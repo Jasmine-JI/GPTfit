@@ -9,7 +9,6 @@
           {{ chartType | dataTypeTranslate: [sportType, unit] | translate }}
         </ng-container>
       </h6>
-      <span id="rowLine"></span>
     </div>
   </ng-container>
   <main
@@ -85,7 +84,7 @@
         </div>
       </div>
     </ng-container>
-    <div #container id="chartBlock">
+    <div #container id="chartBlock" [class.printChartFix]="isPreviewMode">
       chart
     </div>
   </main>

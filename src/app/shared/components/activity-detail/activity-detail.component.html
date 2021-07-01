@@ -40,7 +40,7 @@
         class="flexCenter"
         [class]="activityInfoLayer.type | sportTypeIcon"
       ></i>
-      <div class="flexCol" style="justify-content: center; margin-left: 20px; line-height: 1.2;">
+      <div class="flexCol  report-titleText">
         <span class="small__font">{{ fileTime }}</span>
         <div class="flexRow" style="align-items: center;">
           <span class="head__name" *ngIf="!uiFlag.editNameMode">{{ fileInfo.dispName || 'None' }}</span>
@@ -792,7 +792,7 @@
               <tbody class="segmentation__row">
                 <ng-container *ngFor="let _layer of activityLapLayer; let _lIdx = index;">
                   <tr>
-                    <td class="flexRow segmentation__text" style="align-items: center; justify-content: center;">
+                    <td class="flexCenter segmentation__text">
                       <i
                         style="font-size: 22px;"
                         class="ala-activity-icon"
@@ -853,11 +853,11 @@
   ></app-map-chart-compare>
   <ng-container *ngIf="uiFlag.pcView || uiFlag.currentTag === 'chart'">
     <section class="card__section" *ngIf="+activityInfoLayer.type === 3">
-      <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+      <div class="flexRow cardTitle">
         <span class="cardSubtitle">{{ 'universal_activityData_weightTrainingEffectiveness' | translate }}</span>
         <i class="icon-svg_web-icon_p1_001-setting settingIcon" (click)="handleShowWeightTrainOptMenu($event)"></i>
         <div
-          class="weightTrainSetting"
+          class="report-weightTrainSetting"
           class="flexCol"
           (click)="$event.stopPropagation()"
           *ngIf="uiFlag.showWeightTrainingOpt"
@@ -865,8 +865,8 @@
           <span>{{ 'universal_activityData_weightTrainingExtent' | translate }}</span>
           <div class="flexCol" style="position: relative;">
             <span
-              class="dropMenu weightTrainMenu"
-              [class.dropMenu--active]="uiFlag.showLevelSelector"
+              class="report-dropMenu report-weightTrainMenu"
+              [class.report-dropMenu--active]="uiFlag.showLevelSelector"
               (click)="handleShowLevelSelector($event)"
             >
               <ng-container *ngIf="uiFlag.weightTrainLevel === 'novice'">
@@ -879,7 +879,7 @@
                 {{ 'universal_activityData_highRanker' | translate }}
               </ng-container>
             </span>
-            <div class="dropMenuList" *ngIf="uiFlag.showLevelSelector">
+            <div class="report-dropMenuList" *ngIf="uiFlag.showLevelSelector">
               <span class="levelOpt" (click)="changeLevel('novice')">
                 {{ 'universal_activityData_beginner' | translate }}
               </span>
@@ -952,7 +952,7 @@
     ></app-quadrant-chart>
     <div class="pageBreak" *ngIf="uiFlag.isPreviewMode && activityInfoLayer.type == 3"></div>
     <section class="card__section">
-      <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+      <div class="flexRow cardTitle">
         <span class="cardSubtitle">{{ 'universal_activityData_trend' | translate }}</span>
         <i
           class="icon-svg_web-icon_p1_001-setting settingIcon"
@@ -963,12 +963,12 @@
           <div class="flexCol" *ngIf="trendChartOpt.haveDistanceChoice">
             <span class="bold__font">{{ 'universal_activityData_inAccordanceWith' | translate }}</span>
             <div class="flexRow radio__section">
-              <span class="flexRow radio__selector" (click)="changeXAxisType('pointSecond')">
-                <span class="radio__btn" [class.radio__btn--active]="trendChartOpt.xAxisType === 'pointSecond'"></span>
+              <span class="flexRow radioSelector" (click)="changeXAxisType('pointSecond')">
+                <span class="radioBtn" [class.radioBtn--active]="trendChartOpt.xAxisType === 'pointSecond'"></span>
                 <span>{{ 'universal_activityData_time' | translate }}</span>
               </span>
-              <span class="flexRow radio__selector" (click)="changeXAxisType('distanceMeters')">
-                <span class="radio__btn" [class.radio__btn--active]="trendChartOpt.xAxisType === 'distanceMeters'"></span>
+              <span class="flexRow radioSelector" (click)="changeXAxisType('distanceMeters')">
+                <span class="radioBtn" [class.radioBtn--active]="trendChartOpt.xAxisType === 'distanceMeters'"></span>
                 <span>{{ 'universal_activityData_distance' | translate }}</span>
               </span>
             </div>
@@ -976,12 +976,12 @@
           <div class="flexCol">
             <span class="bold__font">{{ 'universal_vocabulary_type' | translate }}</span>
             <div class="flexRow radio__section">
-              <span class="flexRow radio__selector" (click)="changeSegmentMode()">
-                <span class="radio__btn" [class.radio__btn--active]="!trendChartOpt.segmentMode"></span>
+              <span class="flexRow radioSelector" (click)="changeSegmentMode()">
+                <span class="radioBtn" [class.radioBtn--active]="!trendChartOpt.segmentMode"></span>
                 <span>{{ 'universal_activityData_trendOfChange' | translate }}</span>
               </span>
-              <span class="flexRow radio__selector" (click)="changeSegmentMode()">
-                <span class="radio__btn" [class.radio__btn--active]="trendChartOpt.segmentMode"></span>
+              <span class="flexRow radioSelector" (click)="changeSegmentMode()">
+                <span class="radioBtn" [class.radioBtn--active]="trendChartOpt.segmentMode"></span>
                 <span>{{ 'universal_activityData_segmentationResolution' | translate }}</span>
               </span>
             </div>
@@ -990,8 +990,8 @@
             <span class="bold__font">{{ 'universal_activityData_segment' | translate }}</span>
             <div class="flexCol" style="position: relative;">
               <div
-                class="dropMenu"
-                [class.dropMenu--active]="uiFlag.showSegmentRangeList"
+                class="report-dropMenu"
+                [class.report-dropMenu--active]="uiFlag.showSegmentRangeList"
                 (click)="handleShowDropList()"
               >
                 <ng-container *ngIf="trendChartOpt.xAxisType === 'pointSecond'">
@@ -1006,7 +1006,7 @@
                   </ng-container>
                 </ng-container>
               </div>
-              <div class="flexCol dropMenuList" *ngIf="uiFlag.showSegmentRangeList">
+              <div class="flexCol report-dropMenuList" *ngIf="uiFlag.showSegmentRangeList">
                 <ng-container *ngIf="trendChartOpt.xAxisType === 'pointSecond'">
                   <span (click)="changeSegmentRange(60)">
                     {{ 'universal_activityData_everyMinutes' | translate: {number: 1} }}
@@ -1208,7 +1208,7 @@
     *ngIf="fileInfo.author && (uiFlag.pcView || uiFlag.currentTag === 'summary')"
   >
     <div class="flexCol footer__Info" *ngIf="fileInfo.equipmentSN && fileInfo.equipmentSN.length > 0 && otherInfo.deviceInfo">
-      <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+      <div class="flexRow cardTitle">
         <span class="cardSubtitle">{{ 'universal_deviceSetting_productInfo' | translate }}</span>
       </div>
       <div class="flexCenter footer__header">
@@ -1224,7 +1224,7 @@
       </span>
     </div>
     <div class="flexCol footer__Info" *ngIf="fileInfo.class && otherInfo.classInfo">
-      <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+      <div class="flexRow cardTitle">
         <span class="cardSubtitle">{{ 'universal_group_courseIntroduction' | translate }}</span>
       </div>
       <div class="flexCol">
@@ -1242,7 +1242,7 @@
       </div>
     </div>
     <div class="flexCol footer__Info" *ngIf="fileInfo.class && otherInfo.teacherInfo">
-      <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+      <div class="flexRow cardTitle">
         <span class="cardSubtitle">{{ 'universal_group_coachIntroduction' | translate }}</span>
       </div>
       <div class="flexCol">
@@ -1257,7 +1257,7 @@
       </div>
     </div>
     <div class="flexCol footer__Info" *ngIf="!fileInfo.class || uiFlag.isDebug">
-      <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+      <div class="flexRow cardTitle">
         <span class="cardSubtitle">{{ 'universal_activityData_fileInfo' | translate }}</span>
       </div>
       <div class="flexCol">
@@ -1277,7 +1277,7 @@
       </div>
     </div>
     <div class="flexCol footer__Info" *ngIf="!fileInfo.class || uiFlag.isDebug">
-      <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+      <div class="flexRow cardTitle">
         <span class="cardSubtitle">{{ 'universal_activityData_tag' | translate }}</span>
       </div>
       <div *ngFor="let _tag of fileInfo.tag;">

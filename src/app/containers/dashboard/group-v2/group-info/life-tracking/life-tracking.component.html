@@ -6,7 +6,7 @@
   <ng-container *ngIf="!uiFlag.noData">
     <header>
       <div class="functionBtnBar" style="align-items: center;">
-        <button class="alatech-btn alatech-btn--default activity-btn"
+        <button class="alatech-btn alatech-btn--default"
           title="{{'universal_operating_print' | translate}}"
           (click)="print()"
           *ngIf="uiFlag.isPreviewMode"
@@ -19,114 +19,114 @@
           class="functionBtn"
           *ngIf="!uiFlag.isPreviewMode"
         >
-          <i class="icon-svg_web-icon_p2_087-print activity-info_icon_size"></i>
+          <i class="icon-svg_web-icon_p2_087-print"></i>
         </a>
       </div>
-      <section class="rowToColumn">
+      <section class="report-headerSection">
         <div class="flexRow" style="align-items: center;">
-          <i class="icon-svg_web-icon_p3_016-life_tracking flexCenter reportIcon"></i>
-          <div class="flexCol" style="justify-content: center; margin-left: 20px; line-height: 1.2;">
-            <span class="smallFont">
+          <i class="icon-svg_web-icon_p3_016-life_tracking flexCenter report-headerIcon"></i>
+          <div class="flexCol  report-titleText">
+            <span class="report-dateAnnotation">
               {{ 'universal_group_buildFromTime' | translate: {date: reportTime.endDate, range: reportTime.range} }}
             </span>
             <div class="flexRow" style="align-items: center;">
-              <span class="headName">
+              <span class="report-headerTitle">
                 {{ 'universal_lifeTracking_lifeTracking' | translate }}
                 {{ 'universal_activityData_report' | translate }}
               </span>
             </div>
           </div>
         </div>
-        <div class="flexCenter fileOwner">
+        <div class="flexCenter report-fileOwner">
           <div class="flexCol" style="margin-right: 10px;">
-            <span class="headName" >{{ groupInfo.name }}</span>
-            <span class="smallFont">{{ groupInfo.parents }}</span>
+            <span class="report-headerTitle" >{{ groupInfo.name }}</span>
+            <span class="report-dateAnnotation">{{ groupInfo.parents }}</span>
           </div>
           <img 
-            class="reportImgIcon"
+            class="report-imgIcon"
             [src]="groupInfo.icon"
             (error)="this.groupInfo.icon='/assets/images/group-default.svg'"
           >
         </div>
       </section>
     </header>
-    <section class="displaySection">
-      <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+    <section class="report-displaySection">
+      <div class="flexRow cardTitle">
         <h6 class="cardSubtitle">{{ 'universal_activityData_summary' | translate }}</h6>
-        <span style="display: flex; align-items: center;" class="smallFont">
+        <span style="display: flex; align-items: center;" class="report-dateAnnotation">
           {{ 'universal_activityData_creatTime' | translate }} {{ reportTime.create }}
         </span>
       </div>
-      <div class="summaryArea">
-        <div class="summaryDataArea">
-          <span class="summaryData">{{ info.memberList?.length || 0 }}</span>
-          <p class="summaryDescription">
+      <div class="report-summaryArea">
+        <div>
+          <span class="report-summaryData">{{ info.memberList?.length || 0 }}</span>
+          <p class="report-summaryDescription">
             {{ 'universal_activityData_totalPeople' | translate }}
           </p>
         </div>
-        <div class="summaryDataArea">
-          <span class="summaryData">{{ info.recordPeople || 0 }}</span>
-          <p class="summaryDescription">
+        <div>
+          <span class="report-summaryData">{{ info.recordPeople || 0 }}</span>
+          <p class="report-summaryDescription">
             {{ 'universal_activityData_record' | translate }}
             {{ 'universal_activityData_people' | translate }}
           </p>
         </div>
-        <div class="summaryDataArea">
-          <span class="summaryData">
+        <div>
+          <span class="report-summaryData">
             {{ (info.bodyHeight / info.bodyHeightEffectCount) || 0 | bodyHeightSibs: [userInfo.unit, true] }}
           </span>
-          <p class="summaryDescription">
+          <p class="report-summaryDescription">
             {{ 'universal_activityData_perCapita' | translate }}
             {{ 'universal_userProfile_bodyHeight' | translate }}
           </p>
         </div>
-        <div class="summaryDataArea">
-          <span class="summaryData">
+        <div>
+          <span class="report-summaryData">
             {{ (info.bodyWeight / info.bodyWeightEffectCount) || 0 | weightSibs: [userInfo.unit, 0] }}
           </span>
-          <p class="summaryDescription">
+          <p class="report-summaryDescription">
             {{ 'universal_activityData_perCapita' | translate }}
             {{ 'universal_userProfile_bodyWeight' | translate }}
           </p>
         </div>
-        <div class="summaryDataArea">
-          <span class="summaryData">
+        <div>
+          <span class="report-summaryData">
             {{ (info.age / info.ageEffectCount) || 0 | number: '1.0-0' }}
           </span>
-          <p class="summaryDescription">
+          <p class="report-summaryDescription">
             {{ 'universal_activityData_perCapita' | translate }}
             {{ 'universal_userProfile_age' | translate }}
           </p>
         </div>
-        <div class="summaryDataArea" *ngIf="info?.FFMI">
-          <span class="summaryData">
+        <div *ngIf="info?.FFMI">
+          <span class="report-summaryData">
             {{ (info.FFMI / info.FFMIEffectCount) || 0 | number: '1.0-1' }}
           </span>
-          <p class="summaryDescription">
+          <p class="report-summaryDescription">
             {{ 'universal_activityData_perCapita' | translate }} FFMI
           </p>
         </div>
-        <div class="summaryDataArea">
-          <span class="summaryData">
+        <div>
+          <span class="report-summaryData">
             {{ (info.totalStep / info.totalStepEffectCount) || 0 | thousandConversion: ' ' }}
           </span>
-          <p class="summaryDescription">
+          <p class="report-summaryDescription">
             {{ 'universal_activityData_perCapita' | translate }}
             {{ 'universal_activityData_activityTotalSteps' | translate }}
           </p>
         </div>
-        <div class="summaryDataArea">
-          <span class="summaryData">
+        <div>
+          <span class="report-summaryData">
             {{ (info.totalDistanceMeters / info.totalDistanceMetersEffectCount) || 0 | distanceSibs: [userInfo.unit, true] }}
           </span>
-          <p class="summaryDescription">
+          <p class="report-summaryDescription">
             {{ 'universal_activityData_perCapita' | translate }}
             {{ 'universal_userProfile_walkingDistance' | translate }}
           </p>
         </div>
       </div>
     </section>
-    <section class="displaySection">
+    <section class="report-displaySection">
       <div class="flexRow cardTitle">
         <h6 class="cardSubtitle">
           {{ 'universal_group_dailyLifeRecord' | translate: {range: reportTime.typeTranslate} }}
@@ -134,40 +134,40 @@
       </div>
       <div class="flexCol">
         <ng-container>
-          <div class="flexRow durationSection">
-            <div class="flexCol durationInfo rwd_wid_100per">
-              <span class="chartTitle">
+          <div class="flexRow report-durationSection">
+            <div class="flexCol report-durationInfo">
+              <span class="report-chartTitle">
                 {{ 'universal_userProfile_StepCount' | translate }}
               </span>
-              <div class="flexRow infoHeader">
+              <div class="flexRow report-infoHeader">
                 <div class="flexCol">
-                  <span class="summaryData">
+                  <span class="report-summaryData">
                     {{ chart.stepTrend.totalStep | thousandConversion: ' ' }}
                   </span>
-                  <span class="summaryDescription">
+                  <span class="report-summaryDescription">
                     {{ 'universal_activityData_activityTotalSteps' | translate }}
                   </span>
                 </div>
                 <div class="flexCol" style="margin-left: 10px;">
-                  <span class="summaryData">
+                  <span class="report-summaryData">
                     {{ chart.stepTrend.totalDistance | distanceSibs: [userInfo.unit, true] }}
                   </span>
-                  <span class="summaryDescription">
+                  <span class="report-summaryDescription">
                     {{ 'universal_activityData_totalDistance' | translate }}
                   </span>
                 </div>
                 <div class="flexCol">
-                  <span class="summaryData">{{ chart.stepTrend.reachTimes }}</span>
-                  <span class="summaryDescription">
+                  <span class="report-summaryData">{{ chart.stepTrend.reachTimes }}</span>
+                  <span class="report-summaryDescription">
                     {{ 'universal_activityData_complianceTimes' | translate }}
                   </span>
                 </div>
               </div>
-              <span class="areaDescription dataDiscription">
+              <span class="report-areaDescription report-dataDiscription">
                 {{ 'universal_activityData_stepReportDescription' | translate }}
               </span>
             </div>
-            <div class="durationChart rwd_wid_100per">
+            <div class="report-durationChart">
               <app-discolor-column-chart
                 [data]="chart.stepTrend.trendData"
                 [chartName]="'Step'"
@@ -179,40 +179,40 @@
           </div>
         </ng-container>
         <ng-container>
-          <div class="flexRow  durationSection" style="width: 100%;">
-            <div class="flexCol durationInfo rwd_wid_100per">
-              <span class="chartTitle">{{'universal_lifeTracking_sleep' | translate}}</span>
-              <div class="flexRow infoHeader">
+          <div class="flexRow report-durationSection" style="width: 100%;">
+            <div class="flexCol report-durationInfo">
+              <span class="report-chartTitle">{{'universal_lifeTracking_sleep' | translate}}</span>
+              <div class="flexRow report-infoHeader">
                 <div class="flexCol">
-                  <span class="summaryData">
+                  <span class="report-summaryData">
                     {{ (chart.sleepTrend.ttlAvgSleepSecond / chart.sleepTrend.dataLen) || 0 | sportTime: [true, true] }}
                   </span>
-                  <span class="summaryDescription">
+                  <span class="report-summaryDescription">
                     {{'universal_adjective_avg' | translate}} {{'universal_lifeTracking_sleep' | translate}}
                   </span>
                 </div>
                 <div class="flexCol" style="margin-left: 10px;">
-                  <span class="summaryData">
+                  <span class="report-summaryData">
                     {{ (chart.sleepTrend.ttlAvgDeepSleepSecond / chart.sleepTrend.dataLen) || 0 | sportTime: [true, true] }}
                   </span>
-                  <span class="summaryDescription">
+                  <span class="report-summaryDescription">
                     {{'universal_adjective_avg' | translate}} {{'universal_lifeTracking_deepSleep' | translate}}
                   </span>
                 </div>
                 <div class="flexCol" style="margin-left: 10px;">
-                  <span class="summaryData">
+                  <span class="report-summaryData">
                     {{ (chart.sleepTrend.ttlAvgLightSleepSecond / chart.sleepTrend.dataLen) || 0 | sportTime: [true, true] }}
                   </span>
-                  <span class="summaryDescription">
+                  <span class="report-summaryDescription">
                     {{'universal_adjective_avg' | translate}} {{'universal_lifeTracking_lightSleep' | translate}}
                   </span>
                 </div>
               </div>
-              <span class="areaDescription dataDiscription">
+              <span class="report-areaDescription report-dataDiscription">
                 {{'universal_activityData_sleepReportInstructions' | translate}}
               </span>
             </div>
-            <div class="durationChart rwd_wid_100per">
+            <div class="report-durationChart">
               <app-stack-column-chart
                 [data]="chart.sleepTrend.trendData"
                 [chartName]="'Sleep'"
@@ -225,16 +225,16 @@
         </ng-container>
       </div>
     </section>
-    <section class="displaySection" *ngIf="uiFlag.progress === 100">
+    <section class="report-displaySection" *ngIf="uiFlag.progress === 100">
       <div class="flexCol">
         <div class="cardTitle flexRow">
           <h6 class="cardSubtitle">{{'universal_activityData_recentFitness' | translate}}</h6>
         </div>
       </div>
-      <div class="flexRow recentBodyQuality" style="margin-top: 20px;">
-        <div class="flexCol postureInfo rwd_wid_100per">
-          <span class="chartTitle">{{'universal_activityData_bodyDistribution' | translate}}</span>
-          <span class="areaDescription" style="margin: 10px 0 0 10px;">
+      <div class="flexRow report-bodyQuality" style="margin-top: 20px;">
+        <div class="flexCol posture__info">
+          <span class="report-chartTitle">{{'universal_activityData_bodyDistribution' | translate}}</span>
+          <span class="report-areaDescription" style="margin: 10px 0 0 10px;">
             {{'universal_activityData_bodyDistributionReportDescription' | translate}}
           </span>
           <app-distribution-chart
@@ -242,9 +242,9 @@
             style="margin-top: 20px;"
           ></app-distribution-chart>
         </div>
-        <div class="flexCol postureTrend rwd_wid_100per">
+        <div class="flexCol posture__trend report-chartPrintWidth">
           <div class="flexCol">
-            <span class="chartTitle">
+            <span class="report-chartTitle">
               {{'universal_adjective_avg' | translate}} BMI
             </span>
             <app-line-chart
@@ -256,7 +256,7 @@
             ></app-line-chart>
           </div>
           <div class="flexCol">
-            <span class="chartTitle">
+            <span class="report-chartTitle">
               {{'universal_adjective_avg' | translate}} {{'universal_activityData_bodyFatTrend' | translate}}
             </span>
             <app-line-chart
@@ -269,7 +269,7 @@
             </app-line-chart>
           </div>
           <div class="flexCol">
-            <span class="chartTitle">
+            <span class="report-chartTitle">
               {{'universal_adjective_avg' | translate}} {{'universal_activityData_muscleRateTrend' | translate}}
             </span>
             <app-line-chart
@@ -285,7 +285,7 @@
       </div>
     </section>
 
-    <section class="displaySection">
+    <section class="report-displaySection pageBreak">
       <div class="flexCol">
         <div class="cardTitle flexRow">
           <h6 class="cardSubtitle">{{'universal_activityData_trend' | translate}}</h6>
@@ -302,9 +302,9 @@
         </app-fillet-column-chart>
       </div>
     </section>
-    <section class="displaySection">
+    <section class="report-displaySection pageBreak">
       <div class="flexCol">
-        <div class="cardTitle flexRow haveOptBtn">
+        <div class="cardTitle flexRow report-haveOptBtn">
           <h6 class="cardSubtitle">{{'universal_group_groupAnalysis' | translate}}</h6>
           <button>
             <i class="icon-svg_web-icon_p1_001-setting" (click)="handleShowOpt($event, 'group')"></i>
@@ -335,7 +335,7 @@
                     _opt === 'name'
                       || (groupTableOpt.length >= tableColumn.max && !groupTableOpt.includes(_opt))
                       || (groupTableOpt.length <= tableColumn.min && groupTableOpt.includes(_opt))
-                    ? 'reportCheckBox-disable' : 'reportCheckBox'
+                    ? 'reportCheckBox--disable' : 'reportCheckBox'
                   "
                 >
                   <span style="font-size: 14px">
@@ -698,9 +698,9 @@
         </div>
       </div>
     </section>
-    <section class="displaySection">
+    <section class="report-displaySection pageBreak">
       <div class="flexCol">
-        <div class="cardTitle flexRow haveOptBtn">
+        <div class="cardTitle flexRow report-haveOptBtn">
           <h6 class="cardSubtitle">{{'universal_group_personalAnalysis' | translate}}</h6>
           <button>
             <i class="icon-svg_web-icon_p1_001-setting" (click)="handleShowOpt($event, 'person')"></i>
@@ -731,7 +731,7 @@
                     _opt === 'name'
                       || (personTableOpt.length >= tableColumn.max && !personTableOpt.includes(_opt))
                       || (personTableOpt.length <= tableColumn.min && personTableOpt.includes(_opt))
-                    ? 'reportCheckBox-disable' : 'reportCheckBox'
+                    ? 'reportCheckBox--disable' : 'reportCheckBox'
                   "
                 >
                   <span style="font-size: 14px">
@@ -1250,7 +1250,7 @@
       *ngIf="analysisMenu.focusId"
     >
       <div class="flexCol" style="padding: 15px 15px 0px 15px;">
-        <span class="menuSubtitle">
+        <span class="report-menuSubtitle">
           <ng-container *ngIf="analysisMenu.type === 'group'">
             {{ 'universal_group_member' | translate }}
           </ng-container>
@@ -1262,7 +1262,6 @@
           <div>
             <ng-container *ngIf="analysisMenu.type === 'group'">
               <span
-                class="listSpan"
                 [style.color]="personAnalysis[_member.userId].gender !== undefined ? 'black' : 'red'"
                 (click)="goPage(person, _member.userId)"
                 *ngFor="let _member of groupAnalysis[analysisMenu.focusId].memberList"
@@ -1273,7 +1272,6 @@
             </ng-container>
             <ng-container *ngIf="analysisMenu.type === 'person'">
               <span
-                class="listSpan"
                 (click)="goPage('group', _group.groupId)"
                 *ngFor="let _group of personAnalysis[analysisMenu.focusId].belongGroup"
               >
@@ -1293,9 +1291,12 @@
       </a>
     </div>
   </ng-container>
+  <div *ngIf="uiFlag.isPreviewMode && uiFlag.progress === 100" class="printMark">
+    GPTFit
+  </div>
 </div>
 <ng-template #noChartData>
-  <span class="noChartData">{{ 'universal_status_noData' | translate }}</span>
+  <span class="report-noChartData">{{ 'universal_status_noData' | translate }}</span>
 </ng-template>
 <ng-template #noTimeData>
   -:--

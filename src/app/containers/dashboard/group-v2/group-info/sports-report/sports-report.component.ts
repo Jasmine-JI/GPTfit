@@ -1189,7 +1189,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     }
 
     this.getTrendAvgValue();
-    this.info = { infoData, ...this.info };
+    this.info = { ...infoData, ...this.info };
     // 針對不同類別所需數據進行加工
     switch (sportType) {
       case SportCode.all:

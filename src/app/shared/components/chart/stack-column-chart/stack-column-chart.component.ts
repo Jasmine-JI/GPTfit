@@ -63,7 +63,7 @@ class ChartOptions {
 @Component({
   selector: 'app-stack-column-chart',
   templateUrl: './stack-column-chart.component.html',
-  styleUrls: ['./stack-column-chart.component.scss']
+  styleUrls: ['./stack-column-chart.component.scss', '../chart-share-style.scss']
 })
 export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   noData = true;
@@ -74,6 +74,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: any;  // 生活追蹤用變數-kidin-1090218
   @Input() searchDate: Array<number>;
   @Input() page: DisplayPage;
+  @Input() isPreviewMode: boolean = false;
   @ViewChild('container', {static: false})
   container: ElementRef;
 
@@ -249,89 +250,29 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   initSleepChart () {
     let dataSet: Array<any>,
         dataLength: number;
-    if (this.searchDate) {  // 待企業與個人生活追蹤重構後移除
-      this.createDateList();
-      const newDeepSleepData = [],
-            newLightSleepData = [],
-            newAwakeData = [];
-      let idx = 0;
-      for (let i = 0; i < this.dateList.length; i++) {
-        if (this.dateList[i] === this.data.date[idx]) {
-          newLightSleepData.push(this.data.lightSleepList[idx]);
-          newDeepSleepData.push(this.data.deepSleepList[idx]);
-          newAwakeData.push(this.data.awakeList[idx]);
-          idx++;
-
-        } else {
-          newLightSleepData.push(0);
-          newDeepSleepData.push(0);
-          newAwakeData.push(0);
-        }
+    const { deep, light, standUp } = this.data;
+    this.noData = false;
+    dataLength = deep.length;
+    dataSet = [
+      {
+        name: this.translate.instant('universal_lifeTracking_lightSleep'),
+        data: light,
+        showInLegend: false,
+        color: sleepColor.light
+      },
+      {
+        name: this.translate.instant('universal_lifeTracking_deepSleep'),
+        data: deep,
+        showInLegend: false,
+        color: sleepColor.deep
+      },
+      {
+        name: this.translate.instant('universal_lifeTracking_wideAwake'),
+        data: standUp,
+        showInLegend: false,
+        color: sleepColor.standup
       }
-
-      let deepSleepData = [],
-          lightSleepData = [],
-          awakeData = [];
-
-      this.noData = false;
-      deepSleepData = newDeepSleepData.map((_data, index) => {
-        return [this.dateList[index], _data];
-      });
-
-      lightSleepData = newLightSleepData.map((_data, index) => {
-        return [this.dateList[index], _data];
-      });
-
-      awakeData = newAwakeData.map((_data, index) => {
-        return [this.dateList[index], _data];
-      });
-
-      dataSet = [
-        {
-          name: this.translate.instant('universal_lifeTracking_lightSleep'),
-          data: lightSleepData,
-          showInLegend: false,
-          color: '#35a8c9'
-        },
-        {
-          name: this.translate.instant('universal_lifeTracking_deepSleep'),
-          data: deepSleepData,
-          showInLegend: false,
-          color: '#1e61bb'
-        },
-        {
-          name: this.translate.instant('universal_lifeTracking_wideAwake'),
-          data: awakeData,
-          showInLegend: false,
-          color: '#ccff00'
-        }
-      ];
-
-    } else {
-      const { deep, light, standUp } = this.data;
-      this.noData = false;
-      dataLength = deep.length;
-      dataSet = [
-        {
-          name: this.translate.instant('universal_lifeTracking_lightSleep'),
-          data: light,
-          showInLegend: false,
-          color: sleepColor[0]
-        },
-        {
-          name: this.translate.instant('universal_lifeTracking_deepSleep'),
-          data: deep,
-          showInLegend: false,
-          color: sleepColor[1]
-        },
-        {
-          name: this.translate.instant('universal_lifeTracking_wideAwake'),
-          data: standUp,
-          showInLegend: false,
-          color: sleepColor[2]
-        }
-      ];
-    }
+    ];
 
     const chartOptions = new ChartOptions(dataSet);
 

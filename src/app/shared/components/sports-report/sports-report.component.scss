@@ -28,41 +28,7 @@
 
 /***************************************** media ***************************************/
 
-@media (max-width: 1000px){
-  .media-1000-col {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .authorInfo {
-    justify-content: flex-end;
-    margin-top: 10px;
-  }
-
-  .media-1000-data__content {
-    flex-direction: column;
-  }
-
-  .media-1000-data__number {
-    width: 100%;
-  }
-
-  .media-1000-data__Chart {
-    width: 100%;
-    margin-left: 0px;
-  }
-
-  .musclePartList {
-    width: 100%;
-  }
-}
-
 @media (max-width: 767px){
-  .media-767-col {
-    display: flex;
-    flex-direction: column;
-  }
-
   .muscle__trend__chart,
   .muscle__content__trend__chart,
   .fold__content {

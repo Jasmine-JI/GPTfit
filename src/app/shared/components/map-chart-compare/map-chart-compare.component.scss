@@ -2,8 +2,6 @@
 @import 'transition.scss';
 @import 'rotate.scss';
 
-$radio-size: 20px;
-$radio-active-size: 14px;
 
 .map__style {
   height: 500px;
@@ -23,33 +21,6 @@ $radio-active-size: 14px;
   right: 0px;
   top: 28px;
   box-shadow: -2px 2px 2px rgba(0, 0, 0, 0.5);
-}
-
-.radio__selector {
-  cursor: pointer;
-  align-items: center;
-  margin-right: 15px;
-}
-
-.radio__btn {
-  @include center();
-  border: 1px solid black;
-  border-radius: 50%;
-  width: $radio-size;
-  height: $radio-size;
-  margin-right: 5px;
-}
-
-.radio__btn--active {
-
-  &:before {
-    content: '';
-    width: $radio-active-size;
-    height: $radio-active-size;
-    border-radius: 50%;
-    background-color: rgba(17, 166, 235, 1);
-  }
-
 }
 
 .drop__menu {
@@ -80,7 +51,6 @@ $radio-active-size: 14px;
   }
 
 }
-
 
 .selector__section {
   margin: 5px 0;

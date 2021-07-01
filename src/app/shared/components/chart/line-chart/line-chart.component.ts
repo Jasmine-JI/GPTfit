@@ -89,56 +89,32 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
         chartData = [],
         lineColor: Array<any> = [],
         chartName = '';
-    if (this.data.colorSet) {  // 待個人生活追蹤重構後刪除此段
-      switch (this.chartName) {
-        case 'Weight':
-          chartData = this.mergeData(this.data.weightList);
-          chartName = this.translate.instant('universal_userProfile_bodyWeight');
-          lineColor = this.data.colorSet;
-
-          break;
-        case 'FatRate':
-          chartData = this.mergeData(this.data.fatRateList);
-          chartName = this.translate.instant('universal_lifeTracking_fatRate');
-          lineColor = this.data.fatRateColorSet;
-
-          break;
-        case 'MuscleRate':
-          chartData = this.mergeData(this.data.muscleRateList);
-          chartName = this.translate.instant('universal_userProfile_muscleRate');
-          lineColor = this.data.muscleRateColorSet;
-
-          break;
-      }
-
-    } else {
-      chartData = this.data.arr;
-      this.highestPoint = this.data.top + 1;
-      this.lowestPoint = this.data.bottom - 1;
-      switch (this.chartName) {
-        case 'BMI':
-          chartName = 'BMI';
-          lineColor = [
-            [0, BMIColor[0]],
-            [0.5, BMIColor[1]],
-            [1, BMIColor[2]]
-          ];
-          break;
-        case 'FatRate':
-          chartName = this.translate.instant('universal_lifeTracking_fatRate');
-          lineColor = [
-            [0, fatRateColor[0]],
-            [1, fatRateColor[1]]
-          ];
-          break;
-        case 'MuscleRate':
-          chartName = this.translate.instant('universal_userProfile_muscleRate');
-          lineColor = [
-            [0, muscleRateColor[0]],
-            [1, muscleRateColor[1]]
-          ];
-          break;
-      }
+    chartData = this.data.arr;
+    this.highestPoint = this.data.top + 1;
+    this.lowestPoint = this.data.bottom - 1;
+    switch (this.chartName) {
+      case 'BMI':
+        chartName = 'BMI';
+        lineColor = [
+          [0, BMIColor.low],
+          [0.5, BMIColor.middle],
+          [1, BMIColor.high]
+        ];
+        break;
+      case 'FatRate':
+        chartName = this.translate.instant('universal_lifeTracking_fatRate');
+        lineColor = [
+          [0, fatRateColor.low],
+          [1, fatRateColor.high]
+        ];
+        break;
+      case 'MuscleRate':
+        chartName = this.translate.instant('universal_userProfile_muscleRate');
+        lineColor = [
+          [0, muscleRateColor.low],
+          [1, muscleRateColor.high]
+        ];
+        break;
     }
 
     trendDataset = [

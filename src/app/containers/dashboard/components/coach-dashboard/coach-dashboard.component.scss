@@ -282,7 +282,6 @@
   justify-content: center;
   font-size: 30px;
   animation: heartbeat 1s infinite;
-
   color: #e10019;
 }
 
@@ -452,13 +451,13 @@
     padding: 0 11.5px;
   }
 }
-@media (min-width: 769px) {
+@media (min-width: 768px) {
   .ala-coach.col-md-6 {
     max-width: initial;
     min-width: 50%;
   }
 }
-@media(max-width: 768px) {
+@media(max-width: 767px) {
   .coach-container {
     display: block;
   }

@@ -1,3 +1,8 @@
+/*
+ * 個人頁面、群組頁面、裝置頁面共用樣式
+ * @prefix info-
+ */
+
 @import 'font.scss';
 @import 'flex-center.scss';
 
@@ -78,7 +83,7 @@
 /*********************************** media *****************************/
 
 
-@media (max-width: 1199px) {
+@media (max-width: 1200px) {
   .info-ScenerySection {
     height: 313px;
   }

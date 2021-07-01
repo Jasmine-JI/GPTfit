@@ -88,11 +88,11 @@
   position: relative;
   height: 34px;
   width: 34px;
+  justify-content: center;
   align-items: center;
   cursor: pointer;
   transition: transform 400ms ease-in;
   display: flex;
-  justify-content: center;
 }
 
 .minimize-main-nav.main-nav-toggle {
@@ -397,7 +397,7 @@
   }
 }
 
-@media(max-width: 768px) {
+@media(max-width: 767px) {
   .footer-details.footer-rwd--1 {
     margin-bottom: 84px;
   }

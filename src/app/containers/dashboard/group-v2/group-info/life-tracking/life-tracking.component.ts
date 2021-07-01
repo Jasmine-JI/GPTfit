@@ -1039,7 +1039,6 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
         restHeartRate,
         totalDistanceMeters,
         totalFitSecond,
-        totalSleepSecond,
         totalStep
       } = _tracking;
       const BMI = this.reportService.countBMI(bodyHeight, bodyWeight),
@@ -1176,7 +1175,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
 
         }
 
-        this.createChartData(sameDateData, trackingLen, xAxisTimestamp);
+        this.createChartData(sameDateData, xAxisTimestamp);
         dataIdx++;
       } else {
         let zeroData = {};
@@ -1185,7 +1184,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
           zeroData = {[key]: 0, ...zeroData};
         }
 
-        this.createChartData(zeroData, 1, xAxisTimestamp);
+        this.createChartData(zeroData, xAxisTimestamp);
       }
 
     }
@@ -1196,11 +1195,10 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   /**
    * 製作各圖表所需數據
    * @param strokeData {any}-一個時間單位（日/週）加總的資料
-   * @param denominator {number}-均化分母
    * @param startTimestamp {number}-該筆數據開始時間
    * @author kidin-1100617
    */
-  createChartData(strokeData: any, denominator: number, startTimestamp: number) {
+  createChartData(strokeData: any, startTimestamp: number) {
     this.createStepTrendChart(strokeData, startTimestamp);
     this.createSleepTrendChart(strokeData, startTimestamp);
     this.createBMITrendChart(strokeData, startTimestamp);
@@ -1605,7 +1603,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    * @param startTimestamp {number}-開始時間timestamp
    * @author kidin-1100621
    */
-  createStepTrendChart(strokeData: any,startTimestamp: number) {
+  createStepTrendChart(strokeData: any, startTimestamp: number) {
     const { totalStep, targetStep, totalDistanceMeters } = strokeData,
           { stepTrend } = this.chart;
     stepTrend.totalDistance += totalDistanceMeters;
@@ -1618,7 +1616,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
             y: totalStep,
             z: totalStep,  // tooltip數據用
             t: targetStep,  // tooltip數據用
-            color: stepColor[2]
+            color: stepColor.reach
         });
       } else {
         const discolorPoint = totalStep / targetStep;
@@ -1635,10 +1633,10 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
               y2: 0
             },
             stops: [
-              [0, stepColor[0]],
-              [discolorPoint, stepColor[0]],
-              [discolorPoint + 0.01, stepColor[1]],
-              [1, stepColor[1]]
+              [0, stepColor.step],
+              [discolorPoint, stepColor.step],
+              [discolorPoint + 0.01, stepColor.target],
+              [1, stepColor.target]
             ]
           }
 

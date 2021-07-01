@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
 import { chart } from 'highcharts';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
@@ -86,12 +86,12 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
   @Input() page: DisplayPage;
   @Input() unit = <Unit>unit.metric;
   @Input() sportType: SportType = SportCode.all;
+  @Input() isPreviewMode: boolean = false;
   @ViewChild('container', {static: false})
   container: ElementRef;
 
   constructor(
-    private translate: TranslateService,
-    private changeDetectorRef: ChangeDetectorRef
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {}
@@ -156,32 +156,9 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
           this.chartType = 'calories';
           break;
         case 'FitTime':
-          if (this.searchDate) {  // 待個人生活追蹤重構後移除
-            this.createDateList();
-            const newData = [];
-            let idx = 0;
-            for (let i = 0; i < this.dateList.length; i++) {
-              if (this.dateList[i] === this.data.date[idx]) {
-                newData.push(this.data.fitTimeList[idx]);
-                idx++;
-              } else {
-                newData.push(0);
-              }
-            }
-
-            chartData = newData.map((_item, index) => {
-              return {
-                x: this.dateList[index],
-                y: _item / 60
-              };
-            });
-
-          } else {
-            this.chartType = 'fitTime';
-            chartData = this.data.dataArr;
-            this.columnColor = fitTimeColor;
-          }
-
+          this.chartType = 'fitTime';
+          chartData = this.data.dataArr;
+          this.columnColor = fitTimeColor;
           this.tooltipTitle = this.translate.instant('universal_userProfile_fitTime');
           break;
         case 'CostTime':

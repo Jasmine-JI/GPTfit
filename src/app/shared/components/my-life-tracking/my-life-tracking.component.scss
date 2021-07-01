@@ -1,167 +1,34 @@
-.activity-icon {
-  width: 60px;
-  height: 60px;
-  line-height: 60px;
-  font-size: 35px;
-  box-shadow: 0 0 0 2px #ccc;
-  border-radius: 50%;
-  background-color: #fafafa;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #888;
-}
-
-.activity-btn {
-  width: 140px;
-  height: 38px;
-}
-
-.activity-info_icon_size{
-  font-size: 30px;
-}
-
-.reportHeader {
-  margin: 10px 0px;
-  justify-content: space-between;
-}
-
-.reportDateTime {
-  font-size: 14px;
-  color:#919191;
-  font-weight: bold;
-}
-
-.reportTitle {
-  color: #616161;
-  font-size: 30px;
-  font-weight: bold;
-}
-
-.activity-title {
-  border-bottom: 2px #e5e5e5 solid;
-}
-
-.summaryArea {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-
-.infoDataUnit {
-  font-size: 16px;
-  color:#919191;
-  font-weight: bold;
-}
-
-.summarySepData {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  width: 120px;
-}
-
-.sepLine {
-  border-left: 1px solid #e0e0e0;
-  height: 40px;
-  margin-top: 10px;
-}
-
-.reportChartTitle {
-  font-weight: bold;
-  width: fit-content;
-  white-space: nowrap;
-}
-
-.durationSection {
-  margin-top: 20px;
-}
-
-.summaryData {
-  font-size: 24px;
-  font-weight: bold;
-  color: #646464;
-}
-
-.summaryDescription {
-  font-size: 14px;
-  color: #6e6e6e;
-}
-
-.areaDescription {
-  font-size: 16px;
-  color:#919191;
-  margin-left: 10px;
-}
-
-.postureInfo {
-  width: 60%;
-  margin-right: 10px;
-}
-
-.postureTrend {
+.posture__trend {
   width: 40%;
 }
 
-.durationInfo {
-  width: 40%;
-}
-
-.durationChart {
-  width: 60%;
-}
-
-.infoHeader {
-  margin: 0 10px;
-  justify-content: space-between;
-}
-
-.dataDiscription {
-  margin-top: 10px;
-}
-
-.noChartData {
-  font-weight: bold;
-  color:grey;
-  margin: 10px 0px 10px 10px
-}
-
-.dataNumber {
-  margin-left: 10px;
-  width: 35%;
-}
-
-.dataChart {
-  width: 65%;
-  margin-left: 30px;
-}
-
-.dataAnnotation {
+.data__annotation {
   font-size: 16px;
   font-weight: bold;
   color: #919191;
 }
 
-
-.tableCol tr {
+.table__col tr {
   height: 100px;
 }
 
-.myBodySvg {
+.posture__info {
+  width: 60%;
+}
+
+.my__body__svg {
   width: 35%;
 }
 
-.myBodyInfo {
+.my__body__info {
   margin: 0 auto;
-  height: auto;
 }
 
-.constituteTd {
+.constitute__td {
   text-align: end;
 }
 
-.commentText {
+.comment__text {
   margin-top: 5px;
   width: fit-content;
   padding: 0px 10px;
@@ -170,96 +37,21 @@
   white-space: nowrap;
 }
 
-.card__section {
-  padding: 10px;
-  margin: 5px 0;
-  width: 100%;
-  background-color: rgba(240, 240, 240, 1);
-}
-
-@media (max-width: 1200px) {
-  .searchInput {
-    flex-direction: column;
-    margin-bottom: 10px;
-  }
-
-  .selectArea {
-    flex-direction: column;
-  }
-}
-
 @media (max-width: 1000px){
-  .media-1000-col {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .authorInfo {
-    justify-content: flex-end;
-    margin-top: 10px;
-  }
-
-  .media-1000-dataContent {
-    flex-direction: column;
-  }
-
-  .media-1000-dataNumber {
+  .posture__info, .posture__trend {
     width: 100%;
   }
-
-  .media-1000-dataChart {
-    width: 100%;
-    margin-left: 0px;
-  }
-}
-
-@media (max-width: 768px){
-  .durationSection {
-    flex-direction: column;
-  }
-
-  .recentBodyQuality {
-    flex-direction: column;
-  }
-
-  .rwd_wid_100per {
-    width: 100%;
-  }
-
-  .fitTimeChart {
-    flex-direction: column;
-  }
-
-  .dataChart {
-    width: 100%;
-    margin-left: 0px;
-  }
-
-  .summaryArea {
-    justify-content: space-around;
-  }
-
+  
 }
 
 @media (max-width: 569px){
-  .media-569-col {
+  .posture__info {
     flex-direction: column;
-    margin: 0 auto;
+    align-items: center;
   }
 
-  .myBodySvg {
+  .my__body__svg {
     width: 100%;
-  }
-
-  .myBodyInfo {
-    margin: 0;
-    height: auto;
-  }
-}
-
-@media (max-width: 550px){
-  .reportTitle {
-    font-size: 20px;
   }
 
 }
