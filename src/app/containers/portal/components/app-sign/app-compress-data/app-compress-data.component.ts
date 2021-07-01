@@ -165,7 +165,7 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
         this.uiFlag.isLoading = false;
         const processResult = res.processResult;
         if (processResult.resultCode !== 200) {
-          console.log(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
+          console.error(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
         } else {
           this.compressResp.status = res.status;
 
@@ -203,7 +203,7 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
       this.uiFlag.isLoading = false;
       const processResult = res.processResult;
       if (processResult.resultCode !== 200) {
-        console.log(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
+        console.error(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
       } else {
         this.compressResp.status = res.status;
       }

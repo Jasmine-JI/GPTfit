@@ -2,10 +2,9 @@
 @import 'transition.scss';
 @import 'rotate.scss';
 
-$radio-size: 20px;
-$radio-active-size: 14px;
-$play-bar-color: rgba(110, 110, 110, 1);
-$loaded-color: rgba(255, 252, 174, 1);
+$play-bar-color: var(--scale-255-200);
+$play-btn-color: rgba(110, 110, 110, 1);
+$loaded-color: rgba(255, 252, 174, 0.5);
 
 #record__table {
   padding: 5px 10px 5px 15px;
@@ -63,6 +62,7 @@ $loaded-color: rgba(255, 252, 174, 1);
 #map__section {
   position: relative;
   width: 60%;
+  border: 1px solid white;
 }
 
 .map__style {
@@ -80,7 +80,12 @@ thead, tbody tr {
   cursor: pointer;
 
   &:nth-child(odd) {
-    background-color: rgba(240, 240, 240, 1);
+    background-color: var(--scale-240-45);
+    @include transition(background-color);
+  }
+
+  &:nth-child(even) {
+    background-color: var(--scale-255-60);
     @include transition(background-color);
   }
 
@@ -100,10 +105,11 @@ thead, tbody tr {
   width: 25px;
   padding-right: 5px;
   text-align: end;
+  color: var(--scale-0-255);
 }
 
 .name__col {
-  color: rgba(100, 100, 100, 1);
+  color: var(--scale-100-230);
   width: 50%;
 
   &:hover {
@@ -114,11 +120,13 @@ thead, tbody tr {
 
 .pace__col {
   text-align: center;
+  color: var(--scale-0-255);
 }
 
 .time__col {
   text-align: end;
   padding-right: 5px;
+  color: var(--scale-0-255);
 }
 
 .loaded__player {
@@ -133,39 +141,12 @@ thead, tbody tr {
   position: absolute;
   z-index: 5;
   width: 220px;
-  background-color: white;
+  background-color: var(--scale-255-60);
   border: 1px solid rgba(150, 150, 150, 1);
   padding: 10px;
   right: 0px;
   top: 28px;
-  box-shadow: -2px 2px 2px rgba(0, 0, 0, 0.5);
-}
-
-.radio__selector {
-  cursor: pointer;
-  align-items: center;
-  margin-right: 15px;
-}
-
-.radio__btn {
-  @include center();
-  border: 1px solid black;
-  border-radius: 50%;
-  width: $radio-size;
-  height: $radio-size;
-  margin-right: 5px;
-}
-
-.radio__btn--active {
-
-  &:before {
-    content: '';
-    width: $radio-active-size;
-    height: $radio-active-size;
-    border-radius: 50%;
-    background-color: rgba(17, 166, 235, 1);
-  }
-
+  box-shadow: 2px 2px gray;
 }
 
 .selector__section {
@@ -183,15 +164,20 @@ thead, tbody tr {
 
 }
 
+#map__list__section {
+  margin-bottom: 10px;
+}
+
 #play__btn__section, .play__btn {
   height: 30px;
-  background-color: white;
+  background-color: $play-bar-color;
 }
 
 #play__bar {
   height: 40px;
   justify-content: space-between;
   align-items: center;
+  background-color: $play-bar-color;
   border: 1px solid rgba(200, 200, 200, 1);
 }
 
@@ -202,12 +188,12 @@ thead, tbody tr {
 .play__btn {
   border: none;
   font-size: 24px;
-  color: $play-bar-color;
+  color: $play-btn-color;
   @include center();
 }
 
 #play__timing {
-  color: $play-bar-color;
+  color: $play-btn-color;
 }
 
 #speed__opt {
@@ -215,7 +201,7 @@ thead, tbody tr {
   bottom: 32px;
   padding: 5px;
   background-color: white;
-  color: $play-bar-color;
+  color: $play-btn-color;
 }
 
 .speed__opt__item {

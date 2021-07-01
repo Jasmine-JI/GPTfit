@@ -33,6 +33,10 @@ import { FindPreferPipe } from './find-prefer.pipe';
 import { MuscleGroupIconPipe } from './muscle-group-icon.pipe';
 import { PythagoreanPipe } from './pythagorean.pipe';
 import { MathAbsPipe } from './math-abs.pipe';
+import { BodyHeightSibsPipe } from './body-height-sibs.pipe';
+import { BMIPipe } from './bmi.pipe';
+import { BodyAssessmentPipe } from './body-assessment.pipe';
+import { FFMIPipe } from './ffmi.pipe';
 
 @NgModule({
   imports: [
@@ -72,7 +76,11 @@ import { MathAbsPipe } from './math-abs.pipe';
     FindPreferPipe,
     MuscleGroupIconPipe,
     PythagoreanPipe,
-    MathAbsPipe
+    MathAbsPipe,
+    BodyHeightSibsPipe,
+    BMIPipe,
+    BodyAssessmentPipe,
+    FFMIPipe
   ],
   exports: [
     SexPipe,
@@ -108,7 +116,11 @@ import { MathAbsPipe } from './math-abs.pipe';
     FindPreferPipe,
     MuscleGroupIconPipe,
     PythagoreanPipe,
-    MathAbsPipe
+    MathAbsPipe,
+    BodyHeightSibsPipe,
+    BMIPipe,
+    BodyAssessmentPipe,
+    FFMIPipe
   ]
 })
 export class SharedPipes {}

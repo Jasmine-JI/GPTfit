@@ -571,6 +571,10 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   handleClickBrand() {
     const { groupId } = this.reportConditionOpt.group.brands;
     this.reportConditionOpt.group.selectGroup = groupId.split('-').slice(0, 3).join('-');
+    if (this.reportConditionOpt.hideConfirmBtn) {
+      this.submit();
+    }
+
     this.changeDetectorRef.markForCheck();
   }
 
@@ -581,6 +585,10 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   handleClickBranch(branchIdx: number) {
     const { groupId } = this.reportConditionOpt.group.branches[branchIdx];
     this.reportConditionOpt.group.selectGroup = groupId.split('-').slice(0, 4).join('-');
+    if (this.reportConditionOpt.hideConfirmBtn) {
+      this.submit();
+    }
+
     this.changeDetectorRef.markForCheck();
   }
 
@@ -591,6 +599,10 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   handleClickCoach(coachIdx: number) {
     const { groupId } = this.reportConditionOpt.group.coaches[coachIdx];
     this.reportConditionOpt.group.selectGroup = groupId.split('-').slice(0, 5).join('-');
+    if (this.reportConditionOpt.hideConfirmBtn) {
+      this.submit();
+    }
+    
     this.changeDetectorRef.markForCheck();
   }
 

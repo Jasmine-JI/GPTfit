@@ -118,7 +118,7 @@ export class ParticipantsManageComponent implements OnInit, AfterViewInit, OnDes
     this.uiFlag.isLoading = true;
     this.officialActivityService.getOfficialActivity(body).subscribe(res => {
       if (res.resultCode !== 200) {
-        console.log(`Error: ${res.resultMessage}`);
+        console.error(`Error: ${res.resultMessage}`);
       } else {
         this.activity = res.activity;
 
@@ -267,9 +267,9 @@ export class ParticipantsManageComponent implements OnInit, AfterViewInit, OnDes
     this.uiFlag.isLoading = true;
     this.officialActivityService.updateOfficialActivity(body).subscribe(res => {
       if (res.resultCode !== 200) {
-        console.log('Delete error');
+        console.error('Delete error');
       } else {
-        console.log('Delete success');
+        console.info('Delete success');
       }
 
       // 若在查詢模式下刪除使用者，則清除查詢輸入框
@@ -322,7 +322,7 @@ export class ParticipantsManageComponent implements OnInit, AfterViewInit, OnDes
 
       this.groupService.fetchUserAvartar(body).subscribe(res => {
         if (res.resultCode !== 200) {
-          console.log('Add user Error');
+          console.error('Add user Error');
         } else {
 
           if (res.userName === '') {
@@ -483,7 +483,7 @@ export class ParticipantsManageComponent implements OnInit, AfterViewInit, OnDes
 
     this.groupService.fetchUserAvartar(body).subscribe(res => {
       if (res.resultCode !== 200) {
-        console.log('Add user Error');
+        console.error('Add user Error');
       } else {
 
         res.userList.forEach(_user => {
@@ -701,9 +701,9 @@ export class ParticipantsManageComponent implements OnInit, AfterViewInit, OnDes
     this.uiFlag.isLoading = true;
     this.officialActivityService.updateOfficialActivity(body).subscribe(res => {
       if (res.resultCode !== 200) {
-        console.log('Update error.');
+        console.error('Update error.');
       } else {
-        console.log('Update success.');
+        console.info('Update success.');
       }
 
       this.uiFlag.isLoading = false;
@@ -751,9 +751,9 @@ export class ParticipantsManageComponent implements OnInit, AfterViewInit, OnDes
 
     ).subscribe(res => {
       if (res.resultCode !== 200) {
-        console.log('Error:', res);
+        console.error('Error:', res);
       } else {
-        console.log('Update rank success.')
+        console.info('Update rank success.')
       }
 
     });

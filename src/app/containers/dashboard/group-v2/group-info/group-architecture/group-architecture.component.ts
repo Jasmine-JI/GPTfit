@@ -191,7 +191,7 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
       if (res.resultCode !== 200) {
         this.utils.openAlert(errMsg);
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.groupService.saveGroupDetail(res.info);
       }
@@ -216,7 +216,7 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
       if (res.resultCode !== 200) {
         this.utils.openAlert(errMsg);
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.groupService.setAllLevelGroupData(res.info.subGroupInfo);
       }

@@ -233,7 +233,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
                 }
               });
 
-              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
               break;
 
           }
@@ -264,7 +264,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
                     }
                   });
 
-                  console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+                  console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
                   break;
               }
 
@@ -385,7 +385,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
                 }
               });
 
-              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
               break;
 
           }

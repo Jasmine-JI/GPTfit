@@ -139,7 +139,7 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
    * 裁切套件將圖片載入完成的狀態
    */
   imageLoaded() {
-    console.log('Image loaded');
+    console.info('Image loaded');
   }
 
   /**

@@ -294,7 +294,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
             default:
               this.showMsgBox(errorMsg, 'turnBack');
-              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
               break;
           }
 
@@ -407,7 +407,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
               break;
             default:
               msgBody = errorMsg;
-              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
               this.showMsgBox(errorMsg, 'turnBack');
               break;
           }
@@ -465,7 +465,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
               }
             });
 
-            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+            console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
         }
 
@@ -496,7 +496,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
               break;
             default:
               msgBody = errorMsg;
-              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
               this.showMsgBox(msgBody, 'turnBack');
               break;
           }

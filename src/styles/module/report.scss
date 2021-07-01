@@ -1,0 +1,393 @@
+/**
+ * 運動檔案、運動報告、生活追蹤、雲跑報告共用樣式
+ * (品牌課程的我的課程和課程分析待重構或ui v2時，再依ui套用共用樣式)
+ * @prefix report-
+ */
+
+@import 'font.scss';
+@import 'transition.scss';
+@import 'rotate.scss';
+
+.report-headerIcon{
+  font-size: 30px;
+  color: var(--scale-100-230);
+  border: 2px solid var(--scale-100-230);
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  min-width: 50px;
+  min-height: 50px;
+}
+
+.report-titleText {
+  justify-content: center;
+  margin-left: 20px;
+  line-height: 1.2;
+}
+
+.report-dateAnnotation {
+  font-size: 12px;
+  color: var(--scale-150-180);
+}
+
+.report-headerSection {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.report-headerTitle {
+  @include bold-font(30px);
+  color: var(--scale-115-255);
+}
+
+.report-imgIcon {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+}
+
+.report-displaySection {
+  margin: 10px 0;
+}
+
+.report-summaryArea {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  >div {
+    padding: 0px 15px;
+  }
+
+}
+
+.report-summaryData {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--scale-100-205);
+}
+
+.report-summaryDescription {
+  font-size: 14px;
+  color: var(--scale-100-205);
+}
+
+.report-durationSection {
+  margin-top: 20px;
+}
+
+.report-durationChart {
+  width: 60%;
+}
+
+.report-durationInfo {
+  width: 40%;
+}
+
+.report-chartTitle {
+  color: var(--scale-75-230);
+  font-weight: bold;
+}
+
+.report-areaDescription {
+  font-size: 16px;
+  color: var(--scale-150-180);
+  margin-left: 10px;
+}
+
+.report-dataDiscription {
+  margin-top: 10px;
+}
+
+.report-infoHeader {
+  margin: 0 10px;
+  justify-content: space-between;
+}
+
+.report-noChartData {
+  font-weight: bold;
+  color:grey;
+  margin: 10px 0px 10px 10px
+}
+
+.report-infoDataUnit {
+  font-size: 16px;
+  color: var(--scale-150-180);
+  font-weight: bold;
+}
+
+.report-ringChart {
+  width: 40%;
+}
+
+.report-ringChartTitle {
+  color: var(--scale-0-255);
+  font-weight: bold;
+}
+
+.report-ringChartSection {
+  margin-top: 10px;
+  width: 50%;
+}
+
+.report-zoneChart {
+  width: 55%;
+}
+
+.report-perTypeInfo {
+  font-size: 14px;
+  margin-left: 15px;
+  min-width: 150px;
+
+  &:hover{
+    cursor: pointer;;
+  }
+}
+
+.report-dot {
+  margin-right: 5px;
+  font-size: 16px;
+}
+
+.report-perTypeTitle {
+  color: var(--scale-75-230);
+  font-weight: bold;
+}
+
+.report-perTypeAvgTime {
+  color: var(--scale-0-255);
+  margin-left: 30px;
+}
+
+.report-distributionChartWidth {
+  margin-top: 10px;
+  width: 60%;
+}
+
+.report-timeRangeType {
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: var(--scale-0-255);
+}
+
+.report-distributionChart {
+  width: 100%;
+  height: auto;
+}
+
+.report-infoChart {
+  width: 45%;
+}
+
+.report-haveOptBtn {
+  align-items: center;
+
+  button {
+    font-size: 25px;
+    border: none;
+    background-color: transparent;
+    padding: 0;
+
+    i {
+      color: var(--scale-100-230);
+    }
+
+  }
+
+}
+
+.report-menuSubtitle {
+  color: var(--scale-100-255);
+  font-weight: bold;
+}
+
+.report-weightTrainSetting {
+  position: absolute;
+  top: 28px;
+  right: 0px;
+  width: 260px;
+  padding: 15px;
+  background-color: white;
+  z-index: 1;
+  border: 1px solid black;
+}
+
+.report-dropMenu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid black;
+  height: 30px;
+  margin-top: 5px;
+  padding: 5px;
+  cursor: pointer;
+
+  &:after {
+    content: '';
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 10px solid black;
+    @include transition(transform);
+  }
+
+}
+
+.report-dropMenu--active {
+
+  &:after {
+    @include transition(transform);
+    @include el-rotate(180deg);
+  }
+
+}
+
+.report-dropMenuList {
+  cursor: pointer;
+  position: absolute;
+  width: 100%;
+  border: 1px solid black;
+  padding: 5px;
+  z-index: 2;
+  background-color: white;
+  top: 34px;
+
+  span {
+    padding: 2px;
+    display: block;
+
+    &:hover {
+      background-color: rgba(17, 166, 235, 1);
+      color: white;
+      @include transition(background-color);
+    }
+
+  }
+
+  .levelOpt {
+    text-align: right;
+    padding-right: 20px;
+  }
+
+}
+
+.report-weightTrainMenu {
+  justify-content: flex-end;
+
+  &:after {
+    margin-left: 10px;
+  }
+
+}
+
+.report-cloudrunIcon {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  border: 1px solid white;
+  border-radius: 50%;
+}
+
+.report-mapImg {
+  max-width: 300px;
+  margin: 0 10px 10px 0;
+  border: 1px solid white;
+}
+
+.report-footerTitle {
+  color: var(--scale-0-255);
+  word-break: break-word;
+  font-weight: bold;
+}
+
+.report-mapIntroduction {
+  font-weight: bold;
+  color: var(--scale-100-205);
+}
+
+.report-mapInfo {
+  margin-bottom: 5px;
+  font-weight: bold;
+
+  span {
+    color: var(--scale-100-205);
+  }
+
+}
+
+/***************************** media ******************************/
+
+@media (max-width: 991px){
+  .report-bodyQuality {
+    flex-direction: column;
+  }
+
+}
+
+@media(max-width: 767px) {
+  .report-headerSection {
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .report-fileOwner {
+    justify-content: flex-end;
+  }
+
+  .report-durationSection {
+    flex-direction: column;
+  }
+
+  .report-durationChart,
+  .report-durationInfo {
+    width: 100%;
+  }
+
+  .report-rerangeChartLayout {
+    display: flex;
+    flex-direction: column;
+
+    >div {
+      width: 100%;
+    }
+
+  }
+
+  .report-headerTitle {
+    font-size: 24px;
+  }
+
+  .report-ringChart, .report-distributionChartWidth {
+    width: 100%;
+  }
+
+  .report-footer {
+    flex-direction: column;
+  }
+
+}
+
+/**
+ * 處理列印時，highchart無法自適應等跑版問題
+ */
+@media print {
+  .report-headerSection {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .report-bodyQuality {
+    flex-direction: row;
+  }
+
+  .report-chartPrintWidth {
+    max-width: 300px;
+  }
+
+  .report-durationChart {
+    width: initial;
+    flex-shrink: 0;
+  }
+
+}

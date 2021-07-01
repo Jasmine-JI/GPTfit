@@ -119,7 +119,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
 
       this.userProfileService.getUserProfile(body).subscribe(res => {
         if (res.processResult.resultCode !== 200) {
-          console.log(`${res.processResult.apiCode}：${res.processResult.apiReturnMessage}`);
+          console.error(`${res.processResult.apiCode}：${res.processResult.apiReturnMessage}`);
         } else {
           Object.assign(res.userProfile, {serialNumber: this.hashIdService.handleUserIdEncode(res.userProfile.userId)});
           this.userProfile = res.userProfile;
@@ -167,7 +167,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
     this.officialActivityService.getAllOfficialActivity(body).subscribe(res => {
 
       if (res.resultCode !== 200) {
-        console.log('Get all activity error.');
+        console.error('Get all activity error.');
 
       } else {
         const activityList = res.activityList;
@@ -217,7 +217,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
       })
     ).subscribe(res => {
       if (res.resultCode !== 200) {
-        console.log(`Error: ${res.resultMessage}`);
+        console.error(`Error: ${res.resultMessage}`);
         this.uiFlag.changeFileLoading = false;
       } else {
         this.activity = res.activity;

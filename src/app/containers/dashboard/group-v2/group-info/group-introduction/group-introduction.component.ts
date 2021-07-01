@@ -694,7 +694,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     this.groupService.createGroup(this.createBody).subscribe(res => {
 
       if (res.resultCode !== 200) {
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
         const msg = `Error.<br />Please check Plans status or try again later.`;
         this.utils.openAlert(msg);
       } else {
@@ -744,7 +744,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       if (res.resultCode === 200) {
         this.initPage();
       } else {
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
         this.utils.openAlert(errMsg);
       }
       
@@ -765,7 +765,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         this.initPage();
         this.refreshAllLevelGroupData();
       } else {
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
         this.utils.openAlert(errMsg);
       }
       
@@ -789,8 +789,8 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         this.initPage();
         this.refreshAllLevelGroupData();
       } else {
-        console.log(`${res[0].resultCode}: Api-${res[0].apiCode} ${res[0].resultMessage}`);
-        console.log(`${res[1].resultCode}: Api-${res[1].apiCode} ${res[1].resultMessage}`);
+        console.error(`${res[0].resultCode}: Api-${res[0].apiCode} ${res[0].resultMessage}`);
+        console.error(`${res[1].resultCode}: Api-${res[1].apiCode} ${res[1].resultMessage}`);
         this.utils.openAlert(errMsg);
       }
       
@@ -815,7 +815,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
       if (res.resultCode !== 200) {
         this.utils.openAlert(errMsg);
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.groupService.setAllLevelGroupData(res.info.subGroupInfo);
       }
@@ -851,7 +851,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
       if (res.resultCode !== 200) {
         this.utils.openAlert(errMsg);
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.groupService.saveGroupDetail(res.info);
       }

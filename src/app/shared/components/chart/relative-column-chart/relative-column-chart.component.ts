@@ -90,6 +90,7 @@ export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestro
   @Input() chartName: string;
   @Input() unit: number = 0;
   @Input() page: string = 'sportReport';
+  @Input() isPreviewMode: boolean = false;
   @ViewChild('container', {static: false})
   container: ElementRef;
 

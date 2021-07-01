@@ -26,6 +26,59 @@ export const infoColor = [
   'rgba(239, 56, 150, 1)'
 ];
 
+/**
+ * 步數趨勢圖顏色
+ */
+export const stepColor = {
+  step: '#6fd205',
+  target: '#7f7f7f',
+  reach: '#eb5293'
+};
+
+/**
+ * 睡眠趨勢圖顏色
+ */
+export const sleepColor = {
+  light: '#35a8c9',
+  deep: '#1e61bb',
+  standup: '#ccff00'
+};
+
+/**
+ * BMI趨勢圖顏色
+ */
+export const BMIColor = {
+  low: '#7ee33a',
+  middle: 'yellow',
+  high: 'red'
+};
+
+/**
+ * 脂肪率趨勢圖顏色
+ */
+export const fatRateColor = {
+  low: '#e0a63a',
+  high: '#e04fc4'
+};
+
+/**
+ * 肌肉率趨勢圖顏色
+ */
+export const muscleRateColor = {
+  low: '#3ae5da',
+  high: '#299fc6'
+};
+
+/**
+ * 休息心率趨勢圖顏色
+ */
+export const restHrColor = {
+  line: '#ababab',
+  rest: '#31df93',
+  max: '#e23333'
+};
+
+
 export const costTimeColor = 'rgba(188, 226, 58, 1)',
              strokeNumColor = 'rgba(53, 168, 201, 1)',
              caloriesColor = 'rgba(248, 181, 81, 1)',
@@ -44,7 +97,18 @@ export const costTimeColor = 'rgba(188, 226, 58, 1)',
              speedTrendColor = ['#ff00ff', '#ffff00', '#ffff00'],
              cadenceTrendColor = ['#aafc42', '#d6ff38', '#f56300'],
              swolfTrendColor = ['#aafc42', '#d6ff38', '#7fd9ff'],
-             swingSpeedTrendColor = ['#3da200', '#0012ff', '#0012ff'];
+             swingSpeedTrendColor = ['#3da200', '#0012ff', '#0012ff'],
+             fitTimeColor = 'rgba(248, 181, 81, 1)';
+
+export const maleBodyBoundary = {
+  fatRate: [17, 21, 50],
+  FFMI: [18, 21, 28]
+};
+
+export const femaleBodyBoundary = {
+  fatRate: [23, 27, 56],
+  FFMI: [15, 18, 25]
+};
 
 export interface HrZoneRange {
   hrBase: 0 | 1;
@@ -92,10 +156,10 @@ export interface HrZoneRange {
 }
 
 export interface CompareLineTrendChart {
-  HR?: Array<number>;  // 待個人運動報告重構後再將相容移除
-  avgHR?: number;  // 待個人運動報告重構後再將相容移除
-  bestHR?: Array<number>;  // 待個人運動報告重構後再將相容移除
-  oneRangeBestHR?: number;  // 待個人運動報告重構後再將相容移除
+  HR?: Array<number>;
+  avgHR?: number;
+  bestHR?: Array<number>;
+  oneRangeBestHR?: number;
   hrArr?: Array<Array<number>>;
   maxHrArr?: Array<Array<number>>;
   avgHr?: number;
@@ -122,7 +186,7 @@ export interface CompareLineTrendChart {
 
 export interface FilletTrendChart {
   avgCalories?: number;
-  calories?: Array<number> | Array<Array<number>>;  // 待個人運動報告重構後再將相容移除
+  calories?: Array<number> | Array<Array<number>>;
   totalCalories?: number;
   maxCalories?: number;
   avgCostTime?: number;

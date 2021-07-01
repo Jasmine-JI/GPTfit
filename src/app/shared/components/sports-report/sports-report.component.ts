@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Output, EventEmitter, TestabilityRegistry } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
 import { UtilsService } from '../../services/utils.service';
 import { ReportService } from '../../services/report.service';
 import { ReportConditionOpt } from '../../models/report-condition';
@@ -665,11 +665,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 數據處理完成，進行畫面渲染檢查
-   * @author kidin-1100525
+   * 變更載入頁面進度，並檢查頁面渲染（避免loading bar出不來）
+   * @author kidin-1100624
    */
-  reportCompleted() {
-    this.uiFlag.progress = 100;
+  changeProgress(progress: number) {
+    this.uiFlag.progress = progress;
     this.changeDetectorRef.markForCheck();
   }
 
@@ -681,14 +681,14 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     this.reportService.getReportCondition().pipe(
       tap(res => {
         const { progress } = this.uiFlag;
-        this.uiFlag.progress = progress === 100 ? 10 : progress;
+        this.changeProgress(progress === 100 ? 10 : progress);
         this.initReportContent();
       }),
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       // 避免連續送出
-      if (this.uiFlag.progress === 10) {
-        this.uiFlag.progress = 30;
+      if (this.uiFlag.progress >= 10 && this.uiFlag.progress < 100) {
+        this.changeProgress(30);
         const condition = res as any,
               { date: { startTimestamp, endTimestamp }} = condition,
               { date: { startTimestamp: preStartTimestamp, endTimestamp: preEndTimestamp}} = this.reportConditionOpt;
@@ -742,11 +742,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       this.sameTimePersonData = res[0];
       if (res.length && this.sameTimePersonData[this.dataKey].length > 0) {
         this.uiFlag.noData = false;
-        this.uiFlag.progress = 70;
+        this.changeProgress(70);
         this.createReport(this.sameTimePersonData);
       } else {
         this.uiFlag.noData = true;
-        this.reportCompleted();
+        this.changeProgress(100);
       }
       
     });
@@ -826,7 +826,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
     if (!haveData) {
       this.uiFlag.noData = true;
-      this.reportCompleted();
+      this.changeProgress(100);
     } else {
       this.translate.get('hellow world').pipe(
         takeUntil(this.ngUnsubscribe)
@@ -843,7 +843,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         };
 
         this.handleData(originData);
-        this.reportCompleted();
+        this.changeProgress(100);
         this.updateUrl();
       });
       
@@ -853,7 +853,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
   /**
    * 統計數據以生成概要數據與圖表
-   * @param mix {Array<any>}-所有成員數據
+   * @param mix {Array<any>}-運動數據
    * @author kidin-1100415
    */
   handleData(originData: Array<any>) {
@@ -1907,7 +1907,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       }
 
       this.chart.muscleTrendList[i].isFocus = muscleGroup[i].isFocus;
-
       if (this.uiFlag.isPreviewMode && data[1] === 'init') {
         this.chart.muscleTrendList[i].isFold = muscleGroup[i].isFold;
       }
@@ -2146,7 +2145,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         proficiency = '',
         list = [];
     if (this.reportConditionOpt.sportType === SportCode.weightTrain) {
-      proficiency = `&level=${this.userInfo.weightTrainLevel}`
+      proficiency = `&level=${this.userInfo.weightTrainLevel}`;
       this.chart.muscleTrendList.forEach(_list => {
         if (_list.isFocus === true) {
 
@@ -2179,6 +2178,18 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       }&ipm=s
     `;
 
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 導向預覽列印頁面
+   * (修正直接在html使用[herf]="previewUrl"時，重訓頁面previewUrl會吃不到最新值的問題)
+   * @param e {MouseEvent}
+   * @author kidin-1100630
+   */
+  navigatePreviewMode(e: MouseEvent) {
+    e.preventDefault();
+    window.open(this.previewUrl, '_blank', 'noopener=yes,noreferrer=yes');
   }
 
   /**

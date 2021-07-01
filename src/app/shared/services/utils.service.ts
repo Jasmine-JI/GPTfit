@@ -675,7 +675,7 @@ export class UtilsService {
    * @author kidin-1100304
    */
   handleError(resultCode: number, apiCode: number, apiMsg: string) {
-    console.log(`${resultCode}: Api ${apiCode} ${apiMsg}`);
+    console.error(`${resultCode}: Api ${apiCode} ${apiMsg}`);
     const errorMsg = `Error!<br>Please try again later.`;
     this.openAlert(errorMsg);
   }

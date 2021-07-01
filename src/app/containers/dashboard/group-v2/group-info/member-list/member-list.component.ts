@@ -107,8 +107,8 @@ export class MemberListComponent implements OnInit, OnDestroy {
     ]).subscribe(resArr => {
       if (resArr[0].resultCode !== 200 || resArr[1].resultCode !== 200) {
         this.utils.openAlert(errMsg);
-        console.log(`${resArr[0].resultCode}: Api ${resArr[0].apiCode} ${resArr[0].resultMessage}`);
-        console.log(`${resArr[1].resultCode}: Api ${resArr[1].apiCode} ${resArr[1].resultMessage}`);
+        console.error(`${resArr[0].resultCode}: Api ${resArr[0].apiCode} ${resArr[0].resultMessage}`);
+        console.error(`${resArr[1].resultCode}: Api ${resArr[1].apiCode} ${resArr[1].resultMessage}`);
       } else {
         this.groupService.setAdminList(resArr[0].info.groupMemberInfo);
         this.groupService.setNormalMemberList(resArr[1].info.groupMemberInfo);

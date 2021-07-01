@@ -51,8 +51,8 @@ class ChartOptions {
         },
         startOnTick: false,
         endOntick: true,
-        minPadding: 0.001,
-        maxPadding: 0.001,
+        minPadding: 0.01,
+        maxPadding: 0.01,
         tickAmount: 1
       },
       plotOptions: {
@@ -92,7 +92,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
   @Input() page: DisplayPage;
   @Input() sportType = <SportType>SportCode.run;
   @Input() unit: Unit;
-
+  @Input() isPreviewMode: boolean = false;
   @ViewChild('container', {static: true})
   container: ElementRef;
 
@@ -186,60 +186,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         this.lowestPoint = swingminSpeed;
         break;
       case 'Step': // 生活追蹤步數資料-kidin-1090218
-        this.createDateList();
-        const newData = [],
-              newTargetData = [];
-        let index = 0;
-        this.dataLength = this.dateList.length;
-
-        for (let i = 0; i < this.dataLength; i++) {
-          if (this.dateList[i] === this.data.date[index]) {
-            newData.push(this.data.stepList[index]);
-            newTargetData.push(this.data.targetStepList[index]);
-            index++;
-          } else {
-            newData.push(0);
-            newTargetData.push(0);
-          }
-        }
-
-        for (let i = 0; i < this.dataLength; i++) {
-          if (newData[i] - newTargetData[i] >= 0) {
-            chartData.push(
-              {
-                x: this.dateList[i],
-                y: newData[i],
-                z: newData[i],  // tooltip數據用-kidin-1090218
-                t: newTargetData[i],  // tooltip數據用-kidin-1090218
-                color: this.data.colorSet[2]
-              }
-            );
-          } else {
-            const discolorPoint = newData[i] / newTargetData[i];
-            chartData.push(
-              {
-                x: this.dateList[i],
-                y: newTargetData[i],
-                z: newData[i],  // tooltip數據用-kidin-1090218
-                t: newTargetData[i],  // tooltip數據用-kidin-1090218
-                color: {
-                  linearGradient: {
-                    x1: 0,
-                    x2: 0,
-                    y1: 1,
-                    y2: 0
-                  },
-                  stops: [
-                    [0, this.data.colorSet[0]],
-                    [discolorPoint, this.data.colorSet[0]],
-                    [discolorPoint + 0.01, this.data.colorSet[1]],
-                    [1, this.data.colorSet[1]]
-                  ]
-                }
-              }
-            );
-          }
-        }
+        chartData = this.data;
+        this.dataLength = this.data.length;
         break;
       case 'Muscle':
         const saturation = '100%',  // 主訓練部位色彩飽和度

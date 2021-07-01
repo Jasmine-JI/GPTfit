@@ -7,7 +7,6 @@
         </ng-container>
         {{ chartType | dataTypeTranslate: [1, unit] | translate }}
       </h6>
-      <span id="rowLine"></span>
     </div>
   </ng-container>
     <main id="mainSeciton">
@@ -93,7 +92,7 @@
         </div>
       </div>
     </ng-container>
-    <div #container id="chartBlock">
+    <div #container id="chartBlock" [class.printChartFix]="isPreviewMode">
       chart
     </div>
   </main>

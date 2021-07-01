@@ -85,7 +85,7 @@ class ChartOptions {
 @Component({
   selector: 'app-equidistant-chart',
   templateUrl: './equidistant-chart.component.html',
-  styleUrls: ['./equidistant-chart.component.scss']
+  styleUrls: ['./equidistant-chart.component.scss', '../chart-share-style.scss']
 })
 export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
 
@@ -97,6 +97,7 @@ export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input('gpx') gpx: Array<Array<number>>;
   @Input('mapDistance') mapDistance: number;
   @Input('page') page: 'group' | 'person' = 'person';
+  @Input() isPreviewMode: boolean = false;
   @ViewChild('container') container: ElementRef;
   @Output() onHover: EventEmitter<any> = new EventEmitter();
 

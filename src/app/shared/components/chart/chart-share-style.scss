@@ -1,4 +1,8 @@
 #chartTitle {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  align-items: center;
   font-weight: bold;
   white-space: nowrap;
   color: var(--scale-75-230);
@@ -6,6 +10,9 @@
 
   &:after {
     content: '';
+    border: 1px solid rgba(200, 200, 200, 1);
+    margin-left: 10px;
+    flex-grow: 1;
   }
 
 }
@@ -16,13 +23,6 @@
 
 #chartBlock {
   width: 100%;
-}
-
-#rowLine {
-  height: 0;
-  width: 100%;
-  border: 1px solid var(--scale-100-230-border);
-  margin-left: 10px;
 }
 
 #mainSeciton {
@@ -86,6 +86,13 @@
 
 }
 
+/*
+ * 修正highchart列印時無法自適應頁面寬度而溢出的問題
+ */
+.printChartFix {
+  margin-right: 150px;
+}
+
 
 /*********************************************** media ************************************/
 
@@ -104,18 +111,32 @@
 
 }
 
+
+/**
+ * 處理列印時，highchart無法自適應等跑版問題
+ */
 @media print {
   #mainSeciton {
     flex-direction: row;
+    margin-left: 0;
   }
 
   .infoBlock {
     width: 40%;
   }
-  
+
+  .infoSection {
+    padding: 0 5px;
+    word-break: break-word;
+  }
+
+  .dataNumber {
+    font-size: 18px;
+  }
+
   #chartBlock {
-    width: 100%;
-    margin-top: 0;
+    width: initial;
+    flex-shrink: 0;
   }
 
 }

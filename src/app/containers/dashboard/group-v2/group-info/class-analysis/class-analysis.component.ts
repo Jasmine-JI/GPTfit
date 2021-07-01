@@ -345,7 +345,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           return this.groupService.fetchGroupMemberList(body).pipe(
             map(resp => {
               if (resp.resultCode !== 200) {
-                console.log(`${resp.resultCode}: Api ${resp.apiCode} ${resp.resultMessage}`);
+                console.error(`${resp.resultCode}: Api ${resp.apiCode} ${resp.resultMessage}`);
                 return [];
               } else {
                 const list = this.sortMember(resp.info.groupMemberInfo);
@@ -454,7 +454,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.activityService.fetchMultiActivityData(body).subscribe(res => {
       if (res.resultCode !== 200) {
         this.utils.openAlert(errMsg);
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.calenderActivities = res.info.activities;
         this.handleCalenderActivity(this.calenderActivities);
@@ -631,7 +631,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         this.uiFlag.noData = true;
         this.updateUrl(false);
         this.utils.openAlert(errMsg);
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.activityLength = this.activityDetail.length;
         if (this.activityLength === 0) {

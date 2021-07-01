@@ -125,9 +125,9 @@ export const paiCofficient = {
   z0: 0,
   z1: 0.5,
   z2: 1,
-  z3: 1.5,
-  z4: 2,
-  z5: 2.5
+  z3: 2,
+  z4: 2.2,
+  z5: 2.4
 }
 
 /**

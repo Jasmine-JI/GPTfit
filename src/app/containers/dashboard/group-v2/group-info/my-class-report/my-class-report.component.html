@@ -8,8 +8,9 @@
     </div>
   </ng-container>
   <ng-container
+    class="flexCenter"
+    style="width:100%"
     *ngIf="!reportCompleted || !initialChartComplated"
-    style="display:flex;justify-content: center;align-items: center;width:100%"
   >
     <mat-spinner style="z-index: 3; margin-top: 30px; position: absolute; left: 50%;"></mat-spinner>
     <div class="whiteMask">
@@ -18,7 +19,7 @@
   <ng-container *ngIf="hasResData && reportCompleted" style="width: 100%">
     <section class="child__page__card">
       <div class="functionBtnBar">
-        <button class="alatech-btn alatech-btn--default activity-btn"
+        <button class="alatech-btn alatech-btn--default"
           title="{{'universal_operating_print' | translate}}"
           (click)="print()"
           *ngIf="isPreviewMode"
@@ -31,14 +32,14 @@
           style="border: none;"
           style="display: none;"
         >
-          <i class="icon-svg_web-icon_p1_013-share activity-info_icon_size"></i>
+          <i class="icon-svg_web-icon_p1_013-share"></i>
         </button>
         <a target="_blank"
           [href]="previewUrl"
           class="alatech-btn--default"
           *ngIf="!isPreviewMode"
         >
-          <i class="icon-svg_web-icon_p2_087-print activity-info_icon_size"></i>
+          <i class="icon-svg_web-icon_p2_087-print"></i>
         </a>
       </div>
       <div class="reprotHeadArea" [class.fitWindow]="!isPreviewMode">
@@ -62,11 +63,11 @@
       <div style="display: flex; flex-direction: column;">
         <span class="ala-dashboard-title activity-title">{{'universal_activityData_summary' | translate}}</span>
         <div>
-          <div class="flexRow areaDescription">
+          <div class="flexRow report-areaDescription">
               <span class="activity-Link" style="white-space: nowrap;" (click)="visitAuthor()">
                 {{ fileInfo?.author | stringSlice: 0 }}
               </span>
-              <div id="reportInfo" class="areaDescription"></div>
+              <div id="reportInfo" class="report-areaDescription"></div>
           </div>
           <div style="display: flex; flex-direction: row; margin: 10px 0px; align-items: center;">
             <div class="activity-icon">
@@ -74,18 +75,18 @@
             </div>
             <span style="margin-left: 15px; color: #919191; font-size: 26px;">{{fileInfo?.dispName}}</span>
           </div>
-          <div class="summaryArea">
-            <div class="summaryDataArea">
-              <span class="summaryData">{{totalTime}}</span>
-              <p class="summaryDescription">{{'universal_activityData_totalTime' | translate}}</p>
+          <div class="report-summaryArea">
+            <div>
+              <span class="report-summaryData">{{totalTime}}</span>
+              <p class="report-summaryDescription">{{'universal_activityData_totalTime' | translate}}</p>
             </div>
-            <div class="summaryDataArea">
-              <span class="summaryData">{{avgHR | number:'1.0-1'}} bpm</span>
-              <p class="summaryDescription">{{'universal_activityData_avgHr' | translate}}</p>
+            <div>
+              <span class="report-summaryData">{{avgHR | number:'1.0-1'}} bpm</span>
+              <p class="report-summaryDescription">{{'universal_activityData_avgHr' | translate}}</p>
             </div>
-            <div class="summaryDataArea">
-              <span class="summaryData">{{totalCalories | number:'1.0-1'}} cal</span>
-              <p class="summaryDescription">{{'universal_activityData_totalCalorie' | translate}}</p>
+            <div>
+              <span class="report-summaryData">{{totalCalories | number:'1.0-1'}} cal</span>
+              <p class="report-summaryDescription">{{'universal_activityData_totalCalorie' | translate}}</p>
             </div>
           </div>
         </div>
@@ -93,14 +94,14 @@
       <div style="display: flex; flex-direction: column;">
         <span class="ala-dashboard-title activity-title">{{'universal_activityData_exerciseAchievement' | translate}}</span>
         <div>
-          <p class="areaDescription">
+          <p class="report-areaDescription">
             {{'universal_group_exerciseEffectiveness' | translate}}
           </p>
           <div #container class="sportEfficiencyArea">
             <div class="HRZone" *ngIf="!(initialChartComplated && !showHRZoneChartTarget)" style="width: 55%;">
               <div class="sportEfficiency">
-                <p class="chartTitle">{{'universal_group_hrZoneLandingPoint' | translate}}</p>
-                <p class="chartTitle">{{avgHRZone}}</p>
+                <p class="report-chartTitle">{{'universal_group_hrZoneLandingPoint' | translate}}</p>
+                <p class="report-chartTitle">{{avgHRZone}}</p>
               </div>
               <div #HRZoneChartTarget class="chart" style="margin-right: 10px;">
                 chart target
@@ -116,8 +117,8 @@
           <p class="ala-dashboard-title activity-title">{{'universal_group_personalAnalysis' | translate}}</p>
           <div class="trendChart" *ngIf="!(initialChartComplated && !showavgHRChartTarget)" style="width: 100%;">
             <div class="sportTrend">
-              <p class="chartTitle">{{'universal_activityData_avgHr' | translate}}</p>
-              <p class="chartTitle">{{ avgHR | number:'1.0-2' }}bpm</p>
+              <p class="report-chartTitle">{{'universal_activityData_avgHr' | translate}}</p>
+              <p class="report-chartTitle">{{ avgHR | number:'1.0-2' }}bpm</p>
             </div>
             <div #avgHRChartTarget class="chart">
               chart target
@@ -125,8 +126,8 @@
           </div>
           <div class="trendChart" *ngIf="!(initialChartComplated && !showcaloriesChartTarget)" style="width: 100%;">
             <div class="sportTrend">
-              <p class="chartTitle">{{'universal_activityData_totalCalorie' | translate}}</p>
-              <p class="chartTitle">{{ totalCalories | number:'1.0-2' }}cal</p>
+              <p class="report-chartTitle">{{'universal_activityData_totalCalorie' | translate}}</p>
+              <p class="report-chartTitle">{{ totalCalories | number:'1.0-2' }}cal</p>
             </div>
             <div #caloriesChartTarget class="chart">
               chart target

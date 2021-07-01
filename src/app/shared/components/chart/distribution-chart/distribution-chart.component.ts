@@ -27,9 +27,7 @@ export class DistributionChartComponent implements OnInit, OnChanges {
   @Input() selectType: number;
 
   // 生活追蹤用變數
-  @Input() perFFMI: Array<any>;
-  @Input() perFatRate: Array<any>;
-  @Input() gender: Array<any>;
+  @Input() data: Array<any>;
   xBoundary = [];
   yBoundary = [];
 
@@ -106,14 +104,17 @@ export class DistributionChartComponent implements OnInit, OnChanges {
     if (this.perActivityTime) {
       this.reportType = 'sport';
       this.initRePortChart();
-    } else if (this.perFFMI) {
+    } else if (this.data) {
       this.reportType = 'lifeTracking';
       this.initLifeTrackingChart();
     }
 
   }
 
-  // 初始化變數-kidin-1090131
+  /**
+   * 初始化變數
+   * @author kidin-1090131
+   */
   initVariable () {
     // 左上區塊-kidin-1090323
     this.blockOne = {
@@ -172,7 +173,10 @@ export class DistributionChartComponent implements OnInit, OnChanges {
     this.points = [];
   }
 
-  // 運動報告用圖表-kidin-1090218
+  /**
+   * 運動報告用圖表
+   * @author kidin-1090218
+   */
   initRePortChart () {
     // 定義心率在每個區塊的x軸邊界值，取不到心率區間則設z5的預設值為190-kidin-1090213
     let range,
@@ -273,11 +277,15 @@ export class DistributionChartComponent implements OnInit, OnChanges {
     this.calPercentage(total);
   }
 
-  // 生活追蹤用圖表-kidin-1090218
+  /**
+   * 生活追蹤用圖表
+   * @author kidin-1090218
+   */
   initLifeTrackingChart () {
     let total = 0;
-    for (let i = 0; i < this.perFFMI.length; i++) {
-      if (this.gender[i] === 0) {
+    for (let i = 0, len = this.data.length; i < len; i++) {
+      const { FFMI, fatRate, gender } = this.data[i];
+      if (gender === 0) {
         this.xBoundary = [18, 21, 28];
         this.yBoundary = [17, 21, 50];
       } else {
@@ -286,72 +294,72 @@ export class DistributionChartComponent implements OnInit, OnChanges {
       }
 
       let y;
-      if (this.perFFMI[i] < this.xBoundary[0]) {
+      if (FFMI < this.xBoundary[0]) {
 
-        if (+this.perFatRate[i] <= this.yBoundary[0]) {
-          y = this.getYPoint(this.perFatRate[i], 0, 196, this.yBoundary[0], this.yBoundary[2]);
+        if (fatRate <= this.yBoundary[0]) {
+          y = this.getYPoint(fatRate, 0, 196, this.yBoundary[0], this.yBoundary[2]);
           this.blockThree.stroke++;
           total++;
 
-        } else if (+this.perFatRate[i] > this.yBoundary[0] && +this.perFatRate[i] <= this.yBoundary[1]) {
-          y = this.getYPoint(this.perFatRate[i], this.yBoundary[0], 131, this.yBoundary[1] - this.yBoundary[0], this.yBoundary[2]);
+        } else if (fatRate > this.yBoundary[0] && fatRate <= this.yBoundary[1]) {
+          y = this.getYPoint(fatRate, this.yBoundary[0], 131, this.yBoundary[1] - this.yBoundary[0], this.yBoundary[2]);
           this.blockTwo.stroke++;
           total++;
 
         } else {
-          y = this.getYPoint(+this.perFatRate[i], this.yBoundary[1], 66, this.yBoundary[2] - this.yBoundary[1], this.yBoundary[2]);
+          y = this.getYPoint(fatRate, this.yBoundary[1], 66, this.yBoundary[2] - this.yBoundary[1], this.yBoundary[2]);
           this.blockOne.stroke++;
           total++;
         }
 
         this.points.push({
-          x: this.getXPoint(this.perFFMI[i], 0, this.xBoundary[0], 44, this.xBoundary[2]),
+          x: this.getXPoint(FFMI, 0, this.xBoundary[0], 44, this.xBoundary[2]),
           y: y
         });
 
-      } else if (this.perFFMI[i] >= this.xBoundary[0] && this.perFFMI[i] <= this.xBoundary[1]) {
+      } else if (FFMI >= this.xBoundary[0] && FFMI <= this.xBoundary[1]) {
 
-        if (+this.perFatRate[i] <= this.yBoundary[0]) {
-          y = this.getYPoint(this.perFatRate[i], 0, 196, this.yBoundary[0], this.yBoundary[2]);
+        if (fatRate <= this.yBoundary[0]) {
+          y = this.getYPoint(fatRate, 0, 196, this.yBoundary[0], this.yBoundary[2]);
           this.blockSix.stroke++;
           total++;
 
-        } else if (+this.perFatRate[i] > this.yBoundary[0] && +this.perFatRate[i] <= this.yBoundary[1]) {
-          y = this.getYPoint(this.perFatRate[i], this.yBoundary[0], 131, this.yBoundary[1] - this.yBoundary[0], this.yBoundary[2]);
+        } else if (fatRate > this.yBoundary[0] && fatRate <= this.yBoundary[1]) {
+          y = this.getYPoint(fatRate, this.yBoundary[0], 131, this.yBoundary[1] - this.yBoundary[0], this.yBoundary[2]);
           this.blockFive.stroke++;
           total++;
 
         } else {
-          y = this.getYPoint(this.perFatRate[i], this.yBoundary[1], 66, this.yBoundary[2] - this.yBoundary[1], this.yBoundary[2]);
+          y = this.getYPoint(fatRate, this.yBoundary[1], 66, this.yBoundary[2] - this.yBoundary[1], this.yBoundary[2]);
           this.blockFour.stroke++;
           total++;
         }
 
         this.points.push({
-          x: this.getXPoint(this.perFFMI[i], this.xBoundary[0], this.xBoundary[1], 184, this.xBoundary[2]),
+          x: this.getXPoint(FFMI, this.xBoundary[0], this.xBoundary[1], 184, this.xBoundary[2]),
           y: y
         });
 
-      } else if (this.perFFMI[i] > this.xBoundary[1]) {
+      } else if (FFMI > this.xBoundary[1]) {
 
-        if (+this.perFatRate[i] <= this.yBoundary[0]) {
-          y = this.getYPoint(this.perFatRate[i], 0, 196, this.yBoundary[0], this.yBoundary[2]);
+        if (fatRate <= this.yBoundary[0]) {
+          y = this.getYPoint(fatRate, 0, 196, this.yBoundary[0], this.yBoundary[2]);
           this.blockNine.stroke++;
           total++;
 
-        } else if (+this.perFatRate[i] > this.yBoundary[0] && +this.perFatRate[i] <= this.yBoundary[1]) {
-          y = this.getYPoint(this.perFatRate[i], this.yBoundary[0], 131, this.yBoundary[1] - this.yBoundary[0], this.yBoundary[2]);
+        } else if (fatRate > this.yBoundary[0] && fatRate <= this.yBoundary[1]) {
+          y = this.getYPoint(fatRate, this.yBoundary[0], 131, this.yBoundary[1] - this.yBoundary[0], this.yBoundary[2]);
           this.blockEight.stroke++;
           total++;
 
         } else {
-          y = this.getYPoint(this.perFatRate[i], this.yBoundary[1], 66, this.yBoundary[2] - this.yBoundary[1], this.yBoundary[2]);
+          y = this.getYPoint(fatRate, this.yBoundary[1], 66, this.yBoundary[2] - this.yBoundary[1], this.yBoundary[2]);
           this.blockSeven.stroke++;
           total++;
         }
 
         this.points.push({
-          x: this.getXPoint(this.perFFMI[i], this.xBoundary[1], this.xBoundary[2], 324, this.xBoundary[2]),
+          x: this.getXPoint(FFMI, this.xBoundary[1], this.xBoundary[2], 324, this.xBoundary[2]),
           y: y
         });
       }
@@ -361,7 +369,16 @@ export class DistributionChartComponent implements OnInit, OnChanges {
     this.calPercentage(total);
   }
 
-  // 根據y點比例對比圖表該區高度給予y軸落點(不貼邊)-kidin-1090131
+  /**
+   * 根據y點比例對比圖表該區高度給予y軸落點(不貼邊)
+   * @param y 
+   * @param section 
+   * @param yStart 
+   * @param yScale 
+   * @param yMax 
+   * @returns {number}-y軸落點
+   * @author kidin-1090131
+   */
   getYPoint (y, section, yStart, yScale, yMax) {
     if (y / yMax > 1) {
       return 14;
@@ -371,7 +388,16 @@ export class DistributionChartComponent implements OnInit, OnChanges {
 
   }
 
-  /* 根據x點比例對比圖表該區寬度給予x軸落點(不貼邊)-kidin-1090131 */
+  /**
+   * 根據x點比例對比圖表該區寬度給予x軸落點(不貼邊)
+   * @param x 
+   * @param min 
+   * @param max 
+   * @param xStart 
+   * @param xMax 
+   * @returns {number}-x軸落點
+   * @author kidin-1090131
+   */
   getXPoint (x, min, max, xStart, xMax) {
     if (x > xMax) {
       return 127 + xStart;
@@ -380,7 +406,10 @@ export class DistributionChartComponent implements OnInit, OnChanges {
     }
   }
 
-  // 圖表文字上浮與否-kidin-1090317
+  /**
+   * 圖表文字上浮與否
+   * @author kidin-1090317
+   */
   floatChartText () {
     if (this.floatText === false) {
       this.floatText = true;
@@ -389,7 +418,11 @@ export class DistributionChartComponent implements OnInit, OnChanges {
     }
   }
 
-  // 計算每個區塊的百分比-kidin-1090324
+  /**
+   * 計算每個區塊的百分比
+   * @param total 
+   * @author kidin-1090324
+   */
   calPercentage (total) {
     this.blockOne.percentage = `${((this.blockOne.stroke / total || 0) * 100).toFixed(0)}%`;
     this.blockTwo.percentage = `${((this.blockTwo.stroke / total || 0) * 100).toFixed(0)}%`;
@@ -402,7 +435,10 @@ export class DistributionChartComponent implements OnInit, OnChanges {
     this.blockNine.percentage = `${((this.blockNine.stroke / total || 0) * 100).toFixed(0)}%`;
   }
 
-  // 解決safari在使用linearGradient時，無法正常顯示的問題-kidin-1090428
+  /**
+   * 解決safari在使用linearGradient時，無法正常顯示的問題
+   * @author kidin-1090428
+   */
   fixSvgUrls () {
     const svgArr = document.querySelectorAll('#distributeChart [fill]');
 
