@@ -42,14 +42,17 @@ export class BodyConstituteSvgComponent implements OnInit, OnChanges {
   ngOnChanges () {
     this.initVar();
 
-    if (this.fatRate) {
+    if (this.fatRate && this.bodyWeight && this.muscleRate) {
       this.setMaskRegion();
       this.setComment();
     }
 
   }
 
-  // 初始化變數-kidin-1090226
+  /**
+   * 初始化變數
+   * @author kidin
+   */
   initVar () {
     this.maskYPoint = {
       muscleYMax: 632,

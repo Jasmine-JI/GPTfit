@@ -15,7 +15,6 @@
         </ng-container>
         {{ chartType | dataTypeTranslate: [sportType, unit] | translate }}
       </h6>
-      <span id="rowLine"></span>
     </div>
   </ng-container>
   <main id="mainSeciton">
@@ -54,13 +53,13 @@
             </ng-container>
             <ng-container
               *ngIf="
-                data.maxStrokeNum
-                || data.maxTotalTime
-                || data.maxCalories
-                || data.maxDistance
-                || data.maxPlaneGForce
-                || data.maxPlaneMaxGForce
-                || data.maxMin
+                data.maxStrokeNum !== undefined
+                || data.maxTotalTime !== undefined
+                || data.maxCalories !== undefined
+                || data.maxDistance !== undefined
+                || data.maxPlaneGForce !== undefined
+                || data.maxPlaneMaxGForce !== undefined
+                || data.maxMin !== undefined
               "
             >
               {{ 'universal_adjective_maxHight' | translate }}
@@ -102,7 +101,7 @@
         </div>
       </div>
     </ng-container>
-    <div #container id="chartBlock">
+    <div #container id="chartBlock" [class.printChartFix]="isPreviewMode">
       chart
     </div>
   </main>

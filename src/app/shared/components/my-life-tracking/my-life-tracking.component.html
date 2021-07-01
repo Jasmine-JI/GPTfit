@@ -1,395 +1,427 @@
+<app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
 <div class="flexCol">
-  <span style="color: #157fcc; font-weight:700; font-size: 20px;" *ngIf="!isPreviewMode">
-    {{'universal_lifeTracking_lifeTracking' | translate}} {{'universal_activityData_report' | translate}}
+  <span class="pageTitle" *ngIf="!uiFlag.isPreviewMode">
+    {{ 'universal_lifeTracking_lifeTracking' | translate }} {{ 'universal_activityData_report' | translate }}
   </span>
-  <app-report-filter class="card__section" *ngIf="!isPreviewMode"></app-report-filter>
-  <section class="card__section">
-    <div style="background-color: white; padding: 0 10px;">
-      <ng-container *ngIf="isLoading" style="display:flex;justify-content: center;align-items: center; width:100%;">
-        <mat-spinner style="z-index: 3; margin-top: 30px; position: absolute; left: 50%;"></mat-spinner>
-        <div class="whiteMask">
-        </div>
+  <div
+    class="cardSection"
+    [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
+  >
+    <app-report-filter></app-report-filter>
+  </div>
+  <div class="cardSection">
+    <div class="cardContent">
+      <ng-container *ngIf="uiFlag.noData">
+        <p class="noDataText">{{ 'universal_status_noData' | translate }}</p>
       </ng-container>
-      <ng-container *ngIf="nodata && !isLoading" style="width: 100%; display: flex; flex-direction: row; justify-content: center;">
-        <p style="margin-top: 10px; color: gray; font-size: 18px;">{{'universal_status_noData' | translate}}</p>
-      </ng-container>
-      <ng-container *ngIf="!isLoading && !nodata && showReport" style="width: 100%; min-height: 100%; padding-bottom: 30px;">
-        <div class="functionBtnBar">
-          <button class="alatech-btn alatech-btn--default activity-btn"
-            title="{{'universal_operating_print' | translate}}"
-            (click)="print()"
-            *ngIf="isPreviewMode"
-          >
-            {{'universal_operating_print' | translate}}
-          </button>
-          <a target="_blank"
-            [href]="previewUrl"
-            class="alatech-btn--default"
-            *ngIf="!isPreviewMode"
-          >
-            <i class="icon-svg_web-icon_p2_087-print activity-info_icon_size"></i>
-          </a>
-        </div>
-        <div [class.fitWindow]="!isPreviewMode">
-          <div class="flexRow reportHeader" [class.media-1000-col]="!isPreviewMode">
-            <div class="flexRow">
-              <div class="activity-icon">
-                <i class="icon-svg_web-icon_p3_016-life_tracking"></i>
-              </div>
-              <div class="flexCol" style="margin-left: 20px;">
-                <span class="reportDateTime">
-                  {{'universal_group_buildFromTime' | translate: {'date': reportEndDate, 'range': period} }}
+      <ng-container *ngIf="!uiFlag.noData">
+        <header>
+          <div class="functionBtnBar" style="align-items: center;">
+            <button 
+              class="alatech-btn alatech-btn--default"
+              title="{{'universal_operating_print' | translate}}"
+              (click)="print()"
+              *ngIf="uiFlag.isPreviewMode"
+            >
+              {{'universal_operating_print' | translate}}
+            </button>
+            <a 
+              target="_blank"
+              [href]="previewUrl"
+              class="functionBtn"
+              *ngIf="!uiFlag.isPreviewMode"
+            >
+              <i class="icon-svg_web-icon_p2_087-print"></i>
+            </a>
+          </div>
+          <section class="report-headerSection">
+            <div class="flexRow" style="align-items: center;">
+              <i class="icon-svg_web-icon_p3_016-life_tracking flexCenter report-headerIcon"></i>
+              <div class="flexCol  report-titleText">
+                <span class="report-dateAnnotation">
+                  {{ 'universal_group_buildFromTime' | translate: {date: reportTime.endDate, range: reportTime.range} }}
                 </span>
-                <span class="reportTitle">
-                  {{'universal_lifeTracking_lifeTracking' | translate}} {{'universal_activityData_report' | translate}}
-                </span>
-              </div>
-            </div>
-            <div class="flexRow authorInfo">
-              <span class="reportTitle" style="margin: 10px 10px 0px 0px;">{{fileInfo?.nickname}}</span>
-              <div style="margin-right: 10px;">
-                <img style="width: 55px; border-radius: 50%;" src="{{fileInfo?.avatarUrl}}">
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="flexCol">
-          <div class="activity-title flexRow" style="justify-content: space-between;">
-            <span class="ala-dashboard-title">{{'universal_activityData_summary' | translate}}</span>
-            <span class="reportDateTime" style="text-align: end;">
-              {{'universal_activityData_creatTime' | translate}} {{reportCreatedTime}}
-            </span>
-          </div>
-          <div>
-            <div class="summaryArea">
-              <div class="summaryDataArea">
-                <span class="summaryData">{{infoData.validStroke || 0}}</span>
-                <p class="summaryDescription">{{'universal_activityData_numberOfValidPens' | translate}}</p>
-              </div>
-              <div class="summarySepData">
-                <div class="sepLine"></div>
-                <div class="summaryDataArea">
-                  <span class="summaryData">{{infoData.height || 0 | number:'1.0-1'}}</span>
-                  <p class="summaryDescription">
-                    {{'universal_userProfile_bodyHeight' | translate}}
-                  </p>
-                </div>
-              </div>
-              <div class="summarySepData">
-                <div class="sepLine"></div>
-                <div class="summaryDataArea">
-                  <span class="summaryData">{{infoData.weight || 0 | number:'1.0-1'}}</span>
-                  <p class="summaryDescription">
-                    {{'universal_userProfile_bodyWeight' | translate}}
-                  </p>
-                </div>
-              </div>
-              <div class="summarySepData">
-                <div class="sepLine"></div>
-                <div class="summaryDataArea">
-                  <span class="summaryData">{{infoData.age || 0 | number:'1.0-0'}}</span>
-                  <p class="summaryDescription">
-                    {{'universal_userProfile_age' | translate}}
-                  </p>
-                </div>
-              </div>
-              <div class="summarySepData">
-                <div class="sepLine"></div>
-                <div class="summaryDataArea">
-                  <span class="summaryData" *ngIf="infoData.gender === 0">Male</span>
-                  <span class="summaryData" *ngIf="infoData.gender === 1">Female</span>
-                  <p class="summaryDescription">
-                    {{'universal_userProfile_gender' | translate}}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="flexCol">
-          <div class="activity-title flexRow">
-            <span class="ala-dashboard-title">
-              {{ 'universal_group_dailyLifeRecord' | translate: {'range': rangeTranslate} }}
-            </span>
-          </div>
-          <div class="flexRow durationSection">
-            <div class="flexCol durationInfo rwd_wid_100per">
-              <span class="reportChartTitle">{{'universal_userProfile_StepCount' | translate}}</span>
-              <div class="flexRow infoHeader">
-                <div class="flexCol">
-                  <span class="summaryData" *ngIf="recordData.avgStep / 100000 >= 1">
-                    {{recordData.avgStep / 1000 | number: '1.0-1'}}k
+                <div class="flexRow" style="align-items: center;">
+                  <span class="report-headerTitle">
+                    {{ 'universal_lifeTracking_lifeTracking' | translate }}
+                    {{ 'universal_activityData_report' | translate }}
                   </span>
-                  <span class="summaryData" *ngIf="recordData.avgStep / 100000 < 1">
-                    {{recordData.avgStep | number: '1.0-0'}}
-                  </span>
-                  <span>{{'universal_deviceSetting_avgSteps' | translate}}</span>
-                </div>
-                <div class="flexCol" style="margin-left: 10px;">
-                  <span class="summaryData">{{recordData.avgDistance / 1000 | number: '1.0-1'}}</span>
-                  <span>{{'universal_adjective_avg' | translate}} {{'universal_activityData_distance' | translate}}km</span>
-                </div>
-                <div class="flexCol">
-                  <span class="summaryData">{{recordData.stepReachReps}}</span>
-                  <span>{{'universal_activityData_complianceTimes' | translate}}</span>
                 </div>
               </div>
-              <span class="areaDescription dataDiscription">
-                {{'universal_activityData_stepReportDescription' | translate}}
-              </span>
             </div>
-            <div class="durationChart rwd_wid_100per">
-              <span class="noChartData" *ngIf="noStepData">{{'universal_status_noData' | translate}}</span>
-              <app-discolor-column-chart
-                [data]="stepData"
-                [dateRange]="dataDateRange"
-                [chartName]="'Step'"
-                [searchDate]="searchDate"
-                [chartHeight]="170"
-                *ngIf="!noStepData"
-              ></app-discolor-column-chart>
-            </div>
-          </div>
-          <div class="flexRow  durationSection">
-            <div class="flexCol durationInfo rwd_wid_100per">
-              <span class="reportChartTitle">{{'universal_activityData_hr' | translate}}</span>
-              <div class="flexRow infoHeader">
-                <div class="flexCol">
-                  <span class="summaryData">{{recordData.avgMaxHR | number: '1.0-1'}}</span>
-                  <span>{{'universal_adjective_avg' | translate}} {{'universal_userProfile_maxHr' | translate}}</span>
-                </div>
-                <div class="flexCol">
-                  <span class="summaryData">{{recordData.avgRestHR | number: '1.0-1'}}</span>
-                  <span>{{'universal_adjective_avg' | translate}} {{'universal_userProfile_restHr' | translate}}</span>
-                </div>
+            <div class="flexCenter report-fileOwner">
+              <div class="flexCol" style="margin-right: 10px;">
+                <span class="report-headerTitle" >{{ userInfo.name }}</span>
               </div>
-              <span class="areaDescription dataDiscription">
-                {{'universal_activityData_hrReportDescription' | translate}}
-              </span>
-            </div>
-            <div class="durationChart rwd_wid_100per">
-              <span class="noChartData" *ngIf="noHRData">{{'universal_status_noData' | translate}}</span>
-              <app-compare-line-chart
-                [data]="HRData"
-                [dateRange]="dataDateRange"
-                [chartName]="'LifeHR'"
-                [searchDate]="searchDate"
-                [chartHeight]="170"
-                [page]="'lifeTracking'"
-                *ngIf="!noHRData"
+              <img 
+                class="report-imgIcon"
+                [src]="userInfo.icon"
+                (error)="this.userInfo.icon='/assets/images/user2.png'"
               >
-              </app-compare-line-chart>
             </div>
-          </div>
-          <div class="flexRow  durationSection" style="width: 100%;">
-            <div class="flexCol durationInfo rwd_wid_100per">
-              <span class="reportChartTitle">{{'universal_lifeTracking_sleep' | translate}}</span>
-              <div class="flexRow infoHeader">
-                <div class="flexCol">
-                  <span class="summaryData">{{recordData.avgSleepTime || '0:00'}}</span>
-                  <span>{{'universal_adjective_avg' | translate}} {{'universal_lifeTracking_sleep' | translate}}</span>
-                </div>
-                <div class="flexCol" style="margin-left: 10px;">
-                  <span class="summaryData">{{recordData.avgDeepSleepTime || '0:00'}}</span>
-                  <span>{{'universal_adjective_avg' | translate}} {{'universal_lifeTracking_deepSleep' | translate}}</span>
-                </div>
-                <div class="flexCol">
-                  <span class="summaryData">{{recordData.avgLightSleepTime || '0:00'}}</span>
-                  <span>{{'universal_adjective_avg' | translate}} {{'universal_lifeTracking_lightSleep' | translate}}</span>
-                </div>
-              </div>
-              <span class="areaDescription dataDiscription">
-                {{'universal_activityData_sleepReportInstructions' | translate}}
-              </span>
-            </div>
-            <div class="durationChart rwd_wid_100per">
-              <span class="noChartData" *ngIf="noSleepData">{{'universal_status_noData' | translate}}</span>
-              <app-stack-column-chart
-                [data]="sleepData"
-                [dateRange]="dataDateRange"
-                [chartName]="'Sleep'"
-                [searchDate]="searchDate"
-                *ngIf="!noSleepData"
-              >
-              </app-stack-column-chart>
-            </div>
-          </div>
-        </div>
-        <div class="flexCol" style="margin-top: 10px;">
-          <div class="activity-title">
-            <span class="ala-dashboard-title">
-              {{'universal_activityData_recentFitness' | translate}}
+          </section>
+        </header>
+        <section class="report-displaySection">
+          <div class="flexRow cardTitle">
+            <h6 class="cardSubtitle">{{ 'universal_activityData_summary' | translate }}</h6>
+            <span style="display: flex; align-items: center;" class="report-dateAnnotation">
+              {{ 'universal_activityData_creatTime' | translate }} {{ reportTime.create }}
             </span>
           </div>
-          <div class="flexRow recentBodyQuality" style="margin-top: 20px;">
-            <div class="flexCol postureInfo rwd_wid_100per">
-              <div class="flexRow media-569-col">
-                <app-body-constitute-svg
-                  class="myBodySvg"
-                  [fatRate]="infoData.fatRate"
-                  [muscleRate]="infoData.muscleRate"
-                  [bodyWeight]="infoData.weight"
-                  [FFMI]="infoData.FFMI"
-                  [gender]="infoData.gender"
-                >
-                </app-body-constitute-svg>
-                <div class="myBodyInfo">
-                  <table>
-                    <div>
-                      <td class="tableCol constituteTd" style="padding-right: 5px;">
-                        <tr>
-                          <span class="dataAnnotation">{{'universal_userProfile_bodyWeight' | translate}}</span><br/>
-                          <span class="summaryData">{{infoData.weight | number: '1.0-1'}}Kg</span>
-                        </tr>
-                        <tr>
-                          <span style="color: #ffba4e;">●</span>
-                          <span class="dataAnnotation">{{'universal_lifeTracking_fatRate' | translate}}</span><br/>
-                          <span class="summaryData">{{infoData.fatRate | number: '1.0-1'}}%</span>
-                        </tr>
-                        <tr>
-                          <span style="color: #31e4d9;">●</span>
-                          <span class="dataAnnotation">{{'universal_userProfile_muscleRate' | translate}}</span><br/>
-                          <span class="summaryData">{{infoData.muscleRate | number: '1.0-1'}}%</span>
-                        </tr>
-                        <tr>
-                          <span class="dataAnnotation">FFMI</span><br/>
-                          <span class="summaryData">{{infoData.FFMI | number: '1.0-1'}}</span>
-                        </tr>
-                      </td>
-                      <td class="tableCol" style="text-align: start;">
-                        <tr><br/><br/></tr>
-                        <tr>
-                          <br/>
-                          <div class="commentText" [style.background-color]="infoData.fatRateColor">{{infoData.fatRateComment}}</div>
-                        </tr>
-                        <tr>
-                          <br/>
-                          <div class="commentText" [style.background-color]="infoData.muscleRateColor">{{infoData.muscleRateComment}}</div>
-                        </tr>
-                      </td>
+          <div class="report-summaryArea">
+            <div>
+              <span class="report-summaryData">{{ info.stroke || 0 }}</span>
+              <p class="report-summaryDescription">
+                {{ 'universal_activityData_record' | translate }}
+                {{ 'universal_activityData_numberOf' | translate }}({{ reportTime.typeTranslate | translate}})
+              </p>
+            </div>
+            <div>
+              <span class="report-summaryData">
+                {{ info.bodyHeight || 0 | bodyHeightSibs: [userInfo.unit, true] }}
+              </span>
+              <p class="report-summaryDescription">
+                {{ 'universal_userProfile_bodyHeight' | translate }}
+              </p>
+            </div>
+            <div>
+              <span class="report-summaryData">
+                {{ info.bodyWeight || 0 | weightSibs: [userInfo.unit, 0] }}
+              </span>
+              <p class="report-summaryDescription">
+                {{ 'universal_userProfile_bodyWeight' | translate }}
+              </p>
+            </div>
+            <div>
+              <span class="report-summaryData">
+                {{ info.BMI || 0 }}
+              </span>
+              <p class="report-summaryDescription">
+                BMI
+              </p>
+            </div>
+            <div>
+              <span class="report-summaryData">
+                {{ info.age || 0 }}
+              </span>
+              <p class="report-summaryDescription">
+                {{ 'universal_userProfile_age' | translate }}
+              </p>
+            </div>
+            <div *ngIf="info?.FFMI">
+              <span class="report-summaryData">
+                {{ info.FFMI || 0 }}
+              </span>
+              <p class="report-summaryDescription">
+                FFMI
+              </p>
+            </div>
+            <div>
+              <span class="report-summaryData">
+                {{ info.totalStep || 0 | thousandConversion: ' ' }}
+              </span>
+              <p class="report-summaryDescription">
+                {{ 'universal_activityData_activityTotalSteps' | translate }}
+              </p>
+            </div>
+            <div>
+              <span class="report-summaryData">
+                {{ info.totalDistanceMeters || 0 | distanceSibs: [userInfo.unit, true] }}
+              </span>
+              <p class="report-summaryDescription">
+                {{ 'universal_userProfile_walkingDistance' | translate }}
+              </p>
+            </div>
+          </div>
+        </section>
+        <section class="report-displaySection">
+          <div class="flexRow cardTitle">
+            <h6 class="cardSubtitle">
+              {{ 'universal_group_dailyLifeRecord' | translate: {range: reportTime.typeTranslate} }}
+            </h6>
+          </div>
+          <div class="flexCol">
+            <ng-container>
+              <div class="flexRow report-durationSection">
+                <div class="flexCol report-durationInfo">
+                  <span class="report-chartTitle">
+                    {{ 'universal_userProfile_StepCount' | translate }}
+                  </span>
+                  <div class="flexRow report-infoHeader">
+                    <div class="flexCol">
+                      <span class="report-summaryData">
+                        {{ chart.stepTrend.totalStep | thousandConversion: ' ' }}
+                      </span>
+                      <span class="report-summaryDescription">
+                        {{ 'universal_activityData_activityTotalSteps' | translate }}
+                      </span>
                     </div>
-                    <td class="tableCol constituteTd" style="padding: 0 5px 0 20px;">
+                    <div class="flexCol" style="margin-left: 10px;">
+                      <span class="report-summaryData">
+                        {{ chart.stepTrend.totalDistance | distanceSibs: [userInfo.unit, true] }}
+                      </span>
+                      <span class="report-summaryDescription">
+                        {{ 'universal_activityData_totalDistance' | translate }}
+                      </span>
+                    </div>
+                    <div class="flexCol">
+                      <span class="report-summaryData">{{ chart.stepTrend.reachTimes }}</span>
+                      <span class="report-summaryDescription">
+                        {{ 'universal_activityData_complianceTimes' | translate }}
+                      </span>
+                    </div>
+                  </div>
+                  <span class="report-areaDescription report-dataDiscription">
+                    {{ 'universal_activityData_stepReportDescription' | translate }}
+                  </span>
+                </div>
+                <div class="report-durationChart">
+                  <app-discolor-column-chart
+                    [data]="chart.stepTrend.trendData"
+                    [chartName]="'Step'"
+                    [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
+                    [chartHeight]="170"
+                    *ngIf="chart.stepTrend.totalStep; else noChartData;"
+                  ></app-discolor-column-chart>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container>
+              <div class="flexRow  report-durationSection" style="width: 100%;">
+                <div class="flexCol report-durationInfo">
+                  <span class="report-chartTitle">{{'universal_activityData_hr' | translate}}</span>
+                  <div class="flexRow report-infoHeader">
+                    <div class="flexCol">
+                      <span class="report-summaryData">
+                        {{ (chart.restHrTrend.ttlMaxHr / chart.restHrTrend.dataLen) || 0 | number: '1.0-0' }}
+                      </span>
+                      <span class="report-summaryDescription">
+                        {{'universal_adjective_avg' | translate}} {{'universal_userProfile_maxHr' | translate}}
+                      </span>
+                    </div>
+                    <div class="flexCol" style="margin-left: 10px;">
+                      <span class="report-summaryData">
+                        {{ (chart.restHrTrend.ttlRestHr / chart.restHrTrend.dataLen) || 0 | number: '1.0-0' }}
+                      </span>
+                      <span class="report-summaryDescription">
+                        {{'universal_adjective_avg' | translate}} {{'universal_userProfile_restHr' | translate}}
+                      </span>
+                    </div>
+                  </div>
+                  <span class="report-areaDescription report-dataDiscription">
+                    {{'universal_activityData_hrReportDescription' | translate}}
+                  </span>
+                </div>
+                <div class="report-durationChart">
+                  <app-compare-line-chart
+                    [data]="chart.restHrTrend"
+                    [chartName]="'LifeHR'"
+                    [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
+                    [chartHeight]="170"
+                    *ngIf="chart.restHrTrend.dataLen; else noChartData"
+                  >
+                  </app-compare-line-chart>
+                </div>
+              </div>    
+            </ng-container>
+            <ng-container>
+              <div class="flexRow report-durationSection" style="width: 100%;">
+                <div class="flexCol report-durationInfo">
+                  <span class="report-chartTitle">{{'universal_lifeTracking_sleep' | translate}}</span>
+                  <div class="flexRow report-infoHeader">
+                    <div class="flexCol">
+                      <span class="report-summaryData">
+                        {{ (chart.sleepTrend.ttlAvgSleepSecond / chart.sleepTrend.dataLen) || 0 | sportTime: [true, true] }}
+                      </span>
+                      <span class="report-summaryDescription">
+                        {{'universal_adjective_avg' | translate}} {{'universal_lifeTracking_sleep' | translate}}
+                      </span>
+                    </div>
+                    <div class="flexCol" style="margin-left: 10px;">
+                      <span class="report-summaryData">
+                        {{ (chart.sleepTrend.ttlAvgDeepSleepSecond / chart.sleepTrend.dataLen) || 0 | sportTime: [true, true] }}
+                      </span>
+                      <span class="report-summaryDescription">
+                        {{'universal_adjective_avg' | translate}} {{'universal_lifeTracking_deepSleep' | translate}}
+                      </span>
+                    </div>
+                    <div class="flexCol" style="margin-left: 10px;">
+                      <span class="report-summaryData">
+                        {{ (chart.sleepTrend.ttlAvgLightSleepSecond / chart.sleepTrend.dataLen) || 0 | sportTime: [true, true] }}
+                      </span>
+                      <span class="report-summaryDescription">
+                        {{'universal_adjective_avg' | translate}} {{'universal_lifeTracking_lightSleep' | translate}}
+                      </span>
+                    </div>
+                  </div>
+                  <span class="report-areaDescription report-dataDiscription">
+                    {{'universal_activityData_sleepReportInstructions' | translate}}
+                  </span>
+                </div>
+                <div class="report-durationChart">
+                  <app-stack-column-chart
+                    [data]="chart.sleepTrend.trendData"
+                    [chartName]="'Sleep'"
+                    [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
+                    *ngIf="chart.sleepTrend.dataLen; else noChartData"
+                  >
+                  </app-stack-column-chart>
+                </div>
+              </div>    
+            </ng-container>
+          </div>
+        </section>
+        <section class="report-displaySection" *ngIf="uiFlag.progress === 100">
+          <div class="flexCol">
+            <div class="cardTitle flexRow">
+              <h6 class="cardSubtitle">{{'universal_activityData_recentFitness' | translate}}</h6>
+            </div>
+          </div>
+          <div class="flexRow report-bodyQuality" style="margin-top: 20px;">
+            <div class="flexRow posture__info">
+              <app-body-constitute-svg
+                class="my__body__svg"
+                [fatRate]="info.fatRate || 0"
+                [muscleRate]="info.muscleRate || 0"
+                [bodyWeight]="info.bodyWeight || 0"
+                [FFMI]="info.FFMI || 0"
+                [gender]="info.gender || 0"
+              >
+              </app-body-constitute-svg>
+              <div class="my__body__info">
+                <table>
+                  <div>
+                    <td class="table__col constitute__td" style="padding-right: 5px;">
                       <tr>
-                        <span class="dataAnnotation">{{'universal_lifeTracking_skeletonRate' | translate}}</span><br/>
-                        <span class="summaryData">{{infoData.skeletonRate | number: '1.0-1'}}%</span>
+                        <span class="data__annotation">{{ 'universal_userProfile_bodyWeight' | translate }}</span><br/>
+                        <span class="report-summaryData">{{ info.bodyWeight || 0 | number: '1.0-1' }}Kg</span>
                       </tr>
                       <tr>
-                        <span class="dataAnnotation">{{'universal_lifeTracking_moistureRate' | translate}}</span><br/>
-                        <span class="summaryData">{{infoData.moistureRate | number: '1.0-1'}}%</span>
+                        <span style="color: #ffba4e;">●</span>
+                        <span class="data__annotation">{{ 'universal_lifeTracking_fatRate' | translate }}</span><br/>
+                        <span class="report-summaryData">{{ info.fatRate || 0 | number: '1.0-1' }}%</span>
                       </tr>
                       <tr>
-                        <span class="dataAnnotation">{{'universal_lifeTracking_proteinRate' | translate}}</span><br/>
-                        <span class="summaryData">{{infoData.proteinRate | number: '1.0-1'}}%</span>
+                        <span style="color: #31e4d9;">●</span>
+                        <span class="data__annotation">{{ 'universal_userProfile_muscleRate' | translate }}</span><br/>
+                        <span class="report-summaryData">{{ info.muscleRate || 0 | number: '1.0-1' }}%</span>
                       </tr>
                       <tr>
-                        <span class="dataAnnotation">{{'universal_activityData_basalMetabolism' | translate}}</span><br/>
-                        <span class="summaryData">{{infoData.basalMetabolicRate | number: '1.0-1'}}</span>
+                        <span class="data__annotation">FFMI</span><br/>
+                        <span class="report-summaryData">{{ info.FFMI || 0 | number: '1.0-1' }}</span>
                       </tr>
                     </td>
-                    <td class="tableCol" style="text-align: start;">
+                    <td class="table__col" style="text-align: start;">
                       <tr><br/><br/></tr>
                       <tr>
                         <br/>
-                        <div class="commentText" [style.background-color]="infoData.moistureRateColor">{{infoData.moistureRateComment}}</div>
+                        <div class="comment__text" [style.background-color]="info?.fatRateComment?.bgColor">
+                          {{ info?.fatRateComment?.i18Key | translate }}
+                        </div>
+                      </tr>
+                      <tr>
+                        <br/>
+                        <div class="comment__text" [style.background-color]="info?.muscleRateComment?.bgColor">
+                          {{ info?.muscleRateComment?.i18Key | translate }}
+                        </div>
                       </tr>
                     </td>
-                  </table>
-                </div>
+                  </div>
+                  <td class="table__col constitute__td" style="padding: 0 5px 0 20px;">
+                    <tr>
+                      <span class="data__annotation">{{ 'universal_lifeTracking_skeletonRate' | translate }}</span><br/>
+                      <span class="report-summaryData">{{ info.skeletonRate || 0 | number: '1.0-1' }}%</span>
+                    </tr>
+                    <tr>
+                      <span class="data__annotation">{{ 'universal_lifeTracking_moistureRate' | translate }}</span><br/>
+                      <span class="report-summaryData">{{ info.moistureRate || 0 | number: '1.0-1' }}%</span>
+                    <tr>
+                      <span class="data__annotation">{{ 'universal_lifeTracking_proteinRate' | translate }}</span><br/>
+                      <span class="report-summaryData">{{ info.proteinRate || 0 | number: '1.0-1' }}%</span>
+                    </tr>
+                    <tr>
+                      <span class="data__annotation">{{ 'universal_activityData_basalMetabolism' | translate }}</span><br/>
+                      <span class="report-summaryData">{{ info.basalMetabolicRate || 0 | number: '1.0-1' }}</span>
+                    </tr>
+                  </td>
+                  <td class="table__col" style="text-align: start;">
+                    <tr><br/><br/></tr>
+                    <tr>
+                      <br/>
+                      <div class="comment__text" [style.background-color]="info?.moistureRateComment?.bgColor">
+                        {{ info?.moistureRateComment?.i18Key | translate }}
+                      </div>
+                    </tr>
+                  </td>
+                </table>
               </div>
-              <!---
-              <span class="dataAnnotation" style="margin-top: 10px;">
-                <i class="icon-svg_web-icon_p3_001-bathroom_scale" style="font-size: 22px;"></i>
-                {{'universal_operating_update' | translate}} {{'universal_activityData_time' | translate}}
-              </span>
-              --->
             </div>
-            <div class="flexCol postureTrend rwd_wid_100per">
-              <div>
-                <span class="reportChartTitle">{{'universal_adjective_avg' | translate}} {{'universal_activityData_weightTrend' | translate}}</span>
+            <div class="flexCol posture__trend">
+              <div class="flexCol">
+                <span class="report-chartTitle">
+                  {{'universal_adjective_avg' | translate}} BMI
+                </span>
                 <app-line-chart
-                  [data]="weightData"
-                  [dateRange]="dataDateRange"
-                  [dateList]="chartTimeStamp"
-                  [chartName]="'Weight'"
-                  [searchDate]="searchDate"
+                  [data]="chart.BMITrend.data"
+                  [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
+                  [chartName]="'BMI'"
                   [chartHeight]="120"
+                  *ngIf="!chart.BMITrend.noData; else noChartData;"
                 ></app-line-chart>
               </div>
               <div class="flexCol">
-                <span class="reportChartTitle">{{'universal_adjective_avg' | translate}} {{'universal_activityData_bodyFatTrend' | translate}}</span>
-                <span class="noChartData" *ngIf="noConstituteData">{{'universal_status_noData' | translate}}</span>
+                <span class="report-chartTitle">
+                  {{'universal_adjective_avg' | translate}} {{'universal_activityData_bodyFatTrend' | translate}}
+                </span>
                 <app-line-chart
-                  [data]="constituteData"
-                  [dateRange]="dataDateRange"
-                  [dateList]="chartTimeStamp"
+                  [data]="chart.fatRateTrend.data"
+                  [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
                   [chartName]="'FatRate'"
-                  [searchDate]="searchDate"
                   [chartHeight]="120"
-                  *ngIf="!noConstituteData"
+                  *ngIf="!chart.fatRateTrend.noData; else noChartData;"
                 >
                 </app-line-chart>
               </div>
               <div class="flexCol">
-                <span class="reportChartTitle">{{'universal_adjective_avg' | translate}} {{'universal_activityData_muscleRateTrend' | translate}}</span>
-                <span class="noChartData" *ngIf="noConstituteData">{{'universal_status_noData' | translate}}</span>
+                <span class="report-chartTitle">
+                  {{'universal_adjective_avg' | translate}} {{'universal_activityData_muscleRateTrend' | translate}}
+                </span>
                 <app-line-chart
-                  [data]="constituteData"
-                  [dateRange]="dataDateRange"
-                  [dateList]="chartTimeStamp"
+                  [data]="chart.muscleRateTrend.data"
+                  [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
                   [chartName]="'MuscleRate'"
-                  [searchDate]="searchDate"
                   [chartHeight]="120"
-                  *ngIf="!noConstituteData"
+                  *ngIf="!chart.muscleRateTrend.noData; else noChartData;"
                 >
                 </app-line-chart>
               </div>
             </div>
           </div>
-        </div>
-        <div class="flexCol" style="margin-top: 10px;">
-          <div class="activity-title">
-            <span class="ala-dashboard-title">
-              {{'universal_activityData_trend' | translate}}
-            </span>
-          </div>
+        </section>
+        <section class="report-displaySection">
           <div class="flexCol">
-            <div class="flexRow" style="align-items: center; margin-top: 10px;">
-              <span class="reportChartTitle">{{'universal_userProfile_fitTime' | translate}}</span>
-              <div class="separateLine"></div>
-            </div>
-            <div class="flexRow fitTimeChart" [class.media-1000-dataContent]="!isPreviewMode">
-              <div class="flexRow dataNumber rwd_wid_100per" [class.media-1000-dataNumber]="!isPreviewMode">
-                <div class="flexCol dataMargin" style="width: 50%;">
-                  <span class="dataFont summaryData">{{trendData.bestFitTime | number:'1.0-0'}}</span>
-                  <span class="dataAnnotation">
-                    {{'universal_adjective_maxHight' | translate}} {{'universal_activityData_minutes' | translate}}
-                  </span>
-                </div>
-                <div class="flexCol dataMargin" style="width: 50%;">
-                  <span class="dataFont summaryData">{{trendData.avgFitTime | number:'1.0-1'}}</span>
-                  <span class="dataAnnotation">
-                    {{'universal_adjective_avg' | translate}} {{'universal_activityData_minutes' | translate}}
-                  </span>
-                </div>
-              </div>
-              <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
-                <span class="noChartData" *ngIf="noFitTimeData">{{'universal_status_noData' | translate}}</span>
-                <app-fillet-column-chart
-                  [data]="fitTimeData"
-                  [dateRange]="dataDateRange"
-                  [chartName]="'FitTime'"
-                  [searchDate]="searchDate"
-                  *ngIf="!noFitTimeData"
-                >
-                </app-fillet-column-chart>
-              </div>
+            <div class="cardTitle flexRow">
+              <h6 class="cardSubtitle">{{'universal_activityData_trend' | translate}}</h6>
             </div>
           </div>
-        </div>
+          <div>
+            <app-fillet-column-chart
+              [data]="chart.fitTimeTrend"
+              [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
+              [chartName]="'FitTime'"
+              [page]="'lifeTracking'"
+              *ngIf="uiFlag.progress === 100"
+            >
+            </app-fillet-column-chart>
+          </div>
+        </section>
       </ng-container>
     </div>
-    <div *ngIf="isPreviewMode && !isLoading" class="printMark">
+    <div *ngIf="uiFlag.isPreviewMode && uiFlag.progress === 100" class="printMark">
       GPTFit
     </div>
-  </section>
+  </div>
 </div>
+<ng-template #noChartData>
+  <span class="report-noChartData">{{ 'universal_status_noData' | translate }}</span>
+</ng-template>

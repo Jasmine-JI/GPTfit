@@ -18,16 +18,20 @@
 }
 
 $sky-blue: rgba(17, 166, 235, 1);
+$radio-size: 20px;
+$radio-active-size: 14px;
 
 .alpha-text {
   color: #F2850C;
   font-size: 14px;
 }
-.page-title {
+
+.pageTitle {
   color: #157fcc;
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 700;
 }
+
 .spinner {
   position: absolute;
   right: 30px;
@@ -286,8 +290,8 @@ html {
   background: rgba(0, 0, 0, 0.15);
   z-index: 1;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   height: 100vh;
 }
 
@@ -682,14 +686,16 @@ a.ban-send:hover {
 
 .flexCenter {
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 }
 
 .cardTitle {
   border-bottom: 1px solid rgba(200, 200, 200, 1);
   width: 100%;
   margin-bottom: 10px;
+  position: relative;
+  justify-content: space-between;
 }
 
 .cardSubtitle {
@@ -711,10 +717,10 @@ a.ban-send:hover {
   justify-content: flex-end;
   width: 100%;
   margin: 10px 0px;
+  font-size: 30px;
 }
 
 .functionBtn {
-  font-size: 30px;
   cursor: pointer;
   color: var(--scale-100-230);
   margin: 10px 2px;
@@ -780,271 +786,37 @@ a.ban-send:hover {
   color: var(--scale-100-205);
 }
 
-/********************************* 報告共用樣式 ************************************/
-
-.displaySection {
-  margin: 10px 0;
-}
-
-.reportIcon {
-  font-size: 30px;
-  color: var(--scale-100-230);
-  border: 2px solid var(--scale-100-230);
-  border-radius: 50%;
-  height: 50px;
-  width: 50px;
-  min-width: 50px;
-  min-height: 50px;
-}
-
-.rowToColumn {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.smallFont {
-  font-size: 12px;
-  color: var(--scale-150-180);
-}
-
-.headName {
-  @include bold-font(30px);
-  color: var(--scale-115-255);
-}
-
-.reportImgIcon {
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-}
-
-.summaryArea {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-
-.summaryDataArea {
-  padding: 0px 15px;
-}
-
-.summaryData {
-  font-size: 24px;
-  font-weight: bold;
-  color: var(--scale-100-205);
-}
-
-.summaryDescription {
-  font-size: 14px;
-  color: var(--scale-100-205);
-}
-
-.areaDescription {
-  font-size: 16px;
-  color:var(--scale-150-180);
-  margin-left: 10px;
-}
-
-.infoDataUnit {
-  font-size: 16px;
-  color: var(--scale-150-180);
-  font-weight: bold;
-}
-
-.ringChart {
-  width: 40%;
-}
-
-.ringChartTitle {
-  color: var(--scale-0-255);
-  font-weight: bold;
-}
-
-.ringChartSection {
-  margin-top: 10px;
-  width: 50%;
-}
-
-.perTypeInfo {
-  font-size: 14px;
-  margin-left: 15px;
-  min-width: 150px;
-
-  &:hover{
-    cursor: pointer;;
-  }
-}
-
-.perTypeTitle {
-  color: var(--scale-75-230);
-  font-weight: bold;
-}
-
-.chartTitle {
-  color: var(--scale-75-230);
-  margin-block-start: 0px;
-  margin-block-end: 0px;
-}
-
-.dot {
-  margin-right: 5px;
-  font-size: 16px;
-}
-
-.perTypeAvgTime {
-  color: var(--scale-0-255);
-  margin-left: 30px;
-}
-
-.distributionChartWidth {
-  margin-top: 10px;
-  width: 60%;
-}
-
-.distributionChart {
-  width: 100%;
-  height: auto;
-}
-
-.zoneChart {
-  width: 55%;
-}
-
-.infoChart {
-  width: 45%;
-}
-
-.haveOptBtn {
-  position: relative;
-  justify-content: space-between;
-  align-items: center;
-
-  button {
-    font-size: 25px;
-    border: none;
-    background-color: transparent;
-    padding: 0;
-
-    i {
-      color: var(--scale-100-230);
-    }
-
-  }
-
-}
-
-.parentsName {
-  text-align: start;
-  font-size: 10px;
-  color: var(--scale-200-130);
-}
-
-.reportTypeTitle {
-  font-weight: bold;
-  margin-bottom: 15px;
-  color: var(--scale-0-255);
-}
-
-.reportCheckBox {
-  color: var(--scale-0-255);
-}
-
-.reportCheckBox-disable {
-  pointer-events: none;
-  color: var(--scale-200-130);
-}
-
-.menuSubtitle {
-  color: var(--scale-100-255);
-  font-weight: bold;
-}
-
-.weightTrainSetting {
-  position: absolute;
-  top: 28px;
-  right: 0px;
-  width: 260px;
-  padding: 15px;
-  background-color: white;
-  z-index: 1;
-  border: 1px solid black;
-}
-
-.dropMenu {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border: 1px solid black;
-  height: 30px;
-  margin-top: 5px;
-  padding: 5px;
-  cursor: pointer;
-
-  &:after {
-    content: '';
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-top: 10px solid black;
-    @include transition(transform);
-  }
-
-}
-
-.dropMenu--active {
-
-  &:after {
-    @include transition(transform);
-    @include el-rotate(180deg);
-  }
-
-}
-
-.dropMenuList {
-  cursor: pointer;
-  position: absolute;
-  width: 100%;
-  border: 1px solid black;
-  padding: 5px;
-  z-index: 2;
-  background-color: white;
-  top: 34px;
-
-  span {
-    padding: 2px;
-    display: block;
-
-    &:hover {
-      background-color: rgba(17, 166, 235, 1);
-      color: white;
-      @include transition(background-color);
-    }
-
-  }
-
-  .levelOpt {
-    text-align: right;
-    padding-right: 20px;
-  }
-
-}
-
-.weightTrainMenu {
-  justify-content: flex-end;
-
-  &:after {
-    margin-left: 10px;
-  }
-
-}
-
 .pageBreakAvoid {
   page-break-inside: avoid;
 }
 
+.radioSelector {
+  cursor: pointer;
+  align-items: center;
+  margin-right: 15px;
+  color: var(--scale-0-255);
+}
 
-/**********************************************************************************/
+.radioBtn {
+  @include center();
+  border: 1px solid var(--scale-0-255);
+  border-radius: 50%;
+  width: $radio-size;
+  height: $radio-size;
+  margin-right: 5px;
+}
+
+.radioBtn--active {
+
+  &:before {
+    content: '';
+    width: $radio-active-size;
+    height: $radio-active-size;
+    border-radius: 50%;
+    background-color: rgba(17, 166, 235, 1);
+  }
+
+}
 
 
 /************************************* media **************************************/
@@ -1063,17 +835,7 @@ a.ban-send:hover {
   }
 }
 
-@media(max-width: 768px) {
-  .media-768-col {
-    display: flex;
-    flex-direction: column;
-
-    >div {
-      width: 100%;
-    }
-
-  }
-
+@media(max-width: 767px) {
   .access-header {
     height: 50px;
   }
@@ -1126,12 +888,7 @@ a.ban-send:hover {
   
   .pageBreak {
     min-height: 1px;
-    page-break-before: always;
-  }
-
-  .rowToColumn {
-    flex-direction: row;
-    justify-content: space-between;
+    page-break-before: avoid;
   }
 
 }
@@ -1158,21 +915,6 @@ a.ban-send:hover {
     margin: 15px 0px;
   }
 
-  .fileOwner {
-    justify-content: flex-end;
-  }
 
-  .rowToColumn {
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .headName {
-    font-size: 24px;
-  }
-
-  .ringChart, .distributionChartWidth {
-    width: 100%;
-  }
 
 }

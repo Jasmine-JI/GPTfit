@@ -7,8 +7,6 @@ $sky-blue: rgba(17, 166, 235, 1);
 $table-fontsize: 14px;
 $segmentation-color: rgba(100, 100, 100, 1);
 $btn-color: rgba(120, 120, 120, 1);
-$radio-size: 20px;
-$radio-active-size: 14px;
 
 
 #portal__detail__page {
@@ -139,8 +137,8 @@ $radio-active-size: 14px;
 }
 
 .summery__block {
-  align-items: center;
   justify-content: center;
+  align-items: center;
 }
 
 .img__icon {
@@ -272,34 +270,6 @@ $radio-active-size: 14px;
 
 .radio__section {
   margin: 5px 0 5px 10px;
-}
-
-.radio__selector {
-  cursor: pointer;
-  align-items: center;
-  margin-right: 15px;
-  margin-bottom: 5px;
-}
-
-.radio__btn {
-  @include center();
-  border: 1px solid black;
-  border-radius: 50%;
-  width: $radio-size;
-  height: $radio-size;
-  margin-right: 5px;
-}
-
-.radio__btn--active {
-
-  &:before {
-    content: '';
-    width: $radio-active-size;
-    height: $radio-active-size;
-    border-radius: 50%;
-    background-color: rgba(17, 166, 235, 1);
-  }
-
 }
 
 #footer__section {

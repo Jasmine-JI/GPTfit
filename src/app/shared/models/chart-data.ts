@@ -29,36 +29,54 @@ export const infoColor = [
 /**
  * 步數趨勢圖顏色
  */
-export const stepColor = [
-  '#6fd205',
-  '#7f7f7f',
-  '#eb5293'
-];
+export const stepColor = {
+  step: '#6fd205',
+  target: '#7f7f7f',
+  reach: '#eb5293'
+};
 
 /**
  * 睡眠趨勢圖顏色
  */
-export const sleepColor = [
-  '#35a8c9',
-  '#1e61bb',
-  '#ccff00'
-];
+export const sleepColor = {
+  light: '#35a8c9',
+  deep: '#1e61bb',
+  standup: '#ccff00'
+};
 
-export const BMIColor = [
-  '#7ee33a',
-  'yellow',
-  'red'
-];
+/**
+ * BMI趨勢圖顏色
+ */
+export const BMIColor = {
+  low: '#7ee33a',
+  middle: 'yellow',
+  high: 'red'
+};
 
-export const fatRateColor = [
-  '#e0a63a',
-  '#e04fc4'
-];
+/**
+ * 脂肪率趨勢圖顏色
+ */
+export const fatRateColor = {
+  low: '#e0a63a',
+  high: '#e04fc4'
+};
 
-export const muscleRateColor = [
-  '#3ae5da',
-  '#299fc6'
-];
+/**
+ * 肌肉率趨勢圖顏色
+ */
+export const muscleRateColor = {
+  low: '#3ae5da',
+  high: '#299fc6'
+};
+
+/**
+ * 休息心率趨勢圖顏色
+ */
+export const restHrColor = {
+  line: '#ababab',
+  rest: '#31df93',
+  max: '#e23333'
+};
 
 
 export const costTimeColor = 'rgba(188, 226, 58, 1)',
@@ -138,10 +156,10 @@ export interface HrZoneRange {
 }
 
 export interface CompareLineTrendChart {
-  HR?: Array<number>;  // 待個人運動報告重構後再將相容移除
-  avgHR?: number;  // 待個人運動報告重構後再將相容移除
-  bestHR?: Array<number>;  // 待個人運動報告重構後再將相容移除
-  oneRangeBestHR?: number;  // 待個人運動報告重構後再將相容移除
+  HR?: Array<number>;
+  avgHR?: number;
+  bestHR?: Array<number>;
+  oneRangeBestHR?: number;
   hrArr?: Array<Array<number>>;
   maxHrArr?: Array<Array<number>>;
   avgHr?: number;
@@ -168,7 +186,7 @@ export interface CompareLineTrendChart {
 
 export interface FilletTrendChart {
   avgCalories?: number;
-  calories?: Array<number> | Array<Array<number>>;  // 待個人運動報告重構後再將相容移除
+  calories?: Array<number> | Array<Array<number>>;
   totalCalories?: number;
   maxCalories?: number;
   avgCostTime?: number;

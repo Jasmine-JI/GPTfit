@@ -11,7 +11,8 @@ import {
   acclerateColor,
   hitColor,
   jumpColor,
-  landingColor
+  landingColor,
+  restHrColor
 } from '../../../models/chart-data';
 import { unit, Unit } from '../../../models/bs-constant';
 import { day, month, week } from '../../../models/utils-constant';
@@ -92,6 +93,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() chartHeight = <number>110;
   @Input() page: DisplayPage;
   @Input() unit = <Unit>unit.metric;
+  @Input() isPreviewMode: boolean = false;
   @ViewChild('container', {static: false})
   container: ElementRef;
 
@@ -102,20 +104,6 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {}
 
   ngOnChanges () {
-    if (this.data.fatRateList && this.data.fatRateList.length === 0) {
-      this.noData = true;
-    }
-
-    // 若為週報告，則先求得報告頭尾的日期-kidin-1090220
-    if (
-      this.searchDate
-      && this.dateRange === 'week'
-      && !this.noData
-      && !['cloudrun', 'sportReport'].includes(this.page)
-    ) {
-      this.findDate();
-    }
-
     this.translate.get('hellow world').pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
@@ -124,10 +112,12 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
     
   }
 
+  /**
+   * 建立圖表
+   * @author kidin-1100625
+   */
   initChart () {
     let trendDataset;
-    const chartData = [],
-          chartBestData = [];
     switch (this.chartName) {
       case 'HR':
         this.chartType = 'hr';
@@ -262,203 +252,33 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           ];
         break;
       case 'LifeHR':
-        // 若搜尋的第一天（週）或最後一天（週）沒有數據，則用前後數據遞補-kidin-1090220
-        if (this.dateRange === 'week') {
-
-          if (this.data.date[0] !== this.firstSunday) {
-            this.data.date.unshift(this.firstSunday);
-            this.data.restHRList.unshift(this.data.restHRList[0]);
-            this.data.maxHRList.unshift(this.data.maxHRList[0]);
-          }
-
-          if (this.data.date[this.data.date.length - 1] !== this.lastSunday) {
-            this.data.date.push(this.lastSunday);
-            this.data.restHRList.push(this.data.restHRList[this.data.date.length - 1]);
-            this.data.maxHRList.push(this.data.maxHRList[this.data.date.length - 1]);
-          }
-
-        } else {
-
-          if (this.data.date[0] !== this.searchDate[0]) {
-            this.data.date.unshift(this.searchDate[0]);
-            this.data.restHRList.unshift(this.data.restHRList[0]);
-            this.data.maxHRList.unshift(this.data.maxHRList[0]);
-          }
-
-          if (this.data.date[this.data.date.length - 1] !== this.searchDate[1]) {
-            this.data.date.push(this.searchDate[1]);
-            this.data.restHRList.push(this.data.restHRList[this.data.date.length - 1]);
-            this.data.maxHRList.push(this.data.maxHRList[this.data.date.length - 1]);
-          }
-        }
-
-        this.dataLength = this.data.date.length;
-        for (let i = 0; i < this.dataLength; i++) {
-          chartData.push(
-            {
-              x: this.data.date[i],
-              y: this.data.restHRList[i],
-              marker: {
-                enabled: true,
-                fillColor: '#31df93'
-              }
-            }
-          );
-
-          chartBestData.push(
-            {
-              x: this.data.date[i],
-              y: this.data.maxHRList[i],
-              marker: {
-                enabled: true,
-                fillColor: '#e23333'
-              }
-            }
-          );
-        }
-
+        this.dataLength = this.data.restHr.length;
         trendDataset = [
           {
             name: this.translate.instant('universal_userProfile_maxHr'),
-            data: chartBestData,
+            data: this.data.maxHr,
             showInLegend: false,
-            color: '#ababab',
+            color: restHrColor.line,
             marker: {
+              enabled: true,
+              fillColor: restHrColor.max,
               symbol: 'circle',
               height: 20
             }
           },
           {
             name: this.translate.instant('universal_userProfile_restHr'),
-            data: chartData,
+            data: this.data.restHr,
             showInLegend: false,
-            color: '#ababab',
+            color: restHrColor.line,
             marker: {
+              enabled: true,
+              fillColor: restHrColor.rest,
               symbol: 'circle',
               height: 20
             }
           }
         ];
-
-        break;
-      case 'Weight':
-        trendDataset = [];
-        this.dataLength = this.data.weightList.length;
-        for (let i = 0; i < this.dataLength; i++) {
-
-          // 若搜尋的第一天（週）或最後一天（週）沒有數據，則用前後數據遞補-kidin-1090220
-          const weightData = this.data.weightList[i];
-          if (this.dateRange === 'week') {
-
-            if (weightData[0][0] !== this.firstSunday) {
-              weightData.unshift([this.firstSunday, weightData[0][1]]);
-            }
-
-            if (weightData[weightData.length - 1][0] !== this.lastSunday) {
-              weightData.push([this.lastSunday, weightData[weightData.length - 1][1]]);
-            }
-
-          } else {
-
-            if (weightData[0][0] !== this.searchDate[0]) {
-              weightData.unshift([this.searchDate[0], weightData[0][1]]);
-            }
-
-            if (weightData[weightData.length - 1][0] !== this.searchDate[1]) {
-              weightData.push([this.searchDate[1], weightData[weightData.length - 1][1]]);
-            }
-          }
-
-          trendDataset.push({
-            name: this.translate.instant('universal_userProfile_bodyWeight'),
-            data: weightData,
-            showInLegend: false,
-            color: this.data.colorSet,
-            marker: {
-              enabled: false
-            }
-          });
-        }
-
-        break;
-      case 'FatRate':
-        trendDataset = [];
-        this.dataLength = this.data.fatRateList.length;
-        for (let i = 0; i < this.dataLength; i++) {
-
-          // 若搜尋的第一天（週）或最後一天（週）沒有數據，則用前後數據遞補-kidin-1090220
-          const fatRateData = this.data.fatRateList[i];
-          if (this.dateRange === 'week') {
-
-            if (fatRateData[0][0] !== this.firstSunday) {
-              fatRateData.unshift([this.firstSunday, fatRateData[0][1]]);
-            }
-
-            if (fatRateData[fatRateData.length - 1][0] !== this.lastSunday) {
-              fatRateData.push([this.lastSunday, fatRateData[fatRateData.length - 1][1]]);
-            }
-
-          } else {
-
-            if (fatRateData[0][0] !== this.searchDate[0]) {
-              fatRateData.unshift([this.searchDate[0], fatRateData[0][1]]);
-            }
-
-            if (fatRateData[fatRateData.length - 1][0] !== this.searchDate[1]) {
-              fatRateData.push([this.searchDate[1], fatRateData[fatRateData.length - 1][1]]);
-            }
-          }
-
-          trendDataset.push({
-            name: this.translate.instant('universal_lifeTracking_fatRate'),
-            data: fatRateData,
-            showInLegend: false,
-            color: this.data.fatRateColorSet,
-            marker: {
-              enabled: false
-            }
-          });
-        }
-
-        break;
-      case 'MuscleRate':
-        trendDataset = [];
-        this.dataLength = this.data.muscleRateList.length;
-        for (let i = 0; i < this.dataLength; i++) {
-
-          // 若搜尋的第一天（週）或最後一天（週）沒有數據，則用前後數據遞補-kidin-1090220
-          const muscleRateData = this.data.muscleRateList[i];
-          if (this.dateRange === 'week') {
-
-            if (muscleRateData[0][0] !== this.firstSunday) {
-              muscleRateData.unshift([this.firstSunday, muscleRateData[0][1]]);
-            }
-
-            if (muscleRateData[muscleRateData.length - 1][0] !== this.lastSunday) {
-              muscleRateData.push([this.lastSunday, muscleRateData[muscleRateData.length - 1][1]]);
-            }
-
-          } else {
-
-            if (muscleRateData[0][0] !== this.searchDate[0]) {
-              muscleRateData.unshift([this.searchDate[0], muscleRateData[0][1]]);
-            }
-
-            if (muscleRateData[muscleRateData.length - 1][0] !== this.searchDate[1]) {
-              muscleRateData.push([this.searchDate[1], muscleRateData[muscleRateData.length - 1][1]]);
-            }
-          }
-
-          trendDataset.push({
-            name: this.translate.instant('universal_userProfile_muscleRate'),
-            data: muscleRateData,
-            showInLegend: false,
-            color: this.data.muscleRateColorSet,
-            marker: {
-              enabled: false
-            }
-          });
-        }
 
         break;
     }
@@ -468,9 +288,6 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.chartName) {
       case 'HR':
       case 'Power':
-      case 'Weight':
-      case 'FatRate':
-      case 'MuscleRate':
       case 'LifeHR':
         // 設定浮動提示框顯示格式-kidin-1090204
         trendChartOptions['tooltip'] = {
@@ -608,24 +425,6 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
       }
 
     }
-  }
-
-  // 根據搜索時間取得周報告第一周的開始日期和最後一週的開始日期-kidin-1090220
-  findDate () {
-
-    // 周報告開頭是星期日-kidin-1090220
-    if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-      this.firstSunday = this.searchDate[0] - day * moment(this.searchDate[0]).isoWeekday();
-    } else {
-      this.firstSunday = this.searchDate[0];
-    }
-
-    if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-      this.lastSunday = this.searchDate[1] - day * moment(this.searchDate[1]).isoWeekday();
-    } else {
-      this.lastSunday = this.searchDate[1];
-    }
-
   }
 
   // 確認取得元素才建立圖表-kidin-1090706

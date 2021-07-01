@@ -1,5 +1,5 @@
 <section class="flexCol" style="position: relative;">
-  <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+  <div class="flexRow cardTitle">
     <span class="cardSubtitle">
       <ng-container *ngIf="uiFlag.showMap">
         {{ 'universal_activityData_map' | translate }}
@@ -11,22 +11,22 @@
     <i class="icon-svg_web-icon_p1_001-setting settingIcon" (click)="handleShowOptMenu($event)"></i>
     <div id="map__opt__menu" *ngIf="uiFlag.showMapOpt" (click)="$event.stopPropagation()">
       <div class="flexRow selector__section" *ngIf="mapOpt.showMapSourceSelector && uiFlag.showMap">
-        <span class="flexRow radio__selector" (click)="changeMapSource('google')">
-          <span class="radio__btn" [class.radio__btn--active]="mapOpt.mapSource === 'google'"></span>
+        <span class="flexRow radioSelector" (click)="changeMapSource('google')">
+          <span class="radioBtn" [class.radioBtn--active]="mapOpt.mapSource === 'google'"></span>
           Google
         </span>
-        <span class="flexRow radio__selector" (click)="changeMapSource('baidu')">
-          <span class="radio__btn" [class.radio__btn--active]="mapOpt.mapSource === 'baidu'"></span>
+        <span class="flexRow radioSelector" (click)="changeMapSource('baidu')">
+          <span class="radioBtn" [class.radioBtn--active]="mapOpt.mapSource === 'baidu'"></span>
           Baidu
         </span>
       </div>
       <div class="flexRow selector__section" *ngIf="sysAccessRight <= 20 && uiFlag.showMap">
-        <span class="flexRow radio__selector" (click)="changeMapKind('normal')">
-          <span class="radio__btn" [class.radio__btn--active]="mapOpt.mapKind === 'normal'"></span>
+        <span class="flexRow radioSelector" (click)="changeMapKind('normal')">
+          <span class="radioBtn" [class.radioBtn--active]="mapOpt.mapKind === 'normal'"></span>
           路線圖
         </span>
-        <span class="flexRow radio__selector" (click)="changeMapKind('heat')">
-          <span class="radio__btn"[class.radio__btn--active]="mapOpt.mapKind === 'heat'" ></span>
+        <span class="flexRow radioSelector" (click)="changeMapKind('heat')">
+          <span class="radioBtn"[class.radioBtn--active]="mapOpt.mapKind === 'heat'" ></span>
           熱力圖
         </span>
       </div>

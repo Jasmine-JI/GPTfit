@@ -214,9 +214,9 @@
 
 .cloudRun-app-info {
   display: flex;
+  justify-content: center;
   align-items: center;
   flex-direction: column;
-  justify-content: center;
 }
 
 .coach-img {
@@ -225,9 +225,9 @@
 
 .home-connect-info {
   display: flex;
+  justify-content: center;
   align-items: center;
   flex-direction: column;
-  justify-content: center;
 }
 
 .ala-app-info {
@@ -337,7 +337,7 @@
 
 /*************************** media *************************/
 
-@media (min-width: 769px) {
+@media (min-width: 768px) {
   .date-picker {
     vertical-align: middle;
     display: inline-block;
@@ -386,7 +386,7 @@
 
 }
 
-@media(max-width: 768px) {
+@media(max-width: 767px) {
   .rwd__hide {
     display: none;
   }

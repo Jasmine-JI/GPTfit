@@ -13,7 +13,7 @@ export interface UserProfileInfo {
   description: number | string;
   email: string;
   fatRate: number;
-  gender: number;
+  gender: Sex;
   groupAccessRightList: Array<any>;
   handedness: number | string;
   heartRateBase: number;
@@ -51,3 +51,13 @@ export interface UserProfileInfo {
   weightTrainingStrengthLevel: number;
   wheelSize: number;
 }
+
+/**
+ * 性別
+ */
+export enum sex {
+  male,
+  female
+}
+
+export type Sex = sex.male | sex.female;
