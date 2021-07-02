@@ -78,6 +78,14 @@
             </div>
             <div>
               <span class="report-summaryData">
+                {{ info.age || 0 }}
+              </span>
+              <p class="report-summaryDescription">
+                {{ 'universal_userProfile_age' | translate }}
+              </p>
+            </div>
+            <div>
+              <span class="report-summaryData">
                 {{ info.bodyHeight || 0 | bodyHeightSibs: [userInfo.unit, true] }}
               </span>
               <p class="report-summaryDescription">
@@ -100,14 +108,7 @@
                 BMI
               </p>
             </div>
-            <div>
-              <span class="report-summaryData">
-                {{ info.age || 0 }}
-              </span>
-              <p class="report-summaryDescription">
-                {{ 'universal_userProfile_age' | translate }}
-              </p>
-            </div>
+          <!-- 先不顯示FFMI數據
             <div *ngIf="info?.FFMI">
               <span class="report-summaryData">
                 {{ info.FFMI || 0 }}
@@ -116,22 +117,7 @@
                 FFMI
               </p>
             </div>
-            <div>
-              <span class="report-summaryData">
-                {{ info.totalStep || 0 | thousandConversion: ' ' }}
-              </span>
-              <p class="report-summaryDescription">
-                {{ 'universal_activityData_activityTotalSteps' | translate }}
-              </p>
-            </div>
-            <div>
-              <span class="report-summaryData">
-                {{ info.totalDistanceMeters || 0 | distanceSibs: [userInfo.unit, true] }}
-              </span>
-              <p class="report-summaryDescription">
-                {{ 'universal_userProfile_walkingDistance' | translate }}
-              </p>
-            </div>
+          -->
           </div>
         </section>
         <section class="report-displaySection">
@@ -307,8 +293,8 @@
                         <span class="report-summaryData">{{ info.muscleRate || 0 | number: '1.0-1' }}%</span>
                       </tr>
                       <tr>
-                        <span class="data__annotation">FFMI</span><br/>
-                        <span class="report-summaryData">{{ info.FFMI || 0 | number: '1.0-1' }}</span>
+                        <span class="data__annotation">BMI</span><br/>
+                        <span class="report-summaryData">{{ info.BMI || 0 | number: '1.0-1' }}</span>
                       </tr>
                     </td>
                     <td class="table__col" style="text-align: start;">

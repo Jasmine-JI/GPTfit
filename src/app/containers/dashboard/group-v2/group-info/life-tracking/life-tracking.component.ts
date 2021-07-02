@@ -1394,7 +1394,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       'BMI',
       'fatRate',
       'muscleRate',
-      'FFMI',
+      // 'FFMI',
       'bodyAssessment'
     ];
 
@@ -1534,9 +1534,9 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     this.personTableOpt = [
       'name',
       'totalStep',
+      'BMI',
       'fatRate',
       'muscleRate',
-      'FFMI',
       'bodyAssessment'
     ];
 
