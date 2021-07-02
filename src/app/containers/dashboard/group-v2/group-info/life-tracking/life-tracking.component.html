@@ -73,6 +73,15 @@
         </div>
         <div>
           <span class="report-summaryData">
+            {{ (info.age / info.ageEffectCount) || 0 | number: '1.0-0' }}
+          </span>
+          <p class="report-summaryDescription">
+            {{ 'universal_activityData_perCapita' | translate }}
+            {{ 'universal_userProfile_age' | translate }}
+          </p>
+        </div>
+        <div>
+          <span class="report-summaryData">
             {{ (info.bodyHeight / info.bodyHeightEffectCount) || 0 | bodyHeightSibs: [userInfo.unit, true] }}
           </span>
           <p class="report-summaryDescription">
@@ -82,22 +91,18 @@
         </div>
         <div>
           <span class="report-summaryData">
-            {{ (info.bodyWeight / info.bodyWeightEffectCount) || 0 | weightSibs: [userInfo.unit, 0] }}
+            {{ 
+              [
+                (info.bodyHeight / info.bodyHeightEffectCount) || 0,
+                (info.bodyWeight / info.bodyWeightEffectCount) || 0
+              ] | bmi
+            }}
           </span>
           <p class="report-summaryDescription">
-            {{ 'universal_activityData_perCapita' | translate }}
-            {{ 'universal_userProfile_bodyWeight' | translate }}
+            {{ 'universal_activityData_perCapita' | translate }} BMI
           </p>
         </div>
-        <div>
-          <span class="report-summaryData">
-            {{ (info.age / info.ageEffectCount) || 0 | number: '1.0-0' }}
-          </span>
-          <p class="report-summaryDescription">
-            {{ 'universal_activityData_perCapita' | translate }}
-            {{ 'universal_userProfile_age' | translate }}
-          </p>
-        </div>
+      <!-- 先不顯示FFMI、人均步數與人均距離
         <div *ngIf="info?.FFMI">
           <span class="report-summaryData">
             {{ (info.FFMI / info.FFMIEffectCount) || 0 | number: '1.0-1' }}
@@ -124,6 +129,7 @@
             {{ 'universal_userProfile_walkingDistance' | translate }}
           </p>
         </div>
+      -->
       </div>
     </section>
     <section class="report-displaySection">
@@ -1136,6 +1142,7 @@
                   ></div>
                 </mat-cell>
               </ng-container>
+            <!--
               <ng-container matColumnDef="FFMI">
                 <mat-header-cell
                   *matHeaderCellDef
@@ -1185,6 +1192,7 @@
                   ></div>
                 </mat-cell>
               </ng-container>
+            -->
               <ng-container matColumnDef="bodyAssessment">
                 <mat-header-cell
                   *matHeaderCellDef
