@@ -441,7 +441,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       switch (res.resultCode) {
         case 400:  // 找不到該筆運動檔案或其他
           this.progress = 100;
-          console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+          console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
           this.router.navigateByUrl('/404');
           break;
         case 403: // 無權限觀看該運動檔案
@@ -454,7 +454,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           break;
         default:
           this.progress = 100;
-          console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+          console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
           this.utils.openAlert(errMsg);
           break;
       }
@@ -530,9 +530,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
               name: userProfile.nickname
             };
           } else if (res.processResult && res.processResult.resultCode !== 200) {
-            console.log(`${res.processResult.resultCode}: Api ${res.processResult.apiCode} ${res.processResult.resultMessage}`);
+            console.error(`${res.processResult.resultCode}: Api ${res.processResult.apiCode} ${res.processResult.resultMessage}`);
           } else {
-            console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+            console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
           }
     
         });
@@ -754,7 +754,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
       if (res.resultCode !== 200) {
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         const {info} = res;
         this.otherInfo.classInfo = {
@@ -794,9 +794,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
         this.checkGroupResLength('teacherDesc');
       } else if (res.processResult && res.processResult.resultCode !== 200) {
-        console.log(`${res.processResult.resultCode}: Api ${res.processResult.apiCode} ${res.processResult.resultMessage}`);
+        console.error(`${res.processResult.resultCode}: Api ${res.processResult.apiCode} ${res.processResult.resultMessage}`);
       } else {
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       }
 
       this.changeDetectorRef.markForCheck();
@@ -818,7 +818,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
     this.qrcodeService.getProductInfo(body).subscribe(res => {
       if (res.resultCode !== 200) {
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         const {productInfo} = res.info;
         // 暫時只顯示單一裝置，待有顯示多裝置需求再修改

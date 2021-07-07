@@ -313,7 +313,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
       if (res.processResult.resultCode !== 200) {
         this.utils.openAlert('Image upload error.');
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.initImgSetting();
 
@@ -715,7 +715,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
       if (res.resultCode !== 200) {
         this.utils.openAlert(errMsg);
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.groupService.setNormalMemberList(res.info.groupMemberInfo);
       }
@@ -734,7 +734,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
       if (this.currentGroupInfo.groupId !== '0-0-0-0-0-0') {
         this.utils.openAlert(errMsg);
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.saveDefaultGroupDetail();
       }
@@ -791,7 +791,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   handleCommerce(res: any) {
     if (res.resultCode !== 200) {
       this.utils.openAlert(errMsg);
-      console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+      console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
     } else {
 
       if (moment(res.info.commercePlanExpired).valueOf() < moment().valueOf()) {
@@ -816,9 +816,9 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   handleMemberList(childGroupRes: any, adminRes: any, memberRes: any) {
     if (childGroupRes.resultCode !== 200 || adminRes.resultCode !== 200 || memberRes.resultCode !== 200) {
       this.utils.openAlert(errMsg);
-      console.log(`${childGroupRes.resultCode}: Api ${childGroupRes.apiCode} ${childGroupRes.resultMessage}`);
-      console.log(`${adminRes.resultCode}: Api ${adminRes.apiCode} ${adminRes.resultMessage}`);
-      console.log(`${memberRes.resultCode}: Api ${memberRes.apiCode} ${memberRes.resultMessage}`);
+      console.error(`${childGroupRes.resultCode}: Api ${childGroupRes.apiCode} ${childGroupRes.resultMessage}`);
+      console.error(`${adminRes.resultCode}: Api ${adminRes.apiCode} ${adminRes.resultMessage}`);
+      console.error(`${memberRes.resultCode}: Api ${memberRes.apiCode} ${memberRes.resultMessage}`);
     } else {
 
       const groupLevel = this.utils.displayGroupLevel(this.currentGroupInfo.groupId);
@@ -1176,7 +1176,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.groupService.actionGroup(body).subscribe(res => {
       if (res.resultCode !== 200) {
         this.utils.openAlert(errMsg);
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
 
         if (this.currentGroupInfo.groupDetail.groupStatus === 1 || this.user.joinStatus === 2) {
@@ -1388,7 +1388,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091204
    */
   sceneryError() {
-    console.log('image Error');
+    console.error("Can't get group Scenery.");
     this.uiFlag.hideScenery = true;
   }
 

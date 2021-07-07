@@ -137,7 +137,7 @@ export class EditOfficialActivityComponent implements OnInit, OnDestroy {
 
       this.officialActivityService.getOfficialActivity(body).subscribe(res => {
         if (res.resultCode !== 200) {
-          console.log(`Error: ${res.resultMessage}`);
+          console.error(`Error: ${res.resultMessage}`);
         } else {
           this.pageSetting = res.activity;
         }
@@ -640,7 +640,7 @@ export class EditOfficialActivityComponent implements OnInit, OnDestroy {
 
     this.officialActivityService.editOfficialActivity(this.formData).subscribe(res => {
       if (res.resultCode !== 200) {
-        console.log(`Error: ${res.resultMessage}`);
+        console.error(`Error: ${res.resultMessage}`);
       } else {
         this.uiFlag.isSaving = false;
         this.uiFlag.isSaved = true;

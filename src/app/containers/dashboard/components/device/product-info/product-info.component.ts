@@ -103,7 +103,7 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
 
   // Check if device is phone or tablet
   get isMobile() {
-    return this.breakpointObserver.isMatched('(max-width: 768px)');
+    return this.breakpointObserver.isMatched('(max-width: 767px)');
   }
 
   ngOnInit() {
@@ -387,7 +387,7 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
 
     this.qrCodeService.getEquipmentLog(body).subscribe(res => {
       if (res.resultCode !== 200) {
-        console.log(`${res.apiCode}：${res.resultMessage}`);
+        console.error(`${res.apiCode}：${res.resultMessage}`);
       } else {
         this.logList = res.info.equipmentErrorLog;
         this.uiFlag.totalCount = res.info.totalCounts;

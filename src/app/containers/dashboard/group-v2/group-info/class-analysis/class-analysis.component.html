@@ -99,7 +99,7 @@
     <ng-container *ngIf="!uiFlag.isLoading && !uiFlag.noData; else noData;">
       <div class="functionBtnBar">
         <div>
-          <button class="alatech-btn alatech-btn--default activity-btn"
+          <button class="alatech-btn alatech-btn--default"
             title="{{'universal_operating_print' | translate}}"
             (click)="print()"
             *ngIf="uiFlag.isPreviewMode"
@@ -111,14 +111,14 @@
             *ngIf="!uiFlag.isPreviewMode"
             style="border: none; display: none;"
           >
-            <i class="icon-svg_web-icon_p1_013-share activity-info_icon_size"></i>
+            <i class="icon-svg_web-icon_p1_013-share"></i>
           </button>
           <a target="_blank"
             [href]="previewUrl"
             class="alatech-btn--default"
             *ngIf="!uiFlag.isPreviewMode"
           >
-            <i class="icon-svg_web-icon_p2_087-print activity-info_icon_size"></i>
+            <i class="icon-svg_web-icon_p2_087-print"></i>
           </a>
         </div>
       </div>
@@ -149,34 +149,34 @@
       <div style="display: flex; flex-direction: column;">
         <span class="ala-dashboard-title activity-title">{{'universal_activityData_summary' | translate}}</span>
         <div>
-          <div id="reportInfo" class="areaDescription"></div>
+          <div id="reportInfo" class="report-areaDescription"></div>
           <div style="display: flex; flex-direction: row; margin: 10px 0px; align-items: center;">
             <div class="activity-icon">
               <i [class]="activityDetail[0].activityInfoLayer.type | sportTypeIcon"></i>
             </div>
             <span style="margin-left: 15px; color: #919191; font-size: 26px;">{{fileInfo?.dispName}}</span>
           </div>
-          <div class="summaryArea">
-            <div class="summaryDataArea">
-              <span class="summaryData">{{avgActivityTime}}</span>
-              <p class="summaryDescription">{{'universal_adjective_avg' | translate}} {{'universal_activityData_time' | translate}}</p>
+          <div class="report-summaryArea">
+            <div>
+              <span class="report-summaryData">{{avgActivityTime}}</span>
+              <p class="report-summaryDescription">{{'universal_adjective_avg' | translate}} {{'universal_activityData_time' | translate}}</p>
             </div>
-            <div class="summaryDataArea" *ngIf="activityDetail[0].activityInfoLayer.type !== '5'">
-              <span class="summaryData" *ngIf="avgDistance >= 1000">{{avgDistance / 1000 | number:'1.0-1'}} km</span>
-              <span class="summaryData" *ngIf="avgDistance < 1000">{{avgDistance}} m</span>
-              <p class="summaryDescription">{{'universal_activityData_totalDistance' | translate}}</p>
+            <div *ngIf="activityDetail[0].activityInfoLayer.type !== '5'">
+              <span class="report-summaryData" *ngIf="avgDistance >= 1000">{{avgDistance / 1000 | number:'1.0-1'}} km</span>
+              <span class="report-summaryData" *ngIf="avgDistance < 1000">{{avgDistance}} m</span>
+              <p class="report-summaryDescription">{{'universal_activityData_totalDistance' | translate}}</p>
             </div>
-            <div class="summaryDataArea" *ngIf="activityDetail[0].activityInfoLayer.type !== '5'">
-              <span class="summaryData">{{avgSpeed | number:'1.0-1'}} km/h</span>
-              <p class="summaryDescription">{{'universal_activityData_avgSpeed' | translate}}</p>
+            <div *ngIf="activityDetail[0].activityInfoLayer.type !== '5'">
+              <span class="report-summaryData">{{avgSpeed | number:'1.0-1'}} km/h</span>
+              <p class="report-summaryDescription">{{'universal_activityData_avgSpeed' | translate}}</p>
             </div>
-            <div class="summaryDataArea">
-              <span class="summaryData">{{avgHR | number:'1.0-1'}} bpm</span>
-              <p class="summaryDescription">{{'universal_activityData_avgHr' | translate}}</p>
+            <div>
+              <span class="report-summaryData">{{avgHR | number:'1.0-1'}} bpm</span>
+              <p class="report-summaryDescription">{{'universal_activityData_avgHr' | translate}}</p>
             </div>
-            <div class="summaryDataArea">
-              <span class="summaryData">{{avgCalories | number:'1.0-1'}} cal</span>
-              <p class="summaryDescription">{{'universal_activityData_totalCalorie' | translate}}</p>
+            <div>
+              <span class="report-summaryData">{{avgCalories | number:'1.0-1'}} cal</span>
+              <p class="report-summaryDescription">{{'universal_activityData_totalCalorie' | translate}}</p>
             </div>
           </div>
         </div>
@@ -184,14 +184,14 @@
       <div style="display: flex; flex-direction: column;">
         <span class="ala-dashboard-title activity-title">{{'universal_activityData_exerciseAchievement' | translate}}</span>
         <div>
-          <p class="areaDescription">
+          <p class="report-areaDescription">
             {{'universal_group_allMembersReport' | translate}}
           </p>
           <div #container class="sportEfficiencyArea">
               <div class="HRZone">
                 <div class="sportEfficiency">
-                  <p class="chartTitle">{{'universal_activityData_hrZoneFallPoint' | translate}}</p>
-                  <p class="chartTitle">{{'universal_activityData_enduranceZone' | translate}} {{HRZoneThree}}%</p>
+                  <p class="report-chartTitle">{{'universal_activityData_hrZoneFallPoint' | translate}}</p>
+                  <p class="report-chartTitle">{{'universal_activityData_enduranceZone' | translate}} {{HRZoneThree}}%</p>
                 </div>
                 <div #classHRZoneChartTarget class="chart">
                   chart target
@@ -199,7 +199,7 @@
               </div>
               <div class="bodyQuality">
                 <div class="sportEfficiency">
-                  <p class="chartTitle">{{'universal_adjective_all' | translate}} {{'universal_group_member' | translate}} {{'universal_activityData_totalCalorie' | translate}}</p>
+                  <p class="report-chartTitle">{{'universal_adjective_all' | translate}} {{'universal_group_member' | translate}} {{'universal_activityData_totalCalorie' | translate}}</p>
                 </div>
                 <div #classCaloriesChartTarget class="chart">
                   chart target

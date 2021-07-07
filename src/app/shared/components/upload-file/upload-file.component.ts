@@ -162,7 +162,7 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
     this.isImgUpLoading = false;
   }
   loadImageFailed () {
-    console.log('Load failed');
+    console.error('Load failed');
   }
 
   rotateLeft() {

@@ -432,7 +432,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
                 }
               });
 
-              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
               break;
           }
         }
@@ -483,7 +483,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
               }
             });
 
-            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+            console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
         }
 

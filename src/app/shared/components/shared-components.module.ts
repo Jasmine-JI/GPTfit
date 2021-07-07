@@ -44,7 +44,6 @@ import { CustomSelectComponent } from './custom-material/custom-select/custom-se
 import { ReportFilterComponent } from './report-filter/report-filter.component';
 import { BottomSheetComponent } from './bottom-sheet/bottom-sheet.component';
 import { SportsReportComponent } from './sports-report/sports-report.component';
-import { LifeTrackingComponent } from './life-tracking/life-tracking.component';
 import { LoadingIconComponent } from './loading-icon/loading-icon.component';
 import { ImgCropperComponent } from './image-cropper/image-cropper.component';
 import { PrivacySettingDialogComponent } from './privacy-setting-dialog/privacy-setting-dialog.component';
@@ -111,7 +110,6 @@ import { RelativeColumnChartComponent } from './chart/relative-column-chart/rela
     ReportFilterComponent,
     BottomSheetComponent,
     SportsReportComponent,
-    LifeTrackingComponent,
     LoadingIconComponent,
     ImgCropperComponent,
     PrivacySettingDialogComponent,
@@ -164,7 +162,6 @@ import { RelativeColumnChartComponent } from './chart/relative-column-chart/rela
     CustomSelectComponent,
     ReportFilterComponent,
     SportsReportComponent,
-    LifeTrackingComponent,
     LoadingIconComponent,
     ImgCropperComponent,
     PrivacySettingDialogComponent,

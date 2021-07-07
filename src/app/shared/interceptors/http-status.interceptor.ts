@@ -41,7 +41,7 @@ export class HttpStatusInterceptor implements HttpInterceptor {
               if (parseBody.processResult && parseBody.processResult.resultCode === 401) {
                 const auth = this.injector.get(AuthService);
                 auth.logout();
-                console.log('Login identity error!');
+                console.error('Login identity error!');
               }
             }
 

@@ -358,7 +358,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
             default:
               const msgBody = 'Error!<br /> Please try again later.';
               this.showMsgBox(msgBody);
-              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
               break;
           }
 
@@ -502,7 +502,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
           default:
             const msgBody = 'Error!<br /> Please try again later.';
             this.showMsgBox(msgBody);
-            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+            console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
         }
 
@@ -558,7 +558,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
           default:
             const msgBody = `Error.<br />Please try again later.`;
             this.showMsgBox(msgBody);
-            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+            console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
         }
 
@@ -597,7 +597,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
               break;
             default:
               msgBody = 'Error!<br /> Please try again later.';
-              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
               this.showMsgBox(msgBody);
               break;
           }
@@ -649,7 +649,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
           default:
             const msgBody = 'Error!<br /> Please try again later.';
             this.showMsgBox(msgBody);
-            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+            console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
         }
 
@@ -696,7 +696,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
       let msgBody;
       if (res.processResult.resultCode !== 200) {
         msgBody = 'Error!<br /> Please try again later.';
-        console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+        console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
       } else {
         msgBody = this.translate.instant('universal_userAccount_passwordResetComplete');
         this.newToken = res.resetPassword.newToken;

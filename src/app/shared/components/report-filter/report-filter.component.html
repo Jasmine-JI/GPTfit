@@ -52,7 +52,7 @@
                 (click)="selectDateRange($event, 3)"
               >{{'universal_activityData_calendarSelect' | translate}}</span>
             </div>
-            <div style="display: flex; align-items: center; justify-content: center;">
+            <div class="flexCenter">
               <span
                 class="selector__tab__title"
                 [class.date__type--active]="date.type === 'custom'"
@@ -180,12 +180,12 @@
       <span class="condition__title">{{ 'universal_activityData_map' | translate }}</span>
       <div class="flexRow condition__content">
         <div class="flexRow radio__section map__child__block">
-          <span class="flexRow radio__selector" (click)="changeMapListType('all')">
-            <span class="radio__btn" [class.radio__btn--active]="uiFlag.mapListType === 'all'"></span>
+          <span class="flexRow radioSelector" (click)="changeMapListType('all')">
+            <span class="radioBtn" [class.radioBtn--active]="uiFlag.mapListType === 'all'"></span>
             <span>{{ 'universal_adjective_all' | translate }}</span>
           </span>
-          <span class="flexRow radio__selector" (click)="changeMapListType('routine')">
-            <span class="radio__btn" [class.radio__btn--active]="uiFlag.mapListType === 'routine'"></span>
+          <span class="flexRow radioSelector" (click)="changeMapListType('routine')">
+            <span class="radioBtn" [class.radioBtn--active]="uiFlag.mapListType === 'routine'"></span>
             <span>{{ 'universal_race_match' | translate }}</span>
           </span>
         </div>
@@ -255,15 +255,15 @@
       </div>
       <div
         class="flexRow condition__content"
-        style="align-items: center; cursor: pointer;"
+        style="align-items: center; width: fit-content; cursor: pointer;"
         (click)="changeCheckStatus()"
       >
-        <div style="border: 1px solid black; width: 20px; height: 20px;">
+        <div style="border: 1px solid var(--scale-0-255); width: 20px; height: 20px;">
           <ng-container *ngIf="reportConditionOpt.cloudRun.checkCompletion">
             <span class="flexCenter" style="height: 19px;">✔</span>
           </ng-container>
         </div>
-        <span style="margin-left: 5px;" for="checkCompletion">
+        <span style="margin-left: 5px;">
           {{ 'universal_operating_finished' | translate }} {{ 'universal_race_match' | translate }}
         </span>
       </div>

@@ -1,6 +1,6 @@
 <app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
 <div class="flexCol">
-  <span style="color: #157fcc; font-weight:700; font-size: 20px;" *ngIf="!uiFlag.isPreviewMode">
+  <span class="pageTitle" *ngIf="!uiFlag.isPreviewMode">
     {{'universal_activityData_sportReport' | translate}}
   </span>
   <div
@@ -22,10 +22,10 @@
               (click)="showPrivacyAlert()"
               *ngIf="uiFlag.isReportOwner && !uiFlag.isPreviewMode"
             >
-              <i class="icon-svg_web-icon_p1_013-share activity-info_icon_size"></i>
+              <i class="icon-svg_web-icon_p1_013-share"></i>
             </button>
             <button 
-              class="alatech-btn alatech-btn--default activity-btn"
+              class="alatech-btn alatech-btn--default"
               title="{{'universal_operating_print' | translate}}"
               (click)="print()"
               *ngIf="uiFlag.isPreviewMode"
@@ -34,56 +34,57 @@
             </button>
             <a 
               target="_blank"
-              [href]="previewUrl"
               class="functionBtn"
+              href="#"
+              (click)="navigatePreviewMode($event)"
               *ngIf="!uiFlag.isPreviewMode"
             >
-              <i class="icon-svg_web-icon_p2_087-print activity-info_icon_size"></i>
+              <i class="icon-svg_web-icon_p2_087-print"></i>
             </a>
           </div>
-          <section class="rowToColumn">
+          <section class="report-headerSection">
             <div class="flexRow" style="align-items: center;">
-              <i class="flexCenter sportTypeIcon" [class]="reportConditionOpt.sportType | sportTypeIcon" ></i>
-              <div class="flexCol" style="justify-content: center; margin-left: 20px; line-height: 1.2;">
-                <span class="smallFont">
+              <i class="flexCenter report-headerIcon" [class]="reportConditionOpt.sportType | sportTypeIcon" ></i>
+              <div class="flexCol  report-titleText">
+                <span class="report-dateAnnotation">
                   {{ 'universal_group_buildFromTime' | translate: {date: reportTime.endDate, range: reportTime.range} }}
                 </span>
                 <div class="flexRow" style="align-items: center;">
-                  <span class="headName">
+                  <span class="report-headerTitle">
                     {{ reportConditionOpt.sportType | sportType | translate }}
                     {{ 'universal_deviceSetting_activityTotals' | translate }}
                   </span>
                 </div>
               </div>
             </div>
-            <div class="flexCenter fileOwner">
+            <div class="flexCenter report-fileOwner">
               <div class="flexCol" style="margin-right: 10px;">
-                <span class="headName" >{{ userInfo.name }}</span>
+                <span class="report-headerTitle" >{{ userInfo.name }}</span>
               </div>
               <img 
-                class="reportImgIcon"
+                class="report-imgIcon"
                 [src]="userInfo.icon"
                 (error)="this.userInfo.icon='/assets/images/user2.png'"
               >
             </div>
           </section>
         </header>
-        <section class="displaySection">
-          <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+        <section class="report-displaySection">
+          <div class="flexRow cardTitle">
             <h6 class="cardSubtitle">{{ 'universal_activityData_summary' | translate }}</h6>
-            <span style="display: flex; align-items: center;" class="smallFont">
+            <span style="display: flex; align-items: center;" class="report-dateAnnotation">
               {{ 'universal_activityData_creatTime' | translate }} {{ reportTime.create }}
             </span>
           </div>
-          <div class="summaryArea" *ngIf="info">
-            <div class="summaryDataArea">
-              <span class="summaryData">{{ info.totalActivities || 0 }}</span>
-              <p class="summaryDescription">
+          <div class="report-summaryArea" *ngIf="info">
+            <div>
+              <span class="report-summaryData">{{ info.totalActivities || 0 }}</span>
+              <p class="report-summaryDescription">
                 {{ 'universal_activityData_totalActivity' | translate }}
               </p>
             </div>
-            <div class="summaryDataArea">
-              <span class="summaryData">
+            <div>
+              <span class="report-summaryData">
                 <ng-container *ngIf="reportConditionOpt.sportType !== sportCode.weightTrain">
                   {{ info.totalSecond || 0 | sportTime: [true, false] }}
                 </ng-container>
@@ -91,7 +92,7 @@
                   {{ info.totalActivitySecond || 0 | sportTime: [true, false] }}
                 </ng-container>
               </span>
-              <p class="summaryDescription">
+              <p class="report-summaryDescription">
                 <ng-container *ngIf="reportConditionOpt.sportType !== sportCode.weightTrain">
                   {{ 'universal_activityData_totalTime' | translate }}
                 </ng-container>
@@ -100,8 +101,8 @@
                 </ng-container>
               </p>
             </div>
-            <div class="summaryDataArea">
-              <span class="summaryData">
+            <div>
+              <span class="report-summaryData">
                 <ng-container *ngIf="reportConditionOpt.sportType !== sportCode.weightTrain">
                   {{ (info.totalSecond / info.totalActivities) || 0 | sportTime: [true, false] }}
                 </ng-container>
@@ -109,7 +110,7 @@
                   {{ (info.totalActivitySecond / info.totalActivities) || 0 | sportTime: [true, false] }}
                 </ng-container>
               </span>
-              <p class="summaryDescription">
+              <p class="report-summaryDescription">
                 <ng-container *ngIf="reportConditionOpt.sportType !== sportCode.weightTrain">
                   {{ 'universal_adjective_avg' | translate }} {{ 'universal_activityData_totalTime' | translate }}
                 </ng-container>
@@ -118,71 +119,71 @@
                 </ng-container>
               </p>
             </div>
-            <div class="summaryDataArea">
+            <div>
               <div>
-                <span class="summaryData">{{ info.calories || 0 | thousandConversion | number: '1.0-1' }}</span>
-                <span class="infoDataUnit">{{ info.calories >= 1000 ? 'kcal' : 'cal' }}</span>
+                <span class="report-summaryData">{{ info.calories || 0 | thousandConversion | number: '1.0-1' }}</span>
+                <span class="report-infoDataUnit">{{ info.calories >= 1000 ? 'kcal' : 'cal' }}</span>
               </div>
-              <p class="summaryDescription">{{ 'universal_activityData_totalCalories' | translate }}</p>
+              <p class="report-summaryDescription">{{ 'universal_activityData_totalCalories' | translate }}</p>
             </div>
-            <div class="summaryDataArea">
+            <div>
               <div>
-                <span class="summaryData">
+                <span class="report-summaryData">
                   {{ (info.calories / info.totalActivities) || 0 | thousandConversion | number: '1.0-1' }}
                 </span>
-                <span class="infoDataUnit">
+                <span class="report-infoDataUnit">
                   {{ ((info.calories / info.totalActivities) || 0) >= 1000 ? 'kcal' : 'cal' }}
                 </span>
               </div>
-              <p class="summaryDescription">
+              <p class="report-summaryDescription">
                 {{'universal_adjective_avg' | translate}} {{'universal_activityData_totalCalorie' | translate}}
               </p>
             </div>
             <div
-              class="summaryDataArea"
+              class="report-summaryDataArea"
               *ngIf="[sportCode.run, sportCode.aerobic, sportCode.ball].includes(reportConditionOpt.sportType)"
             >
               <div>
-                <span class="summaryData">
+                <span class="report-summaryData">
                   {{
                     (info?.avgHeartRateBpm / avgDataRecord?.avgHeartRateBpm) || 0 | number: '1.0-0'
                   }}
                 </span>
-                <span class="infoDataUnit">bpm</span>
+                <span class="report-infoDataUnit">bpm</span>
               </div>
-              <p class="summaryDescription">
+              <p class="report-summaryDescription">
                 {{ 'universal_adjective_avg' | translate }} {{ 'universal_activityData_hr' | translate }} 
               </p>
             </div>
-            <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.all">
+            <div *ngIf="reportConditionOpt.sportType === sportCode.all">
               <div>
-                <span class="summaryData">
+                <span class="report-summaryData">
                   {{ info.totalBenefitSecond || 0 | sportTime: [false, false] }}
                 </span>
               </div>
-              <p class="summaryDescription">
+              <p class="report-summaryDescription">
                 {{ 'universal_activityData_benefitime' | translate }} 
               </p>
             </div>
-            <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.all">
+            <div *ngIf="reportConditionOpt.sportType === sportCode.all">
               <div>
-                <span class="summaryData">
+                <span class="report-summaryData">
                   {{ info.pai || 0 | number: '1.0-1' }}
                 </span>
               </div>
-              <p class="summaryDescription">
+              <p class="report-summaryDescription">
                 {{ 'universal_activityData_pai' | translate }} 
               </p>
             </div>
             <div
-              class="summaryDataArea"
+              class="report-summaryDataArea"
               *ngIf="[sportCode.run, sportCode.cycle, sportCode.swim, sportCode.row, sportCode.ball].includes(reportConditionOpt.sportType)"
             >
               <div>
-                <span class="summaryData">
+                <span class="report-summaryData">
                   {{ info.totalDistanceMeters || 0 | distanceSibs: [userInfo.unit, false] }}
                 </span>
-                <span class="infoDataUnit">
+                <span class="report-infoDataUnit">
                   <ng-container *ngIf="userInfo.unit === unitEnum.metric">
                     {{ info.totalDistanceMeters >= 1000 ? 'km' : 'm' }}
                   </ng-container>
@@ -191,19 +192,19 @@
                   </ng-container>
                 </span>
               </div>
-              <p class="summaryDescription">
+              <p class="report-summaryDescription">
                 {{ 'universal_activityData_distance' | translate }} 
               </p>
             </div>
             <div
-              class="summaryDataArea"
+              class="report-summaryDataArea"
               *ngIf="[sportCode.run, sportCode.cycle, sportCode.swim, sportCode.row, sportCode.ball].includes(reportConditionOpt.sportType)"
             >
               <div>
-                <span class="summaryData">
+                <span class="report-summaryData">
                   {{ (info.totalDistanceMeters / info.totalActivities) || 0 | distanceSibs: [userInfo.unit, false] }}
                 </span>
-                <span class="infoDataUnit">
+                <span class="report-infoDataUnit">
                   <ng-container *ngIf="userInfo.unit === unitEnum.metric">
                     {{ (info.totalDistanceMeters / info.totalActivities) || 0 >= 1000 ? 'km' : 'm' }}
                   </ng-container>
@@ -212,16 +213,16 @@
                   </ng-container>
                 </span>
               </div>
-              <p class="summaryDescription">
+              <p class="report-summaryDescription">
                 {{ 'universal_activityData_avgDistance' | translate }} 
               </p>
             </div>
-            <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.run">
+            <div *ngIf="reportConditionOpt.sportType === sportCode.run">
               <div>
-                <span class="summaryData">
+                <span class="report-summaryData">
                   {{ info.elevGain || 0 | distanceSibs: [userInfo.unit, false] }}
                 </span>
-                <span class="infoDataUnit">
+                <span class="report-infoDataUnit">
                   <ng-container *ngIf="userInfo.unit === unitEnum.metric">
                     {{ info.elevGain >= 1000 ? 'km' : 'm' }}
                   </ng-container>
@@ -230,219 +231,219 @@
                   </ng-container>
                 </span>
               </div>
-              <p class="summaryDescription">
+              <p class="report-summaryDescription">
                 {{ 'universal_activityData_climb' | translate }} 
               </p>
             </div>
-            <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.weightTrain">
+            <div *ngIf="reportConditionOpt.sportType === sportCode.weightTrain">
               <div>
-                <span class="summaryData">
+                <span class="report-summaryData">
                   {{ info.totalWeightKg | weightSibs: [userInfo.unit, 1] }}
                 </span>
-                <span class="infoDataUnit">
+                <span class="report-infoDataUnit">
                   {{ userInfo.unit === unitEnum.metric ? 'kg' : 'lb' }}
                 </span>
               </div>
-              <p class="summaryDescription">
+              <p class="report-summaryDescription">
                 {{ 'universal_activityData_limit_activiyTotalWeight' | translate }} 
               </p>
             </div>
-            <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.run">
-              <span class="summaryData">
+            <div *ngIf="reportConditionOpt.sportType === sportCode.run">
+              <span class="report-summaryData">
                 {{ (info?.avgSpeed / avgDataRecord?.avgSpeed) || 0 | sportPaceSibs: [sportCode.run, userInfo.unit, 1] }}
               </span>
-              <p class="summaryDescription">
+              <p class="report-summaryDescription">
                 <ng-container *ngIf="userInfo.unit === unitEnum.metric">{{ 'universal_activityData_avgKilometerPace' | translate }}</ng-container>
                 <ng-container *ngIf="userInfo.unit === unitEnum.imperial">{{ 'universal_activityData_avgMilePace' | translate }}</ng-container>
               </p>
             </div>
             <div
-              class="summaryDataArea"
+              class="report-summaryDataArea"
               *ngIf="[sportCode.cycle, sportCode.ball].includes(reportConditionOpt.sportType)"
             >
               <div>
-                <span class="summaryData">
+                <span class="report-summaryData">
                   {{ (info?.avgSpeed / avgDataRecord?.avgSpeed) || 0 | speedSibs: [userInfo.unit, 1] }}
                 </span>
-                <span class="infoDataUnit">
+                <span class="report-infoDataUnit">
                   {{ userInfo.unit === unitEnum.metric ? 'km/h' : 'mi/h' }}
                 </span>
               </div>
-              <p class="summaryDescription">
+              <p class="report-summaryDescription">
                 {{ 'universal_adjective_avg' | translate }} {{ 'universal_activityData_speed' | translate }} 
               </p>
             </div>
-            <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.swim">
-              <span class="summaryData">
+            <div *ngIf="reportConditionOpt.sportType === sportCode.swim">
+              <span class="report-summaryData">
                 {{ (info?.avgSpeed / avgDataRecord?.avgSpeed) || 0 | sportPaceSibs: [sportCode.swim, userInfo.unit, 1] }}
               </span>
-              <p class="summaryDescription">
+              <p class="report-summaryDescription">
                 {{ 'universal_adjective_avg' | translate }} {{ 'universal_activityData_100mPace' | translate }}
               </p>
             </div>
-            <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.row">
-              <span class="summaryData">
+            <div *ngIf="reportConditionOpt.sportType === sportCode.row">
+              <span class="report-summaryData">
                 {{ (info?.avgSpeed / avgDataRecord?.avgSpeed) || 0 | sportPaceSibs: [sportCode.row, userInfo.unit, 1] }}
               </span>
-              <p class="summaryDescription">
+              <p class="report-summaryDescription">
                 {{ 'universal_adjective_avg' | translate }} {{ 'universal_activityData_500mPace' | translate }} 
               </p>
             </div>
-            <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.run">
+            <div *ngIf="reportConditionOpt.sportType === sportCode.run">
               <div>
-                <span class="summaryData">
+                <span class="report-summaryData">
                   {{ (info?.runAvgCadence / avgDataRecord?.runAvgCadence) || 0 | number: '1.0-1' }}
                 </span>
-                <span class="infoDataUnit">spm</span>
+                <span class="report-infoDataUnit">spm</span>
               </div>
-              <p class="summaryDescription">
+              <p class="report-summaryDescription">
                 {{ 'universal_activityData_avgStepCadence' | translate }}
               </p>
             </div>
-            <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.cycle">
+            <div *ngIf="reportConditionOpt.sportType === sportCode.cycle">
               <div>
-                <span class="summaryData">
+                <span class="report-summaryData">
                   {{ (info?.cycleAvgCadence / avgDataRecord?.cycleAvgCadence) || 0 | number: '1.0-1' }}
                 </span>
-                <span class="infoDataUnit">rpm</span>
+                <span class="report-infoDataUnit">rpm</span>
               </div>
-              <p class="summaryDescription">
+              <p class="report-summaryDescription">
                 {{ 'universal_adjective_avg' | translate }} {{ 'universal_activityData_CyclingCadence' | translate }} 
               </p>
             </div>
-            <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.swim">
+            <div *ngIf="reportConditionOpt.sportType === sportCode.swim">
               <div>
-                <span class="summaryData">
+                <span class="report-summaryData">
                   {{ (info?.swimAvgCadence / avgDataRecord?.swimAvgCadence) || 0 | number: '1.0-1' }}
                 </span>
-                <span class="infoDataUnit">rpm</span>
+                <span class="report-infoDataUnit">rpm</span>
               </div>
-              <p class="summaryDescription">
+              <p class="report-summaryDescription">
                 {{ 'universal_adjective_avg' | translate }} {{ 'universal_activityData_swimCadence' | translate }} 
               </p>
             </div>
-            <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.row">
+            <div *ngIf="reportConditionOpt.sportType === sportCode.row">
               <div>
-                <span class="summaryData">
+                <span class="report-summaryData">
                   {{ (info?.rowingAvgCadence / avgDataRecord?.rowingAvgCadence) || 0 | number: '1.0-1' }}
                 </span>
-                <span class="infoDataUnit">rpm</span>
+                <span class="report-infoDataUnit">rpm</span>
               </div>
-              <p class="summaryDescription">
+              <p class="report-summaryDescription">
                 {{ 'universal_adjective_avg' | translate }} {{ 'universal_activityData_rowCadence' | translate }} 
               </p>
             </div>
-            <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.row">
+            <div *ngIf="reportConditionOpt.sportType === sportCode.row">
               <div>
-                <span class="summaryData">
+                <span class="report-summaryData">
                   {{ (info?.rowingAvgWatt / avgDataRecord?.rowingAvgWatt) || 0 | number: '1.0-1' }}
                 </span>
-                <span class="infoDataUnit">watt</span>
+                <span class="report-infoDataUnit">watt</span>
               </div>
-              <p class="summaryDescription">
+              <p class="report-summaryDescription">
                 {{ 'universal_adjective_avg' | translate }} {{ 'universal_activityData_power' | translate }} 
               </p>
             </div>
             <ng-container *ngIf="reportConditionOpt.sportType === sportCode.ball">
-              <div class="summaryDataArea">
+              <div>
                 <div>
-                  <span class="summaryData">
+                  <span class="report-summaryData">
                     {{ info.totalPlaneAcceleration | number: '1.0-0' }}
                   </span>
-                  <span class="infoDataUnit">g</span>
+                  <span class="report-infoDataUnit">g</span>
                 </div>
-                <p class="summaryDescription">
+                <p class="report-summaryDescription">
                   {{ 'universal_adjective_accumulation' | translate }}
                   {{ 'universal_activityData_planarAcceleration' | translate }} 
                 </p>
               </div>
-              <div class="summaryDataArea" *ngIf="userInfo.accessRight <= 20">
+              <div *ngIf="userInfo.accessRight <= 20">
                 <div>
-                  <span class="summaryData">
+                  <span class="report-summaryData">
                     {{ info.totalPlusGforceX | number: '1.0-1' }}
                   </span>
-                  <span class="infoDataUnit">g</span>
+                  <span class="report-infoDataUnit">g</span>
                 </div>
-                <p class="summaryDescription">
+                <p class="report-summaryDescription">
                   {{ 'universal_activityData_totalRight' | translate }} 
                 </p>
               </div>
-              <div class="summaryDataArea" *ngIf="userInfo.accessRight <= 20">
+              <div *ngIf="userInfo.accessRight <= 20">
                 <div>
-                  <span class="summaryData">
+                  <span class="report-summaryData">
                     {{ info.totalMinusGforceX | number: '1.0-1' }}
                   </span>
-                  <span class="infoDataUnit">g</span>
+                  <span class="report-infoDataUnit">g</span>
                 </div>
-                <p class="summaryDescription">
+                <p class="report-summaryDescription">
                   {{ 'universal_activityData_totalLeft' | translate }} 
                 </p>
               </div>
-              <div class="summaryDataArea" *ngIf="userInfo.accessRight <= 20">
+              <div *ngIf="userInfo.accessRight <= 20">
                 <div>
-                  <span class="summaryData">
+                  <span class="report-summaryData">
                     {{ info.totalPlusGforceY | number: '1.0-1' }}
                   </span>
-                  <span class="infoDataUnit">g</span>
+                  <span class="report-infoDataUnit">g</span>
                 </div>
-                <p class="summaryDescription">
+                <p class="report-summaryDescription">
                   {{ 'universal_activityData_totalAcceleration' | translate }} 
                 </p>
               </div>
-              <div class="summaryDataArea" *ngIf="userInfo.accessRight <= 20">
+              <div *ngIf="userInfo.accessRight <= 20">
                 <div>
-                  <span class="summaryData">
+                  <span class="report-summaryData">
                     {{ info.totalMinusGforceY | number: '1.0-1' }}
                   </span>
-                  <span class="infoDataUnit">g</span>
+                  <span class="report-infoDataUnit">g</span>
                 </div>
-                <p class="summaryDescription">
+                <p class="report-summaryDescription">
                   {{ 'universal_activityData_totalImpact' | translate }} 
                 </p>
               </div>
-              <div class="summaryDataArea">
+              <div>
                 <div>
-                  <span class="summaryData">
+                  <span class="report-summaryData">
                     {{ info.totalPlusGforceZ | number: '1.0-1' }}
                   </span>
-                  <span class="infoDataUnit">g</span>
+                  <span class="report-infoDataUnit">g</span>
                 </div>
-                <p class="summaryDescription">
+                <p class="report-summaryDescription">
                   {{ 'universal_activityData_totalJump' | translate }} 
                 </p>
               </div>
-              <div class="summaryDataArea">
+              <div>
                 <div>
-                  <span class="summaryData">
+                  <span class="report-summaryData">
                     {{ info.totalMinusGforceZ | number: '1.0-1' }}
                   </span>
-                  <span class="infoDataUnit">g</span>
+                  <span class="report-infoDataUnit">g</span>
                 </div>
-                <p class="summaryDescription">
+                <p class="report-summaryDescription">
                   {{ 'universal_activityData_totalFloorImpact' | translate }} 
                 </p>
               </div>
             </ng-container>
           </div>
         </section>
-        <section class="displaySection" *ngIf="reportConditionOpt.sportType === sportCode.all">
+        <section class="report-displaySection" *ngIf="reportConditionOpt.sportType === sportCode.all">
           <div class="cardTitle">
             <h6 class="cardSubtitle">{{'universal_activityData_activityAnalysis' | translate}}</h6>
           </div>
-          <p class="areaDescription">{{'universal_activityData_activityAnalysisReportDescription' | translate}}</p>
-          <div class="flexRow media-768-col">
-            <div class="flexCol ringChart">
+          <p class="report-areaDescription">{{'universal_activityData_activityAnalysisReportDescription' | translate}}</p>
+          <div class="flexRow report-rerangeChartLayout">
+            <div class="flexCol report-ringChart">
               <div class="flexRow" style="align-items: flex-end;">
-                <div class="flexCol ringChartSection">
-                  <span class="ringChartTitle">{{'universal_activityData_amountOfQuantity' | translate}}</span>
+                <div class="flexCol report-ringChartSection">
+                  <span class="report-ringChartTitle">{{'universal_activityData_amountOfQuantity' | translate}}</span>
                   <app-ring-chart
                     [data]="chart.ring.stroke"
                     [selectType]="uiFlag.analysisType"
                     *ngIf="uiFlag.progress === 100"
                   ></app-ring-chart>
                 </div>
-                <div class="flexCol ringChartSection">
-                  <span class="ringChartTitle">{{'universal_activityData_proportionOfTime' | translate}}</span>
+                <div class="flexCol report-ringChartSection">
+                  <span class="report-ringChartTitle">{{'universal_activityData_proportionOfTime' | translate}}</span>
                   <app-ring-chart
                     [data]="chart.ring.time"
                     [selectType]="uiFlag.analysisType"
@@ -452,156 +453,156 @@
               </div>
               <div class="flexRow" style="flex-wrap: wrap;">
                 <div
-                  class="flexCol perTypeInfo"
+                  class="flexCol report-perTypeInfo"
                   *ngIf="chart.ring.stroke[sportCode.run - 1] !== 0"
                   (click)="assignAnalysisType(sportCode.run)"
                 >
                   <div class="flexRow">
                     <span
-                      class="dot"
+                      class="report-dot"
                       [style.color]="[sportCode.all, sportCode.run].includes(uiFlag.analysisType) ? '#ea5757' : '#9e9e9e'"
                     >●</span>
-                    <span class="perTypeTitle">
+                    <span class="report-perTypeTitle">
                       {{'universal_activityData_run' | translate}}
                       {{chart.ring.stroke[sportCode.run - 1]}}
                       {{'universal_activityData_numberOf' | translate}}
                     </span>
                   </div>
-                  <span class="perTypeAvgTime">
+                  <span class="report-perTypeAvgTime">
                     {{'universal_activityData_limit_totalTime' | translate}}
                     {{chart.ring.time[sportCode.run - 1] | sportTime}}
                   </span>
                 </div>
                 <div
-                  class="flexCol perTypeInfo"
+                  class="flexCol report-perTypeInfo"
                   *ngIf="chart.ring.stroke[sportCode.cycle - 1] !== 0"
                   (click)="assignAnalysisType(sportCode.cycle)"
                 >
                   <div class="flexRow">
                     <span
-                      class="dot"
+                      class="report-dot"
                       [style.color]="[sportCode.all, sportCode.cycle].includes(uiFlag.analysisType) ? '#ff9a22' : '#9e9e9e'"
                     >●</span>
-                    <span class="perTypeTitle">
+                    <span class="report-perTypeTitle">
                       {{'universal_activityData_cycle' | translate}}
                       {{chart.ring.stroke[sportCode.cycle - 1]}}
                       {{'universal_activityData_numberOf' | translate}}
                     </span>
                   </div>
-                  <span class="perTypeAvgTime">
+                  <span class="report-perTypeAvgTime">
                     {{'universal_activityData_limit_totalTime' | translate}}
                     {{chart.ring.time[sportCode.cycle - 1] | sportTime}}
                   </span>
                 </div>
                 <div
-                  class="flexCol perTypeInfo"
+                  class="flexCol report-perTypeInfo"
                   *ngIf="chart.ring.stroke[sportCode.weightTrain - 1] !== 0"
                   (click)="assignAnalysisType(sportCode.weightTrain)"
                 >
                   <div class="flexRow">
                     <span
-                      class="dot"
+                      class="report-dot"
                       [style.color]="[sportCode.all, sportCode.weightTrain].includes(uiFlag.analysisType) ? '#f9cc3d' : '#9e9e9e'"
                     >●</span>
-                    <span class="perTypeTitle">
+                    <span class="report-perTypeTitle">
                       {{'universal_activityData_weightTraining' | translate}}
                       {{chart.ring.stroke[sportCode.weightTrain - 1]}}
                       {{'universal_activityData_numberOf' | translate}}
                     </span>
                   </div>
-                  <span class="perTypeAvgTime">
+                  <span class="report-perTypeAvgTime">
                     {{'universal_activityData_limit_totalTime' | translate}}
                     {{chart.ring.time[sportCode.weightTrain - 1] | sportTime}}
                   </span>
                 </div>
                 <div 
-                  class="flexCol perTypeInfo"
+                  class="flexCol report-perTypeInfo"
                   *ngIf="chart.ring.stroke[sportCode.swim - 1] !== 0"
                   (click)="assignAnalysisType(sportCode.swim)"
                 >
                   <div class="flexRow">
                     <span
-                      class="dot"
+                      class="report-dot"
                       [style.color]="[sportCode.all, sportCode.swim].includes(uiFlag.analysisType) ? '#cfef4b' : '#9e9e9e'"
                     >●</span>
-                    <span class="perTypeTitle">
+                    <span class="report-perTypeTitle">
                       {{'universal_activityData_swin' | translate}}
                       {{chart.ring.stroke[sportCode.swim - 1]}}
                       {{'universal_activityData_numberOf' | translate}}
                     </span>
                   </div>
-                  <span class="perTypeAvgTime">
+                  <span class="report-perTypeAvgTime">
                     {{'universal_activityData_limit_totalTime' | translate}}
                     {{chart.ring.time[sportCode.swim - 1] | sportTime}}
                   </span>
                 </div>
                 <div
-                  class="flexCol perTypeInfo"
+                  class="flexCol report-perTypeInfo"
                   *ngIf="chart.ring.stroke[sportCode.aerobic - 1] !== 0"
                   (click)="assignAnalysisType(sportCode.aerobic)"
                 >
                   <div class="flexRow">
                     <span
-                      class="dot"
+                      class="report-dot"
                       [style.color]="[sportCode.all, sportCode.aerobic].includes(uiFlag.analysisType) ? '#75f25f' : '#9e9e9e'"
                     >●</span>
-                    <span class="perTypeTitle">
+                    <span class="report-perTypeTitle">
                       {{'universal_activityData_aerobic' | translate}}
                       {{chart.ring.stroke[sportCode.aerobic - 1]}}
                       {{'universal_activityData_numberOf' | translate}}
                     </span>
                   </div>
-                  <span class="perTypeAvgTime">
+                  <span class="report-perTypeAvgTime">
                     {{'universal_activityData_limit_totalTime' | translate}}
                     {{chart.ring.time[sportCode.aerobic - 1] | sportTime}}
                   </span>
                 </div>
                 <div
-                  class="flexCol perTypeInfo"
+                  class="flexCol report-perTypeInfo"
                   *ngIf="chart.ring.stroke[sportCode.row - 1] !== 0"
                   (click)="assignAnalysisType(sportCode.row)"
                 >
                   <div class="flexRow">
                     <span
-                      class="dot"
+                      class="report-dot"
                       [style.color]="[sportCode.all, sportCode.row].includes(uiFlag.analysisType) ? '#72e8b0' : '#9e9e9e'"
                     >●</span>
-                    <span class="perTypeTitle">
+                    <span class="report-perTypeTitle">
                       {{'universal_sportsName_boating' | translate}}
                       {{chart.ring.stroke[sportCode.row - 1]}}
                       {{'universal_activityData_numberOf' | translate}}
                     </span>
                   </div>
-                  <span class="perTypeAvgTime">
+                  <span class="report-perTypeAvgTime">
                     {{'universal_activityData_limit_totalTime' | translate}}
                     {{chart.ring.time[sportCode.row - 1] | sportTime}}
                   </span>
                 </div>
                 <div 
-                  class="flexCol perTypeInfo"
+                  class="flexCol report-perTypeInfo"
                   *ngIf="chart.ring.stroke[sportCode.ball - 1] !== 0"
                   (click)="assignAnalysisType(sportCode.ball)"
                 >
                   <div class="flexRow">
                     <span
-                      class="dot"
+                      class="report-dot"
                       [style.color]="[sportCode.all, sportCode.ball].includes(uiFlag.analysisType) ? '#6bebf9' : '#9e9e9e'"
                     >●</span>
-                    <span class="perTypeTitle">
+                    <span class="report-perTypeTitle">
                       {{'universal_activityData_ballSports' | translate}}
                       {{chart.ring.stroke[sportCode.ball - 1]}}
                       {{'universal_activityData_numberOf' | translate}}
                     </span>
                   </div>
-                  <span class="perTypeAvgTime">
+                  <span class="report-perTypeAvgTime">
                     {{'universal_adjective_avg' | translate}}
                     {{chart.ring.time[sportCode.ball - 1] | sportTime}}
                   </span>
                 </div>
               </div>
             </div>
-            <div class="flexCol distributionChartWidth">
-              <span class="reportTypeTitle">
+            <div class="flexCol report-distributionChartWidth">
+              <span class="report-timeRangeType">
                 {{'universal_activityData_activityEffectivenessMap' | translate}}
                 <span *ngIf="reportTime.type === 1">({{'universal_time_day' | translate}})</span>
                 <span *ngIf="reportTime.type === 2">({{'universal_time_week' | translate}})</span>
@@ -613,39 +614,40 @@
                 [selectType]="uiFlag.analysisType"
                 [HRRange]="[60, 190]"
                 *ngIf="uiFlag.progress === 100"
-                class="distributionChart"
+                class="report-distributionChart"
               >
               </app-distribution-chart>
             </div>
           </div>
         </section>
         <section
-          class="displaySection"
+          class="report-displaySection"
           *ngIf="reportConditionOpt.sportType !== sportCode.weightTrain"
         >
           <div class="flexCol">
             <div class="cardTitle">
               <h6 class="cardSubtitle">{{'universal_activityData_hrZone' | translate}}</h6>
             </div>
-            <div class="flexRow media-768-col">
-              <div class="flexCol zoneChart">
-                <p class="areaDescription">
+            <div class="flexRow report-rerangeChartLayout">
+              <div class="flexCol report-zoneChart">
+                <p class="report-areaDescription">
                   {{ 'universal_activityData_hrStatisticsDuringThePeriod' | translate: {'number': info.totalActivities } }}
                 </p>
                 <div>
                   <div>
-                    <p class="chartTitle">{{'universal_group_hrZoneLandingPoint' | translate}}</p>
+                    <p class="report-chartTitle">{{'universal_group_hrZoneLandingPoint' | translate}}</p>
                   </div>
                   <div>
                     <app-hrzone-chart
                       [data]="chart.hrzone"
                       [type]="'mixHrZone'"
+                      [isPreviewMode]="uiFlag.isPreviewMode"
                       *ngIf="uiFlag.progress === 100"
                     ></app-hrzone-chart>
                   </div>
                 </div>
               </div>
-              <div class="infoChart">
+              <div class="report-infoChart">
                 <app-hrzone-info
                   [hrZoneRange]="chart.hrInfo"
                   *ngIf="uiFlag.progress === 100"
@@ -654,20 +656,21 @@
             </div>
           </div>
         </section>
-        <section class="displaySection" *ngIf="reportConditionOpt.sportType !== sportCode.weightTrain">
+        <section class="report-displaySection" *ngIf="reportConditionOpt.sportType !== sportCode.weightTrain">
           <div class="flexCol">
             <div class="cardTitle">
               <h6 class="cardSubtitle">
                 {{'universal_activityData_hrZone' | translate}} {{'universal_activityData_trend' | translate}}
               </h6>
             </div>
-            <p class="areaDescription">
+            <p class="report-areaDescription">
               {{'universal_activityData_hrZoneTrendReportDescription' | translate}}
             </p>
             <div>
               <app-stack-column-chart
                 [perZoneData]="chart.hrZoneTrend"
                 [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
+                [isPreviewMode]="uiFlag.isPreviewMode"
                 *ngIf="uiFlag.progress === 100"
               >
               </app-stack-column-chart>
@@ -675,26 +678,26 @@
           </div>
         </section>
         <ng-container *ngIf="reportConditionOpt.sportType === sportCode.cycle && !uiFlag.noFtpData">
-          <section class="displaySection">
+          <section class="report-displaySection">
             <div class="flexCol">
               <div class="cardTitle">
                 <h6 class="cardSubtitle">{{ 'universal_activityData_ftpZone' | translate }}</h6>
               </div>
-              <div class="flexRow media-768-col">
-                <div class="zoneChart" style="display: flex; align-items: center;">
+              <div class="flexRow report-rerangeChartLayout">
+                <div class="report-zoneChart" style="display: flex; align-items: center;">
                   <app-threshold-chart
                     [data]="chart.thresholdZone"
                     [type]="'mixFtpZone'"
                     (checkData)="this.uiFlag.noFtpData = $event;"
                   ></app-threshold-chart>
                 </div>
-                <div class="infoChart">
+                <div class="report-infoChart">
                   <app-threshold-info></app-threshold-info>
                 </div>
               </div>
             </div>
           </section>
-          <section class="displaySection">
+          <section class="report-displaySection">
             <div class="flexCol">
               <div class="cardTitle">
                 <h6 class="cardSubtitle">
@@ -712,10 +715,9 @@
             </div>
           </section>
         </ng-container>
-
         <section *ngIf="reportConditionOpt.sportType === sportCode.weightTrain">
           <div class="flexCol">
-            <div class="cardTitle flexRow haveOptBtn">
+            <div class="cardTitle flexRow report-haveOptBtn">
               <h6 class="cardSubtitle">
                 {{'universal_activityData_weightTrainingEffectiveness' | translate}}
               </h6>
@@ -723,15 +725,15 @@
                 <i class="icon-svg_web-icon_p1_001-setting"></i>
               </button>
               <div
-                class="flexCol weightTrainSetting"
+                class="flexCol report-weightTrainSetting"
                 (click)="$event.stopPropagation()"
                 *ngIf="uiFlag.showWeightTrainingOpt"
               >
                 <span>{{ 'universal_activityData_weightTrainingExtent' | translate }}</span>
                 <div class="flexCol" style="position: relative;">
                   <span
-                    class="dropMenu weightTrainMenu"
-                    [class.dropMenu--active]="uiFlag.showLevelSelector"
+                    class="report-dropMenu report-weightTrainMenu"
+                    [class.report-dropMenu--active]="uiFlag.showLevelSelector"
                     (click)="handleShowLevelSelector($event)"
                   >
                     <ng-container *ngIf="userInfo.weightTrainLevel === proficiency.novice">
@@ -744,7 +746,7 @@
                       {{ 'universal_activityData_highRanker' | translate }}
                     </ng-container>
                   </span>
-                  <div class="dropMenuList" *ngIf="uiFlag.showLevelSelector">
+                  <div class="report-dropMenuList" *ngIf="uiFlag.showLevelSelector">
                     <span class="levelOpt" (click)="changeLevel(proficiency.novice)">
                       {{ 'universal_activityData_beginner' | translate }}
                     </span>
@@ -774,7 +776,7 @@
               <h6 class="cardSubtitle">{{'universal_activityData_trainingTrend' | translate}}</h6>
             </div>
             <div>
-              <p class="areaDescription">
+              <p class="report-areaDescription">
                 {{'universal_activityData_trainingTrendDescription' | translate}}
               </p>
 
@@ -813,6 +815,7 @@
                       [proficiencyCoefficient]="userInfo.weightTrainLevel"
                       [userWeight]="userInfo.bodyWeight"
                       [chartName]="'Muscle'"
+                      [isPreviewMode]="uiFlag.isPreviewMode"
                     ></app-discolor-column-chart>
                   </div>
                   <div  *ngIf="!list.isFold">
@@ -833,17 +836,17 @@
                           [proficiencyCoefficient]="userInfo.weightTrainLevel"
                           [userWeight]="userInfo.bodyWeight"
                           [chartName]="'Muscle'"
+                          [isPreviewMode]="uiFlag.isPreviewMode"
                         ></app-discolor-column-chart>
                       </div>
                     </div>
                   </div>
                 </div>
               </ng-container>
-
             </div>
           </div>
         </section>
-        <section class="displaySection">
+        <section class="report-displaySection pageBreakAvoid">
           <div class="flexCol">
             <div class="cardTitle">
               <h6 class="cardSubtitle">
@@ -856,6 +859,7 @@
                 [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
                 [chartName]="'StrokeNum'"
                 [page]="'sportReport'"
+                [isPreviewMode]="uiFlag.isPreviewMode"
                 *ngIf="uiFlag.progress === 100 && reportTime.type === 2"
               >
               </app-fillet-column-chart>
@@ -865,6 +869,7 @@
                 [chartName]="'TotalTime'"
                 [sportType]="reportConditionOpt.sportType"
                 [page]="'sportReport'"
+                [isPreviewMode]="uiFlag.isPreviewMode"
                 *ngIf="uiFlag.progress === 100"
               >
               </app-fillet-column-chart>
@@ -874,6 +879,7 @@
                 [chartName]="'HR'"
                 [hrZoneRange]="hrInfo"
                 [page]="'sportReport'"
+                [isPreviewMode]="uiFlag.isPreviewMode"
                 *ngIf="uiFlag.progress === 100"
               >
               </app-compare-line-chart>
@@ -882,6 +888,7 @@
                 [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
                 [chartName]="'Calories'"
                 [page]="'sportReport'"
+                [isPreviewMode]="uiFlag.isPreviewMode"
                 *ngIf="uiFlag.progress === 100"
               >
               </app-fillet-column-chart>
@@ -891,6 +898,7 @@
                 [chartName]="'Distance'"
                 [page]="'sportReport'"
                 [unit]="userInfo.unit"
+                [isPreviewMode]="uiFlag.isPreviewMode"
                 *ngIf="
                   uiFlag.progress === 100
                   && [
@@ -910,6 +918,7 @@
                 [sportType]="reportConditionOpt.sportType"
                 [page]="'sportReport'"
                 [unit]="userInfo.unit"
+                [isPreviewMode]="uiFlag.isPreviewMode"
                 *ngIf="uiFlag.progress === 100 && [sportCode.cycle, sportCode.ball].includes(reportConditionOpt.sportType)"
               >
               </app-discolor-column-chart>
@@ -920,6 +929,7 @@
                 [sportType]="reportConditionOpt.sportType"
                 [page]="'sportReport'"
                 [unit]="userInfo.unit"
+                [isPreviewMode]="uiFlag.isPreviewMode"
                 *ngIf="uiFlag.progress === 100 && [sportCode.run, sportCode.swim, sportCode.row].includes(reportConditionOpt.sportType)"
               >
               </app-discolor-column-chart>
@@ -928,6 +938,7 @@
                 [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
                 [chartName]="'Power'"
                 [page]="'sportReport'"
+                [isPreviewMode]="uiFlag.isPreviewMode"
                 *ngIf="uiFlag.progress === 100 && [sportCode.cycle, sportCode.row].includes(reportConditionOpt.sportType)"
               >
               </app-compare-line-chart>
@@ -938,6 +949,7 @@
                 [sportType]="reportConditionOpt.sportType"
                 [page]="'sportReport'"
                 [unit]="userInfo.unit"
+                [isPreviewMode]="uiFlag.isPreviewMode"
                 *ngIf="
                   uiFlag.progress === 100
                   && [sportCode.run, sportCode.cycle, sportCode.swim, sportCode.row].includes(reportConditionOpt.sportType)
@@ -951,6 +963,7 @@
                 [sportType]="reportConditionOpt.sportType"
                 [page]="'sportReport'"
                 [unit]="userInfo.unit"
+                [isPreviewMode]="uiFlag.isPreviewMode"
                 *ngIf="
                   uiFlag.progress === 100
                   && reportConditionOpt.sportType === sportCode.swim
@@ -963,6 +976,7 @@
                 [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
                 [chartName]="'PlaneGForce'"
                 [page]="'sportReport'"
+                [isPreviewMode]="uiFlag.isPreviewMode"
                 *ngIf="uiFlag.progress === 100 && [sportCode.ball].includes(reportConditionOpt.sportType)"
               >
               </app-fillet-column-chart>
@@ -973,6 +987,7 @@
                   [chartName]="'TotalXGForce'"
                   [sportType]="reportConditionOpt.sportType"
                   [page]="'sportReport'"
+                  [isPreviewMode]="uiFlag.isPreviewMode"
                   *ngIf="uiFlag.progress === 100 && [sportCode.ball].includes(reportConditionOpt.sportType)"
                 >
                 </app-relative-column-chart>
@@ -982,6 +997,7 @@
                   [chartName]="'TotalYGForce'"
                   [sportType]="reportConditionOpt.sportType"
                   [page]="'sportReport'"
+                  [isPreviewMode]="uiFlag.isPreviewMode"
                   *ngIf="uiFlag.progress === 100 && [sportCode.ball].includes(reportConditionOpt.sportType)"
                 >
                 </app-relative-column-chart>
@@ -992,6 +1008,7 @@
                 [chartName]="'TotalZGForce'"
                 [sportType]="reportConditionOpt.sportType"
                 [page]="'sportReport'"
+                [isPreviewMode]="uiFlag.isPreviewMode"
                 *ngIf="uiFlag.progress === 100 && [sportCode.ball].includes(reportConditionOpt.sportType)"
               >
               </app-relative-column-chart>
@@ -1000,6 +1017,7 @@
                 [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
                 [chartName]="'PlaneMaxGForce'"
                 [page]="'sportReport'"
+                [isPreviewMode]="uiFlag.isPreviewMode"
                 *ngIf="uiFlag.progress === 100 && [sportCode.ball].includes(reportConditionOpt.sportType)"
               >
               </app-fillet-column-chart>
@@ -1009,6 +1027,7 @@
                   [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
                   [chartName]="'ExtremeXGForce'"
                   [page]="'sportReport'"
+                  [isPreviewMode]="uiFlag.isPreviewMode"
                   *ngIf="uiFlag.progress === 100 && [sportCode.ball].includes(reportConditionOpt.sportType)"
                 >
                 </app-compare-line-chart>
@@ -1017,6 +1036,7 @@
                   [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
                   [chartName]="'ExtremeYGForce'"
                   [page]="'sportReport'"
+                  [isPreviewMode]="uiFlag.isPreviewMode"
                   *ngIf="uiFlag.progress === 100 && [sportCode.ball].includes(reportConditionOpt.sportType)"
                 >
                 </app-compare-line-chart>
@@ -1026,6 +1046,7 @@
                 [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
                 [chartName]="'ExtremeZGForce'"
                 [page]="'sportReport'"
+                [isPreviewMode]="uiFlag.isPreviewMode"
                 *ngIf="uiFlag.progress === 100 && [sportCode.ball].includes(reportConditionOpt.sportType)"
               >
               </app-compare-line-chart>
@@ -1036,6 +1057,7 @@
                 [sportType]="reportConditionOpt.sportType"
                 [page]="'sportReport'"
                 [unit]="userInfo.unit"
+                [isPreviewMode]="uiFlag.isPreviewMode"
                 *ngIf="
                   uiFlag.progress === 100
                   && reportConditionOpt.sportType === sportCode.ball
@@ -1049,6 +1071,7 @@
                   [chartName]="'SwingRatio'"
                   [sportType]="reportConditionOpt.sportType"
                   [page]="'sportReport'"
+                  [isPreviewMode]="uiFlag.isPreviewMode"
                   *ngIf="
                     uiFlag.progress === 100
                     && reportConditionOpt.sportType === sportCode.ball

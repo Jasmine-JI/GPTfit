@@ -2,6 +2,7 @@ import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input }
 import { chart } from 'highcharts';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
+import { BMIColor, fatRateColor, muscleRateColor } from '../../../models/chart-data';
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -86,26 +87,33 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
   initChart () {
     let trendDataset,
         chartData = [],
-        lineColor = '',
+        lineColor: Array<any> = [],
         chartName = '';
+    chartData = this.data.arr;
+    this.highestPoint = this.data.top + 1;
+    this.lowestPoint = this.data.bottom - 1;
     switch (this.chartName) {
-      case 'Weight':
-        chartData = this.mergeData(this.data.weightList);
-        chartName = this.translate.instant('universal_userProfile_bodyWeight');
-        lineColor = this.data.colorSet;
-
+      case 'BMI':
+        chartName = 'BMI';
+        lineColor = [
+          [0, BMIColor.low],
+          [0.5, BMIColor.middle],
+          [1, BMIColor.high]
+        ];
         break;
       case 'FatRate':
-        chartData = this.mergeData(this.data.fatRateList);
         chartName = this.translate.instant('universal_lifeTracking_fatRate');
-        lineColor = this.data.fatRateColorSet;
-
+        lineColor = [
+          [0, fatRateColor.low],
+          [1, fatRateColor.high]
+        ];
         break;
       case 'MuscleRate':
-        chartData = this.mergeData(this.data.muscleRateList);
         chartName = this.translate.instant('universal_userProfile_muscleRate');
-        lineColor = this.data.muscleRateColorSet;
-
+        lineColor = [
+          [0, muscleRateColor.low],
+          [1, muscleRateColor.high]
+        ];
         break;
     }
 
@@ -138,7 +146,7 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
     // 設定圖表y軸四捨五入取至整數-kidin-1090204
     trendChartOptions['yAxis'].labels = {
       formatter: function () {
-        return this.value.toFixed(0);
+        return parseFloat(this.value.toFixed(0));
       }
     };
 
@@ -151,10 +159,10 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
       formatter: function () {
         if (this.series.xAxis.tickInterval === 30 * 24 * 3600 * 1000) {
           return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
-            <br/>${this.series.name}: ${parseFloat(this.y).toFixed(1)}`;
+            <br/>${this.series.name}: ${parseFloat(this.y.toFixed(1))}`;
         } else {
           return `${moment(this.x).format('YYYY-MM-DD')}
-            <br/>${this.series.name}: ${parseFloat(this.y).toFixed(1)}`;
+            <br/>${this.series.name}: ${parseFloat(this.y.toFixed(1))}`;
         }
 
       }
