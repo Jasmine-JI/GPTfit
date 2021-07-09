@@ -7,6 +7,7 @@ import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CloudrunService } from '../../services/cloudrun.service';
 import { GroupService } from '../../../containers/dashboard/services/group.service';
+import { Lang } from '../../models/i18n';
 
 
 interface DateCondition {
@@ -53,7 +54,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     disableBtn: 'pre',
     isLoading: false,
     currentType: '',
-    currentLanguage: 'zh-tw',
+    currentLanguage: <Lang>'zh-tw',
     mapListType: <MapListType>'routine'
   }
 

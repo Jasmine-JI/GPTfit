@@ -1,9 +1,8 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { UtilsService } from '@shared/services/utils.service';
+import { UtilsService } from '../../../../../shared/services/utils.service';
 import { AuthService } from '../../../../../shared/services/auth.service';
-import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
-
+import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';

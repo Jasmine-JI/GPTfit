@@ -12,13 +12,13 @@
       && groupDetail.commerceStatus === 1
     "
   >
-    <button class="child__page__btn" (click)="closeEditMode('close')" *ngIf="uiFlag.editMode !== 'close'">
+    <button class="childPageBtn" (click)="closeEditMode('close')" *ngIf="uiFlag.editMode !== 'close'">
       <span>{{ 'universal_operating_cancel' | translate}}</span>
     </button>
     <button
-      class="child__page__btn"
-      [class.edit__mode__btn]="uiFlag.editMode !== 'close'"
-      [class.btn__loading__status]="uiFlag.isLoading"
+      class="childPageBtn"
+      [class.editModeBtn]="uiFlag.editMode !== 'close'"
+      [class.btnLoadingStatus]="uiFlag.isLoading"
       (click)="handleEdit()"
     >
       <span *ngIf="uiFlag.editMode === 'close'">{{ 'universal_operating_edit' | translate}}</span>
@@ -26,10 +26,10 @@
     </button>
   </section>
   <section class="flexCol info__section">
-    <h6 class="info__title">{{ 'universal_group_group' | translate}}</h6>
-    <div class="flexCol info__content">
+    <h6 class="info-contentTitle">{{ 'universal_group_group' | translate}}</h6>
+    <div class="flexCol info-contentText">
       <div class="flexRow group__layer__section" *ngIf="uiFlag.editMode !== 'create' || createBody.levelType > 3">
-        <span class="info__item__title" *ngIf="groupDetail">
+        <span class="info-itemTitle" *ngIf="groupDetail">
           {{ 30 | groupLevelTranslate: groupDetail.brandType | translate }} :
         </span>
         <span
@@ -42,7 +42,7 @@
         </span>
       </div>
       <div class="flexRow group__layer__section" *ngIf="groupDetail &&  groupDetail.groupRootInfo && groupDetail.groupRootInfo.length >= 3;">
-        <span class="info__item__title">
+        <span class="info-itemTitle">
           {{ 40 | groupLevelTranslate: groupDetail.brandType | translate }} :
         </span>
         <span
@@ -55,13 +55,13 @@
         </span>
       </div>
       <div class="flexRow group__layer__section" *ngIf="groupDetail &&  groupDetail.groupRootInfo && groupDetail.groupRootInfo.length >= 4;">
-        <span class="info__item__title">
+        <span class="info-itemTitle">
           {{ 60 | groupLevelTranslate: groupDetail.brandType | translate }} :
         </span>
         <span class="info__row" *ngTemplateOutlet="currentGroupName"></span>
       </div>
       <div class="flexRow group__layer__section" *ngIf="uiFlag.editMode === 'create'">
-        <span class="info__item__title">
+        <span class="info-itemTitle">
           {{ uiFlag.createLevel | groupLevelTranslate: groupDetail.brandType | translate }} :
         </span>
         <input
@@ -77,9 +77,9 @@
     </div>
   </section>
   <section class="flexCol info__section">
-    <h6 class="info__title">{{ 'universal_group_status' | translate}}</h6>
+    <h6 class="info-contentTitle">{{ 'universal_group_status' | translate}}</h6>
     <span
-      class="info__content"
+      class="info-contentText"
       *ngIf="uiFlag.editMode === 'close'"
     >
       {{ groupDetail?.groupStatus | groupStatus | translate }}
@@ -91,7 +91,7 @@
       </span>
     </span>
     <div
-      class="flexCol info__content status__selector"
+      class="flexCol info-contentText status__selector"
       [class.status__selector__active]="uiFlag.openStatusSelector"
       style="position: relative;"
       *ngIf="uiFlag.editMode !== 'close'"
@@ -115,12 +115,12 @@
     </div>
   </section>
   <section class="flexCol info__section">
-    <h6 class="info__title">{{ 'universal_group_introduction' | translate}}</h6>
-    <span class="info__content" [innerHTML]="groupDetail.groupDesc | lineBreak" *ngIf="groupDetail && uiFlag.editMode === 'close'"></span>
+    <h6 class="info-contentTitle">{{ 'universal_group_introduction' | translate}}</h6>
+    <span class="info-contentText" [innerHTML]="groupDetail.groupDesc | lineBreak" *ngIf="groupDetail && uiFlag.editMode === 'close'"></span>
     <textarea
       style="min-height: 300px; resize: none;"
       [style.border-color]="formCheck.desc !== false ? 'initial' : 'red'"
-      class="info__content"
+      class="info-contentText"
       placeholder="{{ i18n.enterDesc }}"
       maxlength="500"
       [value]="uiFlag.editMode === 'create' ? createBody.levelDesc : editBody.groupDesc"
@@ -130,8 +130,8 @@
     </textarea>
   </section>
   <section class="flexCol info__section" *ngIf="uiFlag.editMode === 'close' && userSimpleInfo">
-    <h6 class="info__title">{{ 'universal_group_groupInfo' | translate }}</h6>
-    <span class="info__content" *ngIf="editBody.groupLevel <= 30">
+    <h6 class="info-contentTitle">{{ 'universal_group_groupInfo' | translate }}</h6>
+    <span class="info-contentText" *ngIf="editBody.groupLevel <= 30">
       <ng-container *ngIf="groupDetail.brandType === 1">
         {{ 'universal_group_numberOfBranches' | translate }}
       </ng-container>
@@ -140,7 +140,7 @@
       </ng-container>
       ：{{ groupDetail?.branchNum }}
     </span>
-    <span class="info__content" *ngIf="editBody.groupLevel <= 40">
+    <span class="info-contentText" *ngIf="editBody.groupLevel <= 40">
       <ng-container *ngIf="groupDetail.brandType === 1">
         {{ 'universal_group_numberOfClass' | translate }}
       </ng-container>
@@ -149,10 +149,10 @@
       </ng-container>
       ：{{ groupDetail?.coachNum }}
     </span>
-    <span class="info__content">
+    <span class="info-contentText">
       {{ 'universal_group_numberOfAdministrators' | translate }}：{{ groupDetail?.adminNum }}
     </span>
-    <span class="info__content">
+    <span class="info-contentText">
       {{ 'universal_group_generalMember' | translate }}：{{ groupDetail?.memberNum }}
     </span>
   </section>
@@ -160,19 +160,19 @@
     class="flexCol info__section"
     *ngIf="groupDetail && groupDetail.brandType === 1 && editBody.groupLevel === 60 && uiFlag.editMode === 'edit'"
   >
-    <h6 class="info__title">{{ 'universal_live_liveLink' | translate}}</h6>
-    <input class="info__content" [value]="editBody.groupVideoUrl" (change)="saveVedioUrl($event)">
+    <h6 class="info-contentTitle">{{ 'universal_live_liveLink' | translate}}</h6>
+    <input class="info-contentText" [value]="editBody.groupVideoUrl" (change)="saveVedioUrl($event)">
   </section>
   <section class="info__section" *ngIf="uiFlag.editMode === 'create'">
     <div class="ala-list__item" style="margin-top: 20px">
-      <h6 class="info__title">
+      <h6 class="info-contentTitle">
         {{'universal_group_assignAdmin' | translate}}：
       </h6>
       <div class="ala-form__col assign-admin">
         <button class="icon-btn" (click)="openSelectorWin(createBody.levelType, $event)">
           <i class="icon-svg_web-icon_p1_021-add_friend group-icon"></i>
         </button>
-        <div class="warn__text" *ngIf="chooseLabels.length === 0;">
+        <div class="warnText" *ngIf="chooseLabels.length === 0;">
           {{'universal_group_addAdministrator' | translate}}
         </div>
         <div style="margin-top: 15px" *ngIf="chooseLabels && chooseLabels.length > 0">
@@ -190,7 +190,7 @@
   </section>
   <section class="info__section" *ngIf="uiFlag.editMode === 'create' && uiFlag.createLevel === 30">
     <div>
-      <h6 class="info__title">
+      <h6 class="info-contentTitle">
         方案內容
       </h6>
       <div class="ala-list__item" 
@@ -329,7 +329,7 @@
   </section>
 </div>
 <ng-template #currentGroupName>
-  <span class="group__blue__label info__row" *ngIf="groupDetail && (uiFlag.editMode === 'close' || uiFlag.editMode === 'create')">
+  <span class="groupBlueLabel info__row" *ngIf="groupDetail && (uiFlag.editMode === 'close' || uiFlag.editMode === 'create')">
     {{ groupDetail.groupName }}
   </span>
   <input

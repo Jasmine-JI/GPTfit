@@ -22,7 +22,6 @@ import { webSocket } from 'rxjs/webSocket';
 import moment from 'moment';
 import { stockChart } from 'highcharts/highstock';
 import { UtilsService } from '../../../../shared/services/utils.service';
-import { getUrlQueryStrings } from '../../../../shared/utils/';
 import { cloneDeep, keyBy } from 'lodash';
 
 export class Message {
@@ -244,7 +243,7 @@ export class CoachDashboardComponent
   }
 
   ngOnInit() {
-    const queryStrings = getUrlQueryStrings(location.search);
+    const queryStrings = this.utils.getUrlQueryStrings(location.search);
     this.classType = queryStrings.type;
     this.classId = this.route.snapshot.paramMap.get('classId');
     this.token = this.utils.getToken() || '';

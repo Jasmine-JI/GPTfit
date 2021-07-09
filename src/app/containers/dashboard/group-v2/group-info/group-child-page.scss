@@ -10,7 +10,7 @@ $warn-color: rgba(255, 75, 75, 1);
 $group-btn-blue: rgba(0, 183, 238, 1);
 
 
-.child__page__btn {
+.childPageBtn {
   border: 1px solid gray;
   border-radius: 5px;
   padding: 3px 10px;
@@ -26,25 +26,25 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 
 }
 
-.child__page__card {
+.childPageCard {
   background-color: var(--scale-255-0);
   border: 1px solid rgba(200, 200, 200, 1);
   padding: 10px;
   margin-bottom: 10px;
 }
 
-.group__blue__label {
+.groupBlueLabel {
   color: $group-btn-blue;
   font-weight: bold;
 }
 
-.edit__mode__btn {
+.editModeBtn {
   background-color: rgba(255, 75, 75, 1) !important;
   color: white !important;
   @include transition(background-color);
 }
 
-.btn__loading__status {
+.btnLoadingStatus {
   background-color: rgba(200, 200, 200, 1) !important;
   color: black !important;
   cursor: progress;
@@ -57,7 +57,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   margin-left: 10px;
 }
 
-.warn__text {
+.warnText {
   font-size: 14px;
   color: $warn-color;
 }
@@ -71,15 +71,15 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   padding: 3px 5px;
 }
 
-.architecture__section {
+.architectureSection {
   margin: 10px 0;
 }
 
-.group__list__content {
+.groupListContent {
   margin: 5px;
 }
 
-.content__subtitle {
+.contentSubtitle {
   @include subtitle-or-focus(18px);
   margin-bottom: 15px;
 }
@@ -484,6 +484,14 @@ mat-header-cell:last-child, mat-cell:last-child, mat-footer-cell:last-child {
     flex-direction: column;
     align-items: center;
   }
+
+}
+
+@media (max-width: 340px) {
+  .childPageCard {
+    padding: 10px 2px;
+  }
+
 }
 
 /***********************************************************************/

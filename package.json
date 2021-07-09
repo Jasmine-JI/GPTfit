@@ -24,7 +24,7 @@
     "uat-build": "ng build -c uat --aot --output-hashing=all --base-href /",
     "tst-build": "ng build -c tst --aot --base-href /",
     "prod-build": "ng build --configuration production --aot --build-optimizer --output-hashing=all --base-href /",
-    "patch": "cp patch/query-string.index.js node_modules/query-string/index.js && cp patch/regression-simple-linear.d.ts node_modules/ml-regression-simple-linear/regression-simple-linear.d.ts",
+    "patch": "cp patch/regression-simple-linear.d.ts node_modules/ml-regression-simple-linear/regression-simple-linear.d.ts",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -89,7 +89,6 @@
     "normalize.css": "^8.0.1",
     "pm2": "3.0.4",
     "popper.js": "1.12.6",
-    "query-string": "^6.13.1",
     "rxjs": "^6.6.0",
     "rxjs-tslint": "^0.1.8",
     "tslib": "^2.0.0",

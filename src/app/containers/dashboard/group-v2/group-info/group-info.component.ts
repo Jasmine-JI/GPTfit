@@ -1273,7 +1273,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     if (page === 'group-introduction') {
       mainBodyEle.scrollTo({top: 0, behavior: 'smooth'});
     } else {
-      const pageListBar = document.querySelectorAll('.page__list__bar')[0] as HTMLElement,
+      const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as HTMLElement,
             pageListBarTop = pageListBar.offsetTop;
       mainBodyEle.scrollTo({top: pageListBarTop, behavior: 'smooth'});
     }

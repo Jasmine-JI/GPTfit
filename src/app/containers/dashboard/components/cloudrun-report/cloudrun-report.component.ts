@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject, combineLatest, fromEvent, Subscription } from 'rxjs';
-import { takeUntil, switchMap, map, first } from 'rxjs/operators';
+import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { ReportConditionOpt } from '../../../../shared/models/report-condition';
 import moment from 'moment';
 import { ReportService } from '../../../../shared/services/report.service';

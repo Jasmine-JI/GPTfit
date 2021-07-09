@@ -1,4 +1,4 @@
-<div class="flexCol child__page__card">
+<div class="flexCol childPageCard">
   <section
     class="flexRow"
     style="justify-content: flex-end;"
@@ -13,7 +13,7 @@
     "  
   >
     <button
-      class="child__page__btn"
+      class="childPageBtn"
       (click)="addGroup('branch')"
       *ngIf="groupInfo.groupLevel === 30 && userSimpleInfo.accessRight[0] <= 30 && !uiFlag.branchFull"
     >
@@ -21,7 +21,7 @@
       <span *ngIf="groupInfo.brandType === 2">{{ 'universal_group_addBranchOffice' | translate}}</span>
     </button>
     <button
-      class="child__page__btn"
+      class="childPageBtn"
       (click)="addGroup('class')"
       *ngIf="groupInfo.groupLevel === 40 && userSimpleInfo.accessRight[0] <= 40 && !uiFlag.classFull"
     >
@@ -29,21 +29,21 @@
       <span *ngIf="groupInfo.brandType === 2">{{ 'universal_group_addDepartment' | translate}}</span>
     </button>
     <button
-      class="child__page__btn"
-      [class.edit__mode__btn]="uiFlag.editMode === 'edit'"
-      [class.btn__loading__status]="uiFlag.isLoading"
+      class="childPageBtn"
+      [class.editModeBtn]="uiFlag.editMode === 'edit'"
+      [class.btnLoadingStatus]="uiFlag.isLoading"
       (click)="handleEdit()"
     >
       <span *ngIf="uiFlag.editMode === 'complete'">{{ 'universal_operating_edit' | translate}}</span>
       <span *ngIf="uiFlag.editMode === 'edit'">{{ 'universal_operating_finishEdit' | translate}}</span>
     </button>
   </section>
-  <section class="architecture__section">
-    <span class="content__subtitle" *ngIf="groupInfo.brandType === 1">{{ 'universal_group_gym' | translate }}</span>
-    <span class="content__subtitle" *ngIf="groupInfo.brandType === 2">{{ 'universal_group_company' | translate }}</span>
+  <section class="architectureSection">
+    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{ 'universal_group_gym' | translate }}</span>
+    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{ 'universal_group_company' | translate }}</span>
     <div>
       <app-member-capsule
-        class="group__list__content"
+        class="groupListContent"
         [isSubGroupInfo]="true"
         [title]="groupArchitecture.brands[0].groupName"
         [memberInfo]="groupArchitecture.brands[0]"
@@ -60,15 +60,15 @@
       </app-member-capsule>
     </div>
   </section>
-  <section class="architecture__section">
-    <span class="content__subtitle" *ngIf="groupInfo.brandType === 1">{{ 'universal_group_branch' | translate }}</span>
-    <span class="content__subtitle" *ngIf="groupInfo.brandType === 2">{{ 'universal_group_companyBranch' | translate }}</span>
+  <section class="architectureSection">
+    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{ 'universal_group_branch' | translate }}</span>
+    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{ 'universal_group_companyBranch' | translate }}</span>
     <div
       class="flexRow"
       style="flex-wrap: wrap;"
       *ngIf="groupArchitecture.branches && groupArchitecture.branches.length > 0 && groupInfo.brandType; else noData;"
     >
-      <div class="group__list__content" *ngFor="let _branch of groupArchitecture.branches;">
+      <div class="groupListContent" *ngFor="let _branch of groupArchitecture.branches;">
         <app-member-capsule
           [isSubGroupInfo]="true"
           [title]="_branch.groupName"
@@ -88,15 +88,15 @@
       </div>
     </div>
   </section>
-  <section class="architecture__section">
-    <span class="content__subtitle" *ngIf="groupInfo.brandType === 1">{{ 'universal_group_class' | translate }}</span>
-    <span span class="content__subtitle" *ngIf="groupInfo.brandType === 2">{{ 'universal_group_department' | translate }}</span>
+  <section class="architectureSection">
+    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{ 'universal_group_class' | translate }}</span>
+    <span span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{ 'universal_group_department' | translate }}</span>
     <div
       class="flexRow"
       style="flex-wrap: wrap;"
       *ngIf="groupArchitecture.coaches && groupArchitecture.coaches.length > 0 && groupInfo.brandType; else noData;"
     >
-      <div class="group__list__content" *ngFor="let _coach of groupArchitecture.coaches;">
+      <div class="groupListContent" *ngFor="let _coach of groupArchitecture.coaches;">
         <app-member-capsule
           [isSubGroupInfo]="true"
           [title]="_coach.groupName"

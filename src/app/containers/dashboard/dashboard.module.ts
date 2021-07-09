@@ -84,7 +84,8 @@ import { PushMessageListComponent } from './components/push-message/push-message
 import { SystemLogComponent } from './components/system-log/system-log.component';
 import { SystemFolderPermissionComponent } from './components/system-folder-permission/system-folder-permission.component';
 import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-analysis.component';
-import { CloudrunReportComponent as PersonCloudrunReport } from './components/cloudrun-report/cloudrun-report.component'
+import { CloudrunReportComponent as PersonCloudrunReport } from './components/cloudrun-report/cloudrun-report.component';
+import { DeviceInfoComponent } from './components/device-info/device-info.component'
 
 
 @NgModule({
@@ -180,7 +181,8 @@ import { CloudrunReportComponent as PersonCloudrunReport } from './components/cl
     SystemLogComponent,
     SystemFolderPermissionComponent,
     AlaAppAnalysisComponent,
-    PersonCloudrunReport
+    PersonCloudrunReport,
+    DeviceInfoComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

@@ -1,14 +1,11 @@
 import { UserProfileService } from './user-profile.service';
-import {
-  HttpClient,
-} from '@angular/common/http';
-
-import { Injectable, Injector } from '@angular/core';
+import { HttpClient} from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, BehaviorSubject, of } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { User } from '../models/user';
 import { tap, map } from 'rxjs/operators';
-import { UtilsService, TOKEN } from '@shared/services/utils.service';
+import { UtilsService, TOKEN } from './utils.service';
 
 
 @Injectable()
@@ -18,6 +15,7 @@ export class AuthService {
   hadAlertEnableAccount = false;
   backUrl = '';
   userName = '';
+
   constructor(
     private http: HttpClient,
     private utils: UtilsService,
