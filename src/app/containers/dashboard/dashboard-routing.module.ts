@@ -52,6 +52,7 @@ import { SystemLogComponent } from './components/system-log/system-log.component
 import { SystemFolderPermissionComponent } from './components/system-folder-permission/system-folder-permission.component';
 import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-analysis.component';
 import { CloudrunReportComponent as PersonCloudrunReport } from './components/cloudrun-report/cloudrun-report.component'
+import { DeviceInfoComponent } from './components/device-info/device-info.component';
 
 const routes: Routes = [
   {
@@ -141,9 +142,16 @@ const routes: Routes = [
         component: InnerDevicePairComponent,
         canActivate: [DashboardGuard]
       },
+      /*
       {
         path: 'system/device/info/:deviceSN',
         component: ProductInfoComponent,
+        canActivate: [DashboardGuard]
+      },
+      */
+      {
+        path: 'system/device/info/:deviceSN',
+        component: DeviceInfoComponent,
         canActivate: [DashboardGuard]
       },
       {
@@ -227,9 +235,15 @@ const routes: Routes = [
         path: 'device',
         component: MyDeviceComponent
       },
+      /*
       {
         path: 'device/info/:deviceSN',
         component: ProductInfoComponent
+      },
+      */
+      {
+        path: 'device/info/:deviceSN',
+        component: DeviceInfoComponent
       },
       {
         path: 'live/train-live',

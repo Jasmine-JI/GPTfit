@@ -4,8 +4,8 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { UtilsService } from '@shared/services/utils.service';
-import { HashIdService } from '@shared/services/hash-id.service';
+import { UtilsService } from '../../../../shared/services/utils.service';
+import { HashIdService } from '../../../../shared/services/hash-id.service';
 
 @Component({
   selector: 'app-all-group-list',

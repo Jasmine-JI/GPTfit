@@ -1,14 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { getUrlQueryStrings } from '@shared/utils/';
 import { QrcodeService } from '../../services/qrcode.service';
 import { HttpParams } from '@angular/common/http';
 import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
 import moment from 'moment';
-import { UtilsService } from '@shared/services/utils.service';
+import { UtilsService } from '../../../../shared/services/utils.service';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
-import { AuthService } from '@shared/services/auth.service';
+import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
+import { AuthService } from '../../../../shared/services/auth.service';
 import { Router } from '@angular/router';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { Subscription, Subject, of } from 'rxjs';
@@ -59,7 +58,7 @@ export class DemoQrcodComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getTranslate();
     this.token = this.utilsService.getToken() || '';
-    const queryStrings = getUrlQueryStrings(location.search);
+    const queryStrings = this.utilsService.getUrlQueryStrings(location.search);
     this.displayQr = queryStrings;
 
     this.fitPairType = this.utilsService.getLocalStorageObject('fitPairType');

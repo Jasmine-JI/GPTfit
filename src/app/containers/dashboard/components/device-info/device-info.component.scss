@@ -1,0 +1,87 @@
+@import 'transition.scss';
+@import 'rotate.scss';
+@import 'font.scss';
+
+@mixin btn-mobile () {
+  width: 100%;
+  height: 40px;
+  margin: 5px 0;
+  border-radius: 0.5rem;
+}
+
+$icon-side-length: 75px;
+
+.header__btn {
+  min-width: 100px;
+  @include bold-font(17px);
+}
+
+.app__card {
+  align-items: center;
+  width: 255px;
+  min-height: 300px;
+  padding: 10px;
+  margin: 5px;
+  border: 1px solid var(--scale-115-255);
+  border-radius: 5px;
+  background-color: var(--scale-250-20);
+  @include transition(height);
+}
+
+.app__icon {
+  width: $icon-side-length;
+  height: $icon-side-length;
+  border: 1px solid white;
+  border-radius: 15px;
+}
+
+.app__download__image {
+  width: 200px;
+  margin: 5px 0;
+}
+
+.app__description {
+  color: var(--scale-150-180);
+  margin: 10px 5px;
+}
+
+.dl__btn {
+  width: 100%;
+  justify-content: start;
+}
+
+.unfold__arrow {
+  @include transition(transform);
+}
+
+.fold__arrow {
+  @include el-rotate(180deg);
+  @include transition(transform);
+}
+
+.fitpair__dialog {
+  width: 90vw;
+  max-width: 500px;
+  border-radius: 5px;
+  background-color: var(--scale-255-90);
+  z-index: 12;
+}
+
+.btn__mobile {
+  @include btn-mobile();
+}
+
+
+/************************************************ media ******************************************/
+
+@media (max-width: 575px) {
+  #header__btn__section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .header__btn {
+    @include btn-mobile();
+  }
+
+}

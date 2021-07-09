@@ -25,9 +25,9 @@ if (address === '192.168.1.231' || address === '192.168.1.235' || address === '1
   SERVER_CONFIG.ca = fs.readFileSync('/etc/ssl/free_ca.crt'),
   SERVER_CONFIG.cert = fs.readFileSync('/etc/ssl/free.crt');
 } else {
-  SERVER_CONFIG.key = fs.readFileSync('/etc/ssl/130/offical_130_no_pem.key'),
-  SERVER_CONFIG.ca = fs.readFileSync('/etc/ssl/130/offical_public_130.crt'),
-  SERVER_CONFIG.cert = fs.readFileSync('/etc/ssl/130/offical_130.crt');
+  SERVER_CONFIG.key = fs.readFileSync('/etc/ssl/130/second_certs/offical_130_no_pem.key'),
+  SERVER_CONFIG.ca = fs.readFileSync('/etc/ssl/130/second_certs/offical_public_130.crt'),
+  SERVER_CONFIG.cert = fs.readFileSync('/etc/ssl/130/second_certs/offical_130.crt');
 }
 
 

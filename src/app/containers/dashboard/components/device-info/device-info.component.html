@@ -1,0 +1,480 @@
+<div>
+  <nav
+    #navSection
+    class="flexCol"
+    style="position: relative;"
+  >
+    <section
+      class="info-ScenerySection"
+      [style.background-image]="uiFlag.displayPage === 'fitPair' ? 'url(' + (deviceInfo.modelTypeName | productType: 'imgPath') + ')' : ''"
+    >
+      <img
+        class="info-imgAbs"
+        [src]="deviceInfo.modelTypeName | productType: 'imgPath'"
+        *ngIf="uiFlag.displayPage !== 'fitPair'"
+      />
+    </section>
+    <section class="Info-header" [class.info-portalMode]="uiFlag.displayPage === 'fitPair'">
+      <div
+        style="border-color: rgba(230, 230, 230, 1);"
+        class="info-sceneryIcon"
+        [style.left]="uiFlag.displayPage === 'fitPair' ? 'initial' : '50px'"
+      >
+        <img
+          style="padding: 15px;"
+          [src]="imgStoragePath + deviceInfo.modelImg"
+          (error)="this.deviceInfo.modelImg = this.imgStoragePath + '/img/unknown.png'"
+        />
+      </div>
+      <div class="info-headerRow">
+        <div class="flexRow info-headerTitle">
+          <div class="flexRow info-titleText">
+            <div>
+              <span
+                class="info-parentsName"
+              >
+                {{ deviceInfo.modelTypeName | productType: 'key' | translate }}\
+              </span>
+              <span
+                class="info-parentsName"
+              >
+                {{ deviceInfo.sn }}\
+              </span>
+            </div>
+            <span class="info-currentName">
+              {{ deviceInfo.modelName }}
+            </span>
+          </div>
+        </div>
+        <div
+          id="header__btn__section"
+          class="flexRow info-headerBtnBar"
+          *ngIf="uiFlag.displayPage === 'fitPair' && !uiFlag.checkSumError && uiFlag.overManufactureDate"
+        >
+          <button
+            class="info-pageBtn info-primaryBtn header__btn"
+            *ngIf="fitPairInfo.warrantyStatus == 1"
+          >
+            <span
+              *ngIf="fitPairInfo.warrantyStatus == 1"
+              (click)="handleBonding(1)"
+            >
+              {{ 'universal_deviceSetting_productRegistration' | translate }}
+            </span>
+          </button>
+          <button
+            class="info-pageBtn info-primaryBtn header__btn"
+            [class.info-warningBtn]="fitPairInfo.isFitPaired"
+            [class.info-unattraclyBtn]="fitPairInfo.warrantyStatus == 1 && !fitPairInfo.isFitPaired"
+            (click)="checkBonding(fitPairInfo.isFitPaired ? 2 : 1)"
+            *ngIf="fitPairInfo.status == 3"
+          >
+            <span *ngIf="fitPairInfo.isFitPaired" >
+              {{ 'universal_uiFitpair_undoFitpair' | translate }}
+            </span>
+            <span *ngIf="!fitPairInfo.isFitPaired">
+              Fitpair
+            </span>
+            <app-loading-icon style="font-size: 8px; pointer-events: none;" *ngIf="uiFlag.isJoinLoading"></app-loading-icon>
+          </button>
+        </div>
+      </div>
+    </section>
+    <section [class.info-portalMode]="uiFlag.displayPage === 'fitPair'">
+      <span
+        style="color: red;"
+        class="info-headerDescription"
+        [innerHTML]="'universal_deviceSetting_registeredDeviceDescription' | translate"
+        *ngIf="uiFlag.progress === 100 && fitPairInfo.warrantyStatus == 1"
+      ></span>
+      <app-loading-icon *ngIf="uiFlag.progress !== 100"></app-loading-icon>
+    </section>
+    <section
+      #pageListBar
+      class="flexCol info-pageListBar"
+      [class.info-portalMode]="uiFlag.displayPage === 'fitPair'"
+    >
+      <div class="info-barLine"></div>
+      <div
+        class="info-activeBar"
+        [style.width]="uiFlag.barWidth + 'px'"
+        [style.left]="uiFlag.barPosition + 'px'"
+      ></div>
+      <div class="flexRow" style="justify-content: space-between; align-items: center;">
+        <div
+          class="flexRow"
+          [style.pointer-events]="uiFlag.displayPage === 'fitPair' ? 'none' : 'initial'"
+        >
+          <ng-container *ngFor="let _page of childPageList; let _idx = index;">
+            <ng-container>
+              <span 
+                class="info-childPageTitle main__page__list"
+                [class.info-active--color]="uiFlag.currentTagIndex === _idx"
+                (click)="handleShowContent($event, _page, _idx)"
+                *ngIf="uiFlag.divideIndex === null || _idx < uiFlag.divideIndex"
+              >
+                <ng-container *ngIf="_page === 'info'">
+                  {{ 'universal_deviceSetting_adout' | translate }}
+                </ng-container>
+                <ng-container *ngIf="_page === 'management'">
+                  {{ 'universal_group_management' | translate }}
+                </ng-container>
+                <ng-container *ngIf="_page === 'odometer'">
+                  {{ 'universal_deviceSetting_totalMileage' | translate }}
+                </ng-container>
+                <ng-container *ngIf="_page === 'log'">
+                  設備日誌
+                </ng-container>
+                <ng-container *ngIf="_page === 'register'">
+                  註冊資訊
+                </ng-container>
+              </span>
+            </ng-container>
+          </ng-container>
+        </div>
+        <div
+          #seeMore
+          class="info-childPageTitle info-moreBtn"
+          (click)="handleShowMorePageOpt($event)"
+          *ngIf="uiFlag.divideIndex !== null"
+        >
+          <span [class.info-active--color]="uiFlag.currentTagIndex >= uiFlag.divideIndex && !uiFlag.showMorePageOpt">
+            <span style="position: relative;">
+              {{ 'universal_operating_more' | translate }}
+            </span>
+            <span
+              class="info-seeMoreTriangle"
+              [class.info-active--color]="uiFlag.currentTagIndex >= uiFlag.divideIndex && !uiFlag.showMorePageOpt"
+              [class.info-openFold]="uiFlag.showMorePageOpt"
+            ></span>
+          </span>
+          <div
+            class="flexCol info-foldList"
+            *ngIf="uiFlag.showMorePageOpt"
+          >
+            <ng-container *ngFor="let _foldItem of childPageList; let _fIdx = index;">
+              <div
+                class="info-foldListItem"
+                *ngIf="_fIdx >= uiFlag.divideIndex"
+              >
+                <span
+                  [class.info-active--color]="uiFlag.currentTagIndex === (_fIdx)"
+                  (click)="handleShowContent($event, _foldItem, _fIdx)"
+                >
+                  <ng-container *ngIf="_foldItem === 'info'">
+                    {{ 'universal_deviceSetting_adout' | translate }}
+                  </ng-container>
+                  <ng-container *ngIf="_foldItem === 'management'">
+                    {{ 'universal_group_management' | translate }}
+                  </ng-container>
+                  <ng-container *ngIf="_foldItem === 'odometer'">
+                    {{ 'universal_deviceSetting_totalMileage' | translate }}
+                  </ng-container>
+                  <ng-container *ngIf="_foldItem === 'log'">
+                    設備日誌
+                  </ng-container>
+                  <ng-container *ngIf="_foldItem === 'register'">
+                    註冊資訊
+                  </ng-container>
+                </span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </section>
+  </nav>
+  <main
+    class="cardSection"
+    [class.info-portalMode]="uiFlag.displayPage === 'fitPair'"
+    [style.padding-bottom]="
+      !uiFlag.openAppDl.length
+      && uiFlag.displayPage !== 'fitPair'
+      && uiFlag.currentPage !== 'management'
+        ? '210px' : '10px'
+    "
+  >
+    <div class="cardContent">
+      <ng-container *ngIf="uiFlag.currentPage === 'info'">
+        <div class="flexCol">
+          <h6 class="info-contentTitle">{{ 'universal_deviceSetting_productInfo' | translate }}</h6>
+          <div class="flexCol info-contentText">
+            <span *ngTemplateOutlet="rowInfoItem;
+              context: {
+                itemTitle: 'universal_deviceSetting_deviceSerialNumber',
+                itemValue: deviceInfo.sn
+              }"
+            ></span>
+            <span class="flexRow info-item" *ngIf="deviceInfo.relatedLinks[currentLang]">
+              <p class="info-itemTitle">{{ 'universal_deviceSetting_relatedLinks' | translate }}：</p>
+              <div class="flexCol">
+                <ng-container *ngFor="let _link of deviceInfo.relatedLinks[currentLang]">
+                  <p class="info-itemValue" style="margin-bottom: 5px;">
+                    <a [href]="_link.link" target="_blank">{{ _link.dispName }}</a>
+                  </p>
+                </ng-container>
+              </div>
+            </span>
+            <span class="flexRow info-item" *ngIf="deviceInfo.manual[currentLang]">
+              <p class="info-itemTitle">{{ 'universal_vocabulary_manual' | translate }}：</p>
+              <p class="info-itemValue">
+                <a [href]="deviceInfo.manual[currentLang]" target="_blank">
+                  {{ 'universal_deviceSetting_deviceManual' | translate }}
+                </a>
+              </p>
+            </span>
+          </div>
+        </div>
+        <div class="flexCol" style="margin: 15px 0;">
+          <h6 class="info-contentTitle">{{ 'universal_deviceSetting_mainApp' | translate }}</h6>
+          <div class="flexRow" style="flex-wrap: wrap;">
+            <ng-container *ngFor="let _mainApp of deviceInfo.mainApp">
+              <div *ngTemplateOutlet="appCard;
+                context: {
+                  cardTitle: _mainApp.appName,
+                  cardIcon: _mainApp.appIconUrl,
+                  appId: _mainApp.appId,
+                  iOSLink: _mainApp.appIosUrl,
+                  gpLink: _mainApp.appAndroidUrl,
+                  apkLink: _mainApp.appApkUrl
+                }"
+              ></div>
+            </ng-container>
+          </div>
+        </div>
+        <div class="flexCol" *ngIf="deviceInfo.secondaryApp && deviceInfo.secondaryApp.length > 0">
+          <h6 class="info-contentTitle">{{ 'universal_deviceSetting_otherApp' | translate }}</h6>
+          <div class="flexRow" style="flex-wrap: wrap;">
+            <ng-container *ngFor="let _secondaryApp of deviceInfo.secondaryApp">
+              <div *ngTemplateOutlet=" appCard;
+                context: {
+                  cardTitle: _secondaryApp.appName,
+                  cardIcon: _secondaryApp.appIconUrl,
+                  appId: _secondaryApp.appId,
+                  iOSLink: _secondaryApp.appIosUrl,
+                  gpLink: _secondaryApp.appAndroidUrl,
+                  apkLink: _secondaryApp.appApkUrl
+                }"
+              ></div>
+            </ng-container>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="uiFlag.currentPage === 'management'">
+        <div class="flexCol">
+          <h6 class="info-contentTitle">Fitpair</h6>
+          <div class="flexCol info-contentText">
+            <div class="flexRow info-item" *ngIf="fitPairInfo.deviceBond.id">
+              <p class="info-itemTitle">{{ 'universal_vocabulary_object' | translate }}：</p>
+              <div class="flexRow" style="flex-wrap: wrap; padding-left: 15px;">
+                <p class="flexRow radioSelector" (click)="editDeviceInfo(3)">
+                  <span
+                    class="radioBtn"
+                    [class.radioBtn--active]="fitPairInfo.status == 3"
+                  ></span>
+                  <span>{{ 'universal_uiFitpair_openToAnyone' | translate }}</span>
+                </p>
+                <p class="flexRow radioSelector" (click)="editDeviceInfo(1)">
+                  <span
+                    class="radioBtn"
+                    [class.radioBtn--active]="fitPairInfo.status == 1 || fitPairInfo.status == 2"
+                  ></span>
+                  <span>{{ 'universal_privacy_onlyMe' | translate }}</span>
+                </p>
+                <p class="flexRow radioSelector" (click)="editDeviceInfo(0)">
+                  <span
+                    class="radioBtn"
+                    [class.radioBtn--active]="fitPairInfo.status == 0"
+                  ></span>
+                  <span>{{ 'universal_operating_close' | translate }}</span>
+                </p>
+              </div>
+            </div>
+            <ng-container *ngIf="fitPairInfo.status == 3">
+              <span class="flexRow info-item">
+                <p class="info-itemTitle">{{ 'universal_uiFitpair_fitpairObject' | translate }}：</p>
+                <p class="info-itemValue">
+                  <img
+                    style="height: 30px; width: 30px; border-radius: 50%;"
+                    [src]="fitPairInfo.currentPair.icon"
+                    (error)="this.fitPairInfo.currentPair.icon='/assets/images/user2.png'"
+                    *ngIf="fitPairInfo.currentPair.id"
+                  >
+                  {{ fitPairInfo.currentPair.name || '--' }}
+                  <span *ngIf="systemAccessRight[0] <= 29 && fitPairInfo.currentPair.id">
+                    (id: {{ fitPairInfo.currentPair.id }})
+                  </span>
+                </p>
+              </span>
+            </ng-container>
+          </div>
+        </div>
+        <div class="flexCol" *ngIf="fitPairInfo.status == 3 || systemAccessRight[0] <= 29">
+          <h6 class="info-contentTitle">{{ 'universal_uiFitpair_createFitpairQr' | translate }}</h6>
+          <div class="flexCol info-contentText">
+            <qrcode [qrdata]="deviceInfo.qrURL" [size]="128" [level]="'M'"></qrcode>
+            <p class="flexRow info-item" *ngIf="systemAccessRight[0] <= 29">
+              <span class="info-itemTitle">Fitpair頁面：</span>
+              <span class="info-itemValue">
+                <a [href]="deviceInfo.qrURL">點擊前往</a>
+              </span>
+            </p>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="uiFlag.currentPage === 'odometer'">
+        <div class="flexCol">
+          <h6 class="info-contentTitle">{{ 'universal_activityData_summary' | translate }}</h6>
+          <div class="flexCol info-contentText">
+            <span *ngTemplateOutlet="rowInfoItem;
+                context: {
+                  itemTitle: 'universal_deviceSetting_timer',
+                  itemValue: deviceInfo.odometer.totalUseTimeSecond | sportTime
+                }"
+            ></span>
+            <span *ngTemplateOutlet="rowInfoItem;
+                context: {
+                  itemTitle: 'universal_deviceSetting_totalMileage',
+                  itemValue: deviceInfo.odometer.totalUseMeter | thousandConversion: 'm'
+                }"
+            ></span>
+            <ng-container *ngIf="systemAccessRight[0] <= 29">
+              <span *ngTemplateOutlet="rowInfoItem;
+                  context: {
+                    itemTitle: '開機次數',
+                    itemValue: deviceInfo.odometer.totalNumberOfEnable
+                  }"
+              ></span>
+            </ng-container>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="uiFlag.currentPage === 'log'">
+        <div class="flexCol">
+          <h6 class="info-contentTitle">日誌</h6>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="uiFlag.currentPage === 'register'">
+        <div class="flexCol">
+          <h6 class="info-contentTitle">{{ 'universal_activityData_summary' | translate }}</h6>
+          <div class="flexCol info-contentText">
+            <span *ngTemplateOutlet="rowInfoItem;
+              context: {
+                itemTitle: '啟用日期',
+                itemValue: deviceInfo.deviceEnableDate
+              }"
+            ></span>
+            <span *ngTemplateOutlet="rowInfoItem;
+              context: {
+                itemTitle: '註冊日期',
+                itemValue: fitPairInfo.deviceBond.date || '--'
+              }"
+            ></span>
+            <span *ngTemplateOutlet="rowInfoItem;
+              context: {
+                itemTitle: '出廠日期',
+                itemValue: deviceInfo.manufactureDate
+              }"
+            ></span>
+            <span *ngTemplateOutlet="rowInfoItem;
+              context: {
+                itemTitle: '產品註冊者',
+                itemValue: fitPairInfo.deviceBond.name || '--'
+              }"
+            ></span>
+            <button
+              style="background-color: red; border-radius: 5px; color: white; width: 200px;"
+              (click)="showUnBondingAlert()"
+              *ngIf="fitPairInfo.deviceBond.id"
+            >
+              {{ 'universal_uiFitpair_unbind' | translate }}
+            </button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+    <footer *ngIf="uiFlag.displayPage === 'fitPair' || uiFlag.currentPage === 'management' ">
+      <p style="padding: 10px 20px; font-size: 14px; color: var(--scale-100-205);"
+        [innerHTML]="'universal_uiFitpair_fitpairDetailDescription' | translate"
+      ></p>
+    </footer>
+  </main>
+</div>
+<ng-template
+  #rowInfoItem
+  let-itemTitle="itemTitle"
+  let-itemValue="itemValue"
+>
+  <p class="flexRow info-item">
+    <span class="info-itemTitle">{{ itemTitle | translate }}：</span>
+    <span class="info-itemValue">{{ itemValue }}</span>
+  </p>
+</ng-template>
+<ng-template 
+  #appCard
+  let-cardTitle="cardTitle"
+  let-cardIcon="cardIcon"
+  let-appId="appId"
+  let-iOSLink="iOSLink"
+  let-gpLink="gpLink"
+  let-apkLink="apkLink"
+>
+  <div class="flexCol app__card">
+    <h5 class="info-contentTitle" style="font-size: 22px;">{{ cardTitle }}</h5>
+    <img class="app__icon" [src]="imgStoragePath + cardIcon" [alt]="cardTitle">
+    <span
+      class="app__description"
+      [innerHTML]="+appId | appId: 'descriptionKey' | translate"
+    >
+    </span>
+    <button class="dl__btn" (click)="handleFoldDl(appId)">
+      <i
+        class="icon-svg_web-icon_p1_006-unfold unfold__arrow"
+        [class.fold__arrow]="uiFlag.openAppDl.includes(appId)"
+      ></i>
+      <span style="color: rgba(0, 55, 255, 1)">
+        {{ 'universal_operating_download' | translate }}
+      </span>
+    </button>
+    <ng-container *ngIf="uiFlag.openAppDl.includes(appId)">
+      <div *ngIf="iOSLink.length > 0">
+        <a target="_blank" [href]="iOSLink">
+          <img class="app__download__image" [src]="appDlImgDomain + 'getApp_01_apple.png'">
+        </a>
+      </div>
+      <div *ngIf="gpLink.length > 0">
+        <a target="_blank" [href]="gpLink">
+          <img class="app__download__image" [src]="appDlImgDomain + 'getApp_02_googleplay.png'">
+        </a>
+      </div>
+      <div *ngIf="apkLink.length > 0">
+        <a target="_blank" [href]="apkLink">
+          <img class="app__download__image" [src]="appDlImgDomain + 'getApp_03_apk.png'">
+        </a>
+      </div>
+    </ng-container>
+  </div>
+</ng-template>
+<section 
+  class="flexCenter info-editMask"
+  *ngIf="uiFlag.showFitPairSettingDialog"
+>
+  <div class="flexCol fitpair__dialog">
+    <div style="padding: 20px 10px; color: var(--scale-0-255)">
+      <h6 style="text-align: center; font-weight: bold;">
+        {{ 'universal_uiFitpair_enabledFitPair' | translate }}
+      </h6>
+      <img src="/assets/fitPairDemo.png" style="width: 100%" />
+      <div style="padding: 5px 2vw;">
+        <span [innerHTML]="'universal_uiFitpair_fitpairDescription' | translate"></span>
+        <span [innerHTML]="'universal_deviceSetting_changeLater' | translate"></span>
+      </div>
+      <button class="info-primaryBtn btn__mobile" style="color: white;" (click)="editDeviceInfo(1)">
+        {{ 'universal_deviceSetting_personal' | translate }}
+      </button>
+      <button class="btn__mobile" style="color: red; background-color: white;" (click)="editDeviceInfo(3)">
+        {{ 'universal_deviceSetting_gymEquipment' | translate }}
+      </button>
+    </div>
+  </div>
+</section>

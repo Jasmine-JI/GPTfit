@@ -3,7 +3,7 @@
     *ngIf="hasResData === false && initialChartComplated"
     style="width: 100%; display: flex; flex-direction: row; justify-content: center;"
   >
-    <div class="child__page__card">
+    <div class="childPageCard">
       <p style="margin-top: 10px; color: gray; font-size: 18px;">{{'universal_status_noData' | translate}}</p>
     </div>
   </ng-container>
@@ -17,7 +17,7 @@
     </div>
   </ng-container>
   <ng-container *ngIf="hasResData && reportCompleted" style="width: 100%">
-    <section class="child__page__card">
+    <section class="childPageCard">
       <div class="functionBtnBar">
         <button class="alatech-btn alatech-btn--default"
           title="{{'universal_operating_print' | translate}}"

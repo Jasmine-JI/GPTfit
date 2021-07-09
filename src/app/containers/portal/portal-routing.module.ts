@@ -23,6 +23,7 @@ import { GroupIntroductionComponent } from '../../containers/dashboard/group-v2/
 import { AppCompressDataComponent } from './components/app-sign/app-compress-data/app-compress-data.component';
 import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-account/app-destroy-account.component';
 import { ActivityDetailComponent } from '../../shared/components/activity-detail/activity-detail.component';
+import { DeviceInfoComponent } from '../dashboard/components/device-info/device-info.component';
 
 
 const routes: Routes = [
@@ -42,9 +43,15 @@ const routes: Routes = [
     path: '',
     component: PortalComponent,
     children: [
+      /*
       {
         path: 'pair',
         component: DemoQrcodComponent
+      },
+      */
+      {
+        path: 'pair',
+        component: DeviceInfoComponent
       },
       {
         path: 'activity/:fileId',
