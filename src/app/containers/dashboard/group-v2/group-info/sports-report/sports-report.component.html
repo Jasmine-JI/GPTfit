@@ -301,6 +301,7 @@
             {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_power' | translate }} 
           </p>
         </div>
+      <!-- wb002 138版 不支援totalPlusGforce、totalMinusGforce
         <ng-container *ngIf="reportConditionOpt.sportType === sportCode.ball">
           <div>
             <div>
@@ -382,6 +383,7 @@
             </p>
           </div>
         </ng-container>
+      -->
       </div>
     </section>
     <section class="report-displaySection" *ngIf="reportConditionOpt.sportType === sportCode.all">
@@ -795,6 +797,7 @@
             "
           >
           </app-discolor-column-chart>
+        <!-- wb002 138版 不支援totalPlusGforce、totalMinusGforce
           <app-fillet-column-chart
             [data]="chart.planeAcceleration"
             [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
@@ -836,6 +839,7 @@
             *ngIf="uiFlag.progress === 100 && [sportCode.ball].includes(reportConditionOpt.sportType)"
           >
           </app-relative-column-chart>
+        -->
           <app-fillet-column-chart
             [data]="chart.extremePlaneGForce"
             [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
@@ -1645,6 +1649,7 @@
                   </div>
                 </mat-cell>
               </ng-container>
+            <!-- wb002 138版 不支援totalPlusGforce、totalMinusGforce
               <ng-container matColumnDef="totalPlaneGForce">
                 <mat-header-cell
                   *matHeaderCellDef
@@ -1802,6 +1807,7 @@
                   </div>
                 </mat-cell>
               </ng-container>
+            -->
               <ng-container matColumnDef="hrZone">
                 <mat-header-cell
                   *matHeaderCellDef
@@ -3028,6 +3034,7 @@
                   </div>
                 </mat-cell>
               </ng-container>
+            <!-- wb002 138版 不支援totalPlusGforce、totalMinusGforce
               <ng-container matColumnDef="totalPlaneGForce">
                 <mat-header-cell
                   *matHeaderCellDef
@@ -3179,6 +3186,7 @@
                   </div>
                 </mat-cell>
               </ng-container>
+            -->
               <ng-container matColumnDef="preferSport">
                 <mat-header-cell
                   *matHeaderCellDef

@@ -32,7 +32,6 @@ import { ActivityService } from '../../shared/services/activity.service';
 import { ProductErrorLogPipe } from './pipes/product-error-log.pipe';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { MyDeviceComponent } from './components/device/my-device/my-device.component';
-import { ProductInfoComponent } from './components/device/product-info/product-info.component';
 import { ReportService } from '../../shared/services/report.service';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -143,7 +142,6 @@ import { DeviceInfoComponent } from './components/device-info/device-info.compon
     PeopleSelectorWinComponent,
     ProductErrorLogPipe,
     MyDeviceComponent,
-    ProductInfoComponent,
     TrainLiveComponent,
     SettingsComponent,
     UserSettingsComponent,

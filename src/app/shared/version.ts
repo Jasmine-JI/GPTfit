@@ -1,6 +1,6 @@
-// fix time 2020/06/16
+// fix time 2020/07/14
 export const version = {
-  develop: '1.6.3.0 alpha',
-  release: '1.6.3.0 alpha',
-  master: '1.6.3'
+  develop: '1.7.0.0 alpha',
+  release: '1.7.0.0 alpha',
+  master: '1.7.0'
 };

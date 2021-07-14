@@ -1,15 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-
 import { GroupDetailInfo, GroupArchitecture, UserSimpleInfo } from '../../../models/group-detail';
 import { GroupService } from '../../../services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { HashIdService } from '../../../../../shared/services/hash-id.service';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { Router } from '@angular/router';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { BottomSheetComponent } from '../../../../../shared/components/bottom-sheet/bottom-sheet.component';
 import { GroupIdSlicePipe } from '../../../../../shared/pipes/group-id-slice.pipe';
+import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
+import { MatDialog } from '@angular/material/dialog';
+import { TranslateService } from '@ngx-translate/core';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -51,8 +51,9 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private router: Router,
     private hashIdService: HashIdService,
-    private bottomSheet: MatBottomSheet,
-    private groupIdSlicePipe: GroupIdSlicePipe
+    private groupIdSlicePipe: GroupIdSlicePipe,
+    private dialog: MatDialog,
+    private translateService: TranslateService
   ) { }
 
   ngOnInit(): void {
@@ -169,9 +170,35 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
         `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId)}/group-introduction?createType=department`
       );
     } else {
-      this.bottomSheet.open(BottomSheetComponent, {
-        data: { groupId: this.groupInfo.groupId }
+      this.translateService.get('hellow world').pipe(
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe(() => {
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: this.translateService.instant('universal_group_disclaimer'),
+            body: this.translateService.instant('universal_group_createClassStatement'),
+            confirmText: this.translateService.instant('universal_operating_agree'),
+            cancelText: this.translateService.instant('universal_operating_disagree'),
+            onConfirm: () => {
+              this.router.navigateByUrl(
+                `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId)}/group-introduction?createType=coach`
+              );
+  
+            }
+  
+          }
+  
+        });
+
       });
+
+      /* 1100714移除建立"專業老師"階層群組
+        this.bottomSheet.open(BottomSheetComponent, {
+          data: { groupId: this.groupInfo.groupId }
+        });
+      */
+      
     }
 
   }

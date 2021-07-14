@@ -747,7 +747,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100309
    */
   checkRaceComplete(distance: number, totalStep: number): boolean {
-    const mapDistance = +this.mapInfo.distance * 1000;
+    const mapDistance = parseFloat((+this.mapInfo.distance * 1000).toFixed(0));
     if (distance >= mapDistance && distance / 2 < totalStep) {
       return true;
     } else {

@@ -10,6 +10,7 @@
 }
 
 $icon-side-length: 75px;
+$date-picker-color: var(--scale-100-230);
 
 .header__btn {
   min-width: 100px;
@@ -51,6 +52,7 @@ $icon-side-length: 75px;
 }
 
 .unfold__arrow {
+  color: var(--scale-0-255);
   @include transition(transform);
 }
 
@@ -71,6 +73,51 @@ $icon-side-length: 75px;
   @include btn-mobile();
 }
 
+.date__selector {
+  width: 160px;
+  color: $date-picker-color;
+
+  &:last-of-type {
+    margin-right: 10px;
+  }
+
+}
+
+.picker__icon, .date__picker__tilde {
+  color: $date-picker-color;
+}
+
+.date__picker__tilde {
+  align-items: center;
+  margin: 0 10px 10px 10px;
+}
+
+#log__table {
+  width: 100%;
+
+  tr {
+    padding: 2px 0;
+    border-bottom: 1px solid rgba(200, 200, 200, 1);
+  }
+
+}
+
+#log__header {
+  color: rgba(185, 185, 185, 1);
+  font-size: 14px;
+}
+
+#log__body {
+  color: var(--scale-0-255);
+}
+
+.log__time {
+  font-size: 13px;
+}
+
+.log__msg {
+  word-break: break-all;
+}
 
 /************************************************ media ******************************************/
 

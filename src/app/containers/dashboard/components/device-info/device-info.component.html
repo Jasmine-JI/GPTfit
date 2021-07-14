@@ -351,7 +351,96 @@
       </ng-container>
       <ng-container *ngIf="uiFlag.currentPage === 'log'">
         <div class="flexCol">
-          <h6 class="info-contentTitle">日誌</h6>
+          <h6 class="info-contentTitle">設備日誌</h6>
+          <div>
+            <div class="flexRow" style="flex-wrap: wrap;">
+              <mat-form-field class="date__selector">
+                <input
+                  matInput
+                  [matDatepicker]="picker"
+                  placeholder="{{'universal_time_startDate' | translate}}"
+                  (dateChange)="handleDateChange($event, true)"
+                  [(ngModel)]="logDate.filterStartTime"
+                  [max]="logDate.filterEndTime"
+                >
+                <mat-datepicker-toggle 
+                  matSuffix
+                  [for]="picker"
+                  class="picker__icon"
+                ></mat-datepicker-toggle>
+                <mat-datepicker [touchUi]="isMobile" #picker startView="year"></mat-datepicker>
+              </mat-form-field>
+              <div class="flexRow date__picker__tilde">~</div>
+              <mat-form-field class="date__selector">
+                <input 
+                  matInput
+                  [matDatepicker]="picker2"
+                  placeholder="{{'universal_time_endDate' | translate}}"
+                  (dateChange)="handleDateChange($event, false)"
+                  [(ngModel)]="logDate.filterEndTime"
+                  [min]="logDate.filterStartTime"
+                >
+                <mat-datepicker-toggle 
+                  matSuffix
+                  [for]="picker2"
+                  class="picker__icon"
+                ></mat-datepicker-toggle>
+                <mat-datepicker [touchUi]="isMobile" #picker2 startView="year" [startAt]="logDate.filterEndTime"></mat-datepicker>
+              </mat-form-field>
+              <button
+                mat-raised-button
+                mat-icon-button
+                style="background-color: #26abe3;color: #fff"
+                (click)="getProductLog()"
+              >
+                <mat-icon>search</mat-icon>
+              </button>
+            </div>
+            <div>
+              <app-pagination
+                [pageSetting]="pageSetting"
+                [onePageSizeOpt]="onePageSizeOpt"
+                (pageChange)="changePage($event)"
+              ></app-pagination>
+            </div>
+            <div>
+              <table id="log__table">
+                <thead>
+                  <tr id="log__header">
+                    <th>發生時間</th>
+                    <th>上傳時間</th>
+                    <th>訊息</th>
+                  </tr>
+                </thead>
+                <tbody id="log__body">
+                  <ng-container *ngIf="equipmentLog.length > 0">
+                    <ng-container *ngFor="let _log of equipmentLog;">
+                      <tr>
+                        <td class="log__time">{{ _log.logTime | timeFormat: 'YYYY-MM-DD HH:mm:ss' }}</td>
+                        <td class="log__time">{{ _log.uploadTime  | timeFormat: 'YYYY-MM-DD HH:mm:ss' }}</td>
+                        <td class="log__msg">
+                          {{ _log.code }}:
+                          {{ ('errorCode_' + deviceInfo.modelTypeName + '_' + (_log.code.split('_')[0])) | productErrorLog }}
+                        </td>
+                      </tr>
+                    </ng-container>
+                  </ng-container>
+                  <ng-container *ngIf="equipmentLog.length === 0">
+                    <span style="color: rgba(150, 150, 150, 1);">
+                      {{ 'universal_status_noData' | translate }}
+                    </span>
+                  </ng-container>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <app-pagination
+                [pageSetting]="pageSetting"
+                [onePageSizeOpt]="onePageSizeOpt"
+                (pageChange)="changePage($event)"
+              ></app-pagination>
+            </div>
+          </div>
         </div>
       </ng-container>
       <ng-container *ngIf="uiFlag.currentPage === 'register'">
@@ -432,7 +521,7 @@
         class="icon-svg_web-icon_p1_006-unfold unfold__arrow"
         [class.fold__arrow]="uiFlag.openAppDl.includes(appId)"
       ></i>
-      <span style="color: rgba(0, 55, 255, 1)">
+      <span style="color: rgba(0, 105, 255, 1)">
         {{ 'universal_operating_download' | translate }}
       </span>
     </button>

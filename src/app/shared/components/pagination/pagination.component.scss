@@ -1,89 +1,70 @@
-/* pagination */
+@import 'transition.scss';
+@import 'rotate.scss';
+@import 'color.scss';
 
-.page-link:hover {
-  text-decoration: none;
-  cursor: pointer;
-  background-color: #eee;
-  border-radius: 4px;
-  color: #157fcc;
+$pagination-color: var(--scale-120-190);
+$drop-menu-width: 40px;
+
+.pagination__section {
+  width: 100%;
+  margin: 10px 0;
+  font-size: 14px;
+  color: $pagination-color;
+  justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
-.page-link {
-  border: none;
-  background-color: transparent;
-  text-decoration: none;
-  padding: 8px;
-  font-size: 16px;
-  color: #157fcc;
-}
-
-.pagination>li>a {
+.one__page__size {
   position: relative;
-  float: left;
-  padding: 6px 9pt;
-  line-height: 1.42857143;
-  text-decoration: none;
-  color: #337ab7;
-}
-
-.pagination__md>li {
-  position: relative;
-  float: left;
-  padding: 6px 9pt;
-  line-height: 1.42857143;
-  text-decoration: none;
-  color: #337ab7;
-}
-
-.page__info {
-  padding: 6px 0px;
-  color: #777;
-}
-
-.pagination-item>a {
-  border: none;
-  border-radius: 4px;
+  display: inline-block;
+  border-bottom: 1px solid $pagination-color;
+  width: $drop-menu-width;
+  margin: 0 10px 0 5px;
   cursor: pointer;
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: 3px;
+    top: 7px;
+    border: solid;
+    border-width: 6px 4px 0px 4px;
+    border-color: $pagination-color transparent transparent transparent;
+    @include transition(transform);
+  }
+
 }
 
-.pagination-item .pagination-item__content:hover {
-  background-color: #ccc;
-  color: #23527c;
+.one__page__size--active {
+
+  &:after {
+    @include el-rotate(180deg);
+    @include transition(transform);
+  }
+
 }
 
-.pagination-item--active>a {
-  background-color: #ccc;
+.switch__btn {
+  color: $pagination-color;
 }
 
-.pagination .pagination-item--disabled>a {
-  color: #999;
-  background-color: transparent;
-  cursor: default;
-}
-
-.pagination__md .pagination-item--disabled>a {
-  color: #999;
-  background-color: transparent;
-  cursor: default;
-}
-
-.pagination.page__pagination {
-  display: none;
-}
-
-.pagination__md {
+.pagination__drop__menu {
   display: flex;
-  padding-left: 0;
-  list-style: none;
-  border-radius: 0.25rem;
-}
+  flex-direction: column;
+  position: absolute;
+  padding: 5px;
+  background-color: var(--scale-255-60);
+  cursor: pointer;
+  border: 1px solid rgba(0, 0, 0, 0.2);
 
-@media (min-width: 767px) {
-  .pagination.page__pagination {
-    display: flex;
-    margin-bottom: 0px;
+  span {
+    width: $drop-menu-width;
+
+    &:hover {
+      background-color: $primary-blue;
+      color: white;
+    }
+
   }
-  .pagination__md {
-    display: none;
-  }
+
 }
