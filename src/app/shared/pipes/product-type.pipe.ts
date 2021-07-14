@@ -9,26 +9,27 @@ export class ProductTypePipe implements PipeTransform {
    * @returns {string}-翻譯的鍵
    */
   transform(value: string | number, arg: 'key' | 'imgPath' = 'key'): string {
+    const imgDir = '/app/public_html/img/devicebg';
     const device = {
       wearable: {
         key: 'universal_vocabulary_wearableDevice',
-        imgPath: '/assets/images/deviceBg/wearable.jpg'
+        imgPath: `${imgDir}/wearable.jpg`
       },
       treadmill: {
         key: 'universal_vocabulary_treadmill',
-        imgPath: '/assets/images/deviceBg/run.jpg'
+        imgPath: `${imgDir}/run.jpg`
       },
       spinBike: {
         key: 'universal_vocabulary_spinBike',
-        imgPath: '/assets/images/deviceBg/bike.jpg'
+        imgPath: `${imgDir}/bike.jpg`
       },
       rowMachine: {
         key: 'universal_vocabulary_rowingMachine',
-        imgPath: '/assets/images/deviceBg/row.jpg'
+        imgPath: `${imgDir}/row.jpg`
       },
       sensor: {
         key: 'universal_vocabulary_sensor',
-        imgPath: '/assets/images/deviceBg/wt.jpg'
+        imgPath: `${imgDir}/wt.jpg`
       },
     };
     switch (value + '') {

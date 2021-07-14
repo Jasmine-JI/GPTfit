@@ -14,7 +14,6 @@ import { DashboardGuard } from './guards/dashboard-guard';
 import { MyActivityComponent } from '../../shared/components/my-activity/my-activity.component';
 import { SportsReportComponent } from '../../shared/components/sports-report/sports-report.component';
 import { MyDeviceComponent } from './components/device/my-device/my-device.component';
-import { ProductInfoComponent } from './components/device/product-info/product-info.component';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { PersonalPreferencesComponent } from './components/settings/personal-preferences/personal-preferences.component';
@@ -142,13 +141,6 @@ const routes: Routes = [
         component: InnerDevicePairComponent,
         canActivate: [DashboardGuard]
       },
-      /*
-      {
-        path: 'system/device/info/:deviceSN',
-        component: ProductInfoComponent,
-        canActivate: [DashboardGuard]
-      },
-      */
       {
         path: 'system/device/info/:deviceSN',
         component: DeviceInfoComponent,
@@ -235,12 +227,6 @@ const routes: Routes = [
         path: 'device',
         component: MyDeviceComponent
       },
-      /*
-      {
-        path: 'device/info/:deviceSN',
-        component: ProductInfoComponent
-      },
-      */
       {
         path: 'device/info/:deviceSN',
         component: DeviceInfoComponent

@@ -345,6 +345,7 @@
               </p>
             </div>
             <ng-container *ngIf="reportConditionOpt.sportType === sportCode.ball">
+            <!-- wb002 138版 不支援totalPlusGforce、totalMinusGforce
               <div>
                 <div>
                   <span class="report-summaryData">
@@ -423,6 +424,7 @@
                   {{ 'universal_activityData_totalFloorImpact' | translate }} 
                 </p>
               </div>
+            -->
             </ng-container>
           </div>
         </section>
@@ -971,6 +973,7 @@
                 "
               >
               </app-discolor-column-chart>
+            <!-- wb002 138版 不支援totalPlusGforce、totalMinusGforce
               <app-fillet-column-chart
                 [data]="chart.planeAcceleration"
                 [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
@@ -1012,6 +1015,7 @@
                 *ngIf="uiFlag.progress === 100 && [sportCode.ball].includes(reportConditionOpt.sportType)"
               >
               </app-relative-column-chart>
+            -->
               <app-fillet-column-chart
                 [data]="chart.extremePlaneGForce"
                 [dateRange]="reportTime.type === 1 ? 'day' : 'week'"

@@ -109,7 +109,7 @@ export class QrcodeService {
   }
 
   /**
-   * api 7021-取得設備資訊
+   * api 7021-取得設備資訊(日誌)
    * @param body {Object}
    * @author kidin-1090924
    */

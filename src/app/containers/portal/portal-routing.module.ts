@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { PortalComponent } from './portal.component';
-import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component';
 import { SigninGuard } from '../../shared/guards/signin/signin.guard';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { SportsReportComponent } from '../../shared/components/sports-report/sports-report.component';
@@ -43,12 +42,6 @@ const routes: Routes = [
     path: '',
     component: PortalComponent,
     children: [
-      /*
-      {
-        path: 'pair',
-        component: DemoQrcodComponent
-      },
-      */
       {
         path: 'pair',
         component: DeviceInfoComponent

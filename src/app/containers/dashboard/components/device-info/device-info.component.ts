@@ -15,6 +15,8 @@ import { MessageBoxComponent } from '../../../../shared/components/message-box/m
 import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../../../shared/services/auth.service';
 import { UserProfileInfo } from '../../models/userProfileInfo';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { PaginationSetting } from '../../../../shared/models/pagination';
 
 type DisplayPage = 'fitPair' | 'system' | 'myDevice';
 type MainContent = 'info' | 'management' | 'odometer' | 'log' | 'register';
@@ -32,8 +34,8 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
   @ViewChild('seeMore') seeMore: ElementRef;
 
   private ngUnsubscribe = new Subject;
-  pageResize: Subscription;
   clickEvent: Subscription;
+  pageResize: Subscription;
 
   /**
    * ui上會用到的各個flag
@@ -97,15 +99,11 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 裝置日誌request body
+   * 裝置日誌日期範圍
    */
-   EquipmentCond = {
-    filterStartTime: null,
-    filterEndTime: null,
-    page: 0,
-    pageCount: 10,
-    queryEquipmentSN: null,
-    token: null
+   logDate = {
+    filterStartTime: moment().subtract(6, 'month').format('YYYY-MM-DDT00:00:00.000Z'),
+    filterEndTime: moment().format('YYYY-MM-DDT23:59:59Z')
   }
 
   /**
@@ -126,6 +124,16 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
      perSize: []
    };
 
+   /**
+    * 頁碼設定
+    */
+   pageSetting: PaginationSetting = {
+    totalCounts: 0,
+    pageIndex: 0,
+    onePageSize: 10
+  };
+
+  readonly onePageSizeOpt = [10, 30, 50];
   currentLang: string;
   userId: number = null;
   systemAccessRight = [99];
@@ -358,6 +366,10 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     this.uiFlag.currentTagIndex = tagIdx;
     this.uiFlag.showMorePageOpt = false;
     this.getBtnPosition(tagIdx);
+    if (page === 'log') {
+      this.getProductLog();
+    }
+
   }
 
   /**
@@ -882,23 +894,6 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 取得裝置日誌
-   * @author kidin-1100702
-   */
-  getequipmentLog() {
-    this.qrcodeService.getEquipmentLog(this.EquipmentCond).subscribe(res => {
-      const { apiCode, info, resultCode, resultMessage } = res;
-      if (res.resultCode !== 200) {
-        this.utils.handleError(resultCode, apiCode, resultMessage);
-      } else {
-        this.equipmentLog = info.equipmentErrorLog;
-      }
-
-    });
-
-  }
-
-  /**
    * 處理裝置綁定或解綁
    * @param bondStatus {1 | 2}-欲更新的綁定狀態
    * @author kidin-1100706
@@ -1177,6 +1172,80 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     }
 
     this.utils.removeLocalStorageObject('actionAfterLogin');
+  }
+
+  /**
+   * 取得設備日誌
+   * @author kidin-1100712
+   */
+  getProductLog() {
+    const token = this.utils.getToken() || '',
+          { sn } = this.deviceInfo,
+          { filterStartTime, filterEndTime } = this.logDate,
+          body = {
+            token,
+            queryEquipmentSN: sn,
+            filterStartTime,
+            filterEndTime,
+            page: this.pageSetting.pageIndex,
+            pageCounts: this.pageSetting.onePageSize
+          };
+
+    this.qrcodeService.getEquipmentLog(body).subscribe(res => {
+      const { apiCode, resultCode, resultMessage, info } = res;
+      if (resultCode !== 200) {
+        this.utils.handleError(resultCode, apiCode, resultMessage);
+      } else {
+        const { totalCounts, equipmentErrorLog } = info,
+              { pageIndex, onePageSize } = this.pageSetting;
+        this.pageSetting = {
+          totalCounts,
+          pageIndex,
+          onePageSize
+        };
+        this.equipmentLog = equipmentErrorLog;
+      }
+
+    });
+
+  }
+
+  /**
+   * 切換分頁
+   * @param pageSetting {PaginationSetting}-變更後的分頁設定
+   * @author kidin-1100712
+   */
+  changePage(pageSetting: PaginationSetting) {
+    if (this.equipmentLog.length > 0) {
+      const { pageIndex, onePageSize } = pageSetting;
+      this.pageSetting.pageIndex = pageIndex;
+      this.pageSetting.onePageSize = onePageSize;
+      this.getProductLog();
+    }
+
+  }
+
+  /**
+   * 取得使用者選擇的日期
+   * @param $event {MatDatepickerInputEvent<moment.Moment>}
+   * @param isStartTime {boolean}
+   * @author kidin-1100712
+   */
+   handleDateChange(
+    $event: MatDatepickerInputEvent<moment.Moment>,
+    isStartTime: boolean
+  ) {
+    if (isStartTime) {
+      this.logDate.filterStartTime = moment($event.value).format(
+        'YYYY-MM-DDT00:00:00.000Z'
+      );
+    } else {
+      this.logDate.filterEndTime = moment($event.value).format(
+        'YYYY-MM-DDT23:59:59.000Z'
+      );
+
+    }
+
   }
 
   /**

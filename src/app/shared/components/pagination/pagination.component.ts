@@ -1,57 +1,128 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, Output, EventEmitter, Input } from '@angular/core';
+import { fromEvent, Subject, Subscription } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { PaginationSetting } from '../../models/pagination';
+import { UtilsService } from '../../services/utils.service';
 
 @Component({
   selector: 'app-pagination',
   templateUrl: './pagination.component.html',
   styleUrls: ['./pagination.component.scss']
 })
-export class PaginationComponent implements OnInit {
-  @Input() meta: any;
-  @Input() currentPage: number;
-  @Input() maxPage: number;
-  @Input() total: number;
-  @Output() onChange = new EventEmitter();
+export class PaginationComponent implements OnInit, OnDestroy, OnChanges {
+  @Output() pageChange = new EventEmitter();
+  @Input() onePageSizeOpt: Array<number> = [5, 10, 15];
+  @Input() pageSetting: PaginationSetting = {
+    totalCounts: 0,
+    pageIndex: 0,
+    onePageSize: 10
+  };
+  
+  
+  private ngUnsubscribe = new Subject;
+  clickEvent: Subscription;
+  showPageSizeMenu = false;
 
-  pageRanges: Array<any>; // 產生頁數範圍
-  constructor() {}
+  pageSettingObj: PaginationSetting;
+  debounce: any;
 
-  ngOnInit() {
-    this.pageRanges = Array.from({ length: this.maxPage }, (v, k) => k + 1);
+  constructor(
+    private utils: UtilsService
+  ) {}
+
+  ngOnInit() {}
+
+  ngOnChanges(): void {
+    this.pageSettingObj = this.utils.deepCopy(this.pageSetting);
   }
-  onPageChange(_page) {
-    this.onChange.emit(_page);
-  }
-  selectPage(_page) {
-    this.currentPage = _page;
-    this.onPageChange(this.currentPage);
-  }
-  prePage() {
-    let pageNumber = this.currentPage;
-    if (this.currentPage > 1) {
-      pageNumber = this.currentPage - 1;
+
+  /**
+   * 顯示一頁顯示項數選單
+   * @param e {MouseEvent}
+   * @author kidin-1100712
+   */
+  showPageSizeOpt(e: MouseEvent) {
+    e.stopPropagation();
+    if (this.showPageSizeMenu) {
+      this.showPageSizeMenu = false;
+      this.clickEvent.unsubscribe();
+    } else {
+      this.showPageSizeMenu = true;
+      this.subscribeClickEvent();
     }
-    if (this.currentPage !== 1) {
-      this.onPageChange(pageNumber);
-    }
+    
   }
-  nextPage() {
-    let pageNumber = this.currentPage;
-    if (this.currentPage < this.maxPage) {
-      pageNumber = this.currentPage + 1;
-    }
-    if (this.currentPage !== this.maxPage) {
-      this.onPageChange(pageNumber);
-    }
+
+  /**
+   * 訂閱全域點擊事件
+   * @author kidin-1100712
+   */
+  subscribeClickEvent() {
+    const click = fromEvent(document, 'click');
+    this.clickEvent = click.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(e => {
+      this.showPageSizeMenu = false;
+      this.clickEvent.unsubscribe();
+    });
+
   }
-  toFirstPage() {
-    const pageNumber = 1;
-    if (this.currentPage !== 1) {
-      this.onPageChange(pageNumber);
+
+  /**
+   * 切換頁碼
+   * @author kidin-1100712
+   */
+  switchPage(action: 'pre' | 'next') {
+    if (action === 'pre') {
+
+      if (this.pageSettingObj.pageIndex > 0) {
+        this.pageSettingObj.pageIndex--;
+      }
+      
+    } else {
+      const { totalCounts, onePageSize, pageIndex } = this.pageSettingObj;
+      if ((pageIndex + 1) * onePageSize < totalCounts) {
+        this.pageSettingObj.pageIndex++;
+      }
+      
     }
-  }
-  toLastPage() {
-    if (this.currentPage !== this.maxPage) {
-      this.onPageChange(this.maxPage);
+
+    // 避免快速切換造成太過頻繁call api
+    if (this.debounce) {
+      clearTimeout(this.debounce);
     }
+    
+    this.debounce = setTimeout(() => {
+      this.emitPageSetting();
+    }, 250);
+
   }
+
+  /**
+   * 變更單頁顯示項數
+   * @param size {number}-單一頁所顯示項數
+   * @author kidin-1100712
+   */
+  changeOnePageSize(size: number) {  
+    this.pageSettingObj.onePageSize = size;
+    this.pageSettingObj.pageIndex = 0;
+    this.emitPageSetting();
+  }
+
+  /**
+   * 向父組件傳遞頁碼設定
+   * @author kidin-1100712
+   */
+  emitPageSetting() {
+    this.pageChange.emit(this.pageSettingObj);
+  }
+
+  /**
+   * 解除rxjs訂閱
+   */
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
 }
