@@ -1,0 +1,137 @@
+<app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
+<section class="flexCol" style="margin-bottom: 15px">
+  <span class="pageTitle" *ngIf="!targetUserId">
+    {{ 'universal_deviceSetting_myDevice' | translate }}
+  </span>
+  <app-pagination
+    [pageSetting]="pageSetting"
+    [onePageSizeOpt]="onePageSizeOpt"
+    (pageChange)="changePage($event)"
+  ></app-pagination>
+  <main id="main__section" class="flexRow">
+    <ng-container *ngIf="deviceList?.length > 0; else noData;">
+      <ng-container *ngFor="let _list of deviceList; let _idx = index;">
+        <div class="flexCol list__card" (click)="goDetail(_list.myEquipmentSN)">
+          <div class="flexRow" style="width: 100%;">
+            <img class="device__img" [src]="imgStoragePath + _list.modelImg" (error)="this.imgStoragePath + '/img/unknown.png'">
+            <div class="list__content" style="width: 100%;">
+              <h4 style="font-weight: bold; margin: 0; color: var(--scale-75-230);">
+                {{ _list.modelName }}
+              </h4>
+              <p style="font-size: 15px; font-weight: bold; margin-bottom: 6px;">{{ _list.myEquipmentSN }}</p>
+              <div class="flexCol">
+                <span style="font-weight: bold; font-size: 15px;">
+                  {{ 'universal_uiFitpair_fitpairObject' | translate }}：
+                </span>
+                <div style="position: relative;" (click)="openMenu($event, _idx)">
+                  <div class="drop__menu" [class.drop__menu--active]="uiFlag.openMenu === _idx">
+                    <span
+                      class="current__select anyone__option"
+                      *ngIf="_list.fitPairStatus == 3"
+                    >
+                      {{ 'universal_vocabulary_anyone' | translate }}
+                    </span>
+                    <span
+                      class="current__select self__option"
+                      *ngIf="_list.fitPairStatus == 1"
+                    >
+                      {{ 'universal_privacy_onlyMe' | translate }}
+                    </span>
+                    <span
+                      class="current__select close__option"
+                      *ngIf="_list.fitPairStatus == 0"
+                    >
+                      {{ 'universal_operating_close' | translate }}
+                    </span>
+                  </div>
+                  <div id="drop__menu__list" *ngIf="uiFlag.openMenu === _idx">
+                    <ul style="list-style-type:none; padding: 5px; margin: 0;">
+                      <li class="anyone__option" (click)="changeFitObj($event, 3)">
+                        {{ 'universal_vocabulary_anyone' | translate }}
+                      </li>
+                      <li class="self__option" (click)="changeFitObj($event, 1)">
+                        {{ 'universal_privacy_onlyMe' | translate }}
+                      </li>
+                      <li class="close__option" (click)="changeFitObj($event, 0)">
+                        {{ 'universal_operating_close' | translate }}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <span
+            id="expand__title"
+            [style.border-bottom]="uiFlag.showMoreInfo.includes(_idx) ? '1px solid rgba(200, 200, 200, 1)' : 'none'"
+          >
+            {{ 'universal_deviceSetting_productInfo' | translate }}
+          </span>
+          <div class="flexCenter expand__section" *ngIf="uiFlag.showMoreInfo.includes(_idx)">
+            <table>
+              <tbody>
+                <tr>
+                  <th class="row__header">{{ 'universal_deviceSetting_modeType' | translate }}：</th>
+                  <td class="row__data">{{ _list.deviceType | productType | translate }}</td>
+                </tr>
+                <tr
+                  *ngIf="_list.fitPairStatus == 3 && (_list.fitPairUserId || !_list.lastFitPairUserId)"
+                >
+                  <th class="row__header">{{ 'universal_deviceSetting_currentFitpair' | translate }}：</th>
+                  <td class="row__data">
+                    <ng-container *ngIf="_list.fitPairUserId">
+                      {{ _list.fitPairUserName }}
+                    </ng-container>
+                    <ng-container *ngIf="!_list.fitPairUserId">
+                      --
+                    </ng-container>
+                  </td>
+                </tr>
+                <tr *ngIf="_list.fitPairStatus == 3 && _list.lastFitPairUserId && !_list.fitPairUserId">
+                  <th class="row__header">{{ 'universal_deviceSetting_lastFitpair' | translate }}：</th>
+                  <td class="row__data">{{ _list.lastFitPairUserName }}</td>
+                </tr>
+                <tr *ngIf="_list.fitPairStatus == 3">
+                  <th class="row__header">Fitpair {{ 'universal_activityData_time' | translate }}：</th>
+                  <td class="row__data">
+                    <ng-container *ngIf="_list.lastFitPairUserId && _list.lastFitPairTimeStamp">
+                      {{ (_list.lastFitPairTimeStamp * 1000) | timeFormat: 'YYYY-MM-DD HH:MM' }}
+                    </ng-container>
+                    <ng-container *ngIf="!_list.lastFitPairUserId || !_list.lastFitPairTimeStamp">
+                      --
+                    </ng-container>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div
+              class="flexCol"
+              style="margin-top: 10px; align-items: center;"
+              *ngIf="_list.fitPairStatus == 3"
+            >
+              <span style="font-size: 14px; font-weight: bold; color: rgba(150, 150, 150, 1);">
+                Fitpair QR code
+              </span>
+              <qrcode [qrdata]="_list.qrURL" [width]="128" [level]="'M'"></qrcode>
+            </div>
+          </div>
+          <div class="expand__btn" [class.expand__btn--active]="uiFlag.showMoreInfo.includes(_idx)">
+            <button (click)="getMoreInfo($event, _idx)">
+              <i class="icon-svg_web-icon_p1_006-unfold"></i>
+            </button>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+  </main>
+  <app-pagination
+    [pageSetting]="pageSetting"
+    [onePageSizeOpt]="onePageSizeOpt"
+    (pageChange)="changePage($event)"
+  ></app-pagination>
+</section>
+<ng-template #noData>
+  <div style="color: var(--scale-100-205); font-size: 18px;">
+    {{ 'universal_status_noFindData' | translate }}
+  </div>
+</ng-template>

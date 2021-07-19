@@ -31,7 +31,7 @@ import { UnsaveGuard } from '../dashboard/guards/unsave-guard';
 import { ActivityService } from '../../shared/services/activity.service';
 import { ProductErrorLogPipe } from './pipes/product-error-log.pipe';
 import { NgProgressModule } from '@ngx-progressbar/core';
-import { MyDeviceComponent } from './components/device/my-device/my-device.component';
+import { MyDeviceComponent } from './components/my-device/my-device.component';
 import { ReportService } from '../../shared/services/report.service';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';

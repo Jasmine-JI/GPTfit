@@ -557,21 +557,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1100706
    */
   checkCheckSum(sn: string, cs: string): boolean {
-    const weighted = [2, 2, 6, 1, 8, 3, 4, 1, 1, 1, 1, 1, 1, 1];
-    let oddTotal = 0,
-        evenTotal = 0;
-    for (let i = 0, len = sn.length; i < len; i++) {
-      const weightedValue = sn.charCodeAt(i) * weighted[i];
-      if ((i + 1) % 2 === 0) {
-        evenTotal += weightedValue;
-      } else {
-        oddTotal += weightedValue;
-      }
-    }
-
-    const multiplyStr = `${evenTotal * oddTotal}`,
-          multiplyStrLen = multiplyStr.length,
-          checkSum = multiplyStr.slice(multiplyStrLen - 4, multiplyStrLen);
+    const checkSum = this.qrcodeService.createDeviceChecksum(sn);
     if (checkSum == cs) {
       return true;
     } else {
@@ -843,6 +829,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
 
   /**
    * 編輯裝置資訊
+   * @param fitPairStatus {number}-fitpair開放對象
    * @author kidin-1100702
    */
   editDeviceInfo(fitPairStatus: number) {

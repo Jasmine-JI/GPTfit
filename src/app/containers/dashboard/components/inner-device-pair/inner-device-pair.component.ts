@@ -11,6 +11,7 @@ import { UtilsService } from '../../../../shared/services/utils.service';
 })
 export class InnerDevicePairComponent implements OnInit {
   targetUserId: number;
+  targetUserName: string;
   deviceSN: string;
 
   constructor(
@@ -23,6 +24,7 @@ export class InnerDevicePairComponent implements OnInit {
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
     this.targetUserId = queryStrings.targetUserId;
   }
+
   openSelectorWin(e) {
     const adminLists = [];
     e.preventDefault();
@@ -37,13 +39,16 @@ export class InnerDevicePairComponent implements OnInit {
       }
     });
   }
+
   handleConfirm(type, _lists) {
-    const userIds = _lists.map(_list => _list.userId);
-    this.targetUserId = userIds[0];
+    const { userId, userName } = _lists[0];
+    this.targetUserName = userName;
+    this.targetUserId = userId;
     this.router.navigateByUrl(
       `${location.pathname}?targetUserId=${this.targetUserId}`
     );
   }
+
   watchDeviceSNDetail() {
     this.deviceSN = this.deviceSN.toUpperCase();
     this.router.navigateByUrl(
