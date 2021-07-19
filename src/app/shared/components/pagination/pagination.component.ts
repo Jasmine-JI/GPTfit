@@ -33,6 +33,7 @@ export class PaginationComponent implements OnInit, OnDestroy, OnChanges {
   ngOnInit() {}
 
   ngOnChanges(): void {
+console.log('pageSetting', this.pageSetting);
     this.pageSettingObj = this.utils.deepCopy(this.pageSetting);
   }
 

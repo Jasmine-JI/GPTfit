@@ -13,7 +13,7 @@ import { InnerSettingsComponent } from './components/inner-settings/inner-settin
 import { DashboardGuard } from './guards/dashboard-guard';
 import { MyActivityComponent } from '../../shared/components/my-activity/my-activity.component';
 import { SportsReportComponent } from '../../shared/components/sports-report/sports-report.component';
-import { MyDeviceComponent } from './components/device/my-device/my-device.component';
+import { MyDeviceComponent } from './components/my-device/my-device.component';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { PersonalPreferencesComponent } from './components/settings/personal-preferences/personal-preferences.component';

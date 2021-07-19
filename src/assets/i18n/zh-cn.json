@@ -2399,4 +2399,6 @@
  "universal_system_lowBatteryDataLost": "請保持{{number}}{{unit}}以上的踩踏維持電力，避免資料遺失",
  "universal_vocabulary_wtSensor": "Strengh sensor (place stationary before connect)",
  "universal_vocabulary_acceleration": "加速度",
- "universal_muscleName_preferredMuscleGroup": "Preferred muscle group"}
+ "universal_muscleName_preferredMuscleGroup": "Preferred muscle group",
+ "universal_deviceSetting_currentFitpair": "目前Fitpair對象",
+ "universal_deviceSetting_lastFitpair": "前一個Fitpair對象"}
