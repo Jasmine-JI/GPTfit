@@ -65,7 +65,7 @@
     font-size="13"
     stroke="#868686"
     stroke-width="0.5"
-    *ngIf="reportType === 'sport'"
+    *ngIf="pageType === 'sport'"
   >{{'universal_activityData_hrZone' | translate}}
   </text>
   <text
@@ -75,7 +75,7 @@
     font-size="13"
     stroke="#868686"
     stroke-width="0.5"
-    *ngIf="reportType === 'lifeTracking'"
+    *ngIf="pageType === 'lifeTracking'"
   >{{ 'universal_activityData_fatFreeMassIndex' | translate }}(FFMI)
   </text>
 
@@ -87,7 +87,7 @@
     transform="rotate(-90, 16, 107)"
     stroke="#868686"
     stroke-width="0.5"
-    *ngIf="reportType === 'sport'"
+    *ngIf="pageType === 'sport'"
   >{{'universal_deviceSetting_timer' | translate}}
   </text>
   <text
@@ -98,10 +98,10 @@
     transform="rotate(-90, 16, 107)"
     stroke="#868686"
     stroke-width="0.5"
-    *ngIf="reportType === 'lifeTracking'"
+    *ngIf="pageType === 'lifeTracking'"
   >{{'universal_lifeTracking_fatRate' | translate}}
   </text>
-  <g id="sport" *ngIf="reportType === 'sport'" [attr.opacity]="floatText ? 0 : 0.5">
+  <g id="sport" *ngIf="pageType === 'sport'" [attr.opacity]="floatText ? 0 : 0.5">
     <foreignObject x="45" y="17" width="130" height="60">
       <xhtml:p class="blockDescription blockOne">
         {{'universal_activityData_hardWorkButLowIntensity' | translate}}{{blockOne.percentage}}
@@ -195,7 +195,7 @@
     </foreignObject>
   </g>
 
-  <g id="lifeTracking" *ngIf="reportType === 'lifeTracking'" [attr.opacity]="floatText ? 0 : 0.5">
+  <g id="lifeTracking" *ngIf="pageType === 'lifeTracking'" [attr.opacity]="floatText ? 0 : 0.5">
     <foreignObject x="35" y="17" width="130" height="60">
       <xhtml:div class="flexRow" >
         <i class="icon-svg_web-icon_p3_021-3_recessive_obesity bodyIcon blockOne"></i>
@@ -377,7 +377,7 @@
     </text>
   </g>
 
-  <g *ngIf="reportType === 'sport' && floatText === true">
+  <g *ngIf="pageType === 'sport' && floatText === true">
     <foreignObject x="45" y="17" width="130" height="60">
       <xhtml:p class="blockDescription blockOne">
         {{'universal_activityData_hardWorkButLowIntensity' | translate}}{{blockOne.percentage}}
@@ -471,7 +471,7 @@
     </foreignObject>
   </g>
 
-  <g *ngIf="reportType === 'lifeTracking' && floatText === true">
+  <g *ngIf="pageType === 'lifeTracking' && floatText === true">
     <foreignObject x="35" y="17" width="130" height="60">
       <xhtml:div class="flexRow" >
         <i class="icon-svg_web-icon_p3_021-3_recessive_obesity bodyIcon blockOne"></i>

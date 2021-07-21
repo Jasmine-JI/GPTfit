@@ -73,7 +73,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 報告頁面可讓使用者篩選的條件
    */
   reportConditionOpt: ReportConditionOpt = {
-    reportType: 'sport',
+    pageType: 'sport',
     date: {
       startTimestamp: moment().startOf('day').subtract(6, 'days').valueOf(),
       endTimestamp: moment().endOf('day').valueOf(),

@@ -74,7 +74,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   reportConditionOpt: ReportConditionOpt = {
     brandType: 2,
-    reportType: 'sport',
+    pageType: 'sport',
     date: {
       startTimestamp: moment().startOf('day').subtract(6, 'days').valueOf(),
       endTimestamp: moment().endOf('day').valueOf(),

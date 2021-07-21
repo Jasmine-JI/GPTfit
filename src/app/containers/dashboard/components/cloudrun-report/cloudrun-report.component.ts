@@ -50,7 +50,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * 報告頁面可讓使用者篩選的條件
    */
   reportConditionOpt: ReportConditionOpt = {
-    reportType: 'cloudRun',
+    pageType: 'cloudRun',
     date: {
       startTimestamp: moment().startOf('month').valueOf(),
       endTimestamp: moment().endOf('month').valueOf(),
