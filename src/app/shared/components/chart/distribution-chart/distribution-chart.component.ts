@@ -32,7 +32,7 @@ export class DistributionChartComponent implements OnInit, OnChanges {
   yBoundary = [];
 
   floatText = true;
-  reportType = '';
+  pageType = '';
 
   points = [];  // 落點用變數-kidin-1090130
 
@@ -102,10 +102,10 @@ export class DistributionChartComponent implements OnInit, OnChanges {
     this.initVariable();
 
     if (this.perActivityTime) {
-      this.reportType = 'sport';
+      this.pageType = 'sport';
       this.initRePortChart();
     } else if (this.data) {
-      this.reportType = 'lifeTracking';
+      this.pageType = 'lifeTracking';
       this.initLifeTrackingChart();
     }
 

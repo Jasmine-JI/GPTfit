@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import { Router } from '@angular/router';
-import { getUrlQueryStrings } from '@shared/utils/';
+import { UtilsService } from '../../../../shared/services/utils.service';
 
 @Component({
   selector: 'app-inner-device-pair',
@@ -10,13 +10,21 @@ import { getUrlQueryStrings } from '@shared/utils/';
   styleUrls: ['./inner-device-pair.component.scss']
 })
 export class InnerDevicePairComponent implements OnInit {
-  constructor(public dialog: MatDialog, private router: Router) {}
   targetUserId: number;
+  targetUserName: string;
   deviceSN: string;
+
+  constructor(
+    public dialog: MatDialog,
+    private router: Router,
+    private utils: UtilsService
+  ) {}
+  
   ngOnInit() {
-    const queryStrings = getUrlQueryStrings(location.search);
+    const queryStrings = this.utils.getUrlQueryStrings(location.search);
     this.targetUserId = queryStrings.targetUserId;
   }
+
   openSelectorWin(e) {
     const adminLists = [];
     e.preventDefault();
@@ -31,13 +39,16 @@ export class InnerDevicePairComponent implements OnInit {
       }
     });
   }
+
   handleConfirm(type, _lists) {
-    const userIds = _lists.map(_list => _list.userId);
-    this.targetUserId = userIds[0];
+    const { userId, userName } = _lists[0];
+    this.targetUserName = userName;
+    this.targetUserId = userId;
     this.router.navigateByUrl(
       `${location.pathname}?targetUserId=${this.targetUserId}`
     );
   }
+
   watchDeviceSNDetail() {
     this.deviceSN = this.deviceSN.toUpperCase();
     this.router.navigateByUrl(

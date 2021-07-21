@@ -6,7 +6,7 @@
   [style.pointer-events]="uiFlag.isLoading ? 'none' : 'initial'"
 >
   <div class="flexRow" style="width: fit-content; align-items: center; cursor: pointer;" (click)="openConditionSelector()">
-    <span class="condition__title">{{ 'universal_operating_filter' | translate }}</span>
+    <h6 class="condition__title">{{ 'universal_operating_filter' | translate }}</h6>
     <i
       class="icon-svg_web-icon_p1_006-unfold condition__unfold__icon"
       [class.condition__fold__icon]="uiFlag.showConditionSelector"
@@ -113,7 +113,7 @@
       {{date.startTimestamp | timeFormat: 'YYYY-MM-DD'}} - {{date.endTimestamp | timeFormat: 'YYYY-MM-DD'}}
     </section>
     <section
-      class="flexCol"
+      class="flexCol condition__section"
       *ngIf="
         reportConditionOpt
         && reportConditionOpt.group
@@ -121,7 +121,7 @@
         && (reportConditionOpt.group.brands !== null || reportConditionOpt.group.branches !== null)
       "
     >
-      <span class="condition__title">{{ 'universal_group_group' | translate }}</span>
+      <h6 class="condition__title">{{ 'universal_group_group' | translate }}</h6>
       <div class="flexCol condition__content">
         <div class="flexCol" *ngIf="reportConditionOpt.group.brands !== null">
           <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 1">{{ 'universal_group_brand' | translate }}</span>
@@ -161,10 +161,10 @@
       </div>
     </section>
     <section
-      class="flexCol"
-      *ngIf="reportConditionOpt && reportConditionOpt.reportType === 'sport'"
+      class="flexCol condition__section"
+      *ngIf="reportConditionOpt && reportConditionOpt.pageType === 'sport'"
     >
-      <span class="condition__title">{{ 'universal_activityData_activityType' | translate }}</span>
+      <h6 class="condition__title">{{ 'universal_activityData_activityType' | translate }}</h6>
       <div class="flexRow condition__content">
         <span
           class="condition__btn"
@@ -176,8 +176,11 @@
         </span>
       </div>
     </section>
-    <section class="flexCol" *ngIf="reportConditionOpt && reportConditionOpt.reportType === 'cloudRun'">
-      <span class="condition__title">{{ 'universal_activityData_map' | translate }}</span>
+    <section
+      class="flexCol condition__section"
+      *ngIf="reportConditionOpt && reportConditionOpt.pageType === 'cloudRun'"
+    >
+      <h6 class="condition__title">{{ 'universal_activityData_map' | translate }}</h6>
       <div class="flexRow condition__content">
         <div class="flexRow radio__section map__child__block">
           <span class="flexRow radioSelector" (click)="changeMapListType('all')">
@@ -255,7 +258,7 @@
       </div>
       <div
         class="flexRow condition__content"
-        style="align-items: center; width: fit-content; cursor: pointer;"
+        style="align-items: center; width: fit-content; cursor: pointer; margin-bottom: 10px;"
         (click)="changeCheckStatus()"
       >
         <div style="border: 1px solid var(--scale-0-255); width: 20px; height: 20px;">
@@ -266,6 +269,60 @@
         <span style="margin-left: 5px;">
           {{ 'universal_operating_finished' | translate }} {{ 'universal_race_match' | translate }}
         </span>
+      </div>
+    </section>
+    <section
+      class="flexCol condition__section"
+      *ngIf="reportConditionOpt && reportConditionOpt.pageType === 'cloudRun' && uiFlag.isGroupPage"
+    >
+      <h6 class="condition__title">{{ 'universal_userProfile_gender' | translate }}</h6>
+      <div class="flexRow condition__content">
+        <div class="flexRow radio__section map__child__block">
+          <span class="flexRow radioSelector" (click)="changeGender(null)">
+            <span
+              class="radioBtn"
+              [class.radioBtn--active]="reportConditionOpt.gender === null"
+            ></span>
+            <span>{{ 'universal_adjective_all' | translate }}</span>
+          </span>
+          <span class="flexRow radioSelector" (click)="changeGender(sex.male)">
+            <span
+              class="radioBtn"
+              [class.radioBtn--active]="reportConditionOpt.gender === sex.male"
+            ></span>
+            <span>{{ 'universal_userProfile_male' | translate }}</span>
+          </span>
+          <span class="flexRow radioSelector" (click)="changeGender(sex.female)">
+            <span
+              class="radioBtn"
+              [class.radioBtn--active]="reportConditionOpt.gender === sex.female"
+            ></span>
+            <span>{{ 'universal_userProfile_female' | translate }}</span>
+          </span>
+        </div>
+      </div>
+    </section>
+    <section
+      class="flexCol condition__section"
+      *ngIf="reportConditionOpt && reportConditionOpt.pageType === 'cloudRun' && uiFlag.isGroupPage"
+    >
+      <h6 class="condition__title">{{ 'universal_userProfile_age' | translate }}</h6>
+      <div class="flexRow condition__content">
+        <input
+          class="age__input"
+          type="text"
+          placeholder="0"
+          maxlength="3"
+          (change)="handleAgeRange($event, 'min')"
+        >
+        ～
+        <input
+          class="age__input"
+          type="text"
+          placeholder="100"
+          maxlength="3"
+          (change)="handleAgeRange($event, 'max')"
+        >
       </div>
     </section>
     <div style="display: flex; justify-content: flex-end;" *ngIf="reportConditionOpt && !reportConditionOpt.hideConfirmBtn">

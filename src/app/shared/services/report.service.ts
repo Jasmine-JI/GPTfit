@@ -38,10 +38,6 @@ export class ReportService {
     this.period$.next(status);
   }
 
-  setReportCategory (status: string) {
-    this.reportCategory$.next(status);
-  }
-
   setReportTime (startTime: string, endTime: string) {
     this.reportStartTime$.next(startTime);
     this.reportEndTime$.next(endTime);
@@ -50,30 +46,6 @@ export class ReportService {
 
   setReportAddition () {
     this.addition$.next([this.reportStartTime$, this.reportEndTime$, this.period$]);
-  }
-
-  setTypeAllData (
-    dataAll: Object,
-    dataRun: Object,
-    dataCycle: Object,
-    dataWeightTrain: Object,
-    dataSwim: Object,
-    dataAerobic: Object,
-    dataRow: Object,
-    dataBall: Object,
-  ) {
-    this.typeAllData$.next(dataAll);
-    this.typeRunData$.next(dataRun);
-    this.typeCycleData$.next(dataCycle);
-    this.typeWeightTrainData$.next(dataWeightTrain);
-    this.typeSwimData$.next(dataSwim);
-    this.typeAerobicData$.next(dataAerobic);
-    this.typeRowData$.next(dataRow);
-    this.typeBallData$.next(dataBall);
-  }
-
-  getreportCategory (): Observable<string> {
-    return this.reportCategory$;
   }
 
   getReportAddition (): Observable<Array<BehaviorSubject<string>>> {
@@ -112,27 +84,6 @@ export class ReportService {
    */
   getReportLoading(): Observable<boolean> {
     return this.reportLoading$;
-  }
-
-  getTypeData (type: number) {
-    switch (type) {
-      case 1:
-        return this.typeRunData$;
-      case 2:
-        return this.typeCycleData$;
-      case 3:
-        return this.typeWeightTrainData$;
-      case 4:
-        return this.typeSwimData$;
-      case 5:
-        return this.typeAerobicData$;
-      case 6:
-        return this.typeRowData$;
-      case 7:
-        return this.typeBallData$;
-      default:
-        return this.typeAllData$;
-    }
   }
 
   /**

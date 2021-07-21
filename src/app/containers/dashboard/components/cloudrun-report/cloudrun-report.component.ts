@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject, combineLatest, fromEvent, Subscription } from 'rxjs';
-import { takeUntil, switchMap, map, first } from 'rxjs/operators';
+import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { ReportConditionOpt } from '../../../../shared/models/report-condition';
 import moment from 'moment';
 import { ReportService } from '../../../../shared/services/report.service';
@@ -50,7 +50,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * 報告頁面可讓使用者篩選的條件
    */
   reportConditionOpt: ReportConditionOpt = {
-    reportType: 'cloudRun',
+    pageType: 'cloudRun',
     date: {
       startTimestamp: moment().startOf('month').valueOf(),
       endTimestamp: moment().endOf('month').valueOf(),
@@ -747,7 +747,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100309
    */
   checkRaceComplete(distance: number, totalStep: number): boolean {
-    const mapDistance = +this.mapInfo.distance * 1000;
+    const mapDistance = parseFloat((+this.mapInfo.distance * 1000).toFixed(0));
     if (distance >= mapDistance && distance / 2 < totalStep) {
       return true;
     } else {

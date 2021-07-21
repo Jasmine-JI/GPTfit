@@ -17,8 +17,48 @@ import { Unit } from '../../../../../shared/models/bs-constant';
 
 type AnalysisTable = 'group' | 'member';
 type AnalysisData = 
-  'name' | 'completeNum' | 'avgTime' | 'totalTime' | 'avgPace' | 'avgHr' | 'avgCalories' | 'avgCadence' | 'hrZone' | 'runTimes' | 'bestTime' | 'totalCalories';
+  'name'|
+  'gender' |
+  'age' |
+  'completeNum' |
+  'avgTime' |
+  'totalTime' |
+  'avgPace' |
+  'avgHr' |
+  'avgCalories' |
+  'avgCadence' |
+  'hrZone' |
+  'runTimes' |
+  'bestTime' |
+  'totalCalories';
 type NavigationPage = 'info' | 'sportsReport' | 'cloudrunReport';
+
+enum groupTableCol {
+  name,
+  completeNum,
+  avgTime,
+  totalTime,
+  avgPace,
+  avgHr,
+  avgCalories,
+  avgCadence,
+  hrZone
+};
+
+enum memberTableCol {
+  name,
+  gender,
+  age,
+  runTimes,
+  bestTime,
+  avgTime,
+  totalTime,
+  avgPace,
+  avgHr,
+  totalCalories,
+  avgCadence,
+  hrZone
+};
 
 @Component({
   selector: 'app-cloudrun-report',
@@ -51,7 +91,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * 報告頁面可讓使用者篩選的條件
    */
   reportConditionOpt: ReportConditionOpt = {
-    reportType: 'cloudRun',
+    pageType: 'cloudRun',
     date: {
       startTimestamp: moment().startOf('month').valueOf(),
       endTimestamp: moment().endOf('month').valueOf(),
@@ -63,6 +103,11 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       month: moment().format('YYYYMM'),
       checkCompletion: true
     },
+    age: {
+      min: null,
+      max: null
+    },
+    gender: null,
     hideConfirmBtn: false
   }
 
@@ -109,7 +154,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     showOpt: false,
     showAll: false,
     showLevel: [30, 40, 60],
-    showDataType: [0, 1, 3, 6, 7],  // 預設顯示完賽人數、人均總時間、人均配速、人均步頻、心率圖表
+    showDataType: [
+      0, 1, 3, 6, 7
+    ],  // 預設顯示完賽人數、人均總時間、人均配速、人均步頻、心率圖表
     sortType: null,
     sorted: false
   };
@@ -121,7 +168,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     showOpt: false,
     showAll: false,
     showLevel: [30, 40, 60],
-    showDataType: [0, 1, 2, 4, 8],  // 預設顯示總筆數、最佳時間、平均時間、平均配速、心率圖表
+    showDataType: [
+      2, 3, 4, 6, 10
+    ],  // 預設顯示總筆數、最佳時間、平均時間、平均配速、心率圖表
     sortType: null,
     sorted: false
   }
@@ -180,6 +229,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
 
   readonly memberHeaderRowDef = [
     'name',
+    'gender',
+    'age',
     'runTimes',
     'bestTime',
     'avgTime',
@@ -194,113 +245,17 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   /**
    * 團體分析篩選設定
    */
-  groupTableOpt = {
-    filter: [
-      {
-        i18n: '',
-        level: 30
-      },
-      {
-        i18n: '',
-        level: 40
-      },
-      {
-        i18n: '',
-        level: 60
-      }
-    ],
-    column: [  // name為必須欄位，故不開放設定
-      {
-        rowType: this.groupHeaderRowDef[1],
-        i18n: ''
-      },
-      {
-        rowType: this.groupHeaderRowDef[2],
-        i18n: ''
-      },
-      {
-        rowType: this.groupHeaderRowDef[3],
-        i18n: ''
-      },
-      {
-        rowType: this.groupHeaderRowDef[4],
-        i18n: ''
-      },
-      {
-        rowType: this.groupHeaderRowDef[5],
-        i18n: ''
-      },
-      {
-        rowType: this.groupHeaderRowDef[6],
-        i18n: ''
-      },
-      {
-        rowType: this.groupHeaderRowDef[7],
-        i18n: ''
-      },
-      {
-        rowType: this.groupHeaderRowDef[8],
-        i18n: ''
-      }
-    ]
+  groupTableOpt: any = {
+    filter: [],
+    column: []
   };
 
   /**
    * 個人分析篩選設定
    */
-  memberTableOpt = {
-    filter: [
-      {
-        i18n: '',
-        level: 30
-      },
-      {
-        i18n: '',
-        level: 40
-      },
-      {
-        i18n: '',
-        level: 60
-      }
-    ],
-    column: [  // name為必須欄位，故不開放設定
-      {
-        rowType: this.memberHeaderRowDef[1],
-        i18n: ''
-      },
-      {
-        rowType: this.memberHeaderRowDef[2],
-        i18n: ''
-      },
-      {
-        rowType: this.memberHeaderRowDef[3],
-        i18n: ''
-      },
-      {
-        rowType: this.memberHeaderRowDef[4],
-        i18n: ''
-      },
-      {
-        rowType: this.memberHeaderRowDef[5],
-        i18n: ''
-      },
-      {
-        rowType: this.memberHeaderRowDef[6],
-        i18n: ''
-      },
-      {
-        rowType: this.memberHeaderRowDef[7],
-        i18n: ''
-      },
-      {
-        rowType: this.memberHeaderRowDef[8],
-        i18n: ''
-      },
-      {
-        rowType: this.memberHeaderRowDef[9],
-        i18n: ''
-      }
-    ]
+  memberTableOpt: any = {
+    filter: [],
+    column: []
   };
 
   userId: number;
@@ -321,7 +276,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     urlList: [],
     clickList: []
   }
-
+  readonly groupTableCol = groupTableCol;
+  readonly memberTableCol = memberTableCol;
   constructor(
     private reportService: ReportService,
     private groupService: GroupService,
@@ -376,39 +332,132 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       key_50 = 'universal_group_department';
     }
 
-    this.groupTableOpt.filter[0].i18n = this.translate.instant(key_30);
-    this.groupTableOpt.filter[1].i18n = this.translate.instant(key_40);
-    this.groupTableOpt.filter[2].i18n = this.translate.instant(key_50);
+    this.groupTableOpt = {
+      filter: [
+        {
+          i18n: this.translate.instant(key_30),
+          level: 30
+        },
+        {
+          i18n: this.translate.instant(key_40),
+          level: 40
+        },
+        {
+          i18n: this.translate.instant(key_50),
+          level: 60
+        }
+      ],
+      column: [
+        {
+          rowType: this.memberHeaderRowDef[groupTableCol.name],
+          i18n: this.translate.instant('universal_activityData_name')
+        },
+        {
+          rowType: this.groupHeaderRowDef[groupTableCol.completeNum],
+          i18n: `${this.translate.instant('universal_operating_finished')} ${this.translate.instant('universal_activityData_people')}`
+        },
+        {
+          rowType: this.groupHeaderRowDef[groupTableCol.avgTime],
+          i18n: `${this.translate.instant('universal_adjective_avg')} ${this.translate.instant('universal_activityData_timing')}`
+        },
+        {
+          rowType: this.groupHeaderRowDef[groupTableCol.totalTime],
+          i18n: this.translate.instant('universal_activityData_limit_totalTime')
+        },
+        {
+          rowType: this.groupHeaderRowDef[groupTableCol.avgPace],
+          i18n: this.translate.instant(
+            this.unit === 0 ? 'universal_activityData_limit_avgKilometerPace' : 'universal_activityData_limit_avgMilePace'
+          )
+        },
+        {
+          rowType: this.groupHeaderRowDef[groupTableCol.avgHr],
+          i18n: this.translate.instant('universal_activityData_limit_avgHr')
+        },
+        {
+          rowType: this.groupHeaderRowDef[groupTableCol.avgCalories],
+          i18n: `${this.translate.instant('universal_adjective_avg')} ${this.translate.instant('universal_userProfile_calories')}`
+        },
+        {
+          rowType: this.groupHeaderRowDef[groupTableCol.avgCadence],
+          i18n: this.translate.instant('universal_activityData_limit_avgStepCadence')
+        },
+        {
+          rowType: this.groupHeaderRowDef[groupTableCol.hrZone],
+          i18n: this.translate.instant('universal_activityData_hrZone')
+        }
+      ]
+    };
 
-    this.groupTableOpt.column[0].i18n = 
-      `${this.translate.instant('universal_operating_finished')} ${this.translate.instant('universal_activityData_people')}`;
-    this.groupTableOpt.column[1].i18n = 
-      `${this.translate.instant('universal_adjective_avg')} ${this.translate.instant('universal_activityData_timing')}`;
-    this.groupTableOpt.column[2].i18n = this.translate.instant('universal_activityData_limit_totalTime');
-    this.groupTableOpt.column[3].i18n = 
-      this.translate.instant(this.unit === 0 ? 'universal_activityData_limit_avgKilometerPace' : 'universal_activityData_limit_avgMilePace');
-    this.groupTableOpt.column[4].i18n = this.translate.instant('universal_activityData_limit_avgHr');
-    this.groupTableOpt.column[5].i18n = 
-    `${this.translate.instant('universal_adjective_avg')} ${this.translate.instant('universal_userProfile_calories')}`;
-    this.groupTableOpt.column[6].i18n = this.translate.instant('universal_activityData_limit_avgStepCadence');
-    this.groupTableOpt.column[7].i18n = this.translate.instant('universal_activityData_hrZone');
+    this.memberTableOpt = {
+      filter: [
+        {
+          i18n: this.translate.instant(key_30),
+          level: 30
+        },
+        {
+          i18n: this.translate.instant(key_40),
+          level: 40
+        },
+        {
+          i18n: this.translate.instant(key_50),
+          level: 60
+        }
+      ],
+      column: [
+        {
+          rowType: this.memberHeaderRowDef[memberTableCol.name],
+          i18n: this.translate.instant('universal_activityData_name')
+        },
+        {
+          rowType: this.memberHeaderRowDef[memberTableCol.gender],
+          i18n: this.translate.instant('universal_userProfile_gender')
+        },
+        {
+          rowType: this.memberHeaderRowDef[memberTableCol.age],
+          i18n: this.translate.instant('universal_userProfile_age')
+        },
+        {
+          rowType: this.memberHeaderRowDef[memberTableCol.runTimes],
+          i18n: this.translate.instant('universal_activityData_totalActivity')
+        },
+        {
+          rowType: this.memberHeaderRowDef[memberTableCol.bestTime],
+          i18n: `${this.translate.instant('universal_adjective_maxBest')} ${this.translate.instant('universal_activityData_timing')}`
+        },
+        {
+          rowType: this.memberHeaderRowDef[memberTableCol.avgTime],
+          i18n: `${this.translate.instant('universal_adjective_avg')} ${this.translate.instant('universal_activityData_timing')}`
+        },
+        {
+          rowType: this.memberHeaderRowDef[memberTableCol.totalTime],
+          i18n: this.translate.instant('universal_activityData_limit_totalTime')
+        },
+        {
+          rowType: this.memberHeaderRowDef[memberTableCol.avgPace],
+          i18n: this.translate.instant(
+            this.unit === 0 ? 'universal_activityData_limit_avgKilometerPace' : 'universal_activityData_limit_avgMilePace'
+          )
+        },
+        {
+          rowType: this.memberHeaderRowDef[memberTableCol.avgHr],
+          i18n: this.translate.instant('universal_activityData_limit_avgHr')
+        },
+        {
+          rowType: this.memberHeaderRowDef[memberTableCol.totalCalories],
+          i18n: this.translate.instant('universal_activityData_totalCalories')
+        },
+        {
+          rowType: this.memberHeaderRowDef[memberTableCol.avgCadence],
+          i18n: this.translate.instant('universal_activityData_limit_avgStepCadence')
+        },
+        {
+          rowType: this.memberHeaderRowDef[memberTableCol.hrZone],
+          i18n: this.translate.instant('universal_activityData_hrZone')
+        }
+      ]
+    };
 
-    this.memberTableOpt.filter[0].i18n = this.translate.instant(key_30);
-    this.memberTableOpt.filter[1].i18n = this.translate.instant(key_40);
-    this.memberTableOpt.filter[2].i18n = this.translate.instant(key_50);
-
-    this.memberTableOpt.column[0].i18n = this.translate.instant('universal_activityData_totalActivity');
-    this.memberTableOpt.column[1].i18n = 
-      `${this.translate.instant('universal_adjective_maxBest')} ${this.translate.instant('universal_activityData_timing')}`;
-    this.memberTableOpt.column[2].i18n = 
-      `${this.translate.instant('universal_adjective_avg')} ${this.translate.instant('universal_activityData_timing')}`;
-    this.memberTableOpt.column[3].i18n = this.translate.instant('universal_activityData_limit_totalTime');
-    this.memberTableOpt.column[4].i18n = 
-      this.translate.instant(this.unit === 0 ? 'universal_activityData_limit_avgKilometerPace' : 'universal_activityData_limit_avgMilePace');
-    this.memberTableOpt.column[5].i18n = this.translate.instant('universal_activityData_limit_avgHr');
-    this.memberTableOpt.column[6].i18n = this.translate.instant('universal_activityData_totalCalories');
-    this.memberTableOpt.column[7].i18n = this.translate.instant('universal_activityData_limit_avgStepCadence');
-    this.memberTableOpt.column[8].i18n = this.translate.instant('universal_activityData_hrZone');
   }
 
   /**
@@ -708,7 +757,6 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     data.forEach(_data => {
       const { privacyMatch } = _data;
       if (!privacyMatch || privacyMatch === 'false') {
-        
         const { userId } = _data;
         if (!middleData.hasOwnProperty(userId)) {
           Object.assign(middleData, {
@@ -1050,15 +1098,27 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100310
    */
   groupCombineUser(groupList: any, memList: any, memberData: any) {
+    const currentDate = moment(),
+          { gender: genderFilter, age: { max: ageMax, min: ageMin } } = this.reportConditionOpt;
     for (let i = 0, len = memList.length; i < len; i++) {
-      const { groupId, memberId: userId, memberIcon: icon, memberName: nickName } = memList[i],
+      const { 
+        groupId,
+        memberId: userId,
+        memberIcon: icon,
+        memberName: nickName,
+        birthday,
+        gender
+      } = memList[i];
+      const age = currentDate.diff(moment(birthday, 'YYYYMMDD'), 'year'),
             groupLevel = +this.utils.displayGroupLevel(groupId),
             brandsGroupId = `${this.groupService.getPartGroupId(groupId, 3)}-0-0-0`,
-            branchesGroupId = `${this.groupService.getPartGroupId(groupId, 4)}-0-0`;
-      if (groupList.hasOwnProperty(groupId)) {
+            branchesGroupId = `${this.groupService.getPartGroupId(groupId, 4)}-0-0`,
+            outOfAge = (ageMax !== null && age > ageMax) || (ageMin !== null && age < ageMin),
+            outOfGender = genderFilter !== null && gender !== genderFilter;
+      if (groupList.hasOwnProperty(groupId) && !outOfAge && !outOfGender) {
         /** 團體分析所需的成員清單及成績加總，上面階層會將下面階層成員包含進去 */
         if (groupList.hasOwnProperty(brandsGroupId) && !groupList[brandsGroupId].member.some(_list => _list.id === userId)) {
-          groupList[brandsGroupId].member.push({id: userId, name: nickName});
+          groupList[brandsGroupId].member.push({id: userId, name: nickName, age});
           if (
             memberData.hasOwnProperty(userId)
             && memberData[userId].record
@@ -1072,7 +1132,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         }
         
         if (groupList.hasOwnProperty(branchesGroupId) && !groupList[branchesGroupId].member.some(_list => _list.id === userId)) {
-            groupList[branchesGroupId].member.push({id: userId, name: nickName});
+            groupList[branchesGroupId].member.push({id: userId, name: nickName, age});
             if (
               memberData.hasOwnProperty(userId)
               && memberData[userId].record
@@ -1085,7 +1145,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         }
 
         if (!groupList[groupId].member.some(_list => _list.id === userId)) {
-          groupList[groupId].member.push({id: userId, name: nickName});
+          groupList[groupId].member.push({id: userId, name: nickName, age});
           if (
             memberData.hasOwnProperty(userId)
             && memberData[userId].record
@@ -1102,7 +1162,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         if (memberData.hasOwnProperty(userId)) {
           memberData[userId].info = {
             name: nickName,
-            icon
+            icon,
+            age,
+            gender
           };
           memberData[userId].belongGroup.push({
             id: groupId,
@@ -1117,7 +1179,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
             [userId]: {
               info: {
                 name: nickName,
-                icon
+                icon,
+                age,
+                gender
               },
               privacy: true,
               record: null,
@@ -1271,12 +1335,14 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   handleMemTableData(memData: any) {
     const tableArr = [];
     for (let key in memData) {
-
-      if (memData.hasOwnProperty(key) && memData[key].record) {
+      const { record, info } = memData[key];
+      if (memData.hasOwnProperty(key) && record && info) {
         const {
           info: {
             name,
-            icon
+            icon,
+            age,
+            gender
           },
           level,
           record: {
@@ -1305,6 +1371,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           level,
           name,
           icon,
+          gender,
+          age,
           runTimes,
           totalSeconds,
           bestSeconds: bestFile.time,
@@ -1324,11 +1392,13 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         if (!memData[key].info) {
           delete memData[key];  // 該成員數據為connect跨網域補傳數據，故移除。
         } else {
-          const { info: {name, icon}, privacy, level } = memData[key];
+          const { info: {name, icon, age, gender }, privacy, level } = memData[key];
           tableArr.push({
             userId: key,
             name,
             icon,
+            age,
+            gender,
             level,
             runTimes: 0,
             totalSeconds: 0,
@@ -1421,7 +1491,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100309
    */
   checkRaceComplete(distance: number, totalStep: number): boolean {
-    const mapDistance = +this.mapInfo.distance * 1000;
+    const mapDistance = parseFloat((+this.mapInfo.distance * 1000).toFixed(0));
     if (distance >= mapDistance && distance / 2 < totalStep) {
       return true;
     } else {
@@ -1487,46 +1557,35 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   assignChooseNum (width: number) {
     if (width < 500) {
       this.tableColumn = {
-        max: 2,
-        min: 1
+        max: 3,
+        min: 2
       };
-
-      if (this.uiFlag.defaultOpt) {
-        this.setDefaultOpt(2);
-      } else {
-        this.hideExtraOpt(2);
-      }
 
     } else if (width < 630) {
       this.tableColumn = {
-        max: 3,
-        min: 1
+        max: 4,
+        min: 2
       };
-
-      if (this.uiFlag.defaultOpt) {
-        this.setDefaultOpt(3);
-      } else {
-        this.hideExtraOpt(3);
-      }
 
     } else if (width < 950) {
-      this.tableColumn = {
-        max: 4,
-        min: 1
-      };
-
-      if (this.uiFlag.defaultOpt) {
-        this.setDefaultOpt(4);
-      } else {
-        this.hideExtraOpt(4);
-      }
-
-    } else {
       this.tableColumn = {
         max: 5,
         min: 2
       };
 
+    } else {
+      this.tableColumn = {
+        max: 6,
+        min: 3
+      };
+
+    }
+
+    const { max } = this.tableColumn;
+    if (this.uiFlag.defaultOpt) {
+      this.setDefaultOpt(max);
+    } else {
+      this.hideExtraOpt(max);
     }
 
   }
@@ -1538,17 +1597,65 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   setDefaultOpt(num: number) {
     switch (num) {
+      case 6:
+        this.groupTable.showDataType = [
+          groupTableCol.name,
+          groupTableCol.completeNum,
+          groupTableCol.avgTime,
+          groupTableCol.avgPace,
+          groupTableCol.avgCadence,
+          groupTableCol.avgHr
+        ];
+        this.memberTable.showDataType = [
+          memberTableCol.name,
+          memberTableCol.gender,
+          memberTableCol.runTimes,
+          memberTableCol.bestTime,
+          memberTableCol.avgTime,
+          memberTableCol.avgPace
+        ];
+        break;
+      case 5:
+        this.groupTable.showDataType = [
+          groupTableCol.name,
+          groupTableCol.completeNum,
+          groupTableCol.avgTime,
+          groupTableCol.avgPace,
+          groupTableCol.avgCadence
+        ];
+        this.memberTable.showDataType = [
+          memberTableCol.name,
+          memberTableCol.runTimes,
+          memberTableCol.bestTime,
+          memberTableCol.avgTime,
+          memberTableCol.avgPace
+        ];
+        break;
       case 4:
-        this.groupTable.showDataType = [0, 1, 3, 6]; // 預設顯示完賽人數、人均總時間、人均配速、人均步頻
-        this.memberTable.showDataType = [0, 1, 2, 4];  // 預設顯示總筆數、最佳時間、平均時間、平均配速
+        this.groupTable.showDataType = [
+          groupTableCol.name,
+          groupTableCol.completeNum,
+          groupTableCol.avgTime,
+          groupTableCol.avgPace,
+        ];
+        this.memberTable.showDataType = [
+          memberTableCol.name,
+          memberTableCol.runTimes,
+          memberTableCol.bestTime,
+          memberTableCol.avgPace
+        ];
         break;
       case 3:
-        this.groupTable.showDataType = [0, 1, 3];  // 預設顯示完賽人數、人均總時間、人均配速
-        this.memberTable.showDataType = [0, 1, 4];  // 預設顯示總筆數、最佳時間、平均配速
-        break;
-      case 2:
-        this.groupTable.showDataType = [0, 1];  // 預設顯示完賽人數、人均總時間
-        this.memberTable.showDataType = [1, 4];  // 預設顯示最佳時間、平均配速
+        this.groupTable.showDataType = [
+          groupTableCol.name,
+          groupTableCol.completeNum,
+          groupTableCol.avgTime,
+        ];
+        this.memberTable.showDataType = [
+          memberTableCol.name,
+          memberTableCol.bestTime,
+          memberTableCol.avgPace
+        ];
         break;
     }
 
@@ -1562,7 +1669,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   hideExtraOpt(max: number) {
     this.groupTable.showDataType = this.groupTable.showDataType.slice(0, max);
-    this.memberTable.showDataType = this.groupTable.showDataType.slice(0, max);
+    this.memberTable.showDataType = this.memberTable.showDataType.slice(0, max);
     this.setAnalysisOpt();
     this.changeDetectorRef.markForCheck();
   }
@@ -1576,8 +1683,12 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
 
     switch (level) {
       case 30:
-        defaultFil.group = [0, 1, 2]; // 預設30~50階
-        defaultFil.person = [0, 1, 2]; // 預設30~50階
+        defaultFil.group = [
+          0, 1, 2
+        ]; // 預設30~50階
+        defaultFil.person = [
+          0, 1, 2
+        ]; // 預設30~50階
         break;
       case 40:
         defaultFil.group = [1, 2]; // 預設40~50階
@@ -1615,6 +1726,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   getSortType(type: AnalysisData) {
     switch (type) {
       case 'name':
+      case 'age':
+      case 'gender':
       case 'avgHr':
       case 'avgCalories':
       case 'avgCadence':
@@ -1660,18 +1773,30 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
 
         // 無成績者皆必排最後
         const noDataCond = !_dataA && _dataB && _dataB !== 0,
-              ascCond = _dataB && asc && _dataB < _dataA,
-              descCond = !asc && _dataB > _dataA;
-        if (noDataCond || ascCond || descCond) {
-          swaped = true;
-          [sortData[j], sortData[j + 1]] = [sortData[j + 1], sortData[j]];
+              ascCond = asc && _dataB < _dataA,
+              descCond = !asc && _dataB > _dataA,
+              genderArrange = sortCategory === 'gender';
+        if (genderArrange) {
+
+          if (ascCond || descCond) {
+            swaped = true;
+            [sortData[j], sortData[j + 1]] = [sortData[j + 1], sortData[j]];
+          }
+          
+        } else {
+
+          if (noDataCond || (_dataB && ascCond) || descCond || genderArrange) {
+            swaped = true;
+            [sortData[j], sortData[j + 1]] = [sortData[j + 1], sortData[j]];
+          }
+
         }
 
       }
 
     }
 
-    if (sortCategory !== 'name' && sortDenominator !== 0) {
+    if (['name', 'age', 'gender'].includes(sortCategory) && sortDenominator !== 0) {
       return sortData.map(_data => {
         const sortItemData = _data[sortCategory];
         let numerator: number;

@@ -73,7 +73,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 報告頁面可讓使用者篩選的條件
    */
   reportConditionOpt: ReportConditionOpt = {
-    reportType: 'sport',
+    pageType: 'sport',
     date: {
       startTimestamp: moment().startOf('day').subtract(6, 'days').valueOf(),
       endTimestamp: moment().endOf('day').valueOf(),
@@ -1768,6 +1768,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100610
    */
   getWeightTrainLevel(level: 50 | 100 | 200) {
+    this.updateUrl();
     switch (level) {
       case 50:
         return Proficiency.novice;
@@ -1777,7 +1778,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         return Proficiency.asept;
     }
 
-    this.updateUrl();
   }
 
   /**
@@ -1805,7 +1805,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   changeLevel(level: ProficiencyCoefficient) {
     this.userInfo.weightTrainLevel = level;
     const strengthLevel = this.getStrengthLevel(level);
-    if (this.uiFlag.isDashboardPage) {
+    if (this.uiFlag.isDashboardPage || this.uiFlag.isReportOwner) {
       const body = {
         token: this.utils.getToken() || '',
         userProfile: {

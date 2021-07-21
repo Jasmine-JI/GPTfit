@@ -290,23 +290,6 @@ export class GroupService {
   }
 
   /**
-   * 取得訂閱的群組列表
-   * @author kidin-1090715
-   */
-  getMemberList (): Observable<any> {
-    return this.memberList$;
-  }
-
-  /**
-   * 儲存訂閱的群組列表
-   * @param status {any}
-   * @author kidin-1090715
-   */
-  setMemberList (status: any) {
-    this.memberList$.next(status);
-  }
-
-  /**
    * 取得訂閱的成員列表
    * @author kidin-1090715
    */
@@ -321,23 +304,6 @@ export class GroupService {
    */
   setMemList (status: any) {
     this.memList$.next(status);
-  }
-
-  /**
-   * 儲存訂閱的運動報告類別
-   * @param status {string}}
-   * @author kidin-1090715
-   */
-  setReportCategory (status: number) {
-    this.reportCategory$.next(status);
-  }
-
-  /**
-   * 取得訂閱的運動報告類別
-   * @author kidin-1090715
-   */
-  getreportCategory (): Observable<number> {
-    return this.reportCategory$;
   }
 
   /**
@@ -389,59 +355,6 @@ export class GroupService {
    */
   setNormalMemberList(list: Array<any>) {
     this.normalMemberList$.next(list);
-  }
-
-  /**
-   * 儲存訂閱的不同類別運動資料
-   * @param dataAll {object}
-   * @param dataRun {object}
-   * @param dataCycle {object}
-   * @param dataWeightTrain {object}
-   * @param dataSwim {object}
-   * @param dataAerobic {object}
-   * @param dataRow {object}
-   * @author kidin-1090715
-   */
-  setTypeAllData (
-    dataAll: Object,
-    dataRun: Object,
-    dataCycle: Object,
-    dataWeightTrain: Object,
-    dataSwim: Object,
-    dataAerobic: Object,
-    dataRow: Object
-  ) {
-    this.typeAllData$.next(dataAll);
-    this.typeRunData$.next(dataRun);
-    this.typeCycleData$.next(dataCycle);
-    this.typeWeightTrainData$.next(dataWeightTrain);
-    this.typeSwimData$.next(dataSwim);
-    this.typeAerobicData$.next(dataAerobic);
-    this.typeRowData$.next(dataRow);
-  }
-
-  /**
-   * 取得指定類別的運動資料
-   * @param type {number}
-   * @author kidin-1090715
-   */
-  getTypeData (type: number) {
-    switch (type) {
-      case 1:
-        return this.typeRunData$;
-      case 2:
-        return this.typeCycleData$;
-      case 3:
-        return this.typeWeightTrainData$;
-      case 4:
-        return this.typeSwimData$;
-      case 5:
-        return this.typeAerobicData$;
-      case 6:
-        return this.typeRowData$;
-      default:
-        return this.typeAllData$;
-    }
   }
 
   /**
@@ -526,23 +439,6 @@ export class GroupService {
    */
   getAllLevelGroupData() {
     return this.allLevelGroupData$;
-  }
-
-  /**
-   * 取得訂閱的group資訊
-   * @author kidin-1081210
-   */
-  getAllLevelGroupInfo() {
-    return this.allLevelGroupInfo$;
-  }
-
-  /**
-   * 儲存訂閱的group資訊
-   * @param status {any}
-   * @author kidin-1081210
-   */
-  saveAllLevelGroupInfo(status: any) {
-    this.allLevelGroupInfo$.next(status);
   }
 
   /**

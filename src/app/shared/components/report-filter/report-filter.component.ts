@@ -7,7 +7,8 @@ import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CloudrunService } from '../../services/cloudrun.service';
 import { GroupService } from '../../../containers/dashboard/services/group.service';
-
+import { Lang } from '../../models/i18n';
+import { Sex, sex } from '../../../containers/dashboard/models/userProfileInfo';
 
 interface DateCondition {
   type: 'sevenDay' | 'thirtyDay' | 'sixMonth' | 'today' | 'thisWeek' | 'thisMonth' | 'thisYear' | 'custom';
@@ -42,6 +43,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   uiFlag = {
     showConditionSelector: true,
     isPreviewMode: false,
+    isGroupPage: location.pathname.includes('group-info'),
     dateTypeIdx: 0,
     showDateTypeShiftIcon: false,
     showMapSelector: false,
@@ -53,7 +55,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     disableBtn: 'pre',
     isLoading: false,
     currentType: '',
-    currentLanguage: 'zh-tw',
+    currentLanguage: <Lang>'zh-tw',
     mapListType: <MapListType>'routine'
   }
 
@@ -99,7 +101,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   routineRaceList: Array<any> = [];
 
   timeout: any;
-
+  readonly sex = sex;
   constructor(
     private utils: UtilsService,
     private reportService: ReportService,
@@ -169,12 +171,12 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.reportConditionOpt = res;
-      if (this.reportConditionOpt.reportType !== this.uiFlag.currentType) {
+      if (this.reportConditionOpt.pageType !== this.uiFlag.currentType) {
         this.initDate();
-        this.uiFlag.currentType = this.reportConditionOpt.reportType;
+        this.uiFlag.currentType = this.reportConditionOpt.pageType;
       }
 
-      if (this.reportConditionOpt.reportType === 'cloudRun' && (this.mapList.length === 0 || this.routineRaceList.length === 0)) {
+      if (this.reportConditionOpt.pageType === 'cloudRun' && (this.mapList.length === 0 || this.routineRaceList.length === 0)) {
         this.getMapList();
       }
 
@@ -706,6 +708,16 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 變更性別篩選
+   * @param gender { Sex }-性別
+   * @author kidin-1100308
+   */
+   changeGender(gender: Sex) {
+    this.reportConditionOpt.gender = gender;
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /**
    * 選擇例行賽月份
    * @param index {number}-清單序位
    * @author kidin-1100308
@@ -733,6 +745,36 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    */
   changeCheckStatus() {
     this.reportConditionOpt.cloudRun.checkCompletion = !this.reportConditionOpt.cloudRun.checkCompletion;
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 變更年齡篩選範圍
+   * @param e {Event}
+   * @param boundary {'min' | 'max'}-上下限
+   * @author kidin-1100721
+   */
+  handleAgeRange(e: Event, boundary: 'min' | 'max') {
+    const targetValue = (e as any).currentTarget.value,
+          checkNumRex = /^(\d*)$/,
+          isMinRange = boundary === 'min';
+    if (targetValue && checkNumRex.test(targetValue)) {
+      const { min, max } = this.reportConditionOpt.age,
+            haveMinValue = min !== null,
+            haveMaxValue = max !== null;
+      if (isMinRange) {
+        this.reportConditionOpt.age.min =
+          !haveMaxValue || +targetValue < max ? +targetValue : max;
+      } else {
+        this.reportConditionOpt.age.max =
+          !haveMinValue || +targetValue > min ? +targetValue : min;
+      }
+
+    } else {
+      this.reportConditionOpt.age[boundary] = isMinRange ? 0 : 100;
+    }
+    
+    (e as any).currentTarget.value = this.reportConditionOpt.age[boundary];
     this.changeDetectorRef.markForCheck();
   }
 

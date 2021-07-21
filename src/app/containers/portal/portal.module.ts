@@ -15,7 +15,6 @@ import { PatternValidator } from '@angular/forms';
 import { MyDatePickerModule } from 'mydatepicker';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component';
 import { QrcodeService } from './services/qrcode.service';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { AuthService } from '../../shared/services/auth.service';
@@ -90,7 +89,6 @@ import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-ac
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [
     PortalComponent,
-    DemoQrcodComponent,
     UserProfileComponent,
     BasicInfoComponent,
     AppSignupComponent,

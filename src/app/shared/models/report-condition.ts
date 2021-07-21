@@ -1,3 +1,5 @@
+import { Sex } from '../../containers/dashboard/models/userProfileInfo';
+
 /**
  * 報告頁面可讓使用者篩選的條件
  */
@@ -8,7 +10,7 @@ export interface ReportConditionOpt {
     type: 'sevenDay' | 'thirtyDay' | 'sixMonth' | 'today' | 'thisWeek' | 'thisMonth' | 'thisYear' | 'custom';
   };
   brandType?: null | 1 | 2;
-  reportType?: 'sport' | 'lifeTracking' | 'cloudRun';
+  pageType?: 'sport' | 'lifeTracking' | 'cloudRun' | 'deviceList';
   group?: GroupTree;
   sportType?: SportType;
   cloudRun?: {
@@ -16,6 +18,12 @@ export interface ReportConditionOpt {
     month: string;  // 例行賽月份
     checkCompletion: boolean;  // 是否檢查過濾未完賽數據（含防弊）
   };
+  age?: {
+    min: number;
+    max: number;
+  };
+  gender?: Sex;
+  sn?: string;
   hideConfirmBtn: boolean;
 }
 

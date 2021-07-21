@@ -22,6 +22,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShareGroupInfoDialogComponent } from '../share-group-info-dialog/share-group-info-dialog.component';
 import { PrivacyCode } from '../../models/user-privacy';
 import { EditIndividualPrivacyComponent } from '../edit-individual-privacy/edit-individual-privacy.component';
+import { Proficiency } from '../../models/weight-train';
+import { SettingsService } from '../../../containers/dashboard/services/settings.service';
 
 const errMsg = `Error! Please try again later.`;
 
@@ -245,7 +247,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     private muscleName: MuscleNamePipe,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private settingsService: SettingsService
   ) { }
 
   ngOnInit(): void {
@@ -1056,10 +1059,48 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   changeLevel(level: UserLevel) {
     this.uiFlag.weightTrainLevel = level;
+    const strengthLevel = this.getStrengthLevel(level);
+    if (!this.uiFlag.isPortal || this.uiFlag.isFileOwner) {
+      const body = {
+        token: this.utils.getToken() || '',
+        userProfile: {
+          weightTrainingStrengthLevel: strengthLevel
+        }
+
+      };
+
+      this.settingsService.updateUserProfile(body).subscribe(res => {
+        const { processResult } = res;
+        if (processResult && processResult.resultCode === 200) {
+          this.userProfile.weightTrainingStrengthLevel = strengthLevel;
+          this.userProfileService.editRxUserProfile(this.userProfile);
+        }
+
+      });
+
+    }
+
     this.uiFlag.showLevelSelector = false;
     this.uiFlag.showWeightTrainingOpt = false;
     this.ngUnsubscribeClick();
     this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 取得對應的訓練程度(api用)
+   * @param level { UserLevel }-重訓程度
+   * @author kidin-1100610
+   */
+  getStrengthLevel(proficiency: UserLevel) {
+    switch (proficiency) {
+      case 'novice':
+        return 50;
+      case 'metacarpus':
+        return 100;
+      case 'asept':
+        return 200;
+    }
+
   }
 
   /**

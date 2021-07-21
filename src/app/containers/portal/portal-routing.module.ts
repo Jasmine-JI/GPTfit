@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { PortalComponent } from './portal.component';
-import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component';
 import { SigninGuard } from '../../shared/guards/signin/signin.guard';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { SportsReportComponent } from '../../shared/components/sports-report/sports-report.component';
@@ -23,6 +22,7 @@ import { GroupIntroductionComponent } from '../../containers/dashboard/group-v2/
 import { AppCompressDataComponent } from './components/app-sign/app-compress-data/app-compress-data.component';
 import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-account/app-destroy-account.component';
 import { ActivityDetailComponent } from '../../shared/components/activity-detail/activity-detail.component';
+import { DeviceInfoComponent } from '../dashboard/components/device-info/device-info.component';
 
 
 const routes: Routes = [
@@ -44,7 +44,7 @@ const routes: Routes = [
     children: [
       {
         path: 'pair',
-        component: DemoQrcodComponent
+        component: DeviceInfoComponent
       },
       {
         path: 'activity/:fileId',

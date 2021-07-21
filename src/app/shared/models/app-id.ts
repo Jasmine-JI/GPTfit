@@ -1,4 +1,16 @@
 /**
- * 各平台代碼 0.AlaCenter 1.AlaConnect 2.AlaCloudRun 3.AlaTrainLive 4.AlaFitness
+ * 目前所有app
  */
-export type AppId = 0 | 1 | 2 | 3 | 4;
+export enum alaApp {
+  center,
+  connect,
+  cloudrun,
+  trainlive,
+  fitness
+}
+
+/**
+ * 各平台代碼
+ */
+export type AppId = 
+  alaApp.center | alaApp.connect | alaApp.cloudrun | alaApp.trainlive | alaApp.fitness;
