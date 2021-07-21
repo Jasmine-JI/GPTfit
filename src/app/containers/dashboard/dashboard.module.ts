@@ -84,7 +84,8 @@ import { SystemLogComponent } from './components/system-log/system-log.component
 import { SystemFolderPermissionComponent } from './components/system-folder-permission/system-folder-permission.component';
 import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-analysis.component';
 import { CloudrunReportComponent as PersonCloudrunReport } from './components/cloudrun-report/cloudrun-report.component';
-import { DeviceInfoComponent } from './components/device-info/device-info.component'
+import { DeviceInfoComponent } from './components/device-info/device-info.component';
+import { DeviceListComponent } from './group-v2/group-info/device-list/device-list.component'
 
 
 @NgModule({
@@ -180,7 +181,8 @@ import { DeviceInfoComponent } from './components/device-info/device-info.compon
     SystemFolderPermissionComponent,
     AlaAppAnalysisComponent,
     PersonCloudrunReport,
-    DeviceInfoComponent
+    DeviceInfoComponent,
+    DeviceListComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

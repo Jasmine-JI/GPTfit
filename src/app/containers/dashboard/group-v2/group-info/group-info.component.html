@@ -198,6 +198,9 @@
                 <ng-container *ngIf="_page === 'admin-list'">
                   {{ 'universal_group_administrator' | translate }}
                 </ng-container>
+                <ng-container *ngIf="_foldItem === 'device-list'">
+                  {{ 'universal_deviceSetting_deviceManagement' | translate }}
+                </ng-container>
                 <i
                   class="icon-svg_web-icon_p1_069-about warn__icon"
                   *ngIf="_page === 'commerce-plan' && (currentGroupInfo.groupDetail.expired || +currentGroupInfo.commerceInfo.commerceStatus !== 1)"
@@ -273,6 +276,9 @@
                   <ng-container *ngIf="_foldItem === 'admin-list'">
                     {{ 'universal_group_administrator' | translate }}
                   </ng-container>
+                  <ng-container *ngIf="_foldItem === 'device-list'">
+                    {{ 'universal_deviceSetting_deviceManagement' | translate }}
+                  </ng-container>
                 </span>
               </div>
             </ng-container>
@@ -284,12 +290,13 @@
   <section
     class="cardSection"
     [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
-    *ngIf="
-      uiFlag.currentPage === 'myclass-report'
-      || uiFlag.currentPage === 'sports-report'
-      || uiFlag.currentPage === 'life-tracking'
-      || uiFlag.currentPage === 'cloudrun-report'
-    "
+    *ngIf="[
+      'myclass-report',
+      'sports-report',
+      'life-tracking',
+      'cloudrun-report',
+      'device-list'
+    ].includes(uiFlag.currentPage)"
   >
     <app-report-filter></app-report-filter>
   </section>

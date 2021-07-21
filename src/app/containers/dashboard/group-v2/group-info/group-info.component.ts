@@ -670,7 +670,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.handleDetail(resArr[0]);
         this.handleCommerce(resArr[1]);
         this.checkUserAccessRight();
-        this.initChildPageList();
+        this.childPageList = this.initChildPageList();
         this.getCurrentContentPage();
         this.getPerPageOptSize();
       })
@@ -689,7 +689,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.handleCommerce(resArr[1]);
         this.handleMemberList(resArr[2], resArr[3], resArr[4]);
         this.checkUserAccessRight();
-        this.initChildPageList();
+        this.childPageList = this.initChildPageList();
         this.getCurrentContentPage();
         this.getPerPageOptSize();
       })
@@ -858,7 +858,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.currentGroupInfo.groupDetail = (resArr[0] as any).info;
       this.currentGroupInfo.commerceInfo = (resArr[1] as any).info;
       this.checkUserAccessRight();
-      this.initChildPageList();
+      this.childPageList = this.initChildPageList();
       this.getCurrentContentPage();
       this.getPerPageOptSize();
       this.checkGroupResLength();
@@ -961,74 +961,51 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * 根據群組類別、群組階層、群組經營狀態、使用者權限等，顯示可點選的頁面
    * @author kidin-1091104
    */
-  initChildPageList() {
+  initChildPageList(): Array<string> {
     const groupDetail = this.currentGroupInfo.groupDetail,
-          commerceInfo = this.currentGroupInfo.commerceInfo;
-
-    if (this.uiFlag.portalMode) {
-      this.childPageList = [
-        'group-introduction'
-      ];
-    } else if (
-      groupDetail.brandType === 1
-      && this.currentGroupInfo.groupLevel === 60
-      && !commerceInfo.expired
-      && +commerceInfo.commerceStatus === 1
-      && this.currentGroupInfo.groupDetail.groupStatus !== 6
-      && this.user.accessRight[0] <= 50
-    ) {
-      this.childPageList = [
-        'group-introduction',
+          commerceInfo = this.currentGroupInfo.commerceInfo,
+          isEnterpriseType = groupDetail.brandType === 2,
+          inClassLevel = this.currentGroupInfo.groupLevel === 60,
+          inBrandLevel = this.currentGroupInfo.groupLevel === 30,
+          inOperation = !commerceInfo.expired && +commerceInfo.commerceStatus === 1,
+          notLock = this.currentGroupInfo.groupDetail.groupStatus !== 6,
+          upperClassAdmin = this.user.accessRight[0] <= 50,
+          upperMarktingManage = this.user.accessRight[0] <= 29;
+    let childPageList = ['group-introduction'];
+    if (!isEnterpriseType && inClassLevel && inOperation && notLock && upperClassAdmin) {
+      childPageList = childPageList.concat([
         'myclass-report',
         'class-analysis',
-        'cloudrun-report',
-        'member-list',
-        'group-architecture',
-        'admin-list'
-      ];
-    } else if (
-      groupDetail.brandType === 1
-      && this.currentGroupInfo.groupLevel === 60
-      && !commerceInfo.expired
-      && +commerceInfo.commerceStatus === 1
-      && this.currentGroupInfo.groupDetail.groupStatus !== 6
-    ) {
-      this.childPageList = [
-        'group-introduction',
+        'cloudrun-report'
+      ]);
+    } else if (!isEnterpriseType && inClassLevel && inOperation && notLock) {
+      childPageList = childPageList.concat([
         'myclass-report',
-        'cloudrun-report',
-        'member-list',
-        'group-architecture',
-        'admin-list'
-      ];
-    } else if (
-      groupDetail.brandType === 2
-      && !commerceInfo.expired
-      && +commerceInfo.commerceStatus === 1
-      && this.currentGroupInfo.groupDetail.groupStatus !== 6
-    ) {
-      this.childPageList = [
-        'group-introduction',
+        'cloudrun-report'
+      ]);
+    } else if (isEnterpriseType && inOperation && notLock) {
+      childPageList = childPageList.concat([
         'sports-report',
         'life-tracking',
-        'cloudrun-report',
-        'member-list',
-        'group-architecture',
-        'admin-list'
-      ];
-    } else {
-      this.childPageList = [
-        'group-introduction',
-        'member-list',
-        'group-architecture',
-        'admin-list'
-      ];
+        'cloudrun-report'
+      ]);
     }
 
-    if (this.currentGroupInfo.groupLevel === 30 && (this.user.accessRight[0] <= 29 || this.user.isGroupAdmin)) {
-      this.childPageList.push('commerce-plan');
+    if (!this.uiFlag.portalMode) {
+      childPageList = childPageList.concat([
+        'member-list',
+        'group-architecture',
+        'admin-list',
+        // 'device-list'
+      ]);
+      
+    }
+
+    if (inBrandLevel && (upperMarktingManage || this.user.isGroupAdmin)) {
+      childPageList.push('commerce-plan');
     }
     
+    return childPageList;
   }
 
   /**

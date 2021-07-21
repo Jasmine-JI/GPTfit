@@ -49,7 +49,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    */
   reportConditionOpt: ReportConditionOpt = {
     brandType: 2,
-    reportType: 'lifeTracking',
+    pageType: 'lifeTracking',
     date: {
       startTimestamp: moment().startOf('day').subtract(6, 'days').valueOf(),
       endTimestamp: moment().endOf('day').valueOf(),

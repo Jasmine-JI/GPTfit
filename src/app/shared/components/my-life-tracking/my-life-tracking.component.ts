@@ -40,7 +40,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
    * 報告頁面可讓使用者篩選的條件
    */
   reportConditionOpt: ReportConditionOpt = {
-    reportType: 'lifeTracking',
+    pageType: 'lifeTracking',
     date: {
       startTimestamp: moment().startOf('day').subtract(6, 'days').valueOf(),
       endTimestamp: moment().endOf('day').valueOf(),
