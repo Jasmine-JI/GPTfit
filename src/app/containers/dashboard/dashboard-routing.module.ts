@@ -13,8 +13,7 @@ import { InnerSettingsComponent } from './components/inner-settings/inner-settin
 import { DashboardGuard } from './guards/dashboard-guard';
 import { MyActivityComponent } from '../../shared/components/my-activity/my-activity.component';
 import { SportsReportComponent } from '../../shared/components/sports-report/sports-report.component';
-import { MyDeviceComponent } from './components/device/my-device/my-device.component';
-import { ProductInfoComponent } from './components/device/product-info/product-info.component';
+import { MyDeviceComponent } from './components/my-device/my-device.component';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { PersonalPreferencesComponent } from './components/settings/personal-preferences/personal-preferences.component';
@@ -52,6 +51,7 @@ import { SystemLogComponent } from './components/system-log/system-log.component
 import { SystemFolderPermissionComponent } from './components/system-folder-permission/system-folder-permission.component';
 import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-analysis.component';
 import { CloudrunReportComponent as PersonCloudrunReport } from './components/cloudrun-report/cloudrun-report.component'
+import { DeviceInfoComponent } from './components/device-info/device-info.component';
 
 const routes: Routes = [
   {
@@ -143,7 +143,7 @@ const routes: Routes = [
       },
       {
         path: 'system/device/info/:deviceSN',
-        component: ProductInfoComponent,
+        component: DeviceInfoComponent,
         canActivate: [DashboardGuard]
       },
       {
@@ -229,7 +229,7 @@ const routes: Routes = [
       },
       {
         path: 'device/info/:deviceSN',
-        component: ProductInfoComponent
+        component: DeviceInfoComponent
       },
       {
         path: 'live/train-live',

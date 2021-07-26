@@ -74,7 +74,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   reportConditionOpt: ReportConditionOpt = {
     brandType: 2,
-    reportType: 'sport',
+    pageType: 'sport',
     date: {
       startTimestamp: moment().startOf('day').subtract(6, 'days').valueOf(),
       endTimestamp: moment().endOf('day').valueOf(),
@@ -1851,18 +1851,12 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       case SportCode.ball:
         this.groupTable.showDataDef = groupDef.concat([
           'totalDistance',
-          'totalPlaneGForce',
-          'totalPlusZGForce',
-          'totalMinZGForce',
           'calories',
           'hrZone'
         ]);
 
         this.personTable.showDataDef = personDef.concat([
           'totalDistance',
-          'totalPlaneGForce',
-          'totalPlusZGForce',
-          'totalMinZGForce',
           'calories',
           'hrZone'
         ]);
@@ -2115,7 +2109,13 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           { sportType } = this.reportConditionOpt,
           opt = JSON.parse(this.utils.getLocalStorageObject(`groupReport-${sportType}`));
     if (opt) {
-      const { group, person } = opt;
+      let { group, person } = opt;
+      // 避免之後修改移除某個欄位但是localStroage卻存有舊設定造成設定錯誤
+      group = group.filter(_group => this.groupTable.showDataDef.includes(_group));
+
+      // 避免之後修改移除某個欄位但是localStroage卻存有舊設定造成設定錯誤
+      person = person.filter(_person => this.personTable.showDataDef.includes(_person));
+
       if (group.length > max) {
         group.length = max;
         this.saveAnalysisOpt(sportType, opt);
@@ -2132,7 +2132,12 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       const { sportType } = this.reportConditionOpt;
       this.setDefaultGroupCol(max, sportType);
       this.setDefaultPersonCol(max, sportType);
-      this.saveAnalysisOpt(sportType, opt);
+      const newOpt = {
+        group: this.groupTableOpt,
+        person: this.personTableOpt
+      };
+
+      this.saveAnalysisOpt(sportType, newOpt);
     }
 
   }
@@ -2204,13 +2209,13 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           'memberNum',
           'totalTime',
           'totalDistance',
-          'totalPlaneGForce',
-          'totalPlusZGForce'
+          'calories',
+          'hrZone'
         ];
         break;
     }
 
-    this.groupTableOpt.length = len;
+    if (this.groupTableOpt.length > len) this.groupTableOpt.length = len;
   }
 
   /**
@@ -2275,16 +2280,16 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       case SportCode.ball:
         this.personTableOpt = [
           'name',
+          'stroke',
           'totalTime',
           'totalDistance',
-          'totalPlaneGForce',
-          'totalPlusZGForce',
+          'calories',
           'hrZone'
         ];
         break;
     }
 
-    this.personTableOpt.length = len;
+    if (this.personTableOpt.length > len) this.personTableOpt.length = len;
   }
 
   /**

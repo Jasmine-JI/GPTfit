@@ -7,27 +7,12 @@ $input-border-color: rgba(120, 120, 120, 1);
 $group-btn-blue: rgba(0, 183, 238, 1);
 
 
-.info__title {
-  white-space: nowrap;
-  color: var(--scale-0-255);
-  @include bold-font(16px);
-}
-
-.info__item__title {
-  color: var(--scale-150-180);
-}
-
 .info__section {
   margin: 0 10px 20px 10px;
 }
 
 .group__layer__section {
   margin: 5px 0px;
-}
-
-.info__content {
-  margin: 6px 0 0 35px;
-  color: var(--scale-0-255);
 }
 
 .info__row {
@@ -95,7 +80,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   width: 200px;
 }
 
-.btn__loading__status {
+.btnLoadingStatus {
   pointer-events: none;
 }
 

@@ -31,8 +31,7 @@ import { UnsaveGuard } from '../dashboard/guards/unsave-guard';
 import { ActivityService } from '../../shared/services/activity.service';
 import { ProductErrorLogPipe } from './pipes/product-error-log.pipe';
 import { NgProgressModule } from '@ngx-progressbar/core';
-import { MyDeviceComponent } from './components/device/my-device/my-device.component';
-import { ProductInfoComponent } from './components/device/product-info/product-info.component';
+import { MyDeviceComponent } from './components/my-device/my-device.component';
 import { ReportService } from '../../shared/services/report.service';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -84,7 +83,9 @@ import { PushMessageListComponent } from './components/push-message/push-message
 import { SystemLogComponent } from './components/system-log/system-log.component';
 import { SystemFolderPermissionComponent } from './components/system-folder-permission/system-folder-permission.component';
 import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-analysis.component';
-import { CloudrunReportComponent as PersonCloudrunReport } from './components/cloudrun-report/cloudrun-report.component'
+import { CloudrunReportComponent as PersonCloudrunReport } from './components/cloudrun-report/cloudrun-report.component';
+import { DeviceInfoComponent } from './components/device-info/device-info.component';
+import { DeviceListComponent } from './group-v2/group-info/device-list/device-list.component'
 
 
 @NgModule({
@@ -142,7 +143,6 @@ import { CloudrunReportComponent as PersonCloudrunReport } from './components/cl
     PeopleSelectorWinComponent,
     ProductErrorLogPipe,
     MyDeviceComponent,
-    ProductInfoComponent,
     TrainLiveComponent,
     SettingsComponent,
     UserSettingsComponent,
@@ -180,7 +180,9 @@ import { CloudrunReportComponent as PersonCloudrunReport } from './components/cl
     SystemLogComponent,
     SystemFolderPermissionComponent,
     AlaAppAnalysisComponent,
-    PersonCloudrunReport
+    PersonCloudrunReport,
+    DeviceInfoComponent,
+    DeviceListComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

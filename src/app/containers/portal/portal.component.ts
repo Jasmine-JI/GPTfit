@@ -1,16 +1,16 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { GlobalEventsManager } from '@shared/global-events-manager';
+import { GlobalEventsManager } from '../../shared/global-events-manager';
 // import debounce from 'debounce';
-
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../shared/services/utils.service';
-import { DetectInappService } from '@shared/services/detect-inapp.service';
+import { DetectInappService } from '../../shared/services/detect-inapp.service';
 import { MatDialog } from '@angular/material/dialog';
-import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { MessageBoxComponent } from '../../shared/components/message-box/message-box.component';
 import { fromEvent, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { langList } from '../../shared/models/i18n';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -192,20 +192,9 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
       browserLang = this.utilsService.getLocalStorageObject('locale') || navigator.language.toLowerCase();
     }
 
-    const currentLocales = [
-      'zh-tw',
-      'zh-cn',
-      'en-us',
-      'es-es',
-      'de-de',
-      'fr-fr',
-      'it-it',
-      'pt-pt'
-    ];  // 新增文件全語系-kidin-1090629
-
     if (browserLang === 'pt-br') {
       browserLang = 'pt-pt'; // 巴西語預設顯示葡萄牙語-kidin-1091203
-    } else if (currentLocales.findIndex(_locale => _locale === browserLang) === -1) {
+    } else if (langList.findIndex(_locale => _locale === browserLang) === -1) {
       browserLang = 'en-us'; // default en-us
     }
 

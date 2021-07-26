@@ -1,13 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { getUrlQueryStrings } from '@shared/utils/';
 import { SettingsService } from '../../../services/settings.service';
-import { UtilsService } from '@shared/services/utils.service';
+import { UtilsService } from '../../../../../shared/services/utils.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../../shared/services/auth.service';
-
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
@@ -109,7 +107,7 @@ export class AccountInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1090723
    */
   handleQueryStrings(): void {
-    const queryStrings = getUrlQueryStrings(location.search);
+    const queryStrings = this.utils.getUrlQueryStrings(location.search);
     const { code } = queryStrings;
 
     if (code && code.length > 0) {

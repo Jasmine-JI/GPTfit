@@ -1,7 +1,3 @@
-import { stringify, parse } from 'query-string';
-import { cloneDeep } from 'lodash';
-
-export const EMPTY_OBJECT = {};
 export const DEFAULT_MAXLENGTH = {
   TEXT: 100,
   TEXTAREA: 2000,
@@ -10,22 +6,6 @@ export function isObjectEmpty(object) {
   if (!object) return true;
 
   return Object.keys(object).length === 0 && object.constructor === Object;
-}
-
-export function buildUrlQueryStrings(_params) {
-  const params = isObjectEmpty(_params) ? EMPTY_OBJECT : cloneDeep(_params);
-  // if (Object.keys(params).length) {
-  //   for (var key in params) {
-  //     if (!params[key]) delete params[key];
-  //   }
-  // }
-  return stringify(params);
-}
-
-export function getUrlQueryStrings(_search) {
-  const search = _search || window.location.search;
-  if (!search) return EMPTY_OBJECT;
-  return parse(search);
 }
 
 export function buildPageMeta(_meta) {

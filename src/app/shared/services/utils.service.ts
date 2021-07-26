@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core';
-import { cloneDeep } from 'lodash';
-import { stringify, parse } from 'query-string';
 import { FormGroup } from '@angular/forms';
 import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
 import { MessageBoxComponent } from '../components/message-box/message-box.component';
@@ -9,7 +7,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { AlbumType } from '../models/image';
 import { HrZoneRange } from '../models/chart-data';
 export const TOKEN = 'ala_token';
-export const EMPTY_OBJECT = {};
 import moment from 'moment';
 import { Unit, mi, ft } from '../models/bs-constant';
 import { SportType, SportCode } from '../models/report-condition';
@@ -89,12 +86,34 @@ export class UtilsService {
     }
   }
 
+  /**
+   * 將query string轉為物件，以方便取值
+   * @param _search {string}-query string
+   * @returns {any}-物件 {queryKey: queryValue }
+   * @author kidin-1100707
+   */
   getUrlQueryStrings(_search: string) {
-    const search = _search || window.location.search;
+    const search = _search || window.location.search,
+          queryObj = {};
+    let queryArr: Array<string>;
     if (!search) {
-      return EMPTY_OBJECT;
+      return queryObj as any;
+    } else {
+
+      if (search.includes('?')) {
+        queryArr = search.split('?')[1].split('&');
+      } else {
+        queryArr = search.split('&');
+      }
+
+      queryArr.forEach(_query => {
+        const [_key, _value] = _query.split('=');
+        Object.assign(queryObj, {[_key]: _value});
+      });
+
+      return queryObj as any;
     }
-    return parse(search);
+
   }
 
   str_cut(str, max_length) {
@@ -127,21 +146,6 @@ export class UtilsService {
       return true;
     }
     return Object.keys(object).length === 0 && object.constructor === Object;
-  }
-
-  buildUrlQueryStrings(_params) {
-    const params = this.isObjectEmpty(_params)
-      ? EMPTY_OBJECT
-      : cloneDeep(_params);
-
-    if (Object.keys(params).length) {
-      for (const key in params) {
-        if (!params[key]) {
-          delete params[key];
-        }
-      }
-    }
-    return stringify(params);
   }
 
   displayGroupId(_id: string) {

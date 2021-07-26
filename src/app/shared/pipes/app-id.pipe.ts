@@ -4,26 +4,28 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class AppIdPipe implements PipeTransform {
 
   /**
-   * 將app id轉成app name
+   * 將app id轉成app 名稱或介紹
    * @param value {number}-app id
    * @returns {string}-app name
    * @author kidin
    */
-  transform(value: number): string {
+  transform(value: number, args: 'name' | 'descriptionKey' = 'name'): string {
+    const name = [
+            'GPTFit',
+            'Connect',
+            'Cloud run',
+            'Train live',
+            'Fitness'
+          ],
+          key = [
+            'universal_app_gptInfo3',
+            'universal_app_alaconnectInfo',
+            'universal_app_cloudRunInfo',
+            'universal_app_trainLiveInfo',
+            'universal_app_fitnessInfo'
+          ];
     if (value !== null) {
-      switch (value) {
-        case 0:
-          return 'GPTFit'
-        case 1:
-          return 'Connect';
-        case 2:
-          return 'Cloud run';
-        case 3:
-          return 'Train live';
-        case 4:
-          return 'Fitness';
-      }
-
+      return args === 'name' ? name[value] : key[value];
     } else {
       return null;
     }

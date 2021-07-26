@@ -130,7 +130,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
    * 產生報告所需資料
    */
   sportsReportContent = {
-    reportType: 'my-class',
+    pageType: 'my-class',
     sportType: 1,
     dateRange: {
       startTimestamp: null,
@@ -237,7 +237,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
    */
   reportConditionOpt: ReportConditionOpt = {
     brandType: 1,
-    reportType: 'sport',
+    pageType: 'sport',
     date: {
       startTimestamp: moment().startOf('day').subtract(6, 'days').valueOf(),
       endTimestamp: moment().endOf('day').valueOf(),

@@ -106,7 +106,7 @@ export class ProductErrorLogPipe implements PipeTransform {
         return '光學心跳讀取錯誤';
 
       default:
-        return `Can't not find this key.`;
+        return `Can't find this key.`;
     }
 
   }

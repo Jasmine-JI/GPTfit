@@ -4,9 +4,10 @@ import { OfficialActivityService } from '../../../../../shared/services/official
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { fromEvent, Subscription, Subject, Observable } from 'rxjs';
-import { takeUntil, switchMap, tap } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import moment from 'moment';
 import { CloudrunService } from '../../../../../shared/services/cloudrun.service';
+import { Lang } from '../../../../../shared/models/i18n';
 
 
 interface Activity {
@@ -93,7 +94,7 @@ export class EditOfficialActivityComponent implements OnInit, OnDestroy {
   cardContent = '';
   editor: number;
   formData = new FormData();
-  currentLanguage: 'zh-tw';
+  currentLanguage = <Lang>'zh-tw';
 
   /**
    * 雲跑地圖清單

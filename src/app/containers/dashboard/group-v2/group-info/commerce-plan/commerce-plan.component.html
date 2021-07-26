@@ -1,15 +1,15 @@
-<div class="flexCol child__page__card">
+<div class="flexCol childPageCard">
   <section
     class="flexRow"
     style="justify-content: flex-end;"
     *ngIf="userSimpleInfo && userSimpleInfo.accessRight[0] <= 29">
-    <button class="child__page__btn" (click)="handleCancelEdit()" *ngIf="uiFlag.editMode">
+    <button class="childPageBtn" (click)="handleCancelEdit()" *ngIf="uiFlag.editMode">
       <span>{{ 'universal_operating_cancel' | translate}}</span>
     </button>
     <button
-      class="child__page__btn"
-      [class.edit__mode__btn]="uiFlag.editMode"
-      [class.btn__loading__status]="uiFlag.isLoading"
+      class="childPageBtn"
+      [class.editModeBtn]="uiFlag.editMode"
+      [class.btnLoadingStatus]="uiFlag.isLoading"
       (click)="handleEdit()"
     >
       <span *ngIf="!uiFlag.editMode">{{ 'universal_operating_edit' | translate}}</span>
@@ -18,10 +18,10 @@
   </section>
   <ng-container *ngIf="commerceInfo">
     <section class="plan__section">
-      <span class="content__subtitle" *ngIf="groupInfo.brandType === 1">
+      <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">
         {{ 'universal_group_brand' | translate}}
       </span>
-      <span class="content__subtitle" *ngIf="groupInfo.brandType === 2">
+      <span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">
         {{ 'universal_group_enterprise' | translate}}
       </span>
       <div class="group-list">
@@ -60,7 +60,7 @@
       </div>
     </section>
     <section class="plan__section">
-      <span  class="content__subtitle">
+      <span  class="contentSubtitle">
         {{'universal_group_totalMember' | translate}}
       </span>
       <div class="group-list">
@@ -118,7 +118,7 @@
       </div>
     </section>
     <section class="plan__section">
-      <span  class="content__subtitle">
+      <span  class="contentSubtitle">
         {{ 'universal_group_currentPlan' | translate}}
       </span>
       <div class="group-list">
@@ -165,7 +165,7 @@
       </div>
     </section>
     <section class="plan__section">
-      <span  class="content__subtitle">
+      <span  class="contentSubtitle">
         {{ 'universal_group_numberOfGroups' | translate}}
       </span>
       <div class="group-list">
@@ -218,7 +218,7 @@
       </div>
     </section>
     <section class="plan__section">
-      <span  class="content__subtitle">
+      <span  class="contentSubtitle">
         {{ 'universal_group_numberOfAdministrator' | translate}}
       </span>
       <div class="group-list">

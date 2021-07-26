@@ -620,58 +620,62 @@
             </div>
             <div
               class="flexCol"
-              *ngIf="activityInfoLayer.type == 7 && activityInfoLayer.totalPlusGforceX !== null && userProfile.systemAccessRight[0] <= 20"
+              *ngIf="activityInfoLayer.type == 7 && userProfile.systemAccessRight[0] <= 20"
             >
               <span class="table__list__title">{{ 'universal_unit_gforce' | translate }}</span>
               <div class="flexCol table__list__block">
-                <div class="flexRow table__row">
-                  <span class="table__list__subtitle">{{ 'universal_activityData_totalPlusGforceX' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalPlusGforceX }} g</span>
-                </div>
-                <div class="flexRow table__row">
-                  <span class="table__list__subtitle">{{ 'universal_activityData_totalPlusGforceY' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalPlusGforceY }} g</span>
-                </div>
-                <div class="flexRow table__row">
-                  <span class="table__list__subtitle">{{ 'universal_activityData_totalPlusGforceZ' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalPlusGforceZ }} g</span>
-                </div>
-                <div class="flexRow table__row">
-                  <span class="table__list__subtitle">{{ 'universal_activityData_totalMinusGforceX' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalMinusGforceX }} g</span>
-                </div>
-                <div class="flexRow table__row">
-                  <span class="table__list__subtitle">{{ 'universal_activityData_totalMinusGforceY' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalMinusGforceY }} g</span>
-                </div>
-                <div class="flexRow table__row">
-                  <span class="table__list__subtitle">{{ 'universal_activityData_totalMinusGforceZ' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalMinusGforceZ }} g</span>
-                </div>
-                <div class="flexRow table__row">
-                  <span class="table__list__subtitle">{{ 'universal_activityData_maxGforceX' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.maxGforceX }} g</span>
-                </div>
-                <div class="flexRow table__row">
-                  <span class="table__list__subtitle">{{ 'universal_activityData_maxGforceY' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.maxGforceY }} g</span>
-                </div>
-                <div class="flexRow table__row">
-                  <span class="table__list__subtitle">{{ 'universal_activityData_maxGforceZ' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.maxGforceZ }} g</span>
-                </div>
-                <div class="flexRow table__row">
-                  <span class="table__list__subtitle">{{ 'universal_activityData_miniGforceX' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.miniGforceX }} g</span>
-                </div>
-                <div class="flexRow table__row">
-                  <span class="table__list__subtitle">{{ 'universal_activityData_miniGforceY' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.miniGforceY }} g</span>
-                </div>
-                <div class="flexRow table__row">
-                  <span class="table__list__subtitle">{{ 'universal_activityData_miniGforceZ' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.miniGforceZ }} g</span>
-                </div>
+                <ng-container *ngIf="activityInfoLayer.totalPlusGforceX !== null">
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">{{ 'universal_activityData_totalPlusGforceX' | translate }}</span>
+                    <span class="table__list__content">{{ activityInfoLayer.totalPlusGforceX }} g</span>
+                  </div>
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">{{ 'universal_activityData_totalPlusGforceY' | translate }}</span>
+                    <span class="table__list__content">{{ activityInfoLayer.totalPlusGforceY }} g</span>
+                  </div>
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">{{ 'universal_activityData_totalPlusGforceZ' | translate }}</span>
+                    <span class="table__list__content">{{ activityInfoLayer.totalPlusGforceZ }} g</span>
+                  </div>
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">{{ 'universal_activityData_totalMinusGforceX' | translate }}</span>
+                    <span class="table__list__content">{{ activityInfoLayer.totalMinusGforceX }} g</span>
+                  </div>
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">{{ 'universal_activityData_totalMinusGforceY' | translate }}</span>
+                    <span class="table__list__content">{{ activityInfoLayer.totalMinusGforceY }} g</span>
+                  </div>
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">{{ 'universal_activityData_totalMinusGforceZ' | translate }}</span>
+                    <span class="table__list__content">{{ activityInfoLayer.totalMinusGforceZ }} g</span>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="activityInfoLayer.maxGforceX !== null">
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">{{ 'universal_activityData_maxGforceX' | translate }}</span>
+                    <span class="table__list__content">{{ activityInfoLayer.maxGforceX }} g</span>
+                  </div>
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">{{ 'universal_activityData_maxGforceY' | translate }}</span>
+                    <span class="table__list__content">{{ activityInfoLayer.maxGforceY }} g</span>
+                  </div>
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">{{ 'universal_activityData_maxGforceZ' | translate }}</span>
+                    <span class="table__list__content">{{ activityInfoLayer.maxGforceZ }} g</span>
+                  </div>
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">{{ 'universal_activityData_miniGforceX' | translate }}</span>
+                    <span class="table__list__content">{{ activityInfoLayer.miniGforceX }} g</span>
+                  </div>
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">{{ 'universal_activityData_miniGforceY' | translate }}</span>
+                    <span class="table__list__content">{{ activityInfoLayer.miniGforceY }} g</span>
+                  </div>
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">{{ 'universal_activityData_miniGforceZ' | translate }}</span>
+                    <span class="table__list__content">{{ activityInfoLayer.miniGforceZ }} g</span>
+                  </div>
+                </ng-container>
               </div>
             </div>
             <div class="flexCol" *ngIf="activityInfoLayer.type == 7 && activityInfoLayer.totalSwingCount">
@@ -853,12 +857,18 @@
   ></app-map-chart-compare>
   <ng-container *ngIf="uiFlag.pcView || uiFlag.currentTag === 'chart'">
     <section class="card__section" *ngIf="+activityInfoLayer.type === 3">
-      <div class="flexRow cardTitle">
-        <span class="cardSubtitle">{{ 'universal_activityData_weightTrainingEffectiveness' | translate }}</span>
-        <i class="icon-svg_web-icon_p1_001-setting settingIcon" (click)="handleShowWeightTrainOptMenu($event)"></i>
+      <div class="flexRow cardTitle report-haveOptBtn">
+        <span class="cardSubtitle">
+          {{ 'universal_activityData_weightTrainingEffectiveness' | translate }}
+        </span>
+        <button>
+          <i 
+            class="icon-svg_web-icon_p1_001-setting settingIcon"
+            (click)="handleShowWeightTrainOptMenu($event)"
+          ></i>
+        </button>
         <div
-          class="report-weightTrainSetting"
-          class="flexCol"
+          class="flexCol report-weightTrainSetting"
           (click)="$event.stopPropagation()"
           *ngIf="uiFlag.showWeightTrainingOpt"
         >
@@ -954,11 +964,13 @@
     <section class="card__section">
       <div class="flexRow cardTitle">
         <span class="cardSubtitle">{{ 'universal_activityData_trend' | translate }}</span>
-        <i
-          class="icon-svg_web-icon_p1_001-setting settingIcon"
-          (click)="handleShowOptMenu($event)"
-          *ngIf="activityPointLayer.pointSecond.length > 1"
-        ></i>
+        <button>
+          <i
+            class="icon-svg_web-icon_p1_001-setting settingIcon"
+            (click)="handleShowOptMenu($event)"
+            *ngIf="activityPointLayer.pointSecond.length > 1"
+          ></i>
+        </button>
         <div id="map__opt__menu" (click)="$event.stopPropagation();" *ngIf="uiFlag.showChartOpt">
           <div class="flexCol" *ngIf="trendChartOpt.haveDistanceChoice">
             <span class="bold__font">{{ 'universal_activityData_inAccordanceWith' | translate }}</span>
