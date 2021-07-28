@@ -164,7 +164,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
         targetGroupId = this.groupService.getCompleteGroupId(selectGroup.split('-'));
       } else {
         const { groupId } = this.groupInfo;
-        targetGroupId = groupId;
+        targetGroupId = `${this.groupService.getPartGroupId(groupId, 4)}-0-0`;
       }
 
       if (!this.uiFlag.editMode) this.getDeviceList(targetGroupId);
@@ -221,6 +221,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
             
           this.getOtherInfo(deviceList);
         } else {
+          this.deviceList = [];
           this.uiFlag.progress = 100;
         }
 
@@ -375,37 +376,6 @@ export class DeviceListComponent implements OnInit, OnDestroy {
 
   /**
    * 更新裝置列表
-   * @param action {1 | 2} 1:加入 2:移除
-   * @author kidin-1100722
-   */
-  updateDevice(action: 1 | 2) {
-    const { groupId } = this.groupInfo,
-          body = {
-            token: this.token,
-            targetGroupId: groupId,
-            equipmentSN: this.updateList,
-            action
-          };
-
-    this.qrcodeService.updateGroupDeviceList(body).subscribe(res => {
-      const { resultCode, apiCode, resultMessage } = res;
-      if (resultCode !== 200) {
-        this.utils.handleError(resultCode, apiCode, resultMessage);
-      } else {
-        this.snackbar.open(
-          'Success',
-          'OK',
-          { duration: 3000 }
-        );
-
-      }
-
-    });
-
-  }
-
-  /**
-   * 更新裝置列表
    * @author kidin-1100722
    */
   refreshList() {
@@ -529,8 +499,9 @@ export class DeviceListComponent implements OnInit, OnDestroy {
   openEditMode(mode: EditMode) {
     if (mode === 'add') {
       this.getDeviceList();
-    } 
+    }
 
+    this.uiFlag.selectAll = null;
     // 隱藏部份篩選器條件
     this.uiFlag.editMode = mode;
     delete this.reportConditionOpt.deviceUseStatus;
@@ -630,7 +601,19 @@ export class DeviceListComponent implements OnInit, OnDestroy {
     this.qrcodeService.updateGroupDeviceList(body).subscribe(res => {
       const { resultCode, apiCode, resultMessage } = res;
       if (resultCode !== 200) {
-        this.utils.handleError(resultCode, apiCode, resultMessage);
+        
+        if (resultMessage === 'Execute access right is not enough.') {
+          this.translateService.get('hellow world').pipe(
+            takeUntil(this.ngUnsubscribe)
+          ).subscribe(() => {
+            const msg = this.translateService.instant('universal_group_notGroupMember');
+            this.utils.openAlert(msg);
+          });
+          
+        } else {
+          this.utils.handleError(resultCode, apiCode, resultMessage);
+        }
+
       } else {
         this.returnNormalMode();
       }

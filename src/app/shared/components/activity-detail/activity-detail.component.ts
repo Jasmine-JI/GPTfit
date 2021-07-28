@@ -1654,7 +1654,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 將所需資料轉換為csv格式
-   * @param rawData {any}-活動賽事檔案內容
+   * @param rawData {any}-運動檔案內容
    * @author kidin-1090928
    */
   switchCSVFile(rawData: any) {
@@ -2015,6 +2015,77 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   editPrivacy(privacy: Array<PrivacyCode>) {
     this.fileInfo.privacy = privacy;
     this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 建立gpx檔案
+   */
+  downloadGpxFile() {
+    const { 
+            fileInfo: { dispName, creationDate },
+            activityPointLayer,
+            activityInfoLayer: {startTime}
+          } = this.rawData,
+          gpxName = `${dispName}${creationDate}.gpx`,
+          data = this.switchGpxFile(activityPointLayer, startTime, dispName),
+          blob = new Blob([data], {
+            type: 'text/csv;charset=utf8'
+          }),
+          href = URL.createObjectURL(blob),  // 建立gpx檔url
+          link = document.createElement('a');  // 建立連結供gpx下載使用
+
+    document.body.appendChild(link);
+    link.href = href;
+    link.download = gpxName;
+    link.click();
+  }
+
+  /**
+   * 將所需資料轉換為csv格式
+   * @param points {Array<any>}-運動檔案單點資料
+   * @param startTime {Array<any>}-運動開始時間
+   * @param dispName {string}-運動檔案名稱
+   * @author kidin-1090928
+   */
+  switchGpxFile(points: Array<any>, startTime: string, dispName: string) {
+    let content = '';
+    const startTimestamp = moment(startTime).valueOf();
+    points.forEach(_point => {
+      const { latitudeDegrees, longitudeDegrees, altitudeMeters, pointSecond } = _point,
+            checkLat = latitudeDegrees && parseFloat(latitudeDegrees) !== 100,
+            checkLng = longitudeDegrees && parseFloat(longitudeDegrees) !== 100,
+            alt = altitudeMeters || 0,
+            pointTime = moment(startTimestamp + pointSecond * 1000).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+      if (checkLat && checkLng) {
+        content += `<trkpt lat="${latitudeDegrees}" lon="${longitudeDegrees}">
+            <ele>${alt}</ele>
+            <time>${pointTime}</time>
+          </trkpt>
+        `;
+      }
+
+    });
+
+    let gpxData = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+    <gpx xmlns="${
+        "http://www.topografix.com/GPX/1/1"
+      }" xmlns:gpxtpx="${
+        "http://www.gptfit.com"
+      }" xmlns:xsi="${
+        "http://www.w3.org/2001/XMLSchema-instance"
+      }" xsi:schemaLocation="${
+        "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"
+    }">
+      <trk>
+        <name>${dispName}</name>
+        <trkseg>
+          ${content}
+        </trkseg>
+      </trk>
+    </gpx>
+    `;
+
+    return gpxData;
   }
 
   /**
