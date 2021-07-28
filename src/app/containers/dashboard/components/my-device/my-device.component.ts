@@ -183,8 +183,8 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
             // 取得使用者暱稱
             const { processResult, userProfile } = userProfileRes;
             if (processResult && processResult.resultCode === 200) {
-              const havecurrentFitpair = fitPairUserId.length > 0,
-                    haveLastFitpair = lastFitPairUserId.length > 0;
+              const havecurrentFitpair = fitPairUserId && fitPairUserId.length > 0,
+                    haveLastFitpair = lastFitPairUserId && lastFitPairUserId.length > 0;
               userProfile.forEach(_user => {
                 const { userId, nickname } = _user;
                 if (havecurrentFitpair && userId == fitPairUserId) {

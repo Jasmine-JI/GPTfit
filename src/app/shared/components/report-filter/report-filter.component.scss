@@ -1,7 +1,7 @@
 @import 'transition.scss';
 @import 'flex-center.scss';
 @import 'font.scss';
-@import "rotate.scss";
+@import "transform.scss";
 
 $active-color: rgba(38, 171, 227, 1);
 $hover-bg-gray: rgba(240, 240, 240, 1);
@@ -265,4 +265,23 @@ $drop-list-width: 200px;
   width: 50px;
   color: var(--scale-0-255);
   border-color: var(--scale-120-200);
+  border-radius: 20px;
+  border-color: rgba(17, 166, 235, 1);
+  padding-left: 10px;
+  outline: none;
+}
+
+#fitpairing__mark {
+  display: flex;
+  align-items: center;
+
+  &:before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 5px;
+    background-color: #08d818;
+    margin-right: 2px;
+  }
+
 }

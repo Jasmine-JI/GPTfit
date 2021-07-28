@@ -2401,4 +2401,6 @@
  "universal_vocabulary_acceleration": "加速度",
  "universal_muscleName_preferredMuscleGroup": "Preferred muscle group",
  "universal_deviceSetting_currentFitpair": "目前Fitpair對象",
- "universal_deviceSetting_lastFitpair": "前一個Fitpair對象"}
+ "universal_deviceSetting_lastFitpair": "前一個Fitpair對象",
+ "universal_system_openFitpair": "裝置綁定群組，將強制開放該裝置Fitpair對象為「任何人」，是否繼續？"
+}

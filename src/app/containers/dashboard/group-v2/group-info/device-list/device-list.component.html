@@ -1,0 +1,227 @@
+<app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
+<main id="device__list" class="cardContent" style="position: relative;">
+  <div id="sn__input">
+    <div class="flexRow">
+      <i class="icon-svg_web-icon_p1_014-search"></i>
+      <input
+        type="text"
+        maxlength="15"
+        [value]="filterSn"
+        [placeholder]="'universal_deviceSetting_serialNumber' | translate"
+        (keyup)="handleSnInput($event)"
+        (focusout)="handleSnInput($event)"
+      >
+      <i class="icon-svg_web-icon_p1_012-close" (click)="cancelSnFilter()"></i>
+    </div>
+  </div>
+  <div class="flexCol" style="margin: 20px 10px;">
+    <h5 *ngIf="uiFlag.editMode === 'add'">{{ 'universal_deviceSetting_myDevice' | translate }}</h5>
+    <table style="width: 100%;">
+      <thead id="table__header">
+        <tr id="list__header">
+          <ng-container *ngIf="uiFlag.editMode !== null">
+            <th>
+              <div
+                class="check__box"
+                [class.check__box--selected]="uiFlag.selectAll"
+                (click)="selectAll(uiFlag.editMode)"
+              >
+                <ng-container *ngIf="uiFlag.selectAll">
+                  <span class="flexCenter">✔</span>
+                </ng-container>
+              </div>
+            </th>
+          </ng-container>
+          <th style="word-break: break-word;">
+            {{ 'universal_deviceSetting_modeCode' | translate }}
+          </th>
+          <th>
+            <div class="flexCol">
+              <ng-container *ngIf="!uiFlag.isPhoneMode; else infoTitle">
+                <span [style.font-size]="uiFlag.isPhoneMode ? '14px' : '16px'">
+                  {{ 'universal_deviceSetting_serialNumber' | translate }}
+                </span>
+                <span class="remark__value" *ngIf="uiFlag.editMode !== 'add'">
+                  {{ 'universal_deviceSetting_registeredDevice' | translate }}
+                </span>
+              </ng-container>
+              <ng-template #infoTitle>
+                <span>{{ 'universal_activityData_summary' | translate }}</span>
+              </ng-template>
+            </div>
+          </th>
+          <ng-container *ngIf="!uiFlag.isPhoneMode && uiFlag.editMode !== 'add'">
+            <th>
+              <div class="flexCol">
+                <span>{{ 'universal_uiFitpair_fitpairObject' | translate }}</span>
+                <span class="remark__value">{{ 'universal_activityData_time' | translate }}</span>
+              </div>
+            </th>
+          </ng-container>
+          <ng-container *ngIf="!uiFlag.isPhoneMode">
+            <th>
+              {{ 'universal_deviceSetting_modeType' | translate }}
+            </th>
+          </ng-container>
+          <ng-container *ngIf="!uiFlag.editMode">
+            <th class="refresh__col">
+              <button (click)="refreshList()" [title]="'universal_operating_update' | translate">
+                <i class="icon-svg_web-icon_p1_031-sync" style="font-size: 26px;"></i>
+              </button>
+            </th>
+          </ng-container>
+        </tr>
+      </thead>
+      <tbody style="width: 100%;">
+        <ng-container *ngIf="deviceList?.length > 0; else noData;">
+          <ng-container *ngFor="let _list of deviceList; let _idx = index;">
+            <tr
+              class="device__list__row"
+              [class.device--fitpairing]="_list.fitPairUserId && !uiFlag.editMode"
+              (click)="navigateDevicePage(_idx)"
+              *ngIf="
+                (filterSn === null || _list.myEquipmentSN.includes(filterSn.toUpperCase()))
+                && reportConditionOpt.deviceType.includes(_list.deviceType)
+                && (uiFlag.editMode
+                  || (
+                    reportConditionOpt.deviceUseStatus === 'all'
+                    || (reportConditionOpt.deviceUseStatus === 'fitpairing' && _list.fitPairUserId)
+                    || (reportConditionOpt.deviceUseStatus === 'idle' && !_list.fitPairUserId)
+                ));
+              "
+            >
+              <ng-container *ngIf="uiFlag.editMode !== null">
+                <td>
+                  <div
+                    class="check__box"
+                    [class.check__box--selected]="
+                      _list.delSelected || (!_list.added && _list.addSelected)
+                    "
+                    [class.check__box--added]="_list.added"
+                    (click)="selectOne($event, uiFlag.editMode, _idx)"
+                  >
+                    <ng-container *ngIf="_list.added || _list.addSelected || _list.delSelected">
+                      <span class="flexCenter">✔</span>
+                    </ng-container>
+                  </div>
+                </td>
+              </ng-container>
+              <td>
+                <div class="flexCol">
+                  <img class="device__img" [src]="imgStoragePath + _list.modelImg" (error)="this.imgStoragePath + '/img/unknown.png'">
+                  <span>{{ _list.modelName }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="flexCol">
+                  <span style="font-weight: bold;">{{ _list.myEquipmentSN }}</span>
+                  <span class="remark__value" *ngIf="uiFlag.editMode !== 'add'">
+                    <span *ngIf="uiFlag.isPhoneMode">
+                      {{ 'universal_deviceSetting_registeredDevice' | translate }}:
+                    </span>
+                    {{ _list.bondingUserName }}
+                  </span>
+                  <ng-container *ngIf="uiFlag.isPhoneMode">
+                    <ng-container *ngIf="uiFlag.editMode !== 'add'">
+                      <span style="font-weight: bold; font-size: 14px;">
+                        <span>
+                          {{ 'universal_uiFitpair_fitpairObject' | translate }}:
+                        </span>
+                        <ng-container *ngIf="_list.fitPairUserId">
+                          {{ _list.fitPairUserName }}
+                        </ng-container>
+                        <ng-container *ngIf="!_list.fitPairUserId && _list.lastFitPairUserId">
+                          {{ _list.lastFitPairUserName }}
+                        </ng-container>
+                        <ng-container *ngIf="!_list.fitPairUserId && !_list.lastFitPairUserId">
+                          --
+                        </ng-container>
+                      </span>
+                      <span class="remark__value" *ngIf="_list.fitPairUserId || _list.lastFitPairUserId">
+                        {{ _list.lastFitPairTimeStamp * 1000 | timeFormat: 'MM/DD HH:mm' }}
+                      </span>
+                    </ng-container>
+                    <ng-container *ngIf="uiFlag.editMode === 'add'">
+                      <span>{{ _list.deviceType | productType | translate }}</span>
+                    </ng-container>
+                  </ng-container>
+                </div>
+              </td>
+              <ng-container *ngIf="!uiFlag.isPhoneMode && uiFlag.editMode !=='add'">
+                <td>
+                  <div class="flexCol">
+                    <span>
+                      <ng-container *ngIf="_list.fitPairUserId">
+                        {{ _list.fitPairUserName }}
+                      </ng-container>
+                      <ng-container *ngIf="!_list.fitPairUserId && _list.lastFitPairUserId">
+                        {{ _list.lastFitPairUserName }}
+                      </ng-container>
+                      <ng-container *ngIf="!_list.fitPairUserId && !_list.lastFitPairUserId">
+                        --
+                      </ng-container>
+                    </span>
+                    <span class="remark__value" *ngIf="_list.fitPairUserId || _list.lastFitPairUserId">
+                      {{ _list.lastFitPairTimeStamp * 1000 | timeFormat: 'MM/DD HH:mm' }}
+                    </span>
+                  </div>
+                </td>
+              </ng-container>
+              <ng-container *ngIf="!uiFlag.isPhoneMode">
+                <td>
+                  {{ _list.deviceType | productType | translate }}
+                </td>
+              </ng-container>
+              <ng-container *ngIf="!uiFlag.editMode">
+                <td class="refresh__col">&nbsp;</td>
+              </ng-container>
+            </tr>
+          </ng-container>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+</main>
+<section
+  id="edit__btn__group"
+  (mousedown)="changeBtnPositionStart($event, 'mouse')"
+  (touchstart)="changeBtnPositionStart($event, 'touch')"
+  *ngIf="uiFlag.editMode === null && groupInfo.groupLevel == 40 && userSimpleInfo?.accessRight[0] <= 40"
+>
+  <button id="delete__btn" (click)="openEditMode('del')" *ngIf="deviceList?.length > 0">
+    <i class="icon-svg_web-icon_p1_012-close"></i>
+    <span>{{ 'universal_operating_delete' | translate }}</span>
+  </button>
+  <button id="add__btn" (click)="openEditMode('add')">
+    <i class="icon-svg_web-icon_p1_029-add" style="font-weight: 100;"></i>
+    <span>{{ 'universal_operating_add' | translate }}</span>
+  </button>
+</section>
+<section
+  id="edit__finish"
+  *ngIf="uiFlag.editMode !== null"
+>
+  <button
+    id="delete__finish"
+    *ngIf="uiFlag.editMode === 'del'"
+    (click)="delDevice()"
+  >
+    <i class="icon-svg_web-icon_p1_012-close"></i>
+    <span>{{ 'universal_operating_determine' | translate }}</span>
+  </button>
+  <button
+    id="add__finish"
+    *ngIf="uiFlag.editMode === 'add'"
+    (click)="showAddAlert()"
+  >
+    <i class="icon-svg_web-icon_p1_029-add" style="font-weight: 100;"></i>
+    <span>{{ 'universal_operating_determine' | translate }}</span>
+  </button>
+</section>
+<ng-template #noData>
+  <tr>
+    <td style="color: rgba(150, 150, 150, 1); padding-top: 10px;">
+      {{ 'universal_status_noData' | translate }}
+    </td>
+  </tr>
+</ng-template>
