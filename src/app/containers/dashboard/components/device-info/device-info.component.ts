@@ -707,7 +707,13 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
 
     };
 
-    if (fitPairStatus == 3 && isFitPaired && fitPairUserId != this.userId) {
+    const action = this.utils.getLocalStorageObject('actionAfterLogin');
+    if (
+      fitPairStatus == 3
+      && isFitPaired
+      && fitPairUserId != this.userId
+      && action !== 'coverPair'
+    ) {
       this.openFitPairAlert();
     }
 
@@ -796,7 +802,6 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     const overMaintantner = this.systemAccessRight[0] <= 20,
           overMarketing = this.systemAccessRight[0] <= 29;
     if (this.fitPairInfo.deviceBond.id == this.userId || overMarketing) {
-
       if (this.deviceInfo['odometer']) {
         this.childPageList = this.childPageList.concat(['management', 'odometer']);
       } else {

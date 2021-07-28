@@ -1,0 +1,7 @@
+// user-select: none; 各瀏覽器支援
+@mixin noneSelect() {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
