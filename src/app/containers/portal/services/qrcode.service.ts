@@ -121,6 +121,18 @@ export class QrcodeService {
   }
 
   /**
+   * api 7023-從管理群組(課程)中，可將註冊裝置從群組加入或移除
+   * @param body {Object}
+   * @author kidin-1090924
+   */
+   updateGroupDeviceList(body: any) {
+    return this.http.post<any>('/api/v1/device/updateGroupDeviceList', body).pipe(
+      catchError(err => throwError(err))
+    );
+    
+  }
+
+  /**
    * 設定是否顯示fitPair設定框
    * @param show {boolean}-是否顯示fitPair設定框
    * @author kidin-1100709

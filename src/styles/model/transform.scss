@@ -7,3 +7,11 @@
     -ms-transform: rotate($degree);
     transform: rotate($degree);
 }
+
+@mixin el-scaleX($degree) {
+    -moz-transform: scaleX($degree);
+    -webkit-transform: scaleX($degree);
+    -o-transform: scaleX($degree);
+    -ms-transform: scaleX($degree);
+    transform: scaleX($degree);
+}

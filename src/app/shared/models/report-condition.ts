@@ -23,10 +23,14 @@ export interface ReportConditionOpt {
     max: number;
   };
   gender?: Sex;
-  sn?: string;
+  deviceType?: Array<string>;
+  deviceUseStatus?: 'all' | 'fitpairing' | 'idle';
   hideConfirmBtn: boolean;
 }
 
+/**
+ * 簡易的群組資訊
+ */
 export interface GroupSimpleInfo {
   accessRight?: string;
   groupIcon?: string;
@@ -35,6 +39,9 @@ export interface GroupSimpleInfo {
   groupStatus?: string;
 }
 
+/**
+ * 群組階層
+ */
 export interface GroupTree {
   brands: null | GroupSimpleInfo;
   branches: null | Array<GroupSimpleInfo>;
@@ -42,6 +49,9 @@ export interface GroupTree {
   selectGroup: string;  // 只擷取到前面有效片段，ex. '0-0-101-1'
 }
 
+/**
+ * 運動類別代碼清單
+ */
 export enum SportCode {
   rest,
   run,
@@ -54,5 +64,8 @@ export enum SportCode {
   all = 99
 }
 
+/**
+ * 運動代碼
+ */
 export type SportType = 
   SportCode.all | SportCode.run | SportCode.cycle | SportCode.weightTrain | SportCode.swim | SportCode.aerobic | SportCode.row | SportCode.ball;
