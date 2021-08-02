@@ -996,9 +996,9 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         'member-list',
         'group-architecture',
         'admin-list',
-        // 'device-list'
       ]);
       
+      if (upperClassAdmin) childPageList = childPageList.concat(['device-list']);
     }
 
     if (inBrandLevel && (upperMarktingManage || this.user.isGroupAdmin)) {

@@ -180,7 +180,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         this.getMapList();
       }
 
-      if (res.date.startTimestamp !== null) {
+      if (res.date && res.date.startTimestamp !== null) {
         this.date.startTimestamp = res.date.startTimestamp;
         this.date.endTimestamp = res.date.endTimestamp;
         this.date.type = res.date.type;
@@ -681,13 +681,17 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1091028
    */
   submit() {
-    Object.assign(this.reportConditionOpt, {
-      date: {
-        startTimestamp: this.date.startTimestamp,
-        endTimestamp: this.date.endTimestamp,
-        type: this.date.type
-      }
-    });
+    if (this.reportConditionOpt.date) {
+      Object.assign(this.reportConditionOpt, {
+        date: {
+          startTimestamp: this.date.startTimestamp,
+          endTimestamp: this.date.endTimestamp,
+          type: this.date.type
+        }
+        
+      });
+
+    }
 
     this.reportService.setReportCondition(this.reportConditionOpt);
     this.changeDetectorRef.markForCheck();
@@ -775,6 +779,36 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     }
     
     (e as any).currentTarget.value = this.reportConditionOpt.age[boundary];
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 選擇裝置類別
+   * @param type {string}-裝置類型代碼
+   * @author kidin-1100722
+   */
+  selectDevice(type: string) {
+    let { deviceType } = this.reportConditionOpt;
+    if (deviceType.includes(type)) {
+      this.reportConditionOpt.deviceType = deviceType.filter(_type => _type !== type);
+    } else {
+      deviceType.push(type);
+    }
+
+    if (this.reportConditionOpt.hideConfirmBtn) {
+      this.submit();
+    }
+
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 變更欲篩選的裝置使用狀態
+   * @param status {'all' | 'fitpairing' | 'idle'}-欲篩選的裝置使用狀態
+   * @author kidin-1100723
+   */
+  changeFitpairUse(status: 'all' | 'fitpairing' | 'idle') {
+    this.reportConditionOpt.deviceUseStatus = status;
     this.changeDetectorRef.markForCheck();
   }
 
