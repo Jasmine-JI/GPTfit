@@ -2041,7 +2041,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   /**
-   * 將所需資料轉換為csv格式
+   * 將所需資料轉換為gpx格式
    * @param points {Array<any>}-運動檔案單點資料
    * @param startTime {Array<any>}-運動開始時間
    * @param dispName {string}-運動檔案名稱
@@ -2056,13 +2056,13 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
             checkLng = longitudeDegrees && parseFloat(longitudeDegrees) !== 100,
             alt = altitudeMeters || 0,
             pointTime = moment(startTimestamp + pointSecond * 1000).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
-      if (checkLat && checkLng) {
+      // if (checkLat && checkLng) {  // 暫不做座標是否有效的判斷
         content += `<trkpt lat="${latitudeDegrees}" lon="${longitudeDegrees}">
             <ele>${alt}</ele>
             <time>${pointTime}</time>
           </trkpt>
         `;
-      }
+      // }
 
     });
 

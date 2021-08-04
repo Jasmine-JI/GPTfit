@@ -37,6 +37,7 @@ enum Dashboard {
   coordinateTranslate,
   lifeTrackingLog,
   systemLog,
+  systemFolder,
   eventManagement,
   allGroupList,
   createBrandGroup,
