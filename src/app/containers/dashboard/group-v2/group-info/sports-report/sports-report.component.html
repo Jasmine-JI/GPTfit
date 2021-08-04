@@ -11,7 +11,7 @@
           (click)="print()"
           *ngIf="uiFlag.isPreviewMode"
         >
-          {{'universal_operating_print' | translate}}
+          {{ 'universal_operating_print' | translate }}
         </button>
         <a 
           target="_blank"
@@ -894,6 +894,28 @@
             (scroll)="$event.stopPropagation();"
             *ngIf="groupTable.showOpt"
           >
+            <div *ngIf="groupInfo.level <= 40">
+              <span class="tableMenuTitle">
+                {{ 'universal_operating_filter' | translate }} {{ 'universal_group_group' | translate }}
+              </span>
+              <div class="tableCheckbox" *ngFor="let _filter of [30, 40, 60]; let _idx = index;">
+                <mat-checkbox
+                  color="primary"
+                  value="{{ _filter }}"
+                  [checked]="groupFilterLevel.includes(_filter)"
+                  (change)="changeGroupFilter($event)"
+                  [class]="
+                    groupFilterLevel.length <= 1 && groupFilterLevel.includes(_filter)
+                      ? 'reportCheckBox--disable' : 'reportCheckBox'
+                  "
+                  *ngIf="groupInfo.level <= 30 || _idx !== 0"
+                >
+                  <span style="font-size: 14px">
+                    {{ _filter | groupLevelTranslate:2 | translate }}
+                  </span>
+                </mat-checkbox>
+              </div>
+            </div>
             <div>
               <div class="flexRow">
                 <span class="tableMenuTitle">{{'universal_activityData_fieldDisplay' | translate}}</span>
@@ -992,7 +1014,7 @@
                     [style.width]="groupTable.sorted ? groupAnalysis[row].ratio : '0px'"
                     *ngIf="groupTable.sortType === 'memberNum'"
                   ></div>
-                  <span class="setIn tableData">
+                  <span class="setIn" style="position: relative; right: 8px;">
                     {{ groupAnalysis[row].activityPeople || 0 }}/{{ groupAnalysis[row].memberList.length }}
                   </span>
                 </mat-cell>
@@ -1850,7 +1872,6 @@
                   </ng-container>
                 </mat-cell>
               </ng-container>
-
               <ng-container>
                 <mat-header-row *matHeaderRowDef="groupTable.showDataDef"></mat-header-row>
                 <mat-row
@@ -1858,7 +1879,10 @@
                   (click)="showAnalysisInfoMenu($event, 'group', logRow)"
                   id="{{ logRow }}"
                   class="tableRow"
-                  [hidden]="!groupTable.showAll && j > tableLength"
+                  [hidden]="
+                    (!groupTable.showAll && j > tableLength)
+                    || !groupFilterLevel.includes(groupAnalysis[logRow].level)
+                  "
                 >
                 </mat-row>
               </ng-container>
@@ -1872,7 +1896,6 @@
             {{ 'universal_operating_more' | translate }}
           </div>
         </div>
-
       </div>
     </section>
     <section class="report-displaySection" *ngIf="uiFlag.progress === 100">

@@ -119,12 +119,13 @@
         [mapSource]="mapSource"
         [isPreviewMode]="uiFlag.isPreviewMode"
         [compareList]="compare.urlList"
+        [systemAccessRight]="systemAccessRight"
         [page]="'group'"
         (mapSourceChange)="mapSourceChange($event)"
         (comparePlayer)="comparePlayer($event)"
       ></app-cloudrun-map>
     </section>
-    <section class="report-displaySection">
+    <section class="report-displaySection" *ngIf="progress === 100">
       <div class="flexRow cardTitle report-haveOptBtn">
         <span class="cardSubtitle">{{ 'universal_group_groupAnalysis' | translate }}</span>
         <button>
@@ -138,7 +139,9 @@
           *ngIf="groupTable.showOpt"
         >
           <div *ngIf="currentGroup.level <= 40">
-            <span class="tableMenuTitle">{{'universal_operating_filter' | translate}} {{'universal_group_group' | translate}}</span>
+            <span class="tableMenuTitle">
+              {{ 'universal_operating_filter' | translate }} {{ 'universal_group_group' | translate }}
+            </span>
             <div class="tableCheckbox" *ngFor="let _filter of groupTableOpt.filter; let _idx = index;">
               <mat-checkbox
                 color="primary"
@@ -276,7 +279,7 @@
                   *ngIf="groupTable.sortType === 'avgTime'"
                 ></div>
                 <div class="setIn">
-                  <span class="tableData">
+                  <span class="tableData regulate__col">
                     <ng-container *ngIf="row?.completeNum !== 0; else noTimeData">
                       {{ row?.avgSecond || 0 | sportTime: [false, false] }}
                     </ng-container>
@@ -310,7 +313,7 @@
                   *ngIf="groupTable.sortType === 'totalTime'"
                 ></div>
                 <div class="setIn">
-                  <span class="tableData">
+                  <span class="tableData regulate__col">
                     <ng-container *ngIf="row?.completeNum !== 0; else noTimeData">
                       {{ row?.totalSeconds | sportTime: [false, false] }}
                     </ng-container>
@@ -346,7 +349,7 @@
                   *ngIf="groupTable.sortType === 'avgPace'"
                 ></div>
                 <div class="setIn">
-                  <span class="tableData">
+                  <span class="tableData regulate__col">
                     <ng-container *ngIf="row?.completeNum !== 0; else noTimeData">
                       {{ row?.avgSpeed || 0 | sportPaceSibs: [1, unit, 1] }}
                     </ng-container>
@@ -382,7 +385,7 @@
                   *ngIf="groupTable.sortType === 'avgHr'"
                 ></div>
                 <div class="setIn">
-                  <span class="tableData">
+                  <span class="tableData regulate__col">
                     <ng-container *ngIf="row?.completeNum !== 0; else noData">
                       {{ row?.avgHr || 0 | number: '1.0-0' }}
                     </ng-container>
@@ -418,7 +421,7 @@
                   *ngIf="groupTable.sortType === 'avgCalories'"
                 ></div>
                 <div class="setIn">
-                  <span class="tableData">
+                  <span class="tableData regulate__col">
                     <ng-container *ngIf="row?.completeNum !== 0; else noData">
                       {{ row?.avgCalories | number: '1.0-1' }}
                     </ng-container>
@@ -452,7 +455,7 @@
                   *ngIf="groupTable.sortType === 'avgCadence'"
                 ></div>
                 <div class="setIn">
-                  <span class="tableData">
+                  <span class="tableData regulate__col">
                     <ng-container *ngIf="row?.completeNum !== 0; else noData">
                       {{ row?.avgCadence || 0 | number: '1.0-1' }}
                     </ng-container>
@@ -555,7 +558,7 @@
         </a>
       </div>
     </section>
-    <section class="report-displaySection">
+    <section class="report-displaySection" *ngIf="progress === 100">
       <div class="flexRow cardTitle report-haveOptBtn">
         <span class="cardSubtitle">{{ 'universal_group_personalAnalysis' | translate }}</span>
         <button>
@@ -613,6 +616,7 @@
                   || (memberTable.showDataType.length <= tableColumn.min && memberTable.showDataType.includes(_index))
                   ? 'reportCheckBox--disable' : 'reportCheckBox'
                 "
+                *ngIf="systemAccessRight[0] <= currentGroup.level || !['gender', 'age'].includes(_column.rowType)"
               >
                 <span style="font-size: 14px">
                   {{ _column.i18n }}
@@ -656,59 +660,61 @@
                 <span style="text-align: center;">{{ row?.name }}</span>
               </mat-cell>
             </ng-container>
-            <ng-container matColumnDef="gender">
-              <mat-header-cell
-                *matHeaderCellDef
-                mat-sort-header
-                disableClear="true"
-                class="flexCenter tableArrangement"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.gender) ? '' : 'none'"
-              >
-                <div class="tableTitle">
-                  <span class="tableTitleWord">{{ 'universal_userProfile_gender' | translate }}</span>
-                </div>
-              </mat-header-cell>
-              <mat-cell
-                *matCellDef="let row; let i = index;"
-                class="tableArrangement tableContent"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.gender) ? '' : 'none'"
-              >
-                <div
-                  class="visualizeData"
-                  [style.width]="memberTable.sorted ? row?.ratio : '0px'"
-                  *ngIf="memberTable.sortType === 'runTimes'"
-                ></div>
-                <span class="setIn tableData" *ngIf="row?.privacy; else privacyLock;">
-                  {{ row?.gender | sex: 'i18n' | translate }}
-                </span>
-              </mat-cell>
-            </ng-container>
-            <ng-container matColumnDef="age">
-              <mat-header-cell
-                *matHeaderCellDef
-                mat-sort-header
-                disableClear="true"
-                class="flexCenter tableArrangement"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.age) ? '' : 'none'"
-              >
-                <div class="tableTitle">
-                  <span class="tableTitleWord">{{ 'universal_userProfile_age' | translate }}</span>
-                </div>
-              </mat-header-cell>
-              <mat-cell
-                *matCellDef="let row; let i = index;"
-                class="tableArrangement tableContent"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.age) ? '' : 'none'"
-              >
-                <div
-                  class="visualizeData"
-                  [style.width]="memberTable.sorted ? row?.ratio : '0px'"
-                  *ngIf="memberTable.sortType === 'runTimes'"
-                ></div>
-                <span class="setIn tableData" *ngIf="row?.privacy; else privacyLock;">
-                  {{ row?.age }}
-                </span>
-              </mat-cell>
+            <ng-container *ngIf="systemAccessRight[0] <= currentGroup.level">
+              <ng-container matColumnDef="gender">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="memberTable.showDataType.includes(memberTableCol.gender) ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">{{ 'universal_userProfile_gender' | translate }}</span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="memberTable.showDataType.includes(memberTableCol.gender) ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="memberTable.sorted ? row?.ratio : '0px'"
+                    *ngIf="memberTable.sortType === 'runTimes'"
+                  ></div>
+                  <span class="setIn tableData regulate__col" *ngIf="row?.privacy; else privacyLock;">
+                    {{ row?.gender | sex: 'i18n' | translate }}
+                  </span>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="age">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="memberTable.showDataType.includes(memberTableCol.age) ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">{{ 'universal_userProfile_age' | translate }}</span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="memberTable.showDataType.includes(memberTableCol.age) ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="memberTable.sorted ? row?.ratio : '0px'"
+                    *ngIf="memberTable.sortType === 'runTimes'"
+                  ></div>
+                  <span class="setIn tableData regulate__col" *ngIf="row?.privacy; else privacyLock;">
+                    {{ row?.age }}
+                  </span>
+                </mat-cell>
+              </ng-container>
             </ng-container>
             <ng-container matColumnDef="runTimes">
               <mat-header-cell
@@ -733,7 +739,7 @@
                   [style.width]="memberTable.sorted ? row?.ratio : '0px'"
                   *ngIf="memberTable.sortType === 'runTimes'"
                 ></div>
-                <span class="setIn tableData" *ngIf="row?.privacy; else privacyLock;">{{ row?.runTimes }}</span>
+                <span class="setIn tableData regulate__col" *ngIf="row?.privacy; else privacyLock;">{{ row?.runTimes }}</span>
               </mat-cell>
             </ng-container>
             <ng-container matColumnDef="bestTime">
@@ -762,7 +768,7 @@
                   *ngIf="memberTable.sortType === 'bestTime'"
                 ></div>
                 <div class="setIn">
-                  <span class="tableData" *ngIf="row?.privacy; else privacyLock">
+                  <span class="tableData regulate__col" *ngIf="row?.privacy; else privacyLock">
                     <ng-container *ngIf="row?.runTimes !== 0; else noTimeData">
                       {{ row?.bestSeconds | sportTime: [false, false] }}
                     </ng-container>
@@ -796,7 +802,7 @@
                   *ngIf="memberTable.sortType === 'avgTime'"
                 ></div>
                 <div class="setIn">
-                  <span class="tableData" *ngIf="row?.privacy; else privacyLock;">
+                  <span class="tableData regulate__col" *ngIf="row?.privacy; else privacyLock;">
                     <ng-container *ngIf="row?.runTimes !== 0; else noTimeData">
                       {{ row?.avgSecond || 0 | sportTime: [false, false] }}
                     </ng-container>
@@ -830,7 +836,7 @@
                   *ngIf="memberTable.sortType === 'totalTime'"
                 ></div>
                 <div class="setIn">
-                  <span class="tableData" *ngIf="row?.privacy; else privacyLock;">
+                  <span class="tableData regulate__col" *ngIf="row?.privacy; else privacyLock;">
                     <ng-container *ngIf="row?.runTimes !== 0; else noTimeData">
                       {{ row?.totalSeconds | sportTime: [false, false] }}
                     </ng-container>
@@ -866,7 +872,7 @@
                   *ngIf="memberTable.sortType === 'avgPace'"
                 ></div>
                 <div class="setIn">
-                  <span class="tableData" *ngIf="row?.privacy; else privacyLock;">
+                  <span class="tableData regulate__col" *ngIf="row?.privacy; else privacyLock;">
                     <ng-container *ngIf="row?.runTimes !== 0; else noTimeData">
                       {{ row?.avgSpeed || 0 | sportPaceSibs: [1, unit, 1] }}
                     </ng-container>
@@ -899,7 +905,7 @@
                   *ngIf="memberTable.sortType === 'avgHr'"
                 ></div>
                 <div class="setIn">
-                  <span class="tableData" *ngIf="row?.privacy; else privacyLock;">
+                  <span class="tableData regulate__col" *ngIf="row?.privacy; else privacyLock;">
                     <ng-container *ngIf="row?.runTimes !== 0; else noData">
                       {{ row?.avgHr | number: '1.0-0' }}
                     </ng-container>
@@ -933,7 +939,7 @@
                   *ngIf="memberTable.sortType === 'totalCalories'"
                 ></div>
                 <div class="setIn">
-                  <span class="tableData" *ngIf="row?.privacy; else privacyLock;">
+                  <span class="tableData regulate__col" *ngIf="row?.privacy; else privacyLock;">
                     <ng-container *ngIf="row?.runTimes !== 0; else noData">
                       {{ row?.totalCalories | number: '1.0-0' }}
                     </ng-container>
@@ -967,7 +973,7 @@
                   *ngIf="memberTable.sortType === 'avgCadence'"
                 ></div>
                 <div class="setIn">
-                  <span class="tableData" *ngIf="row?.privacy; else privacyLock;">
+                  <span class="tableData regulate__col" *ngIf="row?.privacy; else privacyLock;">
                     <ng-container *ngIf="row?.runTimes !== 0; else noData">
                       {{ row?.avgCadence | number: '1.0-1' }}
                     </ng-container>
@@ -1073,7 +1079,7 @@
     </ng-template>
     <ng-template #privacyLock>
       <i
-        class="icon-svg_web-icon_p1_059-lock lockIcon setIn tableData"
+        class="icon-svg_web-icon_p1_059-lock lockIcon setIn tableData regulate__col"
         *ngIf="!row?.privacy"
       ></i>
     </ng-template>

@@ -52,7 +52,7 @@ import { SystemFolderPermissionComponent } from './components/system-folder-perm
 import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-analysis.component';
 import { CloudrunReportComponent as PersonCloudrunReport } from './components/cloudrun-report/cloudrun-report.component'
 import { DeviceInfoComponent } from './components/device-info/device-info.component';
-import { DeviceListComponent } from './group-v2/group-info/device-list/device-list.component'
+import { DeviceListComponent } from './group-v2/group-info/device-list/device-list.component';
 
 const routes: Routes = [
   {

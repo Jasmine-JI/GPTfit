@@ -10,15 +10,15 @@ import {
   EventEmitter,
   ChangeDetectorRef
 } from '@angular/core';
-import { transform, WGS84, GCJ02, BD09 } from 'gcoord';
+import { transform, WGS84, BD09 } from 'gcoord';
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UtilsService } from '../../services/utils.service';
 import { chinaAndTaiwanBorder } from '../../models/china-border-data';
-import { taiwanBorder } from '../../models/taiwan-border-data';
 import { Unit } from '../../models/bs-constant';
 import { ActivityService } from '../../services/activity.service';
 import { mi } from '../../models/bs-constant';
+import { GroupService } from '../../../containers/dashboard/services/group.service';
 
 // 若google api或baidu api掛掉則建物件代替，避免造成gptfit卡住。
 const google: any = (window as any).google || { maps: { OverlayView: null }},
@@ -50,6 +50,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input('compareList') compareList: Array<number>;
   @Input('isPreviewMode') isPreviewMode: boolean;
   @Input('page') page: 'group' | 'person';
+  @Input('systemAccessRight') systemAccessRight: Array<number> = [99];
   @Output() mapSourceChange: EventEmitter<MapSource> = new EventEmitter();
   @Output() comparePlayer: EventEmitter<number> = new EventEmitter();
 
@@ -113,6 +114,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
     showSpeedOpt: false
   }
 
+  groupLevel: number;
   clickEvent: Subscription;
   playInterval: any;
   playerList: any;  // 所有玩家列表
@@ -123,7 +125,8 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private utils: UtilsService,
     private activityService: ActivityService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private groupService: GroupService
   ) { }
 
   ngOnInit(): void {
@@ -136,6 +139,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     if (this.userList && e.userList) {
+      if (this.groupId) this.groupLevel = +this.utils.displayGroupLevel(this.groupId);
       this.createPlayerList(this.userList)
       if (this.isPreviewMode) {
         this.mapOpt.mapSource = this.mapSource;
@@ -536,6 +540,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
     if (fileIdArr.length > 0) {
       const body = {
         token: this.utils.getToken(),
+        privacyCheck: this.groupId ? 2 : 1,
         searchTime: {
           type: 1,
           fuzzyTime: [],
@@ -544,8 +549,8 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
         },
         searchRule: {
           activity: 1,
-          targetUser: 2,
-          groupId: '',
+          targetUser: this.groupId ? 3 : 2,
+          groupId: this.groupId ? `${this.groupService.getBlurryGroupId(this.groupId)}` : '',
           fileInfo: {
             fileId: fileIdArr,
             author: '',

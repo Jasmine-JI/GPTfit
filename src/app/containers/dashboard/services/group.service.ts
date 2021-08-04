@@ -541,4 +541,22 @@ export class GroupService {
     return idArr.fill('0', fillStart, 6).join('-');
   }
 
+  /**
+   * 取得模糊搜尋用group id
+   * @param id {string}-group id
+   * @author kidin-1100803
+   */
+  getBlurryGroupId(id: string) {
+    const idArr = id.split('-').map((_id, _idx) => {
+      if (_idx <= 1 || +_id !== 0) {
+        return _id;
+      } else {
+        return '*';
+      }
+
+    });
+    
+    return idArr.join('-');
+  }
+
 }

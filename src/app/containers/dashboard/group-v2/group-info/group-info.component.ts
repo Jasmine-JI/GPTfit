@@ -993,9 +993,9 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     if (!this.uiFlag.portalMode) {
       childPageList = childPageList.concat([
-        'member-list',
         'group-architecture',
-        'admin-list',
+        'member-list',
+        'admin-list'
       ]);
       
       if (upperClassAdmin) childPageList = childPageList.concat(['device-list']);
