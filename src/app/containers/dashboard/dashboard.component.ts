@@ -45,7 +45,8 @@ enum Dashboard {
   createPush,
   pushList,
   deviceSearch,
-  deviceLog
+  deviceLog,
+  appFlowAnalysis
 };
 
 

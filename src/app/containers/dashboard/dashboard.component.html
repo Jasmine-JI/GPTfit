@@ -344,7 +344,7 @@
                   (click)="chooseItem(sideBarList.systemFolder)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.systemFolder"
                   [routerLink]="['/dashboard/system/folder-permission']"
-                  *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 20"
+                  *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 10"
                 >
                   系統使用者存取權限設定
                 </li>
@@ -484,7 +484,6 @@
                   ></i>
                 </span>
               </div>
-              
               <div
                 class="navbar__list__content"
                 [class.expand__content]="uiFlag.currentDrop === 'deviceManagement' && uiFlag.sidebarMode === 'expand' ? true : false"
@@ -506,6 +505,23 @@
                   應用日誌
                 </li>
               </div>
+            </div>
+            <div
+              class="nav__color"
+              *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 29 && uiFlag.sidebarMode !== 'hide'"
+            >
+              <li
+                class="ala-sidenav-item drop__down"
+                (click)="chooseItem(sideBarList.appFlowAnalysis)"
+                [class.ala-sidenav-menu-item__active]="target === sideBarList.appFlowAnalysis"
+                [routerLink]="['/dashboard/system/ala-app-analysis']"
+                *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 29"
+              >
+                <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon" *ngIf="uiFlag.sidebarMode !== 'hide'"></i>
+                <span class="navbar__list__title" [style.display]="uiFlag.sidebarMode !== 'expand' && !uiFlag.navFixed ? 'none' : flex">
+                  流量統計分析
+                </span>
+              </li>
             </div>
           </section>
         </main>

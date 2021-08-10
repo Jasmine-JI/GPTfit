@@ -1112,7 +1112,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100310
    */
   groupCombineUser(groupList: any, memList: any, memberData: any) {
-    const currentDate = moment(),
+    const refDate = moment(this.selectDate.startDate),
           { gender: genderFilter, age: { max: ageMax, min: ageMin } } = this.reportConditionOpt;
     for (let i = 0, len = memList.length; i < len; i++) {
       const { 
@@ -1123,7 +1123,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         birthday,
         gender
       } = memList[i];
-      const age = currentDate.diff(moment(birthday, 'YYYYMMDD'), 'year'),
+      const age = refDate.diff(moment(birthday, 'YYYYMMDD'), 'year'),  // 年齡以報告開始日為基準
             groupLevel = +this.utils.displayGroupLevel(groupId),
             brandsGroupId = `${this.groupService.getPartGroupId(groupId, 3)}-0-0-0`,
             branchesGroupId = `${this.groupService.getPartGroupId(groupId, 4)}-0-0`,

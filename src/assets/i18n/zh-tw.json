@@ -2400,7 +2400,18 @@
  "universal_vocabulary_wtSensor": "重訓感應器（請放置好後再連線）",
  "universal_vocabulary_acceleration": "加速度",
  "universal_muscleName_preferredMuscleGroup": "偏好肌群",
+ "universal_system_wtSettings": "重訓運動設定",
+ "universal_deviceSetting_countRest": "計次休息",
+ "universal_activityData_idleRestInfo": "當重訓感應器停止動作時，自動進入休息分段",
+ "universal_activityData_autoStartInfo": "倒數休息結束後自動進入下一個分段項目",
+ "universal_activityData_countRestInfo": "當次數到達目標設定，自動進入休息分段",
+ "universal_activityData_restCountdown": "休息倒數",
+ "universal_activityData_autoStartWarning": "尚未開啟「自動開始」功能",
+ "universal_activityData_cliberating": "初始校正中，請靜止裝置等候校正",
  "universal_deviceSetting_currentFitpair": "目前Fitpair對象",
  "universal_deviceSetting_lastFitpair": "前一個Fitpair對象",
- "universal_system_openFitpair": "裝置綁定群組，將強制開放該裝置Fitpair對象為「任何人」，是否繼續？"
-}
+ "universal_app_unsupportedMove": "不支援的動作",
+ "universal_system_openFitpair": "裝置綁定群組，將強制開放該裝置Fitpair對象為「任何人」，是否繼續？",
+ "universal_app_resetWTProfile": "重置重訓個人化",
+ "universal_app_resetWTProfileInfo": "將重訓感應器的個人化設定重設為預設值",
+ "universal_system_ageBasedOnReport": "年齡以報告起始日為基準"}

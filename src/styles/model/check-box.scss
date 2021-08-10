@@ -1,0 +1,36 @@
+@import 'flex-center.scss';
+
+/*
+ * checkbox樣式
+ */
+@mixin checkBox() {
+  align-items: center;
+  width: fit-content;
+  margin: 0 0 10px 10px;
+
+  button {
+    border: 1px solid var(--scale-0-255);
+    width: 20px;
+    height: 20px;
+  
+    >span {
+      @include center();
+      height: 19px;
+    }
+  
+  }
+
+  >label {
+    margin: 0;
+    margin-left: 5px;
+  }
+
+}
+
+@mixin checkBox-active(
+  $bg-color: rgba(17, 166, 235, 1),
+  $color: white
+) {
+  background-color: $bg-color;
+  color: $color;
+}

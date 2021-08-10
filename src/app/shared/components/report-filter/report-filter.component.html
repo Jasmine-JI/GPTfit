@@ -262,19 +262,17 @@
           </div>
         </div>
       </div>
-      <div
-        class="flexRow condition__content"
-        style="align-items: center; width: fit-content; cursor: pointer; margin-bottom: 10px;"
-        (click)="changeCheckStatus()"
-      >
-        <div style="border: 1px solid var(--scale-0-255); width: 20px; height: 20px;">
-          <ng-container *ngIf="reportConditionOpt.cloudRun.checkCompletion">
-            <span class="flexCenter" style="height: 19px;">✔</span>
-          </ng-container>
-        </div>
-        <span style="margin-left: 5px;">
+      <div class="flexRow condition__content checkBoxBlock">
+        <button
+          id="finish__race"
+          [class.checkBox--active]="reportConditionOpt.cloudRun.checkCompletion"
+          (click)="changeCheckStatus()"
+        >
+          <span *ngIf="reportConditionOpt.cloudRun.checkCompletion">✔</span>
+        </button>
+        <label for="finish__race">
           {{ 'universal_operating_finished' | translate }} {{ 'universal_race_match' | translate }}
-        </span>
+        </label>
       </div>
     </section>
     <section
@@ -330,6 +328,9 @@
           (change)="handleAgeRange($event, 'max')"
         >
       </div>
+      <span class="condition__content" style="font-size: 8px; color: red;">
+        *{{ 'universal_system_ageBasedOnReport' | translate }}
+      </span>
     </section>
     <section
       class="flexCol condition__section"
