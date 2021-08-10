@@ -7,6 +7,8 @@
 @import 'flex-center.scss';
 @import 'transform.scss';
 @import 'none-select.scss';
+@import 'check-box.scss';
+@import 'radio-btn.scss';
 
 @font-face {
   font-family: Matamata-Regular;
@@ -799,24 +801,19 @@ a.ban-send:hover {
 }
 
 .radioBtn {
-  @include center();
-  border: 1px solid var(--scale-0-255);
-  border-radius: 50%;
-  width: $radio-size;
-  height: $radio-size;
-  margin-right: 5px;
+  @include radio();
 }
 
 .radioBtn--active {
+  @include radio-active();
+}
 
-  &:before {
-    content: '';
-    width: $radio-active-size;
-    height: $radio-active-size;
-    border-radius: 50%;
-    background-color: rgba(17, 166, 235, 1);
-  }
+.checkBoxBlock {
+  @include checkBox();
+}
 
+.checkBox--active {
+  @include checkBox-active();
 }
 
 [draggable="true"] {

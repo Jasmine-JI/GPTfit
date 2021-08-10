@@ -164,6 +164,15 @@ export class GroupService {
   }
 
   /**
+   * nodejs middleware-取得群組清單
+   * @method post
+   * @author kidin-1090715
+   */
+   searchGroup(body: any) {
+    return this.http.post<any>(API_SERVER + 'group/searchGroup', body);
+  }
+
+  /**
    * nodejs middleware
    * @method get
    * @author kidin-1090715
@@ -539,6 +548,24 @@ export class GroupService {
     const fillStart = idArr.length;
     idArr.length = 6;
     return idArr.fill('0', fillStart, 6).join('-');
+  }
+
+  /**
+   * 取得模糊搜尋用group id
+   * @param id {string}-group id
+   * @author kidin-1100803
+   */
+  getBlurryGroupId(id: string) {
+    const idArr = id.split('-').map((_id, _idx) => {
+      if (_idx <= 1 || +_id !== 0) {
+        return _id;
+      } else {
+        return '*';
+      }
+
+    });
+    
+    return idArr.join('-');
   }
 
 }

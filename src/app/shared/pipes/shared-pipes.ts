@@ -37,6 +37,7 @@ import { BodyHeightSibsPipe } from './body-height-sibs.pipe';
 import { BMIPipe } from './bmi.pipe';
 import { BodyAssessmentPipe } from './body-assessment.pipe';
 import { FFMIPipe } from './ffmi.pipe';
+import { DataFlowConversionPipe } from './data-flow-conversion.pipe';
 
 @NgModule({
   imports: [
@@ -80,7 +81,8 @@ import { FFMIPipe } from './ffmi.pipe';
     BodyHeightSibsPipe,
     BMIPipe,
     BodyAssessmentPipe,
-    FFMIPipe
+    FFMIPipe,
+    DataFlowConversionPipe
   ],
   exports: [
     SexPipe,
@@ -120,7 +122,8 @@ import { FFMIPipe } from './ffmi.pipe';
     BodyHeightSibsPipe,
     BMIPipe,
     BodyAssessmentPipe,
-    FFMIPipe
+    FFMIPipe,
+    DataFlowConversionPipe
   ]
 })
 export class SharedPipes {}

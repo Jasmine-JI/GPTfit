@@ -42,5 +42,30 @@ router.post('/getGroupNameList', function (req, res, next) {
 
 });
 
+// apiCode-group02:取得所有營運中群組清單
+router.post('/searchGroup', function (req, res, next) {
+  const {
+    con,
+    body
+  } = req;
+
+  const sql = `
+    select g.group_name as groupName, g.group_id as groupId
+    from ?? g
+    where g.group_name like '%' ? '%' and g.group_status != 4;
+  `;
+  con.query(sql, ['group_info', body.searchName], function (err, rows) {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({
+        errorMessage: err.sqlMessage
+      });
+    }
+
+    return res.json(rows);
+  });
+
+});
+
 // Exports
 module.exports = router;

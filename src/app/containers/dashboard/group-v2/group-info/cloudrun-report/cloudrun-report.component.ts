@@ -227,7 +227,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     'hrZone'
   ];
 
-  readonly memberHeaderRowDef = [
+  memberHeaderRowDef = [
     'name',
     'gender',
     'age',
@@ -260,6 +260,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
 
   userId: number;
   unit = <Unit>0;  // 使用者所使用的單位
+  systemAccessRight = [99];
   allMapList: any;
   mapInfo: any;
   groupList: any;
@@ -526,12 +527,21 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     ]).pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(resArr => {
-      const { unit, userId } = resArr[0],
+      this.getTranslate();
+      const { unit, userId, systemAccessRight } = resArr[0],
             { brands, branches, coaches } = resArr[1],
-            { groupName, groupIcon, groupId, brandType } = resArr[3];
+            { groupName, groupIcon, groupId, brandType } = resArr[3],
+            level = +this.utils.displayGroupLevel(groupId);
       
       this.userId = userId;
       this.unit = unit;
+      this.systemAccessRight = systemAccessRight;
+      // 僅管理員以上權限可以看性別與年齡數據
+      if (systemAccessRight[0] > level) {
+        this.memberHeaderRowDef = 
+          this.memberHeaderRowDef.filter(_rowDef => !['gender', 'age'].includes(_rowDef));
+      }
+
       this.allMapList = resArr[2];
       if (!this.uiFlag.isPreviewMode && !this.uiFlag.haveUrlCondition) {
         this.reportConditionOpt.cloudRun.mapId = this.allMapList.leaderboard[0].mapId;  // 預設顯示本月例行賽報告
@@ -541,7 +551,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         name: groupName,
         icon: groupIcon,
         id: groupId,
-        level: +this.utils.displayGroupLevel(groupId),
+        level,
         brandType: brandType
       }
 
@@ -558,7 +568,6 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       }
 
       this.reportService.setReportCondition(this.reportConditionOpt);
-      this.getTranslate();
       this.getReportSelectedCondition();
     });
 
@@ -641,6 +650,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     this.currentMapId = this.reportConditionOpt.cloudRun.mapId;
     const body = {
       token: this.utils.getToken(),
+      privacyCheck: 2,
       searchTime: {
         type: 1,
         fuzzyTime: [],
@@ -780,7 +790,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
               userId = this.getUserId(fileInfo),
               record = this.getUserRecord(activityInfoLayer);
         if (record) {
-          Object.assign(record, {fileId: fileInfo.fileId});
+          const { fileId, privacy: filePrivacy } = fileInfo;
+          Object.assign(record, {fileId, filePrivacy});
         }
 
         if (!middleData.hasOwnProperty(userId)) {
@@ -836,6 +847,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
               bestFile = {
                 time: null,
                 fileId: null,
+                filePrivacy: null,
                 avgHr: null,
                 avgSpeed: null,
                 calories: null,
@@ -855,6 +867,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
               avgSpeed,
               calories,
               fileId,
+              filePrivacy,
               runAvgCadence,
               totalHrZone0Second,
               totalHrZone1Second,
@@ -868,6 +881,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
               bestFile = {
                 time: totalSecond,
                 fileId,
+                filePrivacy,
                 avgHr: avgHeartRateBpm,
                 avgSpeed,
                 calories,
@@ -1098,88 +1112,99 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100310
    */
   groupCombineUser(groupList: any, memList: any, memberData: any) {
-    const currentDate = moment(),
+    const refDate = moment(this.selectDate.startDate),
           { gender: genderFilter, age: { max: ageMax, min: ageMin } } = this.reportConditionOpt;
     for (let i = 0, len = memList.length; i < len; i++) {
       const { 
         groupId,
-        memberId: userId,
-        memberIcon: icon,
-        memberName: nickName,
+        memberId: _userId,
+        memberIcon: _icon,
+        memberName: _nickName,
         birthday,
         gender
       } = memList[i];
-      const age = currentDate.diff(moment(birthday, 'YYYYMMDD'), 'year'),
+      const age = refDate.diff(moment(birthday, 'YYYYMMDD'), 'year'),  // 年齡以報告開始日為基準
             groupLevel = +this.utils.displayGroupLevel(groupId),
             brandsGroupId = `${this.groupService.getPartGroupId(groupId, 3)}-0-0-0`,
             branchesGroupId = `${this.groupService.getPartGroupId(groupId, 4)}-0-0`,
             outOfAge = (ageMax !== null && age > ageMax) || (ageMin !== null && age < ageMin),
             outOfGender = genderFilter !== null && gender !== genderFilter;
       if (groupList.hasOwnProperty(groupId) && !outOfAge && !outOfGender) {
+        const _memData = memberData[_userId];
         /** 團體分析所需的成員清單及成績加總，上面階層會將下面階層成員包含進去 */
-        if (groupList.hasOwnProperty(brandsGroupId) && !groupList[brandsGroupId].member.some(_list => _list.id === userId)) {
-          groupList[brandsGroupId].member.push({id: userId, name: nickName, age});
+        if (
+          groupList.hasOwnProperty(brandsGroupId)
+          && !groupList[brandsGroupId].member.some(_list => _list.id === _userId)
+        ) {
+          const brandData =  groupList[brandsGroupId];
+          brandData.member.push({id: _userId, name: _nickName, age});
           if (
-            memberData.hasOwnProperty(userId)
-            && memberData[userId].record
-            && memberData[userId].record.length !== 0
+            memberData.hasOwnProperty(_userId)
+            && _memData.record
+            && _memData.record.length !== 0
           ) {
-            const { record } = groupList[brandsGroupId],
-                  { bestFile } = memberData[userId].record;
-            groupList[brandsGroupId].record = this.addUpData(record, bestFile);
+            const { record } = brandData,
+                  { bestFile } = _memData.record;
+            brandData.record = this.addUpData(record, bestFile);
           }
 
         }
         
-        if (groupList.hasOwnProperty(branchesGroupId) && !groupList[branchesGroupId].member.some(_list => _list.id === userId)) {
-            groupList[branchesGroupId].member.push({id: userId, name: nickName, age});
-            if (
-              memberData.hasOwnProperty(userId)
-              && memberData[userId].record
-              && memberData[userId].record.length !== 0
-            ) {
-              const { record } = groupList[branchesGroupId],
-                    { bestFile } = memberData[userId].record;
-              groupList[branchesGroupId].record = this.addUpData(record, bestFile);
-            }
+        if (
+          groupList.hasOwnProperty(branchesGroupId)
+          && !groupList[branchesGroupId].member.some(_list => _list.id === _userId)
+        ) {
+          const branchData = groupList[branchesGroupId];
+          branchData.member.push({id: _userId, name: _nickName, age});
+          if (
+            memberData.hasOwnProperty(_userId)
+            && _memData.record
+            && _memData.record.length !== 0
+          ) {
+            const { record } = branchData,
+                  { bestFile } = _memData.record;
+            branchData.record = this.addUpData(record, bestFile);
+          }
+
         }
 
-        if (!groupList[groupId].member.some(_list => _list.id === userId)) {
-          groupList[groupId].member.push({id: userId, name: nickName, age});
+        if (!groupList[groupId].member.some(_list => _list.id === _userId)) {
+          const coachData = groupList[groupId];
+          coachData.member.push({id: _userId, name: _nickName, age});
           if (
-            memberData.hasOwnProperty(userId)
-            && memberData[userId].record
-            && memberData[userId].record.length !== 0
+            memberData.hasOwnProperty(_userId)
+            && _memData.record
+            && _memData.record.length !== 0
           ) {
-            const { record } = groupList[groupId],
-                  { bestFile } = memberData[userId].record;
-            groupList[groupId].record = this.addUpData(record, bestFile);
+            const { record } = coachData,
+                  { bestFile } = _memData.record;
+            coachData.record = this.addUpData(record, bestFile);
           }
         }
         /******************************************************************/
 
         // 個人分析所需資訊，包含個人所屬群組
-        if (memberData.hasOwnProperty(userId)) {
-          memberData[userId].info = {
-            name: nickName,
-            icon,
+        if (memberData.hasOwnProperty(_userId)) {
+          _memData.info = {
+            name: _nickName,
+            icon: _icon,
             age,
             gender
           };
-          memberData[userId].belongGroup.push({
+          _memData.belongGroup.push({
             id: groupId,
             name: groupList[groupId].name
           });
 
-          if (!memberData[userId].level.includes(groupLevel)) !memberData[userId].level.push(groupLevel);
+          if (!_memData.level.includes(groupLevel)) !_memData.level.push(groupLevel);
         } else {
 
           /**無成績者視為隱私權已開放 */
           Object.assign(memberData, {
-            [userId]: {
+            [_userId]: {
               info: {
-                name: nickName,
-                icon,
+                name: _nickName,
+                icon: _icon,
                 age,
                 gender
               },
@@ -1378,6 +1403,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           bestSeconds: bestFile.time,
           bestSpeed: bestFile.avgSpeed,
           fileId: bestFile.fileId,
+          filePrivacy: bestFile.filePrivacy,
           avgSecond,
           avgHr,
           avgCadence,
@@ -1405,6 +1431,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
             bestSeconds: 0,
             bestSpeed: 0,
             fileId: null,
+            filePrivacy: [1],
             avgSecond: 0,
             avgHr: 0,
             avgCadence: 0,
@@ -1608,11 +1635,11 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         ];
         this.memberTable.showDataType = [
           memberTableCol.name,
-          memberTableCol.gender,
           memberTableCol.runTimes,
           memberTableCol.bestTime,
           memberTableCol.avgTime,
-          memberTableCol.avgPace
+          memberTableCol.avgPace,
+          memberTableCol.hrZone
         ];
         break;
       case 5:
@@ -2044,7 +2071,13 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       member: this.memberTable.showDataType,
     };
 
-    this.utils.setLocalStorageObject('cloudRunOpt', JSON.stringify(opt));
+    // 僅管理員以上權限可以看到年齡與性別的資訊，故分開儲存欄位設定
+    if (this.systemAccessRight[0] < this.currentGroup.level) {
+      this.utils.setLocalStorageObject('cloudRunOpt', JSON.stringify(opt));
+    } else {
+      this.utils.setLocalStorageObject('cloudRunOpt-mem', JSON.stringify(opt));
+    }
+    
   }
 
   /**
@@ -2052,7 +2085,13 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100319
    */
   getAnalysisOpt () {
-    const opt = this.utils.getLocalStorageObject('cloudRunOpt');
+    let opt: any;
+    if (this.systemAccessRight[0] < this.currentGroup.level) {
+      opt = this.utils.getLocalStorageObject('cloudRunOpt');
+    } else {
+      opt = this.utils.getLocalStorageObject('cloudRunOpt-mem');
+    }
+
     if (opt) {
       this.uiFlag.defaultOpt = false;
       const { group, member } = JSON.parse(opt);

@@ -1,0 +1,165 @@
+@import 'transition.scss';
+
+
+@mixin hover-bg($bgColor) {
+
+  @include transition(background-color);
+  &:hover {
+    background-color: $bgColor;
+    @include transition(background-color);
+  }
+
+}
+
+.create__btn {
+  border: 1px solid rgba(150, 150, 150, 1);
+  margin: 0 5px;
+  border-radius: 5px;
+  color: var(--scale-0-255);
+  @include hover-bg(rgba(200, 200, 200, 0.3));
+}
+
+.list__section {
+  padding: 5px;
+}
+
+.table__header {
+  width: 100%;
+  height: 40px;
+  border-bottom: 3px solid var(--scale-200-100);
+  justify-content: space-between;
+  align-items: center;
+
+  h6 {
+    margin: 0;
+  }
+
+}
+
+.list__btn {
+  font-size: 24px;
+  border: 1px solid rgba(150, 150, 150, 1);
+  border-radius: 5px;
+  margin: 0 5px;
+  background-color: white;
+  @include hover-bg(rgba(200, 200, 200, 0.3));
+}
+
+.delete__btn {
+  color: rgba(255, 150, 150, 1);
+  @include hover-bg(rgba(255, 230, 230, 1));
+}
+
+.user__list, .folder__list {
+  padding: 5px 0;
+}
+
+.user__list {
+
+  span {
+    display: inline-block;
+    padding: 2px 5px;
+    cursor: pointer;
+    @include hover-bg(rgba(186, 255, 197, 1));
+  }
+
+}
+
+.user__name--focus {
+  color: rgba(17, 166, 235, 1) !important;
+  font-weight: bold;
+}
+
+#create__mode {
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+#create__window {
+  background-color: var(--scale-255-0);
+  color: var(--scale-0-255);
+  width: 320px;
+}
+
+.input__section {
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.alert__text {
+  color: red;
+  font-size: 12px;
+  text-align: right;
+}
+
+.condition__content {
+  margin-left: 20px;
+  flex-wrap: wrap;
+  color: var(--scale-0-255);
+}
+
+#account, #pwd, #folder, #check__pwd, #user__add__folder {
+  border: none;
+  outline: none;
+  margin-left: 20px;
+  width: 275px;
+}
+
+#user__add__folder {
+  margin: 0;
+  border-bottom: 1px solid rgba(150, 150, 255, 1);
+}
+
+.pwd__input {
+  position: relative;
+
+  i {
+    position: absolute;
+    font-size: 24px;
+    right: 0;
+    cursor: pointer;
+  }
+
+}
+
+.radio__section {
+  margin: 5px 0;
+
+  >span {
+    margin-bottom: 5px;
+  }
+
+}
+
+#cancel__btn , #confirm__btn {
+  width: 60px;
+  height: 35px;
+}
+
+#cancel__btn {
+  color: red;
+
+  &:hover {
+    background: rgba(255, 0, 0, 0.1);
+  }
+
+}
+
+#confirm__btn {
+  color: var(--scale-0-255);
+
+  &:hover {
+    background: rgba(0, 255, 0, 0.1);
+  }
+
+}
+
+.edit__confirm__btn {
+  font-size: 16px;
+  @include hover-bg(rgba(240, 240, 240, 1));
+}

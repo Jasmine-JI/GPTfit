@@ -282,7 +282,8 @@
                       sideBarList.innerSearch,
                       sideBarList.coordinateTranslate,
                       sideBarList.lifeTrackingLog,
-                      sideBarList.systemLog
+                      sideBarList.systemLog,
+                      sideBarList.systemFolder,
                     ].includes(target)
                   "
                 ></i>
@@ -305,7 +306,6 @@
                   [routerLink]="['/dashboard/system/setting-member']"
                   *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30"
                 >
-                  <!--  之後把font awesome 與material icon 擇一-->
                   {{"universal_system_internalAdministrator" | translate }}
                 </li>
                 <li class="ala-sidenav-menu-item"
@@ -314,7 +314,6 @@
                   [routerLink]="['/dashboard/system/inner-test']"
                   *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 29"
                 >
-                  <!--  之後把font awesome 與material icon 擇一-->
                   {{"universal_group_rserGroupQuery" | translate }}
                 </li>
                 <li class="ala-sidenav-menu-item"
@@ -323,7 +322,6 @@
                   [routerLink]="['/dashboard/system/inner-gpx']"
                   *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 20"
                 >
-                  <!--  之後把font awesome 與material icon 擇一-->
                   {{"universal_system_coordinateSystemConversion" | translate }}
                 </li>
                 <li class="ala-sidenav-menu-item"
@@ -332,7 +330,6 @@
                   [routerLink]="['/dashboard/system/life-tracking']"
                   *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 20"
                 >
-                  <!--  之後把font awesome 與material icon 擇一-->
                   {{"universal_system_lifetrackingLog" | translate }}
                 </li>
                 <li class="ala-sidenav-menu-item"
@@ -341,8 +338,15 @@
                   [routerLink]="['/dashboard/system/system-log']"
                   *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 20"
                 >
-                  <!--  之後把font awesome 與material icon 擇一-->
                   系統日誌
+                </li>
+                <li class="ala-sidenav-menu-item"
+                  (click)="chooseItem(sideBarList.systemFolder)"
+                  [class.ala-sidenav-menu-item__active]="target === sideBarList.systemFolder"
+                  [routerLink]="['/dashboard/system/folder-permission']"
+                  *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 10"
+                >
+                  系統使用者存取權限設定
                 </li>
               </div>
             </div>
@@ -480,7 +484,6 @@
                   ></i>
                 </span>
               </div>
-              
               <div
                 class="navbar__list__content"
                 [class.expand__content]="uiFlag.currentDrop === 'deviceManagement' && uiFlag.sidebarMode === 'expand' ? true : false"
@@ -502,6 +505,23 @@
                   應用日誌
                 </li>
               </div>
+            </div>
+            <div
+              class="nav__color"
+              *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 29 && uiFlag.sidebarMode !== 'hide'"
+            >
+              <li
+                class="ala-sidenav-item drop__down"
+                (click)="chooseItem(sideBarList.appFlowAnalysis)"
+                [class.ala-sidenav-menu-item__active]="target === sideBarList.appFlowAnalysis"
+                [routerLink]="['/dashboard/system/ala-app-analysis']"
+                *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 29"
+              >
+                <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon" *ngIf="uiFlag.sidebarMode !== 'hide'"></i>
+                <span class="navbar__list__title" [style.display]="uiFlag.sidebarMode !== 'expand' && !uiFlag.navFixed ? 'none' : flex">
+                  流量統計分析
+                </span>
+              </li>
             </div>
           </section>
         </main>
