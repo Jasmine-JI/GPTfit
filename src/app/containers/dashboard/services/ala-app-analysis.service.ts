@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 @Injectable({
   providedIn: 'root'
 })
-export class AlaAppAnalysysService {
+export class AlaAppAnalysisService {
 
   constructor(
     private http: HttpClient

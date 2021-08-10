@@ -164,6 +164,15 @@ export class GroupService {
   }
 
   /**
+   * nodejs middleware-取得群組清單
+   * @method post
+   * @author kidin-1090715
+   */
+   searchGroup(body: any) {
+    return this.http.post<any>(API_SERVER + 'group/searchGroup', body);
+  }
+
+  /**
    * nodejs middleware
    * @method get
    * @author kidin-1090715

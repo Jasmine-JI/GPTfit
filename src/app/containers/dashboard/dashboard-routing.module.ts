@@ -25,7 +25,6 @@ import { MyLifeTrackingComponent } from '../../shared/components/my-life-trackin
 import { QrcodeUploadComponent } from './components/qrcode-upload/qrcode-upload.component';
 import { EditPushMessageComponent } from './components/push-message/edit-push-message/edit-push-message.component';
 import { PushMessageListComponent } from './components/push-message/push-message-list/push-message-list.component';
-
 import { GroupInfoComponent } from './group-v2/group-info/group-info.component';
 import { SearchGroupComponent } from './group-v2/search-group/search-group.component';
 import { MyGroupListComponent } from './group/my-group-list/my-group-list.component';

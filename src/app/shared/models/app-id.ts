@@ -2,15 +2,16 @@
  * 目前所有app
  */
 export enum alaApp {
-  center,
+  gptfit,
   connect,
   cloudrun,
   trainlive,
-  fitness
+  fitness,
+  all = 99
 }
 
 /**
  * 各平台代碼
  */
 export type AppId = 
-  alaApp.center | alaApp.connect | alaApp.cloudrun | alaApp.trainlive | alaApp.fitness;
+  alaApp.gptfit | alaApp.connect | alaApp.cloudrun | alaApp.trainlive | alaApp.fitness | alaApp.all;

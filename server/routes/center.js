@@ -96,7 +96,7 @@ router.get('/getGroupJoinStatus', function (req, res, next) {
 
 });
 
-// apiCode-center01:取得群組清單
+// apiCode-center01:取得個人相關群組清單
 router.get('/getGroupList', function (req, res, next) {
   const {
     con
@@ -104,12 +104,12 @@ router.get('/getGroupList', function (req, res, next) {
 
   const token = req.headers['authorization'];
   getUserId(token).then((userId) => {
-  const sql = `
-    select g.group_name as groupName, g.group_id as groupId,
-    m.access_right as accessRight, m.join_status as JoinStatus
-    from ?? g, ?? m
-    where g.group_id = m.group_id and m.member_id = ? and g.group_status != 4;
-  `;
+    const sql = `
+      select g.group_name as groupName, g.group_id as groupId,
+      m.access_right as accessRight, m.join_status as JoinStatus
+      from ?? g, ?? m
+      where g.group_id = m.group_id and m.member_id = ? and g.group_status != 4;
+    `;
     con.query(sql, ['group_info', 'group_member_info', userId], function (err, rows) {
       if (err) {
         console.log(err);

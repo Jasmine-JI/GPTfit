@@ -2,7 +2,8 @@
  * 圖床圖片所屬對象/類別
  */
 export enum albumType {
-  personalIcon = 1,
+  all,
+  personalIcon,
   personalScenery,
   personalSportFile,
   groupIcon = 11,
@@ -13,4 +14,9 @@ export enum albumType {
  * 圖床圖片所屬對象/類別
  */
 export type AlbumType = 
-  albumType.personalIcon | albumType.personalScenery | albumType.personalSportFile | albumType.groupIcon | albumType.groupScenery;
+  albumType.all
+  | albumType.personalIcon
+  | albumType.personalScenery
+  | albumType.personalSportFile
+  | albumType.groupIcon
+  | albumType.groupScenery;
