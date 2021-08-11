@@ -12,7 +12,6 @@ import { HashIdService } from '../../../../../shared/services/hash-id.service';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { TranslateService } from '@ngx-translate/core';
-import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { Unit } from '../../../../../shared/models/bs-constant';
 
 type AnalysisTable = 'group' | 'member';
@@ -287,7 +286,6 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     private cloudrunService: CloudrunService,
     private hashIdService: HashIdService,
     private translate: TranslateService,
-    private userProfileService: UserProfileService,
     private changeDetectorRef: ChangeDetectorRef
   ) { }
 
@@ -519,7 +517,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */   
   getNeedInfo() {
     combineLatest([
-      this.userProfileService.getRxUserProfile(),
+      this.groupService.getUserSimpleInfo(),
       this.groupService.getAllLevelGroupData(),
       this.cloudrunService.getAllMapInfo(),
       this.groupService.getRxGroupDetail(),
@@ -528,16 +526,16 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       takeUntil(this.ngUnsubscribe)
     ).subscribe(resArr => {
       this.getTranslate();
-      const { unit, userId, systemAccessRight } = resArr[0],
+      const { unit, userId, accessRight } = resArr[0],
             { brands, branches, coaches } = resArr[1],
             { groupName, groupIcon, groupId, brandType } = resArr[3],
             level = +this.utils.displayGroupLevel(groupId);
       
       this.userId = userId;
       this.unit = unit;
-      this.systemAccessRight = systemAccessRight;
+      this.systemAccessRight = accessRight;
       // 僅管理員以上權限可以看性別與年齡數據
-      if (systemAccessRight[0] > level) {
+      if (accessRight[0] > level) {
         this.memberHeaderRowDef = 
           this.memberHeaderRowDef.filter(_rowDef => !['gender', 'age'].includes(_rowDef));
       }
@@ -2072,7 +2070,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     };
 
     // 僅管理員以上權限可以看到年齡與性別的資訊，故分開儲存欄位設定
-    if (this.systemAccessRight[0] < this.currentGroup.level) {
+    if (this.systemAccessRight[0] <= this.currentGroup.level) {
       this.utils.setLocalStorageObject('cloudRunOpt', JSON.stringify(opt));
     } else {
       this.utils.setLocalStorageObject('cloudRunOpt-mem', JSON.stringify(opt));
@@ -2086,7 +2084,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   getAnalysisOpt () {
     let opt: any;
-    if (this.systemAccessRight[0] < this.currentGroup.level) {
+    if (this.systemAccessRight[0] <= this.currentGroup.level) {
       opt = this.utils.getLocalStorageObject('cloudRunOpt');
     } else {
       opt = this.utils.getLocalStorageObject('cloudRunOpt-mem');
