@@ -43,6 +43,7 @@ export interface UserSimpleInfo {
   accessRight: Array<number>;
   joinStatus: number;
   isGroupAdmin: boolean;
+  unit: number;
   privacy?: {
     activityTracking: Array<number | string>;
     activityTrackingReport: Array<number | string>;

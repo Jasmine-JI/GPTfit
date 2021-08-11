@@ -55,14 +55,22 @@
         </span>
       </div>
     </div>
-    <button
-      class="appview-btn"
-      [class.appview-btn-unclickable]="(accountInfo.type === 2 && phoneCaptcha.value === '') || sending"
-      (click)="submit()"
-    >
-      <span>{{ 'universal_deviceSetting_switch' | translate }}</span>
-      <i *ngIf="sending" class="fa fa-spinner fa-pulse"></i>
-    </button>
+    <div class="flexCol" style="align-items: center;">
+      <button
+        class="appview-btn"
+        [class.appview-btn-unclickable]="(accountInfo.type === 2 && phoneCaptcha.value === '') || sending"
+        (click)="submit()"
+      >
+        <span>{{ 'universal_deviceSetting_switch' | translate }}</span>
+        <i *ngIf="sending" class="fa fa-spinner fa-pulse"></i>
+      </button>
+      <button
+        class="skip__btn"
+        (click)="turnFirstLoginOrBack()"
+      >
+        <span>{{ 'universal_operating_skip' | translate }}</span>
+      </button>
+    </div>
   </div>
 </ng-container>
 <ng-container *ngIf="pcView">
@@ -126,10 +134,13 @@
                 <span>{{ 'universal_operating_send' | translate }}({{ timeCount }}s)</span>
               </button>
             </div>
-            <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 20px;">
-<!-- 接回後記得調整css
-              <a class="access-text" style="cursor:pointer" [routerLink]="['/signIn-web']"><{{'universal_operating_back' | translate}}</a>
--->
+            <div class="flexRow" style="justify-content: space-between; align-items: center; margin-top: 20px;">
+              <button
+                class="btn skip__btn"
+                (click)="turnFirstLoginOrBack()"
+              >
+                <span>{{ 'universal_operating_skip' | translate }} &gt;&gt;</span>
+              </button>
               <button
                 class="btn btn-primary access-btn"
                 [class.appview-btn-unclickable]="(accountInfo.type === 2 && phoneCaptcha.value === '') || sending"

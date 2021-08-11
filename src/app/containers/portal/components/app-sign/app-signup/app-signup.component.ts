@@ -751,28 +751,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
           });
           
         } else {
-          const N = '\n';
-          this.dialog.open(MessageBoxComponent, {
-            hasBackdrop: true,
-            disableClose: true,
-            data: {
-              title: 'Message',
-              body: `${this.translate.instant('universal_status_success')} ${this.translate.instant('universal_userAccount_signUp')} ${
-                N} ${this.translate.instant('universal_popUpMessage_continueExecution')} ${
-                this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_userAccount_account')}?
-              `,
-              confirmText: this.translate.instant(
-                'universal_operating_confirm'
-              ),
-              cancelText: this.translate.instant(
-                'universal_operating_cancel'
-              ),
-              onCancel: this.finishSignup.bind(this),
-              onConfirm: this.toEnableAccount.bind(this)
-            }
-
-          });
-          
+          this.toEnableAccount();
         }
 
       }
