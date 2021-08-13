@@ -377,6 +377,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   readonly groupLevelEnum = GroupLevel;
   readonly unitEnum = unit;
   readonly sportCode = SportCode;
+  groupFilterLevel = [30, 40, 60];  // 團體分析可篩選的階層
   dateLen = 0; // 報告橫跨天數/週數
   haveDataLen = 0;  // 有數據的天（週）數
   sameTimeGroupData: any;
@@ -832,6 +833,10 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       // 避免連續送出
       if (this.uiFlag.progress >= 10 && this.uiFlag.progress < 100) {
         this.changeProgress(30);
+        // 團體分析可篩選的階層
+        const { level } = this.groupInfo;
+        this.groupFilterLevel = this.groupFilterLevel.filter(_level => _level >= +level);
+
         const [condition, memberList] = resArr as any,
               { 
                 date: { 
@@ -1229,6 +1234,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       case GroupLevel.class:
         this.groupList.analysisObj = {
           [id]: {
+            level: 60,
             name,
             parentsName: parents.split('\\')[1],
             memberList: [],
@@ -1244,6 +1250,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           if (_parentId === id) {
             this.groupList.analysisObj = {
               [_coachId]: {
+                level: 60,
                 name: _coachName,
                 parentsName: name,
                 memberList: [],
@@ -1258,6 +1265,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
         this.groupList.analysisObj = {
           [id]: {
+            level: 40,
             name: name,
             parentsName: parents,
             memberList: [],
@@ -1284,6 +1292,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     
           this.groupList.analysisObj = {
             [_coachId]: {
+              level: 60,
               name: groupName,
               parentsName,
               memberList: [],
@@ -1299,6 +1308,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           const { groupId: _branchId, groupName } = _branch;
           this.groupList.analysisObj = {
             [_branchId]: {
+              level: 40,
               name: groupName,
               parentsName: brandName,
               memberList: [],
@@ -1311,6 +1321,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
         this.groupList.analysisObj = {
           [brandId]: {
+            level: 30,
             name: brandName,
             parentsName: '',
             memberList: [],
@@ -3481,6 +3492,21 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   print() {
     window.print();
+  }
+
+  /**
+   * 變更組別篩選條件
+   * @param e {MatCheckboxChange}
+   * @author kidin-1100803
+   */
+  changeGroupFilter(e: MatCheckboxChange) {
+    const { checked, source: { value } } = e;
+    if (checked) {
+      this.groupFilterLevel.push(+value);
+    } else {
+      this.groupFilterLevel = this.groupFilterLevel.filter(_level => _level != +value);
+    }
+
   }
 
   /**

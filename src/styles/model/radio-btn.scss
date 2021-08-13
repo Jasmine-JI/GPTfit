@@ -1,0 +1,28 @@
+@import 'flex-center.scss';
+
+/*
+ * radio樣式
+ */
+@mixin radio($size: 20px) {
+
+  @include center();
+  border: 1px solid var(--scale-0-255);
+  border-radius: 50%;
+  width: $size;
+  height: $size;
+  margin-right: 5px;
+  padding: 0px;
+
+}
+
+@mixin radio-active($size: 14px, $bg-color: rgba(17, 166, 235, 1)) {
+
+  &:before {
+    content: '';
+    width: $size;
+    height: $size;
+    border-radius: 50%;
+    background-color: $bg-color;
+  }
+
+}

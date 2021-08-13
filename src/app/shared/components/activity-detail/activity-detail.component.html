@@ -27,7 +27,7 @@
     <i 
       class="icon-svg_web-icon_p1_041-file_gpx function__btn"
       (click)="downloadGpxFile()"
-      *ngIf="[1, 2, 4, 6, 7].includes(+activityInfoLayer.type) && uiFlag.isFileOwner && !uiFlag.isPreviewMode"
+      *ngIf="uiFlag.isFileOwner && !uiFlag.isPreviewMode"
     ></i>
     <i 
       class="icon-svg_web-icon_p1_018-input function__btn"

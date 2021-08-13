@@ -69,9 +69,10 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   noData = true;
   dateList = [];
 
-  @Input() perZoneData: ZoneTrendData;  // 心率區間用變數
+  @Input() perZoneData: ZoneTrendData;  // 心率或閾值區間用變數
   @Input() dateRange: string;
   @Input() data: any;  // 生活追蹤用變數-kidin-1090218
+  @Input() analysisData: any;  // 流量分析頁面用變數-kidin-1100810
   @Input() searchDate: Array<number>;
   @Input() page: DisplayPage;
   @Input() isPreviewMode: boolean = false;
@@ -84,7 +85,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit () {}
 
-  ngOnChanges () {
+  ngOnChanges (e) {
     if (this.perZoneData) {
       if (this.perZoneData.zoneZero.length === 0) {
         this.noData = true;
@@ -95,6 +96,9 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
       this.initZoneTrendChart();
     } else if (this.data) {
       this.initSleepChart();
+    } else if (this.analysisData) {
+      this.noData = false;
+      this.initAnalysisTrendChart();
     }
 
   }
@@ -409,6 +413,85 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
 
+  }
+
+  /**
+   * 初始化流量分析頁面圖表
+   * @author kidin-1100810
+   */
+  initAnalysisTrendChart() {
+    const ZoneTrendDataset = [
+      {
+        name: 'Fitness',
+        data: this.analysisData.fitness,
+        showInLegend: true,
+        color: zoneColor[4]
+      },
+      {
+        name: 'Trainlive',
+        data: this.analysisData.trainlive,
+        showInLegend: true,
+        color: zoneColor[3]
+      },
+      {
+        name: 'Cloud Run',
+        data: this.analysisData.cloudrun,
+        showInLegend: true,
+        color: zoneColor[2]
+      },
+      {
+        name: 'Connect',
+        data: this.analysisData.connect,
+        showInLegend: true,
+        color: zoneColor[1]
+      },
+      {
+        name: 'GPTFit',
+        data: this.analysisData.gptfit,
+        showInLegend: true,
+        color: zoneColor[0]
+      }
+    ];
+
+    const trendChartOptions = new ChartOptions(ZoneTrendDataset);
+    trendChartOptions['chart'].height = 200;
+
+    // 設定圖表y軸單位格式-kidin-1090204
+    trendChartOptions['yAxis'].labels = {
+      formatter: function () {
+        const mb = 1024 * 1024;
+        return `${parseFloat((this.value / mb).toFixed(2))} MB`
+      }
+
+    };
+
+    // 設定浮動提示框顯示格式-kidin-1090204
+    trendChartOptions['tooltip'] = {
+      formatter: function () {
+        const getFinalText = (val) => {
+          const kb = 1024,
+                mb = 1024 * kb,
+                gb = 1024 * mb;
+          if (val > gb) {
+            return `${parseFloat((val / gb).toFixed(2))} GB`;
+          } else if (val > mb) {
+            return `${parseFloat((val / mb).toFixed(2))} MB`;
+          } else if (val > kb) {
+            return `${parseFloat((val / kb).toFixed(2))} KB`;
+          } else {
+            return `${val} Byte`
+          }
+
+        };
+
+        return `${moment(this.x).format('YYYY-MM-DD')}
+          <br/>${this.series.name}: ${getFinalText(this.y)}
+          <br/>Total: ${getFinalText(this.total)}`;
+      }
+
+    };
+
+    this.createChart(trendChartOptions);
   }
 
   // 確認取得元素才建立圖表-kidin-1090706

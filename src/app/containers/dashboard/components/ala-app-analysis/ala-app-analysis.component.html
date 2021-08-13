@@ -1,0 +1,559 @@
+<app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
+<div>
+  <h5 class="pageTitle">流量統計分析</h5>
+  <header style="margin: 15px; border-bottom: 1px solid rgba(200, 200, 200, 1);">
+    <section class="flexCol">
+      <h6 class="condition__type">篩選條件</h6>
+      <div class="flexCol conditon__content__area">
+        <div class="flexCol condition__content">
+          <span>統計類型：</span>
+          <div class="flexRow">
+            <span class="flexRow radioSelector">
+              <button
+                id="sports"
+                class="radioBtn"
+                [class.radio__btn--active]="uiFlag.statisticType === statisticTypeEnum.sports"
+                (click)="changeStatisticType(statisticTypeEnum.sports)"
+              ></button>
+              <label for="sports">運動檔案</label>
+            </span>
+            <span class="flexRow radioSelector">
+              <button
+                id="lifeTracking"
+                class="radioBtn"
+                [class.radio__btn--active]="uiFlag.statisticType === statisticTypeEnum.lifeTracking"
+                (click)="changeStatisticType(statisticTypeEnum.lifeTracking)"
+              >
+
+              </button>
+              <label for="lifeTracking">生活追蹤</label>
+            </span>
+            <span class="flexRow radioSelector">
+              <button
+                id="image"
+                class="radioBtn"
+                [class.radio__btn--active]="uiFlag.statisticType === statisticTypeEnum.image"
+                (click)="changeStatisticType(statisticTypeEnum.image)"
+              >
+
+              </button>
+              <label for="image">圖床</label>
+            </span>
+          </div>
+        </div>
+        <div class="flexCol condition__content">
+          <span>統計方法：</span>
+          <div class="flexRow">
+            <span class="flexRow radioSelector">
+              <button
+                id="pre"
+                class="radioBtn"
+                [class.radio__btn--active]="uiFlag.statisticMethod === 'pre'"
+                (click)="changeStatisticMethod('pre')"
+              >
+
+              </button>
+              <label for="pre">預先統計</label>
+            </span>
+            <span class="flexRow radioSelector">
+              <button
+                id="realtime"
+                class="radioBtn"
+                [class.radio__btn--active]="uiFlag.statisticMethod === 'realtime'"
+                (click)="changeStatisticMethod('realtime')"
+              >
+                
+              </button>
+              <label for="realtime">即時統計</label>
+            </span>
+          </div>
+        </div>
+        <div
+          class="flexCol condition__content"
+          *ngIf="uiFlag.statisticType !== statisticTypeEnum.image || uiFlag.statisticMethod !== 'realtime'"
+        >
+          <span>日期範圍：</span>
+          <app-date-range-picker
+            style="margin-left: 10px;"
+            [pickerType]="'rangePick'"
+            [startTimeStamp]="selectTime.startTimestamp"
+            [endTimeStamp]="selectTime.endTimestamp"
+            (selectDateRange)="getSelectDate($event)"
+          ></app-date-range-picker>
+        </div>
+      </div>
+    </section>
+    <section class="flexCol">
+      <span
+        class="flexRow"
+        style="margin: 10px 0;"
+      >
+        <label for="advanced__condition" style="margin: 0;">
+          <h6 style="margin: 0; color: var(--scale-0-255); font-weight: bold;">進階篩選</h6>
+        </label>
+        <button
+          id="advanced__condition"
+          [class.condition--unfolder]="uiFlag.showAdvancedCondition"
+          (click)="showAdvancedCondition()"
+          *ngIf="uiFlag.statisticMethod === 'realtime'"
+        >
+          <i class="icon-svg_web-icon_p1_006-unfold"></i>
+        </button>
+      </span>
+      <div class="flexCol conditon__content__area">
+        <div class="flexCol condition__content" *ngIf="uiFlag.statisticType !== statisticTypeEnum.image">
+          <span [class.empty__warn]="filterCondition.createFromApp.length === 0">
+            App 類別：
+          </span>
+          <div class="flexRow" style="flex-wrap: wrap; margin: 0;">
+            <span class="flexRow checkBoxBlock">
+              <button
+                id="all__app"
+                [class.check__box--active]="filterCondition.createFromApp.length === 5"
+                (click)="selectApp(alaApp.all)"
+              >
+                <span *ngIf="filterCondition.createFromApp.length === 5">✔</span>
+              </button>
+              <label for="all__app">全部</label>
+            </span>
+            <span class="flexRow checkBoxBlock">
+              <button
+                id="gptfit"
+                [class.check__box--active]="filterCondition.createFromApp.includes(alaApp.gptfit)"
+                (click)="selectApp(alaApp.gptfit)"
+              >
+                <span *ngIf="filterCondition.createFromApp.includes(alaApp.gptfit)">✔</span>
+              </button>
+              <label for="gptfit">GPTFit</label>
+            </span>
+            <span class="flexRow checkBoxBlock">
+              <button
+                id="connect"
+                [class.check__box--active]="filterCondition.createFromApp.includes(alaApp.connect)"
+                (click)="selectApp(alaApp.connect)"
+              >
+                <span *ngIf="filterCondition.createFromApp.includes(alaApp.connect)">✔</span>
+              </button>
+              <label for="connect">Connect</label>
+            </span>
+            <span class="flexRow checkBoxBlock">
+              <button
+                id="cloudrun"
+                [class.check__box--active]="filterCondition.createFromApp.includes(alaApp.cloudrun)"
+                (click)="selectApp(alaApp.cloudrun)"
+              >
+                <span *ngIf="filterCondition.createFromApp.includes(alaApp.cloudrun)">✔</span>
+              </button>
+              <label for="cloudrun">Cloudrun</label>
+            </span>
+            <span class="flexRow checkBoxBlock">
+              <button
+                id="trainlive"
+                [class.check__box--active]="filterCondition.createFromApp.includes(alaApp.trainlive)"
+                (click)="selectApp(alaApp.trainlive)"
+              >
+                <span *ngIf="filterCondition.createFromApp.includes(alaApp.trainlive)">✔</span>
+              </button>
+              <label for="trainlive">TrainLive</label>
+            </span>
+            <span class="flexRow checkBoxBlock">
+              <button
+                id="fitness"
+                [class.check__box--active]="filterCondition.createFromApp.includes(alaApp.fitness)"
+                (click)="selectApp(alaApp.fitness)"
+              >
+                <span *ngIf="filterCondition.createFromApp.includes(alaApp.fitness)">✔</span>
+              </button>
+              <label for="fitness">Fitness</label>
+            </span>
+          </div>
+        </div>
+        <ng-container
+          *ngIf="uiFlag.statisticMethod === 'realtime' && uiFlag.showAdvancedCondition"
+        >
+          <ng-container *ngIf="uiFlag.statisticType !== statisticTypeEnum.image">
+            <div class="flexRow condition__content">
+              <label for="country__region">地區：</label>
+              <div class="auto__completed__input">
+                <input
+                  #regionInput
+                  type="text"
+                  id="country__region"
+                  placeholder="Ex. 'TW'"
+                  autocomplete="off"
+                  (click)="openCommonList($event, 'region')"
+                  (keyup)="handleRegionInput($event)"
+                  (focusout)="handleRegionInput($event)"
+                  (change)="handleRegionInput($event)"
+                >
+                <ng-container *ngIf="uiFlag.showAutoCompleted === 'region'">
+                  <div *ngTemplateOutlet="autoCompleted; context: {conditionType: 'region'}"></div>
+                </ng-container>
+              </div>
+            </div>
+            <div class="flexRow condition__content">
+              <label for="language">語言：</label>
+              <div class="auto__completed__input">
+                <input
+                  #languageInput
+                  type="text"
+                  id="language"
+                  placeholder="Ex. 'zh'"
+                  autocomplete="off"
+                  (click)="openCommonList($event, 'language')"
+                  (keyup)="handleLanguageInput($event)"
+                  (focusout)="handleLanguageInput($event)"
+                  (change)="handleLanguageInput($event)"
+                >
+                <ng-container *ngIf="uiFlag.showAutoCompleted === 'language'">
+                  <div *ngTemplateOutlet="autoCompleted; context: {conditionType: 'language'}"></div>
+                </ng-container>
+              </div>
+            </div>
+            <span class="condition__content">
+              <label for="sn">裝置序號：</label>
+              <input
+                #snInput
+                type="text"
+                id="sn"
+                placeholder="Ex. 'WB00200'"
+                (keyup)="handleSnInput($event)"
+                (change)="handleSnInput($event)"
+                (focusout)="handleSnInput($event)"
+              >
+            </span>
+            <div *ngTemplateOutlet="group"></div>
+            <div *ngTemplateOutlet="user"></div>
+          </ng-container>
+          <ng-container *ngIf="uiFlag.statisticType === statisticTypeEnum.image">
+            <div class="flexCol condition__content">
+              <span>對象類型：</span>
+              <div class="flexRow" style="flex-wrap: wrap;">
+                <span class="flexRow radioSelector">
+                  <button 
+                    id="all__obj"
+                    class="radioBtn"
+                    [class.radio__btn--active]="imageReqBody.objectType === objType.all"
+                    (click)="selectObjType(objType.all)"
+                  ></button>
+                  <label for="all__obj">全部</label>
+                </span>
+                <span class="flexRow radioSelector">
+                  <button 
+                    id="user__obj"
+                    class="radioBtn"
+                    [class.radio__btn--active]="imageReqBody.objectType === objType.user"
+                    (click)="selectObjType(objType.user)"
+                  ></button>
+                  <label for="user__obj">使用者</label>
+                </span>
+                <span class="flexRow radioSelector">
+                  <button 
+                    id="group__obj"
+                    class="radioBtn"
+                    [class.radio__btn--active]="imageReqBody.objectType === objType.group"
+                    (click)="selectObjType(objType.group)"
+                  ></button>
+                  <label for="group__obj">群組</label>
+                </span>
+              </div>
+            </div>
+            <div class="flexCol condition__content">
+              <span>圖床類型：</span>
+              <div class="flexRow" style="flex-wrap: wrap;">
+                <span class="flexRow radioSelector">
+                  <button 
+                    id="all__image__type"
+                    class="radioBtn"
+                    [class.radio__btn--active]="imageReqBody.imgType === albumType.all"
+                    (click)="selectImageType(albumType.all)"
+                  ></button>
+                  <label for="all__image__type">全部</label>
+                </span>
+                <ng-container *ngIf="imageReqBody.objectType !== objType.group">
+                  <span class="flexRow radioSelector">
+                    <button
+                      id="personal__icon"
+                      class="radioBtn"
+                      [class.radio__btn--active]="imageReqBody.imgType === albumType.personalIcon"
+                      (click)="selectImageType(albumType.personalIcon)"
+                    ></button>
+                    <label for="personal__icon">個人頭像</label>
+                  </span>
+                  <span class="flexRow radioSelector">
+                    <button
+                      id="personal__scenery"
+                      class="radioBtn"
+                      [class.radio__btn--active]="imageReqBody.imgType === albumType.personalScenery"
+                      (click)="selectImageType(albumType.personalScenery)"
+                    ></button>
+                    <label for="personal__scenery">個人佈景</label>
+                  </span>
+                  <span class="flexRow radioSelector">
+                    <button
+                      id="personal__sport__file"
+                      class="radioBtn"
+                      [class.radio__btn--active]="imageReqBody.imgType === albumType.personalSportFile"
+                      (click)="selectImageType(albumType.personalSportFile)"
+                    ></button>
+                    <label for="personal__sport__file">個人運動檔案</label>
+                  </span>
+                </ng-container>
+                <ng-container *ngIf="imageReqBody.objectType !== objType.user">
+                  <span class="flexRow radioSelector">
+                    <button
+                      id="group__icon"
+                      class="radioBtn"
+                      [class.radio__btn--active]="imageReqBody.imgType === albumType.groupIcon"
+                      (click)="selectImageType(albumType.groupIcon)"
+                    ></button>
+                    <label for="group__icon">群組頭像</label>
+                  </span>
+                  <span class="flexRow radioSelector">
+                    <button
+                      id="group__scenery"
+                      class="radioBtn"
+                      [class.radio__btn--active]="imageReqBody.imgType === albumType.groupScenery"
+                      (click)="selectImageType(albumType.groupScenery)"
+                    ></button>
+                    <label for="group__scenery">群組佈景</label>
+                  </span>
+                </ng-container>
+              </div>
+            </div>
+            <ng-container *ngIf="imageReqBody.objectType === objType.user">
+              <div *ngTemplateOutlet="user"></div>
+            </ng-container>
+            <ng-container *ngIf="imageReqBody.objectType === objType.group">
+              <div *ngTemplateOutlet="group"></div>
+              <span class="flexRow checkBoxBlock">
+                <button
+                  id="check__child__group"
+                  [class.check__box--active]="this.imageReqBody.subset"
+                  (click)="clickSearchChild()"
+                >
+                  <span *ngIf="this.imageReqBody.subset">✔</span>
+                </button>
+                <label for="check__child__group">包含子群組</label>
+              </span>
+            </ng-container>            
+          </ng-container>
+        </ng-container>
+      </div>
+    </section>
+    <section id="condition__list" class="flexCol">
+      <h6 style="font-weight: bold;">輸入條件一覽</h6>
+      <div class="flexRow">
+        <ng-container *ngIf="filterCondition.region?.length > 0">
+          <div *ngTemplateOutlet="conditionList;
+            context: {
+              conditionType: 'region',
+              conditionTitle: '地區',
+              conditionList: filterCondition.region
+            }"
+          ></div>
+        </ng-container>
+        <ng-container *ngIf="filterCondition.language?.length > 0">
+          <div *ngTemplateOutlet="conditionList;
+            context: {
+              conditionType: 'language',
+              conditionTitle: '語言',
+              conditionList: filterCondition.language
+            }"
+          ></div>
+        </ng-container>
+        <ng-container *ngIf="filterCondition.user?.length > 0">
+          <div *ngTemplateOutlet="conditionList;
+            context: {
+              conditionType: 'user',
+              conditionTitle: '使用者',
+              conditionList: filterCondition.user
+            }"
+          ></div>
+        </ng-container>
+        <ng-container *ngIf="filterCondition.group?.length > 0">
+          <div *ngTemplateOutlet="conditionList;
+            context: {
+              conditionType: 'group',
+              conditionTitle: '群組',
+              conditionList: filterCondition.group
+            }"
+          ></div>
+        </ng-container>
+        <ng-container *ngIf="filterCondition.sn?.length > 0">
+          <div *ngTemplateOutlet="conditionList;
+            context: {
+              conditionType: 'sn',
+              conditionTitle: '裝置序號',
+              conditionList: filterCondition.sn
+            }"
+          ></div>
+        </ng-container>
+      </div>
+    </section>
+    <div style="display: flex; justify-content: flex-end;">
+      <button id="defalut__btn" (click)="allConditionRecovery()">
+        恢復預設
+      </button>
+      <button
+        id="confirm__btn"
+        [style.pointer-events]="
+          (filterCondition.createFromApp.length === 0
+            || (uiFlag.statisticType === statisticTypeEnum.image && 
+                (
+                  (imageReqBody.objectType === objType.user && !filterCondition.user)
+                  || (imageReqBody.objectType === objType.group && !filterCondition.group)
+                )
+              )
+          ) ? 'none' : 'initial'
+        "
+        (click)="submit()"
+      >
+        送出
+      </button>
+    </div>
+  </header>
+  <main>
+    <h6 style="font-weight: bold; color: var(--scale-0-255)">統計結果</h6>
+    <div class="flexCol" style="margin-left: 10px; color: var(--scale-100-205);">
+      <div>
+        <app-stack-column-chart
+          [analysisData]="searchRes.trendChart"
+          *ngIf="uiFlag.statisticMethod === 'pre'"
+        >
+        </app-stack-column-chart>
+      </div>
+      <span>
+        <span>檔案數量：</span>
+        <span>{{ searchRes.fileCount }}</span>
+      </span>
+      <span class="flexRow">
+        <span *ngIf="uiFlag.statisticMethod === 'pre'">總使用空間：</span>
+        <span *ngIf="uiFlag.statisticMethod === 'realtime'">點陣數量：</span>
+        <span>{{ searchRes.totalSpace | dataFlowConversion }}</span>
+        <span
+          class="condition__description"
+          *ngIf="uiFlag.statisticMethod === 'realtime'"
+        >
+          (*point數 * 32 byte)
+        </span>
+      </span>
+      <span>
+        <span>查詢時間：</span>
+        <span>{{ searchRes.createTime }}</span>
+      </span>
+    </div>
+  </main>
+</div>
+<ng-template #user>
+  <div class="flexRow condition__content">
+    <label
+      for="user"
+      [class.empty__warn]="
+        uiFlag.statisticType === statisticTypeEnum.image
+        && imageReqBody.objectType === objType.user
+        && !filterCondition.user
+      "
+    >
+      使用者：
+    </label>
+    <div class="auto__completed__input">
+      <input
+        #userInput
+        type="text"
+        id="user"
+        placeholder="輸入暱稱後點選"
+        autocomplete="off"
+      >
+      <ng-container *ngIf="uiFlag.showAutoCompleted === 'user'">
+        <div *ngTemplateOutlet="autoCompleted; context: {conditionType: 'user'}"></div>
+      </ng-container>
+    </div>
+  </div>
+</ng-template>
+<ng-template #group>
+  <div class="flexRow condition__content">
+    <label
+      for="group"
+      [class.empty__warn]="
+        uiFlag.statisticType === statisticTypeEnum.image
+        && imageReqBody.objectType === objType.group
+        && !filterCondition.group
+      "
+    >
+      群組：
+    </label>
+    <div class="auto__completed__input">
+      <input
+        #groupInput
+        type="text"
+        id="group"
+        placeholder="輸入群組名稱後點選"
+        autocomplete="off"
+      >
+      <ng-container *ngIf="uiFlag.showAutoCompleted === 'group'">
+        <div *ngTemplateOutlet="autoCompleted; context: {conditionType: 'group'}"></div>
+      </ng-container>
+    </div>
+    <span
+        class="condition__description"
+        *ngIf="uiFlag.statisticType !== statisticTypeEnum.image"
+    >
+      ※ 計算fileInfo.class為該群組的檔案
+    </span>
+  </div>
+</ng-template>
+<ng-template #autoCompleted let-conditionType="conditionType">
+  <div id="auto__completed" class="flexCol">
+    <span
+      *ngFor="let _list of autoCompletedList; let _idx = index;"
+      (click)="clickAutoCompleted($event, _idx)"
+    >
+      <ng-container *ngIf="conditionType === 'user'">
+        {{ _list.userName }}
+      </ng-container>
+      <ng-container *ngIf="conditionType === 'group'">
+        {{ _list.groupName }}
+      </ng-container>
+      <ng-container *ngIf="['region', 'language'].includes(conditionType)">
+        {{ _list.name }}
+      </ng-container>
+    </span>
+  </div>
+</ng-template>
+<ng-template
+  #conditionList
+  let-conditionType="conditionType"
+  let-conditionTitle="conditionTitle"
+  let-conditionList="conditionList"
+>
+  <div class="flexCol" style="margin: 0 10px;">
+    <span>{{ conditionTitle }}：</span>
+    <div class="flexCol" style="margin-left: 10px;">
+      <div
+        class="flexRow final__condition__list"
+        *ngFor="let _list of conditionList; let _idx = index;"
+      >
+        <button class="del__condition__btn" (click)="delCondition(conditionType, _idx)">
+          <i class="icon-svg_web-icon_p1_030-less"></i>
+        </button>
+        <span>
+          <ng-container *ngIf="conditionType === 'user'">
+            {{ _list.userName }}
+          </ng-container>
+          <ng-container *ngIf="conditionType === 'group'">
+            {{ _list.groupName }}
+          </ng-container>
+          <ng-container *ngIf="['region', 'language', 'sn'].includes(conditionType)">
+            <ng-container *ngIf="_list.name">
+              {{ _list.name }}
+            </ng-container>
+            <ng-container *ngIf="!_list.name">
+              {{ _list }}
+            </ng-container>
+          </ng-container>
+        </span>
+      </div>
+    </div>
+  </div>
+</ng-template>

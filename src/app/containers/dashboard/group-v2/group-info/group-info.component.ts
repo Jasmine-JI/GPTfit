@@ -16,6 +16,7 @@ import { ImageUploadService } from '../../services/image-upload.service';
 import { AlbumType } from '../../../../shared/models/image';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { PrivacySettingDialogComponent } from '../../../../shared/components/privacy-setting-dialog/privacy-setting-dialog.component';
+import { unit } from '../../../../shared/models/bs-constant'
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -59,6 +60,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   user = <UserSimpleInfo>{
     nickname: '',
     userId: null,
+    unit: unit.metric,
     token: '',
     accessRight: [],
     joinStatus: 2,
@@ -927,20 +929,26 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.groupService.checkAccessRight(this.currentGroupInfo.groupId).pipe(
         switchMap(res => this.userProfileService.getRxUserProfile().pipe(
           map(resp => {
-            const userObj = {};
-            Object.assign(userObj, {accessRight: res});
-            Object.assign(userObj, {nickname: (resp as any).nickname});
-            Object.assign(userObj, {userId: (resp as any).userId});
-            Object.assign(userObj, {privacy: (resp as any).privacy})
+            const { nickname, userId, privacy, unit } = (resp as any),
+                  userObj = {
+                    accessRight: res,
+                    nickname,
+                    userId,
+                    privacy,
+                    unit
+                  };
+
             return userObj;
           })
         )),
         takeUntil(this.ngUnsubscribe)
       ).subscribe(res => {
-        this.user.accessRight = (res as any).accessRight;
-        this.user.nickname = (res as any).nickname;
-        this.user.userId = (res as any).userId;
-        this.user.privacy = (res as any).privacy;
+        const { accessRight, nickname, userId, privacy, unit } = (res as any);
+        this.user.accessRight = accessRight;
+        this.user.nickname = nickname;
+        this.user.userId = userId;
+        this.user.privacy = privacy;
+        this.user.unit = unit;
         this.user.isGroupAdmin = this.user.accessRight.some(_accessRight => {
           if (this.currentGroupInfo.groupLevel === 60) {
             return _accessRight === 50 || _accessRight === 60;
@@ -993,9 +1001,9 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     if (!this.uiFlag.portalMode) {
       childPageList = childPageList.concat([
-        'member-list',
         'group-architecture',
-        'admin-list',
+        'member-list',
+        'admin-list'
       ]);
       
       if (upperClassAdmin) childPageList = childPageList.concat(['device-list']);

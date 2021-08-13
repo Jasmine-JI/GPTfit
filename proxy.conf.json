@@ -13,5 +13,10 @@
     "target": "https://app.alatech.com.tw",
     "secure": false,
     "changeOrigin": true
+  },
+  "/privilege": {
+    "target": "http://192.168.1.234:5555",
+    "secure": false,
+    "changeOrigin": true
   }
 }

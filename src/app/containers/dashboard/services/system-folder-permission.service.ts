@@ -18,7 +18,7 @@ export class SystemFolderPermissionService {
    * @author kidin-1100302
    */
   createSysAccount(body: any) {
-    return this.http.post<any>('privilege/addRdUser', body).pipe(
+    return this.http.post<any>('/privilege/addRdUser', body).pipe(
       catchError(err => throwError(err))
     );
   }
@@ -29,7 +29,7 @@ export class SystemFolderPermissionService {
    * @author kidin-1100302
    */
   createSysFolder(body: any) {
-    return this.http.post<any>('privilege/createProject', body).pipe(
+    return this.http.post<any>('/privilege/createProject', body).pipe(
       catchError(err => throwError(err))
     );
   }
@@ -40,7 +40,7 @@ export class SystemFolderPermissionService {
    * @author kidin-1100302
    */
   getSysList(body: any) {
-    return this.http.post<any>('privilege/getUserDataList', body).pipe(
+    return this.http.post<any>('/privilege/getUserDataList', body).pipe(
       catchError(err => throwError(err))
     );
   }
@@ -51,7 +51,7 @@ export class SystemFolderPermissionService {
    * @author kidin-1100302
    */
   setUserAccessRight(body: any) {
-    return this.http.post<any>('privilege/setFolderAccessRight', body).pipe(
+    return this.http.post<any>('/privilege/setFolderAccessRight', body).pipe(
       catchError(err => throwError(err))
     );
   }
@@ -62,7 +62,7 @@ export class SystemFolderPermissionService {
    * @author kidin-1100302
    */
   delSysAccount(body: any) {
-    return this.http.post<any>('privilege/deleteRdUser', body).pipe(
+    return this.http.post<any>('/privilege/deleteRdUser', body).pipe(
       catchError(err => throwError(err))
     );
   }
