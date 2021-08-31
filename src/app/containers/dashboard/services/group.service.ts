@@ -17,21 +17,15 @@ const { API_SERVER } = environment.url;
  */
 @Injectable()
 export class GroupService {
-  sideBarMode$ = new ReplaySubject<any>(1); // sidebar展開與否
   editMode$ = new ReplaySubject<'edit' | 'create' | 'complete' | 'close'>(1); // 是否進入編輯模式或建立模式
   userSimpleInfo$ = new ReplaySubject<UserSimpleInfo>(1); // 儲存使用者在該群組的簡易資訊（權限）-kidin-1091103
   groupInfo$ = new BehaviorSubject<any>({}); // 儲存group資訊-kidin-1081210
-  allLevelGroupInfo$ = new ReplaySubject<any>(1); // 儲存 同"品牌/企業" group 資訊-kidin-1090604
   groupDetail$ = new ReplaySubject<any>(1);  // 儲存群組基本概要方便各子頁面使用-kidin-1091020
   allLevelGroupData$ = new ReplaySubject<any>(1); // 儲存 同"品牌/企業" group 資訊-kidin-1090716
   groupCommerceInfo$ = new ReplaySubject<any>(1); // 儲存群組經營權限資訊-kidin-1091104
   classMemberList$ = new BehaviorSubject<any>([]); // 儲存課程成員清單-kidin-1091116
   adminList$ = new ReplaySubject<any>(1);
   normalMemberList$ = new ReplaySubject<any>(1);
-  memberList$ = new BehaviorSubject<any>({
-    groupId: '',
-    groupList: []
-  });
 
   memList$ = new BehaviorSubject<any>({  // 成員清單
     groupId: '',
@@ -39,14 +33,6 @@ export class GroupService {
   });
 
   newGroupId$ = new ReplaySubject<any>(1); // 創建群組的group id，以上傳圖床。
-  reportCategory$ = new BehaviorSubject<number>(99);
-  typeAllData$ = new BehaviorSubject<any>({});
-  typeRunData$ = new BehaviorSubject<any>({});
-  typeCycleData$ = new BehaviorSubject<any>({});
-  typeWeightTrainData$ = new BehaviorSubject<any>({});
-  typeSwimData$ = new BehaviorSubject<any>({});
-  typeAerobicData$ = new BehaviorSubject<any>({});
-  typeRowData$ = new BehaviorSubject<any>({});
 
   constructor(
     private http: HttpClient,
@@ -435,7 +421,7 @@ export class GroupService {
   }
 
   /**
-   * 1103-依權限取得群組內所有群組後並儲存
+   * 依權限取得群組內所有群組後並儲存
    * @author kidin-1090716
    */
   setAllLevelGroupData(childGroupList: any) {
@@ -465,23 +451,6 @@ export class GroupService {
    */
   saveUserSimpleInfo(status: UserSimpleInfo) {
     this.userSimpleInfo$.next(status);
-  }
-
-  /**
-   * 取得sidebar 模式供子頁面用
-   * @author kidin-1091111
-   */
-  getRxSideBarMode() {
-    return this.sideBarMode$;
-  }
-
-  /**
-   * 儲存sidebar模式供子頁面用
-   * @param status {'expand' | 'hide' | 'narrow'}-sidebar 模式
-   * @author kidin-1091111
-   */
-  setSideBarMode(status: 'expand' | 'hide' | 'narrow') {
-    this.sideBarMode$.next(status);
   }
 
   /**

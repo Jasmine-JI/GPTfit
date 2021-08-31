@@ -11,12 +11,9 @@ import { GroupSearchComponent } from './group/group-search/group-search.componen
 import { AllGroupListComponent } from './group/all-group-list/all-group-list.component';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { DashboardGuard } from './guards/dashboard-guard';
-import { MyActivityComponent } from '../../shared/components/my-activity/my-activity.component';
 import { SportsReportComponent } from '../../shared/components/sports-report/sports-report.component';
 import { MyDeviceComponent } from './components/my-device/my-device.component';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
-import { SettingsComponent } from './components/settings/settings.component';
-import { PersonalPreferencesComponent } from './components/settings/personal-preferences/personal-preferences.component';
 import { InnerTestComponent } from './components/inner-test/inner-test.component';
 import { CloudRunGpxComponent } from './components/cloud-run-gpx/cloud-run-gpx.component';
 import { InnerDevicePairComponent } from './components/inner-device-pair/inner-device-pair.component';
@@ -49,9 +46,16 @@ import { ActivityDetailComponent } from '../../shared/components/activity-detail
 import { SystemLogComponent } from './components/system-log/system-log.component';
 import { SystemFolderPermissionComponent } from './components/system-folder-permission/system-folder-permission.component';
 import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-analysis.component';
-import { CloudrunReportComponent as PersonCloudrunReport } from './components/cloudrun-report/cloudrun-report.component'
+import { CloudrunReportComponent as PersonCloudrunReport } from './components/cloudrun-report/cloudrun-report.component';
 import { DeviceInfoComponent } from './components/device-info/device-info.component';
 import { DeviceListComponent } from './group-v2/group-info/device-list/device-list.component';
+import { PersonalComponent } from './personal/personal.component';
+import { InfoComponent } from './personal/info/info.component';
+import { SettingBaseComponent } from './personal/setting-base/setting-base.component';
+import { SettingPreferComponent } from './personal/setting-prefer/setting-prefer.component';
+import { SettingPrivacyComponent } from './personal/setting-privacy/setting-privacy.component';
+import { SettingAccountComponent } from './personal/setting-account/setting-account.component';
+import { ActivityListComponent } from './personal/activity-list/activity-list.component';
 
 const routes: Routes = [
   {
@@ -181,47 +185,8 @@ const routes: Routes = [
         canActivate: [DashboardGuard]
       },
       {
-        path: 'settings',
-        component: SettingsComponent,
-        children: [
-          {
-            path: 'user-settings',
-            component: SettingsComponent
-          },
-          {
-            path: 'privacy-settings',
-            component: SettingsComponent
-          },
-          {
-            path: 'account-info',
-            component: SettingsComponent
-          },
-          {
-            path: 'personal-preferences',
-            component: PersonalPreferencesComponent
-          }
-        ]
-      },
-      {
-        path: 'activity-list',
-        component: MyActivityComponent
-      },
-      {
         path: 'activity/:fileId',
         component: ActivityDetailComponent
-      },
-      
-      {
-        path: 'sport-report',
-        component: SportsReportComponent
-      },
-      {
-        path: 'life-tracking',
-        component: MyLifeTrackingComponent
-      },
-      {
-        path: 'cloudrun',
-        component: PersonCloudrunReport
       },
       {
         path: 'device',
@@ -239,7 +204,6 @@ const routes: Routes = [
         path: 'qrupload/activityfile',
         component: QrcodeUploadComponent
       },
-
       {
         path: 'group-info/:groupId',
         component: GroupInfoComponent,
@@ -297,6 +261,54 @@ const routes: Routes = [
       {
         path: 'mygroup-list-v2',
         component: MyGroupListComponent
+      },
+      /*
+      {
+        path: 'activity-list',
+        component: MyActivityComponent
+      },
+      */
+      {
+        path: '',
+        component: PersonalComponent,
+        children: [
+          {
+            path: 'activity-list',
+            component: ActivityListComponent
+          },
+          {
+            path: 'sport-report',
+            component: SportsReportComponent
+          },
+          {
+            path: 'life-tracking',
+            component: MyLifeTrackingComponent
+          },
+          {
+            path: 'cloudrun',
+            component: PersonCloudrunReport
+          },
+          {
+            path: 'info',
+            component: InfoComponent
+          },
+          {
+            path: 'user-settings',
+            component: SettingBaseComponent
+          },
+          {
+            path: 'personal-preferences',
+            component: SettingPreferComponent
+          },
+          {
+            path: 'privacy-settings',
+            component: SettingPrivacyComponent
+          },
+          {
+            path: 'account-info',
+            component: SettingAccountComponent
+          }
+        ]
       },
       {
         path: '**',

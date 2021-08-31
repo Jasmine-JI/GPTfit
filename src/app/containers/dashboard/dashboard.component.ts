@@ -20,7 +20,7 @@ import { MessageBoxComponent } from '../../shared/components/message-box/message
 import { Subject, forkJoin } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { UserProfileInfo } from './models/userProfileInfo';
-import { GroupService } from './services/group.service';
+import { DashboardService } from './services/dashboard.service';
 
 
 enum Dashboard {
@@ -105,7 +105,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     private detectInappService: DetectInappService,
     private dialog: MatDialog,
     private userProfileService: UserProfileService,
-    private groupService: GroupService
+    private dashboardService: DashboardService
   ) {}
 
   ngOnInit() {
@@ -517,7 +517,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   handleSideBarMode(mode: 'expand' | 'hide' | 'narrow') {
     this.uiFlag.sidebarMode = mode;
-    this.groupService.setSideBarMode(mode);
+    this.dashboardService.setSideBarMode(mode);
   }
 
   /**

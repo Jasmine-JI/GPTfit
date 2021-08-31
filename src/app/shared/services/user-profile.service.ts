@@ -44,18 +44,6 @@ export class UserProfileService {
    */
   refreshUserProfile(body: any) {
     this.getUserProfile(body).pipe(
-      map(response => {
-        // 待個人頭像接圖床之後再刪除此段
-        const userProfile = response.userProfile
-        if (userProfile) {
-          const newImage = `${userProfile.avatarUrl}?${moment().valueOf()}`;
-          Object.assign(userProfile, {avatarUrl: newImage});
-          Object.assign(userProfile, {unit: 0});  // 待所有報告皆完成公英制轉換再刪除此行
-          return response;
-        } else {
-          throw new Error('Get userProfile failed.');
-        }
-      }),
       switchMap(res => this.getMemberAccessRight(body).pipe(
         map(resp => {
           Object.assign(
@@ -110,6 +98,15 @@ export class UserProfileService {
   }
 
   /**
+   * 使用nodejs確認暱稱是否重複
+   * @param body {any}
+   * @author kidin-1100819
+   */
+  checkNickname(body: any) {
+    return this.http.post<any>(API_SERVER + 'user/checkNickname', body);
+  }
+
+  /**
    * 使用nodejs取得指定的使用者列表
    * @param body {any}
    * @author kidin-1090902
@@ -134,5 +131,7 @@ export class UserProfileService {
   clearUserProfile() {
     this.userProfile$.next(undefined);
   }
+
+
 
 }

@@ -1,0 +1,31 @@
+@import 'color.scss';
+@import 'radio-btn.scss';
+
+.content__row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.input__alert {
+  font-size: 12px;
+  line-height: 1;
+}
+
+#nickname__input {
+  width: 100%;
+  max-width: 200px;
+}
+
+#height__input, #weight__input {
+  width: 70px;
+}
+
+.radio__btn--active {
+  @include radio-active(14px, rgba(253, 71, 214, 1));
+}
+
+.info__content {
+  color: var(--scale-0-255);
+}

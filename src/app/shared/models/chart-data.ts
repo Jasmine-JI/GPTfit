@@ -1,3 +1,5 @@
+import { HrBase } from '../../containers/dashboard/models/userProfileInfo';
+
 export type DisplayPage = 'cloudrun' | 'sport' | 'lifeTracking' | 'sportReport';
 
 /**
@@ -111,7 +113,7 @@ export const femaleBodyBoundary = {
 };
 
 export interface HrZoneRange {
-  hrBase: 0 | 1;
+  hrBase: HrBase;
   z0: number | 'Z0';
   z1: number | 'Z1';
   z2: number | 'Z2';

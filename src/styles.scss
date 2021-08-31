@@ -258,6 +258,7 @@ $radio-active-size: 14px;
 
 .mat-dialog-container {
   padding-top: 0px !important;
+  background-color: var(--scale-255-60) !important;
 }
 
 .ala-dialog.mat-dialog-title {
@@ -823,6 +824,16 @@ a.ban-send:hover {
   @include noneSelect();
 }
 
+.imgSelector {
+  position: fixed;
+  background-color: white;
+  border-radius: 3px;
+  margin: 0 10px;
+  padding: 0 10px 10px 10px;
+  min-width: 250px;
+  min-height: 250px;
+  max-width: 700px;
+}
 
 /************************************* media **************************************/
 

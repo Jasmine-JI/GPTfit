@@ -1,8 +1,5 @@
 <app-loading-bar [progress]="progress" [isPreviewMode]="uiFlag.isPreviewMode"></app-loading-bar>
 <div class="flexCol">
-  <span class="pageTitle" *ngIf="!uiFlag.isPreviewMode">
-    Cloud run {{ 'universal_activityData_report' | translate }}
-  </span>
   <div class="cardSection" *ngIf="!uiFlag.isPreviewMode">
     <app-report-filter></app-report-filter>
   </div>

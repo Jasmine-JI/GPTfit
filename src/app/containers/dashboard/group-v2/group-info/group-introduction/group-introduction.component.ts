@@ -691,6 +691,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091106
    */
   saveCreateContent() {
+    this.uiFlag.isLoading = true;
     this.groupService.createGroup(this.createBody).subscribe(res => {
 
       if (res.resultCode !== 200) {
@@ -702,6 +703,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         this.closeEditMode('complete');
       }
 
+      this.uiFlag.isLoading = false;
     });
 
   }

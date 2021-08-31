@@ -1,8 +1,5 @@
 <app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
 <div class="flexCol">
-  <span class="pageTitle" *ngIf="!uiFlag.isPreviewMode">
-    {{'universal_activityData_sportReport' | translate}}
-  </span>
   <div
     class="cardSection"
     [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
@@ -694,7 +691,9 @@
                   ></app-threshold-chart>
                 </div>
                 <div class="report-infoChart">
-                  <app-threshold-info></app-threshold-info>
+                  <app-threshold-info
+                    [cycleFtp]="userProfile.cycleFtp"
+                  ></app-threshold-info>
                 </div>
               </div>
             </div>

@@ -1,0 +1,185 @@
+<section class="cardSection">
+  <div class="flexCol cardContent" style="padding-bottom: 50px;">
+    <div class="flexRow" style="justify-content: space-between;">
+      <h5 class="settingTitle">
+        {{ 'universal_privacy_set' | translate }}
+      </h5>
+    </div>
+    <div class="flexCol settingContent">
+      <h6 class="settingSubTitle">{{ 'universal_privacy_newAvtivityData' | translate }}</h6>
+      <span class="settingDescription setting__desc">
+        ※ {{ 'universal_activityData_eventFileInformation' | translate }}
+      </span>
+      <div class="flexCol setting__section">
+        <span class="flexRow checkBoxBlock">
+          <button
+            id="file__all"
+            [class.checkBox--active]="setting.activityTracking.includes(privacyObj.anyone)"
+            (click)="changePrivacy('activityTracking', privacyObj.anyone)"
+          >
+            <span *ngIf="setting.activityTracking.includes(privacyObj.anyone)">✔</span>
+          </button>
+          <label for="file__all" class="checkBox__label">
+            {{ 'universal_privacy_allMember' | translate }}
+          </label>
+        </span>
+        <span class="flexRow checkBoxBlock">
+          <button
+            id="file__admin"
+            [class.checkBox--active]="setting.activityTracking.includes(privacyObj.myGroup)"
+            (click)="changePrivacy('activityTracking', privacyObj.myGroup)"
+          >
+            <span *ngIf="setting.activityTracking.includes(privacyObj.myGroup)">✔</span>
+          </button>
+          <label for="file__admin" class="checkBox__label">
+            {{ 'universal_privacy_myGroupMember' | translate }}
+          </label>
+        </span>
+        <span class="flexRow checkBoxBlock">
+          <button
+            id="file__same__group"
+            [class.checkBox--active]="setting.activityTracking.includes(privacyObj.onlyGroupAdmin)"
+            (click)="changePrivacy('activityTracking', privacyObj.onlyGroupAdmin)"
+          >
+            <span *ngIf="setting.activityTracking.includes(privacyObj.onlyGroupAdmin)">✔</span>
+          </button>
+          <label for="file__same__group" class="checkBox__label">
+            {{ 'universal_group_myGroupAdmin' | translate }}
+          </label>
+        </span>
+      </div>
+    </div>
+    <div class="flexCol settingContent">
+      <h6 class="settingSubTitle">{{ 'universal_privacy_newAvtivityReport' | translate }}</h6>
+      <span class="settingDescription setting__desc">
+        ※ {{ 'universal_activityData_sportsStatisticsInformation' | translate }}
+      </span>
+      <div class="flexCol setting__section">
+        <span class="flexRow checkBoxBlock">
+          <button
+            id="report__all"
+            [class.checkBox--active]="setting.activityTrackingReport.includes(privacyObj.anyone)"
+            (click)="changePrivacy('activityTrackingReport', privacyObj.anyone)"
+          >
+            <span *ngIf="setting.activityTrackingReport.includes(privacyObj.anyone)">✔</span>
+          </button>
+          <label for="report__all" class="checkBox__label">
+            {{ 'universal_privacy_allMember' | translate }}
+          </label>
+        </span>
+        <span class="flexRow checkBoxBlock">
+          <button
+            id="report__admin"
+            [class.checkBox--active]="setting.activityTrackingReport.includes(privacyObj.myGroup)"
+            (click)="changePrivacy('activityTrackingReport', privacyObj.myGroup)"
+          >
+            <span *ngIf="setting.activityTrackingReport.includes(privacyObj.myGroup)">✔</span>
+          </button>
+          <label for="report__admin" class="checkBox__label">
+            {{ 'universal_privacy_myGroupMember' | translate }}
+          </label>
+        </span>
+        <span class="flexRow checkBoxBlock">
+          <button
+            id="report__same__group"
+            [class.checkBox--active]="setting.activityTrackingReport.includes(privacyObj.onlyGroupAdmin)"
+            (click)="changePrivacy('activityTrackingReport', privacyObj.onlyGroupAdmin)"
+          >
+            <span *ngIf="setting.activityTrackingReport.includes(privacyObj.onlyGroupAdmin)">✔</span>
+          </button>
+          <label for="report__same__group" class="checkBox__label">
+            {{ 'universal_group_myGroupAdmin' | translate }}
+          </label>
+        </span>
+      </div>
+    </div>
+    <div class="flexCol settingContent">
+      <h6 class="settingSubTitle">{{ 'universal_privacy_newLifeTrackingReport' | translate }}</h6>
+      <span class="settingDescription setting__desc">
+        ※ {{ 'universal_lifeTracking_lifeStatisticsInformation' | translate }}
+      </span>
+      <div class="flexCol setting__section">
+        <span class="flexRow checkBoxBlock">
+          <button
+            id="life__all"
+            [class.checkBox--active]="setting.lifeTrackingReport.includes(privacyObj.anyone)"
+            (click)="changePrivacy('lifeTrackingReport', privacyObj.anyone)"
+          >
+            <span *ngIf="setting.lifeTrackingReport.includes(privacyObj.anyone)">✔</span>
+          </button>
+          <label for="file__all" class="checkBox__label">
+            {{ 'universal_privacy_allMember' | translate }}
+          </label>
+        </span>
+        <span class="flexRow checkBoxBlock">
+          <button
+            id="life__admin"
+            [class.checkBox--active]="setting.lifeTrackingReport.includes(privacyObj.myGroup)"
+            (click)="changePrivacy('lifeTrackingReport', privacyObj.myGroup)"
+          >
+            <span *ngIf="setting.lifeTrackingReport.includes(privacyObj.myGroup)">✔</span>
+          </button>
+          <label for="life__admin" class="checkBox__label">
+            {{ 'universal_privacy_myGroupMember' | translate }}
+          </label>
+        </span>
+        <span class="flexRow checkBoxBlock">
+          <button
+            id="life__same__group"
+            [class.checkBox--active]="setting.lifeTrackingReport.includes(privacyObj.onlyGroupAdmin)"
+            (click)="changePrivacy('lifeTrackingReport', privacyObj.onlyGroupAdmin)"
+          >
+            <span *ngIf="setting.lifeTrackingReport.includes(privacyObj.onlyGroupAdmin)">✔</span>
+          </button>
+          <label for="life__same__group" class="checkBox__label">
+            {{ 'universal_group_myGroupAdmin' | translate }}
+          </label>
+        </span>
+      </div>
+    </div>
+    <div class="flexCol settingContent" style="margin-top: 20px;">
+      <h6 class="settingSubTitle">
+        {{
+          'universal_privacy_batchEditPrivacy' | translate: { 
+            object: ('universal_vocabulary_data' | translate)
+          } 
+        }}
+      </h6>
+      <div class="flexCol setting__section">
+        <div class="flexRow list__item">
+          <label for="patch__edit__file">
+            {{ 'universal_activityData_eventArchive' | translate }}
+          </label>
+          <button
+            id="patch__edit__file"
+            (click)="showBatchModification(privacyEditObj.file)"
+          >
+            <i class="icon-svg_web-icon_p1_008-edit"></i>
+          </button>
+        </div>
+        <div class="flexRow list__item">
+          <label for="patch__edit__report">
+            {{ 'universal_activityData_sportsStatistics' | translate }}
+          </label>
+          <button
+            id="patch__edit__report"
+            (click)="showBatchModification(privacyEditObj.sportsReport)"
+          >
+            <i class="icon-svg_web-icon_p1_008-edit"></i>
+          </button>
+        </div>
+        <div class="flexRow list__item">
+          <label for="patch__edit__lifeTracking">
+            {{ 'universal_lifeTracking_lifeStatistics' | translate }}
+          </label>
+          <button
+            id="patch__edit__lifeTracking"
+            (click)="showBatchModification(privacyEditObj.lifeTracking)"
+          >
+            <i class="icon-svg_web-icon_p1_008-edit"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

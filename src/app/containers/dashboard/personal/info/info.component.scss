@@ -1,0 +1,12 @@
+#description__input {
+  color: var(--scale-75-230);
+  width: 100%;
+  min-height: 300px;
+  border: 1px solid var(--scale-115-215);
+  outline: none;
+  
+  &:focus {
+    border: 1px solid rgba(0, 170, 255, 1);
+  }
+
+}

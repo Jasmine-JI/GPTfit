@@ -23,6 +23,11 @@ import { AppCompressDataComponent } from './components/app-sign/app-compress-dat
 import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-account/app-destroy-account.component';
 import { ActivityDetailComponent } from '../../shared/components/activity-detail/activity-detail.component';
 import { DeviceInfoComponent } from '../dashboard/components/device-info/device-info.component';
+import { PersonalComponent } from '../dashboard/personal/personal.component';
+import { ActivityListComponent } from '../dashboard/personal/activity-list/activity-list.component';
+import { InfoComponent } from '../dashboard/personal/info/info.component';
+import { MyLifeTrackingComponent } from '../../shared/components/my-life-tracking/my-life-tracking.component';
+import { CloudrunReportComponent as PersonCloudrunReport } from '../dashboard/components/cloudrun-report/cloudrun-report.component';
 
 
 const routes: Routes = [
@@ -53,16 +58,32 @@ const routes: Routes = [
       
       {
         path: 'user-profile/:userId',
-        component: UserProfileComponent,
+        component: PersonalComponent,
         children: [
           {
             path: 'activity-list',
-            component: MyActivityComponent
+            component: ActivityListComponent
           },
           {
             path: 'sport-report',
             component: SportsReportComponent
-          }
+          },
+          {
+            path: 'life-tracking',
+            component: MyLifeTrackingComponent
+          },
+          {
+            path: 'cloudrun',
+            component: PersonCloudrunReport
+          },
+          {
+            path: 'info',
+            component: InfoComponent
+          },
+          {
+            path: '',
+            component: ActivityListComponent
+          },
         ]
       },
       {

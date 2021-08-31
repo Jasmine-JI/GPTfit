@@ -35,8 +35,9 @@ import { SettingsService } from '../../../containers/dashboard/services/settings
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../message-box/message-box.component';
-import { UserProfileInfo } from '../../../containers/dashboard/models/userProfileInfo';
+import { UserProfileInfo, hrBase } from '../../../containers/dashboard/models/userProfileInfo';
 import { ShareGroupInfoDialogComponent } from '../share-group-info-dialog/share-group-info-dialog.component';
+import { UserInfoService } from '../../../containers/dashboard/services/userInfo.service';
 
 const errMsg = 'Error!<br>Please try again later.';
 
@@ -220,7 +221,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     },
     hrzone: [0, 0, 0, 0, 0, 0],
     hrInfo: <HrZoneRange>{
-      hrBase: 0,
+      hrBase: hrBase.max,
       z0: 'Z0',
       z1: 'Z1',
       z2: 'Z2',
@@ -322,7 +323,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef,
     private settingsService: SettingsService,
     private route: ActivatedRoute,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private userInfoService: UserInfoService
   ) { }
 
   ngOnInit(): void {
@@ -454,33 +456,19 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     unit: Unit = 0,
     weightTrainLevel: ProficiencyCoefficient = Proficiency.metacarpus
   ) {    
-    const body = {
-      targetUserId: this.userInfo.id
-    };
-
-    this.userProfileService.getUserProfile(body).subscribe(res => {
-      const { processResult, userProfile } = res;
-      if (userProfile) {
-        const { avatarUrl, nickname, userId } = userProfile;
-        this.userInfo = {
-          name: nickname,
-          id: userId,
-          accessRight: [99],
-          unit,
-          icon: avatarUrl,
-          bodyWeight: 70,
-          weightTrainLevel
-        };
-      } else {
-
-        if (processResult) {
-          const { apiCode, resultCode, resultMessage } = processResult;
-          this.utils.handleError(resultCode, apiCode, resultMessage);
-        } else {
-          this.utils.openAlert(errMsg);
-        }
-
-      }
+    this.userInfoService.getRxTargetUserInfo().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      const { avatarUrl, nickname, userId } = res;
+      this.userInfo = {
+        name: nickname,
+        id: userId,
+        accessRight: [99],
+        unit,
+        icon: avatarUrl,
+        bodyWeight: 70,
+        weightTrainLevel
+      };
 
       this.reportService.setReportCondition(this.reportConditionOpt);
       this.getReportSelectedCondition();

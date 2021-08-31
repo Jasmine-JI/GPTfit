@@ -6,11 +6,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AlbumType } from '../models/image';
 import { HrZoneRange } from '../models/chart-data';
-export const TOKEN = 'ala_token';
 import moment from 'moment';
-import { Unit, mi, ft } from '../models/bs-constant';
+import { Unit, mi } from '../models/bs-constant';
 import { SportType, SportCode } from '../models/report-condition';
 import { GroupLevel } from '../../containers/dashboard/models/group-detail';
+import { HrBase, hrBase } from '../../containers/dashboard/models/userProfileInfo';
+export const TOKEN = 'ala_token';
 
 type Point = {
   x: number;
@@ -432,12 +433,12 @@ export class UtilsService {
 
   /**
    * 取得各心率區間
-   * @param userHRBase {0 | 1}-使用者心率法, 0.最大心率法 1.儲備心率法
+   * @param userHRBase {HrBase}-使用者心率法, 0.最大心率法 1.儲備心率法
    * @param userAge {number}
    * @param userMaxHR {number}
    * @param userRestHR {number}
    */
-  getUserHrRange(userHRBase: number, userAge: number, userMaxHR: number, userRestHR: number) {
+  getUserHrRange(userHRBase: HrBase, userAge: number, userMaxHR: number, userRestHR: number) {
     let userHrInfo = <HrZoneRange>{
       hrBase: userHRBase,
       z0: 0,
@@ -449,8 +450,10 @@ export class UtilsService {
     };
 
     if (userAge !== null) {
+
       if (userMaxHR && userRestHR) {
-        if (userHRBase === 0) {
+
+        if (userHRBase === hrBase.max) {
           // 區間數值採無條件捨去法
           userHrInfo['z0'] = Math.floor((220 - userAge) * 0.5 - 1);
           userHrInfo['z1'] = Math.floor((220 - userAge) * 0.6 - 1);
@@ -466,8 +469,10 @@ export class UtilsService {
           userHrInfo['z4'] = Math.floor((userMaxHR - userRestHR) * (0.85)) + userRestHR;
           userHrInfo['z5'] = Math.floor((userMaxHR - userRestHR) * (1)) + userRestHR;
         }
+        
       } else {
-        if (userHRBase === 0) {
+
+        if (userHRBase === hrBase.max) {
           // 區間數值採無條件捨去法
           userHrInfo['z0'] = Math.floor((220 - userAge) * 0.5 - 1);
           userHrInfo['z1'] = Math.floor((220 - userAge) * 0.6 - 1);
@@ -483,7 +488,9 @@ export class UtilsService {
           userHrInfo['z4'] = Math.floor(((220 - userAge) - userRestHR) * (0.85)) + userRestHR;
           userHrInfo['z5'] = Math.floor(((220 - userAge) - userRestHR) * (1)) + userRestHR;
         }
+
       }
+
     } else {
       userHrInfo['z0'] = 'Z0';
       userHrInfo['z1'] = 'Z1';
@@ -805,7 +812,7 @@ export class UtilsService {
     }
 
     const speed = convertSpeed <= 1 ? 1 : convertSpeed,  // 配速最小60'00"
-          ttlSecond = parseFloat((3600 / speed).toFixed(1));
+          ttlSecond = this.rounding((3600 / speed), 1);
     switch (convertType) {
       case 'second':
         return ttlSecond;
@@ -817,6 +824,80 @@ export class UtilsService {
         return `${minuteStr}'${secondStr}"`;
     }
 
+  }
+
+  /**
+   * 將base64的圖片轉為檔案格式
+   * @param albumType {number}-圖片類型
+   * @param base64 {string}-base64圖片
+   * @param fileName {檔案名稱}
+   * @author kidin-1091127
+   */
+   base64ToFile(albumType: AlbumType, base64: string, fileName: string): File {
+    const blob = this.dataUriToBlob(albumType, base64);
+    return new File([blob], `${fileName}.jpg`, {type: 'image/jpeg'});
+  }
+
+  /**
+   * 將數值依係數轉換為另一值
+   * @param value {number}-待轉換的值
+   * @param convert {boolean}-是否轉換
+   * @param forward {boolean}-是否為公制轉英制
+   * @param coefficient {number}-轉換係數
+   * @param digit {number}-四捨五入的位數
+   * @author kidin-1100820
+   */
+  valueConvert(
+    value: number,
+    convert: boolean,
+    forward: boolean,
+    coefficient: number,
+    digit: number = null
+  ) {
+    if (convert) {
+
+      if (forward) {
+        const convertedVal = value / coefficient;
+        return digit !== null ? this.rounding(convertedVal, digit) : convertedVal;
+      } else {
+        const convertedVal = value * coefficient;
+        return digit !== null ? this.rounding(convertedVal, digit) : convertedVal;
+      }
+
+    } else {
+      return digit !== null ? this.rounding(value, digit) : value;
+    }
+
+  }
+
+  /**
+   * 四捨五入至指定位數
+   * @param value {number}-欲四捨五入的值
+   * @param digit {number}-四捨五入的位數
+   * @author kidin-1100820
+   */
+  rounding(value: number, digit: number) {
+    return parseFloat(value.toFixed(digit));
+  }
+
+  /**
+   * 取得功能性閾值功率區間
+   * @param ftp {number}-功能性閾值功率
+   * @author kidin-1100824
+   */
+  getUserFtpZone(ftp: number) {
+    let ref = ftp ? ftp : 100;
+    const userFtpZone = {
+      z0: this.rounding(ref * 0.55, 0),
+      z1: this.rounding(ref * 0.75, 0),
+      z2: this.rounding(ref * 0.90, 0),
+      z3: this.rounding(ref * 1.05, 0),
+      z4: this.rounding(ref * 1.20, 0),
+      z5: this.rounding(ref * 1.50, 0),
+      z6: ''  // 最上層不顯示數值
+    };
+
+    return userFtpZone;
   }
 
 }
