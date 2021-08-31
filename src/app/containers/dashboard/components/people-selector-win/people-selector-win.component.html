@@ -61,7 +61,9 @@
           <i class="fa fa-search icon_fa"></i>
         </button>
       </div>
-      <ul class="memberselector-sl memberselector-sl--with-bar"
+      <ul 
+        class="memberselector-sl memberselector-sl--with-bar"
+        [style.height]="uiFlag.canSearch ? 'calc(100% - 64px)' : '100%'"
         (click)="handleBtnColor(1, $event)"
       >
         <ng-container *ngIf="fakeDatas.length > 0">
@@ -107,7 +109,10 @@
     <div class="memberselector__content"
       (click)="handleBtnColor(2, $event)"
     >
-      <ul class="memberselector-sl memberselector-sl--with-bar memberselector-sl--with-bar--manage">
+      <ul
+        class="memberselector-sl memberselector-sl--with-bar memberselector-sl--with-bar--manage"
+        style="height: 100%;"
+      >
         <ng-container *ngIf="selectedDatas.length > 0">
           <li class="memberselector-sl__item"
             *ngFor="let item of selectedDatas; let _idx = index"

@@ -5,14 +5,10 @@
     class="flexCol"
     style="position: relative;"
   >
-    <section
-      class="info-ScenerySection"
-      [style.background-image]="uiFlag.displayPage === 'fitPair' ? 'url(' + (deviceInfo.modelTypeName | productType: 'imgPath') + ')' : ''"
-    >
+    <section class="info-ScenerySection">
       <img
         class="info-imgAbs"
         [src]="deviceInfo.modelTypeName | productType: 'imgPath'"
-        *ngIf="uiFlag.displayPage !== 'fitPair'"
       />
     </section>
     <section class="Info-header" [class.info-portalMode]="uiFlag.displayPage === 'fitPair'">
@@ -475,7 +471,7 @@
             <button
               style="background-color: red; border-radius: 5px; color: white; width: 200px;"
               (click)="showUnBondingAlert()"
-              *ngIf="fitPairInfo.deviceBond.id"
+              *ngIf="fitPairInfo.deviceBond.id && systemAccessRight[0] <= 29"
             >
               {{ 'universal_uiFitpair_unbind' | translate }}
             </button>

@@ -1,0 +1,47 @@
+<section class="cardSection">
+  <div class="cardContent">
+    <div class="flexRow" style="justify-content: space-between;">
+      <h5 class="settingTitle">{{ 'universal_deviceSetting_adout' | translate }}</h5>
+      <div class="flexRow" *ngIf="userInfo.systemAccessRight">
+        <button 
+          class="childPageBtn"
+          (click)="openEditMode()"
+          *ngIf="uiFlag.editMode === 'close'"
+        >
+          {{ 'universal_operating_edit' | translate }}
+        </button>
+        <button
+          class="childPageBtn"
+          (click)="cancelEdit()"
+          *ngIf="uiFlag.editMode === 'edit'"
+        >
+          {{ 'universal_operating_cancel' | translate }}
+        </button>
+        <button
+          class="childPageBtn editModeBtn"
+          (click)="editComplete()"
+          *ngIf="uiFlag.editMode === 'edit'"
+        >
+          {{ 'universal_operating_confirm' | translate }}
+        </button>
+      </div>
+    </div>
+    <div class="childPageContent">
+      <h6 class="settingSubTitle">{{ 'universal_group_introduction' | translate }}</h6>
+      <div class="contentDetail">
+        <p
+          style="white-space: pre-wrap; color: var(--scale-75-230);"
+          *ngIf="uiFlag.editMode === 'close'"
+        >{{ userInfo.description }}</p>
+        <textarea
+          id="description__input"
+          [(ngModel)]="inputDescription"
+          [placeholder]="'universal_group_introduction' | translate"
+          autofocus
+          maxlength="5000"
+          *ngIf="uiFlag.editMode === 'edit'"
+        ></textarea>
+      </div>
+    </div>
+  </div>
+</section>

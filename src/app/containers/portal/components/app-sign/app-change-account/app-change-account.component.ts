@@ -531,14 +531,6 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
   toEnableAccount () {
     this.utils.setHideNavbarStatus(false);
     this.router.navigateByUrl(`/enableAccount`);
-  /* 待測試無問題後刪除此段-kidin-1091229
-    if (this.pcView === true) {
-      this.router.navigateByUrl(`/enableAccount-web`);
-    } else {
-      this.router.navigateByUrl(`/enableAccount`);
-    }
-  */
-
   }
 
   // 離開頁面則取消隱藏navbar-kidin-1090514

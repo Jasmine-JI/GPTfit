@@ -1,0 +1,738 @@
+<section class="cardSection">
+  <div class="flexCol cardContent" style="padding-bottom: 50px;">
+    <div class="flexRow" style="justify-content: space-between;">
+      <h5 class="settingTitle">
+        {{ 'universal_userProfile_personalPreferences' | translate }}
+      </h5>
+      <div class="flexRow">
+        <button
+          class="childPageBtn"
+          (click)="openEditMode()"
+          *ngIf="uiFlag.editMode === 'close'"
+        >
+          {{ 'universal_operating_edit' | translate }}
+        </button>
+        <button
+          class="childPageBtn"
+          (click)="cancelEdit()"
+          *ngIf="uiFlag.editMode === 'edit'"
+        >
+          {{ 'universal_operating_cancel' | translate }}
+        </button>
+        <button
+          class="childPageBtn editModeBtn"
+          [style.pointer-events]="uiFlag.nicknameAlert ? 'none' : 'initial'"
+          (click)="editComplete()"
+          *ngIf="uiFlag.editMode === 'edit'"
+        >
+          {{ 'universal_operating_confirm' | translate }}
+        </button>
+      </div>
+    </div>
+    <div class="flexCol settingContent">
+      <h6 class="settingSubTitle">{{ 'universal_activityData_hr' | translate }}</h6>
+      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+        <span class="contentTitle">
+          {{ 'universal_userProfile_hrCalculation' | translate }}：
+        </span>
+        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
+          <ng-container *ngIf="userInfo.heartRateBase === hrBase.max">
+            {{ 'universal_userProfile_maximalHeartRate' | translate }}
+          </ng-container>
+          <ng-container *ngIf="userInfo.heartRateBase === hrBase.reserve">
+            {{ 'universal_userProfile_heartRateReserve' | translate }}
+          </ng-container>
+        </span>
+        <div
+          class="flexRow"
+          style="margin-left: 10px; flex-wrap: wrap;"
+          *ngIf="uiFlag.editMode === 'edit'"
+        >
+          <span class="flexRow radioSelector" (click)="changeHrBase(hrBase.max)">
+            <span
+              class="radioBtn"
+              [class.radioBtn--active]="setting.heartRateBase === hrBase.max"
+            ></span>
+            <span>{{ 'universal_userProfile_maximalHeartRate' | translate }}</span>
+          </span>
+          <span class="flexRow radioSelector" (click)="changeHrBase(hrBase.reserve)">
+            <span
+              class="radioBtn"
+              [class.radioBtn--active]="setting.heartRateBase === hrBase.reserve"
+            ></span>
+            <span>{{ 'universal_userProfile_heartRateReserve' | translate }}</span>
+          </span>
+        </div>
+      </div>
+      <ng-container *ngIf="uiFlag.editMode === 'edit' && setting.heartRateBase === hrBase.reserve">
+        <div class="childPageContent">
+          <label class="contentTitle" for="max_hr">
+            {{ 'universal_userProfile_maxHr' | translate }}：
+          </label>
+          <input
+            id="max_hr"
+            type="text"
+            class="num__input"
+            maxlength="3"
+            [placeholder]="190"
+            [value]="setting.heartRateMax"
+            (keydown)="checkFormat($event)"
+            (focusout)="handleMaxHrInput($event)"
+            *ngIf="uiFlag.editMode === 'edit'"
+          >
+          <span class="valueUnit">bpm</span>
+        </div>
+        <div class="childPageContent">
+          <span class="contentTitle">
+            {{ 'universal_userProfile_restHr' | translate }}：
+          </span>
+          <input
+            type="text"
+            class="num__input userSettingInput"
+            maxlength="3"
+            [placeholder]="60"
+            [value]="setting.heartRateResting"
+            (keydown)="checkFormat($event)"
+            (focusout)="handleMaxHrInput($event)"
+            *ngIf="uiFlag.editMode === 'edit'"
+          >
+          <span class="valueUnit">bpm</span>
+        </div>
+      </ng-container>
+      <ul id="hr__zone__info" *ngIf="uiFlag.editMode === 'close'">
+        <li class="flexCol">
+          <div class="flexRow" (click)="showHrZoneDesc('z5')">
+            <span class="contentTitle">Z5：</span>
+            <span class="rangeValue">{{ +userHrZone.z4 + 1 }}</span>
+              ～
+            <span class="rangeValue">{{ userHrZone.z5 }}</span>
+            <span class="valueUnit">bpm</span>
+          </div>
+          <span class="settingDescription" *ngIf="uiFlag.showHrZoneDesc === 'z5'">
+            {{ 'universal_activityData_anaerobicZone' | translate }}:
+            {{ 'universal_sportsTerm_zone5' | translate }}
+          </span>
+        </li>
+        <li>
+          <div class="flexRow" (click)="showHrZoneDesc('z4')">
+            <span class="contentTitle">Z4：</span>
+            <span class="rangeValue">{{ +userHrZone.z3 + 1 }}</span>
+              ～
+            <span class="rangeValue">{{ userHrZone.z4 }}</span>
+            <span class="valueUnit">bpm</span>
+          </div>
+          <span class="settingDescription" *ngIf="uiFlag.showHrZoneDesc === 'z4'">
+            {{ 'universal_activityData_marathonZone' | translate }}:
+            {{ 'universal_sportsTerm_zone4' | translate }}
+          </span>
+        </li>
+        <li>
+          <div class="flexRow" (click)="showHrZoneDesc('z3')">
+            <span class="contentTitle">Z3：</span>
+            <span class="rangeValue">{{ +userHrZone.z2 + 1 }}</span>
+              ～
+            <span class="rangeValue">{{ userHrZone.z3 }}</span>
+            <span class="valueUnit">bpm</span>
+          </div>
+          <span class="settingDescription" *ngIf="uiFlag.showHrZoneDesc === 'z3'">
+            {{ 'universal_activityData_enduranceZone' | translate }}:
+            {{ 'universal_sportsTerm_zone3' | translate }}
+          </span>
+        </li>
+        <li>
+          <div class="flexRow" (click)="showHrZoneDesc('z2')">
+            <span class="contentTitle">Z2：</span>
+            <span class="rangeValue">{{ +userHrZone.z1 + 1 }}</span>
+              ～
+            <span class="rangeValue">{{ userHrZone.z2 }}</span>
+            <span class="valueUnit">bpm</span>
+          </div>
+          <span class="settingDescription" *ngIf="uiFlag.showHrZoneDesc === 'z2'">
+            {{ 'universal_activityData_aerobicZone' | translate }}:
+            {{ 'universal_sportsTerm_zone2' | translate }}
+          </span>
+        </li>
+        <li>
+          <div class="flexRow" (click)="showHrZoneDesc('z1')">
+            <span class="contentTitle">Z1：</span>
+            <span class="rangeValue">{{ +userHrZone.z0 + 1 }}</span>
+              ～
+            <span class="rangeValue">{{ userHrZone.z1 }}</span>
+            <span class="valueUnit">bpm</span>
+          </div>
+          <span class="settingDescription" *ngIf="uiFlag.showHrZoneDesc === 'z1'">
+            {{ 'universal_activityData_warmUpZone' | translate }}:
+            {{ 'universal_sportsTerm_zone1' | translate }}
+          </span>
+        </li>
+        <li>
+          <div class="flexRow" (click)="showHrZoneDesc('z0')">
+            <span class="contentTitle">Z0：</span>
+            <span class="rangeValue">40</span>
+              ～
+            <span class="rangeValue">{{ userHrZone.z0 }}</span>
+            <span class="valueUnit">bpm</span>
+          </div>
+          <span class="settingDescription" *ngIf="uiFlag.showHrZoneDesc === 'z0'">
+            {{ 'universal_activityData_generalZone' | translate }}:
+            {{ 'universal_sportsTerm_zone0' | translate }}
+          </span>
+        </li>
+      </ul>
+    </div>
+    <div class="flexCol settingContent">
+      <h6 class="settingSubTitle">{{ 'universal_userProfile_ftp' | translate }}</h6>
+      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+        <span class="contentTitle">
+          {{ 'universal_userProfile_ftp' | translate }}：
+        </span>
+        <span *ngIf="uiFlag.editMode === 'close'">
+          {{ userInfo.cycleFtp }}
+        </span>
+        <input
+          type="text"
+          class="num__input userSettingInput"
+          maxlength="3"
+          [placeholder]="100"
+          [value]="setting.cycleFtp"
+          (keydown)="checkFormat($event)"
+          (focusout)="handleCycleFtpInput($event)"
+          *ngIf="uiFlag.editMode === 'edit'"
+        >
+        <span class="valueUnit">
+          w
+        </span>
+      </div>
+      <ul id="ftp__zone__info" *ngIf="uiFlag.editMode === 'close'">
+        <li class="flexCol">
+          <div class="flexRow" (click)="showFtpZoneDesc('z6')">
+            <span class="contentTitle">Z6：</span>
+            <span class="rangeValue">{{ +userFtpZone.z5 + 1 }}</span>
+            ～
+          </div>
+          <span class="settingDescription" *ngIf="uiFlag.showFtpZoneDesc === 'z6'">
+            {{ 'universal_activityData_ftpZ6' | translate }}:
+            {{ 'universal_activityData_ftpZ6Info' | translate }}
+          </span>
+        </li>
+        <li class="flexCol">
+          <div class="flexRow" (click)="showFtpZoneDesc('z5')">
+            <span class="contentTitle">Z5：</span>
+            <span class="rangeValue">{{ +userFtpZone.z4 + 1 }}</span>
+              ～
+            <span class="rangeValue">{{ userFtpZone.z5 }}</span>
+            <span class="valueUnit">w</span>
+          </div>
+          <span class="settingDescription" *ngIf="uiFlag.showFtpZoneDesc === 'z5'">
+            {{ 'universal_activityData_ftpZ5' | translate }}:
+            {{ 'universal_activityData_ftpZ5Info' | translate }}
+          </span>
+        </li>
+        <li>
+          <div class="flexRow" (click)="showFtpZoneDesc('z4')">
+            <span class="contentTitle">Z4：</span>
+            <span class="rangeValue">{{ +userFtpZone.z3 + 1 }}</span>
+              ～
+            <span class="rangeValue">{{ userFtpZone.z4 }}</span>
+            <span class="valueUnit">w</span>
+          </div>
+          <span class="settingDescription" *ngIf="uiFlag.showFtpZoneDesc === 'z4'">
+            {{ 'universal_activityData_ftpZ4' | translate }}:
+            {{ 'universal_activityData_ftpZ4Info' | translate }}
+          </span>
+        </li>
+        <li>
+          <div class="flexRow" (click)="showFtpZoneDesc('z3')">
+            <span class="contentTitle">Z3：</span>
+            <span class="rangeValue">{{ +userFtpZone.z2 + 1 }}</span>
+              ～
+            <span class="rangeValue">{{ userFtpZone.z3 }}</span>
+            <span class="valueUnit">w</span>
+          </div>
+          <span class="settingDescription" *ngIf="uiFlag.showFtpZoneDesc === 'z3'">
+            {{ 'universal_activityData_ftpZ3' | translate }}:
+            {{ 'universal_activityData_ftpZ3Info' | translate }}
+          </span>
+        </li>
+        <li>
+          <div class="flexRow" (click)="showFtpZoneDesc('z2')">
+            <span class="contentTitle">Z2：</span>
+            <span class="rangeValue">{{ +userFtpZone.z1 + 1 }}</span>
+              ～
+            <span class="rangeValue">{{ userFtpZone.z2 }}</span>
+            <span class="valueUnit">w</span>
+          </div>
+          <span class="settingDescription" *ngIf="uiFlag.showFtpZoneDesc === 'z2'">
+            {{ 'universal_activityData_ftpZ2' | translate }}:
+            {{ 'universal_activityData_ftpZ2Info' | translate }}
+          </span>
+        </li>
+        <li>
+          <div class="flexRow" (click)="showFtpZoneDesc('z1')">
+            <span class="contentTitle">Z1：</span>
+            <span class="rangeValue">{{ +userFtpZone.z0 + 1 }}</span>
+              ～
+            <span class="rangeValue">{{ userFtpZone.z1 }}</span>
+            <span class="valueUnit">w</span>
+          </div>
+          <span class="settingDescription" *ngIf="uiFlag.showFtpZoneDesc === 'z1'">
+            {{ 'universal_activityData_ftpZ1' | translate }}:
+            {{ 'universal_activityData_ftpZ1Info' | translate }}
+          </span>
+        </li>
+        <li>
+          <div class="flexRow" (click)="showFtpZoneDesc('z0')">
+            <span class="contentTitle">Z0：</span>
+            <span 
+              style="min-width: 44px; text-align: right;"
+            >～</span>
+            <span class="rangeValue">{{ userFtpZone.z0 }}</span>
+            <span class="valueUnit">w</span>
+          </div>
+          <span class="settingDescription" *ngIf="uiFlag.showFtpZoneDesc === 'z0'">
+            {{ 'universal_activityData_ftpZ0' | translate }}:
+            {{ 'universal_activityData_ftpZ0Info' | translate }}
+          </span>
+        </li>
+      </ul>
+    </div>
+    <div class="flexCol settingContent">
+      <h6 class="settingSubTitle">{{ 'universal_vocabulary_activity' | translate }}</h6>
+      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+        <span class="contentTitle">
+          {{ 'universal_deviceSetting_unit' | translate }}：
+        </span>
+        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
+          <ng-container *ngIf="userInfo.unit === unit.metric">
+            {{ 'universal_userProfile_metric' | translate }}
+          </ng-container>
+          <ng-container *ngIf="userInfo.unit === unit.imperial">
+            {{ 'universal_userProfile_imperial' | translate }}
+          </ng-container>
+        </span>
+        <div
+          class="flexRow"
+          style="margin-left: 10px; flex-wrap: wrap;"
+          *ngIf="uiFlag.editMode === 'edit'"
+        >
+          <span class="flexRow radioSelector" (click)="changeUnit(unit.metric)">
+            <span
+              class="radioBtn"
+              [class.radioBtn--active]="setting.unit === unit.metric"
+            ></span>
+            <span>{{ 'universal_userProfile_metric' | translate }}</span>
+          </span>
+          <span class="flexRow radioSelector" (click)="changeUnit(unit.imperial)">
+            <span
+              class="radioBtn"
+              [class.radioBtn--active]="setting.unit === unit.imperial"
+            ></span>
+            <span>{{ 'universal_userProfile_imperial' | translate }}</span>
+          </span>
+        </div>
+      </div>
+      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+        <span class="contentTitle">
+          {{ 'universal_activityData_swing' | translate }}：
+        </span>
+        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
+          <ng-container *ngIf="userInfo.handedness == dominantHand.left">
+            {{ 'universal_vocabulary_leftHand' | translate }}
+          </ng-container>
+          <ng-container *ngIf="userInfo.handedness == dominantHand.right">
+            {{ 'universal_vocabulary_rightHand' | translate }}
+          </ng-container>
+        </span>
+          <div
+            class="flexRow"
+            style="margin-left: 10px; flex-wrap: wrap;"
+            *ngIf="uiFlag.editMode === 'edit'"
+          >
+            <span class="flexRow radioSelector" (click)="changeDominantHand(dominantHand.left)">
+              <span
+                class="radioBtn"
+                [class.radioBtn--active]="setting.handedness == dominantHand.left"
+              ></span>
+              <span>{{ 'universal_vocabulary_leftHand' | translate }}</span>
+            </span>
+            <span class="flexRow radioSelector" (click)="changeDominantHand(dominantHand.right)">
+              <span
+                class="radioBtn"
+                [class.radioBtn--active]="setting.handedness == dominantHand.right"
+              ></span>
+              <span>{{ 'universal_vocabulary_rightHand' | translate }}</span>
+            </span>
+          </div>
+      </div>
+      <div class="childPageContent">
+        <span class="contentTitle">
+          {{ 'universal_userProfile_stepLength' | translate }}：
+        </span>
+        <span *ngIf="uiFlag.editMode === 'close'">
+          {{ userInfo.strideLengthCentimeter | lengthSibs: {
+            userUnit: userInfo.unit,
+            valueUnit: 'cm',
+            transformUnit: 'inch',
+            digit: 1
+          } }}
+        </span>
+        <input
+          type="text"
+          class="num__input userSettingInput"
+          maxlength="5"
+          [placeholder]="90 | lengthSibs: {
+            userUnit: userInfo.unit,
+            valueUnit: 'cm',
+            transformUnit: 'inch',
+            digit: 1
+          }"
+          [value]="setting.strideLengthCentimeter"
+          (keydown)="checkFormat($event, true)"
+          (focusout)="handleStepLenInput($event)"
+          *ngIf="uiFlag.editMode === 'edit'"
+        >
+        <span class="valueUnit">
+          {{ 'stepLength' | dataTypeUnit: [
+            null, 
+            uiFlag.editMode === 'edit' ? setting.unit : userInfo.unit
+          ] }}
+        </span>
+      </div>
+      <div class="childPageContent">
+        <span class="contentTitle">
+          {{ 'universal_userProfile_tireCircumference' | translate }}：
+        </span>
+        <span *ngIf="uiFlag.editMode === 'close'">
+          {{ userInfo.wheelSize | lengthSibs: {
+            userUnit: userInfo.unit,
+            valueUnit: 'mm',
+            transformUnit: 'inch',
+            digit: 1
+          } }}
+        </span>
+        <input
+          type="text"
+          class="num__input userSettingInput"
+          maxlength="5"
+          [placeholder]="2000 | lengthSibs: {
+            userUnit: userInfo.unit,
+            valueUnit: 'mm',
+            transformUnit: 'inch',
+            digit: 1
+          }"
+          [value]="setting.wheelSize"
+          (keydown)="checkFormat($event, true)"
+          (focusout)="handleWheelSizeInput($event)"
+          *ngIf="uiFlag.editMode === 'edit'"
+        >
+        <span class="valueUnit">
+          {{ 'wheelSize' | dataTypeUnit: [
+            null,
+            uiFlag.editMode === 'edit' ? setting.unit : userInfo.unit
+          ] }}
+        </span>
+      </div>
+    </div>
+    <div class="flexCol settingContent">
+      <h6 class="settingSubTitle">{{ 'universal_lifeTracking_sleep' | translate }}</h6>
+      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+        <span class="contentTitle">
+          {{ 'universal_lifeTracking_sleepTime' | translate }}：
+        </span>
+        <div class="time__selector__section">
+          <span
+            [class.userSettingInput]="uiFlag.editMode === 'edit'"
+            (click)="openTimeSelector('normalBedTime')"
+          >
+            {{ userInfo.normalBedTime | slice: 0 :5 }}
+          </span>
+          <ng-container *ngIf="uiFlag.showTimeSelector === 'normalBedTime'">
+            <div *ngTemplateOutlet="timeSelect"></div>
+          </ng-container>
+        </div>
+      </div>
+      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+        <span class="contentTitle">
+          {{ 'universal_lifeTracking_wakeUpTime' | translate }}：
+        </span>
+        <div class="time__selector__section">
+          <span
+            [class.userSettingInput]="uiFlag.editMode === 'edit'"
+            (click)="openTimeSelector('normalWakeTime')"
+          >
+            {{ userInfo.normalWakeTime | slice: 0 :5 }}
+          </span>
+          <ng-container *ngIf="uiFlag.showTimeSelector === 'normalWakeTime'">
+            <div *ngTemplateOutlet="timeSelect"></div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+    <div class="flexCol settingContent">
+      <h6 class="settingSubTitle">
+        {{ 'universal_userProfile_lifeTrackingTarget' | translate }}
+      </h6>
+      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+        <span class="contentTitle">
+          {{ 'universal_userProfile_AutoStepTarget' | translate }}：
+        </span>
+        <span *ngIf="uiFlag.editMode === 'close'">
+          <ng-container *ngIf="userInfo.autoTargetStep === autoStepTarget.close">
+            {{ 'universal_operating_close' | translate }}
+          </ng-container>
+          <ng-container *ngIf="userInfo.autoTargetStep === autoStepTarget.open">
+            {{ 'universal_operating_open' | translate }}
+          </ng-container>
+        </span>
+        <div
+          class="flexRow"
+          style="margin-left: 10px; flex-wrap: wrap;"
+          *ngIf="uiFlag.editMode === 'edit'"
+        >
+          <span class="flexRow radioSelector" (click)="changeAutoTargetStep(autoStepTarget.close)">
+            <span
+              class="radioBtn"
+              [class.radioBtn--active]="setting.autoTargetStep === autoStepTarget.close"
+            ></span>
+            <span>{{ 'universal_operating_close' | translate }}</span>
+          </span>
+          <span class="flexRow radioSelector" (click)="changeAutoTargetStep(autoStepTarget.open)">
+            <span
+              class="radioBtn"
+              [class.radioBtn--active]="setting.autoTargetStep === autoStepTarget.open"
+            ></span>
+            <span>{{ 'universal_operating_open' | translate }}</span>
+          </span>
+        </div>
+      </div>
+      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+        <span class="contentTitle">
+          {{ 'universal_lifeTracking_targetStep' | translate }}：
+        </span>
+        <span *ngIf="uiFlag.editMode === 'close'">
+          {{ userInfo.target.step }}
+        </span>
+        <input
+          type="text"
+          class="num__input userSettingInput"
+          maxlength="5"
+          [placeholder]="5000"
+          [value]="setting.target.step"
+          (keydown)="checkFormat($event)"
+          (focusout)="handleTargetStepInput($event)"
+          *ngIf="uiFlag.editMode === 'edit'"
+        >
+        <span class="valueUnit">
+          {{ 'universal_lifeTracking_step' | translate }}
+        </span>
+      </div>
+      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+        <span class="contentTitle">
+          {{ 'universal_lifeTracking_targetDistance' | translate }}：
+        </span>
+        <span *ngIf="uiFlag.editMode === 'close'">
+          {{ userInfo.target.distance | lengthSibs: {
+            userUnit: userInfo.unit,
+            valueUnit: 'm',
+            transformUnit: 'ft',
+            digit: 2
+          } }}
+        </span>
+        <input
+          type="text"
+          class="num__input userSettingInput"
+          maxlength="5"
+          [placeholder]="1000 | lengthSibs: {
+            userUnit: userInfo.unit,
+            valueUnit: 'm',
+            transformUnit: 'ft',
+            digit: 2
+          }"
+          [value]="setting.target.distance"
+          (keydown)="checkFormat($event, true)"
+          (focusout)="handleTargetDistanceInput($event)"
+          *ngIf="uiFlag.editMode === 'edit'"
+        >
+        <span class="valueUnit">
+          {{ 'targetDistance' | dataTypeUnit: [
+            null,
+            uiFlag.editMode === 'edit' ? setting.unit : userInfo.unit
+          ] }}
+        </span>
+      </div>
+      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+        <span class="contentTitle">
+          {{ 'universal_lifeTracking_targetClimbGain' | translate }}：
+        </span>
+        <span *ngIf="uiFlag.editMode === 'close'">
+          {{ userInfo.target.elevGain }}
+        </span>
+        <input
+          type="text"
+          class="num__input userSettingInput"
+          maxlength="5"
+          [placeholder]="1000"
+          [value]="setting.target.elevGain"
+          (keydown)="checkFormat($event)"
+          (focusout)="handleTargetElevGainInput($event)"
+          *ngIf="uiFlag.editMode === 'edit'"
+        >
+        <span class="valueUnit">
+          {{ 'universal_group_layer' | translate }}
+        </span>
+      </div>
+      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+        <span class="contentTitle">
+          {{ 'universal_lifeTracking_targetCalories' | translate }}：
+        </span>
+        <span *ngIf="uiFlag.editMode === 'close'">
+          {{ userInfo.target.calorie }}
+        </span>
+        <input
+          type="text"
+          class="num__input userSettingInput"
+          maxlength="5"
+          [placeholder]="1000"
+          [value]="setting.target.calorie"
+          (keydown)="checkFormat($event)"
+          (focusout)="handleTargetCalorieInput($event)"
+          *ngIf="uiFlag.editMode === 'edit'"
+        >
+        <span class="valueUnit">
+          cal
+        </span>
+      </div>
+      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+        <span class="contentTitle">
+          {{ 'universal_lifeTracking_targetFitTime' | translate }}：
+        </span>
+        <span *ngIf="uiFlag.editMode === 'close'">
+          {{ userInfo.target.fitTime / 60 | number: '1.0-0' }}
+        </span>
+        <input
+          type="text"
+          class="num__input userSettingInput"
+          maxlength="5"
+          [placeholder]="20"
+          [value]="setting.target.fitTime"
+          (keydown)="checkFormat($event)"
+          (focusout)="handleTargetFitTimeInput($event)"
+          *ngIf="uiFlag.editMode === 'edit'"
+        >
+        <span class="valueUnit">
+          {{ 'universal_unit_minute' | translate }}
+        </span>
+      </div>
+      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+        <span class="contentTitle">
+          {{ 'universal_lifeTracking_targetSleepTime' | translate }}：
+        </span>
+        <span *ngIf="uiFlag.editMode === 'close'">
+          {{ userInfo.target.sleep / 3600 | number: '1.0-1' }}
+        </span>
+        <input
+          type="text"
+          class="num__input userSettingInput"
+          maxlength="4"
+          [placeholder]="8"
+          [value]="setting.target.sleep"
+          (keydown)="checkFormat($event, true)"
+          (focusout)="handleTargetSleepInput($event)"
+          *ngIf="uiFlag.editMode === 'edit'"
+        >
+        <span class="valueUnit">
+          {{ 'universal_time_hour' | translate }}
+        </span>
+      </div>
+      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+        <span class="contentTitle">
+          {{ 'universal_lifeTracking_target' | translate }}
+          {{ 'universal_userProfile_limit_bodyWeight' | translate }}：
+        </span>
+        <span *ngIf="uiFlag.editMode === 'close'">
+          {{ userInfo.target.bodyWeight | weightSibs: [userInfo.unit, 1] }}
+        </span>
+        <input
+          type="text"
+          class="num__input userSettingInput"
+          maxlength="5"
+          [placeholder]="70"
+          [value]="setting.target.bodyWeight"
+          (keydown)="checkFormat($event, true)"
+          (focusout)="handleTargetWeightInput($event)"
+          *ngIf="uiFlag.editMode === 'edit'"
+        >
+        <span class="valueUnit">
+          {{ 'bodyWeight' | dataTypeUnit: [
+            null,
+            uiFlag.editMode === 'edit' ? setting.unit : userInfo.unit
+          ] }}
+        </span>
+      </div>
+      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+        <span class="contentTitle">
+          {{ 'universal_lifeTracking_target' | translate }}
+          {{ 'universal_userProfile_muscleRate' | translate }}：
+        </span>
+        <span *ngIf="uiFlag.editMode === 'close'">
+          {{ userInfo.target.muscleRate }}
+        </span>
+        <input
+          type="text"
+          class="num__input userSettingInput"
+          maxlength="4"
+          [placeholder]="50"
+          [value]="setting.target.muscleRate"
+          (keydown)="checkFormat($event, true)"
+          (focusout)="handleTargetMuscleRateInput($event)"
+          *ngIf="uiFlag.editMode === 'edit'"
+        >
+        <span class="valueUnit">
+          %
+        </span>
+      </div>
+      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+        <span class="contentTitle">
+          {{ 'universal_lifeTracking_target' | translate }}
+          {{ 'universal_lifeTracking_fatRate' | translate }}：
+        </span>
+        <span *ngIf="uiFlag.editMode === 'close'">
+          {{ userInfo.target.fatRate }}
+        </span>
+        <input
+          type="text"
+          class="num__input userSettingInput"
+          maxlength="4"
+          [placeholder]="20"
+          [value]="setting.target.fatRate"
+          (keydown)="checkFormat($event, true)"
+          (focusout)="handleTargetFatRateInput($event)"
+          *ngIf="uiFlag.editMode === 'edit'"
+        >
+        <span class="valueUnit">
+          %
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+<ng-template #timeSelect>
+  <div id="time__Selector" class="flexRow">
+    <div id="hour__selector" class="flexCol scroll__time" style="top: -25px;">
+      <ng-container *ngFor="let _hour of timeSelector.hourList">
+        <span
+          [class.current__selector]="timeSelector.hour === _hour"
+          (click)="selectTime($event, 'currentHour', _hour)"
+        >{{ _hour }}</span>
+      </ng-container>
+    </div>
+    <div id="min__selector" class="flexCol scroll__time" style="top: -25px;">
+      <ng-container *ngFor="let _min of timeSelector.minList">
+        <span
+          [class.current__selector]="timeSelector.min === _min"
+          (click)="selectTime($event, 'currentMin', _min)"
+        >{{ _min }}</span>
+      </ng-container>
+    </div>
+  </div>
+</ng-template>

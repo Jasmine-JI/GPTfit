@@ -1,39 +1,52 @@
 <h2 mat-dialog-title class="ala-dialog">
   {{ 'universal_privacy_set' | translate }}
 </h2>
-<mat-dialog-content class="post-form">
+<mat-dialog-content class="post-form" style="color: var(--scale-0-255);">
+  <h6>{{ 'universal_privacy_set' | translate }} {{ 'universal_vocabulary_object' | translate }}</h6>
   <div class="flexCol">
-    <span style="margin-bottom: 15px;">
-      {{ 'universal_privacy_set' | translate }} {{ 'universal_vocabulary_object' | translate }}
+    <span class="flexRow checkBoxBlock">
+      <button
+        id="file__all"
+        [class.checkBox--active]="openObj.includes(privacyObj.anyone)"
+        (click)="selectModifyRange(privacyObj.anyone)"
+      >
+        <span *ngIf="openObj.includes(privacyObj.anyone)">✔</span>
+      </button>
+      <label for="file__all" class="checkBox__label">
+        {{ 'universal_privacy_allMember' | translate }}
+      </label>
     </span>
-    <div class="flexCol" style="margin-right: 20px;">
-      <mat-radio-group>
-        <mat-radio-button
-          value="99"
-          id="selectObj"
-          color="primary"
-          (click)="selectModifyRange(99)"
-        >
-          {{'universal_privacy_allMember' | translate}}
-        </mat-radio-button>
-      </mat-radio-group>
-      <div *ngIf="showPerObj">
-        <mat-checkbox
-          color="primary"
-          [checked]="this.openObj.includes(4)"
-          (click)="selectModifyRange(4)"
-        >
-          {{ 'universal_group_myObject' | translate: {'object': i18n.gym} }}
-          /
-          {{ 'universal_group_enterprise' | translate }}
-          {{ 'universal_group_administrator' | translate }}
-        </mat-checkbox>
-      </div>
-    </div>
+    <span class="flexRow checkBoxBlock">
+      <button
+        id="file__admin"
+        [class.checkBox--active]="openObj.includes(privacyObj.myGroup)"
+        (click)="selectModifyRange(privacyObj.myGroup)"
+      >
+        <span *ngIf="openObj.includes(privacyObj.myGroup)">✔</span>
+      </button>
+      <label for="file__admin" class="checkBox__label">
+        {{ 'universal_privacy_myGroupMember' | translate }}
+      </label>
+    </span>
+    <span class="flexRow checkBoxBlock">
+      <button
+        id="file__same__group"
+        [class.checkBox--active]="openObj.includes(privacyObj.onlyGroupAdmin)"
+        (click)="selectModifyRange(privacyObj.onlyGroupAdmin)"
+      >
+        <span *ngIf="openObj.includes(privacyObj.onlyGroupAdmin)">✔</span>
+      </button>
+      <label for="file__same__group" class="checkBox__label">
+        {{ 'universal_group_myGroupAdmin' | translate }}
+      </label>
+    </span>
   </div>
 </mat-dialog-content>
 <mat-dialog-actions class="flexRow" style="justify-content: space-between;">
-  <button mat-button mat-dialog-close>{{ 'universal_operating_cancel' | translate }}</button>
+  <button
+    mat-button mat-dialog-close
+    style="color: var(--scale-0-255);"
+  >{{ 'universal_operating_cancel' | translate }}</button>
   <button mat-button color="warn" style="font-weight: bold;" (click)="handleConfirm()">
     {{ 'universal_operating_confirm' | translate }} {{ 'universal_operating_modify' | translate }}
   </button>

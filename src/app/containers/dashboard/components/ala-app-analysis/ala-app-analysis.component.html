@@ -430,7 +430,9 @@
       <span class="flexRow">
         <span *ngIf="uiFlag.statisticMethod === 'pre'">總使用空間：</span>
         <span *ngIf="uiFlag.statisticMethod === 'realtime'">點陣數量：</span>
-        <span>{{ searchRes.totalSpace | dataFlowConversion }}</span>
+        <span>
+          {{ searchRes.totalSpace | dataFlowConversion }} ({{ searchRes.totalSpace }} byte)
+        </span>
         <span
           class="condition__description"
           *ngIf="uiFlag.statisticMethod === 'realtime'"

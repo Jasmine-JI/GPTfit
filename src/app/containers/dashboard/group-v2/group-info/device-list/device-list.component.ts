@@ -99,7 +99,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
    * @author kidin-1100723
    */
   checkWindowSize(innerWidth: number) {
-    this.uiFlag.isPhoneMode = innerWidth <= 767 ? true : false;
+    this.uiFlag.isPhoneMode = innerWidth <= 767;
   }
 
   /**
@@ -538,9 +538,9 @@ export class DeviceListComponent implements OnInit, OnDestroy {
     this.deviceList = this.deviceList.map(_list => {
       if (type === 'add') {
         const { added } = _list;
-        _list.addSelected = selectAll === 'add' && !added ? false : true;
+        _list.addSelected = !(selectAll === 'add' && !added);
       } else {
-        _list.delSelected = selectAll === 'del' ? false : true;
+        _list.delSelected = selectAll !== 'del';
       }
 
       return _list;

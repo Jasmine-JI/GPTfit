@@ -1,4 +1,4 @@
-{"﻿完整代码": "zh-CN简体中文",
+{"﻿完整代碼": "zh-CN簡體中文",
  "universal_activityData_100mPace": "百米配速",
  "universal_activityData_500mPace": "五百米配速",
  "universal_activityData_aboveAverage": "高于平均值",
@@ -2414,4 +2414,5 @@
  "universal_system_openFitpair": "装置绑定群组，将强制开放该装置Fitpair对象为「任何人」，是否继续？",
  "universal_app_resetWTProfile": "重置重训个人化",
  "universal_app_resetWTProfileInfo": "将重训传感器的个人化设定重设为默认值",
- "universal_system_ageBasedOnReport": "年龄以报告起始日为基准"}
+ "universal_system_ageBasedOnReport": "年龄以报告起始日为基准",
+ "universal_userProfile_tireCircumference": "自行车轮周长"}

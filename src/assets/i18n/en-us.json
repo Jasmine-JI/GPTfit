@@ -1,4 +1,4 @@
-{"﻿完整代码": "en-us英文(美国)",
+{"﻿完整代碼": "en-us英文(美國)",
  "universal_activityData_100mPace": "100m pace",
  "universal_activityData_500mPace": "500m pace",
  "universal_activityData_aboveAverage": "Above Average",
@@ -2414,4 +2414,5 @@
  "universal_system_openFitpair": "Bind device to group will open Fitpair to anyone, would you like to continue?",
  "universal_app_resetWTProfile": "Reset weight training profile",
  "universal_app_resetWTProfileInfo": "Set personalized weight traing profile to default",
- "universal_system_ageBasedOnReport": "Age is based on start date of report"}
+ "universal_system_ageBasedOnReport": "Age is based on start date of report",
+ "universal_userProfile_tireCircumference": "Bike tire circumference"}

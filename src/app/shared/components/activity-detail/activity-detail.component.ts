@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { Subject, fromEvent, Subscription } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, fromEvent, Subscription, of } from 'rxjs';
+import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { UserProfileService } from '../../services/user-profile.service';
-import { UserProfileInfo } from '../../../containers/dashboard/models/userProfileInfo';
+import { UserProfileInfo, hrBase } from '../../../containers/dashboard/models/userProfileInfo';
 import { UtilsService } from '../../services/utils.service';
 import { ActivityService } from '../../services/activity.service';
 import { Router } from '@angular/router';
@@ -24,6 +24,10 @@ import { PrivacyCode } from '../../models/user-privacy';
 import { EditIndividualPrivacyComponent } from '../edit-individual-privacy/edit-individual-privacy.component';
 import { Proficiency } from '../../models/weight-train';
 import { SettingsService } from '../../../containers/dashboard/services/settings.service';
+import { albumType } from '../../models/image';
+import { v5 as uuidv5 } from 'uuid';
+import { ImageUploadService } from '../../../containers/dashboard/services/image-upload.service';
+
 
 const errMsg = `Error! Please try again later.`;
 
@@ -73,7 +77,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     teacherDescOverflow: false,
     editNameMode: false,
     isFileOwner: false,
-    imageLoaded: false
+    imageLoaded: false,
+    openImgSelector: false
   };
 
   /**
@@ -135,7 +140,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   chartData = {
     hr: [0, 0, 0, 0, 0, 0],
     hrInfo: <HrZoneRange>{
-      hrBase: 0,
+      hrBase: hrBase.max,
       z0: <number | string>0,
       z1: <number | string>0,
       z2: <number | string>0,
@@ -144,7 +149,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       z5: <number | string>0
     },
     defaultHrInfo: <HrZoneRange>{
-      hrBase: 0,
+      hrBase: hrBase.max,
       z0: <number>0,
       z1: <number>0,
       z2: <number>0,
@@ -203,6 +208,15 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     xAxisDataRef: null
   }
 
+  /**
+   * 管理編輯頭像或佈景
+   */
+  editImage = {
+    edited: false,
+    origin: null,
+    base64: null
+  }
+
   fileTime: string;
   sceneryImg: string;
   pageResize: Subscription;
@@ -215,6 +229,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   compareChartQueryString = '';
   filePrivacy: Array<PrivacyCode> = [1];
   cloudrunMapId: number;
+  readonly albumType = albumType;
 
   // 頁面所需資訊
   readonly needKey = [
@@ -248,7 +263,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private changeDetectorRef: ChangeDetectorRef,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private imageUploadService: ImageUploadService
   ) { }
 
   ngOnInit(): void {
@@ -290,7 +306,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   checkQueryString(searchStr: string) {
     const queryString = searchStr.split('?')[1];
-    if (queryString && queryString.length > 0) {
+    if (queryString) {
       const queryArr = queryString.split('&');
       queryArr.forEach(_query => {
         const query = _query.split('='),
@@ -377,7 +393,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         gender: 0,
         groupAccessRightList: null,
         handedness: null,
-        heartRateBase: 0,
+        heartRateBase: hrBase.max,
         heartRateMax: 195,
         heartRateResting: 60,
         lastBodyTimestamp: null,
@@ -474,12 +490,13 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   handleActivityDetail(data: any) {
     this.rawData = data;
-    const { fileInfo, activityInfoLayer, activityLapLayer, activityPointLayer } = data;
-    this.handleFileInfo(fileInfo);
+    const { fileInfo, activityInfoLayer, activityLapLayer, activityPointLayer } = data,
+          { type, subtype } = activityInfoLayer;
     this.activityInfoLayer = activityInfoLayer;
-    this.handleSceneryImg(+this.activityInfoLayer.type, +this.activityInfoLayer.subtype);
-    this.handleHrZoneData(this.activityInfoLayer);
-    if (+this.activityInfoLayer.type === 2) this.handleFtpZoneData(this.activityInfoLayer);
+    this.sceneryImg = this.handleScenery(fileInfo.photo, +type, +subtype); 
+    this.handleFileInfo(fileInfo);
+    this.handleHrZoneData(activityInfoLayer);
+    if (+type === 2) this.handleFtpZoneData(activityInfoLayer);
     this.activityLapLayer = activityLapLayer;
     if (activityPointLayer.length === 0) {
       this.handleActivityPoint(this.handleEmptyPoint());
@@ -487,13 +504,29 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       this.handleActivityPoint(activityPointLayer);
     }
 
-    if(this.activityInfoLayer.type == 3) {
+    if(type == 3) {
       if (!this.uiFlag.isPreviewMode) this.getUserWeightTrainLevel();
       this.createMuscleTranslate();
     }
 
     this.progress = 100;
     this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 確認檔案代表圖是否存在，不存在則根據運動主副類別給予預設圖片
+   * @param photo {string}-代表圖之url
+   * @param type {SportType}-運動主類別
+   * @param subType {number}-運動副類別
+   * @returns string
+   */
+  handleScenery(photo: string = null, type: SportType, subType: number) {
+    if (photo) {
+      return photo;
+    } else {
+      return this.activityService.handleSceneryImg(type, subType);
+    }
+
   }
 
   /**
@@ -595,45 +628,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     });
     
 
-  }
-
-  /**
-   * 根據運動類別顯示佈景圖
-   * @param type {number}-運動類別
-   * @author kidin-1100105
-   */
-  handleSceneryImg(type: number, subtype: number) {
-    let sportType: string;
-    switch (type) {
-      case SportCode.run:
-        sportType = 'run';
-        break;
-      case SportCode.cycle:
-        sportType = 'cycle';
-        break;
-      case SportCode.weightTrain:
-        sportType = 'weightTraining';
-        break;
-      case SportCode.swim:
-        sportType = 'swim';
-        break;
-      case SportCode.aerobic:
-        sportType = 'aerobic';
-        break;
-      case SportCode.row:
-        sportType = 'rowing';
-        break;
-      case SportCode.ball:
-        sportType = 'ball';
-        break;
-    }
-
-    if (subtype) {
-      this.sceneryImg = `/app/public_html/img/${sportType}_${subtype}.jpg`;
-    } else {
-      this.sceneryImg = `/app/public_html/img/${sportType}_0.jpg`;
-    }
-    
   }
 
   /**
@@ -2051,8 +2045,40 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     let content = '';
     const startTimestamp = moment(startTime).valueOf();
     points.forEach(_point => {
-      const { latitudeDegrees, longitudeDegrees, altitudeMeters, pointSecond } = _point,
-            checkLat = latitudeDegrees && parseFloat(latitudeDegrees) !== 100,
+      const { 
+        latitudeDegrees,
+        longitudeDegrees,
+        altitudeMeters,
+        pointSecond,
+        heartRateBpm,
+        runCadence,
+        cycleCadence,
+        swimCadence,
+        rowingCadence,
+        cycleWatt,
+        rowingWatt,
+        distanceMeters,
+        temp
+      } = _point;
+      let power = null,
+          cadence = null;
+      switch (+this.activityInfoLayer.type) {
+        case SportCode.run:
+          cadence = runCadence;
+          break;
+        case SportCode.cycle:
+          power = cycleWatt;
+          cadence = cycleCadence;
+          break;
+        case SportCode.swim:
+          cadence = swimCadence;
+          break;
+        case SportCode.row:
+          power = rowingWatt;
+          cadence = rowingCadence;
+      }
+
+      const checkLat = latitudeDegrees && parseFloat(latitudeDegrees) !== 100,
             checkLng = longitudeDegrees && parseFloat(longitudeDegrees) !== 100,
             alt = altitudeMeters || 0,
             pointTime = moment(startTimestamp + pointSecond * 1000).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
@@ -2060,6 +2086,15 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         content += `<trkpt lat="${latitudeDegrees}" lon="${longitudeDegrees}">
             <ele>${alt}</ele>
             <time>${pointTime}</time>
+            <extensions>
+              <gpxtpx:TrackPointExtension>
+                <gpxtpx:hr>${heartRateBpm}</gpxtpx:hr>
+                <gpxtpx:cad>${cadence}</gpxtpx:cad>
+                <gpxtpx:distance>${distanceMeters}</gpxtpx:distance>
+                <gpxtpx:atemp>${temp}</gpxtpx:atemp>
+                <gpxtpx:power>${alt}</gpxtpx:power>
+              </gpxtpx:TrackPointExtension>
+            </extensions>
           </trkpt>
         `;
       // }
@@ -2086,6 +2121,188 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     `;
 
     return gpxData;
+  }
+
+  /**
+   * 開啟圖片選擇器
+   * @author kidin-1100817
+   */
+   openImgSelector() {
+    this.uiFlag.openImgSelector = true;
+  }
+
+  /**
+   * 關閉圖片選擇器
+   * @param e {any}
+   * @author kidin-1100817
+   */
+  closeSelector(e: any) {
+    if (e.action === 'complete') {
+      this.editImage.edited = true;
+      this.editImage.origin = e.img.origin;
+      this.editImage.base64 = e.img.base64;
+      this.upLoadImg();
+    }
+
+    this.uiFlag.openImgSelector = null;
+  }
+
+  /**
+   * 上傳圖片
+   * @author kidin-1100817
+   */
+  upLoadImg() {
+    const { edited, base64 } = this.editImage;
+    if (edited) {
+      let imgArr = [];
+      const formData = new FormData(),
+            { userId } = this.userProfile;
+      formData.set('token', this.utils.getToken());
+      formData.set('targetType', '1');
+      // 個人icon
+      if (base64 !== null) {
+        const fileName = this.createFileName(imgArr.length, `${userId}`);
+        imgArr.unshift({
+          albumType: albumType.personalSportFile,
+          fileNameFull: `${fileName}.jpg`,
+          activityFileId: this.fileInfo.fileId
+        })
+
+        formData.append(
+          'file',
+          this.utils.base64ToFile(albumType.personalSportFile, base64, fileName)
+        );
+
+      }
+
+      formData.set('img', JSON.stringify(imgArr));
+      this.sendImgUploadReq(formData);
+    }
+
+  }
+
+  /**
+   * 先送出api 8002刪除圖片後再送出api 8001上傳圖片
+   * @param formData {FormData}-api所需資料
+   * @param groupId {string}-group id
+   * @author kidin-1100817
+   */
+  sendImgUploadReq(formData: FormData) {
+    const { photo } = this.fileInfo;
+    if (photo) {
+      const delBody = {
+        token: this.utils.getToken(),
+        targetType: 1,
+        img: [{
+          albumType: albumType.personalSportFile,
+          activityFileId: this.fileInfo.fileId,
+          fileNameFull: this.getPhotoName(photo)
+        }]
+      };
+
+      this.imageUploadService.deleteImg(delBody).pipe(
+        switchMap(resp => {
+          const { resultCode, apiCode, resultMessage, processResult } = resp;
+          if (!processResult || processResult.resultCode !== 200) {
+            const errRes = processResult ? { processResult } : { resultCode, apiCode, resultMessage };
+            return of(errRes).pipe(
+              map(response => response)
+            );
+          } else {
+            return this.imageUploadService.addImg(formData).pipe(
+              map(response => response)
+            );
+          }
+
+        })
+      ).subscribe(res => {
+        this.handleUploadRes(res);
+      });
+
+    } else {
+      this.imageUploadService.addImg(formData).subscribe(res => {
+        this.handleUploadRes(res);
+      });
+
+    }
+
+  }
+
+  /**
+   * 
+   * @param res 
+   */
+  handleUploadRes(res: any) {
+    const { resultCode, apiCode, resultMessage, processResult, img } = res;
+    if (!processResult) {
+      console.error(`${resultCode}: Api ${apiCode} ${resultMessage}`);
+      this.snackBar.open(
+        `${this.translate.instant('universal_popUpMessage_uploadFailed')}`,
+        'OK',
+        { duration: 2000 }
+      );
+
+    } else {
+      const { resultCode, apiCode, resultMessage } = processResult;
+      if (resultCode !== 200) {
+        console.error(`${resultCode}: Api ${apiCode} ${resultMessage}`);
+        this.snackBar.open(
+          `${this.translate.instant('universal_popUpMessage_uploadFailed')}`,
+          'OK',
+          { duration: 2000 }
+        );
+      } else {
+        this.initImgSetting();
+        const { url } = img[0],
+              normalSizeUrl = url.replace('_128', '');
+        this.fileInfo.photo = normalSizeUrl;
+        this.sceneryImg = normalSizeUrl;
+        this.snackBar.open(
+          `${this.translate.instant('universal_popUpMessage_uploadSuccess')}`,
+          'OK',
+          { duration: 2000 }
+        );
+
+      }
+
+    }
+
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 建立圖片名稱
+   * @param length {number}-檔案序列
+   * @param userId {string}-使用者id
+   * @author kidin-1100817
+   */
+  createFileName(length: number, userId: string) {
+    const nameSpace = uuidv5('https://www.gptfit.com', uuidv5.URL),
+          keyword = `${moment().valueOf().toString()}${length}${userId.split('-').join('')}`;
+    return uuidv5(keyword, nameSpace);
+  }
+
+  /**
+   * 將圖片設定初始化
+   * @author kidin-1091201
+   */
+  initImgSetting() {
+    this.editImage = {
+      edited: false,
+      origin: null,
+      base64: null
+    };
+
+  }
+
+  /**
+   * 從url中取得file name
+   * @param url {string}
+   * @author kidin-1100817
+   */
+  getPhotoName(url: string) {
+    const pathArr = url.split('/');
+    return pathArr[pathArr.length - 1];
   }
 
   /**

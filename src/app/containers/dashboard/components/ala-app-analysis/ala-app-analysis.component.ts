@@ -605,7 +605,6 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    */
   submit() {
     this.uiFlag.progress = 0;
-    this.initSearchRes();
     const { statisticMethod, statisticType } = this.uiFlag;
     let body: any;
     if (statisticMethod === 'pre') {
@@ -735,7 +734,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
               };
               break;
             case 'user':
-              const author = content.map(_content => `?userId=${_content.userId}`);
+              const author = content.map(_content => `*?userId=${_content.userId}*`);
               body.filterCondition = {
                 author,
                 ...body.filterCondition
@@ -805,6 +804,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
   getTrackingCalculateData(body: any) {
     this.uiFlag.progress = 50;
     this.alaAppAnalysisService.getPreAnalysis(body).subscribe(res => {
+      this.initSearchRes();
       const { processResult, dataStatistics } = res;
       if (!processResult) {
         const { apiCode, resultCode, resultMessage } = res;
@@ -864,6 +864,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
   getGalleryStatisticsData(body: any) {
     this.uiFlag.progress = 50;
     this.alaAppAnalysisService.getImgAnalysis(body).subscribe(res => {
+      this.initSearchRes();
       const { processResult, dataStatistics } = res;
       if (!processResult) {
         const { apiCode, resultCode, resultMessage } = res;
@@ -903,6 +904,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
   getTrackingStatisticsData(body: any) {
     this.uiFlag.progress = 50;
     this.alaAppAnalysisService.getFileAnalysis(body).subscribe(res => {
+      this.initSearchRes();
       const { processResult, dataStatistics } = res;
       if (!processResult) {
         const { apiCode, resultCode, resultMessage } = res;

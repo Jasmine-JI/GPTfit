@@ -1,9 +1,9 @@
-var express = require('express');
-var searchNickname = require('../models/user_id').searchNickname;
-var getUserList = require('../models/user_id').getUserList;
-
-var router = express.Router();
-var checkAccessRight = require('../models/auth.model').checkAccessRight;
+const express = require('express');
+const searchNickname = require('../models/user_id').searchNickname;
+const getUserList = require('../models/user_id').getUserList;
+const router = express.Router();
+const checkAccessRight = require('../models/auth.model').checkAccessRight;
+const checkNicknameRepeat = require('../models/user_id').checkNicknameRepeat;
 
 router.get('/userProfile', function (req, res, next) {
   const {
@@ -138,53 +138,6 @@ router.post('/userAvartar', function (req, res, next) {
   });
 });
 
-router.post('/getLogonData_v2', function (req, res, next) {
-  const {
-    con,
-    body: {
-      iconType,
-      token
-    }
-  } = req;
-  let iconQuery = '';
-  if (iconType === '0') {
-    iconQuery = ', icon_large as nameIcon';
-  } else if (iconType === '1') {
-    iconQuery = ', icon_middle as nameIcon';
-  } else {
-    iconQuery = ', icon_small as nameIcon';
-  }
-  const sql = `
-    select u.login_acc as name,
-    u.user_id as nameId
-    ${iconQuery}
-    from ?? u, ?? s where access_token = ?;
-  `;
-  const sql1 = `
-    select s1.sport_id, s1.max_speed, s1.max_pace
-    from sport as s1 join(select max(max_speed) as max_speed
-    from sport where user_id = 46) as s2
-    on s1.max_speed = s2.max_speed
-    where s1.user_id = 46;
-  `;
-  con.query(sql, ['user_profile', 'sport', token], function (err, rows) {
-    if (err) {
-      console.log(err);
-      return res.status(500).send({
-        errorMessage: err.sqlMessage
-      });
-    }
-    const data = rows[0];
-    res.json({
-      name: data['name'],
-      nameId: data['nameId'],
-      rtnMsg: "Get logon data success.",
-      token,
-
-    });
-  });
-});
-
 // 使用關鍵字尋找相關暱稱(auto complete list)-kidin-1090908
 router.post('/search_nickname', function (req, res, next) {
   const {
@@ -265,6 +218,48 @@ router.post('/getUserList', function (req, res, next) {
     });
 
   }
+
+});
+
+/**
+ * 確認暱稱是否重複
+ */
+router.post('/checkNickname', function (req, res, next) {
+  const {
+    con,
+    body
+  } = req;
+
+  const result = checkNicknameRepeat(body.nickname).then(result => {
+    if (result && result.length > 0) {
+
+      return res.json({
+        apiCode: 'N9002',  // 暫定
+        resultCode: 200,
+        repeat: true,
+        resultMessage: "Get result success.",
+      });
+
+    } else if (result && result.length === 0) {
+
+      return res.json({
+        apiCode: 'N9002',
+        resultCode: 200,
+        repeat: false,
+        resultMessage: "Get result success.",
+      })
+
+    } else {
+
+      return res.json({
+        apiCode: 'N9002',
+        resultCode: 400,
+        resultMessage: "Get result failed.",
+      })
+
+    }
+
+  });
 
 });
 

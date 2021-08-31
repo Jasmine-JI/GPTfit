@@ -37,6 +37,7 @@ import {
 import { GroupLevel, SettingObj } from '../../../../dashboard/models/group-detail';
 import { MuscleCode, MuscleGroup } from '../../../../../shared/models/weight-train';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { hrBase } from '../../../models/userProfileInfo';
 
 
 @Component({
@@ -226,7 +227,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     },
     hrzone: [0, 0, 0, 0, 0, 0],
     hrInfo: {
-      hrBase: 0,
+      hrBase: hrBase.max,
       z0: 'Z0',
       z1: 'Z1',
       z2: 'Z2',
@@ -720,7 +721,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       },
       hrzone: [0, 0, 0, 0, 0, 0,],
       hrInfo: {
-        hrBase: 0,
+        hrBase: hrBase.max,
         z0: 'Z0',
         z1: 'Z1',
         z2: 'Z2',

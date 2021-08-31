@@ -72,3 +72,22 @@ exports.getUserList = function (list) {
   });
 
 };
+
+exports.checkNicknameRepeat = function (keyword) {
+
+  return new Promise((resolve, reject) => {
+    db.query(
+      `SELECT login_acc FROM ?? WHERE login_acc = ?`, ['user_profile', keyword],
+      function (err, rows) {
+        if (err) {
+          return reject(false);
+        }
+
+        return resolve(rows);
+      }
+
+    );
+
+  });
+
+};

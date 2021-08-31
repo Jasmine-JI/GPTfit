@@ -19,7 +19,7 @@ export class BodyHeightSibsPipe implements PipeTransform {
       finalValue = parseFloat(value.toFixed(1));;
       unit = 'cm';
     } else {
-      finalValue = parseFloat((value / ft).toFixed(2));
+      finalValue = parseFloat(((value / 100) / ft).toFixed(2));
       unit = 'ft';
     }
     

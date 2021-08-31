@@ -2,53 +2,86 @@
 <main [attr.id]="uiFlag.isPortal ? 'portal__detail__page' : ''" *ngIf="userProfile && activityInfoLayer">
   <section
     class="card__section flexRow"
-    style="align-items: center; margin-bottom: 20px;"
+    style="align-items: center; margin-bottom: 20px; flex-wrap: wrap;"
     [style.justify-content]="uiFlag.isPreviewMode ? 'space-between' : 'flex-end'"
   >
     <span
       style="font-family: Eurostile-ExtendedTwo; font-size: 30px; height: 30px; color: rgba(80, 80, 80, 1)"
       *ngIf="uiFlag.isPreviewMode"
     >GPTFit</span>
-    <i
-      class="icon-svg_web-icon_p1_008-edit function__btn"
+    <button
+      class="function__btn"
+      [title]="'universal_operating_edit' | translate"
       (click)="editFileName()"
       *ngIf="!uiFlag.editNameMode && uiFlag.isFileOwner && !uiFlag.isPreviewMode"
-    ></i>
-    <i
-      class="icon-svg_web-icon_p1_059-lock function__btn"
+    >
+      <i class="icon-svg_web-icon_p1_008-edit"></i>
+    </button>
+    <button
+      class="function__btn"
+      [title]="'universal_operating_selectImg' | translate"
+      [class.btn__obvious]="!fileInfo.photo || fileInfo.photo.includes('cloudrun')"
+      (click)="openImgSelector()"
+      *ngIf="!uiFlag.editNameMode && uiFlag.isFileOwner && !uiFlag.isPreviewMode"
+    >
+      <i class="icon-svg_web-icon_p2_096-camera"></i>
+    </button>
+    <button
+      class="function__btn"
+      [title]="'universal_privacy_set' | translate"
       (click)="openPrivacySetting()"
       *ngIf="uiFlag.isFileOwner && !uiFlag.isPreviewMode"
-    ></i>
-    <i
-      class="icon-svg_web-icon_p1_013-share function__btn"
+    >
+      <i class="icon-svg_web-icon_p1_059-lock"></i>
+    </button>
+    <button
+      class="function__btn"
+      [title]="'universal_operating_share' | translate"
       (click)="showPrivacyAlert()"
       *ngIf="(uiFlag.isFileOwner || userProfile.systemAccessRight[0] <= 29) && !uiFlag.isPreviewMode"
-    ></i>
-    <i 
-      class="icon-svg_web-icon_p1_041-file_gpx function__btn"
+    >
+      <i class="icon-svg_web-icon_p1_013-share" ></i>
+    </button>
+    <button
+      class="function__btn"
+      [title]="('universal_operating_download' | translate) + ' GPX'"
       (click)="downloadGpxFile()"
       *ngIf="uiFlag.isFileOwner && !uiFlag.isPreviewMode"
-    ></i>
-    <i 
-      class="icon-svg_web-icon_p1_018-input function__btn"
+    >
+      <i class="icon-svg_web-icon_p1_041-file_gpx"></i>
+    </button>
+    <button
+      class="function__btn"
+      [title]="('universal_operating_download' | translate) + ' CSV'"
       (click)="downloadRawData()"
       *ngIf="uiFlag.isFileOwner && !uiFlag.isPreviewMode"
-    ></i>
-    <i
-      class="icon-svg_web-icon_p2_087-print function__btn"
+    >
+      <i class="icon-svg_web-icon_p1_018-input" ></i>
+    </button>
+    <button
+      class="function__btn"
+      [title]="'universal_operating_browsePrint' | translate"
       (click)="printPreview()"
       *ngIf="!uiFlag.isPreviewMode"
-    ></i>
-    <i
-      class="icon-svg_web-icon_p1_009-delete function__btn"
+    >
+      <i class="icon-svg_web-icon_p2_087-print"></i>
+    </button>
+    <button
+      class="function__btn"
+      [title]="'universal_operating_delete' | translate"
       (click)="showDeleteAlert()"
       *ngIf="uiFlag.isFileOwner && !uiFlag.isPreviewMode"
-    ></i>
-    <i
-      class="icon-svg_web-icon_p1_012-close function__btn"
+    >
+      <i class="icon-svg_web-icon_p1_009-delete"></i>
+    </button>
+    <button
+      class="function__btn"
+      [title]="'universal_operating_back' | translate"
       (click)="returnList()"
       *ngIf="!uiFlag.isPreviewMode"
-    ></i>
+    >
+      <i class="icon-svg_web-icon_p1_012-close"></i>
+    </button>
     <span id="print__datetime">
       {{ 'universal_operating_print' | translate}} {{ 'universal_activityData_time' | translate }}：{{ printDateTime }}
     </span>
@@ -104,7 +137,12 @@
           <span class="cardSubtitle">{{ 'universal_activityData_summary' | translate }}</span>
         </div>
         <div id="summary__info" *ngIf="uiFlag.pcView || uiFlag.currentTag === 'summary'">
-          <img [src]="sceneryImg" id="scenery__img" (load)="sceneryImgLoaded()">
+          <img
+            [src]="sceneryImg"
+            id="scenery__img"
+            (load)="sceneryImgLoaded()"
+            (error)="handleScenery(null, +activityInfoLayer.type, +activityInfoLayer.subtype)"
+          >
           <span id="img__loading__text" *ngIf="!uiFlag.imageLoaded">Loading...</span>
           <div id="summary__info__section" class="flexRow">
             <div class="flexCol summery__block">
@@ -969,6 +1007,7 @@
           </div>
           <app-threshold-info
             class="info__chart"
+            [cycleFtp]="userProfile.cycleFtp"
           ></app-threshold-info>
         </div>
       </div>
@@ -1316,6 +1355,18 @@
       <div *ngFor="let _tag of fileInfo.tag;">
         <span class="footer__content footer__tag">#{{ _tag }}</span>
       </div>
+    </div>
+  </section>
+  <section
+    class="flexCenter info-editMask"
+    *ngIf="uiFlag.openImgSelector"
+  >
+    <div class="imgSelector">
+      <app-image-cropper
+        [imgInputEvent]="editImage.origin"
+        [albumType]="albumType.personalSportFile"
+        (closeSelector)="closeSelector($event)"
+      ></app-image-cropper>
     </div>
   </section>
 </main>

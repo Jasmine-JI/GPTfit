@@ -1,31 +1,23 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { UserDetail } from '../models/userDetail';
+import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
+import { EditMode } from '../models/personal';
 
 @Injectable()
 export class UserInfoService {
-  userName$ = new BehaviorSubject<string>('');
-  userAge$ = new BehaviorSubject<number>(null);
-  userMaxHR$ = new BehaviorSubject<number>(null);
-  userRestHR$ = new BehaviorSubject<number>(null);
-  userHRBase$ = new BehaviorSubject<number>(null);
-
-  // groupId$ = new BehaviorSubject<string>('0-0-0-0-0-0');
+  editMode$ = new ReplaySubject<EditMode>(1); // 是否進入編輯模式或建立模式
+  targetUserInfo$ = new ReplaySubject<any>(1); // 個人頁面的使用者資訊
   userIcon$ = new BehaviorSubject<string>('');
   updatedImg$ = new BehaviorSubject<string>('');
-  userAccessRightDetail$ = new BehaviorSubject<any>({
-    accessRight: 'none',
-    isCanManage: false,
-    isGroupAdmin: false,
-    isApplying: false
-  });
 
   constructor(
     private http: HttpClient
   ) { }
 
-  fetchEnableAccount (body, ip) {  // v2 1002
+  /**
+   * Api-v2 1002-啟用帳號
+   */
+  fetchEnableAccount (body, ip) {
     const httpOptions = {
       headers: new HttpHeaders({
         'remoteAddr': `${ip}`,
@@ -35,7 +27,10 @@ export class UserInfoService {
     return this.http.post<any>('/api/v2/user/enableAccount', body, httpOptions);
   }
 
-  fetchForgetpwd (body, ip) {  // v2 1004
+  /**
+   * Api-v2 1004-忘記密碼
+   */
+  fetchForgetpwd (body, ip) {
     const httpOptions = {
       headers: new HttpHeaders({
         'remoteAddr': `${ip}`,
@@ -45,6 +40,9 @@ export class UserInfoService {
     return this.http.post<any>('/api/v2/user/resetPassword', body, httpOptions);
   }
 
+  /**
+   * Api-v2 1004-編輯帳密
+   */
   fetchEditAccountInfo (body, ip) {  // v2 1005
     const httpOptions = {
       headers: new HttpHeaders({
@@ -55,41 +53,42 @@ export class UserInfoService {
     return this.http.post<any>('/api/v2/user/editAccount', body, httpOptions);
   }
 
-  getUserIcon(): Observable<string> {
-    return this.userIcon$;
-  }
-
   getUpdatedImgStatus(): Observable<string> {
     return this.updatedImg$;
   }
 
-  getUserName(): Observable<string> {
-    return this.userName$;
+  /**
+   * 設置編輯模式以傳達給父組件
+   * @param mode {EditMode}-是否進入編輯模式或完成編輯
+   * @author kidin-1100812
+   */
+  setRxEditMode(mode: EditMode) {
+    this.editMode$.next(mode);
   }
 
-  getUserAge(): Observable<number> {
-    return this.userAge$;
-  }
-  getUserMaxHR(): Observable<number> {
-    return this.userMaxHR$;
-  }
-  getUserRestHR(): Observable<number> {
-    return this.userRestHR$;
-  }
-  getUserHRBase(): Observable<number> {
-    return this.userHRBase$;
+  /**
+   * 取得現在的編輯模式
+   * @author kidin-1100812
+   */
+  getRxEditMode(): Observable<EditMode> {
+    return this.editMode$;
   }
 
-  setUpdatedImgStatus(status: string) {
-    this.updatedImg$.next(status);
+  /**
+   * 儲存目標userProfile供個人子頁面使用
+   * @param info {any}-是否進入編輯模式或完成編輯
+   * @author kidin-1100816
+   */
+   setRxTargetUserInfo(info: any) {
+    this.targetUserInfo$.next(info);
   }
 
-  setUserAccessRightDetail(data: UserDetail) {
-    return this.userAccessRightDetail$.next(data);
-  }
-
-  getUserAccessRightDetail(): Observable<UserDetail> {
-    return this.userAccessRightDetail$;
+  /**
+   * 取得目標userProfile供個人子頁面使用
+   * @author kidin-1100816
+   */
+  getRxTargetUserInfo(): Observable<any> {
+    return this.targetUserInfo$;
   }
 
 }

@@ -32,33 +32,6 @@ $loaded-color: rgba(255, 252, 174, 0.5);
   flex-wrap: nowrap;
 }
 
-.switch__btn__item {
-  width: 33px;
-  z-index: 2;
-}
-
-.simulate__btn {
-  @include transition(background-color);
-  @include transition(right);
-  position: absolute;
-  z-index: 1;
-  top: 2px;
-  right: 2px;
-  background-color: rgba(200, 200, 200, 1);
-  // background-color: rgba(255, 212, 0, 1);
-  width: 33px;
-  height: 18px;
-  border: 1px solid white;
-  border-radius: 5px;
-}
-
-.simulate__btn--active {
-  @include transition(background-color);
-  @include transition(right);
-  right: 35px;
-  background-color: rgba(255, 212, 0, 1);
-}
-
 #map__section {
   position: relative;
   width: 60%;
