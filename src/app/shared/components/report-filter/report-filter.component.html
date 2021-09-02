@@ -143,7 +143,7 @@
         <div class="flexCol" *ngIf="reportConditionOpt.group.branches !== null">
           <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 1">{{ 'universal_group_branch' | translate }}</span>
           <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 2">{{ 'universal_group_companyBranch' | translate }}</span>
-          <div class="flexRow" style="flex-wrap: wrap;">
+          <div class="flexRowWrap">
             <button
               class="condition__btn"
               *ngFor="let _branches of reportConditionOpt.group.branches; let _branchIdx = index;"
@@ -155,7 +155,7 @@
         <div class="flexCol" *ngIf="reportConditionOpt.group.coaches.length > 0">
           <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 1">{{ 'universal_group_coachingClass' | translate }}</span>
           <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 2">{{ 'universal_group_department' | translate }}</span>
-          <div class="flexRow" style="flex-wrap: wrap;">
+          <div class="flexRowWrap">
             <button
               class="condition__btn"
               *ngFor="let _coaches of reportConditionOpt.group.coaches; let _coachIdx = index;"

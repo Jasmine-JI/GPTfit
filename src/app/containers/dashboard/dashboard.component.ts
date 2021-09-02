@@ -177,6 +177,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin
    */
   tokenLogin() {
+console.log('tokenLogini');
     const token = this.utilsService.getToken() || '',
           body = {
             signInType: 3,

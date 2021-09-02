@@ -1,3 +1,4 @@
+<app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
 <section class="cardSection">
   <div class="flexCol cardContent" style="padding-bottom: 50px;">
     <div class="flexRow" style="justify-content: space-between;">
@@ -14,6 +15,7 @@
         <span class="flexRow checkBoxBlock">
           <button
             id="file__all"
+            [class.unclickable]="uiFlag.progress !== 100"
             [class.checkBox--active]="setting.activityTracking.includes(privacyObj.anyone)"
             (click)="changePrivacy('activityTracking', privacyObj.anyone)"
           >
@@ -26,6 +28,7 @@
         <span class="flexRow checkBoxBlock">
           <button
             id="file__admin"
+            [class.unclickable]="uiFlag.progress !== 100"
             [class.checkBox--active]="setting.activityTracking.includes(privacyObj.myGroup)"
             (click)="changePrivacy('activityTracking', privacyObj.myGroup)"
           >
@@ -38,6 +41,7 @@
         <span class="flexRow checkBoxBlock">
           <button
             id="file__same__group"
+            [class.unclickable]="uiFlag.progress !== 100"
             [class.checkBox--active]="setting.activityTracking.includes(privacyObj.onlyGroupAdmin)"
             (click)="changePrivacy('activityTracking', privacyObj.onlyGroupAdmin)"
           >
@@ -58,6 +62,7 @@
         <span class="flexRow checkBoxBlock">
           <button
             id="report__all"
+            [class.unclickable]="uiFlag.progress !== 100"
             [class.checkBox--active]="setting.activityTrackingReport.includes(privacyObj.anyone)"
             (click)="changePrivacy('activityTrackingReport', privacyObj.anyone)"
           >
@@ -70,6 +75,7 @@
         <span class="flexRow checkBoxBlock">
           <button
             id="report__admin"
+            [class.unclickable]="uiFlag.progress !== 100"
             [class.checkBox--active]="setting.activityTrackingReport.includes(privacyObj.myGroup)"
             (click)="changePrivacy('activityTrackingReport', privacyObj.myGroup)"
           >
@@ -82,6 +88,7 @@
         <span class="flexRow checkBoxBlock">
           <button
             id="report__same__group"
+            [class.unclickable]="uiFlag.progress !== 100"
             [class.checkBox--active]="setting.activityTrackingReport.includes(privacyObj.onlyGroupAdmin)"
             (click)="changePrivacy('activityTrackingReport', privacyObj.onlyGroupAdmin)"
           >
@@ -102,18 +109,20 @@
         <span class="flexRow checkBoxBlock">
           <button
             id="life__all"
+            [class.unclickable]="uiFlag.progress !== 100"
             [class.checkBox--active]="setting.lifeTrackingReport.includes(privacyObj.anyone)"
             (click)="changePrivacy('lifeTrackingReport', privacyObj.anyone)"
           >
             <span *ngIf="setting.lifeTrackingReport.includes(privacyObj.anyone)">✔</span>
           </button>
-          <label for="file__all" class="checkBox__label">
+          <label for="life__all" class="checkBox__label">
             {{ 'universal_privacy_allMember' | translate }}
           </label>
         </span>
         <span class="flexRow checkBoxBlock">
           <button
             id="life__admin"
+            [class.unclickable]="uiFlag.progress !== 100"
             [class.checkBox--active]="setting.lifeTrackingReport.includes(privacyObj.myGroup)"
             (click)="changePrivacy('lifeTrackingReport', privacyObj.myGroup)"
           >
@@ -126,6 +135,7 @@
         <span class="flexRow checkBoxBlock">
           <button
             id="life__same__group"
+            [class.unclickable]="uiFlag.progress !== 100"
             [class.checkBox--active]="setting.lifeTrackingReport.includes(privacyObj.onlyGroupAdmin)"
             (click)="changePrivacy('lifeTrackingReport', privacyObj.onlyGroupAdmin)"
           >

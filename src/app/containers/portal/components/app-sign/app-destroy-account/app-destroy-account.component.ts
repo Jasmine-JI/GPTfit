@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { AppCode } from '../../../models/app-webview';
 import { Router } from '@angular/router';
 import { UtilsService } from '../../../../../shared/services/utils.service';
@@ -7,17 +7,17 @@ import moment from 'moment';
 import { UserProfileInfo } from '../../../../dashboard/models/userProfileInfo';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../../shared/services/auth.service';
+import { accountTypeEnum } from '../../../../dashboard/models/userProfileInfo';
 
 @Component({
   selector: 'app-app-destroy-account',
   templateUrl: './app-destroy-account.component.html',
   styleUrls: ['./app-destroy-account.component.scss']
 })
-export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
-
+export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();
 
   // ui用到的各種flag
@@ -47,6 +47,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
     destroyTimestamp: null
   };
 
+  readonly accountTypeEnum = accountTypeEnum;
   constructor(
     private utils: UtilsService,
     private router: Router,
@@ -56,7 +57,9 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
     private auth: AuthService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.uiFlag.isLoading = true;
+  }
 
   /**
    * 因應ios嵌入webkit物件時間點較後面，故在此生命週期才判斷裝置平台
@@ -156,14 +159,20 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
     } else {
       this.uiFlag.isLoading = true;
       this.userProfileService.getUserProfile({token: this.token}).subscribe(res => {
-        this.uiFlag.isLoading = false;
-        const processResult = res.processResult;
-        if (processResult.resultCode !== 200) {
-          console.error(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
-        } else {
-          this.user = res.userProfile;
+        const {
+          signIn,
+          userProfile,
+        } = res as any;
+        if (this.utils.checkRes(res)) {
+          const { accountType } = signIn;
+          this.user = {
+            accountType,
+            ...userProfile
+          };
+
         }
 
+        this.uiFlag.isLoading = false;
       });
 
     }
@@ -185,24 +194,24 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
 
       this.uiFlag.isLoading = true;
       this.signupService.fetchDestroyAccount(body).subscribe(res => {
-        this.uiFlag.isLoading = false;
-        const processResult = res.processResult;
-        if (processResult.resultCode !== 200) {
-          console.error(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
-        } else {
-          this.destroyResp.status = res.status;
-
-          if (res.status === 0) {
+        const {
+          status,
+          destroyTimestamp
+        } = res as any;
+        if (this.utils.checkRes(res)) {
+          this.destroyResp.status = status;
+          if (status === 0) {
             this.checkoutIsGroupAdmin();
-          } else if (res.status === 2) {
-            this.destroyResp.destroyTimestamp = res.destroyTimestamp;
-            const destroyDate = moment(res.destroyTimestamp * 1000).format('YYYY-MM-DD'),
-                  destroyTime = moment(res.destroyTimestamp * 1000).format('HH:mm');
+          } else if (status === 2) {
+            this.destroyResp.destroyTimestamp = destroyTimestamp;
+            const destroyDate = moment(destroyTimestamp * 1000).format('YYYY-MM-DD'),
+                  destroyTime = moment(destroyTimestamp * 1000).format('HH:mm');
             this.getTranslate(destroyDate, destroyTime);
           }
 
         }
 
+        this.uiFlag.isLoading = false;
       });
 
     }
@@ -215,26 +224,23 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
    */
   checkoutIsGroupAdmin() {
     this.uiFlag.isLoading = true;
-    this.userProfileService.getMemberAccessRight({token: this.token}).subscribe(res => {
-      this.uiFlag.isLoading = false;
-      if (res.resultCode !== 200) {
-        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
-      } else {
+    this.userProfileService.getMemberAccessRight({token: this.token}).pipe(
+      switchMap(response => this.translate.get('hellow world').pipe(
+        map(resp => response)
+      )),
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      const { info } = res as any;
+      if (this.utils.checkRes(res)) {
 
-        if (
-          res.info.groupAccessRight.some(_list => +_list.accessRight < 90)
-        ) {
-          this.translate.get('hellow world').pipe(
-            takeUntil(this.ngUnsubscribe)
-          ).subscribe(() => {
-            const msg = this.translate.instant('universal_userAccount_adminDeleteAccount');
-            this.utils.openAlert(msg);
-          });
-
+        if (info.groupAccessRight.some(_list => +_list.accessRight < 90)) {
+          const msg = this.translate.instant('universal_userAccount_adminDeleteAccount');
+          this.utils.openAlert(msg);
         }
 
       }
 
+      this.uiFlag.isLoading = false;
     });
     
   }
@@ -250,35 +256,29 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
     };
 
     this.uiFlag.isLoading = true;
-    this.signupService.fetchDestroyAccount(body).subscribe(res => {
-      this.uiFlag.isLoading = false;
-      const processResult = res.processResult;
-      if (processResult.resultCode !== 200) {
-        console.error(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
-      } else {
-        this.destroyResp.status = res.status;
-
-        if (this.user.countryCode) {
-          this.translate.get('hellow world').pipe(
-            takeUntil(this.ngUnsubscribe)
-          ).subscribe(() => {
-            const msg = this.translate.instant('universal_userAccount_sendSmsSuccess');
-            this.utils.openAlert(msg);
-          });
-
+    this.signupService.fetchDestroyAccount(body).pipe(
+      switchMap(response => this.translate.get('hellow world').pipe(
+        map(resp => response)
+      )),
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      const {
+        status,
+      } = res as any;
+      if (this.utils.checkRes(res)) {
+        this.destroyResp.status = status;
+        if (this.user.accountType === accountTypeEnum.phone) {
+          const msg = this.translate.instant('universal_userAccount_sendSmsSuccess');
+          this.utils.openAlert(msg);
           this.countDown();
         } else {
-          this.translate.get('hellow world').pipe(
-            takeUntil(this.ngUnsubscribe)
-          ).subscribe(() => {
-            const msg = this.translate.instant('universal_userAccount_sendCaptchaChackEmail');
-            this.utils.openAlert(msg);
-          })
-          
+          const msg = this.translate.instant('universal_userAccount_sendCaptchaChackEmail');
+          this.utils.openAlert(msg);
         }
 
       }
 
+      this.uiFlag.isLoading = false;
     });
 
   }
@@ -304,26 +304,32 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
       };
 
       this.uiFlag.isLoading = true;
-      this.signupService.fetchDestroyAccount(body).subscribe(res => {
-        this.uiFlag.isLoading = false;
-        const processResult = res.processResult;
-        if (!processResult && res.info.rtnMsg.indexOf('Exception: invalid literal for int() with base 10:') > -1) {
+      this.signupService.fetchDestroyAccount(body).pipe(
+        switchMap(response => this.translate.get('hellow world').pipe(
+          map(resp => response)
+        )),
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe(res => {
+        const {
+          processResult,
+          info,
+          resultCode: resCode,
+          status,
+          destroyTimestamp
+        } = res as any;
+        if (!processResult && info.rtnMsg.indexOf('Exception: invalid literal for int() with base 10:') > -1) {
           this.uiFlag.verifyCodeError = true;
-        } else if (!processResult && res.resultCode === 400) {
+        } else if (!processResult && resCode === 400) {
           const msg = 'Error! Please try again later.'
           this.utils.openAlert(msg);
         } else if (processResult.resultCode !== 200) {
-          console.error(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
-          if (processResult.apiReturnMessage === 'Destroy me fail, code was verified.') {
+          const { resultCode, apiCode, resultMessage, apiReturnMessage } = processResult;
+          this.utils.handleError(resultCode, apiCode, resultMessage);
+          if (apiReturnMessage === 'Destroy me fail, code was verified.') {
             this.uiFlag.checkCompress = false;
-            this.translate.get('hellow world').pipe(
-              takeUntil(this.ngUnsubscribe)
-            ).subscribe(() => {
-              const msg = this.translate.instant('universal_userAccount_linkHasExpired');
-              this.utils.openAlert(msg);
-            });
-
-          } else if (processResult.apiReturnMessage === 'Destroy me fail, found verification code error.') {
+            const msg = this.translate.instant('universal_userAccount_linkHasExpired');
+            this.utils.openAlert(msg);
+          } else if (apiReturnMessage === 'Destroy me fail, found verification code error.') {
             this.uiFlag.verifyCodeError = true;
           } else {
             this.checkDestroyStatus();
@@ -332,15 +338,16 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
         } else {
           this.uiFlag.verifyCodeError = false;
           this.destroyResp = {
-            status: res.status,
-            destroyTimestamp: res.destroyTimestamp,
+            status,
+            destroyTimestamp,
           };
 
-          const destroyDate = moment(res.destroyTimestamp * 1000).format('YYYY-MM-DD'),
-                destroyTime = moment(res.destroyTimestamp * 1000).format('HH:mm');
+          const destroyDate = moment(destroyTimestamp * 1000).format('YYYY-MM-DD'),
+                destroyTime = moment(destroyTimestamp * 1000).format('HH:mm');
           this.getTranslate(destroyDate, destroyTime);
         }
 
+        this.uiFlag.isLoading = false;
       });
 
   }
@@ -358,10 +365,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
     this.uiFlag.cancelDestroyLoading = true;
     this.signupService.fetchDestroyAccount(body).subscribe(res => {
       this.uiFlag.cancelDestroyLoading = false;
-      const processResult = res.processResult;
-      if (processResult.resultCode !== 200) {
-        console.error(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
-      } else {
+      if (this.utils.checkRes(res)) {
         this.destroyResp.status = 0;
         this.uiFlag.cancelDestroy = true;
       }
@@ -441,7 +445,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
    * 取消訂閱rxjs
    * @author kidin-1091223
    */
-  ngOndestroy() {
+  ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }

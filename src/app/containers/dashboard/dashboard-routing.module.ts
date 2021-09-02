@@ -262,12 +262,6 @@ const routes: Routes = [
         path: 'mygroup-list-v2',
         component: MyGroupListComponent
       },
-      /*
-      {
-        path: 'activity-list',
-        component: MyActivityComponent
-      },
-      */
       {
         path: '',
         component: PersonalComponent,

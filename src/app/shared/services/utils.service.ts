@@ -900,4 +900,38 @@ export class UtilsService {
     return userFtpZone;
   }
 
+  /**
+   * 確認res resultCode是否回傳200(兼容兩個版本的response result)
+   * @returns {boolean} resultCode是否回傳200
+   * @author kidin-1100902
+   */
+  checkRes(res: any): boolean {
+    const {
+      processResult,
+      resultCode: resCode,
+      apiCode: resApiCode,
+      resultMessage: resMsg
+    } = res;
+    if (!processResult) {
+
+      if (resCode !== 200) {
+        this.handleError(resCode, resApiCode, resMsg);
+        return false;
+      } else {
+        return true;
+      }
+      
+    } else {
+      const { resultCode, apiCode, resultMessage } = processResult;
+      if (resultCode !== 200) {
+        this.handleError(resultCode, apiCode, resultMessage);
+        return false;
+      } else {
+        return true;
+      }
+
+    }
+
+  }
+
 }

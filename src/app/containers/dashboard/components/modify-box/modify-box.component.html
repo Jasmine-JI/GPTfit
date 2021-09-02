@@ -35,37 +35,37 @@
     <div class="flexCol checkBox__section">
       <span class="flexRow checkBoxBlock">
         <button
-          id="life__all"
+          id="anyone__opt"
           [class.checkBox--active]="openObj.includes(privacyObj.anyone)"
           (click)="selectModifyRange(privacyObj.anyone)"
         >
           <span *ngIf="openObj.includes(privacyObj.anyone)">✔</span>
         </button>
-        <label for="file__all" class="checkBox__label">
+        <label for="anyone__opt" class="checkBox__label">
           {{ 'universal_privacy_allMember' | translate }}
         </label>
       </span>
       <span class="flexRow checkBoxBlock">
         <button
-          id="life__admin"
+          id="my__group__opt"
           [class.checkBox--active]="openObj.includes(privacyObj.myGroup)"
           (click)="selectModifyRange(privacyObj.myGroup)"
         >
           <span *ngIf="openObj.includes(privacyObj.myGroup)">✔</span>
         </button>
-        <label for="life__admin" class="checkBox__label">
+        <label for="my__group__opt" class="checkBox__label">
           {{ 'universal_privacy_myGroupMember' | translate }}
         </label>
       </span>
       <span class="flexRow checkBoxBlock">
         <button
-          id="life__same__group"
+          id="my__admin"
           [class.checkBox--active]="openObj.includes(privacyObj.onlyGroupAdmin)"
           (click)="selectModifyRange(privacyObj.onlyGroupAdmin)"
         >
           <span *ngIf="openObj.includes(privacyObj.onlyGroupAdmin)">✔</span>
         </button>
-        <label for="life__same__group" class="checkBox__label">
+        <label for="my__admin" class="checkBox__label">
           {{ 'universal_group_myGroupAdmin' | translate }}
         </label>
       </span>

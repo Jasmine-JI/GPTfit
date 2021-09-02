@@ -9,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ModifyBoxComponent } from '../../components/modify-box/modify-box.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
+import { UserProfileService } from '../../../../shared/services/user-profile.service';
 
 type PrivacyType = 'activityTracking' | 'activityTrackingReport' | 'lifeTrackingReport';
 
@@ -56,7 +57,8 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private userProfileService: UserProfileService
   ) { }
 
   ngOnInit(): void {
@@ -100,6 +102,7 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
    * @author kidin-1100830
    */
   changePrivacy(type: PrivacyType, privacy: PrivacyCode) {
+    this.uiFlag.progress = 0;
     const privacySetting = this.setting[type];
     if (privacy === privacyObj.anyone) {
 
@@ -130,16 +133,18 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
    * @author kidin-1100831
    */
   saveSetting() {
-    const body = {
-      token: this.utils.getToken(),
-      userProfile: {
-        privacy: {
-          ...this.setting
-        }
+    this.uiFlag.progress = 30;
+    const token = this.utils.getToken(),
+          body = {
+            token,
+            userProfile: {
+              privacy: {
+                ...this.setting
+              }
 
-      }
+            }
 
-    };
+          };
 
     this.settingService.updateUserProfile(body).subscribe(res => {
       const {processResult} = res as any;
@@ -162,6 +167,8 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
 
       }
 
+      this.userProfileService.refreshUserProfile({ token });
+      this.uiFlag.progress = 100;
     });
   }
 

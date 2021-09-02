@@ -31,7 +31,7 @@
     </div>
     <div class="flexCol settingContent">
       <h6 class="settingSubTitle">{{ 'universal_activityData_hr' | translate }}</h6>
-      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+      <div class="flexRowWrap childPageContent">
         <span class="contentTitle">
           {{ 'universal_userProfile_hrCalculation' | translate }}：
         </span>
@@ -44,8 +44,7 @@
           </ng-container>
         </span>
         <div
-          class="flexRow"
-          style="margin-left: 10px; flex-wrap: wrap;"
+          class="flexRow radio__section"
           *ngIf="uiFlag.editMode === 'edit'"
         >
           <span class="flexRow radioSelector" (click)="changeHrBase(hrBase.max)">
@@ -72,7 +71,7 @@
           <input
             id="max_hr"
             type="text"
-            class="num__input"
+            class="num__input userSettingInput"
             maxlength="3"
             [placeholder]="190"
             [value]="setting.heartRateMax"
@@ -83,17 +82,18 @@
           <span class="valueUnit">bpm</span>
         </div>
         <div class="childPageContent">
-          <span class="contentTitle">
+          <label class="contentTitle" for="rest__hr">
             {{ 'universal_userProfile_restHr' | translate }}：
-          </span>
+          </label>
           <input
+            id="rest__hr"
             type="text"
             class="num__input userSettingInput"
             maxlength="3"
             [placeholder]="60"
             [value]="setting.heartRateResting"
             (keydown)="checkFormat($event)"
-            (focusout)="handleMaxHrInput($event)"
+            (focusout)="handleRestHrInput($event)"
             *ngIf="uiFlag.editMode === 'edit'"
           >
           <span class="valueUnit">bpm</span>
@@ -104,7 +104,7 @@
           <div class="flexRow" (click)="showHrZoneDesc('z5')">
             <span class="contentTitle">Z5：</span>
             <span class="rangeValue">{{ +userHrZone.z4 + 1 }}</span>
-              ～
+            <span class="info__content">～</span>
             <span class="rangeValue">{{ userHrZone.z5 }}</span>
             <span class="valueUnit">bpm</span>
           </div>
@@ -117,7 +117,7 @@
           <div class="flexRow" (click)="showHrZoneDesc('z4')">
             <span class="contentTitle">Z4：</span>
             <span class="rangeValue">{{ +userHrZone.z3 + 1 }}</span>
-              ～
+            <span class="info__content">～</span>
             <span class="rangeValue">{{ userHrZone.z4 }}</span>
             <span class="valueUnit">bpm</span>
           </div>
@@ -130,7 +130,7 @@
           <div class="flexRow" (click)="showHrZoneDesc('z3')">
             <span class="contentTitle">Z3：</span>
             <span class="rangeValue">{{ +userHrZone.z2 + 1 }}</span>
-              ～
+            <span class="info__content">～</span>
             <span class="rangeValue">{{ userHrZone.z3 }}</span>
             <span class="valueUnit">bpm</span>
           </div>
@@ -143,7 +143,7 @@
           <div class="flexRow" (click)="showHrZoneDesc('z2')">
             <span class="contentTitle">Z2：</span>
             <span class="rangeValue">{{ +userHrZone.z1 + 1 }}</span>
-              ～
+            <span class="info__content">～</span>
             <span class="rangeValue">{{ userHrZone.z2 }}</span>
             <span class="valueUnit">bpm</span>
           </div>
@@ -156,7 +156,7 @@
           <div class="flexRow" (click)="showHrZoneDesc('z1')">
             <span class="contentTitle">Z1：</span>
             <span class="rangeValue">{{ +userHrZone.z0 + 1 }}</span>
-              ～
+            <span class="info__content">～</span>
             <span class="rangeValue">{{ userHrZone.z1 }}</span>
             <span class="valueUnit">bpm</span>
           </div>
@@ -169,7 +169,7 @@
           <div class="flexRow" (click)="showHrZoneDesc('z0')">
             <span class="contentTitle">Z0：</span>
             <span class="rangeValue">40</span>
-              ～
+            <span class="info__content">～</span>
             <span class="rangeValue">{{ userHrZone.z0 }}</span>
             <span class="valueUnit">bpm</span>
           </div>
@@ -182,11 +182,11 @@
     </div>
     <div class="flexCol settingContent">
       <h6 class="settingSubTitle">{{ 'universal_userProfile_ftp' | translate }}</h6>
-      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+      <div class="flexRowWrap childPageContent">
         <span class="contentTitle">
           {{ 'universal_userProfile_ftp' | translate }}：
         </span>
-        <span *ngIf="uiFlag.editMode === 'close'">
+        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
           {{ userInfo.cycleFtp }}
         </span>
         <input
@@ -208,7 +208,7 @@
           <div class="flexRow" (click)="showFtpZoneDesc('z6')">
             <span class="contentTitle">Z6：</span>
             <span class="rangeValue">{{ +userFtpZone.z5 + 1 }}</span>
-            ～
+            <span class="info__content">～</span>
           </div>
           <span class="settingDescription" *ngIf="uiFlag.showFtpZoneDesc === 'z6'">
             {{ 'universal_activityData_ftpZ6' | translate }}:
@@ -219,7 +219,7 @@
           <div class="flexRow" (click)="showFtpZoneDesc('z5')">
             <span class="contentTitle">Z5：</span>
             <span class="rangeValue">{{ +userFtpZone.z4 + 1 }}</span>
-              ～
+            <span class="info__content">～</span>
             <span class="rangeValue">{{ userFtpZone.z5 }}</span>
             <span class="valueUnit">w</span>
           </div>
@@ -232,7 +232,7 @@
           <div class="flexRow" (click)="showFtpZoneDesc('z4')">
             <span class="contentTitle">Z4：</span>
             <span class="rangeValue">{{ +userFtpZone.z3 + 1 }}</span>
-              ～
+            <span class="info__content">～</span>
             <span class="rangeValue">{{ userFtpZone.z4 }}</span>
             <span class="valueUnit">w</span>
           </div>
@@ -245,7 +245,7 @@
           <div class="flexRow" (click)="showFtpZoneDesc('z3')">
             <span class="contentTitle">Z3：</span>
             <span class="rangeValue">{{ +userFtpZone.z2 + 1 }}</span>
-              ～
+            <span class="info__content">～</span>
             <span class="rangeValue">{{ userFtpZone.z3 }}</span>
             <span class="valueUnit">w</span>
           </div>
@@ -258,7 +258,7 @@
           <div class="flexRow" (click)="showFtpZoneDesc('z2')">
             <span class="contentTitle">Z2：</span>
             <span class="rangeValue">{{ +userFtpZone.z1 + 1 }}</span>
-              ～
+            <span class="info__content">～</span>
             <span class="rangeValue">{{ userFtpZone.z2 }}</span>
             <span class="valueUnit">w</span>
           </div>
@@ -271,7 +271,7 @@
           <div class="flexRow" (click)="showFtpZoneDesc('z1')">
             <span class="contentTitle">Z1：</span>
             <span class="rangeValue">{{ +userFtpZone.z0 + 1 }}</span>
-              ～
+            <span class="info__content">～</span>
             <span class="rangeValue">{{ userFtpZone.z1 }}</span>
             <span class="valueUnit">w</span>
           </div>
@@ -285,6 +285,7 @@
             <span class="contentTitle">Z0：</span>
             <span 
               style="min-width: 44px; text-align: right;"
+              class="info__content"
             >～</span>
             <span class="rangeValue">{{ userFtpZone.z0 }}</span>
             <span class="valueUnit">w</span>
@@ -298,7 +299,7 @@
     </div>
     <div class="flexCol settingContent">
       <h6 class="settingSubTitle">{{ 'universal_vocabulary_activity' | translate }}</h6>
-      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+      <div class="flexRowWrap childPageContent">
         <span class="contentTitle">
           {{ 'universal_deviceSetting_unit' | translate }}：
         </span>
@@ -311,8 +312,7 @@
           </ng-container>
         </span>
         <div
-          class="flexRow"
-          style="margin-left: 10px; flex-wrap: wrap;"
+          class="flexRow radio__section"
           *ngIf="uiFlag.editMode === 'edit'"
         >
           <span class="flexRow radioSelector" (click)="changeUnit(unit.metric)">
@@ -331,7 +331,7 @@
           </span>
         </div>
       </div>
-      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+      <div class="flexRowWrap childPageContent">
         <span class="contentTitle">
           {{ 'universal_activityData_swing' | translate }}：
         </span>
@@ -344,8 +344,7 @@
           </ng-container>
         </span>
           <div
-            class="flexRow"
-            style="margin-left: 10px; flex-wrap: wrap;"
+            class="flexRow radio__section"
             *ngIf="uiFlag.editMode === 'edit'"
           >
             <span class="flexRow radioSelector" (click)="changeDominantHand(dominantHand.left)">
@@ -368,7 +367,7 @@
         <span class="contentTitle">
           {{ 'universal_userProfile_stepLength' | translate }}：
         </span>
-        <span *ngIf="uiFlag.editMode === 'close'">
+        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
           {{ userInfo.strideLengthCentimeter | lengthSibs: {
             userUnit: userInfo.unit,
             valueUnit: 'cm',
@@ -402,7 +401,7 @@
         <span class="contentTitle">
           {{ 'universal_userProfile_tireCircumference' | translate }}：
         </span>
-        <span *ngIf="uiFlag.editMode === 'close'">
+        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
           {{ userInfo.wheelSize | lengthSibs: {
             userUnit: userInfo.unit,
             valueUnit: 'mm',
@@ -435,35 +434,69 @@
     </div>
     <div class="flexCol settingContent">
       <h6 class="settingSubTitle">{{ 'universal_lifeTracking_sleep' | translate }}</h6>
-      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+      <div class="flexRowWrap childPageContent">
         <span class="contentTitle">
           {{ 'universal_lifeTracking_sleepTime' | translate }}：
         </span>
         <div class="time__selector__section">
           <span
-            [class.userSettingInput]="uiFlag.editMode === 'edit'"
-            (click)="openTimeSelector('normalBedTime')"
+            class="info__content"
+            *ngIf="uiFlag.editMode === 'close'"
           >
             {{ userInfo.normalBedTime | slice: 0 :5 }}
           </span>
-          <ng-container *ngIf="uiFlag.showTimeSelector === 'normalBedTime'">
-            <div *ngTemplateOutlet="timeSelect"></div>
+          <ng-container *ngIf="!uiFlag.isMobile">
+            <span
+              class="userSettingInput time__set"
+              (click)="openTimeSelector('normalBedTime')"
+              *ngIf="uiFlag.editMode === 'edit'"
+            >
+              {{ setting.normalBedTime | slice: 0 :5 }}
+            </span>
+            <ng-container *ngIf="uiFlag.showTimeSelector === 'normalBedTime'">
+              <div *ngTemplateOutlet="timeSelect"></div>
+            </ng-container>
+          </ng-container>
+          <ng-container *ngIf="uiFlag.editMode === 'edit' && uiFlag.isMobile">
+            <input
+              [value]="setting.normalBedTime | slice: 0 :5"
+              type="time"
+              class="info__content"
+              (change)="changeTime($event, 'normalBedTime')"
+            >
           </ng-container>
         </div>
       </div>
-      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+      <div class="flexRowWrap childPageContent">
         <span class="contentTitle">
           {{ 'universal_lifeTracking_wakeUpTime' | translate }}：
         </span>
         <div class="time__selector__section">
           <span
-            [class.userSettingInput]="uiFlag.editMode === 'edit'"
-            (click)="openTimeSelector('normalWakeTime')"
+            class="info__content"
+            *ngIf="uiFlag.editMode === 'close'"
           >
             {{ userInfo.normalWakeTime | slice: 0 :5 }}
           </span>
-          <ng-container *ngIf="uiFlag.showTimeSelector === 'normalWakeTime'">
-            <div *ngTemplateOutlet="timeSelect"></div>
+          <ng-container *ngIf="!uiFlag.isMobile">
+            <span
+              class="userSettingInput time__set"
+              (click)="openTimeSelector('normalWakeTime')"
+              *ngIf="uiFlag.editMode === 'edit'"
+            >
+              {{ setting.normalWakeTime | slice: 0 :5 }}
+            </span>
+            <ng-container *ngIf="uiFlag.showTimeSelector === 'normalWakeTime'">
+              <div *ngTemplateOutlet="timeSelect"></div>
+            </ng-container>
+          </ng-container>
+          <ng-container *ngIf="uiFlag.editMode === 'edit' && uiFlag.isMobile">
+            <input
+              [value]="setting.normalWakeTime | slice: 0 :5"
+              type="time"
+              class="info__content"
+              (change)="changeTime($event, 'normalWakeTime')"
+            >
           </ng-container>
         </div>
       </div>
@@ -472,11 +505,11 @@
       <h6 class="settingSubTitle">
         {{ 'universal_userProfile_lifeTrackingTarget' | translate }}
       </h6>
-      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+      <div class="flexRowWrap childPageContent">
         <span class="contentTitle">
           {{ 'universal_userProfile_AutoStepTarget' | translate }}：
         </span>
-        <span *ngIf="uiFlag.editMode === 'close'">
+        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
           <ng-container *ngIf="userInfo.autoTargetStep === autoStepTarget.close">
             {{ 'universal_operating_close' | translate }}
           </ng-container>
@@ -485,8 +518,7 @@
           </ng-container>
         </span>
         <div
-          class="flexRow"
-          style="margin-left: 10px; flex-wrap: wrap;"
+          class="flexRow radio__section"
           *ngIf="uiFlag.editMode === 'edit'"
         >
           <span class="flexRow radioSelector" (click)="changeAutoTargetStep(autoStepTarget.close)">
@@ -505,11 +537,11 @@
           </span>
         </div>
       </div>
-      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+      <div class="flexRowWrap childPageContent">
         <span class="contentTitle">
           {{ 'universal_lifeTracking_targetStep' | translate }}：
         </span>
-        <span *ngIf="uiFlag.editMode === 'close'">
+        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
           {{ userInfo.target.step }}
         </span>
         <input
@@ -526,11 +558,11 @@
           {{ 'universal_lifeTracking_step' | translate }}
         </span>
       </div>
-      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+      <div class="flexRowWrap childPageContent">
         <span class="contentTitle">
           {{ 'universal_lifeTracking_targetDistance' | translate }}：
         </span>
-        <span *ngIf="uiFlag.editMode === 'close'">
+        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
           {{ userInfo.target.distance | lengthSibs: {
             userUnit: userInfo.unit,
             valueUnit: 'm',
@@ -560,11 +592,11 @@
           ] }}
         </span>
       </div>
-      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+      <div class="flexRowWrap childPageContent">
         <span class="contentTitle">
           {{ 'universal_lifeTracking_targetClimbGain' | translate }}：
         </span>
-        <span *ngIf="uiFlag.editMode === 'close'">
+        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
           {{ userInfo.target.elevGain }}
         </span>
         <input
@@ -581,11 +613,11 @@
           {{ 'universal_group_layer' | translate }}
         </span>
       </div>
-      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+      <div class="flexRowWrap childPageContent">
         <span class="contentTitle">
           {{ 'universal_lifeTracking_targetCalories' | translate }}：
         </span>
-        <span *ngIf="uiFlag.editMode === 'close'">
+        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
           {{ userInfo.target.calorie }}
         </span>
         <input
@@ -602,11 +634,11 @@
           cal
         </span>
       </div>
-      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+      <div class="flexRowWrap childPageContent">
         <span class="contentTitle">
           {{ 'universal_lifeTracking_targetFitTime' | translate }}：
         </span>
-        <span *ngIf="uiFlag.editMode === 'close'">
+        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
           {{ userInfo.target.fitTime / 60 | number: '1.0-0' }}
         </span>
         <input
@@ -623,11 +655,11 @@
           {{ 'universal_unit_minute' | translate }}
         </span>
       </div>
-      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+      <div class="flexRowWrap childPageContent">
         <span class="contentTitle">
           {{ 'universal_lifeTracking_targetSleepTime' | translate }}：
         </span>
-        <span *ngIf="uiFlag.editMode === 'close'">
+        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
           {{ userInfo.target.sleep / 3600 | number: '1.0-1' }}
         </span>
         <input
@@ -644,12 +676,12 @@
           {{ 'universal_time_hour' | translate }}
         </span>
       </div>
-      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+      <div class="flexRowWrap childPageContent">
         <span class="contentTitle">
           {{ 'universal_lifeTracking_target' | translate }}
           {{ 'universal_userProfile_limit_bodyWeight' | translate }}：
         </span>
-        <span *ngIf="uiFlag.editMode === 'close'">
+        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
           {{ userInfo.target.bodyWeight | weightSibs: [userInfo.unit, 1] }}
         </span>
         <input
@@ -669,12 +701,12 @@
           ] }}
         </span>
       </div>
-      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+      <div class="flexRowWrap childPageContent">
         <span class="contentTitle">
           {{ 'universal_lifeTracking_target' | translate }}
           {{ 'universal_userProfile_muscleRate' | translate }}：
         </span>
-        <span *ngIf="uiFlag.editMode === 'close'">
+        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
           {{ userInfo.target.muscleRate }}
         </span>
         <input
@@ -691,12 +723,12 @@
           %
         </span>
       </div>
-      <div class="flexRow childPageContent" style="flex-wrap: wrap;">
+      <div class="flexRowWrap childPageContent">
         <span class="contentTitle">
           {{ 'universal_lifeTracking_target' | translate }}
           {{ 'universal_lifeTracking_fatRate' | translate }}：
         </span>
-        <span *ngIf="uiFlag.editMode === 'close'">
+        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
           {{ userInfo.target.fatRate }}
         </span>
         <input
@@ -718,19 +750,27 @@
 </section>
 <ng-template #timeSelect>
   <div id="time__Selector" class="flexRow">
-    <div id="hour__selector" class="flexCol scroll__time" style="top: -25px;">
+    <div
+      id="hour__selector"
+      class="flexCol scroll__time"
+      style="top: -25px;"
+    >
       <ng-container *ngFor="let _hour of timeSelector.hourList">
         <span
           [class.current__selector]="timeSelector.hour === _hour"
-          (click)="selectTime($event, 'currentHour', _hour)"
+          (click)="selectTime($event, 'hour', _hour)"
         >{{ _hour }}</span>
       </ng-container>
     </div>
-    <div id="min__selector" class="flexCol scroll__time" style="top: -25px;">
+    <div
+      id="min__selector"
+      class="flexCol scroll__time"
+      style="top: -25px;"
+    >
       <ng-container *ngFor="let _min of timeSelector.minList">
         <span
           [class.current__selector]="timeSelector.min === _min"
-          (click)="selectTime($event, 'currentMin', _min)"
+          (click)="selectTime($event, 'min', _min)"
         >{{ _min }}</span>
       </ng-container>
     </div>

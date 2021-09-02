@@ -6,9 +6,9 @@ import moment from 'moment';
 import { UserInfoService } from '../../services/userInfo.service';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
-import { Router } from '@angular/router';
 import { ReportConditionOpt } from '../../../../shared/models/report-condition';
 import { ReportService } from '../../../../shared/services/report.service';
+import { unit } from '../../../../shared/models/bs-constant';
 
 
 const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ',
@@ -21,8 +21,8 @@ const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ',
   styleUrls: ['./activity-list.component.scss']
 })
 export class ActivityListComponent implements OnInit, OnDestroy {
-  private ngUnsubscribe = new Subject;
-  private scrollEvent = new Subscription;
+  private ngUnsubscribe = new Subject();
+  private scrollEvent = new Subscription();
 
   /**
    * ui 會用到的flag
@@ -63,12 +63,13 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   activityList = [];
   targetUserId: number;
   totalCounts = 0;
+  unit = unit.metric;
+  readonly sportCode = SportCode;
 
   constructor(
     private activityService: ActivityService,
     private utils: UtilsService,
     private userInfoService: UserInfoService,
-    private router: Router,
     private reportService: ReportService
   ) { }
 
@@ -85,8 +86,9 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     this.userInfoService.getRxTargetUserInfo().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
-      const { userId, systemAccessRight } = res;
+      const { userId, systemAccessRight, unit: userUnit } = res;
       this.targetUserId = systemAccessRight ? undefined : userId;
+      this.unit = userUnit !== undefined ? userUnit : unit.metric;
       this.reportService.setReportCondition(this.reportConditionOpt);
       this.getReportSelectedCondition();
     });
@@ -109,6 +111,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       if (this.uiFlag.progress >= 10 && this.uiFlag.progress < 100) {
         const condition = res as any,
               { date: { startTimestamp, endTimestamp }, sportType, keyword } = condition;
+        this.reportConditionOpt = this.utils.deepCopy(res);
         this.listReq.type = sportType;
         this.listReq.filterStartTime = moment(startTimestamp).format(dateFormat);
         this.listReq.filterEndTime = moment(endTimestamp).format(dateFormat);
@@ -142,7 +145,6 @@ export class ActivityListComponent implements OnInit, OnDestroy {
         this.activityList = this.activityList.concat(this.handleScenery(info));
         this.totalCounts = totalCounts;
         this.uiFlag.progress = 100;
-console.log('sport list', this.activityList, this.activityList);
       }
 
     });

@@ -693,11 +693,21 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   saveCreateContent() {
     this.uiFlag.isLoading = true;
     this.groupService.createGroup(this.createBody).subscribe(res => {
-
-      if (res.resultCode !== 200) {
+      const { resultCode } = res;
+      if (resultCode !== 200) {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
-        const msg = `Error.<br />Please check Plans status or try again later.`;
-        this.utils.openAlert(msg);
+        let msg: string;
+        switch (resultCode) {
+          case 409:
+            msg = `群組名稱重複，請更換名稱`;
+            this.utils.openAlert(msg);
+            break;
+          default:
+            msg = `Error.<br />Please check Plans status or try again later.`;
+            this.utils.openAlert(msg);
+            break;
+        }
+        
       } else {
         this.groupService.saveNewGroupId(res.info.newGroupId);
         this.closeEditMode('complete');

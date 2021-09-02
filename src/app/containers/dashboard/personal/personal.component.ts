@@ -169,8 +169,10 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-20200714
    */
   checkScreenSize() {
-    
-    setTimeout(() => {
+    // 確認多國語系載入後再計算按鈕位置
+    this.translate.get('hellow world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
       const navSection = this.navSection.nativeElement,
             navSectionWidth = navSection.clientWidth;
       let reservedSpace = 0;
@@ -294,7 +296,6 @@ export class PersonalComponent implements OnInit, OnDestroy {
     this.userProfileService.getRxUserProfile().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
-console.log('userProfile', res);
       this.uiFlag.hideScenery = false;
       this.userProfile = res;
       this.userInfoService.setRxTargetUserInfo(res);

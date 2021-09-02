@@ -2,6 +2,7 @@
 @import 'transition.scss';
 
 $turn-gap: 2px;
+$input-width: 60px;
 
 @mixin list-content($bg-color) {
   div {
@@ -25,7 +26,11 @@ $turn-gap: 2px;
 $dot-diameter: 8px;
 
 .num__input {
-  width: 60px;
+  width: $input-width;
+}
+
+.info__content {
+  color: var(--scale-0-255);
 }
 
 #hr__zone__info {
@@ -70,6 +75,7 @@ $dot-diameter: 8px;
 .rangeValue {
   text-align: right;
   width: 28px;
+  @extend .info__content;
 }
 
 .time__selector__section {
@@ -79,10 +85,11 @@ $dot-diameter: 8px;
 #time__Selector {
   position: absolute;
   z-index: 1;
-  background-color: white;
-  width: 80px;
-  height: 125px;
-  top: -50px;
+  background-color: var(--scale-255-60);
+  color: var(--scale-0-255);
+  width: 120px;
+  height: 175px;
+  top: -75px;
   border: 1px solid rgba(150, 150, 150, 1);
   overflow: hidden;
 }
@@ -91,7 +98,6 @@ $dot-diameter: 8px;
   position: absolute;
   width: 50%;
   align-items: center;
-  @include transition(top);
 
   span {
     width: 25px;
@@ -101,7 +107,7 @@ $dot-diameter: 8px;
     @include transition(background-color);
 
     &:hover {
-      background-color: rgb(185 236 255);
+      background-color: rgb(185, 236, 255, 0.5);
       @include transition(background-color);
     }
 
@@ -109,15 +115,25 @@ $dot-diameter: 8px;
 
 }
 
-#hour__selector {
+#hour__selector, #hour__selector__temp {
   left: $turn-gap;
 }
 
-#min__selector {
+#min__selector, #min__selector__temp {
   right: $turn-gap;
 }
 
 .current__selector {
   background-color: $primary-blue !important;
   color: white;
+}
+
+.time__set {
+  display: inline-block;
+  min-width: $input-width;
+}
+
+.radio__section {
+  margin-left: 10px;
+  flex-wrap: wrap;
 }

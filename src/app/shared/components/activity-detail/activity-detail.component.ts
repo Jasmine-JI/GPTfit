@@ -1881,6 +1881,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100220
    */
   returnList() {
+    window.close();
     window.history.back();
   }
 

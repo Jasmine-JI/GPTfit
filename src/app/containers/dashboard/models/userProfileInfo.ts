@@ -51,6 +51,7 @@ export interface UserProfileInfo {
   weightTrainingStrengthLevel?: number;
   wheelSize?: number;
   themeImgUrl?: string;
+  accountType?: AccountType;
 }
 
 /**
@@ -69,3 +70,13 @@ export enum hrBase {
 }
 
 export type HrBase = hrBase.max | hrBase.reserve;
+
+/**
+ * 帳號類別
+ */
+export enum accountTypeEnum {
+  email = 1,
+  phone
+}
+
+export type AccountType = accountTypeEnum.email | accountTypeEnum.phone;
