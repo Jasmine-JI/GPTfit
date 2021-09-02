@@ -23,8 +23,12 @@
             <span style="color: rgba(184, 88, 88, 1); font-size: 20px; font-weight: bold; margin-bottom: 10px;">
               {{ 'universal_userAccount_tellToDeleteAccount' | translate }}
             </span>
-            <span class="account__font" *ngIf="user && user.email">{{ user.email }}</span>
-            <span class="account__font" *ngIf="user && user.countryCode">+{{ user.countryCode }} {{ user.mobileNumber }}</span>
+            <span class="account__font" *ngIf="user?.accountType === accountTypeEnum.email">
+              {{ user.email }}
+            </span>
+            <span class="account__font" *ngIf="user?.accountType === accountTypeEnum.phone">
+              +{{ user.countryCode }} {{ user.mobileNumber }}
+            </span>
           </div>
           <div class="flexRow">
             <div
@@ -51,7 +55,9 @@
           <i *ngIf="uiFlag.isLoading" class="fa fa-spinner fa-pulse"></i>
         </button>
       </ng-container>
-      <ng-container *ngIf="destroyResp.status === 1 && user && user.email && !uiFlag.cancelDestroy">
+      <ng-container
+        *ngIf="destroyResp.status === 1 && user?.accountType === accountTypeEnum.email && !uiFlag.cancelDestroy"
+      >
         <div class="flexCol">
           <div class="flexCol">
             <span class="check__account__title">{{ 'universal_userAccount_verifyAccount' | translate }}</span>
@@ -82,11 +88,13 @@
           </button>
         </div>
       </ng-container>
-      <ng-container *ngIf="user && user.countryCode && destroyResp.status === 1 && !uiFlag.cancelDestroy">
+      <ng-container
+        *ngIf="user?.accountType === accountTypeEnum.phone && destroyResp.status === 1 && !uiFlag.cancelDestroy"
+      >
         <div class="flexCol">
           <div class="flexCol">
             <span class="check__account__title">{{ 'universal_userAccount_verifyAccount' | translate }}</span>
-            <span class="check__account" *ngIf="user && user.countryCode">+{{ user.countryCode }} {{ user.mobileNumber }}</span>
+            <span class="check__account">+{{ user?.countryCode }} {{ user?.mobileNumber }}</span>
             <div style="height: 50px;" class="flexCol">
               <span>
                 <input
@@ -96,7 +104,7 @@
                   (change)="handleVerifyCode($event)"
                 >
                 <button
-                  style="border: none; background-color: rgba(35, 160, 218, 1); width: 130px; height: 30px; border-radius: 30px; color: white; margin-left: 10px;"
+                  id="counter__btn"
                   [class.appview-btn-unclickable]="uiFlag.isLoading || timeCount !== 30"
                   (click)="applyDestroy()"
                 >{{ 'universal_operating_send' | translate }}({{ timeCount }}s)</button>
@@ -108,7 +116,7 @@
             <span>{{ 'universal_userAccount_smsVerificationInstructions' | translate }}</span>
           </div>
           <button
-            style="margin-top: 0px; display: block; background-color: rgba(217, 35, 35, 1); margin-top: 20px;"
+            id="verify__btn"
             class="appview-btn"
             [class.appview-btn-unclickable]="uiFlag.isLoading || uiFlag.cancelDestroyLoading || verifyCode.length === 0"
             (click)="submitVerifyCode()"

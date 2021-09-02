@@ -13,6 +13,7 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
 import { TranslateService } from '@ngx-translate/core';
 import { last } from 'rxjs/operators';
 import moment from 'moment';
+import { accountTypeEnum } from '../../../dashboard/models/userProfileInfo';
 
 const errorMsg = 'Error!<br />Please try again later.';
 
@@ -30,6 +31,7 @@ interface UserInfo {
   enableStatus: string;
   lastLogin: string;
   lastResetPwd: string;
+  accountType: number;
 }
 
 @Component({
@@ -38,22 +40,9 @@ interface UserInfo {
   styleUrls: ['./inner-test.component.scss']
 })
 export class InnerTestComponent implements OnInit {
-  constructor(
-    private groupService: GroupService,
-    private utils: UtilsService,
-    public dialog: MatDialog,
-    private hashIdService: HashIdService,
-    private userProfileService: UserProfileService,
-    private auth: AuthService,
-    private router: Router,
-    private translate: TranslateService
-  ) {
-    this.onGroupEncode = debounce(this.onGroupEncode, 1000);
-    this.onGroupDecode = debounce(this.onGroupDecode, 1000);
-  }
-
   userInfo: UserInfo = {
     userName: '',
+    accountType: accountTypeEnum.email,
     userId: null,
     userPageLink: '',
     userDeviceLog: '',
@@ -89,6 +78,21 @@ export class InnerTestComponent implements OnInit {
   hashUserId: string;
   groupLevel: number;
   flag = 402;
+  readonly accountType = accountTypeEnum;
+
+  constructor(
+    private groupService: GroupService,
+    private utils: UtilsService,
+    public dialog: MatDialog,
+    private hashIdService: HashIdService,
+    private userProfileService: UserProfileService,
+    private auth: AuthService,
+    private router: Router,
+    private translate: TranslateService
+  ) {
+    this.onGroupEncode = debounce(this.onGroupEncode, 1000);
+    this.onGroupDecode = debounce(this.onGroupDecode, 1000);
+  }
 
   ngOnInit() {}
 
@@ -105,29 +109,44 @@ export class InnerTestComponent implements OnInit {
     };
 
     this.groupService.fetchUserAvartar(body).subscribe(res => {
-      if (res.resultCode === 200) {
+      const {
+        resultCode,
+        lastResetPwd,
+        userName,
+        accountType,
+        email,
+        countryCode,
+        phone,
+        enableStatus,
+        lastLogin,
+        smallIcon,
+        middleIcon,
+        largeIcon
+      } = res as any;
+      if (resultCode === 200) {
 
-        let lastResetPwd: string;
-        if (res.lastResetPwd !== null && res.lastResetPwd !== '') {
-          lastResetPwd = moment.unix(+res.lastResetPwd).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+        let lastResetPasswordd: string;
+        if (lastResetPwd !== null && lastResetPwd !== '') {
+          lastResetPasswordd = moment.unix(+lastResetPwd).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
         } else {
-          lastResetPwd = '未重設';
+          lastResetPasswordd = '未重設';
         }
 
         this.userInfo = {
-          userName: res.userName,
+          userName,
+          accountType,
           userId: userId,
           userPageLink: `https://${location.hostname}/user-profile/${this.hashIdService.handleUserIdEncode(userId.toString())}`,
           userDeviceLog: `https://${location.hostname}/dashboard/system/device_log/detail/${userId}`,
-          smallIcon: this.utils.buildBase64ImgString(res.smallIcon),
-          middleIcon: this.utils.buildBase64ImgString(res.middleIcon),
-          largeIcon: this.utils.buildBase64ImgString(res.largeIcon),
-          email: res.email,
-          countryCode: res.countryCode,
-          phone: res.phone,
-          enableStatus: res.enableStatus,
-          lastLogin: moment.unix(+res.lastLogin).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-          lastResetPwd: lastResetPwd
+          smallIcon: this.utils.buildBase64ImgString(smallIcon),
+          middleIcon: this.utils.buildBase64ImgString(middleIcon),
+          largeIcon: this.utils.buildBase64ImgString(largeIcon),
+          email,
+          countryCode,
+          phone,
+          enableStatus,
+          lastLogin: moment.unix(+lastLogin).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          lastResetPwd: lastResetPasswordd
         };
 
         this.handleAvartarInfo(this.userInfo.smallIcon, 1);

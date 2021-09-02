@@ -28,3 +28,8 @@
 .setting__desc {
   margin-bottom: 5px;
 }
+
+.unclickable {
+  cursor: progress;
+  pointer-events: none;
+}

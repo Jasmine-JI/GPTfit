@@ -30,7 +30,7 @@ const wheelSizeCoefficient = inch * 10;
   templateUrl: './setting-prefer.component.html',
   styleUrls: ['./setting-prefer.component.scss', '../personal-child-page.scss']
 })
-export class SettingPreferComponent implements OnInit {
+export class SettingPreferComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
   private clickEvent = new Subscription();
   private wheelEvent = new Subscription();
@@ -44,7 +44,9 @@ export class SettingPreferComponent implements OnInit {
     editMode: 'close',
     showHrZoneDesc: null,
     showFtpZoneDesc: null,
-    showTimeSelector: null
+    showTimeSelector: null,
+    valueShifting: false,
+    isMobile: 'ontouchmove' in window
   };
 
   /**
@@ -91,8 +93,8 @@ export class SettingPreferComponent implements OnInit {
    * 時間選擇器用
    */
   timeSelector = {
-    hourList: ['21', '22', '23', '00', '01', '02', '03'],
-    minList: ['57', '58', '59', '00', '01', '02', '03'],
+    hourList: ['20', '21', '22', '23', '00', '01', '02', '03', '04'],
+    minList: ['56', '57', '58', '59', '00', '01', '02', '03', '04'],
     hour: '00',
     min: '00'
   };
@@ -365,9 +367,9 @@ export class SettingPreferComponent implements OnInit {
   checkFormat(e: KeyboardEvent, haveDot = false) {
     const { key, target: { value } } = e as any,
           numTest = formTest.number.test(`${key}`),
-          notFnKey = key.length <= 1,
-          checkDot = haveDot ? !value.includes('.') && key === '.' : key !== '.';
-    if (!numTest && notFnKey && !checkDot) {
+          isFnKey = key.length > 1,
+          checkDot = key === '.' && haveDot && !value.includes('.');
+    if (!(numTest || isFnKey || checkDot)) {
       e.preventDefault();
     }
 
@@ -702,11 +704,11 @@ export class SettingPreferComponent implements OnInit {
       const min = 1300,
             max = 5000;
       if (inputValue < min) {
-        this.setting.target.step = min;
+        this.setting.target.calorie = min;
       } else if (inputValue > max) {
-        this.setting.target.step = max;
+        this.setting.target.calorie = max;
       } else {
-        this.setting.target.step = inputValue;
+        this.setting.target.calorie = inputValue;
       }
 
       (e as any).target.value = this.setting.target.calorie;
@@ -773,16 +775,6 @@ export class SettingPreferComponent implements OnInit {
       const { sleep } = this.userInfo.target;
       (e as any).target.value = this.utils.rounding(sleep / 3600, 1);
     }
-
-  }
-
-  /**
-   * 變更時間設定
-   * @param e {MouseEvent}
-   * @param type {TimeEditType}-變更時間的欄位類別
-   * @author kidin-1100826
-   */
-  handleTimeInput(e: MouseEvent, type: TimeEditType) {
 
   }
 
@@ -881,10 +873,10 @@ export class SettingPreferComponent implements OnInit {
    * @author kidin-1100830
    */
   openTimeSelector(type: 'normalBedTime' | 'normalWakeTime') {
-    const [hour, min, second] = this.userInfo[type].split(':'),
+    const [hour, min, second] = this.setting[type].split(':'),
           hourList = [],
           minList = [];
-    for (let i = -3; i <= 3; i++) {
+    for (let i = -4; i <= 4; i++) {
       const _hour = +hour + i,
             _min = +min + i;
       hourList.push(this.timeCheck(_hour, 'hour'));
@@ -897,20 +889,13 @@ export class SettingPreferComponent implements OnInit {
       hourList,
       minList
     };
-console.log('time selector', this.timeSelector);
+
     this.uiFlag.showTimeSelector = type;
-    this.subscribeGlobalClick();
     setTimeout(() => {
       const hourEl = document.getElementById('hour__selector'),
             minEl = document.getElementById('min__selector');
-      if ('onwheel' in window) {
-        this.subscribeWheelEvent(hourEl, minEl);
-      }
-
-      if ('ontouchmove' in window) {
-        this.subscribeTouchEvent(hourEl, minEl);
-      }
-
+      this.subscribeWheelEvent(hourEl, minEl);
+      this.subscribeGlobalClick();
     });
     
   }
@@ -925,7 +910,7 @@ console.log('time selector', this.timeSelector);
     const max = type === 'hour' ? 24 : 60;
     if (value < 0) {
       return (`${value + max}`.padStart(2, '0'));
-    } else if (value > max) {
+    } else if (value >= max) {
       return (`${value - max}`.padStart(2, '0'));
     } else {
       return (`${value}`.padStart(2, '0'));
@@ -940,60 +925,70 @@ console.log('time selector', this.timeSelector);
    * @author kidin-1100830
    */
   subscribeWheelEvent(hourEl: Element, minEl: Element) {
-console.log('element', hourEl, minEl);
     const hourWheelEvent = fromEvent(hourEl, 'wheel'),
           minWheelEvent = fromEvent(minEl, 'wheel');
     this.wheelEvent = merge(hourWheelEvent, minWheelEvent).pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(e => {
       e.preventDefault();
-      const shiftY = 25,
-            { 
-              deltaY,
-              currentTarget: {
-                id,
-                style: {
-                  top
-                }
-              }
-            } = e as any;
-      const topVal = +top.split('px')[0],
-            timeType = id.split('__')[0],
-            ref = `${timeType}List`,
-            refList = this.timeSelector[ref],
-            targetEl = document.getElementById(id),
-            selectorList = document.querySelectorAll(`#${id} span`);
-      if (deltaY > 0) {
-        (e as any).currentTarget.style.top = `${topVal - shiftY}px`;
-        const lastVal = refList[refList.length - 1],
-              newVal = this.timeCheck(+lastVal + 1, timeType),
-              newEl = document.createElement('span');
-        newEl.innerHTML = newVal;
-        targetEl.appendChild(newEl);
-        targetEl.removeChild(selectorList[0]);
-      } else {
-        (e as any).currentTarget.style.top = `${topVal + shiftY}px`;
-        const firstVal = refList[0],
-              newVal = this.timeCheck(+firstVal - 1, timeType),
-              newEl = document.createElement('span');
-        newEl.innerHTML = newVal;
-        targetEl.insertBefore(newEl, targetEl.firstChild);
-        targetEl.removeChild(selectorList[selectorList.length - 1]);
+      // 避免正在校正數值與位置時又觸發滾輪事件
+      if (!this.uiFlag.valueShifting) {
+        this.uiFlag.valueShifting = true;
+        const ttlShift = 25,  // 數字偏移量
+              animationTime = 25,  // 總偏移時間
+              interval = 5,  // 偏移間隔時間
+              { deltaY, currentTarget } = e as any,
+              { id, style: { top } } = currentTarget,
+              topVal = +top.split('px')[0],
+              timeType = id.split('__')[0],  // hour或min
+              ref = `${timeType}List`;  // hourList或minList
+        let refList = this.timeSelector[ref],
+            start = 0;
+        const animation = setInterval(() => {
+          start += interval;
+          if (start >= animationTime) {
+            // 將位置校正回來
+            if (deltaY > 0) {
+              const lastVal = refList[refList.length - 1],
+                    newVal = this.timeCheck(+lastVal + 1, timeType);
+              refList.push(newVal);
+              refList.shift();
+            } else {
+              const firstVal = refList[0],
+                    newVal = this.timeCheck(+firstVal - 1, timeType);
+              refList.unshift(newVal);
+              refList.pop();
+            }
+            
+            currentTarget.style.top = `${topVal}px`;
+            clearInterval(animation);
+            this.uiFlag.valueShifting = false;
+          } else {
+            const shift = ttlShift * (start / animationTime);
+            if (deltaY > 0) {
+              currentTarget.style.top = `${topVal - shift}px`;
+            } else {
+              currentTarget.style.top = `${topVal + shift}px`;
+            }
+
+          }
+
+        }, interval);
+
       }
-      
+
     });
 
   }
 
   /**
-   * 訂閱觸控滑動事件
-   * @param hourEl {Element}-小時選擇器
-   * @param minEl {Element}-分鐘選擇器
+   * 從手機變更時間
+   * @param e {Event}
    * @author kidin-1100830
    */
-  subscribeTouchEvent(hourEl: Element, minEl: Element) {
-    const hourWheelEvent = fromEvent(hourEl, 'touchmove'),
-          minWheelEvent = fromEvent(minEl, 'touchmove');
+  changeTime(e: Event, type: 'normalBedTime' | 'normalWakeTime') {
+    const { value } = (e as any).target;
+    this.setting[type] = `${value}:00`;
   }
 
   /**
@@ -1001,12 +996,12 @@ console.log('element', hourEl, minEl);
    * @author kidin-1100830
    */
   subscribeGlobalClick() {
-    const clickEvent = fromEvent(document, 'click');
+    const clickEvent = fromEvent(document, 'click'),
+          mainBody = document.querySelector('.main-body') as any;
     this.clickEvent = clickEvent.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
-console.log('close selector');
-      // this.closeTimeSelector();
+      this.closeTimeSelector();
     });
 
   }
@@ -1025,13 +1020,16 @@ console.log('close selector');
   /**
    * 選擇時間
    * @param e {MouseEvent}
-   * @param type {'currentHour' | 'currentMin'}-時間單位類別
+   * @param type {TimeEditType}-時間單位類別
    * @param value {string}-所選時間
    * @author kidin-1100830
    */
-  selectTime(e: MouseEvent, type: 'currentHour' | 'currentMin', value: string) {
+  selectTime(e: MouseEvent, type: TimeEditType, value: string) {
     e.stopPropagation();
     this.timeSelector[type] = value;
+    const { showTimeSelector } = this.uiFlag,
+          { hour, min } = this.timeSelector;
+    this.setting[showTimeSelector] = `${hour}:${min}:00`;
   }
 
   /**

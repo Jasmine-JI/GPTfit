@@ -46,11 +46,18 @@ export class UserProfileService {
     this.getUserProfile(body).pipe(
       switchMap(res => this.getMemberAccessRight(body).pipe(
         map(resp => {
-          Object.assign(
-            res.userProfile,
-            {groupAccessRightList: resp.info.groupAccessRight},
-            {systemAccessRight: this.getAllAccessRight(resp.info.groupAccessRight)}
-          )
+          const { processResult, signIn } = res,
+                { resultCode: resCodeB } = resp,
+                getRes = processResult && processResult.resultCode === 200 && resCodeB === 200;
+          if (getRes) {
+            Object.assign(
+              res.userProfile,
+              {groupAccessRightList: resp.info.groupAccessRight},
+              {systemAccessRight: this.getAllAccessRight(resp.info.groupAccessRight)},
+              {accountType: signIn.accountType}
+            )
+
+          }
 
           return res;
         })

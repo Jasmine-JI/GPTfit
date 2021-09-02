@@ -243,8 +243,10 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-20200714
    */
   checkScreenSize() {
-    
-    setTimeout(() => {
+    // 確認多國語系載入後再計算按鈕位置
+    this.translateService.get('hellow world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
       const navSection = this.navSection.nativeElement,
             navSectionWidth = navSection.clientWidth;
 

@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
+import { accountTypeEnum } from '../../models/userProfileInfo';
 
 enum thirdParty {
   strava = 1,
@@ -28,6 +29,7 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
   userInfo: any;
   clientId = 30689;
   stravaApiDomain = 'https://app.alatech.com.tw:5443';
+  readonly accountType = accountTypeEnum;
 
   constructor(
     private userInfoService: UserInfoService,

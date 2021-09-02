@@ -66,6 +66,7 @@ router.post('/userAvartar', function (req, res, next) {
           country_code as countryCode,
           active_status as enableStatus,
           time_stamp as lastLogin,
+          register_category as accountType,
           timestamp_reset_passwd as lastResetPwd,
           gender,
           birthday
@@ -89,22 +90,23 @@ router.post('/userAvartar', function (req, res, next) {
           })
 
         } else if (rows.length > 0) {
+          const row = rows[0];
           res.json({
             resultCode: 200,
-            userId: rows[0].userId,
-            userName: rows[0].userName,
-            smallIcon: rows[0].smallIcon,
-            middleIcon: rows[0].middleIcon,
-            largeIcon: rows[0].largeIcon,
-            email: rows[0].email || '',
-            countryCode: rows[0].countryCode || '',
-            phone: rows[0].phone || '',
-            enableStatus: rows[0].enableStatus,
-            lastLogin: rows[0].lastLogin,
-            lastResetPwd: rows[0].lastResetPwd,
-            gender: rows[0].gender,
-            birthday: rows[0].birthday
-
+            userId: row.userId,
+            userName: row.userName,
+            smallIcon: row.smallIcon,
+            middleIcon: row.middleIcon,
+            largeIcon: row.largeIcon,
+            email: row.email || '',
+            countryCode: row.countryCode || '',
+            phone: row.phone || '',
+            enableStatus: row.enableStatus,
+            lastLogin: row.lastLogin,
+            lastResetPwd: row.lastResetPwd,
+            gender: row.gender,
+            birthday: row.birthday,
+            accountType: +row.accountType
           })
 
         } else {
@@ -122,7 +124,8 @@ router.post('/userAvartar', function (req, res, next) {
             lastResetPwd: null,
             gender: null,
             birthday: null,
-            userList: []
+            userList: [],
+            accountType: null
           })
 
         }

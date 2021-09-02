@@ -28,10 +28,37 @@
               ></i>
               <div class="flexCol" style="align-items: flex-end;">
                 <div class="flexRow" style="align-items: center;">
-                  <ng-container *ngIf="_list.activityInfoLayer.avgHeartRateBpm">
+                  <ng-container
+                    *ngIf="
+                      _list.activityInfoLayer.avgHeartRateBpm
+                      && [sportCode.all, sportCode.aerobic, sportCode.ball].includes(reportConditionOpt.sportType)
+                    "
+                  >
                     <i class="icon-svg_web-icon_p2_006-avg_heart_rate"></i>
                     <span style="font-size: 14px; margin-right: 5px;">
                       {{ _list.activityInfoLayer.avgHeartRateBpm }}
+                    </span>
+                  </ng-container>
+                  <ng-container
+                    *ngIf="
+                      _list.activityInfoLayer.totalDistanceMeters
+                      && [sportCode.run, sportCode.cycle, sportCode.swim, sportCode.row].includes(reportConditionOpt.sportType)
+                    "
+                  >
+                    <i class="icon-svg_web-icon_p2_018-distance"></i>
+                    <span style="font-size: 14px; margin-right: 5px;">
+                      {{ _list.activityInfoLayer.totalDistanceMeters | distanceSibs: [unit, true] }}
+                    </span>
+                  </ng-container>
+                  <ng-container
+                    *ngIf="
+                      _list.activityInfoLayer.totalWeightKg
+                      && reportConditionOpt.sportType === sportCode.weightTrain
+                    "
+                  >
+                    <i class="icon-svg_web-icon_p2_033-weight"></i>
+                    <span style="font-size: 14px; margin-right: 5px;">
+                      {{ _list.activityInfoLayer.totalWeightKg | weightSibs: [unit, 0] }}
                     </span>
                   </ng-container>
                   <i class="icon-svg_web-icon_p1_026-time"></i>

@@ -295,7 +295,6 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
           isMetric = this.userInfo.unit === unit.metric,
           newValue = this.utils.valueConvert(inputValue, !isMetric, false, heightCoefficient, 2),
           valueChanged = newValue !== oldValue;
-console.log('height', inputValue, testFormat, valueChanged, newValue);
     if (inputValue && testFormat && valueChanged) {
       this.editFlag.bodyHeight = true;
       const min = 100,

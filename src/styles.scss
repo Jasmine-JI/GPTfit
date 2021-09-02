@@ -688,6 +688,11 @@ a.ban-send:hover {
   flex-direction: row;
 }
 
+.flexRowWrap {
+  @extend .flexRow;
+  flex-wrap: wrap;
+}
+
 .flexCenter {
   display: flex;
   justify-content: center;
