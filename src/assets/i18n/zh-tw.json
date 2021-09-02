@@ -1,4 +1,4 @@
-{"﻿完整代码": "zh-TW繁体中文",
+{"﻿完整代碼": "zh-TW繁體中文",
  "universal_activityData_100mPace": "百米配速",
  "universal_activityData_500mPace": "五百米配速",
  "universal_activityData_aboveAverage": "高於平均值",
@@ -2414,4 +2414,6 @@
  "universal_system_openFitpair": "裝置綁定群組，將強制開放該裝置Fitpair對象為「任何人」，是否繼續？",
  "universal_app_resetWTProfile": "重置重訓個人化",
  "universal_app_resetWTProfileInfo": "將重訓感應器的個人化設定重設為預設值",
- "universal_system_ageBasedOnReport": "年齡以報告起始日為基準"}
+ "universal_system_ageBasedOnReport": "年齡以報告起始日為基準",
+ "universal_userProfile_tireCircumference": "自行車輪周長"
+}

@@ -1,0 +1,63 @@
+<section class="cardSection">
+  <div class="flexCol cardContent" style="padding-bottom: 50px;">
+    <h5 class="settingTitle">
+      {{ 'universal_vocabulary_accountInformation' | translate }}
+    </h5>
+    <div class="childPageContent">
+      <h6 class="settingSubTitle">
+        {{ 'universal_userProfile_basicInformation' | translate }}
+      </h6>
+      <div class="contentDetail">
+        <span>
+          <span class="contentTitle">{{ 'universal_userAccount_account' | translate }}：</span>
+          <span style="color: var(--scale-75-230); border-bottom: 1px solid var(--scale-75-230);">
+            <ng-container *ngIf="userInfo?.accountType === accountType.email">
+              {{ userInfo.email }}
+            </ng-container>
+            <ng-container *ngIf="userInfo?.accountType === accountType.phone">
+              +{{ userInfo.countryCode }} {{ userInfo.mobileNumber }}
+            </ng-container>
+          </span>
+        </span>
+        <div class="flexRowWrap">
+          <button
+            class="navigate__btn"
+            (click)="navigateToAssignPage('/enableAccount')"
+            *ngIf="userInfo?.accountStatus === 1"
+          >
+            {{ 'universal_deviceSetting_switch' | translate }}
+            {{ 'universal_userAccount_account' | translate }}
+          </button>
+          <button class="navigate__btn" (click)="navigateToAssignPage('/changeAccount')">
+            {{ 'universal_operating_edit' | translate }}
+            {{ 'universal_userAccount_account' | translate }}
+          </button>
+          <button class="navigate__btn" (click)="navigateToAssignPage('/editPassword')">
+            {{ 'universal_userProfile_changePassword' | translate }}
+          </button>
+          <button class="navigate__btn" (click)="navigateToAssignPage('/compressData')">
+            {{ 'universal_userAccount_performDataArchiving' | translate }}
+          </button>
+          <button id="navigate__btn__warn" (click)="navigateToAssignPage('/destroyAccount')">
+            {{ 'universal_userAccount_accountDeletion' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="childPageContent">
+      <h6 class="settingSubTitle">
+        {{ 'universal_userProfile_thirdPartyUsage' | translate }}
+      </h6>
+      <div class="flexCol contentDetail">
+        <div class="flexRow" style="align-items: center;">
+          <span class="contentTitle">Strava：</span>
+          <div
+            class="rod__bar"
+            [class.rod__bar--active]="userInfo?.thirdPartyAgency.strava"
+            (click)="handleStravaStatus()"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

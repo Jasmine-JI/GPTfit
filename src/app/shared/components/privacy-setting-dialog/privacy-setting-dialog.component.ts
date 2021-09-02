@@ -8,10 +8,7 @@ import { UserProfileService } from '../../services/user-profile.service';
 @Component({
   selector: 'app-privacy-setting-dialog',
   templateUrl: './privacy-setting-dialog.component.html',
-  styleUrls: [
-    './privacy-setting-dialog.component.scss',
-    '../../../containers/dashboard/components/settings/privacy-settings/privacy-settings.component.scss'
-  ]
+  styleUrls: ['./privacy-setting-dialog.component.scss']
 })
 export class PrivacySettingDialogComponent implements OnInit {
   i18n = {  // 可能再增加新的翻譯

@@ -90,19 +90,19 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
     if (_type === 10) {
       targetAdminName = '系統開發員(10)';
       adminLists = cloneDeep(this.systemDevelopers); // 深拷貝，避免win修改先影響settings table
-      isCanOpen = this.maxAccessRight < 20 ? true : false;
+      isCanOpen = this.maxAccessRight < 20;
     } else if (_type === 20) {
       targetAdminName = '系統維護員(20)';
       adminLists = cloneDeep(this.systemMaintainers); // 深拷貝，避免win修改先影響settings table
-      isCanOpen = this.maxAccessRight < 30 ? true : false;
+      isCanOpen = this.maxAccessRight < 30;
     } else if (_type === 28) {
       targetAdminName = '系統維護員(28)';
       adminLists = cloneDeep(this.systemPushners); // 深拷貝，避免win修改先影響settings table
-      isCanOpen = this.maxAccessRight < 20 ? true : false;
+      isCanOpen = this.maxAccessRight < 20;
     } else {
       targetAdminName = '行銷與企劃員(29)';
       adminLists = cloneDeep(this.marketingDevelopers); // 深拷貝，避免win修改先影響settings table
-      isCanOpen = this.maxAccessRight < 30 ? true : false;
+      isCanOpen = this.maxAccessRight < 30;
     }
 
     if (isCanOpen) {
@@ -114,7 +114,7 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
           adminLists,
           type: 1,
           onConfirm: this.handleConfirm.bind(this),
-          isInnerAdmin: this.maxAccessRight < 30 ? true : false
+          isInnerAdmin: this.maxAccessRight < 30
         }
       });
     } else {

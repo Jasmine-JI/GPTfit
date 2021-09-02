@@ -2,11 +2,13 @@
 @import 'flex-center.scss';
 @import 'transition.scss';
 @import "transform.scss";
+@import 'keyframes.scss';
 
 $sky-blue: rgba(17, 166, 235, 1);
 $table-fontsize: 14px;
 $segmentation-color: rgba(100, 100, 100, 1);
 $btn-color: rgba(120, 120, 120, 1);
+$info-height: 340px;
 
 
 #portal__detail__page {
@@ -36,9 +38,9 @@ $btn-color: rgba(120, 120, 120, 1);
 
 .function__btn {
   font-size: 30px;
-  cursor: pointer;
   color: $btn-color;
   margin: 10px 2px;
+  padding: 0;
 
   &:hover {
     color: $sky-blue;
@@ -50,6 +52,28 @@ $btn-color: rgba(120, 120, 120, 1);
   cursor: pointer;
   font-size: 20px;
   margin-left: 5px;
+}
+
+.btn__obvious {
+  border: 1px solid;
+  border-radius: 5px;
+  animation: color-gradient 3s infinite;
+
+  @include keyframes(color-gradient) {
+    0% {
+      border-color: rgba(0, 123, 255, 1);
+    }
+
+    50% {
+      border-color: rgba(0, 123, 255, 0);
+    }
+
+    100% {
+      border-color: rgba(0, 123, 255, 1);
+    }
+
+  }
+
 }
 
 #print__datetime {
@@ -67,9 +91,12 @@ $btn-color: rgba(120, 120, 120, 1);
 }
 
 #summary__info {
+  @include center();
   position: relative;
   background-color: rgba(225, 225, 225, 1);
   min-height: 172px;
+  max-height: $info-height;
+  overflow: hidden;
 }
 
 #scenery__img {
@@ -174,7 +201,7 @@ $btn-color: rgba(120, 120, 120, 1);
 }
 
 .lap__info {
-  max-height: 340px;
+  max-height: $info-height;
   overflow-y: scroll;
 }
 
@@ -345,16 +372,10 @@ $btn-color: rgba(120, 120, 120, 1);
 
 /******************************************* media *****************************************/
 
-@media(max-width: 1200px) {
-  .lap__info {
-    max-height: 286px;
-  }
-
-}
 
 @media(max-width: 993px) {
   .lap__info {
-    max-height: 208px;
+    max-height: 253px;
   }
 
   .table__list__subtitle {

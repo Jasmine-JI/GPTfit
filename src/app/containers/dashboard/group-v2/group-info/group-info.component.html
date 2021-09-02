@@ -5,18 +5,12 @@
     style="position: relative;"
     [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
   >
-    <section
-      class="info-ScenerySection"
-      [style.background-image]="
-        uiFlag.portalMode && currentGroupInfo.groupDetail.groupThemeImgUrl ?
-          'url(' + currentGroupInfo.groupDetail.groupThemeImgUrl + ')' : ''
-      "
-    >
+    <section class="info-ScenerySection">
       <img
         class="info-imgAbs"
         [src]="uiFlag.editMode !== 'close' && editImage.scenery.base64 !== null ? editImage.scenery.base64 : currentGroupInfo.groupDetail.groupThemeImgUrl"
         (error)="sceneryError()"
-        *ngIf="(!uiFlag.portalMode || currentGroupInfo.groupDetail.groupThemeImgUrl === undefined) && !uiFlag.hideScenery && uiFlag.editMode !== 'create'"
+        *ngIf="!uiFlag.hideScenery && uiFlag.editMode !== 'create'"
       />
       <img
         class="info-imgAbs"
@@ -307,7 +301,7 @@
     class="flexCenter info-editMask"
     *ngIf="uiFlag.editMode !== 'close' && (uiFlag.openSceneryImgSelector || uiFlag.openIconImgSelector)"
   >
-    <div class="img__selector">
+    <div class="imgSelector">
       <app-image-cropper
         [imgInputEvent]="uiFlag.openIconImgSelector ? editImage.icon.origin : editImage.scenery.origin"
         [albumType]="uiFlag.openIconImgSelector ? 11 : 12"

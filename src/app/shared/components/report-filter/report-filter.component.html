@@ -1,6 +1,6 @@
 <div
   #filterSection
-  style="width: 100%;"
+  style="width: 100%; margin: 0;"
   class="cardContent"
   [class.reportPreviewMode]="uiFlag.isPreviewMode"
   [style.pointer-events]="uiFlag.isLoading ? 'none' : 'initial'"
@@ -143,7 +143,7 @@
         <div class="flexCol" *ngIf="reportConditionOpt.group.branches !== null">
           <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 1">{{ 'universal_group_branch' | translate }}</span>
           <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 2">{{ 'universal_group_companyBranch' | translate }}</span>
-          <div class="flexRow" style="flex-wrap: wrap;">
+          <div class="flexRowWrap">
             <button
               class="condition__btn"
               *ngFor="let _branches of reportConditionOpt.group.branches; let _branchIdx = index;"
@@ -155,7 +155,7 @@
         <div class="flexCol" *ngIf="reportConditionOpt.group.coaches.length > 0">
           <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 1">{{ 'universal_group_coachingClass' | translate }}</span>
           <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 2">{{ 'universal_group_department' | translate }}</span>
-          <div class="flexRow" style="flex-wrap: wrap;">
+          <div class="flexRowWrap">
             <button
               class="condition__btn"
               *ngFor="let _coaches of reportConditionOpt.group.coaches; let _coachIdx = index;"
@@ -168,7 +168,7 @@
     </section>
     <section
       class="flexCol condition__section"
-      *ngIf="reportConditionOpt && reportConditionOpt.pageType === 'sport'"
+      *ngIf="reportConditionOpt && ['sport', 'file'].includes(reportConditionOpt.pageType)"
     >
       <h6 class="condition__title">{{ 'universal_activityData_activityType' | translate }}</h6>
       <div class="flexRow condition__content">
@@ -328,7 +328,7 @@
           (change)="handleAgeRange($event, 'max')"
         >
       </div>
-      <span class="condition__content" style="font-size: 8px; color: red;">
+      <span class="condition__content" style="font-size: 12px; color: red;">
         *{{ 'universal_system_ageBasedOnReport' | translate }}
       </span>
     </section>
@@ -401,8 +401,28 @@
         </div>
       </div>
     </section>
-    <div style="display: flex; justify-content: flex-end;" *ngIf="reportConditionOpt && !reportConditionOpt.hideConfirmBtn">
-      <span class="confirm__btn" (click)="submit()">{{ 'universal_operating_confirm' | translate }}</span>
+    <section
+      class="flexCol condition__section"
+      *ngIf="reportConditionOpt && reportConditionOpt.pageType === 'file'"
+    >
+      <h6 class="condition__title">{{ 'universal_activityData_keyword' | translate }}</h6>
+      <div class="flexRow condition__content">
+        <input
+          id="keyword"
+          type="text"
+          [placeholder]="'universal_activityData_keyword' | translate"
+          (focusout)="handleKeywordInput($event)"
+          (change)="handleKeywordInput($event)"
+        >
+      </div>
+    </section>
+    <div
+      style="display: flex; justify-content: flex-end;"
+      *ngIf="reportConditionOpt && !reportConditionOpt.hideConfirmBtn"
+    >
+      <button class="confirm__btn" (click)="submit()">
+        {{ 'universal_operating_confirm' | translate }}
+      </button>
     </div>
   </main>
 </div>

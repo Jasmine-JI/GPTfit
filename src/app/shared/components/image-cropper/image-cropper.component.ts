@@ -85,11 +85,12 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
         break;
       case 2:
       case 12:
-        this.imageCropSetting.aspectRatio = 3 / 1;
+        this.imageCropSetting.aspectRatio = 3;
         this.imageCropSetting.roundCropper = false;
         this.imageCropSetting.maintainAspectRatio = true;
         break;
       default:
+        this.imageCropSetting.aspectRatio = 1.75;
         this.imageCropSetting.roundCropper = false;
         this.imageCropSetting.maintainAspectRatio = true;
         break;

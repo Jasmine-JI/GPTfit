@@ -411,7 +411,7 @@
               ></app-ring-chart>
             </div>
           </div>
-          <div class="flexRow" style="flex-wrap: wrap;">
+          <div class="flexRowWrap">
             <div
               class="flexCol report-perTypeInfo"
               *ngIf="chart.ring.stroke[sportCode.run - 1] !== 0"
@@ -920,7 +920,7 @@
               <div class="flexRow">
                 <span class="tableMenuTitle">{{'universal_activityData_fieldDisplay' | translate}}</span>
                 <span
-                  style="font-size: 8px; margin-left: 5px;"
+                  style="font-size: 12px; margin-left: 5px;"
                   [style.color]="groupTableOpt.length >= tableColumn.max ? 'red' : '#ababab'"
                 >
                   ({{ 'universal_activityData_most' | translate: {'number': tableColumn.max} }})
@@ -1915,7 +1915,7 @@
               <div class="flexRow">
                 <span class="tableMenuTitle">{{'universal_activityData_fieldDisplay' | translate}}</span>
                 <span
-                  style="font-size: 8px; margin-left: 5px;"
+                  style="font-size: 12px; margin-left: 5px;"
                   [style.color]="personTableOpt.length >= tableColumn.max ? 'red' : '#ababab'"
                 >
                   ({{ 'universal_activityData_most' | translate: {'number': tableColumn.max} }})

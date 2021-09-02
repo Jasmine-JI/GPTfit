@@ -5,14 +5,10 @@
     class="flexCol"
     style="position: relative;"
   >
-    <section
-      class="info-ScenerySection"
-      [style.background-image]="uiFlag.displayPage === 'fitPair' ? 'url(' + (deviceInfo.modelTypeName | productType: 'imgPath') + ')' : ''"
-    >
+    <section class="info-ScenerySection">
       <img
         class="info-imgAbs"
         [src]="deviceInfo.modelTypeName | productType: 'imgPath'"
-        *ngIf="uiFlag.displayPage !== 'fitPair'"
       />
     </section>
     <section class="Info-header" [class.info-portalMode]="uiFlag.displayPage === 'fitPair'">
@@ -228,7 +224,7 @@
         </div>
         <div class="flexCol" style="margin: 15px 0;">
           <h6 class="info-contentTitle">{{ 'universal_deviceSetting_mainApp' | translate }}</h6>
-          <div class="flexRow" style="flex-wrap: wrap;">
+          <div class="flexRowWrap">
             <ng-container *ngFor="let _mainApp of deviceInfo.mainApp">
               <div *ngTemplateOutlet="appCard;
                 context: {
@@ -245,7 +241,7 @@
         </div>
         <div class="flexCol" *ngIf="deviceInfo.secondaryApp && deviceInfo.secondaryApp.length > 0">
           <h6 class="info-contentTitle">{{ 'universal_deviceSetting_otherApp' | translate }}</h6>
-          <div class="flexRow" style="flex-wrap: wrap;">
+          <div class="flexRowWrap">
             <ng-container *ngFor="let _secondaryApp of deviceInfo.secondaryApp">
               <div *ngTemplateOutlet=" appCard;
                 context: {
@@ -354,7 +350,7 @@
         <div class="flexCol">
           <h6 class="info-contentTitle">設備日誌</h6>
           <div>
-            <div class="flexRow" style="flex-wrap: wrap;">
+            <div class="flexRowWrap">
               <mat-form-field class="date__selector">
                 <input
                   matInput
@@ -475,7 +471,7 @@
             <button
               style="background-color: red; border-radius: 5px; color: white; width: 200px;"
               (click)="showUnBondingAlert()"
-              *ngIf="fitPairInfo.deviceBond.id"
+              *ngIf="fitPairInfo.deviceBond.id && systemAccessRight[0] <= 29"
             >
               {{ 'universal_uiFitpair_unbind' | translate }}
             </button>

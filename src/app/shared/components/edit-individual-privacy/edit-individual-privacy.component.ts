@@ -1,12 +1,10 @@
-import { Component, OnInit, Inject, Input } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
 import { TranslateService } from '@ngx-translate/core';
-
 import { UtilsService } from '../../services/utils.service';
 import { SettingsService } from '../../../containers/dashboard/services/settings.service';
-import { PrivacyCode } from '../../models/user-privacy';
+import { PrivacyCode, privacyObj } from '../../models/user-privacy';
 
 @Component({
   selector: 'app-edit-individual-privacy',
@@ -18,9 +16,14 @@ export class EditIndividualPrivacyComponent implements OnInit {
     gym: ''
   };
 
-  showPerObj = true;
-  openObj = [1];
-
+  openObj = [privacyObj.self];
+  readonly privacyObj = privacyObj;
+  readonly anyOneList = [
+    privacyObj.self,
+    privacyObj.myGroup,
+    privacyObj.onlyGroupAdmin,
+    privacyObj.anyone
+  ];
   constructor(
     private utils: UtilsService,
     private settingsService: SettingsService,
@@ -43,23 +46,11 @@ export class EditIndividualPrivacyComponent implements OnInit {
    * @author kidin-1100302
    */
   getCurrentSetting() {
-    setTimeout(() => {
-      if (this.data.openObj.includes(1)) {
-        this.openObj = [...this.data.openObj];
-      } else {
-        this.openObj = [1, ...this.data.openObj];
-      }
-      
-      const radioBtn = document.getElementById('selectObj');
-      if (this.openObj.includes(99)) {
-        radioBtn.classList.add('mat-radio-checked');
-        this.showPerObj = false;
-      } else {
-        radioBtn.classList.remove('mat-radio-checked');
-        this.showPerObj = true;
-      }
-
-    });
+    if (this.data.openObj.includes(privacyObj.self)) {
+      this.openObj = [...this.data.openObj];
+    } else {
+      this.openObj = [privacyObj.self, ...this.data.openObj];
+    }
 
   }
 
@@ -74,39 +65,32 @@ export class EditIndividualPrivacyComponent implements OnInit {
 
   /** 
    * 選擇開放隱私權的對象 1:僅自己 2:我的朋友 3:我的群組 4:我的健身房教練 99:所有人
-   * @param obj {PrivacyCode}
+   * @param privacy {PrivacyCode}
    * @author kidin-1100302
    */
-  selectModifyRange (obj: PrivacyCode) {
-    setTimeout(() => {
-      const radioBtn = document.getElementById('selectObj');
+  selectModifyRange (privacy: PrivacyCode) {
+    const privacySetting = this.openObj;
+    switch (privacy) {
+      case privacyObj.anyone:
+        if (privacySetting.includes(privacyObj.anyone)) {
+          this.openObj = [privacyObj.self];
+        } else {
+          this.openObj = [...this.anyOneList];
+        }
 
-      switch (obj) {
-        case 99:
-          if (this.openObj.includes(obj)) {
-            radioBtn.classList.remove('mat-radio-checked');
-            this.openObj.length = 1;
-            this.showPerObj = true;
-          } else {
-            radioBtn.classList.add('mat-radio-checked');
-            this.openObj.length = 1;
-            this.openObj.push(99);
-            this.showPerObj = false;
-          }
-          break;
-        default:
-          if (this.openObj.includes(obj)) {
-            this.openObj = this.openObj.filter(_obj => {
-              return _obj !== obj;
-            });
-          } else {
-            this.openObj.push(obj);
-            this.openObj.sort();
-          }
-          break;
-      }
+        break;
+      default:
+        if (privacySetting.includes(privacy)) {
+          this.openObj = this.openObj.filter(_setting => {
+            return _setting !== privacy && _setting !== privacyObj.anyone
+          });
+        } else {
+          this.openObj.push(privacy);
+          this.openObj.sort((a, b) => a - b);
+        }
 
-    });
+        break;
+    }
 
   }
 

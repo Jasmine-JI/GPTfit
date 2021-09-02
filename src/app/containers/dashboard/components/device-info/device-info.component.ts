@@ -9,7 +9,7 @@ import moment from 'moment';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { TranslateService } from '@ngx-translate/core';
 import { langList } from '../../../../shared/models/i18n';
-import { GroupService } from '../../services/group.service';
+import { DashboardService } from '../../services/dashboard.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -148,11 +148,11 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     private coachService: CoachService,
     private userProfileService: UserProfileService,
     private translateService: TranslateService,
-    private groupService: GroupService,
     private snackbar: MatSnackBar,
     private dialog: MatDialog,
     private router: Router,
-    private auth: AuthService
+    private auth: AuthService,
+    private dashboardService: DashboardService
   ) { }
 
   ngOnInit(): void {
@@ -243,8 +243,10 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-20200714
    */
   checkScreenSize() {
-    
-    setTimeout(() => {
+    // 確認多國語系載入後再計算按鈕位置
+    this.translateService.get('hellow world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
       const navSection = this.navSection.nativeElement,
             navSectionWidth = navSection.clientWidth;
 
@@ -286,12 +288,12 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1091111
    */
    handleSideBarSwitch() {
-    this.groupService.getRxSideBarMode().pipe(
+    this.dashboardService.getRxSideBarMode().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
 
       setTimeout(() => {
-        this.getBtnPosition(this.uiFlag.currentTagIndex);
+        this.checkScreenSize();
       }, 250); // 待sidebar動畫結束再計算位置
       
     })
@@ -802,20 +804,17 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     const overMaintantner = this.systemAccessRight[0] <= 20,
           overMarketing = this.systemAccessRight[0] <= 29;
     if (this.fitPairInfo.deviceBond.id == this.userId || overMarketing) {
+
       if (this.deviceInfo['odometer']) {
-        this.childPageList = this.childPageList.concat(['management', 'odometer']);
+        this.childPageList = this.childPageList.concat(['management', 'odometer', 'register']);
       } else {
-        this.childPageList = this.childPageList.concat(['management']);
+        this.childPageList = this.childPageList.concat(['management', 'register']);
       }
 
     }
 
     if (overMaintantner) {
       this.childPageList = this.childPageList.concat(['log']);
-    }
-
-    if (overMarketing) {
-      this.childPageList = this.childPageList.concat(['register']);
     }
 
   }

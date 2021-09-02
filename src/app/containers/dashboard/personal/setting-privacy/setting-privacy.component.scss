@@ -1,0 +1,35 @@
+.setting__section {
+  margin-left: 10px;
+
+  button {
+    margin-right: 5px;
+  }
+
+  label, i {
+    color: var(--scale-0-255);
+  }
+
+}
+
+.list__item {
+  margin: 5px;
+
+  label {
+    border-bottom: 1px solid var(--scale-100-205);
+    cursor: pointer;
+  }
+
+  i {
+    font-size: 20px;
+  }
+
+}
+
+.setting__desc {
+  margin-bottom: 5px;
+}
+
+.unclickable {
+  cursor: progress;
+  pointer-events: none;
+}

@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
+import { UtilsService } from '../../../services/utils.service';
 
 @Component({
   selector: 'app-threshold-info',
@@ -6,6 +7,9 @@ import { Component, OnInit, Input, OnChanges } from '@angular/core';
   styleUrls: ['./threshold-info.component.scss']
 })
 export class ThresholdInfoComponent implements OnInit, OnChanges {
+
+  @Input('cycleFtp') cycleFtp: number = 200;
+
   ftpZoneRange = {
     z0: 109,
     z1: 149,
@@ -16,9 +20,12 @@ export class ThresholdInfoComponent implements OnInit, OnChanges {
     z6: ' ', // 最上層不顯示數值
   };
 
-  constructor() { }
+  constructor(
+    private utils: UtilsService
+  ) { }
 
   ngOnInit(): void {
+    this.ftpZoneRange = this.utils.getUserFtpZone(this.cycleFtp);
   }
 
   ngOnChanges () {}

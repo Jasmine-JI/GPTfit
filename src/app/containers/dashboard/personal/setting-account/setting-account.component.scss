@@ -1,0 +1,65 @@
+@import 'button.scss';
+@import 'color.scss';
+@import 'transition.scss';
+
+$rod-size: 18px;
+$rod-bar-height: 12px;
+
+@mixin account-btn($bg-color) {
+  margin: 10px 5px 5px 5px;
+  height: 30px;
+  width: fit-content;
+  opacity: 0.8;
+  @include button(14px, none, $bg-color) {
+    border-radius: 5px;
+    color: white;
+  }
+
+  &:hover {
+    opacity: 1;
+  }
+
+}
+
+.navigate__btn {
+  @include account-btn($primary-blue);
+}
+
+#navigate__btn__warn {
+  @include account-btn($warn-red);
+}
+
+.rod__bar {
+  position: relative;
+  background-color: var(--scale-150-180);
+  height: $rod-bar-height;
+  width: 40px;
+  border-radius: $rod-bar-height;
+  margin-left: 10px;
+  cursor: pointer;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: calc((#{$rod-bar-height} - #{$rod-size}) / 2);
+    left: 0px;
+    height: $rod-size;
+    width: $rod-size;
+    border-radius: 50%;
+    border: 1px solid var(--scale-200-0);
+    background-color: white;
+    @include multiple-transition((left $move-effect, background-color $move-effect));
+
+  }
+
+}
+
+.rod__bar--active {
+
+  &:before {
+    left: 22px;
+    background-color: $primary-blue;
+    @include multiple-transition((left $move-effect, background-color $move-effect));
+  }
+
+}

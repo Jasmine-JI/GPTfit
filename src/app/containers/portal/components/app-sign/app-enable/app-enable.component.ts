@@ -7,11 +7,11 @@ import { UserInfoService } from '../../../../dashboard/services/userInfo.service
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 import { AuthService } from '@shared/services/auth.service';
-
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { accountTypeEnum } from '../../../../dashboard/models/userProfileInfo';
 
 const errorMsg = 'Error!<br /> Please try again later.';
 
@@ -118,7 +118,6 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 確認ngx translate套件已經載入再產生翻譯-kidin-1090430
   createPlaceholder () {
-
     this.translate.get('hellow world').pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
@@ -146,11 +145,8 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 取得url query string和token-kidin-1090514
   getUrlString (urlStr) {
-
     const query = urlStr.replace('?', '').split('&');
-
     for (let i = 0; i < query.length; i++) {
-
       const queryKey = query[i].split('=')[0];
       switch (queryKey) {
         case 'tk':
@@ -196,22 +192,24 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
       };
 
       this.userProfileService.getUserProfile(body).subscribe(res => {
+        if (this.utils.checkRes(res)) {
+          const { userProfile, signIn: { accountType } } = res as any;
+          if (accountType === accountTypeEnum.email) {
+            this.accountInfo = {
+              type: 1,
+              account: userProfile.email,
+              id: userProfile.userIdk
+            };
+          } else {
+            this.accountInfo = {
+              type: 2,
+              account: `+${userProfile.countryCode} ${userProfile.mobileNumber}`,
+              id: userProfile.userId
+            };
 
-        const profile = res.userProfile;
-        if (profile.email) {
-          this.accountInfo = {
-            type: 1,
-            account: profile.email,
-            id: profile.userIdk
-          };
-        } else {
-          this.accountInfo = {
-            type: 2,
-            account: `+${profile.countryCode} ${profile.mobileNumber}`,
-            id: profile.userId
-          };
+            this.reciprocal();
+          }
 
-          this.reciprocal();
         }
 
       });
@@ -258,9 +256,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.imgCaptcha.show) {
       this.removeCaptcha('reciprocal');
     } else {
-
       this.sendingPhoneCaptcha = true;
-
       const body = {
         enableAccountFlow: 1,
         token: this.appInfo.token,
@@ -268,7 +264,6 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
       };
 
       this.userInfoService.fetchEnableAccount(body, this.ip).subscribe(res => {
-
         const resultInfo = res.processResult;
         if (resultInfo.resultCode !== 200) {
 
@@ -346,7 +341,6 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
   checkImgCaptcha (e) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputImgCaptcha = e.currentTarget.value;
-
       if (inputImgCaptcha.length === 0) {
         this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
       } else {
@@ -359,12 +353,10 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 進行啟用帳號流程-kidin-1090515
   submit () {
-
     if (this.imgCaptcha.show) {
       this.removeCaptcha('submit');
     } else {
       this.sending = true;
-
       const body = {
         enableAccountFlow: 2,
         token: this.appInfo.token,
@@ -379,7 +371,6 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       this.signupService.fetchEnableAccount(body, this.ip).subscribe(res => {
-
         if (res.processResult.resultCode !== 200) {
           let msgBody;
           switch (res.processResult.apiReturnMessage) {
@@ -485,7 +476,6 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
       this.sending = true;
 
       this.signupService.fetchEnableAccount(body, this.ip).subscribe(res => {
-
         let msgBody;
         if (res.processResult.resultCode !== 200) {
 
@@ -585,9 +575,9 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
       window.onunload = this.refreshParent;
       // 若無法關閉瀏覽器則導回登入頁
       if (this.pcView === true) {
-        this.router.navigateByUrl(this.utils.getToken() ? '/firstLogin-web' : '/signIn-web');
+        this.router.navigateByUrl(this.utils.getToken() ? '/dashboard/user-settings' : '/signIn-web');
       } else {
-        this.router.navigateByUrl(this.utils.getToken() ? '/firstLogin' : '/signIn');
+        this.router.navigateByUrl(this.utils.getToken() ? '/dashboard/user-settings' : '/signIn');
       }
 
     }

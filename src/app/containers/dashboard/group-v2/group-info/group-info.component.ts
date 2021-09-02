@@ -13,10 +13,11 @@ import { HashIdService } from '../../../../shared/services/hash-id.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { v5 as uuidv5 } from 'uuid';
 import { ImageUploadService } from '../../services/image-upload.service';
-import { AlbumType } from '../../../../shared/models/image';
+import { AlbumType, albumType } from '../../../../shared/models/image';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { PrivacySettingDialogComponent } from '../../../../shared/components/privacy-setting-dialog/privacy-setting-dialog.component';
-import { unit } from '../../../../shared/models/bs-constant'
+import { unit } from '../../../../shared/models/bs-constant';
+import { DashboardService } from '../../services/dashboard.service';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -147,7 +148,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     private utils: UtilsService,
     private userProfileService: UserProfileService,
     private dialog: MatDialog,
-    private imageUploadService: ImageUploadService
+    private imageUploadService: ImageUploadService,
+    private dashboardService: DashboardService
   ) {}
 
   /**
@@ -186,12 +188,12 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091111
    */
   handleSideBarSwitch() {
-    this.groupService.getRxSideBarMode().pipe(
+    this.dashboardService.getRxSideBarMode().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
 
       setTimeout(() => {
-        this.getBtnPosition(this.uiFlag.currentTagIndex);
+        this.checkScreenSize();
       }, 250); // 待sidebar動畫結束再計算位置
       
     })
@@ -233,22 +235,30 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         if (this.editImage.icon.base64 !== null) {
           const fileName = this.createFileName(imgArr.length, this.currentGroupInfo.groupDetail.groupId);
           imgArr.unshift({
-            albumType: 11,
+            albumType: albumType.groupIcon,
             fileNameFull: `${fileName}.jpg`
           })
 
-          formData.append('file', this.base64ToFile(11, this.editImage.icon.base64, fileName));
+          formData.append(
+            'file',
+            this.utils.base64ToFile(albumType.groupIcon, this.editImage.icon.base64, fileName)
+          );
+
         }
 
         // 群組佈景
         if (this.editImage.scenery.base64 !== null) {   
           const fileName = this.createFileName(imgArr.length, this.currentGroupInfo.groupDetail.groupId);
           imgArr.unshift({
-            albumType: 12,
+            albumType: albumType.groupScenery,
             fileNameFull: `${fileName}.jpg`
           })
 
-          formData.append('file', this.base64ToFile(12, this.editImage.scenery.base64, fileName));
+          formData.append(
+            'file',
+            this.utils.base64ToFile(albumType.groupScenery, this.editImage.scenery.base64, fileName)
+          );
+
         }
 
         formData.set('img', JSON.stringify(imgArr));
@@ -262,22 +272,29 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
           if (this.editImage.icon.base64 !== null) {
             const fileName = this.createFileName(imgArr.length, this.newGroupId);
             imgArr.unshift({
-              albumType: 11,
+              albumType: albumType.groupIcon,
               fileNameFull: `${fileName}.jpg`
             })
 
-            formData.append('file', this.base64ToFile(11, this.editImage.icon.base64, fileName));
+            formData.append(
+              'file',
+              this.utils.base64ToFile(albumType.groupIcon, this.editImage.icon.base64, fileName)
+            );
+
           }
 
           // 群組佈景
           if (this.editImage.scenery.base64 !== null) {   
             const fileName = this.createFileName(imgArr.length, this.newGroupId);
             imgArr.unshift({
-              albumType: 12,
+              albumType: albumType.groupScenery,
               fileNameFull: `${fileName}.jpg`
             })
 
-            formData.append('file', this.base64ToFile(12, this.editImage.scenery.base64, fileName));
+            formData.append(
+              'file',
+              this.utils.base64ToFile(albumType.groupScenery, this.editImage.scenery.base64, fileName)
+            );
           }
 
           formData.set('img', JSON.stringify(imgArr));
@@ -347,20 +364,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   createFileName(length: number, groupId: string) {
     const nameSpace = uuidv5('https://www.gptfit.com', uuidv5.URL),
           keyword = `${moment().valueOf().toString()}${length}${groupId.split('-').join('')}`;
-
     return uuidv5(keyword, nameSpace);
-  }
-
-  /**
-   * 將base64的圖片轉為檔案格式
-   * @param albumType {number}-圖片類型
-   * @param base64 {string}-base64圖片
-   * @param fileName {檔案名稱}
-   * @author kidin-1091127
-   */
-  base64ToFile(albumType: AlbumType, base64: string, fileName: string): File {
-    const blob = this.utils.dataUriToBlob(albumType, base64);
-    return new File([blob], `${fileName}.jpg`, {type: 'image/jpeg'});
   }
 
   /**
@@ -520,8 +524,10 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-20200714
    */
   checkScreenSize() {
-    
-    setTimeout(() => {
+    // 確認多國語系載入後再計算按鈕位置
+    this.translate.get('hellow world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
       const navSection = this.navSection.nativeElement,
             navSectionWidth = navSection.clientWidth;
 
@@ -1353,7 +1359,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     if (e.action === 'complete') {
 
       this.editImage.edited = true;
-      if (e.img.albumType === 11) {
+      if (e.img.albumType === albumType.groupIcon) {
         this.editImage.icon.origin = e.img.origin;
         this.editImage.icon.base64 = e.img.base64;
       } else {
@@ -1373,7 +1379,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091204
    */
   sceneryError() {
-    console.error("Can't get group Scenery.");
+    console.error("Can't get group scenery.");
     this.uiFlag.hideScenery = true;
   }
 

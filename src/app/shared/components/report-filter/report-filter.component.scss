@@ -18,6 +18,16 @@ $drop-list-width: 200px;
   @content;
 }
 
+@mixin condition-input($width) {
+  width: $width;
+  color: var(--scale-0-255);
+  border-color: var(--scale-120-200);
+  border-radius: 20px;
+  border-color: rgba(17, 166, 235, 1);
+  outline: none;
+  padding-left: 10px;
+}
+
 .condition__unfold__icon {
   color: var(--scale-100-230);
   @include transition(transform);
@@ -171,8 +181,7 @@ $drop-list-width: 200px;
 
 .confirm__btn {
   @include default-btn(rgba(38, 171, 227, 1));
-  @include transition(top);
-  @include transition(left);
+  @include multiple-transition((top $move-effect, left $move-effect));
   position: relative;
   color: white;
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3);
@@ -184,8 +193,7 @@ $drop-list-width: 200px;
   &:active {
     top: 2px;
     left: 2px;
-    @include transition(top);
-    @include transition(left);
+    @include multiple-transition((top $move-effect, left $move-effect));
   }
 
 }
@@ -233,14 +241,12 @@ $drop-list-width: 200px;
   padding: 2px;
   width: 100%;
   text-align: center;
-  @include transition(color);
-  @include transition(background-color);
+  @include multiple-transition((color $move-effect, background-color $move-effect));
 
   &:hover {
     color: white;
     background-color: $active-color;
-    @include transition(color);
-    @include transition(background-color);
+    @include multiple-transition((color $move-effect, background-color $move-effect));
   }
 
 }
@@ -262,13 +268,11 @@ $drop-list-width: 200px;
 }
 
 .age__input {
-  width: 50px;
-  color: var(--scale-0-255);
-  border-color: var(--scale-120-200);
-  border-radius: 20px;
-  border-color: rgba(17, 166, 235, 1);
-  padding-left: 10px;
-  outline: none;
+  @include condition-input(50px);
+}
+
+#keyword {
+  @include condition-input(200px);
 }
 
 #fitpairing__mark {

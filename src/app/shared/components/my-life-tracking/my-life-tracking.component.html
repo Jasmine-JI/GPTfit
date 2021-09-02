@@ -1,8 +1,5 @@
 <app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
 <div class="flexCol">
-  <span class="pageTitle" *ngIf="!uiFlag.isPreviewMode">
-    {{ 'universal_lifeTracking_lifeTracking' | translate }} {{ 'universal_activityData_report' | translate }}
-  </span>
   <div
     class="cardSection"
     [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
