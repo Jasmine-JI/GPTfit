@@ -254,7 +254,14 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
           if (resultCode !== 200) {
             this.utils.handleError(resultCode, apiCode, resultMessage);
           } else {
-            this.uiFlag.nicknameAlert = repeat ? 'repeat' : null;
+
+            if (repeat) {
+              this.uiFlag.nicknameAlert = 'repeat';
+            } else {
+              this.uiFlag.nicknameAlert = null;
+              this.setting.nickname = name;
+            }
+
           }
 
         });

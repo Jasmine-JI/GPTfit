@@ -37,6 +37,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   groupIdSubscription: Subscription;
   pageResize: Subscription;
   clickEvent: Subscription;
+  scrollEvent: Subscription;
 
   i18n = {
     allMember: '',
@@ -163,6 +164,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.detectParamChange();
     this.detectGroupIdChange();
     this.handlePageResize();
+    if (!this.uiFlag.isPreviewMode) this.handleScroll();
     this.handleSideBarSwitch();
     this.checkEditMode();
   }
@@ -180,6 +182,43 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     ).subscribe(() => {
       this.checkScreenSize();
     });
+
+  }
+
+  /**
+   * 監聽捲動事件，當捲動到tab時，tab固定置頂
+   * @author kidin-1100908
+   */
+  handleScroll() {
+    const targetClass = this.uiFlag.portalMode ? '.main' : '.main-body',
+          targetElement = document.querySelectorAll(targetClass)[0],
+          targetScrollEvent = fromEvent(targetElement, 'scroll');
+    this.scrollEvent = targetScrollEvent.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(e => {
+      this.checkPageListBarPosition();
+    });
+
+  }
+
+  /**
+   * 確認tab位置與寬度
+   * @author kidin-1100908
+   */
+  checkPageListBarPosition() {
+    const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as any,
+          headerDescription = document.querySelectorAll('.info-headerDescription')[0],
+          scenerySection = document.querySelectorAll('.info-ScenerySection')[0],
+          { top: barTop } = pageListBar.getBoundingClientRect(),
+          { bottom: descBottom } = headerDescription.getBoundingClientRect(),
+          { width } = scenerySection.getBoundingClientRect();
+      if (barTop <= 50 && descBottom < 50) {
+        pageListBar.classList.add('info-pageListBar-fixed');
+        pageListBar.style.width = `${width}px`;
+      } else {
+        pageListBar.classList.remove('info-pageListBar-fixed');
+        pageListBar.style.width = `100%`;
+      }
 
   }
 
@@ -560,6 +599,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       }
 
       this.getBtnPosition(this.uiFlag.currentTagIndex);
+      this.checkPageListBarPosition();
     });
 
   }

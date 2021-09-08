@@ -27,3 +27,11 @@ export enum privacyEditObj {
   sportsReport,
   lifeTracking
 }
+
+export const allPrivacyItem = [
+  privacyObj.self,
+  // privacyObj.myFriend
+  privacyObj.myGroup,
+  privacyObj.onlyGroupAdmin,
+  privacyObj.anyone
+];

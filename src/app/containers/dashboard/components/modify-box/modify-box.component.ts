@@ -5,7 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { SettingsService } from '../../services/settings.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
-import { privacyObj, PrivacyCode, privacyEditObj } from '../../../../shared/models/user-privacy';
+import { privacyObj, allPrivacyItem, PrivacyCode, privacyEditObj } from '../../../../shared/models/user-privacy';
 
 
 enum rangeType {
@@ -92,30 +92,43 @@ export class ModifyBoxComponent implements OnInit {
   selectModifyRange(obj: PrivacyCode) {
     switch (obj) {
       case privacyObj.anyone:
-        if (this.openObj.indexOf(obj) >= 0) {
+
+        if (this.openObj.includes(obj)) {
           this.openObj.length = 1;
         } else {
-          this.openObj = [
-            privacyObj.self,
-            privacyObj.myGroup,
-            privacyObj.onlyGroupAdmin,
-            privacyObj.anyone
-          ];
-
+          this.openObj = [...allPrivacyItem];
         }
         break;
+      case privacyObj.myGroup:
+
+        if (this.openObj.includes(privacyObj.myGroup)) {
+          this.openObj = this.openObj.filter(_obj => {
+            return _obj !== privacyObj.myGroup && _obj !== privacyObj.anyone
+          });
+        } else {
+          this.openObj.push(privacyObj.myGroup);
+          // 群組管理員視為同群組成員
+          if (!this.openObj.includes(privacyObj.onlyGroupAdmin)) {
+            this.openObj.push(privacyObj.onlyGroupAdmin);
+          }
+
+        }
+
+        break;
       default:
-        if (this.openObj.indexOf(obj) > 0) {
+
+        if (this.openObj.includes(obj)) {
           this.openObj = this.openObj.filter(_obj => {
             return _obj !== obj && _obj !== privacyObj.anyone;
           });
         } else {
           this.openObj.push(obj);
-          this.openObj.sort();
         }
+
         break;
     }
 
+    this.openObj.sort();
   }
 
   // 根據使用者選擇修改隱私權-kidin-1090331

@@ -28,6 +28,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
   pageResize: Subscription;
   clickEvent: Subscription;
+  scrollEvent: Subscription;
 
   @ViewChild('navSection') navSection: ElementRef;
   @ViewChild('pageListBar') pageListBar: ElementRef;
@@ -39,7 +40,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
    */
   uiFlag = {
     isLoading: false,
-    isPortalMode: false,
+    isPortalMode: !location.pathname.includes('dashboard'),
     isPageOwner: false,
     currentPage: 'activity-list',
     editMode: <EditMode>'close',
@@ -100,7 +101,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.checkPreviewMode(location.search);
     this.handlePageResize();
-    this.checkportalMode();
+    if (!this.uiFlag.isPreviewMode) this.handleScroll();
     this.getNeedInfo();
     this.detectParamChange();
     if (!this.uiFlag.isPortalMode) this.handleSideBarSwitch();
@@ -130,6 +131,43 @@ export class PersonalComponent implements OnInit, OnDestroy {
     ).subscribe(() => {
       this.checkScreenSize();
     });
+
+  }
+
+  /**
+   * 監聽捲動事件，當捲動到tab時，tab固定置頂
+   * @author kidin-1100908
+   */
+  handleScroll() {
+    const targetClass = this.uiFlag.isPortalMode ? '.main' : '.main-body',
+          targetElement = document.querySelectorAll(targetClass)[0],
+          targetScrollEvent = fromEvent(targetElement, 'scroll');
+    this.scrollEvent = targetScrollEvent.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(e => {
+      this.checkPageListBarPosition();
+    });
+
+  }
+
+  /**
+   * 確認tab位置與寬度
+   * @author kidin-1100908
+   */
+  checkPageListBarPosition() {
+    const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as any,
+          headerDescription = document.querySelectorAll('.info-headerDescription')[0],
+          scenerySection = document.querySelectorAll('.info-ScenerySection')[0],
+          { top: barTop } = pageListBar.getBoundingClientRect(),
+          { bottom: descBottom } = headerDescription.getBoundingClientRect(),
+          { width } = scenerySection.getBoundingClientRect();
+      if (barTop <= 50 && descBottom < 50) {
+        pageListBar.classList.add('info-pageListBar-fixed');
+        pageListBar.style.width = `${width}px`;
+      } else {
+        pageListBar.classList.remove('info-pageListBar-fixed');
+        pageListBar.style.width = `100%`;
+      }
 
   }
 
@@ -206,6 +244,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
 
       setTimeout(() => {
         this.getBtnPosition(this.uiFlag.currentTagIndex);
+        this.checkPageListBarPosition();
       }, 250); // 待sidebar動畫結束再計算位置
 
     });
@@ -224,15 +263,6 @@ export class PersonalComponent implements OnInit, OnDestroy {
       this.uiFlag.showMorePageOpt = false;
     });
 
-  }
-
-  /**
-   * 確認是否為登入後頁面
-   * @author kidin-1100811
-   */
-  checkportalMode() {
-    const { pathname } = location;
-    this.uiFlag.isPortalMode = !pathname.includes('dashboard');
   }
 
   /**
