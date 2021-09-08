@@ -4,7 +4,7 @@ import { SettingsService } from '../../services/settings.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { privacyObj, PrivacyCode, privacyEditObj } from '../../../../shared/models/user-privacy';
+import { privacyObj, allPrivacyItem, PrivacyCode, privacyEditObj } from '../../../../shared/models/user-privacy';
 import { MatDialog } from '@angular/material/dialog';
 import { ModifyBoxComponent } from '../../components/modify-box/modify-box.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -44,12 +44,6 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
   userInfo: any;
   readonly privacyObj = privacyObj;
   readonly privacyEditObj = privacyEditObj;
-  readonly anyOneList = [
-    privacyObj.self,
-    privacyObj.myGroup,
-    privacyObj.onlyGroupAdmin,
-    privacyObj.anyone
-  ];
 
   constructor(
     private userInfoService: UserInfoService,
@@ -73,7 +67,7 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
     const checkPrivacy = (privacy: Array<string>) => {
       const transformPrivach = privacy.map(_privacy => +_privacy);
       if (transformPrivach.includes(privacyObj.anyone)) {
-        return [...this.anyOneList];
+        return [...allPrivacyItem];
       } else {
         return transformPrivach;
       }
@@ -104,27 +98,47 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
   changePrivacy(type: PrivacyType, privacy: PrivacyCode) {
     this.uiFlag.progress = 0;
     const privacySetting = this.setting[type];
-    if (privacy === privacyObj.anyone) {
+    switch (privacy) {
+      case privacyObj.anyone:
 
-      if (privacySetting.includes(privacyObj.anyone)) {
-        this.setting[type] = [privacyObj.self];
-      } else {
-        this.setting[type] = [...this.anyOneList];
-      }
+        if (privacySetting.includes(privacyObj.anyone)) {
+          this.setting[type] = [privacyObj.self];
+        } else {
+          this.setting[type] = [...allPrivacyItem];
+        }
 
-    } else {
-      
-      if (privacySetting.includes(privacy)) {
-        this.setting[type] = this.setting[type].filter(_setting => {
-          return _setting !== privacy && _setting !== privacyObj.anyone
-        });
-      } else {
-        this.setting[type].push(privacy);
-        this.setting[type].sort((a, b) => a - b);
-      }
+        break;
+      case privacyObj.myGroup:
 
+        if (privacySetting.includes(privacyObj.myGroup)) {
+          this.setting[type] = this.setting[type].filter(_setting => {
+            return _setting !== privacyObj.myGroup && _setting !== privacyObj.anyone
+          });
+        } else {
+          this.setting[type].push(privacyObj.myGroup);
+          // 群組管理員視為同群組成員
+          if (!privacySetting.includes(privacyObj.onlyGroupAdmin)) {
+            this.setting[type].push(privacyObj.onlyGroupAdmin);
+          }
+
+        }
+
+        break;
+      default:
+
+        if (privacySetting.includes(privacy)) {
+          this.setting[type] = this.setting[type].filter(_setting => {
+            return _setting !== privacy && _setting !== privacyObj.anyone
+          });
+        } else {
+          this.setting[type].push(privacy);
+          
+        }
+
+        break;
     }
 
+    this.setting[type].sort((a, b) => a - b);
     this.saveSetting();
   }
 

@@ -26,7 +26,7 @@
       </div>
     </section>
     <section class="Info-header" [class.info-portalMode]="uiFlag.portalMode">
-      <div class="info-sceneryIcon" [style.left]="uiFlag.portalMode ? 'initial' : '50px'">
+      <div class="flexCenter info-sceneryIcon" [style.left]="uiFlag.portalMode ? 'initial' : '50px'">
         <img
           [src]="uiFlag.editMode !== 'close' && editImage.icon.base64 !== null ? editImage.icon.base64 : currentGroupInfo.groupDetail.groupIcon"
           (error)="this.currentGroupInfo.groupDetail.groupIcon = '/assets/images/group.jpg'"
