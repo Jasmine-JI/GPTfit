@@ -276,6 +276,7 @@ export class GroupService {
             break;
         }
 
+        accessRightSet.add(99);  // 給予最低權限
         const accessRightArr = Array.from(accessRightSet);
         return currentGroupAccessRight.concat(accessRightArr as number[]).sort((a, b) => a - b);
       })

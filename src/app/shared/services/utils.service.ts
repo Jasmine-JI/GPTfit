@@ -424,7 +424,7 @@ export class UtilsService {
       canvas.height = albumType === 1 || albumType === 11 ? 1080 : 360;
       ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-      this.checkImgSize(albumType, canvas.toDataURL('image/jpeg', limitSize / imageSize));  // 壓縮完再次確認是否超過大小限制
+      return this.checkImgSize(albumType, canvas.toDataURL('image/jpeg', limitSize / imageSize));  // 壓縮完再次確認是否超過大小限制
     } else {
       return img;
     }
@@ -833,7 +833,7 @@ export class UtilsService {
    * @param fileName {檔案名稱}
    * @author kidin-1091127
    */
-   base64ToFile(albumType: AlbumType, base64: string, fileName: string): File {
+  base64ToFile(albumType: AlbumType, base64: string, fileName: string): File {
     const blob = this.dataUriToBlob(albumType, base64);
     return new File([blob], `${fileName}.jpg`, {type: 'image/jpeg'});
   }

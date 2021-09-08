@@ -4,7 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../services/utils.service';
 import { SettingsService } from '../../../containers/dashboard/services/settings.service';
-import { PrivacyCode, privacyObj } from '../../models/user-privacy';
+import { PrivacyCode, privacyObj, allPrivacyItem } from '../../models/user-privacy';
 
 @Component({
   selector: 'app-edit-individual-privacy',
@@ -18,12 +18,7 @@ export class EditIndividualPrivacyComponent implements OnInit {
 
   openObj = [privacyObj.self];
   readonly privacyObj = privacyObj;
-  readonly anyOneList = [
-    privacyObj.self,
-    privacyObj.myGroup,
-    privacyObj.onlyGroupAdmin,
-    privacyObj.anyone
-  ];
+
   constructor(
     private utils: UtilsService,
     private settingsService: SettingsService,
@@ -72,14 +67,32 @@ export class EditIndividualPrivacyComponent implements OnInit {
     const privacySetting = this.openObj;
     switch (privacy) {
       case privacyObj.anyone:
+
         if (privacySetting.includes(privacyObj.anyone)) {
           this.openObj = [privacyObj.self];
         } else {
-          this.openObj = [...this.anyOneList];
+          this.openObj = [...allPrivacyItem];
+        }
+
+        break;
+      case privacyObj.myGroup:
+
+        if (this.openObj.includes(privacyObj.myGroup)) {
+          this.openObj = this.openObj.filter(_obj => {
+            return _obj !== privacyObj.myGroup && _obj !== privacyObj.anyone
+          });
+        } else {
+          this.openObj.push(privacyObj.myGroup);
+          // 群組管理員視為同群組成員
+          if (!this.openObj.includes(privacyObj.onlyGroupAdmin)) {
+            this.openObj.push(privacyObj.onlyGroupAdmin);
+          }
+
         }
 
         break;
       default:
+        
         if (privacySetting.includes(privacy)) {
           this.openObj = this.openObj.filter(_setting => {
             return _setting !== privacy && _setting !== privacyObj.anyone

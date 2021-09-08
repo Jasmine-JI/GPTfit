@@ -36,6 +36,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject;
   clickEvent: Subscription;
   pageResize: Subscription;
+  scrollEvent: Subscription;
 
   /**
    * ui上會用到的各個flag
@@ -54,7 +55,8 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     barWidth: 0,
     openAppDl: [],
     showFitPairSettingDialog: false,
-    fitPairChanged: false
+    fitPairChanged: false,
+    isPortalMode: !location.pathname.includes('dashboard')
   };
 
   /**
@@ -159,6 +161,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     this.checkUrl();
     this.checkLang();
     this.handlePageResize();
+    this.handleScroll();
     this.handleSideBarSwitch();
     this.getNeedInfo(this.uiFlag.displayPage);
   }
@@ -235,6 +238,43 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     ).subscribe(() => {
       this.checkScreenSize();
     });
+
+  }
+
+  /**
+   * 監聽捲動事件，當捲動到tab時，tab固定置頂
+   * @author kidin-1100908
+   */
+  handleScroll() {
+    const targetClass = this.uiFlag.isPortalMode ? '.main' : '.main-body',
+          targetElement = document.querySelectorAll(targetClass)[0],
+          targetScrollEvent = fromEvent(targetElement, 'scroll');
+    this.scrollEvent = targetScrollEvent.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(e => {
+      this.checkPageListBarPosition();
+    });
+
+  }
+
+  /**
+   * 確認tab位置與寬度
+   * @author kidin-1100908
+   */
+  checkPageListBarPosition() {
+    const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as any,
+          headerRow = document.querySelectorAll('.info-headerRow')[0],
+          scenerySection = document.querySelectorAll('.info-ScenerySection')[0],
+          { top: barTop } = pageListBar.getBoundingClientRect(),
+          { bottom: descBottom } = headerRow.getBoundingClientRect(),
+          { width } = scenerySection.getBoundingClientRect();
+      if (barTop <= 50 && descBottom < 50) {
+        pageListBar.classList.add('info-pageListBar-fixed');
+        pageListBar.style.width = `${width}px`;
+      } else {
+        pageListBar.classList.remove('info-pageListBar-fixed');
+        pageListBar.style.width = `100%`;
+      }
 
   }
 
@@ -368,8 +408,15 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     this.uiFlag.currentTagIndex = tagIdx;
     this.uiFlag.showMorePageOpt = false;
     this.getBtnPosition(tagIdx);
-    if (page === 'log') {
-      this.getProductLog();
+    switch (page) {
+      case 'info':
+        const scrollEleClass = this.uiFlag.isPortalMode ? '.main' : '.main-body',
+              mainBodyEle = document.querySelector(scrollEleClass);
+        mainBodyEle.scrollTo({top: 0, behavior: 'smooth'});
+        break;
+      case 'log':
+        this.getProductLog();
+        break;
     }
 
   }
