@@ -118,7 +118,13 @@ export class PersonalComponent implements OnInit, OnDestroy {
           pathnameArr = pathname.split('/'),
           query = this.utils.getUrlQueryStrings(search);
     this.uiFlag.isPortalMode = pathnameArr[1] !== 'dashboard';
-    this.uiFlag.isSettingPage = !this.uiFlag.isPortalMode && pathnameArr[2] === 'user-settings';
+    this.uiFlag.isSettingPage = 
+      !this.uiFlag.isPortalMode
+      && (
+        pathnameArr[2] === 'user-settings'
+        || `${pathnameArr[2]}/${pathnameArr[3]}` === 'settings/account-info'  // strava轉導回GPTfit
+      );
+
     if (query.ipm) this.uiFlag.isPreviewMode = true;
   }
 

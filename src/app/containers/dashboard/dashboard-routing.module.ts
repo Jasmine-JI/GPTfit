@@ -267,6 +267,10 @@ const routes: Routes = [
         component: PersonalComponent
       },
       {
+        path: 'settings/account-info',
+        component: PersonalComponent
+      },
+      {
         path: '',
         component: PersonalComponent,
         children: [
