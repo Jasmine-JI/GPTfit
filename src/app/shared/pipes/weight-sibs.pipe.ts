@@ -22,7 +22,7 @@ export class WeightSibsPipe implements PipeTransform {
       unit = 'lb';
     }
     
-    const fixedValue = parseFloat(finalValue.toFixed(1));
+    const fixedValue = parseFloat(finalValue.toFixed(0));
     return !showUnit ? `${fixedValue} ${unit}` : `${fixedValue}`;
   }
 

@@ -1,43 +1,37 @@
-<section class="cardSection">
-  <div class="flexCol cardContent" style="padding-bottom: 50px;">
-    <div class="flexRow" style="justify-content: space-between;">
-      <h5 class="settingTitle">
-        {{ 'universal_userProfile_basicInformation' | translate }}
-      </h5>
-      <div class="flexRow">
-        <button
-          class="childPageBtn"
-          (click)="openEditMode()"
-          *ngIf="uiFlag.editMode === 'close'"
-        >
-          {{ 'universal_operating_edit' | translate }}
-        </button>
-        <button
-          class="childPageBtn"
-          (click)="cancelEdit()"
-          *ngIf="uiFlag.editMode === 'edit'"
-        >
-          {{ 'universal_operating_cancel' | translate }}
-        </button>
-        <button
-          class="childPageBtn editModeBtn"
-          [style.pointer-events]="uiFlag.nicknameAlert ? 'none' : 'initial'"
-          (click)="editComplete()"
-          *ngIf="uiFlag.editMode === 'edit'"
-        >
-          {{ 'universal_operating_confirm' | translate }}
-        </button>
+<section class="flexCol settingSection">
+  <div
+    class="flexRow settingTitleBlock"
+    [style.border-bottom]="!uiFlag.expand ? 'none' : ''"
+    (click)="handleFolder()"
+  >
+    <div class="flexRow">
+      <i class="icon-svg_web-icon_p1_069-about settingIcon"></i>
+      <div class="flexCol">
+        <h5 class="settingTitle">
+          {{ 'universal_userProfile_basicInformation' | translate }}
+        </h5>
+        <span class="settingTitleDescription">
+          {{ 'universal_system_basicDesc' | translate }}
+        </span>
       </div>
     </div>
-    <div class="flexCol settingContent">
-      <div class="content__row">
-        <label class="contentTitle" for="nickname__input">
-          {{ 'universal_userAccount_nickname' | translate }}：
-        </label>
-        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
-          {{ userInfo.nickname }}
-        </span>
-        <div class="flexCol" *ngIf="uiFlag.editMode === 'edit'">
+    <button>
+      <i
+        class="icon-svg_web-icon_p1_006-unfold folderIcon"
+        [class.folderIcon-fold]="uiFlag.expand"
+      ></i>
+    </button>
+  </div>
+  <div class="flexCol settingContent" *ngIf="uiFlag.expand">
+    <div class="flexRow rowContent">
+      <label class="contentTitle" for="nickname__input">
+        {{ 'universal_userAccount_nickname' | translate }}
+      </label>
+      <span class="contentText" *ngIf="uiFlag.editMode === 'close'">
+        {{ userInfo.nickname }}
+      </span>
+      <ng-container *ngIf="uiFlag.editMode === 'edit'">
+        <div class="contentInput">
           <input
             type="text"
             id="nickname__input"
@@ -47,27 +41,29 @@
             [value]="setting.nickname"
             (focusout)="handleNicknameInput($event)"
           >
-          <span
-            class="input__alert"
-            [style.color]="uiFlag.nicknameAlert ? 'red' : 'var(--scale-100-205)'"
-          >
-            <ng-container *ngIf="uiFlag.nicknameAlert !== 'repeat'">
-              *{{ 'universal_userAccount_nameCharactersToLong' | translate }}
-            </ng-container>
-            <ng-container *ngIf="uiFlag.nicknameAlert === 'repeat'">
-              *{{ 'universal_userAccount_nickname' | translate }}
-              {{ 'universal_deviceSetting_repeat' | translate }}
-            </ng-container>
-          </span>
         </div>
-      </div>
-      <div class="content__row">
-        <label class="contentTitle" for="height__input">
-          {{ 'universal_userProfile_bodyHeight' | translate }}：
-        </label>
-        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
-          {{ (userInfo.bodyHeight) | bodyHeightSibs: [userInfo.unit, false] }}
+        <span
+          class="contentDescription"
+          [style.color]="uiFlag.nicknameAlert ? 'red' : ''"
+        >
+          <ng-container *ngIf="uiFlag.nicknameAlert !== 'repeat'">
+            {{ 'universal_userAccount_nameCharactersToLong' | translate }}
+          </ng-container>
+          <ng-container *ngIf="uiFlag.nicknameAlert === 'repeat'">
+            {{ 'universal_userAccount_nickname' | translate }}
+            {{ 'universal_deviceSetting_repeat' | translate }}
+          </ng-container>
         </span>
+      </ng-container>
+    </div>
+    <div class="flexRow rowContent">
+      <label class="contentTitle" for="height__input">
+        {{ 'universal_userProfile_bodyHeight' | translate }}
+      </label>
+      <span class="contentText" *ngIf="uiFlag.editMode === 'close'">
+        {{ (userInfo.bodyHeight) | bodyHeightSibs: [userInfo.unit, false] }}
+      </span>
+      <div class="contentInput">
         <input
           type="text"
           id="height__input"
@@ -75,19 +71,32 @@
           maxlength="5"
           [placeholder]="175 | bodyHeightSibs: [userInfo.unit, false]"
           [value]="setting.bodyHeight"
-          (keydown)="checkFormat($event)"
+          (keydown)="checkHeightFormat($event)"
           (focusout)="handleHeightInput($event)"
           *ngIf="uiFlag.editMode === 'edit'"
         >
         <span class="valueUnit">{{ 'bodyHeight' | dataTypeUnit: [null, userInfo.unit] }}</span>
       </div>
-      <div class="content__row">
-        <label class="contentTitle" for="weight__input">
-          {{ 'universal_userProfile_limit_bodyWeight' | translate }}：
-        </label>
-        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
-          {{ userInfo.bodyWeight | weightSibs: [userInfo.unit, 1] }}
-        </span>
+      <span
+        class="contentDescription"
+        [style.color]="uiFlag.heightAlert ? 'red' : ''"
+      >
+        <ng-container *ngIf="!uiFlag.heightAlert">
+          {{ 'universal_privacy_your' | translate: { object: ('universal_userProfile_bodyHeight' | translate)} }}
+        </ng-container>
+        <ng-container *ngIf="uiFlag.heightAlert">
+          {{ 'universal_status_wrongFormat' | translate }}
+        </ng-container>
+      </span>
+    </div>
+    <div class="flexRow rowContent">
+      <label class="contentTitle" for="weight__input">
+        {{ 'universal_userProfile_limit_bodyWeight' | translate }}
+      </label>
+      <span class="contentText" *ngIf="uiFlag.editMode === 'close'">
+        {{ userInfo.bodyWeight | weightSibs: [userInfo.unit, 1] }}
+      </span>
+      <div class="contentInput">
         <input
           type="text"
           id="weight__input"
@@ -95,51 +104,66 @@
           maxlength="5"
           [placeholder]="70 | weightSibs: [userInfo.unit, 1]"
           [value]="setting.bodyWeight"
-          (keydown)="checkFormat($event)"
+          (keydown)="checkWeightFormat($event)"
           (focusout)="handleWeightInput($event)"
           *ngIf="uiFlag.editMode === 'edit'"
         >
         <span class="valueUnit">{{ 'bodyWeight' | dataTypeUnit: [null, userInfo.unit] }}</span>
       </div>
-      <div class="flexRow content__row">
-        <span class="contentTitle">{{ 'universal_userProfile_birthday' | translate }}：</span>
-        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
-          {{ userInfo.birthday }}
-        </span>
-        <div *ngIf="uiFlag.editMode === 'edit'">
-          <app-date-range-picker
-            (selectDateRange)="getSelectDate($event)"
-            [pickerType]="'singlePicker'"
-            [refStartDate]="userInfo.birthday | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
-            [default]="userInfo.birthday | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
-            [selectBirthday]="true"
-          ></app-date-range-picker>
+      <span class="contentDescription">
+        {{ 'universal_privacy_your' | translate: { object: ('universal_userProfile_bodyWeight' | translate)} }}
+      </span>
+    </div>
+    <div class="flexRow rowContent">
+      <span class="contentTitle">{{ 'universal_userProfile_birthday' | translate }}</span>
+      <span class="contentText" *ngIf="uiFlag.editMode === 'close'">
+        {{ userInfo.birthday | timeFormat: 'YYYY-MM-DD' }}
+      </span>
+      <div class="contentInput" *ngIf="uiFlag.editMode === 'edit'">
+        <app-date-range-picker
+          (selectDateRange)="getSelectDate($event)"
+          [pickerType]="'singlePicker'"
+          [refStartDate]="userInfo.birthday | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
+          [default]="userInfo.birthday | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
+          [selectBirthday]="true"
+          [editStyle]="'
+            border: none;
+            border-bottom: 1px solid var(--scale-150-180);
+            font-weight: bold;
+            outline: none;
+          '"
+        ></app-date-range-picker>
+      </div>
+      <span class="contentDescription">
+        {{ 'universal_privacy_your' | translate: { object: ('universal_userProfile_birthday' | translate)} }}
+      </span>
+    </div>
+    <div class="flexRow rowContent">
+      <span class="contentTitle">{{ 'universal_userProfile_gender' | translate }}</span>
+      <span class="contentText" *ngIf="uiFlag.editMode === 'close'">
+        {{ userInfo.gender | sex: 'i18n' | translate }}
+      </span>
+      <div class="flexRow contentInput" *ngIf="uiFlag.editMode === 'edit'">
+        <div class="flexRow">
+          <span class="flexRow radioSelector" (click)="changeGender(sex.male)">
+            <span
+              class="radioBtn"
+              [class.radioBtn--active]="setting.gender === sex.male"
+            ></span>
+            <span class="radioText">{{ 'universal_userProfile_male' | translate }}</span>
+          </span>
+          <span class="flexRow radioSelector" (click)="changeGender(sex.female)">
+            <span
+              class="radioBtn"
+              [class.radio__btn--active]="setting.gender === sex.female"
+            ></span>
+            <span class="radioText">{{ 'universal_userProfile_female' | translate }}</span>
+          </span>
         </div>
       </div>
-      <div class="flexRow content__row">
-        <span class="contentTitle">{{ 'universal_userProfile_gender' | translate }}：</span>
-        <span class="info__content" *ngIf="uiFlag.editMode === 'close'">
-          {{ userInfo.gender | sex: 'i18n' | translate }}
-        </span>
-        <div class="flexRow" *ngIf="uiFlag.editMode === 'edit'">
-          <div class="flexRow">
-            <span class="flexRow radioSelector" (click)="changeGender(sex.male)">
-              <span
-                class="radioBtn"
-                [class.radioBtn--active]="setting.gender === sex.male"
-              ></span>
-              <span>{{ 'universal_userProfile_male' | translate }}</span>
-            </span>
-            <span class="flexRow radioSelector" (click)="changeGender(sex.female)">
-              <span
-                class="radioBtn"
-                [class.radio__btn--active]="setting.gender === sex.female"
-              ></span>
-              <span>{{ 'universal_userProfile_female' | translate }}</span>
-            </span>
-          </div>
-        </div>
-      </div>
+      <span class="contentDescription">
+        {{ 'universal_privacy_your' | translate: { object: ('universal_userProfile_gender' | translate)} }}
+      </span>
     </div>
   </div>
 </section>

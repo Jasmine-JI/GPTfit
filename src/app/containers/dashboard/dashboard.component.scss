@@ -383,6 +383,10 @@
   @include transition(transform);
 }
 
+.dashboard__container {
+  padding: 1vh 7vw;
+}
+
 
 /*********************************** media ********************************************/
 
@@ -417,6 +421,10 @@
   .main-nav-toggle {
     height: 44px;
     width: 44px;
+  }
+
+  .dashboard__container {
+    padding: 0 2vw;
   }
 
 }

@@ -87,10 +87,10 @@ export class BodyConstituteSvgComponent implements OnInit, OnChanges {
     let FFMIBoundary = [],
         fatRateBoundary = [];
     if (this.gender === 0) {
-      FFMIBoundary = [18, 21];
-      fatRateBoundary = [17, 21];
+      FFMIBoundary = [17, 22];
+      fatRateBoundary = [17, 22];
     } else {
-      FFMIBoundary = [15, 18];
+      FFMIBoundary = [14, 19];
       fatRateBoundary = [23, 27];
     }
 

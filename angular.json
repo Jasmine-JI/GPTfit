@@ -34,7 +34,8 @@
               "src/styles/theme/light.scss",
               "src/styles/theme/dark.scss",
               "src/styles/module/info.scss",
-              "src/styles/module/report.scss"
+              "src/styles/module/report.scss",
+              "src/styles/module/dialog.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [

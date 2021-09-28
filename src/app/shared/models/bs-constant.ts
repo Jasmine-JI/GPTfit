@@ -8,9 +8,9 @@
 export const mi = 1.61;
 
 /**
- * 1英呎 = 0.3公尺
+ * 1英呎 = 0.3048公尺
  */
-export const ft = 0.3;
+export const ft = 0.3048;
 
 /**
  * 1英吋 = 2.54公分

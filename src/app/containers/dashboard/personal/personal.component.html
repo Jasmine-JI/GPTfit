@@ -9,33 +9,35 @@
     style="position: relative;"
     [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
   >
-    <section class="info-ScenerySection">
+    <section class="info-scenerySection">
       <img
         class="info-imgAbs"
         [src]="uiFlag.editMode !== 'close' && editImage.scenery.base64 !== null ? editImage.scenery.base64 : userProfile.themeImgUrl"
         (error)="sceneryError()"
         *ngIf="!uiFlag.hideScenery"
       />
-      <div class="flexCenter info-imgAbs">
+      <div class="flexCenter info-imgEditIcon" *ngIf="!uiFlag.isPortalMode">
         <i
-          class="icon-svg_web-icon_p1_008-edit info-imgEditIcon info-sceneryEditIcon"
+          class="icon-svg_web-icon_p1_008-edit info-sceneryEditIcon"
           (click)="openImgSelector('scenery')"
           *ngIf="uiFlag.editMode !== 'close'"
         ></i>
       </div>
     </section>
-    <section class="Info-header" [class.info-portalMode]="uiFlag.isPortalMode">
+    <section class="info-header" [class.info-portalMode]="uiFlag.isPortalMode">
       <div
-        class="flexCenter info-sceneryIcon"
+        class="flexCenter info-avatarIcon"
         [style.left]="uiFlag.isPortalMode ? 'initial' : '50px'"
       >
-        <img
-          [src]="uiFlag.editMode !== 'close' && editImage.icon.base64 !== null ? editImage.icon.base64 : userProfile.avatarUrl"
-          (error)="this.userProfile.avatarUrl = '/assets/images/user2.png'"
-        />
-        <div class="flexCenter info-imgAbs">
+        <div class="info-avatarImg">
+          <img
+            [src]="uiFlag.editMode !== 'close' && editImage.icon.base64 !== null ? editImage.icon.base64 : userProfile.avatarUrl"
+            (error)="this.userProfile.avatarUrl = '/assets/images/user2.png'"
+          />
+        </div>
+        <div class="info-imgAbs info-imgEditIcon" *ngIf="!uiFlag.isPortalMode">
           <i
-            class="icon-svg_web-icon_p1_008-edit info-imgEditIcon"
+            class="icon-svg_web-icon_p1_008-edit info-avatarEditIcon"
             (click)="openImgSelector('icon')"
             *ngIf="uiFlag.editMode !== 'close'"
           ></i>
@@ -55,7 +57,7 @@
               <i
                 class="icon-svg_web-icon_p1_013-share info-pageBtn info-primaryBtn"
                 style="color: white; font-size: 24px; padding: 2px; cursor: pointer;"
-                *ngIf="uiFlag.isPageOwner"
+                *ngIf="uiFlag.isPageOwner && !uiFlag.isSettingPage"
                 (click)="openSharePersonalPage()"
               ></i>
             </button>
@@ -63,82 +65,94 @@
         </div>
       </div>
     </section>
-    <section [class.info-portalMode]="uiFlag.isPortalMode">
-      <span
-        #headerDescription
-        [innerHTML]="userProfile.description"
-        class="info-headerDescription"
-        [class.info-descOverflow]="uiFlag.descOverflow"
-        (click)="handleNavigation('info')"
-        *ngIf="!uiFlag.isLoading"
-      ></span>
-      <app-loading-icon *ngIf="uiFlag.isLoading"
-      ></app-loading-icon>
-    </section>
-    <section #pageListBar class="flexCol info-pageListBar" [class.info-portalMode]="uiFlag.isPortalMode">
-      <div class="info-barLine"></div>
-      <div
-        class="info-activeBar"
-        [style.width]="uiFlag.barWidth + 'px'"
-        [style.left]="uiFlag.barPosition + 'px'"
-      ></div>
-      <div class="flexRow" style="justify-content: space-between; align-items: center;">
-        <div class="flexRow">
-          <ng-container *ngFor="let _page of childPageList; let _idx = index;">
-            <span 
-              class="info-childPageTitle main__page__list"
-              [class.info-active--color]="uiFlag.currentTagIndex === _idx"
-              (click)="handleShowContent($event, _page, _idx)"
-              *ngIf="uiFlag.divideIndex === null || _idx < uiFlag.divideIndex"
-            >
-              <ng-container *ngTemplateOutlet="childPage;
-                context: { page: _page }"
-              ></ng-container>
-            </span>
-          </ng-container>
-        </div>
+    <ng-container *ngIf="!uiFlag.isSettingPage">
+      <section class="flexCol info-headerDescriptionBlock" [class.info-portalMode]="uiFlag.isPortalMode">
+        <span
+          #headerDescription
+          [innerHTML]="userProfile.description"
+          class="info-headerDescription"
+          [class.info-descOverflow]="uiFlag.descOverflow"
+          (click)="handleNavigation('info')"
+          *ngIf="!uiFlag.isLoading"
+        ></span>
+        <app-loading-icon *ngIf="uiFlag.isLoading"></app-loading-icon>
+      </section>
+      <section #pageListBar class="flexCol info-pageListBar" [class.info-portalMode]="uiFlag.isPortalMode">
+        <div class="info-barLine"></div>
         <div
-          #seeMore
-          class="info-childPageTitle info-moreBtn"
-          (click)="handleShowMorePageOpt($event)"
-          *ngIf="uiFlag.divideIndex !== null"
-        >
-          <span [class.info-active--color]="uiFlag.currentTagIndex >= uiFlag.divideIndex && !uiFlag.showMorePageOpt">
-            <span style="position: relative;">
-              {{ 'universal_operating_more' | translate }}
-            </span>
-            <span
-              class="info-seeMoreTriangle"
-              [class.info-active--color]="uiFlag.currentTagIndex >= uiFlag.divideIndex && !uiFlag.showMorePageOpt"
-              [class.info-openFold]="uiFlag.showMorePageOpt"
-            ></span>
-          </span>
-          <div
-            class="flexCol info-foldList"
-            *ngIf="uiFlag.showMorePageOpt"
-          >
-            <ng-container *ngFor="let _foldItem of childPageList; let _fIdx = index;">
-              <div
-                class="info-foldListItem"
-                *ngIf="_fIdx >= uiFlag.divideIndex"
+          class="info-activeBar"
+          [style.width]="uiFlag.barWidth + 'px'"
+          [style.left]="uiFlag.barPosition + 'px'"
+        ></div>
+        <div class="flexRow" style="justify-content: space-between; align-items: center;">
+          <div class="flexRow">
+            <ng-container *ngFor="let _page of childPageList; let _idx = index;">
+              <span 
+                class="info-childPageTitle main__page__list"
+                [class.info-active--color]="uiFlag.currentTagIndex === _idx"
+                (click)="handleShowContent($event, _page, _idx)"
+                *ngIf="uiFlag.divideIndex === null || _idx < uiFlag.divideIndex"
               >
-                <span
-                  [class.info-active--color]="uiFlag.currentTagIndex === (_fIdx)"
-                  (click)="handleShowContent($event, _foldItem, _fIdx)"
-                >
-                  <ng-container *ngTemplateOutlet="childPage;
-                    context: { page: _foldItem }"
-                  ></ng-container>
-                </span>
-              </div>
+                <ng-container *ngTemplateOutlet="childPage;
+                  context: { page: _page }"
+                ></ng-container>
+              </span>
             </ng-container>
           </div>
+          <div
+            #seeMore
+            class="info-childPageTitle info-moreBtn"
+            (click)="handleShowMorePageOpt($event)"
+            *ngIf="uiFlag.divideIndex !== null"
+          >
+            <span [class.info-active--color]="uiFlag.currentTagIndex >= uiFlag.divideIndex && !uiFlag.showMorePageOpt">
+              <span style="position: relative;">
+                {{ 'universal_operating_more' | translate }}
+              </span>
+              <span
+                class="info-seeMoreTriangle"
+                [class.info-active--color]="uiFlag.currentTagIndex >= uiFlag.divideIndex && !uiFlag.showMorePageOpt"
+                [class.info-openFold]="uiFlag.showMorePageOpt"
+              ></span>
+            </span>
+            <div
+              class="flexCol info-foldList"
+              *ngIf="uiFlag.showMorePageOpt"
+            >
+              <ng-container *ngFor="let _foldItem of childPageList; let _fIdx = index;">
+                <div
+                  class="info-foldListItem"
+                  *ngIf="_fIdx >= uiFlag.divideIndex"
+                >
+                  <span
+                    [class.info-active--color]="uiFlag.currentTagIndex === (_fIdx)"
+                    (click)="handleShowContent($event, _foldItem, _fIdx)"
+                  >
+                    <ng-container *ngTemplateOutlet="childPage;
+                      context: { page: _foldItem }"
+                    ></ng-container>
+                  </span>
+                </div>
+              </ng-container>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </ng-container>
   </nav>
-  <main id="main__section" [class.info-portalMode]="uiFlag.isPortalMode">
-    <router-outlet></router-outlet>
+  <main
+    id="main__section"
+    [class.info-portalMode]="uiFlag.isPortalMode"
+  >
+    <ng-container *ngIf="!uiFlag.isSettingPage">
+      <router-outlet></router-outlet>
+    </ng-container>
+    <ng-container *ngIf="uiFlag.isSettingPage">
+      <app-setting-base></app-setting-base>
+      <app-setting-privacy></app-setting-privacy>
+      <app-setting-prefer></app-setting-prefer>
+      <app-setting-account></app-setting-account>
+    </ng-container>
   </main>
   <section
     class="flexCenter info-editMask"

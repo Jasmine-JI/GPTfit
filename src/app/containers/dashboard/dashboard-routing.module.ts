@@ -263,6 +263,10 @@ const routes: Routes = [
         component: MyGroupListComponent
       },
       {
+        path: 'user-settings',
+        component: PersonalComponent
+      },
+      {
         path: '',
         component: PersonalComponent,
         children: [
@@ -285,22 +289,6 @@ const routes: Routes = [
           {
             path: 'info',
             component: InfoComponent
-          },
-          {
-            path: 'user-settings',
-            component: SettingBaseComponent
-          },
-          {
-            path: 'personal-preferences',
-            component: SettingPreferComponent
-          },
-          {
-            path: 'privacy-settings',
-            component: SettingPrivacyComponent
-          },
-          {
-            path: 'account-info',
-            component: SettingAccountComponent
           }
         ]
       },

@@ -1,0 +1,21 @@
+@mixin obj-layer($left: 5px) {
+  margin: 0 5px 0px $left;
+}
+
+.first__layer {
+  @include obj-layer();
+}
+
+.second__layer {
+  @include obj-layer(25px);
+}
+
+.rod__bar__section {
+  align-items: center;
+  margin: 10px 5px;
+
+  >span {
+    color: var(--scale-0-255);
+  }
+
+}

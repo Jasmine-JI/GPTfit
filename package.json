@@ -12,7 +12,7 @@
     "pm2-kill": "pm2 kill",
     "bash": "./reset.sh",
     "build": "ng build",
-    "preweb-build": "npm run pm2-kill",
+    "preweb-build": "",
     "pretst-build": "npm run pm2-kill && find dist/* -type l -delete",
     "preuat-build": "npm run pm2-kill && cp src/environments/robots.uat.txt src/robots.txt && find dist/* -type l -delete",
     "preprod-build": "npm run pm2-kill && find dist/* -type l -delete",

@@ -1,10 +1,11 @@
 @import 'transition.scss';
 @import 'font.scss';
 @import 'color.scss';
+@import 'transform.scss';
 
 $warn-color: rgba(255, 75, 75, 1);
 $group-btn-blue: rgba(0, 183, 238, 1);
-$title-unit-color: rgba(150, 150, 150, 1);
+$setting-border: 1px solid var(--scale-200-100);
 
 
 .childPageBtn {
@@ -33,9 +34,46 @@ $title-unit-color: rgba(150, 150, 150, 1);
   margin: 10px 0 10px 30px;
 }
 
+.itemTitle {
+  color: var(--scale-0-255);
+}
+
+.settingSection {
+  border: $setting-border;
+  border-radius: 10px;
+  margin: 5px 0;
+  background-color: var(--scale-240-45);
+  padding-bottom: 10px;
+}
+
+.settingTitleBlock {
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: $setting-border;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
 .settingTitle {
   @include bold-font(17px);
-  color: $primary-blue;
+  margin-bottom: 0;
+  color: var(--scale-0-255);
+}
+
+.settingIcon {
+  font-size: 30px;
+  color: var(--scale-0-255);
+}
+
+.settingTitleDescription {
+  @include description-font(12px, rgba(150, 150, 150, 1));
+}
+
+.rowContent {
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 40px;
+  border-bottom: $setting-border;
 }
 
 .settingSubTitle {
@@ -44,7 +82,7 @@ $title-unit-color: rgba(150, 150, 150, 1);
 }
 
 .settingContent {
-  padding-left: 20px;
+  background-color: var(--scale-255-0);
 
   label {
     margin: 0;
@@ -52,17 +90,53 @@ $title-unit-color: rgba(150, 150, 150, 1);
 
 }
 
-.contentTitle {
-  color: $title-unit-color;
+.radioText, .mainText {
   font-weight: bold;
+  color: var(--scale-0-255);
+}
+
+.contentTitle {
+  color: var(--scale-0-255);
+  width: 20%;
+}
+
+.contentText {
+  color: var(--scale-0-255);
+}
+
+.contentInput {
+  width: 30%;
+
+  >input {
+    font-weight: bold;
+  }
+
+}
+
+.contentDescription {
+  width: 45%;
+  color: var(--scale-100-205);
 }
 
 .contentDetail {
   margin-left: 20px;
 }
 
+.editBtn {
+  padding: 0;
+}
+
+.openDialogIcon {
+  font-size: 24px;
+  color: var(--scale-0-255);
+}
+
+.iconStuffing {
+  width: 24px;
+}
+
 .valueUnit {
-  color: $title-unit-color;
+  color: rgba(150, 150, 150, 1);
   margin-left: 5px;
 }
 
@@ -79,6 +153,37 @@ $title-unit-color: rgba(150, 150, 150, 1);
 
   &:focus {
     border-bottom: 1px solid $primary-blue;
+  }
+
+}
+
+.folderIcon {
+  font-size: 26px;
+  color: var(--scale-0-255);
+  @include transition(transform);
+}
+
+.folderIcon-fold {
+  @include el-rotate(180deg);
+  @include transition(transform);
+}
+
+
+/***************************************************** media *****************************************************/
+
+@media (max-width: 767px) {
+
+  .rowContent {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .contentTitle, .contentInput, .contentDescription {
+    width: 100%;
+  }
+
+  .contentTitle, .contentDescription {
+    font-size: 10pt;
   }
 
 }
