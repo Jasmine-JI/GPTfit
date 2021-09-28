@@ -91,19 +91,21 @@ export class ModifyBoxComponent implements OnInit {
    */
   selectModifyRange(obj: PrivacyCode) {
     switch (obj) {
+
       case privacyObj.anyone:
 
-        if (this.openObj.includes(obj)) {
-          this.openObj.length = 1;
+        if (this.openObj.includes(privacyObj.anyone)) {
+          this.openObj = [privacyObj.self];
         } else {
           this.openObj = [...allPrivacyItem];
         }
+
         break;
       case privacyObj.myGroup:
 
         if (this.openObj.includes(privacyObj.myGroup)) {
-          this.openObj = this.openObj.filter(_obj => {
-            return _obj !== privacyObj.myGroup && _obj !== privacyObj.anyone
+          this.openObj = this.openObj.filter(_setting => {
+            return _setting !== privacyObj.myGroup && _setting !== privacyObj.anyone;
           });
         } else {
           this.openObj.push(privacyObj.myGroup);
@@ -115,18 +117,27 @@ export class ModifyBoxComponent implements OnInit {
         }
 
         break;
-      default:
+      case privacyObj.onlyGroupAdmin:
 
-        if (this.openObj.includes(obj)) {
-          this.openObj = this.openObj.filter(_obj => {
-            return _obj !== obj && _obj !== privacyObj.anyone;
+        if (this.openObj.includes(privacyObj.onlyGroupAdmin)) {
+          this.openObj = this.openObj.filter(_setting => {
+            return ![obj, privacyObj.myGroup, privacyObj.anyone].includes(_setting);
           });
         } else {
           this.openObj.push(obj);
         }
 
         break;
-    }
+      case privacyObj.self:
+
+        if (this.openObj.length > 1) {
+          this.openObj = [privacyObj.self];
+        } else {
+          this.openObj = [privacyObj.self, privacyObj.onlyGroupAdmin];
+        }
+
+        break;
+      }
 
     this.openObj.sort();
   }

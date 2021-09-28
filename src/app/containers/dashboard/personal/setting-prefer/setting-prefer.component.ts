@@ -4,12 +4,14 @@ import { SettingsService } from '../../services/settings.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
-import { takeUntil, map } from 'rxjs/operators';
+import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { unit, Unit, ft, inch, lb } from '../../../../shared/models/bs-constant';
 import { hrBase, HrBase } from '../../models/userProfileInfo';
 import { formTest } from '../../../portal/models/form-test';
 import { HrZoneRange } from '../../../../shared/models/chart-data';
 import moment from 'moment';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateService } from '@ngx-translate/core';
 
 enum dominantHand {
   right,
@@ -23,6 +25,7 @@ enum autoStepTarget {
 
 type AutoStepTarget = autoStepTarget.close | autoStepTarget.open;
 type TimeEditType = 'hour' | 'min';
+type SetType = 'hr' | 'ftp' | 'activity' | 'sleep' | 'target';
 const wheelSizeCoefficient = inch * 10;
 
 @Component({
@@ -41,12 +44,11 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   uiFlag = {
     progress: 100,
-    editMode: 'close',
-    showHrZoneDesc: null,
-    showFtpZoneDesc: null,
     showTimeSelector: null,
     valueShifting: false,
-    isMobile: 'ontouchmove' in window
+    isMobile: 'ontouchmove' in window,
+    expand: false,
+    showEditDialog: <SetType>null
   };
 
   /**
@@ -111,7 +113,9 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     private userInfoService: UserInfoService,
     private settingService: SettingsService,
     private utils: UtilsService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private snackBar: MatSnackBar,
+    private translate: TranslateService
   ) { }
 
   ngOnInit(): void {
@@ -134,22 +138,18 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       }),
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
-      const { heartRateBase, birthday, heartRateMax, heartRateResting, cycleFtp } = res,
-            age = moment().diff(moment(birthday, 'YYYYMMDD'), 'year');
       this.userInfo = res;
-      this.userHrZone = this.utils.getUserHrRange(heartRateBase, age, heartRateMax, heartRateResting);
-      this.userFtpZone = this.utils.getUserFtpZone(cycleFtp);
     });
 
   }
 
   /**
-   * 開啟編輯模式
-   * @author kidin-1100818
+   * 開啟設定彈跳框
+   * @param type {SetType}-設定類別
+   * @author kidin-1100923
    */
-  openEditMode() {
-    this.uiFlag.editMode = 'edit';
-    this.userInfoService.setRxEditMode('edit');
+  showEditDialog(type: SetType) {
+    this.uiFlag.showEditDialog = type;
     const {
       unit: userUnit,
       strideLengthCentimeter,
@@ -195,7 +195,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
         fitTime: this.utils.rounding(fitTime / 60, 0),
         sleep: this.utils.rounding(sleep / 3600, 1),
         step,
-        bodyWeight: this.utils.valueConvert(bodyWeight, !isMetric, true, lb, 2),
+        bodyWeight: this.utils.valueConvert(bodyWeight, !isMetric, true, lb, 1),
         muscleRate,
         fatRate
       }
@@ -209,6 +209,8 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       bodyWeight: false
     }
 
+    this.handleCountHrZone();
+    this.handleCountFtpZone();
   }
 
   /**
@@ -216,8 +218,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    * @author kidin-1100818
    */
   cancelEdit() {
-    this.uiFlag.editMode = 'close';
-    this.userInfoService.setRxEditMode('close');
+    this.uiFlag.showEditDialog = null;
   }
 
   /**
@@ -235,7 +236,12 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
         }
       };
 
-      this.settingService.updateUserProfile(body).subscribe(res => {
+      this.settingService.updateUserProfile(body).pipe(
+        switchMap(res => this.translate.get('hellow world').pipe(
+          map(resp => res)
+        )),
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe(res => {
         const {processResult} = res as any;
         if (!processResult) {
           const { apiCode, resultMessage, resultCode } = res as any;
@@ -245,7 +251,9 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
           if (resultCode !== 200) {
             this.utils.handleError(resultCode, apiCode, resultMessage);
           } else {
-            this.uiFlag.editMode = 'close';
+            this.uiFlag.showEditDialog = null;
+            const successMsg = this.translate.instant('universal_status_updateCompleted');
+            this.snackBar.open(successMsg, 'OK', { duration: 2000 });
             this.userInfoService.setRxEditMode('complete');
           }
 
@@ -254,8 +262,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       });
 
     } else {
-      this.uiFlag.editMode = 'close';
-      this.userInfoService.setRxEditMode('complete');
+      this.cancelEdit();
     }
     
   }
@@ -334,7 +341,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
         }
       case 'bodyWeight':
         if (edited) {
-          return isMetric ? value : this.utils.valueConvert(+value, true, false, lb, 2);
+          return isMetric ? value : this.utils.valueConvert(+value, true, false, lb, 1);
         } else {
           return this.userInfo.target[key];
         }
@@ -357,6 +364,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   changeHrBase(base: HrBase) {
     this.setting.heartRateBase = base;
+    this.handleCountHrZone();
   }
 
   /**
@@ -399,6 +407,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       (e as any).target.value = heartRateMax;
     }
 
+    this.handleCountHrZone();
   }
 
   /**
@@ -428,26 +437,6 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 顯示心率區間說明
-   * @param zone {string}-心率區間
-   * @author kidin-1100823
-   */
-  showHrZoneDesc(zone: string) {
-    const { showHrZoneDesc } = this.uiFlag;
-    this.uiFlag.showHrZoneDesc = showHrZoneDesc === zone ? null : zone;
-  }
-
-  /**
-   * 顯示閾值區間說明
-   * @param zone {string}-ftp區間
-   * @author kidin-1100824
-   */
-  showFtpZoneDesc(zone: string) {
-    const { showFtpZoneDesc } = this.uiFlag;
-    this.uiFlag.showFtpZoneDesc = showFtpZoneDesc === zone ? null : zone;
-  }
-
-  /**
    * 變更功能性閾值功率
    * @param e {MouseEvent}
    * @author kidin-1100824
@@ -470,6 +459,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       (e as any).target.value = this.userInfo.cycleFtp;
     }
 
+    this.handleCountFtpZone();
   }
 
   /**
@@ -525,7 +515,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
           this.utils.valueConvert(strideLengthCentimeter, true, true, inch, 1);
         this.setting.wheelSize = this.utils.valueConvert(wheelSize, true, true, wheelSizeCoefficient, 1);
         this.setting.target.distance = this.utils.valueConvert(distance, true, true, ft, 2);
-        this.setting.target.bodyWeight = this.utils.valueConvert(bodyWeight, true, true, lb, 2);
+        this.setting.target.bodyWeight = this.utils.valueConvert(bodyWeight, true, true, lb, 1);
       }
 
     }
@@ -788,16 +778,16 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
           inputValue = +(e as any).target.value,
           isMetric = this.setting.unit === unit.metric,
           testFormat = formTest.decimalValue.test(`${inputValue}`),
-          newValue = this.utils.valueConvert(inputValue, !isMetric, false, lb, 2),
+          newValue = this.utils.valueConvert(inputValue, !isMetric, false, lb, 1),
           valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       this.editFlag.bodyWeight = true;
       const min = 40,
             max = 255;
       if (newValue < min) {
-        this.setting.target.bodyWeight = this.utils.valueConvert(min, !isMetric, true, lb, 2);
+        this.setting.target.bodyWeight = this.utils.valueConvert(min, !isMetric, true, lb, 1);
       } else if (newValue > max) {
-        this.setting.target.bodyWeight = this.utils.valueConvert(max, !isMetric, true, lb, 2);
+        this.setting.target.bodyWeight = this.utils.valueConvert(max, !isMetric, true, lb, 1);
       } else {
         this.setting.target.bodyWeight = inputValue;
       }
@@ -806,7 +796,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     } else {
       this.editFlag.bodyWeight = false;
       const { bodyWeight } = this.userInfo.target;
-      (e as any).target.value = this.utils.valueConvert(bodyWeight, !isMetric, true, lb, 2);
+      (e as any).target.value = this.utils.valueConvert(bodyWeight, !isMetric, true, lb, 1);
     }
 
   }
@@ -869,10 +859,12 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
 
   /**
    * 開啟時間選擇器
+   * @param e {keyboardEvent}
    * @param type {'normalBedTime' | 'normalWakeTime'}-欲變更的時間類別
    * @author kidin-1100830
    */
-  openTimeSelector(type: 'normalBedTime' | 'normalWakeTime') {
+  openTimeSelector(e: KeyboardEvent, type: 'normalBedTime' | 'normalWakeTime') {
+    e.stopPropagation();
     const [hour, min, second] = this.setting[type].split(':'),
           hourList = [],
           minList = [];
@@ -880,7 +872,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       const _hour = +hour + i,
             _min = +min + i;
       hourList.push(this.timeCheck(_hour, 'hour'));
-      minList.push(this.timeCheck(_min, 'min'))
+      minList.push(this.timeCheck(_min, 'min'));
     }
 
     this.timeSelector = {
@@ -996,8 +988,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    * @author kidin-1100830
    */
   subscribeGlobalClick() {
-    const clickEvent = fromEvent(document, 'click'),
-          mainBody = document.querySelector('.main-body') as any;
+    const clickEvent = fromEvent(document, 'click');
     this.clickEvent = clickEvent.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
@@ -1033,11 +1024,49 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 展開或收合整個帳號資訊內容
+   * @author kidin-1100922
+   */
+  handleFolder() {
+    this.uiFlag.expand = !this.uiFlag.expand;
+  }
+
+  /**
+   * 計算心率區間
+   * @author kidin-1100923
+   */
+  handleCountHrZone() {
+    const { birthday } = this.userInfo,
+          { heartRateBase, heartRateMax, heartRateResting } = this.setting,
+          age = moment().diff(moment(birthday, 'YYYYMMDD'), 'year');
+    this.userHrZone = this.utils.getUserHrRange(heartRateBase, age, heartRateMax, heartRateResting);
+  }
+
+  /**
+   * 計算閾值區間
+   * @author kidin-1100923
+   */
+  handleCountFtpZone() {
+    const { cycleFtp } = this.setting;
+    this.userFtpZone = this.utils.getUserFtpZone(cycleFtp);
+  }
+
+  /**
+   * 點擊彈跳框時，若開啟時間選擇器，則關閉時間選擇器
+   * @param e {KeyboardEvent}
+   * @author kidin-1100923
+   */
+  handleClickDialog(e: KeyboardEvent) {
+    e.stopPropagation();
+    this.closeTimeSelector();
+  }
+
+  /**
    * 取消訂閱rxjs
    */
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-  }
+  }  
 
 }

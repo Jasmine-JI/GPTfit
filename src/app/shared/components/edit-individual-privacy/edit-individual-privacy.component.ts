@@ -41,12 +41,23 @@ export class EditIndividualPrivacyComponent implements OnInit {
    * @author kidin-1100302
    */
   getCurrentSetting() {
-    if (this.data.openObj.includes(privacyObj.self)) {
-      this.openObj = [...this.data.openObj];
+    const { openObj } = this.data;
+    // 避免隱私權沒有帶到1的情況
+    if (openObj.includes(privacyObj.self)) {
+      this.openObj = [...openObj];
     } else {
-      this.openObj = [privacyObj.self, ...this.data.openObj];
+      this.openObj = [privacyObj.self, ...openObj];
     }
 
+    // 避免隱私權有帶3卻沒帶到4的情況
+    if (
+      openObj.includes(privacyObj.myGroup)
+      && !openObj.includes(privacyObj.onlyGroupAdmin)
+    ) {
+      this.openObj.push(privacyObj.onlyGroupAdmin);
+    }
+
+    this.openObj.sort((a, b) => a - b);
   }
 
   /**
@@ -66,6 +77,7 @@ export class EditIndividualPrivacyComponent implements OnInit {
   selectModifyRange (privacy: PrivacyCode) {
     const privacySetting = this.openObj;
     switch (privacy) {
+
       case privacyObj.anyone:
 
         if (privacySetting.includes(privacyObj.anyone)) {
@@ -77,29 +89,37 @@ export class EditIndividualPrivacyComponent implements OnInit {
         break;
       case privacyObj.myGroup:
 
-        if (this.openObj.includes(privacyObj.myGroup)) {
-          this.openObj = this.openObj.filter(_obj => {
-            return _obj !== privacyObj.myGroup && _obj !== privacyObj.anyone
+        if (privacySetting.includes(privacyObj.myGroup)) {
+          this.openObj = privacySetting.filter(_setting => {
+            return _setting !== privacyObj.myGroup && _setting !== privacyObj.anyone;
           });
         } else {
           this.openObj.push(privacyObj.myGroup);
           // 群組管理員視為同群組成員
-          if (!this.openObj.includes(privacyObj.onlyGroupAdmin)) {
+          if (!privacySetting.includes(privacyObj.onlyGroupAdmin)) {
             this.openObj.push(privacyObj.onlyGroupAdmin);
           }
 
         }
 
         break;
-      default:
-        
-        if (privacySetting.includes(privacy)) {
-          this.openObj = this.openObj.filter(_setting => {
-            return _setting !== privacy && _setting !== privacyObj.anyone
+      case privacyObj.onlyGroupAdmin:
+
+        if (privacySetting.includes(privacyObj.onlyGroupAdmin)) {
+          this.openObj = privacySetting.filter(_setting => {
+            return ![privacy, privacyObj.myGroup, privacyObj.anyone].includes(_setting);
           });
         } else {
           this.openObj.push(privacy);
-          this.openObj.sort((a, b) => a - b);
+        }
+
+        break;
+      case privacyObj.self:
+
+        if (privacySetting.length > 1) {
+          this.openObj = [privacyObj.self];
+        } else {
+          this.openObj = [privacyObj.self, privacyObj.onlyGroupAdmin];
         }
 
         break;

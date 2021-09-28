@@ -296,7 +296,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   assignAdmin() {
     this.chooseLabels.length = 0;
-    this.chooseLabels.push({ 'groupName': 'GPTFit', 'userName': this.userSimpleInfo.nickname, 'userId': this.userSimpleInfo.userId });
+    this.chooseLabels.push({ 'groupName': 'GPTfit', 'userName': this.userSimpleInfo.nickname, 'userId': this.userSimpleInfo.userId });
   }
 
   /**

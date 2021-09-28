@@ -1,19 +1,22 @@
 @import 'color.scss';
 @import 'transition.scss';
+@import 'flex-center.scss';
+@import 'button.scss';
 
 $turn-gap: 2px;
 $input-width: 60px;
+$dot-diameter: 8px;
 
 @mixin list-content($bg-color) {
   div {
     align-items: center;
-    cursor: pointer;
     width: fit-content;
 
     &:before {
       content: '';
       width: $dot-diameter;
       height: $dot-diameter;
+      min-width: $dot-diameter;
       border-radius: 50%;
       margin-right: 5px;
       background-color: $bg-color;
@@ -22,8 +25,6 @@ $input-width: 60px;
   }
 
 }
-
-$dot-diameter: 8px;
 
 .num__input {
   width: $input-width;
@@ -41,13 +42,13 @@ $dot-diameter: 8px;
 
       div {
         align-items: center;
-        cursor: pointer;
         width: fit-content;
 
         &:before {
           content: '';
           width: $dot-diameter;
           height: $dot-diameter;
+          min-width: $dot-diameter;
           border-radius: 50%;
           margin-right: 5px;
           background-color: nth($zone-color, $i);
@@ -83,13 +84,12 @@ $dot-diameter: 8px;
 }
 
 #time__Selector {
-  position: absolute;
-  z-index: 1;
+  position: fixed;
+  z-index: 11;
   background-color: var(--scale-255-60);
   color: var(--scale-0-255);
   width: 120px;
   height: 175px;
-  top: -75px;
   border: 1px solid rgba(150, 150, 150, 1);
   overflow: hidden;
 }

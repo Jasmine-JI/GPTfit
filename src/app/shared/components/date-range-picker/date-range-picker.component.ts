@@ -18,11 +18,10 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
   @Input() refStartDate: string;
   @Input() startTimeStamp: number;
   @Input() endTimeStamp: number;
-  @Input() noBorder = false;
+  @Input() editStyle: string;
   @Input() openLeft = false;
   @Input() openPicker: boolean;
   @Input() limitMax: boolean;
-  @Input() maxWidth: string;
   @Input() selectBirthday: boolean = false;
 
   // 預設上週-kidin-1090330

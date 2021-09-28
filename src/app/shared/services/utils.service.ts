@@ -7,7 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { AlbumType } from '../models/image';
 import { HrZoneRange } from '../models/chart-data';
 import moment from 'moment';
-import { Unit, mi } from '../models/bs-constant';
+import { Unit, mi, ft, inch } from '../models/bs-constant';
 import { SportType, SportCode } from '../models/report-condition';
 import { GroupLevel } from '../../containers/dashboard/models/group-detail';
 import { HrBase, hrBase } from '../../containers/dashboard/models/userProfileInfo';
@@ -797,7 +797,12 @@ export class UtilsService {
    * @returns pace {number | string}
    * @author kidin-1100407
    */
-  convertSpeed(value: number, sportType: SportType, unit: Unit, convertType: 'second' | 'minute'): number | string {
+  convertSpeed(
+    value: number,
+    sportType: SportType,
+    unit: Unit,
+    convertType: 'second' | 'minute'
+  ): number | string {
     let convertSpeed: number;
     switch (sportType) {
       case SportCode.swim:
@@ -854,6 +859,7 @@ export class UtilsService {
     coefficient: number,
     digit: number = null
   ) {
+
     if (convert) {
 
       if (forward) {
@@ -930,6 +936,39 @@ export class UtilsService {
         return true;
       }
 
+    }
+
+  }
+
+  /**
+   * 身高公英制轉換 公分<->吋
+   * @param height {number | string}-身高（轉換前）
+   * @param convert {boolean}-是否轉換
+   * @param forward {boolean}-是否為公制轉英制
+   * @author kidin-1100921
+   */
+  bodyHeightTransfer(
+    height: number | string,
+    convert: boolean,
+    forward: boolean
+  ): number | string {
+
+    if (convert) {
+      
+      if (forward) {
+        // 公分轉吋
+        height = height as number;
+        const feet = Math.floor((height / 100) / ft),
+              mantissa = parseFloat(((height - (feet * 0.3) * 100) / inch).toFixed(0));
+        return `${feet}"${mantissa}`;
+      } else {
+        // 吋轉公分
+        const [feet, mantissa] = (height as string).split('"');
+        return parseFloat((((+feet * 0.3) * 100) + +mantissa * inch).toFixed(1));
+      }
+
+    } else {
+      return forward ? height: `${height}`;
     }
 
   }

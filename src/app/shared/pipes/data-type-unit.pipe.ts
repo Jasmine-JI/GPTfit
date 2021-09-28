@@ -54,7 +54,7 @@ export class DataTypeUnitPipe implements PipeTransform {
       case 'zMoveGForce':
         return 'g';
       case 'bodyHeight':
-        return userUnit === unit.metric ? 'cm' : 'ft';
+        return userUnit === unit.metric ? 'cm' : 'inch';
       case 'bodyWeight':
         return userUnit === unit.metric ? 'kg' : 'lb';
       case 'wheelSize':

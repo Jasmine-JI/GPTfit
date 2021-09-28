@@ -2,11 +2,9 @@
   id="picker"
   type="text"
   name="dates"
-  style="cursor: pointer; color: var(--scale-0-255);"
-  [style.width]="pickerType === 'singlePicker' || pickerType === 'simpleSinglePicker' ? '110px' : '200px'"
-  [style.border]="noBorder ? 'none' : ''"
-  [style.outline]="noBorder ? 'none' : ''"
-  [style.max-width]="maxWidth ? maxWidth : 'initial'"
+  class="picker__input"
+  [class.single__picker]="pickerType === 'singlePicker' || pickerType === 'simpleSinglePicker'"
+  [style]="editStyle ? editStyle : ''"
   readonly
   (click)="$event.stopPropagation()"
 >

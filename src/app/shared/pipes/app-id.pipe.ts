@@ -11,7 +11,7 @@ export class AppIdPipe implements PipeTransform {
    */
   transform(value: number, args: 'name' | 'descriptionKey' = 'name'): string {
     const name = [
-            'GPTFit',
+            'GPTfit',
             'Connect',
             'Cloud run',
             'Train live',

@@ -9,6 +9,7 @@
 @import 'none-select.scss';
 @import 'check-box.scss';
 @import 'radio-btn.scss';
+@import 'rod-bar.scss';
 
 @font-face {
   font-family: Matamata-Regular;
@@ -838,6 +839,14 @@ a.ban-send:hover {
   min-width: 250px;
   min-height: 250px;
   max-width: 700px;
+}
+
+.rodBar {
+  @include rodBar();
+}
+
+.rodBar--active {
+  @include rodBar-active();
 }
 
 /************************************* media **************************************/
