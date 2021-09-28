@@ -239,7 +239,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
 
         // 建立分店以及課程群組時，指派建立者為預設管理員。 by Vincent 2019/5/9
         if (+this.createType === 1 || +this.createType === 2) {
-          this.chooseLabels.push({ 'groupName': 'GPTFit', 'userName': this.role.userName, 'userId': this.role.userId });
+          this.chooseLabels.push({ 'groupName': 'GPTfit', 'userName': this.role.userName, 'userId': this.role.userId });
           this.form.patchValue({ groupManager: [ this.role.userId ] });
         }
 

@@ -40,10 +40,10 @@ export class PersonalComponent implements OnInit, OnDestroy {
    */
   uiFlag = {
     isLoading: false,
-    isPortalMode: !location.pathname.includes('dashboard'),
+    isPortalMode: false,
     isPageOwner: false,
     currentPage: 'activity-list',
-    editMode: <EditMode>'close',
+    editMode: <EditMode>'edit',
     descOverflow: false,
     showMorePageOpt: false,
     isPreviewMode: false,
@@ -53,7 +53,8 @@ export class PersonalComponent implements OnInit, OnDestroy {
     barPosition: 0,
     barWidth: 0,
     windowInnerWidth: null,
-    hideScenery: false
+    hideScenery: false,
+    isSettingPage: false
   };
 
   /**
@@ -99,7 +100,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.checkPreviewMode(location.search);
+    this.checkPage();
     this.handlePageResize();
     if (!this.uiFlag.isPreviewMode) this.handleScroll();
     this.getNeedInfo();
@@ -112,8 +113,12 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * 確認是否為預覽列印頁面
    * @author kidin-1100812
    */
-  checkPreviewMode(queryString: string) {
-    const query = this.utils.getUrlQueryStrings(queryString);
+   checkPage() {
+    const { pathname, search } = location,
+          pathnameArr = pathname.split('/'),
+          query = this.utils.getUrlQueryStrings(search);
+    this.uiFlag.isPortalMode = pathnameArr[1] !== 'dashboard';
+    this.uiFlag.isSettingPage = !this.uiFlag.isPortalMode && pathnameArr[2] === 'user-settings';
     if (query.ipm) this.uiFlag.isPreviewMode = true;
   }
 
@@ -155,19 +160,31 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1100908
    */
   checkPageListBarPosition() {
-    const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as any,
-          headerDescription = document.querySelectorAll('.info-headerDescription')[0],
-          scenerySection = document.querySelectorAll('.info-ScenerySection')[0],
-          { top: barTop } = pageListBar.getBoundingClientRect(),
-          { bottom: descBottom } = headerDescription.getBoundingClientRect(),
-          { width } = scenerySection.getBoundingClientRect();
-      if (barTop <= 50 && descBottom < 50) {
+    if (!this.uiFlag.isSettingPage) {
+      const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as any,
+            headerDescriptionBlock = document.querySelectorAll('.info-headerDescriptionBlock')[0],
+            headerDescription = document.querySelectorAll('.info-headerDescription')[0],
+            scenerySection = document.querySelectorAll('.info-scenerySection')[0],
+            { top: barTop } = pageListBar.getBoundingClientRect(),
+            { bottom: descBottom } = headerDescription.getBoundingClientRect(),
+            { width } = scenerySection.getBoundingClientRect();
+      if (barTop <= 51 && descBottom < 50) {
         pageListBar.classList.add('info-pageListBar-fixed');
+        headerDescriptionBlock.classList.add('info-pageListBar-replace');  // 填充原本功能列的高度
         pageListBar.style.width = `${width}px`;
       } else {
         pageListBar.classList.remove('info-pageListBar-fixed');
+        headerDescriptionBlock.classList.remove('info-pageListBar-replace');
         pageListBar.style.width = `100%`;
       }
+
+      if (this.uiFlag.isPortalMode) {
+        const cardSection = document.querySelectorAll('.cardSection')[0],
+              { left } = cardSection.getBoundingClientRect();
+        pageListBar.style.left = `${left}px`;
+      }
+
+    }
 
   }
 
@@ -344,29 +361,36 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1100811
    */
   initChildPageList(): Array<string> {
-    let childPageList = this.childPageList;
-    if (!this.uiFlag.isPortalMode) {
-      childPageList = [
-        'activity-list',
-        'sport-report',
-        'life-tracking',
-        'cloudrun',
-        'info',
-        'user-settings',
-        'personal-preferences',
-        'privacy-settings',
-        'account-info'
-      ];
-    } else {
-      childPageList = [
-        'activity-list',
-        'sport-report',
-        'info'
-      ];
+    if (!this.uiFlag.isSettingPage) {
+      let childPageList = this.childPageList;
+      const { isPortalMode, isSettingPage } = this.uiFlag;
+      if (!isPortalMode) {
 
+        if (!isSettingPage) {
+          childPageList = [
+            'activity-list',
+            'sport-report',
+            'life-tracking',
+            'cloudrun',
+            'info'
+          ];
+
+        }
+
+      } else {
+        childPageList = [
+          'activity-list',
+          'sport-report',
+          'info'
+        ];
+
+      }
+      
+      return childPageList;
+    } else {
+      return [];
     }
-    
-    return childPageList;
+
   }
 
   /**
@@ -374,22 +398,25 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1100811
    */
   getPerPageOptSize() {
-    this.uiFlag.divideIndex = null;
-    if (this.clickEvent) {
-      this.clickEvent.unsubscribe();
-    }
+    if (!this.uiFlag.isSettingPage) {
+      this.uiFlag.divideIndex = null;
+      if (this.clickEvent) {
+        this.clickEvent.unsubscribe();
+      }
 
-    setTimeout(() => {
-      this.initPageOptSize();
-      const menuList = document.querySelectorAll('.main__page__list');
-      this.uiFlag.barWidth = menuList[0].clientWidth;
-      menuList.forEach(_menu => {
-        this.perPageOptSize.perSize.push(_menu.clientWidth);
-        this.perPageOptSize.total += _menu.clientWidth;
+      setTimeout(() => {
+        this.initPageOptSize();
+        const menuList = document.querySelectorAll('.main__page__list');
+        this.uiFlag.barWidth = menuList[0].clientWidth;
+        menuList.forEach(_menu => {
+          this.perPageOptSize.perSize.push(_menu.clientWidth);
+          this.perPageOptSize.total += _menu.clientWidth;
+        });
+
+        this.checkScreenSize();
       });
 
-      this.checkScreenSize();
-    })
+    }
 
   }
 
@@ -433,19 +460,23 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1100812
    */
   getCurrentContentPage(event = null): void {
-    let urlArr: Array<string>;
-    if (event !== null) {
-      urlArr = event.url.split('/');
-    } else {
-      urlArr = location.pathname.split('/');
-    }
+    if (!this.uiFlag.isSettingPage) {
+      let urlArr: Array<string>;
+      const { isPortalMode } = this.uiFlag;
+      if (event !== null) {
+        urlArr = event.url.split('/');
+      } else {
+        urlArr = location.pathname.split('/');
+      }
 
-    if (this.uiFlag.isPortalMode && urlArr.length < 4) {
-      this.uiFlag.currentPage = 'activity-list';
-      this.uiFlag.currentTagIndex = 0;
-    } else {
-      this.uiFlag.currentPage = urlArr[urlArr.length - 1].split('?')[0];
-      this.uiFlag.currentTagIndex = this.childPageList.indexOf(this.uiFlag.currentPage);
+      if (isPortalMode && urlArr.length < 4) {
+        this.uiFlag.currentPage = 'activity-list';
+        this.uiFlag.currentTagIndex = 0;
+      } else {
+        this.uiFlag.currentPage = urlArr[urlArr.length - 1].split('?')[0];
+        this.uiFlag.currentTagIndex = this.childPageList.indexOf(this.uiFlag.currentPage);
+      }
+
     }
     
   }
@@ -455,19 +486,21 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1100812
    */
   checkDescLen() {
+    if (!this.uiFlag.isSettingPage) {
+      setTimeout(() => {
+        const descSection = this.headerDescription.nativeElement,
+              descStyle = window.getComputedStyle(descSection, null),
+              descLineHeight = +descStyle.lineHeight.split('px')[0],
+              descHeight = +descStyle.height.split('px')[0];
+        if (descHeight / descLineHeight > 2) {
+          this.uiFlag.descOverflow = true;
+        } else {
+          this.uiFlag.descOverflow = false;
+        }
 
-    setTimeout(() => {
-      const descSection = this.headerDescription.nativeElement,
-            descStyle = window.getComputedStyle(descSection, null),
-            descLineHeight = +descStyle.lineHeight.split('px')[0],
-            descHeight = +descStyle.height.split('px')[0];
-      if (descHeight / descLineHeight > 2) {
-        this.uiFlag.descOverflow = true;
-      } else {
-        this.uiFlag.descOverflow = false;
-      }
+      });
 
-    });
+    }
 
   }
 
@@ -497,6 +530,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
         this.uiFlag.hideScenery = false;
       }
 
+      this.upLoadImg('complete');
     }
 
     this.uiFlag.openImgSelector = null;
@@ -549,7 +583,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
       this.sendImgUploadReq(formData);
     } else if (editMode === 'complete') {
       this.userProfileService.refreshUserProfile({ token: this.token });
-      this.userInfoService.setRxEditMode('close');
+      // this.userInfoService.setRxEditMode('close');
     } else {
       this.uiFlag.editMode = editMode;
     }
@@ -570,7 +604,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
       } else {
         this.initImgSetting();
         this.userProfileService.refreshUserProfile({ token: this.token });
-        this.userInfoService.setRxEditMode('close');
+        // this.userInfoService.setRxEditMode('close');
       }
 
     });
@@ -633,8 +667,9 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1100812
    */
   handleShowContent(e: MouseEvent, page: string, tagIdx: number) {
+    const { isPortalMode } = this.uiFlag;
     if (e) e.stopPropagation();
-    if (this.uiFlag.isPortalMode) {
+    if (isPortalMode) {
       this.router.navigateByUrl(`/user-profile/${this.hashUserId}/${page}`);
     } else {
       this.router.navigateByUrl(`/dashboard/${page}`);

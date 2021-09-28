@@ -88,7 +88,7 @@
           [style.display]="uiFlag.sidebarMode !== 'expand' && !uiFlag.navFixed ? 'none' : flex"
           (click)="navigateHomePage()"
         >
-          GPTFit
+          GPTfit
           <span class="alpha-text" *ngIf="isAlphaVersion">alpha</span>
         </span>
         <div
@@ -531,7 +531,7 @@
             [ngClass]="footerAddClassName"
             [style.display]="isHideFooter ? 'none' : 'block'"
           >
-            {{'universal_vocabulary_footerAnnouncement' | translate: {'appName': 'GPTFit' } }}
+            {{'universal_vocabulary_footerAnnouncement' | translate: {'appName': 'GPTfit' } }}
             <div>{{'universal_ota_version' | translate}}: {{version}}</div>
           </div>
         </div>
@@ -549,7 +549,7 @@
       (click)="navbarFixed()"
     ></div>
     <div
-      [class.container]="isHadContainer"
+      [class.dashboard__container]="isHadContainer"
       [class.containerPrint]="isPreviewMode"
       [hidden]="isLoading"
     >

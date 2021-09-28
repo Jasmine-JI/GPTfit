@@ -8,7 +8,7 @@
     <span
       style="font-family: Eurostile-ExtendedTwo; font-size: 30px; height: 30px; color: rgba(80, 80, 80, 1)"
       *ngIf="uiFlag.isPreviewMode"
-    >GPTFit</span>
+    >GPTfit</span>
     <button
       class="function__btn"
       [title]="'universal_operating_edit' | translate"
@@ -129,7 +129,7 @@
   </section>
   <secton id="main__content">
     <section class="card__section" [style.width]="uiFlag.pcView ? '53%' : '100%'">
-      <div style="max-width: 600px;">
+      <div>
         <div
           class="cardTitle"
           *ngIf="uiFlag.pcView; else activeBarTemp;"
@@ -554,11 +554,11 @@
               <div class="flexCol table__list__block">
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_avgCyclingCadence' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.cycleAvgCadence }} rpm</span>
+                  <span class="table__list__content">{{ activityInfoLayer.cycleAvgCadence || 0 }} rpm</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_liveMaxCycleCadence' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.cycleMaxCadence }} rpm</span>
+                  <span class="table__list__content">{{ activityInfoLayer.cycleMaxCadence || 0 }} rpm</span>
                 </div>
               </div>
             </div>

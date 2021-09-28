@@ -5,16 +5,16 @@
     class="flexCol"
     style="position: relative;"
   >
-    <section class="info-ScenerySection">
+    <section class="info-scenerySection">
       <img
         class="info-imgAbs"
         [src]="deviceInfo.modelTypeName | productType: 'imgPath'"
       />
     </section>
-    <section class="Info-header" [class.info-portalMode]="uiFlag.displayPage === 'fitPair'">
+    <section class="info-header" [class.info-portalMode]="uiFlag.displayPage === 'fitPair'">
       <div
         style="border-color: rgba(230, 230, 230, 1);"
-        class="info-sceneryIcon"
+        class="info-avatarIcon"
         [style.left]="uiFlag.displayPage === 'fitPair' ? 'initial' : '50px'"
       >
         <img
@@ -77,7 +77,7 @@
         </div>
       </div>
     </section>
-    <section [class.info-portalMode]="uiFlag.displayPage === 'fitPair'">
+    <section class="flexCol info-headerDescriptionBlock" [class.info-portalMode]="uiFlag.displayPage === 'fitPair'">
       <span
         style="color: red;"
         class="info-headerDescription"

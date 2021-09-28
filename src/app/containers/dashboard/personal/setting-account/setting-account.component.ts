@@ -26,6 +26,10 @@ enum thirdParty {
 export class SettingAccountComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
 
+  uiFlag = {
+    expand: false
+  }
+
   userInfo: any;
   clientId = 30689;
   stravaApiDomain = 'https://app.alatech.com.tw:5443';
@@ -173,7 +177,7 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
         }
       }
 
-      this.router.navigateByUrl('/dashboard/account-info');
+      this.router.navigateByUrl('/dashboard/user-settings');
     });
 
   }
@@ -204,6 +208,14 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
     };
 
     this.handleStravaAccess(body);
+  }
+
+  /**
+   * 展開或收合整個帳號資訊內容
+   * @author kidin-1100922
+   */
+  handleFolder() {
+    this.uiFlag.expand = !this.uiFlag.expand;
   }
 
   /**

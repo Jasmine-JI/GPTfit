@@ -65,7 +65,7 @@ export class InfoComponent implements OnInit, OnDestroy {
    */
   cancelEdit() {
     this.uiFlag.editMode = 'close';
-    this.userInfoService.setRxEditMode('close');
+    // this.userInfoService.setRxEditMode('close');
   }
 
   /**
@@ -74,7 +74,6 @@ export class InfoComponent implements OnInit, OnDestroy {
    */
   editComplete() {
     this.uiFlag.editMode = 'close';
-    this.userInfoService.setRxEditMode('complete');
     if (this.inputDescription) {
       this.updateUserProfile();
     }
@@ -104,6 +103,7 @@ export class InfoComponent implements OnInit, OnDestroy {
           this.utils.handleError(resultCode, apiCode, resultMessage);
         } else {
           this.inputDescription = undefined;
+          this.userInfoService.setRxEditMode('complete');
         }
 
       }

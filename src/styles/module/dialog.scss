@@ -1,0 +1,72 @@
+/**
+ * 彈跳視窗樣式
+ * @prefix dialog-
+ */
+
+@import 'transition.scss';
+@import 'button.scss';
+
+$btn-font-size: 16px;
+$btn-padding: 5px 10px;
+
+.dialog-box {
+  width: 90vw;
+  max-width: 500px;
+  border-radius: 5px;
+  background-color: var(--scale-255-60);
+  z-index: 12;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2), -5px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.dialog-title {
+  display: flex;
+  justify-content: center;
+  background-color: rgba(47, 67, 73, 1);
+  padding: 10px 0;
+  border-radius: 5px 5px 0 0;
+
+  >h5 {
+    margin: 0;
+    color: white;
+  }
+
+}
+
+.dialog-content {
+  padding: 5px;
+  max-height: 300px;
+  overflow-y: scroll;
+}
+
+.dialog-action {
+  padding: 10px;
+  justify-content: space-between;
+}
+
+.dialog-cancelBtn {
+  @include transition(background-color);
+  @include button($btn-font-size, none, rgba(0, 0, 0, 0)) {
+    color: rgba(244, 67, 54, 1);
+    padding: $btn-padding;
+  };
+
+  &:hover {
+    background-color: rgba(244, 67, 54, 0.1);
+    @include transition(background-color);
+  }
+
+}
+
+.dialog-confirmBtn {
+  @include transition(background-color);
+  @include button($btn-font-size, none, rgba(0, 0, 0, 0)) {
+    color: rgba(112, 149, 255, 1);
+    padding: $btn-padding;
+  };
+
+  &:hover {
+    background-color: rgba(112, 149, 255, 0.1);
+    @include transition(background-color);
+  }
+
+}

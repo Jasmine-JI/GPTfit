@@ -31,45 +31,64 @@
     </div>
   </div>
   <div class="flexCol" style="color: var(--scale-0-255);">
-    <span style="margin-bottom: 10px;">{{ title }} {{ 'universal_vocabulary_object' | translate }}</span>
-    <div class="flexCol checkBox__section">
-      <span class="flexRow checkBoxBlock">
-        <button
-          id="anyone__opt"
-          [class.checkBox--active]="openObj.includes(privacyObj.anyone)"
-          (click)="selectModifyRange(privacyObj.anyone)"
-        >
-          <span *ngIf="openObj.includes(privacyObj.anyone)">✔</span>
-        </button>
-        <label for="anyone__opt" class="checkBox__label">
-          {{ 'universal_privacy_allMember' | translate }}
-        </label>
+    <span style="margin-bottom: 10px;">
+      {{ title }} {{ 'universal_vocabulary_object' | translate }}
+    </span>
+    <div class="flexRow rod__bar__section">
+      <span>
+        {{ 'universal_operating_close' | translate }}
       </span>
-      <span class="flexRow checkBoxBlock">
-        <button
-          id="my__group__opt"
-          [class.checkBox--active]="openObj.includes(privacyObj.myGroup)"
-          (click)="selectModifyRange(privacyObj.myGroup)"
-        >
-          <span *ngIf="openObj.includes(privacyObj.myGroup)">✔</span>
-        </button>
-        <label for="my__group__opt" class="checkBox__label">
-          {{ 'universal_privacy_myGroupMember' | translate }}
-        </label>
-      </span>
-      <span class="flexRow checkBoxBlock">
-        <button
-          id="my__admin"
-          [class.checkBox--active]="openObj.includes(privacyObj.onlyGroupAdmin)"
-          (click)="selectModifyRange(privacyObj.onlyGroupAdmin)"
-        >
-          <span *ngIf="openObj.includes(privacyObj.onlyGroupAdmin)">✔</span>
-        </button>
-        <label for="my__admin" class="checkBox__label">
-          {{ 'universal_group_myGroupAdmin' | translate }}
-        </label>
+      <div
+        class="rodBar"
+        [class.rodBar--active]="openObj.length > 1"
+        (click)="selectModifyRange(privacyObj.self)"
+      ></div>
+      <span style="margin-left: 10px;">
+        {{ 'universal_privacy_openPrivacy' | translate }}
       </span>
     </div>
+    <ng-container *ngIf="openObj.length > 1">
+      <div class="flexCol checkBox__section">
+        <span class="flexRow checkBoxBlock">
+          <button
+            id="anyone__opt"
+            [class.checkBox--active]="openObj.includes(privacyObj.anyone)"
+            (click)="selectModifyRange(privacyObj.anyone)"
+          >
+            <span *ngIf="openObj.includes(privacyObj.anyone)">✔</span>
+          </button>
+          <label for="anyone__opt" class="checkBox__label">
+            {{ 'universal_privacy_allMember' | translate }}
+          </label>
+        </span>
+        <span class="flexRow checkBoxBlock">
+          <span class="first__layer">└</span>
+          <button
+            id="my__group__opt"
+            [class.checkBox--active]="openObj.includes(privacyObj.myGroup)"
+            (click)="selectModifyRange(privacyObj.myGroup)"
+          >
+            <span *ngIf="openObj.includes(privacyObj.myGroup)">✔</span>
+          </button>
+          <label for="my__group__opt" class="checkBox__label">
+            {{ 'universal_group_myGroup' | translate }}
+          </label>
+        </span>
+        <span class="flexRow checkBoxBlock">
+          <span class="second__layer">└</span>
+          <button
+            id="my__admin"
+            [class.checkBox--active]="openObj.includes(privacyObj.onlyGroupAdmin)"
+            (click)="selectModifyRange(privacyObj.onlyGroupAdmin)"
+          >
+            <span *ngIf="openObj.includes(privacyObj.onlyGroupAdmin)">✔</span>
+          </button>
+          <label for="my__admin" class="checkBox__label">
+            {{ 'universal_group_administrator' | translate }}
+          </label>
+        </span>
+      </div>
+    </ng-container>
   </div>
 </mat-dialog-content>
 <mat-dialog-actions class="flexRow" style="justify-content: space-between;">

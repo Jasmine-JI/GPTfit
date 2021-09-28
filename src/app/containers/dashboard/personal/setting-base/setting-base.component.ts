@@ -11,8 +11,6 @@ import { unit, ft, lb } from '../../../../shared/models/bs-constant';
 import { formTest } from '../../../portal/models/form-test';
 
 
-const heightCoefficient = 100 * ft;
-
 @Component({
   selector: 'app-setting-base',
   templateUrl: './setting-base.component.html',
@@ -26,8 +24,10 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    */
   uiFlag = {
     progress: 100,
+    expand: true,
     editMode: 'close',
     nicknameAlert: <'repeat' | 'format'>null,
+    heightAlert: false
   }
 
   /**
@@ -35,7 +35,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    */
   setting = {
     nickname: '',
-    bodyHeight: 175,
+    bodyHeight: <string | number>175,
     bodyWeight: 70,
     birthday: moment().subtract(30, 'years').startOf('year').valueOf(),  // 預設30歲
     gender: 0
@@ -74,6 +74,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.userInfo = res;
+      this.openEditMode();
     });
 
   }
@@ -89,8 +90,8 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
           isMetric = userUnit === unit.metric;
     this.setting = {
       nickname,
-      bodyHeight: this.utils.valueConvert(bodyHeight, !isMetric, true, heightCoefficient, 2),
-      bodyWeight: this.utils.valueConvert(bodyWeight, !isMetric, true, lb, 2),
+      bodyHeight: this.utils.bodyHeightTransfer(bodyHeight, !isMetric, true),
+      bodyWeight: this.utils.valueConvert(bodyWeight, !isMetric, true, lb, 0),
       birthday: moment(birthday, 'YYYYMMDD').valueOf(),
       gender,
     };
@@ -109,7 +110,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
   cancelEdit() {
     this.uiFlag.nicknameAlert = null;
     this.uiFlag.editMode = 'close';
-    this.userInfoService.setRxEditMode('close');
+    // this.userInfoService.setRxEditMode('close');
   }
 
   /**
@@ -120,8 +121,8 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     const token = this.utils.getToken(),
           newSet = this.checkEdit(this.userInfo, this.setting);
     if (newSet) {
-
-      if (!this.uiFlag.nicknameAlert) {
+      const { nicknameAlert, heightAlert } = this.uiFlag;
+      if (!nicknameAlert && !heightAlert) {
         const body = {
           token,
           userProfile: {
@@ -139,7 +140,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
             if (resultCode !== 200) {
               this.utils.handleError(resultCode, apiCode, resultMessage);
             } else {
-              this.uiFlag.editMode = 'close';
+              // this.uiFlag.editMode = 'close';  // 常駐編輯狀態
               this.userInfoService.setRxEditMode('complete');
             }
 
@@ -149,9 +150,6 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
 
       }
       
-    } else {
-      this.uiFlag.editMode = 'close';
-      this.userInfoService.setRxEditMode('complete');
     }
     
   }
@@ -212,13 +210,13 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     switch (key) {
       case 'bodyHeight':
         if (edited) {
-          return isMetric ? value : this.utils.valueConvert(value as number, true, false, heightCoefficient, 2);
+          return isMetric ? value : this.utils.bodyHeightTransfer(value, true, false);
         } else {
           return this.userInfo[key];
         }
       case 'bodyWeight':
         if (edited) {
-          return isMetric ? value : this.utils.valueConvert((value as number), true, false, lb, 2);
+          return isMetric ? value : this.utils.valueConvert((value as number), true, false, lb, 1);
         } else {
           return this.userInfo[key];
         }
@@ -260,6 +258,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
             } else {
               this.uiFlag.nicknameAlert = null;
               this.setting.nickname = name;
+              this.editComplete();
             }
 
           }
@@ -291,34 +290,87 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 確認身高欄位是否輸入為數字或"
+   * @param e {KeyboardEvent}
+   * @author kidin-1100823
+   */
+  checkHeightFormat(e: KeyboardEvent) {
+    if (this.userInfo.unit === unit.metric) {
+      this.checkFormat(e);
+    } else {
+      const { key, target: { value } } = e as any,
+            testReg = /\d|"/,
+            numTest = testReg.test(`${key}`),
+            notFnKey = key.length <= 1,
+            checkQuotation = !value.includes('"') && key === '"';
+      if (!numTest && notFnKey && !checkQuotation) {
+        e.preventDefault();
+      }
+
+    }
+
+  }
+
+  /**
+   * 確認體重欄位是否輸入為數字或.
+   * @param e {KeyboardEvent}
+   * @author kidin-1100823
+   */
+  checkWeightFormat(e: KeyboardEvent) {
+    if (this.userInfo.unit === unit.metric) {
+      this.checkFormat(e);
+    } else {
+      const { key } = e as any,
+            numTest = formTest.number.test(`${key}`),
+            notFnKey = key.length <= 1;
+      if (!numTest && notFnKey) {
+        e.preventDefault();
+      }
+
+    }
+  }
+
+  /**
    * 檢查是否為合理值
    * @param e {Event | MouseEvent}
    * @author kidin-1100818
    */
   handleHeightInput(e: Event | MouseEvent) {
-    const oldValue = this.userInfo.bodyHeight,
-          inputValue = +(e as any).target.value,
-          testFormat = formTest.decimalValue.test(`${inputValue}`),
-          isMetric = this.userInfo.unit === unit.metric,
-          newValue = this.utils.valueConvert(inputValue, !isMetric, false, heightCoefficient, 2),
+    const isMetric = this.userInfo.unit === unit.metric,
+          { decimalValue, imperialHeight } = formTest,
+          oldValue = this.userInfo.bodyHeight,
+          { value } = (e as any).target,
+          inputValue = isMetric ? +value : value,
+          testReg = isMetric ? decimalValue : imperialHeight,
+          testFormat = testReg.test(`${inputValue}`),
+          newValue = this.utils.bodyHeightTransfer(inputValue, !isMetric, false),
           valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       this.editFlag.bodyHeight = true;
       const min = 100,
             max = 255;
       if (newValue < min) {
-        this.setting.bodyHeight = this.utils.valueConvert(min, !isMetric, true, heightCoefficient, 2);
+        this.setting.bodyHeight = this.utils.bodyHeightTransfer(min, !isMetric, true);
       } else if (newValue > max) {
-        this.setting.bodyHeight = this.utils.valueConvert(max, !isMetric, true, heightCoefficient, 2);
+        this.setting.bodyHeight = this.utils.bodyHeightTransfer(max, !isMetric, true);
       } else {
-        this.setting.bodyHeight = +inputValue;
+        this.setting.bodyHeight = inputValue;
       }
 
       (e as any).target.value = this.setting.bodyHeight;
+      this.uiFlag.heightAlert = false;
+      this.editComplete();
     } else {
+
+      if (!testFormat) {
+        this.uiFlag.heightAlert = true;
+      } else {
+        const { bodyHeight } = this.userInfo;
+        (e as any).target.value = this.utils.bodyHeightTransfer(bodyHeight, !isMetric, true);
+        this.uiFlag.heightAlert = false;
+      }
+
       this.editFlag.bodyHeight = false;
-      const { bodyHeight } = this.userInfo;
-      (e as any).target.value = this.utils.valueConvert(bodyHeight, !isMetric, true, heightCoefficient, 2);
     }
 
   }
@@ -340,18 +392,19 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
       const min = 40,
             max = 255;
       if (newValue < min) {
-        this.setting.bodyWeight = this.utils.valueConvert(min, !isMetric, true, lb, 2);
+        this.setting.bodyWeight = this.utils.valueConvert(min, !isMetric, true, lb, 0);
       } else if (newValue > max) {
-        this.setting.bodyWeight = this.utils.valueConvert(max, !isMetric, true, lb, 2);;
+        this.setting.bodyWeight = this.utils.valueConvert(max, !isMetric, true, lb, 0);
       } else {
         this.setting.bodyWeight = +inputValue;
       }
 
       (e as any).target.value = this.setting.bodyWeight;
+      this.editComplete();
     } else {
       this.editFlag.bodyWeight = false;
       const { bodyWeight } = this.userInfo;
-      (e as any).target.value = this.utils.valueConvert(bodyWeight, !isMetric, true, lb, 2);
+      (e as any).target.value = this.utils.valueConvert(bodyWeight, !isMetric, true, lb, 0);
     }
 
   }
@@ -364,6 +417,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
   getSelectDate(e: any) {
     const { startDate } = e;
     this.setting.birthday = moment(startDate).valueOf();
+    this.editComplete();
   }
 
   /**
@@ -373,6 +427,15 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    */
   changeGender(sex: Sex) {
     this.setting.gender = sex;
+    this.editComplete();
+  }
+
+  /**
+   * 展開或收合整個基本資訊內容
+   * @author kidin-1100922
+   */
+  handleFolder() {
+    this.uiFlag.expand = !this.uiFlag.expand;
   }
 
   /**

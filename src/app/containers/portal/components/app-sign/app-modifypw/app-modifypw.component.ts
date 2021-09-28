@@ -172,7 +172,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     } else if (this.appSys === 2) {
       (window as any).android.closeWebView('Close');
     } else {
-      this.router.navigateByUrl('/dashboard/settings/account-info');
+      this.router.navigateByUrl('/dashboard/user-settings');
     }
 
   }

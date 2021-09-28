@@ -207,17 +207,26 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   checkPageListBarPosition() {
     const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as any,
+          headerDescriptionBlock = document.querySelectorAll('.info-headerDescriptionBlock')[0],
           headerDescription = document.querySelectorAll('.info-headerDescription')[0],
-          scenerySection = document.querySelectorAll('.info-ScenerySection')[0],
+          scenerySection = document.querySelectorAll('.info-scenerySection')[0],
           { top: barTop } = pageListBar.getBoundingClientRect(),
           { bottom: descBottom } = headerDescription.getBoundingClientRect(),
           { width } = scenerySection.getBoundingClientRect();
-      if (barTop <= 50 && descBottom < 50) {
+      if (barTop <= 51 && descBottom < 50) {
         pageListBar.classList.add('info-pageListBar-fixed');
+        headerDescriptionBlock.classList.add('info-pageListBar-replace');  // 填充原本功能列的高度
         pageListBar.style.width = `${width}px`;
       } else {
         pageListBar.classList.remove('info-pageListBar-fixed');
+        headerDescriptionBlock.classList.remove('info-pageListBar-replace');
         pageListBar.style.width = `100%`;
+      }
+
+      if (this.uiFlag.portalMode) {
+        const cardSection = document.querySelectorAll('.cardSection')[0],
+              { left } = cardSection.getBoundingClientRect();
+        pageListBar.style.left = `${left}px`;
       }
 
   }
@@ -1026,37 +1035,41 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
           upperClassAdmin = this.user.accessRight[0] <= 50,
           upperMarktingManage = this.user.accessRight[0] <= 29;
     let childPageList = ['group-introduction'];
-    if (!isEnterpriseType && inClassLevel && inOperation && notLock && upperClassAdmin) {
-      childPageList = childPageList.concat([
-        'myclass-report',
-        'class-analysis',
-        'cloudrun-report'
-      ]);
-    } else if (!isEnterpriseType && inClassLevel && inOperation && notLock) {
-      childPageList = childPageList.concat([
-        'myclass-report',
-        'cloudrun-report'
-      ]);
-    } else if (isEnterpriseType && inOperation && notLock) {
-      childPageList = childPageList.concat([
-        'sports-report',
-        'life-tracking',
-        'cloudrun-report'
-      ]);
-    }
-
     if (!this.uiFlag.portalMode) {
-      childPageList = childPageList.concat([
-        'group-architecture',
-        'member-list',
-        'admin-list'
-      ]);
-      
-      if (upperClassAdmin) childPageList = childPageList.concat(['device-list']);
-    }
 
-    if (inBrandLevel && (upperMarktingManage || this.user.isGroupAdmin)) {
-      childPageList.push('commerce-plan');
+      if (!isEnterpriseType && inClassLevel && inOperation && notLock && upperClassAdmin) {
+        childPageList = childPageList.concat([
+          'myclass-report',
+          'class-analysis',
+          'cloudrun-report'
+        ]);
+      } else if (!isEnterpriseType && inClassLevel && inOperation && notLock) {
+        childPageList = childPageList.concat([
+          'myclass-report',
+          'cloudrun-report'
+        ]);
+      } else if (isEnterpriseType && inOperation && notLock) {
+        childPageList = childPageList.concat([
+          'sports-report',
+          'life-tracking',
+          'cloudrun-report'
+        ]);
+      }
+
+      if (!this.uiFlag.portalMode) {
+        childPageList = childPageList.concat([
+          'group-architecture',
+          'member-list',
+          'admin-list'
+        ]);
+        
+        if (upperClassAdmin) childPageList = childPageList.concat(['device-list']);
+      }
+
+      if (inBrandLevel && (upperMarktingManage || this.user.isGroupAdmin)) {
+        childPageList.push('commerce-plan');
+      }
+
     }
     
     return childPageList;

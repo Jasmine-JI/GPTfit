@@ -1,4 +1,4 @@
-# GPTFit
+# GPTfit
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.1
 Angular version: 11.0.0
@@ -110,7 +110,7 @@ unmount
 ## Product error log
 目前device error log代碼由研發定義，web開發者負責文件維護與顯示，若有變更再一併更新下列檔案
 > Excel：Q:\APP+CLOUD\05-翻譯管理\錯誤代碼查找表_{{date}}.xlsx
-> GPTFit：src/app/containers/dashboard/pipes/product-error-log.pipe.ts
+> GPTfit：src/app/containers/dashboard/pipes/product-error-log.pipe.ts
 
 ## 資料夾結構
 
