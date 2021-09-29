@@ -21,6 +21,7 @@ import { Subject, forkJoin } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { UserProfileInfo } from './models/userProfileInfo';
 import { DashboardService } from './services/dashboard.service';
+import { langData } from '../../shared/models/i18n';
 
 
 enum Dashboard {
@@ -77,6 +78,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     hover: false
   };
 
+  langName: string;
   userProfile = <UserProfileInfo>{};
   isPreviewMode = false;
   isLoading = false;
@@ -585,6 +587,17 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     if (save) this.utilsService.setLocalStorageObject('theme', nextTheme);
     this.theme = nextTheme;
+  }
+
+  /**
+   * 變更語言
+   * @param lang {string}-語言類別
+   * @author kidin-1100929
+   */
+  switchLang(lang: string) {
+    this.langName = langData[lang];
+    this.translateService.use(lang);
+    this.utilsService.setLocalStorageObject('locale', lang);
   }
 
   /**

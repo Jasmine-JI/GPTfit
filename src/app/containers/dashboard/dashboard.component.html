@@ -11,7 +11,7 @@
           <i class="icon-svg_web-icon_p1_005-menu main-nav-toggle-icon"></i>
         </div>
       </div>
-      <div style="display: flex; position: fixed; right: 20px">
+      <div style="display: flex; position: fixed; right: 20px; align-items: center;">
         <div class="flexCenter" *ngIf="userProfile.systemAccessRight[0] <= 20">
           <button style="border: none; background-color: transparent;" (click)="changeTheme()">
             <span style="font-size: 22px;" [style.color]="theme === 'light' ? 'black' : 'yellow'">
@@ -28,7 +28,7 @@
             aria-expanded="false"
           >
             <div class="header-nav-item" style="margin-right: 10px">
-              {{ userProfile.nickname || '' }}
+              <span *ngIf="!uiFlag.mobileMode">{{ userProfile.nickname || '' }}</span>
             </div>
             <img
               [src]="userProfile.avatarUrl"
@@ -45,19 +45,9 @@
              aria-labelledby="dropdownMenu3"
           >
             <div class="header-nav-menu-section">
-              <!-- <div (click)="$event.preventDefault();$event.stopPropagation();"
-                style="padding: 15px 20px"
-              >
-                {{ userName || '' }}
-              </div> -->
-            </div>
-            <div class="header-nav-menu-section">
               <ul>
                 <li style="color: #ff3838; font-weight: bold;" (click)="toEnableAccount()" *ngIf="accountStatus === 1">
                   {{ "universal_deviceSetting_switch" | translate}} {{ "universal_userAccount_account" | translate}}
-                </li>
-                <li (click)="goToUserProfile(userProfile.userId)">
-                  {{ "universal_userProfile_info" | translate}}
                 </li>
                 <li [routerLink]="['/dashboard/user-settings']">
                   {{ "universal_system_accountManagement" | translate}}
@@ -65,6 +55,22 @@
               </ul>
             </div>
             <button class="dropdown-item" type="button" (click)="logout()">{{ "universal_userAccount_logOut" | translate}}</button>
+          </div>
+        </div>
+        <div class="dropdown nav-rwd">
+          <button class="btn btn-secondary dropdown-toggle ala-btn__lang" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false" style="background-color: transparent;border-color: transparent">
+            <i class="icon-svg_web-icon_p1_045-earth" style="font-size: 25px;"></i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-lang" aria-labelledby="dropdownMenu2">
+            <button class="dropdown-item" type="button" (click)="switchLang('zh-tw')">繁體中文</button>
+            <button class="dropdown-item" type="button" (click)="switchLang('zh-cn')">简体中文</button>
+            <button class="dropdown-item" type="button" (click)="switchLang('en-us')">English</button>
+            <button class="dropdown-item" type="button" (click)="switchLang('es-es')">Español</button>
+            <button class="dropdown-item" type="button" (click)="switchLang('de-de')">Deutsche</button>
+            <button class="dropdown-item" type="button" (click)="switchLang('fr-fr')">français</button>
+            <button class="dropdown-item" type="button" (click)="switchLang('it-it')">italiano</button>
+            <button class="dropdown-item" type="button" (click)="switchLang('pt-pt')">Português</button>
           </div>
         </div>
       </div>
