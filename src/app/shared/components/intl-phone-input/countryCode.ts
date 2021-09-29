@@ -37,7 +37,7 @@ export const codes = [
   },
   {
     name: 'AmericanSamoa',
-    code: '+1684'
+    code: '+1'
   },
   {
     name: 'Andorra',
@@ -45,11 +45,11 @@ export const codes = [
   },
   {
     name: 'Anguilla',
-    code: '+1264'
+    code: '+1'
   },
   {
     name: 'Antigua and Barbuda',
-    code: '+1268'
+    code: '+1'
   },
   {
     name: 'Angola',
@@ -81,7 +81,7 @@ export const codes = [
   },
   {
     name: 'Bahamas',
-    code: '+1242'
+    code: '+1'
   },
   {
     name: 'Bahrain',
@@ -89,7 +89,7 @@ export const codes = [
   },
   {
     name: 'Barbados',
-    code: '+1246'
+    code: '+1'
   },
   {
     name: 'Bangladesh',
@@ -105,7 +105,7 @@ export const codes = [
   },
   {
     name: 'Bermuda',
-    code: '+1441'
+    code: '+1'
   },
   {
     name: 'Belarus',
@@ -249,11 +249,11 @@ export const codes = [
   },
   {
     name: 'Dominican Republic',
-    code: '+1849'
+    code: '+1'
   },
   {
     name: 'Dominica',
-    code: '+1767'
+    code: '+1'
   },
   {
     name: 'Ecuador',
@@ -342,7 +342,7 @@ export const codes = [
   },
   {
     name: 'Grenada',
-    code: '+1473'
+    code: '+1'
   },
   {
     name: 'Guinea-Bissau',
@@ -358,7 +358,7 @@ export const codes = [
   },
   {
     name: 'Guam',
-    code: '+1671'
+    code: '+1'
   },
   {
     name: 'Guatemala',
@@ -438,7 +438,7 @@ export const codes = [
   },
   {
     name: 'Jamaica',
-    code: '+1876'
+    code: '+1'
   },
   {
     name: 'Jersey',
@@ -450,7 +450,7 @@ export const codes = [
   },
   {
     name: 'Kazakhstan',
-    code: '+77'
+    code: '+7'
   },
   {
     name: 'Kenya',
@@ -578,7 +578,7 @@ export const codes = [
   },
   {
     name: 'Montserrat',
-    code: '+1664'
+    code: '+1'
   },
   {
     name: 'Montenegro',
@@ -650,7 +650,7 @@ export const codes = [
   },
   {
     name: 'Northern Mariana Islands',
-    code: '+1670'
+    code: '+1'
   },
   {
     name: 'Norway',
@@ -710,7 +710,7 @@ export const codes = [
   },
   {
     name: 'Puerto Rico',
-    code: '+1939'
+    code: '+1'
   },
   {
     name: 'Qatar',
@@ -738,7 +738,7 @@ export const codes = [
   },
   {
     name: 'Saint Lucia',
-    code: '+1758'
+    code: '+1'
   },
   {
     name: 'Saint Martin',
@@ -750,7 +750,7 @@ export const codes = [
   },
   {
     name: 'Saint Vincent and the Grenadines',
-    code: '+1784'
+    code: '+1'
   },
   {
     name: 'Samoa',
@@ -758,7 +758,7 @@ export const codes = [
   },
   {
     name: 'Saint Kitts and Nevis',
-    code: '+1869'
+    code: '+1'
   },
   {
     name: 'Saudi Arabia',
@@ -883,7 +883,7 @@ export const codes = [
   },
   {
     name: 'Trinidad and Tobago',
-    code: '+1868'
+    code: '+1'
   },
   {
     name: 'Tuvalu',
@@ -891,7 +891,7 @@ export const codes = [
   },
   {
     name: 'Turks and Caicos Islands',
-    code: '+1649'
+    code: '+1'
   },
   {
     name: 'Turkey',
@@ -935,7 +935,7 @@ export const codes = [
   },
   {
     name: 'Virgin Islands, U.S.',
-    code: '+1340'
+    code: '+1'
   },
   {
     name: 'Viet Nam',
@@ -943,7 +943,7 @@ export const codes = [
   },
   {
     name: 'Virgin Islands, British',
-    code: '+1284'
+    code: '+1'
   },
   {
     name: 'Wallis and Futuna',
