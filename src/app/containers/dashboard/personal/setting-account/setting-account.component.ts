@@ -39,7 +39,6 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
     private userInfoService: UserInfoService,
     private settingsService: SettingsService,
     private utils: UtilsService,
-    private userProfileService: UserProfileService,
     private auth: AuthService,
     private router: Router,
     private dialog: MatDialog,
@@ -47,8 +46,10 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    const { hostname, pathname, search } = location;
     this.getNeedInfo();
-    this.checkDomain();
+    this.checkDomain(hostname);
+    this.checkPathname(pathname, search);
     this.handleQueryStrings();
   }
 
@@ -114,20 +115,33 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
    * 確認網域來變更strava client id 和 domain
    * @author kidin-1100819
    */
-  checkDomain(): void {
+  checkDomain(hostname: string): void {
     if (
-      location.hostname === '152.101.90.130' ||
-      location.hostname === 'cloud.alatech.com.tw' ||
-      location.hostname === 'www.gptfit.com'
+      hostname === '152.101.90.130' ||
+      hostname === 'cloud.alatech.com.tw' ||
+      hostname === 'www.gptfit.com'
     ) {
       this.clientId = 52136;
-      if (location.hostname === 'cloud.alatech.com.tw') {
+      if (hostname === 'cloud.alatech.com.tw') {
         this.stravaApiDomain = 'https://cloud.alatech.com.tw:5443';
-      } else if (location.hostname === 'www.gptfit.com') {
+      } else if (hostname === 'www.gptfit.com') {
         this.stravaApiDomain = 'https://www.gptfit.com:6443';
       }
 
     }
+
+  }
+
+  /**
+   * 確認url路徑是否由strava轉導回GPTfit
+   * @author kidin-1100819
+   */
+  checkPathname(pathname: string, search: string): void {
+    if (pathname.includes('settings/account-info')) {
+      const newUrl = `/dashboard/user-settings${search}`;
+      window.history.pushState({path: newUrl}, '', newUrl);
+      this.uiFlag.expand = true;
+    };
 
   }
 
@@ -177,7 +191,6 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
         }
       }
 
-      this.router.navigateByUrl('/dashboard/user-settings');
     });
 
   }
