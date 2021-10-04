@@ -148,8 +148,12 @@
       <router-outlet></router-outlet>
     </ng-container>
     <ng-container *ngIf="uiFlag.isSettingPage">
-      <app-setting-base></app-setting-base>
-      <app-setting-privacy></app-setting-privacy>
+      <app-setting-base
+        [patchEditPrivacy]="uiFlag.patchEditPrivacy"
+      ></app-setting-base>
+      <app-setting-privacy
+        (patchEditPrivacy)="passPatchEditPrivacyStatus($event)"
+      ></app-setting-privacy>
       <app-setting-prefer></app-setting-prefer>
       <app-setting-account></app-setting-account>
     </ng-container>
