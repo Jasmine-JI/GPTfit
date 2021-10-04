@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { UserInfoService } from '../../services/userInfo.service';
 import { SettingsService } from '../../services/settings.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
@@ -18,6 +18,8 @@ import { formTest } from '../../../portal/models/form-test';
 })
 export class SettingBaseComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
+
+  @Input() patchEditPrivacy: boolean;
 
   /**
    * ui 會用到的flag
@@ -385,7 +387,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
           inputValue = +(e as any).target.value,
           testFormat = formTest.decimalValue.test(`${inputValue}`),
           isMetric = this.userInfo.unit === unit.metric,
-          newValue = this.utils.valueConvert(inputValue, !isMetric, false, ft, 2),
+          newValue = this.utils.valueConvert(inputValue, !isMetric, false, lb, 0),
           valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       this.editFlag.bodyWeight = true;

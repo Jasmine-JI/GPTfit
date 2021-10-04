@@ -54,7 +54,8 @@ export class PersonalComponent implements OnInit, OnDestroy {
     barWidth: 0,
     windowInnerWidth: null,
     hideScenery: false,
-    isSettingPage: false
+    isSettingPage: false,
+    patchEditPrivacy: false
   };
 
   /**
@@ -776,6 +777,16 @@ export class PersonalComponent implements OnInit, OnDestroy {
   handleNavigation(page: string) {
     const index = this.childPageList.indexOf(page);
     this.handleShowContent(null, page, index);
+  }
+
+  /**
+   * 將批次修改隱私權狀態傳給子組件，
+   * 以修正生日設定欄位日期選擇棄背覆蓋的問題
+   * @param e {boolean}-是否開啟批次修改隱私權設定框
+   * @author kidin-1101001
+   */
+  passPatchEditPrivacyStatus(e: boolean) {
+    this.uiFlag.patchEditPrivacy = e;
   }
 
   /**
