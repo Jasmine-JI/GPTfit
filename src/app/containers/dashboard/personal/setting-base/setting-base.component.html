@@ -120,6 +120,9 @@
         {{ userInfo.birthday | timeFormat: 'YYYY-MM-DD' }}
       </span>
       <div class="contentInput" *ngIf="uiFlag.editMode === 'edit'">
+        <span class="userSettingInput" *ngIf="patchEditPrivacy">
+          {{ userInfo.birthday | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ' }}
+        </span>
         <app-date-range-picker
           (selectDateRange)="getSelectDate($event)"
           [pickerType]="'singlePicker'"
@@ -132,6 +135,7 @@
             font-weight: bold;
             outline: none;
           '"
+          *ngIf="!patchEditPrivacy"
         ></app-date-range-picker>
       </div>
       <span class="contentDescription">

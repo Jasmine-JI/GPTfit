@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { UserInfoService } from '../../services/userInfo.service';
 import { SettingsService } from '../../services/settings.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
@@ -21,6 +21,8 @@ enum rangeType {
 })
 export class SettingPrivacyComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
+
+  @Output() patchEditPrivacy: EventEmitter<any> = new EventEmitter();
 
   /**
    * ui 會用到的flag
@@ -178,6 +180,8 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
       this.dateRange = rangeType.all;
     }
 
+    // 修正日期選擇器會覆蓋生日欄位日期選擇器的問題
+    this.patchEditPrivacy.emit(true);
   }
 
   /**
@@ -186,6 +190,7 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
    */
   cancelEdit() {
     this.uiFlag.showEditDialog = null;
+    this.patchEditPrivacy.emit(false);
   }
 
   /**
@@ -330,6 +335,7 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
         );
 
         this.uiFlag.showEditDialog = null;
+        this.patchEditPrivacy.emit(false);
       } else {
         this.snackBar.open(
           this.translate.instant('universal_popUpMessage_updateFailed'),
