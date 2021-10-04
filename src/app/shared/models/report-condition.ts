@@ -10,7 +10,7 @@ export interface ReportConditionOpt {
     type: 'sevenDay' | 'thirtyDay' | 'sixMonth' | 'today' | 'thisWeek' | 'thisMonth' | 'thisYear' | 'custom';
   };
   brandType?: null | 1 | 2;
-  pageType?: 'sport' | 'lifeTracking' | 'cloudRun' | 'deviceList';
+  pageType?: 'sport' | 'lifeTracking' | 'cloudRun' | 'deviceList' | 'file';
   group?: GroupTree;
   sportType?: SportType;
   cloudRun?: {
@@ -25,6 +25,7 @@ export interface ReportConditionOpt {
   gender?: Sex;
   deviceType?: Array<string>;
   deviceUseStatus?: 'all' | 'fitpairing' | 'idle';
+  keyword?: string;
   hideConfirmBtn: boolean;
 }
 

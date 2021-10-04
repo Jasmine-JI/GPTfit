@@ -1,0 +1,39 @@
+@import 'transition.scss';
+@import 'color.scss';
+
+/*
+ * rod bar樣式(switch bar)
+ */
+@mixin rodBar($rod-size: 18px, $rod-bar-height: 12px, $rod-color: white) {
+  position: relative;
+  background-color: var(--scale-150-180);
+  height: $rod-bar-height;
+  width: 40px;
+  border-radius: $rod-bar-height;
+  margin: 0 10px;
+  cursor: pointer;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: calc((#{$rod-bar-height} - #{$rod-size}) / 2);
+    left: 0px;
+    height: $rod-size;
+    width: $rod-size;
+    border-radius: 50%;
+    border: 1px solid var(--scale-200-0);
+    background-color: $rod-color;
+    @include multiple-transition((left $move-effect, background-color $move-effect));
+  }
+
+}
+
+@mixin rodBar-active($rod-active-color: $primary-blue) {
+
+  &:before {
+    left: 22px;
+    background-color: $rod-active-color;
+    @include multiple-transition((left $move-effect, background-color $move-effect));
+  }
+
+}

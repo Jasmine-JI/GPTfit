@@ -1,0 +1,16 @@
+.info__headerRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/*********************************** media ******************************/
+
+@media (max-width: 420px) {
+  .info__headerRow {
+    display: flex;
+    flex-direction: column;
+  }
+
+}

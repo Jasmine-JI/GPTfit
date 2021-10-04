@@ -1,10 +1,10 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-
 import { Injectable } from '@angular/core';
 import { UtilsService } from './utils.service';
 import { environment } from '../../../environments/environment';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { SportCode } from '../models/report-condition';
 
 const { API_SERVER } = environment.url;
 
@@ -84,6 +84,45 @@ export class ActivityService {
     return this.http.post<any>('/api/v2/sport/deleteActivityData', body).pipe(
       catchError(err => throwError(err))
     );
+  }
+
+  /**
+   * 根據運動類別顯示佈景圖
+   * @param type {number}-運動類別
+   * @author kidin-1100105
+   */
+  handleSceneryImg(type: number, subtype: number) {
+    let sportType: string;
+    switch (type) {
+      case SportCode.run:
+        sportType = 'run';
+        break;
+      case SportCode.cycle:
+        sportType = 'cycle';
+        break;
+      case SportCode.weightTrain:
+        sportType = 'weightTraining';
+        break;
+      case SportCode.swim:
+        sportType = 'swim';
+        break;
+      case SportCode.aerobic:
+        sportType = 'aerobic';
+        break;
+      case SportCode.row:
+        sportType = 'rowing';
+        break;
+      case SportCode.ball:
+        sportType = 'ball';
+        break;
+    }
+
+    if (subtype) {
+      return `/app/public_html/img/${sportType}_${subtype}.jpg`;
+    } else {
+      return `/app/public_html/img/${sportType}_0.jpg`;
+    }
+    
   }
 
 }

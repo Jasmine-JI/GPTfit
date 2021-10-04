@@ -1,0 +1,39 @@
+@import 'button.scss';
+@import 'color.scss';
+@import 'transition.scss';
+@import 'rod-bar.scss';
+@import 'keyframes.scss';
+
+$more-btn-size: 15px;
+
+.rod__bar {
+  @include rodBar();
+}
+
+.rod__bar--active {
+  @include rodBar-active();
+}
+
+.account__content {
+  border-bottom: 1px solid var(--scale-0-255);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+#more__btn {
+  border: 1px solid rgba(150, 150, 150, 1);
+  position: absolute;
+  top: 5px;
+  left: -20px;
+  height: $more-btn-size;
+  width: $more-btn-size;
+  color: var(--scale-0-255);
+}
+
+.primary__color {
+  color: rgba(90, 139, 214, 1) !important;
+}
+
+.del__color {
+  color: rgba(255, 111, 111, 1) !important;
+}

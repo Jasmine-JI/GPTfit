@@ -12,7 +12,7 @@ export class DataTypeUnitPipe implements PipeTransform {
    * @returns {any}-單位
    * @author kidin
    */
-  transform(value: string, args: number[]): any {
+  transform(value: string, args: number[] = []): any {
     const [sportType, userUnit] = [...args];
     switch (value) {
       case 'hr':
@@ -53,6 +53,16 @@ export class DataTypeUnitPipe implements PipeTransform {
       case 'yMoveGForce':
       case 'zMoveGForce':
         return 'g';
+      case 'bodyHeight':
+        return userUnit === unit.metric ? 'cm' : 'inch';
+      case 'bodyWeight':
+        return userUnit === unit.metric ? 'kg' : 'lb';
+      case 'wheelSize':
+        return userUnit === unit.metric ? 'mm' : 'inch';
+      case 'stepLength':
+        return userUnit === unit.metric ? 'cm' : 'inch';
+      case 'targetDistance':
+        return userUnit === unit.metric ? 'm' : 'ft';
       default:
         return '';
     }

@@ -729,6 +729,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   initVar() {
     this.memberTableData.data.length = 0;
     this.groupTableData.data.length = 0;
+    this.groupTable.sorted = false;
+    this.memberTable.sorted = false;
     this.groupTable.showLevel = [30, 40, 60].filter(_level => _level >= this.currentGroup.level);
     this.memberTable.showLevel = [30, 40, 60].filter(_level => _level >= this.currentGroup.level);
     if (!this.uiFlag.isPreviewMode) {

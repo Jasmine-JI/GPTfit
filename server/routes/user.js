@@ -1,9 +1,9 @@
-var express = require('express');
-var searchNickname = require('../models/user_id').searchNickname;
-var getUserList = require('../models/user_id').getUserList;
-
-var router = express.Router();
-var checkAccessRight = require('../models/auth.model').checkAccessRight;
+const express = require('express');
+const searchNickname = require('../models/user_id').searchNickname;
+const getUserList = require('../models/user_id').getUserList;
+const router = express.Router();
+const checkAccessRight = require('../models/auth.model').checkAccessRight;
+const checkNicknameRepeat = require('../models/user_id').checkNicknameRepeat;
 
 router.get('/userProfile', function (req, res, next) {
   const {
@@ -66,6 +66,7 @@ router.post('/userAvartar', function (req, res, next) {
           country_code as countryCode,
           active_status as enableStatus,
           time_stamp as lastLogin,
+          register_category as accountType,
           timestamp_reset_passwd as lastResetPwd,
           gender,
           birthday
@@ -89,22 +90,23 @@ router.post('/userAvartar', function (req, res, next) {
           })
 
         } else if (rows.length > 0) {
+          const row = rows[0];
           res.json({
             resultCode: 200,
-            userId: rows[0].userId,
-            userName: rows[0].userName,
-            smallIcon: rows[0].smallIcon,
-            middleIcon: rows[0].middleIcon,
-            largeIcon: rows[0].largeIcon,
-            email: rows[0].email || '',
-            countryCode: rows[0].countryCode || '',
-            phone: rows[0].phone || '',
-            enableStatus: rows[0].enableStatus,
-            lastLogin: rows[0].lastLogin,
-            lastResetPwd: rows[0].lastResetPwd,
-            gender: rows[0].gender,
-            birthday: rows[0].birthday
-
+            userId: row.userId,
+            userName: row.userName,
+            smallIcon: row.smallIcon,
+            middleIcon: row.middleIcon,
+            largeIcon: row.largeIcon,
+            email: row.email || '',
+            countryCode: row.countryCode || '',
+            phone: row.phone || '',
+            enableStatus: row.enableStatus,
+            lastLogin: row.lastLogin,
+            lastResetPwd: row.lastResetPwd,
+            gender: row.gender,
+            birthday: row.birthday,
+            accountType: +row.accountType
           })
 
         } else {
@@ -122,7 +124,8 @@ router.post('/userAvartar', function (req, res, next) {
             lastResetPwd: null,
             gender: null,
             birthday: null,
-            userList: []
+            userList: [],
+            accountType: null
           })
 
         }
@@ -135,53 +138,6 @@ router.post('/userAvartar', function (req, res, next) {
       });
     }
 
-  });
-});
-
-router.post('/getLogonData_v2', function (req, res, next) {
-  const {
-    con,
-    body: {
-      iconType,
-      token
-    }
-  } = req;
-  let iconQuery = '';
-  if (iconType === '0') {
-    iconQuery = ', icon_large as nameIcon';
-  } else if (iconType === '1') {
-    iconQuery = ', icon_middle as nameIcon';
-  } else {
-    iconQuery = ', icon_small as nameIcon';
-  }
-  const sql = `
-    select u.login_acc as name,
-    u.user_id as nameId
-    ${iconQuery}
-    from ?? u, ?? s where access_token = ?;
-  `;
-  const sql1 = `
-    select s1.sport_id, s1.max_speed, s1.max_pace
-    from sport as s1 join(select max(max_speed) as max_speed
-    from sport where user_id = 46) as s2
-    on s1.max_speed = s2.max_speed
-    where s1.user_id = 46;
-  `;
-  con.query(sql, ['user_profile', 'sport', token], function (err, rows) {
-    if (err) {
-      console.log(err);
-      return res.status(500).send({
-        errorMessage: err.sqlMessage
-      });
-    }
-    const data = rows[0];
-    res.json({
-      name: data['name'],
-      nameId: data['nameId'],
-      rtnMsg: "Get logon data success.",
-      token,
-
-    });
   });
 });
 
@@ -265,6 +221,48 @@ router.post('/getUserList', function (req, res, next) {
     });
 
   }
+
+});
+
+/**
+ * 確認暱稱是否重複
+ */
+router.post('/checkNickname', function (req, res, next) {
+  const {
+    con,
+    body
+  } = req;
+
+  const result = checkNicknameRepeat(body.nickname).then(result => {
+    if (result && result.length > 0) {
+
+      return res.json({
+        apiCode: 'N9002',  // 暫定
+        resultCode: 200,
+        repeat: true,
+        resultMessage: "Get result success.",
+      });
+
+    } else if (result && result.length === 0) {
+
+      return res.json({
+        apiCode: 'N9002',
+        resultCode: 200,
+        repeat: false,
+        resultMessage: "Get result success.",
+      })
+
+    } else {
+
+      return res.json({
+        apiCode: 'N9002',
+        resultCode: 400,
+        resultMessage: "Get result failed.",
+      })
+
+    }
+
+  });
 
 });
 

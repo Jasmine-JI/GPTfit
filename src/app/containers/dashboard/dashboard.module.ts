@@ -36,13 +36,8 @@ import { ReportService } from '../../shared/services/report.service';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from '../../shared/interceptors/token.interceptor';
-import { SettingsComponent } from './components/settings/settings.component';
-import { UserSettingsComponent } from './components/settings/user-settings/user-settings.component';
-import { PrivacySettingsComponent } from './components/settings/privacy-settings/privacy-settings.component';
-import { AccountInfoComponent } from './components/settings/account-info/account-info.component';
 import { SettingsService } from './services/settings.service';
 import { UserProfileService } from '../../shared/services/user-profile.service';
-import { PersonalPreferencesComponent } from './components/settings/personal-preferences/personal-preferences.component';
 import { InnerTestComponent } from './components/inner-test/inner-test.component';
 import { HashIdService } from '../../shared/services/hash-id.service';
 import { CloudRunGpxComponent } from './components/cloud-run-gpx/cloud-run-gpx.component';
@@ -54,10 +49,9 @@ import { InnerDevicePairComponent } from './components/inner-device-pair/inner-d
 import { ShareGroupInfoDialogComponent } from '../../shared/components/share-group-info-dialog/share-group-info-dialog.component';
 import { LifeTrackingComponent } from './components/life-tracking/life-tracking.component';
 import { LifeTrackingService } from './services/life-tracking.service';
-import { ModifyBoxComponent } from './components/settings/privacy-settings/modify-box/modify-box.component';
+import { ModifyBoxComponent } from './components/modify-box/modify-box.component';
 import { QrcodeUploadComponent } from './components/qrcode-upload/qrcode-upload.component';
 import { OfficialActivityService } from '../../shared/services/official-activity.service';
-
 import { GroupSearchComponent } from './group/group-search/group-search.component';
 import { AllGroupListComponent } from './group/all-group-list/all-group-list.component';
 import { MyGroupListComponent } from './group/my-group-list/my-group-list.component';
@@ -85,7 +79,14 @@ import { SystemFolderPermissionComponent } from './components/system-folder-perm
 import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-analysis.component';
 import { CloudrunReportComponent as PersonCloudrunReport } from './components/cloudrun-report/cloudrun-report.component';
 import { DeviceInfoComponent } from './components/device-info/device-info.component';
-import { DeviceListComponent } from './group-v2/group-info/device-list/device-list.component'
+import { DeviceListComponent } from './group-v2/group-info/device-list/device-list.component';
+import { PersonalComponent } from './personal/personal.component';
+import { InfoComponent } from './personal/info/info.component';
+import { SettingBaseComponent } from './personal/setting-base/setting-base.component';
+import { SettingPreferComponent } from './personal/setting-prefer/setting-prefer.component';
+import { SettingPrivacyComponent } from './personal/setting-privacy/setting-privacy.component';
+import { SettingAccountComponent } from './personal/setting-account/setting-account.component';
+import { ActivityListComponent } from './personal/activity-list/activity-list.component';
 
 
 @NgModule({
@@ -144,11 +145,6 @@ import { DeviceListComponent } from './group-v2/group-info/device-list/device-li
     ProductErrorLogPipe,
     MyDeviceComponent,
     TrainLiveComponent,
-    SettingsComponent,
-    UserSettingsComponent,
-    PrivacySettingsComponent,
-    AccountInfoComponent,
-    PersonalPreferencesComponent,
     InnerTestComponent,
     CloudRunGpxComponent,
     InnerDevicePairComponent,
@@ -182,7 +178,14 @@ import { DeviceListComponent } from './group-v2/group-info/device-list/device-li
     AlaAppAnalysisComponent,
     PersonCloudrunReport,
     DeviceInfoComponent,
-    DeviceListComponent
+    DeviceListComponent,
+    PersonalComponent,
+    InfoComponent,
+    SettingBaseComponent,
+    SettingPreferComponent,
+    SettingPrivacyComponent,
+    SettingAccountComponent,
+    ActivityListComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

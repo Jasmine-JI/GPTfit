@@ -1,0 +1,303 @@
+<app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
+<section class="flexCol settingSection">
+  <div
+    class="flexRow settingTitleBlock"
+    [style.border-bottom]="!uiFlag.expand ? 'none' : ''"
+    (click)="handleFolder()"
+  >
+    <div class="flexRow">
+      <i class="icon-svg_web-icon_p3_080-privacy settingIcon"></i>
+      <div class="flexCol">
+        <h5 class="settingTitle">
+          {{ 'universal_privacy_set' | translate }}
+        </h5>
+        <span class="settingTitleDescription">
+          {{ 'universal_system_filePrivDesc' | translate }}
+        </span>
+      </div>
+    </div>
+    <button>
+      <i
+        class="icon-svg_web-icon_p1_006-unfold folderIcon"
+        [class.folderIcon-fold]="uiFlag.expand"
+      ></i>
+    </button>
+  </div>
+  <div class="flexCol settingContent" *ngIf="uiFlag.expand">
+    <div class="flexRow rowContent">
+      <span class="contentTitle">
+        {{ 'universal_activityData_eventArchive' | translate }}
+      </span>
+      <div class="contentInput">
+        <span *ngTemplateOutlet="openPrivacyObj;
+          context: {
+            privacyObjArr: setting.activityTracking
+          }"
+        ></span>
+      </div>
+      <span class="contentDescription">
+        {{ 'universal_system_fileDetailPrivDesc' | translate }}
+      </span>
+      <button class="editBtn" (click)="showEditDialog(privacyEditObj.file, false)">
+        <i class="icon-svg_web-icon_p3_079-new-window openDialogIcon"></i>
+      </button>
+    </div>
+    <div class="flexRow rowContent">
+      <span class="contentTitle">
+        {{ 'universal_activityData_sportsStatistics' | translate }}
+      </span>
+      <div class="contentInput">
+        <span *ngTemplateOutlet="openPrivacyObj;
+          context: {
+            privacyObjArr: setting.activityTrackingReport
+          }"
+        ></span>
+      </div>
+      <span class="contentDescription">
+        {{ 'universal_system_reportPrivDesc' | translate }}
+      </span>
+      <button class="editBtn" (click)="showEditDialog(privacyEditObj.sportsReport, false)">
+        <i class="icon-svg_web-icon_p3_079-new-window openDialogIcon"></i>
+      </button>
+    </div>
+    <div class="flexRow rowContent">
+      <span class="contentTitle">
+        {{ 'universal_lifeTracking_lifeStatistics' | translate }}
+      </span>
+      <div class="contentInput">
+        <span *ngTemplateOutlet="openPrivacyObj;
+          context: {
+            privacyObjArr: setting.lifeTrackingReport
+          }"
+        ></span>
+      </div>
+      <span class="contentDescription">
+        {{ 'universal_system_lifeTrackingPrivDesc' | translate }}
+      </span>
+      <button class="editBtn" (click)="showEditDialog(privacyEditObj.lifeTracking, false)">
+        <i class="icon-svg_web-icon_p3_079-new-window openDialogIcon"></i>
+      </button>
+    </div>
+    <div class="flexRow rowContent" style="align-items: flex-start;">
+      <span class="contentTitle">
+        {{
+          'universal_privacy_batchEditPrivacy' | translate: { 
+            object: ('universal_vocabulary_data' | translate)
+          } 
+        }}
+      </span>
+      <div class="flexCol contentInput">
+        <div class="flexRow">
+          <label class="mainText" for="patch__edit__file">
+            {{ 'universal_activityData_eventArchive' | translate }}
+          </label>
+          <button
+            id="patch__edit__file"
+            class="folderIcon"
+            (click)="showEditDialog(privacyEditObj.file, true)"
+          >
+            <i class="icon-svg_web-icon_p3_079-new-window"></i>
+          </button>
+        </div>
+        <div class="flexRow">
+          <label class="mainText" for="patch__edit__report">
+            {{ 'universal_activityData_sportsStatistics' | translate }}
+          </label>
+          <button
+            id="patch__edit__report"
+            class="folderIcon"
+            (click)="showEditDialog(privacyEditObj.sportsReport, true)"
+          >
+            <i class="icon-svg_web-icon_p3_079-new-window"></i>
+          </button>
+        </div>
+        <div class="flexRow">
+          <label class="mainText" for="patch__edit__lifeTracking">
+            {{ 'universal_lifeTracking_lifeStatistics' | translate }}
+          </label>
+          <button
+            id="patch__edit__lifeTracking"
+            class="folderIcon"
+            (click)="showEditDialog(privacyEditObj.lifeTracking, true)"
+          >
+            <i class="icon-svg_web-icon_p3_079-new-window"></i>
+          </button>
+        </div>
+      </div>
+      <span class="contentDescription">
+        {{ 'universal_system_batchEdit' | translate }}
+      </span>
+      <div class="iconStuffing"></div>
+    </div>
+  </div>
+</section>
+<section
+  class="flexCenter info-editMask"
+  (click)="cancelEdit()"
+  *ngIf="uiFlag.showEditDialog"
+>
+  <div class="dialog-box" style="max-width: 320px;" (click)="$event.stopPropagation();">
+    <div class="dialog-title">
+      <h5>
+        <ng-container *ngIf="!uiFlag.batchEdit">
+          {{ 'universal_privacy_set' | translate }}
+        </ng-container>
+        <ng-container *ngIf="uiFlag.batchEdit">
+          <ng-container *ngIf="uiFlag.showEditDialog === privacyEditObj.file">
+            {{ 'universal_privacy_batchEditPrivacy' | translate: {
+              object: ('universal_activityData_eventArchive' | translate) 
+            } }}
+          </ng-container>
+          <ng-container *ngIf="uiFlag.showEditDialog === privacyEditObj.sportsReport">
+            {{ 'universal_privacy_batchEditPrivacy' | translate: {
+              object: ('universal_activityData_sportsStatistics' | translate) 
+            } }}
+          </ng-container>
+          <ng-container *ngIf="uiFlag.showEditDialog === privacyEditObj.lifeTracking">
+            {{ 'universal_privacy_batchEditPrivacy' | translate: {
+              object: ('universal_lifeTracking_lifeStatistics' | translate) 
+            } }}
+          </ng-container>
+        </ng-container>
+      </h5>
+    </div>
+    <div class="dialog-content" style="padding: 10px 20px;">
+      <span class="settingTitleDescription">
+        <ng-container *ngIf="uiFlag.showEditDialog === privacyEditObj.file">
+          {{ 'universal_activityData_eventFileInformation' | translate }}
+        </ng-container>
+        <ng-container *ngIf="uiFlag.showEditDialog === privacyEditObj.sportsReport">
+          {{ 'universal_activityData_sportsStatisticsInformation' | translate }}
+        </ng-container>
+        <ng-container *ngIf="uiFlag.showEditDialog === privacyEditObj.lifeTracking">
+          {{ 'universal_lifeTracking_lifeStatisticsInformation' | translate }}
+        </ng-container>
+      </span>
+      <ng-container *ngIf="uiFlag.batchEdit">
+        <div
+          class="flexRow"
+          style="flex-wrap: wrap; margin-bottom: 10px; margin-top: 10px;"
+        >
+          <span class="flexRow radioSelector" (click)="selectDateRange(rangeType.all)">
+            <span
+              class="radioBtn"
+              [class.radioBtn--active]="dateRange === rangeType.all"
+            ></span>
+            <span>{{ 'universal_adjective_all' | translate }}</span>
+          </span>
+          <span class="flexRow radioSelector" (click)="selectDateRange(rangeType.date)">
+            <span
+              class="radioBtn"
+              [class.radioBtn--active]="dateRange === rangeType.date"
+            ></span>
+            <span>{{ 'universal_operating_selectDate' | translate }}</span>
+          </span>
+        </div>
+        <div *ngIf="dateRange === rangeType.date">
+          <p class="itemTitle">{{ 'universal_activityData_dateRange' | translate }}</p>
+          <div class="dateSelectArea" style="margin: 0 0 15px 50px;">
+            <app-date-range-picker
+              (selectDateRange)="getSelectDate($event)"
+              [default]="'last30Days'"
+            ></app-date-range-picker>
+          </div>
+        </div>
+      </ng-container>
+      <div class="flexCol" style="color: var(--scale-0-255);">
+        <div class="flexRow rod__bar__section">
+          <span>
+            {{ 'universal_operating_close' | translate }}
+          </span>
+          <div
+            class="rodBar"
+            [class.rodBar--active]="openObj.length > 1"
+            (click)="selectModifyRange(privacyObj.self)"
+          ></div>
+          <span style="margin-left: 10px;">
+            {{ 'universal_privacy_openPrivacy' | translate }}
+          </span>
+        </div>
+        <ng-container *ngIf="openObj.length > 1">
+          <div class="flexCol checkBox__section">
+            <span class="flexRow checkBoxBlock">
+              <button
+                id="anyone__opt"
+                [class.checkBox--active]="openObj.includes(privacyObj.anyone)"
+                (click)="selectModifyRange(privacyObj.anyone)"
+              >
+                <span *ngIf="openObj.includes(privacyObj.anyone)">✔</span>
+              </button>
+              <label for="anyone__opt" class="checkBox__label">
+                {{ 'universal_privacy_allMember' | translate }}
+              </label>
+            </span>
+            <span class="flexRow checkBoxBlock">
+              <span class="first__layer">└</span>
+              <button
+                id="my__group__opt"
+                [class.checkBox--active]="openObj.includes(privacyObj.myGroup)"
+                (click)="selectModifyRange(privacyObj.myGroup)"
+              >
+                <span *ngIf="openObj.includes(privacyObj.myGroup)">✔</span>
+              </button>
+              <label for="my__group__opt" class="checkBox__label">
+                {{ 'universal_group_myGroup' | translate }}
+              </label>
+            </span>
+            <span class="flexRow checkBoxBlock">
+              <span class="second__layer">└</span>
+              <button
+                id="my__admin"
+                [class.checkBox--active]="openObj.includes(privacyObj.onlyGroupAdmin)"
+                (click)="selectModifyRange(privacyObj.onlyGroupAdmin)"
+              >
+                <span *ngIf="openObj.includes(privacyObj.onlyGroupAdmin)">✔</span>
+              </button>
+              <label for="my__admin" class="checkBox__label">
+                {{ 'universal_group_administrator' | translate }}
+              </label>
+            </span>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <div class="flexRow dialog-action">
+      <button class="dialog-cancelBtn" (click)="cancelEdit()">
+        {{ 'universal_operating_cancel' | translate }}
+      </button>
+      <button class="dialog-confirmBtn" (click)="editComplete()">
+        {{ 'universal_operating_confirm' | translate }}
+      </button>
+    </div>
+  </div>
+</section>
+<ng-template
+  #openPrivacyObj
+  let-privacyObjArr="privacyObjArr"
+>
+  <span class="mainText">
+    <ng-container *ngIf="privacyObjArr.includes(privacyObj.anyone)">
+      {{ 'universal_privacy_allMember' | translate }}
+    </ng-container>
+    <ng-container *ngIf="
+      !privacyObjArr.includes(privacyObj.anyone)
+      && privacyObjArr.includes(privacyObj.myGroup)
+    ">
+      {{ 'universal_group_myGroup' | translate }}
+    </ng-container>
+    <ng-container *ngIf="
+      !privacyObjArr.includes(privacyObj.anyone)
+      && !privacyObjArr.includes(privacyObj.myGroup)
+      && privacyObjArr.includes(privacyObj.onlyGroupAdmin)
+    ">
+      {{ 'universal_group_groupAdministrator' | translate }}
+    </ng-container>
+    <ng-container *ngIf="
+      !privacyObjArr.includes(privacyObj.anyone)
+      && !privacyObjArr.includes(privacyObj.myGroup)
+      && !privacyObjArr.includes(privacyObj.onlyGroupAdmin)
+    ">
+      {{ 'universal_privacy_onlyMe' | translate }}
+    </ng-container>
+  </span>
+</ng-template>

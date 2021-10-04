@@ -12,13 +12,34 @@ $primary-btn-blue: rgba(0, 183, 238, 1);
 $warn-color: rgba(255, 75, 75, 1);
 $page-title-colr: rgba(120, 120, 120, 1);
 $group-btn-gray: rgba(160, 160, 160, 1);
+$avatar-normal-size: 150px;
+$avatar-small-size: 120px;
+$edit-icon-size: 30px;
 
-.info-ScenerySection {
+
+@mixin editIcon($bottom: 10px, $right: 10px) {
+  position: absolute;
+  right: $right;
+  bottom: $bottom;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  font-size: 24px;
+  width: $edit-icon-size;
+  height: $edit-icon-size;
+  border: 1px solid white;
+  border-radius: 50%;
+  cursor: pointer;
+  @include center();
+}
+
+.info-scenerySection {
+  @include center();
   position: relative;
   width: 100%;
-  height: 373px;
+  height: 273px;
   background-image: linear-gradient(0deg, var(--scale-200-0) 0%, var(--scale-255-200) 100%);
   background-size: cover;
+  overflow: hidden;
 }
 
 .info-childPageTitle {
@@ -35,16 +56,16 @@ $group-btn-gray: rgba(160, 160, 160, 1);
 
 }
 
-.info-sceneryIcon {
+.info-avatarIcon {
   position: absolute;
-  width: 150px;
+  width: $avatar-normal-size;
+  height: $avatar-normal-size;
   z-index: 2;
-  top: 250px;
+  top: 150px;
   left: 50px;
   background: #ffffff;
   border: 3px solid #ffffff;
   border-radius: 50%;
-  overflow: hidden;
 
   &::after {
     padding-bottom: 100%;
@@ -67,15 +88,23 @@ $group-btn-gray: rgba(160, 160, 160, 1);
 
 }
 
+.info-avatarImg {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
 .info-descOverflow {
   position: relative;
-  pointer-events: initial;
+  pointer-events: initial !important;
   cursor: pointer;
   max-height: 45px;
   overflow: hidden;
 
   &:after {
-    content: '... more >';
+    content: '... >>';
     position: absolute;
     right: 0;
     top: 21px;
@@ -89,22 +118,31 @@ $group-btn-gray: rgba(160, 160, 160, 1);
 .info-imgAbs {
   position: absolute;
   width: 100%;
+}
+
+.info-editIconBox {
   height: 100%;
+  width: 100%;
+  justify-content: flex-end;
+  align-items: flex-end;
 }
 
 .info-imgEditIcon {
-  position: absolute;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  font-size: 24px;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  cursor: pointer;
-  @include center();
+  height: 100%;
+  justify-content: flex-end;
+  align-items: flex-end;
+
+  >.info-sceneryEditIcon {
+    @include editIcon();
+  }
+
+  >.info-avatarEditIcon {
+    @include editIcon();
+  }
+
 }
 
-.Info-header {
+.info-header {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -189,12 +227,31 @@ $group-btn-gray: rgba(160, 160, 160, 1);
 .info-portalMode {
   width: 90vw !important;
   margin: 0 auto;
-  max-width: 1000px;
 }
 
 .info-pageListBar {
   width: 100%;
   padding: 10px 0px;
+}
+
+.info-pageListBar-fixed {
+  position: fixed;
+  top: 50px;
+  background-color: var(--scale-255-0);
+  z-index: 5;
+  border-bottom: 10px solid var(--scale-240-100);
+}
+
+/**
+ * 填充用，讓滾動更順暢
+ */
+.info-pageListBar-replace {
+
+  &:after {
+    content: '';
+    min-height: 69px;
+  }
+
 }
 
 .info-barLine {
@@ -227,8 +284,8 @@ $group-btn-gray: rgba(160, 160, 160, 1);
   align-items: center;
   position: absolute;
   top: 44px;
-  background-color: white;
-  z-index: 1;
+  background-color: var(--scale-255-60);
+  z-index: 3;
   padding: 0 10px;
   border: 1px solid gray;
 }
@@ -343,25 +400,25 @@ $group-btn-gray: rgba(160, 160, 160, 1);
 
 /*********************************** media *****************************/
 
-
 @media (max-width: 1200px) {
-  .info-ScenerySection {
-    height: 313px;
+  .info-scenerySection {
+    height: 235px;
   }
 
-  .info-sceneryIcon {
-    top: 190px;
+  .info-avatarIcon {
+    top: 110px;
   }
 
 }
 
+
 @media (max-width: 991px) {
-  .info-ScenerySection {
-    height: 233px;
+  .info-scenerySection {
+    height: 175px;
   }
 
-  .info-sceneryIcon {
-    top: 110px;
+  .info-avatarIcon {
+    top: 52px;
   }
 
   .info-headerRow {
@@ -380,13 +437,13 @@ $group-btn-gray: rgba(160, 160, 160, 1);
 }
 
 @media (max-width: 767px) {
-  .info-ScenerySection {
-    height: 173px;
-  }
+  .info-scenerySection {
+    height: 130px;
 
-  .info-sceneryEditIcon {
-    top: 20px;
-    right: 20px;
+    & img {
+      min-width: 520px;
+    }
+
   }
 
   .info-header {
@@ -398,27 +455,28 @@ $group-btn-gray: rgba(160, 160, 160, 1);
     margin: 20px 0 10px 0;
   }
 
-  .info-sceneryIcon {
+  .info-avatarIcon {
     left: initial;
-    top: 65px;
-    width: 130px;
-    height: 130px;
+    top: 30px;
+    width: $avatar-small-size;
+    height: $avatar-small-size;
+  }
+
+  .info-imgEditIcon {
+  
+    >.info-avatarEditIcon {
+      bottom: 5px;
+    }
+    
   }
 
 }
 
 @media (max-width: 575px) {
-  .info-ScenerySection {
-    height: 173px;
+  .info-scenerySection {
     display: flex;
     justify-content: center;
     overflow: hidden;
-
-    & img {
-      height: 173px;
-      min-width: 520px;
-    }
-
   }
 
   .info-titleText {

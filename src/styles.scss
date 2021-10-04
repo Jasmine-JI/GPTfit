@@ -9,6 +9,7 @@
 @import 'none-select.scss';
 @import 'check-box.scss';
 @import 'radio-btn.scss';
+@import 'rod-bar.scss';
 
 @font-face {
   font-family: Matamata-Regular;
@@ -258,6 +259,7 @@ $radio-active-size: 14px;
 
 .mat-dialog-container {
   padding-top: 0px !important;
+  background-color: var(--scale-255-60) !important;
 }
 
 .ala-dialog.mat-dialog-title {
@@ -687,6 +689,11 @@ a.ban-send:hover {
   flex-direction: row;
 }
 
+.flexRowWrap {
+  @extend .flexRow;
+  flex-wrap: wrap;
+}
+
 .flexCenter {
   display: flex;
   justify-content: center;
@@ -823,6 +830,24 @@ a.ban-send:hover {
   @include noneSelect();
 }
 
+.imgSelector {
+  position: fixed;
+  background-color: white;
+  border-radius: 3px;
+  margin: 0 10px;
+  padding: 0 10px 10px 10px;
+  min-width: 250px;
+  min-height: 250px;
+  max-width: 700px;
+}
+
+.rodBar {
+  @include rodBar();
+}
+
+.rodBar--active {
+  @include rodBar-active();
+}
 
 /************************************* media **************************************/
 

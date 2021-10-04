@@ -11,7 +11,7 @@ class ChartOptions {
   constructor (dataset) {
     return {
       chart: {
-        height: 150,
+        height: 200,
         margin: [0, 0, 0, 0],
         backgroundColor: 'transparent'
       },

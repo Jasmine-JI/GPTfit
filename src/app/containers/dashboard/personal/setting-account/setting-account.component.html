@@ -1,0 +1,125 @@
+<section class="flexCol settingSection">
+  <div
+    class="flexRow settingTitleBlock"
+    [style.border-bottom]="!uiFlag.expand ? 'none' : ''"
+    (click)="handleFolder()"
+  >
+    <div class="flexRow">
+      <i class="icon-svg_web-icon_p1_079-user settingIcon"></i>
+      <div class="flexCol">
+        <h5 class="settingTitle">
+          {{ 'universal_vocabulary_accountInformation' | translate }}
+        </h5>
+        <span class="settingTitleDescription">
+          {{ 'universal_system_accountDesc' | translate }}
+        </span>
+      </div>
+    </div>
+    <button>
+      <i
+        class="icon-svg_web-icon_p1_006-unfold folderIcon"
+        [class.folderIcon-fold]="uiFlag.expand"
+      ></i>
+    </button>
+  </div>
+  <div class="flexCol settingContent" *ngIf="uiFlag.expand">
+    <div class="flexRow rowContent" *ngIf="userInfo?.accountStatus === 1">
+      <span class="contentTitle">
+        {{ 'universal_deviceSetting_switch' | translate }}
+        {{ 'universal_userAccount_account' | translate }}
+      </span>
+      <div class="contentInput">
+        <span class="account__content mainText">
+          <ng-container *ngIf="userInfo?.accountType === accountType.email">
+            {{ userInfo.email }}
+          </ng-container>
+          <ng-container *ngIf="userInfo?.accountType === accountType.phone">
+            +{{ userInfo.countryCode }} {{ userInfo.mobileNumber }}
+          </ng-container>
+        </span>
+      </div>
+      <span class="contentDescription">
+        {{ 'universal_deviceSetting_switch' | translate }}
+        {{ 'universal_privacy_your' | translate: { object: ('universal_userAccount_account' | translate) } }}
+      </span>
+      <button class="editBtn" (click)="navigateToAssignPage('/enableAccount')">
+        <i class="icon-svg_web-icon_p3_079-new-window openDialogIcon"></i>
+      </button>
+    </div>
+    <div class="flexRow rowContent">
+      <span class="contentTitle">
+        {{ 'universal_userProfile_changePassword' | translate }}
+      </span>
+      <div class="contentInput"></div>
+      <span class="contentDescription">
+        {{ 'universal_system_changePassword' | translate }}
+      </span>
+      <button class="editBtn" (click)="navigateToAssignPage('/editPassword')">
+        <i class="icon-svg_web-icon_p3_079-new-window openDialogIcon"></i>
+      </button>
+    </div>
+    <div class="flexRow rowContent">
+      <span class="contentTitle">
+        {{ 'universal_operating_edit' | translate }}
+        {{ 'universal_userAccount_account' | translate }}
+      </span>
+      <div class="contentInput">
+        <span class="account__content mainText">
+          <ng-container *ngIf="userInfo?.accountType === accountType.email">
+            {{ userInfo.email }}
+          </ng-container>
+          <ng-container *ngIf="userInfo?.accountType === accountType.phone">
+            +{{ userInfo.countryCode }} {{ userInfo.mobileNumber }}
+          </ng-container>
+        </span>
+      </div>
+      <span class="contentDescription">
+        {{ 'universal_system_changAccountName' | translate }}
+      </span>
+      <button class="editBtn" (click)="navigateToAssignPage('/changeAccount')">
+        <i class="icon-svg_web-icon_p3_079-new-window openDialogIcon"></i>
+      </button>
+    </div>
+    <div class="flexRow rowContent">
+      <span class="contentTitle">
+        {{ 'universal_userProfile_thirdPartyUsage' | translate }}
+      </span>
+      <div class="flexRow contentInput" style="align-items: center;">
+        <span class="mainText">Strava</span>
+        <div
+          class="rod__bar"
+          [class.rod__bar--active]="userInfo?.thirdPartyAgency.strava"
+          (click)="handleStravaStatus()"
+        ></div>
+      </div>
+      <span class="contentDescription">
+        {{ 'universal_system_thirdPartyConnect' | translate }}
+      </span>
+      <div class="iconStuffing"></div>
+    </div>
+    <div class="flexRow rowContent">
+      <span class="contentTitle primary__color">
+        {{ 'universal_userAccount_performDataArchiving' | translate }}
+      </span>
+      <div class="contentInput"></div>
+      <span class="contentDescription">
+        {{ 'universal_system_archiveAccount' | translate }}
+      </span>
+      <button class="editBtn" (click)="navigateToAssignPage('/compressData')">
+        <i class="icon-svg_web-icon_p3_079-new-window openDialogIcon primary__color"></i>
+      </button>
+    </div>
+    <div class="flexRow rowContent">
+      <span class="contentTitle del__color">
+        {{ 'universal_userAccount_accountDeletion' | translate }}
+      </span>
+      <div class="contentInput"></div>
+      <span class="contentDescription">
+        {{ 'universal_system_deleteAccount' | translate }}
+      </span>
+      <button class="editBtn" (click)="navigateToAssignPage('/destroyAccount')">
+        <i class="icon-svg_web-icon_p3_079-new-window openDialogIcon del__color"></i>
+      </button>
+    </div>
+  </div>
+</section>

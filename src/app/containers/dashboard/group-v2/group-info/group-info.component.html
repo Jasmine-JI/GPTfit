@@ -5,47 +5,43 @@
     style="position: relative;"
     [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
   >
-    <section
-      class="info-ScenerySection"
-      [style.background-image]="
-        uiFlag.portalMode && currentGroupInfo.groupDetail.groupThemeImgUrl ?
-          'url(' + currentGroupInfo.groupDetail.groupThemeImgUrl + ')' : ''
-      "
-    >
+    <section class="info-scenerySection">
       <img
         class="info-imgAbs"
         [src]="uiFlag.editMode !== 'close' && editImage.scenery.base64 !== null ? editImage.scenery.base64 : currentGroupInfo.groupDetail.groupThemeImgUrl"
         (error)="sceneryError()"
-        *ngIf="(!uiFlag.portalMode || currentGroupInfo.groupDetail.groupThemeImgUrl === undefined) && !uiFlag.hideScenery && uiFlag.editMode !== 'create'"
+        *ngIf="!uiFlag.hideScenery && uiFlag.editMode !== 'create'"
       />
       <img
         class="info-imgAbs"
         [src]="editImage.scenery.base64 !== null ? editImage.scenery.base64 : ''"
         *ngIf="!uiFlag.hideScenery && uiFlag.editMode === 'create'"
       />
-      <div class="flexCenter info-imgAbs">
+      <div class="flexCenter info-imgEditIcon">
         <i
-          class="icon-svg_web-icon_p1_008-edit info-imgEditIcon info-sceneryEditIcon"
+          class="icon-svg_web-icon_p1_008-edit info-sceneryEditIcon"
           (click)="openImgSelector('scenery')"
           *ngIf="uiFlag.editMode !== 'close'"
         ></i>
       </div>
     </section>
-    <section class="Info-header" [class.info-portalMode]="uiFlag.portalMode">
-      <div class="info-sceneryIcon" [style.left]="uiFlag.portalMode ? 'initial' : '50px'">
-        <img
-          [src]="uiFlag.editMode !== 'close' && editImage.icon.base64 !== null ? editImage.icon.base64 : currentGroupInfo.groupDetail.groupIcon"
-          (error)="this.currentGroupInfo.groupDetail.groupIcon = '/assets/images/group.jpg'"
-          *ngIf="uiFlag.editMode !== 'create'"
-        />
-        <i class="icon-svg_web-icon_p1_059-lock group__lock" *ngIf="currentGroupInfo.groupDetail.groupStatus === 6"></i>
-        <img
-          [src]="editImage.icon.base64 !== null ? editImage.icon.base64 : '/assets/images/group.jpg'"
-          *ngIf="uiFlag.editMode === 'create'"
-        />
-        <div class="flexCenter info-imgAbs">
+    <section class="info-header" [class.info-portalMode]="uiFlag.portalMode">
+      <div class="flexCenter info-avatarIcon" [style.left]="uiFlag.portalMode ? 'initial' : '50px'">
+        <div class="info-avatarImg">
+          <img
+            [src]="uiFlag.editMode !== 'close' && editImage.icon.base64 !== null ? editImage.icon.base64 : currentGroupInfo.groupDetail.groupIcon"
+            (error)="this.currentGroupInfo.groupDetail.groupIcon = '/assets/images/group.jpg'"
+            *ngIf="uiFlag.editMode !== 'create'"
+          />
+          <i class="icon-svg_web-icon_p1_059-lock group__lock" *ngIf="currentGroupInfo.groupDetail.groupStatus === 6"></i>
+          <img
+            [src]="editImage.icon.base64 !== null ? editImage.icon.base64 : '/assets/images/group.jpg'"
+            *ngIf="uiFlag.editMode === 'create'"
+          />
+        </div>
+        <div class="info-imgAbs info-imgEditIcon">
           <i
-            class="icon-svg_web-icon_p1_008-edit info-imgEditIcon"
+            class="icon-svg_web-icon_p1_008-edit info-avatarEditIcon"
             (click)="openImgSelector('icon')"
             *ngIf="uiFlag.editMode !== 'close'"
           ></i>
@@ -139,7 +135,7 @@
         </div>
       </div>
     </section>
-    <section [class.info-portalMode]="uiFlag.portalMode">
+    <section class="flexCol info-headerDescriptionBlock" [class.info-portalMode]="uiFlag.portalMode">
       <span
         #groupHeaderDescription
         [innerHTML]="currentGroupInfo.groupDetail.groupDesc"
@@ -307,7 +303,7 @@
     class="flexCenter info-editMask"
     *ngIf="uiFlag.editMode !== 'close' && (uiFlag.openSceneryImgSelector || uiFlag.openIconImgSelector)"
   >
-    <div class="img__selector">
+    <div class="imgSelector">
       <app-image-cropper
         [imgInputEvent]="uiFlag.openIconImgSelector ? editImage.icon.origin : editImage.scenery.origin"
         [albumType]="uiFlag.openIconImgSelector ? 11 : 12"

@@ -1,0 +1,24 @@
+@import 'color.scss';
+@import 'radio-btn.scss';
+
+#nickname__input {
+  max-width: 200px;
+}
+
+#height__input, #weight__input {
+  width: 70px;
+}
+
+.radio__btn--active {
+  @include radio-active(14px, rgba(253, 71, 214, 1));
+}
+
+/***************************************************** media *****************************************************/
+
+@media (max-width: 950px) {
+
+  #nickname__input {
+    max-width: 150px;
+  }
+
+}

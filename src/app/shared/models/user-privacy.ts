@@ -13,4 +13,25 @@ export enum privacyObj {
 /**
  * 隱私權代碼 1.僅自己 2.我的朋友 3.我的群組 4.我的群組 99.任何人
  */
-export type PrivacyCode = 1 | 2 | 3 | 4 | 99;
+export type PrivacyCode =
+  privacyObj.self
+  | privacyObj.myFriend
+  | privacyObj.myGroup
+  | privacyObj.onlyGroupAdmin
+  | privacyObj.anyone
+;
+
+
+export enum privacyEditObj {
+  file = 1,
+  sportsReport,
+  lifeTracking
+}
+
+export const allPrivacyItem = [
+  privacyObj.self,
+  // privacyObj.myFriend
+  privacyObj.myGroup,
+  privacyObj.onlyGroupAdmin,
+  privacyObj.anyone
+];

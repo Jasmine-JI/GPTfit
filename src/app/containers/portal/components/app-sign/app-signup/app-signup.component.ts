@@ -773,13 +773,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       (window as any).android.returnToken(this.newToken);
       this.turnBack();
     } else {
-
-      if (this.pcView) {
-        this.router.navigateByUrl('/firstLogin-web');
-      } else {
-        this.router.navigateByUrl('/firstLogin');
-      }
-
+      this.router.navigateByUrl('/dashboard/user-settings');
     }
 
   }
@@ -791,7 +785,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   saveToken(token: string): void {
     this.utils.writeToken(token);  // 直接在瀏覽器幫使用者登入
-
     if (this.appSys === 1) {
       (window as any).webkit.messageHandlers.returnToken.postMessage(token);
     } else if (this.appSys === 2) {

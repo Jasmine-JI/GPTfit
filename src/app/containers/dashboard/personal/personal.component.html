@@ -1,0 +1,190 @@
+<div
+  style="position: relative;"
+  class="flexCol"
+  *ngIf="userProfile"
+>
+  <nav
+    #navSection
+    class="flexCol"
+    style="position: relative;"
+    [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
+  >
+    <section class="info-scenerySection">
+      <img
+        class="info-imgAbs"
+        [src]="uiFlag.editMode !== 'close' && editImage.scenery.base64 !== null ? editImage.scenery.base64 : userProfile.themeImgUrl"
+        (error)="sceneryError()"
+        *ngIf="!uiFlag.hideScenery"
+      />
+      <div class="flexCenter info-imgEditIcon" *ngIf="!uiFlag.isPortalMode">
+        <i
+          class="icon-svg_web-icon_p1_008-edit info-sceneryEditIcon"
+          (click)="openImgSelector('scenery')"
+          *ngIf="uiFlag.editMode !== 'close'"
+        ></i>
+      </div>
+    </section>
+    <section class="info-header" [class.info-portalMode]="uiFlag.isPortalMode">
+      <div
+        class="flexCenter info-avatarIcon"
+        [style.left]="uiFlag.isPortalMode ? 'initial' : '50px'"
+      >
+        <div class="info-avatarImg">
+          <img
+            [src]="uiFlag.editMode !== 'close' && editImage.icon.base64 !== null ? editImage.icon.base64 : userProfile.avatarUrl"
+            (error)="this.userProfile.avatarUrl = '/assets/images/user2.png'"
+          />
+        </div>
+        <div class="info-imgAbs info-imgEditIcon" *ngIf="!uiFlag.isPortalMode">
+          <i
+            class="icon-svg_web-icon_p1_008-edit info-avatarEditIcon"
+            (click)="openImgSelector('icon')"
+            *ngIf="uiFlag.editMode !== 'close'"
+          ></i>
+        </div>
+      </div>
+      <div class="info__headerRow">
+        <div class="flexRow info-headerTitle">
+          <div class="flexRow info-titleText">
+            <span class="info-currentName" style="white-space: pre-wrap;">
+              {{ userProfile.nickname }}
+            </span>
+          </div>
+        </div>
+        <div class="flexRow info-headerBtnBar">
+          <ng-container>
+            <button>
+              <i
+                class="icon-svg_web-icon_p1_013-share info-pageBtn info-primaryBtn"
+                style="color: white; font-size: 24px; padding: 2px; cursor: pointer;"
+                *ngIf="uiFlag.isPageOwner && !uiFlag.isSettingPage"
+                (click)="openSharePersonalPage()"
+              ></i>
+            </button>
+          </ng-container>
+        </div>
+      </div>
+    </section>
+    <ng-container *ngIf="!uiFlag.isSettingPage">
+      <section class="flexCol info-headerDescriptionBlock" [class.info-portalMode]="uiFlag.isPortalMode">
+        <span
+          #headerDescription
+          [innerHTML]="userProfile.description"
+          class="info-headerDescription"
+          [class.info-descOverflow]="uiFlag.descOverflow"
+          (click)="handleNavigation('info')"
+          *ngIf="!uiFlag.isLoading"
+        ></span>
+        <app-loading-icon *ngIf="uiFlag.isLoading"></app-loading-icon>
+      </section>
+      <section #pageListBar class="flexCol info-pageListBar" [class.info-portalMode]="uiFlag.isPortalMode">
+        <div class="info-barLine"></div>
+        <div
+          class="info-activeBar"
+          [style.width]="uiFlag.barWidth + 'px'"
+          [style.left]="uiFlag.barPosition + 'px'"
+        ></div>
+        <div class="flexRow" style="justify-content: space-between; align-items: center;">
+          <div class="flexRow">
+            <ng-container *ngFor="let _page of childPageList; let _idx = index;">
+              <span 
+                class="info-childPageTitle main__page__list"
+                [class.info-active--color]="uiFlag.currentTagIndex === _idx"
+                (click)="handleShowContent($event, _page, _idx)"
+                *ngIf="uiFlag.divideIndex === null || _idx < uiFlag.divideIndex"
+              >
+                <ng-container *ngTemplateOutlet="childPage;
+                  context: { page: _page }"
+                ></ng-container>
+              </span>
+            </ng-container>
+          </div>
+          <div
+            #seeMore
+            class="info-childPageTitle info-moreBtn"
+            (click)="handleShowMorePageOpt($event)"
+            *ngIf="uiFlag.divideIndex !== null"
+          >
+            <span [class.info-active--color]="uiFlag.currentTagIndex >= uiFlag.divideIndex && !uiFlag.showMorePageOpt">
+              <span style="position: relative;">
+                {{ 'universal_operating_more' | translate }}
+              </span>
+              <span
+                class="info-seeMoreTriangle"
+                [class.info-active--color]="uiFlag.currentTagIndex >= uiFlag.divideIndex && !uiFlag.showMorePageOpt"
+                [class.info-openFold]="uiFlag.showMorePageOpt"
+              ></span>
+            </span>
+            <div
+              class="flexCol info-foldList"
+              *ngIf="uiFlag.showMorePageOpt"
+            >
+              <ng-container *ngFor="let _foldItem of childPageList; let _fIdx = index;">
+                <div
+                  class="info-foldListItem"
+                  *ngIf="_fIdx >= uiFlag.divideIndex"
+                >
+                  <span
+                    [class.info-active--color]="uiFlag.currentTagIndex === (_fIdx)"
+                    (click)="handleShowContent($event, _foldItem, _fIdx)"
+                  >
+                    <ng-container *ngTemplateOutlet="childPage;
+                      context: { page: _foldItem }"
+                    ></ng-container>
+                  </span>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </section>
+    </ng-container>
+  </nav>
+  <main
+    id="main__section"
+    [class.info-portalMode]="uiFlag.isPortalMode"
+  >
+    <ng-container *ngIf="!uiFlag.isSettingPage">
+      <router-outlet></router-outlet>
+    </ng-container>
+    <ng-container *ngIf="uiFlag.isSettingPage">
+      <app-setting-base
+        [patchEditPrivacy]="uiFlag.patchEditPrivacy"
+      ></app-setting-base>
+      <app-setting-privacy
+        (patchEditPrivacy)="passPatchEditPrivacyStatus($event)"
+      ></app-setting-privacy>
+      <app-setting-prefer></app-setting-prefer>
+      <app-setting-account></app-setting-account>
+    </ng-container>
+  </main>
+  <section
+    class="flexCenter info-editMask"
+    *ngIf="uiFlag.openImgSelector"
+  >
+    <div class="imgSelector">
+      <app-image-cropper
+        [imgInputEvent]="uiFlag.openImgSelector === 'icon' ? editImage.icon.origin : editImage.scenery.origin"
+        [albumType]="uiFlag.openImgSelector === 'icon' ? albumType.personalIcon : albumType.personalScenery"
+        (closeSelector)="closeSelector($event)"
+      ></app-image-cropper>
+    </div>
+  </section>
+</div>
+<ng-template #childPage let-page="page">
+  <ng-container *ngIf="page === 'activity-list'">
+    {{ 'universal_activityData_story' | translate }}
+  </ng-container>
+  <ng-container *ngIf="page === 'sport-report'">
+    {{ 'universal_activityData_sportReport' | translate }}
+  </ng-container>
+  <ng-container *ngIf="page === 'life-tracking'">
+    {{ 'universal_lifeTracking_lifeTracking' | translate }}
+  </ng-container>
+  <ng-container *ngIf="page === 'cloudrun'">
+    Cloud run
+  </ng-container>
+  <ng-container *ngIf="page === 'info'">
+    {{ 'universal_deviceSetting_adout' | translate }}
+  </ng-container>
+</ng-template>

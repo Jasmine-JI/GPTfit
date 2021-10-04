@@ -164,7 +164,7 @@
             <div class="flexRow">
               <span class="tableMenuTitle">{{'universal_activityData_fieldDisplay' | translate}}</span>
               <span
-                style="font-size: 8px; margin-left: 5px;"
+                style="font-size: 12px; margin-left: 5px;"
                 [style.color]="groupTable.showDataType.length >= tableColumn.max ? 'red' : '#ababab'"
               >
                 ({{ 'universal_activityData_most' | translate: {'number': tableColumn.max} }})
@@ -598,7 +598,7 @@
             <div class="flexRow">
               <span class="tableMenuTitle">{{'universal_activityData_fieldDisplay' | translate}}</span>
               <span
-                style="font-size: 8px; margin-left: 5px;"
+                style="font-size: 12px; margin-left: 5px;"
                 [style.color]="memberTable.showDataType.length >= tableColumn.max ? 'red' : '#ababab'"
               >
                 ({{ 'universal_activityData_most' | translate: {'number': tableColumn.max} }})
@@ -1112,6 +1112,6 @@
     </div>
   </footer>
   <div *ngIf="uiFlag.isPreviewMode" class="printMark">
-    GPTFit
+    GPTfit
   </div>
 </div>

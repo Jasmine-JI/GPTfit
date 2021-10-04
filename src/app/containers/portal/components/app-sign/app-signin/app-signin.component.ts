@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { formTest } from '../../../models/form-test';
+import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 
 
 @Component({
@@ -59,7 +60,8 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
     private utils: UtilsService,
     private authService: AuthService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private userProfileService: UserProfileService
   ) {
     // 當語系變換就重新取得翻譯-kidin-1090720
     this.subscription.push(
@@ -317,6 +319,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
           this.utils.writeToken(token);
           this.authService.setLoginStatus(true);
           this.loginStatus = 'success';
+          this.userProfileService.refreshUserProfile({ token });
 
           // 儲存國碼方便使用者下次登入
           if (this.loginBody.signInType === 2) {
@@ -326,7 +329,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
           if (location.search.indexOf('action') > -1) {
             this.navigateAssignPage(location.search);
           } else if (res.signIn.counter <= 1) {
-            this.router.navigateByUrl('/firstLogin-web');
+            this.router.navigateByUrl('/dashboard/user-settings');
           } else if (this.authService.backUrl.length > 0) {
             location.href = this.authService.backUrl;
           } else {

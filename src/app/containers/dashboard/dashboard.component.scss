@@ -121,7 +121,7 @@
 }
 
 .header__color {
-  background-color: rgba(121, 125, 125, 0.7);
+  background-color: rgba(121, 125, 125, 1);
 }
 
 .ala-dashboard-header {
@@ -383,18 +383,15 @@
   @include transition(transform);
 }
 
+.dashboard__container {
+  padding: 1vh 7vw;
+}
 
 /*********************************** media ********************************************/
 
 @media (hover: none) {
   .mat-expansion-panel:not(.mat-expanded):not([aria-disabled=true]) .mat-expansion-panel-header:hover {
     background: initial;
-  }
-}
-
-@media (max-width: 991px) {
-  .container {
-    width: 99vw;
   }
 }
 
@@ -423,6 +420,10 @@
   .main-nav-toggle {
     height: 44px;
     width: 44px;
+  }
+
+  .dashboard__container {
+    padding: 0 2vw;
   }
 
 }

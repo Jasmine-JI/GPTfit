@@ -37,3 +37,20 @@ div {
 ::ng-deep .date__time__warn {
   color: rgba(217, 35, 35, 1);
 }
+
+#counter__btn {
+  border: none;
+  background-color: rgba(35, 160, 218, 1);
+  width: 130px;
+  height: 30px;
+  border-radius: 30px;
+  color: white;
+  margin-left: 10px;
+}
+
+#verify__btn {
+  margin-top: 0px;
+  display: block;
+  background-color: rgba(217, 35, 35, 1);
+  margin-top: 20px;
+}

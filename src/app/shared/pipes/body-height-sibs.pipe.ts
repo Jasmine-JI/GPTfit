@@ -1,8 +1,13 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { ft } from '../models/bs-constant';
+import { UtilsService } from '../services/utils.service';
+import { unit } from '../models/bs-constant';
 
 @Pipe({name: 'bodyHeightSibs'})
 export class BodyHeightSibsPipe implements PipeTransform {
+
+  constructor(
+    private utils: UtilsService
+  ) {}
 
   /**
    * 依公英制轉換身高單位。
@@ -12,18 +17,16 @@ export class BodyHeightSibsPipe implements PipeTransform {
    * @author kidin-1100106
    */
   transform(value: number, args: [number, boolean]): string {
-    const [unitType, showUnit] = [...args];
-    let finalValue: number,
-        unit: string;
-    if (unitType === 0) {
-      finalValue = parseFloat(value.toFixed(1));;
-      unit = 'cm';
+    const [unitType, showUnit] = [...args],
+          result = this.utils.bodyHeightTransfer(value, unitType === unit.imperial, true);
+    let unitStr: string;
+    if (unitType === unit.imperial) {
+      unitStr = 'inch';
     } else {
-      finalValue = parseFloat((value / ft).toFixed(2));
-      unit = 'ft';
+      unitStr = 'cm';
     }
     
-    return showUnit || showUnit === undefined ? `${finalValue} ${unit}` : `${finalValue}`;
+    return showUnit || showUnit === undefined ? `${result} ${unitStr}` : `${result}`;
   }
 
 }

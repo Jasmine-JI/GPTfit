@@ -6,9 +6,9 @@ import { ReportConditionOpt, SportType, SportCode } from '../../models/report-co
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CloudrunService } from '../../services/cloudrun.service';
-import { GroupService } from '../../../containers/dashboard/services/group.service';
 import { Lang } from '../../models/i18n';
 import { Sex, sex } from '../../../containers/dashboard/models/userProfileInfo';
+import { DashboardService } from '../../../containers/dashboard/services/dashboard.service';
 
 interface DateCondition {
   type: 'sevenDay' | 'thirtyDay' | 'sixMonth' | 'today' | 'thisWeek' | 'thisMonth' | 'thisYear' | 'custom';
@@ -106,8 +106,8 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private reportService: ReportService,
     private cloudrunService: CloudrunService,
-    private groupService: GroupService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private dashboardService: DashboardService
   ) {}
 
   ngOnInit(): void {
@@ -127,7 +127,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     this.date.openSelector = null;
     this.resizeSubScription = merge(
       resizeEvent,
-      this.groupService.getRxSideBarMode()
+      this.dashboardService.getRxSideBarMode()
     ).pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(e => {
@@ -171,20 +171,33 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.reportConditionOpt = res;
-      if (this.reportConditionOpt.pageType !== this.uiFlag.currentType) {
+      // 確認頁面是否變更
+      const { pageType } = this.reportConditionOpt;
+      if (pageType !== this.uiFlag.currentType) {
         this.initDate();
-        this.uiFlag.currentType = this.reportConditionOpt.pageType;
+        this.uiFlag.currentType = pageType;
+
+        // 運動列表預設不展開條件篩選器
+        if (pageType === 'file') {
+          this.uiFlag.showConditionSelector = false;
+        }
+
       }
 
-      if (this.reportConditionOpt.pageType === 'cloudRun' && (this.mapList.length === 0 || this.routineRaceList.length === 0)) {
+      // 確認雲跑的地圖資訊是否載入
+      const mapLoaded = this.mapList.length > 0 && this.routineRaceList.length > 0;
+      if (pageType === 'cloudRun' && !mapLoaded) {
         this.getMapList();
       }
 
-      if (res.date && res.date.startTimestamp !== null) {
-        this.date.startTimestamp = res.date.startTimestamp;
-        this.date.endTimestamp = res.date.endTimestamp;
-        this.date.type = res.date.type;
-        if (res.date.endTimestamp <= this.date.maxTimestamp) {
+      // 確認是否可以選擇日期
+      const { date } = res;
+      if (date && date.startTimestamp !== null) {
+        const { startTimestamp, endTimestamp, type } = date;
+        this.date.startTimestamp = startTimestamp;
+        this.date.endTimestamp = endTimestamp;
+        this.date.type = type;
+        if (endTimestamp <= this.date.maxTimestamp) {
           this.date.endOfShift = false;
         } else {
           this.date.endOfShift = true;
@@ -810,6 +823,16 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   changeFitpairUse(status: 'all' | 'fitpairing' | 'idle') {
     this.reportConditionOpt.deviceUseStatus = status;
     this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 
+   * @param e {Event | MouseEvent}
+   * @author kidin-1100817
+   */
+  handleKeywordInput(e: Event | MouseEvent) {
+    const { target: {value} } = (e as any);
+    this.reportConditionOpt.keyword = value;
   }
 
   /**

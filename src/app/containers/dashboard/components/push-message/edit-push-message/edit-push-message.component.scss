@@ -1,17 +1,10 @@
+@import 'transition.scss';
+
 $sea--blue: rgba(0, 104, 183, 1);
-$transition-effect: 0.2s cubic-bezier(0.5, 0.5, 0.5, 0.5);
 $selector-width: 130px;
 $middle-gray: rgba(150, 150, 150, 1);
 $input-min-width: 250px;
 $input-max-width: 600px;
-
-@mixin transition($target) {
-  -webkit-transition: $target $transition-effect;
-  -moz-transition: $target $transition-effect;
-  -ms-transition: $target $transition-effect;
-  -o-transition: $target $transition-effect;
-  transition: $target $transition-effect;
-}
 
 #send__btn {
   position: relative;
@@ -26,9 +19,11 @@ $input-max-width: 600px;
   font-size: 18px;
   font-weight: bold;
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
-  @include transition(top);
-  @include transition(left);
-  @include transition(background-color);
+  @include multiple-transition((
+    left $move-effect,
+    top $move-effect,
+    background-color $move-effect
+  ));
 
   &:hover {
     background-color: rgba(250, 250, 250, 1);
@@ -39,8 +34,7 @@ $input-max-width: 600px;
     top: 2px;
     left: 2px;
     box-shadow: none;
-    @include transition(top);
-    @include transition(left);
+    @include multiple-transition((left $move-effect, top $move-effect));
   }
 
 }

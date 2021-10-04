@@ -1,0 +1,139 @@
+@import 'color.scss';
+@import 'transition.scss';
+@import 'flex-center.scss';
+@import 'button.scss';
+
+$turn-gap: 2px;
+$input-width: 60px;
+$dot-diameter: 8px;
+
+@mixin list-content($bg-color) {
+  div {
+    align-items: center;
+    width: fit-content;
+
+    &:before {
+      content: '';
+      width: $dot-diameter;
+      height: $dot-diameter;
+      min-width: $dot-diameter;
+      border-radius: 50%;
+      margin-right: 5px;
+      background-color: $bg-color;
+    }
+
+  }
+
+}
+
+.num__input {
+  width: $input-width;
+}
+
+.info__content {
+  color: var(--scale-0-255);
+}
+
+#hr__zone__info {
+  list-style: none;
+  @for $i from 1 through 6 {
+
+    >:nth-last-child(#{$i}) {
+
+      div {
+        align-items: center;
+        width: fit-content;
+
+        &:before {
+          content: '';
+          width: $dot-diameter;
+          height: $dot-diameter;
+          min-width: $dot-diameter;
+          border-radius: 50%;
+          margin-right: 5px;
+          background-color: nth($zone-color, $i);
+        }
+
+      }
+
+    }
+
+  }
+
+}
+
+#ftp__zone__info {
+  list-style: none;
+  @for $i from 1 through 7 {
+
+    >:nth-last-child(#{$i}) {
+      @include list-content(nth($zone-color, $i));
+    }
+
+  }
+}
+
+.rangeValue {
+  text-align: right;
+  width: 28px;
+  @extend .info__content;
+}
+
+.time__selector__section {
+  position: relative;
+}
+
+#time__Selector {
+  position: fixed;
+  z-index: 11;
+  background-color: var(--scale-255-60);
+  color: var(--scale-0-255);
+  width: 120px;
+  height: 175px;
+  border: 1px solid rgba(150, 150, 150, 1);
+  overflow: hidden;
+}
+
+#hour__selector, #min__selector {
+  position: absolute;
+  width: 50%;
+  align-items: center;
+
+  span {
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    cursor: pointer;
+    @include transition(background-color);
+
+    &:hover {
+      background-color: rgb(185, 236, 255, 0.5);
+      @include transition(background-color);
+    }
+
+  }
+
+}
+
+#hour__selector, #hour__selector__temp {
+  left: $turn-gap;
+}
+
+#min__selector, #min__selector__temp {
+  right: $turn-gap;
+}
+
+.current__selector {
+  background-color: $primary-blue !important;
+  color: white;
+}
+
+.time__set {
+  display: inline-block;
+  min-width: $input-width;
+}
+
+.radio__section {
+  margin-left: 10px;
+  flex-wrap: wrap;
+}

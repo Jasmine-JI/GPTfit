@@ -15,7 +15,7 @@
       (click)="returnHomePage()"
     >
       <i class="icon-svg_web-icon_p1_073-level_fold" style="font-size: 30px;"></i>
-      GPTFit
+      GPTfit
     </div>
     <img
       id="main__image"
@@ -373,7 +373,7 @@
       </div>
       <section class="flexCol table__section" *ngIf="activity.product.length > 0">
         <span id="product__title">精選產品</span>
-        <div class="flexRow" style="flex-wrap: wrap;">
+        <div class="flexRowWrap">
           <div
             class="flexRow product__list"
             *ngFor="let _product of activity.product; let _ind = index;"

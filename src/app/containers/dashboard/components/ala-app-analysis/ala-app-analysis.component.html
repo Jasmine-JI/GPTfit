@@ -124,7 +124,7 @@
               >
                 <span *ngIf="filterCondition.createFromApp.includes(alaApp.gptfit)">✔</span>
               </button>
-              <label for="gptfit">GPTFit</label>
+              <label for="gptfit">GPTfit</label>
             </span>
             <span class="flexRow checkBoxBlock">
               <button
@@ -228,7 +228,7 @@
           <ng-container *ngIf="uiFlag.statisticType === statisticTypeEnum.image">
             <div class="flexCol condition__content">
               <span>對象類型：</span>
-              <div class="flexRow" style="flex-wrap: wrap;">
+              <div class="flexRowWrap">
                 <span class="flexRow radioSelector">
                   <button 
                     id="all__obj"
@@ -260,7 +260,7 @@
             </div>
             <div class="flexCol condition__content">
               <span>圖床類型：</span>
-              <div class="flexRow" style="flex-wrap: wrap;">
+              <div class="flexRowWrap">
                 <span class="flexRow radioSelector">
                   <button 
                     id="all__image__type"
@@ -430,7 +430,9 @@
       <span class="flexRow">
         <span *ngIf="uiFlag.statisticMethod === 'pre'">總使用空間：</span>
         <span *ngIf="uiFlag.statisticMethod === 'realtime'">點陣數量：</span>
-        <span>{{ searchRes.totalSpace | dataFlowConversion }}</span>
+        <span>
+          {{ searchRes.totalSpace | dataFlowConversion }} ({{ searchRes.totalSpace }} byte)
+        </span>
         <span
           class="condition__description"
           *ngIf="uiFlag.statisticMethod === 'realtime'"

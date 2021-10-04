@@ -1,0 +1,106 @@
+<h2 mat-dialog-title class="ala-dialog">
+  {{ title }}
+</h2>
+<mat-dialog-content class="post-form">
+  <div
+    class="flexRow"
+    style="flex-wrap: wrap; margin-bottom: 10px;"
+  >
+    <span class="flexRow radioSelector" (click)="selectDateRange(rangeType.all)">
+      <span
+        class="radioBtn"
+        [class.radioBtn--active]="dateRange === rangeType.all"
+      ></span>
+      <span>{{ 'universal_adjective_all' | translate }}</span>
+    </span>
+    <span class="flexRow radioSelector" (click)="selectDateRange(rangeType.date)">
+      <span
+        class="radioBtn"
+        [class.radioBtn--active]="dateRange === rangeType.date"
+      ></span>
+      <span>{{ 'universal_operating_selectDate' | translate }}</span>
+    </span>
+  </div>
+  <div *ngIf="dateRange === rangeType.date">
+    <p>{{ 'universal_activityData_dateRange' | translate }}</p>
+    <div class="dateSelectArea" style="margin: 0 0 15px 50px;">
+      <app-date-range-picker
+        (selectDateRange)="getSelectDate($event)"
+        [default]="'last30Days'"
+      ></app-date-range-picker>
+    </div>
+  </div>
+  <div class="flexCol" style="color: var(--scale-0-255);">
+    <span style="margin-bottom: 10px;">
+      {{ title }} {{ 'universal_vocabulary_object' | translate }}
+    </span>
+    <div class="flexRow rod__bar__section">
+      <span>
+        {{ 'universal_operating_close' | translate }}
+      </span>
+      <div
+        class="rodBar"
+        [class.rodBar--active]="openObj.length > 1"
+        (click)="selectModifyRange(privacyObj.self)"
+      ></div>
+      <span style="margin-left: 10px;">
+        {{ 'universal_privacy_openPrivacy' | translate }}
+      </span>
+    </div>
+    <ng-container *ngIf="openObj.length > 1">
+      <div class="flexCol checkBox__section">
+        <span class="flexRow checkBoxBlock">
+          <button
+            id="anyone__opt"
+            [class.checkBox--active]="openObj.includes(privacyObj.anyone)"
+            (click)="selectModifyRange(privacyObj.anyone)"
+          >
+            <span *ngIf="openObj.includes(privacyObj.anyone)">✔</span>
+          </button>
+          <label for="anyone__opt" class="checkBox__label">
+            {{ 'universal_privacy_allMember' | translate }}
+          </label>
+        </span>
+        <span class="flexRow checkBoxBlock">
+          <span class="first__layer">└</span>
+          <button
+            id="my__group__opt"
+            [class.checkBox--active]="openObj.includes(privacyObj.myGroup)"
+            (click)="selectModifyRange(privacyObj.myGroup)"
+          >
+            <span *ngIf="openObj.includes(privacyObj.myGroup)">✔</span>
+          </button>
+          <label for="my__group__opt" class="checkBox__label">
+            {{ 'universal_group_myGroup' | translate }}
+          </label>
+        </span>
+        <span class="flexRow checkBoxBlock">
+          <span class="second__layer">└</span>
+          <button
+            id="my__admin"
+            [class.checkBox--active]="openObj.includes(privacyObj.onlyGroupAdmin)"
+            (click)="selectModifyRange(privacyObj.onlyGroupAdmin)"
+          >
+            <span *ngIf="openObj.includes(privacyObj.onlyGroupAdmin)">✔</span>
+          </button>
+          <label for="my__admin" class="checkBox__label">
+            {{ 'universal_group_administrator' | translate }}
+          </label>
+        </span>
+      </div>
+    </ng-container>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions class="flexRow" style="justify-content: space-between;">
+  <button
+    mat-button mat-dialog-close
+    style="color: var(--scale-0-255);"
+  >{{ 'universal_operating_cancel' | translate }}</button>
+  <button
+    mat-button color="warn"
+    style="font-weight: bold;"
+    (click)="handleConfirm()"
+  >
+    {{ 'universal_operating_confirm' | translate }} {{ 'universal_operating_modify' | translate }}
+  </button>
+</mat-dialog-actions>

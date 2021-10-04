@@ -1,12 +1,10 @@
-import { Component, OnInit, Inject, Input } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
 import { TranslateService } from '@ngx-translate/core';
-
 import { UtilsService } from '../../services/utils.service';
 import { SettingsService } from '../../../containers/dashboard/services/settings.service';
-import { PrivacyCode } from '../../models/user-privacy';
+import { PrivacyCode, privacyObj, allPrivacyItem } from '../../models/user-privacy';
 
 @Component({
   selector: 'app-edit-individual-privacy',
@@ -18,8 +16,8 @@ export class EditIndividualPrivacyComponent implements OnInit {
     gym: ''
   };
 
-  showPerObj = true;
-  openObj = [1];
+  openObj = [privacyObj.self];
+  readonly privacyObj = privacyObj;
 
   constructor(
     private utils: UtilsService,
@@ -43,24 +41,23 @@ export class EditIndividualPrivacyComponent implements OnInit {
    * @author kidin-1100302
    */
   getCurrentSetting() {
-    setTimeout(() => {
-      if (this.data.openObj.includes(1)) {
-        this.openObj = [...this.data.openObj];
-      } else {
-        this.openObj = [1, ...this.data.openObj];
-      }
-      
-      const radioBtn = document.getElementById('selectObj');
-      if (this.openObj.includes(99)) {
-        radioBtn.classList.add('mat-radio-checked');
-        this.showPerObj = false;
-      } else {
-        radioBtn.classList.remove('mat-radio-checked');
-        this.showPerObj = true;
-      }
+    const { openObj } = this.data;
+    // 避免隱私權沒有帶到1的情況
+    if (openObj.includes(privacyObj.self)) {
+      this.openObj = [...openObj];
+    } else {
+      this.openObj = [privacyObj.self, ...openObj];
+    }
 
-    });
+    // 避免隱私權有帶3卻沒帶到4的情況
+    if (
+      openObj.includes(privacyObj.myGroup)
+      && !openObj.includes(privacyObj.onlyGroupAdmin)
+    ) {
+      this.openObj.push(privacyObj.onlyGroupAdmin);
+    }
 
+    this.openObj.sort((a, b) => a - b);
   }
 
   /**
@@ -74,39 +71,59 @@ export class EditIndividualPrivacyComponent implements OnInit {
 
   /** 
    * 選擇開放隱私權的對象 1:僅自己 2:我的朋友 3:我的群組 4:我的健身房教練 99:所有人
-   * @param obj {PrivacyCode}
+   * @param privacy {PrivacyCode}
    * @author kidin-1100302
    */
-  selectModifyRange (obj: PrivacyCode) {
-    setTimeout(() => {
-      const radioBtn = document.getElementById('selectObj');
+  selectModifyRange (privacy: PrivacyCode) {
+    const privacySetting = this.openObj;
+    switch (privacy) {
 
-      switch (obj) {
-        case 99:
-          if (this.openObj.includes(obj)) {
-            radioBtn.classList.remove('mat-radio-checked');
-            this.openObj.length = 1;
-            this.showPerObj = true;
-          } else {
-            radioBtn.classList.add('mat-radio-checked');
-            this.openObj.length = 1;
-            this.openObj.push(99);
-            this.showPerObj = false;
-          }
-          break;
-        default:
-          if (this.openObj.includes(obj)) {
-            this.openObj = this.openObj.filter(_obj => {
-              return _obj !== obj;
-            });
-          } else {
-            this.openObj.push(obj);
-            this.openObj.sort();
-          }
-          break;
-      }
+      case privacyObj.anyone:
 
-    });
+        if (privacySetting.includes(privacyObj.anyone)) {
+          this.openObj = [privacyObj.self];
+        } else {
+          this.openObj = [...allPrivacyItem];
+        }
+
+        break;
+      case privacyObj.myGroup:
+
+        if (privacySetting.includes(privacyObj.myGroup)) {
+          this.openObj = privacySetting.filter(_setting => {
+            return _setting !== privacyObj.myGroup && _setting !== privacyObj.anyone;
+          });
+        } else {
+          this.openObj.push(privacyObj.myGroup);
+          // 群組管理員視為同群組成員
+          if (!privacySetting.includes(privacyObj.onlyGroupAdmin)) {
+            this.openObj.push(privacyObj.onlyGroupAdmin);
+          }
+
+        }
+
+        break;
+      case privacyObj.onlyGroupAdmin:
+
+        if (privacySetting.includes(privacyObj.onlyGroupAdmin)) {
+          this.openObj = privacySetting.filter(_setting => {
+            return ![privacy, privacyObj.myGroup, privacyObj.anyone].includes(_setting);
+          });
+        } else {
+          this.openObj.push(privacy);
+        }
+
+        break;
+      case privacyObj.self:
+
+        if (privacySetting.length > 1) {
+          this.openObj = [privacyObj.self];
+        } else {
+          this.openObj = [privacyObj.self, privacyObj.onlyGroupAdmin];
+        }
+
+        break;
+    }
 
   }
 

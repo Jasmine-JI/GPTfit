@@ -3,5 +3,7 @@ export const formTest = {
   password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,20}$/,
   nickname: /^[^!@#$%^&*()=|{}"?<>;:+-\/\\]{4,24}$/,
   phone: /^([1-9][0-9]+)$/,
-  number: /^([0-9]*)$/
+  number: /^([0-9]*)$/,
+  decimalValue: /(^\d*)(.\d*$)/,
+  imperialHeight: /^\d"([1-9]|1[01])$/
 };

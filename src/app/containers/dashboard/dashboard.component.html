@@ -11,7 +11,7 @@
           <i class="icon-svg_web-icon_p1_005-menu main-nav-toggle-icon"></i>
         </div>
       </div>
-      <div style="display: flex; position: fixed; right: 20px">
+      <div style="display: flex; position: fixed; right: 20px; align-items: center;">
         <div class="flexCenter" *ngIf="userProfile.systemAccessRight[0] <= 20">
           <button style="border: none; background-color: transparent;" (click)="changeTheme()">
             <span style="font-size: 22px;" [style.color]="theme === 'light' ? 'black' : 'yellow'">
@@ -28,7 +28,7 @@
             aria-expanded="false"
           >
             <div class="header-nav-item" style="margin-right: 10px">
-              {{ userProfile.nickname || '' }}
+              <span *ngIf="!uiFlag.mobileMode">{{ userProfile.nickname || '' }}</span>
             </div>
             <img
               [src]="userProfile.avatarUrl"
@@ -45,26 +45,32 @@
              aria-labelledby="dropdownMenu3"
           >
             <div class="header-nav-menu-section">
-              <!-- <div (click)="$event.preventDefault();$event.stopPropagation();"
-                style="padding: 15px 20px"
-              >
-                {{ userName || '' }}
-              </div> -->
-            </div>
-            <div class="header-nav-menu-section">
               <ul>
                 <li style="color: #ff3838; font-weight: bold;" (click)="toEnableAccount()" *ngIf="accountStatus === 1">
                   {{ "universal_deviceSetting_switch" | translate}} {{ "universal_userAccount_account" | translate}}
                 </li>
-                <li (click)="goToUserProfile(userProfile.userId)">
-                  {{ "universal_userProfile_info" | translate}}
-                </li>
-                <li [routerLink]="['/dashboard/settings']">
+                <li [routerLink]="['/dashboard/user-settings']">
                   {{ "universal_system_accountManagement" | translate}}
                 </li>
               </ul>
             </div>
             <button class="dropdown-item" type="button" (click)="logout()">{{ "universal_userAccount_logOut" | translate}}</button>
+          </div>
+        </div>
+        <div class="dropdown nav-rwd">
+          <button class="btn btn-secondary dropdown-toggle ala-btn__lang" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false" style="background-color: transparent;border-color: transparent">
+            <i class="icon-svg_web-icon_p1_045-earth" style="font-size: 25px;"></i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-lang" aria-labelledby="dropdownMenu2">
+            <button class="dropdown-item" type="button" (click)="switchLang('zh-tw')">繁體中文</button>
+            <button class="dropdown-item" type="button" (click)="switchLang('zh-cn')">简体中文</button>
+            <button class="dropdown-item" type="button" (click)="switchLang('en-us')">English</button>
+            <button class="dropdown-item" type="button" (click)="switchLang('es-es')">Español</button>
+            <button class="dropdown-item" type="button" (click)="switchLang('de-de')">Deutsche</button>
+            <button class="dropdown-item" type="button" (click)="switchLang('fr-fr')">français</button>
+            <button class="dropdown-item" type="button" (click)="switchLang('it-it')">italiano</button>
+            <button class="dropdown-item" type="button" (click)="switchLang('pt-pt')">Português</button>
           </div>
         </div>
       </div>
@@ -88,12 +94,12 @@
           [style.display]="uiFlag.sidebarMode !== 'expand' && !uiFlag.navFixed ? 'none' : flex"
           (click)="navigateHomePage()"
         >
-          GPTFit
+          GPTfit
           <span class="alpha-text" *ngIf="isAlphaVersion">alpha</span>
         </span>
         <div
           class="toggle__btn"
-          [class.toggle__btn__move]="uiFlag.sidebarMode === 'narrow' && !uiFlag.navFixed ? false : true"
+          [class.toggle__btn__move]="!(uiFlag.sidebarMode === 'narrow' && !uiFlag.navFixed)"
           (click)="navbarFixed()"
           *ngIf="!uiFlag.mobileMode"
         >
@@ -137,7 +143,7 @@
               
               <div
                 class="navbar__list__content"
-                [class.expand__content]="uiFlag.currentDrop === 'timelyActivity' && uiFlag.sidebarMode === 'expand' ? true : false"
+                [class.expand__content]="uiFlag.currentDrop === 'timelyActivity' && uiFlag.sidebarMode === 'expand'"
               >
                 <li class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.trainLive)"
@@ -171,7 +177,7 @@
               
               <div
                 class="navbar__list__content"
-                [class.expand__content]="uiFlag.currentDrop === 'group' && uiFlag.sidebarMode === 'expand' ? true : false"
+                [class.expand__content]="uiFlag.currentDrop === 'group' && uiFlag.sidebarMode === 'expand'"
               >
                 <li class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.myGroup)"
@@ -239,7 +245,7 @@
               
               <div
                 class="navbar__list__content"
-                [class.expand__content]="uiFlag.currentDrop === 'myReport' && uiFlag.sidebarMode === 'expand' ? true : false"
+                [class.expand__content]="uiFlag.currentDrop === 'myReport' && uiFlag.sidebarMode === 'expand'"
               >
                 <li class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.sportReport)"
@@ -298,7 +304,7 @@
               
               <div
                 class="navbar__list__content"
-                [class.expand__content]="uiFlag.currentDrop === 'systemManagement' && uiFlag.sidebarMode === 'expand' ? true : false"
+                [class.expand__content]="uiFlag.currentDrop === 'systemManagement' && uiFlag.sidebarMode === 'expand'"
               >
                 <li class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.innerAdmin)"
@@ -391,7 +397,7 @@
               
               <div
                 class="navbar__list__content"
-                [class.expand__content]="uiFlag.currentDrop === 'groupManagement' && uiFlag.sidebarMode === 'expand' ? true : false"
+                [class.expand__content]="uiFlag.currentDrop === 'groupManagement' && uiFlag.sidebarMode === 'expand'"
                 *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30 && uiFlag.sidebarMode !== 'hide'"
               >
                 <li class="ala-sidenav-menu-item"
@@ -443,7 +449,7 @@
               </div>
               <div
                 class="navbar__list__content"
-                [class.expand__content]="uiFlag.currentDrop === 'push' && uiFlag.sidebarMode === 'expand' ? true : false"
+                [class.expand__content]="uiFlag.currentDrop === 'push' && uiFlag.sidebarMode === 'expand'"
               >
                 <li class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.createPush)"
@@ -486,7 +492,7 @@
               </div>
               <div
                 class="navbar__list__content"
-                [class.expand__content]="uiFlag.currentDrop === 'deviceManagement' && uiFlag.sidebarMode === 'expand' ? true : false"
+                [class.expand__content]="uiFlag.currentDrop === 'deviceManagement' && uiFlag.sidebarMode === 'expand'"
               >
                 <li class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.deviceSearch)"
@@ -531,7 +537,7 @@
             [ngClass]="footerAddClassName"
             [style.display]="isHideFooter ? 'none' : 'block'"
           >
-            {{'universal_vocabulary_footerAnnouncement' | translate: {'appName': 'GPTFit' } }}
+            {{'universal_vocabulary_footerAnnouncement' | translate: {'appName': 'GPTfit' } }}
             <div>{{'universal_ota_version' | translate}}: {{version}}</div>
           </div>
         </div>
@@ -549,7 +555,7 @@
       (click)="navbarFixed()"
     ></div>
     <div
-      [class.container]="isHadContainer"
+      [class.dashboard__container]="isHadContainer"
       [class.containerPrint]="isPreviewMode"
       [hidden]="isLoading"
     >

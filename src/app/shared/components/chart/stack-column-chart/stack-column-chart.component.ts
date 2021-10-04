@@ -446,7 +446,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         color: zoneColor[1]
       },
       {
-        name: 'GPTFit',
+        name: 'GPTfit',
         data: this.analysisData.gptfit,
         showInLegend: true,
         color: zoneColor[0]

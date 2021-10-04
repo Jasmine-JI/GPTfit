@@ -9,7 +9,7 @@ import moment from 'moment';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { TranslateService } from '@ngx-translate/core';
 import { langList } from '../../../../shared/models/i18n';
-import { GroupService } from '../../services/group.service';
+import { DashboardService } from '../../services/dashboard.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -36,6 +36,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject;
   clickEvent: Subscription;
   pageResize: Subscription;
+  scrollEvent: Subscription;
 
   /**
    * ui上會用到的各個flag
@@ -54,7 +55,8 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     barWidth: 0,
     openAppDl: [],
     showFitPairSettingDialog: false,
-    fitPairChanged: false
+    fitPairChanged: false,
+    isPortalMode: !location.pathname.includes('dashboard')
   };
 
   /**
@@ -148,17 +150,18 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     private coachService: CoachService,
     private userProfileService: UserProfileService,
     private translateService: TranslateService,
-    private groupService: GroupService,
     private snackbar: MatSnackBar,
     private dialog: MatDialog,
     private router: Router,
-    private auth: AuthService
+    private auth: AuthService,
+    private dashboardService: DashboardService
   ) { }
 
   ngOnInit(): void {
     this.checkUrl();
     this.checkLang();
     this.handlePageResize();
+    this.handleScroll();
     this.handleSideBarSwitch();
     this.getNeedInfo(this.uiFlag.displayPage);
   }
@@ -239,12 +242,60 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 監聽捲動事件，當捲動到tab時，tab固定置頂
+   * @author kidin-1100908
+   */
+  handleScroll() {
+    const targetClass = this.uiFlag.isPortalMode ? '.main' : '.main-body',
+          targetElement = document.querySelectorAll(targetClass)[0],
+          targetScrollEvent = fromEvent(targetElement, 'scroll');
+    this.scrollEvent = targetScrollEvent.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(e => {
+      this.checkPageListBarPosition();
+    });
+
+  }
+
+  /**
+   * 確認tab位置與寬度
+   * @author kidin-1100908
+   */
+  checkPageListBarPosition() {
+    const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as any,
+          headerRow = document.querySelectorAll('.info-headerRow')[0],
+          headerDescriptionBlock = document.querySelectorAll('.info-headerDescriptionBlock')[0],
+          scenerySection = document.querySelectorAll('.info-scenerySection')[0],
+          { top: barTop } = pageListBar.getBoundingClientRect(),
+          { bottom: descBottom } = headerRow.getBoundingClientRect(),
+          { width } = scenerySection.getBoundingClientRect();
+      if (barTop <= 51 && descBottom < 50) {
+        pageListBar.classList.add('info-pageListBar-fixed');
+        headerDescriptionBlock.classList.add('info-pageListBar-replace');  // 填充原本功能列的高度
+        pageListBar.style.width = `${width}px`;
+      } else {
+        pageListBar.classList.remove('info-pageListBar-fixed');
+        headerDescriptionBlock.classList.remove('info-pageListBar-replace');
+        pageListBar.style.width = `100%`;
+      }
+
+      if (this.uiFlag.isPortalMode) {
+        const cardSection = document.querySelectorAll('.cardSection')[0],
+              { left } = cardSection.getBoundingClientRect();
+        pageListBar.style.left = `${left}px`;
+      }
+
+  }
+
+  /**
    * 依瀏覽器大小將超出邊界的清單進行收納
    * @author kidin-20200714
    */
   checkScreenSize() {
-    
-    setTimeout(() => {
+    // 確認多國語系載入後再計算按鈕位置
+    this.translateService.get('hellow world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
       const navSection = this.navSection.nativeElement,
             navSectionWidth = navSection.clientWidth;
 
@@ -277,6 +328,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
       }
 
       this.getBtnPosition(this.uiFlag.currentTagIndex);
+      this.checkPageListBarPosition();
     });
 
   }
@@ -286,12 +338,12 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1091111
    */
    handleSideBarSwitch() {
-    this.groupService.getRxSideBarMode().pipe(
+    this.dashboardService.getRxSideBarMode().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
 
       setTimeout(() => {
-        this.getBtnPosition(this.uiFlag.currentTagIndex);
+        this.checkScreenSize();
       }, 250); // 待sidebar動畫結束再計算位置
       
     })
@@ -366,8 +418,15 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     this.uiFlag.currentTagIndex = tagIdx;
     this.uiFlag.showMorePageOpt = false;
     this.getBtnPosition(tagIdx);
-    if (page === 'log') {
-      this.getProductLog();
+    switch (page) {
+      case 'info':
+        const scrollEleClass = this.uiFlag.isPortalMode ? '.main' : '.main-body',
+              mainBodyEle = document.querySelector(scrollEleClass);
+        mainBodyEle.scrollTo({top: 0, behavior: 'smooth'});
+        break;
+      case 'log':
+        this.getProductLog();
+        break;
     }
 
   }
@@ -802,20 +861,17 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     const overMaintantner = this.systemAccessRight[0] <= 20,
           overMarketing = this.systemAccessRight[0] <= 29;
     if (this.fitPairInfo.deviceBond.id == this.userId || overMarketing) {
+
       if (this.deviceInfo['odometer']) {
-        this.childPageList = this.childPageList.concat(['management', 'odometer']);
+        this.childPageList = this.childPageList.concat(['management', 'odometer', 'register']);
       } else {
-        this.childPageList = this.childPageList.concat(['management']);
+        this.childPageList = this.childPageList.concat(['management', 'register']);
       }
 
     }
 
     if (overMaintantner) {
       this.childPageList = this.childPageList.concat(['log']);
-    }
-
-    if (overMarketing) {
-      this.childPageList = this.childPageList.concat(['register']);
     }
 
   }

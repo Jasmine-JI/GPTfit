@@ -1,0 +1,61 @@
+@mixin obj-layer($left: 5px) {
+  margin: 0 5px 0px $left;
+}
+
+.setting__section {
+  margin-left: 10px;
+
+  button {
+    margin-right: 5px;
+  }
+
+  label, i {
+    color: var(--scale-0-255);
+  }
+
+}
+
+.privacy__type {
+  margin-bottom: 10px;
+}
+
+.list__item {
+  margin: 5px;
+
+  label {
+    border-bottom: 1px solid var(--scale-100-205);
+    cursor: pointer;
+  }
+
+  i {
+    font-size: 20px;
+  }
+
+}
+
+.setting__desc {
+  margin-bottom: 5px;
+}
+
+.unclickable {
+  cursor: progress;
+  pointer-events: none;
+}
+
+.first__layer {
+  @include obj-layer();
+}
+
+.second__layer {
+  @include obj-layer(25px);
+}
+
+.rod__bar__section {
+  align-items: center;
+  margin: 10px 5px;
+
+  >span {
+    color: var(--scale-0-255);
+  }
+
+}

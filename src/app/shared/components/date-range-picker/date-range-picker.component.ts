@@ -18,11 +18,11 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
   @Input() refStartDate: string;
   @Input() startTimeStamp: number;
   @Input() endTimeStamp: number;
-  @Input() noBorder = false;
+  @Input() editStyle: string;
   @Input() openLeft = false;
   @Input() openPicker: boolean;
   @Input() limitMax: boolean;
-  @Input() maxWidth: string;
+  @Input() selectBirthday: boolean = false;
 
   // 預設上週-kidin-1090330
   defaultDate = {
@@ -53,31 +53,47 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
           pickerOpt = {
             singleDatePicker: true,
             showDropdowns: true,
-            minYear: +moment().format('YYYY'),
-            minDate: moment(),
             startDate: moment(this.refStartDate),
             endDate: moment(this.refStartDate),
             drops: 'auto',
             locale: {
               format: 'YYYY-MM-DD'
             },
-            ranges: {
-              [`1 ${this.translate.instant('universal_time_month')}`]:
-                [moment(this.refStartDate).subtract(-1, 'month'), moment(this.refStartDate).subtract(-1, 'month')],
-              [`2 ${this.translate.instant('universal_time_month')}`]:
-                [moment(this.refStartDate).subtract(-2, 'month'), moment(this.refStartDate).subtract(-2, 'month')],
-              [`3 ${this.translate.instant('universal_time_month')}`]:
-                [moment(this.refStartDate).subtract(-3, 'month'), moment(this.refStartDate).subtract(-3, 'month')],
-              [`6 ${this.translate.instant('universal_time_month')}`]:
-                [moment(this.refStartDate).subtract(-6, 'month'), moment(this.refStartDate).subtract(-6, 'month')],
-              [`1 ${this.translate.instant('universal_time_year')}`]:
-                [moment(this.refStartDate).subtract(-1, 'year'), moment(this.refStartDate).subtract(-1, 'year')],
-              [`2 ${this.translate.instant('universal_time_year')}`]:
-                [moment(this.refStartDate).subtract(-2, 'year'), moment(this.refStartDate).subtract(-2, 'year')]
-            },
             showCustomRangeLabel: false,
             alwaysShowCalendars: true
           };
+
+          if (!this.selectBirthday) {
+            pickerOpt = {
+              minYear: +moment().format('YYYY'),
+              minDate: moment(),
+              ranges: {
+                [`1 ${this.translate.instant('universal_time_month')}`]:
+                  [moment(this.refStartDate).subtract(-1, 'month'), moment(this.refStartDate).subtract(-1, 'month')],
+                [`2 ${this.translate.instant('universal_time_month')}`]:
+                  [moment(this.refStartDate).subtract(-2, 'month'), moment(this.refStartDate).subtract(-2, 'month')],
+                [`3 ${this.translate.instant('universal_time_month')}`]:
+                  [moment(this.refStartDate).subtract(-3, 'month'), moment(this.refStartDate).subtract(-3, 'month')],
+                [`6 ${this.translate.instant('universal_time_month')}`]:
+                  [moment(this.refStartDate).subtract(-6, 'month'), moment(this.refStartDate).subtract(-6, 'month')],
+                [`1 ${this.translate.instant('universal_time_year')}`]:
+                  [moment(this.refStartDate).subtract(-1, 'year'), moment(this.refStartDate).subtract(-1, 'year')],
+                [`2 ${this.translate.instant('universal_time_year')}`]:
+                  [moment(this.refStartDate).subtract(-2, 'year'), moment(this.refStartDate).subtract(-2, 'year')]
+              },
+              ...pickerOpt
+            };
+
+          } else {
+            const minDate = moment().subtract(120, 'years').startOf('year');
+            pickerOpt = {
+              minYear: +minDate.format('YYYY'),
+              minDate: minDate,
+              ...pickerOpt
+            };
+
+          }
+
           break;
         case 'simpleSinglePicker': // 單一日期選擇器(無快速選擇自訂日期區間)
           pickerOpt = {
@@ -204,11 +220,8 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
           };
           break;
         default:
-          const startDate = this.default.split('_')[0];
-          let endDate;
-          if (this.default.split('_')[1]) {
-            endDate = this.default.split('_')[1];
-          }
+          let [startDate, endDate] = this.default.split('_');
+          if (!endDate) endDate = moment().format('YYYY-MM-DDT23:59:59.999Z');
           this.defaultDate = {
             startDate: moment(startDate).format('YYYY-MM-DDT00:00:00.000Z'),
             endDate: moment(endDate).format('YYYY-MM-DDT23:59:59.999Z')
