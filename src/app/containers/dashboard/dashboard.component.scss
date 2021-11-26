@@ -10,6 +10,13 @@
   opacity: 0.3;
 }
 
+#aside__menu {
+  justify-content: space-between;
+  height: 90vh;
+  overflow-y: scroll;
+  scrollbar-width: none;
+}
+
 .main-body {
   width: calc(100% - 273px);
   position: relative;
@@ -17,6 +24,7 @@
   height: 100vh;
   padding: 60px 0 0 0;
   overflow-y: scroll;
+  scrollbar-width: thin;
   background-color: var(--scale-255-0);
 }
 
@@ -24,6 +32,7 @@
   margin-top: 0px;
   padding: 5px 0 0 0;
   overflow: scroll;
+  scrollbar-width: thin;
 }
 .container {
   padding: 20px 10px 60px 10px;

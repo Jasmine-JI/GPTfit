@@ -4,6 +4,7 @@ import { GroupService } from '../../../services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { SelectDate } from '../../../../../shared/models/utils-type';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -178,10 +179,10 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
 
   /**
    * 取得使用者選擇的日期
-   * @param e {{startDate: string, endDate: string}}-使用者選擇的日期
+   * @param e {SelectDate}-使用者選擇的日期
    * @author kidin-1091112
    */
-  getSelectDate(e: {startDate: string, endDate: string}) {
+  getSelectDate(e: SelectDate) {
     this.editBody.commercePlanExpired = e.startDate;
   }
 

@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { unit } from '../models/bs-constant';
+import { Unit } from '../models/bs-constant';
 import { SportCode } from '../models/report-condition';
 
 @Pipe({name: 'dataTypeTranslate'})
@@ -23,7 +23,7 @@ export class DataTypeTranslatePipe implements PipeTransform {
 
         switch (sportType) {
           case SportCode.run:
-            return userUnit === unit.metric ? 'universal_activityData_kilometerPace' : 'universal_activityData_milePace';
+            return userUnit === Unit.metric ? 'universal_activityData_kilometerPace' : 'universal_activityData_milePace';
           case SportCode.swim:
             return 'universal_activityData_100mPace';
           case SportCode.row:

@@ -6,22 +6,22 @@
     class="flexRow"
     style="flex-wrap: wrap; margin-bottom: 10px;"
   >
-    <span class="flexRow radioSelector" (click)="selectDateRange(rangeType.all)">
+    <span class="flexRow radioSelector" (click)="selectDateRange(RangeType.all)">
       <span
         class="radioBtn"
-        [class.radioBtn--active]="dateRange === rangeType.all"
+        [class.radioBtn--active]="dateRange === RangeType.all"
       ></span>
       <span>{{ 'universal_adjective_all' | translate }}</span>
     </span>
-    <span class="flexRow radioSelector" (click)="selectDateRange(rangeType.date)">
+    <span class="flexRow radioSelector" (click)="selectDateRange(RangeType.date)">
       <span
         class="radioBtn"
-        [class.radioBtn--active]="dateRange === rangeType.date"
+        [class.radioBtn--active]="dateRange === RangeType.date"
       ></span>
       <span>{{ 'universal_operating_selectDate' | translate }}</span>
     </span>
   </div>
-  <div *ngIf="dateRange === rangeType.date">
+  <div *ngIf="dateRange === RangeType.date">
     <p>{{ 'universal_activityData_dateRange' | translate }}</p>
     <div class="dateSelectArea" style="margin: 0 0 15px 50px;">
       <app-date-range-picker
@@ -41,7 +41,7 @@
       <div
         class="rodBar"
         [class.rodBar--active]="openObj.length > 1"
-        (click)="selectModifyRange(privacyObj.self)"
+        (click)="selectModifyRange(PrivacyObj.self)"
       ></div>
       <span style="margin-left: 10px;">
         {{ 'universal_privacy_openPrivacy' | translate }}
@@ -52,10 +52,10 @@
         <span class="flexRow checkBoxBlock">
           <button
             id="anyone__opt"
-            [class.checkBox--active]="openObj.includes(privacyObj.anyone)"
-            (click)="selectModifyRange(privacyObj.anyone)"
+            [class.checkBox--active]="openObj.includes(PrivacyObj.anyone)"
+            (click)="selectModifyRange(PrivacyObj.anyone)"
           >
-            <span *ngIf="openObj.includes(privacyObj.anyone)">✔</span>
+            <span *ngIf="openObj.includes(PrivacyObj.anyone)">✔</span>
           </button>
           <label for="anyone__opt" class="checkBox__label">
             {{ 'universal_privacy_allMember' | translate }}
@@ -65,10 +65,10 @@
           <span class="first__layer">└</span>
           <button
             id="my__group__opt"
-            [class.checkBox--active]="openObj.includes(privacyObj.myGroup)"
-            (click)="selectModifyRange(privacyObj.myGroup)"
+            [class.checkBox--active]="openObj.includes(PrivacyObj.myGroup)"
+            (click)="selectModifyRange(PrivacyObj.myGroup)"
           >
-            <span *ngIf="openObj.includes(privacyObj.myGroup)">✔</span>
+            <span *ngIf="openObj.includes(PrivacyObj.myGroup)">✔</span>
           </button>
           <label for="my__group__opt" class="checkBox__label">
             {{ 'universal_group_myGroup' | translate }}
@@ -78,10 +78,10 @@
           <span class="second__layer">└</span>
           <button
             id="my__admin"
-            [class.checkBox--active]="openObj.includes(privacyObj.onlyGroupAdmin)"
-            (click)="selectModifyRange(privacyObj.onlyGroupAdmin)"
+            [class.checkBox--active]="openObj.includes(PrivacyObj.onlyGroupAdmin)"
+            (click)="selectModifyRange(PrivacyObj.onlyGroupAdmin)"
           >
-            <span *ngIf="openObj.includes(privacyObj.onlyGroupAdmin)">✔</span>
+            <span *ngIf="openObj.includes(PrivacyObj.onlyGroupAdmin)">✔</span>
           </button>
           <label for="my__admin" class="checkBox__label">
             {{ 'universal_group_administrator' | translate }}

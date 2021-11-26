@@ -13,7 +13,7 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
 import { TranslateService } from '@ngx-translate/core';
 import { last } from 'rxjs/operators';
 import moment from 'moment';
-import { accountTypeEnum } from '../../../dashboard/models/userProfileInfo';
+import { AccountTypeEnum } from '../../../dashboard/models/userProfileInfo';
 
 const errorMsg = 'Error!<br />Please try again later.';
 
@@ -42,7 +42,7 @@ interface UserInfo {
 export class InnerTestComponent implements OnInit {
   userInfo: UserInfo = {
     userName: '',
-    accountType: accountTypeEnum.email,
+    accountType: AccountTypeEnum.email,
     userId: null,
     userPageLink: '',
     userDeviceLog: '',
@@ -78,7 +78,7 @@ export class InnerTestComponent implements OnInit {
   hashUserId: string;
   groupLevel: number;
   flag = 402;
-  readonly accountType = accountTypeEnum;
+  readonly accountType = AccountTypeEnum;
 
   constructor(
     private groupService: GroupService,

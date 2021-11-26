@@ -23,10 +23,10 @@
             <span style="color: rgba(184, 88, 88, 1); font-size: 20px; font-weight: bold; margin-bottom: 10px;">
               {{ 'universal_userAccount_tellToDeleteAccount' | translate }}
             </span>
-            <span class="account__font" *ngIf="user?.accountType === accountTypeEnum.email">
+            <span class="account__font" *ngIf="user?.accountType === AccountTypeEnum.email">
               {{ user.email }}
             </span>
-            <span class="account__font" *ngIf="user?.accountType === accountTypeEnum.phone">
+            <span class="account__font" *ngIf="user?.accountType === AccountTypeEnum.phone">
               +{{ user.countryCode }} {{ user.mobileNumber }}
             </span>
           </div>
@@ -56,7 +56,7 @@
         </button>
       </ng-container>
       <ng-container
-        *ngIf="destroyResp.status === 1 && user?.accountType === accountTypeEnum.email && !uiFlag.cancelDestroy"
+        *ngIf="destroyResp.status === 1 && user?.accountType === AccountTypeEnum.email && !uiFlag.cancelDestroy"
       >
         <div class="flexCol">
           <div class="flexCol">
@@ -89,7 +89,7 @@
         </div>
       </ng-container>
       <ng-container
-        *ngIf="user?.accountType === accountTypeEnum.phone && destroyResp.status === 1 && !uiFlag.cancelDestroy"
+        *ngIf="user?.accountType === AccountTypeEnum.phone && destroyResp.status === 1 && !uiFlag.cancelDestroy"
       >
         <div class="flexCol">
           <div class="flexCol">

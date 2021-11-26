@@ -165,7 +165,7 @@
     <div class="imgSelector">
       <app-image-cropper
         [imgInputEvent]="uiFlag.openImgSelector === 'icon' ? editImage.icon.origin : editImage.scenery.origin"
-        [albumType]="uiFlag.openImgSelector === 'icon' ? albumType.personalIcon : albumType.personalScenery"
+        [albumType]="uiFlag.openImgSelector === 'icon' ? AlbumType.personalIcon : AlbumType.personalScenery"
         (closeSelector)="closeSelector($event)"
       ></app-image-cropper>
     </div>

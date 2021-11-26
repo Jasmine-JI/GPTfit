@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { HrZoneRange } from '../../../models/chart-data';
-import { hrBase } from '../../../../containers/dashboard/models/userProfileInfo';
+import { HrBase } from '../../../../containers/dashboard/models/userProfileInfo';
 
 @Component({
   selector: 'app-hrzone-info',
@@ -10,7 +10,7 @@ import { hrBase } from '../../../../containers/dashboard/models/userProfileInfo'
 export class HrzoneInfoComponent implements OnInit, OnChanges {
   @Input() hrZoneRange: HrZoneRange;
 
-  readonly hrBase = hrBase;
+  readonly HrBase = HrBase;
 
   constructor() {
   }

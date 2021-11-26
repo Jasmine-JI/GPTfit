@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { unit } from '../models/bs-constant';
+import { Unit } from '../models/bs-constant';
 import { SportCode } from '../models/report-condition';
 
 @Pipe({name: 'dataTypeUnit'})
@@ -18,11 +18,11 @@ export class DataTypeUnitPipe implements PipeTransform {
       case 'hr':
         return 'bpm';
       case 'speed':
-        return userUnit === unit.metric ? 'km/h' : 'mi/h';
+        return userUnit === Unit.metric ? 'km/h' : 'mi/h';
       case 'pace':
         switch (sportType) {
           case SportCode.run:
-            return userUnit === unit.metric ? 't/km' : 't/mi';
+            return userUnit === Unit.metric ? 't/km' : 't/mi';
           case SportCode.swim:
             return 't/100m';
           case SportCode.row:
@@ -43,9 +43,9 @@ export class DataTypeUnitPipe implements PipeTransform {
       case 'power':
         return 'w';
       case 'temperature':
-        return userUnit === unit.metric ? '°C' : '°F';
+        return userUnit === Unit.metric ? '°C' : '°F';
       case 'altitude':
-        return userUnit === unit.metric ? 'm' : 'ft';;
+        return userUnit === Unit.metric ? 'm' : 'ft';;
       case 'gforceX':
       case 'gforceY':
       case 'gforceZ':
@@ -54,15 +54,15 @@ export class DataTypeUnitPipe implements PipeTransform {
       case 'zMoveGForce':
         return 'g';
       case 'bodyHeight':
-        return userUnit === unit.metric ? 'cm' : 'inch';
+        return userUnit === Unit.metric ? 'cm' : 'inch';
       case 'bodyWeight':
-        return userUnit === unit.metric ? 'kg' : 'lb';
+        return userUnit === Unit.metric ? 'kg' : 'lb';
       case 'wheelSize':
-        return userUnit === unit.metric ? 'mm' : 'inch';
+        return userUnit === Unit.metric ? 'mm' : 'inch';
       case 'stepLength':
-        return userUnit === unit.metric ? 'cm' : 'inch';
+        return userUnit === Unit.metric ? 'cm' : 'inch';
       case 'targetDistance':
-        return userUnit === unit.metric ? 'm' : 'ft';
+        return userUnit === Unit.metric ? 'm' : 'ft';
       default:
         return '';
     }

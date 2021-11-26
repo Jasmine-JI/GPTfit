@@ -1,0 +1,205 @@
+<div class="flexCol" style="justify-content: center;">
+  <nav
+    id="nav"
+    class="flexRow"
+    *ngIf="!['edit-activity', 'apply-activity'].includes(uiFlag.currentPage)"
+  >
+    <h1 id="nav__title" class="flexRow">
+      <a
+        href="/official-activity/activity-list"
+        class="flexRow page__link"
+        (click)="navigate($event, '/official-activity/activity-list')"
+      >
+        <img id="official__icon" src="/assets/cloud_run/Vector.svg">
+        <span style="white-space: nowrap;" *ngIf="!uiFlag.isMobile">{{ '雲跑活動網' }}</span>
+      </a>
+      <button (click)="showEntryMenu($event)">
+        <i
+          class="icon-svg_web-icon_p1_005-menu"
+          *ngIf="uiFlag.isMobile"
+        ></i>
+      </button>
+    </h1>
+    <div class="flexCol">
+      <div class="child__page__entry" *ngIf="!uiFlag.isMobile">
+        <a
+          href="/official-activity/activity-list"
+          class="page__link child__page__link"
+          (click)="navigate($event, '/official-activity/activity-list')"
+        >
+          {{ '官方活動' }}
+        </a>
+        <a
+          href="/official-activity/leaderboard"
+          class="page__link child__page__link"
+          (click)="navigate($event, '/official-activity/leaderboard')"
+        >
+          {{ '統計資料' }}
+        </a>
+        <a
+          href="/official-activity/my-activity"
+          class="page__link child__page__link"
+          (click)="navigate($event, '/official-activity/my-activity')"
+        >
+          {{ '我的競賽' }}
+        </a>
+      </div>
+      <div id="link__active__bar" *ngIf="!uiFlag.isMobile">
+        <div id="link__active"></div>
+      </div>
+    </div>
+    <div class="flexRow">
+      <div
+        id="search__btn"
+        class="flexRow"
+        [title]="'universal_operating_search' | translate"
+        [style.opacity]="uiFlag.showSearchInput ? 0 : 1"
+      >
+        <label for="search__input">
+          <button (click)="showSearchInput()">
+            <i class="icon-svg_web-icon_p1_014-search"></i>
+          </button>
+        </label>
+      </div>
+      <ng-container *ngIf="userInfo">
+        <a 
+          href="/dashboard/activity-list"
+          class="page__link"
+          (click)="navigate($event, '/dashboard/activity-list')"
+        >
+          <img
+            id="avatar"
+            [src]="userInfo?.avatarUrl"
+            (error)="this.userInfo.avatarUrl='/assets/images/user2.png';"
+            alt="avatar"
+          >
+          <span id="nav__nickname" *ngIf="!uiFlag.isMobile">
+            {{ userInfo?.nickname }}
+          </span>
+        </a>
+      </ng-container>
+      <button>
+        <i class="icon-svg_web-icon_p1_006-unfold nav__fold"></i>
+      </button>
+    </div>
+  </nav>
+  <div
+    class="search__section"
+    [class.search__input--show]="uiFlag.showSearchInput"
+    *ngIf="!['edit-activity', 'apply-activity'].includes(uiFlag.currentPage)"
+  >
+    <div class="flexRow">
+      <button
+        (click)="hideSearchInput()"
+      >
+        <i class="icon-svg_web-icon_p1_007-fold"></i>
+      </button>
+      <input id="search__input" type="text">
+      <button
+        [title]="'universal_operating_search' | translate"
+      >
+        <i class="icon-svg_web-icon_p1_014-search"></i>
+      </button>
+    </div>
+  </div>
+  <ul id="mobile__entry__menu" *ngIf="uiFlag.showEntryMenu">
+    <li [class.page__link--active]="uiFlag.currentPage === 'activity-list'">
+      <a
+        href="/official-activity/activity-list"
+        class="page__link child__page__link"
+        (click)="navigate($event, '/official-activity/activity-list')"
+      >
+        {{ '官方活動' }}
+      </a>
+    </li>
+    <li [class.page__link--active]="uiFlag.currentPage === 'leaderboard'">
+      <a
+        href="/official-activity/leaderboard"
+        class="page__link child__page__link"
+        (click)="navigate($event, '/official-activity/leaderboard')"
+      >
+        {{ '統計資料' }}
+      </a>
+    </li>
+    <li [class.page__link--active]="uiFlag.currentPage === 'my-activity'">
+      <a
+        href="/official-activity/my-activity"
+        class="page__link child__page__link"
+        (click)="navigate($event, '/official-activity/my-activity')"
+      >
+        {{ '我的競賽' }}
+      </a>
+    </li>
+  </ul>
+  <section class="flexRow">
+    <main
+      id="main__page"
+      [style.padding]="
+        [
+          'activity-detail',
+          'edit-activity',
+          'apply-activity',
+          'contestant-list'
+        ].includes(uiFlag.currentPage) ? 'unset' : '10px 2vw'
+      "
+      [style.height]="
+        [
+          'edit-activity',
+          'apply-activity'
+        ].includes(uiFlag.currentPage) ? '100vh' : ''
+      "
+    >
+      <ng-container *ngIf="advertise.length > 0 && uiFlag.showAdvertise">
+        <div id="carousel" class="flexCol">
+          <div class="flexRow">
+            <button
+              class="switch__btn"
+              (click)="switchNextCarousel()"
+              [disabled]="advertise.length < 1"
+            >
+              <i class="icon-svg_web-icon_p1_073-level_fold"></i>
+            </button>
+            <div class="carousel__block">
+              <ul class="flexRow carousel__list">
+                <li class="carousel__list__item">
+                  <a [href]="carousel.link" target="_blank">
+                    <img [src]="carousel.img" alt="ad" class="carousel__img">
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <button
+              class="switch__btn"
+              (click)="switchPreCarousel()"
+              [disabled]="advertise.length < 1"
+            >
+              <i class="icon-svg_web-icon_p1_074-level_unfold"></i>
+            </button>
+          </div>
+          <div id="carousel__dot__block">
+            <ul class="flexRow">
+              <li
+                class="carousel__dot"
+                [class.carousel__dot--active]="uiFlag.currentAdvertiseId === _advertise.advertiseId"
+                *ngFor="let _advertise of advertise; let _dotIndex = index;"
+              ></li>
+            </ul>
+          </div>
+        </div>
+      </ng-container>
+      <div
+        id="child__page"
+        [style.max-width]="
+          [
+            'activity-detail',
+            'edit-activity',
+            'apply-activity',
+            'contestant-list'
+          ].includes(uiFlag.currentPage) ? 'unset' : '1600px'
+        "
+      >
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </section>
+</div>

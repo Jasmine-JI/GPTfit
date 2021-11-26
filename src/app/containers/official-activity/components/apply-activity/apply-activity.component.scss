@@ -1,0 +1,627 @@
+@import 'font.scss';
+@import 'flex-center.scss';
+@import 'transition.scss';
+@import 'button.scss';
+@import 'transform.scss';
+@import 'color.scss';
+
+$app-icon-size: 80px;
+$aside-width: 200px;
+$margin-left: 5vw;
+$progress-hint-width: 20%;
+$stage-size: 90px;
+$step-index-size: 30px;
+$radio-size: 16px;
+$radio-button-color: rgba(254, 60, 61, 1);
+$login-button-color: rgb(224, 225, 224, 1);
+$login-button-border: 2px solid rgba(254, 218, 219, 1);
+$primary-origin: rgba(251, 32, 33, 1);
+$login-button-height: 30px;
+$input-border-bottom: 1px solid black;
+$hint-text-color: rgba(140, 140, 140, 1);
+$apply-fee-width: 120px;
+$password-hint-size: 12px;
+
+
+@mixin section-layout($align-items) {
+  align-items: $align-items;
+  margin: 5vh 0;
+}
+
+@mixin step-index-mark($background-color, $border: false) {
+  background-color: $background-color;
+
+  @if $border {
+    border: 2px solid rgba(246, 83, 46, 1);
+  }
+
+}
+
+@mixin progress-bar($width, $stage-width) {
+  width: $width;
+  right: calc((#{$stage-width} - #{$width}) / 2);
+}
+
+@mixin input-no-border() {
+  border: none;
+  outline: none;
+}
+
+@mixin drop-menu($top, $width, $height: 200px) {
+  list-style: none;
+  position: absolute;
+  background-color: white;
+  top: $top;
+  left: 0;
+  z-index: 1;
+  box-shadow: 2px 2px 4px rgba(200, 200, 200, 1), -2px 2px 4px rgba(200, 200, 200, 1);
+  padding: 0;
+  width: 180px;
+  max-height: 200px;
+  overflow-y: scroll;
+
+  >li {
+    padding: 5px;
+    font-size: 14px;
+
+    &:hover {
+      background-color: $primary-blue;
+      color: white;
+    }
+
+  }
+
+}
+
+@mixin selector-list($width) {
+  display: inline-block;
+  width: $width;
+}
+
+@mixin input-hint-text($color: $hint-text-color) {
+  color: $color;
+  font-size: 12px;
+}
+
+@mixin drop-hint($border-top, $border-aside, $border-color) {
+
+  &:after {
+    content: '';
+    border-style: solid;
+    border-width: $border-top $border-aside 0px $border-aside;
+    border-color: $border-color transparent transparent transparent;
+    @include transition(transform);
+  }
+
+}
+
+@mixin drop-hint-active() {
+
+  &:after {
+    @include el-rotate(180deg);
+    @include transition(transform);
+  }
+
+}
+
+@mixin apply-fee-text() {
+  font-size: 14px;
+  color: rgba(150, 150, 150, 1);
+  padding: 5px;
+}
+
+#whole__page {
+  position: relative;
+}
+
+#aside__bar {
+  position: relative;
+  top: 0;
+  margin-left: $margin-left;
+  width: $aside-width;
+  height: 100vh;
+  padding: 10px;
+  background-image: linear-gradient(
+    rgba(25, 25, 25, 1),
+    rgba(190, 23, 40, 1)
+  );
+
+}
+
+#main__content {
+  width: calc(100vw - #{$aside-width} - #{$margin-left});
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+#progress__hint {
+  position: relative;
+  width: $progress-hint-width;
+  height: 100%;
+  @include section-layout(flex-end);
+}
+
+#apply__form {
+  width: calc(100% - #{$progress-hint-width});
+  @include section-layout(center);
+}
+
+.app__icon {
+  padding: 5px;
+
+  >img {
+    height: $app-icon-size;
+    width: $app-icon-size;
+  }
+  
+}
+
+.aside__slogan {
+  margin-top: 10vh;
+  padding: 0 10px;
+  color: white;
+  white-space: pre-wrap;
+  text-align: center;
+}
+
+.apply__stage {
+  position: absolute;
+  background-color: rgba(254, 185, 184, 1);
+  width: $stage-size;
+  height: $stage-size;
+  border-radius: 15px;
+  white-space: pre-wrap;
+  text-align: center;
+  font-size: 14px;
+  @include center();
+  @include transition(top);
+
+  >span {
+    white-space: inherit;
+  }
+
+}
+
+.apply__progress {
+  position: absolute;
+  background-color: rgba(233, 39, 109, 1);
+  @include multiple-transition((
+    top $move-effect,
+    height $move-effect
+  ));
+
+}
+
+.progress__bar__thick {
+  @include progress-bar(5px, $stage-size);
+}
+
+.progress__bar__thin {
+  @include progress-bar(2px, $stage-size);
+}
+
+.step__index {
+  width: $step-index-size;
+  height: $step-index-size;
+  border-radius: 50%;
+  color: white;
+  @include center();
+}
+
+#first__step {
+
+  :first-child {
+    @include step-index-mark(rgba(245, 72, 33, 1));
+  }
+  
+}
+
+#second__step {
+  z-index: 1;
+
+  :first-child {
+    @include step-index-mark(black, $border: true);
+  }
+  
+}
+
+#third__step {
+  z-index: 2;
+
+  :first-child {
+    @include step-index-mark(rgba(255, 190, 190, 1), $border: true);
+  }
+  
+}
+
+.form__title {
+  @include bold-font(32px);
+}
+
+#sign__hint {
+  text-align: center;
+  margin: 30px 0;
+  @include bold-font(22px);
+}
+
+#form__content {
+
+  >:nth-child(n) {
+    margin: 30px 0;
+  }
+
+}
+
+.login__form {
+  padding: 0 4vw;
+
+  >div {
+    margin: 30px 0;
+  }
+  
+}
+
+.input__label {
+  @include bold-font(16px);
+  width: 100px;
+  color: rgba(143, 143, 143, 1);
+  white-space: pre-wrap;
+  text-align: right;
+  margin-right: 10px;
+}
+
+#phone, #email, #password {
+  @include input-no-border();
+  margin-left: 10px;
+  width: 100%;
+}
+
+.login__input {
+  border-bottom: $input-border-bottom;
+  width: 240px;
+}
+
+.country__code__selector {
+  position: relative;
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  @include drop-hint(6px, 4px, black);
+}
+
+.selector--active {
+  @include drop-hint-active();
+}
+
+.country__code___list {
+  @include drop-menu(27px, 180px);
+}
+
+.country__number {
+  @include selector-list(45px);
+}
+
+.country__name {
+  @include selector-list(100px);
+}
+
+.checking__text {
+  color: $hint-text-color;
+  margin-left: 10px;
+}
+
+.alert__text {
+  @include input-hint-text(rgba(255, 0, 0, 1));
+}
+
+.input__hint {
+  @include input-hint-text();
+}
+
+.info__input {
+  @include input-no-border();
+  border-bottom: $input-border-bottom;
+}
+
+.radio__input[type=radio] {
+  visibility: hidden;
+  position: absolute;
+
+  + label {
+    @include center();
+  }
+
+  + label:before {
+    content: '';
+    display: inline-block;
+    width: $radio-size;
+    height: $radio-size;
+    outline: 1px solid $radio-button-color;
+    border: 3px solid white;
+    border-radius: 50%;
+    cursor: pointer;
+    margin: 0 10px;
+  }
+
+  &:checked {
+
+    + label:before {
+      background-color: $radio-button-color;
+    }
+
+  }
+
+}
+
+label, legend {
+  margin-bottom: 0;
+}
+
+.radio__item {
+  @include center();
+  margin-right: 10px;
+}
+
+#login__button {
+  @include button(
+    16px,
+    3px solid rgba(255, 219, 219, 1),
+    rgba(225, 225, 225, 1)
+  ) {
+    font-weight: bold;
+    color: rgba(155, 155, 155, 1);
+    width: 80px;
+    height: $login-button-height;
+    border-radius: $login-button-height;
+  }
+  
+}
+
+.submit__button {
+  @include bold-font(18px);
+  border-width: 5px 8px;
+  border-style: solid;
+  border-color: rgba(255, 158, 158, 1);
+  background-color: $primary-origin;
+  color: white;
+  border-radius: 20px;
+  width: 200px;
+  height: 60px;
+}
+
+.drop__hint {
+  align-items: center;
+  margin-bottom: 10px;
+  @include drop-hint(8px, 5px, black);
+}
+
+.drop__hint--hide {
+
+  &:after {
+    border-color: transparent;
+  }
+
+}
+
+.emergency__contact__fold {
+  height: 0;
+  overflow: hidden;
+  @include transition(height);
+
+  >div {
+    margin: 10px 0;
+  }
+
+}
+
+.emergency__contact__unfold {
+  height: 100px;
+  @include transition(height);
+}
+
+.group__selector {
+  position: relative;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: $input-border-bottom;
+  min-width: 180px;
+  cursor: pointer;
+  @include drop-hint(8px, 5px, black);
+
+  >span {
+    max-width: 170px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+}
+
+.group__selector--active {
+  @include drop-hint-active();
+}
+
+.group__menu {
+  @include drop-menu(27px, 180px);
+}
+
+.fee__plan__menu {
+  list-style: none;
+
+  >li {
+    min-width: $apply-fee-width;
+    border: 1px solid rgba(200, 200, 200, 1);
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+
+}
+
+.apply__fee__title {
+  @include apply-fee-text();
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.apply__fee__price {
+  @include apply-fee-text();
+}
+
+.apply__fee__img {
+  width: $apply-fee-width;
+}
+
+.apply__fee--active {
+  border-color: rgba(250, 65, 65, 1) !important;
+}
+
+#apply__accomplish {
+  justify-content: space-around;
+  align-items: center;
+  margin: 0 auto;
+}
+
+#apply__accomplish__content {
+  align-items: center;
+
+  >h5 {
+    color: rgba(60, 60, 60, 1);
+  }
+
+}
+
+#apply__hint {
+  align-items: center;
+  margin: 30px 0;
+
+  :first-child {
+    @include bold-font(24px);
+  }
+
+  :nth-child(2) {
+    @include bold-font(15px);
+  }
+
+}
+
+.apply__accomplish__text {
+  @include bold-font(16px);
+}
+
+#update__password___button {
+  @include bold-font(14px);
+  background-color: rgba(225, 225, 225, 1);
+  color: rgba(125, 125, 125, 1);
+  width: 70px;
+  height: 22px;
+  margin-left: 20px;
+}
+
+#new__password__input {
+  border-bottom: $input-border-bottom;
+
+  >input {
+    @include input-no-border();
+    margin-left: 10px;
+    max-width: 150px;
+  }
+
+}
+
+#not__reset__alert {
+  @include bold-font($password-hint-size);
+  color: rgb(255, 90, 90, 1);
+}
+
+#password__hint {
+  @include bold-font($password-hint-size);
+}
+
+#not__paid__alert {
+  @include bold-font(12px);
+  text-align: center;
+}
+
+.password__format___error {
+  color: red;
+}
+
+.can__not__submit {
+  cursor: no-drop;
+}
+
+.apply__fee__content {
+  margin-top: 5vh;
+
+  >h6 {
+    border-bottom: 1px solid rgba(150, 150, 150, 1);
+    width: 300px;
+    min-width: 300px;
+    text-align: center;
+    padding: 20px;
+  }
+
+}
+
+.apply__fee__detail {
+  width: 100%;
+
+  th, td {
+    text-align: center;
+  }
+
+  td {
+    color: rgba(175, 175, 175, 1);
+  }
+
+}
+
+#paid__button {
+
+}
+
+/***************************************************** media ***********************************************/
+
+@media (max-width: 767px) {
+  #main__content, #apply__form {
+    width: 100%;
+  }
+
+  #main__content {
+    height: unset;
+  }
+
+  .login__form {
+    padding: unset;
+    
+    >div {
+      flex-direction: column;
+    }
+
+  }
+
+  .password__input {
+    align-items: end;
+  }
+
+  .form__input {
+    flex-direction: column;
+  }
+
+  .input__label {
+    text-align: left;
+  }
+
+  #login__button {
+    margin-top: 20px;
+  }
+
+  .radio__item {
+    margin: 5px 0;
+  }
+
+}

@@ -79,7 +79,7 @@ npm run pm2-kill
 ```
 是kill掉nodejs api server process
 
-若有更新nodejs的code，建議build之前先下
+若有更新nodejs的code或憑證更新，建議build之前先下
 ```
 netstat -tlunp | grep 3000
 ```
@@ -154,6 +154,7 @@ web
 |       ├─ theme/ // 網站主題顏色（目前僅light/dark樣式，故顏色命名是以此為基礎）
 |           ├─ light.scss // 清亮主題
 |           └─ dark.scss // 暗黑主題
+│       ├─ styles.scss  整個網頁應用程式共用的樣式設定檔
 │       └─ icon.scss // custom icon 定義scss檔
 |
 │   ├─ .htaccess // apache route config設定，沒此設定，無法啟用angular route於apache
@@ -162,7 +163,6 @@ web
 │   ├─ main.ts  整個專案的入口點，Angular通過這個檔案來啟動專案
 │   ├─ manifest.json  允許將站點添加至手機主屏幕，是PWA提供的一項重要功能
 │   ├─ polyfills.ts  主要是用來匯入一些必要庫，為了讓Angular能正常執行在老舊瀏覽器版本下
-│   ├─ styles.scss  整個網頁應用程式共用的樣式設定檔
 │   ├─ tsconfig.app.json  TypeScript編譯器的配置,新增第三方依賴的時候會修改這個檔案
 │   ├─ tsconfig.spec.json  跟 tsconfig.app.json 用途類似，不過主要是針對測試檔。
 │   ├─ typings.d.ts  typescript模組定義檔，為了讓 TypeScript 能與目前市面上各種 JavaScript 模組/函式庫一起運作
@@ -242,10 +242,12 @@ app
 
 | Dependency Name | 版本 | 筆記 | 專案範例連結 |
 | ---- | ---- | ---- | ---- |
-|**[@ngx-progressbar/core](https://github.com/murhafsousli/ngx-progressbar)** | 5.3.1 | 進度條，ex:使用於裝置資訊、QR配對頁面...等 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/activity-info/activity-info.component.html#L1)|
-|**[@ngx-translate/core](https://github.com/ngx-translate/core)** | 10.0.2 | 處理多語系 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/portal/components/signin/signin.component.ts#L87)|
 |**[@angular/pwa](https://angular.io/guide/service-worker-getting-started)** | 0.8.7 | pwa模組，`但目前center還沒啟用，連結是註解掉的部分` | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/app.module.ts#L48)|
 |**[@angular/service-worker](https://angular.io/guide/service-worker-getting-started)** | 6.1.6 | service-worker模組，`但目前center還沒啟用，連結是註解掉的部分` | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/app.module.ts#L48)|
+|**[@ckeditor/ckeditor5-angular](https://ckeditor.com/docs/ckeditor5/latest/)** | 2.0.2 | 適用於angular的文字編輯器套件 | none |
+|**[@ckeditor/ckeditor5-build-decoupled-document](https://www.npmjs.com/package/@ckeditor/ckeditor5-build-decoupled-document)** | 31.0.0 | ckeditor其中一個編輯模式，該模式擁有最多功能可以使用。 | none                                                         |
+|**[@ngx-progressbar/core](https://github.com/murhafsousli/ngx-progressbar)** | 5.3.1 | 進度條，ex:使用於裝置資訊、QR配對頁面...等 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/activity-info/activity-info.component.html#L1)|
+|**[@ngx-translate/core](https://github.com/ngx-translate/core)** | 10.0.2 | 處理多語系 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/portal/components/signin/signin.component.ts#L87)|
 |**@types/googlemaps** | 3.30.16 | google map的typescript型別定義檔 | None|
 |**@types/highcharts** | 5.0.31 | highcharts的typescript型別定義檔 | None|
 |**@types/lodash** | 4.14.109 | lodash的typescript型別定義檔 | None|
@@ -253,6 +255,7 @@ app
 |**apollo-angular** |  "2.1.0" | 在angular使用graphql的套件 | [Link](https://apollo-angular.com)|
 |**[angularx-qrcode](https://github.com/cordobo/angularx-qrcode#readme)** | 1.5.3 | 產生qrcode功能 | [Link](https://gitlab.com/alatech_cloud/web/blob/release_internal_server/src/app/containers/dashboard/components/device/product-info/product-info.component.html#L146)|
 |**[bootstrap](https://getbootstrap.com/)** | 4.1.3 | css framework，目前主要的排版layout樣式皆採用於此，ex: container、menu...等 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/navbar/navbar.component.html#L80)|
+|**[daterangepicker](https://www.daterangepicker.com)** | 3.0.5| 可以雙開的日期選擇器| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/date-range-picker/date-range-picker.component.ts)|
 |**[file-saver](https://github.com/eligrey/FileSaver.js#readme)** | 1.3.3 | 是一款基於 HTML5 完成文件保存的插件，它可以幫我們直接從網頁中導出多種格式文件 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/dashboard/components/leaderboard-settings/leaderboard-settings.component.ts#L6)|
 |**[font-awesome](https://fontawesome.com/v4.7.0/)** | 4.7.0 | icon font 的library，目前center已經很少使用，主要是用google mat icon 、和Rex自定的icon，建議可以考慮日後慢慢讓它退場。| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/portal/portal.component.html#L40)|
 |**[gcoord](https://github.com/hujiulong/gcoord#readme)** | 0.2.0| 轉換坐標系的套件 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/activity-info/activity-info.component.ts#L21)|
@@ -264,9 +267,7 @@ app
 |**[material-design-icons](https://github.com/google/material-design-icons)** | 3.0.1| Material Design icons by Google 是目前與rex 自定icon大量使用於center的庫。 | [Link](https://gitlab.com/alatech_cloud/web/blob/release_internal_server/src/app/containers/portal/components/leaderboard/leaderboard.component.html#L98)|
 |**[moment](http://momentjs.com/)** | 2.20.1|處理時間格式的函式庫 | None|
 |**[mydatepicker](https://github.com/kekeh/mydatepicker#readme)** | 2.6.1|日期選擇器元件，目前使用於外部排行版與賽事管理系統，建議可以慢慢替換成material design(因為那時還沒出...) | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/portal/portal.component.ts#L15)|
+|**normalize.css** | 8.0.1| css正規化| [Link](https://www.npmjs.com/package/normalize.css)|
 |**[query-string](https://github.com/sindresorhus/query-string#readmee)** | 6.1.0| 用来做url查询参数的解析| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/services/utils.service.ts#L3)|
 |**[ml-regression-simple-linear](https://www.npmjs.com/package/ml-regression-simple-linear)** | 2.1.1| 用来做群組report的簡單回歸分析 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/dashboard/group/group-info/com-life-tracking/com-life-tracking.component.ts#L3)|
-|**[tui-calendar](https://ui.toast.com/tui-calendar/)** | 1.12.11| 行事曆套件(棄用) | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/tui-calender/tui-calender.component.ts)|
-|**[daterangepicker](https://www.daterangepicker.com)** | 3.0.5| 可以雙開的日期選擇器| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/date-range-picker/date-range-picker.component.ts)|
-|**normalize.css** | 8.0.1| css正規化| [Link](https://www.npmjs.com/package/normalize.css)|
 

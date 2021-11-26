@@ -4,22 +4,23 @@ const os = require('os');
 const moment = require('moment');
 const schedule = require('node-schedule');
 const helmet = require('helmet');
-const {
-  checkTokenExit
-} = require('./models/auth.model');
+const { checkTokenExit } = require('./models/auth.model');
 const { getUserActivityInfo } = require('./models/officialActivity_model');
 const https = require('https');
 const fs = require('fs');
-  var address,
-    ifaces = os.networkInterfaces();
-  for (var dev in ifaces) {
-    ifaces[dev].filter((details) => details.family === 'IPv4' && details.internal === false ? address = details.address : undefined);
-  }
+
+var address;
+var ifaces = os.networkInterfaces();
+for (var dev in ifaces) {
+  ifaces[dev].filter((details) => details.family === 'IPv4' && details.internal === false ? address = details.address : undefined);
+}
+
 const SERVER_CONFIG = {
   key: null,
   ca: null,
   cert: null
 };
+
 if (address === '192.168.1.231' || address === '192.168.1.235' || address === '192.168.1.234') {
   SERVER_CONFIG.key = fs.readFileSync('/etc/ssl/free.key'),
   SERVER_CONFIG.ca = fs.readFileSync('/etc/ssl/free_ca.crt'),

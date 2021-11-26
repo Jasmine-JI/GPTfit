@@ -11,7 +11,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { accountTypeEnum } from '../../../../dashboard/models/userProfileInfo';
+import { AccountTypeEnum } from '../../../../dashboard/models/userProfileInfo';
 
 const errorMsg = 'Error!<br /> Please try again later.';
 
@@ -194,7 +194,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
       this.userProfileService.getUserProfile(body).subscribe(res => {
         if (this.utils.checkRes(res)) {
           const { userProfile, signIn: { accountType } } = res as any;
-          if (accountType === accountTypeEnum.email) {
+          if (accountType === AccountTypeEnum.email) {
             this.accountInfo = {
               type: 1,
               account: userProfile.email,

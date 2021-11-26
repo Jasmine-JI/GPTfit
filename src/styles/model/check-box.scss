@@ -3,19 +3,20 @@
 /*
  * checkbox樣式
  */
-@mixin checkBox() {
+@mixin checkBox($size: 20px, $font-size: 16px) {
   align-items: center;
   width: fit-content;
   margin: 0 0 10px 10px;
 
   button {
     border: 1px solid var(--scale-0-255);
-    width: 20px;
-    height: 20px;
+    width: $size;
+    height: $size;
   
     >span {
       @include center();
       height: 19px;
+      font-size: $font-size;
     }
   
   }

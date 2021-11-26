@@ -32,7 +32,7 @@ type AnalysisData =
   'totalCalories';
 type NavigationPage = 'info' | 'sportsReport' | 'cloudrunReport';
 
-enum groupTableCol {
+enum GroupTableCol {
   name,
   completeNum,
   avgTime,
@@ -44,7 +44,7 @@ enum groupTableCol {
   hrZone
 };
 
-enum memberTableCol {
+enum MemberTableCol {
   name,
   gender,
   age,
@@ -276,8 +276,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     urlList: [],
     clickList: []
   }
-  readonly groupTableCol = groupTableCol;
-  readonly memberTableCol = memberTableCol;
+  readonly GroupTableCol = GroupTableCol;
+  readonly MemberTableCol = MemberTableCol;
   constructor(
     private reportService: ReportService,
     private groupService: GroupService,
@@ -348,41 +348,41 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       ],
       column: [
         {
-          rowType: this.memberHeaderRowDef[groupTableCol.name],
+          rowType: this.memberHeaderRowDef[GroupTableCol.name],
           i18n: this.translate.instant('universal_activityData_name')
         },
         {
-          rowType: this.groupHeaderRowDef[groupTableCol.completeNum],
+          rowType: this.groupHeaderRowDef[GroupTableCol.completeNum],
           i18n: `${this.translate.instant('universal_operating_finished')} ${this.translate.instant('universal_activityData_people')}`
         },
         {
-          rowType: this.groupHeaderRowDef[groupTableCol.avgTime],
+          rowType: this.groupHeaderRowDef[GroupTableCol.avgTime],
           i18n: `${this.translate.instant('universal_adjective_avg')} ${this.translate.instant('universal_activityData_timing')}`
         },
         {
-          rowType: this.groupHeaderRowDef[groupTableCol.totalTime],
+          rowType: this.groupHeaderRowDef[GroupTableCol.totalTime],
           i18n: this.translate.instant('universal_activityData_limit_totalTime')
         },
         {
-          rowType: this.groupHeaderRowDef[groupTableCol.avgPace],
+          rowType: this.groupHeaderRowDef[GroupTableCol.avgPace],
           i18n: this.translate.instant(
             this.unit === 0 ? 'universal_activityData_limit_avgKilometerPace' : 'universal_activityData_limit_avgMilePace'
           )
         },
         {
-          rowType: this.groupHeaderRowDef[groupTableCol.avgHr],
+          rowType: this.groupHeaderRowDef[GroupTableCol.avgHr],
           i18n: this.translate.instant('universal_activityData_limit_avgHr')
         },
         {
-          rowType: this.groupHeaderRowDef[groupTableCol.avgCalories],
+          rowType: this.groupHeaderRowDef[GroupTableCol.avgCalories],
           i18n: `${this.translate.instant('universal_adjective_avg')} ${this.translate.instant('universal_userProfile_calories')}`
         },
         {
-          rowType: this.groupHeaderRowDef[groupTableCol.avgCadence],
+          rowType: this.groupHeaderRowDef[GroupTableCol.avgCadence],
           i18n: this.translate.instant('universal_activityData_limit_avgStepCadence')
         },
         {
-          rowType: this.groupHeaderRowDef[groupTableCol.hrZone],
+          rowType: this.groupHeaderRowDef[GroupTableCol.hrZone],
           i18n: this.translate.instant('universal_activityData_hrZone')
         }
       ]
@@ -405,53 +405,53 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       ],
       column: [
         {
-          rowType: this.memberHeaderRowDef[memberTableCol.name],
+          rowType: this.memberHeaderRowDef[MemberTableCol.name],
           i18n: this.translate.instant('universal_activityData_name')
         },
         {
-          rowType: this.memberHeaderRowDef[memberTableCol.gender],
+          rowType: this.memberHeaderRowDef[MemberTableCol.gender],
           i18n: this.translate.instant('universal_userProfile_gender')
         },
         {
-          rowType: this.memberHeaderRowDef[memberTableCol.age],
+          rowType: this.memberHeaderRowDef[MemberTableCol.age],
           i18n: this.translate.instant('universal_userProfile_age')
         },
         {
-          rowType: this.memberHeaderRowDef[memberTableCol.runTimes],
+          rowType: this.memberHeaderRowDef[MemberTableCol.runTimes],
           i18n: this.translate.instant('universal_activityData_totalActivity')
         },
         {
-          rowType: this.memberHeaderRowDef[memberTableCol.bestTime],
+          rowType: this.memberHeaderRowDef[MemberTableCol.bestTime],
           i18n: `${this.translate.instant('universal_adjective_maxBest')} ${this.translate.instant('universal_activityData_timing')}`
         },
         {
-          rowType: this.memberHeaderRowDef[memberTableCol.avgTime],
+          rowType: this.memberHeaderRowDef[MemberTableCol.avgTime],
           i18n: `${this.translate.instant('universal_adjective_avg')} ${this.translate.instant('universal_activityData_timing')}`
         },
         {
-          rowType: this.memberHeaderRowDef[memberTableCol.totalTime],
+          rowType: this.memberHeaderRowDef[MemberTableCol.totalTime],
           i18n: this.translate.instant('universal_activityData_limit_totalTime')
         },
         {
-          rowType: this.memberHeaderRowDef[memberTableCol.avgPace],
+          rowType: this.memberHeaderRowDef[MemberTableCol.avgPace],
           i18n: this.translate.instant(
             this.unit === 0 ? 'universal_activityData_limit_avgKilometerPace' : 'universal_activityData_limit_avgMilePace'
           )
         },
         {
-          rowType: this.memberHeaderRowDef[memberTableCol.avgHr],
+          rowType: this.memberHeaderRowDef[MemberTableCol.avgHr],
           i18n: this.translate.instant('universal_activityData_limit_avgHr')
         },
         {
-          rowType: this.memberHeaderRowDef[memberTableCol.totalCalories],
+          rowType: this.memberHeaderRowDef[MemberTableCol.totalCalories],
           i18n: this.translate.instant('universal_activityData_totalCalories')
         },
         {
-          rowType: this.memberHeaderRowDef[memberTableCol.avgCadence],
+          rowType: this.memberHeaderRowDef[MemberTableCol.avgCadence],
           i18n: this.translate.instant('universal_activityData_limit_avgStepCadence')
         },
         {
-          rowType: this.memberHeaderRowDef[memberTableCol.hrZone],
+          rowType: this.memberHeaderRowDef[MemberTableCol.hrZone],
           i18n: this.translate.instant('universal_activityData_hrZone')
         }
       ]
@@ -1626,62 +1626,62 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     switch (num) {
       case 6:
         this.groupTable.showDataType = [
-          groupTableCol.name,
-          groupTableCol.completeNum,
-          groupTableCol.avgTime,
-          groupTableCol.avgPace,
-          groupTableCol.avgCadence,
-          groupTableCol.avgHr
+          GroupTableCol.name,
+          GroupTableCol.completeNum,
+          GroupTableCol.avgTime,
+          GroupTableCol.avgPace,
+          GroupTableCol.avgCadence,
+          GroupTableCol.avgHr
         ];
         this.memberTable.showDataType = [
-          memberTableCol.name,
-          memberTableCol.runTimes,
-          memberTableCol.bestTime,
-          memberTableCol.avgTime,
-          memberTableCol.avgPace,
-          memberTableCol.hrZone
+          MemberTableCol.name,
+          MemberTableCol.runTimes,
+          MemberTableCol.bestTime,
+          MemberTableCol.avgTime,
+          MemberTableCol.avgPace,
+          MemberTableCol.hrZone
         ];
         break;
       case 5:
         this.groupTable.showDataType = [
-          groupTableCol.name,
-          groupTableCol.completeNum,
-          groupTableCol.avgTime,
-          groupTableCol.avgPace,
-          groupTableCol.avgCadence
+          GroupTableCol.name,
+          GroupTableCol.completeNum,
+          GroupTableCol.avgTime,
+          GroupTableCol.avgPace,
+          GroupTableCol.avgCadence
         ];
         this.memberTable.showDataType = [
-          memberTableCol.name,
-          memberTableCol.runTimes,
-          memberTableCol.bestTime,
-          memberTableCol.avgTime,
-          memberTableCol.avgPace
+          MemberTableCol.name,
+          MemberTableCol.runTimes,
+          MemberTableCol.bestTime,
+          MemberTableCol.avgTime,
+          MemberTableCol.avgPace
         ];
         break;
       case 4:
         this.groupTable.showDataType = [
-          groupTableCol.name,
-          groupTableCol.completeNum,
-          groupTableCol.avgTime,
-          groupTableCol.avgPace,
+          GroupTableCol.name,
+          GroupTableCol.completeNum,
+          GroupTableCol.avgTime,
+          GroupTableCol.avgPace,
         ];
         this.memberTable.showDataType = [
-          memberTableCol.name,
-          memberTableCol.runTimes,
-          memberTableCol.bestTime,
-          memberTableCol.avgPace
+          MemberTableCol.name,
+          MemberTableCol.runTimes,
+          MemberTableCol.bestTime,
+          MemberTableCol.avgPace
         ];
         break;
       case 3:
         this.groupTable.showDataType = [
-          groupTableCol.name,
-          groupTableCol.completeNum,
-          groupTableCol.avgTime,
+          GroupTableCol.name,
+          GroupTableCol.completeNum,
+          GroupTableCol.avgTime,
         ];
         this.memberTable.showDataType = [
-          memberTableCol.name,
-          memberTableCol.bestTime,
-          memberTableCol.avgPace
+          MemberTableCol.name,
+          MemberTableCol.bestTime,
+          MemberTableCol.avgPace
         ];
         break;
     }

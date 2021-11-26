@@ -6,10 +6,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../services/utils.service';
 import { ReportService } from '../../services/report.service';
 import { ReportConditionOpt } from '../../models/report-condition';
-import { mi, Unit, unit } from '../../models/bs-constant';
+import { mi, Unit } from '../../models/bs-constant';
 import { UserProfileService } from '../../services/user-profile.service';
 import { stepColor } from '../../models/chart-data';
-import { Sex, sex } from '../../../containers/dashboard/models/userProfileInfo';
+import { Sex } from '../../../containers/dashboard/models/userProfileInfo';
 import { chart } from 'highcharts';
 import highcharts from 'highcharts';
 
@@ -140,12 +140,12 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
     id: null,
     name: '',
     accessRight: null,
-    unit: <Unit>unit.metric,
+    unit: <Unit>Unit.metric,
     icon: ''
   }
 
   readonly tableLength = 8; // 分析列表預設顯示長度
-  readonly unitEnum = unit;
+  readonly unitEnum = Unit;
   readonly mi = mi;
   dateLen = 0; // 報告橫跨天數/週數
   previewUrl: string;
@@ -664,7 +664,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
           'universal_activityData_high'
         ];
         bgColorArr = ['#2398c3', '#43ca81', '#ec6941'];
-        if (gender === sex.male) {
+        if (gender === Sex.male) {
           boundary = overThirty ? [17, 25] : [14, 20];
         } else {
           boundary = overThirty ? [20, 30] : [17, 25];
@@ -679,7 +679,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
           'universal_activityData_good'
         ];
         bgColorArr = ['#ec6941', '#43ca81', '#2398c3'];
-        if (gender === sex.male) {
+        if (gender === Sex.male) {
           boundary = overThirty ? [17, 25] : [14, 20];
         } else {
           boundary = overThirty ? [20, 30] : [17, 25];
@@ -693,7 +693,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
           'universal_activityData_high'
         ];
         bgColorArr = ['#ec6941', '#43ca81', '#2398c3'];
-        boundary = gender === sex.male ? [55, 65] : [45, 60];
+        boundary = gender === Sex.male ? [55, 65] : [45, 60];
         break;
     }
 

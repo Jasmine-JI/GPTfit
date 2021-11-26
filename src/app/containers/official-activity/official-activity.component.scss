@@ -1,0 +1,258 @@
+@import 'font.scss';
+@import 'transition.scss';
+@import 'flex-center.scss';
+
+$avatar-size: 40px;
+$nav-height: 60px;
+$carousel-dot-size: 10px;
+$input-height: 24px;
+
+#nav {
+  position: relative;
+  justify-content: space-between;
+  align-items: center;
+  width: 100vw;
+  height: $nav-height;
+  background-color: rgba(229, 68, 68, 1);
+  padding: 0 10px;
+  color: white;
+  z-index: 2;
+}
+
+#nav__title {
+  color: inherit;
+  font-size: 24px;
+  margin: 0;
+
+  >button {
+    color: white;
+    padding: 0;
+
+    >i {
+      font-size: 32px;
+    }
+    
+  }
+
+}
+
+.child__page__entry {
+
+  >a {
+    padding: 0 10px;
+  }
+
+}
+
+#link__active__bar {
+  position: relative;
+  width: 100%;
+}
+
+#link__active {
+  position: absolute;
+  height: 3px;
+  background-color: white;
+  @include transition(left);
+}
+
+#official__icon {
+  height: 30px;
+  margin-right: 10px;
+}
+
+.page__link {
+  color: inherit;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+}
+
+#search__btn {
+  margin-right: 10px;
+
+  >label {
+    @include center();
+    font-size: 24px;
+    cursor: pointer;
+    margin: 0;
+
+    >button {
+      color: white;
+    }
+
+  }
+
+}
+
+.search__section {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  z-index: 1;
+  @include transition(top);
+
+  >div {
+    padding: 5px 10px;
+    background-color: white;
+    width: fit-content;
+    border-radius: 30px;
+    box-shadow: 1px 1px 2px rgba(150, 150, 150, 1), -1px -1px 2px rgba(150, 150, 150, 1);
+
+    >button {
+      font-size: 24px;
+    }
+
+  }
+
+}
+
+#search__input {
+  outline: none;
+  height: $input-height;
+  border-radius: $input-height;
+  padding: 0 10px;
+}
+
+.search__input--show {
+  top: 62px;
+}
+
+#avatar {
+  height: $avatar-size;
+  width: $avatar-size;
+  border-radius: 50%;
+}
+
+#nav__nickname {
+  margin: 0 5px;
+}
+
+#main__page {
+  width: 100vw;
+  height: calc(100vh - #{$nav-height});
+  overflow-y: scroll;
+  scrollbar-width: thin;
+}
+
+.noraml__link, .admin__link {
+  position: absolute;
+}
+
+.noraml__link {
+  top: 5vh;
+
+  >a {
+    margin: 10px 0;
+  }
+
+}
+
+.admin__link {
+  bottom: 0px;
+}
+
+#carousel {
+  align-items: center;
+  padding: 5px 0px;
+
+  ul {
+    list-style: none;
+  }
+
+}
+
+.switch__btn {
+  font-size: 48px;
+}
+
+.carousel__block {
+  max-width: 840px;
+  max-height: 230px;
+  overflow: hidden;
+}
+
+.carousel__list {
+  position: relative;
+  padding: 0;
+}
+
+::ng-deep .carousel__list__item {
+  position: relative;
+}
+
+::ng-deep .carousel__img {
+  height: 100%;
+  max-height: 230px;
+}
+
+#carousel__dot__block {
+  margin: 10px 0;
+
+  >ul {
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+  }
+
+}
+
+.carousel__dot {
+  width: $carousel-dot-size;
+  height: $carousel-dot-size;
+  border-radius: 50%;
+  margin: 0 5px;
+  background-color: rgba(196, 196, 196, 1);
+}
+
+.carousel__dot--active {
+  background-color: black;
+}
+
+#child__page {
+  margin: 0 auto;
+}
+
+#mobile__entry__menu {
+  position: absolute;
+  top: 61px;
+  left: 10px;
+  z-index: 1;
+  background-color: white;
+  list-style: none;
+  padding: 5px 0;
+  box-shadow: 1px 1px 5px rgba(150, 150, 150, 1), -1px -1px 5px rgba(150, 150, 150, 1);
+
+  >li {
+    padding: 5px 15px;
+  }
+
+}
+
+.page__link--active {
+  border-bottom: 3px solid black;
+  font-weight: bold;
+  pointer-events: none;
+}
+
+/************************************************* media ****************************************/
+
+@media (max-width: 767px) {
+
+  #main__page {
+    width: 100vw;
+  }
+
+  #carousel {
+    width: 100%;
+  }
+
+  .switch__btn {
+    font-size: 36px;
+  }
+
+}

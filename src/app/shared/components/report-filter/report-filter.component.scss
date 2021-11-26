@@ -260,6 +260,7 @@ $drop-list-width: 200px;
   min-width: $drop-list-width;
   max-height: 350px;
   overflow: scroll;
+  scrollbar-width: thin;
   top: 28px;
 }
 

@@ -1,5 +1,5 @@
 // user-select: none; 各瀏覽器支援
-@mixin noneSelect() {
+@mixin none-select() {
   user-select: none;
   -moz-user-select: none;
   -webkit-user-select: none;

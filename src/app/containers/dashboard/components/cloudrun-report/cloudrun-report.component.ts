@@ -21,7 +21,7 @@ import {
   costTimeColor,
   HrZoneRange
 } from '../../../../shared/models/chart-data';
-import { hrBase } from '../../models/userProfileInfo';
+import { HrBase } from '../../models/userProfileInfo';
 
 
 @Component({
@@ -135,7 +135,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * 使用者心率法與各心率區間
    */
   hrZoneRange = <HrZoneRange>{
-    hrBase: hrBase.max,
+    hrBase: HrBase.max,
     z0: 'Z0',
     z1: 'Z1',
     z2: 'Z2',

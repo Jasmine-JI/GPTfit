@@ -1,0 +1,39 @@
+@import 'transition.scss';
+@import 'transform.scss';
+
+@mixin drop-triangle(
+  $width: 10px,
+  $height: 6px,
+  $color: black,
+  $right: 3px
+) {
+  position: relative;
+  cursor: pointer;
+  align-items: center;
+
+  &:after {
+    @include transition(transform);
+    content: '';
+    position: absolute;
+    right: $right;
+    border: solid;
+    border-width: $width $height 0px $height;
+    border-color: $color transparent transparent transparent;
+    @content;
+  }
+
+}
+
+@mixin drop-active() {
+  @include transition(transform);
+  @include el-rotate(180deg);
+}
+
+@mixin drop-triangle-active() {
+
+  &:after {
+    @include drop-active();
+  }
+
+}
+

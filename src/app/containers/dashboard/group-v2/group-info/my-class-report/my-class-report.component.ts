@@ -16,7 +16,7 @@ import { chart, charts, color, each } from 'highcharts';
 import { ReportService } from '../../../../../shared/services/report.service';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
 import { HrZoneRange } from '../../../../../shared/models/chart-data';
-import { hrBase } from '../../../models/userProfileInfo';
+import { HrBase } from '../../../models/userProfileInfo';
 
 
 // 建立圖表用-kidin-1081212
@@ -223,7 +223,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   ];
   colorIdx = 0;
   hrZoneRange = <HrZoneRange>{
-    hrBase: hrBase.max,
+    hrBase: HrBase.max,
     z0: 'Z0',
     z1: 'Z1',
     z2: 'Z2',
@@ -486,7 +486,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       if (+this.userId !== res.userId) {
-        this.hrZoneRange['hrBase'] = hrBase.max;
+        this.hrZoneRange['hrBase'] = HrBase.max;
         this.hrZoneRange['z0'] = 'Z0';
         this.hrZoneRange['z1'] = 'Z1';
         this.hrZoneRange['z2'] = 'Z2';
@@ -510,7 +510,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   getUserBodyInfo (userHRBase, userAge, userMaxHR, userRestHR) {
     if (userAge !== null) {
       if (userMaxHR && userRestHR) {
-        if (userHRBase === hrBase.max) {
+        if (userHRBase === HrBase.max) {
           // 區間數值採無條件捨去法
           this.hrZoneRange['hrBase'] = userHRBase;
           this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5 - 1);
@@ -529,7 +529,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
           this.hrZoneRange['z5'] = Math.floor((userMaxHR - userRestHR) * (1)) + userRestHR;
         }
       } else {
-        if (userHRBase === hrBase.max) {
+        if (userHRBase === HrBase.max) {
           // 區間數值採無條件捨去法
           this.hrZoneRange['hrBase'] = userHRBase;
           this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5 - 1);
@@ -549,7 +549,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
         }
       }
     } else {
-      this.hrZoneRange['hrBase'] = hrBase.max;
+      this.hrZoneRange['hrBase'] = HrBase.max;
       this.hrZoneRange['z0'] = 'Z0';
       this.hrZoneRange['z1'] = 'Z1';
       this.hrZoneRange['z2'] = 'Z2';

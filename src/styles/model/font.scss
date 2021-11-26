@@ -22,3 +22,10 @@ $color-subtitle: rgba(130, 130, 130, 1);
   color: $color;
   word-break: break-word;
 }
+
+@mixin text-overflow($max-width: 200px, $text-overflow: ellipsis) {
+  max-width: $max-width;
+  overflow: hidden;
+  text-overflow: $text-overflow;
+  white-space: nowrap;
+}

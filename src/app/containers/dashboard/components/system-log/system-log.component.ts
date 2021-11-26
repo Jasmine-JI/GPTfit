@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import moment from 'moment';
-import { AppId } from '../../../../shared/models/app-id';
+import { AlaApp } from '../../../../shared/models/app-id';
 import { InnerSystemService } from '../../services/inner-system.service';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -9,6 +9,7 @@ import { PeopleSelectorWinComponent } from '../../components/people-selector-win
 import { MatDialog } from '@angular/material/dialog';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { SelectDate } from '../../../../shared/models/utils-type';
 
 type Serverity = 'INFO' | 'WARN' | 'ERROR' | 'DEBUG';
 type TargetType = 'user' | 'equipment';
@@ -45,7 +46,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     targetUserId: <number>null,
     targetEquipmentSN: <string>null,
     serverity: <Serverity>null,
-    appId: <AppId>null,
+    appId: <AlaApp>null,
     apiCode: <string>null,
     startTime: moment().subtract(3, 'month').format(apiDateFormat),
     endTime: moment().format(apiDateFormat),
@@ -267,10 +268,10 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   /**
    * 儲存使用者所選app id
    * @param e {MouseEvent}
-   * @param id {AppId}
+   * @param id {AlaApp}
    * @author kidin-1100303
    */
-  saveAppId(e: MouseEvent, id: AppId) {
+  saveAppId(e: MouseEvent, id: AlaApp) {
     e.stopPropagation();
     this.searchCondition.appId = id;
     this.clickUnsubscribe();
@@ -278,10 +279,10 @@ export class SystemLogComponent implements OnInit, OnDestroy {
 
   /**
    * 儲存使用者所選日期
-   * @param e {startDate: string; endDate: string}
+   * @param e {SelectDate}
    * @author kidin-1103030
    */
-  saveDate(e: {startDate: string; endDate: string}) {
+  saveDate(e: SelectDate) {
     this.selectedDate.startDate = e.startDate;
     this.selectedDate.endDate = e.endDate;
   }
@@ -352,7 +353,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
       targetUserId: <number>null,
       targetEquipmentSN: <string>null,
       serverity: <Serverity>null,
-      appId: <AppId>null,
+      appId: <AlaApp>null,
       apiCode: <string>null,
       startTime: moment().subtract(3, 'month').format(apiDateFormat),
       endTime: moment().format(apiDateFormat),
