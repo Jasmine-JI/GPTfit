@@ -4,7 +4,7 @@ import { UtilsService } from '../../../../../shared/services/utils.service';
 import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
 import { AuthService } from '../../../../../shared/services/auth.service';
 import { SignupService } from '../../../services/signup.service';
-import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 
@@ -12,7 +12,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { formTest } from '../../../models/form-test';
+import { formTest } from '../../../../../shared/models/form-test';
 
 @Component({
   selector: 'app-app-forgetpw',

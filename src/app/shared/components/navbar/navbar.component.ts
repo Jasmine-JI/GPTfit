@@ -6,7 +6,6 @@ import { AuthService } from '../../../shared/services/auth.service';
 import { Observable } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../services/utils.service';
-import { OfficialActivityService } from '../../services/official-activity.service';
 import { langData } from '../../../shared/models/i18n';
 
 @Component({
@@ -16,7 +15,6 @@ import { langData } from '../../../shared/models/i18n';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit {
-  noActivity = true;
   isShowMask = false;
   isCollapseShow = false;
   isCollapseSearchShow = false;
@@ -39,8 +37,7 @@ export class NavbarComponent implements OnInit {
     private authService: AuthService,
     private utilsService: UtilsService,
     @Inject(WINDOW) private window,
-    private translateService: TranslateService,
-    private officialActivityService: OfficialActivityService
+    private translateService: TranslateService
   ) {}
 
   ngOnInit() {
@@ -82,7 +79,6 @@ export class NavbarComponent implements OnInit {
       this.isCollapseSearchShow = mode;
     });
 
-    this.checkOfficialActivity();
   }
 
   /**
@@ -125,6 +121,7 @@ export class NavbarComponent implements OnInit {
   onResize() {
     this.deviceWidth = window.innerWidth;
   }
+
   validate() {
     const pwd = window.prompt('請輸入密碼: ');
     if (pwd === '12345678') {
@@ -133,6 +130,7 @@ export class NavbarComponent implements OnInit {
     }
     return (location.href = '/');
   }
+
   toggleSearch() {
     if (this.isCollapseShow) {
       this.isCollapseShow = !this.isCollapseShow;
@@ -143,6 +141,7 @@ export class NavbarComponent implements OnInit {
     this.isCollapseSearchShow = !this.isCollapseSearchShow;
     this.globalEventsManager.openCollapse(this.isCollapseSearchShow);
   }
+
   toggleMask() {
     if (this.deviceWidth < 992) {
       if (this.isCollapseSearchShow) {
@@ -155,9 +154,11 @@ export class NavbarComponent implements OnInit {
       this.globalEventsManager.showMask(this.isShowMask);
     }
   }
+
   reloadPage() {
     location.reload();
   }
+  
   logout() {
     this.authService.logout();
   }
@@ -191,28 +192,6 @@ export class NavbarComponent implements OnInit {
     this.translateService.use(lang);
     this.utilsService.setLocalStorageObject('locale', lang);
     this.toggleMask();
-  }
-
-  /**
-   * 確認有無官方活動
-   * @author kidin-1090904
-   */
-  checkOfficialActivity() {
-    if (navigator.language.toLocaleLowerCase() !== 'pt-br') {
-
-      const body = {
-        token: this.utilsService.getToken() || ''
-      };
-
-      this.officialActivityService.getAllOfficialActivity(body).subscribe(res => {
-        if (res.resultCode === 200 && res.activityList.length > 0) {
-          this.noActivity = false;
-        }
-
-      });
-
-    }
-
   }
 
 }

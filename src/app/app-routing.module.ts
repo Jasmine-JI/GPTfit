@@ -2,20 +2,20 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { PortalComponent } from './containers/portal/portal.component';
 
+
 const routes: Routes = [
-  { path: '', component: PortalComponent },
   {
     path: 'dashboard',
     loadChildren: () => import('./containers/dashboard/dashboard.module').then(m => m.DashboardModule)
-  }
-  /* 測試延遲載入用
+  },
   {
-    path: 'dashboard',
-    redirectTo: 'activity-list',
-    pathMatch: 'full'
+    path: 'official-activity',
+    loadChildren: () => import('./containers/official-activity/official-activity.module').then(m => m.OfficialActivityModule)
+  },
+  { 
+    path: '', 
+    component: PortalComponent
   }
-   */
-  // { path: '**', redirectTo: '404' }
 ];
 
 @NgModule({

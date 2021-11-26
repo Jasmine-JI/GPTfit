@@ -1,0 +1,645 @@
+<div class="flexCol">
+  <div class="flexRow control__section">
+    <div class="flexRow date__filter">
+      <span style="font-weight: bold;">
+        {{ 'universal_operating_filter' | translate }}
+      </span>
+      <i
+        style="font-size: 20px;"
+        class="icon-svg_web-icon_p1_099-calendar"
+      ></i>
+      <div class="divider__line" style="position: relative;">
+        <button (click)="checkScreenHeight($event)">
+          {{ 
+            selectDate.startTimestamp | timeFormat: 'YYYY-MM-DD'
+          }}~{{
+            selectDate.endTimestamp | timeFormat: 'YYYY-MM-DD'
+          }}
+        </button>
+        <app-date-range-picker
+          (selectDateRange)="getSelectDate($event)"
+          [pickerType]="'rangePick'"
+          [startTimeStamp]="selectDate.startTimestamp"
+          [endTimeStamp]="selectDate.endTimestamp"
+          [openPicker]="uiFlag.openDatePicker"
+          [editStyle]="'
+            position: absolute;
+            top: 0;
+            max-width: 0px;
+            opacity: 0;
+          '"
+        ></app-date-range-picker>
+      </div>
+    </div>
+    <div
+      class="flexRow"
+      *ngIf="
+        userProfile?.systemAccessRight[0] === 28
+        && !uiFlag.isMobile
+        && uiFlag.currentPage === 'activity-list'
+      "
+    >
+      <button class="manage__btn">
+        編輯輪播
+      </button>
+      <button
+        class="manage__btn"
+        (click)="navigatePage($event, 'edit-activity', -1, true)"
+      >
+        新建賽事
+      </button>
+      <button class="manage__btn" (click)="switchEditMode()">
+        <ng-container *ngIf="!uiFlag.editMode">
+          管理賽事
+        </ng-container>
+        <ng-container *ngIf="uiFlag.editMode">
+          取消管理
+        </ng-container>
+      </button>
+    </div>
+    <div
+      class="flexRow"
+      style="position: relative; justify-content: flex-end;"
+      *ngIf="
+        userProfile?.systemAccessRight[0] === 28
+        && uiFlag.isMobile
+        && uiFlag.currentPage === 'activity-list'
+      "
+    >
+      <button class="manage__menu__btn manage__btn" (click)="showManageMenu($event)">
+        管理
+      </button>
+      <ul class="manage__menu" *ngIf="uiFlag.showManageMenu">
+        <li>
+          <button>
+            編輯輪播
+          </button>
+        </li>
+        <li>
+          <button (click)="navigatePage($event, 'edit-activity', -1, true)">
+            新建賽事
+          </button>
+        </li>
+        <li>
+          <button (click)="switchEditMode()">
+            <ng-container *ngIf="!uiFlag.editMode">
+              管理賽事
+            </ng-container>
+            <ng-container *ngIf="uiFlag.editMode">
+              取消管理
+            </ng-container>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <ul class="flexCol activity__list__section">
+    <li class="activity__list" *ngIf="effectEventList.length === 0">
+      <ng-container *ngIf="!uiFlag.isMobile">
+        <div class="flexRow">
+          <div class="theme__img theme__no__img">
+            <i class="icon-svg_web-icon_p3_072-photo no__img"></i>
+          </div>
+          <div
+            class="flexCol race__list"
+            [class.divider__line]="uiFlag.currentPage === 'activity-list' || screenSize > 1150"
+          >
+            <div class="flexRow">
+              <div
+                class="flexCol race__info"
+                [style.width]="
+                  uiFlag.currentPage === 'my-activity' && screenSize < 1150 ? '100%' : ''
+                "
+              >
+                <div class="flexRow race__info__header">
+                  <h3 class="race__title">
+                    {{ '無任何賽事' }}
+                  </h3>
+                </div>
+                <p class="race__description">
+                  {{ '此時間範圍無任何賽事' }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="uiFlag.isMobile">
+        <div class="flexCol" style="width: 90vw; margin: 0 auto;">
+          <h3 class="race__title">
+            {{ '無任何賽事' }}
+          </h3>
+          <div class="theme__img__mobile theme__no__img">
+            <i class="icon-svg_web-icon_p3_072-photo no__img"></i>
+          </div>
+          <div
+            class="flexRow race__info__mobile"
+            [class.divider__line]="
+              uiFlag.currentPage !== 'my-activity' && !uiFlag.editMode
+            "
+          >
+            <p class="race__description__mobile">
+              {{ '此時間範圍無任何賽事' }}
+            </p>
+          </div>
+        </div>
+      </ng-container>
+    </li>
+    <ng-container *ngFor="let _eventList of effectEventList;">
+      <li
+        class="activity__list"
+        *ngIf="serverTimestamp >= _eventList.applyDate.startDate || userProfile?.systemAccessRight[0] <= 28"
+      >
+        <a
+          [href]="'/official-activity/activity-detail/' + _eventList.eventId"
+          target="_blank"
+        >
+          <div class="flexCol" style="width: 100%;">
+            <ng-container *ngIf="!uiFlag.isMobile">
+              <div class="flexCol" style="width: 100%;">
+                <div class="flexRow">
+                  <div class="theme__img">
+                    <img [src]="_eventList.themeImg" [alt]="_eventList.eventName">
+                    <div
+                      class="flexCenter rece__end__mask"
+                      *ngIf="
+                        _eventList.eventStatus === EventStatus.cancel
+                        || serverTimestamp > _eventList.raceDate.endDate
+                      "
+                    >
+                      <ng-container *ngIf="
+                        _eventList.eventStatus !== EventStatus.cancel
+                        && serverTimestamp > _eventList.raceDate.endDate"
+                      >
+                        {{ '已結束' }}
+                      </ng-container>
+                      <ng-container *ngIf="_eventList.eventStatus === EventStatus.cancel">
+                        {{ '賽事取消' }}
+                      </ng-container>
+                    </div>
+                  </div>
+                  <div
+                    class="flexCol race__list"
+                    [class.divider__line]="uiFlag.currentPage === 'activity-list' || screenSize > 1150"
+                  >
+                    <div class="flexRow">
+                      <div
+                        class="flexCol race__info"
+                        [style.width]="
+                          uiFlag.currentPage === 'my-activity' && screenSize < 1150 ? '100%' : ''
+                        "
+                      >
+                        <span *ngTemplateOutlet="applyDate;
+                          context: {
+                            startDate: _eventList.applyDate.startDate,
+                            endDate: _eventList.applyDate.endDate,
+                            eventCancel: _eventList.eventStatus === EventStatus.cancel,
+                            applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit
+                          }"
+                        ></span>
+                        <div class="flexRow race__info__header">
+                          <h3 class="race__title">{{ _eventList.eventName }}</h3>
+                          <div class="flexRow race__date">
+                            <div *ngTemplateOutlet="calender;
+                              context: {
+                                type: 'start',
+                                raceEnd: serverTimestamp > _eventList.raceDate.endDate,
+                                month: (_eventList.raceDate.startDate * 1000 | timeFormat: 'MM'),
+                                day: (_eventList.raceDate.startDate * 1000 | timeFormat: 'DD')
+                              }"
+                            ></div>
+                            <div class="calender__link"></div>
+                            <div *ngTemplateOutlet="calender;
+                              context: {
+                                type: 'end',
+                                raceEnd: serverTimestamp > _eventList.raceDate.endDate,
+                                month: (_eventList.raceDate.endDate * 1000 | timeFormat: 'MM'),
+                                day: (_eventList.raceDate.endDate * 1000 | timeFormat: 'DD')
+                              }"
+                            ></div>
+                          </div>
+                        </div>
+                        <p class="race__description">{{ _eventList.description }}</p>
+                      </div>
+                      <div
+                        class="flexRow map__info"
+                        *ngIf="
+                          allMapInfo
+                          && allMapInfo[_eventList.cloudrunMapId - 1]
+                          && uiFlag.currentPage === 'activity-list'
+                          && !uiFlag.editMode
+                        "
+                      >
+                        <div class="flexCol map__description" style="align-items: center;">
+                          <span>
+                            {{ allMapInfo[_eventList.cloudrunMapId - 1].info[mapLanguage].mapName }}
+                          </span>
+                          <div class="flexRow">
+                            <span class="flexRow map__detail">
+                              {{ allMapInfo[_eventList.cloudrunMapId - 1].distance }}KM
+                            </span>
+                            <span class="flexRow map__detail">
+                              {{ 'universal_activityData_climb' | translate }}
+                              {{ allMapInfo[_eventList.cloudrunMapId - 1].incline }}
+                            </span>
+                          </div>
+                        </div>
+                        <div class="map__img">
+                          <img
+                            [src]="mapImgPath + allMapInfo[_eventList.cloudrunMapId - 1].mapImg"
+                            [alt]="allMapInfo[_eventList.cloudrunMapId - 1].info[mapLanguage].mapName"
+                          >
+                        </div>
+                      </div>
+                      <ng-container *ngIf="uiFlag.editMode">
+                        <div
+                          *ngTemplateOutlet="editSection; context: {
+                            eventId: _eventList.eventId,
+                            canEdit: _eventList.eventStatus !== EventStatus.cancel
+                          }"
+                        ></div>
+                      </ng-container>
+                      <div
+                        class="flexCol history__detail"
+                        *ngIf="uiFlag.currentPage === 'my-activity' && screenSize > 1150"
+                      >
+                        <div *ngTemplateOutlet="applySchedule; context: {
+                          eventId: _eventList.eventId,
+                          haveProduct: _eventList.haveProduct,
+                          feeTitle: _eventList.feeTitle,
+                          feeId: _eventList.feeId,
+                          fee: _eventList.fee,
+                          paidStatus: _eventList.paidStatus,
+                          productShipped: _eventList.productShipped
+                        }"></div>
+                        <div *ngTemplateOutlet="historyRecord; context: {
+                          record: _eventList.record,
+                          rank: _eventList.rank,
+                          totalRacer: _eventList.totalRacerCounts,
+                          groupName: _eventList.groupName
+                        }"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="flexRow history__detail"
+                  *ngIf="uiFlag.currentPage === 'my-activity' && screenSize <= 1150 && screenSize > 767"
+                >
+                  <div *ngTemplateOutlet="applySchedule; context: {
+                    eventId: _eventList.eventId,
+                    haveProduct: _eventList.haveProduct,
+                    feeTitle: _eventList.feeTitle,
+                    feeId: _eventList.feeId,
+                    fee: _eventList.fee,
+                    paidStatus: _eventList.paidStatus,
+                    productShipped: _eventList.productShipped
+                  }"></div>
+                  <div *ngTemplateOutlet="historyRecord; context: {
+                    record: _eventList.record,
+                    rank: _eventList.rank,
+                    totalRacer: _eventList.totalRacerCounts,
+                    groupName: _eventList.groupName
+                  }"></div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="uiFlag.isMobile">
+              <div class="flexCol" style="width: 90vw; margin: 0 auto;">
+                <h3 class="race__title">{{ _eventList.eventName }}</h3>
+                <span *ngTemplateOutlet="applyDate;
+                  context: {
+                    startDate: _eventList.applyDate.startDate,
+                    endDate: _eventList.applyDate.endDate,
+                    eventCancel: _eventList.eventStatus === EventStatus.cancel,
+                    applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit
+                  }"
+                ></span>
+                <div
+                  class="flexRow"
+                  style="align-items: center;"
+                  *ngIf="uiFlag.currentPage === 'activity-list'"
+                >
+                  <div class="map__img__mobile">
+                    <img
+                      [src]="mapImgPath + allMapInfo[_eventList.cloudrunMapId - 1].mapImg"
+                      [alt]="allMapInfo[_eventList.cloudrunMapId - 1].info[mapLanguage].mapName"
+                    >
+                  </div>
+                  <div class="flexCol map__info__mobile">
+                    <span>
+                      {{ allMapInfo[_eventList.cloudrunMapId - 1].info[mapLanguage].mapName }}
+                    </span>
+                    <div class="flexRow">
+                      <span class="flexRow map__detail__mobile">
+                        {{ allMapInfo[_eventList.cloudrunMapId - 1].distance }}KM
+                      </span>
+                      <span class="flexRow map__detail__mobile">
+                        {{ 'universal_activityData_climb' | translate }}
+                        {{ allMapInfo[_eventList.cloudrunMapId - 1].incline }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="theme__img__mobile">
+                  <img [src]="_eventList.themeImg" [alt]="_eventList.eventName">
+                  <div
+                    class="flexCenter rece__end__mask"
+                    *ngIf="
+                      serverTimestamp > _eventList.raceDate.endDate
+                      || _eventList.eventStatus === EventStatus.cancel
+                    "
+                  >
+                    <ng-container *ngIf="
+                      _eventList.eventStatus !== EventStatus.cancel
+                      && serverTimestamp > _eventList.raceDate.endDate"
+                    >
+                      {{ '已結束' }}
+                    </ng-container>
+                    <ng-container *ngIf="_eventList.eventStatus === EventStatus.cancel">
+                      {{ '賽事取消' }}
+                    </ng-container>
+                  </div>
+                </div>
+                <div
+                  class="flexRow race__info__mobile"
+                  [class.divider__line]="
+                    uiFlag.currentPage !== 'my-activity' && !uiFlag.editMode
+                  "
+                >
+                  <div *ngTemplateOutlet="calender;
+                    context: {
+                      type: 'start',
+                      raceEnd: serverTimestamp > _eventList.raceDate.endDate,
+                      month: (_eventList.raceDate.startDate * 1000 | timeFormat: 'MM'),
+                      day: (_eventList.raceDate.startDate * 1000 | timeFormat: 'DD')
+                    }"
+                  ></div>
+                  <div class="calender__link"></div>
+                  <div *ngTemplateOutlet="calender;
+                    context: {
+                      type: 'end',
+                      raceEnd: serverTimestamp > _eventList.raceDate.endDate,
+                      month: (_eventList.raceDate.endDate * 1000 | timeFormat: 'MM'),
+                      day: (_eventList.raceDate.endDate * 1000 | timeFormat: 'DD')
+                    }"
+                  ></div>
+                  <p class="race__description__mobile">{{ _eventList.description }}</p>
+                </div>
+                <ng-container *ngIf="uiFlag.editMode">
+                  <div
+                    *ngTemplateOutlet="editSection; context: {
+                      eventId: _eventList.eventId,
+                      canEdit: _eventList.eventStatus !== EventStatus.cancel
+                    }"
+                  ></div>
+                </ng-container>
+                <div
+                  class="flexCol history__detail"
+                  *ngIf="uiFlag.currentPage === 'my-activity'"
+                >
+                  <div *ngTemplateOutlet="applySchedule; context: {
+                    eventId: _eventList.eventId,
+                    haveProduct: _eventList.haveProduct,
+                    feeTitle: _eventList.feeTitle,
+                    feeId: _eventList.feeId,
+                    fee: _eventList.fee,
+                    paidStatus: _eventList.paidStatus,
+                    productShipped: _eventList.productShipped
+                  }"></div>
+                  <div *ngTemplateOutlet="historyRecord; context: {
+                    record: _eventList.record,
+                    rank: _eventList.rank,
+                    totalRacer: _eventList.totalRacerCounts,
+                    groupName: _eventList.groupName
+                  }"></div>
+                </div>
+              </div>
+            </ng-container>
+            <div
+              class="product__detail"
+              *ngIf="uiFlag.currentPage === 'my-activity'"
+            >
+              <table>
+                <thead>
+                  <tr>
+                    <th class="product__title">
+                      {{ '項目' }}
+                    </th>
+                    <th class="product__fee">
+                      {{ '費用' }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="product__title">
+                      {{ _eventList.feeTitle }}
+                    </td>
+                    <td class="product__fee">
+                      {{ _eventList.fee }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </a>
+      </li>
+    </ng-container>
+  </ul>
+</div>
+
+<ng-template
+  #applyDate
+  let-startDate="startDate"
+  let-endDate="endDate"
+  let-eventCancel="eventCancel"
+  let-applyFull="applyFull"
+>
+  <span
+    [class.apply__open__yet]="
+      !eventCancel && !applyFull && serverTimestamp < startDate
+    "
+    [class.apply__opening]="
+      !eventCancel && !applyFull && serverTimestamp > startDate && serverTimestamp < endDate
+    "
+    [class.apply__close]="
+      eventCancel || applyFull || serverTimestamp > endDate
+    "
+  >
+    <ng-container *ngIf="!eventCancel && !applyFull && serverTimestamp < startDate">
+      {{ '尚未開放' }}
+    </ng-container>
+    <ng-container *ngIf="!eventCancel && !applyFull && serverTimestamp > startDate && serverTimestamp < endDate">
+      {{ '報名中' }}
+    </ng-container>
+    <ng-container *ngIf="!eventCancel && !applyFull && serverTimestamp > endDate">
+      {{ '報名截止' }}
+    </ng-container>
+    <ng-container *ngIf="!eventCancel && applyFull">
+      {{ '額滿' }}
+    </ng-container>
+    <ng-container *ngIf="eventCancel">
+      {{ '賽事取消' }}
+    </ng-container>
+    <ng-container *ngIf="!eventCancel && !applyFull && uiFlag.currentPage !== 'my-activity'">
+      {{ startDate * 1000 | timeFormat: 'MM/DD' }}~{{ endDate * 1000 | timeFormat: 'MM/DD' }}
+    </ng-container>
+  </span>
+</ng-template>
+
+<ng-template
+  #calender
+  let-type="type"
+  let-month="month"
+  let-day="day"
+  let-raceEnd="raceEnd"
+>
+  <div
+    class="flexCol calender"
+    [class.calender__start]="type === 'start'"
+    [class.calender__end]="type === 'end'"
+    [class.calender__race__end]="raceEnd"
+  >
+    <span class="calender__month">
+      <ng-container *ngIf="month === '01'">
+        {{ "universal_time_limit_january" | translate }}
+      </ng-container>
+      <ng-container *ngIf="month === '02'">
+        {{ "universal_time_limit_february" | translate }}
+      </ng-container>
+      <ng-container *ngIf="month === '03'">
+        {{ "universal_time_limit_march" | translate }}
+      </ng-container>
+      <ng-container *ngIf="month === '04'">
+        {{ "universal_time_limit_april" | translate }}
+      </ng-container>
+      <ng-container *ngIf="month === '05'">
+        {{ "universal_time_limit_may" | translate }}
+      </ng-container>
+      <ng-container *ngIf="month === '06'">
+        {{ "universal_time_limit_june" | translate }}
+      </ng-container>
+      <ng-container *ngIf="month === '07'">
+        {{ "universal_time_limit_july" | translate }}
+      </ng-container>
+      <ng-container *ngIf="month === '08'">
+        {{ "universal_time_limit_august" | translate }}
+      </ng-container>
+      <ng-container *ngIf="month === '09'">
+        {{ "universal_time_limit_september" | translate }}
+      </ng-container>
+      <ng-container *ngIf="month === '10'">
+        {{ "universal_time_limit_october" | translate }}
+      </ng-container>
+      <ng-container *ngIf="month === '11'">
+        {{ "universal_time_limit_november" | translate }}
+      </ng-container>
+      <ng-container *ngIf="month === '12'">
+        {{ "universal_time_limit_december" | translate }}
+      </ng-container>
+    </span>
+    <span class="calender__day">{{ day }}</span>
+  </div>
+</ng-template>
+
+<ng-template
+  #applySchedule
+  let-eventId="eventId"
+  let-haveProduct="haveProduct"
+  let-feeTitle="feeTitle"
+  let-feeId="feeId"
+  let-fee="fee"
+  let-paidStatus="paidStatus"
+  let-productShipped="productShipped"
+>
+  <div class="flexRow" style="align-items: center;">
+    <ng-container *ngIf="paidStatus === PaidStatusEnum.unPaid">
+      <button
+        class="apply__schedule apply__schedule__warn"
+        (click)="navigatePaidPage($event, eventId, feeId, feeTitle, fee)"
+      >
+        {{ '點擊繳費' }}
+      </button>
+    </ng-container>
+    <ng-container *ngIf="paidStatus === PaidStatusEnum.paid">
+      <div class="apply__schedule apply__schedule__finish">
+        {{ '報名完成' }}
+      </div>
+    </ng-container>
+    <ng-container>
+      <div
+        class="apply__schedule apply__schedule__finish"
+        [class.apply__schedule__undone]="
+          !haveProduct || productShipped === ProductShipped.unShip
+        "
+        [class.apply__schedule__warn]="
+          productShipped === ProductShipped.returnGoods
+        "
+      >
+        <ng-container *ngIf="!haveProduct">
+          {{ '無商品' }}
+        </ng-container>
+        <ng-container *ngIf="haveProduct && productShipped === ProductShipped.unShip">
+          {{ '未出貨' }}
+        </ng-container>
+        <ng-container *ngIf="haveProduct && productShipped === ProductShipped.shipped">
+          {{ '已出貨' }}
+        </ng-container>
+        <ng-container *ngIf="haveProduct && productShipped === ProductShipped.returnGoods">
+          {{ '已退貨' }}
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+</ng-template>
+
+<ng-template
+  #editSection
+  let-eventId="eventId"
+  let-canEdit="canEdit"
+>
+  <div class="flexRow edit__btn">
+    <button
+      title="報名列表"
+      (click)="navigatePage($event, 'contestant-list', eventId, true)"
+    >
+      <i class="icon-svg_web-icon_p3_082-ordered-list"></i>
+    </button>
+    <button
+      [title]="canEdit ? '編輯賽事' : '賽事凍結'"
+      (click)="navigatePage($event, 'edit-activity', eventId, canEdit)"
+    >
+      <i class="icon-svg_web-icon_p1_008-edit" *ngIf="canEdit"></i>
+      <mat-icon class="block__icon" *ngIf="!canEdit">block</mat-icon>
+    </button>
+  </div>
+</ng-template>
+
+<ng-template
+ #historyRecord
+ let-record="record"
+ let-rank="rank"
+ let-totalRacer="totalRacer"
+ let-groupName="groupName"
+>
+  <div class="flexRow">
+    <div class="flexCol history__record">
+      <h6>
+        {{ '成績' }}
+      </h6>
+      <span>
+        {{ record ? (record | sportTime: [false, false]) : '--:--' }}
+      </span>
+    </div>
+    <div class="flexCol history__record">
+      <h6>
+        {{ groupName }}
+      </h6>
+      <span>
+        {{ rank || '--' }}/{{ totalRacer || '--' }}
+      </span>
+    </div>
+  </div>
+</ng-template>

@@ -7,8 +7,9 @@ import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CloudrunService } from '../../services/cloudrun.service';
 import { Lang } from '../../models/i18n';
-import { Sex, sex } from '../../../containers/dashboard/models/userProfileInfo';
+import { Sex } from '../../../containers/dashboard/models/userProfileInfo';
 import { DashboardService } from '../../../containers/dashboard/services/dashboard.service';
+import { SelectDate } from '../../models/utils-type';
 
 interface DateCondition {
   type: 'sevenDay' | 'thirtyDay' | 'sixMonth' | 'today' | 'thisWeek' | 'thisMonth' | 'thisYear' | 'custom';
@@ -101,7 +102,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   routineRaceList: Array<any> = [];
 
   timeout: any;
-  readonly sex = sex;
+  readonly Sex = Sex;
   constructor(
     private utils: UtilsService,
     private reportService: ReportService,
@@ -452,11 +453,10 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
 
   /**
    * 取得使用者所選擇的日期
-   * @param e.starDate {string} - 使用者選擇的起始日期('YYYY-MM-DDTHH:mm:ss.SSSZ')
-   * @param e.endDate {string} - 使用者選擇的結束日期('YYYY-MM-DDTHH:mm:ss.SSSZ')
+   * @param e {SelectDate}-使用者選擇的日期('YYYY-MM-DDTHH:mm:ss.SSSZ')
    * @author kidin-1091023
    */
-  getSelectDate(e: {startDate: string, endDate: string}) {
+  getSelectDate(e: SelectDate) {
     if (this.date.openSelector === 'custom') {
       this.date.startTimestamp = moment(e.startDate).valueOf();
       this.date.endTimestamp = moment(e.endDate).valueOf();

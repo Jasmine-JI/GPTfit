@@ -14,16 +14,18 @@ const { getUserActivityInfo } = require('./server/models/officialActivity_model'
 const https = require('https');
 const fs = require('fs');
 
-var address,
-  ifaces = os.networkInterfaces();
+var address;
+var ifaces = os.networkInterfaces();
 for (var dev in ifaces) {
   ifaces[dev].filter((details) => details.family === 'IPv4' && details.internal === false ? address = details.address : undefined);
 }
+
 const SERVER_CONFIG = {
   key: null,
   ca: null,
   cert: null
 };
+
 if (address === '192.168.1.231' || address === '192.168.1.235' || address === '192.168.1.234') {
   SERVER_CONFIG.key = fs.readFileSync('/etc/ssl/free.key'),
   SERVER_CONFIG.ca = fs.readFileSync('/etc/ssl/free_ca.crt'),
@@ -707,7 +709,7 @@ app.use('/nodejs/api/map', authMiddleware, map.protected);
 app.use('/nodejs/api/gpx', authMiddleware, runGpx);
 app.use('/nodejs/api/deviceLog', authMiddleware, deviceLog);
 app.use('/nodejs/api/coach', authMiddleware, coach);
-app.use('/nodejs/api/user', authMiddleware, user);
+app.use('/nodejs/api/user', user);
 app.use('/nodejs/api/center', authMiddleware, center);
 app.use('/nodejs/api/sport', authMiddleware, sport);
 app.use('/nodejs/api/uploadSportFile', uploadSportFile);

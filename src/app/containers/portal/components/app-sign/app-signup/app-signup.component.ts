@@ -10,7 +10,7 @@ import { fromEvent, Subscription, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { formTest } from '../../../models/form-test';
+import { formTest } from '../../../../../shared/models/form-test';
 
 interface RegCheck {
   email: RegExp;

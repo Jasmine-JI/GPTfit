@@ -4,6 +4,71 @@ const getUserList = require('../models/user_id').getUserList;
 const router = express.Router();
 const checkAccessRight = require('../models/auth.model').checkAccessRight;
 const checkNicknameRepeat = require('../models/user_id').checkNicknameRepeat;
+const getTargetInfo = require('../models/user_id').getTargetInfo;
+
+/**
+ * 將 api request key 與 schema table 做對應
+ */
+const tableRename = {
+  groupMember: {
+    needToken: true,
+    originName: 'group_member_info',
+    field: {
+      accessRight: 'access_right',
+      memberId: 'member_id',
+      groupId: 'group_id'
+    }
+  },
+  userProfile: {
+    needToken: true,
+    originName: 'user_profile',
+    field: {
+      userId: 'user_id',
+      nickname: 'login_acc',
+      email: 'e_mail',
+      gender: 'gender',
+      birthday: 'birthday',
+      height: 'height',
+      weight: 'weight',
+      unit: 'use_units',
+      country: 'country',
+      language: 'language',
+      maxHr: 'max_heart_rate',
+      restHr: 'rest_heart_rate',
+      baseHr: 'base_heart_rate',
+      icon: 'avatar_url',
+      countryCode: 'country_code',
+      phone: 'phone',
+      theme: 'theme_img_url',
+      counter: 'counter'
+    }
+  },
+  userInfo: {
+    needToken: false,
+    originName: 'user_profile',
+    field: {
+      userId: 'user_id',
+      nickname: 'login_acc',
+      email: 'e_mail',
+      icon: 'avatar_url',
+      countryCode: 'country_code',
+      phone: 'phone',
+      theme: 'theme_img_url'
+    }
+  },
+  userApplyInfo: {
+    needToken: true,
+    originName: 'event_user_profile',
+    field: {
+      userId: 'user_id',
+      eventId: 'target_event_id',
+      applyStatus: 'apply_status',
+      paidStatus: 'paid_status'
+    }
+  }
+
+};
+
 
 router.get('/userProfile', function (req, res, next) {
   const {
@@ -225,7 +290,7 @@ router.post('/getUserList', function (req, res, next) {
 });
 
 /**
- * 確認暱稱是否重複
+ * 確認暱稱是否重複(可由N9003取代)
  */
 router.post('/checkNickname', function (req, res, next) {
   const {
@@ -265,6 +330,191 @@ router.post('/checkNickname', function (req, res, next) {
   });
 
 });
+
+/**
+ * 取得所需之資料
+ */
+ router.post('/alaql', function (req, res, next) {
+  const {
+    con,
+    body
+  } = req;
+
+  const {result: translateResult, sql, algebra} = queryTranslate(body);
+  if (!translateResult) {
+
+    return res.json({
+      apiCode: 'N9003',  // 暫定
+      resultCode: 400,
+      resultMessage: "Need token or condition.",
+    });
+
+  } else {
+    const result = getTargetInfo(sql, algebra)
+      .then(response => {
+        return res.json({
+          apiCode: 'N9003',  // 暫定
+          resultCode: 200,
+          result: response,
+          resultMessage: "Get result success.",
+        });
+
+      })
+      .catch(error => {
+        return res.json({
+          apiCode: 'N9003',  // 暫定
+          resultCode: 400,
+          result: error,
+          resultMessage: "Get result failed.",
+        });
+
+      });
+
+    }
+
+});
+
+/**
+ * 將request轉為mysql語法（select $target from $table where $condition）
+ */
+function queryTranslate(body) {
+  const { token, search } = body;
+  const translateResult = {
+    result: false,
+    sql: '',
+    algebra: []
+  };
+
+  const table = [];
+  const condition = [];
+  for (let tableName in search) {
+    const { needToken, originName, field } = tableRename[tableName];
+    if (needToken && !token) {
+      return translateResult;
+    } else {
+      table.push(originName);
+      const { target, args } = search[tableName];
+      translateResult.sql = `select ${getTargetField(field, target, originName)}`;
+
+      if (args) {
+
+        for (let arg in args) {
+          const schemaFieldName = field[arg];
+          const key = `${originName}.${schemaFieldName}`;
+          const value = args[arg];
+          condition.push({ key, value });
+        }
+
+      }
+
+    }
+
+  }
+
+  if (condition.length === 0 && !token) {
+    return translateResult;
+  } else {
+    const [conditionString, algebra] = getCondition(table, condition, token);
+    translateResult.algebra = algebra;
+    translateResult.sql = `${
+      translateResult.sql
+    } from ${getTargetTable(table)
+    } where ${conditionString
+    }`;
+
+    translateResult.result = true;
+  }
+
+  return translateResult;
+}
+
+/**
+ * 取得目標欄位字串
+ * @param field {Object}-可取得之資料庫欄位
+ * @param target {Array<string>}-欲取得之資料庫欄位資料
+ * @param originName {string}-資料庫列表名稱
+ * @author kidin-1101115
+ */
+function getTargetField(field, target, originName) {
+  let string = '';
+  const targetLength = target.length;
+  target.forEach((target, index) => {
+    const schemaTarget = field[target];
+    const addString = index === targetLength - 1 ? '' : ', ';
+    string = `${string}${originName}.${schemaTarget} as ${target}${addString}`;
+  });
+
+  return string;
+}
+
+/**
+ * 取得目標列表字串
+ * @param table {Array<string>}-目標數據庫列表
+ * @author kidin-1101115
+ */
+function getTargetTable(table) {
+  let string = '';
+  const tableLength = table.length;
+  table.forEach((_table, index) => {
+    const addString = index === tableLength - 1 ? '??' : '??, '
+    string = `${string}${addString}`;
+  });
+
+  if (!table.includes('user_profile')) string = `${string}, ??`;
+  return string;
+}
+
+/**
+ * 取得條件式字串
+ * @param table {Array<string>}-目標數據庫
+ * @param condition {Array<string>}-搜尋條件
+ * @param token {string}-權杖
+ * @author kidin-1101115
+ */
+function getCondition(table, condition, token) {
+  const [...algebra] = table;
+  let string = '';
+  const conditionLength = condition.length;
+  if (token) {
+    const userIdCondition = getUserIdCondition(table);
+    const haveUserIdCondition = userIdCondition.length > 0;
+    const notHaveUserProfile = !algebra.includes('user_profile');
+    if (haveUserIdCondition && notHaveUserProfile) {
+      algebra.push('user_profile');
+    }
+
+    const endString = condition.length > 0 ? ' and ' : '';
+    string = `${string}user_profile.access_token like ?${userIdCondition}${endString}`;
+    algebra.push(token);
+  }
+
+  condition.forEach((_condition, index) => {
+    const { key, value } = _condition;
+    const addString = index === conditionLength - 1 ? '?' : '? and ';
+    algebra.push(value);
+    string = `${string}${key} like ${addString}`;
+  });
+
+  string = `${string};`;
+  return [string, algebra];
+}
+
+/**
+ * 根據userId取得條件以串連跨table數據
+ * @param table {Array<string>}-目標數據庫
+ * @author kidin-1101119
+ */
+function getUserIdCondition(table) {
+  let string = '';
+  table.forEach(_table => {
+    if (_table !== 'user_profile') {
+      string = `${string} and ${_table}.user_id = user_profile.user_id`;
+    }
+    
+  });
+
+  return string;
+}
 
 // Exports
 module.exports = router;

@@ -15,6 +15,7 @@ import { fromEvent, Subject } from 'rxjs';
 import { takeUntil, map, switchMap } from 'rxjs/operators';
 import { UtilsService } from '../../services/utils.service';
 import { AlbumType } from '../../models/image';
+import { advertiseRatio } from '../../../containers/official-activity/models/official-activity-const';
 
 @Component({
   selector: 'app-image-cropper',
@@ -77,15 +78,25 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
   ngOnChanges() {
     this.result.img.albumType = this.albumType;
     switch (this.albumType) {
-      case 1:
-      case 11:
+      case AlbumType.personalIcon:
+      case AlbumType.groupIcon:
         this.imageCropSetting.aspectRatio = 1;
         this.imageCropSetting.roundCropper = true;
         this.imageCropSetting.maintainAspectRatio = true;
         break;
-      case 2:
-      case 12:
+      case AlbumType.personalScenery:
+      case AlbumType.groupScenery:
         this.imageCropSetting.aspectRatio = 3;
+        this.imageCropSetting.roundCropper = false;
+        this.imageCropSetting.maintainAspectRatio = true;
+        break;
+      case AlbumType.eventApplyFee:
+        this.imageCropSetting.aspectRatio = 1;
+        this.imageCropSetting.roundCropper = false;
+        this.imageCropSetting.maintainAspectRatio = true;
+        break;
+      case AlbumType.advertise:
+        this.imageCropSetting.aspectRatio = advertiseRatio;
         this.imageCropSetting.roundCropper = false;
         this.imageCropSetting.maintainAspectRatio = true;
         break;

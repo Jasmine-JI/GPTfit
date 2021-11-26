@@ -26,7 +26,7 @@
             "styles": [
               "src/styles/icon.scss",
               "node_modules/leaflet/dist/leaflet.css",
-              "src/styles.scss",
+              "src/styles/styles.scss",
               "node_modules/bootstrap/dist/css/bootstrap.css",
               "node_modules/font-awesome/css/font-awesome.min.css",
               "node_modules/material-design-icons/iconfont/material-icons.css",
@@ -214,7 +214,7 @@
             "styles": [
               "src/styles/icon.scss",
               "node_modules/leaflet/dist/leaflet.css",
-              "src/styles.scss",
+              "src/styles/styles.scss",
               "node_modules/bootstrap/dist/css/bootstrap.css",
               "node_modules/font-awesome/css/font-awesome.min.css",
               "node_modules/dragula/dist/dragula.css",

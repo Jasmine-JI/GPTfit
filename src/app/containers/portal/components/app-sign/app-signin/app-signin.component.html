@@ -31,7 +31,7 @@
             class="icon-svg_web-icon_p1_004-qr_code qrcode__login__icon"
             (click)="navigateToQrcodeSign()"
           ></i>
-          <div class="flexRow" *ngIf="loginBody.signInType === 2">
+          <div class="flexRow" *ngIf="loginBody.signInType === SignTypeEnum.phone">
             <app-intl-phone-input
               (onChange)="onCodeChange($event)"
               (focusoutPhoneInt)="getPhoneNum($event)"
@@ -124,7 +124,10 @@
                       (click)="navigateToQrcodeSign()"
                     ></i>
                   </div>
-                  <div class="flexRow" *ngIf="loginBody.signInType === 2">
+                  <div
+                    class="flexRow"
+                    *ngIf="loginBody.signInType === SignTypeEnum.phone"
+                  >
                     <app-intl-phone-input
                       (onChange)="onCodeChange($event)"
                       [currentCountryCode]="loginBody.countryCode"

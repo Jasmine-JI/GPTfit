@@ -1,0 +1,744 @@
+<div class="flexCol" *ngIf="eventInfo">
+  <header id="header" class="flexCenter">
+    <div id="scenery">
+      <img
+        [src]="eventInfo.themeImg"
+        [alt]="eventInfo.eventName"
+      >
+    </div>
+    <div id="headerInfo" class="flexRow">
+      <div id="map__icon">
+        <img
+          [src]="mapIconPath + allMapInfo[eventInfo.cloudrunMapId - 1].mapImg"
+        >
+      </div>
+      <div id="header__title" class="flexCol">
+        <h5 id="event__name">{{ eventInfo.eventName }}</h5>
+        <div
+          id="search__input"
+          class="flexRow"
+        >
+          <mat-icon id="search__icon">search</mat-icon>
+          <input
+            type="text"
+            style="width: 100%;"
+            (focusout)="searchContestant($event)"
+          >
+          <div
+            id="list__filter"
+            (click)="showFilterSelector($event)"
+          >
+            <div class="flexRow filter__entry">
+              <span>
+                <ng-container *ngIf="!listFilter.type">
+                  {{ '顯示全部' }}
+                </ng-container>
+                <ng-container *ngIf="listFilter.type === 'group'">
+                  {{ '分組' }} - {{ listFilter.groupName }}
+                </ng-container>
+                <ng-container *ngIf="listFilter.type === 'paidStatus'">
+                  {{ '繳費' }} - {{ listFilter.status | paidStatus }}
+                </ng-container>
+                <ng-container *ngIf="['orderStatus', 'awardStatus'].includes(listFilter.type)">
+                  <ng-container *ngIf="listFilter.type === 'orderStatus'">
+                    {{ '訂單' }} -
+                  </ng-container>
+                  <ng-container *ngIf="listFilter.type === 'awardStatus'">
+                    {{ '獎品' }} -
+                  </ng-container>
+                  {{ listFilter.status | shippedStatus }}
+                </ng-container>
+              </span>
+              <i
+                class="icon-svg_web-icon_p1_006-unfold drop__icon"
+                [class.drop__icon--active]="uiFlag.showFilterSelector"
+              ></i>
+            </div>
+            <div
+              id="filter__selector"
+              *ngIf="uiFlag.showFilterSelector"
+            >
+              <div class="flexCol">
+                <button
+                  class="status__show__all"
+                  (click)="showAllList()"
+                >
+                  {{ '顯示全部' }}
+                </button>
+              </div>
+              <div class="flexCol">
+                <h6 class="drop__type__title">{{ '分組' }}</h6>
+                <ng-container *ngFor="let _group of groupList;">
+                  <button
+                    class="filter__group"
+                    [style.background-color]="_group.color"
+                    (click)="filterGroup(_group.id, _group.name)"
+                  >
+                    {{ _group.name }}
+                  </button>
+                </ng-container>
+              </div>
+              <div class="flexCol">
+                <h6 class="drop__type__title">{{ '繳費狀態' }}</h6>
+                <button
+                  class="status__yet"
+                  (click)="filterPaidStatus(PaidStatusEnum.unPaid)"
+                >
+                  {{ '未繳費' }}
+                </button>
+                <button
+                  class="status__already"
+                  (click)="filterPaidStatus(PaidStatusEnum.paid)"
+                >
+                  {{ '已繳費' }}
+                </button>
+                <button
+                  class="status__cancel"
+                  (click)="filterPaidStatus(PaidStatusEnum.refund)"
+                >
+                  {{ '已退賽' }}
+                </button>
+              </div>
+              <div class="flexCol">
+                <h6 class="drop__type__title">{{ '訂單狀態' }}</h6>
+                <button
+                  class="status__yet"
+                  (click)="filterOrderStatus(ProductShipped.unShip)"
+                >
+                  {{ '未出貨' }}
+                </button>
+                <button
+                  class="status__already"
+                  (click)="filterOrderStatus(ProductShipped.shipped)"
+                >
+                  {{ '已出貨' }}
+                </button>
+                <button
+                  class="status__cancel"
+                  (click)="filterOrderStatus(ProductShipped.returnGoods)"
+                >
+                  {{ '已退貨' }}
+                </button>
+                <button
+                  class="status__case__closed"
+                  (click)="filterOrderStatus(ProductShipped.closeCase)"
+                >
+                  {{ '已結案' }}
+                </button>
+                <button
+                  class="status__not__action"
+                  (click)="filterOrderStatus(ProductShipped.needNotShip)"
+                >
+                  {{ '不須出貨' }}
+                </button>
+              </div>
+              <div class="flexCol">
+                <h6 class="drop__type__title">{{ '獎品狀態' }}</h6>
+                <button
+                  class="status__yet"
+                  (click)="filterAwardStatus(ProductShipped.unShip)"
+                >
+                  {{ '未出貨' }}
+                </button>
+                <button
+                  class="status__already"
+                  (click)="filterAwardStatus(ProductShipped.shipped)"
+                >
+                  {{ '已出貨' }}
+                </button>
+                <button
+                  class="status__case__closed"
+                  (click)="filterAwardStatus(ProductShipped.closeCase)"
+                >
+                  {{ '已結案' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="race__date" class="flexCol">
+        <span>
+          {{ '開始' }}
+          {{ eventInfo.raceDate.startDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
+        </span>
+        <span>
+          {{ '結束' }}
+          {{ eventInfo.raceDate.endDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
+        </span>
+      </div>
+    </div>
+  </header>
+  <div class="functionBtnBar button__section">
+    <div id="sort__button">
+      <button
+        class="function__btn"
+        [title]="'universal_activityData_sort' | translate"
+        (click)="showSortMenu($event)"
+      >
+        <i class="icon-svg_web-icon_p1_022-descending"></i>
+      </button>
+      <div
+        id="sort__menu"
+        class="flexCol"
+        (click)="$event.stopPropagation();"
+        *ngIf="uiFlag.showSortMenu"
+      >
+        <div class="flexCol classification__area">
+          <h6>{{ '排序順序' }}</h6>
+          <div>
+            <input
+              type="radio"
+              name="sortOrder"
+              id="sort__asc"
+              value="asc"
+              [checked]="sortSet.order === 'asc'"
+              (click)="changeSortOrder($event)"
+            >
+            <label class="radio__label" for="sort__asc">
+              {{ '升冪' }}
+            </label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              name="sortOrder"
+              id="sort__desc"
+              value="desc"
+              [checked]="sortSet.order === 'desc'"
+              (click)="changeSortOrder($event)"
+            >
+            <label class="radio__label" for="sort__desc">
+              {{ '降冪' }}
+            </label>
+          </div>
+        </div>
+        <div class="flexCol classification__area">
+          <h6>{{ '排序依據' }}</h6>
+          <div>
+            <input
+              type="radio"
+              name="sortType"
+              id="sort__rank"
+              value="rank"
+              [checked]="sortSet.type === 'rank'"
+              (click)="changeSortType($event)"
+            >
+            <label class="radio__label" for="sort__rank">
+              {{ '排名' }}
+            </label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              name="sortType"
+              id="sort__group"
+              value="group"
+              [checked]="sortSet.type === 'group'"
+              (click)="changeSortType($event)"
+            >
+            <label class="radio__label" for="sort__group">
+              {{ '分組' }}
+            </label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              name="sortType"
+              id="sort__paid__status"
+              value="paidStatus"
+              [checked]="sortSet.type === 'paidStatus'"
+              (click)="changeSortType($event)"
+            >
+            <label class="radio__label" for="sort__paid__status">
+              {{ '繳費狀態' }}
+            </label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              name="sortType"
+              id="sort__paid__date"
+              value="paidDate"
+              [checked]="sortSet.type === 'paidDate'"
+              (click)="changeSortType($event)"
+            >
+            <label class="radio__label" for="sort__paid__date">
+              {{ '繳費日期' }}
+            </label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              name="sortType"
+              id="sort__order__status"
+              value="orderStatus"
+              [checked]="sortSet.type === 'orderStatus'"
+              (click)="changeSortType($event)"
+            >
+            <label class="radio__label" for="sort__order__status">
+              {{ '訂單出貨狀態' }}
+            </label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              name="sortType"
+              id="sort__shipped__date"
+              value="shippedDate"
+              [checked]="sortSet.type === 'shippedDate'"
+              (click)="changeSortType($event)"
+            >
+            <label class="radio__label" for="sort__shipped__date">
+              {{ '訂單出貨日期' }}
+            </label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              name="sortType"
+              id="sort__award__status"
+              value="awardStatus"
+              [checked]="sortSet.type === 'awardStatus'"
+              (click)="changeSortType($event)"
+            >
+            <label class="radio__label" for="sort__award__status">
+              {{ '獎品出貨狀態' }}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button
+      class="function__btn"
+      [title]="('universal_operating_download' | translate) + ' CSV'"
+      (click)="downloadCSV()"
+    >
+      <i class="icon-svg_web-icon_p1_018-input" ></i>
+    </button>
+    <button
+      class="function__btn"
+      [class.delete__mode]="uiFlag.deleteMode"
+      [title]="'universal_operating_delete' | translate"
+      (click)="handleDeleteMode()"
+    >
+      <i class="icon-svg_web-icon_p1_009-delete"></i>
+    </button>
+  </div>
+  <div *ngTemplateOutlet="contestantList; context: {
+    displayList: reArrangeList,
+    listType: 'normal'
+  }"></div>
+  <ng-container *ngIf="leaveList.length > 0">
+    <div *ngTemplateOutlet="contestantList; context: {
+      displayList: leaveList,
+      listType: 'leave'
+    }"></div>
+  </ng-container>
+</div>
+
+<ng-template
+  #contestantList
+  let-displayList="displayList"
+  let-listType="listType"
+>
+  <div class="flexCol main__content">
+    <div
+      style="padding: 2vh 2vw;"
+      class="flexCol"
+      [class.leave__list]="listType === 'leave'"
+    >
+      <h5
+        id="leave__title"
+        *ngIf="listType === 'leave'"
+      >{{ '回收區' }}</h5>
+      <div class="flexRow list__title">
+        <h6 class="rank">#</h6>
+        <h6 class="nickname">{{ 'universal_userAccount_nickname' | translate }}</h6>
+        <h6 class="group">{{ '分組' }}</h6>
+        <h6 class="paid__status">{{ '繳費狀態' }}</h6>
+        <h6 class="paid__date">{{ '繳費時間' }}</h6>
+        <h6 class="order__status">{{ '訂單狀態' }}</h6>
+        <h6 class="award__status">{{ '獎品' }}</h6>
+      </div>
+      <ul class="contestant__list">
+        <li
+          class="list__row"
+          *ngIf="displayList.length === 0"
+        >
+          {{ 'universal_status_noData' | translate }}
+        </li>
+        <li
+          class="flexRow"
+          *ngFor="let _list of displayList; let index = index;"
+          (click)="showListDetail(listType, index)"
+        >
+          <div class="flexCol list__row">
+            <div class="flexRow important__info">
+              <span class="rank">{{ _list.rank }}</span>
+              <span class="nickname">{{ _list.nickname }}</span>
+              <span
+                class="group"
+                [class.status__selector]="listType === 'normal'"
+              >
+                <button
+                  class="filter__group"
+                  [style.background-color]="groupList[_list.groupId - 1].color"
+                  (click)="showSelector($event, listType, 'showGroupList', index)"
+                >
+                  {{ _list.groupName }}
+                </button>
+                <div *ngTemplateOutlet="groupSelector; context: { index }"></div>
+              </span>
+              <span
+                class="paid__status"
+                [class.status__selector]="listType === 'normal'"
+              >
+                <button
+                  [class.status__yet]="_list.paidStatus === PaidStatusEnum.unPaid"
+                  [class.status__already]="_list.paidStatus === PaidStatusEnum.paid"
+                  [class.status__cancel]="_list.paidStatus === PaidStatusEnum.refund"
+                  (click)="showSelector($event, listType, 'showPaidStatusSelector', index)"
+                >
+                  {{ _list.paidStatus | paidStatus }}
+                </button>
+                <div *ngTemplateOutlet="paidStatusSelector; context: { index }"></div>
+              </span>
+              <span class="paid__date">
+                {{ _list.paidDate ? (_list.paidDate * 1000 | timeFormat: 'YYYY-MM-DD HH:mm') : '----------' }}
+              </span>
+              <span
+                class="order__status"
+                [class.status__selector]="listType === 'normal'"
+              >
+                <button
+                  [class.status__yet]="_list.productShipped === ProductShipped.unShip"
+                  [class.status__already]="_list.productShipped === ProductShipped.shipped"
+                  [class.status__cancel]="_list.productShipped === ProductShipped.returnGoods"
+                  [class.status__case__closed]="_list.productShipped === ProductShipped.closeCase"
+                  [class.status__not__action]="_list.productShipped === ProductShipped.needNotShip"
+                  (click)="showSelector($event, listType, 'showOrderStatusSelector', index)"
+                >
+                  {{ _list.productShipped | shippedStatus }}
+                </button>
+                <div *ngTemplateOutlet="shippedStatusSelector; context: {
+                  index,
+                  type: 'productShipped'
+                }"></div>
+              </span>
+              <span
+                class="award__status"
+                [class.status__selector]="listType === 'normal'"
+              >
+                <button
+                  [class.status__yet]="_list.awardShipped === ProductShipped.unShip"
+                  [class.status__already]="_list.awardShipped === ProductShipped.shipped"
+                  [class.status__case__closed]="_list.awardShipped === ProductShipped.closeCase"
+                  (click)="showSelector($event, listType, 'showAwardStatusSelector', index)"
+                >
+                  {{ _list.awardShipped | shippedStatus }}
+                </button>
+                <div *ngTemplateOutlet="shippedStatusSelector; context: {
+                  index,
+                  type: 'awardShipped'
+              }"></div>
+              </span>
+            </div>
+            <div
+              style="width: 100%;"
+              class="flexRow"
+              *ngIf="uiFlag.expandDetail === (listType + index)"
+            >
+              <div 
+                class="flexCol"
+                *ngIf="listType === 'normal'"
+              >
+                <button
+                  class="edit__button"
+                  title="更新狀態"
+                  (click)="refreshUserInfo($event, index)"
+                  *ngIf="!uiFlag.editDetail"
+                >
+                  <mat-icon>autorenew</mat-icon>
+                </button>
+                <button
+                  class="edit__button"
+                  [title]="uiFlag.detailEditable ? '離開編輯模式' : '開啟編輯模式'"
+                  (click)="openEditableMode($event)"
+                  *ngIf="!uiFlag.editDetail"
+                >
+                  <ng-container *ngIf="!uiFlag.detailEditable">
+                    <mat-icon>edit</mat-icon>
+                  </ng-container>
+                  <ng-container *ngIf="uiFlag.detailEditable">
+                    <img src="/assets/icons/edit_off.svg">
+                  </ng-container>
+                </button>
+              </div>
+              <div
+                class="flexCol"
+                style="width: 100%;"
+                (click)="$event.stopPropagation()"
+              >
+                <div class="flexRow apply__info">
+                  <div *ngTemplateOutlet="infoCard; context: {
+                    title: 'User id',
+                    value: _list.userId
+                  }"
+                  ></div>
+                  <div *ngTemplateOutlet="infoCard; context: {
+                    title: '姓名',
+                    value: _list.truthName,
+                    canEdit: true,
+                    index: index,
+                    type: 'truthName'
+                  }"
+                  ></div>
+                  <div *ngTemplateOutlet="infoCard; context: {
+                    title: '年齡',
+                    value: ({
+                      birth: _list.birthday,
+                      birthFormat: 'YYYYMMDD',
+                      baseDate: _list.appliedDate ? _list.appliedDate * 1000 : null,
+                      baseFormat: null
+                    } | countAge)
+                  }"
+                  ></div>
+                  <div *ngTemplateOutlet="infoCard; context: {
+                    title: ('universal_userProfile_gender' | translate),
+                    value: (_list.gender | sex: 'i18n' | translate)
+                  }"
+                  ></div>
+                  <div *ngTemplateOutlet="infoCard; context: {
+                    title: '證件號',
+                    value: _list.idCardNumber
+                  }"
+                  ></div>
+                  <div *ngTemplateOutlet="infoCard; context: {
+                    title: '國籍',
+                    value: _list.taiwaness === Nationality.taiwaness ? '本國' : '外國'
+                  }"
+                  ></div>
+                </div>
+                <div class="flexRow apply__info">
+                  <div *ngTemplateOutlet="infoCard; context: {
+                    title: '綠界訂單編號',
+                    value: _list.thirdPartyPaidId ? _list.thirdPartyPaidId : '**********'
+                  }"
+                  ></div>
+                  <div *ngTemplateOutlet="infoCard; context: {
+                    title: '英達訂單編號',
+                    value: _list.officialPaidId ? _list.officialPaidId : '**********'
+                  }"
+                  ></div>
+                  <br>
+                  <div *ngTemplateOutlet="infoCard; context: {
+                    title: '商品名稱',
+                    value: _list.feeTitle,
+                    break: true
+                  }"
+                  ></div>
+                  <br>
+                  <div *ngTemplateOutlet="infoCard; context: {
+                    title: '商品價格',
+                    value: '$' + _list.fee
+                  }"
+                  ></div>
+                </div>
+                <div class="flexRow apply__info">
+                  <div *ngTemplateOutlet="infoCard; context: {
+                    title: '收件地址',
+                    value: _list.address,
+                    break: true,
+                    canEdit: true,
+                    index: index,
+                    type: 'address'
+                  }"
+                  ></div>
+                  <div *ngTemplateOutlet="infoCard; context: {
+                    title: '聯絡電話',
+                    value: '+' + _list.countryCode + ' ' + _list.mobileNumber,
+                    break: true
+                  }"
+                  ></div>
+                  <div *ngTemplateOutlet="infoCard; context: {
+                    title: '商品出貨日期',
+                    value: _list.productShippingDate ? (_list.productShippingDate * 1000 | timeFormat: 'YYYY-MM-DD') : '----------'
+                  }"
+                  ></div>
+                  <div *ngTemplateOutlet="infoCard; context: {
+                    title: '獎品出貨日期',
+                    value: _list.awardShippingDate ? (_list.awardShippingDate * 1000 | timeFormat: 'YYYY-MM-DD') : '----------'
+                  }"
+                  ></div>
+                  <br>
+                  <div *ngTemplateOutlet="infoCard; context: {
+                    title: '備註',
+                    value: _list.remark,
+                    break: true,
+                    canEdit: true,
+                    index: index,
+                    type: 'remark'
+                  }"
+                  ></div>
+                </div>
+                <div class="flexRow apply__info">
+                  <div *ngTemplateOutlet="infoCard; context: {
+                    title: '緊急聯絡人',
+                    value: _list.emergencyContact.name,
+                    canEdit: true,
+                    index: index,
+                    type: 'name'
+                  }"
+                  ></div>
+                  <div *ngTemplateOutlet="infoCard; context: {
+                    title: '關係',
+                    value: _list.emergencyContact.relationship,
+                    canEdit: true,
+                    index: index,
+                    type: 'relationship'
+                  }"
+                  ></div>
+                  <div *ngTemplateOutlet="infoCard; context: {
+                    title: '聯絡電話',
+                    value: _list.emergencyContact.mobileNumber,
+                    canEdit: true,
+                    index: index,
+                    type: 'mobileNumber'
+                  }"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button
+            title="移除參賽者"
+            (click)="removeContestant(index)"
+            *ngIf="uiFlag.deleteMode && listType === 'normal'"
+          >
+            <i class="icon-svg_web-icon_p1_012-close delete__icon"></i>
+          </button>
+          <button
+            title="加回參賽者"
+            (click)="addContestant(index)"
+            *ngIf="listType === 'leave'"
+          >
+            <i class="icon-svg_web-icon_p1_029-add add__icon"></i>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template
+  #infoCard
+  let-title="title"
+  let-value="value"
+  let-break="break"
+  let-index="index"
+  let-type="type"
+  let-canEdit="canEdit"
+>
+  <div
+    class="flexCol info__card"
+    [class.info__card__break]="break"
+  >
+    <h6 class="card__title">{{ title }}</h6>
+    <p
+      class="card__value"
+      *ngIf="!canEdit || !uiFlag.detailEditable"
+    >
+      {{ value }}
+    </p>
+    <input
+      type="text"
+      class="detail__input"
+      [value]="value"
+      (focusout)="handleEditDetail($event, type, index)"
+      *ngIf="canEdit && uiFlag.detailEditable"
+    >
+  </div>
+</ng-template>
+
+<ng-template
+  #groupSelector
+  let-index="index"
+>
+  <ul
+    class="drop__menu"
+    *ngIf="uiFlag.showGroupList === index"
+  >
+    <li *ngFor="let _group of groupList">
+      <button
+        class="filter__group"
+        [style.background-color]="_group.color"
+        (click)="changeGroup($event, _group, index)"
+      >
+        {{ _group.name }}
+      </button>
+    </li>
+  </ul>
+</ng-template>
+
+<ng-template
+  #paidStatusSelector
+  let-index="index"
+>
+  <ul
+    class="drop__menu"
+    *ngIf="uiFlag.showPaidStatusSelector === index"
+  >
+    <li>
+      <button
+        class="status__already"
+        (click)="changePaidStatus($event, PaidStatusEnum.paid, index)"
+      >
+        {{ '已繳費' }}
+      </button>
+      <button
+        class="status__cancel"
+        (click)="changePaidStatus($event, PaidStatusEnum.refund, index)"
+      >
+        {{ '已退費' }}
+      </button>
+    </li>
+  </ul>
+</ng-template>
+
+<ng-template
+  #shippedStatusSelector
+  let-index="index"
+  let-type="type"
+>
+  <ul
+    class="drop__menu"
+    *ngIf="
+         (type === 'productShipped' && uiFlag.showOrderStatusSelector === index)
+      || (type === 'awardShipped' && uiFlag.showAwardStatusSelector === index)
+    "
+  >
+    <li>
+      <button
+        class="status__yet"
+        (click)="changeShippedStatus($event, ProductShipped.unShip, index, type)"
+      >
+        {{ '未出貨' }}
+      </button>
+      <button
+        class="status__already"
+        (click)="changeShippedStatus($event, ProductShipped.shipped, index, type)"
+      >
+        {{ '已出貨' }}
+      </button>
+      <button
+        class="status__cancel"
+        (click)="changeShippedStatus($event, ProductShipped.returnGoods, index, type)"
+        *ngIf="type === 'productShipped'"
+      >
+        {{ '已退貨' }}
+      </button>
+    </li>
+  </ul>
+</ng-template>
+

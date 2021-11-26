@@ -1,0 +1,504 @@
+@import 'font.scss';
+@import 'color.scss';
+@import 'input.scss';
+@import 'none-select.scss';
+@import 'transition.scss';
+@import 'transform.scss';
+@import 'flex-center.scss';
+@import 'button.scss';
+@import 'check-box.scss';
+
+$edit-frame-color: rgba(150, 150, 150, 1);
+$dashed-border: 3px dashed $edit-frame-color;
+$placeholder-color: rgba(190, 190, 190, 1);
+$placeholder-font-size: 24px;
+$edit-nav-height: 60px;
+$list-shadow-color: rgba(150, 150, 150, 1);
+$edit-block-width: 70vw;
+$content-title-height: 20px;
+$age-selector-height: 30px;
+$delete-button-size: 20px;
+$drag-button-size: 30px;
+$video-input-height: 30px;
+$fee-img-size: 150px;
+$check-box-size: 18px;
+
+@mixin edit-block-border() {
+  border: $dashed-border;
+  border-radius: 10px;
+}
+
+@mixin placeholder-text(
+  $font-size: $placeholder-font-size,
+  $color: $placeholder-color
+) {
+  @include bold-font($font-size);
+  color: $color;
+}
+
+@mixin placeholder() {
+  outline: none;
+
+  &::placeholder {
+    @include placeholder-text();
+    @content
+  };
+
+}
+
+@mixin input-title-border() {
+  border: none;
+  border-bottom: 1px solid rgba(150, 150, 150, 1);
+}
+
+@mixin section-card() {
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 5px;
+}
+
+#edit__nav {
+  justify-content: space-between;
+  align-items: center;
+  height: $edit-nav-height;
+  padding: 0 10px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+#main__edit__content {
+  padding: 5vh 10vw;
+  height: calc(100vh - #{$edit-nav-height});
+  overflow-y: scroll;
+}
+
+#event__cancel {
+  align-items: center;
+  margin-bottom: 20px;
+
+  >input {
+    height: $check-box-size;
+    width: $check-box-size;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+
+  >label {
+    margin: 0;
+    font-size: 18px;
+  }
+
+}
+
+.radio__input {
+  cursor: pointer;
+}
+
+.edit__tool__button {
+  margin: 10px;
+
+  >i {
+    @include bold-font(36px);
+  }
+
+}
+
+#edit__theme__img {
+  position: relative;
+  width: $edit-block-width;
+  height: 35vw;
+  max-width: 1200px;
+  max-height: 600px;
+  cursor: pointer;
+  @include edit-block-border();
+
+  >i {
+    font-size: 150px;
+  }
+
+  >img {
+    position: absolute;
+    width: 85%;
+    max-height: 500px;
+  }
+
+}
+
+#edit__content__header {
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 20px 0;
+  max-width: 800px;
+
+  >input {
+    border: none;
+    border-bottom: 1px solid rgba(150, 150, 150, 1);
+    width: 240px;
+    @include bold-font(24px);
+    @include placeholder();
+  }
+
+}
+
+.info__cannot__edit {
+  margin-left: 10px;
+  cursor: not-allowed;
+}
+
+.people__limit__input {
+  @include input-title-border();
+  @include input-no-arrow();
+  width: 80px;
+  text-align: center;
+  outline: none;
+}
+
+.cloudrun__map {
+  border-bottom: 1px solid black;
+  cursor: not-allowed;
+  width: fit-content;
+  max-width: 300px;
+  margin: 10px 0;
+
+  >span {
+    @include placeholder-text();
+  }
+
+}
+
+.map__selector {
+  position: relative;
+  align-items: center;
+  cursor: pointer !important;
+  padding-right: 30px;
+
+  &:after {
+    content: '';
+    position: absolute;
+    right: 10px;
+    border-color: black transparent transparent transparent;
+    border-width: 8px 5px 0 5px;
+    border-style: solid;
+  }
+
+}
+
+#map__list {
+  position: absolute;
+  width: 300px;
+  padding: 10px;
+  top: 40px;
+  left: 0;
+  list-style: none;
+  background-color: white;
+  z-index: 2;
+  box-shadow: 1px 2px 4px $list-shadow-color, -1px -2px 4px $list-shadow-color;
+  max-height: 350px;
+  overflow-y: scroll;
+
+  >li {
+    padding: 5px;
+
+    &:hover {
+      background-color: $primary-blue;
+      color: white;
+    }
+
+  }
+
+}
+
+.map__distance {
+  display: inline-block;
+  width: 65px;
+
+  >span {
+    font-size: 12px;
+  }
+
+}
+
+#event__description {
+  margin: 10px 0;
+  padding: 10px;
+  width: $edit-block-width;
+  height: 100px;
+  resize: none;
+  @include edit-block-border();
+  @include placeholder() {
+    text-align: center;
+    line-height: 70px;
+  };
+
+}
+
+.edit__section__title {
+  @include bold-font(18px);
+  margin: 30px 0 10px 0;
+}
+
+.content__section {
+  margin: 10px 0;
+  padding: 10px;
+  width: $edit-block-width;
+  height: fit-content;
+  @include edit-block-border();
+  @include none-select();
+}
+
+.content__appendix {
+  position: relative;
+}
+
+.content__section__title {
+  padding: 2px 10px;
+  margin: 10px 0;
+  height: $content-title-height;
+  border-radius: $content-title-height;
+  width: 150px;
+}
+
+.content__text {
+  @include placeholder() {
+    text-align: center;
+    line-height: 70px;
+  };
+
+}
+
+.content__text[placeholder]:empty:before {
+  content: attr(placeholder);
+  color: $placeholder-color;
+  pointer-events: none;
+  display: block;
+}
+
+.content__img {
+  max-width: 60vw;
+  z-index: 1;
+}
+
+.placeholder__icon {
+
+  >i {
+    font-size: 96px;
+    color: $edit-frame-color;
+    text-align: center;
+  }
+  
+  >span {
+    font-size: 12px;
+    color: rgba(150, 150, 150, 1);
+  }
+  
+}
+
+.content__text__placeholder {
+  position: absolute;
+}
+
+.group__section__card {
+  @include section-card();
+  min-height: 180px;
+  justify-content: space-around;
+}
+
+.selector__label {
+  margin: 0;
+  font-weight: bold;
+}
+
+.condition__selector {
+  justify-content: space-around;
+  align-items: center;
+  position: relative;
+  text-align: center;
+  cursor: pointer;
+  min-width: 60px;
+
+  >span {
+    font-size: 20px;
+    color: rgba(100, 100, 100, 1);
+    height: $age-selector-height;
+  }
+
+  >i {
+    font-size: 22px;
+  }
+  
+}
+
+.selector__list {
+  position: absolute;
+  top: $age-selector-height;
+  padding: 5px;
+  list-style: none;
+  box-shadow: 1px 2px 4px $list-shadow-color, -1px -2px 4px $list-shadow-color;
+  background-color: white;
+  z-index: 2;
+  max-height: 150px;
+  overflow-y: scroll;
+
+  >li {
+    padding: 2px 10px;
+    white-space: nowrap;
+
+    &:hover {
+      background-color: $primary-blue;
+      color: white;
+    }
+
+  }
+
+}
+
+.group__name__input,
+.applyFee__title__input,
+.fee__input {
+  border: none;
+  border-bottom: 1px solid black;
+  outline: none;
+}
+
+.money__symbol {
+  @include bold-font(18px);
+}
+
+.icon--unfold {
+  @include transition(transform);
+}
+
+.icon--fold {
+  @include el-rotate(180deg);
+  @include transition(transform);
+}
+
+.delete__button {
+  @include button(20px, none, black) {
+    margin: 15px;
+    height: $delete-button-size;
+    width: $delete-button-size;
+    border-radius: 50%;
+    color: white;
+  };
+  
+  >i {
+    font-size: 20px;
+  }
+
+}
+
+.edit__photo__button {
+  margin: 10px 0;
+
+  >i {
+    font-size: 30px;
+  }
+
+}
+
+.photo__recovery__button {
+  @extend .edit__photo__button;
+}
+
+.group__section, .fee__section {
+
+  >div {
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  
+}
+
+.fee__section__card {
+  @include section-card();
+  height: 250px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fee__section__img {
+  position: relative;
+  width: $fee-img-size;
+  height: $fee-img-size;
+  @include center();
+
+  >i {
+    font-size: 48px;
+    color: rgba(200, 200, 200, 1);
+  }
+
+  >img {
+    object-fit: cover;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    margin: 10px;
+    z-index: 1;
+  }
+
+}
+
+.fee__input {
+  @include input-no-arrow();
+}
+
+.have__product {
+  @include checkBox(14px, 12px);
+  width: 100%;
+  margin: 15px 0px;
+
+  >label {
+    @include bold-font(18px);
+  }
+
+}
+
+.check__box--active {
+  @include checkBox-active(black, white);
+}
+
+.add__new__item {
+  width: 150px;
+  height: 60px;
+  margin: 10px;
+  cursor: pointer;
+  @include edit-block-border();
+  @include center();
+
+  >i {
+    @include bold-font(48px);
+  }
+
+}
+
+.drag__button {
+  @include button(18px, 1px solid rgba(150, 150, 150, 1)) {
+    height: $drag-button-size;
+    width: $drag-button-size;
+    border-radius: 5px;
+  };
+  
+}
+
+.video__url__input {
+  margin: 5px 0 10px 0;
+  height: $video-input-height;
+  border-radius: $video-input-height;
+  padding: 0 10px;
+}
+
+.empty__warn {
+  border-color: red !important;
+}
+
+/******************************************************* media ****************************************************/
+
+@media (max-width: 767px) {
+
+  .edit__tool__button {
+    margin: 2px;
+  }
+
+}

@@ -8,12 +8,12 @@ import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { ReportConditionOpt } from '../../../../shared/models/report-condition';
 import { ReportService } from '../../../../shared/services/report.service';
-import { unit } from '../../../../shared/models/bs-constant';
+import { Unit } from '../../../../shared/models/bs-constant';
 
 
 const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ',
       defaultEnd = moment().endOf('day'),
-      defaultStart = moment(defaultEnd).subtract(1, 'years').startOf('day');
+      defaultStart = moment(defaultEnd).subtract(3, 'years').startOf('day');
 
 @Component({
   selector: 'app-activity-list',
@@ -63,7 +63,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   activityList = [];
   targetUserId: number;
   totalCounts = 0;
-  unit = unit.metric;
+  unit = Unit.metric;
   readonly sportCode = SportCode;
 
   constructor(
@@ -88,7 +88,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     ).subscribe(res => {
       const { userId, systemAccessRight, unit: userUnit } = res;
       this.targetUserId = systemAccessRight ? undefined : userId;
-      this.unit = userUnit !== undefined ? userUnit : unit.metric;
+      this.unit = userUnit !== undefined ? userUnit : Unit.metric;
       this.reportService.setReportCondition(this.reportConditionOpt);
       this.getReportSelectedCondition();
     });

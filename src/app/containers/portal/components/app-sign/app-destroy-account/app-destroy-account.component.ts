@@ -10,7 +10,7 @@ import { Subject } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../../shared/services/auth.service';
-import { accountTypeEnum } from '../../../../dashboard/models/userProfileInfo';
+import { AccountTypeEnum } from '../../../../dashboard/models/userProfileInfo';
 
 @Component({
   selector: 'app-app-destroy-account',
@@ -47,7 +47,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
     destroyTimestamp: null
   };
 
-  readonly accountTypeEnum = accountTypeEnum;
+  readonly AccountTypeEnum = AccountTypeEnum;
   constructor(
     private utils: UtilsService,
     private router: Router,
@@ -66,6 +66,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
    * @author kidin-1090710
    */
   ngAfterViewInit () {
+console.log('view init');
     this.getDeviceSys();
     this.getUserToken();
   }
@@ -94,13 +95,9 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
     if (this.appSys === 0) {
       this.token = this.utils.getToken() || '';
     } else {
-      
-      if (location.search.indexOf('tk') > -1) {
-        this.token = location.search.split('?tk=')[1];
-      } else {
-        this.token = '';
-      }
-
+      const { search } = location;
+      const { tk } = this.utils.getUrlQueryStrings(search);
+      this.token = tk ? tk : '';
     }
 
     if (this.token.length === 0) {
@@ -267,7 +264,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
       } = res as any;
       if (this.utils.checkRes(res)) {
         this.destroyResp.status = status;
-        if (this.user.accountType === accountTypeEnum.phone) {
+        if (this.user.accountType === AccountTypeEnum.phone) {
           const msg = this.translate.instant('universal_userAccount_sendSmsSuccess');
           this.utils.openAlert(msg);
           this.countDown();

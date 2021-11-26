@@ -64,8 +64,6 @@ export class HttpStatusInterceptor implements HttpInterceptor {
               });
 
               auth.logout();
-              router.navigate(['/signIn-web']);
-
             }
             if (err.status === 504) {
               this.dialog.open(MessageBoxComponent, {

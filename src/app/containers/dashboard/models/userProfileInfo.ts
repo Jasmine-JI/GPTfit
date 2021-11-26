@@ -12,6 +12,8 @@ export interface UserProfileInfo {
   bodyWeight?: number;
   description: number | string;
   email?: string;
+  countryCode?: number;
+  mobileNumber?: number;
   fatRate?: number;
   gender?: Sex;
   groupAccessRightList?: Array<any>;
@@ -51,32 +53,37 @@ export interface UserProfileInfo {
   weightTrainingStrengthLevel?: number;
   wheelSize?: number;
   themeImgUrl?: string;
-  accountType?: AccountType;
+  accountType?: AccountTypeEnum;
+  accountStatus?: AccountStatusEnum;
 }
 
 /**
  * 性別
  */
-export enum sex {
+export enum Sex {
   male,
-  female
+  female,
+  unlimit
 }
 
-export type Sex = sex.male | sex.female;
-
-export enum hrBase {
+export enum HrBase {
   max,
   reserve
 }
 
-export type HrBase = hrBase.max | hrBase.reserve;
-
 /**
  * 帳號類別
  */
-export enum accountTypeEnum {
+export enum AccountTypeEnum {
   email = 1,
   phone
 }
 
-export type AccountType = accountTypeEnum.email | accountTypeEnum.phone;
+
+/**
+ * 帳號狀態
+ */
+ export enum AccountStatusEnum {
+  unenabled = 1,
+  enabled
+}

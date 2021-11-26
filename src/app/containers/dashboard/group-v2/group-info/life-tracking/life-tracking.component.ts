@@ -12,7 +12,7 @@ import { HashIdService } from '../../../../../shared/services/hash-id.service';
 import { ReportService } from '../../../../../shared/services/report.service';
 import { GroupService } from '../../../services/group.service';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
-import { mi, Unit, unit } from '../../../../../shared/models/bs-constant';
+import { mi, Unit } from '../../../../../shared/models/bs-constant';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { GroupLevel, SettingObj } from '../../../../dashboard/models/group-detail';
 import { MatCheckboxChange } from '@angular/material/checkbox';
@@ -214,7 +214,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   userInfo = {
     id: null,
     accessRight: null,
-    unit: <Unit>unit.metric
+    unit: <Unit>Unit.metric
   }
 
   /**
@@ -237,7 +237,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   };
 
   readonly tableLength = 8; // 分析列表預設顯示長度
-  readonly unitEnum = unit;
+  readonly unitEnum = Unit;
   readonly mi = mi;
   dateLen = 0; // 報告橫跨天數/週數
   previewUrl: string;

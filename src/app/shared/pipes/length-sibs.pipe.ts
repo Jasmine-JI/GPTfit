@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Unit, unit, ft, inch } from '../models/bs-constant';
+import { Unit, ft, inch } from '../models/bs-constant';
 
 type MetricLenUnit = 'cm' | 'mm';
 type ImperialLenUnit = 'ft' | 'inch';
@@ -37,7 +37,7 @@ export class LengthSibsPipe implements PipeTransform {
     const rounding = (value) => parseFloat(value.toFixed(digit ?? 2));
     let finalValue: number,
         dispUnit: MetricLenUnit | ImperialLenUnit;
-    const isMetric = userUnit === unit.metric,
+    const isMetric = userUnit === Unit.metric,
           isCentiMeter = valueUnit === 'cm';
     if (isMetric) {
       finalValue = value;

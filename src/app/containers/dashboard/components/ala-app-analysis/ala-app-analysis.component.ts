@@ -2,37 +2,35 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { AlaAppAnalysisService } from '../../services/ala-app-analysis.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import moment from 'moment';
-import { AppId, alaApp } from '../../../../shared/models/app-id';
-import { albumType, AlbumType } from '../../../../shared/models/image';
+import { AlaApp } from '../../../../shared/models/app-id';
+import { AlbumType } from '../../../../shared/models/image';
 import { GroupService } from '../../services/group.service';
 import { Subject, fromEvent, Subscription } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { HttpParams } from '@angular/common/http';
 
-enum statisticTypeEnum {
+enum StatisticTypeEnum {
   sports = 1,
   lifeTracking,
   image
 };
 
-enum objType {
+enum ObjType {
   all,
   user,
   group
 };
 
-type StatisticType = statisticTypeEnum.sports | statisticTypeEnum.lifeTracking | statisticTypeEnum.image;
 type StatisticMethod = 'pre' | 'realtime';
 type InputType = 'user' | 'group' | 'sn' | 'language' | 'region';
-type ObjType = objType.all | objType.user | objType.group;
 
 const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 const allApp = [
-  alaApp.gptfit,
-  alaApp.connect,
-  alaApp.cloudrun,
-  alaApp.trainlive,
-  alaApp.fitness
+  AlaApp.gptfit,
+  AlaApp.connect,
+  AlaApp.cloudrun,
+  AlaApp.trainlive,
+  AlaApp.fitness
 ];
 const commonRegion = [
   {code: 'TW', name: '台灣'},
@@ -50,7 +48,7 @@ const commonLanguage = [
 ];
 
 @Component({
-  selector: 'app-alaApp-analysis',
+  selector: 'app-AlaApp-analysis',
   templateUrl: './ala-app-analysis.component.html',
   styleUrls: ['./ala-app-analysis.component.scss']
 })
@@ -70,7 +68,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    */
   uiFlag = {
     progress: 100,
-    statisticType: <StatisticType>statisticTypeEnum.sports,
+    statisticType: <StatisticTypeEnum>StatisticTypeEnum.sports,
     statisticMethod: <StatisticMethod>'pre',
     showAdvancedCondition: false,
     showAutoCompleted: <InputType>null
@@ -89,9 +87,9 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    */
   imageReqBody = {
     token: this.utils.getToken(),
-    objectType: objType.all,
+    objectType: ObjType.all,
     subset: false,
-    imgType: albumType.all
+    imgType: AlbumType.all
   };
 
   /**
@@ -127,10 +125,10 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
   };
 
   autoCompletedList = [];
-  readonly alaApp = alaApp;
-  readonly albumType = albumType;
-  readonly objType = objType;
-  readonly statisticTypeEnum = statisticTypeEnum;
+  readonly AlaApp = AlaApp;
+  readonly AlbumType = AlbumType;
+  readonly ObjType = ObjType;
+  readonly StatisticTypeEnum = StatisticTypeEnum;
 
   constructor(
     private alaAppAnalysisService: AlaAppAnalysisService,
@@ -144,10 +142,10 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
 
   /**
    * 變更統計類別
-   * @param type {StatisticType}
+   * @param type {StatisticTypeEnum}
    * @author kidin-1100804
    */
-  changeStatisticType(type: StatisticType) {
+  changeStatisticType(type: StatisticTypeEnum) {
     if (this.uiFlag.statisticType !== type) {
       this.uiFlag.statisticType = type;
       this.checkCondition();
@@ -205,37 +203,37 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
     const { statisticType, statisticMethod } = this.uiFlag;
     if (this.uiFlag.showAdvancedCondition && statisticMethod === 'realtime') {
 
-      if (statisticType !== statisticTypeEnum.image) {
-        this.subscribeInput(objType.user);
-        this.subscribeInput(objType.group);
+      if (statisticType !== StatisticTypeEnum.image) {
+        this.subscribeInput(ObjType.user);
+        this.subscribeInput(ObjType.group);
       } else {
         const { objectType } = this.imageReqBody;
-        if (objectType === objType.user) {
-          this.subscribeInput(objType.user);
-          this.unSubscribeInput(objType.group);
-        } else if (objectType === objType.group) {
-          this.subscribeInput(objType.group);
-          this.unSubscribeInput(objType.user);
+        if (objectType === ObjType.user) {
+          this.subscribeInput(ObjType.user);
+          this.unSubscribeInput(ObjType.group);
+        } else if (objectType === ObjType.group) {
+          this.subscribeInput(ObjType.group);
+          this.unSubscribeInput(ObjType.user);
         } else {
-          this.unSubscribeInput(objType.user);
-          this.unSubscribeInput(objType.group);
+          this.unSubscribeInput(ObjType.user);
+          this.unSubscribeInput(ObjType.group);
         }
 
       }
 
     } else {
-      this.unSubscribeInput(objType.user);
-      this.unSubscribeInput(objType.group);
+      this.unSubscribeInput(ObjType.user);
+      this.unSubscribeInput(ObjType.group);
     }
 
   }
 
   /**
    * 選擇app類別
-   * @param app {AppId}-選擇的app
+   * @param app {AlaApp}-選擇的app
    * @author kidin-1100804
    */
-  selectApp(app: AppId) {
+  selectApp(app: AlaApp) {
     const { createFromApp } = this.filterCondition;
     if (app === 99) {
       this.filterCondition.createFromApp = createFromApp.length < 5 ? allApp : [];
@@ -259,30 +257,30 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
   selectObjType(type: ObjType) {
     this.imageReqBody.objectType = type;
     const { imgType } = this.imageReqBody;
-    if (type === objType.user) {
+    if (type === ObjType.user) {
       const userImageType = [
-        albumType.all,
-        albumType.personalIcon,
-        albumType.personalScenery,
-        albumType.personalSportFile
+        AlbumType.all,
+        AlbumType.personalIcon,
+        AlbumType.personalScenery,
+        AlbumType.personalSportFile
       ];
 
-      this.imageReqBody.imgType = userImageType.includes(imgType) ? imgType : albumType.all;
-      this.subscribeInput(objType.user);
-      this.unSubscribeInput(objType.group);
-    } else if (type === objType.group) {
+      this.imageReqBody.imgType = userImageType.includes(imgType) ? imgType : AlbumType.all;
+      this.subscribeInput(ObjType.user);
+      this.unSubscribeInput(ObjType.group);
+    } else if (type === ObjType.group) {
       const groupImageType = [
-        albumType.all,
-        albumType.groupIcon,
-        albumType.groupScenery
+        AlbumType.all,
+        AlbumType.groupIcon,
+        AlbumType.groupScenery
       ];
 
-      this.imageReqBody.imgType = groupImageType.includes(imgType) ? imgType : albumType.all;
-      this.subscribeInput(objType.group);
-      this.unSubscribeInput(objType.user);
+      this.imageReqBody.imgType = groupImageType.includes(imgType) ? imgType : AlbumType.all;
+      this.subscribeInput(ObjType.group);
+      this.unSubscribeInput(ObjType.user);
     } else {
-      this.unSubscribeInput(objType.user);
-      this.unSubscribeInput(objType.group);
+      this.unSubscribeInput(ObjType.user);
+      this.unSubscribeInput(ObjType.group);
     }
 
     this.allConditionRecovery();
@@ -311,7 +309,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    * @author kidin-1100805
    */
   subscribeInput(type: ObjType) {
-    const key = type === objType.user ? 'user' : 'group';
+    const key = type === ObjType.user ? 'user' : 'group';
     setTimeout(() => {
       const input = this[key].nativeElement,
             keyUpEvent = fromEvent(input, 'keyup');
@@ -322,7 +320,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
         const { value } = (event as any).target;
         if (value && value.length > 0) {
 
-          if (type === objType.user) {
+          if (type === ObjType.user) {
             this.getUserSearch(value);
           } else {
             this.getGroupSearch(value);
@@ -344,7 +342,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    * @author kidin-1100805
    */
   unSubscribeInput(type: ObjType) {
-    const prefix = type === objType.user ? 'user' : 'group';
+    const prefix = type === ObjType.user ? 'user' : 'group';
     this[`${prefix}InputSubscription`].unsubscribe();
   }
 
@@ -419,7 +417,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
       if (condition.findIndex(_condition => _condition[compareKey] === assignObj[compareKey]) < 0) {
 
         const { statisticType } = this.uiFlag;
-        if (statisticType === statisticTypeEnum.image) {
+        if (statisticType === StatisticTypeEnum.image) {
           this.filterCondition[showAutoCompleted] = [assignObj];
         } else {
           condition.push(assignObj);
@@ -592,9 +590,9 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
   imgConditionRecovery() {
     this.imageReqBody = {
       token: this.utils.getToken(),
-      objectType: objType.all,
+      objectType: ObjType.all,
       subset: false,
-      imgType: albumType.all
+      imgType: AlbumType.all
     };
 
   }
@@ -618,15 +616,15 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
       this.getTrackingCalculateData(body);
     } else {
 
-      if (statisticType === statisticTypeEnum.image) {
+      if (statisticType === StatisticTypeEnum.image) {
         body = this.imageReqBody;
         const { objectType } = this.imageReqBody;
-        if (objectType === objType.user)  {
+        if (objectType === ObjType.user)  {
           body = {
             userId: this.filterCondition.user[0].userId,
             ...body
           };
-        } else if (objectType === objType.group) {
+        } else if (objectType === ObjType.group) {
           body = {
             groupId: this.filterCondition.group[0].groupId,
             ...body
@@ -672,7 +670,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    * @author kidin-1100809
    */
   arrangeCondition(
-    searchFileType: StatisticType,
+    searchFileType: StatisticTypeEnum,
     searchTime: { startTime: string, endTime: string },
     condition: any
   ) {
@@ -825,19 +823,19 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
               const startTimestamp = moment(startTime).valueOf(),
                     oneRangeData = [startTimestamp, byte];
               switch (appId) {
-                case alaApp.gptfit:
+                case AlaApp.gptfit:
                   this.searchRes.trendChart.gptfit.push(oneRangeData);
                   break;
-                case alaApp.connect:
+                case AlaApp.connect:
                   this.searchRes.trendChart.connect.push(oneRangeData);
                   break;
-                case alaApp.cloudrun:
+                case AlaApp.cloudrun:
                   this.searchRes.trendChart.cloudrun.push(oneRangeData);
                   break;
-                case alaApp.trainlive:
+                case AlaApp.trainlive:
                   this.searchRes.trendChart.trainlive.push(oneRangeData);
                   break;
-                case alaApp.fitness:
+                case AlaApp.fitness:
                   this.searchRes.trendChart.fitness.push(oneRangeData);
                   break;
               }

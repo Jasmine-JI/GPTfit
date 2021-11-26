@@ -71,6 +71,7 @@ input[type='email']::-webkit-input-placeholder {
     z-index: 5;
     max-height: calc(100vh - 65px);
     overflow-y: scroll;
+    scrollbar-width: thin;
   }
 
   .nav-rwd {

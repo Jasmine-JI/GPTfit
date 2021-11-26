@@ -4,7 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../services/utils.service';
 import { SettingsService } from '../../../containers/dashboard/services/settings.service';
-import { PrivacyCode, privacyObj, allPrivacyItem } from '../../models/user-privacy';
+import { PrivacyObj, allPrivacyItem } from '../../models/user-privacy';
 
 @Component({
   selector: 'app-edit-individual-privacy',
@@ -16,8 +16,8 @@ export class EditIndividualPrivacyComponent implements OnInit {
     gym: ''
   };
 
-  openObj = [privacyObj.self];
-  readonly privacyObj = privacyObj;
+  openObj = [PrivacyObj.self];
+  readonly PrivacyObj = PrivacyObj;
 
   constructor(
     private utils: UtilsService,
@@ -43,18 +43,18 @@ export class EditIndividualPrivacyComponent implements OnInit {
   getCurrentSetting() {
     const { openObj } = this.data;
     // 避免隱私權沒有帶到1的情況
-    if (openObj.includes(privacyObj.self)) {
+    if (openObj.includes(PrivacyObj.self)) {
       this.openObj = [...openObj];
     } else {
-      this.openObj = [privacyObj.self, ...openObj];
+      this.openObj = [PrivacyObj.self, ...openObj];
     }
 
     // 避免隱私權有帶3卻沒帶到4的情況
     if (
-      openObj.includes(privacyObj.myGroup)
-      && !openObj.includes(privacyObj.onlyGroupAdmin)
+      openObj.includes(PrivacyObj.myGroup)
+      && !openObj.includes(PrivacyObj.onlyGroupAdmin)
     ) {
-      this.openObj.push(privacyObj.onlyGroupAdmin);
+      this.openObj.push(PrivacyObj.onlyGroupAdmin);
     }
 
     this.openObj.sort((a, b) => a - b);
@@ -71,55 +71,55 @@ export class EditIndividualPrivacyComponent implements OnInit {
 
   /** 
    * 選擇開放隱私權的對象 1:僅自己 2:我的朋友 3:我的群組 4:我的健身房教練 99:所有人
-   * @param privacy {PrivacyCode}
+   * @param privacy {PrivacyObj}
    * @author kidin-1100302
    */
-  selectModifyRange (privacy: PrivacyCode) {
+  selectModifyRange (privacy: PrivacyObj) {
     const privacySetting = this.openObj;
     switch (privacy) {
 
-      case privacyObj.anyone:
+      case PrivacyObj.anyone:
 
-        if (privacySetting.includes(privacyObj.anyone)) {
-          this.openObj = [privacyObj.self];
+        if (privacySetting.includes(PrivacyObj.anyone)) {
+          this.openObj = [PrivacyObj.self];
         } else {
           this.openObj = [...allPrivacyItem];
         }
 
         break;
-      case privacyObj.myGroup:
+      case PrivacyObj.myGroup:
 
-        if (privacySetting.includes(privacyObj.myGroup)) {
+        if (privacySetting.includes(PrivacyObj.myGroup)) {
           this.openObj = privacySetting.filter(_setting => {
-            return _setting !== privacyObj.myGroup && _setting !== privacyObj.anyone;
+            return _setting !== PrivacyObj.myGroup && _setting !== PrivacyObj.anyone;
           });
         } else {
-          this.openObj.push(privacyObj.myGroup);
+          this.openObj.push(PrivacyObj.myGroup);
           // 群組管理員視為同群組成員
-          if (!privacySetting.includes(privacyObj.onlyGroupAdmin)) {
-            this.openObj.push(privacyObj.onlyGroupAdmin);
+          if (!privacySetting.includes(PrivacyObj.onlyGroupAdmin)) {
+            this.openObj.push(PrivacyObj.onlyGroupAdmin);
           }
 
         }
 
         break;
-      case privacyObj.onlyGroupAdmin:
+      case PrivacyObj.onlyGroupAdmin:
 
-        if (privacySetting.includes(privacyObj.onlyGroupAdmin)) {
+        if (privacySetting.includes(PrivacyObj.onlyGroupAdmin)) {
           this.openObj = privacySetting.filter(_setting => {
-            return ![privacy, privacyObj.myGroup, privacyObj.anyone].includes(_setting);
+            return ![privacy, PrivacyObj.myGroup, PrivacyObj.anyone].includes(_setting);
           });
         } else {
           this.openObj.push(privacy);
         }
 
         break;
-      case privacyObj.self:
+      case PrivacyObj.self:
 
         if (privacySetting.length > 1) {
-          this.openObj = [privacyObj.self];
+          this.openObj = [PrivacyObj.self];
         } else {
-          this.openObj = [privacyObj.self, privacyObj.onlyGroupAdmin];
+          this.openObj = [PrivacyObj.self, PrivacyObj.onlyGroupAdmin];
         }
 
         break;

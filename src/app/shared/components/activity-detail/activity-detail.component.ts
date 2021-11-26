@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, Cha
 import { Subject, fromEvent, Subscription, of } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { UserProfileService } from '../../services/user-profile.service';
-import { UserProfileInfo, hrBase } from '../../../containers/dashboard/models/userProfileInfo';
+import { UserProfileInfo, HrBase } from '../../../containers/dashboard/models/userProfileInfo';
 import { UtilsService } from '../../services/utils.service';
 import { ActivityService } from '../../services/activity.service';
 import { Router } from '@angular/router';
@@ -20,11 +20,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../message-box/message-box.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShareGroupInfoDialogComponent } from '../share-group-info-dialog/share-group-info-dialog.component';
-import { PrivacyCode } from '../../models/user-privacy';
+import { PrivacyObj } from '../../models/user-privacy';
 import { EditIndividualPrivacyComponent } from '../edit-individual-privacy/edit-individual-privacy.component';
 import { Proficiency } from '../../models/weight-train';
 import { SettingsService } from '../../../containers/dashboard/services/settings.service';
-import { albumType } from '../../models/image';
+import { AlbumType } from '../../models/image';
 import { v5 as uuidv5 } from 'uuid';
 import { ImageUploadService } from '../../../containers/dashboard/services/image-upload.service';
 
@@ -140,7 +140,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   chartData = {
     hr: [0, 0, 0, 0, 0, 0],
     hrInfo: <HrZoneRange>{
-      hrBase: hrBase.max,
+      hrBase: HrBase.max,
       z0: <number | string>0,
       z1: <number | string>0,
       z2: <number | string>0,
@@ -149,7 +149,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       z5: <number | string>0
     },
     defaultHrInfo: <HrZoneRange>{
-      hrBase: hrBase.max,
+      hrBase: HrBase.max,
       z0: <number>0,
       z1: <number>0,
       z2: <number>0,
@@ -227,9 +227,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   previewUrl = '';
   progress = 0;
   compareChartQueryString = '';
-  filePrivacy: Array<PrivacyCode> = [1];
+  filePrivacy: Array<PrivacyObj> = [1];
   cloudrunMapId: number;
-  readonly albumType = albumType;
+  readonly AlbumType = AlbumType;
 
   // 頁面所需資訊
   readonly needKey = [
@@ -393,7 +393,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         gender: 0,
         groupAccessRightList: null,
         handedness: null,
-        heartRateBase: hrBase.max,
+        heartRateBase: HrBase.max,
         heartRateMax: 195,
         heartRateResting: 60,
         lastBodyTimestamp: null,
@@ -2004,10 +2004,10 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 修改隱私權設定成功後替換fileInfo的privacy
-   * @param privacy {Array<PrivacyCode>}-該筆運動檔案隱私權設定
+   * @param privacy {Array<PrivacyObj>}-該筆運動檔案隱私權設定
    * @author kidin-1100302
    */
-  editPrivacy(privacy: Array<PrivacyCode>) {
+  editPrivacy(privacy: Array<PrivacyObj>) {
     this.fileInfo.privacy = privacy;
     this.changeDetectorRef.markForCheck();
   }
@@ -2164,14 +2164,14 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       if (base64 !== null) {
         const fileName = this.createFileName(imgArr.length, `${userId}`);
         imgArr.unshift({
-          albumType: albumType.personalSportFile,
+          albumType: AlbumType.personalSportFile,
           fileNameFull: `${fileName}.jpg`,
           activityFileId: this.fileInfo.fileId
         })
 
         formData.append(
           'file',
-          this.utils.base64ToFile(albumType.personalSportFile, base64, fileName)
+          this.utils.base64ToFile(base64, fileName)
         );
 
       }
@@ -2195,7 +2195,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         token: this.utils.getToken(),
         targetType: 1,
         img: [{
-          albumType: albumType.personalSportFile,
+          albumType: AlbumType.personalSportFile,
           activityFileId: this.fileInfo.fileId,
           fileNameFull: this.getPhotoName(photo)
         }]

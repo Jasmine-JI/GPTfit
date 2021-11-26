@@ -38,7 +38,7 @@
             <i
               class="icon-svg_web-icon_p1_069-about"
               style="color: #ff3838; font-size: 30px; position: absolute; right: -15px; bottom: 0px;"
-              *ngIf="accountStatus === 1"
+              *ngIf="userProfile.accountStatus === 1"
             ></i>
           </div>
           <div class="dropdown-menu dropdown-user-menu" [class.show]="isUserMenuShow"
@@ -46,7 +46,11 @@
           >
             <div class="header-nav-menu-section">
               <ul>
-                <li style="color: #ff3838; font-weight: bold;" (click)="toEnableAccount()" *ngIf="accountStatus === 1">
+                <li
+                  style="color: #ff3838; font-weight: bold;"
+                  (click)="toEnableAccount()"
+                  *ngIf="userProfile.accountStatus === 1"
+                >
                   {{ "universal_deviceSetting_switch" | translate}} {{ "universal_userAccount_account" | translate}}
                 </li>
                 <li [routerLink]="['/dashboard/user-settings']">
@@ -116,7 +120,7 @@
           </div>
         </div>
       </div>
-      <div class="flexCol" style="justify-content: space-between; height: 90vh; overflow-y: scroll; scrollbar-width: none;">
+      <div id="aside__menu" class="flexCol">
         <main>
           <section style="margin-bottom: 30px;">
             <div
@@ -358,23 +362,6 @@
             </div>
             <div
               class="nav__color"
-              *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30 && uiFlag.sidebarMode !== 'hide'"
-            >
-              <li
-                class="ala-sidenav-item drop__down"
-                (click)="chooseItem(sideBarList.eventManagement)"
-                [class.ala-sidenav-menu-item__active]="target === sideBarList.eventManagement"
-                [routerLink]="['/dashboard/system/event-management']"
-                *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30"
-              >
-                <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon" *ngIf="uiFlag.sidebarMode !== 'hide'"></i>
-                <span class="navbar__list__title" [style.display]="uiFlag.sidebarMode !== 'expand' && !uiFlag.navFixed ? 'none' : flex">
-                  {{"universal_race_racesManagement" | translate }}
-                </span>
-              </li>
-            </div>
-            <div
-              class="nav__color"
               [style.background-color]="uiFlag.currentDrop === 'groupManagement' ? 'rgba(54, 60, 60, 1)' : 'initial'"
               *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30 && uiFlag.sidebarMode !== 'hide'"
             >
@@ -521,7 +508,7 @@
                 (click)="chooseItem(sideBarList.appFlowAnalysis)"
                 [class.ala-sidenav-menu-item__active]="target === sideBarList.appFlowAnalysis"
                 [routerLink]="['/dashboard/system/ala-app-analysis']"
-                *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 29"
+                *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 29"
               >
                 <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon" *ngIf="uiFlag.sidebarMode !== 'hide'"></i>
                 <span class="navbar__list__title" [style.display]="uiFlag.sidebarMode !== 'expand' && !uiFlag.navFixed ? 'none' : flex">

@@ -395,6 +395,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   border: 1px solid #bcbcbc;
   height: 150px;
   overflow-y: scroll;
+  scrollbar-width: thin;
   background-color: var(--scale-255-90);
 
   div {
