@@ -388,21 +388,27 @@ function queryTranslate(body) {
   const table = [];
   const condition = [];
   for (let tableName in search) {
-    const { needToken, originName, field } = tableRename[tableName];
-    if (needToken && !token) {
+
+    if (!tableRename[tableName]) {
       return translateResult;
     } else {
-      table.push(originName);
-      const { target, args } = search[tableName];
-      translateResult.sql = `select ${getTargetField(field, target, originName)}`;
+      const { needToken, originName, field } = tableRename[tableName];
+      if (needToken && !token) {
+        return translateResult;
+      } else {
+        table.push(originName);
+        const { target, args } = search[tableName];
+        translateResult.sql = `select ${getTargetField(field, target, originName)}`;
 
-      if (args) {
+        if (args) {
 
-        for (let arg in args) {
-          const schemaFieldName = field[arg];
-          const key = `${originName}.${schemaFieldName}`;
-          const value = args[arg];
-          condition.push({ key, value });
+          for (let arg in args) {
+            const schemaFieldName = field[arg];
+            const key = `${originName}.${schemaFieldName}`;
+            const value = args[arg];
+            condition.push({ key, value });
+          }
+
         }
 
       }
@@ -411,7 +417,7 @@ function queryTranslate(body) {
 
   }
 
-  if (condition.length === 0 && !token) {
+  if (condition.length === 0) {
     return translateResult;
   } else {
     const [conditionString, algebra] = getCondition(table, condition, token);
@@ -483,17 +489,33 @@ function getCondition(table, condition, token) {
       algebra.push('user_profile');
     }
 
-    const endString = condition.length > 0 ? ' and ' : '';
+    const endString = conditionLength > 0 ? ' and ' : '';
     string = `${string}user_profile.access_token like ?${userIdCondition}${endString}`;
     algebra.push(token);
   }
 
+  let orderBy;
+  let finalAlgebra;
   condition.forEach((_condition, index) => {
     const { key, value } = _condition;
-    const addString = index === conditionLength - 1 ? '?' : '? and ';
-    algebra.push(value);
-    string = `${string}${key} like ${addString}`;
+    if (Array.isArray(value)) {
+      const addString = index + 1 < conditionLength ? '(?) and ' : '(?)';
+      algebra.push(value);
+      string = `${string}${key} in ${addString}`;
+      orderBy = `order by field(${key}, ?) asc`;
+      finalAlgebra = [...value];
+    } else {
+      const addString = index + 1 < conditionLength ? '? and ' : '?';
+      algebra.push(value);
+      string = `${string}${key} like ${addString}`;
+    }
+
   });
+
+  if (orderBy) {
+    string = `${string} ${orderBy}`;
+    algebra.push(finalAlgebra);
+  }
 
   string = `${string};`;
   return [string, algebra];

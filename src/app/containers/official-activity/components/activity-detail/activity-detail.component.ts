@@ -4,8 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { formTest } from '../../../../shared/models/form-test';
-import { Subject, Subscription, fromEvent, combineLatest } from 'rxjs';
-import { takeUntil, map } from 'rxjs/operators';
+import { Subject, Subscription, fromEvent, of } from 'rxjs';
+import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { pageNotFoundPath } from '../../models/official-activity-const';
 import { EventStatus } from '../../models/activity-content';
 
@@ -31,6 +31,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
    * ui會用到的flag
    */
   uiFlag = {
+    progress: 100,
     isAdmin: false,
     applyButtonStatus: ApplyButtonStatus.canApply,
     raceEnd: false,
@@ -88,23 +89,35 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
    * @author kidin-1101015
    */
   getAccessRight() {
-    const token = this.utils.getToken();
-    if (token) {
-      const { eventId } = this;
-      combineLatest([
-        this.userProfileService.getRxUserProfile(),
-        this.checkApplied(token, eventId)
-      ]).pipe(
-        takeUntil(this.ngUnsubscribe)
-      ).subscribe(res => {
-        const [userProfile, checkApplied] = res;
-        const { systemAccessRight } = userProfile;
-        const { result: { eventId: appliedEventId } } = checkApplied;
-        this.uiFlag.isAdmin = systemAccessRight[0] === 28;
-        if (appliedEventId) this.uiFlag.applyButtonStatus = ApplyButtonStatus.applied;
-      });
+    this.userProfileService.getRxUserProfile().pipe(
+      switchMap(userProfile => {
+        if (userProfile) {
+          const token = this.utils.getToken();
+          const { eventId } = this;
+          return this.checkApplied(token, eventId).pipe(
+            map(applyResult => [userProfile, applyResult])
+          )
+        } else {
+          return of([userProfile]);
+        }
 
-    }
+      }),
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+        const [userProfile, checkApplied] = res;
+        if (userProfile) {
+          const { systemAccessRight } = userProfile;
+          const { eventId: appliedEventId } = checkApplied.result[0];
+          this.uiFlag.isAdmin = systemAccessRight[0] === 28;
+          if (appliedEventId) this.uiFlag.applyButtonStatus = ApplyButtonStatus.applied;
+
+        } else {
+          this.uiFlag.applyButtonStatus = ApplyButtonStatus.canApply;
+          this.uiFlag.isAdmin = false;
+          if (this.eventInfo) this.checkApplyDate(this.currentTimestamp);
+        }
+        
+      });
 
   }
 
@@ -113,11 +126,11 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
    * @author kidin-1101014
    */
   getActivityDetail() {
+    this.uiFlag.progress = 30;
     this.eventId = +this.activatedRoute.snapshot.paramMap.get('eventId');
     const body = { eventId: this.eventId };
     this.officialActivityService.getEventDetail(body).subscribe(res => {
-console.log('event detail', res);
-      if (this.utils.checkRes(res)) {
+      if (this.utils.checkRes(res, false)) {
         const { eventInfo, eventDetail, currentTimestamp } = res;
         this.eventInfo = eventInfo;
         this.eventDetail = eventDetail;
@@ -127,6 +140,7 @@ console.log('event detail', res);
         this.router.navigateByUrl(pageNotFoundPath);
       }
 
+      this.uiFlag.progress = 100;
     });
 
   }

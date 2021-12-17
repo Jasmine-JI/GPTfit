@@ -13,6 +13,17 @@ const { API_SERVER } = environment.url;
 export class CloudrunService {
 
   /**
+   * api-2004 開啟競賽
+   * @param body {any}
+   * @author kidin-1101117
+   */
+  createRace (body: any) {
+    return this.http.post<any>('/api/v1/race/createRace', body).pipe(
+      catchError(err => throwError(err))
+    );
+  }
+
+  /**
    * api-2010 取得排行榜資料
    * @param body {any}
    * @author kidin-1090421
@@ -24,7 +35,7 @@ export class CloudrunService {
   }
 
   /**
-   * api-1015 編輯排程賽局
+   * api-2015 編輯排程賽局
    * @param body {any}
    * @author kidin-1101117
    */

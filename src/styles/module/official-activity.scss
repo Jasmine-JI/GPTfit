@@ -1,0 +1,109 @@
+/**
+ * 官方活動樣式相關
+ * @prefix official-
+ */
+
+@import 'flex-center.scss';
+@import 'font.scss';
+@import 'color.scss';
+@import 'button.scss';
+
+ 
+@mixin main-button() {
+  border-radius: 10px;
+  width: 100px;
+  min-height: 40px;
+  font-weight: bold;
+}
+
+.official-dialog {
+  @include center();
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 5;
+
+  >div {
+    width: 310px;
+    background-color: white;
+  }
+
+}
+
+.official-dialogTitle {
+  $height: 45px;
+  @include center();
+  background-color: $official-theme-color;
+  color: white;
+  height: $height;
+  min-height: $height;
+
+  >h5 {
+    @include center();
+    @include bold-font(24px);
+    position: relative;
+    left: -10px;
+    margin: 0;
+
+    >img {
+      height: 20px;
+    }
+
+  }
+
+}
+
+.official-dialogContent {
+  justify-content: space-between;
+  align-items: center;
+  min-height: 150px;
+  height: 100%;
+  padding: 15px 20px;
+  
+  >div {
+    width: 100%;
+  }
+
+}
+
+.official-submitButton {
+  @include main-button();
+  color: white;
+  border-style: solid;
+  border-width: 3px 5px;
+  border-color: rgba(255, 159, 159, 1);
+  background-color: $official-theme-color-deep;
+}
+
+.official-subButton {
+  border-radius: 10px;
+  width: 100px;
+  min-height: 40px;
+  font-weight: bold;
+  border: 1px solid $official-theme-color;
+  color: $official-theme-color-deep;
+}
+
+.official-dashBorder {
+  border: 3px dashed rgba(150, 150, 150, 1);
+  border-radius: 10px;
+}
+
+.official-deleteButton {
+  $size: 20px;
+  @include button(20px, none, black) {
+    margin: 15px;
+    height: $size;
+    width: $size;
+    border-radius: 50%;
+    color: white;
+  };
+  
+  >i {
+    font-size: 20px;
+  }
+
+}

@@ -8,8 +8,6 @@
 @import 'button.scss';
 @import 'check-box.scss';
 
-$edit-frame-color: rgba(150, 150, 150, 1);
-$dashed-border: 3px dashed $edit-frame-color;
 $placeholder-color: rgba(190, 190, 190, 1);
 $placeholder-font-size: 24px;
 $edit-nav-height: 60px;
@@ -17,16 +15,12 @@ $list-shadow-color: rgba(150, 150, 150, 1);
 $edit-block-width: 70vw;
 $content-title-height: 20px;
 $age-selector-height: 30px;
-$delete-button-size: 20px;
 $drag-button-size: 30px;
 $video-input-height: 30px;
 $fee-img-size: 150px;
 $check-box-size: 18px;
-
-@mixin edit-block-border() {
-  border: $dashed-border;
-  border-radius: 10px;
-}
+$placeholder-img-size: 15vw;
+$placeholder-img-max-size: 220px;
 
 @mixin placeholder-text(
   $font-size: $placeholder-font-size,
@@ -101,6 +95,12 @@ $check-box-size: 18px;
     @include bold-font(36px);
   }
 
+  >img {
+    $size: 36px;
+    height: $size;
+    width: $size;
+  }
+
 }
 
 #edit__theme__img {
@@ -110,13 +110,15 @@ $check-box-size: 18px;
   max-width: 1200px;
   max-height: 600px;
   cursor: pointer;
-  @include edit-block-border();
 
-  >i {
-    font-size: 150px;
+  >.placeholder__img {
+    height: $placeholder-img-size;
+    width: $placeholder-img-size;
+    max-height: $placeholder-img-max-size;
+    max-width: $placeholder-img-max-size;
   }
 
-  >img {
+  >.loaded__img {
     position: absolute;
     width: 85%;
     max-height: 500px;
@@ -225,7 +227,6 @@ $check-box-size: 18px;
   width: $edit-block-width;
   height: 100px;
   resize: none;
-  @include edit-block-border();
   @include placeholder() {
     text-align: center;
     line-height: 70px;
@@ -243,7 +244,6 @@ $check-box-size: 18px;
   padding: 10px;
   width: $edit-block-width;
   height: fit-content;
-  @include edit-block-border();
   @include none-select();
 }
 
@@ -281,15 +281,16 @@ $check-box-size: 18px;
 
 .placeholder__icon {
 
-  >i {
-    font-size: 96px;
-    color: $edit-frame-color;
-    text-align: center;
-  }
-  
   >span {
     font-size: 12px;
     color: rgba(150, 150, 150, 1);
+  }
+
+  >img {
+    height: $placeholder-img-size;
+    width: $placeholder-img-size;
+    max-height: $placeholder-img-max-size;
+    max-width: $placeholder-img-max-size;
   }
   
 }
@@ -374,26 +375,13 @@ $check-box-size: 18px;
   @include transition(transform);
 }
 
-.delete__button {
-  @include button(20px, none, black) {
-    margin: 15px;
-    height: $delete-button-size;
-    width: $delete-button-size;
-    border-radius: 50%;
-    color: white;
-  };
-  
-  >i {
-    font-size: 20px;
-  }
-
-}
-
 .edit__photo__button {
   margin: 10px 0;
 
-  >i {
-    font-size: 30px;
+  >img {
+    $size: 40px;
+    width: $size;
+    height: $size;
   }
 
 }
@@ -413,7 +401,7 @@ $check-box-size: 18px;
 
 .fee__section__card {
   @include section-card();
-  height: 250px;
+  height: 270px;
   justify-content: space-between;
   align-items: center;
 }
@@ -421,7 +409,7 @@ $check-box-size: 18px;
 .fee__section__img {
   position: relative;
   width: $fee-img-size;
-  height: $fee-img-size;
+  min-height: $fee-img-size;
   @include center();
 
   >i {
@@ -429,15 +417,20 @@ $check-box-size: 18px;
     color: rgba(200, 200, 200, 1);
   }
 
-  >img {
-    object-fit: cover;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    margin: 10px;
-    z-index: 1;
-  }
+}
 
+.fee__placeholder__img {
+  position: absolute;
+  height: 50%;
+  margin: 10px;
+  z-index: 1;
+}
+
+.fee__img {
+  @extend .fee__placeholder__img;
+  object-fit: cover;
+  height: 100%;
+  width: 100%;
 }
 
 .fee__input {
@@ -464,7 +457,6 @@ $check-box-size: 18px;
   height: 60px;
   margin: 10px;
   cursor: pointer;
-  @include edit-block-border();
   @include center();
 
   >i {

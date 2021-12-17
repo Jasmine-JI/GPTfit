@@ -730,6 +730,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
         cue: '',
         code: ''
       };
+      
     });
 
   }

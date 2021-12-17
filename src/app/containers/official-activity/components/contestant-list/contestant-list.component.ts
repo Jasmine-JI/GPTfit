@@ -4,14 +4,19 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { formTest } from '../../../../shared/models/form-test';
-import { Subject, Subscription, fromEvent, combineLatest, merge } from 'rxjs';
+import { Subject, Subscription, fromEvent, combineLatest, merge, of } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { pageNotFoundPath } from '../../models/official-activity-const';
+import { pageNotFoundPath, officialHomePage } from '../../models/official-activity-const';
 import { CloudrunService } from '../../../../shared/services/cloudrun.service';
 import { RankType } from '../../../../shared/models/cloudrun-leaderboard';
 import { ProductShipped, HaveProduct, ApplyStatus, PaidStatusEnum, Nationality } from '../../models/activity-content';
 import moment from 'moment';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { PaidStatusPipe } from '../../pipes/paid-status.pipe';
+import { ShippedStatusPipe } from '../../pipes/shipped-status.pipe';
+import { TranslateService } from '@ngx-translate/core';
+import { Sex } from '../../../dashboard/models/userProfileInfo';
+import { AgePipe } from '../../../../shared/pipes/age.pipe';
 
 
 type SortType = 'rank' | 'group' | 'paidStatus' | 'orderStatus' | 'awardStatus' | 'paidDate' | 'shippedDate';
@@ -25,6 +30,16 @@ type ProfileEditType =
   | 'name'
   | 'relationship'
   | 'mobileNumber';
+
+interface SortSet {
+  type: SortType;
+  order: SortSequence;
+}
+
+const defaultSortSet = <SortSet>{
+  type: 'rank',
+  order: 'asc'
+};
 
 @Component({
   selector: 'app-contestant-list',
@@ -40,6 +55,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    * ui會用到的flag
    */
   uiFlag = {
+    progress: 100,
     showFilterSelector: false,
     focusList: null,
     expandDetail: null,
@@ -50,10 +66,11 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     detailEditable: false,
     screenSize: window.innerWidth,
     deleteMode: false,
-    showSortMenu: false
+    showSortMenu: false,
+    focusInput: false
   };
 
-  sortSet = {
+  sortSet = <SortSet>{
     type: 'rank',
     order: 'asc'
   };
@@ -66,7 +83,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     targetEventId: null,
     page: {
       index: 0,
-      counts: 10
+      counts: 100
     }
   };
 
@@ -75,8 +92,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    */
   listFilter = {
     type: <SortType>null,
-    status: null,
-    groupId: null,
+    value: null,
     groupName: null
   };
 
@@ -93,6 +109,8 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    */
   groupList: any;
 
+
+  serverTimeDiff = null;
   token: string;
   eventId: number;
   eventInfo: any;
@@ -100,6 +118,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
   participantList: Array<any>;
   allMapInfo: Array<any>;
   reArrangeList = [];
+  backupLeaveList = [];
   leaveList = [];
   readonly mapIconPath = '/app/public_html/cloudrun/update/';
   readonly ProductShipped = ProductShipped;
@@ -113,7 +132,11 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     private router: Router,
     private userProfileService: UserProfileService,
     private cloudrunService: CloudrunService,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    private paidStatusPipe: PaidStatusPipe,
+    private shippedStatusPipe: ShippedStatusPipe,
+    private translate: TranslateService,
+    private agePipe: AgePipe
   ) {}
 
   ngOnInit(): void {
@@ -158,13 +181,18 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    * @author kidin-1101015
    */
   getAccessRight() {
-    const { token } = this;
     this.userProfileService.getRxUserProfile().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
-      const { systemAccessRight } = res;
-      const notAdmin = systemAccessRight[0] !== 28;
-      if (notAdmin) this.router.navigateByUrl(pageNotFoundPath);
+      if (res) {
+        const { systemAccessRight } = res;
+        const notAdmin = systemAccessRight[0] !== 28;
+        if (notAdmin) this.router.navigateByUrl(officialHomePage);
+
+      } else {
+        this.router.navigateByUrl(officialHomePage);
+      }
+
     });
 
   }
@@ -187,13 +215,17 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         this.groupList = this.getGroupList(group);
         this.allMapInfo = mapInfo as Array<any>;
         if (this.utils.checkRes(detail)) {
-          const { 
-            cloudrunMapId: mapId,
-            raceDate: {
-              startDate: raceStartDate,
-              endDate: raceEndDate
-            }
-          } = detail.eventInfo;
+          const {
+            eventInfo: {
+              cloudrunMapId: mapId,
+              raceDate: {
+                startDate: raceStartDate,
+                endDate: raceEndDate
+              }
+            },
+            currentTimestamp
+          } = detail;
+          this.saveServerTime(currentTimestamp);
           const body = {
             token,
             eventId,
@@ -214,7 +246,6 @@ export class ContestantListComponent implements OnInit, OnDestroy {
 
       })
     ).subscribe(result => {
-console.log('event detail', result);
       if (this.utils.checkRes(result)) {
         const { info: { rankList } } = result as any;
         this.leaderboard = rankList;
@@ -232,13 +263,13 @@ console.log('event detail', result);
    */
   getGroupList(group: any) {
     const groupLength = group.length;
-    const groupColor = this.assignGroupColor(groupLength);
+    const groupColor = this.officialActivityService.assignGroupColor(groupLength);
     const groupList = group.map((_group, index) => {
       const color = groupColor[index];
       Object.assign(_group, { color });
       return _group;
     });
-console.log('gorupList', groupList);
+
     return groupList;
   }
 
@@ -247,26 +278,36 @@ console.log('gorupList', groupList);
    * @author kidin-1101117
    */
   getParticipantList() {
-    this.officialActivityService.getParticipantList(this.searchInfo).pipe(
-      map(res => {
-console.log('participantList', res);
-        if (this.utils.checkRes(res)) {
-          const { participantList } = res;
-          return this.reEditList(participantList);
-        } else {
-          return [];
-        }
+    const { progress } = this.uiFlag;
+    if (progress === 100) {
+      this.uiFlag.progress = 30;
+      this.officialActivityService.getParticipantList(this.searchInfo).pipe(
+        map(res => {
+          if (this.utils.checkRes(res)) {
+            const { participantList } = res;
+            return this.reEditList(participantList);
+          } else {
+            return [];
+          }
 
-      }),
-      map(reEditList => this.bindRecord(reEditList))
-    ).subscribe(bindResult => {
-console.log('bindResult', bindResult);
-      const [normalList, leaveList] = this.filterApplyStatus(bindResult);
-      this.participantList = normalList;
-      this.leaveList = leaveList;
-      this.reArrangeList = this.sortList();
-console.log('reArrangeList', this.reArrangeList);
-    });
+        }),
+        map(reEditList => this.bindRecord(reEditList))
+      ).subscribe(bindResult => {
+        const [normalList, leaveList] = this.filterApplyStatus(bindResult);
+        this.participantList = normalList;
+        this.backupLeaveList = leaveList;
+        this.leaveList = leaveList;
+        of(this.participantList).pipe(
+          map(list => this.sortList(list)),
+          map(sortList => this.assignRank(sortList))
+        ).subscribe(finalList => {
+          this.reArrangeList = finalList;
+        });
+
+        this.uiFlag.progress = 100;
+      });
+
+    }
 
   }
 
@@ -297,7 +338,7 @@ console.log('reArrangeList', this.reArrangeList);
    */
   reEditList(list: Array<any>) {
     // 出貨7天過後即可視為結案
-    const closeCaseDate = moment().subtract(7, 'day').unix();
+    const closeCaseDate = moment().add(7, 'day').unix();
     return list.map(_list => {
       const {
         productShipped,
@@ -375,11 +416,14 @@ console.log('reArrangeList', this.reArrangeList);
 
   /**
    * 根據排序類別進行排序
+   * @param list {Array<any>}-參賽者列表
    * @author kidin-1101118
    */
-  sortList() {
-    const { type, order } = this.sortSet;
-    return this.participantList.sort((a, b) => {
+  sortList(list: Array<any>, assignSort: SortSet = null) {
+    const sortRule = assignSort ? assignSort : this.sortSet;
+    const { type, order } = sortRule;
+
+    return list.sort((a, b) => {
       let sortKey: string;
       switch (type) {
         case 'rank':
@@ -420,17 +464,44 @@ console.log('reArrangeList', this.reArrangeList);
   }
 
   /**
+   * 根據成績進行排名
+   * @param sortList {Array<any>}-根據成績排序過的參賽者列表
+   * @author kidin-1101129
+   */
+  assignRank(sortList: Array<any>) {
+    return sortList.map((_list, index) => {
+      delete _list.rank;  // 初始化名次
+      const { record } = _list;
+      if (record) {
+        let rank: number;
+        if (index !== 0) {
+          const { rank: frontRank, record: frontRecord } = sortList[index - 1];
+          rank = frontRecord > record ? frontRank + 1 : frontRank;
+        } else {
+          rank = 1;
+        }
+
+        Object.assign(_list, { rank });
+      }
+      
+      return _list;
+    });
+
+  }
+
+  /**
    * 變更排序順序
    * @param e {MouseEvent}
    * @author kidin-1101126
    */
   changeSortOrder(e: MouseEvent) {
     e.stopPropagation();
+    this.uiFlag.expandDetail = null;
     const { value: newOrder } = (e as any).target;
     const { order } = this.sortSet;
     if (newOrder !== order) {
       this.sortSet.order = newOrder;
-      this.sortList();
+      this.reArrangeList = this.sortList(this.reArrangeList);
     }
 
   }
@@ -442,11 +513,12 @@ console.log('reArrangeList', this.reArrangeList);
    */
   changeSortType(e: MouseEvent) {
     e.stopPropagation();
+    this.uiFlag.expandDetail = null;
     const { value: newType } = (e as any).target;
     const { type } = this.sortSet;
     if (newType !== type) {
       this.sortSet.type = newType;
-      this.sortList();
+      this.reArrangeList = this.sortList(this.reArrangeList);
     }
 
   }
@@ -466,12 +538,34 @@ console.log('reArrangeList', this.reArrangeList);
   }
 
   /**
-   * 搜尋指定參賽者
+   * 搜尋指定參賽者(含回收區)
    * @param e {MouseEvent}
    * @author kidin-1101123
    */
   searchContestant(e: MouseEvent) {
+    this.uiFlag.expandDetail = null;
     const keyword = (e as any).target.value;
+    const isPhoneWord = formTest.number.test(keyword);
+    const isEmailWord = formTest.email.test(keyword);
+    if (isPhoneWord) {
+      this.reArrangeList = this.participantList.filter(_list => `${_list.mobileNumber}`.includes(keyword));
+      this.leaveList = this.backupLeaveList.filter(_list => `${_list.mobileNumber}`.includes(keyword));
+    } else if (isEmailWord) {
+      this.reArrangeList = this.participantList.filter(_list => _list.email.includes(keyword));
+      this.leaveList = this.backupLeaveList.filter(_list => _list.email.includes(keyword));
+    } else {
+      const matchKeyword = (list) => {
+        const { email, nickname, truthName } = list;
+        const emailMatch = email ? email.includes(keyword) : false;
+        const nicknameMatch = nickname.includes(keyword);
+        const truthNameMatch = truthName.includes(keyword);
+        return emailMatch || nicknameMatch || truthNameMatch;
+      }
+
+      this.reArrangeList = this.participantList.filter(_list => matchKeyword(_list));
+      this.leaveList = this.backupLeaveList.filter(_list => matchKeyword(_list));
+    }
+
   }
 
   /**
@@ -522,30 +616,13 @@ console.log('reArrangeList', this.reArrangeList);
   }
 
   /**
-   * 根據群組數目分配分組代表色
-   * @param length {number}-群組數目
-   * @author kidin-1101123
-   */
-  assignGroupColor(length: number) {
-    const hueRange = 360;
-    const colorAssign = [];
-    for (let i = 1; i <= length; i++) {
-      const hue = Math.round((i / length) * hueRange);
-      colorAssign.push(`hsla(${hue}, 100%, 85%, 1)`);
-    }
-
-    return colorAssign;
-  }
-
-  /**
    * 顯示所有參賽者
    * @author kidin-1101124
    */
   showAllList() {
     this.listFilter = {
       type: null,
-      status: null,
-      groupId: null,
+      value: null,
       groupName: null
     };
 
@@ -561,8 +638,7 @@ console.log('reArrangeList', this.reArrangeList);
   filterGroup(groupId: number, groupName: string) {
     this.listFilter = {
       type: 'group',
-      status: null,
-      groupId,
+      value: groupId,
       groupName
     };
 
@@ -576,7 +652,7 @@ console.log('reArrangeList', this.reArrangeList);
    */
   filterPaidStatus(status: PaidStatusEnum) {
     this.listFilter.type = 'paidStatus';
-    this.listFilter.status = status;
+    this.listFilter.value = status;
     this.filterList();
   }
 
@@ -587,7 +663,7 @@ console.log('reArrangeList', this.reArrangeList);
    */
   filterOrderStatus(status: ProductShipped) {
     this.listFilter.type = 'orderStatus';
-    this.listFilter.status = status;
+    this.listFilter.value = status;
     this.filterList();
   }
 
@@ -597,7 +673,7 @@ console.log('reArrangeList', this.reArrangeList);
    */
   filterAwardStatus(status: ProductShipped) {
     this.listFilter.type = 'awardStatus';
-    this.listFilter.status = status;
+    this.listFilter.value = status;
     this.filterList();
   }
 
@@ -606,7 +682,43 @@ console.log('reArrangeList', this.reArrangeList);
    * @author kidin-1101124
    */
   filterList() {
-    const { type, status, groupId } = this.listFilter;
+    this.uiFlag.expandDetail = null;
+    const { type, value } = this.listFilter;
+    let item: string;
+    switch (type) {
+      case 'group':
+        item = 'groupId';
+        break;
+      case 'paidStatus':
+        item = 'paidStatus'
+        break;
+      case 'orderStatus':
+        item = 'productShipped'
+        break;
+      case 'awardStatus':
+        item = 'awardShipped'
+        break;
+      default:
+        item = null;
+        break;
+    }
+
+    of(this.participantList).pipe(
+      map(list => {
+        if (item) {
+          return list.filter(_list => _list[item] === value);
+        } else {
+          return list;
+        }
+        
+      }),
+      map(filterList => this.sortList(filterList, defaultSortSet)),
+      map(sortList => this.assignRank(sortList)),
+      map(rankList => this.sortList(rankList))
+    ).subscribe(finalList => {
+      this.reArrangeList = finalList;
+    });
+
   }
 
   /**
@@ -620,7 +732,8 @@ console.log('reArrangeList', this.reArrangeList);
     if (expandDetail !== newIndex) {
       this.uiFlag.expandDetail = newIndex;
     } else {
-      this.uiFlag.expandDetail = null;
+      const { focusInput } = this.uiFlag;
+      if (!focusInput) this.uiFlag.expandDetail = null;
     }
 
   }
@@ -693,8 +806,8 @@ console.log('reArrangeList', this.reArrangeList);
 
       this.updateUserEventProfile(update).subscribe(success => {
         if (success) {
-          const replaceDate = { groupId, groupName };
-          this.updateOriginProfile(targetUserId, replaceDate);
+          const replace = { groupId, groupName };
+          this.updateOriginProfile(targetUserId, replace);
         } else {
           this.reArrangeList[index].groupId = oldGroupId;
           this.reArrangeList[index].groupName = oldGroupName;
@@ -723,8 +836,16 @@ console.log('reArrangeList', this.reArrangeList);
       if (success) {
         const leaveIndex = this.participantList.indexOf(_list => _list.userId === targetUserId);
         const [leaveContestant] = this.participantList.splice(leaveIndex, 1);
-        this.leaveList.push(leaveContestant);
-        this.reArrangeList = this.sortList();
+        this.backupLeaveList.push(leaveContestant);
+        of(this.participantList).pipe(
+          map(list => this.sortList(list, defaultSortSet)),
+          map(sortList => this.assignRank(sortList)),
+          map(rankList => this.sortList(rankList))
+        ).subscribe(result => {
+          this.reArrangeList = result;
+        });
+
+        this.leaveList = this.utils.deepCopy(this.backupLeaveList);
       }
 
     });
@@ -737,7 +858,7 @@ console.log('reArrangeList', this.reArrangeList);
    * @author kidin-1101126
    */
   addContestant(delIndex: number) {
-    const { userId: targetUserId } = this.leaveList[delIndex];
+    const { userId: targetUserId } = this.backupLeaveList[delIndex];
     const update = [{
       targetUserId,
       applyStatus: ApplyStatus.applied
@@ -745,9 +866,16 @@ console.log('reArrangeList', this.reArrangeList);
 
     this.updateUserEventProfile(update).subscribe(success => {
       if (success) {
-        const [addContestant] = this.leaveList.splice(delIndex, 1);
+        const [addContestant] = this.backupLeaveList.splice(delIndex, 1);
         this.participantList.push(addContestant);
-        this.reArrangeList = this.sortList();
+        of(this.participantList).pipe(
+          map(list => this.sortList(list, defaultSortSet)),
+          map(sortList => this.assignRank(sortList))
+        ).subscribe(result => {
+          this.reArrangeList = result;
+        });
+
+        this.leaveList = this.utils.deepCopy(this.backupLeaveList);
       }
 
     });
@@ -780,8 +908,8 @@ console.log('reArrangeList', this.reArrangeList);
 
       this.updateUserEventProfile(update).subscribe(success => {
         if (success) {
-          const replaceDate = { paidStatus };
-          this.updateOriginProfile(targetUserId, replaceDate);
+          const replace = { paidStatus };
+          this.updateOriginProfile(targetUserId, replace);
         } else {
           this.reArrangeList[index].paidStatus = oldPaidStatus;
         }
@@ -812,15 +940,17 @@ console.log('reArrangeList', this.reArrangeList);
     const oldStatus = this.reArrangeList[index][type];
     if (shipped !== oldStatus) {
       this.reArrangeList[index][type] = shipped;
+      const shippingDate = this.getShippingDate(type, shipped);
       const update = [{
         targetUserId,
-        [type]: shipped
+        [type]: shipped,
+        ...shippingDate
       }];
 
       this.updateUserEventProfile(update).subscribe(success => {
         if (success) {
-          const replaceDate = { shipped };
-          this.updateOriginProfile(targetUserId, replaceDate);
+          const replace = { [type]: shipped, ...shippingDate };
+          this.updateOriginProfile(targetUserId, replace);
         } else {
           this.reArrangeList[index][type] = oldStatus;
         }
@@ -833,6 +963,34 @@ console.log('reArrangeList', this.reArrangeList);
   }
 
   /**
+   * 產生出貨時間
+   * @param type {ShippedType}-出貨類別
+   * @param shipped {ProductShipped}-出貨狀態
+   * @author kidin-1101216
+   */
+  getShippingDate(type: ShippedType, shipped: ProductShipped) {
+    let ServerCurrentTimeStamp: number | string;
+    switch (shipped) {
+      case ProductShipped.unShip:
+        ServerCurrentTimeStamp = 0;
+        break;
+      case ProductShipped.shipped:
+        ServerCurrentTimeStamp = this.utils.getCurrentTimestamp() + this.serverTimeDiff;
+        break;
+      case ProductShipped.unShip:
+        return {};
+    }
+
+    switch (type) {
+      case 'productShipped':
+        return { productShippingDate: ServerCurrentTimeStamp };
+      case 'awardShipped':
+        return { awardShippingDate: ServerCurrentTimeStamp };
+    }
+
+  }
+
+  /**
    * 編輯參賽者私人資訊
    * @param e {MouseEvent}
    * @param type {ProfileEditType}-編輯類別
@@ -840,6 +998,7 @@ console.log('reArrangeList', this.reArrangeList);
    * @author kidin-1101125
    */
   handleEditDetail(e: MouseEvent, type: ProfileEditType, index: number) {
+    this.uiFlag.focusInput = false;
     const { value } = (e as any).target;
     const assignUserInfo = this.reArrangeList[index];
     const { userId: targetUserId } = assignUserInfo;
@@ -848,7 +1007,6 @@ console.log('reArrangeList', this.reArrangeList);
     const oldValue = isEmergencyInfo ?
       assignUserInfo['emergencyContact'][type] : assignUserInfo[type];
 
-console.log('edit detail', value, oldValue);
     if (value !== oldValue) {
       let update: Array<any>;
       if (isEmergencyInfo) {
@@ -861,9 +1019,9 @@ console.log('edit detail', value, oldValue);
 
       this.updateUserEventProfile(update).subscribe(success => {
         if (success) {
-          const emergencyContact = this.reArrangeList[index];
-          const replaceDate = { emergencyContact };
-          this.updateOriginProfile(targetUserId, replaceDate);
+          const { emergencyContact } = this.reArrangeList[index];
+          const replace = { emergencyContact };
+          this.updateOriginProfile(targetUserId, replace);
         } else {
 
           if (isEmergencyInfo) {
@@ -946,10 +1104,162 @@ console.log('edit detail', value, oldValue);
 
   /**
    * 將參賽者名單製成CSV檔並提供下載
-   * @author kidin-1101126
+   * @author kidin-1101129
    */
-  downloadCSV() {
+   downloadCSV() {
+    const { eventName } = this.eventInfo;
+    const fileName = `${eventName}_參賽者名單.csv`;
+    const data = this.switchCSVFile();
+    const blob = new Blob(['\ufeff' + data], {  // 加上bom（\ufeff）讓excel辨識編碼
+      type: 'text/csv;charset=utf8'
+    });
+    const href = URL.createObjectURL(blob);  // 建立csv檔url
+    const link = document.createElement('a');  // 建立連結供csv下載使用
 
+    document.body.appendChild(link);
+    link.href = href;
+    link.download = fileName;
+    link.click();
+  }
+  
+  /**
+   * 將所需資料轉換為csv格式
+   * @author kidin-1101129
+   */
+  switchCSVFile() {
+    let csvData = '';
+    const title = [
+      '報名日期',
+      'User id',
+      '暱稱',
+      '分組',
+      '報名組合',
+      '報名費用',
+      '繳費狀態',
+      '繳費時間',
+      '英達訂單編號',
+      '綠界訂單編號',
+      '訂單狀態',
+      '出貨日期',
+      '名次',
+      '成績',
+      '獎品狀態',
+      '獎品出貨日期',
+      '真實姓名',
+      '年齡',
+      '性別',
+      '國碼',
+      '聯絡電話',
+      'email',
+      '國籍',
+      '身份/居留證號',
+      '地址',
+      '備註',
+      '緊急聯絡人姓名',
+      '緊急聯絡人電話',
+      '緊急聯絡人關係'
+    ];
+
+    title.forEach(_title => {
+      csvData += `${_title},`;
+    });
+
+    csvData += '\n';
+    const { reArrangeList, leaveList } = this;
+    const dateFormat = 'YYYY-MM-DD';
+    const applyDateFormat = `${dateFormat} HH:mm`;
+    const createRowInfo = (list) => {
+      const {
+        appliedDate,
+        userId,
+        nickname,
+        groupName,
+        feeTitle,
+        fee,
+        paidStatus,
+        paidDate,
+        officialPaidId,
+        thirdPartyPaidId,
+        productShipped,
+        productShippingDate,
+        rank,
+        record,
+        awardShipped,
+        awardShippingDate,
+        truthName,
+        birthday,
+        gender,
+        countryCode,
+        mobileNumber,
+        email,
+        taiwaness,
+        idCardNumber,
+        address,
+        remark,
+        emergencyContact: {
+          name: emergencyName,
+          mobileNumber: emergencyPhone,
+          relationship
+        }
+      } = list;
+
+      const ageBase = {
+        birth: birthday,
+        birthFormat: 'YYYYMMDD',
+        baseDate: appliedDate ? appliedDate * 1000 : null,
+        baseFormat: null
+      };
+
+      return `${
+        appliedDate ? moment(appliedDate).format(applyDateFormat) : ''
+        },${userId
+        },${nickname
+        },${groupName
+        },${feeTitle
+        },${fee
+        },${this.paidStatusPipe.transform(paidStatus)
+        },${paidDate ? moment(paidDate).format(dateFormat) : ''
+        },${officialPaidId ? officialPaidId : ''
+        },${thirdPartyPaidId ? thirdPartyPaidId : ''
+        },${this.shippedStatusPipe.transform(productShipped)
+        },${productShippingDate ? moment(productShippingDate).format(dateFormat) : ''
+        },${rank ? rank : ''
+        },${record ? record : ''
+        },${this.shippedStatusPipe.transform(awardShipped)
+        },${awardShippingDate ? moment(awardShippingDate).format(dateFormat) : ''
+        },${truthName
+        },${this.agePipe.transform(ageBase)
+        },${gender === Sex.male ? '男' : '女'
+        },+${countryCode
+        },${mobileNumber
+        },${email ? email : ''
+        },${taiwaness === Nationality.taiwaness ? '本國' : '外國'
+        },${idCardNumber
+        },${address
+        },${remark ? remark : ''
+        },${emergencyName ? emergencyName : ''
+        },${emergencyPhone ? emergencyPhone : ''
+        },${relationship ? relationship : ''
+      },\n`;
+    };
+
+    reArrangeList.forEach(_list => {
+      csvData += createRowInfo(_list);
+    });
+
+    /*************************
+     * 暫不將回收區資訊列入csv
+     * 方便使用者使用excel篩選功能
+    
+    const blank = ',,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n';
+    csvData += `\n\n${blank}`;
+    leaveList.forEach(_list => {
+      csvData += createRowInfo(_list);
+    });
+
+    **************************/
+
+    return csvData;
   }
 
   /**
@@ -996,12 +1306,30 @@ console.log('edit detail', value, oldValue);
         this.reArrangeList[index].thirdPartyPaidId = thirdPartyPaidId;
         this.reArrangeList[index].paidDate = paidDate;
 
-        const replaceDate = { paidStatus, thirdPartyPaidId, paidDate };
-        this.updateOriginProfile(targetUserId, replaceDate);
+        const replace = { paidStatus, thirdPartyPaidId, paidDate };
+        this.updateOriginProfile(targetUserId, replace);
       }
 
     });
 
+  }
+
+  /**
+   * 儲存server時間與client時間之差值，方便校正並更新出貨時間
+   * @param serverTime {number}-server currentTimestamp
+   * @author kidin-1101216
+   */
+  saveServerTime(serverTime: number) {
+    const currentTimeStamp = this.utils.getCurrentTimestamp();
+    this.serverTimeDiff = currentTimeStamp - serverTime;
+  }
+
+  /**
+   * 聚焦輸入框
+   * @author kidin-1101216
+   */
+  focusInput() {
+    this.uiFlag.focusInput = true;
   }
 
   /**

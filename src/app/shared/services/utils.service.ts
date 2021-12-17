@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { MessageBoxComponent } from '../components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { HrZoneRange } from '../models/chart-data';
 import moment from 'moment';
 import { Unit, mi, ft, inch } from '../models/bs-constant';
@@ -31,6 +32,7 @@ export class UtilsService {
 
   constructor(
     private dialog: MatDialog,
+    private snackbar: MatSnackBar,
     private translate: TranslateService
   ) {}
 
@@ -385,6 +387,15 @@ export class UtilsService {
 
     })
 
+  }
+
+  /**
+   * 跳出snackbar
+   * @param msg {string}-欲顯示的訊息
+   * @author kidin-1101203
+   */
+  showSnackBar(msg: string) {
+    this.snackbar.open(msg, 'OK', { duration: 3000 } );
   }
 
   /**
@@ -952,10 +963,12 @@ export class UtilsService {
 
   /**
    * 確認res resultCode是否回傳200(兼容兩個版本的response result)
+   * @param res {any}-api response
+   * @param showAlert {boolean}-是否顯示錯誤alert
    * @returns {boolean} resultCode是否回傳200
    * @author kidin-1100902
    */
-  checkRes(res: any): boolean {
+  checkRes(res: any, showAlert: boolean = true): boolean {
     const {
       processResult,
       resultCode: resCode,
@@ -965,7 +978,9 @@ export class UtilsService {
     if (!processResult) {
 
       if (resCode !== 200) {
-        this.handleError(resCode, resApiCode, resMsg);
+
+        if (showAlert) this.handleError(resCode, resApiCode, resMsg);
+
         return false;
       } else {
         return true;
@@ -974,7 +989,9 @@ export class UtilsService {
     } else {
       const { resultCode, apiCode, resultMessage } = processResult;
       if (resultCode !== 200) {
-        this.handleError(resultCode, apiCode, resultMessage);
+
+        if (showAlert) this.handleError(resultCode, apiCode, resultMessage);
+
         return false;
       } else {
         return true;
@@ -1078,6 +1095,22 @@ export class UtilsService {
     const base64OnLoad = fromEvent(reader, 'load');
     const base64OnError = fromEvent(reader, 'error');
     return merge(base64OnLoad, base64OnError);
+  }
+
+  /**
+   * 取得現在時間
+   * @param timeUnit {'s' | 'ms'}-時間單位
+   * @author kidin-1101216
+   */
+  getCurrentTimestamp(timeUnit: 's' | 'ms' = 's') {
+    const currentTimeStamp = (new Date()).getTime();
+    switch (timeUnit) {
+      case 's':
+        return Math.round(currentTimeStamp / 1000);
+      case 'ms':
+        return currentTimeStamp;
+    }
+
   }
 
 }

@@ -1,12 +1,10 @@
+<app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
 <div class="flexCol">
   <div class="flexRow control__section">
     <div class="flexRow date__filter">
-      <span style="font-weight: bold;">
-        {{ 'universal_operating_filter' | translate }}
-      </span>
       <i
         style="font-size: 20px;"
-        class="icon-svg_web-icon_p1_099-calendar"
+        class="icon-svg_web-icon_p1_078-filter"
       ></i>
       <div class="divider__line" style="position: relative;">
         <button (click)="checkScreenHeight($event)">
@@ -19,6 +17,7 @@
         <app-date-range-picker
           (selectDateRange)="getSelectDate($event)"
           [pickerType]="'rangePick'"
+          [serialId]="'1'"
           [startTimeStamp]="selectDate.startTimestamp"
           [endTimeStamp]="selectDate.endTimestamp"
           [openPicker]="uiFlag.openDatePicker"
@@ -39,7 +38,10 @@
         && uiFlag.currentPage === 'activity-list'
       "
     >
-      <button class="manage__btn">
+      <button 
+        class="manage__btn"
+        (click)="navigatePage($event, 'edit-carousel')"
+      >
         編輯輪播
       </button>
       <button
@@ -71,7 +73,7 @@
       </button>
       <ul class="manage__menu" *ngIf="uiFlag.showManageMenu">
         <li>
-          <button>
+          <button (click)="navigatePage($event, 'edit-carousel')">
             編輯輪播
           </button>
         </li>
@@ -255,7 +257,10 @@
                         <div
                           *ngTemplateOutlet="editSection; context: {
                             eventId: _eventList.eventId,
-                            canEdit: _eventList.eventStatus !== EventStatus.cancel
+                            canEdit: _eventList.eventStatus !== EventStatus.cancel,
+                            eventName: _eventList.eventName,
+                            mapId: _eventList.cloudrunMapId,
+                            endDate: _eventList.raceDate.endDate
                           }"
                         ></div>
                       </ng-container>
@@ -270,7 +275,10 @@
                           feeId: _eventList.feeId,
                           fee: _eventList.fee,
                           paidStatus: _eventList.paidStatus,
-                          productShipped: _eventList.productShipped
+                          productShipped: _eventList.productShipped,
+                          endDate: _eventList.applyDate.endDate,
+                          eventCancel: _eventList.eventStatus === EventStatus.cancel,
+                          applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit
                         }"></div>
                         <div *ngTemplateOutlet="historyRecord; context: {
                           record: _eventList.record,
@@ -293,7 +301,10 @@
                     feeId: _eventList.feeId,
                     fee: _eventList.fee,
                     paidStatus: _eventList.paidStatus,
-                    productShipped: _eventList.productShipped
+                    productShipped: _eventList.productShipped,
+                    endDate: _eventList.applyDate.endDate,
+                    eventCancel: _eventList.eventStatus === EventStatus.cancel,
+                    applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit
                   }"></div>
                   <div *ngTemplateOutlet="historyRecord; context: {
                     record: _eventList.record,
@@ -390,7 +401,10 @@
                   <div
                     *ngTemplateOutlet="editSection; context: {
                       eventId: _eventList.eventId,
-                      canEdit: _eventList.eventStatus !== EventStatus.cancel
+                      canEdit: _eventList.eventStatus !== EventStatus.cancel,
+                      eventName: _eventList.eventName,
+                      mapId: _eventList.cloudrunMapId,
+                      endDate: _eventList.raceDate.endDate
                     }"
                   ></div>
                 </ng-container>
@@ -405,7 +419,10 @@
                     feeId: _eventList.feeId,
                     fee: _eventList.fee,
                     paidStatus: _eventList.paidStatus,
-                    productShipped: _eventList.productShipped
+                    productShipped: _eventList.productShipped,
+                    endDate: _eventList.applyDate.endDate,
+                    eventCancel: _eventList.eventStatus === EventStatus.cancel,
+                    applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit
                   }"></div>
                   <div *ngTemplateOutlet="historyRecord; context: {
                     record: _eventList.record,
@@ -448,6 +465,102 @@
       </li>
     </ng-container>
   </ul>
+</div>
+
+<div
+  class="official-dialog"
+  (click)="closeCreateScheduleBox()"
+  *ngIf="uiFlag.showCreateScheduleBox"
+>
+  <div
+    class="flexCol"
+    (click)="$event.stopPropagation();"
+  >
+    <div class="official-dialogTitle">
+      <h5>
+        <img class="official__icon" src="/assets/cloud_run/cloudrun-icon.svg">
+        {{ '建立排程賽局' }}
+      </h5>
+    </div>
+    <div class="flexCol official-dialogContent">
+      <div class="flexCol">
+        <section class="flexCol dialog__section">
+          <h6>{{ 'universal_activityData_map' | translate }}</h6>
+          <div class="flexRow">
+            <img
+              [src]="mapImgPath + allMapInfo[scheduleRace.mapIndex - 1].mapImg"
+              [alt]="allMapInfo[scheduleRace.mapIndex - 1].info[mapLanguage].mapName"
+              class="dialog__map__img"
+            >
+            <div class="flexCol dialog__map__info">
+              <p>
+                {{ allMapInfo[scheduleRace.mapIndex - 1].info[mapLanguage].mapName }}
+              </p>
+              <div class="flexRow dialog__map__detail">
+                <span>
+                  {{ allMapInfo[scheduleRace.mapIndex - 1].distance }}KM
+                </span>
+                <span>|</span>
+                <span>
+                  {{ 'universal_activityData_climb' | translate }}
+                  {{ allMapInfo[scheduleRace.mapIndex - 1].incline }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="flexRow dialog__section">
+          <i class="icon-svg_web-icon_p3_067-story dialog__icon"></i>
+          <div class="flexCol">
+            <h6>{{ 'universal_activityData_name' | translate }}</h6>
+            <input 
+              type="text"
+              class="schedule__name"
+              [placeholder]="'請輸入賽局名稱'"
+              [(value)]="scheduleRace.raceName"
+            >
+          </div>
+        </section>
+        <section class="flexRow dialog__section">
+          <i class="icon-svg_web-icon_p1_099-calendar dialog__icon"></i>
+          <div class="flexCol">
+            <h6>{{ 'universal_time_startTime' | translate }}</h6>
+            <div class="flexRow">
+              <app-date-range-picker
+                (selectDateRange)="getScheduleDate($event)"
+                [pickerType]="'singlePicker'"
+                [refStartDate]="scheduleTime.date * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
+                [default]="scheduleTime.date * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
+                [serialId]="'2'"
+                [limitMin]="scheduleTime.today * 1000"
+                [editStyle]="'
+                  border: none;
+                  border-bottom: 1px solid rgba(100, 100, 100, 1);
+                  color: rgba(150, 150, 150, 1);
+                  font-weight: bold;
+                '"
+              ></app-date-range-picker>
+              <input
+                type="time"
+                class="schedule__time__selector"
+                [value]="scheduleTime.time | sportTime: [true, true]"
+                (change)="getScheduleTime($event)"
+              >
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="button__area">
+        <button
+          style="margin: 0 auto;"
+          class="official-submitButton"
+          (click)="submitSchedule()"
+        >
+          {{ 'universal_activityData_create' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <ng-template
@@ -553,15 +666,25 @@
   let-fee="fee"
   let-paidStatus="paidStatus"
   let-productShipped="productShipped"
+  let-endDate="endDate"
+  let-eventCancel="eventCancel"
+  let-applyFull="applyFull"
 >
   <div class="flexRow" style="align-items: center;">
     <ng-container *ngIf="paidStatus === PaidStatusEnum.unPaid">
       <button
         class="apply__schedule apply__schedule__warn"
         (click)="navigatePaidPage($event, eventId, feeId, feeTitle, fee)"
+        *ngIf="!eventCancel && !applyFull && serverTimestamp < endDate"
       >
         {{ '點擊繳費' }}
       </button>
+      <div 
+        class="apply__schedule apply__schedule__warn"
+        *ngIf="eventCancel || applyFull || serverTimestamp > endDate"
+      >
+        {{ '已截止' }}
+      </div>
     </ng-container>
     <ng-container *ngIf="paidStatus === PaidStatusEnum.paid">
       <div class="apply__schedule apply__schedule__finish">
@@ -599,6 +722,9 @@
   #editSection
   let-eventId="eventId"
   let-canEdit="canEdit"
+  let-eventName="eventName"
+  let-mapId="mapId"
+  let-endDate="endDate"
 >
   <div class="flexRow edit__btn">
     <button
@@ -613,6 +739,26 @@
     >
       <i class="icon-svg_web-icon_p1_008-edit" *ngIf="canEdit"></i>
       <mat-icon class="block__icon" *ngIf="!canEdit">block</mat-icon>
+    </button>
+    <button
+      [title]="canEdit ? '排程賽局' : '賽事凍結'"
+      (click)="showCreateScheduleBox(
+        $event,
+        eventName,
+        +mapId,
+        canEdit && serverTimestamp < endDate
+      )"
+    >
+      <img
+        src="/assets/icons/more_time.svg"
+        alt="排程賽局"
+        class="schedule__icon"
+        *ngIf="canEdit && serverTimestamp < endDate"
+      >
+      <mat-icon
+        class="block__icon"
+        *ngIf="!canEdit || serverTimestamp >= endDate"
+      >block</mat-icon>
     </button>
   </div>
 </ng-template>

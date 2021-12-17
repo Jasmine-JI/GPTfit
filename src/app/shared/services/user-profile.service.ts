@@ -81,7 +81,7 @@ export class UserProfileService {
   }
 
   /**
-   * 
+   * 儲存會員資料
    * @param userProfile 
    */
   setRxUserProfile(userProfile: any) {

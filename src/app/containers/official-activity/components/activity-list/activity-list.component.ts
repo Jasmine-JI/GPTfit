@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
@@ -12,6 +12,7 @@ import { MapLanguageEnum } from '../../../../shared/models/i18n';
 import { SelectDate } from '../../../../shared/models/utils-type';
 import { DomSanitizer } from '@angular/platform-browser';
 import { EventStatus } from '../../models/activity-content';
+import { CloudrunService } from '../../../../shared/services/cloudrun.service';
 
 type Page = 'activity-list' | 'my-activity';
 
@@ -28,11 +29,13 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * ui會用到的各個flag
    */
   uiFlag = {
+    progress: 100,
     currentPage: <Page>'activity-list',
     editMode: false,
     isMobile: false,
     showManageMenu: false,
-    openDatePicker: false
+    openDatePicker: false,
+    showCreateScheduleBox: false
   }
 
   /**
@@ -53,6 +56,33 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     endTimestamp: moment().add(3, 'months').valueOf()
   };
 
+  /**
+   * 建立排程賽局所需資訊(api 2004)
+   */
+  scheduleRace = {
+    token: null,
+    sportMode: 0, // 競賽模式
+    trainingType: 0,  // Treadmill
+    mapIndex: null,
+    raceType: 0,  // 競速競賽
+    raceLap: 1,
+    raceOrientation: 0,  // 正方向競賽
+    maxRaceMans: 50,
+    raceManPermission: 0,  // 公開
+    raceClearCode: null,
+    raceName: null,
+    schedTimestamp: null
+  };
+
+  /**
+   * 排程賽局時間設定
+   */
+  scheduleTime = {
+    today: null,
+    date: null,
+    time: null
+  }
+
   screenSize: number;
   eventList = [];
   effectEventList = [];
@@ -72,15 +102,17 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private userProfileService: UserProfileService,
     private router: Router,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private cloudrunService: CloudrunService
   ) { }
 
   ngOnInit(): void {
-    if (this.token) this.getUserProfile();
+    this.getUserProfile();
     this.checkDomain();
     this.checkLanguage();
     this.checkMobileMode();
     this.checkCurrentPage();
+    this.subscribeUrlChange();
   }
 
   /**
@@ -92,7 +124,16 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.userProfile = res;
-      this.handleEffectEvent();
+      if (res) {
+        this.handleEffectEvent();
+      } else {
+        this.uiFlag.editMode = false;
+        if (this.uiFlag.currentPage === 'my-activity') {
+          this.router.navigateByUrl(`/official-activity/activity-list`);
+        }
+
+      }
+      
     });
 
   }
@@ -124,6 +165,43 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     } else if (childPath === 'my-activity') {
       this.getUserHistory();
     }
+
+  }
+
+  /**
+   * 訂閱url變更事件，若有關鍵字則使用關鍵字篩選活動
+   * @author kidin-1101217
+   */
+  subscribeUrlChange() {
+    this.router.events.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(e => {
+      if (e instanceof NavigationEnd) {
+        const queryObj = this.utils.getUrlQueryStrings(location.search);
+        const searchWords = decodeURIComponent(queryObj.search);
+        const { currentPage } = this.uiFlag;
+        switch (currentPage) {
+          case 'activity-list':
+            if (searchWords.length === 0) {
+              delete (this.eventListCondition as any).searchWords;
+            } else {
+              Object.assign(this.eventListCondition, { searchWords });
+            }
+            
+            this.getActivityList();
+            break;
+          case 'my-activity':
+            this.handleEffectEvent();
+            if (searchWords) {
+              this.effectEventList = this.effectEventList.filter(_list => _list.eventName.includes(searchWords));
+            }
+
+            break;
+        }
+        
+      }
+
+    });
 
   }
 
@@ -170,22 +248,28 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1101006
    */
   getActivityList() {
-    this.officialActivityService.getEventList(this.eventListCondition).pipe(
-      switchMap(eventListRes => this.officialActivityService.getRxAllMapInfo().pipe(
-        map(mapInfoRes => [eventListRes, mapInfoRes])
-      )),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(resArr => {
-      const [eventListRes, mapInfoRes] = resArr;
-      this.allMapInfo = mapInfoRes;
-      if (this.utils.checkRes(eventListRes)) {
-        const { eventList, currentTimestamp } = eventListRes;
-        this.eventList = eventList;
-        this.serverTimestamp = currentTimestamp;
-        this.handleEffectEvent();
-      }
+    const { progress } = this.uiFlag;
+    if (progress === 100) {
+      this.uiFlag.progress = 30;
+      this.officialActivityService.getEventList(this.eventListCondition).pipe(
+        switchMap(eventListRes => this.officialActivityService.getRxAllMapInfo().pipe(
+          map(mapInfoRes => [eventListRes, mapInfoRes])
+        )),
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe(resArr => {
+        const [eventListRes, mapInfoRes] = resArr;
+        this.allMapInfo = mapInfoRes;
+        if (this.utils.checkRes(eventListRes)) {
+          const { eventList, currentTimestamp } = eventListRes;
+          this.eventList = eventList;
+          this.serverTimestamp = currentTimestamp;
+          this.handleEffectEvent();
+        }
 
-    });
+        this.uiFlag.progress = 100;
+      });
+
+    }
 
   }
 
@@ -195,7 +279,6 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    */
   handleEffectEvent() {
     const { eventList, userProfile, serverTimestamp } = this;
-console.log('handleEffectEvent',eventList, userProfile, serverTimestamp);
     if (eventList.length > 0) {
       const isAdmin = userProfile && userProfile.systemAccessRight[0] <= 28;
       const effectEvent = eventList.filter(_list => serverTimestamp >= _list.applyDate.startDate);
@@ -219,15 +302,24 @@ console.log('handleEffectEvent',eventList, userProfile, serverTimestamp);
   getUserHistory() {
     const { token } = this;
     if (token) {
-      this.officialActivityService.getParticipantHistory({token}).subscribe(res => {
-        if (this.utils.checkRes(res)) {
-          const { info: { history }, currentTimestamp } = res;
-          this.eventList = history;
-          this.effectEventList = history;
-          this.countCurrentTime(currentTimestamp);
-        }
 
-      })
+      const { progress } = this.uiFlag;
+      if (progress === 100) {
+        this.uiFlag.progress = 30;
+        this.officialActivityService.getParticipantHistory({token}).subscribe(res => {
+          if (this.utils.checkRes(res)) {
+            const { info: { history }, currentTimestamp } = res;
+            const reverseList = history.reverse();
+            this.eventList = reverseList;
+            this.effectEventList = reverseList;
+            this.countCurrentTime(currentTimestamp);
+          }
+
+          this.uiFlag.progress = 100;
+        });
+
+      }
+
     } else {
       this.router.navigateByUrl('/signIn-web');
     }
@@ -253,19 +345,22 @@ console.log('handleEffectEvent',eventList, userProfile, serverTimestamp);
   /**
    * 轉導至指定頁面
    * @param e {MouseEvent}
-   * @param page {'contestant-list' | 'edit-activity'}-欲轉導之頁面
+   * @param page {'contestant-list' | 'edit-activity' | 'edit-carousel'}-欲轉導之頁面
    * @param eventId {number}-活動流水id
+   * @param canEdit {boolean}-該活動是否可編輯
    * @author kidin-1101013
    */
   navigatePage(
     e: MouseEvent,
-    page: 'contestant-list' | 'edit-activity',
+    page: 'contestant-list' | 'edit-activity' | 'edit-carousel',
     eventId: number,
     canEdit: boolean
   ) {
     e.preventDefault();
     if (canEdit || page === 'contestant-list') {
       this.router.navigateByUrl(`/official-activity/${page}/${eventId}`);
+    } else if (page === 'edit-carousel') {
+      this.router.navigateByUrl(`/official-activity/${page}`);
     }
     
   }
@@ -312,7 +407,7 @@ console.log('handleEffectEvent',eventList, userProfile, serverTimestamp);
    */
   subscribeClickEvent() {
     const scrollElement = document.getElementById('main__page'),
-          clickEvent = fromEvent(document, 'click'),
+          clickEvent = fromEvent(scrollElement, 'click'),
           scrollEvent = fromEvent(scrollElement, 'scroll');
     this.globelEventSubscription = merge(clickEvent, scrollEvent).pipe(
       takeUntil(this.ngUnsubscribe)
@@ -408,6 +503,151 @@ console.log('handleEffectEvent',eventList, userProfile, serverTimestamp);
       }
       
     });
+
+  }
+
+  /**
+   * 顯示建立排程賽局之彈跳視窗
+   * @param e {MouseEvent}
+   * @param eventId {number}
+   * @param canEdit {boolean}
+   * @author kidin-1101208
+   */
+  showCreateScheduleBox(e: MouseEvent, eventName: string, mapId: number, canEdit: boolean) {
+    e.preventDefault();
+    if (canEdit) {
+      const defaultSchedule = moment().add(3, 'day').unix();
+      const defaultDate = moment(defaultSchedule * 1000).startOf('day').unix();
+      const defaultTime = defaultSchedule - defaultDate;
+      this.uiFlag.showCreateScheduleBox = true;
+      this.scheduleRace.token = this.token;
+      this.scheduleRace.mapIndex = mapId;
+      this.scheduleRace.raceName = eventName;
+      this.scheduleRace.schedTimestamp = defaultSchedule;
+      this.scheduleTime = {
+        today: moment().unix(),
+        date: defaultSchedule,
+        time: defaultTime
+      };
+
+    }
+    
+  }
+
+  /**
+   * 關閉建立排程賽局之彈跳視窗
+   * @author kidin-1101208
+   */
+  closeCreateScheduleBox() {
+    this.uiFlag.showCreateScheduleBox = false;
+    this.initScheduleRace();
+    this.scheduleTime = {
+      today: null,
+      date: null,
+      time: null
+    }
+
+  }
+
+  /**
+   * 初始化scheduleRace物件
+   * @author kidin-1101208
+   */
+  initScheduleRace() {
+    this.scheduleRace = {
+      token: null,
+      sportMode: 0,
+      trainingType: 0,
+      mapIndex: null,
+      raceType: 0,
+      raceLap: 1,
+      raceOrientation: 0,
+      maxRaceMans: 50,
+      raceManPermission: 0,
+      raceClearCode: null,
+      raceName: null,
+      schedTimestamp: null
+    };
+
+  }
+
+  /**
+   * 取得所選排程賽局日期
+   * @param date {SelectDate}-排程賽局開始日
+   * @author kidin-1101013
+   */
+  getScheduleDate(date: SelectDate) {
+    const { startDate } = date;
+    this.scheduleTime.date = moment(startDate).unix();
+    this.checkScheduleTime();
+  }
+
+  /**
+   * 取得所選排程賽局時間
+   * @param e {Event}
+   * @author kidin-1101208
+   */
+  getScheduleTime(e: Event) {
+    const [hour, min] = (e as any).target.value.split(':');
+    this.scheduleTime.time = +hour * 3600 + +min * 60;
+  }
+
+  /**
+   * 確認排程賽局時間是否設定為現在時間10分鐘以上
+   * @author kidin-1101208
+   */
+  checkScheduleTime() {
+    const today = moment().unix();
+    const { date, time } = this.scheduleTime;
+    const compareDate = moment(today * 1000).startOf('day').unix();
+    const bufferTime = 20 * 60;
+    if (date < compareDate) {
+      this.scheduleTime = {
+        today,
+        date: compareDate,
+        time: today - compareDate + bufferTime  // 排程賽局需設定10分後以上
+      };
+
+    } else if (date === compareDate) {
+      const compareTime = today - compareDate + bufferTime;
+      if (time < compareTime) {
+        this.scheduleTime.time = compareTime;
+      }
+
+    }
+
+  }
+
+  /**
+   * 建立排程賽局
+   * @author kidin-1101208
+   */
+  submitSchedule() {
+    const { progress } = this.uiFlag;
+    if (progress === 100) {
+      this.uiFlag.progress = 30;
+      const { date, time } = this.scheduleTime;
+      this.scheduleRace.schedTimestamp = date + time;
+      this.cloudrunService.createRace(this.scheduleRace).subscribe(res => {
+        let msg: string;
+        if (this.utils.checkRes(res, false)) {
+          msg = '建立成功';
+          this.closeCreateScheduleBox();
+        } else {
+          const { msgCode } = res;
+          if (msgCode === 1283) {
+            msg = '建立失敗，單一帳號僅限建立一場賽事';
+          } else {
+            msg = '建立失敗';
+          }
+          
+        }
+
+        this.utils.showSnackBar(msg);
+        this.uiFlag.progress = 100;
+      });
+
+    }
 
   }
 
