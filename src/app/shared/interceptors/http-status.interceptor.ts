@@ -57,7 +57,7 @@ export class HttpStatusInterceptor implements HttpInterceptor {
                 hasBackdrop: true,
                 data: {
                   title: 'Error',
-                  body: `${err.status}：網路異常，請稍後再試`,
+                  body: `${err.status}：The network is abnormal, please try again later.`,
                   confirmText: 'Confirm'
                 }
 

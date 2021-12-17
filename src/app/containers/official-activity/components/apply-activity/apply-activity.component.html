@@ -1,3 +1,4 @@
+<app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
 <div id="whole__page" class="flexRow">
   <aside id="aside__bar" *ngIf="uiFlag.showAside">
     <table>
@@ -98,7 +99,6 @@
               <div class="flexRow login__input">
                 <mat-icon>smartphone</mat-icon>
                 <div
-                  id="country__code"
                   class="country__code__selector"
                   [class.selector--active]="uiFlag.showCountryCodeList"
                   (click)="showCountryCodeList($event)"
@@ -171,30 +171,37 @@
                 }"></span>
               </ng-container>
             </div>
-            <div
-              class="flexRow password__input"
-              *ngIf="uiFlag.showLoginButton"
-            >
-              <div class="flexRow login__input">
-                <mat-icon>vpn_key</mat-icon>
-                <input
-                  type="password"
-                  id="password"
-                  autocomplete="on"
-                  [placeholder]="
-                    'universal_userAccount_enterInfo' | translate: {
-                      info: ('universal_userAccount_password' | translate)
-                    }
-                  "
-                  (focusout)="checkPassword($event)"
-                >
-              </div>
-              <button
-                id="login__button"
-                (click)="login()"
+            <div class="flexCol">
+              <div
+                class="flexRow password__input"
+                *ngIf="uiFlag.showLoginButton"
               >
-                {{ 'universal_userAccount_logIn' | translate }}
-              </button>
+                <div class="flexRow login__input">
+                  <mat-icon>vpn_key</mat-icon>
+                  <input
+                    type="password"
+                    id="password"
+                    autocomplete="on"
+                    [placeholder]="
+                      'universal_userAccount_enterInfo' | translate: {
+                        info: ('universal_userAccount_password' | translate)
+                      }
+                    "
+                    (focusout)="checkPassword($event)"
+                  >
+                </div>
+                <button
+                  id="login__button"
+                  (click)="login()"
+                >
+                  {{ 'universal_userAccount_logIn' | translate }}
+                </button>
+              </div>
+              <ng-container *ngIf="uiFlag.showLoginButton">
+                <span *ngTemplateOutlet="inputAlert; context: {
+                  alert: 'login'
+                }"></span>
+              </ng-container>
             </div>
           </div>
           <div class="flexRow form__input">
@@ -347,9 +354,10 @@
               [limitMax]="true"
               [editStyle]="'
                 border: none;
-                border-bottom: 1px solid var(--scale-150-180);
+                border-bottom: 1px solid black;
                 font-weight: bold;
                 outline: none;
+                width: 100%;
               '"
             ></app-date-range-picker>
           </div>
@@ -461,10 +469,21 @@
               </span>
               <ul class="group__menu" *ngIf="uiFlag.showGroupList">
                 <li
+                  class="flexCol"
                   (click)="selectGroup($event, _group.id)"
                   *ngFor="let _group of eventDetail.group;"
                 >
-                  {{ _group.name }}
+                  <span>{{ _group.name }}</span>
+                  <span class="group__limit">
+                    {{ _group.gender | sex: 'i18n' | translate }}
+                    |
+                    <ng-container *ngIf="_group.age">
+                      {{ _group.age.min }}~{{ _group.age.max }} {{ 'universal_deviceSetting_yearsOld' | translate }}
+                    </ng-container>
+                    <ng-container *ngIf="!_group.age">
+                      {{ '無年齡限制' }}
+                    </ng-container>
+                  </span>
                 </li>
               </ul>
             </div>
@@ -648,6 +667,9 @@
     <ng-container *ngIf="alert === 'repeat'">
       {{ 'universal_userAccount_nickname' | translate }}
       {{ 'universal_deviceSetting_repeat' | translate }}
+    </ng-container>
+    <ng-container *ngIf="alert === 'login'">
+      {{ '登入確認身份或請變更手機及email' }}
     </ng-container>
   </span>
 </ng-template>

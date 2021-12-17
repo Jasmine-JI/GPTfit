@@ -1,3 +1,4 @@
+<app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
 <div class="flexCol" *ngIf="eventInfo">
   <header id="header" class="flexCenter">
     <div id="scenery">
@@ -37,7 +38,7 @@
                   {{ '分組' }} - {{ listFilter.groupName }}
                 </ng-container>
                 <ng-container *ngIf="listFilter.type === 'paidStatus'">
-                  {{ '繳費' }} - {{ listFilter.status | paidStatus }}
+                  {{ '繳費' }} - {{ listFilter.value | paidStatus }}
                 </ng-container>
                 <ng-container *ngIf="['orderStatus', 'awardStatus'].includes(listFilter.type)">
                   <ng-container *ngIf="listFilter.type === 'orderStatus'">
@@ -46,7 +47,7 @@
                   <ng-container *ngIf="listFilter.type === 'awardStatus'">
                     {{ '獎品' }} -
                   </ng-container>
-                  {{ listFilter.status | shippedStatus }}
+                  {{ listFilter.value | shippedStatus }}
                 </ng-container>
               </span>
               <i
@@ -355,11 +356,11 @@
       <div class="flexRow list__title">
         <h6 class="rank">#</h6>
         <h6 class="nickname">{{ 'universal_userAccount_nickname' | translate }}</h6>
-        <h6 class="group">{{ '分組' }}</h6>
-        <h6 class="paid__status">{{ '繳費狀態' }}</h6>
-        <h6 class="paid__date">{{ '繳費時間' }}</h6>
-        <h6 class="order__status">{{ '訂單狀態' }}</h6>
-        <h6 class="award__status">{{ '獎品' }}</h6>
+        <h6 class="group" *ngIf="uiFlag.screenSize > 500">{{ '分組' }}</h6>
+        <h6 class="paid__status" *ngIf="uiFlag.screenSize > 600">{{ '繳費狀態' }}</h6>
+        <h6 class="paid__date" *ngIf="uiFlag.screenSize > 700">{{ '繳費時間' }}</h6>
+        <h6 class="order__status" *ngIf="uiFlag.screenSize > 800">{{ '訂單狀態' }}</h6>
+        <h6 class="award__status" *ngIf="uiFlag.screenSize > 900">{{ '獎品' }}</h6>
       </div>
       <ul class="contestant__list">
         <li
@@ -375,11 +376,14 @@
         >
           <div class="flexCol list__row">
             <div class="flexRow important__info">
-              <span class="rank">{{ _list.rank }}</span>
+              <span class="rank rank__value">
+                {{ _list.rank | rankSuffix }}
+              </span>
               <span class="nickname">{{ _list.nickname }}</span>
               <span
                 class="group"
                 [class.status__selector]="listType === 'normal'"
+                *ngIf="uiFlag.screenSize > 500"
               >
                 <button
                   class="filter__group"
@@ -388,11 +392,21 @@
                 >
                   {{ _list.groupName }}
                 </button>
-                <div *ngTemplateOutlet="groupSelector; context: { index }"></div>
+                <div *ngTemplateOutlet="groupSelector; context: {
+                  index,
+                  gender,
+                  age: ({
+                    birth: _list.birthday,
+                    birthFormat: 'YYYYMMDD',
+                    baseDate: _list.appliedDate ? _list.appliedDate * 1000 : null,
+                    baseFormat: null
+                  } | countAge)
+                }"></div>
               </span>
               <span
                 class="paid__status"
                 [class.status__selector]="listType === 'normal'"
+                *ngIf="uiFlag.screenSize > 600"
               >
                 <button
                   [class.status__yet]="_list.paidStatus === PaidStatusEnum.unPaid"
@@ -404,12 +418,16 @@
                 </button>
                 <div *ngTemplateOutlet="paidStatusSelector; context: { index }"></div>
               </span>
-              <span class="paid__date">
+              <span
+                class="paid__date"
+                *ngIf="uiFlag.screenSize > 700"
+              >
                 {{ _list.paidDate ? (_list.paidDate * 1000 | timeFormat: 'YYYY-MM-DD HH:mm') : '----------' }}
               </span>
               <span
                 class="order__status"
                 [class.status__selector]="listType === 'normal'"
+                *ngIf="uiFlag.screenSize > 800"
               >
                 <button
                   [class.status__yet]="_list.productShipped === ProductShipped.unShip"
@@ -429,6 +447,7 @@
               <span
                 class="award__status"
                 [class.status__selector]="listType === 'normal'"
+                *ngIf="uiFlag.screenSize > 900"
               >
                 <button
                   [class.status__yet]="_list.awardShipped === ProductShipped.unShip"
@@ -441,7 +460,7 @@
                 <div *ngTemplateOutlet="shippedStatusSelector; context: {
                   index,
                   type: 'awardShipped'
-              }"></div>
+                }"></div>
               </span>
             </div>
             <div
@@ -480,9 +499,119 @@
                 style="width: 100%;"
                 (click)="$event.stopPropagation()"
               >
+                <div
+                  class="flexRow apply__info"
+                  *ngIf="uiFlag.screenSize <= 900"
+                >
+                  <div
+                    class="flexCol info__card"
+                    *ngIf="uiFlag.screenSize <= 500"
+                  >
+                    <h6 class="card__title">{{ '分組' }}</h6>
+                    <div
+                      class="group"
+                      [class.status__selector]="listType === 'normal'"
+                    >
+                      <button
+                        class="filter__group"
+                        [style.background-color]="groupList[_list.groupId - 1].color"
+                        (click)="showSelector($event, listType, 'showGroupList', index)"
+                      >
+                        {{ _list.groupName }}
+                      </button>
+                      <div *ngTemplateOutlet="groupSelector; context: {
+                        index,
+                        gender,
+                        age: ({
+                          birth: _list.birthday,
+                          birthFormat: 'YYYYMMDD',
+                          baseDate: _list.appliedDate ? _list.appliedDate * 1000 : null,
+                          baseFormat: null
+                        } | countAge)
+                      }"></div>
+                    </div>
+                  </div>
+                  <div
+                    class="flexCol info__card"
+                    *ngIf="uiFlag.screenSize <= 600"
+                  >
+                    <h6 class="card__title">{{ '繳費狀態' }}</h6>
+                    <span
+                      class="paid__status"
+                      [class.status__selector]="listType === 'normal'"
+                    >
+                      <button
+                        [class.status__yet]="_list.paidStatus === PaidStatusEnum.unPaid"
+                        [class.status__already]="_list.paidStatus === PaidStatusEnum.paid"
+                        [class.status__cancel]="_list.paidStatus === PaidStatusEnum.refund"
+                        (click)="showSelector($event, listType, 'showPaidStatusSelector', index)"
+                      >
+                        {{ _list.paidStatus | paidStatus }}
+                      </button>
+                      <div *ngTemplateOutlet="paidStatusSelector; context: { index }"></div>
+                    </span>
+                  </div>
+                  <div
+                    class="flexCol info__card"
+                    *ngIf="uiFlag.screenSize <= 700"
+                  >
+                    <h6 class="card__title">{{ '繳費時間' }}</h6>
+                    <span class="paid__date">
+                      {{ _list.paidDate ? (_list.paidDate * 1000 | timeFormat: 'YYYY-MM-DD HH:mm') : '----------' }}
+                    </span>
+                  </div>
+                  <div
+                    class="flexCol info__card"
+                    *ngIf="uiFlag.screenSize <= 800"
+                  >
+                    <h6 class="card__title">{{ '訂單狀態' }}</h6>
+                    <span
+                      class="order__status"
+                      [class.status__selector]="listType === 'normal'"
+                    >
+                      <button
+                        [class.status__yet]="_list.productShipped === ProductShipped.unShip"
+                        [class.status__already]="_list.productShipped === ProductShipped.shipped"
+                        [class.status__cancel]="_list.productShipped === ProductShipped.returnGoods"
+                        [class.status__case__closed]="_list.productShipped === ProductShipped.closeCase"
+                        [class.status__not__action]="_list.productShipped === ProductShipped.needNotShip"
+                        (click)="showSelector($event, listType, 'showOrderStatusSelector', index)"
+                      >
+                        {{ _list.productShipped | shippedStatus }}
+                      </button>
+                      <div *ngTemplateOutlet="shippedStatusSelector; context: {
+                        index,
+                        type: 'productShipped'
+                      }"></div>
+                    </span>
+                  </div>
+                  <div
+                    class="flexCol info__card"
+                    *ngIf="uiFlag.screenSize <= 900"
+                  >
+                    <h6 class="card__title">{{ '獎品' }}</h6>
+                    <span
+                      class="award__status"
+                      [class.status__selector]="listType === 'normal'"
+                    >
+                      <button
+                        [class.status__yet]="_list.awardShipped === ProductShipped.unShip"
+                        [class.status__already]="_list.awardShipped === ProductShipped.shipped"
+                        [class.status__case__closed]="_list.awardShipped === ProductShipped.closeCase"
+                        (click)="showSelector($event, listType, 'showAwardStatusSelector', index)"
+                      >
+                        {{ _list.awardShipped | shippedStatus }}
+                      </button>
+                      <div *ngTemplateOutlet="shippedStatusSelector; context: {
+                        index,
+                        type: 'awardShipped'
+                      }"></div>
+                    </span>
+                  </div>
+                </div>
                 <div class="flexRow apply__info">
                   <div *ngTemplateOutlet="infoCard; context: {
-                    title: 'User id',
+                    title: '使用者編號',
                     value: _list.userId
                   }"
                   ></div>
@@ -562,6 +691,12 @@
                   }"
                   ></div>
                   <div *ngTemplateOutlet="infoCard; context: {
+                    title: 'email',
+                    value: _list.email ? _list.email : '*********',
+                    break: true
+                  }"
+                  ></div>
+                  <div *ngTemplateOutlet="infoCard; context: {
                     title: '商品出貨日期',
                     value: _list.productShippingDate ? (_list.productShippingDate * 1000 | timeFormat: 'YYYY-MM-DD') : '----------'
                   }"
@@ -574,7 +709,7 @@
                   <br>
                   <div *ngTemplateOutlet="infoCard; context: {
                     title: '備註',
-                    value: _list.remark,
+                    value: _list.remark ? _list.remark : '*********',
                     break: true,
                     canEdit: true,
                     index: index,
@@ -655,6 +790,7 @@
       type="text"
       class="detail__input"
       [value]="value"
+      (focus)="focusInput()"
       (focusout)="handleEditDetail($event, type, index)"
       *ngIf="canEdit && uiFlag.detailEditable"
     >
@@ -664,19 +800,28 @@
 <ng-template
   #groupSelector
   let-index="index"
+  let-gender="gender"
+  let-age="age"
 >
   <ul
     class="drop__menu"
     *ngIf="uiFlag.showGroupList === index"
   >
     <li *ngFor="let _group of groupList">
-      <button
-        class="filter__group"
-        [style.background-color]="_group.color"
-        (click)="changeGroup($event, _group, index)"
+      <ng-container
+        *ngIf="
+             (_group.gender === 2 || _group.gender === gender)
+          && (!_group.age || (age >= _group.age.min && age <= _group.age.max))
+        "
       >
-        {{ _group.name }}
-      </button>
+        <button
+          class="filter__group"
+          [style.background-color]="_group.color"
+          (click)="changeGroup($event, _group, index)"
+        >
+          {{ _group.name }}
+        </button>
+      </ng-container>
     </li>
   </ul>
 </ng-template>

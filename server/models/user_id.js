@@ -93,6 +93,7 @@ exports.checkNicknameRepeat = function (keyword) {
 };
 
 exports.getTargetInfo = function (sql, algebra) {
+
   return new Promise((resolve, reject) => {
     db.query(sql, algebra, function (err, rows) {
         if (err) {
@@ -100,15 +101,7 @@ exports.getTargetInfo = function (sql, algebra) {
           return reject(false);
         }
 
-        let obj = {};
-        rows.forEach(_row => {
-          obj = {
-            ..._row,
-            ...obj
-          };
-
-        });
-        return resolve(obj);
+        return resolve(rows);
       }
 
     );

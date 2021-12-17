@@ -9,14 +9,6 @@ export class SignupService {
     private http: HttpClient
   ) {}
 
-  getSMSVerifyCode(body) {
-    return this.http.post('/api/v1/user/getSMSVerifyCode', body);
-  }
-
-  register(body) {
-    return this.http.post('/api/v1/user/register', body);
-  }
-
   /**
    * api-v2 1001
    * @param body {any}-api 所需參數

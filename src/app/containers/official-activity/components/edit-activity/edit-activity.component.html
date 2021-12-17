@@ -1,3 +1,4 @@
+<app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
 <div>
   <nav id="edit__nav" class="flexRow">
     <div>
@@ -15,21 +16,21 @@
         title="新增影片區塊"
         (click)="addContentVideo()"
       >
-        <i class="icon-svg_web-icon_p1_032-screen"></i>
+        <img src="/assets/icons/slow_motion_video.svg" alt="新增影片區塊">
       </button>
       <button
         class="edit__tool__button"
         title="新增圖片區塊"
         (click)="addContentImg()"
       >
-        <i class="icon-svg_web-icon_p3_072-photo"></i>
+        <img src="/assets/icons/add_image.svg" alt="新增圖片區塊">
       </button>
       <button
         class="edit__tool__button"
         title="新增文字區塊"
         (click)="addContentText()"
       >
-        <i class="icon-svg_web-icon_p3_082-ordered-list"></i>
+        <img src="/assets/icons/add_text.svg" alt="新增圖片區塊">
       </button>
     </div>
     <div>
@@ -66,11 +67,16 @@
       <div class="flexRow">
         <div
           id="edit__theme__img"
-          class="flexCenter"
+          class="flexCenter official-dashBorder"
           [class.empty__warn]="!eventInfo.themeImg && !imgUpload.theme.crop"
         >
-          <i class="icon-svg_web-icon_p3_072-photo"></i>
           <img
+            class="placeholder__img"
+            src="/assets/icons/image.svg"
+            alt="圖片"
+          >
+          <img
+            class="loaded__img"
             [src]="imgUpload.theme.crop ? imgUpload.theme.crop : eventInfo.themeImg"
             [alt]="eventInfo.eventName"
           >
@@ -81,7 +87,10 @@
             title="編輯佈景圖片"
             (click)="selectorThemeImg()"
           >
-            <i class="icon-svg_web-icon_p3_072-photo"></i>
+            <img
+              src="/assets/icons/add_image.svg"
+              [alt]="'universal_operating_selectImg' | translate"
+            >
           </button>
           <button
             class="photo__recovery__button"
@@ -290,6 +299,7 @@
       <div>
         <textarea
           id="event__description"
+          class="official-dashBorder"
           name="eventDescription"
           maxlength="150"
           placeholder="列表內容簡介"
@@ -308,13 +318,13 @@
           (dragover)="cancelDefault($event)"
           (drop)="drop($event, _content.contentId)"
         >
-          <div class="flexCol content__section">
+          <div class="flexCol content__section official-dashBorder">
             <div class="flexRow" style="justify-content: space-between;">
               <input
                 type="text"
                 class="content__section__title"
                 [value]="_content.title"
-                placeholder="導航標題（選填）"
+                placeholder="索引標題（選填）"
                 maxlength="10"
                 (focusout)="handleContentTitleInput($event, _content.contentId)"
               >
@@ -323,7 +333,9 @@
                 draggable="true"
                 title="拖曳變更區塊順序"
                 (dragstart)="dragStart($event, _content.contentId)"
-              >↕</button>
+              >
+                <mat-icon>drag_handle</mat-icon>
+              </button>
             </div>
             <ng-container *ngIf="_content.cardType === CardTypeEnum.text">
               <ckeditor
@@ -341,7 +353,7 @@
                   class="flexCol placeholder__icon"
                   *ngIf="!imgUpload.content[_content.contentId] && !_content.img"
                 >
-                  <i class="icon-svg_web-icon_p3_072-photo"></i>
+                  <img src="/assets/icons/image.svg" alt="圖片">
                   <span>圖片限制1080 * 1080、500kb</span>
                 </div>
                 <img
@@ -365,11 +377,11 @@
                 (focusout)="handleVideoUrlInput($event, _content.contentId)"
               >
               <div class="flexCenter content__appendix">
-                <div 
+                <div
                   class="placeholder__icon"
                   *ngIf="!_content.videoLink"
                 >
-                  <i class="icon-svg_web-icon_p1_032-screen"></i>
+                  <img src="/assets/icons/slow_motion_video.svg" alt="影片">
                 </div>
                 <app-ala-iframe
                   [src]="_content.videoLink"
@@ -386,7 +398,7 @@
           </div>
           <div class="flexCol">
             <button
-              class="delete__button"
+              class="official-deleteButton"
               title="刪除此內容區塊"
               (click)="showDeleteAlert('content', _content.contentId)"
             >
@@ -398,7 +410,10 @@
                 title="編輯照片"
                 (click)="selectorContentImg(_content.contentId)"
               >
-                <i class="icon-svg_web-icon_p3_072-photo"></i>
+                <img
+                  src="/assets/icons/add_image.svg"
+                  [alt]="'universal_operating_selectImg' | translate"
+                >
               </button>
               <button
                 class="photo__recovery__button"
@@ -452,7 +467,7 @@
               </div>
             </div>
             <button
-              class="delete__button"
+              class="official-deleteButton"
               title="刪除此分組區塊"
               (click)="showDeleteAlert('group', _group.id)"
             >
@@ -480,12 +495,18 @@
                 (focusout)="handleFeeTitleInput($event, _applyFee.feeId)"
               >
               <div class="fee__section__img">
-                <i class="icon-svg_web-icon_p3_072-photo"></i>
+                <img
+                  src="/assets/icons/image.svg"
+                  alt="圖片"
+                  class="fee__placeholder__img"
+                >
                 <img
                   [src]="imgUpload.applyFee[_applyFee.feeId]?.crop ? 
                     imgUpload.applyFee[_applyFee.feeId].crop : _applyFee.img
                   "
                   [alt]="_applyFee.title"
+                  class="fee__img"
+                  *ngIf="imgUpload.applyFee[_applyFee.feeId] || _applyFee.img"
                 >
               </div>
               <div class="flexRow">
@@ -514,7 +535,7 @@
             </div>
             <div class="flexCol">
               <button
-                class="delete__button"
+                class="official-deleteButton"
                 title="刪除此費用區塊"
                 (click)="showDeleteAlert('applyFee', _applyFee.feeId)"
               >
@@ -525,7 +546,10 @@
                 title="變更照片"
                 (click)="selectorApplyFeeImg(_applyFee.feeId)"
               >
-                <i class="icon-svg_web-icon_p3_072-photo"></i>
+                <img
+                  src="/assets/icons/add_image.svg"
+                  [alt]="'universal_operating_selectImg' | translate"
+                >
               </button>
               <button
                 class="photo__recovery__button"
@@ -664,7 +688,7 @@
   let-type="type"
 >
   <div
-    class="add__new__item"
+    class="add__new__item official-dashBorder"
     (click)="addNewItem(type)"
   >
     <i class="icon-svg_web-icon_p1_029-add"></i>

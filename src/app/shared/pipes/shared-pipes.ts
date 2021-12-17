@@ -42,6 +42,7 @@ import { LengthSibsPipe } from './length-sibs.pipe';
 import { SafeStylePipe } from './safe-style.pipe';
 import { PatchUnitPipe } from './patch-unit.pipe';
 import { AgePipe } from './age.pipe';
+import { RankSuffixPipe } from './rank-suffix.pipe';
 
 @NgModule({
   imports: [
@@ -90,7 +91,8 @@ import { AgePipe } from './age.pipe';
     LengthSibsPipe,
     SafeStylePipe,
     PatchUnitPipe,
-    AgePipe
+    AgePipe,
+    RankSuffixPipe
   ],
   exports: [
     SexPipe,
@@ -135,6 +137,10 @@ import { AgePipe } from './age.pipe';
     LengthSibsPipe,
     SafeStylePipe,
     PatchUnitPipe,
+    AgePipe,
+    RankSuffixPipe
+  ],
+  providers: [
     AgePipe
   ]
 })

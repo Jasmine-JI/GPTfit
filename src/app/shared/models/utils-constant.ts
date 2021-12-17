@@ -4,3 +4,7 @@ export const month = 30 * day;
 export const year = 365 * day;
 
 export const TOKEN = 'ala_token';
+
+export const developDomain = '192.168.1.235';
+export const uatDomain = 'app.alatech.com.tw';
+export const prodDomain = 'www.gptfit.com';

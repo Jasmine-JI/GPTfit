@@ -29,9 +29,10 @@ export class AuthService {
    * 成功登入後將token儲存至localstroage，
    * 失敗則強置登出。
    * @param body {object}
+   * @param navigate {boolean}-登入失敗是否導回gptfit登入頁面
    * @author kidin-1090721
    */
-  loginServerV2(body: any): Observable<any> {
+  loginServerV2(body: any, navigate: boolean = true): Observable<any> {
     return this.http.post<any>('/api/v2/user/signIn', body).pipe(
       map(res => {
         const { processResult, resultCode, signIn } = res;
@@ -51,7 +52,7 @@ export class AuthService {
               break;
             default:
               this.logout();
-              this.router.navigateByUrl('/signIn-web');
+              if (navigate) this.router.navigateByUrl('/signIn-web');
               break;
           }
 

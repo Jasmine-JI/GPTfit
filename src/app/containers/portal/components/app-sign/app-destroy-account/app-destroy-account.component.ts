@@ -66,7 +66,6 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
    * @author kidin-1090710
    */
   ngAfterViewInit () {
-console.log('view init');
     this.getDeviceSys();
     this.getUserToken();
   }

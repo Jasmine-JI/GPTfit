@@ -12,7 +12,7 @@ var transporter = nodemailer.createTransport({
 
 // var mailOptions = {
 //   from: 'noreply@alatech.com.tw',
-//   to: 'kidin_liu@alatech.com.tw',
+//   to: '',
 //   subject: 'Sending Email using Node.js',
 //   text: 'That was easy!',
 // };

@@ -51,6 +51,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * ui 會用到的各個flag
    */
   uiFlag = {
+    progress: 100,
     editMode: <'create' | 'edit'>'edit',
     isSaved: true,
     showMapList: false,
@@ -141,18 +142,22 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       this.userProfileService.getRxUserProfile().pipe(
         takeUntil(this.ngUnsubscribe)
       ).subscribe(res => {
-console.log('access right', res);
-        const { systemAccessRight } = res;
-        this.userProfile = res;
-        const maxAccessRight = systemAccessRight[0];
-        if (maxAccessRight !== 28) {
-          this.router.navigateByUrl('/official-activity/404');
+        if (res) {
+          const { systemAccessRight } = res;
+          this.userProfile = res;
+          const maxAccessRight = systemAccessRight[0];
+          if (maxAccessRight !== 28) {
+            this.router.navigateByUrl('/official-activity/403');
+          }
+
+        } else {
+          this.router.navigateByUrl('/official-activity/403');
         }
 
       });
 
     } else {
-      this.router.navigateByUrl('/official-activity/404');
+      this.router.navigateByUrl('/official-activity/403');
     }
 
   }
@@ -307,7 +312,6 @@ console.log('access right', res);
     this.officialActivityService.getRxAllMapInfo().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
-console.log('cloudrun map', res);
       this.mapList = res as Array<any>;
     });
 
@@ -363,7 +367,6 @@ console.log('cloudrun map', res);
    */
   getEventDetail(eventId: number) {
     this.officialActivityService.getEventDetail({ eventId }).subscribe(res => {
-console.log('edit old event', res);
       if (this.utils.checkRes(res)) {
         const { eventInfo, eventDetail } = res;
         this.eventInfo = eventInfo;
@@ -487,7 +490,6 @@ console.log('edit old event', res);
 
       })
     ).subscribe(result => {
-console.log('create event', result);
       if (this.utils.checkRes(result)) {
         this.saveSuccess();
         const newEventId = result.eventId;
@@ -554,7 +556,6 @@ console.log('create event', result);
     }
 
     formData.set('img', JSON.stringify(imgArray));
-console.log('imgArray', imgArray);
     return this.imageUploadService.addImg(formData);
   }
 
@@ -608,43 +609,44 @@ console.log('imgArray', imgArray);
    * @author kidin-1101020
    */
   saveEdit() {
-    const token = this.utils.getToken();
-    const { eventInfo, eventDetail, compareContent, eventId: targetEventId } = this;
-    const newContent = { eventInfo, eventDetail };
-    const editContent = this.getEditContent(compareContent, newContent);
-    const updateContent = this.filterImg(editContent);
-    const deleteList = this.checkDeleteList();
+    const { progress } = this.uiFlag;
+    if (progress === 100) {
+      this.uiFlag.progress = 30;
+      const token = this.utils.getToken();
+      const { eventInfo, eventDetail, compareContent, eventId: targetEventId } = this;
+      const newContent = { eventInfo, eventDetail };
+      const editContent = this.getEditContent(compareContent, newContent);
+      const deleteList = this.checkDeleteList();
+      const body = {
+        token,
+        targetEventId,
+        ...editContent,
+        ...deleteList
+      };
 
-console.log('event info', eventInfo, targetEventId);
-    const body = {
-      token,
-      targetEventId,
-      ...updateContent,
-      ...deleteList
-    };
-console.log('save edit body', body, updateContent, deleteList);
+      this.officialActivityService.editEventDetail(body).pipe(
+        switchMap(editRes => {
+          if (this.utils.checkRes(editRes)) {
 
-    this.officialActivityService.editEventDetail(body).pipe(
-      switchMap(editRes => {
-        if (this.utils.checkRes(editRes)) {
+            if (this.checkImgChange()) {
+              return this.uploadImg(targetEventId);
+            } else {
+              return of(editRes);
+            }
 
-          if (this.checkImgChange()) {
-            return this.uploadImg(targetEventId);
-          } else {
-            return of(editRes);
           }
 
+        })
+      ).subscribe(result => {
+        if (this.utils.checkRes(result)) {
+          this.saveSuccess();
+          this.router.navigateByUrl(`/official-activity/activity-detail/${targetEventId}`);
         }
 
-      })
-    ).subscribe(result => {
-console.log('edit event', result);
-      if (this.utils.checkRes(result)) {
-        this.saveSuccess();
-        this.router.navigateByUrl(`/official-activity/activity-detail/${targetEventId}`);
-      }
+        this.uiFlag.progress = 100;
+      });
 
-    });
+    }
 
   }
 
@@ -709,7 +711,6 @@ console.log('edit event', result);
           break;
         case 'applyDate':
         case 'raceDate':
-console.log('_key', _key, newValue, compareValue);
           if (this.isDifferentObject(newValue, compareValue)) {
             editPart = {
               [_key]: newValue,
@@ -816,40 +817,6 @@ console.log('_key', _key, newValue, compareValue);
 
     }
 
-  }
-
-  /**
-   * 移除圖片資訊
-   * @param editContent {any}-待更新之內容
-   * @author kidin-1101102
-   */
-  filterImg(editContent: any) {
-    const { eventDetail: {
-      content,
-      applyFee
-    } } = editContent;
-
-    if (content || applyFee) {
-
-      if (content) {
-        editContent.eventDetail.content = content.map(_content => {
-          if (_content.img) delete _content.img;
-          return _content;
-        });
-
-      }
-
-      if (applyFee) {
-        editContent.eventDetail.applyFee = applyFee.filter(_applyFee => {
-          if (_applyFee.img) delete _applyFee.img;
-          return _applyFee;
-        });
-
-      }
-
-    }
-
-    return editContent;
   }
 
   /**
@@ -1325,11 +1292,12 @@ console.log('_key', _key, newValue, compareValue);
     this.eventDetail.content = this.eventDetail.content
       .filter(_content => _content.contentId !== id)
       .map((_content, index) => {
-        _content.contentId = index + 1;
+        const newId = index + 1;
+        _content.contentId = newId;
+        this.handleImgReNumbering(AlbumType.eventContent, id, newId);
         return _content;
       });
 
-    this.imgUpload.content = this.handleEditImgDelete(AlbumType.eventContent, id);
     if (this.uiFlag.editMode === 'edit') {
       const deleteId = this.eventDetail.content.length + 1;
       this.deleteList.contentId.push(deleteId);
@@ -1364,43 +1332,13 @@ console.log('_key', _key, newValue, compareValue);
     this.eventDetail.content.splice(dropId - 1, 1);
     this.eventDetail.content.splice(targetId - 1, 0, dropContent);
     this.eventDetail.content = this.eventDetail.content.map((_content, index) => {
-      _content.contentId = index + 1
+      const newId = index + 1;
+      _content.contentId =newId
+      this.handleImgReNumbering(AlbumType.eventContent, dropId, newId);
       return _content;
     });
 
-    this.imgUpload.content = this.handleContentImgRearrange(dropId, targetId);
     this.saveDraft();
-  }
-
-  /**
-   * 刪除待更新之照片清單，並重編流水號
-   * @param type {AlbumType}-照片類別
-   * @param id {number}-流水id
-   * @author kidin-1101029
-   */
-  handleContentImgRearrange(insertId: number, beInsertedId: number) {
-    const insertImg = this.imgUpload.content[insertId];
-    delete this.imgUpload.content[insertId];
-    const oldList = this.imgUpload.content;
-    let newRange = {};
-    for (let _list in oldList) {
-      const oldId = +_list;
-      const direction = beInsertedId < insertId ?  1 : -1 ;
-      const unRearrange = oldId < beInsertedId || oldId > insertId;
-      const newId = unRearrange ? oldId : oldId + direction;
-      newRange = {
-        [`${newId}`]: oldList[_list],
-        ...newRange
-      };
-
-    }
-
-    newRange = {
-      [beInsertedId]: insertImg,
-      ...newRange
-    };
-
-    return newRange;
   }
 
   /**
@@ -1613,11 +1551,12 @@ console.log('_key', _key, newValue, compareValue);
     this.eventDetail.applyFee = this.eventDetail.applyFee
       .filter(_applyFee => _applyFee.feeId !== id)
       .map((_applyFee, index) => {
-        _applyFee.feeId = index + 1;
+        const newId = index + 1;
+        _applyFee.feeId = newId;
+        this.handleImgReNumbering(AlbumType.eventApplyFee, id, newId);
         return _applyFee;
       });
 
-    this.imgUpload.applyFee = this.handleEditImgDelete(AlbumType.eventApplyFee, id);
     if (this.uiFlag.editMode === 'edit') {
       const deleteId = this.eventDetail.applyFee.length + 1;
       this.deleteList.applyFeeId.push(deleteId);
@@ -1629,25 +1568,18 @@ console.log('_key', _key, newValue, compareValue);
   /**
    * 刪除待更新之照片清單，並重編流水號
    * @param type {AlbumType}-照片類別
-   * @param id {number}-流水id
+   * @param id {number}-舊流水id
+   * @param newId {number}-新流水id
    * @author kidin-1101029
    */
-  handleEditImgDelete(type: AlbumType, id: number) {
+  handleImgReNumbering(type: AlbumType, id: number, newId: number) {
     const targetType = type === AlbumType.eventContent ? 'content' : 'applyFee';
-    delete this.imgUpload[targetType][id];
-    const oldList = this.imgUpload[targetType];
-    let newRange = {};
-    for (let _list in oldList) {
-      const oldId = +_list;
-      const newId = oldId < id ? oldId : oldId - 1;
-      newRange = {
-        [`${newId}`]: oldList[_list],
-        ...newRange
-      };
-
+    const imgEdit = this.imgUpload[targetType][id];
+    if (imgEdit) {
+      Object.assign(this.imgUpload[targetType], { [newId]: imgEdit });
+      delete this.imgUpload[targetType][id];
     }
 
-    return newRange;
   }
 
   /**

@@ -8,6 +8,7 @@ const { checkTokenExit } = require('./models/auth.model');
 const { getUserActivityInfo } = require('./models/officialActivity_model');
 const https = require('https');
 const fs = require('fs');
+const rateLimit = require('express-rate-limit');
 
 var address;
 var ifaces = os.networkInterfaces();
@@ -443,8 +444,18 @@ const authMiddleware = function (req, res, next) {
 
 }
 
-// Set routes
+/**
+ * 使用express-rate-limit套件防止ddos攻擊
+ */
+const limiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 限制時間
+  max: 2, // 限制請求數量
+  message: 'Too many requests, please try again later!'
+})
 
+app.set('trust proxy', 1);
+
+// Set routes
 const rankForm = require('./routes/rankForm.js');
 const resetPassword = require('./routes/resetPassword.js');
 const raceEnroll = require('./routes/raceEnroll.js');
@@ -463,6 +474,7 @@ const uploadSportFile = require('./routes/uploadSportFile.js');
 const officialActivity = require('./routes/officialActivity.js');
 const group = require('./routes/group.js');
 const cloudrun = require('./routes/cloudrun.js');
+const email = require('./routes/email.js');
 
 app.use('/nodejs/api/rankForm', rankForm.unprotected);
 app.use('/nodejs/api/rankForm', authMiddleware, rankForm.protected);
@@ -485,6 +497,7 @@ app.use('/nodejs/api/uploadSportFile', uploadSportFile);
 app.use('/nodejs/api/officialActivity', officialActivity);
 app.use('/nodejs/api/group', group);
 app.use('/nodejs/api/cloudrun', cloudrun);
+app.use('/nodejs/api/email', email, limiter);
 app.use('/nodejs/img', express.static('/tmp/official-activity-img'));
 
 

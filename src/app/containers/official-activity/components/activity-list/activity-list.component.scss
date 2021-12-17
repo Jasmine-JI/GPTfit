@@ -358,6 +358,63 @@ td.product__title, td.product__fee {
   text-overflow: ellipsis;
 }
 
+.schedule__icon {
+  $icon-size: 40px;
+  width: $icon-size;
+  height: $icon-size;
+  filter: invert(50%) brightness(80%);
+}
+
+.dialog__section {
+  margin-bottom: 10px;
+
+  h6 {
+    font-weight: bold;
+  }
+
+}
+
+.dialog__map__img {
+  max-width: 100px;
+}
+
+.dialog__map__info {
+  margin-left: 10px;
+  color: rgba(85, 85, 85, 1);
+
+  >p {
+    font-weight: bold;
+  }
+
+  >div {
+
+    >span {
+      @include bold-font(14px);
+      margin: 0 2px;
+    }
+
+  }
+
+}
+
+.schedule__name {
+  border: none;
+  outline: none;
+  border-bottom: 1px solid rgba(100, 100, 100, 1);
+}
+
+.dialog__icon {
+  font-size: 28px;
+  margin: auto 5px;
+}
+
+.schedule__time__selector {
+  border: none;
+  border-bottom: 1px solid rgba(100, 100, 100, 1);
+  margin-left: 5px;
+  color: rgba(100, 100, 100, 1);
+}
+
 /*********************************************************** mobile style **********************************************/
 
 .map__img__mobile {

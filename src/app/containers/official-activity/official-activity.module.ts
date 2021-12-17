@@ -10,6 +10,7 @@ import { LeaderboardComponent } from './components/leaderboard/leaderboard.compo
 import { ContestantListComponent } from './components/contestant-list/contestant-list.component';
 import { EditActivityComponent } from './components/edit-activity/edit-activity.component';
 import { EditGuard } from './guards/edit.guard';
+import { AdminGuard } from './guards/admin.guard';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 import { SharedPipes } from '../../shared/pipes/shared-pipes';
 import { CustomMaterialModule } from '../../shared/custom-material.module';
@@ -21,6 +22,9 @@ import { GroupService } from '../dashboard/services/group.service';
 import { UserInfoService } from '../dashboard/services/userInfo.service';
 import { PaidStatusPipe } from './pipes/paid-status.pipe';
 import { ShippedStatusPipe } from './pipes/shipped-status.pipe';
+import { QRCodeModule } from 'angularx-qrcode';
+import { EditCarouselComponent } from './components/edit-carousel/edit-carousel.component';
+import { ContactUsComponent } from './components/contact-us/contact-us.component';
 
 
 @NgModule({
@@ -33,7 +37,8 @@ import { ShippedStatusPipe } from './pipes/shipped-status.pipe';
     SharedModule,
     NgProgressModule,
     CKEditorModule,
-    FormsModule
+    FormsModule,
+    QRCodeModule
   ],
   declarations: [
     OfficialActivityComponent,
@@ -44,13 +49,18 @@ import { ShippedStatusPipe } from './pipes/shipped-status.pipe';
     ContestantListComponent,
     EditActivityComponent,
     PaidStatusPipe,
-    ShippedStatusPipe
+    ShippedStatusPipe,
+    EditCarouselComponent,
+    ContactUsComponent
   ],
   providers: [
     EditGuard,
     OfficialActivityService,
     GroupService,
-    UserInfoService
+    UserInfoService,
+    PaidStatusPipe,
+    ShippedStatusPipe,
+    AdminGuard
   ]
 
 })

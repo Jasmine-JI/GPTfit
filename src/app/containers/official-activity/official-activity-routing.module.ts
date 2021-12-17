@@ -8,7 +8,11 @@ import { LeaderboardComponent } from './components/leaderboard/leaderboard.compo
 import { ContestantListComponent } from './components/contestant-list/contestant-list.component';
 import { EditActivityComponent } from './components/edit-activity/edit-activity.component';
 import { EditGuard } from './guards/edit.guard';
-
+import { AdminGuard } from './guards/admin.guard';
+import { Page404Component } from '../../shared/components/page404/page404.component';
+import { Page403Component } from '../../shared/components/page403/page403.component';
+import { EditCarouselComponent } from './components/edit-carousel/edit-carousel.component';
+import { ContactUsComponent } from './components/contact-us/contact-us.component';
 
 const routes: Routes = [
   {
@@ -58,7 +62,8 @@ const routes: Routes = [
         children: [
           {
             path: ':eventId',
-            component: ContestantListComponent
+            component: ContestantListComponent,
+            canActivate: [AdminGuard]
           },
           {
             path: '',
@@ -72,6 +77,7 @@ const routes: Routes = [
           {
             path: ':eventId',
             component: EditActivityComponent,
+            canActivate: [AdminGuard],
             canDeactivate: [EditGuard]
           },
           {
@@ -79,6 +85,23 @@ const routes: Routes = [
             redirectTo: '/official-activity/404'
           }
         ]
+      },
+      {
+        path: 'contact-us',
+        component: ContactUsComponent
+      },
+      {
+        path: 'edit-carousel',
+        component: EditCarouselComponent,
+        canActivate: [AdminGuard]
+      },
+      {
+        path: '403',
+        component: Page403Component
+      },
+      {
+        path: '404',
+        component: Page404Component
       },
       {
         path: '',
@@ -90,10 +113,6 @@ const routes: Routes = [
       }
     ]
 
-  },
-  {
-    path: '**',
-    redirectTo: '/official-activity/404'
   }
 ];
 

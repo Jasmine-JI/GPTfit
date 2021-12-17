@@ -179,7 +179,8 @@ export class DateRangePickerComponent implements OnInit, OnChanges, OnDestroy {
         jquery(`#picker${this.serialId}`).daterangepicker(pickerOpt);
         jquery(`#picker${this.serialId}`).on('apply.daterangepicker', this.emitDateRange.bind(this));
         if (this.openPicker) {
-          const picker = document.getElementById('picker');
+          const id = this.serialId ? `picker${this.serialId}` : 'picker';
+          const picker = document.getElementById(id);
           picker.click();
         } else if (this.openPicker === undefined) {
           this.selectDateRange.emit(this.defaultDate);

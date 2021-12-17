@@ -13,7 +13,6 @@ import { SignTypeEnum } from '../../../../shared/models/utils-type';
 import moment from 'moment';
 import { AuthService } from '../../../../shared/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { HttpParams } from '@angular/common/http';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { UserProfileInfo } from '../../../dashboard/models/userProfileInfo';
 import { UserInfoService } from '../../../dashboard/services/userInfo.service';
@@ -23,7 +22,7 @@ import { Nationality } from '../../models/activity-content';
 
 const stageHeight = 90;
 type AccountType = 'phone' | 'email';
-type InputAlert = 'format' | 'empty' | 'repeat';
+type InputAlert = 'format' | 'empty' | 'repeat' | 'login';
 interface NewRegister {
   token: string;
   password: string;
@@ -48,6 +47,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * ui 會用到的flag
    */
   uiFlag = {
+    progress: 100,
     showLoginButton: false,
     showAside: true,
     haveAccount: false,
@@ -58,8 +58,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     showGroupList: false,
     currentFocusInput: '#phone',
     applyComplish: false,
-    loginLoading: false,
-    applyLoading: false,
     showPasswordHint: false,
     newPasswordFormatError: false,
     upDatePasswordLoading: false,
@@ -180,8 +178,8 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   ngOnInit(): void {
     this.checkEventId();
     if (this.token) this.checkApplied();
-    this.subscribeResizeEvent();
     this.checkScreenSize();
+    this.subscribeResizeEvent();
   }
 
   ngAfterViewInit() {
@@ -230,7 +228,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
 
     this.userProfileService.getAssignInfo(body).subscribe(res => {
       if (this.utils.checkRes(res)) {
-        const { result: { eventId: appliedEventId } } = res;
+        const { eventId: appliedEventId } = res.result[0] ?? {};
         if (appliedEventId) {
           this.router.navigateByUrl('/official-activity/my-activity');
         } else {
@@ -256,20 +254,21 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
           const notEmptyProfile = !this.utils.isObjectEmpty(userProfile);
           if (notEmptyProfile) {
             this.handleEventUserProfile(userProfile);
-            return eventUserProfile;
+            return of(eventUserProfile);
           } else {
             return this.userProfileService.getUserProfile({token}).pipe(
               map(profileResult => {
                 if (this.utils.checkRes(profileResult)) {
                   const { userProfile } = profileResult;
                   this.handleRxUserProfile(userProfile);
-                  return of(userProfile);
+                  return userProfile;
                 } else {
-                  return of();
+                  return null;
                 }
                 
                 
               })
+
             );
 
           }
@@ -303,7 +302,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101116
    */
   handleRxUserProfile(userRxProfile: UserProfileInfo) {
-console.log('handleRxUserProfile', userRxProfile);
     const {
       nickname,
       email,
@@ -352,8 +350,7 @@ console.log('handleRxUserProfile', userRxProfile);
    */
   getEventDetail(eventId: number) {
     this.officialActivityService.getEventDetail({eventId}).subscribe(res => {
-console.log('event detail', res);
-      if (this.utils.checkRes(res)) {
+      if (this.utils.checkRes(res, false)) {
         const { eventInfo, eventDetail } = res;
         const { applyDate: { startDate, endDate } } = eventInfo;
         const overApplyDate = this.checkApplyDateOver(startDate, endDate);
@@ -393,7 +390,7 @@ console.log('event detail', res);
    * @author kidin-1101104
    */
   checkApplyDateOver(startTimestamp: number, endTimestamp: number) {
-    const now = (new Date).getTime();
+    const now = this.utils.getCurrentTimestamp('ms');
     const currentTimestamp = Math.round(now / 1000);
     const beforeStart = currentTimestamp < startTimestamp;
     const afterEnd = currentTimestamp > endTimestamp;
@@ -417,7 +414,7 @@ console.log('event detail', res);
    * @author kidin-1101110
    */
   createRandomId() {
-    const timestamp = `${(new Date).getTime()}`;
+    const timestamp = `${this.utils.getCurrentTimestamp('ms')}`;
     const timestampLength = timestamp.length;
     return timestamp.slice(timestampLength - 4, timestampLength);
   }
@@ -561,7 +558,6 @@ console.log('event detail', res);
     this.uiFlag.showGroupList = false;
     if (this.clickScrollEvent) this.clickScrollEvent.unsubscribe();
   }
-
   
   /**
    * 選擇國碼
@@ -588,18 +584,21 @@ console.log('event detail', res);
    */
   checkPhoneFormat(e: MouseEvent) {
     const trimValue = (e as any).target.value.trim();
-    const { mobileNumber: oldPhone } = this.applyInfo.userProfile;
-    const newPhone = `${+trimValue}`;  // 藉由轉數字將開頭所有0去除
-    if (+newPhone !== oldPhone) {
+    if (!trimValue) {
+      this.alert.mobileNumber = 'empty';
+    } else {
+      const { mobileNumber: oldPhone } = this.applyInfo.userProfile;
+      const newPhone = `${+trimValue}`;  // 藉由轉數字將開頭所有0去除
+      if (+newPhone !== oldPhone) {
 
-      if (newPhone.length === 0) {
-        this.alert.mobileNumber = 'empty';
-      } else if (!formTest.phone.test(newPhone)) {
-        this.alert.mobileNumber = 'format';
-      } else {
-        this.alert.mobileNumber = null;
-        this.applyInfo.userProfile.mobileNumber = +newPhone;
-        this.checkPhoneAccount();
+        if (!formTest.phone.test(newPhone)) {
+          this.alert.mobileNumber = 'format';
+        } else {
+          this.alert.mobileNumber = null;
+          this.applyInfo.userProfile.mobileNumber = +newPhone;
+          this.checkPhoneAccount();
+        }
+
       }
 
     }
@@ -616,15 +615,16 @@ console.log('event detail', res);
       const args = { countryCode, phone: mobileNumber };
       const target = ['phone'];
       this.checkRepeat(args, target).subscribe(res => {
-console.log('check phone', res);
-        if (this.utils.checkRes(res)) {
-          const { phone } = res.result;
+        if (this.utils.checkRes(res, false)) {
+          const { phone } = res.result[0] ?? {};
           if (phone) {
             delete this.loginBody.email;  // 避免多帳號者更換帳號
             this.loginBody.signInType = SignTypeEnum.phone;
             this.loginBody.countryCode = countryCode;
             this.loginBody.mobileNumber = mobileNumber;
             this.handleLoginButton();
+          } else {
+            this.uiFlag.showLoginButton = false;
           }
 
         }
@@ -641,17 +641,22 @@ console.log('check phone', res);
    * @author kidin-1101108
    */
   checkEmailFormat(e: MouseEvent) {
-    const { email: oldEmail } = this.applyInfo.userProfile;
     const newEmail = (e as any).target.value.trim();
-    if (newEmail !== oldEmail) {
-      if (newEmail.length === 0) {
-        this.alert.email = 'empty';
-      } else if (!formTest.email.test(newEmail)) {
-        this.alert.email = 'format';
-      } else {
-        this.alert.email = null;
-        this.applyInfo.userProfile.email = newEmail;
-        this.checkEmailAccount(newEmail);
+    if (!newEmail) {
+      this.alert.email = 'empty';
+    } else {
+      const { email: oldEmail } = this.applyInfo.userProfile;
+      
+      if (newEmail !== oldEmail) {
+
+        if (!formTest.email.test(newEmail)) {
+          this.alert.email = 'format';
+        } else {
+          this.alert.email = null;
+          this.applyInfo.userProfile.email = newEmail;
+          this.checkEmailAccount(newEmail);
+        }
+
       }
 
     }
@@ -667,15 +672,16 @@ console.log('check phone', res);
     const args = { email };
     const target = ['email'];
     this.checkRepeat(args, target).subscribe(res => {
-console.log('check email', res);
-      if (this.utils.checkRes(res)) {
-        const { email } = res.result;
+      if (this.utils.checkRes(res, false)) {
+        const { email } = res.result[0] ?? {};
         if (email) {
           delete this.loginBody.countryCode;  // 避免多帳號者更換帳號
           delete this.loginBody.mobileNumber;
           this.loginBody.signInType = SignTypeEnum.email;
           this.loginBody.email = email;
           this.handleLoginButton();
+        } else {
+          this.uiFlag.showLoginButton = false;
         }
 
       }
@@ -730,11 +736,11 @@ console.log('check email', res);
    * @author kidin-1101111
    */
   login() {
-    const { loginLoading } = this.uiFlag;
-    if (!loginLoading) {
-      this.uiFlag.loginLoading = true;
+    const { progress } = this.uiFlag;
+    if (progress === 100) {
+      this.uiFlag.progress = 30;
       this.auth.loginServerV2(this.loginBody).subscribe(res => {
-        if (this.utils.checkRes(res)) {
+        if (this.utils.checkRes(res, false)) {
           const { signIn: { token } } = res;
           this.token = token;
           this.getEventUserProfile(token);
@@ -745,7 +751,7 @@ console.log('check email', res);
           this.snackbar.open(msg, 'OK', { duration: 3000 } );
         }
 
-        this.uiFlag.loginLoading = false;
+        this.uiFlag.progress = 100;
       });
 
     }
@@ -762,9 +768,8 @@ console.log('check email', res);
     const target = ['nickname'];
     if (!this.token) {
       this.checkRepeat(args, target).subscribe(res => {
-console.log('check nickname', res);
         if (this.utils.checkRes(res)) {
-          const { nickname } = res.result;
+          const { nickname } = res.result[0] ?? {};
           this.alert.nickname = nickname ? 'repeat' : null;
         }
 
@@ -922,22 +927,20 @@ console.log('check nickname', res);
    * @author kidin-1101111
    */
   applyActivity() {
-console.log('apply', this.applyInfo);
-    const { uiFlag: { applyLoading }, token } = this;
-    if (!applyLoading) {
+    const { uiFlag: { progress }, token } = this;
+    if (progress === 100) {
+      this.uiFlag.progress = 30;
 
       if (token) Object.assign(this.applyInfo, { token });
 
-      this.uiFlag.applyLoading = true;
       this.officialActivityService.applyEvent(this.applyInfo).subscribe(res => {
-console.log('apply res', res);
         if (this.utils.checkRes(res)) {
           const { register } = res;
           if (!token) this.handleNewAccount(register);
           this.uiFlag.applyComplish = true;
         }
 
-        this.uiFlag.applyLoading = false;
+        this.uiFlag.progress = 100;
       });
 
     }
@@ -1000,8 +1003,7 @@ console.log('apply res', res);
     if (this.token) {
       this.uiFlag.showLoginButton = false;
     } else {
-      const { email, mobileNumber } = this.loginBody as any;
-      this.uiFlag.showLoginButton = email || mobileNumber;
+      this.uiFlag.showLoginButton = true;
     }
 
   }
@@ -1097,7 +1099,6 @@ console.log('apply res', res);
     };
 
     this.officialActivityService.createProductOrder(body).subscribe(res => {
-console.log('create order', res);
       if (this.utils.checkRes(res)) {
         const { responseHtml } = res;
         const newElement = document.createElement('div');

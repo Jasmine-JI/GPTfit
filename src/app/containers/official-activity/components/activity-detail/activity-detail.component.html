@@ -1,3 +1,4 @@
+<app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
 <section *ngIf="eventInfo">
   <header class="event__info">
     <div id="theme__img"  class="flexCenter">
@@ -110,7 +111,7 @@
         </li>
       </ng-container>
       <li>
-        <a [href]="'/official-activity/leaderboard/' + eventInfo.eventId">
+        <a [href]="'/official-activity/leaderboard?eventId=' + eventInfo.eventId">
           {{ 'universal_race_leaderboard' | translate }}&nbsp;→
         </a>
       </li>
