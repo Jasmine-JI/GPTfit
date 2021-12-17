@@ -5,25 +5,24 @@ import { UtilsService } from '../../../../shared/services/utils.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { unit, Unit, ft, inch, lb } from '../../../../shared/models/bs-constant';
-import { hrBase, HrBase } from '../../models/userProfileInfo';
-import { formTest } from '../../../portal/models/form-test';
+import { Unit, ft, inch, lb } from '../../../../shared/models/bs-constant';
+import { HrBase } from '../../models/userProfileInfo';
+import { formTest } from '../../../../shared/models/form-test';
 import { HrZoneRange } from '../../../../shared/models/chart-data';
 import moment from 'moment';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 
-enum dominantHand {
+enum DominantHand {
   right,
   left
 }
 
-enum autoStepTarget {
+enum AutoStepTarget {
   close,
   open
 }
 
-type AutoStepTarget = autoStepTarget.close | autoStepTarget.open;
 type TimeEditType = 'hour' | 'min';
 type SetType = 'hr' | 'ftp' | 'activity' | 'sleep' | 'target';
 const wheelSizeCoefficient = inch * 10;
@@ -55,17 +54,17 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    * 使用者設定
    */
   setting = {
-    unit: unit.metric,
+    unit: Unit.metric,
     strideLengthCentimeter: 90,
-    heartRateBase: hrBase.max,
+    heartRateBase: HrBase.max,
     heartRateMax: 190,
     heartRateResting: 60,
     normalBedTime: '23:00',
     normalWakeTime: '08:00',
     wheelSize: 2000,
-    autoTargetStep: autoStepTarget.close,
+    autoTargetStep: AutoStepTarget.close,
     cycleFtp: 200,
-    handedness: dominantHand.right,
+    handedness: DominantHand.right,
     target: {
       calorie: 2500,
       distance: 1000,
@@ -104,10 +103,10 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   userInfo: any;
   userHrZone: HrZoneRange;
   userFtpZone: any;
-  readonly hrBase = hrBase;
-  readonly unit = unit;
-  readonly dominantHand = dominantHand;
-  readonly autoStepTarget = autoStepTarget;
+  readonly HrBase = HrBase;
+  readonly Unit = Unit;
+  readonly DominantHand = DominantHand;
+  readonly AutoStepTarget = AutoStepTarget;
 
   constructor(
     private userInfoService: UserInfoService,
@@ -131,7 +130,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       map(resp => {
         const { handedness } = resp;
         if (handedness === undefined || resp.length === 0) {
-          resp.handedness = dominantHand.right;
+          resp.handedness = DominantHand.right;
         }
 
         return resp;
@@ -175,7 +174,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       }
     } = this.userInfo;
 
-    const isMetric = userUnit === unit.metric;
+    const isMetric = userUnit === Unit.metric;
     this.setting = {
       unit: userUnit,
       strideLengthCentimeter: this.utils.valueConvert(strideLengthCentimeter, !isMetric, true, inch, 1),
@@ -318,7 +317,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    * @author kidin-1100825
    */
   valueRevert(key: string, value: string | number) {
-    const isMetric = this.setting.unit === unit.metric,
+    const isMetric = this.setting.unit === Unit.metric,
           edited = this.editFlag[key];
     switch (key) {
       case 'strideLengthCentimeter':
@@ -470,7 +469,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   changeUnit(userUnit: Unit) {
     if (userUnit != this.setting.unit) {
       this.setting.unit = userUnit;
-      const isMetric = userUnit === unit.metric,
+      const isMetric = userUnit === Unit.metric,
             { 
               strideLengthCentimeter,
               wheelSize,
@@ -524,10 +523,10 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
 
   /**
    * 變更慣用手
-   * @param handedness {dominantHand.right | dominantHand.left}-慣用手
+   * @param handedness {DominantHand.right | DominantHand.left}-慣用手
    * @author kidin-1100823
    */
-  changeDominantHand(handedness: dominantHand.right | dominantHand.left) {
+  changeDominantHand(handedness: DominantHand.right | DominantHand.left) {
     this.setting.handedness = handedness;
   }
 
@@ -539,7 +538,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   handleStepLenInput(e: MouseEvent) {
     const oldValue = this.userInfo.strideLengthCentimeter,
           inputValue = +(e as any).target.value,
-          isMetric = this.setting.unit === unit.metric,
+          isMetric = this.setting.unit === Unit.metric,
           testFormat = formTest.decimalValue.test(`${inputValue}`),
           newValue = this.utils.valueConvert(inputValue, !isMetric, false, inch, 1),
           valueChanged = newValue !== oldValue;
@@ -572,7 +571,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   handleWheelSizeInput(e: MouseEvent) {
     const oldValue = this.userInfo.wheelSize,
           inputValue = +(e as any).target.value,
-          isMetric = this.setting.unit === unit.metric,
+          isMetric = this.setting.unit === Unit.metric,
           testFormat = formTest.decimalValue.test(`${inputValue}`),
           newValue = this.utils.valueConvert(inputValue, !isMetric, false, wheelSizeCoefficient, 1),
           valueChanged = newValue !== oldValue;
@@ -639,7 +638,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   handleTargetDistanceInput(e: MouseEvent) {
     const oldValue = this.userInfo.target.distance,
           inputValue = +(e as any).target.value,
-          isMetric = this.setting.unit === unit.metric,
+          isMetric = this.setting.unit === Unit.metric,
           testFormat = formTest.decimalValue.test(`${inputValue}`),
           newValue = this.utils.valueConvert(inputValue, !isMetric, false, ft, 2),
           valueChanged = newValue !== oldValue;
@@ -776,7 +775,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   handleTargetWeightInput(e: MouseEvent) {
     const oldValue = this.userInfo.target.bodyWeight,
           inputValue = +(e as any).target.value,
-          isMetric = this.setting.unit === unit.metric,
+          isMetric = this.setting.unit === Unit.metric,
           testFormat = formTest.decimalValue.test(`${inputValue}`),
           newValue = this.utils.valueConvert(inputValue, !isMetric, false, lb, 1),
           valueChanged = newValue !== oldValue;

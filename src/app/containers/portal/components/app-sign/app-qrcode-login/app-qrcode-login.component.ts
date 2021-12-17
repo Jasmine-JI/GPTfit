@@ -1,18 +1,17 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
-
 import { AuthService } from '../../../../../shared/services/auth.service';
-import { UtilsService } from '@shared/services/utils.service';
+import { UtilsService } from '../../../../../shared/services/utils.service';
 import { SignupService } from '../../../services/signup.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
-import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
-
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import moment from 'moment';
+
 
 @Component({
   selector: 'app-app-qrcode-login',

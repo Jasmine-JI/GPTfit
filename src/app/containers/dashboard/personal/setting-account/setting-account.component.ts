@@ -10,9 +10,10 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
-import { accountTypeEnum } from '../../models/userProfileInfo';
+import { AccountTypeEnum } from '../../models/userProfileInfo';
+import { SignTypeEnum } from '../../../../shared/models/utils-type';
 
-enum thirdParty {
+enum ThirdParty {
   strava = 1,
   runKeeper,
   line
@@ -33,7 +34,7 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
   userInfo: any;
   clientId = 30689;
   stravaApiDomain = 'https://app.alatech.com.tw:5443';
-  readonly accountType = accountTypeEnum;
+  readonly accountType = AccountTypeEnum;
 
   constructor(
     private userInfoService: UserInfoService,
@@ -59,7 +60,7 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
    */
   getNeedInfo() {
     const body = {
-      signInType: 3,
+      signInType: SignTypeEnum.token,
       token: this.utils.getToken()
     };
 
@@ -72,13 +73,13 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
             thirdPartyAgency.forEach(_party => {
               const { interface: type, status } = _party;
               switch (type) {
-                case thirdParty.strava:
+                case ThirdParty.strava:
                   Object.assign(thirdObj, { strava: status });
                   break;
-                case thirdParty.runKeeper:
+                case ThirdParty.runKeeper:
                   Object.assign(thirdObj, { runKeeper: status });
                   break;
-                case thirdParty.line:
+                case ThirdParty.line:
                   Object.assign(thirdObj, { line: status });
                   break;
               }

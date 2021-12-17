@@ -29,10 +29,10 @@
       </span>
       <div class="contentInput">
         <span class="mainText">
-          <ng-container *ngIf="userInfo.heartRateBase === hrBase.max">
+          <ng-container *ngIf="userInfo.heartRateBase === HrBase.max">
             {{ 'universal_userProfile_maximalHeartRate' | translate }}
           </ng-container>
-          <ng-container *ngIf="userInfo.heartRateBase === hrBase.reserve">
+          <ng-container *ngIf="userInfo.heartRateBase === HrBase.reserve">
             {{ 'universal_userProfile_heartRateReserve' | translate }}
           </ng-container>
         </span>
@@ -131,23 +131,23 @@
               {{ 'universal_userProfile_hrCalculation' | translate }}：
             </span>
             <div class="flexRow radio__section">
-              <span class="flexRow radioSelector" (click)="changeHrBase(hrBase.max)">
+              <span class="flexRow radioSelector" (click)="changeHrBase(HrBase.max)">
                 <span
                   class="radioBtn"
-                  [class.radioBtn--active]="setting.heartRateBase === hrBase.max"
+                  [class.radioBtn--active]="setting.heartRateBase === HrBase.max"
                 ></span>
                 <span>{{ 'universal_userProfile_maximalHeartRate' | translate }}</span>
               </span>
-              <span class="flexRow radioSelector" (click)="changeHrBase(hrBase.reserve)">
+              <span class="flexRow radioSelector" (click)="changeHrBase(HrBase.reserve)">
                 <span
                   class="radioBtn"
-                  [class.radioBtn--active]="setting.heartRateBase === hrBase.reserve"
+                  [class.radioBtn--active]="setting.heartRateBase === HrBase.reserve"
                 ></span>
                 <span>{{ 'universal_userProfile_heartRateReserve' | translate }}</span>
               </span>
             </div>
           </div>
-          <ng-container *ngIf="setting.heartRateBase === hrBase.reserve">
+          <ng-container *ngIf="setting.heartRateBase === HrBase.reserve">
             <div class="childPageContent">
               <label for="max_hr">
                 {{ 'universal_userProfile_maxHr' | translate }}：
@@ -384,17 +384,17 @@
               {{ 'universal_deviceSetting_unit' | translate }}：
             </span>
             <div class="flexRow radio__section">
-              <span class="flexRow radioSelector" (click)="changeUnit(unit.metric)">
+              <span class="flexRow radioSelector" (click)="changeUnit(Unit.metric)">
                 <span
                   class="radioBtn"
-                  [class.radioBtn--active]="setting.unit === unit.metric"
+                  [class.radioBtn--active]="setting.unit === Unit.metric"
                 ></span>
                 <span>{{ 'universal_userProfile_metric' | translate }}</span>
               </span>
-              <span class="flexRow radioSelector" (click)="changeUnit(unit.imperial)">
+              <span class="flexRow radioSelector" (click)="changeUnit(Unit.imperial)">
                 <span
                   class="radioBtn"
-                  [class.radioBtn--active]="setting.unit === unit.imperial"
+                  [class.radioBtn--active]="setting.unit === Unit.imperial"
                 ></span>
                 <span>{{ 'universal_userProfile_imperial' | translate }}</span>
               </span>
@@ -405,17 +405,17 @@
               {{ 'universal_activityData_swing' | translate }}：
             </span>
               <div class="flexRow radio__section">
-                <span class="flexRow radioSelector" (click)="changeDominantHand(dominantHand.left)">
+                <span class="flexRow radioSelector" (click)="changeDominantHand(DominantHand.left)">
                   <span
                     class="radioBtn"
-                    [class.radioBtn--active]="setting.handedness == dominantHand.left"
+                    [class.radioBtn--active]="setting.handedness == DominantHand.left"
                   ></span>
                   <span>{{ 'universal_vocabulary_leftHand' | translate }}</span>
                 </span>
-                <span class="flexRow radioSelector" (click)="changeDominantHand(dominantHand.right)">
+                <span class="flexRow radioSelector" (click)="changeDominantHand(DominantHand.right)">
                   <span
                     class="radioBtn"
-                    [class.radioBtn--active]="setting.handedness == dominantHand.right"
+                    [class.radioBtn--active]="setting.handedness == DominantHand.right"
                   ></span>
                   <span>{{ 'universal_vocabulary_rightHand' | translate }}</span>
                 </span>
@@ -532,17 +532,17 @@
             <div
               class="flexRow radio__section"
             >
-              <span class="flexRow radioSelector" (click)="changeAutoTargetStep(autoStepTarget.close)">
+              <span class="flexRow radioSelector" (click)="changeAutoTargetStep(AutoStepTarget.close)">
                 <span
                   class="radioBtn"
-                  [class.radioBtn--active]="setting.autoTargetStep === autoStepTarget.close"
+                  [class.radioBtn--active]="setting.autoTargetStep === AutoStepTarget.close"
                 ></span>
                 <span class="itemTitle">{{ 'universal_operating_close' | translate }}</span>
               </span>
-              <span class="flexRow radioSelector" (click)="changeAutoTargetStep(autoStepTarget.open)">
+              <span class="flexRow radioSelector" (click)="changeAutoTargetStep(AutoStepTarget.open)">
                 <span
                   class="radioBtn"
-                  [class.radioBtn--active]="setting.autoTargetStep === autoStepTarget.open"
+                  [class.radioBtn--active]="setting.autoTargetStep === AutoStepTarget.open"
                 ></span>
                 <span class="itemTitle">{{ 'universal_operating_open' | translate }}</span>
               </span>

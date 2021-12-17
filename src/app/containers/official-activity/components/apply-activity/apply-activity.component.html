@@ -1,0 +1,675 @@
+<app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
+<div id="whole__page" class="flexRow">
+  <aside id="aside__bar" *ngIf="uiFlag.showAside">
+    <table>
+      <tbody>
+        <tr>
+          <td class="app__icon">
+            <img
+              src="/assets/icons/connect-line.png"
+            >
+          </td>
+          <td class="app__icon">
+            <img
+              src="/assets/icons/cloudrun-line.png"
+            >
+          </td>
+        </tr>
+        <tr>
+          <td class="app__icon">
+            <img
+              src="/assets/icons/trainlive-line.png"
+            >
+          </td>
+          <td class="app__icon">
+            <img
+              src="/assets/icons/fitness-line.png"
+            >
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="aside__slogan">
+      {{ "單一帳號可以用在所有的Alatech服務" }}
+    </p>
+  </aside>
+  <div id="main__content" class="flexRow">
+    <ng-container *ngIf="!uiFlag.applyComplish">
+      <div class="flexCol" id="progress__hint" *ngIf="uiFlag.showAside">
+        <div class="apply__stage">
+          {{ '開始' }}
+        </div>
+        <div
+          class="apply__progress progress__bar__thick"
+          [style.top]="progressLine.start.top | patchUnit: 'px'"
+          [style.height]="progressLine.start.height | patchUnit: 'px'"
+        ></div>
+        <div
+          id="first__step"
+          class="flexCol apply__stage"
+          [style.top]="stageTop.start | patchUnit: 'px'"
+        >
+          <span class="step__index">
+            1
+          </span>
+          <span>{{ '填寫資料' }}</span>
+        </div>
+        <div
+          class="apply__progress progress__bar__thick"
+          [style.top]="progressLine.finished.top | patchUnit: 'px'"
+          [style.height]="progressLine.finished.height | patchUnit: 'px'"
+        ></div>
+        <div
+          id="second__step"
+          class="flexCol apply__stage"
+          [style.top]="stageTop.edit | patchUnit: 'px'"
+        >
+          <span class="step__index">
+            2
+          </span>
+          <span>{{ '編輯中' }}</span>
+        </div>
+        <div
+          class="apply__progress progress__bar__thin"
+          [style.top]="progressLine.edit.top | patchUnit: 'px'"
+          [style.height]="progressLine.edit.height | patchUnit: 'px'"
+        ></div>
+        <div
+          id="third__step"
+          class="flexCol apply__stage"
+          [style.top]="stageTop.final | patchUnit: 'px'"
+        >
+          <span class="step__index">
+            3
+          </span>
+          <span>{{ '未完成' }}</span>
+        </div>
+      </div>
+      <section class="flexCol" id="apply__form">
+        <h5 class="form__title">
+          {{ '報名' }}
+        </h5>
+        <p id="sign__hint">
+          {{ '已有帳號？請輸入帳密登入' }}
+          <br>登入後會自動帶入您的基本資料
+        </p>
+        <form id="form__content">
+          <div class="login__form">
+            <div class="flexRow">
+              <div class="flexRow login__input">
+                <mat-icon>smartphone</mat-icon>
+                <div
+                  class="country__code__selector"
+                  [class.selector--active]="uiFlag.showCountryCodeList"
+                  (click)="showCountryCodeList($event)"
+                >
+                  <span>
+                    +{{ applyInfo.userProfile.countryCode }}
+                  </span>
+                  <ul
+                    class="country__code___list"
+                    *ngIf="uiFlag.showCountryCodeList"
+                  >
+                    <li
+                      class="flexRow"
+                      (click)="selectCountryCode($event, _list.code)"
+                      *ngFor="let _list of countryCodeList;"
+                    >
+                      <span class="country__number">
+                        {{ _list.code }}
+                      </span>
+                      <span class="country__name">
+                        {{ _list.name }}
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+                <input
+                  type="text"
+                  id="phone"
+                  [placeholder]="
+                    'universal_userAccount_enterInfo' | translate: {
+                      info: ('universal_userAccount_phone' | translate)
+                    }
+                  "
+                  [value]="applyInfo.userProfile.mobileNumber"
+                  (focus)="positionMark($event)"
+                  (focusout)="checkPhoneFormat($event)"
+                >
+              </div>
+              <ng-container *ngIf="uiFlag.accountChecking === 'phone'">
+                <span *ngTemplateOutlet="checkingHint"></span>
+              </ng-container>
+              <ng-container *ngIf="!uiFlag.accountChecking && alert.mobileNumber">
+                <span *ngTemplateOutlet="inputAlert; context: {
+                  alert: alert.mobileNumber
+                }"></span>
+              </ng-container>
+            </div>
+            <div class="flexRow">
+              <div class="flexRow login__input">
+                <mat-icon>email</mat-icon>
+                <input
+                  type="text"
+                  id="email"
+                  [placeholder]="
+                    'universal_userAccount_enterInfo' | translate: {
+                      info: ('universal_userAccount_email' | translate)
+                    }
+                  "
+                  [value]="applyInfo.userProfile.email"
+                  (focus)="positionMark($event)"
+                  (focusout)="checkEmailFormat($event)"
+                >
+              </div>
+              <ng-container *ngIf="uiFlag.accountChecking === 'email'">
+                <span *ngTemplateOutlet="checkingHint"></span>
+              </ng-container>
+              <ng-container *ngIf="!uiFlag.accountChecking && alert.email">
+                <span *ngTemplateOutlet="inputAlert; context: {
+                  alert: alert.email
+                }"></span>
+              </ng-container>
+            </div>
+            <div class="flexCol">
+              <div
+                class="flexRow password__input"
+                *ngIf="uiFlag.showLoginButton"
+              >
+                <div class="flexRow login__input">
+                  <mat-icon>vpn_key</mat-icon>
+                  <input
+                    type="password"
+                    id="password"
+                    autocomplete="on"
+                    [placeholder]="
+                      'universal_userAccount_enterInfo' | translate: {
+                        info: ('universal_userAccount_password' | translate)
+                      }
+                    "
+                    (focusout)="checkPassword($event)"
+                  >
+                </div>
+                <button
+                  id="login__button"
+                  (click)="login()"
+                >
+                  {{ 'universal_userAccount_logIn' | translate }}
+                </button>
+              </div>
+              <ng-container *ngIf="uiFlag.showLoginButton">
+                <span *ngTemplateOutlet="inputAlert; context: {
+                  alert: 'login'
+                }"></span>
+              </ng-container>
+            </div>
+          </div>
+          <div class="flexRow form__input">
+            <label for="nickname" class="input__label">
+              {{ 'universal_userAccount_nickname' | translate }}
+            </label>
+            <input
+              type="text"
+              id="nickname"
+              class="info__input"
+              maxLength="24"
+              [value]="applyInfo.userProfile.nickname"
+              [placeholder]="
+                'universal_userAccount_enterInfo' | translate: {
+                  info: ('universal_userAccount_nickname' | translate)
+                }
+              "
+              (focus)="showNickNameHint($event)"
+              (focusout)="checkNicknameFormat($event)"
+            >
+            <ng-container *ngIf="uiFlag.showNicknameHint && !alert.nickname">
+              <span class="input__hint">
+                {{ 'universal_userAccount_nameCharactersToLong' | translate }}
+              </span>
+            </ng-container>
+            <ng-container *ngIf="alert.nickname">
+              <span *ngTemplateOutlet="inputAlert; context: {
+                alert: alert.nickname
+              }"></span>
+            </ng-container>
+          </div>
+          <div class="flexRow form__input">
+            <label for="truth__name" class="input__label">
+              {{ '姓名' }}
+            </label>
+            <input
+              type="text"
+              id="truth__name"
+              class="info__input"
+              maxLength="24"
+              [placeholder]="'請輸入您的真實姓名'"
+              [value]="applyInfo.userProfile.truthName"
+              (focus)="positionMark($event)"
+              (focusout)="checkTruthNameFormat($event)"
+            >
+            <ng-container *ngIf="alert.truthName">
+              <span *ngTemplateOutlet="inputAlert; context: {
+                alert: alert.truthName
+              }"></span>
+            </ng-container>
+          </div>
+          <div class="flexRow form__input">
+            <legend class="input__label">
+              {{ '國籍' }}
+            </legend>
+            <div class="radio__item">
+              <input
+                type="radio"
+                id="nationality__taiwan"
+                name="Nationality"
+                class="radio__input"
+                checked="true"
+                [value]="Nationality.taiwaness"
+                [(ngModel)]="applyInfo.userProfile.taiwaness"
+                (focus)="positionMark($event)"
+              >
+              <label for="nationality__taiwan">
+                {{ '本國' }}
+              </label>
+            </div>
+            <div class="radio__item">
+              <input
+                type="radio"
+                id="nationality__foreign"
+                name="Nationality"
+                class="radio__input"
+                [value]="Nationality.foreign"
+                [(ngModel)]="applyInfo.userProfile.taiwaness"
+                (focus)="positionMark($event)"
+              >
+              <label for="nationality__foreign">
+                {{ '外國' }}
+              </label>
+            </div>
+          </div>
+          <div class="flexRow form__input">
+            <label for="id__number" class="input__label">
+              {{ '證件號碼' }}
+            </label>
+            <input
+              type="text"
+              id="id__number"
+              class="info__input"
+              [placeholder]="'身份證或居留證號'"
+              [value]="applyInfo.userProfile.idCardNumber"
+              (focus)="positionMark($event)"
+              (focusout)="checkIdCardNumberFormat($event)"
+            >
+            <ng-container *ngIf="alert.idCardNumber">
+              <span *ngTemplateOutlet="inputAlert; context: {
+                alert: alert.idCardNumber
+              }"></span>
+            </ng-container>
+          </div>
+          <div class="flexRow form__input">
+            <legend class="input__label">
+              {{ '性別' }}
+            </legend>
+            <div class="radio__item">
+              <input
+                type="radio"
+                id="gender__male"
+                name="gender"
+                class="radio__input"
+                checked="true"
+                [value]="Sex.male"
+                [(ngModel)]="applyInfo.userProfile.gender"
+                (focus)="positionMark($event)"
+              >
+              <label for="gender__male">
+                {{ 'universal_userProfile_male' | translate }}
+              </label>
+            </div>
+            <div class="radio__item">
+              <input
+                type="radio"
+                id="gender__female"
+                name="gender"
+                class="radio__input"
+                [value]="Sex.female"
+                [(ngModel)]="applyInfo.userProfile.gender"
+                (focus)="positionMark($event)"
+              >
+              <label for="gender__female">
+                {{ 'universal_userProfile_female' | translate }}
+              </label>
+            </div>
+          </div>
+          <div class="flexRow form__input">
+            <label class="input__label">
+              {{ '出生日期' }}
+            </label>
+            <app-date-range-picker
+              (selectDateRange)="getSelectDate($event)"
+              [pickerType]="'singlePicker'"
+              [refStartDate]="defaultBirthday | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
+              [default]="defaultBirthday | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
+              [selectBirthday]="true"
+              [limitMin]="limitMinBirth | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
+              [limitMax]="true"
+              [editStyle]="'
+                border: none;
+                border-bottom: 1px solid black;
+                font-weight: bold;
+                outline: none;
+                width: 100%;
+              '"
+            ></app-date-range-picker>
+          </div>
+          <div class="flexRow form__input">
+            <label for="address" class="input__label">
+              {{ '地址' }}
+            </label>
+            <input
+              type="text"
+              id="address"
+              class="info__input"
+              maxLength="50"
+              [placeholder]="
+                'universal_userAccount_enterInfo' | translate: {
+                  info: ('地址')
+                }
+              "
+              [value]="applyInfo.userProfile.address"
+              (focus)="positionMark($event)"
+              (focusout)="checkIdAddressFormat($event)"
+            >
+            <ng-container *ngIf="alert.address">
+              <span *ngTemplateOutlet="inputAlert; context: {
+                alert: alert.address
+              }"></span>
+            </ng-container>
+          </div>
+          <div class="flexRow form__input">
+            <label for="remark" class="input__label">
+              {{ '備註' }}
+            </label>
+            <input
+              type="text"
+              id="remark"
+              name="remark"
+              class="info__input"
+              placeholder="（選填）"
+              maxLength="50"
+              [(ngModel)]="applyInfo.userProfile.remark"
+              (focus)="positionMark($event)"
+            >
+          </div>
+          <fieldset class="flexCol emergency__contact">
+            <div 
+              class="flexRow form__input drop__hint"
+              [class.drop__hint--hide]="uiFlag.showEmergencyContact"
+            >
+              <label for="emergency__contact__name" class="input__label">
+                {{ '緊急聯絡人' }}
+              </label>
+              <input
+                type="text"
+                id="emergency__contact__name"
+                name="emergency__contact__name"
+                class="info__input"
+                maxLength="24"
+                placeholder="（選填）"
+                [(ngModel)]="applyInfo.userProfile.emergencyContact.name"
+                (focus)="showEmergencyContact($event)"
+              >
+            </div>
+            <div
+              class="flexCol emergency__contact__fold"
+              [class.emergency__contact__unfold]="uiFlag.showEmergencyContact"
+            >
+              <div class="flexRow form__input">
+                <label for="emergency__contact__phone" class="input__label">
+                  {{ '電話' }}
+                </label>
+                <input
+                  type="text"
+                  id="emergency__contact__phone"
+                  name="emergency__contact__phone"
+                  class="info__input"
+                  [(ngModel)]="applyInfo.userProfile.emergencyContact.mobileNumber"
+                  (focus)="positionMark($event)"
+                >
+              </div>
+              <div class="flexRow form__input">
+                <label for="emergency__contact__relationship" class="input__label">
+                  {{ '關係' }}
+                </label>
+                <input
+                  type="text"
+                  id="emergency__contact__relationship"
+                  name="emergency__contact__relationship"
+                  class="info__input"
+                  [(ngModel)]="applyInfo.userProfile.emergencyContact.relationship"
+                  (focus)="positionMark($event)"
+                >
+              </div>
+            </div>
+          </fieldset>
+          <div
+            class="flexRow form__input"
+            *ngIf="eventDetail?.group.length > 0"
+          >
+            <label class="input__label">
+              {{ '競賽組別' }}
+            </label>
+            <div
+              id="group__selector"
+              class="flexRow group__selector"
+              [class.group__selector--active]="uiFlag.showGroupList"
+              (click)="showGroupList($event)"
+            >
+              <span>
+                {{ eventDetail.group[applyInfo.targetGroupId - 1].name }}
+              </span>
+              <ul class="group__menu" *ngIf="uiFlag.showGroupList">
+                <li
+                  class="flexCol"
+                  (click)="selectGroup($event, _group.id)"
+                  *ngFor="let _group of eventDetail.group;"
+                >
+                  <span>{{ _group.name }}</span>
+                  <span class="group__limit">
+                    {{ _group.gender | sex: 'i18n' | translate }}
+                    |
+                    <ng-container *ngIf="_group.age">
+                      {{ _group.age.min }}~{{ _group.age.max }} {{ 'universal_deviceSetting_yearsOld' | translate }}
+                    </ng-container>
+                    <ng-container *ngIf="!_group.age">
+                      {{ '無年齡限制' }}
+                    </ng-container>
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div
+            id="apply__fee__selector"
+            class="flexRow form__input"
+            (click)="positionMark($event)"
+            *ngIf="eventDetail?.applyFee.length > 0"
+          >
+            <label class="input__label">
+              {{ '商品組合' }}
+            </label>
+            <ul class="fee__plan__menu">
+              <li
+                [class.apply__fee--active]="applyInfo.targetFeeId == _plan.feeId"
+                *ngFor="let _plan of eventDetail.applyFee;"
+                (click)="selectApplyFee(_plan.feeId, _plan.title, _plan.fee)"
+              >
+                <div class="flexCol">
+                  <h6 class="apply__fee__title">
+                    {{ _plan.title }}
+                  </h6>
+                  <span class="apply__fee__price">
+                    ${{ _plan.fee }}
+                  </span>
+                  <img
+                    class="apply__fee__img"
+                    [src]="_plan.img"
+                    [alt]="_plan.title"
+                    (load)="checkStagePosition()"
+                    *ngIf="_plan.img"
+                  >
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="flexCenter">
+            <button
+              class="submit__button"
+              (click)="checkForm()"
+            >
+              {{ '報名' }}
+            </button>
+          </div>
+        </form>
+      </section>
+    </ng-container>
+    <ng-container *ngIf="uiFlag.applyComplish">
+      <div id="apply__accomplish" class="flexCol">
+        <div id="apply__accomplish__content" class="flexCol">
+          <h5 class="form__title">
+            {{ '報名完成' }}
+          </h5>
+          <p id="apply__hint" class="flexCol">
+            <span>
+              {{ '已經完成報名了!' }}
+            </span>
+            <span
+              class="apply__accomplish__text"
+              *ngIf="uiFlag.newAccount"
+            >
+              {{ '您在GPTfit的登入資訊如下' }}
+            </span>
+          </p>
+          <ng-container *ngIf="uiFlag.newAccount">
+            <p class="apply__accomplish__text">
+              <span>
+                {{ 'universal_userAccount_account' | translate }}：
+              </span>
+              <span>
+                +{{ applyInfo.userProfile.countryCode }} {{ applyInfo.userProfile.mobileNumber }}
+              </span>
+            </p>
+            <form id="reset__password">
+              <h6 class="apply__accomplish__text">
+                {{ '我要設定密碼' }}
+              </h6>
+              <div class="flexRow">
+                <div id="new__password__input" class="flexRow">
+                  <mat-icon>vpn_key</mat-icon>
+                  <input
+                    type="password"
+                    [placeholder]="
+                      'universal_userAccount_enterInfo' | translate: {
+                        info: ('universal_userAccount_password' | translate)
+                      }
+                    "
+                    (focus)="showPasswordHint()"
+                    (focusout)="checkPasswordFormat($event)"
+                  >
+                </div>
+                <button
+                  id="update__password___button"
+                  [class.can__not__submit]="
+                    (!editAccountBody.newPassword && !uiFlag.newPasswordFormatError) || uiFlag.newPasswordUpdated
+                  "
+                  (click)="handleUpdatePassword()"
+                >
+                  {{ 'universal_operating_update' | translate }}
+                </button>
+              </div>
+              <p id="not__reset__alert" *ngIf="!uiFlag.showPasswordHint">
+                {{ '不設定密碼，下次登入時請使用忘記密碼重新設定' }}
+              </p>
+              <p
+                id="password__hint"
+                [class.password__format___error]="uiFlag.newPasswordFormatError"
+                *ngIf="uiFlag.showPasswordHint"
+              >
+                {{ 'universal_userAccount_passwordFormat' | translate }}
+              </p>
+            </form>
+          </ng-container>
+          <div class="apply__fee__content">
+            <h6 class="apply__accomplish__text">
+              {{ '您所選擇的套裝為' }}：
+            </h6>
+            <table class="apply__fee__detail">
+              <thead>
+                <tr>
+                  <th>
+                    {{ '項目' }}
+                  </th>
+                  <th>
+                    {{ '費用' }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    {{ selectPlanInfo.title }}
+                  </td>
+                  <td>
+                    {{ selectPlanInfo.fee }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="paid__button">
+          <ng-container *ngIf="selectPlanInfo.fee !== 0">
+            <p id="not__paid__alert">
+              {{ '此訂單尚未繳費' }}
+            </p>
+            <button
+              class="submit__button"
+              (click)="navigatePaidPage()"
+            >
+              {{ '前往繳費' }}
+            </button>
+          </ng-container>
+          <ng-container *ngIf="selectPlanInfo.fee === 0">
+            <button class="submit__button">
+              {{ '返回' }}
+            </button>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<ng-template #checkingHint>
+  <span class="checking__text">檢查中...</span>
+</ng-template>
+
+<ng-template
+  #inputAlert
+  let-alert="alert"
+>
+  <span class="alert__text">
+    <ng-container *ngIf="alert === 'format'">
+      {{ 'universal_status_wrongFormat' | translate }}
+    </ng-container>
+    <ng-container *ngIf="alert === 'empty'">
+      {{ 'universal_userAccount_fullField' | translate }}
+    </ng-container>
+    <ng-container *ngIf="alert === 'repeat'">
+      {{ 'universal_userAccount_nickname' | translate }}
+      {{ 'universal_deviceSetting_repeat' | translate }}
+    </ng-container>
+    <ng-container *ngIf="alert === 'login'">
+      {{ '登入確認身份或請變更手機及email' }}
+    </ng-container>
+  </span>
+</ng-template>

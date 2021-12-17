@@ -6,8 +6,9 @@ import { MessageBoxComponent } from '../../../../../shared/components/message-bo
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { formTest } from '../../../models/form-test';
+import { formTest } from '../../../../../shared/models/form-test';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+import { SignTypeEnum } from '../../../../../shared/models/utils-type';
 
 
 @Component({
@@ -31,7 +32,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
   pcView = false;
 
   loginBody: any = {
-    signInType: 1, // 1. 信箱 2. 手機 3. Token
+    signInType: SignTypeEnum.email,
     password: '',
   };
 
@@ -49,6 +50,8 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
     password: this.formReg.password,
     passwordPass: false
   };
+
+  readonly SignTypeEnum = SignTypeEnum;
 
   @ViewChild('accountInput') accountInput: ElementRef;
   @ViewChild('accountInput_web') accountInput_web: ElementRef;
@@ -137,15 +140,15 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
       } else if (e.key === 'Backspace') {
         const value = account.slice(0, account.length - 1);
         if (value.length > 0 && this.formReg.number.test(value)) {
-          this.loginBody.signInType = 2;
+          this.loginBody.signInType = SignTypeEnum.phone;
         } else {
-          this.loginBody.signInType = 1;
+          this.loginBody.signInType = SignTypeEnum.email;
         }
 
       } else if (this.formReg.number.test(account) && this.formReg.number.test(e.key)) {
-        this.loginBody.signInType = 2;
+        this.loginBody.signInType = SignTypeEnum.phone;
       } else if (!this.formReg.number.test(e.key)) {
-        this.loginBody.signInType = 1;
+        this.loginBody.signInType = SignTypeEnum.email;
       }
 
     }
@@ -167,7 +170,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (account.length > 0) {
       if (this.formReg.number.test(account)) {
-        this.loginBody.signInType = 2;
+        this.loginBody.signInType = SignTypeEnum.phone;
         this.cue.account = '';
         this.loginBody.mobileNumber = account;
         this.checkAll();
@@ -177,7 +180,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
       } else {
-        this.loginBody.signInType = 1;
+        this.loginBody.signInType = SignTypeEnum.email;
         this.loginBody.email = account;
         this.checkEmail(this.loginBody.email);
 
@@ -188,7 +191,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
     } else {
-      this.loginBody.signInType = 1;
+      this.loginBody.signInType = SignTypeEnum.email;
       this.cue.account = 'universal_status_wrongFormat';
     }
 
@@ -200,7 +203,8 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   trimPhoneNumZero() {
     const phone =  this.loginBody.mobileNumber;
-    if (this.loginBody.signInType === 2 && phone[0] === '0') {
+    const isPhoneLogin = this.loginBody.signInType === SignTypeEnum.phone;
+    if (isPhoneLogin && phone[0] === '0') {
       this.loginBody.mobileNumber = +phone.slice(1, phone.length);
     }
     
@@ -269,10 +273,12 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 確認是否所有欄位皆已完成-kidin-1090512
   checkAll() {
-
-    if (this.loginBody.signInType === 1 && !this.regCheck.emailPass) {
+    const { signInType } = this.loginBody;
+    const isEmailLogin = signInType === SignTypeEnum.email;
+    const isPhoneLogin = signInType === SignTypeEnum.phone;
+    if (isEmailLogin && !this.regCheck.emailPass) {
       this.dataIncomplete = true;
-    } else if (this.loginBody.signInType === 2 && !this.regCheck.countryCodePass) {
+    } else if (isPhoneLogin && !this.regCheck.countryCodePass) {
       this.cue.account = 'universal_userAccount_countryRegionCode';
       this.dataIncomplete = true;
     } else if (!this.regCheck.passwordPass) {
@@ -291,14 +297,15 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   doulbleCheck(): boolean {
     let pass = true;
-    if (!this.formReg.password.test(this.loginBody.password)) {
+    const { password, email, mobileNumber } = this.loginBody;
+    if (!this.formReg.password.test(password)) {
       pass = false;
     }
 
-    if (this.loginBody.email && this.formReg.email.test(this.loginBody.email)) {
-      this.loginBody.signInType = 1;
-    } else if (this.loginBody.mobileNumber && this.formReg.phone.test(this.loginBody.mobileNumber)) {
-      this.loginBody.signInType = 2;
+    if (email && this.formReg.email.test(email)) {
+      this.loginBody.signInType = SignTypeEnum.email;
+    } else if (mobileNumber && this.formReg.phone.test(mobileNumber)) {
+      this.loginBody.signInType = SignTypeEnum.phone;
     } else {
       pass = false;
     }
@@ -315,17 +322,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (res.processResult.resultCode === 200) {
           this.cue.signResult = '';
-          const token = res.signIn.token;
-          this.utils.writeToken(token);
-          this.authService.setLoginStatus(true);
           this.loginStatus = 'success';
-          this.userProfileService.refreshUserProfile({ token });
-
-          // 儲存國碼方便使用者下次登入
-          if (this.loginBody.signInType === 2) {
-            this.utils.setLocalStorageObject('countryCode', this.loginBody.countryCode);
-          }
-
           if (location.search.indexOf('action') > -1) {
             this.navigateAssignPage(location.search);
           } else if (res.signIn.counter <= 1) {

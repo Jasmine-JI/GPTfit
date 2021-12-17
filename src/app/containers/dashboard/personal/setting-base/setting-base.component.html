@@ -121,7 +121,7 @@
       </span>
       <div class="contentInput" *ngIf="uiFlag.editMode === 'edit'">
         <span class="userSettingInput" *ngIf="patchEditPrivacy">
-          {{ userInfo.birthday | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ' }}
+          {{ userInfo.birthday | timeFormat: 'YYYY-MM-DD' }}
         </span>
         <app-date-range-picker
           (selectDateRange)="getSelectDate($event)"
@@ -149,17 +149,17 @@
       </span>
       <div class="flexRow contentInput" *ngIf="uiFlag.editMode === 'edit'">
         <div class="flexRow">
-          <span class="flexRow radioSelector" (click)="changeGender(sex.male)">
+          <span class="flexRow radioSelector" (click)="changeGender(Sex.male)">
             <span
               class="radioBtn"
-              [class.radioBtn--active]="setting.gender === sex.male"
+              [class.radioBtn--active]="setting.gender === Sex.male"
             ></span>
             <span class="radioText">{{ 'universal_userProfile_male' | translate }}</span>
           </span>
-          <span class="flexRow radioSelector" (click)="changeGender(sex.female)">
+          <span class="flexRow radioSelector" (click)="changeGender(Sex.female)">
             <span
               class="radioBtn"
-              [class.radio__btn--active]="setting.gender === sex.female"
+              [class.radio__btn--active]="setting.gender === Sex.female"
             ></span>
             <span class="radioText">{{ 'universal_userProfile_female' | translate }}</span>
           </span>

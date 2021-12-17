@@ -1,13 +1,10 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { GlobalEventsManager } from '../../shared/global-events-manager';
-// import debounce from 'debounce';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../shared/services/utils.service';
 import { DetectInappService } from '../../shared/services/detect-inapp.service';
-import { MatDialog } from '@angular/material/dialog';
-import { MessageBoxComponent } from '../../shared/components/message-box/message-box.component';
 import { fromEvent, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { langList } from '../../shared/models/i18n';
@@ -52,8 +49,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     private globalEventsManager: GlobalEventsManager,
     private utilsService: UtilsService,
     public translateService: TranslateService,
-    private detectInappService: DetectInappService,
-    private dialog: MatDialog
+    private detectInappService: DetectInappService
   ) {
     if (location.search.indexOf('ipm=s') > -1) {
       this.isPreviewMode = true;
@@ -82,26 +78,10 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    * @author Kidin-1081023
    */
   checkBrowser() {
-    this.translateService.onLangChange.subscribe(() => {
-
-      if (this.detectInappService.isIE) {
-        if (this.detectInappService.isLine || this.detectInappService.isInApp) {
-          if (location.search.length === 0) {
-            location.href += '?openExternalBrowser=1';
-          } else {
-            location.href += '&openExternalBrowser=1';
-          }
-        } else {
-          this.dialog.open(MessageBoxComponent, {
-            hasBackdrop: true,
-            data: {
-              title: 'message',
-              body: this.translateService.instant('universal_popUpMessage_browserError'),
-              confirmText: this.translateService.instant('universal_operating_confirm')
-            }
-          });
-        }
-      }
+    this.translateService.onLangChange.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.detectInappService.checkBrowser();
     });
 
   }
@@ -134,15 +114,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    * @author kidin-1091008
    */
   checkDomain() {
-    if (
-      location.hostname.indexOf('cloud.alatech.com.tw') > -1
-      || location.hostname.indexOf('www.gptfit.com') > -1
-    ) {
-      this.isAlphaVersion = false;
-    } else {
-      this.isAlphaVersion = true;
-    }
-
+    this.isAlphaVersion = this.utilsService.checkWebVersion()[0];
   }
 
   /**

@@ -10,8 +10,9 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { formTest } from '../../../models/form-test';
-import { accountTypeEnum } from '../../../../dashboard/models/userProfileInfo';
+import { formTest } from '../../../../../shared/models/form-test';
+import { AccountTypeEnum } from '../../../../dashboard/models/userProfileInfo';
+import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 
 @Component({
   selector: 'app-app-change-account',
@@ -71,7 +72,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     placeholder: ''
   };
 
-  accountType = accountTypeEnum.email;
+  accountType = AccountTypeEnum.email;
   constructor(
     private translate: TranslateService,
     private utils: UtilsService,
@@ -80,7 +81,8 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     private userProfileService: UserProfileService,
     private userInfoService: UserInfoService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private getClientIp: GetClientIpService
   ) {
     translate.onLangChange.pipe(
       takeUntil(this.ngUnsubscribe)
@@ -94,6 +96,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     this.getUrlString(location.search);
     this.getUserInfo();
     this.getTranslate();
+    this.getClientIpaddress();
     if (location.pathname.indexOf('web') > 0) {
       this.pcView = true;
       this.utils.setHideNavbarStatus(false);
@@ -169,6 +172,14 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
   }
 
+  // 取得使用者ip位址-kidin-1090521
+  getClientIpaddress () {
+    this.getClientIp.requestJsonp('https://api.ipify.org', 'format=jsonp', 'callback').subscribe(res => {
+      this.ip = (res as any).ip;
+    });
+
+  }
+
   // 使用token取得使用者帳號資訊-kidin-1090514
   getUserInfo () {
     const body = {
@@ -179,7 +190,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
       if (this.utils.checkRes(res)) {
         const { signIn: { accountType }, userProfile } = res;
         this.accountType = accountType;
-        if (accountType === accountTypeEnum.email) {
+        if (accountType === AccountTypeEnum.email) {
           this.accountInfo = {
             oldType: 1,
             oldAccount: userProfile.email

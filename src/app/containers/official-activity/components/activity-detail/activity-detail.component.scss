@@ -1,0 +1,256 @@
+@import 'font.scss';
+@import 'flex-center.scss';
+@import 'transition.scss';
+
+$header-text-shadow: 1px 2px 4px rgba(25, 25, 25, 1);
+$table-border: 1px solid rgba(150, 150, 150, 1);
+$edit-button-size: 30px;
+
+.event__info {
+  position: relative;
+
+}
+
+#theme__img {
+  position: relative;
+  max-height: 40vh;
+  overflow: hidden;
+  
+  >#gradient__mask {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    height: 50%;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent);
+  }
+
+  >img {
+    width: 100%;
+  }
+
+  >h2 {
+    position: absolute;
+    bottom: 0px;
+    left: 10px;
+    color: white;
+    text-shadow: $header-text-shadow;
+    @include bold-font(24px);
+  }
+
+}
+
+.event__info__content {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  justify-content: space-between;
+  z-index: 2;
+  color: white;
+}
+
+.title__bar {
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.title__section {
+  margin-left: 5vw;
+
+  >h2 {
+    font-weight: bold;
+  }
+
+}
+
+#race__date {
+  font-weight: bold;
+}
+
+.navigate__button {
+  margin: 10px;
+  align-items: center;
+}
+
+.edit__button {
+  height: fit-content;
+  width: fit-content;
+  margin-right: 20px;
+
+  >a {
+    width: $edit-button-size;
+    height: $edit-button-size;
+    border-radius: 50%;
+    border: 1px solid white;
+    background-color: black;
+    font-size: 24px;
+    color: white;
+    text-decoration: none;
+  }
+
+}
+
+#apply__button {
+  min-width: 150px;
+  height: 50px;
+  background-color: rgba(250, 33, 33, 1);
+  border: 5px solid rgba(255, 158, 158, 1);
+  border-radius: 10px;
+  color: white;
+  @include bold-font(18px);
+}
+
+#countdonw {
+  text-align: center;
+  text-shadow: $header-text-shadow;
+
+  >tbody {
+    @include bold-font(36px);
+  }
+
+}
+
+#shortcut__section {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.switch__buton {
+  position: absolute;
+  height: 100%;
+  width: 40px;
+  z-index: 1;
+  background-color: rgba(245, 245, 245, 1);
+
+  >i {
+    @include bold-font(32px);
+  }
+
+  &:first-child {
+    left: 0;
+  }
+
+  &:last-child {
+    right: 0;
+  }
+
+}
+
+#shortcut__list {
+  position: relative;
+  list-style: none;
+  width: 100%;
+  height: 60px;
+  margin: 0;
+  padding: 0;
+  @include transition(left);
+
+  >li {
+    min-width: 100px;
+    height: 100%;
+    padding: 0 10px;
+
+    >a {
+      display: inline-block;
+      color: black;
+      text-decoration: none;
+      height: 100%;
+      width: 100%;
+      @include center();
+      @include bold-font(24px);
+    }
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+  }
+
+}
+
+.content__text {
+  margin: 2vw 5vw;
+}
+
+::ng-deep .table {
+
+  >table {
+    width: 100%;
+    border-collapse: initial;
+    border: $table-border;
+
+    tr {
+
+      th {
+        background-color: rgba(240, 240, 240, 1);
+      }
+
+      td, th {
+        border: $table-border;
+
+        &[rowspan] {
+          background-color: white;
+        }
+
+      }
+
+    }
+
+  }
+
+}
+
+.content__img {
+  width: 100%;
+}
+
+.content__video {
+  margin: 20px 0;
+}
+
+
+/********************************************************* media ******************************************************/
+
+@media (max-width: 767px) {
+
+  .event__info__content {
+    position: relative;
+  }
+
+  .title__bar {
+    align-items: center;
+  }
+
+  .navigate__button {
+    flex-direction: column-reverse;
+  }
+
+  #race__date {
+    color: black;
+  }
+
+  #countdonw {
+    color: black;
+  }
+
+  #shortcut__list {
+  
+    >li {
+  
+      >a {
+        font-size: 18px;
+      }
+  
+    }
+  
+  }
+
+  .edit__button {
+    position: absolute;
+    right: 0;
+    top: 10px;
+  }
+
+}

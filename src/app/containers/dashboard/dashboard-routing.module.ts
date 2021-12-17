@@ -6,7 +6,6 @@ import { DeviceLogComponent } from './components/device-log/device-log.component
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
 import { AuthGuard } from '../../shared/guards/auth/auth.guard';
-import { UnsaveGuard } from '../dashboard/guards/unsave-guard';
 import { GroupSearchComponent } from './group/group-search/group-search.component';
 import { AllGroupListComponent } from './group/all-group-list/all-group-list.component';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
@@ -39,9 +38,6 @@ import { GroupArchitectureComponent } from './group-v2/group-info/group-architec
 import { CloudrunReportComponent } from './group-v2/group-info/cloudrun-report/cloudrun-report.component';
 import { LifeTrackingComponent as LifeTrackingV2Component } from './group-v2/group-info/life-tracking/life-tracking.component';
 import { ClassAnalysisComponent } from './group-v2/group-info/class-analysis/class-analysis.component';
-import { ActivityListManageComponent } from './components/official-activity-manage/activity-list-manage/activity-list-manage.component';
-import { EditOfficialActivityComponent } from './components/official-activity-manage/edit-official-activity/edit-official-activity.component';
-import { ParticipantsManageComponent } from './components/official-activity-manage/participants-manage/participants-manage.component';
 import { ActivityDetailComponent } from '../../shared/components/activity-detail/activity-detail.component';
 import { SystemLogComponent } from './components/system-log/system-log.component';
 import { SystemFolderPermissionComponent } from './components/system-folder-permission/system-folder-permission.component';
@@ -51,20 +47,11 @@ import { DeviceInfoComponent } from './components/device-info/device-info.compon
 import { DeviceListComponent } from './group-v2/group-info/device-list/device-list.component';
 import { PersonalComponent } from './personal/personal.component';
 import { InfoComponent } from './personal/info/info.component';
-import { SettingBaseComponent } from './personal/setting-base/setting-base.component';
-import { SettingPreferComponent } from './personal/setting-prefer/setting-prefer.component';
-import { SettingPrivacyComponent } from './personal/setting-privacy/setting-privacy.component';
-import { SettingAccountComponent } from './personal/setting-account/setting-account.component';
 import { ActivityListComponent } from './personal/activity-list/activity-list.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: DashboardComponent,
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'dashboard',
     component: DashboardComponent,
     canActivate: [AuthGuard],
     children: [
@@ -83,22 +70,6 @@ const routes: Routes = [
       {
         path: 'group-search',
         component: GroupSearchComponent
-      },
-      {
-        path: 'system/event-management',
-        component: ActivityListManageComponent,
-        canActivate: [DashboardGuard],
-      },
-      {
-        path: 'system/event-management/edit',
-        component: EditOfficialActivityComponent,
-        canActivate: [DashboardGuard],
-        canDeactivate: [UnsaveGuard]
-      },
-      {
-        path: 'system/event-management/participants',
-        component: ParticipantsManageComponent,
-        canActivate: [DashboardGuard]
       },
       {
         path: 'system/setting-member',
@@ -293,6 +264,10 @@ const routes: Routes = [
           {
             path: 'info',
             component: InfoComponent
+          },
+          {
+            path: '',
+            redirectTo: 'activity-list'
           }
         ]
       },
@@ -302,7 +277,7 @@ const routes: Routes = [
       }
     ]
   },
-  { 
+  {
     path: '**',
     redirectTo: '404'
   }

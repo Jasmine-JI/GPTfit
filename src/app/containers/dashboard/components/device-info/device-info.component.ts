@@ -265,24 +265,27 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as any,
           headerRow = document.querySelectorAll('.info-headerRow')[0],
           headerDescriptionBlock = document.querySelectorAll('.info-headerDescriptionBlock')[0],
-          scenerySection = document.querySelectorAll('.info-scenerySection')[0],
-          { top: barTop } = pageListBar.getBoundingClientRect(),
-          { bottom: descBottom } = headerRow.getBoundingClientRect(),
-          { width } = scenerySection.getBoundingClientRect();
-      if (barTop <= 51 && descBottom < 50) {
-        pageListBar.classList.add('info-pageListBar-fixed');
-        headerDescriptionBlock.classList.add('info-pageListBar-replace');  // 填充原本功能列的高度
-        pageListBar.style.width = `${width}px`;
-      } else {
-        pageListBar.classList.remove('info-pageListBar-fixed');
-        headerDescriptionBlock.classList.remove('info-pageListBar-replace');
-        pageListBar.style.width = `100%`;
-      }
+          scenerySection = document.querySelectorAll('.info-scenerySection')[0];
+    if (pageListBar && headerDescriptionBlock && scenerySection) {
+      const { top: barTop } = pageListBar.getBoundingClientRect(),
+            { bottom: descBottom } = headerRow.getBoundingClientRect(),
+            { width } = scenerySection.getBoundingClientRect();
+        if (barTop <= 51 && descBottom < 50) {
+          pageListBar.classList.add('info-pageListBar-fixed');
+          headerDescriptionBlock.classList.add('info-pageListBar-replace');  // 填充原本功能列的高度
+          pageListBar.style.width = `${width}px`;
+        } else {
+          pageListBar.classList.remove('info-pageListBar-fixed');
+          headerDescriptionBlock.classList.remove('info-pageListBar-replace');
+          pageListBar.style.width = `100%`;
+        }
 
-      if (this.uiFlag.isPortalMode) {
-        const cardSection = document.querySelectorAll('.cardSection')[0],
-              { left } = cardSection.getBoundingClientRect();
-        pageListBar.style.left = `${left}px`;
+        if (this.uiFlag.isPortalMode) {
+          const cardSection = document.querySelectorAll('.cardSection')[0],
+                { left } = cardSection.getBoundingClientRect();
+          pageListBar.style.left = `${left}px`;
+        }
+
       }
 
   }

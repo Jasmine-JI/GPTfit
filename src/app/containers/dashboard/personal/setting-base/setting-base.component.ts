@@ -6,9 +6,9 @@ import { UserProfileService } from '../../../../shared/services/user-profile.ser
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import moment from 'moment';
-import { Sex, sex } from '../../models/userProfileInfo';
-import { unit, ft, lb } from '../../../../shared/models/bs-constant';
-import { formTest } from '../../../portal/models/form-test';
+import { Sex } from '../../models/userProfileInfo';
+import { Unit, ft, lb } from '../../../../shared/models/bs-constant';
+import { formTest } from '../../../../shared/models/form-test';
 
 
 @Component({
@@ -53,8 +53,8 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
   }
 
   userInfo: any;
-  readonly sex = sex;
-  readonly unit = unit;
+  readonly Sex = Sex;
+  readonly Unit = Unit;
 
   constructor(
     private userInfoService: UserInfoService,
@@ -89,7 +89,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     this.uiFlag.editMode = 'edit';
     this.userInfoService.setRxEditMode('edit');
     const { nickname, birthday, bodyHeight, bodyWeight, gender, unit: userUnit } = this.userInfo,
-          isMetric = userUnit === unit.metric;
+          isMetric = userUnit === Unit.metric;
     this.setting = {
       nickname,
       bodyHeight: this.utils.bodyHeightTransfer(bodyHeight, !isMetric, true),
@@ -207,7 +207,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * @author kidin-1100825
    */
   valueRevert(key: string, value: string | number) {
-    const isMetric = this.userInfo.unit === unit.metric,
+    const isMetric = this.userInfo.unit === Unit.metric,
           edited = this.editFlag[key];
     switch (key) {
       case 'bodyHeight':
@@ -297,7 +297,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * @author kidin-1100823
    */
   checkHeightFormat(e: KeyboardEvent) {
-    if (this.userInfo.unit === unit.metric) {
+    if (this.userInfo.unit === Unit.metric) {
       this.checkFormat(e);
     } else {
       const { key, target: { value } } = e as any,
@@ -319,7 +319,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * @author kidin-1100823
    */
   checkWeightFormat(e: KeyboardEvent) {
-    if (this.userInfo.unit === unit.metric) {
+    if (this.userInfo.unit === Unit.metric) {
       this.checkFormat(e);
     } else {
       const { key } = e as any,
@@ -338,7 +338,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * @author kidin-1100818
    */
   handleHeightInput(e: Event | MouseEvent) {
-    const isMetric = this.userInfo.unit === unit.metric,
+    const isMetric = this.userInfo.unit === Unit.metric,
           { decimalValue, imperialHeight } = formTest,
           oldValue = this.userInfo.bodyHeight,
           { value } = (e as any).target,
@@ -386,7 +386,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     const oldValue = this.userInfo.bodyWeight,
           inputValue = +(e as any).target.value,
           testFormat = formTest.decimalValue.test(`${inputValue}`),
-          isMetric = this.userInfo.unit === unit.metric,
+          isMetric = this.userInfo.unit === Unit.metric,
           newValue = this.utils.valueConvert(inputValue, !isMetric, false, lb, 0),
           valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {

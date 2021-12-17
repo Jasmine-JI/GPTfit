@@ -12,17 +12,14 @@ import { UserProfileService } from '../../shared/services/user-profile.service';
 import { UtilsService } from '../../shared/services/utils.service';
 import { TranslateService } from '@ngx-translate/core';
 import { NavigationEnd } from '@angular/router';
-import { version } from '../../shared/version';
 import { HashIdService } from '../../shared/services/hash-id.service';
 import { DetectInappService } from '../../shared/services/detect-inapp.service';
-import { MatDialog } from '@angular/material/dialog';
-import { MessageBoxComponent } from '../../shared/components/message-box/message-box.component';
 import { Subject, forkJoin } from 'rxjs';
-import { takeUntil, switchMap, map } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { UserProfileInfo } from './models/userProfileInfo';
 import { DashboardService } from './services/dashboard.service';
 import { langData } from '../../shared/models/i18n';
-
+import { SignTypeEnum } from '../../shared/models/utils-type';
 
 enum Dashboard {
   trainLive,
@@ -39,7 +36,6 @@ enum Dashboard {
   lifeTrackingLog,
   systemLog,
   systemFolder,
-  eventManagement,
   allGroupList,
   createBrandGroup,
   createEnterpriseGroup,
@@ -86,7 +82,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   isCollapseOpen = false;
   target = Dashboard.myActivity; // 目前預設是我的活動
   isUserMenuShow = false;
-  accountStatus = 2; // 1:未啟用 2:已啟用
   isHadContainer = true;
   footerAddClassName = '';
   isAlphaVersion = false;
@@ -105,40 +100,24 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     private cdRef: ChangeDetectorRef,
     private hashIdService: HashIdService,
     private detectInappService: DetectInappService,
-    private dialog: MatDialog,
     private userProfileService: UserProfileService,
     private dashboardService: DashboardService
   ) {}
 
   ngOnInit() {
     this.isLoading = true;
-    this.handleNavigate(location.pathname);
     this.tokenLogin();
     this.checkCurrentPage(location.pathname);
     this.subscribeRouter();
     this.subscribeLangChange();
-    this.checkWebVersion();
-    this.checkBrowserLang();
+    this.getWebVersion();
+    this.utilsService.checkBrowserLang();
     this.handleGlobalEvent();
     this.onResize();
   }
 
   ngAfterViewChecked() {
     this.cdRef.detectChanges();
-  }
-
-  /**
-   * 根據url確認是否需要導至預設頁面(因延遲載入的關係無法直接在routing設定轉址)
-   * @param path {string}-url path
-   * @param kidin-1100531
-   */
-  handleNavigate(path: string) {
-    switch (path) {
-      case '/dashboard':
-        this.router.navigateByUrl('/dashboard/activity-list');
-        break;
-    }
-
   }
 
   /**
@@ -181,19 +160,15 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   tokenLogin() {
     const token = this.utilsService.getToken() || '',
           body = {
-            signInType: 3,
+            signInType: SignTypeEnum.token,
             token
           };
-    this.authService.loginServerV2(body).pipe(
-      switchMap(loginRes => this.userProfileService.getRxUserProfile().pipe(
-        map(userProfile => [loginRes, userProfile]),
-        takeUntil(this.ngUnsubscribe)
-      ))
-    ).subscribe(resArr => {
-      const [loginRes, userProfile] = resArr;
-      this.accountStatus = loginRes.signIn.accountStatus;
-      this.userProfile = userProfile;
-      if (userProfile) {
+    this.authService.loginCheck(body).subscribe(res => {
+      const [userProfile, accessRight] = res;
+      this.userProfile = 
+        this.userProfileService.userProfileCombineAccessRight(userProfile, accessRight);
+
+      if (this.userProfile) {
         this.isLoading = false;
         this.checkQueryString(location.search);
         if (!this.isPreviewMode) this.checkTheme();
@@ -228,8 +203,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   subscribeLangChange() {
     this.translateService.onLangChange.pipe(
       takeUntil(this.ngUnsubscribe)
-    ).subscribe(resArr => {
-      this.checkUserDevice();
+    ).subscribe(() => {
+      this.detectInappService.checkBrowser();
     });
 
   }
@@ -263,80 +238,71 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin
    */
   checkCurrentPage(url: string) {
-    if (
-      url.indexOf('/dashboard/coach-dashboard') > -1 ||
-      url.indexOf('/dashboard/live/train-live') > -1
-    ) {
-      this.target = Dashboard.trainLive;
-    } else if (url.indexOf('/dashboard/group-search') > -1) {
-      this.target = Dashboard.searchGroup;
-    } else if (url.indexOf('/dashboard/activity-list') > -1) {
-      this.target = Dashboard.myActivity;
-    } else if (url.indexOf('/dashboard/sport-report') > -1) {
-      this.target = Dashboard.sportReport;
-    } else if (url.indexOf('/dashboard/my-group-list') > -1) {
-      this.target = Dashboard.myGroup;
-    } else if (url.indexOf('/dashboard/group-search') > -1) {
-      this.target = Dashboard.searchGroup;
-    } else if (url.indexOf('/dashboard/system/device_log') > -1) {
-      // 字長的先排前辨識
-      this.target = Dashboard.deviceLog;
-    } else if (url.indexOf('/dashboard/device') > -1) {
-      this.target = Dashboard.myDevice;
-    } else if (url.indexOf('/dashboard/system/event-management') > -1) {
-      this.target = Dashboard.eventManagement;
-    } else if (url.indexOf('/dashboard/system/all-group-list') > -1) {
-      this.target = Dashboard.allGroupList;
-    } else if (url.indexOf('/dashboard/system/create-brand-group') > -1) {
-      this.target = Dashboard.createBrandGroup;
-    } else if (url.indexOf('/dashboard/system/setting-member') > -1) {
-      this.target = Dashboard.innerAdmin;
-    } else if (url.indexOf('/dashboard/system/inner-test') > -1) {
-      this.target = Dashboard.innerSearch;
-    } else if (url.indexOf('/dashboard/system/inner-gpx') > -1) {
-      this.target = Dashboard.coordinateTranslate;
-    } else if (url.indexOf('/dashboard/system/device-pair-management') > -1) {
-      this.target = Dashboard.deviceSearch;
-    } else if (url.indexOf('/dashboard/system/life-tracking') > -1) {
-      this.target = Dashboard.lifeTrackingLog;
-    } else if (url.indexOf('/dashboard/system/create-com-group') > -1) {
-      this.target = Dashboard.createEnterpriseGroup;
-    } else if (url.indexOf('/dashboard/life-tracking') > -1) {
-      this.target = Dashboard.lifeTracking;
-    } else if (url.indexOf('/dashboard/cloudrun') > -1) {
-      this.target = Dashboard.cloudrun;
-    } else {
-      this.target = null;
-    }
-
-  }
-
-  /**
-   * 確認使用者所使用者的瀏覽器
-   * @author kidin
-   */
-  checkUserDevice() {
-    if (this.detectInappService.isInApp || this.detectInappService.isIE) {
-      if (this.detectInappService.isLine) {
-        const queryString = 'openExternalBrowser=1';
-        if (location.search.length === 0) {
-          location.href += `?${queryString}`;
-        } else {
-          location.href += `&${queryString}`;
+    const [, mainPath, secondPath, thirdPath, ...rest] = url.split('/');
+    switch (secondPath) {
+      case 'coach-dashboard':
+        this.target = Dashboard.trainLive;
+        break;
+      case 'live':
+        if (thirdPath === 'train-live') this.target = Dashboard.trainLive;
+        break;
+      case 'group-search':
+        this.target = Dashboard.searchGroup;
+        break;
+      case 'activity-list':
+        this.target = Dashboard.myActivity;
+        break;
+      case 'sport-report':
+        this.target = Dashboard.sportReport;
+        break;
+      case 'my-group-list':
+        this.target = Dashboard.myGroup;
+        break;
+      case 'device':
+        this.target = Dashboard.myDevice;
+        break;
+      case 'life-tracking':
+        this.target = Dashboard.lifeTracking;
+        break;
+      case 'cloudrun':
+        this.target = Dashboard.cloudrun;
+        break;
+      case 'system':
+        
+        switch (thirdPath) {
+          case 'device_log':
+            this.target = Dashboard.deviceLog;
+            break;
+          case 'all-group-list':
+            this.target = Dashboard.allGroupList;
+            break;
+          case 'create-brand-group':
+            this.target = Dashboard.createBrandGroup;
+            break;
+          case 'setting-member':
+            this.target = Dashboard.innerAdmin;
+            break;
+          case 'inner-test':
+            this.target = Dashboard.innerSearch;
+            break;
+          case 'inner-gpx':
+            this.target = Dashboard.coordinateTranslate;
+            break;
+          case 'device-pair-management':
+            this.target = Dashboard.deviceSearch;
+            break;
+          case 'life-tracking':
+            this.target = Dashboard.lifeTrackingLog;
+            break;
+          case 'create-com-group':
+            this.target = Dashboard.createEnterpriseGroup;
+            break;
         }
-      } else {
-        this.dialog.open(MessageBoxComponent, {
-          hasBackdrop: true,
-          data: {
-            title: 'message',
-            body: this.translateService.instant('universal_popUpMessage_browserError'),
-            confirmText: this.translateService.instant('universal_operating_confirm')
-          }
 
-        });
-
-      }
-
+        break;
+      default:
+        this.target = null;
+        break;
     }
 
   }
@@ -345,37 +311,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * 確認web版本
    * @author kidin
    */
-  checkWebVersion() {
-    this.isAlphaVersion = true;
-    if (location.hostname.indexOf('cloud.alatech.com.tw') > -1
-      || location.hostname.indexOf('www.gptfit.com') > -1
-    ) {
-      this.isAlphaVersion = false;
-      this.version = version.master;
-    } else if (location.hostname.indexOf('app.alatech.com.tw') > -1) {
-      this.version = version.release;
-    } else {
-      this.version = version.develop;
-    }
-
+  getWebVersion() {
+    [this.isAlphaVersion, this.version] = this.utilsService.checkWebVersion();
   }
-
-  /**
-   * 確認使用語言
-   * @author kidin
-   */
-  checkBrowserLang() {
-    let browserLang = this.utilsService.getLocalStorageObject('locale');
-    if (!browserLang) {
-      browserLang = this.translateService.getBrowserCultureLang().toLowerCase();
-      this.translateService.use(browserLang);
-      this.utilsService.setLocalStorageObject('locale', browserLang);
-    } else {
-      this.translateService.use(browserLang);
-    }
-
-  }
-
 
   handleGlobalEvent() {
     this.globalEventsManager.showMask(false);
@@ -444,7 +382,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     switch (_target) {
       case Dashboard.myActivity:
       case Dashboard.myDevice:
-      case Dashboard.eventManagement:
         this.uiFlag.currentDrop = '';
         break;
     }
@@ -453,7 +390,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   logout() {
     this.authService.logout();
-    this.router.navigate(['/signIn-web']);
+    this.router.navigateByUrl('/signIn-web');
   }
 
   /**

@@ -1,0 +1,183 @@
+<app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
+<section *ngIf="eventInfo">
+  <header class="event__info">
+    <div id="theme__img"  class="flexCenter">
+      <div id="gradient__mask" *ngIf="!uiFlag.isMobile"></div>
+      <img [src]="eventInfo.themeImg" [alt]="eventInfo.eventName">
+      <h2 *ngIf="uiFlag.isMobile">
+        {{ eventInfo.eventName }}
+      </h2>
+      <ng-container *ngIf="uiFlag.isMobile">
+        <button *ngTemplateOutlet="editButton;
+          context: {
+            eventId: eventInfo.eventId,
+            eventCancel: eventInfo.eventStatus === EventStatus.cancel
+          }"
+        >
+        </button>
+      </ng-container>
+    </div>
+    <div class="flexCol event__info__content">
+      <div class="flexRow title__bar">
+        <div class="flexCol title__section">
+          <h2 *ngIf="!uiFlag.isMobile">
+            {{ eventInfo.eventName }}
+          </h2>
+          <table id="race__date">
+            <tbody>
+              <tr>
+                <th>{{ '開始' }}</th>
+                <td>{{ eventInfo.raceDate.startDate * 1000 | timeFormat: 'YYYY-MM-DD' }}</td>
+              </tr>
+              <tr>
+                <th>{{ '結束' }}</th>
+                <td>{{ eventInfo.raceDate.endDate * 1000 | timeFormat: 'YYYY-MM-DD' }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <span></span>
+        </div>
+        <div class="flexRow navigate__button">
+          <ng-container *ngIf="!uiFlag.isMobile">
+            <button *ngTemplateOutlet="editButton;
+              context: {
+                eventId: eventInfo.eventId,
+                eventCancel: eventInfo.eventStatus === EventStatus.cancel
+              }"
+            >
+            </button>
+          </ng-container>
+          <button
+            id="apply__button"
+            (click)="navigateApplyPage()"
+          >
+            <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.canApply">
+              {{ '我要報名' }}
+            </ng-container>
+            <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.applied">
+              {{ '已報名' }}
+            </ng-container>
+            <ng-container
+              *ngIf="
+                [ApplyButtonStatus.applyFull, ApplyButtonStatus.cutOff].includes(uiFlag.applyButtonStatus)
+              "
+            >
+              {{ '報名截止' }}
+            </ng-container>
+            <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.cancel">
+              {{ '賽事取消' }}
+            </ng-container>
+          </button>
+        </div>
+      </div>
+      <table id="countdonw" *ngIf="!uiFlag.raceEnd">
+        <tbody>
+          <tr>
+            <td>{{ raceEndCountdwon.day }}</td>
+            <td>{{ raceEndCountdwon.hour }}</td>
+            <td>{{ raceEndCountdwon.minute }}</td>
+            <td>{{ raceEndCountdwon.second }}</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th>{{ 'universal_time_day' | translate }}</th>
+            <th>{{ '時' }}</th>
+            <th>{{ 'universal_time_minute' | translate}}</th>
+            <th>{{ 'universal_time_second' | translate }}</th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </header>
+  <nav id="shortcut__section" class="flexRow">
+    <button
+      class="switch__buton"
+      *ngIf="uiFlag.showSwitchButton"
+      (click)="switchPreview()"
+    >
+      <i class="icon-svg_web-icon_p1_073-level_fold"></i>
+    </button>
+    <ul
+      id="shortcut__list"
+      class="flexRow"
+      [style.justify-content]="uiFlag.showSwitchButton ? 'unset' : 'space-around'"
+    >
+      <ng-container *ngFor="let _content of eventDetail.content; let _index = index;">
+        <li *ngIf="_content.title">
+          <a href="#" (click)="handleScrollTarget($event, _content.contentId)">
+            {{ _content.title }}
+          </a>
+        </li>
+      </ng-container>
+      <li>
+        <a [href]="'/official-activity/leaderboard?eventId=' + eventInfo.eventId">
+          {{ 'universal_race_leaderboard' | translate }}&nbsp;→
+        </a>
+      </li>
+    </ul>
+    <button
+      class="switch__buton"
+      *ngIf="uiFlag.showSwitchButton"
+      (click)="switchNext()"
+    >
+      <i class="icon-svg_web-icon_p1_074-level_unfold"></i>
+    </button>
+  </nav>
+  <main>
+    <ng-container *ngFor="let _content of eventDetail.content; let _index = index;">
+      <ng-container *ngIf="_content.cardType === 1">
+        <div
+          class="content__text"
+          [id]="'content__' + _content.contentId"
+          [innerHTML]="_content.text | safeStyle"
+        ></div>
+      </ng-container>
+      <ng-container *ngIf="_content.cardType === 2">
+        <div
+          [id]="'content__' + _content.contentId"
+        >
+          <img
+            class="content__img"
+            [src]="_content.img"
+            [alt]="_content.title"
+          >
+        </div>
+      </ng-container>
+      <ng-container *ngIf="_content.cardType === 3">
+        <div
+          class="flexCenter content__video"
+          [id]="'content__' + _content.contentId"
+        >
+          <app-ala-iframe
+            [src]="_content.videoLink"
+            [type]="'officialActivity'"
+            [width]="'95vw'"
+            [height]="'50vw'"
+            [maxWidth]="'1200px'"
+            [maxHeight]="'600px'"
+          >
+          </app-ala-iframe>
+        </div>
+      </ng-container>
+    </ng-container>
+  </main>
+</section>
+
+<ng-template
+  #editButton
+  let-eventId="eventId"
+  let-eventCancel="eventCancel"
+>
+<button
+  class="edit__button"
+  *ngIf="uiFlag.isAdmin && !eventCancel"
+>
+  <a
+    class="flexCenter"
+    [href]="'/official-activity/edit-activity/' + eventInfo.eventId"
+  >
+    <i class="icon-svg_web-icon_p1_008-edit"></i>
+  </a>
+</button>
+</ng-template>

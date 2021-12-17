@@ -203,6 +203,7 @@ $info-height: 340px;
 .lap__info {
   max-height: $info-height;
   overflow-y: scroll;
+  scrollbar-width: thin;
 }
 
 .table__list__title {

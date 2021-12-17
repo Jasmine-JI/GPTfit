@@ -23,14 +23,9 @@ export const inch = 2.54;
 export const lb = 0.45;
 
 /**
- * 0. 公制 1. 英制
- */
-export type Unit = unit.metric | unit.imperial;
-
-/**
  * 0.公制 1.英制
  */
-export enum unit {
+export enum Unit {
   metric,
   imperial
 }

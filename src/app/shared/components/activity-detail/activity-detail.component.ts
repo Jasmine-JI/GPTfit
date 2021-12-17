@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, Cha
 import { Subject, fromEvent, Subscription, of } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { UserProfileService } from '../../services/user-profile.service';
-import { UserProfileInfo, hrBase } from '../../../containers/dashboard/models/userProfileInfo';
+import { UserProfileInfo, HrBase } from '../../../containers/dashboard/models/userProfileInfo';
 import { UtilsService } from '../../services/utils.service';
 import { ActivityService } from '../../services/activity.service';
 import { Router } from '@angular/router';
@@ -20,11 +20,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../message-box/message-box.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShareGroupInfoDialogComponent } from '../share-group-info-dialog/share-group-info-dialog.component';
-import { PrivacyCode } from '../../models/user-privacy';
+import { PrivacyObj } from '../../models/user-privacy';
 import { EditIndividualPrivacyComponent } from '../edit-individual-privacy/edit-individual-privacy.component';
 import { Proficiency } from '../../models/weight-train';
 import { SettingsService } from '../../../containers/dashboard/services/settings.service';
-import { albumType } from '../../models/image';
+import { AlbumType } from '../../models/image';
 import { v5 as uuidv5 } from 'uuid';
 import { ImageUploadService } from '../../../containers/dashboard/services/image-upload.service';
 
@@ -140,7 +140,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   chartData = {
     hr: [0, 0, 0, 0, 0, 0],
     hrInfo: <HrZoneRange>{
-      hrBase: hrBase.max,
+      hrBase: HrBase.max,
       z0: <number | string>0,
       z1: <number | string>0,
       z2: <number | string>0,
@@ -149,7 +149,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       z5: <number | string>0
     },
     defaultHrInfo: <HrZoneRange>{
-      hrBase: hrBase.max,
+      hrBase: HrBase.max,
       z0: <number>0,
       z1: <number>0,
       z2: <number>0,
@@ -227,9 +227,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   previewUrl = '';
   progress = 0;
   compareChartQueryString = '';
-  filePrivacy: Array<PrivacyCode> = [1];
+  filePrivacy: Array<PrivacyObj> = [1];
   cloudrunMapId: number;
-  readonly albumType = albumType;
+  readonly AlbumType = AlbumType;
 
   // 頁面所需資訊
   readonly needKey = [
@@ -393,7 +393,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         gender: 0,
         groupAccessRightList: null,
         handedness: null,
-        heartRateBase: hrBase.max,
+        heartRateBase: HrBase.max,
         heartRateMax: 195,
         heartRateResting: 60,
         lastBodyTimestamp: null,
@@ -1660,9 +1660,11 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       for (let key in finalObj) {
         
         if (i === -1) {
+          // 欄位標題
           csvData += `${key},`;
         } else {
-          csvData += finalObj[key][i] !== undefined ? `${finalObj[key][i]},` : ',';
+          const value = finalObj[key][i];
+          csvData += value !== undefined ? `${value},` : ',';
         }
         
       }
@@ -1681,81 +1683,81 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   flattenObj(rawData: any): Array<any> {
     // csv排除以下資訊
     const excludeData = [
-            'alaFormatVersionName',
-            'apiCode',
-            'msgCode',
-            'resultCode',
-            'resultMessage',
-            'fileInfo'
-          ],
-          finalObj = {};
+      'alaFormatVersionName',
+      'apiCode',
+      'msgCode',
+      'resultCode',
+      'resultMessage',
+      'fileInfo'
+    ];
+    const finalObj = {};
     let maxLength = 0;
-
     for (let key in rawData) {
 
       if (!excludeData.includes(key)) {
-
-        // 純陣列
-        if (Array.isArray(rawData[key]) && typeof rawData[key][0] !== 'object') {
-          maxLength = rawData[key].length > maxLength ? rawData[key].length : maxLength;
+        const value = rawData[key];
+        const isArray = Array.isArray(value) && typeof value[0] !== 'object';
+        const isArrayOfObj = Array.isArray(value) && typeof value[0] === 'object';
+        const isObj = value !== null && typeof value === 'object';
+        if (isArray) {
+          const valueLength = value.length;
+          maxLength = valueLength > maxLength ? valueLength : maxLength;
           // 同key則將數據整合至一個array中
           if (finalObj.hasOwnProperty(key)) {
-            finalObj[key] = finalObj[key].concat(rawData[key]);
+            finalObj[key] = finalObj[key].concat(value);
           } else {
-            Object.assign(finalObj, {[key]: rawData[key]});
+            Object.assign(finalObj, {[key]: value});
           }
 
-        // 為陣列，且其元素為物件 
-        } else if (Array.isArray(rawData[key]) && typeof rawData[key][0] === 'object') {
-          maxLength = rawData[key].length > maxLength ? rawData[key].length : maxLength;
-          rawData[key].forEach(_rawData => {
+        } else if (isArrayOfObj) {
+          const valueLength = value.length;
+          maxLength = valueLength > maxLength ? valueLength : maxLength;
+          value.forEach(_rawData => {
             const [childObj, childMaxLength] = this.flattenObj(_rawData);
             maxLength = childMaxLength > maxLength ? childMaxLength : maxLength;
             for (let childKey in childObj) {
               const mergeKey = `${key}.${childKey}`;
+              const childValue = childObj[childKey];
+              const childIsArray = Array.isArray(childValue);
               // 同key則將數據整合至一個array中
               if (finalObj.hasOwnProperty(mergeKey)) {
-
-                if (Array.isArray(childObj[childKey])) {
-                  finalObj[mergeKey] = finalObj[mergeKey].concat(childObj[childKey]);
+                
+                if (childIsArray) {
+                  finalObj[mergeKey] = finalObj[mergeKey].concat(childValue);
                 } else {
-                  finalObj[mergeKey].push(childObj[childKey]);
+                  finalObj[mergeKey].push(childValue);
                 }
 
               } else {
-                Array.isArray(childObj[childKey]) ?
-                  Object.assign(finalObj, {[mergeKey]: childObj[childKey]}) : Object.assign(finalObj, {[mergeKey]: [childObj[childKey]]});;
+                Object.assign(finalObj, {[mergeKey]: childIsArray ? childValue : [childValue]});
               }
               
             }
 
           });
 
-        // 物件
-        } else if (rawData[key] !== null && typeof rawData[key] === 'object') {
-          const [childObj, childMaxLength] = this.flattenObj(rawData[key]);
+        } else if (isObj) {
+          const [childObj, childMaxLength] = this.flattenObj(value);
           maxLength = childMaxLength > maxLength ? childMaxLength : maxLength;
           for (let childKey in childObj) {
-
             // 同key則將數據整合至一個array中
             const mergeKey = `${key}.${childKey}`;
+            const childValue = childObj[childKey];
+            const childIsArray = Array.isArray(childValue);
             if (finalObj.hasOwnProperty(mergeKey)) {
-              Array.isArray(childObj[childKey]) ? 
-                finalObj[mergeKey].push(childObj[childKey][0]) : finalObj[mergeKey].push(childObj[childKey]);
+              finalObj[mergeKey].push(childIsArray ? childValue[0] : childValue);
             } else {
-              Array.isArray(childObj[childKey]) ? 
-                Object.assign(finalObj, {[mergeKey]: childObj[childKey]}) : Object.assign(finalObj, {[mergeKey]: [childObj[childKey]]});
+              Object.assign(finalObj, {[mergeKey]: childIsArray ? childValue : [childValue]});
             }
             
           }
 
-        // 純值
         } else {
           // 同key則將數據整合至一個array中
           if (finalObj.hasOwnProperty(key)) {
-            finalObj[key].push(rawData[key][0]);
+            finalObj[key].push(value[0]);
           } else {
-            Object.assign(finalObj, {[key]: rawData[key]});
+            Object.assign(finalObj, {[key]: value});
           }
           
         }
@@ -2004,10 +2006,10 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 修改隱私權設定成功後替換fileInfo的privacy
-   * @param privacy {Array<PrivacyCode>}-該筆運動檔案隱私權設定
+   * @param privacy {Array<PrivacyObj>}-該筆運動檔案隱私權設定
    * @author kidin-1100302
    */
-  editPrivacy(privacy: Array<PrivacyCode>) {
+  editPrivacy(privacy: Array<PrivacyObj>) {
     this.fileInfo.privacy = privacy;
     this.changeDetectorRef.markForCheck();
   }
@@ -2164,14 +2166,14 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       if (base64 !== null) {
         const fileName = this.createFileName(imgArr.length, `${userId}`);
         imgArr.unshift({
-          albumType: albumType.personalSportFile,
+          albumType: AlbumType.personalSportFile,
           fileNameFull: `${fileName}.jpg`,
           activityFileId: this.fileInfo.fileId
         })
 
         formData.append(
           'file',
-          this.utils.base64ToFile(albumType.personalSportFile, base64, fileName)
+          this.utils.base64ToFile(base64, fileName)
         );
 
       }
@@ -2195,7 +2197,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         token: this.utils.getToken(),
         targetType: 1,
         img: [{
-          albumType: albumType.personalSportFile,
+          albumType: AlbumType.personalSportFile,
           activityFileId: this.fileInfo.fileId,
           fileNameFull: this.getPhotoName(photo)
         }]

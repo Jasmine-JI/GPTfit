@@ -1,17 +1,21 @@
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
+import { Observable, BehaviorSubject, ReplaySubject, fromEvent, merge } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { MessageBoxComponent } from '../components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
-import { AlbumType } from '../models/image';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { HrZoneRange } from '../models/chart-data';
 import moment from 'moment';
 import { Unit, mi, ft, inch } from '../models/bs-constant';
 import { SportType, SportCode } from '../models/report-condition';
 import { GroupLevel } from '../../containers/dashboard/models/group-detail';
-import { HrBase, hrBase } from '../../containers/dashboard/models/userProfileInfo';
-export const TOKEN = 'ala_token';
+import { HrBase } from '../../containers/dashboard/models/userProfileInfo';
+import { version } from '../../shared/version';
+import { v5 as uuidv5 } from 'uuid';
+import { SelectDate } from '../models/utils-type';
+import { TOKEN } from '../models/utils-constant';
 
 type Point = {
   x: number;
@@ -28,6 +32,7 @@ export class UtilsService {
 
   constructor(
     private dialog: MatDialog,
+    private snackbar: MatSnackBar,
     private translate: TranslateService
   ) {}
 
@@ -95,10 +100,10 @@ export class UtilsService {
    */
   getUrlQueryStrings(_search: string) {
     const search = _search || window.location.search,
-          queryObj = {};
+          queryObj = {} as any;
     let queryArr: Array<string>;
     if (!search) {
-      return queryObj as any;
+      return queryObj;
     } else {
 
       if (search.includes('?')) {
@@ -112,7 +117,7 @@ export class UtilsService {
         Object.assign(queryObj, {[_key]: _value});
       });
 
-      return queryObj as any;
+      return queryObj;
     }
 
   }
@@ -385,50 +390,101 @@ export class UtilsService {
   }
 
   /**
+   * 跳出snackbar
+   * @param msg {string}-欲顯示的訊息
+   * @author kidin-1101203
+   */
+  showSnackBar(msg: string) {
+    this.snackbar.open(msg, 'OK', { duration: 3000 } );
+  }
+
+  /**
    * 將base64轉file
-   * @param albumType {AlbumType}-圖片類型
    * @param base64 {string}-base64檔案
    * @author kidin-1091125
    */
-  dataUriToBlob(albumType: AlbumType, base64: string) {
-    base64 = this.checkImgSize(albumType, base64);
-    const byteString = window.atob(base64.split(',')[1]),  // 去除base64前綴
-          arrayBuffer = new ArrayBuffer(byteString.length),
-          int8Array = new Uint8Array(arrayBuffer);
-
+  dataUriToBlob(base64: string) {
+    const byteString = window.atob(base64.split(',')[1]);  // 去除base64前綴
+    const arrayBuffer = new ArrayBuffer(byteString.length);
+    const int8Array = new Uint8Array(arrayBuffer);
     for (let i = 0; i < byteString.length; i++) {
       int8Array[i] = byteString.charCodeAt(i);
     }
 
-    const blob = new Blob([int8Array], { type: 'image/png' });    
+    const blob = new Blob([int8Array], { type: 'image/png' });
     return blob;
   }
 
   /**
    * 檢查圖片大小，過大就壓縮
-   * @param albumType {AlbumType}-圖片類型
-   * @param img {string}-base64檔案
+   * @param type {AlbumType}-圖片類型
+   * @param base64 {string}-base64檔案
    * @author kidin-1091126
    */
-  checkImgSize(albumType: AlbumType, img: string) {
-    const imageSize = (img.length * (3 / 4)) - 1;  // 計算base64 size的公式（正確公式要判斷base64的'='數量，這邊直接當作'='數量為1）
-    const limitSize = 500000;  // 圖片上傳限制500kb
-    if (imageSize > limitSize) {
-      const image = new Image();
-      image.src = img;
+  checkImgFormat(base64: string) {
+    const image = new Image();
+    image.src = base64;
+    return fromEvent(image, 'load').pipe(
+      map(e => this.checkDimensionalSize(base64, image)),
+      map(checkResult => this.checkImgSize(checkResult as any))
+    );
 
-      const canvas = document.createElement('canvas'),
-            ctx = canvas.getContext('2d');
+  }
 
-      canvas.width = 1080;
-      canvas.height = albumType === 1 || albumType === 11 ? 1080 : 360;
-      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+  /**
+   * 確認長寬是否符合格式
+   * @param base {string}-base64圖片
+   * @param img {HTMLImageElement}-html圖片元素
+   * @author kidin-1101119
+   */
+  checkDimensionalSize(base64: string, img: HTMLImageElement) {
+    const limitDimensional = 1080;
+    const imgWidth = img.width;
+    const imgHeight = img.height;
+    const overWidth = imgWidth > limitDimensional;
+    const overHeight = imgHeight > limitDimensional;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (overWidth || overHeight) {
+      
+      if (imgHeight > imgWidth) {
+        canvas.height = limitDimensional;
+        canvas.width = imgWidth * (limitDimensional / imgHeight);
+      } else {
+        canvas.width = limitDimensional;
+        canvas.height = imgHeight * (limitDimensional / imgWidth);
+      }
 
-      return this.checkImgSize(albumType, canvas.toDataURL('image/jpeg', limitSize / imageSize));  // 壓縮完再次確認是否超過大小限制
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const newBase64 = canvas.toDataURL('image/jpeg', 1);
+      return [newBase64, canvas.width, canvas.height, canvas, ctx];
     } else {
-      return img;
+      const { width, height } = img;
+      return [base64, width, height, canvas, ctx];
     }
-    
+  
+  }
+
+  /**
+   * 確認圖片大小是否符合格式，不符則壓縮圖片
+   * @param [base64, width, height, canvas, ctx]-[base64圖片, 圖片寬度, 圖片高度, canvas, ctx]
+   * @author kidin-1101103
+   */
+  checkImgSize([base64, width, height, canvas, ctx]) {
+    // 計算base64 size的公式（正確公式要判斷base64的'='數量，這邊直接當作'='數量為1）
+    const imageSize = (base64.length * (3 / 4)) - 1;
+    const limitSize = 500000;
+    const overSize = imageSize > limitSize;
+    if (overSize) {
+      ctx.drawImage(canvas, 0, 0, width, height);
+      const compressQulity = 0.95;
+      // 透過toDataURL漸進式壓縮至所需大小，避免圖片過於失真
+      const newBase64 = canvas.toDataURL('image/jpeg', compressQulity);
+      return this.checkImgSize([newBase64, width, height, canvas, ctx]);
+    } else {
+      return base64;
+    }
+
   }
 
   /**
@@ -453,7 +509,7 @@ export class UtilsService {
 
       if (userMaxHR && userRestHR) {
 
-        if (userHRBase === hrBase.max) {
+        if (userHRBase === HrBase.max) {
           // 區間數值採無條件捨去法
           userHrInfo['z0'] = Math.floor((220 - userAge) * 0.5 - 1);
           userHrInfo['z1'] = Math.floor((220 - userAge) * 0.6 - 1);
@@ -472,7 +528,7 @@ export class UtilsService {
         
       } else {
 
-        if (userHRBase === hrBase.max) {
+        if (userHRBase === HrBase.max) {
           // 區間數值採無條件捨去法
           userHrInfo['z0'] = Math.floor((220 - userAge) * 0.5 - 1);
           userHrInfo['z1'] = Math.floor((220 - userAge) * 0.6 - 1);
@@ -715,11 +771,11 @@ export class UtilsService {
 
   /**
    * 取得日期區間（日/週）
-   * @param date {{startDate: string; endDate: string;}}-使用者所選日期範圍
+   * @param date {SelectDate}-使用者所選日期範圍
    * @author kidin-1100401
    * @returns {'day' | 'week'}
    */
-  getDateInterval(date: {startDate: string; endDate: string;}) {
+  getDateInterval(date: SelectDate) {
     const { startDate, endDate } = date;
     if ((moment(endDate).diff(moment(startDate), 'days') + 1) <= 52) {
       return 'day';
@@ -731,10 +787,10 @@ export class UtilsService {
 
   /**
    * 建立報告期間的timeStamp讓圖表使用
-   * @param date {{start: string; end: string;}}-報告起始日期和結束日期
+   * @param date {SelectDate}-報告起始日期和結束日期
    * @author kidin-1100401
    */
-  createTimeStampArr(date: {startDate: string; endDate: string;}) {
+  createTimeStampArr(date: SelectDate) {
   const timeStampArr = [],
         { startDate, endDate } = date,
         range = moment(endDate).diff(moment(startDate), 'days') + 1,
@@ -833,13 +889,12 @@ export class UtilsService {
 
   /**
    * 將base64的圖片轉為檔案格式
-   * @param albumType {number}-圖片類型
    * @param base64 {string}-base64圖片
    * @param fileName {檔案名稱}
    * @author kidin-1091127
    */
-  base64ToFile(albumType: AlbumType, base64: string, fileName: string): File {
-    const blob = this.dataUriToBlob(albumType, base64);
+  base64ToFile(base64: string, fileName: string) {
+    const blob = this.dataUriToBlob(base64);
     return new File([blob], `${fileName}.jpg`, {type: 'image/jpeg'});
   }
 
@@ -908,10 +963,12 @@ export class UtilsService {
 
   /**
    * 確認res resultCode是否回傳200(兼容兩個版本的response result)
+   * @param res {any}-api response
+   * @param showAlert {boolean}-是否顯示錯誤alert
    * @returns {boolean} resultCode是否回傳200
    * @author kidin-1100902
    */
-  checkRes(res: any): boolean {
+  checkRes(res: any, showAlert: boolean = true): boolean {
     const {
       processResult,
       resultCode: resCode,
@@ -921,7 +978,9 @@ export class UtilsService {
     if (!processResult) {
 
       if (resCode !== 200) {
-        this.handleError(resCode, resApiCode, resMsg);
+
+        if (showAlert) this.handleError(resCode, resApiCode, resMsg);
+
         return false;
       } else {
         return true;
@@ -930,7 +989,9 @@ export class UtilsService {
     } else {
       const { resultCode, apiCode, resultMessage } = processResult;
       if (resultCode !== 200) {
-        this.handleError(resultCode, apiCode, resultMessage);
+
+        if (showAlert) this.handleError(resultCode, apiCode, resultMessage);
+
         return false;
       } else {
         return true;
@@ -969,6 +1030,85 @@ export class UtilsService {
 
     } else {
       return forward ? height: `${height}`;
+    }
+
+  }
+
+  /**
+   * 確認web版本
+   * @return [是否為alpha版, 版本號]
+   * @author kidin
+   */
+  checkWebVersion(): [boolean, string] {
+    let isAlphaVersion = true,
+        appVersion = version.develop;
+    if (location.hostname.indexOf('cloud.alatech.com.tw') > -1
+      || location.hostname.indexOf('www.gptfit.com') > -1
+    ) {
+      isAlphaVersion = false;
+      appVersion = version.master;
+    } else if (location.hostname.indexOf('app.alatech.com.tw') > -1) {
+      appVersion = version.release;
+    } else {
+      appVersion = version.develop;
+    }
+
+    return [isAlphaVersion, appVersion];
+  }
+
+  /**
+   * 確認使用語言
+   * @author kidin
+   */
+  checkBrowserLang() {
+    let browserLang = this.getLocalStorageObject('locale');
+    if (!browserLang) {
+      browserLang = this.translate.getBrowserCultureLang().toLowerCase();
+      this.translate.use(browserLang);
+      this.setLocalStorageObject('locale', browserLang);
+    } else {
+      this.translate.use(browserLang);
+    }
+
+  }
+
+  /**
+   * 建立上傳圖床圖片之名稱
+   * @param index {number}-檔案序列+1
+   * @param id {string}-user id/group id(去掉'-')/event id
+   * @author kidin-1101102
+   */
+  createImgFileName(index: number, id: string | number) {
+    const nameSpace = uuidv5('https://www.gptfit.com', uuidv5.URL),
+          keyword = `${moment().valueOf().toString()}${index}${id}`;
+    return uuidv5(keyword, nameSpace);
+  }
+
+  /**
+   * 取得base64圖片
+   * @param file {Blob}-圖片檔案
+   * @author kidin-1101029
+   */
+  getBase64(file: Blob) {
+    const reader = new FileReader();
+    reader.readAsDataURL(file)
+    const base64OnLoad = fromEvent(reader, 'load');
+    const base64OnError = fromEvent(reader, 'error');
+    return merge(base64OnLoad, base64OnError);
+  }
+
+  /**
+   * 取得現在時間
+   * @param timeUnit {'s' | 'ms'}-時間單位
+   * @author kidin-1101216
+   */
+  getCurrentTimestamp(timeUnit: 's' | 'ms' = 's') {
+    const currentTimeStamp = (new Date()).getTime();
+    switch (timeUnit) {
+      case 's':
+        return Math.round(currentTimeStamp / 1000);
+      case 'ms':
+        return currentTimeStamp;
     }
 
   }

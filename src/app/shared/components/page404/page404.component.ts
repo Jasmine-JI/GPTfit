@@ -14,7 +14,10 @@ export class Page404Component implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.redirectUrl = `https://${location.hostname}`;
+    const { pathname, origin } = location;
+    const pathList = pathname.split('/');
+    const isOfficialPage = pathList.indexOf('official-activity') > -1;
+    this.redirectUrl = `${origin}${isOfficialPage ? '/official-activity' : ''}`;
   }
 
   ngOnDestroy() { }

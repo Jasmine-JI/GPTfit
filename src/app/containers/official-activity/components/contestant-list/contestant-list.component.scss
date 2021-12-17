@@ -1,0 +1,461 @@
+@import 'flex-center.scss';
+@import 'font.scss';
+@import 'drop-triangle.scss';
+@import 'transition.scss';
+
+$map-icon-size: 10vw;
+$map-icon-max-size: 150px;
+$map-icon-min-size: 80px;
+$input-height: 40px;
+$list-width: 80vw;
+$list-min-width: 300px;
+$list-padding: 0 2vw;
+$edit-button-size: 30px;
+
+
+@mixin box-shadow($color: rgba(0, 0, 0, 0.5)) {
+  box-shadow: 2px 2px 4px $color, -2px 2px 4px $color;
+}
+
+@mixin list-status($background-color: white) {
+  width: 100px;
+  border-radius: 26px;
+  padding: 3px 5px;
+  margin: 5px auto;
+  background-color: $background-color;
+  font-size: 14px;
+}
+
+@mixin list-arrangement() {
+  width: 100%;
+  justify-content: space-between;
+}
+
+@mixin add-remove-button($background-color) {
+  font-size: 20px;
+  color: white;
+  background-color: $background-color;
+  border-radius: 50%;
+}
+
+#header {
+  position: relative;
+}
+
+#scenery {
+  @include center();
+  height: 20vh;
+  min-height: 190px;
+  width: 100%;
+  overflow-y: hidden;
+
+  >img {
+    filter: blur(10px);
+    width: 100%;
+  }
+  
+}
+
+#headerInfo {
+  position: absolute;
+  width: 100%;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 2vw;
+  bottom: 0px;
+  color: white;
+  text-shadow: 1px 2px 4px black;
+}
+
+#map__icon {
+  @include center();
+  position: relative;
+  top: 3vh;
+  height: $map-icon-size;
+  width: $map-icon-size;
+  max-height: $map-icon-max-size;
+  max-width: $map-icon-max-size;
+  min-height: $map-icon-min-size;
+  min-width: $map-icon-min-size;
+  border-radius: 50%;
+  outline: 1px solid white;
+  overflow: hidden;
+
+  >img {
+    height: 100%;
+  }
+
+}
+
+#header__title {
+  position: relative;
+  top: 15px;
+}
+
+#event__name {
+  @include bold-font(30px);
+  margin-left: 3vw;
+}
+
+#search__input {
+  @include box-shadow(rgba(0, 0, 0, 0.1));
+  justify-content: space-between;
+  align-items: center;
+  width: 40vw;
+  min-width: 310px;
+  background-color: white;
+  padding: 5px 15px;
+  height: $input-height;
+  border-radius: $input-height;
+  text-shadow: none;
+
+  >input {
+    border: none;
+    outline: none;
+  }
+
+}
+
+#search__icon {
+  color: rgba(85, 85, 85, 1);
+  margin: 0 5px;
+}
+
+#list__filter {
+  position: relative;
+  padding: 0 5px;
+  color: black;
+  border-left: 1px solid rgba(150, 150, 150, 1);
+}
+
+.filter__entry {
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+
+  >span {
+    display: inline-block;
+    min-width: 150px;
+    text-align: center;
+    font-weight: bold;
+  }
+
+}
+
+.drop__icon {
+  @include transition(transform);
+  font-size: 20px;
+}
+
+.drop__icon--active {
+  @include drop-active();
+}
+
+#filter__selector {
+  @include box-shadow(rgba(0, 0, 0, 0.5));
+  width: 130px;
+  padding: 5px;
+  position: absolute;
+  background-color: white;
+  z-index: 1;
+  max-height: 200px;
+  overflow-y: scroll;
+  top: 25px;
+  left: 20px;
+  border-radius: 0 0 10px 10px;
+}
+
+#race__date {
+  @include bold-font(16px);
+}
+
+.drop__type__title {
+  font-weight: bold;
+}
+
+.status__show__all {
+  @include list-status(rgba(240, 240, 240, 1));
+}
+
+.status__yet {
+  @include list-status(rgba(255, 184, 184, 1));
+}
+
+.status__already {
+  @include list-status(rgba(26, 237, 174, 1));
+}
+
+.status__case__closed {
+  @include list-status(rgba(184, 202, 255, 1));
+}
+
+.status__cancel {
+  @include list-status(rgba(255, 213, 184, 1));
+}
+
+.status__not__action {
+  @include list-status(rgba(185, 185, 185, 1));
+}
+
+.filter__group {
+  @include list-status();
+}
+
+.main__content {
+  margin: 10px 0;
+  align-items: center;
+}
+
+.list__title {
+  @include list-arrangement();
+  width: $list-width;
+  min-width: $list-min-width;
+  padding: $list-padding;
+
+  >h6 {
+    margin: 0;
+  }
+
+}
+
+.contestant__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: $list-width;
+  min-width: $list-min-width;
+}
+
+.list__row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background-color: rgba(247, 247, 247, 1);
+  border-radius: 20px;
+  padding: $list-padding;
+  margin: 10px 0;
+  cursor: pointer;
+  min-height: 40px;
+
+  &:hover {
+    background-color: rgba(240, 240, 240, 1);
+  }
+
+}
+
+.important__info {
+  @include list-arrangement();
+  align-items: center;
+}
+
+.info__card {
+  flex-grow: 1;
+  margin: 5px 10px 5px 0;
+}
+
+.info__card__break {
+  flex-basis: 100%;
+}
+
+.card__title {
+  @include bold-font(14px);
+  margin: 0;
+}
+
+.card__value {
+  margin: 0;
+  font-size: 16px;
+  color: rgba(140, 140, 140, 1);
+}
+
+.rank {
+  width: 40px;
+}
+
+.rank__value {
+  @include bold-font(20px);
+  text-align: center;
+}
+
+.nickname {
+  width: 165px;
+}
+
+.group {
+  width: 120px;
+}
+
+.paid__status {
+  width: 120px;
+}
+
+.paid__date {
+  width: 140px;
+}
+
+.order__status {
+  width: 120px;
+}
+
+.award__status {
+  width: 120px;
+}
+
+.apply__info {
+  padding: 10px;
+  flex-wrap: wrap;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid black;
+  }
+
+}
+
+.edit__button {
+  width: $edit-button-size;
+  height: $edit-button-size;
+  margin: 20px 5px;
+}
+
+.detail__input {
+  border: none;
+  outline: none;
+  background-color: rgba(255, 253, 220, 1);
+}
+
+.status__selector {
+  @include drop-triangle(6px, 4px, black, -1px);
+  display: flex;
+  position: relative;
+}
+
+.drop__menu {
+  @include box-shadow();
+  position: absolute;
+  top: 35px;
+  left: 5px;
+  list-style: none;
+  z-index: 1;
+  background-color: white;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.button__section {
+  padding-right: 5vw;
+  margin: 20px 0 10px 0;
+}
+
+#leave__title {
+  margin: 0 5vw 2vh 5vw;
+  @include bold-font(24px);
+}
+
+.leave__list {
+  background-color: rgba(252, 214, 214, 1);
+}
+
+.delete__mode {
+  color: rgb(252, 100, 100, 1);
+}
+
+.delete__icon {
+  @include add-remove-button(rgba(250, 107, 107, 1));
+}
+
+.add__icon {
+  @include add-remove-button(rgba(135, 135, 135, 1));
+}
+
+#sort__menu {
+  @include box-shadow();
+  position: absolute;
+  top: 35px;
+  z-index: 1;
+  background-color: white;
+  width: 150px;
+  max-height: 170px;
+  overflow-y: scroll;
+  padding: 5px;
+}
+
+#sort__button {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.classification__area {
+
+  >h6 {
+    font-weight: bold;
+  }
+
+  >div {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+
+    >input {
+      cursor: pointer;
+    }
+
+  }
+
+}
+
+.radio__label {
+  font-size: 15px;
+  margin: 0 0 0 10px;
+  cursor: pointer;
+}
+
+/************************************************* media ******************************************/
+
+@media (max-width: 1150px) {
+  
+  .contestant__list, .list__title {
+    width: 90vw;
+  }
+
+}
+
+@media (max-width: 1000px) {
+  
+  .contestant__list, .list__title {
+    width: 95vw;
+  }
+
+}
+
+@media (max-width: 767px) {
+  
+  .filter__entry {
+    
+    >span {
+      font-size: 14px;
+      min-width: 120px;
+    }
+
+  }
+
+}
+
+@media (max-width: 575px) {
+
+  #map__icon {
+    position: absolute;
+    top: -100px;
+  }
+
+  #search__input {
+    width: 100%;
+  }
+
+  #race__date {
+    position: absolute;
+    top: -100px;
+    right: 10px;
+  }
+
+}

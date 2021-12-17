@@ -1,0 +1,265 @@
+<app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
+<div id="leaderboard__page">
+  <div id="leaderboard__selector" class="flexRow card__area">
+    <div id="main__menu" class="flexRow">
+      <ul
+        class="flexCol"
+        [style.top]="'-' + (uiFlag.mainListTop * shiftLength) + 'px'"
+      >
+        <li
+          class="switch__list"
+          [class.focus__type]="uiFlag.rankType === RankType.event"
+          (click)="selectRankType(RankType.event)"
+        >
+          {{ '活動' }}
+        </li>
+        <li
+          class="switch__list"
+          [class.focus__type]="uiFlag.rankType === RankType.cumulativeClimb"
+          (click)="selectRankType(RankType.cumulativeClimb)"
+        >
+          {{ '累計爬升' }}
+        </li>
+        <li
+          class="switch__list"
+          [class.focus__type]="uiFlag.rankType === RankType.cumulativeDistance"
+          (click)="selectRankType(RankType.cumulativeDistance)"
+        >
+          {{ '累計距離' }}
+        </li>
+        <li
+          class="switch__list"
+          [class.focus__type]="uiFlag.rankType === RankType.routine"
+          (click)="selectRankType(RankType.routine)"
+        >
+          {{ '例賽' }}
+        </li>
+        <li
+          class="switch__list"
+          [class.focus__type]="uiFlag.rankType === RankType.mapBest"
+          (click)="selectRankType(RankType.mapBest)"
+        >
+          {{ '各地圖最佳' }}
+        </li>
+      </ul>
+      <div *ngTemplateOutlet="switchButton; context: {
+        type: 'main',
+        topIndex: uiFlag.mainListTop,
+        maxTop: rankListLength - 3
+      }"></div>
+    </div>
+    <div id="sub__menu" class="flexRow">
+      <ul
+        class="flexCol"
+        [style.top]="'-' + (uiFlag.subListTop * shiftLength) + 'px'"
+      >
+        <li *ngIf="subList.length === 0">
+          {{ 'universal_status_noData' | translate }}
+        </li>
+        <li
+          class="switch__list"
+          [class.focus__type]="uiFlag.currentFocusList === index"
+          (click)="selectSubList(index)"
+          *ngFor="let _subList of subList; let index = index;"
+        >
+          <ng-container *ngIf="uiFlag.rankType === RankType.event">
+            {{ _subList.eventName }}
+          </ng-container>
+          <ng-container *ngIf="uiFlag.rankType === RankType.mapBest">
+            {{ _subList.info[uiFlag.mapLanguageIndex].mapName }}
+          </ng-container>
+          <ng-container *ngIf="!['event', 'mapBest'].includes(uiFlag.rankType)">
+            {{ _subList.month }}
+          </ng-container>
+        </li>
+      </ul>
+      <div *ngTemplateOutlet="switchButton; context: {
+        type: 'sub',
+        topIndex: uiFlag.subListTop,
+        maxTop: subList.length - 3
+      }"></div>
+    </div>
+  </div>
+  <div class="flexCol card__area">
+    <ng-container
+      *ngIf="uiFlag.rankType === RankType.event && subList.length > 0 && mapInfo.length > 0"
+    >
+      <div *ngTemplateOutlet="leaderboardHeader; context: {
+        title: subList[uiFlag.currentFocusList].eventName,
+        iconPath: mapIconPath + mapInfo[subList[uiFlag.currentFocusList].cloudrunMapId - 1].mapImg
+      }">
+      </div>
+    </ng-container>
+    <ng-container *ngIf="[RankType.routine, RankType.mapBest].includes(uiFlag.rankType)">
+      <div *ngTemplateOutlet="leaderboardHeader; context: {
+        title: mapInfo[uiFlag.currentFocusList].info[uiFlag.mapLanguageIndex].mapName,
+        iconPath: mapIconPath + mapInfo[uiFlag.currentFocusList].mapImg
+      }">
+      </div>
+    </ng-container>
+    <ng-container *ngIf="uiFlag.rankType === RankType.cumulativeClimb">
+      <div *ngTemplateOutlet="leaderboardHeader; context: {
+        title: routine[uiFlag.currentFocusList].month + ' 累計爬升'
+      }">
+      </div>
+    </ng-container>
+    <ng-container *ngIf="uiFlag.rankType === RankType.cumulativeDistance">
+      <div *ngTemplateOutlet="leaderboardHeader; context: {
+        title: routine[uiFlag.currentFocusList].month + ' 累計距離'
+      }">
+      </div>
+    </ng-container>
+    <ul
+      class="flexRow group__filter__section"
+      *ngIf="uiFlag.rankType === RankType.event"
+    >
+      <li>
+        <button
+          class="group__filter__button group__tag"
+          [class.focus__button]="!uiFlag.filterGroup"
+          (click)="filterGroup()"
+        >
+          {{ 'universal_adjective_all' | translate }}
+        </button>
+      </li>
+      <li *ngFor="let _group of groupList;">
+        <button
+          class="group__filter__button group__tag"
+          [class.focus__button]="uiFlag.filterGroup === _group.name"
+          [style.background-color]="_group.color"
+          (click)="filterGroup(_group.name)"
+        >
+          {{ _group.name }}
+        </button>
+      </li>
+    </ul>
+    <div class="flexCol">
+      <div class="flexRow leaderboard__headline">
+        <span class="rank">#</span>
+        <span class="user__icon" *ngIf="uiFlag.screenSize > 575"></span>
+        <span class="nickname">
+          {{ 'universal_userAccount_nickname' | translate }}
+        </span>
+        <span 
+          class="group"
+          *ngIf="uiFlag.screenSize > 575 && uiFlag.rankType === RankType.event"
+        >
+          {{ '分組' }}
+        </span>
+        <span class="record">
+          {{ '成績' }}
+        </span>
+      </div>
+      <ul class="flexCol">
+        <li class="no__data" *ngIf="rankList.length === 0">
+          {{ 'universal_status_noData' | translate }}
+        </li>
+        <li
+          class="flexRow leaderboard__content"
+          *ngFor="let _rankList of rankList;"
+        >
+          <span
+            class="rank"
+            [class.first__place]="_rankList.rank == 1"
+            [class.second__place]="_rankList.rank == 2"
+            [class.third__place]="_rankList.rank == 3"
+          >
+            <span class="rank__value">
+              <ng-container *ngIf="+_rankList.rank <= 3">
+                <img
+                  src="/assets//icons/champion.svg"
+                  alt="First"
+                  *ngIf="_rankList.rank == 1"
+                >
+                <img 
+                  src="/assets//icons/silver.svg"
+                  alt="Second"
+                  *ngIf="_rankList.rank == 2"
+                >
+                <img 
+                  src="/assets//icons/bronze.svg"
+                  alt="Third"
+                  *ngIf="_rankList.rank == 3"
+                >
+              </ng-container>
+              <ng-container *ngIf="+_rankList.rank > 3">
+                {{ _rankList.rank }} th
+              </ng-container>
+            </span>
+          </span>
+          <div class="user__icon" *ngIf="uiFlag.screenSize > 575">
+            <div class="contestant__icon">
+              <img
+                [src]="_rankList.icon"
+                (error)="_rankList.icon = '/assets/images/user2.png'"
+              >
+            </div>
+          </div>
+          <span class="nickname nickname__content">
+            {{ _rankList.nickname }}
+          </span>
+          <span
+            class="group"
+            *ngIf="uiFlag.screenSize > 575 && uiFlag.rankType === RankType.event"
+          >
+            <span
+              class="group__tag"
+              [style.background-color]="_rankList.color"
+            >
+              {{ _rankList.groupName }}
+            </span>
+          </span>
+          <span class="record record__content">
+            <ng-container *ngIf="[RankType.event, RankType.mapBest].includes(uiFlag.rankType)">
+              {{ _rankList.result | sportTime: [false, false] }}
+            </ng-container>
+            <ng-container 
+              *ngIf="[RankType.cumulativeClimb, RankType.cumulativeDistance].includes(uiFlag.rankType)">
+              {{ _rankList.result | number: '1.0-1' }} m
+            </ng-container>
+            <ng-container *ngIf="uiFlag.rankType === RankType.routine">
+              {{ _rankList.result }}
+            </ng-container>
+          </span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<ng-template
+  #switchButton
+  let-type="type"
+  let-topIndex="topIndex"
+  let-maxTop="maxTop"
+>
+  <div class="flexCol switch__button">
+    <button
+      [class.switch__unclickable]="topIndex === 0"
+      (click)="switchList(type, 'up')"
+    >
+      <i class="icon-svg_web-icon_p1_007-fold"></i>
+    </button>
+    <button
+      [class.switch__unclickable]="topIndex >= maxTop"
+      (click)="switchList(type, 'down')"
+    >
+      <i class="icon-svg_web-icon_p1_006-unfold"></i>
+    </button>
+  </div>
+</ng-template>
+
+<ng-template
+  #leaderboardHeader
+  let-iconPath="iconPath"
+  let-title="title"
+>
+  <div class="flexRow leaderboard__header">
+    <div class="header__icon" *ngIf="iconPath">
+      <img [src]="iconPath">
+    </div>
+    <h5>
+      {{ title }}
+    </h5>
+  </div>
+</ng-template>

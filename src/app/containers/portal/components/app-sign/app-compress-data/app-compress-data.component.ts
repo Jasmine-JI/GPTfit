@@ -98,13 +98,9 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
     if (this.appSys === 0) {
       this.token = this.utils.getToken() || '';
     } else {
-      
-      if (location.search.indexOf('tk') > -1) {
-        this.token = location.search.split('?tk=')[1];
-      } else {
-        this.token = '';
-      }
-
+      const { search } = location;
+      const { tk } = this.utils.getUrlQueryStrings(search);
+      this.token = tk ? tk : '';
     }
 
     if (this.token.length === 0) {

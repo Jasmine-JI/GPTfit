@@ -39,6 +39,10 @@ import { BodyAssessmentPipe } from './body-assessment.pipe';
 import { FFMIPipe } from './ffmi.pipe';
 import { DataFlowConversionPipe } from './data-flow-conversion.pipe';
 import { LengthSibsPipe } from './length-sibs.pipe';
+import { SafeStylePipe } from './safe-style.pipe';
+import { PatchUnitPipe } from './patch-unit.pipe';
+import { AgePipe } from './age.pipe';
+import { RankSuffixPipe } from './rank-suffix.pipe';
 
 @NgModule({
   imports: [
@@ -84,7 +88,11 @@ import { LengthSibsPipe } from './length-sibs.pipe';
     BodyAssessmentPipe,
     FFMIPipe,
     DataFlowConversionPipe,
-    LengthSibsPipe
+    LengthSibsPipe,
+    SafeStylePipe,
+    PatchUnitPipe,
+    AgePipe,
+    RankSuffixPipe
   ],
   exports: [
     SexPipe,
@@ -126,7 +134,14 @@ import { LengthSibsPipe } from './length-sibs.pipe';
     BodyAssessmentPipe,
     FFMIPipe,
     DataFlowConversionPipe,
-    LengthSibsPipe
+    LengthSibsPipe,
+    SafeStylePipe,
+    PatchUnitPipe,
+    AgePipe,
+    RankSuffixPipe
+  ],
+  providers: [
+    AgePipe
   ]
 })
 export class SharedPipes {}

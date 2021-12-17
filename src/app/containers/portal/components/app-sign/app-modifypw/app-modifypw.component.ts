@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../../shared/services/auth.service';
-import { UtilsService } from '@shared/services/utils.service';
+import { UtilsService } from '../../../../../shared/services/utils.service';
 import { SignupService } from '../../../services/signup.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
@@ -9,9 +9,9 @@ import { GetClientIpService } from '../../../../../shared/services/get-client-ip
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
-import { formTest } from '../../../models/form-test';
-import { accountTypeEnum } from '../../../../dashboard/models/userProfileInfo';
+import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
+import { formTest } from '../../../../../shared/models/form-test';
+import { AccountTypeEnum } from '../../../../dashboard/models/userProfileInfo';
 
 @Component({
   selector: 'app-app-modifypw',
@@ -150,7 +150,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     this.userProfileService.getUserProfile(body).subscribe(res => {
       if (this.utils.checkRes(res)) {
         const { userProfile, signIn: { accountType } } = res as any;
-        if (accountType === accountTypeEnum.email) {
+        if (accountType === AccountTypeEnum.email) {
           this.editBody.newAccountType = 1;
           this.editBody.newEmail = userProfile.email;
         } else {

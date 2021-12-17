@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { ReplaySubject, Observable } from 'rxjs';
 import { tap, switchMap, map, retry } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import moment from 'moment';
 
 const { API_SERVER } = environment.url;
 
@@ -44,30 +43,49 @@ export class UserProfileService {
    */
   refreshUserProfile(body: any) {
     this.getUserProfile(body).pipe(
-      switchMap(res => this.getMemberAccessRight(body).pipe(
-        map(resp => {
-          const { processResult, signIn } = res,
-                { resultCode: resCodeB } = resp,
-                getRes = processResult && processResult.resultCode === 200 && resCodeB === 200;
-          if (getRes) {
-            Object.assign(
-              res.userProfile,
-              {groupAccessRightList: resp.info.groupAccessRight},
-              {systemAccessRight: this.getAllAccessRight(resp.info.groupAccessRight)},
-              {accountType: signIn.accountType}
-            )
-
-          }
-
-          return res;
-        })
+      switchMap(userProfile => this.getMemberAccessRight(body).pipe(
+        map(accessRight => this.userProfileCombineAccessRight(userProfile, accessRight))
       )),
-      tap(result => {
-        this.userProfile$.next(result.userProfile);
-      }),
       retry(3)
     ).subscribe();
 
+  }
+
+  /**
+   * 將使用者權限加至使用者資訊內
+   * @param userProfile {any}
+   * @param accessRight {any}
+   * @author kidin-110104
+   */
+  userProfileCombineAccessRight(userProfile: any, accessRight: any) {
+    const { processResult, signIn: { accountType, accountStatus } } = userProfile,
+          { resultCode: resCodeB } = accessRight,
+          haveUserProfile = processResult && processResult.resultCode === 200,
+          haveMemberAccessRight = resCodeB === 200;
+    let result: any;
+    if (haveUserProfile && haveMemberAccessRight) {
+      const { userProfile: originUserProfile } = userProfile,
+            { groupAccessRight } = accessRight.info;
+      result = {
+        groupAccessRightList: groupAccessRight,
+        systemAccessRight: this.getAllAccessRight(groupAccessRight),
+        accountType,
+        accountStatus,
+        ...originUserProfile
+      };
+
+    }
+
+    this.setRxUserProfile(result);
+    return result;
+  }
+
+  /**
+   * 儲存會員資料
+   * @param userProfile 
+   */
+  setRxUserProfile(userProfile: any) {
+    this.userProfile$.next(userProfile);
   }
 
   /**
@@ -120,6 +138,15 @@ export class UserProfileService {
    */
   getUserList(body: any) {
     return this.http.post<any>(API_SERVER + 'user/getUserList', body);
+  }
+
+  /**
+   * 使用nodejs取得指定資訊
+   * @param body {any}
+   * @author kidin-1101112
+   */
+  getAssignInfo(body: any) {
+    return this.http.post<any>(API_SERVER + 'user/alaql', body);
   }
 
   /**

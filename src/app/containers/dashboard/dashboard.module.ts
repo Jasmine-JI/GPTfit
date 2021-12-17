@@ -27,7 +27,6 @@ import { EditGroupGuard } from './guards/edit-group-guard';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { PeopleSelectorWinComponent } from './components/people-selector-win/people-selector-win.component';
 import { DashboardGuard } from './guards/dashboard-guard';
-import { UnsaveGuard } from '../dashboard/guards/unsave-guard';
 import { ActivityService } from '../../shared/services/activity.service';
 import { ProductErrorLogPipe } from './pipes/product-error-log.pipe';
 import { NgProgressModule } from '@ngx-progressbar/core';
@@ -69,9 +68,6 @@ import { MemberListComponent } from './group-v2/group-info/member-list/member-li
 import { AdminListComponent } from './group-v2/group-info/admin-list/admin-list.component';
 import { GroupArchitectureComponent } from './group-v2/group-info/group-architecture/group-architecture.component';
 import { CloudrunReportComponent } from './group-v2/group-info/cloudrun-report/cloudrun-report.component';
-import { ActivityListManageComponent } from './components/official-activity-manage/activity-list-manage/activity-list-manage.component';
-import { EditOfficialActivityComponent } from './components/official-activity-manage/edit-official-activity/edit-official-activity.component';
-import { ParticipantsManageComponent } from './components/official-activity-manage/participants-manage/participants-manage.component';
 import { EditPushMessageComponent } from './components/push-message/edit-push-message/edit-push-message.component';
 import { PushMessageListComponent } from './components/push-message/push-message-list/push-message-list.component';
 import { SystemLogComponent } from './components/system-log/system-log.component';
@@ -114,7 +110,6 @@ import { ActivityListComponent } from './personal/activity-list/activity-list.co
     GroupService,
     EditGroupGuard,
     DashboardGuard,
-    UnsaveGuard,
     ActivityService,
     ReportService,
     SettingsService,
@@ -168,9 +163,6 @@ import { ActivityListComponent } from './personal/activity-list/activity-list.co
     AdminListComponent,
     GroupArchitectureComponent,
     CloudrunReportComponent,
-    ActivityListManageComponent,
-    EditOfficialActivityComponent,
-    ParticipantsManageComponent,
     EditPushMessageComponent,
     PushMessageListComponent,
     SystemLogComponent,
