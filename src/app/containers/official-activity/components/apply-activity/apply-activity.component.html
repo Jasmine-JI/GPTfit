@@ -318,8 +318,8 @@
                 class="radio__input"
                 checked="true"
                 [value]="Sex.male"
-                [(ngModel)]="applyInfo.userProfile.gender"
                 (focus)="positionMark($event)"
+                (click)="changeGender($event)"
               >
               <label for="gender__male">
                 {{ 'universal_userProfile_male' | translate }}
@@ -332,8 +332,8 @@
                 name="gender"
                 class="radio__input"
                 [value]="Sex.female"
-                [(ngModel)]="applyInfo.userProfile.gender"
                 (focus)="positionMark($event)"
+                (click)="changeGender($event)"
               >
               <label for="gender__female">
                 {{ 'universal_userProfile_female' | translate }}
@@ -432,6 +432,7 @@
                   id="emergency__contact__phone"
                   name="emergency__contact__phone"
                   class="info__input"
+                  placeholder="（選填）"
                   [(ngModel)]="applyInfo.userProfile.emergencyContact.mobileNumber"
                   (focus)="positionMark($event)"
                 >
@@ -445,6 +446,7 @@
                   id="emergency__contact__relationship"
                   name="emergency__contact__relationship"
                   class="info__input"
+                  placeholder="（選填）"
                   [(ngModel)]="applyInfo.userProfile.emergencyContact.relationship"
                   (focus)="positionMark($event)"
                 >
@@ -471,11 +473,16 @@
                 <li
                   class="flexCol"
                   (click)="selectGroup($event, _group.id)"
-                  *ngFor="let _group of eventDetail.group;"
+                  *ngFor="let _group of groupList;"
                 >
                   <span>{{ _group.name }}</span>
                   <span class="group__limit">
-                    {{ _group.gender | sex: 'i18n' | translate }}
+                    <ng-container *ngIf="_group.gender !== 2">
+                      {{ _group.gender | sex: 'i18n' | translate }}
+                    </ng-container>
+                    <ng-container *ngIf="_group.gender === 2">
+                      {{ '無性別限制' }}
+                    </ng-container>
                     |
                     <ng-container *ngIf="_group.age">
                       {{ _group.age.min }}~{{ _group.age.max }} {{ 'universal_deviceSetting_yearsOld' | translate }}
@@ -566,6 +573,7 @@
                 <div id="new__password__input" class="flexRow">
                   <mat-icon>vpn_key</mat-icon>
                   <input
+                    id="reset__password__input"
                     type="password"
                     [placeholder]="
                       'universal_userAccount_enterInfo' | translate: {
@@ -576,15 +584,18 @@
                     (focusout)="checkPasswordFormat($event)"
                   >
                 </div>
-                <button
-                  id="update__password___button"
-                  [class.can__not__submit]="
-                    (!editAccountBody.newPassword && !uiFlag.newPasswordFormatError) || uiFlag.newPasswordUpdated
-                  "
-                  (click)="handleUpdatePassword()"
-                >
-                  {{ 'universal_operating_update' | translate }}
-                </button>
+                <div class="flexRow" style="align-items: center;">
+                  <button
+                    id="update__password___button"
+                    (click)="handleUpdatePassword()"
+                  >
+                    {{ 'universal_operating_update' | translate }}
+                  </button>
+                  <i
+                    class="icon-svg_web-icon_p2_097-ok success__hint__icon"
+                    *ngIf="uiFlag.newPasswordUpdated"
+                  ></i>
+                </div>
               </div>
               <p id="not__reset__alert" *ngIf="!uiFlag.showPasswordHint">
                 {{ '不設定密碼，下次登入時請使用忘記密碼重新設定' }}

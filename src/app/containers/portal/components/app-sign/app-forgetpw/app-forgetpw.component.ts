@@ -1,7 +1,6 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../../../../shared/services/utils.service';
-import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
 import { AuthService } from '../../../../../shared/services/auth.service';
 import { SignupService } from '../../../services/signup.service';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
@@ -85,7 +84,6 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     private utils: UtilsService,
     private authService: AuthService,
     private signupService: SignupService,
-    private userInfoService: UserInfoService,
     private dialog: MatDialog,
     private router: Router,
     public getClientIp: GetClientIpService,
@@ -342,7 +340,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
         project: this.formValue.project
       };
 
-      this.userInfoService.fetchForgetpwd(body, this.ip).subscribe(res => {
+      this.userProfileService.fetchForgetpwd(body, this.ip).subscribe(res => {
 
         const resultInfo = res.processResult;
         if (resultInfo.resultCode !== 200) {
@@ -487,7 +485,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
       project: this.formValue.project
     };
 
-    this.userInfoService.fetchForgetpwd(body, this.ip).subscribe(res => {
+    this.userProfileService.fetchForgetpwd(body, this.ip).subscribe(res => {
 
       if (res.processResult.resultCode !== 200) {
 
@@ -579,7 +577,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
         project: this.formValue.project
       };
 
-      this.userInfoService.fetchForgetpwd(body, this.ip).subscribe(res => {
+      this.userProfileService.fetchForgetpwd(body, this.ip).subscribe(res => {
 
         if (res.processResult.resultCode !== 200) {
 
@@ -630,7 +628,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
       project: this.formValue.project
     };
 
-    this.userInfoService.fetchForgetpwd(body, this.ip).subscribe(res => {
+    this.userProfileService.fetchForgetpwd(body, this.ip).subscribe(res => {
 
       if (res.processResult.resultCode !== 200) {
 
@@ -691,7 +689,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
       body.mobileNumber = +this.formValue.phone;
     }
 
-    this.userInfoService.fetchForgetpwd(body, this.ip).subscribe(res => {
+    this.userProfileService.fetchForgetpwd(body, this.ip).subscribe(res => {
 
       let msgBody;
       if (res.processResult.resultCode !== 200) {

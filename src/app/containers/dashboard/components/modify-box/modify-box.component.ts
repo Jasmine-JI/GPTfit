@@ -3,9 +3,9 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../../../shared/services/utils.service';
-import { SettingsService } from '../../services/settings.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { PrivacyObj, allPrivacyItem, PrivacyEditObj } from '../../../../shared/models/user-privacy';
+import { ActivityService } from '../../../../shared/services/activity.service';
 
 
 enum RangeType {
@@ -37,11 +37,11 @@ export class ModifyBoxComponent implements OnInit {
   readonly RangeType = RangeType;
   constructor(
     private utils: UtilsService,
-    private settingsService: SettingsService,
     private userProfileService: UserProfileService,
     private translate: TranslateService,
     private dialog: MatDialog,
     private snackbar: MatSnackBar,
+    private activityService: ActivityService,
     @Inject(MAT_DIALOG_DATA) private data: any
   ) { }
 
@@ -163,7 +163,7 @@ export class ModifyBoxComponent implements OnInit {
       };
     }
 
-    this.settingsService.editPrivacy(body).subscribe(res => {
+    this.activityService.editPrivacy(body).subscribe(res => {
       if (res.resultCode === 200) {
 
         const refreshBody = {

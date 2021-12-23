@@ -3,8 +3,8 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../services/utils.service';
-import { SettingsService } from '../../../containers/dashboard/services/settings.service';
 import { PrivacyObj, allPrivacyItem } from '../../models/user-privacy';
+import { ActivityService } from '../../services/activity.service';
 
 @Component({
   selector: 'app-edit-individual-privacy',
@@ -21,10 +21,10 @@ export class EditIndividualPrivacyComponent implements OnInit {
 
   constructor(
     private utils: UtilsService,
-    private settingsService: SettingsService,
     private translate: TranslateService,
     private dialog: MatDialog,
     private snackbar: MatSnackBar,
+    private activityService: ActivityService,
     @Inject(MAT_DIALOG_DATA) private data: any
   ) { }
 
@@ -153,7 +153,7 @@ export class EditIndividualPrivacyComponent implements OnInit {
 
     }
 
-    this.settingsService.editPrivacy(body).subscribe(res => {
+    this.activityService.editPrivacy(body).subscribe(res => {
       if (res.resultCode === 200) {
         this.data.onConfirm(this.openObj);
         this.snackbar.open(

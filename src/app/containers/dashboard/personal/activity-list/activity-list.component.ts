@@ -3,12 +3,12 @@ import { ActivityService } from '../../../../shared/services/activity.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { SportCode } from '../../../../shared/models/report-condition';
 import moment from 'moment';
-import { UserInfoService } from '../../services/userInfo.service';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { ReportConditionOpt } from '../../../../shared/models/report-condition';
 import { ReportService } from '../../../../shared/services/report.service';
 import { Unit } from '../../../../shared/models/bs-constant';
+import { UserProfileService } from '../../../../shared/services/user-profile.service';
 
 
 const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ',
@@ -69,8 +69,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   constructor(
     private activityService: ActivityService,
     private utils: UtilsService,
-    private userInfoService: UserInfoService,
-    private reportService: ReportService
+    private reportService: ReportService,
+    private userProfileService: UserProfileService
   ) { }
 
   ngOnInit(): void {
@@ -83,7 +83,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1100816
    */
   getNeedInfo() {
-    this.userInfoService.getRxTargetUserInfo().pipe(
+    this.userProfileService.getRxTargetUserInfo().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       const { userId, systemAccessRight, unit: userUnit } = res;

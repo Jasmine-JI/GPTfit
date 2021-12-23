@@ -687,6 +687,8 @@ const authMiddleware = function (req, res, next) {
   message: 'Too many requests, please try again later!'
 })
 
+app.set('trust proxy', 1);
+
 // Set routes
 const rankForm = require('./server/routes/rankForm.js');
 const resetPassword = require('./server/routes/resetPassword.js');
@@ -731,10 +733,13 @@ app.use('/nodejs/img', express.static('/tmp/official-activity-img'));
 
 // Start the server
 const port = process.env.PORT || 3000;
-// app.listen(port, function () {
-//   console.log('Server running at ' + port);
-// });
+/**
+ app.listen(port, function () {
+   console.log('Server running at ' + port);
+ });
+ */
 // https server
+
 https.createServer(SERVER_CONFIG, app).listen(3000, function() {
   console.log('HTTPS sever started at ' + port);
 });

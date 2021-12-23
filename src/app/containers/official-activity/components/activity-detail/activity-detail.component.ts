@@ -107,7 +107,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
         const [userProfile, checkApplied] = res;
         if (userProfile) {
           const { systemAccessRight } = userProfile;
-          const { eventId: appliedEventId } = checkApplied.result[0];
+          const { eventId: appliedEventId } = checkApplied.result[0] || { eventId: null };
           this.uiFlag.isAdmin = systemAccessRight[0] === 28;
           if (appliedEventId) this.uiFlag.applyButtonStatus = ApplyButtonStatus.applied;
 

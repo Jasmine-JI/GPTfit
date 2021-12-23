@@ -18,7 +18,6 @@ import { DeviceLogService } from './services/device-log.service';
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
 import { CoachService } from './services/coach.service';
-import { UserInfoService } from './services/userInfo.service';
 import { UtilsService } from '../../shared/services/utils.service';
 import { SharedModule } from '../../shared/shared.module';
 import { GroupService } from './services/group.service';
@@ -35,7 +34,6 @@ import { ReportService } from '../../shared/services/report.service';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from '../../shared/interceptors/token.interceptor';
-import { SettingsService } from './services/settings.service';
 import { UserProfileService } from '../../shared/services/user-profile.service';
 import { InnerTestComponent } from './components/inner-test/inner-test.component';
 import { HashIdService } from '../../shared/services/hash-id.service';
@@ -105,14 +103,12 @@ import { ActivityListComponent } from './personal/activity-list/activity-list.co
     GpxService,
     DeviceLogService,
     CoachService,
-    UserInfoService,
     UtilsService,
     GroupService,
     EditGroupGuard,
     DashboardGuard,
     ActivityService,
     ReportService,
-    SettingsService,
     UserProfileService,
     HashIdService,
     InnerAdminService,

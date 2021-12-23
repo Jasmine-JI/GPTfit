@@ -1,6 +1,7 @@
 @import 'font.scss';
 @import 'flex-center.scss';
 @import 'transition.scss';
+@import 'color.scss';
 
 $header-text-shadow: 1px 2px 4px rgba(25, 25, 25, 1);
 $table-border: 1px solid rgba(150, 150, 150, 1);
@@ -94,8 +95,8 @@ $edit-button-size: 30px;
 #apply__button {
   min-width: 150px;
   height: 50px;
-  background-color: rgba(250, 33, 33, 1);
-  border: 5px solid rgba(255, 158, 158, 1);
+  background-color: $official-theme-color-deep;
+  border: 5px solid $official-theme-color-light;
   border-radius: 10px;
   color: white;
   @include bold-font(18px);
@@ -104,6 +105,7 @@ $edit-button-size: 30px;
 #countdonw {
   text-align: center;
   text-shadow: $header-text-shadow;
+  width:100%;
 
   >tbody {
     @include bold-font(36px);

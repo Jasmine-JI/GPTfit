@@ -23,7 +23,6 @@ import { ShareGroupInfoDialogComponent } from '../share-group-info-dialog/share-
 import { PrivacyObj } from '../../models/user-privacy';
 import { EditIndividualPrivacyComponent } from '../edit-individual-privacy/edit-individual-privacy.component';
 import { Proficiency } from '../../models/weight-train';
-import { SettingsService } from '../../../containers/dashboard/services/settings.service';
 import { AlbumType } from '../../models/image';
 import { v5 as uuidv5 } from 'uuid';
 import { ImageUploadService } from '../../../containers/dashboard/services/image-upload.service';
@@ -263,7 +262,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private changeDetectorRef: ChangeDetectorRef,
-    private settingsService: SettingsService,
     private imageUploadService: ImageUploadService
   ) { }
 
@@ -1063,7 +1061,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
       };
 
-      this.settingsService.updateUserProfile(body).subscribe(res => {
+      this.userProfileService.updateUserProfile(body).subscribe(res => {
         const { processResult } = res;
         if (processResult && processResult.resultCode === 200) {
           this.userProfile.weightTrainingStrengthLevel = strengthLevel;

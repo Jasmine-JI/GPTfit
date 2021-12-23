@@ -4,7 +4,6 @@ import { AuthService } from '../../../../../shared/services/auth.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { SignupService } from '../../../services/signup.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
-import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
@@ -63,7 +62,6 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     private authService: AuthService,
     private signupService: SignupService,
     private userProfileService: UserProfileService,
-    private userInfoService: UserInfoService,
     private router: Router,
     private snackbar: MatSnackBar,
     private getClientIp: GetClientIpService,
@@ -289,7 +287,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 傳送變更表單-kidin-1090514
   sendFormInfo () {
-    this.userInfoService.fetchEditAccountInfo(this.editBody, this.ip).subscribe(res => {
+    this.userProfileService.fetchEditAccountInfo(this.editBody, this.ip).subscribe(res => {
       if (res.processResult.resultCode !== 200) {
         switch (res.processResult.apiReturnMessage) {
           case 'Edit account fail, old password is not correct.':

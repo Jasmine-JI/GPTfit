@@ -31,7 +31,6 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
   isImgVertical$ = new BehaviorSubject<boolean>(false);
   isUploadNewImg$ = new BehaviorSubject<boolean>(false);
   errorMsg: string;
-  updateQueryString: string;
 
   // 裁切圖片所需變數-kidin-1090109
   imageChangedEvent: any = '';

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ReplaySubject, Observable } from 'rxjs';
 import { tap, switchMap, map, retry } from 'rxjs/operators';
@@ -13,6 +13,55 @@ export class UserProfileService {
   ) {}
 
   userProfile$ = new ReplaySubject(1);
+  targetUserInfo$ = new ReplaySubject<any>(1); // 個人頁面的使用者資訊
+
+  /**
+   * Api-v2 1002-啟用帳號
+   */
+  fetchEnableAccount (body, ip) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'remoteAddr': `${ip}`,
+      })
+    };
+
+    return this.http.post<any>('/api/v2/user/enableAccount', body, httpOptions);
+  }
+
+  /**
+   * Api-v2 1004-忘記密碼
+   */
+  fetchForgetpwd (body, ip) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'remoteAddr': `${ip}`,
+      })
+    };
+
+    return this.http.post<any>('/api/v2/user/resetPassword', body, httpOptions);
+  }
+
+  /**
+   * Api-v2 1005-編輯帳密
+   */
+  fetchEditAccountInfo (body, ip) {  // v2 1005
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'remoteAddr': `${ip}`,
+      })
+    };
+
+    return this.http.post<any>('/api/v2/user/editAccount', body, httpOptions);
+  }
+
+  /**
+   * api 1009-與第三方軟體連結同步運動資料。
+   * @param body {object}
+   * @author kidin-1090723
+   */
+  updateThirdParty(body: any): Observable<any> {
+    return this.http.post<any>('/api/v2/user/thirdPartyAccess', body);
+  }
 
   /**
    * api 1010-取得會員資料
@@ -22,6 +71,15 @@ export class UserProfileService {
    */
   getUserProfile(body: any) {
     return this.http.post<any>('/api/v2/user/getUserProfile',  body);
+  }
+
+  /**
+   * api 1011-編輯會員資料
+   * @param body {object}
+   * @author kidin-1090723
+   */
+  updateUserProfile(body: any): Observable<any> {
+    return this.http.post<any>('/api/v2/user/editUserProfile', body);
   }
 
   /**
@@ -164,6 +222,23 @@ export class UserProfileService {
    */
   clearUserProfile() {
     this.userProfile$.next(undefined);
+  }
+
+  /**
+   * 儲存目標userProfile供個人子頁面使用
+   * @param info {any}-是否進入編輯模式或完成編輯
+   * @author kidin-1100816
+   */
+  setRxTargetUserInfo(info: any) {
+    this.targetUserInfo$.next(info);
+  }
+
+  /**
+   * 取得目標userProfile供個人子頁面使用
+   * @author kidin-1100816
+   */
+  getRxTargetUserInfo(): Observable<any> {
+    return this.targetUserInfo$;
   }
 
 

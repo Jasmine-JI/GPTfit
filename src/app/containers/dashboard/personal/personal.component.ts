@@ -9,7 +9,6 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { EditMode } from '../models/personal';
 import { AlbumType } from '../../../shared/models/image';
 import { DashboardService } from '../services/dashboard.service';
-import { UserInfoService } from '../services/userInfo.service';
 import { v5 as uuidv5 } from 'uuid';
 import moment from 'moment';
 import { ImageUploadService } from '../services/image-upload.service';
@@ -94,7 +93,6 @@ export class PersonalComponent implements OnInit, OnDestroy {
     private router: Router,
     private hashIdService: HashIdService,
     private dashboardService: DashboardService,
-    private userInfoService: UserInfoService,
     private imageUploadService: ImageUploadService,
     private dialog: MatDialog,
     private translate: TranslateService
@@ -220,7 +218,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1091123
    */
   checkEditMode() {
-    this.userInfoService.getRxEditMode().pipe(
+    this.dashboardService.getRxEditMode().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.upLoadImg(res);
@@ -331,7 +329,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
         } else {
           this.uiFlag.isPageOwner = userId === userProfile.userId;
           this.userProfile = userProfile;
-          this.userInfoService.setRxTargetUserInfo(userProfile);
+          this.userProfileService.setRxTargetUserInfo(userProfile);
           this.checkDescLen();
         }
 
@@ -355,7 +353,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
     ).subscribe(res => {
       this.uiFlag.hideScenery = false;
       this.userProfile = res;
-      this.userInfoService.setRxTargetUserInfo(res);
+      this.userProfileService.setRxTargetUserInfo(res);
       this.hashUserId = this.hashIdService.handleUserIdEncode(res.userId);
       this.childPageList = this.initChildPageList();
       this.getCurrentContentPage();
@@ -594,7 +592,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
       this.sendImgUploadReq(formData);
     } else if (editMode === 'complete') {
       this.userProfileService.refreshUserProfile({ token: this.token });
-      // this.userInfoService.setRxEditMode('close');
+      // this.dashboardService.setRxEditMode('close');
     } else {
       this.uiFlag.editMode = editMode;
     }
@@ -615,7 +613,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
       } else {
         this.initImgSetting();
         this.userProfileService.refreshUserProfile({ token: this.token });
-        // this.userInfoService.setRxEditMode('close');
+        // this.dashboardService.setRxEditMode('close');
       }
 
     });

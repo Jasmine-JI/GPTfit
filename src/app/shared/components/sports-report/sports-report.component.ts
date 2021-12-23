@@ -31,13 +31,13 @@ import {
   HrZoneRange
 } from '../../models/chart-data';
 import { Proficiency, ProficiencyCoefficient } from '../../models/weight-train';
-import { SettingsService } from '../../../containers/dashboard/services/settings.service';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../message-box/message-box.component';
 import { UserProfileInfo, HrBase } from '../../../containers/dashboard/models/userProfileInfo';
 import { ShareGroupInfoDialogComponent } from '../share-group-info-dialog/share-group-info-dialog.component';
-import { UserInfoService } from '../../../containers/dashboard/services/userInfo.service';
+import { ActivityService } from '../../services/activity.service';
+
 
 const errMsg = 'Error!<br>Please try again later.';
 
@@ -321,10 +321,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private userProfileService: UserProfileService,
     private changeDetectorRef: ChangeDetectorRef,
-    private settingsService: SettingsService,
     private route: ActivatedRoute,
     private dialog: MatDialog,
-    private userInfoService: UserInfoService
+    private activityService: ActivityService
   ) { }
 
   ngOnInit(): void {
@@ -456,7 +455,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     unit: Unit = 0,
     weightTrainLevel: ProficiencyCoefficient = Proficiency.metacarpus
   ) {    
-    this.userInfoService.getRxTargetUserInfo().pipe(
+    this.userProfileService.getRxTargetUserInfo().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       const { avatarUrl, nickname, userId } = res;
@@ -1802,7 +1801,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
       };
 
-      this.settingsService.updateUserProfile(body).subscribe(res => {
+      this.userProfileService.updateUserProfile(body).subscribe(res => {
         const { processResult } = res;
         if (processResult && processResult.resultCode === 200) {
           this.userProfile.weightTrainingStrengthLevel = strengthLevel;
@@ -2254,7 +2253,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
             privacy: [1, 99]
           };
 
-    this.settingsService.editPrivacy(body).subscribe(res => {
+    this.activityService.editPrivacy(body).subscribe(res => {
       if (res.resultCode === 200) {
         this.showShareBox();
       } else {
