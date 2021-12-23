@@ -19,7 +19,6 @@ import { NgProgressModule } from '@ngx-progressbar/core';
 import { OfficialActivityService } from './services/official-activity.service';
 import { FormsModule } from '@angular/forms';
 import { GroupService } from '../dashboard/services/group.service';
-import { UserInfoService } from '../dashboard/services/userInfo.service';
 import { PaidStatusPipe } from './pipes/paid-status.pipe';
 import { ShippedStatusPipe } from './pipes/shipped-status.pipe';
 import { QRCodeModule } from 'angularx-qrcode';
@@ -57,7 +56,6 @@ import { ContactUsComponent } from './components/contact-us/contact-us.component
     EditGuard,
     OfficialActivityService,
     GroupService,
-    UserInfoService,
     PaidStatusPipe,
     ShippedStatusPipe,
     AdminGuard

@@ -3,10 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
-import { UserInfoService } from '../../services/userInfo.service';
-import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../../../shared/services/auth.service';
-import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
@@ -37,13 +34,11 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
   readonly accountType = AccountTypeEnum;
 
   constructor(
-    private userInfoService: UserInfoService,
-    private settingsService: SettingsService,
     private utils: UtilsService,
     private auth: AuthService,
-    private router: Router,
     private dialog: MatDialog,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private userProfileService: UserProfileService
   ) { }
 
   ngOnInit(): void {
@@ -64,7 +59,7 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
       token: this.utils.getToken()
     };
 
-    this.userInfoService.getRxTargetUserInfo().pipe(
+    this.userProfileService.getRxTargetUserInfo().pipe(
       switchMap(res => this.auth.loginServerV2(body).pipe(
         map(resp => {
           const { thirdPartyAgency, signIn, processResult } = resp;
@@ -173,7 +168,7 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
    * @author kidin-1100819
    */
   handleStravaAccess(body: any): void {
-    this.settingsService.updateThirdParty(body).subscribe(res => {
+    this.userProfileService.updateThirdParty(body).subscribe(res => {
       if (res.processResult.resultCode !== 200) {
         this.userInfo.thirdPartyAgency.strava = false;
         this.dialog.open(MessageBoxComponent, {

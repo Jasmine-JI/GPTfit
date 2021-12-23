@@ -10,7 +10,6 @@ import { AuthService } from '@shared/services/auth.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { UtilsService } from '@shared/services/utils.service';
-import { SettingsService } from '../../../../dashboard/services/settings.service';
 
 @Component({
   selector: 'app-app-first-login',
@@ -61,8 +60,7 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private router: Router,
     private authService: AuthService,
-    private userProfileService: UserProfileService,
-    private settingsService: SettingsService
+    private userProfileService: UserProfileService
   ) {
     translate.onLangChange.pipe(
       takeUntil(this.ngUnsubscribe)
@@ -283,7 +281,7 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
     this.editBody.userProfile.avatar.mid = this.imageToDataUri(image, 128, 128);
     this.editBody.userProfile.avatar.small = this.imageToDataUri(image, 64, 64);
 
-    this.settingsService.updateUserProfile(this.editBody).subscribe(res => {
+    this.userProfileService.updateUserProfile(this.editBody).subscribe(res => {
       if (res.processResult.resultCode !== 200) {
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,

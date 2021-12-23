@@ -43,6 +43,7 @@ import { AppFirstLoginComponent } from './components/app-sign/app-first-login/ap
 import { QRCodeModule } from 'angularx-qrcode';
 import { AppCompressDataComponent } from './components/app-sign/app-compress-data/app-compress-data.component';
 import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-account/app-destroy-account.component';
+import { HashIdService } from '../../shared/services/hash-id.service';
 
 @NgModule({
   imports: [
@@ -75,6 +76,7 @@ import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-ac
     ActivityService,
     ReportService,
     ActivityOtherDetailsService,
+    HashIdService,
     DetectInappService,
     {
       provide: HTTP_INTERCEPTORS,

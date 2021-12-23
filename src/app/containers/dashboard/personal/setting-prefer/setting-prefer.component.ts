@@ -1,6 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { UserInfoService } from '../../services/userInfo.service';
-import { SettingsService } from '../../services/settings.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
@@ -12,6 +10,7 @@ import { HrZoneRange } from '../../../../shared/models/chart-data';
 import moment from 'moment';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
+import { DashboardService } from '../../services/dashboard.service';
 
 enum DominantHand {
   right,
@@ -109,12 +108,11 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   readonly AutoStepTarget = AutoStepTarget;
 
   constructor(
-    private userInfoService: UserInfoService,
-    private settingService: SettingsService,
     private utils: UtilsService,
     private userProfileService: UserProfileService,
     private snackBar: MatSnackBar,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private dashboardService: DashboardService
   ) { }
 
   ngOnInit(): void {
@@ -126,7 +124,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    * @author kidin-1100818
    */
   getRxUserProfile() {
-    this.userInfoService.getRxTargetUserInfo().pipe(
+    this.userProfileService.getRxTargetUserInfo().pipe(
       map(resp => {
         const { handedness } = resp;
         if (handedness === undefined || resp.length === 0) {
@@ -235,7 +233,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
         }
       };
 
-      this.settingService.updateUserProfile(body).pipe(
+      this.userProfileService.updateUserProfile(body).pipe(
         switchMap(res => this.translate.get('hellow world').pipe(
           map(resp => res)
         )),
@@ -253,7 +251,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
             this.uiFlag.showEditDialog = null;
             const successMsg = this.translate.instant('universal_status_updateCompleted');
             this.snackBar.open(successMsg, 'OK', { duration: 2000 });
-            this.userInfoService.setRxEditMode('complete');
+            this.dashboardService.setRxEditMode('complete');
           }
 
         }

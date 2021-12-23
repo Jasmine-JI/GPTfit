@@ -89,6 +89,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     eventDetail: <EventDetail>null
   };
 
+  readonly defaultNumberLimit = 50;
   readonly AlbumType = AlbumType;
   readonly ageList = this.createAgeList();
   readonly CardTypeEnum = CardTypeEnum;
@@ -1056,6 +1057,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       delete this.eventInfo.numberLimit;
     } else {
       this.uiFlag.numberLimit = HaveNumberLimit.yes;
+      Object.assign(this.eventInfo, { numberLimit: this.defaultNumberLimit });
     }
 
   }
@@ -1205,9 +1207,26 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   handleVideoUrlInput(e: MouseEvent, id: number) {
     const newUrl = (e as any).target.value.trim();
     const { videoLink } = this.eventDetail.content[id - 1];
-    if (newUrl !== videoLink) {
-      this.eventDetail.content[id - 1].videoLink = newUrl;
+    const embedLink = this.checkEmbedUrl(newUrl);
+    if (embedLink !== videoLink) {
+      this.eventDetail.content[id - 1].videoLink = embedLink;
       this.saveDraft();
+    }
+
+  }
+
+  /**
+   * 針對youtube縮網址轉換為嵌入式網址
+   * @param link {string}-影片連結
+   * @author kidin-1101222
+   */
+  checkEmbedUrl(link: string) {
+    const youtubeAbbreviatedUrl = 'https://youtu.be/';
+    if (link.includes(youtubeAbbreviatedUrl)) {
+      const linkCode = link.split(youtubeAbbreviatedUrl)[1];
+      return `https://www.youtube.com/embed/${linkCode}`;
+    } else {
+      return link;
     }
 
   }
@@ -1230,9 +1249,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           passCount = false;
           break;
         default:
-
           if (!passCount) length++;
-
       }
 
     }
@@ -1319,22 +1336,22 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 釋放拖動物件至目標位置，並重新編排id
-   * @param e {MouseEvent}
-   * @param targetId {number}
-   * @author kidin-1101025
+   * 變更內容區塊排序
+   * @param index {number}-內容序列
+   * @param direction {'up' | 'down'}-目標移動方向
+   * @author kidin-1101222
    */
-  drop(e: MouseEvent, targetId: number) {
-    this.cancelDefault(e);
-    const event = e as any;
-    const dropId = event.dataTransfer.getData('text/plain');
-    const dropContent = this.eventDetail.content[dropId - 1];
-    this.eventDetail.content.splice(dropId - 1, 1);
-    this.eventDetail.content.splice(targetId - 1, 0, dropContent);
+  shiftContent(index: number, direction: 'up' | 'down') {
+    const targetContent = this.utils.deepCopy(this.eventDetail.content[index]);
+    const targetId = targetContent.contentId;
+    const switchIndex = index + (direction === 'up' ? -1 : 1);
+    const switchContent = this.utils.deepCopy(this.eventDetail.content[switchIndex]);
+    this.eventDetail.content[index] = switchContent;
+    this.eventDetail.content[switchIndex] = targetContent;
     this.eventDetail.content = this.eventDetail.content.map((_content, index) => {
       const newId = index + 1;
       _content.contentId =newId
-      this.handleImgReNumbering(AlbumType.eventContent, dropId, newId);
+      this.handleImgReNumbering(AlbumType.eventContent, targetId, newId);
       return _content;
     });
 
@@ -1416,7 +1433,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   ) {
     e.stopPropagation();
     this.unSubscribeGlobalEvent();
-    if (this.checkCanEdit) {
+    if (this.checkCanEdit()) {
       const { showAgeSelector } = this.uiFlag;
       const target = `${type}-${id}`;
       if (showAgeSelector !== target) {
@@ -1495,10 +1512,13 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   openGenderSelector(e: MouseEvent, id: number) {
     e.stopPropagation();
     this.unSubscribeGlobalEvent();
-    const { showGenderSelector } = this.uiFlag;
-    if (showGenderSelector !== id) {
-      this.uiFlag.showGenderSelector = id;
-      this.subscribeGlobalEvent();
+    if (this.checkCanEdit()) {
+      const { showGenderSelector } = this.uiFlag;
+      if (showGenderSelector !== id) {
+        this.uiFlag.showGenderSelector = id;
+        this.subscribeGlobalEvent();
+      }
+
     }
 
   }

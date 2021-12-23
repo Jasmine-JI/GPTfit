@@ -1,11 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { EditMode } from '../../models/personal';
-import { UserInfoService } from '../../services/userInfo.service';
-import { SettingsService } from '../../services/settings.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
+import { DashboardService } from '../../services/dashboard.service';
 
 @Component({
   selector: 'app-info',
@@ -26,10 +25,9 @@ export class InfoComponent implements OnInit, OnDestroy {
   inputDescription: string;
 
   constructor(
-    private userInfoService: UserInfoService,
-    private settingService: SettingsService,
     private utils: UtilsService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private dashboardService: DashboardService
   ) { }
 
   ngOnInit(): void {
@@ -41,7 +39,7 @@ export class InfoComponent implements OnInit, OnDestroy {
    * @author kidin-1100813
    */
   getRxUserProfile() {
-    this.userInfoService.getRxTargetUserInfo().pipe(
+    this.userProfileService.getRxTargetUserInfo().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.userInfo = res;
@@ -56,7 +54,7 @@ export class InfoComponent implements OnInit, OnDestroy {
   openEditMode() {
     this.uiFlag.editMode = 'edit';
     this.inputDescription = this.userInfo.description;
-    this.userInfoService.setRxEditMode('edit');
+    this.dashboardService.setRxEditMode('edit');
   }
 
   /**
@@ -65,7 +63,7 @@ export class InfoComponent implements OnInit, OnDestroy {
    */
   cancelEdit() {
     this.uiFlag.editMode = 'close';
-    // this.userInfoService.setRxEditMode('close');
+    // this.dashboardService.setRxEditMode('close');
   }
 
   /**
@@ -93,7 +91,7 @@ export class InfoComponent implements OnInit, OnDestroy {
             }
           };
 
-    this.settingService.updateUserProfile(body).subscribe(res => {
+    this.userProfileService.updateUserProfile(body).subscribe(res => {
       const { processResult, apiCode, resultCode, resultMessage } = res;
       if (!processResult) {
         this.utils.handleError(resultCode, apiCode, resultMessage);
@@ -103,7 +101,7 @@ export class InfoComponent implements OnInit, OnDestroy {
           this.utils.handleError(resultCode, apiCode, resultMessage);
         } else {
           this.inputDescription = undefined;
-          this.userInfoService.setRxEditMode('complete');
+          this.dashboardService.setRxEditMode('complete');
         }
 
       }
