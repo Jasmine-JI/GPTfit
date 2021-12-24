@@ -1,9 +1,10 @@
 @import 'flex-center.scss';
 @import 'font.scss';
-
+@import 'button.scss';
 
 $carousel-width: 50%;
 $img-placeholder-color: rgba(175, 175, 175, 1);
+$drag-button-size: 30px;
 
 .button__row {
   justify-content: flex-end;
@@ -79,6 +80,7 @@ $img-placeholder-color: rgba(175, 175, 175, 1);
   border-bottom: 1px solid black;
   outline: none;
   width: 100%;
+  height: fit-content;
 }
 
 .drag__button {
@@ -116,6 +118,16 @@ $img-placeholder-color: rgba(175, 175, 175, 1);
     height: $size;
   }
 
+}
+
+.shift__button {
+  @include button(18px, 1px solid rgba(150, 150, 150, 1)) {
+    height: $drag-button-size;
+    width: $drag-button-size;
+    border-radius: 5px;
+    margin: 5px;
+  };
+  
 }
 
 
