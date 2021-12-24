@@ -367,6 +367,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101020
    */
   getEventDetail(eventId: number) {
+    this.uiFlag.progress = 30;
     this.officialActivityService.getEventDetail({ eventId }).subscribe(res => {
       if (this.utils.checkRes(res)) {
         const { eventInfo, eventDetail } = res;
@@ -389,6 +390,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       }
 
       this.subscribeBeforeUnloadEvent();
+      this.uiFlag.progress = 100;
     });
 
   }
@@ -825,6 +827,23 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101103
    */
   checkDeleteList() {
+    const { content: newContent, applyFee: newApplyFee, group: newGroup } = this.eventDetail;
+    const { content, applyFee, group } = this.compareContent.eventDetail;
+    if (newContent.length < content.length) {
+      const delLength = content.length - newContent.length;
+      this.deleteList.contentId = this.getDeleleteIdList(newContent.length, delLength);
+    }
+
+    if (newApplyFee.length < applyFee.length) {
+      const delLength = applyFee.length - newApplyFee.length;
+      this.deleteList.contentId = this.getDeleleteIdList(newApplyFee.length, delLength);
+    }
+
+    if (newGroup.length < group.length) {
+      const delLength = group.length - newGroup.length;
+      this.deleteList.contentId = this.getDeleleteIdList(newGroup.length, delLength);
+    }
+
     const { contentId, groupId, applyFeeId } = this.deleteList;
     const haveDeleteContent = contentId.length > 0;
     const haveDeleteGroup = groupId.length > 0;
@@ -838,6 +857,22 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       return {}
     }
 
+  }
+
+  /**
+   * 取得刪除區塊之id清單
+   * @param base {number}-開始刪除的基準id
+   * @param length {number}-刪除數目
+   * @author kidin-1101224
+   */
+  getDeleleteIdList(base: number, length: number) {
+    let list = [];
+    for (let i = 0; i < length; i++) {
+      const deleteId = base + 1 + i;
+      list.push(deleteId);
+    }
+
+    return list;
   }
 
   /**
@@ -899,7 +934,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       videoLink: ''
     });
 
-    this.cancelRemoveContent(newContentId, 'contentId');
   }
 
   /**
@@ -915,7 +949,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       title: ''
     });
 
-    this.cancelRemoveContent(newContentId, 'contentId');
   }
 
   /**
@@ -932,16 +965,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       text: ''
     });
 
-    this.cancelRemoveContent(newContentId, 'contentId');
-  }
-
-  /**
-   * 取消移除指定內容區塊
-   * @param id {number}-指定id內容
-   * @author kidin-1101103
-   */
-  cancelRemoveContent(id: number, type: 'contentId' | 'groupId' | 'applyFeeId') {
-    this.deleteList[type] = this.deleteList[type].filter(_id => _id !== id);
   }
 
   /**
@@ -1306,33 +1329,20 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101028
    */
   deleteContent(id: number) {
+    const imgUploadCache = {};
     this.eventDetail.content = this.eventDetail.content
       .filter(_content => _content.contentId !== id)
       .map((_content, index) => {
+        const oldId = _content.contentId;
         const newId = index + 1;
         _content.contentId = newId;
-        this.handleImgReNumbering(AlbumType.eventContent, id, newId);
+        const uploadImg = this.imgUpload.content[oldId];
+        if (uploadImg) Object.assign(imgUploadCache, { [newId]: uploadImg });
         return _content;
       });
 
-    if (this.uiFlag.editMode === 'edit') {
-      const deleteId = this.eventDetail.content.length + 1;
-      this.deleteList.contentId.push(deleteId);
-    }
-
+    this.imgUpload.content = imgUploadCache;
     this.saveDraft();
-  }
-
-  /**
-   * 開始拖動，紀錄拖動物件的id
-   * @param e {MouseEvent}
-   * @param dragId {number}-拖動物件的id
-   * @author kidin-1101025
-   */
-  dragStart(e: MouseEvent, dragId: number) {
-    const event = e as any;
-    (event as any).dataTransfer.setData('text/plain', dragId);
-
   }
 
   /**
@@ -1343,18 +1353,20 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   shiftContent(index: number, direction: 'up' | 'down') {
     const targetContent = this.utils.deepCopy(this.eventDetail.content[index]);
-    const targetId = targetContent.contentId;
     const switchIndex = index + (direction === 'up' ? -1 : 1);
     const switchContent = this.utils.deepCopy(this.eventDetail.content[switchIndex]);
-    this.eventDetail.content[index] = switchContent;
-    this.eventDetail.content[switchIndex] = targetContent;
+    [this.eventDetail.content[index], this.eventDetail.content[switchIndex]] = [switchContent, targetContent];
+    const imgUploadCache = {};
     this.eventDetail.content = this.eventDetail.content.map((_content, index) => {
+      const oldId = _content.contentId;
       const newId = index + 1;
-      _content.contentId =newId
-      this.handleImgReNumbering(AlbumType.eventContent, targetId, newId);
+      _content.contentId = newId;
+      const uploadImg = this.imgUpload.content[oldId];
+      if (uploadImg) Object.assign(imgUploadCache, { [newId]: uploadImg });
       return _content;
     });
 
+    this.imgUpload.content = imgUploadCache;
     this.saveDraft();
   }
 
@@ -1568,38 +1580,20 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101026
    */
   deleteApplyFee(id: number) {
+    const imgUploadCache = {};
     this.eventDetail.applyFee = this.eventDetail.applyFee
       .filter(_applyFee => _applyFee.feeId !== id)
       .map((_applyFee, index) => {
+        const oldId = _applyFee.feeId;
         const newId = index + 1;
         _applyFee.feeId = newId;
-        this.handleImgReNumbering(AlbumType.eventApplyFee, id, newId);
+        const uploadImg = this.imgUpload.applyFee[oldId];
+        if (uploadImg) Object.assign(imgUploadCache, { [newId]: uploadImg });
         return _applyFee;
       });
 
-    if (this.uiFlag.editMode === 'edit') {
-      const deleteId = this.eventDetail.applyFee.length + 1;
-      this.deleteList.applyFeeId.push(deleteId);
-    }
-
+    this.imgUpload.applyFee = imgUploadCache;
     this.saveDraft();
-  }
-
-  /**
-   * 刪除待更新之照片清單，並重編流水號
-   * @param type {AlbumType}-照片類別
-   * @param id {number}-舊流水id
-   * @param newId {number}-新流水id
-   * @author kidin-1101029
-   */
-  handleImgReNumbering(type: AlbumType, id: number, newId: number) {
-    const targetType = type === AlbumType.eventContent ? 'content' : 'applyFee';
-    const imgEdit = this.imgUpload[targetType][id];
-    if (imgEdit) {
-      Object.assign(this.imgUpload[targetType], { [newId]: imgEdit });
-      delete this.imgUpload[targetType][id];
-    }
-
   }
 
   /**
@@ -1616,7 +1610,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         gender: Sex.unlimit,
       });
 
-      this.cancelRemoveContent(newId, 'groupId');
     } else {
       const newId = this.eventDetail.applyFee.length + 1;
       this.eventDetail.applyFee.push({
@@ -1626,7 +1619,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         haveProduct: HaveProduct.no
       });
 
-      this.cancelRemoveContent(newId, 'applyFeeId');
     }
 
     this.saveDraft();
@@ -1814,8 +1806,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     this.uiFlag.isSaved = false;
     const draft = {
       eventInfo: this.eventInfo,
-      eventDetail: this.eventDetail,
-      del: this.deleteList
+      eventDetail: this.eventDetail
     };
 
     const eventDraft = JSON.stringify(draft);

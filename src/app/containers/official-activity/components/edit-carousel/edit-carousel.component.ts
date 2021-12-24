@@ -242,30 +242,7 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
   deleteCarousel(id: number) {
     const delIndex = id - 1;
     this.carouselList.splice(delIndex, 1);
-
-    // 將其餘輪播編號重新編排
-    this.carouselList = this.carouselList.map((_list, index) => {
-      const newId = index + 1;
-      this.changeImgUploadId(_list.advertiseId, newId);
-      _list.advertiseId = newId;
-      return _list;
-    });
-
-  }
-
-  /**
-   * 移除或變更欲上傳圖片之id
-   * @param oldId {number}-舊id
-   * @param newId {number}-新id
-   * @author kidin-1001210
-   */
-  changeImgUploadId(oldId: number, newId: number = null) {
-    const img = this.imgUpload[oldId];
-    if (img) {
-      if (newId) Object.assign(this.imgUpload, { [newId]: img });
-      delete this.imgUpload[oldId];
-    }
-
+    this.reArrangeList();
   }
 
   /**
@@ -362,36 +339,34 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 拖曳內容，紀錄拖曳id
-   * @param e {MouseEvent}
-   * @param dragId {number}-拖曳的輪播id
-   * @author kidin-1101213
+   * 變更輪播排序
+   * @param id {number}-內容序列
+   * @param direction {'up' | 'down'}-目標移動方向
+   * @author kidin-1101222
    */
-  dragStart(e: MouseEvent, dragId: number) {
-    this.uiFlag.dragId = dragId;
+  shiftCarousel(id: number, direction: 'up' | 'down') {
+    const idx = id - 1;
+    const switchIndex = idx + (direction === 'up' ? -1 : 1);
+    [this.carouselList[idx], this.carouselList[switchIndex]] = [this.carouselList[switchIndex], this.carouselList[idx]];
+    this.reArrangeList();
   }
 
   /**
-   * 放掉拖曳內容，依放掉的位置變更輪播排序
-   * @param e {MouseEvent}
-   * @param dragId {number}-拖曳的輪播id
-   * @author kidin-1101213
+   * 根據輪播順序重新編排id與圖片上傳id
+   * @author kidin-1101224
    */
-  drop(e: MouseEvent, targetId: number) {
-    const { dragId } = this.uiFlag;
-    const canDrop = targetId <= this.carouselList.length;
-    if (targetId !== dragId && canDrop) {
-      const dragContent = this.carouselList[dragId - 1];
-      this.carouselList.splice(dragId - 1, 1);
-      this.carouselList.splice(targetId - 1, 0, dragContent);
+  reArrangeList() {
+    const imgUpload = {};
+    this.carouselList = this.carouselList.map((_list, index) => {
+      const oldId = _list.advertiseId;
+      const newId = index + 1;
+      _list.advertiseId = newId;
+      const uploadImg = this.imgUpload[oldId];
+      if (uploadImg) Object.assign(imgUpload, { [newId]: uploadImg });
+      return _list;
+    });
 
-      this.carouselList = this.carouselList.map((_list, index) => {
-        _list.advertiseId = index + 1;
-        return _list;
-      });
-
-    }
-
+    this.imgUpload = imgUpload;
   }
 
   /**
