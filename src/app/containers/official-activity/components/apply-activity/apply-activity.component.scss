@@ -383,7 +383,7 @@ label, legend {
   @include bold-font(18px);
   border-width: 5px 8px;
   border-style: solid;
-  border-color: rgba(255, 158, 158, 1);
+  border-color: $official-theme-color-light;
   background-color: $primary-origin;
   color: white;
   border-radius: 20px;
@@ -597,6 +597,11 @@ label, legend {
     color: rgba(175, 175, 175, 1);
   }
 
+}
+
+.success__hint__icon {
+  color: rgba(0, 189, 23, 1);
+  font-size: 18px;
 }
 
 /***************************************************** media ***********************************************/

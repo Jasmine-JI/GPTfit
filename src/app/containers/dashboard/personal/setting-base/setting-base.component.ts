@@ -1,6 +1,4 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { UserInfoService } from '../../services/userInfo.service';
-import { SettingsService } from '../../services/settings.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { Subject } from 'rxjs';
@@ -9,6 +7,7 @@ import moment from 'moment';
 import { Sex } from '../../models/userProfileInfo';
 import { Unit, ft, lb } from '../../../../shared/models/bs-constant';
 import { formTest } from '../../../../shared/models/form-test';
+import { DashboardService } from '../../services/dashboard.service';
 
 
 @Component({
@@ -57,10 +56,9 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
   readonly Unit = Unit;
 
   constructor(
-    private userInfoService: UserInfoService,
-    private settingService: SettingsService,
     private utils: UtilsService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private dashboardService: DashboardService
   ) { }
 
   ngOnInit(): void {
@@ -72,7 +70,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * @author kidin-1100818
    */
   getRxUserProfile() {
-    this.userInfoService.getRxTargetUserInfo().pipe(
+    this.userProfileService.getRxTargetUserInfo().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.userInfo = res;
@@ -87,7 +85,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    */
   openEditMode() {
     this.uiFlag.editMode = 'edit';
-    this.userInfoService.setRxEditMode('edit');
+    this.dashboardService.setRxEditMode('edit');
     const { nickname, birthday, bodyHeight, bodyWeight, gender, unit: userUnit } = this.userInfo,
           isMetric = userUnit === Unit.metric;
     this.setting = {
@@ -112,7 +110,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
   cancelEdit() {
     this.uiFlag.nicknameAlert = null;
     this.uiFlag.editMode = 'close';
-    // this.userInfoService.setRxEditMode('close');
+    // this.dashboardService.setRxEditMode('close');
   }
 
   /**
@@ -132,7 +130,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
           }
         };
 
-        this.settingService.updateUserProfile(body).subscribe(res => {
+        this.userProfileService.updateUserProfile(body).subscribe(res => {
           const {processResult} = res as any;
           if (!processResult) {
             const { apiCode, resultMessage, resultCode } = res as any;
@@ -143,7 +141,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
               this.utils.handleError(resultCode, apiCode, resultMessage);
             } else {
               // this.uiFlag.editMode = 'close';  // 常駐編輯狀態
-              this.userInfoService.setRxEditMode('complete');
+              this.dashboardService.setRxEditMode('complete');
             }
 
           }

@@ -64,13 +64,16 @@
             >
               {{ '報名截止' }}
             </ng-container>
-            <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.cancel">
+            <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.eventCancelled">
               {{ '賽事取消' }}
             </ng-container>
           </button>
         </div>
       </div>
-      <table id="countdonw" *ngIf="!uiFlag.raceEnd">
+      <table
+        id="countdonw"
+        *ngIf="!uiFlag.raceEnd && eventInfo.eventStatus !== EventStatus.cancel"
+      >
         <tbody>
           <tr>
             <td>{{ raceEndCountdwon.day }}</td>

@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { UserProfileService } from '@shared/services/user-profile.service';
-import { UserInfoService } from '../../../dashboard/services/userInfo.service';
+import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { ActivatedRoute } from '@angular/router';
-import { UtilsService } from '@shared/services/utils.service';
+import { UtilsService } from '../../../../shared/services/utils.service';
 import { Router, NavigationEnd } from '@angular/router';
-import { HashIdService } from '@shared/services/hash-id.service';
+import { HashIdService } from '../../../../shared/services/hash-id.service';
 
 @Component({
   selector: 'app-user-profile',
@@ -19,10 +18,8 @@ export class UserProfileComponent implements OnInit {
   description: string;
   chooseIdx = 1;
   isShowLock = false;
-  updateQueryString = '';
   constructor(
     private userProfileService: UserProfileService,
-    private userInfoService: UserInfoService,
     private route: ActivatedRoute,
     private utils: UtilsService,
     private router: Router,
@@ -39,7 +36,7 @@ export class UserProfileComponent implements OnInit {
 
     this.fileId = this.route.snapshot.paramMap.get('fileId');
     this.detectUrlChange(location.pathname);
-    this.router.events.subscribe((val: NavigationEnd) => {
+    this.router.events.subscribe(val => {
       if (val instanceof NavigationEnd && val.url) {
         this.detectUrlChange(val.url);
       }
@@ -74,10 +71,6 @@ export class UserProfileComponent implements OnInit {
     const body = {
       targetUserId: this.userId || '',
     };
-
-    this.userInfoService.getUpdatedImgStatus().subscribe(response => {
-      this.updateQueryString = response;
-    });
 
     this.userProfileService.getUserProfile(body).subscribe(res => {
 

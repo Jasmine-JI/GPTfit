@@ -7,8 +7,6 @@ $avatar-size: 40px;
 $nav-height: 60px;
 $carousel-dot-size: 10px;
 $input-height: 24px;
-$official-theme-color: rgba(229, 68, 68, 1);
-$official-theme-color-deep: rgba(250, 33, 33, 1);
 $declaration-color: rgba(100, 100, 100, 1);
 
 
@@ -264,6 +262,7 @@ $declaration-color: rgba(100, 100, 100, 1);
 #carousel {
   align-items: center;
   padding: 5px 0px;
+  margin: 0 auto;
 
   ul {
     list-style: none;
@@ -272,6 +271,8 @@ $declaration-color: rgba(100, 100, 100, 1);
 }
 
 .switch__btn {
+  padding: 0px;
+  margin: 0px;
   font-size: 48px;
 }
 
@@ -472,6 +473,7 @@ $declaration-color: rgba(100, 100, 100, 1);
 .footer__link {
   min-width: 350px;
   justify-content: space-between;
+  
   >a {
     color: black;
 
@@ -494,7 +496,7 @@ $declaration-color: rgba(100, 100, 100, 1);
 }
 
 #contact__us__button {
-
+  
   >a {
     color: white;
     text-decoration: none;

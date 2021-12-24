@@ -3,7 +3,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { AuthService } from '../../../../../shared/services/auth.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
-import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
 import { SignupService } from '../../../services/signup.service';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { Subject } from 'rxjs';
@@ -79,7 +78,6 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     private authService: AuthService,
     private signupService: SignupService,
     private userProfileService: UserProfileService,
-    private userInfoService: UserInfoService,
     private dialog: MatDialog,
     private router: Router,
     private getClientIp: GetClientIpService
@@ -467,7 +465,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
   // 傳送變更表單-kidin-1090514
   sendFormInfo () {
-    this.userInfoService.fetchEditAccountInfo(this.editBody, this.ip).subscribe(res => {
+    this.userProfileService.fetchEditAccountInfo(this.editBody, this.ip).subscribe(res => {
       const {
         processResult,
         resultCode: resCode,

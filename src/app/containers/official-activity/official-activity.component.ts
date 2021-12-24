@@ -18,7 +18,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { KeyCode } from '../../shared/models/key-code';
 import { GetClientIpService } from '../../shared/services/get-client-ip.service';
 import { SignupService } from '../portal/services/signup.service';
-import { UserInfoService } from '../dashboard/services/userInfo.service';
 import { ResetPasswordFlow, UnlockFlow, QrSignInFlow } from '../portal/models/signup-response';
 import { AlaApp } from '../../shared/models/app-id';
 
@@ -144,8 +143,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
     private cloudrunService: CloudrunService,
     private snackbar: MatSnackBar,
     private getClientIp: GetClientIpService,
-    private signupService: SignupService,
-    private userInfoService: UserInfoService
+    private signupService: SignupService
   ) { }
 
   ngOnInit(): void {
@@ -670,6 +668,10 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
       password: null
     };
 
+    if (this.accountInput) {
+      this.accountInput.nativeElement.value = '';
+    }
+    
   }
 
   /**
@@ -1342,7 +1344,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
       switchMap((ipResult: any) => {
         const { ip } = ipResult;
         if (ip) {
-          return this.userInfoService.fetchForgetpwd(body, ip);
+          return this.userProfileService.fetchForgetpwd(body, ip);
         } else {
           return of(false);
         }
@@ -1495,7 +1497,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
    */
   checkAuthInfo() {
     const { uiFlag: { authBox }, authInfo } = this;
-    const havePhone = authInfo.countryCode && authInfo.phone;
+    const havePhone = authInfo.countryCode && authInfo.mobileNumber ? true : false;
     const haveEmail = authInfo.email ? true : false;
     const havePassword = authInfo.password ? true : false;
     const haveNickname = authInfo.nickname ? true : false;

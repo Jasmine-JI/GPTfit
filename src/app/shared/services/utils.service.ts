@@ -438,6 +438,7 @@ export class UtilsService {
    * @author kidin-1101119
    */
   checkDimensionalSize(base64: string, img: HTMLImageElement) {
+console.log('checkDimensionalSize');
     const limitDimensional = 1080;
     const imgWidth = img.width;
     const imgHeight = img.height;
@@ -471,13 +472,14 @@ export class UtilsService {
    * @author kidin-1101103
    */
   checkImgSize([base64, width, height, canvas, ctx]) {
+
     // 計算base64 size的公式（正確公式要判斷base64的'='數量，這邊直接當作'='數量為1）
     const imageSize = (base64.length * (3 / 4)) - 1;
     const limitSize = 500000;
     const overSize = imageSize > limitSize;
     if (overSize) {
       ctx.drawImage(canvas, 0, 0, width, height);
-      const compressQulity = 0.95;
+      const compressQulity = 0.9;
       // 透過toDataURL漸進式壓縮至所需大小，避免圖片過於失真
       const newBase64 = canvas.toDataURL('image/jpeg', compressQulity);
       return this.checkImgSize([newBase64, width, height, canvas, ctx]);

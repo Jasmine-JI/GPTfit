@@ -1,12 +1,10 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { UtilsService } from '@shared/services/utils.service';
+import { UtilsService } from '../../../../../shared/services/utils.service';
 import { SignupService } from '../../../services/signup.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
-import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
-import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
-import { AuthService } from '@shared/services/auth.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
@@ -75,9 +73,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
     private translate: TranslateService,
     private utils: UtilsService,
     private signupService: SignupService,
-    private authService: AuthService,
     private userProfileService: UserProfileService,
-    private userInfoService: UserInfoService,
     private dialog: MatDialog,
     private router: Router,
     public getClientIp: GetClientIpService
@@ -263,7 +259,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
         project: this.appInfo.project
       };
 
-      this.userInfoService.fetchEnableAccount(body, this.ip).subscribe(res => {
+      this.userProfileService.fetchEnableAccount(body, this.ip).subscribe(res => {
         const resultInfo = res.processResult;
         if (resultInfo.resultCode !== 200) {
 

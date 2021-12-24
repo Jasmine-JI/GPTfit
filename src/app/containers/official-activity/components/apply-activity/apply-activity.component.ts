@@ -15,7 +15,6 @@ import { AuthService } from '../../../../shared/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { UserProfileInfo } from '../../../dashboard/models/userProfileInfo';
-import { UserInfoService } from '../../../dashboard/services/userInfo.service';
 import { GetClientIpService } from '../../../../shared/services/get-client-ip.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Nationality } from '../../models/activity-content';
@@ -60,7 +59,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     applyComplish: false,
     showPasswordHint: false,
     newPasswordFormatError: false,
-    upDatePasswordLoading: false,
     newPasswordUpdated: false,
     newAccount: false
   };
@@ -155,6 +153,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     fee: null
   }
 
+  groupList = [];  // 使用者可選擇之分組類別
   defaultBirthday = moment().subtract(40, 'year').startOf('year'); 
   token = this.utils.getToken();
   readonly countryCodeList = codes;
@@ -170,7 +169,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     private auth: AuthService,
     private snackbar: MatSnackBar,
     private userProfileService: UserProfileService,
-    private userInfoService: UserInfoService,
     private getClientIp: GetClientIpService,
     private sanitizer: DomSanitizer
   ) { }
@@ -359,6 +357,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         } else {
           this.eventInfo = eventInfo;
           this.eventDetail = eventDetail;
+          this.filterGroupList();
           this.handleDefaultApplyFee(eventDetail);
         }
 
@@ -826,6 +825,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     const { startDate } = date;
     const birthday = +moment(startDate).format('YYYYMMDD');
     this.applyInfo.userProfile.birthday = birthday;
+    this.filterGroupList();
   }
 
   /**
@@ -1041,22 +1041,22 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   handleUpdatePassword() {
     const {
-      uiFlag: { newPasswordFormatError, upDatePasswordLoading, newPasswordUpdated },
+      uiFlag: { progress, newPasswordFormatError, newPasswordUpdated },
       editAccountBody: { newPassword }
     } = this;
 
     if (
       !newPasswordFormatError
-      && !upDatePasswordLoading
       && !newPasswordUpdated
       && newPassword
+      && progress === 100
     ) {
-      this.uiFlag.upDatePasswordLoading = true;
+      this.uiFlag.progress = 30;
       const getIpApiDomain = 'https://api.ipify.org';
       this.getClientIp.requestJsonp(getIpApiDomain, 'format=jsonp', 'callback').pipe(
         switchMap(ipResult => {
           const ip = (ipResult as any).ip;
-          return this.userInfoService.fetchEditAccountInfo(this.editAccountBody, ip).pipe(
+          return this.userProfileService.fetchEditAccountInfo(this.editAccountBody, ip).pipe(
             map(editResult => editResult)
           )
         })
@@ -1066,6 +1066,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
           this.token = newToken;
           this.utils.writeToken(newToken);
           this.uiFlag.newPasswordUpdated = true;
+          this.disabledPasswordInput();
           const msg = 'Update success.';
           this.snackbar.open(msg, 'OK', { duration: 3000 } );
         } else {
@@ -1073,11 +1074,20 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
           this.snackbar.open(msg, 'OK', { duration: 3000 } );
         }
 
+        this.uiFlag.progress = 100;
       });
 
     }
 
+  }
 
+  /**
+   * 變更密碼成功後，將密碼輸入框disabled
+   * @author kidin-1101222
+   */
+  disabledPasswordInput() {
+    const targetElement = document.getElementById('reset__password__input');
+    targetElement.setAttribute('disabled', 'disabled');
   }
 
   /**
@@ -1110,6 +1120,36 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       
     });
 
+  }
+
+  /**
+   * 變更年齡
+   * @param e {MouseEvent}
+   * @author kidin-1101222
+   */
+  changeGender(e: MouseEvent) {
+    const { value } = (e as any).target;
+    this.applyInfo.userProfile.gender = +value;
+    this.filterGroupList();
+  }
+
+  /**
+   * 根據使用者之年齡與性別，篩選使用者可選擇之分組清單
+   * @author kidin-1101222
+   */
+  filterGroupList() {
+    const { gender, birthday } = this.applyInfo.userProfile;
+    const momentBirthday = birthday ? moment(birthday, 'YYYYMMDD') : this.defaultBirthday;
+    const age = moment().diff(momentBirthday, 'year');
+    this.groupList = this.eventDetail.group.filter(_list => {
+      const { gender: groupGender, age: groupAge } = _list;
+      const { max, min } = groupAge || { max: 100, min: 0 };
+      const fitGender = groupGender === Sex.unlimit || gender === groupGender;
+      const fitAge = !groupAge || (age >= min && age <= max);
+      return fitGender && fitAge;
+    });
+
+    this.applyInfo.targetGroupId = this.groupList[0].id;
   }
 
   /**

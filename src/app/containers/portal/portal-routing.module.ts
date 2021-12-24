@@ -186,8 +186,18 @@ const routes: Routes = [
         path: 'firstLogin-web',
         component: AppFirstLoginComponent
       },
-      { path: '404', component: Page404Component },
-      { path: '403', component: Page403Component }
+      {
+        path: '404',
+        component: Page404Component
+      },
+      {
+        path: '403',
+        component: Page403Component
+      },
+      {
+        path: '**',
+        redirectTo: '404'
+      }
     ]
   }
 ];

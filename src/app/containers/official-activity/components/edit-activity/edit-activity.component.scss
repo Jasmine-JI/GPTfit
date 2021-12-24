@@ -465,11 +465,12 @@ $placeholder-img-max-size: 220px;
 
 }
 
-.drag__button {
+.shift__button {
   @include button(18px, 1px solid rgba(150, 150, 150, 1)) {
     height: $drag-button-size;
     width: $drag-button-size;
     border-radius: 5px;
+    margin: 5px 0;
   };
   
 }

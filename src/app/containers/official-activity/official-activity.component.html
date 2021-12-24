@@ -22,7 +22,7 @@
       </button>
     </h1>
     <div class="flexCol">
-      <div class="child__page__entry" *ngIf="!uiFlag.isMobile">
+      <div class="flexRow child__page__entry" *ngIf="!uiFlag.isMobile">
         <a
           href="/official-activity/activity-list"
           class="page__link child__page__link"
@@ -94,20 +94,20 @@
         >
           {{ 'universal_userAccount_logOut' | translate }}
         </li>
-        <li>
+        <li (click)="navigate($event, '/official-activity/contact-us')">
           <a
-            href="#"
+            href="/official-activity/contact-us"
             class="page__link"
-            (click)="navigate($event, '/official-activity/contact-us')"
+            (click)="$event.preventDefault();"
           >
             {{ '聯絡我們' }}
           </a>
         </li>
-        <li>
+        <li (click)="navigate($event, '/')">
           <a 
             href="/"
             class="page__link"
-            (click)="navigate($event, '/')"
+            (click)="$event.preventDefault();"
           >
             GPTfit
           </a>

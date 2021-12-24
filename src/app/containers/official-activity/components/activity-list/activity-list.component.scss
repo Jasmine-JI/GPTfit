@@ -76,10 +76,21 @@ $block-icon-size: 40px;
   margin-right: 10px;
   width: 20%;
 
-  >img {
-    max-width: 220px;
-  }
+  >:first-of-type {
+    position: relative;
 
+    >i {
+      font-size: 80px;
+      opacity: 0.3;
+    }
+
+    >img {
+      max-width: 220px;
+      position: absolute;
+    }
+
+  }
+  
 }
 
 .theme__no__img {

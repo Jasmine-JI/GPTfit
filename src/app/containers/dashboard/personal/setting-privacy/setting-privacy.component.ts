@@ -1,6 +1,4 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
-import { UserInfoService } from '../../services/userInfo.service';
-import { SettingsService } from '../../services/settings.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -8,7 +6,8 @@ import { PrivacyObj, allPrivacyItem, PrivacyEditObj } from '../../../../shared/m
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
-import { SelectDate } from '../../../../shared/models/utils-type'
+import { SelectDate } from '../../../../shared/models/utils-type';
+import { ActivityService } from '../../../../shared/services/activity.service';
 
 enum RangeType {
   date = 1,
@@ -57,12 +56,11 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
   readonly RangeType = RangeType;
 
   constructor(
-    private userInfoService: UserInfoService,
-    private settingsService: SettingsService,
     private utils: UtilsService,
     private snackBar: MatSnackBar,
     private translate: TranslateService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private activityService: ActivityService
   ) { }
 
   ngOnInit(): void {
@@ -84,7 +82,7 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
 
     };
 
-    this.userInfoService.getRxTargetUserInfo().pipe(
+    this.userProfileService.getRxTargetUserInfo().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.userInfo = res;
@@ -117,7 +115,7 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
 
     };
 
-    this.settingsService.updateUserProfile(body).subscribe(res => {
+    this.userProfileService.updateUserProfile(body).subscribe(res => {
       const {processResult} = res as any;
       if (!processResult) {
         const { apiCode, resultMessage, resultCode } = res as any;
@@ -320,7 +318,7 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
       };
     }
 
-    this.settingsService.editPrivacy(body).subscribe(res => {
+    this.activityService.editPrivacy(body).subscribe(res => {
       if (res.resultCode === 200) {
         const refreshBody = {
           token: this.utils.getToken() || ''

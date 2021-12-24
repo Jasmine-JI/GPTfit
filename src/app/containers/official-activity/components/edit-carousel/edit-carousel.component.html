@@ -45,12 +45,7 @@
   let-list="list"
   let-listId="listId"
 >
-  <li 
-    class="flexRow carousel__list"
-    (dragenter)="cancelDefault($event)"
-    (dragover)="cancelDefault($event)"
-    (drop)="drop($event, listId)"
-  >
+  <li class="flexRow carousel__list">
     <div class="flexRow official-dashBorder edit__content">
       <div class="carousel__image">
         <div class="flexCol">
@@ -68,18 +63,27 @@
             type="text"
             class="link__input"
             [placeholder]="'連結（選填）'"
-            [value]="list?.link"
+            [value]="list && list.link && list.link !== 'None' ? list.link : ''"
             (focusout)="handleLinkInput($event, listId)"
           >
-          <button
-            class="flexCenter drag__button"
-            [draggable]="listId <= carouselList.length"
-            title="拖曳變更區塊順序"
-            (dragstart)="dragStart($event, listId)"
-            *ngIf="listId <= carouselList.length"
-          >
-            <mat-icon>drag_handle</mat-icon>
-          </button>
+          <div class="flexCol">
+            <button
+              class="flexCenter shift__button"
+              title="向上移動"
+              (click)="shiftCarousel(listId, 'up')"
+              *ngIf="listId > 1 && listId <= carouselList.length"
+            >
+              <mat-icon>arrow_upward</mat-icon>
+            </button>
+            <button
+              class="flexCenter shift__button"
+              title="向下移動"
+              (click)="shiftCarousel(listId, 'down')"
+              *ngIf="listId < carouselList.length"
+            >
+              <mat-icon>arrow_downward</mat-icon>
+            </button>
+          </div>
         </div>
         <div class="flexCol carousel__time">
           <span>{{ '結束時間' }}</span>
