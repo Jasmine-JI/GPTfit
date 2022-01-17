@@ -95,8 +95,7 @@ $edit-button-size: 30px;
 #apply__button {
   min-width: 150px;
   height: 50px;
-  background-color: $official-theme-color-deep;
-  border: 5px solid $official-theme-color-light;
+  background: $official-theme-color;
   border-radius: 10px;
   color: white;
   @include bold-font(18px);
@@ -147,12 +146,19 @@ $edit-button-size: 30px;
   height: 60px;
   margin: 0;
   padding: 0;
+  white-space: nowrap;
   @include transition(left);
 
   >li {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
     min-width: 100px;
     height: 100%;
     padding: 0 10px;
+    flex-grow: 1;
+    flex-basis: 0;
 
     >a {
       display: inline-block;
@@ -161,11 +167,21 @@ $edit-button-size: 30px;
       height: 100%;
       width: 100%;
       @include center();
-      @include bold-font(24px);
+      @include bold-font(20px);
     }
 
     &:hover {
       background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    &:not(:last-of-type):after {
+      content: '';
+      display: inline-block;
+      height: 25px;
+      width: 1px;
+      background-color: rgba(150, 150, 150, 1);
+      position: relative;
+      right: -10px;
     }
 
   }
@@ -211,6 +227,25 @@ $edit-button-size: 30px;
 .content__video {
   margin: 20px 0;
 }
+
+
+::ng-deep .text-huge {
+  font-size: 30px;
+}
+
+::ng-deep .text-big {
+  font-size: 24px;
+}
+
+::ng-deep .text-small {
+  font-size: 14px;
+}
+
+::ng-deep .text-tiny {
+  font-size: 12px;
+}
+
+
 
 
 /********************************************************* media ******************************************************/

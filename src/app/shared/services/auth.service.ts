@@ -37,8 +37,12 @@ export class AuthService {
       map(res => {
         const { processResult, resultCode, signIn } = res;
         if (resultCode && resultCode !== 200) {
-          const msg = 'Error!<br> Please try againi later.';
-          this.utils.openAlert(msg);
+
+          if (navigate) {
+            const msg = 'Login failed.';
+            this.utils.openAlert(msg);
+          }
+
         } else {
 
           switch (processResult.resultCode) {

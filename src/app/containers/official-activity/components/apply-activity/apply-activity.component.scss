@@ -12,15 +12,15 @@ $progress-hint-width: 20%;
 $stage-size: 90px;
 $step-index-size: 30px;
 $radio-size: 16px;
-$radio-button-color: rgba(254, 60, 61, 1);
 $login-button-color: rgb(224, 225, 224, 1);
 $login-button-border: 2px solid rgba(254, 218, 219, 1);
-$primary-origin: rgba(251, 32, 33, 1);
 $login-button-height: 30px;
 $input-border-bottom: 1px solid black;
 $hint-text-color: rgba(140, 140, 140, 1);
 $apply-fee-width: 120px;
 $password-hint-size: 12px;
+$progress-line-color: rgba(233, 39, 109, 1);
+$aslide-bottom-color: rgba(190, 23, 40, 1);
 
 
 @mixin section-layout($align-items) {
@@ -123,7 +123,7 @@ $password-hint-size: 12px;
   padding: 10px;
   background-image: linear-gradient(
     rgba(25, 25, 25, 1),
-    rgba(190, 23, 40, 1)
+    $aslide-bottom-color
   );
 
 }
@@ -184,7 +184,7 @@ $password-hint-size: 12px;
 
 .apply__progress {
   position: absolute;
-  background-color: rgba(233, 39, 109, 1);
+  background-color: $progress-line-color;
   @include multiple-transition((
     top $move-effect,
     height $move-effect
@@ -281,6 +281,11 @@ $password-hint-size: 12px;
   width: 240px;
 }
 
+.disable__account {
+  color: rgba(150, 150, 150, 1);
+  cursor: no-drop;
+}
+
 .country__code__selector {
   position: relative;
   min-width: 60px;
@@ -338,7 +343,7 @@ $password-hint-size: 12px;
     display: inline-block;
     width: $radio-size;
     height: $radio-size;
-    outline: 1px solid $radio-button-color;
+    outline: 1px solid $official-theme-color-light;
     border: 3px solid white;
     border-radius: 50%;
     cursor: pointer;
@@ -348,7 +353,7 @@ $password-hint-size: 12px;
   &:checked {
 
     + label:before {
-      background-color: $radio-button-color;
+      background-color: $official-theme-color-light;
     }
 
   }
@@ -364,31 +369,38 @@ label, legend {
   margin-right: 10px;
 }
 
-#login__button {
-  @include button(
-    16px,
-    3px solid rgba(255, 219, 219, 1),
-    rgba(225, 225, 225, 1)
-  ) {
+.login__button {
+  @include button(16px, none, rgba(225, 225, 225, 1)) {
     font-weight: bold;
     color: rgba(155, 155, 155, 1);
     width: 80px;
     height: $login-button-height;
     border-radius: $login-button-height;
+    pointer-events: none;
   }
   
+}
+
+.login__button--active {
+  color: white;
+  background: linear-gradient(to right, $progress-line-color, $aslide-bottom-color);
+  pointer-events: initial;
 }
 
 .submit__button {
   @include bold-font(18px);
   border-width: 5px 8px;
   border-style: solid;
-  border-color: $official-theme-color-light;
-  background-color: $primary-origin;
+  background: $official-theme-color;
   color: white;
   border-radius: 20px;
   width: 200px;
   height: 60px;
+}
+
+.submit__button--disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .drop__hint {
@@ -405,6 +417,10 @@ label, legend {
 
 }
 
+#emergency__contact__name {
+  width: 100%;
+}
+
 .emergency__contact__fold {
   height: 0;
   overflow: hidden;
@@ -417,7 +433,7 @@ label, legend {
 }
 
 .emergency__contact__unfold {
-  height: 100px;
+  height: 135px;
   @include transition(height);
 }
 
@@ -471,7 +487,7 @@ label, legend {
 
   >li {
     min-width: $apply-fee-width;
-    border: 1px solid rgba(200, 200, 200, 1);
+    border: 2px solid rgba(200, 200, 200, 1);
     border-radius: 10px;
     overflow: hidden;
     cursor: pointer;
@@ -483,7 +499,10 @@ label, legend {
 .apply__fee__title {
   @include apply-fee-text();
   margin: 0;
+  max-width: 260px;
   white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1;
 }
 
 .apply__fee__price {
@@ -495,7 +514,16 @@ label, legend {
 }
 
 .apply__fee--active {
-  border-color: rgba(250, 65, 65, 1) !important;
+  border-color: $official-theme-color-light !important;
+
+  >div {
+
+    >h6, >span {
+      color: black;
+    }
+
+  }
+  
 }
 
 #apply__accomplish {

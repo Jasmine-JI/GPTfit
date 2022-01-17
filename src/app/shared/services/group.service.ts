@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, ReplaySubject, throwError } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
-import { UtilsService } from '../../../shared/services/utils.service';
-import { UserProfileService } from '../../../shared/services/user-profile.service'
+import { UtilsService } from './utils.service';
+import { UserProfileService } from './user-profile.service'
 import { Injectable } from '@angular/core';
-import { environment } from '../../../../environments/environment';
-import { GroupDetailInfo, UserSimpleInfo } from '../models/group-detail';
+import { environment } from '../../../environments/environment';
+import { GroupDetailInfo, UserSimpleInfo } from '../../containers/dashboard/models/group-detail';
 
 const { API_SERVER } = environment.url;
 

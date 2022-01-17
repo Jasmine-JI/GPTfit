@@ -2,8 +2,8 @@ import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import { formTest } from '../../../../shared/models/form-test';
-import { fromEvent, Subject, Subscription, merge, of } from 'rxjs';
-import { takeUntil, switchMap, map } from 'rxjs/operators';
+import { fromEvent, Subject, Subscription, merge, of, combineLatest } from 'rxjs';
+import { takeUntil, switchMap, map, tap } from 'rxjs/operators';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { codes } from '../../../../shared/models/countryCode';
 import { Sex } from '../../../dashboard/models/userProfileInfo';
@@ -16,8 +16,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { UserProfileInfo } from '../../../dashboard/models/userProfileInfo';
 import { GetClientIpService } from '../../../../shared/services/get-client-ip.service';
-import { DomSanitizer } from '@angular/platform-browser';
-import { Nationality } from '../../models/activity-content';
+import { Nationality, ApplyStatus } from '../../models/activity-content';
+import { MatDialog } from '@angular/material/dialog';
+import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
+import { TranslateService } from '@ngx-translate/core';
+import { SignupService } from '../../../portal/services/signup.service';
+
 
 const stageHeight = 90;
 type AccountType = 'phone' | 'email';
@@ -27,10 +31,6 @@ interface NewRegister {
   password: string;
 };
 
-enum SearchTypeEnum {
-  nickname = 1,
-  account
-}
 
 @Component({
   selector: 'app-apply-activity',
@@ -47,7 +47,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   uiFlag = {
     progress: 100,
-    showLoginButton: false,
+    showLoginButton: <AccountType>null,
     showAside: true,
     haveAccount: false,
     accountChecking: <AccountType>null,
@@ -60,7 +60,11 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     showPasswordHint: false,
     newPasswordFormatError: false,
     newPasswordUpdated: false,
-    newAccount: false
+    newAccount: false,
+    clickSubmitButton: false,
+    isApplied: false,
+    notQualified: false,
+    displayPW: false
   };
 
   eventInfo: any;
@@ -156,6 +160,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   groupList = [];  // 使用者可選擇之分組類別
   defaultBirthday = moment().subtract(40, 'year').startOf('year'); 
   token = this.utils.getToken();
+  readonly SignTypeEnum = SignTypeEnum;
   readonly countryCodeList = codes;
   readonly Nationality = Nationality;
   readonly Sex = Sex;
@@ -170,7 +175,9 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     private snackbar: MatSnackBar,
     private userProfileService: UserProfileService,
     private getClientIp: GetClientIpService,
-    private sanitizer: DomSanitizer
+    private dialog: MatDialog,
+    private translate: TranslateService,
+    private signupService: SignupService
   ) { }
 
   ngOnInit(): void {
@@ -219,16 +226,16 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       search: {
         userApplyInfo: {
           args: { eventId },
-          target: ['eventId']
+          target: ['eventId', 'applyStatus']
         }
       }
     };
 
     this.userProfileService.getAssignInfo(body).subscribe(res => {
       if (this.utils.checkRes(res)) {
-        const { eventId: appliedEventId } = res.result[0] ?? {};
-        if (appliedEventId) {
-          this.router.navigateByUrl('/official-activity/my-activity');
+        const { applyStatus } = res.result[0] ?? { applyStatus: ApplyStatus.notYet };
+        if (applyStatus !== ApplyStatus.notYet) {
+          this.navigateMyActivityPage();
         } else {
           this.getEventUserProfile(this.token);
         }
@@ -240,13 +247,37 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   /**
+   * 導至我的活動頁面
+   * @author kidin-1101229
+   */
+  navigateMyActivityPage() {
+    this.router.navigateByUrl('/official-activity/my-activity');
+  }
+
+  /**
    * 取得使用者最近一次之報名資訊
    * @param token {string}-權杖
    * @author kidin-1101111
    */
   getEventUserProfile(token: string) {
-    this.officialActivityService.getEventUserProfile({token}).pipe(
-      switchMap(eventUserProfile => {
+    const alaqlBody = {
+      token,
+      search: {
+        userProfile: {
+          target: ['signInType']
+        }
+
+      }
+
+    };
+
+    combineLatest([
+      this.officialActivityService.getEventUserProfile({token}),
+      this.userProfileService.getAssignInfo(alaqlBody)
+    ]).pipe(
+      switchMap(result => {
+        const [eventUserProfile, signType] = result;
+        this.loginBody.signInType = +signType.result[0].signInType;
         if (this.utils.checkRes(eventUserProfile)) {
           const { userProfile } = eventUserProfile;
           const notEmptyProfile = !this.utils.isObjectEmpty(userProfile);
@@ -287,11 +318,18 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101116
    */
   handleEventUserProfile(eventUserProfile: any) {
-    this.applyInfo.userProfile = eventUserProfile;
-    delete this.applyInfo.userProfile['userId'];
-    const { birthday } = this.applyInfo.userProfile;
-    this.defaultBirthday = moment(birthday, 'YYYYMMDD');
-    this.uiFlag.showLoginButton = false;
+    for (let _key in this.applyInfo.userProfile) {
+      const preValue = eventUserProfile[_key];
+      const newValue = this.applyInfo.userProfile[_key];
+      const recoverKey = !['email', 'phone'].includes(_key);
+      if (recoverKey || newValue === null) {
+        this.applyInfo.userProfile[_key] = preValue;
+      }
+
+    }
+
+    this.defaultBirthday = moment(eventUserProfile.birthday, 'YYYYMMDD');
+    this.uiFlag.showLoginButton = null;
   }
 
   /**
@@ -433,28 +471,32 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101104
    */
   checkStagePosition() {
-    const { showAside, currentFocusInput } = this.uiFlag;
-    if (showAside) {
-      const stageHalfHeight = stageHeight / 2;
-      const phoneInputElement = document.getElementById('phone');
-      const focusInputElement = document.querySelector(currentFocusInput);
-      const submitElement = document.querySelector('.submit__button');
-      const originElement = document.querySelector('.apply__stage');
-      if (phoneInputElement && submitElement && originElement) {
-        const phoneInputTop = phoneInputElement.getBoundingClientRect().top - stageHalfHeight;
-        const focusInputTop = focusInputElement.getBoundingClientRect().top - stageHalfHeight;
-        const submitTop = submitElement.getBoundingClientRect().top;
-        const originTop = originElement.getBoundingClientRect().top;
-        this.stageTop = {
-          start: phoneInputTop - originTop,
-          edit: focusInputTop - originTop,
-          final: submitTop - originTop
-        };
+// 使用setTimeout處理ExpressionChangedAfterItHasBeenCheckedError報錯
+    setTimeout(() => {
+      const { showAside, currentFocusInput } = this.uiFlag;
+      if (showAside) {
+        const stageHalfHeight = stageHeight / 2;
+        const phoneInputElement = document.getElementById('phone');
+        const focusInputElement = document.querySelector(currentFocusInput);
+        const submitElement = document.querySelector('.submit__button');
+        const originElement = document.querySelector('.apply__stage');
+        if (phoneInputElement && submitElement && originElement) {
+          const phoneInputTop = phoneInputElement.getBoundingClientRect().top - stageHalfHeight;
+          const focusInputTop = focusInputElement.getBoundingClientRect().top - stageHalfHeight;
+          const submitTop = submitElement.getBoundingClientRect().top;
+          const originTop = originElement.getBoundingClientRect().top;
+          this.stageTop = {
+            start: phoneInputTop - originTop,
+            edit: focusInputTop - originTop,
+            final: submitTop - originTop
+          };
 
-        this.checkProgressPosition();
+          this.checkProgressPosition()
+        }
+
       }
 
-    }
+    });
 
   }
 
@@ -503,7 +545,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       if (firstAlertElement) {
         this.uiFlag.currentFocusInput = '.alert__text';
       } else {
-        const targetId = (e as any).target.id;
+        const targetId = (e as any).currentTarget.id;
         this.uiFlag.currentFocusInput = `#${targetId}`;
       }
 
@@ -519,13 +561,17 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   showCountryCodeList(e: MouseEvent) {
     e.stopPropagation();
-    const { showCountryCodeList } = this.uiFlag;
-    if (showCountryCodeList) {
-      this.unsubscribeClickScrollEvent();
-    } else {
-      this.uiFlag.showCountryCodeList = true;
-      this.positionMark(e);
-      this.subscribeClickScrollEvent();
+    const { token, loginBody: { signInType } } = this;
+    if (!token || signInType !== SignTypeEnum.phone) {
+      const { showCountryCodeList } = this.uiFlag;
+      if (showCountryCodeList) {
+        this.unsubscribeClickScrollEvent();
+      } else {
+        this.uiFlag.showCountryCodeList = true;
+        this.positionMark(e);
+        this.subscribeClickScrollEvent();
+      }
+
     }
     
   }
@@ -585,19 +631,16 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     const trimValue = (e as any).target.value.trim();
     if (!trimValue) {
       this.alert.mobileNumber = 'empty';
+      const { showLoginButton } = this.uiFlag;
+      if (showLoginButton === 'phone') this.uiFlag.showLoginButton = null;
     } else {
-      const { mobileNumber: oldPhone } = this.applyInfo.userProfile;
       const newPhone = `${+trimValue}`;  // 藉由轉數字將開頭所有0去除
-      if (+newPhone !== oldPhone) {
-
-        if (!formTest.phone.test(newPhone)) {
-          this.alert.mobileNumber = 'format';
-        } else {
-          this.alert.mobileNumber = null;
-          this.applyInfo.userProfile.mobileNumber = +newPhone;
-          this.checkPhoneAccount();
-        }
-
+      if (!formTest.phone.test(newPhone)) {
+        this.alert.mobileNumber = 'format';
+      } else {
+        this.alert.mobileNumber = null;
+        this.applyInfo.userProfile.mobileNumber = +newPhone;
+        this.checkPhoneAccount();
       }
 
     }
@@ -610,7 +653,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   checkPhoneAccount() {
     const { mobileNumber, countryCode } = this.applyInfo.userProfile;
-    if (mobileNumber && countryCode) {
+    if (!this.token && mobileNumber && countryCode) {
       const args = { countryCode, phone: mobileNumber };
       const target = ['phone'];
       this.checkRepeat(args, target).subscribe(res => {
@@ -621,9 +664,10 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
             this.loginBody.signInType = SignTypeEnum.phone;
             this.loginBody.countryCode = countryCode;
             this.loginBody.mobileNumber = mobileNumber;
-            this.handleLoginButton();
+            this.handleLoginButton('phone');
           } else {
-            this.uiFlag.showLoginButton = false;
+            const { showLoginButton } = this.uiFlag;
+            if (showLoginButton === 'phone') this.uiFlag.showLoginButton = null;
           }
 
         }
@@ -643,19 +687,16 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     const newEmail = (e as any).target.value.trim();
     if (!newEmail) {
       this.alert.email = 'empty';
+      const { showLoginButton } = this.uiFlag;
+      if (showLoginButton === 'email') this.uiFlag.showLoginButton = null;
     } else {
-      const { email: oldEmail } = this.applyInfo.userProfile;
-      
-      if (newEmail !== oldEmail) {
 
-        if (!formTest.email.test(newEmail)) {
-          this.alert.email = 'format';
-        } else {
-          this.alert.email = null;
-          this.applyInfo.userProfile.email = newEmail;
-          this.checkEmailAccount(newEmail);
-        }
-
+      if (!formTest.email.test(newEmail)) {
+        this.alert.email = 'format';
+      } else {
+        this.alert.email = null;
+        this.applyInfo.userProfile.email = newEmail;
+        this.checkEmailAccount(newEmail);
       }
 
     }
@@ -670,22 +711,26 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   checkEmailAccount(email: string) {
     const args = { email };
     const target = ['email'];
-    this.checkRepeat(args, target).subscribe(res => {
-      if (this.utils.checkRes(res, false)) {
-        const { email } = res.result[0] ?? {};
-        if (email) {
-          delete this.loginBody.countryCode;  // 避免多帳號者更換帳號
-          delete this.loginBody.mobileNumber;
-          this.loginBody.signInType = SignTypeEnum.email;
-          this.loginBody.email = email;
-          this.handleLoginButton();
-        } else {
-          this.uiFlag.showLoginButton = false;
+    if (!this.token) {
+      this.checkRepeat(args, target).subscribe(res => {
+        if (this.utils.checkRes(res, false)) {
+          const { email } = res.result[0] ?? {};
+          if (email) {
+            delete this.loginBody.countryCode;  // 避免多帳號者更換帳號
+            delete this.loginBody.mobileNumber;
+            this.loginBody.signInType = SignTypeEnum.email;
+            this.loginBody.email = email;
+            this.handleLoginButton('email');
+          } else {
+            const { showLoginButton } = this.uiFlag;
+            if (showLoginButton === 'email') this.uiFlag.showLoginButton = null;
+          }
+
         }
 
-      }
+      });
 
-    });
+    }
 
   }
 
@@ -738,22 +783,72 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     const { progress } = this.uiFlag;
     if (progress === 100) {
       this.uiFlag.progress = 30;
-      this.auth.loginServerV2(this.loginBody).subscribe(res => {
-        if (this.utils.checkRes(res, false)) {
-          const { signIn: { token } } = res;
-          this.token = token;
-          this.getEventUserProfile(token);
-          const msg = 'Login success.';
-          this.snackbar.open(msg, 'OK', { duration: 3000 } );
-        } else {
-          const msg = 'Login failed.';
-          this.snackbar.open(msg, 'OK', { duration: 3000 } );
-        }
+      this.auth.loginServerV2(this.loginBody, false).pipe(
+        switchMap(loginResponse => {
+          if (this.utils.checkRes(loginResponse, false)) {
+            const { signIn: { token } } = loginResponse;
+            this.handleLoginSuccess(token);
+            const args = { eventId: this.applyInfo.targetEventId };
+            const target = ['eventId'];
+            return this.checkRepeat(args, target, token, 'userApplyInfo').pipe(
+              tap(checkApplyResponse => this.checkApply(checkApplyResponse))
+            );
+          } else {
+            const msg = 'Login failed.';
+            this.snackbar.open(msg, 'OK', { duration: 3000 } );
+            return of(loginResponse);
+          }
 
+        })
+      ).subscribe(res => {
         this.uiFlag.progress = 100;
       });
 
     }
+
+  }
+
+  /**
+   * 登入成功
+   * @param token {string}-登入權杖
+   * @author kidin-1101229
+   */
+  handleLoginSuccess(token: string) {
+    this.token = token;
+    this.utils.writeToken(token);
+    this.tokenLogin(token);
+    this.uiFlag.showLoginButton = null;
+    this.getEventUserProfile(token);
+    const msg = 'Login success.';
+    this.snackbar.open(msg, 'OK', { duration: 3000 } );
+  }
+
+  /**
+   * 確認是否已經報名
+   * @param response {any}-確認是否重複報名之api response
+   * @author kidin-1101229
+   */
+  checkApply(response: any) {
+    this.translate.get('hellow world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      const { eventId: appliedEventId } = response.result[0] || { eventId: null };
+      if (appliedEventId) {
+        this.uiFlag.isApplied = true;
+        const backUrl = `/official-activity/activity-detail/${appliedEventId}`;
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: 'Message',
+            body: `已報名此賽事`,
+            confirmText: this.translate.instant('universal_operating_confirm'),
+            onConfirm: () => this.router.navigateByUrl(backUrl)
+          }
+        });
+
+      }
+
+    })
 
   }
 
@@ -911,14 +1006,45 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101111
    */
   checkForm() {
-    const errorInput = document.querySelectorAll('.alert__text');
-    if (errorInput.length > 0) {
-      const targetElement = errorInput[0] as HTMLElement;
-      const targetPosition = targetElement.offsetTop;
-      window.scrollTo({top: targetPosition, behavior: 'smooth'});
-    } else {
-      this.applyActivity();
-    }
+    this.uiFlag.clickSubmitButton = true;
+    this.translate.get('hellow world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      // 透過先更新ui，以獲取尚未填寫之欄位
+      setTimeout(() => {
+        const errorInput = document.querySelectorAll('.alert__text');
+        if (errorInput.length > 0) {
+          const targetElement = errorInput[0] as HTMLElement;
+          const targetPosition = targetElement.offsetTop;
+          window.scrollTo({top: targetPosition, behavior: 'smooth'});
+        } else {
+
+          const { targetGroupId } = this.applyInfo;
+          const { name } = this.eventDetail.group[targetGroupId - 1];
+          const { title, fee } = this.selectPlanInfo;
+          const msg = `請確認以下資訊<br><br>報名分組: ${
+            name}<br>報名組合: ${
+            title}<br>報名費用: $${
+            fee}<br><br>報名成功後將無法進行修改
+          `;
+          this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            data: {
+              title: 'Message',
+              body: msg,
+              cancelText: this.translate.instant('universal_operating_cancel'),
+              onCancel: () => false,
+              confirmText: this.translate.instant('universal_operating_confirm'),
+              onConfirm: () => this.applyActivity()
+            }
+
+          });
+          
+        }
+
+      });
+
+    });
 
   }
 
@@ -927,8 +1053,8 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101111
    */
   applyActivity() {
-    const { uiFlag: { progress }, token } = this;
-    if (progress === 100) {
+    const { uiFlag: { progress, isApplied }, token } = this;
+    if (!isApplied && progress === 100) {
       this.uiFlag.progress = 30;
 
       if (token) Object.assign(this.applyInfo, { token });
@@ -982,30 +1108,32 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @param target {Array<string>}-欲取得之目標資訊
    * @author kidin-1101112
    */
-  checkRepeat(args: any, target: Array<string>) {
+  checkRepeat(
+    args: any,
+    target: Array<string>,
+    token: string = null,
+    tableName: string = 'userInfo'
+  ) {
     const body = {
       search: {
-        userInfo: {
+        [tableName]: {
           args,
           target
         }
       }
     };
 
+    if (token) Object.assign(body, { token });
     return this.userProfileService.getAssignInfo(body);
   }
 
   /**
    * 根據是否已經登入與是否有帳號顯示登入按鈕
+   * @param type {AccountType}-帳號類別
    * @author kidin-1101115
    */
-  handleLoginButton() {
-    if (this.token) {
-      this.uiFlag.showLoginButton = false;
-    } else {
-      this.uiFlag.showLoginButton = true;
-    }
-
+  handleLoginButton(type: AccountType) {
+    this.uiFlag.showLoginButton = this.token ? null : type;
   }
 
   /**
@@ -1055,8 +1183,8 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       const getIpApiDomain = 'https://api.ipify.org';
       this.getClientIp.requestJsonp(getIpApiDomain, 'format=jsonp', 'callback').pipe(
         switchMap(ipResult => {
-          const ip = (ipResult as any).ip;
-          return this.userProfileService.fetchEditAccountInfo(this.editAccountBody, ip).pipe(
+          const header = { ip: (ipResult as any).ip };
+          return this.signupService.fetchEditAccountInfo(this.editAccountBody, header).pipe(
             map(editResult => editResult)
           )
         })
@@ -1149,7 +1277,36 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       return fitGender && fitAge;
     });
 
-    this.applyInfo.targetGroupId = this.groupList[0].id;
+    if (this.groupList.length > 0) {
+      this.applyInfo.targetGroupId = this.groupList[0].id;
+      this.uiFlag.notQualified = false;
+    } else {
+      this.showGroupAlert();
+      this.uiFlag.notQualified = true;
+    }
+    
+  }
+
+  /**
+   * 若該年齡性別無分組，則跳出提示
+   * @author kidin-1110104
+   */
+  showGroupAlert() {
+    this.translate.get('hellow world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      const msg = '年齡與性別不符本次賽事分組，請確認年齡性別是否無誤';
+      this.utils.openAlert(msg);
+    })
+    
+  }
+
+  /**
+   * 顯示密碼與否
+   * @author kidin-111117
+   */
+  toggleDisplayPW() {
+    this.uiFlag.displayPW = !this.uiFlag.displayPW;
   }
 
   /**

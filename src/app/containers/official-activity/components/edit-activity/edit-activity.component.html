@@ -111,64 +111,6 @@
           (focusout)="handleTitleInput($event)"
         >
         <table>
-          <tbody>
-            <tr>
-              <th class="date__info__title">競賽開始</th>
-              <td>
-                <time
-                  class="info__cannot__edit"
-                  *ngIf="currentTimestamp >= eventInfo.raceDate.startDate && uiFlag.editMode !== 'create'"
-                >
-                  {{ eventInfo.raceDate.startDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
-                </time>
-                <app-date-range-picker
-                  (selectDateRange)="getSelectDate($event, 'raceStartDate')"
-                  [pickerType]="'singlePicker'"
-                  [refStartDate]="eventInfo.raceDate.startDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
-                  [default]="eventInfo.raceDate.startDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
-                  [serialId]="'1'"
-                  [limitMin]="eventInfo.applyDate.startDate * 1000"
-                  [editStyle]="'
-                    border: none;
-                    border-bottom: 1px solid black;
-                    margin-left: 10px;
-                    color: rgba(150, 150, 150, 1);
-                    font-weight: bold;
-                  '"
-                  *ngIf="currentTimestamp < eventInfo.raceDate.startDate || uiFlag.editMode === 'create'"
-                ></app-date-range-picker>
-              </td>
-            </tr>
-            <tr>
-              <th class="date__info__title">競賽結束</th>
-              <td>
-                <time
-                  class="info__cannot__edit"
-                  *ngIf="currentTimestamp >= eventInfo.raceDate.endDate && uiFlag.editMode !== 'create'"
-                >
-                  {{ eventInfo.raceDate.endDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
-                </time>
-                <app-date-range-picker
-                  (selectDateRange)="getSelectDate($event, 'raceEndDate')"
-                  [pickerType]="'singlePicker'"
-                  [refStartDate]="eventInfo.raceDate.endDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
-                  [default]="eventInfo.raceDate.endDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
-                  [serialId]="'2'"
-                  [limitMin]="eventInfo.applyDate.endDate * 1000"
-                  [editStyle]="'
-                    border: none;
-                    border-bottom: 1px solid black;
-                    margin-left: 10px;
-                    color: rgba(150, 150, 150, 1);
-                    font-weight: bold;
-                  '"
-                  *ngIf="currentTimestamp < eventInfo.raceDate.endDate || uiFlag.editMode === 'create'"
-                ></app-date-range-picker>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <table>
           <tr>
             <th class="date__info__title">報名開始</th>
             <td>
@@ -183,7 +125,7 @@
                 [pickerType]="'singlePicker'"
                 [refStartDate]="eventInfo.applyDate.startDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
                 [default]="eventInfo.applyDate.startDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
-                [serialId]="'3'"
+                [serialId]="'1'"
                 [limitMin]="currentTimestamp * 1000"
                 [editStyle]="'
                   border: none;
@@ -210,8 +152,12 @@
                 [pickerType]="'singlePicker'"
                 [refStartDate]="eventInfo.applyDate.endDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
                 [default]="eventInfo.applyDate.endDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
-                [serialId]="'4'"
+                [serialId]="'2'"
                 [limitMin]="currentTimestamp * 1000"
+                [limitMax]="
+                  currentTimestamp >= eventInfo.raceDate.startDate && uiFlag.editMode !== 'create' ?
+                    eventInfo.raceDate.endDate * 1000 : undefined
+                "
                 [editStyle]="'
                   border: none;
                   border-bottom: 1px solid black;
@@ -223,6 +169,64 @@
               ></app-date-range-picker>
             </td>
           </tr>
+        </table>
+        <table>
+          <tbody>
+            <tr>
+              <th class="date__info__title">競賽開始</th>
+              <td>
+                <time
+                  class="info__cannot__edit"
+                  *ngIf="currentTimestamp >= eventInfo.raceDate.startDate && uiFlag.editMode !== 'create'"
+                >
+                  {{ eventInfo.raceDate.startDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
+                </time>
+                <app-date-range-picker
+                  (selectDateRange)="getSelectDate($event, 'raceStartDate')"
+                  [pickerType]="'singlePicker'"
+                  [refStartDate]="eventInfo.raceDate.startDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
+                  [default]="eventInfo.raceDate.startDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
+                  [serialId]="'3'"
+                  [limitMin]="eventInfo.applyDate.startDate * 1000"
+                  [editStyle]="'
+                    border: none;
+                    border-bottom: 1px solid black;
+                    margin-left: 10px;
+                    color: rgba(150, 150, 150, 1);
+                    font-weight: bold;
+                  '"
+                  *ngIf="currentTimestamp < eventInfo.raceDate.startDate || uiFlag.editMode === 'create'"
+                ></app-date-range-picker>
+              </td>
+            </tr>
+            <tr>
+              <th class="date__info__title">競賽結束</th>
+              <td>
+                <time
+                  class="info__cannot__edit"
+                  *ngIf="currentTimestamp >= eventInfo.raceDate.startDate && uiFlag.editMode !== 'create'"
+                >
+                  {{ eventInfo.raceDate.endDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
+                </time>
+                <app-date-range-picker
+                  (selectDateRange)="getSelectDate($event, 'raceEndDate')"
+                  [pickerType]="'singlePicker'"
+                  [refStartDate]="eventInfo.raceDate.endDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
+                  [default]="eventInfo.raceDate.endDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
+                  [serialId]="'4'"
+                  [limitMin]="eventInfo.applyDate.endDate * 1000"
+                  [editStyle]="'
+                    border: none;
+                    border-bottom: 1px solid black;
+                    margin-left: 10px;
+                    color: rgba(150, 150, 150, 1);
+                    font-weight: bold;
+                  '"
+                  *ngIf="currentTimestamp < eventInfo.raceDate.startDate || uiFlag.editMode === 'create'"
+                ></app-date-range-picker>
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
       <div>
@@ -475,7 +479,10 @@
               class="official-deleteButton"
               title="刪除此分組區塊"
               (click)="showDeleteAlert('group', _group.id)"
-              *ngIf="currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create'"
+              *ngIf="
+                eventDetail.group.length > 1
+                && (currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create')
+              "
             >
               <i class="icon-svg_web-icon_p1_012-close"></i>
             </button>
@@ -525,7 +532,7 @@
                   class="fee__input"
                   [class.empty__warn]="_applyFee?.fee?.length === 0"
                   [value]="_applyFee.fee"
-                  [attr.disabled]="uiFlag.editMode !== 'create' && currentTimestamp >= eventInfo.applyDate.startDate"
+                  [attr.disabled]="uiFlag.editMode !== 'create' && currentTimestamp >= eventInfo.applyDate.startDate ? true : null"
                   (focusout)="handleFeeInput($event, _applyFee.feeId)"
                 >
               </div>
@@ -547,7 +554,10 @@
                 class="official-deleteButton"
                 title="刪除此費用區塊"
                 (click)="showDeleteAlert('applyFee', _applyFee.feeId)"
-                *ngIf="currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create'"
+                *ngIf="
+                  eventDetail.applyFee.length > 1
+                  && (currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create')
+                "
               >
                 <i class="icon-svg_web-icon_p1_012-close"></i>
               </button>

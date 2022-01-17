@@ -18,7 +18,7 @@ import { chinaAndTaiwanBorder } from '../../models/china-border-data';
 import { Unit } from '../../models/bs-constant';
 import { ActivityService } from '../../services/activity.service';
 import { mi } from '../../models/bs-constant';
-import { GroupService } from '../../../containers/dashboard/services/group.service';
+import { GroupService } from '../../services/group.service';
 import { SelectDate } from '../../models/utils-type';
 
 // 若google api或baidu api掛掉則建物件代替，避免造成gptfit卡住。

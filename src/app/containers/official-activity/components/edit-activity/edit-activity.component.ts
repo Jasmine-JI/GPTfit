@@ -465,41 +465,46 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101020
    */
   createEvent() {
-    delete this.eventInfo.eventId;
-    const token = this.utils.getToken();
-    const { eventInfo, eventDetail } = this;
-    const body = {
-      token,
-      eventInfo,
-      eventDetail
-    };
+    if (this.uiFlag.progress === 100) {
+      this.uiFlag.progress = 30;
+      delete this.eventInfo.eventId;
+      const token = this.utils.getToken();
+      const { eventInfo, eventDetail } = this;
+      const body = {
+        token,
+        eventInfo,
+        eventDetail
+      };
 
-    this.officialActivityService.createEvent(body).pipe(
-      switchMap(createRes => {
-        if (this.utils.checkRes(createRes)) {
-          const { eventId } = createRes;
-          return this.uploadImg(eventId).pipe(
-            map(uploadRes => {
-              uploadRes = {
-                eventId,
-                ...uploadRes
-              };
+      this.officialActivityService.createEvent(body).pipe(
+        switchMap(createRes => {
+          if (this.utils.checkRes(createRes)) {
+            const { eventId } = createRes;
+            return this.uploadImg(eventId).pipe(
+              map(uploadRes => {
+                uploadRes = {
+                  eventId,
+                  ...uploadRes
+                };
 
-              return uploadRes;
-            })
+                return uploadRes;
+              })
 
-          );
+            );
+          }
+
+        })
+      ).subscribe(result => {
+        if (this.utils.checkRes(result)) {
+          this.saveSuccess();
+          const newEventId = result.eventId;
+          this.router.navigateByUrl(`/official-activity/activity-detail/${newEventId}`);
         }
 
-      })
-    ).subscribe(result => {
-      if (this.utils.checkRes(result)) {
-        this.saveSuccess();
-        const newEventId = result.eventId;
-        this.router.navigateByUrl(`/official-activity/activity-detail/${newEventId}`);
-      }
+        this.uiFlag.progress = 100;
+      });
 
-    });
+    }
 
   }
 
@@ -836,15 +841,15 @@ export class EditActivityComponent implements OnInit, OnDestroy {
 
     if (newApplyFee.length < applyFee.length) {
       const delLength = applyFee.length - newApplyFee.length;
-      this.deleteList.contentId = this.getDeleleteIdList(newApplyFee.length, delLength);
+      this.deleteList.applyFeeId = this.getDeleleteIdList(newApplyFee.length, delLength);
     }
 
     if (newGroup.length < group.length) {
       const delLength = group.length - newGroup.length;
-      this.deleteList.contentId = this.getDeleleteIdList(newGroup.length, delLength);
+      this.deleteList.groupId = this.getDeleleteIdList(newGroup.length, delLength);
     }
 
-    const { contentId, groupId, applyFeeId } = this.deleteList;
+    const { contentId, groupId, applyFeeId } = this.deleteList || { contentId: [], groupId: [], applyFeeId: [] };
     const haveDeleteContent = contentId.length > 0;
     const haveDeleteGroup = groupId.length > 0;
     const haveDeleteApplyFee = applyFeeId.length > 0;
@@ -1214,6 +1219,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     if (innerHtmlLengthOver || textLengthOver) {
       const { text } = this.eventDetail.content[id - 1];
       e.editor.setData(text);
+      this.utils.showSnackBar('HTML或字數超出限制');
     } else {
       this.eventDetail.content[id - 1].text = newText;
     }
@@ -1390,7 +1396,14 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     const name = (e as any).target.value;
     const targetIndex = id - 1;
     const oldName = this.eventDetail.group[targetIndex].name;
-    if (name !== oldName) {
+    const repeat = this.eventDetail.group.findIndex((_group, index) => {
+      return _group.name === name && targetIndex !== index;
+    });
+
+    if (repeat > -1) {
+      this.utils.showSnackBar('分組名稱重複');
+      this.eventDetail.group[targetIndex].name = null;
+    } else if (name !== oldName) {
       this.eventDetail.group[targetIndex].name = name;
       this.saveDraft();
     }
@@ -1565,11 +1578,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         _group.id = index + 1;
         return _group;
       });
-
-    if (this.uiFlag.editMode === 'edit') {
-      const deleteId = this.eventDetail.group.length + 1;
-      this.deleteList.groupId.push(deleteId);
-    }
 
     this.saveDraft();
   }

@@ -99,7 +99,8 @@
               <div class="flexRow login__input">
                 <mat-icon>smartphone</mat-icon>
                 <div
-                  class="country__code__selector"
+                  [class.disable__account]="token && loginBody.signInType === SignTypeEnum.phone"
+                  [class.country__code__selector]="!token || loginBody.signInType !== SignTypeEnum.phone"
                   [class.selector--active]="uiFlag.showCountryCodeList"
                   (click)="showCountryCodeList($event)"
                 >
@@ -127,12 +128,14 @@
                 <input
                   type="text"
                   id="phone"
+                  [class.disable__account]="token && loginBody.signInType === SignTypeEnum.phone"
                   [placeholder]="
                     'universal_userAccount_enterInfo' | translate: {
                       info: ('universal_userAccount_phone' | translate)
                     }
                   "
                   [value]="applyInfo.userProfile.mobileNumber"
+                  [disabled]="token && loginBody.signInType === SignTypeEnum.phone ? true : null"
                   (focus)="positionMark($event)"
                   (focusout)="checkPhoneFormat($event)"
                 >
@@ -140,24 +143,34 @@
               <ng-container *ngIf="uiFlag.accountChecking === 'phone'">
                 <span *ngTemplateOutlet="checkingHint"></span>
               </ng-container>
-              <ng-container *ngIf="!uiFlag.accountChecking && alert.mobileNumber">
+              <ng-container *ngIf="
+                (!uiFlag.accountChecking && alert.mobileNumber)
+                || (uiFlag.clickSubmitButton && !applyInfo.userProfile.mobileNumber)
+              ">
                 <span *ngTemplateOutlet="inputAlert; context: {
-                  alert: alert.mobileNumber
+                  alert: alert.mobileNumber ? alert.mobileNumber : 'empty'
                 }"></span>
               </ng-container>
             </div>
+            <ng-container *ngIf="uiFlag.showLoginButton === 'phone'">
+              <div *ngTemplateOutlet="loginArea; context: {
+                accountType: SignTypeEnum.phone
+              }"></div>
+            </ng-container>
             <div class="flexRow">
               <div class="flexRow login__input">
                 <mat-icon>email</mat-icon>
                 <input
                   type="text"
                   id="email"
+                  [class.disable__account]="token && loginBody.signInType === SignTypeEnum.email"
                   [placeholder]="
                     'universal_userAccount_enterInfo' | translate: {
                       info: ('universal_userAccount_email' | translate)
                     }
                   "
                   [value]="applyInfo.userProfile.email"
+                  [disabled]="token && loginBody.signInType === SignTypeEnum.email ? true : null"
                   (focus)="positionMark($event)"
                   (focusout)="checkEmailFormat($event)"
                 >
@@ -165,44 +178,20 @@
               <ng-container *ngIf="uiFlag.accountChecking === 'email'">
                 <span *ngTemplateOutlet="checkingHint"></span>
               </ng-container>
-              <ng-container *ngIf="!uiFlag.accountChecking && alert.email">
+              <ng-container *ngIf="
+                !uiFlag.accountChecking && alert.email
+                || (uiFlag.clickSubmitButton && !applyInfo.userProfile.email)
+              ">
                 <span *ngTemplateOutlet="inputAlert; context: {
-                  alert: alert.email
+                  alert: alert.email ? alert.email : 'empty'
                 }"></span>
               </ng-container>
             </div>
-            <div class="flexCol">
-              <div
-                class="flexRow password__input"
-                *ngIf="uiFlag.showLoginButton"
-              >
-                <div class="flexRow login__input">
-                  <mat-icon>vpn_key</mat-icon>
-                  <input
-                    type="password"
-                    id="password"
-                    autocomplete="on"
-                    [placeholder]="
-                      'universal_userAccount_enterInfo' | translate: {
-                        info: ('universal_userAccount_password' | translate)
-                      }
-                    "
-                    (focusout)="checkPassword($event)"
-                  >
-                </div>
-                <button
-                  id="login__button"
-                  (click)="login()"
-                >
-                  {{ 'universal_userAccount_logIn' | translate }}
-                </button>
-              </div>
-              <ng-container *ngIf="uiFlag.showLoginButton">
-                <span *ngTemplateOutlet="inputAlert; context: {
-                  alert: 'login'
-                }"></span>
-              </ng-container>
-            </div>
+            <ng-container *ngIf="uiFlag.showLoginButton === 'email'">
+              <div *ngTemplateOutlet="loginArea; context: {
+                accountType: SignTypeEnum.email
+              }"></div>
+            </ng-container>
           </div>
           <div class="flexRow form__input">
             <label for="nickname" class="input__label">
@@ -227,9 +216,12 @@
                 {{ 'universal_userAccount_nameCharactersToLong' | translate }}
               </span>
             </ng-container>
-            <ng-container *ngIf="alert.nickname">
+            <ng-container *ngIf="
+              alert.nickname
+              || (uiFlag.clickSubmitButton && !applyInfo.userProfile.nickname)
+            ">
               <span *ngTemplateOutlet="inputAlert; context: {
-                alert: alert.nickname
+                alert: alert.nickname ? alert.nickname : 'empty'
               }"></span>
             </ng-container>
           </div>
@@ -247,9 +239,12 @@
               (focus)="positionMark($event)"
               (focusout)="checkTruthNameFormat($event)"
             >
-            <ng-container *ngIf="alert.truthName">
+            <ng-container *ngIf="
+              alert.truthName
+              || (uiFlag.clickSubmitButton && !applyInfo.userProfile.truthName)
+            ">
               <span *ngTemplateOutlet="inputAlert; context: {
-                alert: alert.truthName
+                alert: alert.truthName ? alert.truthName : 'empty'
               }"></span>
             </ng-container>
           </div>
@@ -300,9 +295,12 @@
               (focus)="positionMark($event)"
               (focusout)="checkIdCardNumberFormat($event)"
             >
-            <ng-container *ngIf="alert.idCardNumber">
+            <ng-container *ngIf="
+              alert.idCardNumber
+              || (uiFlag.clickSubmitButton && !applyInfo.userProfile.idCardNumber)
+            ">
               <span *ngTemplateOutlet="inputAlert; context: {
-                alert: alert.idCardNumber
+                alert: alert.idCardNumber ? alert.idCardNumber : 'empty'
               }"></span>
             </ng-container>
           </div>
@@ -316,7 +314,7 @@
                 id="gender__male"
                 name="gender"
                 class="radio__input"
-                checked="true"
+                [attr.checked]="applyInfo.userProfile.gender === 0 ? true : null"
                 [value]="Sex.male"
                 (focus)="positionMark($event)"
                 (click)="changeGender($event)"
@@ -331,6 +329,7 @@
                 id="gender__female"
                 name="gender"
                 class="radio__input"
+                [attr.checked]="applyInfo.userProfile.gender === 1 ? true : null"
                 [value]="Sex.female"
                 (focus)="positionMark($event)"
                 (click)="changeGender($event)"
@@ -351,7 +350,7 @@
               [default]="defaultBirthday | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
               [selectBirthday]="true"
               [limitMin]="limitMinBirth | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
-              [limitMax]="true"
+              [limitMaxCurrent]="true"
               [editStyle]="'
                 border: none;
                 border-bottom: 1px solid black;
@@ -379,9 +378,12 @@
               (focus)="positionMark($event)"
               (focusout)="checkIdAddressFormat($event)"
             >
-            <ng-container *ngIf="alert.address">
+            <ng-container *ngIf="
+              alert.address
+              || (uiFlag.clickSubmitButton && !applyInfo.userProfile.address)
+            ">
               <span *ngTemplateOutlet="inputAlert; context: {
-                alert: alert.address
+                alert: alert.address ? alert.address : 'empty'
               }"></span>
             </ng-container>
           </div>
@@ -402,22 +404,24 @@
           </div>
           <fieldset class="flexCol emergency__contact">
             <div 
-              class="flexRow form__input drop__hint"
+              class="flexRow form__input"
               [class.drop__hint--hide]="uiFlag.showEmergencyContact"
             >
               <label for="emergency__contact__name" class="input__label">
                 {{ '緊急聯絡人' }}
               </label>
-              <input
-                type="text"
-                id="emergency__contact__name"
-                name="emergency__contact__name"
-                class="info__input"
-                maxLength="24"
-                placeholder="（選填）"
-                [(ngModel)]="applyInfo.userProfile.emergencyContact.name"
-                (focus)="showEmergencyContact($event)"
-              >
+              <div class="flexRow drop__hint">
+                <input
+                  type="text"
+                  id="emergency__contact__name"
+                  name="emergency__contact__name"
+                  class="info__input"
+                  maxLength="24"
+                  placeholder="（選填）"
+                  [(ngModel)]="applyInfo.userProfile.emergencyContact.name"
+                  (focus)="showEmergencyContact($event)"
+                >
+              </div>
             </div>
             <div
               class="flexCol emergency__contact__fold"
@@ -502,7 +506,7 @@
             *ngIf="eventDetail?.applyFee.length > 0"
           >
             <label class="input__label">
-              {{ '商品組合' }}
+              {{ '報名組合' }}
             </label>
             <ul class="fee__plan__menu">
               <li
@@ -531,9 +535,15 @@
           <div class="flexCenter">
             <button
               class="submit__button"
+              [class.submit__button--disabled]="uiFlag.notQualified"
               (click)="checkForm()"
             >
-              {{ '報名' }}
+              <ng-container *ngIf="!uiFlag.notQualified">
+                {{ '報名' }}
+              </ng-container>
+              <ng-container *ngIf="uiFlag.notQualified">
+                {{ '資格不符' }}
+              </ng-container>
             </button>
           </div>
         </form>
@@ -650,7 +660,10 @@
             </button>
           </ng-container>
           <ng-container *ngIf="selectPlanInfo.fee === 0">
-            <button class="submit__button">
+            <button
+              class="submit__button"
+              (click)="navigateMyActivityPage()"
+            >
               {{ '返回' }}
             </button>
           </ng-container>
@@ -667,6 +680,7 @@
 <ng-template
   #inputAlert
   let-alert="alert"
+  let-accountType="accountType"
 >
   <span class="alert__text">
     <ng-container *ngIf="alert === 'format'">
@@ -679,8 +693,55 @@
       {{ 'universal_userAccount_nickname' | translate }}
       {{ 'universal_deviceSetting_repeat' | translate }}
     </ng-container>
-    <ng-container *ngIf="alert === 'login'">
-      {{ '登入確認身份或請變更手機及email' }}
+    <ng-container *ngIf="alert === 'login' && accountType === SignTypeEnum.phone">
+      {{ '登入確認身份或請變更手機號碼' }}
+    </ng-container>
+    <ng-container *ngIf="alert === 'login' && accountType === SignTypeEnum.email">
+      {{ '登入確認身份或請變更email' }}
     </ng-container>
   </span>
+</ng-template>
+
+<ng-template
+  #loginArea
+  let-accountType="accountType"
+>
+  <div class="flexCol">
+    <div class="flexRow password__input">
+      <div class="flexRow login__input">
+        <mat-icon>vpn_key</mat-icon>
+        <input
+          [type]="uiFlag.displayPW ? 'text' : 'password'"
+          id="password"
+          maxlength="20"
+          autocomplete="on"
+          [placeholder]="
+            'universal_userAccount_enterInfo' | translate: {
+              info: ('universal_userAccount_password' | translate)
+            }
+          "
+          (focusout)="checkPassword($event)"
+        >
+        <button class="appview-showPassword" (click)="toggleDisplayPW()">
+          <i
+            class="icon-svg_web-icon_p1_081-watch"
+            [style.color]="uiFlag.displayPW ? 'rgba(100, 100, 100, 1)' : 'rgba(200, 200, 200, 1)'"
+          ></i>
+        </button>
+      </div>
+      <button
+        class="login__button"
+        [class.login__button--active]="loginBody.password"
+        (click)="login()"
+      >
+        {{ 'universal_userAccount_logIn' | translate }}
+      </button>
+    </div>
+    <ng-container *ngIf="uiFlag.showLoginButton">
+      <span *ngTemplateOutlet="inputAlert; context: {
+        alert: 'login',
+        accountType
+      }"></span>
+    </ng-container>
+  </div>
 </ng-template>

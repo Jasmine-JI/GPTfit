@@ -21,9 +21,11 @@
         listId: _list.advertiseId
       }"></li>
     </ng-container>
-    <li *ngTemplateOutlet="carouselRow; context: {
-      listId: carouselList.length + 1
-    }"></li>
+    <ng-container *ngIf="uiFlag.showNewBlock">
+      <li *ngTemplateOutlet="carouselRow; context: {
+        listId: carouselList.length + 1
+      }"></li>
+    </ng-container>
   </ul>
 </div>
 
@@ -47,7 +49,10 @@
 >
   <li class="flexRow carousel__list">
     <div class="flexRow official-dashBorder edit__content">
-      <div class="carousel__image">
+      <div
+        class="carousel__image"
+        [class.empty__alert]="list && !uiFlag.passCheck && !imgUpload[listId] && !list.img"
+      >
         <div class="flexCol">
           <span class="img__placeholder__text">Banner{{ listId }}</span>
           <span class="img__hint">(Ratio: 840 * 230)</span>
@@ -61,6 +66,7 @@
         <div class="flexRow">
           <input
             type="text"
+            [id]="'link__'+listId"
             class="link__input"
             [placeholder]="'連結（選填）'"
             [value]="list && list.link && list.link !== 'None' ? list.link : ''"
@@ -89,9 +95,10 @@
           <span>{{ '結束時間' }}</span>
           <input
             type="datetime-local"
+            id="time"
             [min]="currentTimestamp | timeFormat: 'YYYY-MM-DDTHH:mm'"
             [value]="(list ? list.effectDate * 1000 : defaultEffectTimestamp) | timeFormat: 'YYYY-MM-DDTHH:mm'"
-            (change)="getSelectTime($event, listId)"
+            (focusout)="getSelectTime($event, listId)"
           >
         </div>
       </div>

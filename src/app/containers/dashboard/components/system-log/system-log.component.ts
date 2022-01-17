@@ -77,6 +77,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   sysLog: Array<any>;
   currentPage: PageEvent;
   totalCounts = 0;
+  readonly AlaApp = AlaApp;
 
   constructor(
     private utils: UtilsService,

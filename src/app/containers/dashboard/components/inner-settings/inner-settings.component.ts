@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../people-selector-win/people-selector-win.component';
-import { GroupService } from '../../services/group.service';
+import { GroupService } from '../../../../shared/services/group.service';
 import { cloneDeep } from 'lodash';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';

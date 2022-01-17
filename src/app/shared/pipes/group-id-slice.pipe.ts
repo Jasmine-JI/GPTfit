@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { GroupService } from '../../containers/dashboard/services/group.service';
+import { GroupService } from '../services/group.service';
 
 @Pipe({name: 'groupIdSlice'})
 export class GroupIdSlicePipe implements PipeTransform {

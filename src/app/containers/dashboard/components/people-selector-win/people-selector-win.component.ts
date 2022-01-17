@@ -2,7 +2,7 @@ import { HashIdService } from './../../../../shared/services/hash-id.service';
 import { UtilsService } from './../../../../shared/services/utils.service';
 import { Component, OnInit, Inject, Output, HostListener } from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { GroupService } from '../../services/group.service';
+import { GroupService } from './../../../../shared/services/group.service';
 import { HttpParams } from '@angular/common/http';
 
 @Component({

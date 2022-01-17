@@ -5,7 +5,7 @@ import { ReportConditionOpt } from '../../../../../shared/models/report-conditio
 import moment from 'moment';
 import { ReportService } from '../../../../../shared/services/report.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
-import { GroupService } from '../../../services/group.service';
+import { GroupService } from '../../../../../shared/services/group.service';
 import { ActivityService } from '../../../../../shared/services/activity.service';
 import { CloudrunService } from '../../../../../shared/services/cloudrun.service';
 import { HashIdService } from '../../../../../shared/services/hash-id.service';

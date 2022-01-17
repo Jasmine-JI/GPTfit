@@ -39,6 +39,7 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
 
   userInfo: any;
   coverTimestamp: number;
+  dataBroken = false;
 
   constructor(
     private router: Router,
@@ -66,14 +67,19 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
       this.getUserInfo();
       const content = location.search.replace('?', '').split('&'),
             info = this.baseDecodeUnicode(content[1].split('base64,')[1]);
-      if (content[0].split('=')[1] === 'a3') {
-        this.translatedInfo = this.a3Translate(JSON.parse(info));
+      if (info) {
 
-      } else {
-        this.translatedInfo = this.a3Translate(info);
+        if (content[0].split('=')[1] === 'a3') {
+          this.translatedInfo = this.a3Translate(JSON.parse(info));
+
+        } else {
+          this.translatedInfo = this.a3Translate(info);
+        }
+
+        this.displayData(this.translatedInfo);
+
       }
 
-      this.displayData(this.translatedInfo);
     }
 
   }
@@ -91,9 +97,18 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
 
   // 解碼base64成utf-8-kidin-1090420
   baseDecodeUnicode (str) {
-    return decodeURIComponent(atob(decodeURIComponent(str)).split('').map((c) => {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
+    try {
+      return decodeURIComponent(atob(decodeURIComponent(str)).split('').map((c) => {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+    }
+    catch {
+      const msg = 'Data broken!';
+      this.utils.openAlert(msg);
+      this.dataBroken = true;
+      return false;
+    }
+    
   }
 
   // 轉譯a3格式-kidin-1090420

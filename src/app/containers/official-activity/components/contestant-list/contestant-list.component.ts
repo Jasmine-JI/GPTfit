@@ -345,8 +345,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         awardShipped,
         productShippingDate,
         awardShippingDate,
-        haveProduct,
-        applyStatus
+        haveProduct
       } = _list;
       const productCaseClose = this.checkCanClose(productShipped, productShippingDate, closeCaseDate);
       const awardCaseClose = this.checkCanClose(awardShipped, awardShippingDate, closeCaseDate);
@@ -476,7 +475,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         let rank: number;
         if (index !== 0) {
           const { rank: frontRank, record: frontRecord } = sortList[index - 1];
-          rank = frontRecord > record ? frontRank + 1 : frontRank;
+          rank = record > frontRecord ? frontRank + 1 : frontRank;
         } else {
           rank = 1;
         }
@@ -822,10 +821,12 @@ export class ContestantListComponent implements OnInit, OnDestroy {
 
   /**
    * 移除參賽者
+   * @param e {MouseEvent}
    * @param index {number}-顯示順位
    * @author kidin-1101126
    */
-  removeContestant(index: number) {
+  removeContestant(e: MouseEvent, index: number) {
+    e.stopPropagation();
     const { userId: targetUserId } = this.reArrangeList[index];
     const update = [{
       targetUserId,
@@ -834,13 +835,13 @@ export class ContestantListComponent implements OnInit, OnDestroy {
 
     this.updateUserEventProfile(update).subscribe(success => {
       if (success) {
-        const leaveIndex = this.participantList.indexOf(_list => _list.userId === targetUserId);
+        const leaveIndex = this.participantList.findIndex(_list => _list.userId == targetUserId);
         const [leaveContestant] = this.participantList.splice(leaveIndex, 1);
         this.backupLeaveList.push(leaveContestant);
         of(this.participantList).pipe(
           map(list => this.sortList(list, defaultSortSet)),
           map(sortList => this.assignRank(sortList)),
-          map(rankList => this.sortList(rankList))
+          map(rankList => this.sortList(rankList)),
         ).subscribe(result => {
           this.reArrangeList = result;
         });
@@ -1000,21 +1001,21 @@ export class ContestantListComponent implements OnInit, OnDestroy {
   handleEditDetail(e: MouseEvent, type: ProfileEditType, index: number) {
     this.uiFlag.focusInput = false;
     const { value } = (e as any).target;
+    const newValue = value.length === 0 && type === 'mobileNumber' ? +value : value;
     const assignUserInfo = this.reArrangeList[index];
     const { userId: targetUserId } = assignUserInfo;
     const emergencyInfo = ['name', 'mobileNumber', 'relationship'];
     const isEmergencyInfo = emergencyInfo.includes(type);
     const oldValue = isEmergencyInfo ?
       assignUserInfo['emergencyContact'][type] : assignUserInfo[type];
-
-    if (value !== oldValue) {
+    if (newValue !== oldValue) {
       let update: Array<any>;
       if (isEmergencyInfo) {
-        this.reArrangeList[index]['emergencyContact'][type] = value;
-        update = [{ targetUserId, emergencyContact: { [type]: value } }];
+        this.reArrangeList[index]['emergencyContact'][type] = newValue;
+        update = [{ targetUserId, emergencyContact: { [type]: newValue } }];
       } else {
-        this.reArrangeList[index][type] = value;
-        update = [{ targetUserId, [type]: value }];
+        this.reArrangeList[index][type] = newValue;
+        update = [{ targetUserId, [type]: newValue }];
       }
 
       this.updateUserEventProfile(update).subscribe(success => {
@@ -1075,7 +1076,8 @@ export class ContestantListComponent implements OnInit, OnDestroy {
       if (targetUserId === userId) {
         
         for (let _key in replace) {
-          this.participantList[i][_key] = replace[_key];
+          const value = replace[_key];
+          if (value !== undefined) this.participantList[i][_key] = replace[_key];
         }
 
         break;
@@ -1279,38 +1281,41 @@ export class ContestantListComponent implements OnInit, OnDestroy {
   refreshUserInfo(e: MouseEvent, index: number) {
     e.stopPropagation();
     const { feeId, officialPaidId, userId: targetUserId } = this.reArrangeList[index];
-    const { token, eventId } = this;
-    const body = {
-      token,
-      eventId,
-      feeId,
-      officialPaidId
-    };
+    if (officialPaidId) {
+      const { token, eventId } = this;
+      const body = {
+        token,
+        eventId,
+        feeId,
+        officialPaidId
+      };
 
-    this.officialActivityService.updateProductOrder(body).pipe(
-      switchMap(updateResult => {
-        if (this.utils.checkRes(updateResult)) {
-          return this.officialActivityService.getParticipantList(this.searchInfo).pipe(
-            map(participantList => participantList)
-          )
-        } else {
-          return updateResult;
+      this.officialActivityService.updateProductOrder(body).pipe(
+        switchMap(updateResult => {
+          if (this.utils.checkRes(updateResult)) {
+            return this.officialActivityService.getParticipantList(this.searchInfo).pipe(
+              map(participantList => participantList)
+            )
+          } else {
+            return updateResult;
+          }
+        })
+      ).subscribe(res => {
+        if (this.utils.checkRes(res)) {
+          const { participantList } = res as any;
+          const newUserInfo = participantList.filter(_list => _list.userId === targetUserId);
+          const { paidStatus, thirdPartyPaidId, paidDate } = newUserInfo[0];
+          this.reArrangeList[index].paidStatus = paidStatus;
+          this.reArrangeList[index].thirdPartyPaidId = thirdPartyPaidId;
+          this.reArrangeList[index].paidDate = paidDate;
+
+          const replace = { paidStatus, thirdPartyPaidId, paidDate };
+          this.updateOriginProfile(targetUserId, replace);
         }
-      })
-    ).subscribe(res => {
-      if (this.utils.checkRes(res)) {
-        const { participantList } = res as any;
-        const newUserInfo = participantList.filter(_list => _list.userId === targetUserId);
-        const { paidStatus, thirdPartyPaidId, paidDate } = newUserInfo[0];
-        this.reArrangeList[index].paidStatus = paidStatus;
-        this.reArrangeList[index].thirdPartyPaidId = thirdPartyPaidId;
-        this.reArrangeList[index].paidDate = paidDate;
 
-        const replace = { paidStatus, thirdPartyPaidId, paidDate };
-        this.updateOriginProfile(targetUserId, replace);
-      }
+      });
 
-    });
+    }
 
   }
 

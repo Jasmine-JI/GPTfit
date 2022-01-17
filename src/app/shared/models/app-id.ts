@@ -7,5 +7,6 @@ export enum AlaApp {
   cloudrun,
   trainlive,
   fitness,
+  tft,
   all = 99
 }

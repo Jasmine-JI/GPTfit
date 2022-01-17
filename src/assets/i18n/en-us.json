@@ -2172,7 +2172,7 @@
  "universal_userAccount_longUnusedPhone": "Your account, phone number {{number}}, has been inactive for a while. The system will automatically delete it on {{yyyy-mm-dd}}. If you would like to keep your account, please log in to your account and activate it.",
  "universal_userAccount_nameCharactersToLong": "The name must be 4-24 characters long",
  "universal_userAccount_newPassword": "Ｎew Password",
- "universal_userAccount_newVerificationMailSucceeded": "Verification email has been sent, please go to <br /><br /> to click on the link to activate. If you have not receive the email, please check your spam or send another request for verification.",
+ "universal_userAccount_newVerificationMailSucceeded": "Verification email has been sent, please go to <br>{{email}}<br> to click on the link to activate. If you have not receive the email, please check your spam or send another request for verification.",
  "universal_userAccount_nickname": "Nickname",
  "universal_userAccount_noAreaCode": "Please select Country/Region Code",
  "universal_userAccount_noGraphicCode": "Please enter Image Verification Code",

@@ -10,7 +10,7 @@
       style="font-weight: bold; color: #6b6a6a;"
       *ngIf="displayInfo.type === '2'"
     >
-      {{ translatedInfo.fileInfo.dispName || 'None' }}
+      {{ translatedInfo.fileInfo ? translatedInfo.fileInfo.dispName : 'None' }}
     </h1>
   </div>
   <div class="flexCol" style="margin-left: 25px;">
@@ -38,7 +38,12 @@
         </tr>
         <tr>
           <span>
-            {{displayInfo.avgSpeed | speedSibs: userInfo.unit }}
+            <ng-container *ngIf="displayInfo.avgSpeed !== '--'">
+              {{ displayInfo.avgSpeed | speedSibs: userInfo.unit }}
+            </ng-container>
+            <ng-container *ngIf="displayInfo.avgSpeed === '--'">
+              {{ displayInfo.avgSpeed }}
+            </ng-container>
           </span>
         </tr>
         <tr>
@@ -49,10 +54,11 @@
   </div>
   <button
     class="uploadFileBtn"
+    [class.disabled__button]="dataBroken"
     [style.pointer-event]="uploading === true || loadingUserData ? 'none' : ''"
     (click)="uploadFile()"
   >
-    <span *ngIf="uploading === false">{{ 'universal_operating_uploadActivityData' | translate }}</span>
-    <span *ngIf="uploading === true">{{ 'universal_group_waitingToUploadData' | translate }}</span>
+    <span *ngIf="!uploading">{{ 'universal_operating_uploadActivityData' | translate }}</span>
+    <span *ngIf="uploading">{{ 'universal_group_waitingToUploadData' | translate }}</span>
   </button>
 </div>

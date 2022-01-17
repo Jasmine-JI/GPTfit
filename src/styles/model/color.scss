@@ -7,9 +7,8 @@ $ligntest-gray: rgba(245, 245, 245, 1);
 $primary-blue: rgba(0, 183, 238, 1);
 $deep-blue: rgba(0, 104, 183);
 $warn-red: rgb(255, 75, 75, 1);
-$official-theme-color: rgba(229, 68, 68, 1);
-$official-theme-color-light: rgba(255, 158, 158, 1);
-$official-theme-color-deep: rgba(250, 33, 33, 1);
+$official-theme-color: linear-gradient(90deg, #8F1515 0%, #B50C5D 51.89%, #EA5400 100%);
+$official-theme-color-light: rgba(229, 68, 68, 1);
 
 // 心率或閾值區間顏色
 $zone-color:

@@ -40,7 +40,8 @@ const tableRename = {
       countryCode: 'country_code',
       phone: 'phone',
       theme: 'theme_img_url',
-      counter: 'counter'
+      counter: 'counter',
+      signInType: 'register_category'
     }
   },
   userInfo: {
@@ -417,7 +418,7 @@ function queryTranslate(body) {
 
   }
 
-  if (condition.length === 0) {
+  if (!token && condition.length === 0) {
     return translateResult;
   } else {
     const [conditionString, algebra] = getCondition(table, condition, token);
