@@ -3,7 +3,7 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { GroupDetailInfo, UserSimpleInfo, MemberInfo } from '../../../models/group-detail';
 import { CalenderDay } from '../../../models/report';
-import { GroupService } from '../../../services/group.service';
+import { GroupService } from '../../../../../shared/services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { Subject, combineLatest, of } from 'rxjs';
 import { takeUntil, map, switchMap, first } from 'rxjs/operators';

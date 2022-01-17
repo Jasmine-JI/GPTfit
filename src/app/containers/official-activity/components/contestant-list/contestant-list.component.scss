@@ -2,6 +2,7 @@
 @import 'font.scss';
 @import 'drop-triangle.scss';
 @import 'transition.scss';
+@import 'filter.scss';
 
 $map-icon-size: 10vw;
 $map-icon-max-size: 150px;
@@ -50,7 +51,7 @@ $edit-button-size: 30px;
   overflow-y: hidden;
 
   >img {
-    filter: blur(10px);
+    @include filter(blur(10px));
     width: 100%;
   }
   
@@ -78,7 +79,7 @@ $edit-button-size: 30px;
   min-height: $map-icon-min-size;
   min-width: $map-icon-min-size;
   border-radius: 50%;
-  outline: 1px solid white;
+  border: 1px solid white;
   overflow: hidden;
 
   >img {

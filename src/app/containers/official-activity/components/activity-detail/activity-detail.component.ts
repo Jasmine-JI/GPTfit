@@ -7,7 +7,7 @@ import { formTest } from '../../../../shared/models/form-test';
 import { Subject, Subscription, fromEvent, of } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { pageNotFoundPath } from '../../models/official-activity-const';
-import { EventStatus } from '../../models/activity-content';
+import { EventStatus, ApplyStatus } from '../../models/activity-content';
 
 const switchButtonWidth = 40;
 enum ApplyButtonStatus {
@@ -15,8 +15,9 @@ enum ApplyButtonStatus {
   applied,
   applyFull,
   cutOff,
-  eventCancelled
-}
+  eventCancelled,
+  applyCancelled
+};
 
 @Component({
   selector: 'app-activity-detail',
@@ -107,10 +108,10 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
         const [userProfile, checkApplied] = res;
         if (userProfile) {
           const { systemAccessRight } = userProfile;
-          const { eventId: appliedEventId } = checkApplied.result[0] || { eventId: null };
+          
+          const { applyStatus } = checkApplied.result[0] || { applyStatus: ApplyStatus.notYet };
           this.uiFlag.isAdmin = systemAccessRight[0] === 28;
-          if (appliedEventId) this.uiFlag.applyButtonStatus = ApplyButtonStatus.applied;
-
+          this.handleApplyStatus(applyStatus);
         } else {
           this.uiFlag.applyButtonStatus = ApplyButtonStatus.canApply;
           this.uiFlag.isAdmin = false;
@@ -118,6 +119,23 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
         }
         
       });
+
+  }
+
+  /**
+   * 根據報名狀態變更按鈕狀態
+   * @param status {ApplyStatus}-使用者報名狀態
+   * @author kidin-1110106
+   */
+  handleApplyStatus(status: ApplyStatus) {
+    switch (status) {
+      case ApplyStatus.applied:
+        this.uiFlag.applyButtonStatus = ApplyButtonStatus.applied;
+        break;
+      case ApplyStatus.cancel:
+        this.uiFlag.applyButtonStatus = ApplyButtonStatus.applyCancelled;
+        break;
+    }
 
   }
 
@@ -232,7 +250,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
       search: {
         userApplyInfo: {
           args: { eventId },
-          target: ['eventId']
+          target: ['eventId', 'applyStatus']
         }
       }
     };
@@ -350,8 +368,9 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
         }, 0);
 
         const shfitElement = document.getElementById('shortcut__list');
-        const { innerWidth: screenWidth } = window;
-        if (totalWidth > screenWidth) {
+        const navElement = document.getElementById('shortcut__section');
+        const contentWidth = navElement.getBoundingClientRect().width;
+        if (totalWidth > contentWidth) {
           this.uiFlag.showSwitchButton = true;
           shfitElement.style.left = `${switchButtonWidth}px`;
         } else {

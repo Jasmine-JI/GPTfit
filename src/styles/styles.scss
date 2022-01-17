@@ -132,12 +132,6 @@ $radio-active-size: 14px;
   height: 60px;
 }
 
-.appview-btn-unclickable {
-  @include transition(opacity);
-  pointer-events: none;
-  opacity: 0.4;
-}
-
 .avatar-wrapper {
   position: relative;
   width: 100px;

@@ -323,7 +323,7 @@
       [title]="'universal_operating_delete' | translate"
       (click)="handleDeleteMode()"
     >
-      <i class="icon-svg_web-icon_p1_009-delete"></i>
+      <i class="icon-svg_web-icon_p1_008-edit"></i>
     </button>
   </div>
   <div *ngTemplateOutlet="contestantList; context: {
@@ -394,7 +394,7 @@
                 </button>
                 <div *ngTemplateOutlet="groupSelector; context: {
                   index,
-                  gender,
+                  gender: _list.gender,
                   age: ({
                     birth: _list.birthday,
                     birthFormat: 'YYYYMMDD',
@@ -409,14 +409,21 @@
                 *ngIf="uiFlag.screenSize > 600"
               >
                 <button
-                  [class.status__yet]="_list.paidStatus === PaidStatusEnum.unPaid"
-                  [class.status__already]="_list.paidStatus === PaidStatusEnum.paid"
-                  [class.status__cancel]="_list.paidStatus === PaidStatusEnum.refund"
+                  [ngClass]="{
+                    'status__yet': _list.paidStatus === PaidStatusEnum.unPaid,
+                    'status__already': _list.paidStatus === PaidStatusEnum.paid,
+                    'status__cancel': _list.paidStatus === PaidStatusEnum.refund
+                  }"
                   (click)="showSelector($event, listType, 'showPaidStatusSelector', index)"
                 >
                   {{ _list.paidStatus | paidStatus }}
                 </button>
-                <div *ngTemplateOutlet="paidStatusSelector; context: { index }"></div>
+                <div *ngTemplateOutlet="paidStatusSelector; context: {
+                  index,
+                  listType,
+                  thirdPartyPaidId: _list.thirdPartyPaidId,
+                  paidDate: _list.paidDate
+                }"></div>
               </span>
               <span
                 class="paid__date"
@@ -426,21 +433,29 @@
               </span>
               <span
                 class="order__status"
-                [class.status__selector]="listType === 'normal'"
+                [class.status__selector]="
+                  listType === 'normal' && _list.productShipped !== ProductShipped.needNotShip
+                "
                 *ngIf="uiFlag.screenSize > 800"
               >
-                <button
-                  [class.status__yet]="_list.productShipped === ProductShipped.unShip"
-                  [class.status__already]="_list.productShipped === ProductShipped.shipped"
-                  [class.status__cancel]="_list.productShipped === ProductShipped.returnGoods"
-                  [class.status__case__closed]="_list.productShipped === ProductShipped.closeCase"
-                  [class.status__not__action]="_list.productShipped === ProductShipped.needNotShip"
+                <button 
+                  [ngClass]="{
+                    'status__yet': _list.productShipped === ProductShipped.unShip,
+                    'status__already': _list.productShipped === ProductShipped.shipped,
+                    'status__cancel': _list.productShipped === ProductShipped.returnGoods,
+                    'status__case__closed': _list.productShipped === ProductShipped.closeCase,
+                    'status__not__action': _list.productShipped === ProductShipped.needNotShip
+                  }"
+                  [style.pointer-events]="
+                    _list.productShipped === ProductShipped.needNotShip ? 'none' : 'initial'
+                  "
                   (click)="showSelector($event, listType, 'showOrderStatusSelector', index)"
                 >
                   {{ _list.productShipped | shippedStatus }}
                 </button>
                 <div *ngTemplateOutlet="shippedStatusSelector; context: {
                   index,
+                  listType,
                   type: 'productShipped'
                 }"></div>
               </span>
@@ -450,15 +465,18 @@
                 *ngIf="uiFlag.screenSize > 900"
               >
                 <button
-                  [class.status__yet]="_list.awardShipped === ProductShipped.unShip"
-                  [class.status__already]="_list.awardShipped === ProductShipped.shipped"
-                  [class.status__case__closed]="_list.awardShipped === ProductShipped.closeCase"
+                  [ngClass]="{
+                    'status__yet': _list.awardShipped === ProductShipped.unShip,
+                    'status__already': _list.awardShipped === ProductShipped.shipped,
+                    'status__case__closed': _list.awardShipped === ProductShipped.closeCase
+                  }"
                   (click)="showSelector($event, listType, 'showAwardStatusSelector', index)"
                 >
                   {{ _list.awardShipped | shippedStatus }}
                 </button>
                 <div *ngTemplateOutlet="shippedStatusSelector; context: {
                   index,
+                  listType,
                   type: 'awardShipped'
                 }"></div>
               </span>
@@ -476,7 +494,7 @@
                   class="edit__button"
                   title="更新狀態"
                   (click)="refreshUserInfo($event, index)"
-                  *ngIf="!uiFlag.editDetail"
+                  *ngIf="!uiFlag.editDetail && _list.paidStatus === PaidStatusEnum.unPaid"
                 >
                   <mat-icon>autorenew</mat-icon>
                 </button>
@@ -521,7 +539,7 @@
                       </button>
                       <div *ngTemplateOutlet="groupSelector; context: {
                         index,
-                        gender,
+                        gender: _list.gender,
                         age: ({
                           birth: _list.birthday,
                           birthFormat: 'YYYYMMDD',
@@ -541,14 +559,21 @@
                       [class.status__selector]="listType === 'normal'"
                     >
                       <button
-                        [class.status__yet]="_list.paidStatus === PaidStatusEnum.unPaid"
-                        [class.status__already]="_list.paidStatus === PaidStatusEnum.paid"
-                        [class.status__cancel]="_list.paidStatus === PaidStatusEnum.refund"
+                        [ngClass]="{
+                          'status__yet': _list.paidStatus === PaidStatusEnum.unPaid,
+                          'status__already': _list.paidStatus === PaidStatusEnum.paid,
+                          'status__cancel': _list.paidStatus === PaidStatusEnum.refund
+                        }"
                         (click)="showSelector($event, listType, 'showPaidStatusSelector', index)"
                       >
                         {{ _list.paidStatus | paidStatus }}
                       </button>
-                      <div *ngTemplateOutlet="paidStatusSelector; context: { index }"></div>
+                      <div *ngTemplateOutlet="paidStatusSelector; context: {
+                         index,
+                         listType,
+                         thirdPartyPaidId: _list.thirdPartyPaidId,
+                         paidDate: _list.paidDate
+                      }"></div>
                     </span>
                   </div>
                   <div
@@ -570,17 +595,20 @@
                       [class.status__selector]="listType === 'normal'"
                     >
                       <button
-                        [class.status__yet]="_list.productShipped === ProductShipped.unShip"
-                        [class.status__already]="_list.productShipped === ProductShipped.shipped"
-                        [class.status__cancel]="_list.productShipped === ProductShipped.returnGoods"
-                        [class.status__case__closed]="_list.productShipped === ProductShipped.closeCase"
-                        [class.status__not__action]="_list.productShipped === ProductShipped.needNotShip"
+                        [ngClass]="{
+                          'status__yet': _list.productShipped === ProductShipped.unShip,
+                          'status__already': _list.productShipped === ProductShipped.shipped,
+                          'status__cancel': _list.productShipped === ProductShipped.returnGoods,
+                          'status__case__closed': _list.productShipped === ProductShipped.closeCase,
+                          'status__not__action': _list.productShipped === ProductShipped.needNotShip
+                        }"
                         (click)="showSelector($event, listType, 'showOrderStatusSelector', index)"
                       >
                         {{ _list.productShipped | shippedStatus }}
                       </button>
                       <div *ngTemplateOutlet="shippedStatusSelector; context: {
                         index,
+                        listType,
                         type: 'productShipped'
                       }"></div>
                     </span>
@@ -595,15 +623,18 @@
                       [class.status__selector]="listType === 'normal'"
                     >
                       <button
-                        [class.status__yet]="_list.awardShipped === ProductShipped.unShip"
-                        [class.status__already]="_list.awardShipped === ProductShipped.shipped"
-                        [class.status__case__closed]="_list.awardShipped === ProductShipped.closeCase"
+                        [ngClass]="{
+                          'status__yet': _list.awardShipped === ProductShipped.unShip,
+                          'status__already': _list.awardShipped === ProductShipped.shipped,
+                          'status__case__closed': _list.awardShipped === ProductShipped.closeCase
+                        }"
                         (click)="showSelector($event, listType, 'showAwardStatusSelector', index)"
                       >
                         {{ _list.awardShipped | shippedStatus }}
                       </button>
                       <div *ngTemplateOutlet="shippedStatusSelector; context: {
                         index,
+                        listType,
                         type: 'awardShipped'
                       }"></div>
                     </span>
@@ -748,7 +779,7 @@
           </div>
           <button
             title="移除參賽者"
-            (click)="removeContestant(index)"
+            (click)="removeContestant($event, index)"
             *ngIf="uiFlag.deleteMode && listType === 'normal'"
           >
             <i class="icon-svg_web-icon_p1_012-close delete__icon"></i>
@@ -782,14 +813,18 @@
     <h6 class="card__title">{{ title }}</h6>
     <p
       class="card__value"
+      [ngStyle]="{
+        'white-space': type === 'address' ? 'pre-wrap' : 'unset',
+        'word-break': type === 'address' ? 'break-all' : 'unset'
+      }"
       *ngIf="!canEdit || !uiFlag.detailEditable"
     >
-      {{ value }}
+      {{ type === 'mobileNumber' && value == 0 ? '' : value }}
     </p>
     <input
       type="text"
       class="detail__input"
-      [value]="value"
+      [value]="type === 'mobileNumber' && value == 0 ? '' : value"
       (focus)="focusInput()"
       (focusout)="handleEditDetail($event, type, index)"
       *ngIf="canEdit && uiFlag.detailEditable"
@@ -810,7 +845,7 @@
     <li *ngFor="let _group of groupList">
       <ng-container
         *ngIf="
-             (_group.gender === 2 || _group.gender === gender)
+             (_group.gender === 2 || _group.gender == gender)
           && (!_group.age || (age >= _group.age.min && age <= _group.age.max))
         "
       >
@@ -829,11 +864,23 @@
 <ng-template
   #paidStatusSelector
   let-index="index"
+  let-listType="listType"
+  let-thirdPartyPaidId="thirdPartyPaidId"
+  let-paidDate="paidDate"
 >
   <ul
     class="drop__menu"
-    *ngIf="uiFlag.showPaidStatusSelector === index"
+    *ngIf="listType === 'normal' && uiFlag.showPaidStatusSelector === index"
   >
+    <li *ngIf="!thirdPartyPaidId">
+      <button
+        class="status__yet"
+        (click)="changePaidStatus($event, PaidStatusEnum.unPaid, index)"
+        *ngIf="paidDate === null"
+      >
+        {{ '未繳費' }}
+      </button>
+    </li>
     <li>
       <button
         class="status__already"
@@ -841,6 +888,8 @@
       >
         {{ '已繳費' }}
       </button>
+    </li>
+    <li>
       <button
         class="status__cancel"
         (click)="changePaidStatus($event, PaidStatusEnum.refund, index)"
@@ -855,12 +904,16 @@
   #shippedStatusSelector
   let-index="index"
   let-type="type"
+  let-listType="listType"
 >
   <ul
     class="drop__menu"
     *ngIf="
-         (type === 'productShipped' && uiFlag.showOrderStatusSelector === index)
-      || (type === 'awardShipped' && uiFlag.showAwardStatusSelector === index)
+      listType === 'normal'
+      && (
+           (type === 'productShipped' && uiFlag.showOrderStatusSelector === index)
+        || (type === 'awardShipped' && uiFlag.showAwardStatusSelector === index)
+      )
     "
   >
     <li>
@@ -870,12 +923,16 @@
       >
         {{ '未出貨' }}
       </button>
+    </li>
+    <li>
       <button
         class="status__already"
         (click)="changeShippedStatus($event, ProductShipped.shipped, index, type)"
       >
         {{ '已出貨' }}
       </button>
+    </li>
+    <li>
       <button
         class="status__cancel"
         (click)="changeShippedStatus($event, ProductShipped.returnGoods, index, type)"

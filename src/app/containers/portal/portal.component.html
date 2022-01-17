@@ -1,10 +1,17 @@
 <app-navbar
-  [isAlphaVersion]="isAlphaVersion"
+  [isAlphaVersion]="uiFlag.isAlphaVersion"
   (selectPage)="switchPage($event)"
-  *ngIf="!isPreviewMode && !hideNavbar"
+  *ngIf="!uiFlag.isPreviewMode && !uiFlag.hideNavbar"
 ></app-navbar>
-<div class="main" [ngClass]="{'preview': isPreviewMode, 'hideNavbar': hideNavbar}">
-  <div class="mask" [class.mask--show]="isMaskShow" (click)="touchMask()"></div>
+<div
+  class="main"
+  [ngClass]="{
+    'preview': uiFlag.isPreviewMode,
+    'hideNavbar': uiFlag.hideNavbar,
+    'darkMode': uiFlag.darkMode
+  }"
+>
+  <div class="mask" [class.mask--show]="uiFlag.isMaskShow" (click)="touchMask()"></div>
   <div style="min-height: 3000px;" *ngIf="uiFlag.page === 'analysis' || uiFlag.page === 'system' || uiFlag.page === 'application'">
   <ng-container *ngIf="uiFlag.page === 'system'">
     <div style="min-height: 100vh; margin-top: -63px" class="fade__in">

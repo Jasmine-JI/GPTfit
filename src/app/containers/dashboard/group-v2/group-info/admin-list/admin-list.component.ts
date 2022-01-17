@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GroupDetailInfo, UserSimpleInfo, MemberInfo, GroupArchitecture } from '../../../models/group-detail';
-import { GroupService } from '../../../services/group.service';
+import { GroupService } from '../../../../../shared/services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { Subject, combineLatest, forkJoin } from 'rxjs';
 import { takeUntil, first } from 'rxjs/operators';

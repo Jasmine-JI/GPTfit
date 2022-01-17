@@ -5,13 +5,13 @@ import {
   ElementRef,
   ViewEncapsulation
 } from '@angular/core';
-import { GroupService } from '../../services/group.service';
+import { GroupService } from '../../../../shared/services/group.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { UtilsService } from '@shared/services/utils.service';
-import { HashIdService } from '@shared/services/hash-id.service';
+import { UtilsService } from '../../../../shared/services/utils.service';
+import { HashIdService } from '../../../../shared/services/hash-id.service';
 
 @Component({
   selector: 'app-group-search',

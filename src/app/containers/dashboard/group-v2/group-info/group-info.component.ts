@@ -8,7 +8,7 @@ import { ShareGroupInfoDialogComponent } from '../../../../shared/components/sha
 import { GroupDetailInfo, UserSimpleInfo, EditMode } from '../../models/group-detail';
 import moment from 'moment';
 import { UtilsService } from '../../../../shared/services/utils.service';
-import { GroupService } from '../../services/group.service';
+import { GroupService } from '../../../../shared/services/group.service';
 import { HashIdService } from '../../../../shared/services/hash-id.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { v5 as uuidv5 } from 'uuid';

@@ -4,7 +4,6 @@ import { OfficialActivityService } from '../../services/official-activity.servic
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { Subject, combineLatest, of } from 'rxjs';
 import { takeUntil, switchMap } from 'rxjs/operators';
-import { advertiseRatio } from '../../models/official-activity-const';
 import { TranslateService } from '@ngx-translate/core';
 import { AlbumType } from '../../../../shared/models/image';
 import { ImageUploadService } from '../../../dashboard/services/image-upload.service';
@@ -24,7 +23,9 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
   uiFlag = {
     progress: 100,
     showImageCropperId: null,
-    dragId: null
+    dragId: null,
+    showNewBlock: true,
+    passCheck: true
   };
 
   /**
@@ -75,13 +76,13 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
    * @author kidin-1101209
    */
   getCarousel() {
-    const { token, currentTimestamp } = this;
+    const { token, officialActivityService: { filterInvalidCarousel } } = this;
     this.officialActivityService.getEventAdvertise({ token }).subscribe(res => {
       if (this.utils.checkRes(res)) {
         this.originCarouselList = res.advertise;
         // 移除時間過期之輪播內容
         this.carouselList = res.advertise
-          .filter(_advertise => _advertise.effectDate * 1000 > currentTimestamp)
+          .filter(_advertise => filterInvalidCarousel(_advertise))
           .map((_advertise, index) => {
             _advertise.advertiseId = index + 1;
             return _advertise;
@@ -105,22 +106,29 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
     key: string = null,
     value: string | number = null
   ) {
-    const carouselLength = this.carouselList.length;
-    if (id > carouselLength) {
-      const defaultDate = Math.round(this.defaultEffectTimestamp / 1000);
-      this.carouselList.push({
-        advertiseId: id,
-        link: key === 'link' ? value : null,
-        effectDate: key === 'effectDate' ? value : defaultDate
-      });
+    this.uiFlag.showNewBlock = false;
+    setTimeout(() => {
+      const carouselLength = this.carouselList.length;
+      if (id > carouselLength) {
+        const defaultDate = Math.round(this.defaultEffectTimestamp / 1000);
+        this.carouselList.push({
+          advertiseId: id,
+          link: key === 'link' ? value : null,
+          effectDate: key === 'effectDate' ? value : defaultDate
+        });
 
-    } else {
+      } else {
+        if (key) this.carouselList[id - 1][key] = value;
+      }
 
-      if (key) this.carouselList[id - 1][key] = value;
-
-    }
-
+      // 透過setTimeout讓view先刷新透過ngIf清空input值
+      this.uiFlag.showNewBlock = true;
+    });
+    
   }
+
+
+
 
   /**
    * 顯示圖片裁切器
@@ -231,7 +239,7 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
   getSelectTime(e: Event, id: number) {
     const selectTime = (e as any).target.value;
     const selectTimestamp = Math.round((new Date(selectTime)).getTime() / 1000);
-    this.addCarouselList(id, 'link',  selectTimestamp);
+    this.addCarouselList(id, 'effectDate',  selectTimestamp);
   }
 
   /**
@@ -258,7 +266,9 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
    * @author kidin-1101209
    */
   saveEdit() {
-    if (this.uiFlag.progress === 100) {
+    this.uiFlag.passCheck = this.checkCarousel();
+    const { passCheck, progress } = this.uiFlag;
+    if (passCheck && progress === 100) {
       this.uiFlag.progress = 30;
       const { token } = this;
       let advertise = this.utils.deepCopy(this.carouselList);
@@ -300,6 +310,23 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
 
     }
 
+  }
+
+  /**
+   * 確認新增的輪播是否皆有圖片
+   * @author kidin-1101228
+   */
+  checkCarousel() {
+    for (let i = 0; i < this.carouselList.length; i++) {
+      const _list = this.carouselList[i];
+      const { advertiseId, img } = _list;
+      if (!img && !this.imgUpload[advertiseId]) {
+        return false;
+      }
+
+    }
+
+    return true;
   }
 
   /**

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
-import { GroupService } from '../../services/group.service';
+import { GroupService } from '../../../../shared/services/group.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { ReplaySubject, Observable, combineLatest, Subject } from 'rxjs';
 import { tap, switchMap, map, takeUntil } from 'rxjs/operators';

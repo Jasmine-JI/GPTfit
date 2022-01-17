@@ -60,6 +60,8 @@ import { EditIndividualPrivacyComponent } from './edit-individual-privacy/edit-i
 import { CloudrunMapComponent } from './cloudrun-map/cloudrun-map.component';
 import { EquidistantChartComponent } from './chart/equidistant-chart/equidistant-chart.component';
 import { RelativeColumnChartComponent } from './chart/relative-column-chart/relative-column-chart.component';
+import { TermsComponent } from './terms/terms.component';
+import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 
 @NgModule({
   imports: [
@@ -125,7 +127,9 @@ import { RelativeColumnChartComponent } from './chart/relative-column-chart/rela
     EditIndividualPrivacyComponent,
     CloudrunMapComponent,
     EquidistantChartComponent,
-    RelativeColumnChartComponent
+    RelativeColumnChartComponent,
+    TermsComponent,
+    PrivacyPolicyComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -173,7 +177,9 @@ import { RelativeColumnChartComponent } from './chart/relative-column-chart/rela
     LoadingBarComponent,
     ThresholdInfoComponent,
     ThresholdChartComponent,
-    RelativeColumnChartComponent
+    RelativeColumnChartComponent,
+    TermsComponent,
+    PrivacyPolicyComponent
   ]
 })
 export class SharedComponentsModule {}

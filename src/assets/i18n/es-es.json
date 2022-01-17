@@ -2172,7 +2172,7 @@
  "universal_userAccount_longUnusedPhone": "Su cuenta, número de teléfono {{number}}, ha estado inactiva durante un tiempo. El sistema la eliminará automáticamente el {{yyyy-mm-dd}}. Si desea conservar su cuenta, inicie sesión en ella y actívela.",
  "universal_userAccount_nameCharactersToLong": "El nombre debe tener entre 4 y 24 caracteres.",
  "universal_userAccount_newPassword": "Nueva contraseña",
- "universal_userAccount_newVerificationMailSucceeded": "Se ha enviado el correo electrónico de verificación. Vaya a <br /> <br /> para hacer clic en el enlace para activar. Si no ha recibido el correo electrónico, compruebe su correo no deseado o envíe otra solicitud de verificación.",
+ "universal_userAccount_newVerificationMailSucceeded": "Se ha enviado el correo electrónico de verificación. Vaya a <br>{{email}}<br> para hacer clic en el enlace para activar. Si no ha recibido el correo electrónico, compruebe su correo no deseado o envíe otra solicitud de verificación.",
  "universal_userAccount_nickname": "Apodo",
  "universal_userAccount_noAreaCode": "Aún no ha seleccionado el código de país o región",
  "universal_userAccount_noGraphicCode": "No especificó el código de verificación de imagen",

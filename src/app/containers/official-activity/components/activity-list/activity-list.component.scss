@@ -1,5 +1,7 @@
 @import 'flex-center.scss';
 @import 'font.scss';
+@import 'filter.scss';
+@import 'color.scss';
 
 $calender-shadow-color: rgba(0, 0, 0, 0.3);
 $calender-border-top: 10px solid;
@@ -15,7 +17,6 @@ $record-title-height: 20px;
 $shadow-color-light: rgba(175, 175, 175, 1);
 $shadow-color-deep: rgba(150, 150, 150, 1);
 $theme-img-height: 130px;
-$detail-table-width: 140px;
 $block-icon-size: 40px;
 
 @mixin apply-date($background-color) {
@@ -176,11 +177,29 @@ $block-icon-size: 40px;
   color: rgba(136, 136, 136, 1);
 }
 
+.race__date__area {
+  padding: 5px;
+  background-color: rgba(244, 244, 244, 1);
+  border-radius: 10px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+
+  >h6 {
+    text-align: center;
+    font-weight: bold;
+    color: rgba(100, 100, 100, 1);
+  }
+
+  >div {
+    align-items: center;
+  }
+
+}
+
 .calender__link {
   margin: 0px 2px;
   height: 35px;
   width: 20px;
-  background-color: rgba(229, 235, 216, 1);
+  background: linear-gradient(to right, rgba(129, 224, 191, 1), rgba(231, 153, 148, 1));
 }
 
 .map__info {
@@ -340,6 +359,7 @@ $block-icon-size: 40px;
   >button {
     font-size: 60px;
     color: rgba(100, 100, 100, 1);
+    padding: 0;
   }
   
 }
@@ -357,9 +377,10 @@ $block-icon-size: 40px;
 }
 
 .product__title, .product__fee {
+  $detail-table-width: 140px;
   text-align: center;
-  min-width: calc(#{$detail-table-width});
-  max-width: calc(#{$detail-table-width});
+  min-width: $detail-table-width;
+  max-width: $detail-table-width;
 }
 
 td.product__title, td.product__fee {
@@ -373,7 +394,7 @@ td.product__title, td.product__fee {
   $icon-size: 40px;
   width: $icon-size;
   height: $icon-size;
-  filter: invert(50%) brightness(80%);
+  @include filter(invert(50%) brightness(80%));
 }
 
 .dialog__section {
@@ -387,6 +408,7 @@ td.product__title, td.product__fee {
 
 .dialog__map__img {
   max-width: 100px;
+  max-height: 68px;
 }
 
 .dialog__map__info {
@@ -424,6 +446,35 @@ td.product__title, td.product__fee {
   border-bottom: 1px solid rgba(100, 100, 100, 1);
   margin-left: 5px;
   color: rgba(100, 100, 100, 1);
+}
+
+.pagination__area {
+  justify-content: center;
+}
+
+.pagination__button {
+  min-width: 30px;
+  margin: 0 5px;
+  padding: 5px 0;
+  border: 1px solid $official-theme-color-light;
+  border-radius: 5px;
+}
+
+.pagination__button--active {
+  pointer-events: none;
+  background-color: $official-theme-color-light;
+  color: white;
+}
+
+.pagination__button--disabled {
+  pointer-events: none;
+  color: rgba(150, 150, 150, 1);
+}
+
+.pagination__index__button {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 /*********************************************************** mobile style **********************************************/
@@ -584,6 +635,12 @@ td.product__title, td.product__fee {
 
   .product__detail {
     justify-content: center;
+    width: 98%;
+
+    >table {
+      width: 90%;
+    }
+
   }
 
 }

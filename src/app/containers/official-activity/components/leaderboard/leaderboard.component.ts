@@ -296,6 +296,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       const baseDate = '2021-11-01T00:00:00';
       const startTimestamp = (new Date(baseDate)).getTime() / 1000;
       const body = {
+        token: this.token,
         filterRaceStartTime: startTimestamp,
         filterRaceEndTime: currentTimestamp,
         page: {
@@ -491,8 +492,8 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       })
     ).subscribe(res => {
       if (Array.isArray(res)) {
-        this.backupList = res;
-        this.rankList = res;
+        this.backupList = this.utils.deepCopy(res);
+        this.rankList = this.utils.deepCopy(res);
       }
 
       this.uiFlag.progress = 100;
@@ -594,7 +595,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   filterGroup(groupName: string = null) {
     this.uiFlag.filterGroup = groupName;
     if (groupName) {
-      const filterList = this.backupList.filter(_list => _list.groupName === groupName);
+      const filterList = this.utils.deepCopy(this.backupList.filter(_list => _list.groupName === groupName));
       this.rankList = filterList.map((_filterList, index) => {
         let rank: number;
         if (index === 0) {
@@ -608,7 +609,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         return _filterList;
       });
     } else {
-      this.rankList = [...this.backupList];
+      this.rankList = this.utils.deepCopy(this.backupList);
     }
 
   }

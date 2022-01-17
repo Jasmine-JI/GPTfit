@@ -18,12 +18,12 @@ import { SharedModule } from '../../shared/shared.module';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { OfficialActivityService } from './services/official-activity.service';
 import { FormsModule } from '@angular/forms';
-import { GroupService } from '../dashboard/services/group.service';
 import { PaidStatusPipe } from './pipes/paid-status.pipe';
 import { ShippedStatusPipe } from './pipes/shipped-status.pipe';
 import { QRCodeModule } from 'angularx-qrcode';
 import { EditCarouselComponent } from './components/edit-carousel/edit-carousel.component';
 import { ContactUsComponent } from './components/contact-us/contact-us.component';
+import { GroupService } from '../../shared/services/group.service';
 
 
 @NgModule({
@@ -55,10 +55,10 @@ import { ContactUsComponent } from './components/contact-us/contact-us.component
   providers: [
     EditGuard,
     OfficialActivityService,
-    GroupService,
     PaidStatusPipe,
     ShippedStatusPipe,
-    AdminGuard
+    AdminGuard,
+    GroupService
   ]
 
 })

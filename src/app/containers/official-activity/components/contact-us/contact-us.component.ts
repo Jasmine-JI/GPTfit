@@ -16,6 +16,11 @@ enum ContentType {
 
 type AlertType = 'empty' | 'format';
 
+const operationalIssues = '您好，\n問題描述：\n問題發生時間點：\n問題發生的操作步驟：\n\n若已註冊帳號，請留下您的帳號暱稱\n帳號暱稱：\n\n我們將盡快回覆';
+const payIssues = '您好，\n帳號暱稱：\n欲參與的活動名稱：\n選擇的報名組合：\n選擇的付款方式：\n問題發生時間點：\n問題描述：\n\n\n我們將盡快回覆';
+const suggestion = '您好，\n意見內容：\n\n\n感謝您的意見回饋';
+const otherIssues = '您好，\n內容敘述：\n\n';
+
 @Component({
   selector: 'app-contact-us',
   templateUrl: './contact-us.component.html',
@@ -35,7 +40,7 @@ export class ContactUsComponent implements OnInit, OnDestroy {
    * 訊息內容
    */
   contentInfo = {
-    contentType: <ContentType>null,
+    contentType: <ContentType>ContentType.operation,
     name: null,
     email: null,
     phone: null,
@@ -49,6 +54,8 @@ export class ContactUsComponent implements OnInit, OnDestroy {
     content: <AlertType>null,
     contentType: <AlertType>null
   }
+
+  templateText = operationalIssues;
 
   readonly ContentType = ContentType;
 
@@ -139,6 +146,22 @@ export class ContactUsComponent implements OnInit, OnDestroy {
   selectContentType(type: ContentType) {
     this.contentInfo.contentType = type;
     this.formAlert.contentType = null;
+
+    switch (type) {
+      case ContentType.paymentsProblem:
+        this.templateText = payIssues;
+        break;
+      case ContentType.suggestion:
+        this.templateText = suggestion;
+        break;
+      case ContentType.other:
+        this.templateText = otherIssues;
+        break;
+      default:
+        this.templateText = operationalIssues;
+        break;
+    }
+
   }
 
   /**

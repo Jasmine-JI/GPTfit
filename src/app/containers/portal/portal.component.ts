@@ -1,11 +1,11 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
 import { GlobalEventsManager } from '../../shared/global-events-manager';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../shared/services/utils.service';
 import { DetectInappService } from '../../shared/services/detect-inapp.service';
-import { fromEvent, Subject } from 'rxjs';
+import { fromEvent, Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { langList } from '../../shared/models/i18n';
 
@@ -33,16 +33,15 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('analysis_T4') analysisT4: ElementRef;
 
   uiFlag = {
-    page: 'system'
+    page: 'system',
+    isAlphaVersion: false,
+    isPreviewMode: false,
+    hideNavbar: false,
+    isMaskShow: false,
+    isCollapseOpen: false,
+    darkMode: false
   };
-
-  isMaskShow = false;
-  isCollapseOpen = false;
-  isEventTab: boolean;
-  tabIdx = 0;
-  isAlphaVersion = false;
-  isPreviewMode = false;
-  hideNavbar = false;  // 隱藏navbar-Kidin-1081023
+  
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -52,23 +51,23 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     private detectInappService: DetectInappService
   ) {
     if (location.search.indexOf('ipm=s') > -1) {
-      this.isPreviewMode = true;
+      this.uiFlag.isPreviewMode = true;
     }
 
   }
 
   ngOnInit() {
     this.checkBrowser();
-    this.checkHideNavabar();
     this.checkDomain();
     this.checkPage();
     this.checkLanguage();
     this.handleShowNavBar();
     this.listenTargetImg();
-    
   }
 
   ngAfterViewInit() {
+    // 使用setTimeout處理ExpressionChangedAfterItHasBeenCheckedError報錯
+    setTimeout(() => this.checkUiSetting());
     window.scrollTo({top: 0, behavior: 'auto'});
     this.checkLanguage();  // 因應手機平台，故在此生命週期再判斷一次語系
   }
@@ -86,23 +85,27 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
 
   }
 
-  // 是否隱藏Header-Kidin-1081023
-  checkHideNavabar () {
+  /**
+   * 確認ui設定（隱藏導行列、暗黑模式等）
+   * @author kidin-1101229
+   */
+  checkUiSetting () {
     let rxHideNavbar = false;
-    this.utilsService.getHideNavbarStatus().subscribe(res => {
-      rxHideNavbar = res;
-
-      if (this.route.snapshot.queryParamMap.get('navbar') === '0'
-        || rxHideNavbar
-      ) {
-        setTimeout(() => {  // 解決angular檢查前後狀態報錯的問題
-          this.hideNavbar = true;
-        }, 0);
+    combineLatest([
+      this.utilsService.getHideNavbarStatus(),
+      this.utilsService.getDarkModeStatus()
+    ]).pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(result => {
+      const [rxHideNavbar, rxDarkMode] = result;
+      const hideNavbarQuery = this.route.snapshot.queryParamMap.get('navbar') === '0';
+      this.uiFlag.hideNavbar = hideNavbarQuery || rxHideNavbar;
+      this.uiFlag.darkMode = rxDarkMode;
+      const target = document.querySelector('body');
+      if (rxDarkMode) {
+        target.style.backgroundColor = 'black';
       } else {
-        setTimeout(() => {  // 解決angular檢查前後狀態報錯的問題
-          this.hideNavbar = false;
-        }, 0);
-
+        target.style.backgroundColor = 'white';
       }
 
     });
@@ -114,7 +117,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    * @author kidin-1091008
    */
   checkDomain() {
-    this.isAlphaVersion = this.utilsService.checkWebVersion()[0];
+    this.uiFlag.isAlphaVersion = this.utilsService.checkWebVersion()[0];
   }
 
   /**
@@ -138,15 +141,26 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
       case '/introduction/application#fitness':
       case '/introduction/application':
         this.uiFlag.page = 'application';
+        this.clearAppViewSet();
         break;
       case '/introduction/analysis':
         this.uiFlag.page = 'analysis';
+        this.clearAppViewSet();
         break;
       default:
         this.uiFlag.page = 'other';
         break;
     }
 
+  }
+
+  /**
+   * 移除appview變更之設定
+   * @author kidin-1110114
+   */
+  clearAppViewSet() {
+    this.utilsService.setHideNavbarStatus(false);
+    this.utilsService.setDarkModeStatus(false);
   }
 
   /**
@@ -218,7 +232,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   handleShowNavBar() {
     this.globalEventsManager.showNavBarEmitter.subscribe(mode => {
-      this.isMaskShow = mode;
+      this.uiFlag.isMaskShow = mode;
     });
 
   }
@@ -311,9 +325,9 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    * @author kidin-1091008
    */
   touchMask() {
-    this.isCollapseOpen = false;
-    this.globalEventsManager.openCollapse(this.isCollapseOpen);
-    this.isMaskShow = false;
+    this.uiFlag.isCollapseOpen = false;
+    this.globalEventsManager.openCollapse(this.uiFlag.isCollapseOpen);
+    this.uiFlag.isMaskShow = false;
     this.globalEventsManager.closeCollapse(false);
   }
 

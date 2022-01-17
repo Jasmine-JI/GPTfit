@@ -88,7 +88,8 @@ export enum ProductShipped {
 }
 
 export enum ApplyStatus {
-  applied = 1,
+  notYet,
+  applied,
   cancel
 }
 

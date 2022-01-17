@@ -11,21 +11,27 @@ export class AppIdPipe implements PipeTransform {
    */
   transform(value: number, args: 'name' | 'descriptionKey' = 'name'): string {
     const name = [
-            'GPTfit',
-            'Connect',
-            'Cloud run',
-            'Train live',
-            'Fitness'
-          ],
-          key = [
-            'universal_app_gptInfo3',
-            'universal_app_alaconnectInfo',
-            'universal_app_cloudRunInfo',
-            'universal_app_trainLiveInfo',
-            'universal_app_fitnessInfo'
-          ];
+      'GPTfit',
+      'Connect',
+      'Cloud run',
+      'Train live',
+      'Fitness',
+      'TFT'
+    ];
+
+    const key = [
+      'universal_app_gptInfo3',
+      'universal_app_alaconnectInfo',
+      'universal_app_cloudRunInfo',
+      'universal_app_trainLiveInfo',
+      'universal_app_fitnessInfo',
+      'TFT'
+    ];
+
+    const appName = name[value] ?? 'Unknow';
+    const appDescription = key[value] ?? 'Unknow';
     if (value !== null) {
-      return args === 'name' ? name[value] : key[value];
+      return args === 'name' ? appName : appDescription;
     } else {
       return null;
     }

@@ -1,10 +1,12 @@
+@import 'filter.scss';
+
 .lesson-section__hide {
   position: absolute;
   top: -500px;
   left: 0;
 }
 .blurred-mask {
-  filter: blur(5px);
+  @include filter(blur(5px));
   width: 100%;
   height: 100vh;
   background: inherit;
@@ -76,11 +78,7 @@
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  -webkit-filter: brightness(2) blur(15px);
-  -moz-filter: brightness(2) blur(15px);
-  -o-filter: brightness(2) blur(15px);
-  -ms-filter: brightness(2) blur(15px);
-  filter: brightness(2) blur(15px);
+  @include filter(brightness(2) blur(15px));
 }
 
 .content {

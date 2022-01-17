@@ -4,7 +4,7 @@ import { UtilsService } from '../../../../shared/services/utils.service';
 import moment from 'moment';
 import { AlaApp } from '../../../../shared/models/app-id';
 import { AlbumType } from '../../../../shared/models/image';
-import { GroupService } from '../../services/group.service';
+import { GroupService } from '../../../../shared/services/group.service';
 import { Subject, fromEvent, Subscription } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { HttpParams } from '@angular/common/http';
@@ -30,7 +30,8 @@ const allApp = [
   AlaApp.connect,
   AlaApp.cloudrun,
   AlaApp.trainlive,
-  AlaApp.fitness
+  AlaApp.fitness,
+  AlaApp.tft
 ];
 const commonRegion = [
   {code: 'TW', name: '台灣'},
@@ -117,7 +118,8 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
       connect: [],
       cloudrun: [],
       trainlive: [],
-      fitness: []
+      fitness: [],
+      tft: []
     },
     fileCount: 0,
     totalSpace: 0,
@@ -125,6 +127,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
   };
 
   autoCompletedList = [];
+  readonly allAppNumber = allApp.length;
   readonly AlaApp = AlaApp;
   readonly AlbumType = AlbumType;
   readonly ObjType = ObjType;
@@ -235,8 +238,9 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    */
   selectApp(app: AlaApp) {
     const { createFromApp } = this.filterCondition;
-    if (app === 99) {
-      this.filterCondition.createFromApp = createFromApp.length < 5 ? allApp : [];
+    const currentLength = createFromApp.length;
+    if (app === AlaApp.all) {
+      this.filterCondition.createFromApp = currentLength < this.allAppNumber ? allApp : [];
     } else {
 
       if (createFromApp.includes(app)) {
@@ -654,7 +658,8 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
         connect: [],
         cloudrun: [],
         trainlive: [],
-        fitness: []
+        fitness: [],
+        tft: []
       },
       fileCount: 0,
       totalSpace: 0,
@@ -837,6 +842,9 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
                   break;
                 case AlaApp.fitness:
                   this.searchRes.trendChart.fitness.push(oneRangeData);
+                  break;
+                case AlaApp.tft:
+                  this.searchRes.trendChart.tft.push(oneRangeData);
                   break;
               }
 

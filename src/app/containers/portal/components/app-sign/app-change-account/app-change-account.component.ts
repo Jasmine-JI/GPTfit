@@ -5,13 +5,19 @@ import { AuthService } from '../../../../../shared/services/auth.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { SignupService } from '../../../services/signup.service';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Subscription, fromEvent, merge, of } from 'rxjs';
+import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { formTest } from '../../../../../shared/models/form-test';
 import { AccountTypeEnum } from '../../../../dashboard/models/userProfileInfo';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
+import { SignTypeEnum } from '../../../../../shared/models/utils-type';
+import { codes } from '../../../../../shared/models/countryCode';
+import { TFTViewMinWidth } from '../../../models/app-webview';
+
+
+type InputType = 'account' | 'password';
 
 @Component({
   selector: 'app-app-change-account',
@@ -21,8 +27,12 @@ import { GetClientIpService } from '../../../../../shared/services/get-client-ip
 export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private ngUnsubscribe = new Subject();
+  private clickScrollEvent = new Subscription();
+  private resizeSubscription = new Subscription();
 
   readonly formReg = formTest;
+  readonly SignTypeEnum = SignTypeEnum;
+  readonly countryCodeList = codes;
 
   i18n = {
     account: '',
@@ -30,17 +40,21 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
   };
   displayPW = false;
   dataIncomplete = true;
-  sending = false;
+  progress = 100;
   newToken = '';
   appSys = 0;  // 0:web, 1:ios, 2:android
   ip = '';
   pcView = false;
+  focusInput: InputType = null;
+  mobileSize = window.innerWidth < TFTViewMinWidth;
+  displayCountryCodeList = false;
+  requestHeader = {};
 
   editBody: any = {
     editType: 2,
     token: '',
     oldPassword: '',
-    newAccountType: 1,
+    newAccountType: SignTypeEnum.email,
   };
 
   cue = {
@@ -49,7 +63,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
   };
 
   accountInfo = {
-    oldType: 1,
+    oldType: SignTypeEnum.email,
     oldAccount: ''
   };
 
@@ -58,8 +72,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     email: this.formReg.email,
     emailPass: false,
     password: this.formReg.password,
-    passwordPass: false,
-    countryCodePass: false
+    passwordPass: false
   };
 
   // 惡意註冊圖碼解鎖
@@ -94,13 +107,15 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     this.getUrlString(location.search);
     this.getUserInfo();
     this.getTranslate();
-    this.getClientIpaddress();
+    this.subscribeResizeEvent();
     if (location.pathname.indexOf('web') > 0) {
       this.pcView = true;
       this.utils.setHideNavbarStatus(false);
+      this.utils.setDarkModeStatus(false);
     } else {
       this.pcView = false;
       this.utils.setHideNavbarStatus(true);
+      this.utils.setDarkModeStatus(true);
     }
 
     // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)
@@ -123,6 +138,20 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     if (this.pcView === false) {
       this.getDeviceSys();
     }
+
+  }
+
+  /**
+   * 訂閱頁面尺寸改變事件
+   * @author kidin-1101230
+   */
+  subscribeResizeEvent() {
+    const resizeEvent = fromEvent(window, 'resize');
+    this.resizeSubscription = resizeEvent.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(e => {
+      this.mobileSize = window.innerWidth < TFTViewMinWidth;
+    });
 
   }
 
@@ -149,20 +178,24 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     } else {
       this.appSys = 0;
     }
+
+    this.requestHeader = {
+      deviceType: this.appSys,
+      ...this.requestHeader
+    };
+
   }
 
   // 取得url query string和token-kidin-1090514
   getUrlString (urlStr) {
-    const query = urlStr.replace('?', '').split('&');
-    for (let i = 0; i < query.length; i++) {
-      const queryKey = query[i].split('=')[0];
-      switch (queryKey) {
-        case 'tk':  // 不寫死以免之後新增參數
-          this.editBody.token = query[i].split('=')[1];
-          break;
-      }
+    const query = this.utils.getUrlQueryStrings(location.search);
+    this.requestHeader = {
+      ...this.requestHeader,
+      ...this.utils.headerKeyTranslate(query)
+    };
 
-    }
+    const { tk } = query;
+    if (tk) this.editBody.token = tk;
 
     if (this.editBody.token === '') {
       this.editBody.token = this.utils.getToken() || '';
@@ -172,9 +205,21 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
   // 取得使用者ip位址-kidin-1090521
   getClientIpaddress () {
-    this.getClientIp.requestJsonp('https://api.ipify.org', 'format=jsonp', 'callback').subscribe(res => {
-      this.ip = (res as any).ip;
-    });
+    const { remoteAddr } = this.requestHeader as any;
+    if (!remoteAddr) {
+      return this.getClientIp.requestJsonp('https://api.ipify.org', 'format=jsonp', 'callback').pipe(
+        tap(res => {
+          this.ip = (res as any).ip;
+          this.requestHeader = {
+            ...this.requestHeader,
+            remoteAddr: this.ip
+          };
+        })
+      );
+
+    } else {
+      return of(this.requestHeader);
+    }
 
   }
 
@@ -190,12 +235,12 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
         this.accountType = accountType;
         if (accountType === AccountTypeEnum.email) {
           this.accountInfo = {
-            oldType: 1,
+            oldType: SignTypeEnum.email,
             oldAccount: userProfile.email
           };
         } else {
           this.accountInfo = {
-            oldType: 2,
+            oldType: SignTypeEnum.phone,
             oldAccount: `+${userProfile.countryCode} ${userProfile.mobileNumber}`
           };
 
@@ -259,19 +304,31 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
       if (e.key === 'Backspace') {
         const value = account.slice(0, account.length - 1);
         if (value.length > 0 && this.formReg.number.test(value)) {
-          this.editBody.newAccountType = 2;
+          this.editBody.newAccountType = SignTypeEnum.phone;
         } else {
-          this.editBody.newAccountType = 1;
+          this.editBody.newAccountType = SignTypeEnum.email;
         }
   
       } else if (this.formReg.number.test(account) && this.formReg.number.test(e.key)) {
-        this.editBody.newAccountType = 2;
+        this.editBody.newAccountType = SignTypeEnum.phone;
+        this.setCountryCode();
       } else if (!this.formReg.number.test(e.key)) {
-        this.editBody.newAccountType = 1;
+        this.editBody.newAccountType = SignTypeEnum.email;
+        if (this.editBody.newCountryCode) delete this.editBody.newCountryCode;
       }
 
     }
 
+  }
+
+  /**
+   * 從localstorage取得已儲存之country code，若無則預設886
+   * @author kidin-1110111
+   */
+  setCountryCode() {
+    const countryCode = this.utils.getLocalStorageObject('countryCode');
+    this.editBody.newCountryCode = countryCode ? +countryCode : 886;
+    this.checkAll(this.regCheck);
   }
 
   /**
@@ -284,18 +341,18 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
     if (account.length > 0) {
       if (this.formReg.number.test(account)) {
-        this.editBody.newAccountType = 2;
+        this.editBody.newAccountType = SignTypeEnum.phone;
         this.cue.account = '';
         this.editBody.newMobileNumber = account;
         this.checkAll(this.regCheck);
       } else {
-        this.editBody.newAccountType = 1;
+        this.editBody.newAccountType = SignTypeEnum.email;
         this.editBody.newEmail = account;
         this.checkEmail(this.editBody.newEmail);
       }
 
     } else {
-      this.editBody.newAccountType = 1;
+      this.editBody.newAccountType = SignTypeEnum.email;
       this.cue.account = 'universal_status_wrongFormat';
     }
 
@@ -314,17 +371,6 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     this.checkAll(this.regCheck);
   }
 
-  // 將使用者輸入的密碼進行隱藏-kidin-1090430
-  hidePassword () {
-    const pwInputType = (<HTMLInputElement>document.getElementById('signupPW'));
-    if (this.displayPW === true) {
-      pwInputType.type = 'text';
-    } else {
-      pwInputType.type = 'password';
-    }
-
-  }
-
   // 顯示密碼-kidin-1090429
   toggleDisplayPW () {
     if (this.displayPW === false) {
@@ -333,7 +379,6 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
       this.displayPW = false;
     }
 
-    this.hidePassword();
   }
 
   // 確認密碼格式-kidin-1090511
@@ -357,7 +402,6 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
   // 取得使用者輸入的國碼-kidin-1090504
   onCodeChange (countryCode) {
     this.editBody.newCountryCode = +countryCode;
-    this.regCheck.countryCodePass = true;
     this.cue.account = '';
     this.checkAll(this.regCheck);
   }
@@ -378,12 +422,11 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
   // 確認是否所有欄位皆已完成-kidin-1090512
   checkAll (check) {
-    if (this.editBody.newAccountType === 1) {
+    const { emailPass, passwordPass } = check;
+    const { show, code } = this.imgCaptcha;
+    if (this.editBody.newAccountType === SignTypeEnum.email) {
 
-      if (!check.emailPass
-          || !check.passwordPass
-          || (this.imgCaptcha.show && this.imgCaptcha.code.length === 0)
-      ) {
+      if (!emailPass || !passwordPass || (show && code.length === 0) ) {
         this.dataIncomplete = true;
       } else {
         this.dataIncomplete = false;
@@ -391,10 +434,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
     } else {
 
-      if (!check.countryCodePass) {
-        this.cue.account = 'universal_userAccount_countryRegionCode';
-        this.dataIncomplete = true;
-      } else if (!check.passwordPass || (this.imgCaptcha.show && this.imgCaptcha.code.length === 0)) {
+      if (!passwordPass || (show && code.length === 0)) {
         this.dataIncomplete = true;
       } else {
         this.cue.account = '';
@@ -407,14 +447,16 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
   // 進行變更帳號流程-kidin-1090518
   submit () {
-    this.sending = true;
+    this.progress = 30;
     if (this.imgCaptcha.show) {
       const releaseBody = {
         unlockFlow: 2,
         unlockKey: this.imgCaptcha.code
       };
 
-      this.signupService.fetchCaptcha(releaseBody, this.ip).subscribe(res => {
+      this.getClientIpaddress().pipe(
+        switchMap(ipResult => this.signupService.fetchCaptcha(releaseBody, this.requestHeader))
+      ).subscribe((res: any) => {
         const {
           processResult,
           resultCode: resCode,
@@ -433,21 +475,9 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
             switch (apiReturnMessage) {
               case 'Found a wrong unlock key.':
                 this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
-                this.sending = false;
                 break;
               default:
-                this.dialog.open(MessageBoxComponent, {
-                  hasBackdrop: true,
-                  data: {
-                    title: 'Message',
-                    body: `Error.<br />Please try again later.`,
-                    confirmText: this.translate.instant(
-                      'universal_operating_confirm'
-                    ),
-                    onConfirm: this.turnBack.bind(this)
-                  }
-                });
-
+                this.showErrorMsg();
                 console.error(`${resultCode}: ${apiReturnMessage}`);
                 break;
             }
@@ -456,6 +486,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
         }
 
+        this.progress = 100;
       });
     } else {
       this.sendFormInfo();
@@ -465,7 +496,9 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
   // 傳送變更表單-kidin-1090514
   sendFormInfo () {
-    this.userProfileService.fetchEditAccountInfo(this.editBody, this.ip).subscribe(res => {
+    this.getClientIpaddress().pipe(
+      switchMap(ipResult => this.signupService.fetchEditAccountInfo(this.editBody, this.requestHeader))
+    ).subscribe((res: any) => {
       const {
         processResult,
         resultCode: resCode,
@@ -492,25 +525,14 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
                 imgLockCode: imgLockCode
               };
 
-              this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
+              this.signupService.fetchCaptcha(captchaBody, this.requestHeader).subscribe((captchaRes: any) => {
                 this.imgCaptcha.show = true;
                 this.imgCaptcha.imgCode = `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`;
               });
 
               break;
             default:
-              this.dialog.open(MessageBoxComponent, {
-                hasBackdrop: true,
-                data: {
-                  title: 'Message',
-                  body: `Error.<br />Please try again later.`,
-                  confirmText: this.translate.instant(
-                    'universal_operating_confirm'
-                  ),
-                  onConfirm: this.turnBack.bind(this)
-                }
-              });
-
+              this.showErrorMsg();
               console.error(`${resultCode}: ${apiReturnMessage}`);
               break;
           }
@@ -527,32 +549,16 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
             (window as any).android.returnToken(this.newToken);
           }
 
-          const N = '\n';
-          this.dialog.open(MessageBoxComponent, {
-            hasBackdrop: true,
-            disableClose: true,
-            data: {
-              title: 'Message',
-              body: `${this.translate.instant('universal_operating_modify')} ${this.translate.instant('universal_status_success')} ${
-                N} ${this.translate.instant('universal_popUpMessage_continueExecution')} ${
-                this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_userAccount_account')}?
-              `,
-              confirmText: this.translate.instant(
-                'universal_operating_confirm'
-              ),
-              cancelText: this.translate.instant(
-                'universal_operating_cancel'
-              ),
-              onCancel: this.closeWindow.bind(this),
-              onConfirm: this.toEnableAccount.bind(this)
-            }
-          });
-
+          const modifyI18n = this.translate.instant('universal_operating_modify');
+          const successI18n = this.translate.instant('universal_status_success');
+          const msg = `${modifyI18n} ${successI18n}`;
+          this.utils.showSnackBar(msg);
+          this.toEnableAccount();
         }
 
       }
 
-      this.sending = false;
+      this.progress = 100;
     });
 
   }
@@ -563,9 +569,117 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     this.router.navigateByUrl(`/enableAccount`);
   }
 
+  /**
+   * 記憶目前所聚焦的輸入框類型(搭配readonly避免瀏覽器記憶帳密)
+   * @param e {MouseEvent}
+   * @author kidin-1110105
+   */
+  handleInputFocus(e: MouseEvent, input: InputType) {
+    e.stopPropagation();
+    this.focusInput = input;
+  }
+
+  /**
+   * 根據頁面使用dialog或snackbar顯示訊息
+   * @param msg {string}-欲顯示的訊息
+   * @author kidin-1110111
+   */
+  showErrorMsg() {
+    if (this.pcView) {
+      this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: 'Message',
+          body: `Error.<br />Please try again later.`,
+          confirmText: this.translate.instant(
+            'universal_operating_confirm'
+          ),
+          onConfirm: this.turnBack.bind(this)
+        }
+      });
+    } else {
+      const msg = 'Error! Please try again later.';
+      this.debounceTurnBack(msg);
+    }
+
+  }
+
+  /**
+   * 待snackbar訊息顯示兩秒後再轉導
+   * @author kidin-1110117
+   * @author kidin-1110117
+   */
+  debounceTurnBack(msg: string) {
+    this.utils.showSnackBar(msg);
+    this.progress = 30;
+    setTimeout(() => {
+      this.progress = 30;
+      this.turnBack();
+    }, 2000);
+
+  }
+
+  /**
+   * 顯示國碼選擇清單
+   * @param e {MouseEvent}
+   * @author kidin-1110103
+   */
+  showCountryCodeList(e: MouseEvent) {
+    e.stopPropagation();
+    const { editBody: { newAccountType }, displayCountryCodeList } = this;
+    if (newAccountType === SignTypeEnum.phone) {
+      if (displayCountryCodeList) {
+        this.unsubscribeClickScrollEvent();
+      } else {
+        this.displayCountryCodeList = true;
+        this.subscribeClickScrollEvent();
+      }
+
+    }
+    
+  }
+
+  /**
+   * 訂閱點擊與滾動事件
+   * @author kidin-1110103
+   */
+  subscribeClickScrollEvent() {
+    const targetElement = document.querySelector('main');
+    const clickEvent = fromEvent(document, 'click');
+    const scrollEvent = fromEvent(targetElement, 'scroll');
+    this.clickScrollEvent = merge(clickEvent, scrollEvent).pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.unsubscribeClickScrollEvent();
+    });
+
+  }
+  
+  /**
+   * 選擇國碼
+   * @param e {MouseEvent}
+   * @param code {string}-所選國碼
+   * @author kidin-1110103
+   */
+  selectCountryCode(e: MouseEvent, code: string) {
+    e.stopPropagation();
+    this.editBody.newCountryCode = +code.split('+')[1];
+    this.cue.account = '';
+    this.checkAll(this.regCheck);
+    this.unsubscribeClickScrollEvent();
+  }
+
+  /**
+   * 取消訂閱全域點擊與滾動事件
+   * @author kidin-1110103
+   */
+  unsubscribeClickScrollEvent() {
+    this.displayCountryCodeList = false;
+    if (this.clickScrollEvent) this.clickScrollEvent.unsubscribe();
+  }
+
   // 離開頁面則取消隱藏navbar-kidin-1090514
   ngOnDestroy () {
-    this.utils.setHideNavbarStatus(false);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }

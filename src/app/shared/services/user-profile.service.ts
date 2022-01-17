@@ -16,45 +16,6 @@ export class UserProfileService {
   targetUserInfo$ = new ReplaySubject<any>(1); // 個人頁面的使用者資訊
 
   /**
-   * Api-v2 1002-啟用帳號
-   */
-  fetchEnableAccount (body, ip) {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'remoteAddr': `${ip}`,
-      })
-    };
-
-    return this.http.post<any>('/api/v2/user/enableAccount', body, httpOptions);
-  }
-
-  /**
-   * Api-v2 1004-忘記密碼
-   */
-  fetchForgetpwd (body, ip) {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'remoteAddr': `${ip}`,
-      })
-    };
-
-    return this.http.post<any>('/api/v2/user/resetPassword', body, httpOptions);
-  }
-
-  /**
-   * Api-v2 1005-編輯帳密
-   */
-  fetchEditAccountInfo (body, ip) {  // v2 1005
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'remoteAddr': `${ip}`,
-      })
-    };
-
-    return this.http.post<any>('/api/v2/user/editAccount', body, httpOptions);
-  }
-
-  /**
    * api 1009-與第三方軟體連結同步運動資料。
    * @param body {object}
    * @author kidin-1090723
@@ -240,7 +201,5 @@ export class UserProfileService {
   getRxTargetUserInfo(): Observable<any> {
     return this.targetUserInfo$;
   }
-
-
 
 }

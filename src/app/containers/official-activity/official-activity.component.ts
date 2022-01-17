@@ -76,7 +76,8 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
     showNicknameHint: false,
     showPassword: false,
     sendingPhoneCaptcha: false,
-    focusInput: false
+    focusInput: false,
+    clickSubmit: false
   };
 
   /**
@@ -129,6 +130,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
   privacyPolicyUrl: string;
   agreeDeclaration = false;
   activityKeyword = '';
+  requestHeader = {};
   readonly SignTypeEnum = SignTypeEnum;
   readonly countryCodeList = codes;
 
@@ -218,7 +220,9 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
 
       if (event instanceof NavigationEnd) {
         this.closeAuthBox();
+        this.handleAdvertiseSize(window.innerWidth);
         this.checkCurrentPage();
+        this.loginCheck();
       }
 
     })
@@ -245,7 +249,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
     }
 
     if (this.uiFlag.showAdvertise) {
-      this.startCarousel();
+      if (!this.carouselProgress) this.startCarousel();
     } else {
       this.stopCarousel();
     }
@@ -317,6 +321,16 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
       this.handleAdvertiseSize(innerWidth);
     }
 
+    this.correctionHeight();
+  }
+
+  /**
+   * 校正高度以解決手機瀏覽器使用vh設定高度時，vh基準會包含網址列與控制列的問題
+   * @author kidin-1110105
+   */
+  correctionHeight() {
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
   }
 
   /**
@@ -351,7 +365,8 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1100928
    */
   loginCheck() {
-    if (this.token) {
+    this.token = this.utils.getToken();
+    if (this.token  && !this.userInfo) {
       const body = {
         token: this.token,
         signInType: SignTypeEnum.token
@@ -381,9 +396,8 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
     ).subscribe(res => {
       if (this.utils.checkRes(res)) {
         const { advertise } = res;
-        const currentTimestamp = moment().unix();
         this.advertise = advertise
-          .filter(_ad => _ad.effectDate > currentTimestamp)
+          .filter(_ad => this.officialActivityService.filterInvalidCarousel(_ad))
           .map((_ad, index) => {
             _ad.advertiseId = index + 1;
             return _ad;
@@ -435,8 +449,16 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101028
    */
   stopCarousel() {
-    if (this.carouselProgress) clearInterval(this.carouselProgress);
-    if (this.carouselAnimation) clearInterval(this.carouselAnimation);
+    if (this.carouselProgress) {
+      clearInterval(this.carouselProgress);
+      this.carouselProgress = undefined;
+    }
+    
+    if (this.carouselAnimation) {
+      clearInterval(this.carouselAnimation);
+      this.carouselAnimation = undefined;
+    }
+    
   }
 
   /**
@@ -501,11 +523,11 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
       carouselList.appendChild(switchCarousel);
     }
     
-    const animatoinTotalTime = 500;
+    const animationTotalTime = 500;
     const oneShiftTime = 10;
     let timeCount = 0;
     this.carouselAnimation = setInterval(() => {
-      if (timeCount > animatoinTotalTime) {
+      if (timeCount > animationTotalTime) {
         const itemList = document.querySelectorAll('.carousel__list__item');
         const removeIndex = action === 'pre' ? itemList.length - 1 : 0;
         const removeTargetElement = itemList[removeIndex];
@@ -514,7 +536,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
         clearInterval(this.carouselAnimation);
         this.carouselAnimation = undefined;
       } else {
-        const ratio = timeCount / animatoinTotalTime;
+        const ratio = timeCount / animationTotalTime;
         const shiftRatio = action === 'pre' ? 1 - ratio : ratio;
         carouselList.style.left = `${-this.carouselWidth * shiftRatio}px`;
       }
@@ -668,6 +690,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
       password: null
     };
 
+    this.uiFlag.clickSubmit = false;
     if (this.accountInput) {
       this.accountInput.nativeElement.value = '';
     }
@@ -804,19 +827,14 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101108
    */
   checkPhoneFormat(newPhoneNumber: number) {
-    const { mobileNumber: oldPhone } = this.authInfo;
     const newPhone = `${newPhoneNumber}`;
-    if (newPhoneNumber !== oldPhone) {
-
-      if (newPhone.length === 0) {
-        this.authAlert.account = 'empty';
-      } else if (!formTest.phone.test(newPhone)) {
-        this.authAlert.account = 'format';
-      } else {
-        this.authAlert.account = null;
-        this.authInfo.mobileNumber = newPhoneNumber;
-      }
-
+    if (newPhone.length === 0) {
+      this.authAlert.account = 'empty';
+    } else if (!formTest.phone.test(newPhone)) {
+      this.authAlert.account = 'format';
+    } else {
+      this.authAlert.account = null;
+      this.authInfo.mobileNumber = newPhoneNumber;
     }
 
   }
@@ -827,18 +845,13 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101108
    */
   checkEmailFormat(newEmail: string) {
-    const { email: oldEmail } = this.authInfo;
-    if (newEmail !== oldEmail) {
-
-      if (newEmail.length === 0) {
-        this.authAlert.account = 'empty';
-      } else if (!formTest.email.test(newEmail)) {
-        this.authAlert.account = 'format';
-      } else {
-        this.authAlert.account = null;
-        this.authInfo.email = newEmail;
-      }
-
+    if (newEmail.length === 0) {
+      this.authAlert.account = 'empty';
+    } else if (!formTest.email.test(newEmail)) {
+      this.authAlert.account = 'format';
+    } else {
+      this.authAlert.account = null;
+      this.authInfo.email = newEmail;
     }
 
   }
@@ -1048,8 +1061,13 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
           switchMap((ipResult: any) => {
             const { ip, countryCode } = ipResult;
             if (ip) {
+              this.requestHeader = {
+                remoteAddr: ip,
+                regionCode: countryCode || 'US'
+              };
+
               return combineLatest([
-                this.signupService.fetchRegister(body, ip, countryCode),
+                this.signupService.fetchRegister(body, this.requestHeader),
                 this.translate.get('hellow world')  // 確保翻譯載入完成
               ]);
             } else {
@@ -1197,14 +1215,15 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
    */
   submitVerify() {
     const { sms } = this.authInfo;
-    if (sms.length === 0) {
-      this.authAlert.sms = 'empty';
-    } else {
-      const { progress } = this.uiFlag;
-      if (progress === 100) {
-  
-        if (this.captchaImg) {
-          this.handleCaptchaUnlock(UnlockFlow.sendUnlockCode, null, 'submitVerify');
+    const { progress } = this.uiFlag;
+    if (progress === 100) {
+
+      if (this.captchaImg) {
+        this.handleCaptchaUnlock(UnlockFlow.sendUnlockCode, null, 'submitVerify');
+      } else {
+
+        if (sms.length === 0) {
+          this.authAlert.sms = 'empty';
         } else {
           this.uiFlag.progress = 30;
           const flow = ResetPasswordFlow.verify;
@@ -1344,7 +1363,8 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
       switchMap((ipResult: any) => {
         const { ip } = ipResult;
         if (ip) {
-          return this.userProfileService.fetchForgetpwd(body, ip);
+          this.requestHeader = { remoteAddr: ip };
+          return this.signupService.fetchForgetpwd(body, this.requestHeader);
         } else {
           return of(false);
         }
@@ -1466,27 +1486,28 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
     const { authBox } = this.uiFlag;
     const alertElement = document.querySelector('[data-pass=false]');
     const checkEmptyPass = this.checkAuthInfo();
-    if (!alertElement && checkEmptyPass) {
-
-      switch (authBox) {
-        case 'login':
-          this.login();
-          break;
-        case 'register':
-          if (this.agreeDeclaration) this.register();
-          break;
-        case 'forgetPassword':
-          const { signInType } = this.authInfo;
+    this.uiFlag.clickSubmit = true;
+    const passCheck = !alertElement && checkEmptyPass;
+    switch (authBox) {
+      case 'login':
+        if (passCheck) this.login();
+        break;
+      case 'register':
+        if (passCheck && this.agreeDeclaration) this.register();
+        break;
+      case 'forgetPassword':
+        const { signInType } = this.authInfo;
+        if (passCheck || this.captchaImg) {
           signInType === SignTypeEnum.phone ? this.submitVerify() : this.sendVerify();
-          break;
-        case 'resetPassword':
-          this.resetPassword();
-          break;
-        default:
-          this.uiFlag.authBox = null;
-          break;
-      }
+        }
 
+        break;
+      case 'resetPassword':
+        if (passCheck) this.resetPassword();
+        break;
+      default:
+        this.uiFlag.authBox = null;
+        break;
     }
 
   }
@@ -1573,11 +1594,12 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
       switchMap((ipResult: any) => {
         const { ip } = ipResult;
         if (ip) {
-          return this.signupService.fetchQrcodeLogin(firstFlowBody, ip).pipe(
+          this.requestHeader = { remoteAddr: ip };
+          return this.signupService.fetchQrcodeLogin(firstFlowBody, this.requestHeader).pipe(
             switchMap(firstFlowResult => {
               if (this.utils.checkRes(firstFlowResult)) {
                 const secondFlowBody = { qrSignInFlow: QrSignInFlow.longPolling, guid };
-                return this.signupService.fetchQrcodeLogin(secondFlowBody, ip);
+                return this.signupService.fetchQrcodeLogin(secondFlowBody, this.requestHeader);
               } else {
                 return of(firstFlowResult);
               }
@@ -1636,13 +1658,10 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
    */
   handleCaptchaUnlock(unlockFlow: UnlockFlow, imgLockCode: string = null, callback: any = null) {
     this.imgCaptcha.unlockFlow = unlockFlow;
-    const alertElement = document.querySelector('[data-pass=false]');
     if (unlockFlow === UnlockFlow.requestUnlockImage) {
       this.imgCaptcha = { imgLockCode, ...this.imgCaptcha };
     } else if (!this.imgCaptcha.unlockKey) {
       this.authAlert.captcha = 'mistake';
-      return false;
-    } else if (alertElement) {
       return false;
     }
 
@@ -1650,7 +1669,8 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
       switchMap((ipResult: any) => {
         const { ip } = ipResult;
         if (ip) {
-          return this.signupService.fetchCaptcha(this.imgCaptcha, ip);
+          this.requestHeader = { remoteAddr: ip };
+          return this.signupService.fetchCaptcha(this.imgCaptcha, this.requestHeader);
         } else {
           return of(false);
         }
@@ -1665,7 +1685,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
             this.captchaImg = res.captcha.randomCodeImg;
             break;
           case UnlockFlow.sendUnlockCode:
-            this.captchaImg = null;
+            this.initCaptcha();
             this[callback]();
             break;
         }
@@ -1708,6 +1728,18 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
 
     }, 1000);
 
+  }
+
+  /**
+   * 將圖碼相關變數初始化
+   * @author kidin-1101230
+   */
+  initCaptcha() {
+    this.imgCaptcha = {
+      unlockFlow: null
+    };
+
+    this.captchaImg = null;
   }
 
   /**

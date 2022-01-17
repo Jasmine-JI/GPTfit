@@ -26,11 +26,11 @@
           <table id="race__date">
             <tbody>
               <tr>
-                <th>{{ '開始' }}</th>
+                <th>{{ '競賽開始' }}</th>
                 <td>{{ eventInfo.raceDate.startDate * 1000 | timeFormat: 'YYYY-MM-DD' }}</td>
               </tr>
               <tr>
-                <th>{{ '結束' }}</th>
+                <th>{{ '競賽結束' }}</th>
                 <td>{{ eventInfo.raceDate.endDate * 1000 | timeFormat: 'YYYY-MM-DD' }}</td>
               </tr>
             </tbody>
@@ -66,6 +66,9 @@
             </ng-container>
             <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.eventCancelled">
               {{ '賽事取消' }}
+            </ng-container>
+            <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.applyCancelled">
+              {{ '已取消報名' }}
             </ng-container>
           </button>
         </div>

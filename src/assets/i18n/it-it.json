@@ -2172,7 +2172,7 @@
  "universal_userAccount_longUnusedPhone": "Il tuo account, numero di telefono {{number}}, è rimasto inattivo per un po’ di tempo. Il sistema lo eliminerà automaticamente il {{yyyy-mm-dd}}. Se desideri mantenere il tuo account, accedi al tuo account e attivalo.",
  "universal_userAccount_nameCharactersToLong": "Il nome deve avere da 4 a 24 caratteri",
  "universal_userAccount_newPassword": "Nuova password",
- "universal_userAccount_newVerificationMailSucceeded": "L'email di verifica è stata inviata, accedere a <br /> <br /> per fare clic sul link di attivazione. Se non hai ricevuto l'email, controlla lo spam o invia un'altra richiesta di verifica.",
+ "universal_userAccount_newVerificationMailSucceeded": "L'email di verifica è stata inviata, accedere a <br>{{email}}<br> per fare clic sul link di attivazione. Se non hai ricevuto l'email, controlla lo spam o invia un'altra richiesta di verifica.",
  "universal_userAccount_nickname": "Nickname",
  "universal_userAccount_noAreaCode": "Codice paese/regione non ancora selezionato",
  "universal_userAccount_noGraphicCode": "Codice di verifica immagine non ancora inserito",

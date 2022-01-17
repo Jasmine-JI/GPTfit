@@ -331,4 +331,14 @@ export class OfficialActivityService {
     return colorAssign;
   }
 
+  /**
+   * 篩選無圖片或失效之輪播
+   * @author kidin-1101228
+   */
+  filterInvalidCarousel(advertise: any) {
+    const currentTimestamp = (new Date).getTime();
+    const { effectDate, img } = advertise;
+    return effectDate * 1000 > currentTimestamp && img;
+  }
+
 }

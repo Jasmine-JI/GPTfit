@@ -1,3 +1,5 @@
+@import 'font.scss';
+
 .successMsg {
   position: absolute;
   left: 50%;
@@ -15,4 +17,27 @@
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
     text-shadow: 0 2px 1px hsla(0, 0%, 100%, .2);
   }
+}
+
+.alatech__logo {
+  max-width: 300px;
+  margin: 20px auto;
+  width: 90%;
+  filter: sepia(1) brightness(10);
+}
+
+.scan__text {
+  margin: 20px;
+  text-align: center;
+}
+
+.check__text {
+  @include bold-font(18px);
+  color: rgba(243, 183, 183, 1);
+}
+
+.user__name {
+  @include bold-font(18px);
+  text-align: center;
+  margin: 0;
 }
