@@ -36,7 +36,7 @@
 .official-dialogTitle {
   $height: 45px;
   @include center();
-  background-color: $official-theme-color;
+  background: $official-theme-color;
   color: white;
   height: $height;
   min-height: $height;
@@ -75,8 +75,7 @@
   color: white;
   border-style: solid;
   border-width: 3px 5px;
-  border-color: rgba(255, 159, 159, 1);
-  background-color: $official-theme-color-deep;
+  background: $official-theme-color;
 }
 
 .official-subButton {
@@ -84,8 +83,8 @@
   width: 100px;
   min-height: 40px;
   font-weight: bold;
-  border: 1px solid $official-theme-color;
-  color: $official-theme-color-deep;
+  border: 1px solid $official-theme-color-light;
+  color: $official-theme-color-light;
 }
 
 .official-dashBorder {
@@ -95,12 +94,15 @@
 
 .official-deleteButton {
   $size: 20px;
+  @include center();
   @include button(20px, none, black) {
     margin: 15px;
     height: $size;
     width: $size;
     border-radius: 50%;
     color: white;
+    max-width: 20px;
+    padding: 0;
   };
   
   >i {

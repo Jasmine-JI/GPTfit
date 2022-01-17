@@ -20,7 +20,6 @@ import { CoachDashboardComponent } from './components/coach-dashboard/coach-dash
 import { CoachService } from './services/coach.service';
 import { UtilsService } from '../../shared/services/utils.service';
 import { SharedModule } from '../../shared/shared.module';
-import { GroupService } from './services/group.service';
 import { AccessNamePipe } from './pipes/access-name.pipe';
 import { EditGroupGuard } from './guards/edit-group-guard';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
@@ -81,6 +80,7 @@ import { SettingPreferComponent } from './personal/setting-prefer/setting-prefer
 import { SettingPrivacyComponent } from './personal/setting-privacy/setting-privacy.component';
 import { SettingAccountComponent } from './personal/setting-account/setting-account.component';
 import { ActivityListComponent } from './personal/activity-list/activity-list.component';
+import { GroupService } from '../../shared/services/group.service';
 
 
 @NgModule({
@@ -104,7 +104,6 @@ import { ActivityListComponent } from './personal/activity-list/activity-list.co
     DeviceLogService,
     CoachService,
     UtilsService,
-    GroupService,
     EditGroupGuard,
     DashboardGuard,
     ActivityService,
@@ -117,6 +116,7 @@ import { ActivityListComponent } from './personal/activity-list/activity-list.co
     LifeTrackingService,
     OfficialActivityService,
     PersonCloudrunReport,
+    GroupService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

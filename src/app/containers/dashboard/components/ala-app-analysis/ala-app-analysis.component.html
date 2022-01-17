@@ -109,10 +109,10 @@
             <span class="flexRow checkBoxBlock">
               <button
                 id="all__app"
-                [class.check__box--active]="filterCondition.createFromApp.length === 5"
+                [class.check__box--active]="filterCondition.createFromApp.length === allAppNumber"
                 (click)="selectApp(AlaApp.all)"
               >
-                <span *ngIf="filterCondition.createFromApp.length === 5">✔</span>
+                <span *ngIf="filterCondition.createFromApp.length === allAppNumber">✔</span>
               </button>
               <label for="all__app">全部</label>
             </span>
@@ -165,6 +165,16 @@
                 <span *ngIf="filterCondition.createFromApp.includes(AlaApp.fitness)">✔</span>
               </button>
               <label for="fitness">Fitness</label>
+            </span>
+            <span class="flexRow checkBoxBlock">
+              <button
+                id="tft"
+                [class.check__box--active]="filterCondition.createFromApp.includes(AlaApp.tft)"
+                (click)="selectApp(AlaApp.tft)"
+              >
+                <span *ngIf="filterCondition.createFromApp.includes(AlaApp.tft)">✔</span>
+              </button>
+              <label for="tft">TFT</label>
             </span>
           </div>
         </div>

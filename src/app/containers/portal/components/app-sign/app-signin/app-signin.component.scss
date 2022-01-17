@@ -1,9 +1,31 @@
-.loginPageLink {
-  margin: 5px 0px;
-  font-weight: bold;
-  font-size: 18px;
+@import 'button.scss';
+
+.navigate__button__area {
+  justify-content: space-between;
+
+  >button {
+    border-radius: 5px;
+    width: 33%;
+    min-width: 90px;
+    padding: 0;
+
+    >a {
+      text-decoration: none;
+      color: white;
+      font-size: 12px;
+      padding: 5px 10px;
+      width: 100%;
+      height: 100%;
+    }
+
+  }
+
 }
 
-.linkColor {
-  color: #585858;
+.forget__password__button {
+  background-color: rgba(150, 150, 150, 1);
+}
+
+.signup__button {
+  background-color: rgba(66, 98, 106, 1);
 }

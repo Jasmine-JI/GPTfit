@@ -10,7 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { HashIdService } from '../../../../../shared/services/hash-id.service';
 import { ReportService } from '../../../../../shared/services/report.service';
-import { GroupService } from '../../../services/group.service';
+import { GroupService } from '../../../../../shared/services/group.service';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
 import { mi, Unit } from '../../../../../shared/models/bs-constant';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';

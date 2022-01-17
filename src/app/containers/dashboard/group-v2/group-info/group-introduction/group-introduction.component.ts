@@ -4,7 +4,7 @@ import { fromEvent, Subscription, Subject, forkJoin } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { GroupDetailInfo, UserSimpleInfo, EditMode } from '../../../models/group-detail';
 import { UtilsService } from '../../../../../shared/services/utils.service';
-import { GroupService } from '../../../services/group.service';
+import { GroupService } from '../../../../../shared/services/group.service';
 import { HashIdService } from '../../../../../shared/services/hash-id.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';

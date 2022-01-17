@@ -2172,7 +2172,7 @@
  "universal_userAccount_longUnusedPhone": "Votre compte, numéro de téléphone {{number}}, est inactif depuis un certain temps. Le système le supprimera automatiquement le {{yyyy-mm-dd}}. Si vous souhaitez conserver votre compte, veuillez vous connecter à votre compte et l'activer.",
  "universal_userAccount_nameCharactersToLong": "Le nom doit avoir entre 4 - 24 caractères",
  "universal_userAccount_newPassword": "Nouveau mot de passe",
- "universal_userAccount_newVerificationMailSucceeded": "Un e-mail de vérification a été envoyé. Veuillez accéder à <br /><br /> afin de cliquer sur le lien pour l'activer. Si vous n'avez pas reçu l'e-mail, veuillez vérifier vos courriers indésirables ou envoyer une autre demande de vérification.",
+ "universal_userAccount_newVerificationMailSucceeded": "Un e-mail de vérification a été envoyé. Veuillez accéder à <br>{{email}}<br> afin de cliquer sur le lien pour l'activer. Si vous n'avez pas reçu l'e-mail, veuillez vérifier vos courriers indésirables ou envoyer une autre demande de vérification.",
  "universal_userAccount_nickname": "Surnom",
  "universal_userAccount_noAreaCode": "Pas encore sélectionné de code pays / région",
  "universal_userAccount_noGraphicCode": "Pas encore entré de code de vérification d'image",

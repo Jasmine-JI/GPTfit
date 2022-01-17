@@ -71,6 +71,7 @@
           [class.form__alert]="formAlert.content === 'empty'"
           [placeholder]="'內容*'"
           maxlength="500"
+          [value]="templateText"
           (change)="handleContentInput($event)"
           (focusout)="handleContentInput($event)"
         ></textarea>

@@ -12,6 +12,7 @@
     border: 1px solid var(--scale-0-255);
     width: $size;
     height: $size;
+    padding: 0;
   
     >span {
       @include center();
@@ -34,4 +35,43 @@
 ) {
   background-color: $bg-color;
   color: $color;
+}
+
+@mixin aria-checkBox($size: 16px, $bg-color: rgba(196, 196, 196, 1), $font-color: black) {
+
+  &[role="checkbox"] {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    cursor: pointer;
+
+    &:before {
+      content: '';
+      display: inline-block;
+      width: $size;
+      min-width: $size;
+      height: $size;
+      min-height: $size;
+      background-color: $bg-color;
+      margin-right: 10px;
+      position: relative;
+      top: 2px;
+    }
+
+    &[aria-checked="true"] {
+
+      &:before {
+        content: '✔';
+        color: $font-color;
+        @include center();
+      }
+
+    }
+
+    &[aria-disabled="true"] {
+      cursor: initial;
+    }
+
+  }
+
 }

@@ -156,10 +156,13 @@
         class="page__link child__page__link"
         (click)="navigate($event, '/official-activity/leaderboard')"
       >
-        {{ '資料' }}
+        {{ '排行榜' }}
       </a>
     </li>
-    <li [class.page__link--active]="uiFlag.currentPage === 'my-activity'">
+    <li
+      [class.page__link--active]="uiFlag.currentPage === 'my-activity'"
+      *ngIf="token"
+    >
       <a
         href="/official-activity/my-activity"
         class="page__link child__page__link"
@@ -173,7 +176,7 @@
     id="main__page"
     class="flexCol"
     [style.overflow-y]="uiFlag.currentPage === 'edit-activity' ? 'unset' : 'scroll'"
-    [style.height]="uiFlag.currentPage === 'apply-activity' ? '100vh' : ''"
+    [style.height]="uiFlag.currentPage === 'apply-activity' ? 'calc(var(--vh, 1vh) * 100)' : ''"
   >
     <main
       [style.padding]="
@@ -188,7 +191,7 @@
         [
           'edit-activity',
           'apply-activity'
-        ].includes(uiFlag.currentPage) ? '100vh' : ''
+        ].includes(uiFlag.currentPage) ? 'calc(var(--vh, 1vh) * 100)' : ''
       "
     >
       <ng-container *ngIf="advertise.length > 0 && uiFlag.showAdvertise">
@@ -196,7 +199,7 @@
           <div class="flexRow">
             <button
               class="switch__btn"
-              (click)="switchNextCarousel()"
+              (click)="switchPreCarousel()"
               [disabled]="advertise.length < 2"
             >
               <i class="icon-svg_web-icon_p1_073-level_fold"></i>
@@ -204,7 +207,10 @@
             <div class="carousel__block">
               <ul class="flexRow carousel__list">
                 <li class="carousel__list__item">
-                  <a [href]="carousel.link" target="_blank">
+                  <a
+                    [href]="carousel.link.includes('https') ? carousel.link : 'https://' + carousel.link"
+                    target="_blank"
+                  >
                     <img [src]="carousel.img" alt="ad" class="carousel__img">
                   </a>
                 </li>
@@ -212,7 +218,7 @@
             </div>
             <button
               class="switch__btn"
-              (click)="switchPreCarousel()"
+              (click)="switchNextCarousel()"
               [disabled]="advertise.length < 2"
             >
               <i class="icon-svg_web-icon_p1_074-level_unfold"></i>
@@ -231,14 +237,13 @@
       </ng-container>
       <div
         id="child__page"
-        [style.max-width]="
-          [
-            'activity-detail',
-            'edit-activity',
-            'apply-activity',
-            'contestant-list'
-          ].includes(uiFlag.currentPage) ? 'unset' : '1600px'
-        "
+        [class.wide__page]="![
+          'activity-detail',
+          'edit-activity',
+          'apply-activity',
+          'contestant-list'
+        ].includes(uiFlag.currentPage)"
+        [class.middle__page]="uiFlag.currentPage === 'activity-detail'"
       >
         <router-outlet></router-outlet>
       </div>
@@ -249,13 +254,10 @@
       *ngIf="!['edit-activity', 'apply-activity'].includes(uiFlag.currentPage)"
     >
       <div class="flexRow footer__link__area">
-<!--
         <img
           id="footer__logo"
           src="/assets/cloud_run/cloudrun-icon.svg"
-          alt="Alatech"
         >
--->
         <div class="flexRow footer__link">
           <a
             id="about__me__link"
@@ -283,7 +285,12 @@
           </a>
         </button>
       </div>
-      <div>
+      <div class="flexCol" style="align-items: center;">
+        <img
+          src="/assets/images/event-email.png"
+          alt="Official email"
+          style="height: 30px; width: 220px;"
+        >
         <p id="footer__copyright">
           英達科技有限公司 © 2021 Alatech Ltd. Co. All Rights Reserved.
         </p>
@@ -396,6 +403,9 @@
           <ng-container *ngIf="authAlert.account === 'format'">
             {{ 'universal_status_wrongFormat' | translate }}
           </ng-container>
+          <ng-container *ngIf="authAlert.account === 'repeat'">
+            {{ 'universal_userAccount_account' | translate }} {{ 'universal_deviceSetting_repeat' | translate }}
+          </ng-container>
         </span>
         <ng-container *ngIf="uiFlag.authBox !== 'forgetPassword'">
           <div class="flexRow">
@@ -411,6 +421,7 @@
                     ) | translate)
                   }
                 )"
+                maxlength="20"
                 (focus)="focusInput()"
                 (keyup)="checkEnter($event, 'passwordInput')"
                 (change)="checkPassword($event)"
@@ -463,6 +474,9 @@
             </ng-container>
             <ng-container *ngIf="authAlert.nickname === 'format'">
               {{ 'universal_userAccount_nameCharactersToLong' | translate }}
+            </ng-container>
+            <ng-container *ngIf="authAlert.nickname === 'repeat'">
+              {{ 'universal_userAccount_nickname' | translate }} {{ 'universal_deviceSetting_repeat' | translate }}
             </ng-container>
           </span>
         </ng-container>
@@ -569,6 +583,7 @@
         <input 
           id="declaration"
           type="checkbox"
+          [class.checkbox__alert]="uiFlag.clickSubmit && !agreeDeclaration"
           [value]="true"
           [(ngModel)]="agreeDeclaration"
         >

@@ -2,6 +2,7 @@
 @import 'transition.scss';
 @import 'flex-center.scss';
 @import 'color.scss';
+@import 'filter.scss';
 
 $avatar-size: 40px;
 $nav-height: 60px;
@@ -84,7 +85,7 @@ $declaration-color: rgba(100, 100, 100, 1);
   align-items: center;
   width: 100vw;
   height: $nav-height;
-  background-color: $official-theme-color;
+  background: $official-theme-color;
   padding: 0 10px;
   color: white;
   z-index: 5;
@@ -238,7 +239,7 @@ $declaration-color: rgba(100, 100, 100, 1);
 #main__page {
   justify-content: space-between;
   width: 100vw;
-  height: calc(100vh - #{$nav-height});
+  height: calc(var(--vh, 1vh) * 100 - #{$nav-height});
   scrollbar-width: thin;
 }
 
@@ -247,7 +248,7 @@ $declaration-color: rgba(100, 100, 100, 1);
 }
 
 .noraml__link {
-  top: 5vh;
+  top: calc(var(--vh, 1vh) * 5);
 
   >a {
     margin: 10px 0;
@@ -461,13 +462,13 @@ $declaration-color: rgba(100, 100, 100, 1);
   justify-content: space-between;
   border-top: 1px solid black;
   margin: 0 2vw;
-  padding-top: 3vh;
-  min-height: 15vh;
+  padding-top: calc(var(--vh, 1vh) * 3);
 }
 
 .footer__link__area {
   justify-content: space-around;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .footer__link {
@@ -476,6 +477,7 @@ $declaration-color: rgba(100, 100, 100, 1);
   
   >a {
     color: black;
+    white-space: nowrap;
 
     &:first-of-type {
       font-weight: bold;
@@ -485,7 +487,7 @@ $declaration-color: rgba(100, 100, 100, 1);
 
       &:before {
         content: '';
-        border-left: 3px solid rgba(229, 68, 68);
+        border-left: 3px solid $official-theme-color-light;
         margin-right: 10px;
       }
 
@@ -509,13 +511,26 @@ $declaration-color: rgba(100, 100, 100, 1);
   text-align: center;
 }
 
+.wide__page {
+  max-width: 1600px;
+}
+
+.middle__page {
+  max-width: 1200px;
+}
+
+#footer__logo {
+  width: 75px;
+  @include filter(brightness(0.24) sepia(1) hue-rotate(310deg) saturate(8));
+}
+
+.checkbox__alert {
+  box-shadow: 1px 1px 1px red, -1px -1px 1px red, 1px -1px 1px red, -1px 1px 1px red;
+}
+
 /************************************************* media ****************************************/
 
 @media (max-width: 767px) {
-
-  #main__page {
-    width: 100vw;
-  }
 
   #carousel {
     width: 100%;

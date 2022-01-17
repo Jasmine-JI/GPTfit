@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { GroupService } from '../../../services/group.service';
+import { GroupService } from '../../../../../shared/services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { ReportService } from '../../../../../shared/services/report.service';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';

@@ -7,7 +7,7 @@ import { UtilsService } from '../../services/utils.service';
 import { ActivityService } from '../../services/activity.service';
 import { Router } from '@angular/router';
 import { QrcodeService } from '../../../containers/portal/services/qrcode.service';
-import { GroupService } from '../../../containers/dashboard/services/group.service';
+import { GroupService } from '../../services/group.service';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { MuscleNamePipe } from '../../pipes/muscle-name.pipe';
@@ -373,7 +373,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100220
    */
   createUserProfile() {
-    if (this.utils.getToken()) {
+    const token = this.utils.getToken();
+    if (token) {
+      this.userProfileService.refreshUserProfile({ token });
       this.getRxUserProfile();
     } else {
       this.userProfile = {

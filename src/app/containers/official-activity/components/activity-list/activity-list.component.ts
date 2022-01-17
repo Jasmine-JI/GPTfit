@@ -7,12 +7,13 @@ import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { UserProfileInfo } from '../../../dashboard/models/userProfileInfo';
 import moment from 'moment';
-import { PaidStatusEnum, ProductShipped } from '../../models/activity-content';
+import { PaidStatusEnum, ProductShipped, HaveProduct, ApplyStatus } from '../../models/activity-content';
 import { MapLanguageEnum } from '../../../../shared/models/i18n';
 import { SelectDate } from '../../../../shared/models/utils-type';
 import { DomSanitizer } from '@angular/platform-browser';
 import { EventStatus } from '../../models/activity-content';
 import { CloudrunService } from '../../../../shared/services/cloudrun.service';
+import { formTest } from '../../../../shared/models/form-test';
 
 type Page = 'activity-list' | 'my-activity';
 
@@ -42,6 +43,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * api 6004 request body
    */
   eventListCondition = {
+    token: '',
     filterRaceStartTime: moment().subtract(3, 'months').unix(),
     filterRaceEndTime: moment().add(3, 'months').unix(),
     page: {
@@ -83,11 +85,14 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     time: null
   }
 
+  paginationList = [1];
+  totalCounts = 0;
+  lastPage = 1;
   screenSize: number;
   eventList = [];
   effectEventList = [];
   serverTimestamp: number;
-  token = this.utils.getToken();
+  token = this.utils.getToken() || '';
   userProfile: UserProfileInfo;
   timeInterval: any;
   allMapInfo: Array<any>;
@@ -96,6 +101,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   readonly PaidStatusEnum = PaidStatusEnum;
   readonly ProductShipped = ProductShipped;
   readonly EventStatus = EventStatus;
+  readonly HaveProduct = HaveProduct;
+  readonly ApplyStatus = ApplyStatus;
 
   constructor(
     private officialActivityService: OfficialActivityService,
@@ -116,6 +123,20 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 確認query string
+   * @author kidin-1110113
+   */
+   checkPage() {
+    const { p } = this.utils.getUrlQueryStrings(location.search);
+    if (p && formTest.number.test(p)) {
+      const idx = +p - 1;
+      const index = idx >= 0 ? idx : 0;
+      this.eventListCondition.page.index = index;
+    }
+
+  }
+
+  /**
    * 取得使用者資訊
    * @author kidin-1101006
    */
@@ -125,7 +146,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     ).subscribe(res => {
       this.userProfile = res;
       if (res) {
-        this.handleEffectEvent();
+        this.token = this.utils.getToken() || '';
+        this.checkCurrentPage();
       } else {
         this.uiFlag.editMode = false;
         if (this.uiFlag.currentPage === 'my-activity') {
@@ -161,6 +183,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
           [, mainPath, childPath, ...rest] = pathname.split('/');
     this.uiFlag.currentPage = childPath as Page;
     if (childPath === 'activity-list') {
+      this.checkPage();
       this.getActivityList();
     } else if (childPath === 'my-activity') {
       this.getUserHistory();
@@ -177,12 +200,13 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       takeUntil(this.ngUnsubscribe)
     ).subscribe(e => {
       if (e instanceof NavigationEnd) {
-        const queryObj = this.utils.getUrlQueryStrings(location.search);
-        const searchWords = decodeURIComponent(queryObj.search);
+        this.checkPage();
+        const { search } = this.utils.getUrlQueryStrings(location.search);
+        const searchWords = decodeURIComponent(search);
         const { currentPage } = this.uiFlag;
         switch (currentPage) {
           case 'activity-list':
-            if (searchWords.length === 0) {
+            if (!search || searchWords.length === 0) {
               delete (this.eventListCondition as any).searchWords;
             } else {
               Object.assign(this.eventListCondition, { searchWords });
@@ -251,6 +275,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     const { progress } = this.uiFlag;
     if (progress === 100) {
       this.uiFlag.progress = 30;
+      this.eventListCondition.token = this.token;
       this.officialActivityService.getEventList(this.eventListCondition).pipe(
         switchMap(eventListRes => this.officialActivityService.getRxAllMapInfo().pipe(
           map(mapInfoRes => [eventListRes, mapInfoRes])
@@ -260,12 +285,17 @@ export class ActivityListComponent implements OnInit, OnDestroy {
         const [eventListRes, mapInfoRes] = resArr;
         this.allMapInfo = mapInfoRes;
         if (this.utils.checkRes(eventListRes)) {
-          const { eventList, currentTimestamp } = eventListRes;
+          const { eventList, currentTimestamp, totalCounts } = eventListRes;
           this.eventList = eventList;
           this.serverTimestamp = currentTimestamp;
+          this.totalCounts = totalCounts;
+          this.lastPage = Math.ceil(this.totalCounts / 10);
           this.handleEffectEvent();
+          this.scrollPage();
+          this.createPaginationList();
         }
 
+        this.setQueryString();
         this.uiFlag.progress = 100;
       });
 
@@ -382,6 +412,12 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     const { startDate, endDate } = date;
     this.eventListCondition.filterRaceStartTime = moment(startDate).unix();
     this.eventListCondition.filterRaceEndTime = moment(endDate).unix();
+    this.selectDate = {
+      startTimestamp: moment(startDate).valueOf(),
+      endTimestamp: moment(endDate).valueOf()
+    }
+
+    this.unSubscribeClickEvent();
     this.checkCurrentPage();
   }
 
@@ -436,14 +472,13 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     e.preventDefault();
     e.stopPropagation();
     if (!this.uiFlag.openDatePicker) {
-      const dateRangePickHeight = 560,
-            navbarHeight = 60,
-            screenHeight = window.innerHeight,
-            listElement = document.querySelector('.activity__list__section') as any,
-            listElementTop = listElement.offsetTop;
-      if (screenHeight - listElementTop < dateRangePickHeight) {
-        const mainBodyElement = document.getElementById('main__page');
-        mainBodyElement.scrollTo({top: listElementTop, behavior: 'smooth'});
+      const dateRangePickHeight = 560;
+      const screenHeight = window.innerHeight;
+      const listElement = document.querySelector('.activity__list__section') as any;
+      const listElementTop = listElement.offsetTop;
+      const isNarrowMobile = window.innerWidth < 500;
+      if (isNarrowMobile && screenHeight - listElementTop < dateRangePickHeight) {
+        this.scrollPage(listElementTop);
         setTimeout(() => {
           this.openDateRangePicker();
         }, 300);
@@ -456,6 +491,16 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       this.unSubscribeClickEvent();
     }
 
+  }
+
+  /**
+   * 捲動頁面至指定位置
+   * @param top {number}-指定位置
+   * @author kidin-1110104
+   */
+  scrollPage(top: number = 0) {
+    const mainBodyElement = document.getElementById('main__page');
+    mainBodyElement.scrollTo({top, behavior: top === 0 ? 'smooth' : 'auto'});
   }
 
   /**
@@ -649,6 +694,114 @@ export class ActivityListComponent implements OnInit, OnDestroy {
 
     }
 
+  }
+
+  /**
+   * 往前切換分頁
+   * @author kidin-1110104
+   */
+  switchPrePagination() {
+    if (this.uiFlag.progress === 100) {
+      const { page: { index } } = this.eventListCondition;
+      if (index !== 0) {
+        this.eventListCondition.page.index = index - 1;
+        this.getActivityList();
+      }
+
+    }
+
+  }
+
+  /**
+   * 往後切換分頁
+   * @author kidin-1110104
+   */
+  switchNextPagination() {
+    if (this.uiFlag.progress === 100) {
+      const { page: { index } } = this.eventListCondition;
+      const nextPage = index + 1;
+      if (nextPage < this.lastPage) {
+        this.eventListCondition.page.index = nextPage;
+        this.getActivityList();
+      }
+
+    }
+
+  }
+
+  /**
+   * 切換指定分頁
+   * @author kidin-1110104
+   */
+  switchAssignPagination(index: number = null) {
+    this.eventListCondition.page.index = index !== null ? index : this.lastPage - 1;
+    this.getActivityList();
+  }
+
+  /**
+   * 建立頁碼選單
+   * @author kidin-1110104
+   */
+  createPaginationList() {
+    if (this.lastPage > 1) {
+      const { innerWidth }  = window;
+      const PAGE_SHOW_LENGTH = innerWidth < 400 ? 3 : 5;
+      const boundary = Math.floor(PAGE_SHOW_LENGTH / 2);
+      const { page: { index } } = this.eventListCondition;
+      const currentPage = index + 1;
+      this.paginationList = [currentPage];
+      let nextPage = currentPage;
+      let prePage = currentPage;
+      for (let i = 1; i <= boundary; i++) {
+        nextPage += 1;
+        prePage -= 1;
+        let nextComplement = false;
+        let preComplement = false;
+        if (nextPage <= this.lastPage) {
+          this.paginationList.push(nextPage);
+        } else {
+          preComplement = true
+        }
+
+        if (prePage > 0) {
+          this.paginationList.unshift(prePage);
+        } else {
+          nextComplement = true;
+        }
+
+        if (nextComplement && nextPage + 1 <= this.lastPage) {
+          nextPage += 1;
+          this.paginationList.push(nextPage);
+        }
+
+        if (preComplement && prePage - 1 > 0) {
+          prePage -= 1;
+          this.paginationList.unshift(prePage);
+        }
+        
+      }
+
+    } else {
+      this.paginationList = [1];
+    }
+    
+  }
+
+  /**
+   * 將頁碼加入url query string
+   * @author kidin-1110113
+   */
+  setQueryString() {
+    const { index } = this.eventListCondition.page;
+    const { origin, pathname, search } = location;
+    const query = this.utils.getUrlQueryStrings(search);
+    Object.assign(query, { p: index + 1 });
+    const newSearch = this.utils.setUrlQueryString(query);
+    if (newSearch !== search && history.pushState) {
+      const newUrl = `${origin}${pathname}${newSearch}`;
+      window.history.pushState({path: newUrl}, '', newUrl);
+    }
+    
   }
 
   /**

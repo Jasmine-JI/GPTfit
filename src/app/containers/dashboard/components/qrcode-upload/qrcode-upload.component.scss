@@ -31,3 +31,8 @@ data {
   color: #23a0da;
   font-weight: bold;
 }
+
+.disabled__button {
+  pointer-events: none;
+  opacity: 0.5;
+}

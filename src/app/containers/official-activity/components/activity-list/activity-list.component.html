@@ -194,35 +194,25 @@
                           uiFlag.currentPage === 'my-activity' && screenSize < 1150 ? '100%' : ''
                         "
                       >
-                        <span *ngTemplateOutlet="applyDate;
-                          context: {
-                            startDate: _eventList.applyDate.startDate,
-                            endDate: _eventList.applyDate.endDate,
-                            eventCancel: _eventList.eventStatus === EventStatus.cancel,
-                            applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit
-                          }"
-                        ></span>
                         <div class="flexRow race__info__header">
-                          <h3 class="race__title">{{ _eventList.eventName }}</h3>
-                          <div class="flexRow race__date">
-                            <div *ngTemplateOutlet="calender;
+                          <div class="flexCol">
+                            <span *ngTemplateOutlet="applyDate;
                               context: {
-                                type: 'start',
-                                raceEnd: serverTimestamp > _eventList.raceDate.endDate,
-                                month: (_eventList.raceDate.startDate * 1000 | timeFormat: 'MM'),
-                                day: (_eventList.raceDate.startDate * 1000 | timeFormat: 'DD')
+                                startDate: _eventList.applyDate.startDate,
+                                endDate: _eventList.applyDate.endDate,
+                                eventCancel: _eventList.eventStatus === EventStatus.cancel,
+                                applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit
                               }"
-                            ></div>
-                            <div class="calender__link"></div>
-                            <div *ngTemplateOutlet="calender;
-                              context: {
-                                type: 'end',
-                                raceEnd: serverTimestamp > _eventList.raceDate.endDate,
-                                month: (_eventList.raceDate.endDate * 1000 | timeFormat: 'MM'),
-                                day: (_eventList.raceDate.endDate * 1000 | timeFormat: 'DD')
-                              }"
-                            ></div>
+                            ></span>
+                            <h3 class="race__title">{{ _eventList.eventName }}</h3>
                           </div>
+                          <div *ngTemplateOutlet="raceDateArea;
+                            context: {
+                              raceEnd: serverTimestamp > _eventList.raceDate.endDate,
+                              startDate: _eventList.raceDate.startDate * 1000,
+                              endDate: _eventList.raceDate.endDate * 1000
+                            }"
+                          ></div>
                         </div>
                         <p class="race__description">{{ _eventList.description }}</p>
                       </div>
@@ -273,10 +263,11 @@
                       >
                         <div *ngTemplateOutlet="applySchedule; context: {
                           eventId: _eventList.eventId,
-                          haveProduct: _eventList.haveProduct,
+                          haveProduct: _eventList.haveProduct === HaveProduct.yes,
                           feeTitle: _eventList.feeTitle,
                           feeId: _eventList.feeId,
                           fee: _eventList.fee,
+                          applyStatus: _eventList.applyStatus,
                           paidStatus: _eventList.paidStatus,
                           productShipped: _eventList.productShipped,
                           endDate: _eventList.applyDate.endDate,
@@ -299,10 +290,11 @@
                 >
                   <div *ngTemplateOutlet="applySchedule; context: {
                     eventId: _eventList.eventId,
-                    haveProduct: _eventList.haveProduct,
+                    haveProduct: _eventList.haveProduct === HaveProduct.yes,
                     feeTitle: _eventList.feeTitle,
                     feeId: _eventList.feeId,
                     fee: _eventList.fee,
+                    applyStatus: _eventList.applyStatus,
                     paidStatus: _eventList.paidStatus,
                     productShipped: _eventList.productShipped,
                     endDate: _eventList.applyDate.endDate,
@@ -381,21 +373,11 @@
                     uiFlag.currentPage !== 'my-activity' && !uiFlag.editMode
                   "
                 >
-                  <div *ngTemplateOutlet="calender;
+                  <div *ngTemplateOutlet="raceDateArea;
                     context: {
-                      type: 'start',
                       raceEnd: serverTimestamp > _eventList.raceDate.endDate,
-                      month: (_eventList.raceDate.startDate * 1000 | timeFormat: 'MM'),
-                      day: (_eventList.raceDate.startDate * 1000 | timeFormat: 'DD')
-                    }"
-                  ></div>
-                  <div class="calender__link"></div>
-                  <div *ngTemplateOutlet="calender;
-                    context: {
-                      type: 'end',
-                      raceEnd: serverTimestamp > _eventList.raceDate.endDate,
-                      month: (_eventList.raceDate.endDate * 1000 | timeFormat: 'MM'),
-                      day: (_eventList.raceDate.endDate * 1000 | timeFormat: 'DD')
+                      startDate: _eventList.raceDate.startDate * 1000,
+                      endDate: _eventList.raceDate.endDate * 1000
                     }"
                   ></div>
                   <p class="race__description__mobile">{{ _eventList.description }}</p>
@@ -417,10 +399,11 @@
                 >
                   <div *ngTemplateOutlet="applySchedule; context: {
                     eventId: _eventList.eventId,
-                    haveProduct: _eventList.haveProduct,
+                    haveProduct: _eventList.haveProduct === HaveProduct.yes,
                     feeTitle: _eventList.feeTitle,
                     feeId: _eventList.feeId,
                     fee: _eventList.fee,
+                    applyStatus: _eventList.applyStatus,
                     paidStatus: _eventList.paidStatus,
                     productShipped: _eventList.productShipped,
                     endDate: _eventList.applyDate.endDate,
@@ -468,6 +451,47 @@
       </li>
     </ng-container>
   </ul>
+  <div class="flexRow pagination__area" *ngIf="uiFlag.currentPage === 'activity-list'">
+    <button
+      class="pagination__button"
+      [class.pagination__button--disabled]="eventListCondition.page.index === 0"
+      (click)="switchAssignPagination(0)"
+    >
+      <mat-icon>first_page</mat-icon>
+    </button>
+    <button
+      class="pagination__button"
+      [class.pagination__button--disabled]="eventListCondition.page.index === 0"
+      (click)="switchPrePagination()"
+    >
+      <i class="icon-svg_web-icon_p1_073-level_fold"></i>
+    </button>
+    <ul class="flexRow pagination__index__button">
+      <li *ngFor="let _page of paginationList">
+        <button
+          class="pagination__button"
+          [class.pagination__button--active]="eventListCondition.page.index === _page - 1"
+          (click)="switchAssignPagination(_page - 1)"
+        >
+          {{ _page }}
+        </button>
+      </li>
+    </ul>
+    <button
+      class="pagination__button"
+      [class.pagination__button--disabled]="eventListCondition.page.index >= lastPage - 1"
+      (click)="switchNextPagination()"
+    >
+      <i class="icon-svg_web-icon_p1_074-level_unfold"></i>
+    </button>
+    <button
+      class="pagination__button"
+      [class.pagination__button--disabled]="eventListCondition.page.index >= lastPage - 1"
+      (click)="switchAssignPagination()"
+    >
+      <mat-icon>last_page</mat-icon>
+    </button>
+  </div>
 </div>
 
 <div
@@ -606,6 +630,36 @@
 </ng-template>
 
 <ng-template
+  #raceDateArea
+  let-startDate="startDate"
+  let-endDate="endDate"
+  let-raceEnd="raceEnd"
+>
+  <div class="flexCol race__date__area">
+    <h6>{{ '比賽日期' }}</h6>
+    <div class="flexRow">
+      <div *ngTemplateOutlet="calender;
+        context: {
+          type: 'start',
+          raceEnd,
+          month: startDate | timeFormat: 'MM',
+          day: startDate | timeFormat: 'DD'
+        }"
+      ></div>
+      <div class="calender__link"></div>
+      <div *ngTemplateOutlet="calender;
+        context: {
+          type: 'end',
+          raceEnd,
+          month: endDate | timeFormat: 'MM',
+          day: endDate | timeFormat: 'DD'
+        }"
+      ></div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template
   #calender
   let-type="type"
   let-month="month"
@@ -667,6 +721,7 @@
   let-feeTitle="feeTitle"
   let-feeId="feeId"
   let-fee="fee"
+  let-applyStatus="applyStatus"
   let-paidStatus="paidStatus"
   let-productShipped="productShipped"
   let-endDate="endDate"
@@ -678,7 +733,13 @@
       <button
         class="apply__schedule apply__schedule__warn"
         (click)="navigatePaidPage($event, eventId, feeId, feeTitle, fee)"
-        *ngIf="!eventCancel && !applyFull && serverTimestamp < endDate"
+        *ngIf="
+          !eventCancel
+          && !applyFull
+          && applyStatus !== ApplyStatus.cancel
+          && serverTimestamp < endDate
+          && fee > 0
+        "
       >
         {{ '點擊繳費' }}
       </button>
@@ -689,9 +750,18 @@
         {{ '已截止' }}
       </div>
     </ng-container>
-    <ng-container *ngIf="paidStatus === PaidStatusEnum.paid">
+    <ng-container *ngIf="
+      applyStatus === ApplyStatus.applied
+      && (paidStatus !== PaidStatusEnum.unPaid || fee === 0)
+    "
+    >
       <div class="apply__schedule apply__schedule__finish">
         {{ '報名完成' }}
+      </div>
+    </ng-container>
+    <ng-container *ngIf="applyStatus === ApplyStatus.cancel">
+      <div class="apply__schedule apply__schedule__undone">
+        {{ '已取消報名' }}
       </div>
     </ng-container>
     <ng-container>

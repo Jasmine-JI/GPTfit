@@ -9,13 +9,13 @@ import {
   Output,
   ViewEncapsulation
 } from '@angular/core';
-import { GroupService } from '../../../containers/dashboard/services/group.service';
-import { UtilsService } from '@shared/services/utils.service';
+import { GroupService } from '../../services/group.service';
+import { UtilsService } from '../../services/utils.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MessageBoxComponent } from '../message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
-import { HashIdService } from '@shared/services/hash-id.service';
+import { HashIdService } from '../../services/hash-id.service';
 import { UserProfileService } from '../../services/user-profile.service';
 import { LongTextPipe } from '../../pipes/long-text.pipe';
 

@@ -61,8 +61,8 @@ $placeholder-img-max-size: 220px;
 }
 
 #main__edit__content {
-  padding: 5vh 10vw;
-  height: calc(100vh - #{$edit-nav-height});
+  padding: calc(var(--vh, 1vh) * 5) 10vw;
+  height: calc(var(--vh, 1vh) * 100 - #{$edit-nav-height});
   overflow-y: scroll;
 }
 
@@ -360,6 +360,8 @@ $placeholder-img-max-size: 220px;
   border: none;
   border-bottom: 1px solid black;
   outline: none;
+  border-radius: 0;
+  padding: 0;
 }
 
 .money__symbol {
@@ -431,6 +433,7 @@ $placeholder-img-max-size: 220px;
   object-fit: cover;
   height: 100%;
   width: 100%;
+  margin: 0;
 }
 
 .fee__input {
@@ -438,7 +441,7 @@ $placeholder-img-max-size: 220px;
 }
 
 .have__product {
-  @include checkBox(14px, 12px);
+  @include checkBox(16px, 12px);
   width: 100%;
   margin: 15px 0px;
 

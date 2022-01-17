@@ -6,7 +6,7 @@ import { MessageBoxComponent } from '../../../../../shared/components/message-bo
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
-import { GroupService } from '../../../services/group.service';
+import { GroupService } from '../../../../../shared/services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';

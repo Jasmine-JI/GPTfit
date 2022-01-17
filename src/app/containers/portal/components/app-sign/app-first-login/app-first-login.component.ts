@@ -349,7 +349,6 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
 
   // 離開頁面則取消隱藏navbar及取消rxjs訂閱-kidin-1090514
   ngOnDestroy () {
-    this.utils.setHideNavbarStatus(false);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }

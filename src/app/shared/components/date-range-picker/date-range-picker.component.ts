@@ -20,8 +20,9 @@ export class DateRangePickerComponent implements OnInit, OnChanges, OnDestroy {
   @Input() editStyle: string;
   @Input() openLeft = false;
   @Input() openPicker: boolean;
-  @Input() limitMin: string;
-  @Input() limitMax: boolean;
+  @Input() limitMin: number;
+  @Input() limitMax: number;
+  @Input() limitMaxCurrent: boolean;
   @Input() selectBirthday: boolean = false;
   @Input() serialId: string = '';
 
@@ -167,9 +168,9 @@ export class DateRangePickerComponent implements OnInit, OnChanges, OnDestroy {
 
       }
 
-      if (this.limitMax) {
+      if (this.limitMax || this.limitMaxCurrent) {
         Object.assign(pickerOpt, {
-          maxDate: moment()
+          maxDate: this.limitMax ? moment(this.limitMax) : moment()
         });
         
       }
@@ -275,8 +276,13 @@ export class DateRangePickerComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * 移除創建的日期選擇器
    */
+  removePicker() {
+    if (!this.serialId) jquery('.daterangepicker').remove();    
+  }
+
+
   ngOnDestroy() {
-    jquery('.daterangepicker').remove();
+    this.removePicker();
   }
 
 }

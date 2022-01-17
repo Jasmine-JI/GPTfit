@@ -2172,7 +2172,7 @@
  "universal_userAccount_longUnusedPhone": "您已長期未使用「 {{number}} 」手機電話帳號。於{{yyyy-mm-dd}}刪除帳號。若要取消，請前往GPTfit登入與啟用",
  "universal_userAccount_nameCharactersToLong": "名稱長度必須為4-24個字",
  "universal_userAccount_newPassword": "新密碼",
- "universal_userAccount_newVerificationMailSucceeded": "成功寄發驗證信，請至<br /><br />收信並點選啟用連結完成驗證。若收不到，請確認該信件是否在垃圾郵件夾？或重新再次寄發驗證信。",
+ "universal_userAccount_newVerificationMailSucceeded": "成功寄發驗證信，請至<br>{{email}}<br>收信並點選啟用連結完成驗證。若收不到，請確認該信件是否在垃圾郵件夾？或重新再次寄發驗證信。",
  "universal_userAccount_nickname": "暱稱",
  "universal_userAccount_noAreaCode": "未選擇國家/地區代碼",
  "universal_userAccount_noGraphicCode": "未填寫圖形驗證碼",

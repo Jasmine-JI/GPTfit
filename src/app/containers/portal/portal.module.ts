@@ -24,10 +24,8 @@ import { MessageBoxComponent } from '../../shared/components/message-box/message
 import { RandomCodeService } from './services/random-code.service';
 import { SignupService } from './services/signup.service';
 import { ForgetService } from './services/forget.service';
-import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { UserProfileService } from '../../shared/services/user-profile.service';
 import { CustomMaterialModule } from '../../shared/custom-material.module';
-import { BasicInfoComponent } from './components/user-profile/basic-info/basic-info.component';
 import { ActivityService } from '../../shared/services/activity.service';
 import { ReportService } from '../../shared/services/report.service';
 import { ActivityOtherDetailsService } from '../../shared/services/activity-other-details.service';
@@ -44,6 +42,7 @@ import { QRCodeModule } from 'angularx-qrcode';
 import { AppCompressDataComponent } from './components/app-sign/app-compress-data/app-compress-data.component';
 import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-account/app-destroy-account.component';
 import { HashIdService } from '../../shared/services/hash-id.service';
+import { GroupService } from '../../shared/services/group.service';
 
 @NgModule({
   imports: [
@@ -78,6 +77,7 @@ import { HashIdService } from '../../shared/services/hash-id.service';
     ActivityOtherDetailsService,
     HashIdService,
     DetectInappService,
+    GroupService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: EmptyResponseBodyErrorInterceptor,
@@ -88,8 +88,6 @@ import { HashIdService } from '../../shared/services/hash-id.service';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [
     PortalComponent,
-    UserProfileComponent,
-    BasicInfoComponent,
     AppSignupComponent,
     AppSigninComponent,
     AppEnableComponent,

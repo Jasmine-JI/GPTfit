@@ -11,6 +11,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { formTest } from '../../../../../shared/models/form-test';
 import { AccountTypeEnum } from '../../../../dashboard/models/userProfileInfo';
+import { SignTypeEnum } from '../../../../../shared/models/utils-type';
+import { TFTViewMinWidth } from '../../../models/app-webview';
+import { Subject, Subscription, fromEvent, of } from 'rxjs';
+import { takeUntil, tap, switchMap } from 'rxjs/operators';
+
+type InputType = 'oldPassword' | 'newPassword';
 
 @Component({
   selector: 'app-app-modifypw',
@@ -18,15 +24,21 @@ import { AccountTypeEnum } from '../../../../dashboard/models/userProfileInfo';
   styleUrls: ['./app-modifypw.component.scss']
 })
 export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
+  private ngUnsubscribe = new Subject();
+  private resizeSubscription = new Subscription();
 
   readonly passwordReg = formTest.password;
+  readonly SignTypeEnum = SignTypeEnum;
 
   appSys = 0; // 0: web 1: ios 2: android
   dataIncomplete = true;
   newToken = '';
-  sending = false;
+  progress = 100;
   ip = '';
   pcView = false;
+  focusInput = null;
+  mobileSize = window.innerWidth < TFTViewMinWidth;
+  requestHeader = {};
 
   displayPW = {
     oldPassword: false,
@@ -71,14 +83,16 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.getUrlString(location.search);
     this.getUserInfo();
-    this.getClientIpaddress();
+    this.subscribeResizeEvent();
 
     if (location.pathname.indexOf('web') > 0) {
       this.pcView = true;
       this.utils.setHideNavbarStatus(false);
+      this.utils.setDarkModeStatus(false);
     } else {
       this.pcView = false;
       this.utils.setHideNavbarStatus(true);
+      this.utils.setDarkModeStatus(true);
     }
 
     // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)
@@ -101,6 +115,20 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
+  /**
+   * 訂閱頁面尺寸改變事件
+   * @author kidin-1101230
+   */
+  subscribeResizeEvent() {
+    const resizeEvent = fromEvent(window, 'resize');
+    this.resizeSubscription = resizeEvent.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(e => {
+      this.mobileSize = window.innerWidth < TFTViewMinWidth;
+    });
+
+  }
+
   // 取得裝置平台-kidin-1090518
   getDeviceSys () {
     if ((window as any).webkit) {
@@ -110,20 +138,24 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.appSys = 0;
     }
+
+    this.requestHeader = {
+      deviceType: this.appSys,
+      ...this.requestHeader
+    };
+
   }
 
   // 取得url query string和token-kidin-1090514
   getUrlString (urlStr) {
-    const query = urlStr.replace('?', '').split('&');
-    for (let i = 0; i < query.length; i++) {
-      const queryKey = query[i].split('=')[0];
-      switch (queryKey) {
-        case 'tk':  // 不寫死避免新增參數
-          this.editBody.token = query[i].split('=')[1];
-          break;
-      }
+    const query = this.utils.getUrlQueryStrings(urlStr);
+    this.requestHeader = {
+      ...this.requestHeader,
+      ...this.utils.headerKeyTranslate(query)
+    };
 
-    }
+    const { tk } = query;
+    if (tk) this.editBody.token = tk;
 
     if (this.editBody.token === '') {
       this.editBody.token = this.utils.getToken() || '';
@@ -133,9 +165,21 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 取得使用者ip位址-kidin-1090521
   getClientIpaddress () {
-    this.getClientIp.requestJsonp('https://api.ipify.org', 'format=jsonp', 'callback').subscribe(res => {
-      this.ip = (res as any).ip;
-    });
+    const { remoteAddr } = this.requestHeader as any;
+    if (!remoteAddr) {
+      return this.getClientIp.requestJsonp('https://api.ipify.org', 'format=jsonp', 'callback').pipe(
+        tap(res => {
+          this.ip = (res as any).ip;
+          this.requestHeader = {
+            ...this.requestHeader,
+            remoteAddr: this.ip
+          };
+        })
+      );
+
+    } else {
+      return of(this.requestHeader);
+    }
 
   }
 
@@ -175,38 +219,26 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  // 將使用者輸入的密碼進行隱藏-kidin-1090430
-  hidePassword (id) {
-    const pwInputType = (<HTMLInputElement>document.getElementById(id));
-    if (this.displayPW[id] === true) {
-      pwInputType.type = 'text';
-    } else {
-      pwInputType.type = 'password';
-    }
-
-  }
-
   // 顯示密碼-kidin-1090429
-  toggleDisplayPW (id) {
-    if (this.displayPW[id] === false) {
-      this.displayPW[id] = true;
+  toggleDisplayPW (input: InputType) {
+    if (this.displayPW[input] === false) {
+      this.displayPW[input] = true;
     } else {
-      this.displayPW[id] = false;
+      this.displayPW[input] = false;
     }
 
-    this.hidePassword(id);
   }
 
   // 確認密碼格式-kidin-1090511
-  checkPassword (e, obj) {
+  checkPassword (e, input: InputType) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputPassword = e.currentTarget.value,
             regPWD = this.passwordReg;
       if (!regPWD.test(inputPassword)) {
-        this.cue[obj] = 'universal_userAccount_passwordFormat';
+        this.cue[input] = 'universal_userAccount_passwordFormat';
       } else {
-        this.editBody[obj] = inputPassword;
-        this.cue[obj] = '';
+        this.editBody[input] = inputPassword;
+        this.cue[input] = '';
       }
 
       if (
@@ -241,14 +273,16 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 送出修改密碼-kidin-1090519
   submit () {
-    this.sending = true;
+    this.progress = 30;
     if (this.imgCaptcha.show) {
       const releaseBody = {
         unlockFlow: 2,
         unlockKey: this.imgCaptcha.code
       };
 
-      this.signupService.fetchCaptcha(releaseBody, this.ip).subscribe(res => {
+      this.getClientIpaddress().pipe(
+        switchMap(ipResult => this.signupService.fetchCaptcha(releaseBody, this.requestHeader))
+      ).subscribe((res: any) => {
         if (res.processResult.resultCode === 200) {
           this.imgCaptcha.show = false;
           this.submit();
@@ -257,27 +291,16 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
           switch (res.processResult.apiReturnMessage) {
             case 'Found a wrong unlock key.':
               this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
-              this.sending = false;
               break;
             default:
-              this.dialog.open(MessageBoxComponent, {
-                hasBackdrop: true,
-                data: {
-                  title: 'Message',
-                  body: `Error.<br />Please try again later.`,
-                  confirmText: this.translate.instant(
-                    'universal_operating_confirm'
-                  ),
-                  onConfirm: this.turnBack.bind(this)
-                }
-              });
-
+              this.showErrorMsg();
               console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
               break;
           }
 
         }
 
+        this.progress = 100;
       });
     } else {
       this.sendFormInfo();
@@ -287,7 +310,9 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 傳送變更表單-kidin-1090514
   sendFormInfo () {
-    this.userProfileService.fetchEditAccountInfo(this.editBody, this.ip).subscribe(res => {
+    this.getClientIpaddress().pipe(
+      switchMap(ipResult => this.signupService.fetchEditAccountInfo(this.editBody, this.requestHeader))
+    ).subscribe((res: any) => {
       if (res.processResult.resultCode !== 200) {
         switch (res.processResult.apiReturnMessage) {
           case 'Edit account fail, old password is not correct.':
@@ -300,42 +325,26 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
               imgLockCode: res.processResult.imgLockCode
             };
 
-            this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
+            this.signupService.fetchCaptcha(captchaBody, this.requestHeader).subscribe(captchaRes => {
               this.imgCaptcha.show = true;
               this.imgCaptcha.imgCode = `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`;
             });
 
             break;
           default:
-            this.dialog.open(MessageBoxComponent, {
-              hasBackdrop: true,
-              data: {
-                title: 'Message',
-                body: `Error.<br />Please try again later.`,
-                confirmText: this.translate.instant(
-                  'universal_operating_confirm'
-                ),
-                onConfirm: this.turnBack.bind(this)
-              }
-            });
-
+            this.showErrorMsg();
             console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
         }
 
-        this.sending = false;
       } else {
         this.newToken = res.editAccount.newToken;
         this.utils.writeToken(this.newToken);  // 直接在瀏覽器幫使用者登入
         this.userProfileService.refreshUserProfile({token: this.newToken});
         this.authService.setLoginStatus(true);
         this.finishEdit(this.newToken);
-        this.sending = false;
-
-        this.snackbar.open(
-          `${this.translate.instant('universal_operating_modify')} ${this.translate.instant('universal_status_success')}`,
-          'OK',
-          { duration: 1000 }
-        );
+        const modifyI18n = this.translate.instant('universal_operating_modify');
+        const successI18n = this.translate.instant('universal_status_success');
+        this.snackbar.open(`${modifyI18n} ${successI18n}`, 'OK', { duration: 1000 });
 
         setTimeout(() => {
           window.close();
@@ -344,9 +353,52 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
       }
 
+      this.progress = 100;
     });
 
   }
+
+  /**
+   * 根據頁面使用dialog或snackbar顯示訊息
+   * @param msg {string}-欲顯示的訊息
+   * @author kidin-1110111
+   */
+  showErrorMsg() {
+    if (this.pcView) {
+      this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: 'Message',
+          body: `Error.<br />Please try again later.`,
+          confirmText: this.translate.instant(
+            'universal_operating_confirm'
+          ),
+          onConfirm: this.turnBack.bind(this)
+        }
+      });
+    } else {
+      const msg = 'Error! Please try again later.';
+      this.debounceTurnBack(msg);
+    }
+
+  }
+
+  /**
+   * 待snackbar訊息顯示兩秒後再轉導
+   * @author kidin-1110117
+   * @author kidin-1110117
+   */
+  debounceTurnBack(msg: string) {
+    this.utils.showSnackBar(msg);
+    this.progress = 30;
+    setTimeout(() => {
+      this.progress = 30;
+      this.turnBack();
+    }, 2000);
+
+  }
+
+  
 
   // 回傳新token-kidin-1090518
   finishEdit (token) {
@@ -358,9 +410,21 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
+  /**
+   * 記憶目前所聚焦的輸入框類型(搭配readonly避免瀏覽器記憶帳密)
+   * @param e {MouseEvent}
+   * @param input {InputType}-輸入欄位類型
+   * @author kidin-1110105
+   */
+  handleInputFocus(e: MouseEvent, input: InputType) {
+    e.stopPropagation();
+    this.focusInput = input;
+  }
+
   // 離開頁面則取消隱藏navbar-kidin-1090514
   ngOnDestroy () {
-    this.utils.setHideNavbarStatus(false);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
 }

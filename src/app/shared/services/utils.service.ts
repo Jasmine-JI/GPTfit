@@ -28,6 +28,7 @@ export class UtilsService {
   isResetPassword$ = new BehaviorSubject<boolean>(false);
   imgSelected$ = new BehaviorSubject<boolean>(false);
   hideNavbar$ = new BehaviorSubject<boolean>(false);
+  darkMode$ = new BehaviorSubject<boolean>(false);
   loadingProgress$ = new ReplaySubject<number>(1);
 
   constructor(
@@ -120,6 +121,20 @@ export class UtilsService {
       return queryObj;
     }
 
+  }
+
+  /**
+   * 將參數物件轉為url query string
+   * @param query {any}-參數物件
+   * @author kidin-1110113
+   */
+  setUrlQueryString(query: any) {
+    let queryString = '';
+    Object.entries(query).forEach(([key, value]) => {
+      queryString += `${key}=${value}`;
+    });
+
+    return queryString ? `?${queryString}` : queryString;
   }
 
   str_cut(str, max_length) {
@@ -309,6 +324,23 @@ export class UtilsService {
   }
 
   /**
+   * 設定暗黑模式狀態
+   * @param status {boolean}-暗黑模式狀態
+   * @author kidin-1101229
+   */
+  setDarkModeStatus(status: boolean) {
+    this.darkMode$.next(status);
+  }
+
+  /**
+   * 取得暗黑模式狀態
+   * @author kidin-1101229
+   */
+  getDarkModeStatus(): Observable<boolean> {
+    return this.darkMode$;
+  }
+
+  /**
    * 設定loading進度
    * @param status {number}
    * @author kidin-1100302
@@ -438,7 +470,6 @@ export class UtilsService {
    * @author kidin-1101119
    */
   checkDimensionalSize(base64: string, img: HTMLImageElement) {
-console.log('checkDimensionalSize');
     const limitDimensional = 1080;
     const imgWidth = img.width;
     const imgHeight = img.height;
@@ -1113,6 +1144,37 @@ console.log('checkDimensionalSize');
         return currentTimeStamp;
     }
 
+  }
+
+  /**
+   * 將query string物件內有效的參數轉為定義之header名稱
+   * @param query {any}-url query string物件
+   * @author kidin-1110114
+   */
+  headerKeyTranslate(query: any) {
+    let option = {};
+    Object.entries(query).forEach(([_key, _value]) => {
+      switch (_key) {
+        case 'dn':
+          option = { deviceName: _value, ...option };
+          break;
+        case 'an':
+          option = { appName: _value, ...option };
+          break;
+        case 'avc':
+          option = { appVersionCode: _value, ...option };
+          break;
+        case 'avn':
+          option = { appVersionName: _value, ...option };
+          break;
+        case 'sn':
+          option = { equipmentSN: _value, ...option };
+          break;
+      }
+
+    });
+
+    return option;
   }
 
 }
