@@ -319,7 +319,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
     this.checkAll();
     if (this.doulbleCheck() || !this.dataIncomplete) {
       this.loginStatus = 'logging';
-      this.authService.loginServerV2(this.loginBody).subscribe(res => {
+      this.authService.loginServerV2(this.loginBody, false).subscribe(res => {
 
         if (res.processResult.resultCode === 200) {
           this.cue.signResult = '';
@@ -369,7 +369,6 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 轉導至qrcode sign頁面-kidin-1090527
   navigateToQrcodeSign() {
-
     if (this.pcView === true) {
       this.router.navigateByUrl('/signInQrcode-web');
     } else {

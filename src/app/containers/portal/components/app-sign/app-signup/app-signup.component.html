@@ -216,7 +216,6 @@
                 info: ('universal_userAccount_emailPerPhone' | translate)
               }
             "
-            [attr.readonly]="focusInput === 'account' ? null : true"
             (click)="handleInputFocus($event, 'account')"
             (keydown)="determineAccountType($event)"
             (change)="saveAccount($event)"
@@ -250,7 +249,6 @@
               }
             "
             maxlength="20"
-            [attr.readonly]="focusInput === 'password' ? null : true"
             (click)="handleInputFocus($event, 'password')"
             (focusout)="checkPassword($event)"
             (keypress)="checkPassword($event)"
@@ -282,7 +280,6 @@
               info: ('universal_userAccount_nickname' | translate)
             }
           "
-          [attr.readonly]="focusInput === 'nickname' ? null : true"
           (click)="handleInputFocus($event, 'nickname')"
           (focusout)="checkNickname($event)"
           (keypress)="checkNickname($event)"

@@ -63,6 +63,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     this.checkLanguage();
     this.handleShowNavBar();
     this.listenTargetImg();
+    this.utilsService.regulateHeight();
   }
 
   ngAfterViewInit() {

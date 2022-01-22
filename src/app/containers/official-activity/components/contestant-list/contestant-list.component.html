@@ -160,11 +160,11 @@
       </div>
       <div id="race__date" class="flexCol">
         <span>
-          {{ '開始' }}
+          {{ 'universal_operating_start' | translate }}
           {{ eventInfo.raceDate.startDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
         </span>
         <span>
-          {{ '結束' }}
+          {{ 'universal_operating_end' | translate }}
           {{ eventInfo.raceDate.endDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
         </span>
       </div>
@@ -226,7 +226,7 @@
               (click)="changeSortType($event)"
             >
             <label class="radio__label" for="sort__rank">
-              {{ '排名' }}
+              {{ 'universal_race_rank' | translate }}
             </label>
           </div>
           <div>
@@ -655,7 +655,7 @@
                   }"
                   ></div>
                   <div *ngTemplateOutlet="infoCard; context: {
-                    title: '年齡',
+                    title: ('universal_userProfile_age' | translate),
                     value: ({
                       birth: _list.birthday,
                       birthFormat: 'YYYYMMDD',

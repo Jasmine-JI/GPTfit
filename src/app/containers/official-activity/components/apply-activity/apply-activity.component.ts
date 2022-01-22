@@ -329,6 +329,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     this.defaultBirthday = moment(eventUserProfile.birthday, 'YYYYMMDD');
+    this.initAlert();
     this.uiFlag.showLoginButton = null;
   }
 
@@ -354,6 +355,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     this.applyInfo.userProfile.gender = gender;
     this.applyInfo.userProfile.birthday = +birthday;
     this.defaultBirthday = moment(birthday, 'YYYYMMDD');
+    this.initAlert();
   }
 
   /**
@@ -582,7 +584,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   subscribeClickScrollEvent() {
     const { showAside } = this.uiFlag;
-    const targetClass = showAside ? '#main__content' : '#main__page';
+    const targetClass = showAside ? '#main__content' : '.main__page';
     const targetElement = document.querySelector(targetClass);
     const clickEvent = fromEvent(document, 'click');
     const scrollEvent = fromEvent(targetElement, 'scroll');
@@ -643,6 +645,24 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         this.checkPhoneAccount();
       }
 
+    }
+
+  }
+
+  /**
+   * 確認緊急聯絡人電話號碼是否符合格式
+   * @param e {MouseEvent}
+   * @author kidin-1110119
+   */
+  checkEmergencyPhoneFormat(e: MouseEvent) {
+    const trimValue = (e as any).target.value.trim();
+    const newPhone = `${+trimValue}`;  // 藉由轉數字將開頭所有0去除
+    if (trimValue.length !== 0 && !formTest.phone.test(newPhone)) {
+      this.alert.emergencyContact.mobileNumber = 'format';
+    } else {
+      this.alert.emergencyContact.mobileNumber = null;
+      this.applyInfo.userProfile.emergencyContact.mobileNumber = +newPhone || '';
+      this.checkPhoneAccount();
     }
 
   }
@@ -1240,7 +1260,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       if (this.utils.checkRes(res)) {
         const { responseHtml } = res;
         const newElement = document.createElement('div');
-        const target = document.querySelector('#main__page');
+        const target = document.querySelector('.main__page');
         newElement.innerHTML = responseHtml as any;
         target.appendChild(newElement);
         (document.getElementById('data_set') as any).submit();
@@ -1266,23 +1286,26 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101222
    */
   filterGroupList() {
-    const { gender, birthday } = this.applyInfo.userProfile;
-    const momentBirthday = birthday ? moment(birthday, 'YYYYMMDD') : this.defaultBirthday;
-    const age = moment().diff(momentBirthday, 'year');
-    this.groupList = this.eventDetail.group.filter(_list => {
-      const { gender: groupGender, age: groupAge } = _list;
-      const { max, min } = groupAge || { max: 100, min: 0 };
-      const fitGender = groupGender === Sex.unlimit || gender === groupGender;
-      const fitAge = !groupAge || (age >= min && age <= max);
-      return fitGender && fitAge;
-    });
+    if (this.eventDetail) {
+      const { gender, birthday } = this.applyInfo.userProfile;
+      const momentBirthday = birthday ? moment(birthday, 'YYYYMMDD') : this.defaultBirthday;
+      const age = moment().diff(momentBirthday, 'year');
+      this.groupList = this.eventDetail.group.filter(_list => {
+        const { gender: groupGender, age: groupAge } = _list;
+        const { max, min } = groupAge || { max: 100, min: 0 };
+        const fitGender = groupGender === Sex.unlimit || gender === groupGender;
+        const fitAge = !groupAge || (age >= min && age <= max);
+        return fitGender && fitAge;
+      });
 
-    if (this.groupList.length > 0) {
-      this.applyInfo.targetGroupId = this.groupList[0].id;
-      this.uiFlag.notQualified = false;
-    } else {
-      this.showGroupAlert();
-      this.uiFlag.notQualified = true;
+      if (this.groupList.length > 0) {
+        this.applyInfo.targetGroupId = this.groupList[0].id;
+        this.uiFlag.notQualified = false;
+      } else {
+        this.showGroupAlert();
+        this.uiFlag.notQualified = true;
+      }
+
     }
     
   }
@@ -1307,6 +1330,28 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   toggleDisplayPW() {
     this.uiFlag.displayPW = !this.uiFlag.displayPW;
+  }
+
+  /**
+   * 將alert初始化
+   * @author kidin-1110119
+   */
+  initAlert() {
+    this.alert = {
+      mobileNumber: null,
+      email: null,
+      nickname: null,
+      idCardNumber: null,
+      address: null,
+      gender: null,
+      truthName: null,
+      emergencyContact: {
+        name: null,
+        mobileNumber: null,
+        relationship: null
+      }
+
+    };
   }
 
   /**

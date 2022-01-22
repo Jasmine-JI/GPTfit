@@ -589,7 +589,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    * @author kidin-1101108
    */
   subscribeClickScrollEvent() {
-    const targetElement = document.querySelector('#main__page');
+    const targetElement = document.querySelector('.main__page');
     const clickEvent = fromEvent(document, 'click');
     const scrollEvent = fromEvent(targetElement, 'scroll');
     this.clickScrollEvent = merge(clickEvent, scrollEvent).pipe(
@@ -1052,10 +1052,16 @@ export class ContestantListComponent implements OnInit, OnDestroy {
       update
     };
 
-    return this.officialActivityService.editParticipantList(body).pipe(
-      map(res => {
-        const success = this.utils.checkRes(res);
-        const msg = success ? '更新成功' : '更新失敗';
+    return combineLatest([
+      this.officialActivityService.editParticipantList(body),
+      this.translate.get('hellow world')
+    ]).pipe(
+      map(resArr => {
+        const [editResult, ...rest] = resArr;
+        const successMsg = this.translate.instant('universal_status_updateCompleted');
+        const failureMsg = this.translate.instant('universal_popUpMessage_updateFailed');
+        const success = this.utils.checkRes(editResult);
+        const msg = success ? successMsg : failureMsg;
         this.snackbar.open(msg, 'OK', {duration: 2000});
         return success;
       })

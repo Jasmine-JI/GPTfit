@@ -642,83 +642,89 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100308
    */
   createReport() {
-    this.progress = 30;
-    this.initVar();
-    const { startDate, endDate } = this.selectDate;
-    this.currentMapId = this.reportConditionOpt.cloudRun.mapId;
-    const body = {
-      token: this.utils.getToken(),
-      privacyCheck: 2,
-      searchTime: {
-        type: 1,
-        fuzzyTime: [],
-        filterStartTime: startDate,
-        filterEndTime: endDate
-      },
-      searchRule: {
-        activity: 1,
-        targetUser: 3,
-        groupId: this.getFuzzyGroupId(),
-        fileInfo: {
-          fileId: [],
-          author: '',
-          dispName: '',
-          equipmentSN: '',
-          class: '',
-          teacher: '',
-          tag: '',
-          cloudRunMapId: this.currentMapId
-        }
-      },
-      display: {
-        activityLapLayerDisplay: 3,
-        activityLapLayerDataField: [],
-        activityPointLayerDisplay: 3,
-        activityPointLayerDataField: []
-      },
-      page: 0,
-      pageCounts: 10000
-    };
-
     const { gpxPath, distance, incline, mapImg, info } = this.allMapList.list[this.currentMapId - 1];
-    this.cloudrunService.getMapGpx({gpxPath}).pipe(
-      switchMap(gpx => {
-        return this.activityService.fetchMultiActivityData(body).pipe(  // 取得使用者數據
-          map(data => {
-            if (data.resultCode !== 200) {
-              this.uiFlag.noData = true;
-              const {resultCode, apiCode, resultMessage} = data;
-              this.utils.handleError(resultCode, apiCode, resultMessage);
-              return [gpx, []];
-            } else {
-              this.uiFlag.noData = false;
-              return [gpx, data.info.activities];
-            }
-
-          })
-
-        )
-
-      })
-    ).subscribe(response => {
-      const { point, altitude } = response[0],
-            { city, country, introduce, mapName } = info[this.checkLanguage()];
-      this.mapInfo = {
-        city,
-        country,
-        introduce,
-        mapName,
-        distance,
-        incline,
-        mapImg,
-        point,
-        altitude
+    if (gpxPath) {
+      this.progress = 30;
+      this.initVar();
+      const { startDate, endDate } = this.selectDate;
+      this.currentMapId = this.reportConditionOpt.cloudRun.mapId;
+      const body = {
+        token: this.utils.getToken(),
+        privacyCheck: 2,
+        searchTime: {
+          type: 1,
+          fuzzyTime: [],
+          filterStartTime: startDate,
+          filterEndTime: endDate
+        },
+        searchRule: {
+          activity: 1,
+          targetUser: 3,
+          groupId: this.getFuzzyGroupId(),
+          fileInfo: {
+            fileId: [],
+            author: '',
+            dispName: '',
+            equipmentSN: '',
+            class: '',
+            teacher: '',
+            tag: '',
+            cloudRunMapId: this.currentMapId
+          }
+        },
+        display: {
+          activityLapLayerDisplay: 3,
+          activityLapLayerDataField: [],
+          activityPointLayerDisplay: 3,
+          activityPointLayerDataField: []
+        },
+        page: 0,
+        pageCounts: 10000
       };
-      this.handleReportTime();
-      this.progress = 50;
-      this.getGroupMemList(this.sortOriginData(response[1]));
-      this.changeDetectorRef.markForCheck();
-    });
+
+      this.cloudrunService.getMapGpx({gpxPath}).pipe(
+        switchMap(gpx => {
+          return this.activityService.fetchMultiActivityData(body).pipe(  // 取得使用者數據
+            map(data => {
+              if (data.resultCode !== 200) {
+                this.uiFlag.noData = true;
+                const {resultCode, apiCode, resultMessage} = data;
+                this.utils.handleError(resultCode, apiCode, resultMessage);
+                return [gpx, []];
+              } else {
+                this.uiFlag.noData = false;
+                return [gpx, data.info.activities];
+              }
+
+            })
+
+          )
+
+        })
+      ).subscribe(response => {
+        const { point, altitude } = response[0],
+              { city, country, introduce, mapName } = info[this.checkLanguage()];
+        this.mapInfo = {
+          city,
+          country,
+          introduce,
+          mapName,
+          distance,
+          incline,
+          mapImg,
+          point,
+          altitude
+        };
+        this.handleReportTime();
+        this.progress = 50;
+        this.getGroupMemList(this.sortOriginData(response[1]));
+        this.changeDetectorRef.markForCheck();
+      });
+      
+    } else {
+      const msg = 'Can not get cloud run gpx file.<br>Please try again later.';
+      this.utils.openAlert(msg);
+    }
 
   }
 

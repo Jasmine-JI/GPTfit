@@ -7,15 +7,26 @@ import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { UserProfileInfo } from '../../../dashboard/models/userProfileInfo';
 import moment from 'moment';
-import { PaidStatusEnum, ProductShipped, HaveProduct, ApplyStatus } from '../../models/activity-content';
 import { MapLanguageEnum } from '../../../../shared/models/i18n';
 import { SelectDate } from '../../../../shared/models/utils-type';
 import { DomSanitizer } from '@angular/platform-browser';
 import { EventStatus } from '../../models/activity-content';
 import { CloudrunService } from '../../../../shared/services/cloudrun.service';
 import { formTest } from '../../../../shared/models/form-test';
+import { 
+  PaidStatusEnum,
+  ProductShipped,
+  HaveProduct,
+  ApplyStatus,
+  ListStatus
+} from '../../models/activity-content';
 
 type Page = 'activity-list' | 'my-activity';
+
+const defaultRaceDate = {
+  start: moment().subtract(6, 'months'),
+  end: moment().add(6, 'months')
+}
 
 @Component({
   selector: 'app-activity-list',
@@ -36,7 +47,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     isMobile: false,
     showManageMenu: false,
     openDatePicker: false,
-    showCreateScheduleBox: false
+    showCreateScheduleBox: false,
+    showListStatusMenu: false
   }
 
   /**
@@ -44,8 +56,9 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    */
   eventListCondition = {
     token: '',
-    filterRaceStartTime: moment().subtract(3, 'months').unix(),
-    filterRaceEndTime: moment().add(3, 'months').unix(),
+    filterListStatus: <ListStatus>ListStatus.all,
+    filterRaceStartTime: defaultRaceDate.start.unix(),
+    filterRaceEndTime: defaultRaceDate.end.unix(),
     page: {
       index: 0,
       counts: 10
@@ -54,8 +67,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   };
 
   selectDate = {
-    startTimestamp: moment().subtract(3, 'months').valueOf(),
-    endTimestamp: moment().add(3, 'months').valueOf()
+    startTimestamp: defaultRaceDate.start.valueOf(),
+    endTimestamp: defaultRaceDate.end.valueOf()
   };
 
   /**
@@ -103,6 +116,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   readonly EventStatus = EventStatus;
   readonly HaveProduct = HaveProduct;
   readonly ApplyStatus = ApplyStatus;
+  readonly ListStatus = ListStatus;
 
   constructor(
     private officialActivityService: OfficialActivityService,
@@ -339,9 +353,12 @@ export class ActivityListComponent implements OnInit, OnDestroy {
         this.officialActivityService.getParticipantHistory({token}).subscribe(res => {
           if (this.utils.checkRes(res)) {
             const { info: { history }, currentTimestamp } = res;
-            const reverseList = history.reverse();
-            this.eventList = reverseList;
-            this.effectEventList = reverseList;
+            if (history) {
+              const reverseList = history.reverse();
+              this.eventList = reverseList;
+              this.effectEventList = reverseList;
+            }
+            
             this.countCurrentTime(currentTimestamp);
           }
 
@@ -412,6 +429,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     const { startDate, endDate } = date;
     this.eventListCondition.filterRaceStartTime = moment(startDate).unix();
     this.eventListCondition.filterRaceEndTime = moment(endDate).unix();
+    this.initPageIndex();
     this.selectDate = {
       startTimestamp: moment(startDate).valueOf(),
       endTimestamp: moment(endDate).valueOf()
@@ -442,7 +460,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1101013
    */
   subscribeClickEvent() {
-    const scrollElement = document.getElementById('main__page'),
+    const scrollElement = document.querySelector('.main__page'),
           clickEvent = fromEvent(scrollElement, 'click'),
           scrollEvent = fromEvent(scrollElement, 'scroll');
     this.globelEventSubscription = merge(clickEvent, scrollEvent).pipe(
@@ -460,6 +478,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   unSubscribeClickEvent() {
     this.uiFlag.showManageMenu = false;
     this.uiFlag.openDatePicker = false;
+    this.uiFlag.showListStatusMenu = false;
     this.globelEventSubscription.unsubscribe();
   }
 
@@ -475,7 +494,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       const dateRangePickHeight = 560;
       const screenHeight = window.innerHeight;
       const listElement = document.querySelector('.activity__list__section') as any;
-      const listElementTop = listElement.offsetTop;
+      const listElementTop = listElement.offsetTop - 60;
       const isNarrowMobile = window.innerWidth < 500;
       if (isNarrowMobile && screenHeight - listElementTop < dateRangePickHeight) {
         this.scrollPage(listElementTop);
@@ -499,7 +518,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1110104
    */
   scrollPage(top: number = 0) {
-    const mainBodyElement = document.getElementById('main__page');
+    const mainBodyElement = document.querySelector('.main__page');
     mainBodyElement.scrollTo({top, behavior: top === 0 ? 'smooth' : 'auto'});
   }
 
@@ -541,7 +560,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       if (this.utils.checkRes(res)) {
         const { responseHtml } = res;
         const newElement = document.createElement('div');
-        const target = document.querySelector('#main__page');
+        const target = document.querySelector('.main__page');
         newElement.innerHTML = responseHtml as any;
         target.appendChild(newElement);
         (document.getElementById('data_set') as any).submit();
@@ -802,6 +821,46 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       window.history.pushState({path: newUrl}, '', newUrl);
     }
     
+  }
+
+  /**
+   * 顯示活動列表篩選狀態清單
+   * @param e {MouseEvent}
+   * @author kidin-1110120
+   */
+  showListStatusMenu(e: MouseEvent) {
+    e.stopPropagation();
+    const { showListStatusMenu } = this.uiFlag;
+    if (showListStatusMenu) {
+      this.unSubscribeClickEvent();
+    } else {
+      this.uiFlag.showListStatusMenu = true;
+      this.subscribeClickEvent();
+    }
+
+  }
+
+  /**
+   * 選擇列表活動篩選狀態
+   * @param e {MouseEvent}
+   * @param status {ListStatus}-列表活動篩選狀態
+   * @author kidin-1110120
+   */
+  chooseListStatus(e: MouseEvent, status: ListStatus) {
+    e.stopPropagation();
+    this.eventListCondition.filterListStatus = status;
+    this.initPageIndex();
+    this.unSubscribeClickEvent();
+    this.checkCurrentPage();
+  }
+
+  /**
+   * 將頁碼導回第一頁
+   * @author kidin-1110120
+   */
+  initPageIndex() {
+    this.eventListCondition.page.index = 0;
+    this.setQueryString();
   }
 
   /**

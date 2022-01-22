@@ -42,8 +42,8 @@ export class TokenInterceptor implements HttpInterceptor {
     const token = this.utils.getToken() || '';
     if (token) {
       setHeaders = {
-        Authorization: token,
-        ...setHeaders
+        ...setHeaders,
+        Authorization: token
       };
     }
 
@@ -68,10 +68,10 @@ export class TokenInterceptor implements HttpInterceptor {
     ];
 
     checkKey.forEach(([_key, _value]) => {
-      const haveKey = headers.has('_key');
+      const haveKey = headers.has(_key);
       if (!haveKey) {
         defaultHeader = {
-          _key: _value,
+          [_key]: _value,
           ...defaultHeader
         };
 

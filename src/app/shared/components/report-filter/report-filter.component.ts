@@ -505,7 +505,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         break;
       case 'custom':
         const range = moment(this.date.endTimestamp).diff(startTime);
-        this.date.startTimestamp = moment(this.date.startTimestamp - range).startOf('day').valueOf();
+        this.date.startTimestamp = moment(this.date.startTimestamp - range - 1).startOf('day').valueOf();
         this.date.endTimestamp = moment(this.date.startTimestamp + range).endOf('day').valueOf();
         break;
     }
@@ -559,7 +559,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         break;
       case 'custom':
         const range = moment(this.date.endTimestamp).diff(startTime);
-        this.date.startTimestamp = moment(this.date.startTimestamp + range).startOf('day').valueOf();
+        this.date.startTimestamp = moment(this.date.startTimestamp + range + 1).startOf('day').valueOf();
         this.date.endTimestamp = moment(this.date.startTimestamp + range).endOf('day').valueOf();
         break;
     }

@@ -36,7 +36,6 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
   progress = 100;
   ip = '';
   pcView = false;
-  focusInput = null;
   mobileSize = window.innerWidth < TFTViewMinWidth;
   requestHeader = {};
 
@@ -408,17 +407,6 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
       (window as any).android.returnToken(token);
     }
 
-  }
-
-  /**
-   * 記憶目前所聚焦的輸入框類型(搭配readonly避免瀏覽器記憶帳密)
-   * @param e {MouseEvent}
-   * @param input {InputType}-輸入欄位類型
-   * @author kidin-1110105
-   */
-  handleInputFocus(e: MouseEvent, input: InputType) {
-    e.stopPropagation();
-    this.focusInput = input;
   }
 
   // 離開頁面則取消隱藏navbar-kidin-1090514

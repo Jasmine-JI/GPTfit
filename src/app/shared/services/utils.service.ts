@@ -1177,4 +1177,13 @@ export class UtilsService {
     return option;
   }
 
+  /**
+   * 校正高度以解決手機瀏覽器使用vh設定高度時，vh基準會包含網址列與控制列的問題
+   * @author kidin-1110105
+   */
+  regulateHeight() {
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  }
+
 }

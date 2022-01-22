@@ -282,7 +282,7 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
 }
 
 .disable__account {
-  color: rgba(150, 150, 150, 1);
+  color: rgba(100, 100, 100, 1);
   cursor: no-drop;
 }
 
@@ -343,7 +343,8 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
     display: inline-block;
     width: $radio-size;
     height: $radio-size;
-    outline: 1px solid $official-theme-color-light;
+    box-shadow: 1px 1px  white,;
+    box-shadow: 1px 1px #e54444, -1px -1px #e54444, 1px -1px #e54444, -1px 1px #e54444;
     border: 3px solid white;
     border-radius: 50%;
     cursor: pointer;

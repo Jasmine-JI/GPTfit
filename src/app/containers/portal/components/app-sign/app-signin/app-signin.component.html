@@ -99,7 +99,6 @@
           </ng-container>
         </p>
       </div>
-
       <div class="flexRow navigate__button__area">
         <button class="forget__password__button">
           <a href="#" [routerLink]="['/resetPassword']" class="router__link">
@@ -122,6 +121,13 @@
       >
         {{ 'universal_userAccount_logIn' | translate }}
       </button>
+      <p
+        style="text-align: center;"
+        class="appview-alertHint"
+        *ngIf="cue.signResult !== ''"
+      >
+        {{ 'universal_userAccount_errorAccountPassword' | translate }}
+      </p>
     </div>
   </main>
 </ng-container>

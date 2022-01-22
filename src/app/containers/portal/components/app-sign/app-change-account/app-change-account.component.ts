@@ -45,7 +45,6 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
   appSys = 0;  // 0:web, 1:ios, 2:android
   ip = '';
   pcView = false;
-  focusInput: InputType = null;
   mobileSize = window.innerWidth < TFTViewMinWidth;
   displayCountryCodeList = false;
   requestHeader = {};
@@ -567,16 +566,6 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
   toEnableAccount () {
     this.utils.setHideNavbarStatus(false);
     this.router.navigateByUrl(`/enableAccount`);
-  }
-
-  /**
-   * 記憶目前所聚焦的輸入框類型(搭配readonly避免瀏覽器記憶帳密)
-   * @param e {MouseEvent}
-   * @author kidin-1110105
-   */
-  handleInputFocus(e: MouseEvent, input: InputType) {
-    e.stopPropagation();
-    this.focusInput = input;
   }
 
   /**

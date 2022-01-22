@@ -13,6 +13,7 @@ import { Page404Component } from '../../shared/components/page404/page404.compon
 import { Page403Component } from '../../shared/components/page403/page403.component';
 import { EditCarouselComponent } from './components/edit-carousel/edit-carousel.component';
 import { ContactUsComponent } from './components/contact-us/contact-us.component';
+import { AboutCloudrunComponent } from './components/about-cloudrun/about-cloudrun.component';
 
 const routes: Routes = [
   {
@@ -85,6 +86,10 @@ const routes: Routes = [
             redirectTo: '/official-activity/404'
           }
         ]
+      },
+      {
+        path: 'about-cloudrun',
+        component: AboutCloudrunComponent
       },
       {
         path: 'contact-us',

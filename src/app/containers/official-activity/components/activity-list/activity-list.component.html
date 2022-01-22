@@ -1,33 +1,147 @@
 <app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
 <div class="flexCol">
   <div class="flexRow control__section">
-    <div class="flexRow date__filter">
-      <i
-        style="font-size: 20px;"
-        class="icon-svg_web-icon_p1_078-filter"
-      ></i>
-      <div class="divider__line" style="position: relative;">
-        <button (click)="checkScreenHeight($event)">
-          {{ 
-            selectDate.startTimestamp | timeFormat: 'YYYY-MM-DD'
-          }}~{{
-            selectDate.endTimestamp | timeFormat: 'YYYY-MM-DD'
-          }}
-        </button>
-        <app-date-range-picker
-          (selectDateRange)="getSelectDate($event)"
-          [pickerType]="'rangePick'"
-          [serialId]="'1'"
-          [startTimeStamp]="selectDate.startTimestamp"
-          [endTimeStamp]="selectDate.endTimestamp"
-          [openPicker]="uiFlag.openDatePicker"
-          [editStyle]="'
-            position: absolute;
-            top: 0;
-            max-width: 0px;
-            opacity: 0;
-          '"
-        ></app-date-range-picker>
+    <div 
+      class="flexRow filter__area"
+      *ngIf="uiFlag.currentPage === 'activity-list'"
+    >
+      <div class="flexCol filter__block">
+        <label for="date__filter__button" class="list__filter__label">
+          {{ '競賽日期' | translate }}
+        </label>
+        <div style="position: relative;">
+          <div class="flexRow">
+            <button
+              id="date__filter__button"
+              class="filter__button"
+              (click)="checkScreenHeight($event)"
+            >
+              {{ 
+                selectDate.startTimestamp | timeFormat: 'YYYY-MM-DD'
+              }}~{{
+                selectDate.endTimestamp | timeFormat: 'YYYY-MM-DD'
+              }}
+              <i
+                class="icon-svg_web-icon_p1_006-unfold drop__icon"
+                [class.drop__icon__rotate]="uiFlag.openDatePicker"
+              ></i>
+            </button>
+          </div>
+          <app-date-range-picker
+            (selectDateRange)="getSelectDate($event)"
+            [pickerType]="'rangePick'"
+            [serialId]="'1'"
+            [startTimeStamp]="selectDate.startTimestamp"
+            [endTimeStamp]="selectDate.endTimestamp"
+            [openPicker]="uiFlag.openDatePicker"
+            [editStyle]="'
+              position: absolute;
+              top: 0;
+              max-width: 0px;
+              opacity: 0;
+            '"
+          ></app-date-range-picker>
+        </div>
+      </div>
+      <div class="flexCol filter__block">
+        <label for="status__filter__button" class="list__filter__label">
+          {{ '競賽狀態' | translate }}
+        </label>
+        <div class="drop__area">
+          <div class="flexRow">
+            <button
+              id="status__filter__button"
+              class="filter__button"
+              (click)="showListStatusMenu($event)"
+            >
+              {{ eventListCondition.filterListStatus | listStatus | translate }}
+              <i
+                class="icon-svg_web-icon_p1_006-unfold drop__icon"
+                [class.drop__icon__rotate]="uiFlag.showListStatusMenu"
+              ></i>
+            </button>
+          </div>
+          <ul class="list__status__menu" *ngIf="uiFlag.showListStatusMenu">
+            <li
+              class="flexRow status__menu__content"
+              (click)="chooseListStatus($event, ListStatus.all)"
+            >
+              <span class="drop__menu__check">
+                <ng-container 
+                  *ngIf="eventListCondition.filterListStatus === ListStatus.all"
+                >
+                  <mat-icon class="check__icon">done</mat-icon>
+                </ng-container>
+              </span>
+              <span>{{ 'universal_adjective_all' | translate }}</span>
+            </li>
+            <li
+              class="flexRow status__menu__content"
+              (click)="chooseListStatus($event, ListStatus.applying)"
+            >
+              <span class="drop__menu__check">
+                <ng-container 
+                  *ngIf="eventListCondition.filterListStatus === ListStatus.applying"
+                >
+                  <mat-icon class="check__icon">done</mat-icon>
+                </ng-container>
+              </span>
+              <span>{{ '報名中' | translate }}</span>
+            </li>
+            <li
+              class="flexRow status__menu__content"
+              (click)="chooseListStatus($event, ListStatus.applyCutOff)"
+            >
+              <span class="drop__menu__check">
+                <ng-container 
+                  *ngIf="eventListCondition.filterListStatus === ListStatus.applyCutOff"
+                >
+                  <mat-icon class="check__icon">done</mat-icon>
+                </ng-container>
+              </span>
+              <span>{{ '報名截止' | translate }}</span>
+            </li>
+            <li
+              class="flexRow status__menu__content"
+              (click)="chooseListStatus($event, ListStatus.racing)"
+            >
+              <span class="drop__menu__check">
+                <ng-container 
+                  *ngIf="eventListCondition.filterListStatus === ListStatus.racing"
+                >
+                  <mat-icon class="check__icon">done</mat-icon>
+                </ng-container>
+              </span>
+              <span>{{ '競賽進行中' | translate }}</span>
+            </li>
+            <li
+              class="flexRow status__menu__content"
+              (click)="chooseListStatus($event, ListStatus.eventFinished)"
+            >
+              <span class="drop__menu__check">
+                <ng-container 
+                  *ngIf="eventListCondition.filterListStatus === ListStatus.eventFinished"
+                >
+                  <mat-icon class="check__icon">done</mat-icon>
+                </ng-container>
+              </span>
+              <span>{{ '競賽結束' | translate }}</span>
+            </li>
+            <li
+              class="flexRow status__menu__content"
+              (click)="chooseListStatus($event, ListStatus.eventCancel)"
+            >
+              <span class="drop__menu__check">
+                <ng-container 
+                  *ngIf="eventListCondition.filterListStatus === ListStatus.eventCancel"
+                >
+                  <mat-icon class="check__icon">done</mat-icon>
+                </ng-container>
+              </span>
+              <span>{{ '賽事取消' | translate }}</span>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
     <div
@@ -162,8 +276,14 @@
                 <div class="flexRow">
                   <div class="theme__img">
                     <div class="flexCenter">
-                      <i class="icon-svg_web-icon_p3_072-photo"></i>
-                      <img [src]="_eventList.themeImg" [alt]="_eventList.eventName">
+                      <i
+                        class="icon-svg_web-icon_p3_072-photo placeholder__image"
+                      ></i>
+                      <img
+                        class="pc__img"
+                        [src]="_eventList.themeImg"
+                        [alt]="_eventList.eventName"
+                      >
                     </div>
                     <div
                       class="flexCenter rece__end__mask"
@@ -348,7 +468,14 @@
                   </div>
                 </div>
                 <div class="theme__img__mobile">
-                  <img [src]="_eventList.themeImg" [alt]="_eventList.eventName">
+                  <i
+                    class="icon-svg_web-icon_p3_072-photo placeholder__image"
+                  ></i>
+                  <img
+                    class="mobile__image"
+                    [src]="_eventList.themeImg"
+                    [alt]="_eventList.eventName"
+                  >
                   <div
                     class="flexCenter rece__end__mask"
                     *ngIf="
@@ -430,7 +557,7 @@
                       {{ '項目' }}
                     </th>
                     <th class="product__fee">
-                      {{ '費用' }}
+                      {{ 'universal_group_cost' | translate }}
                     </th>
                   </tr>
                 </thead>
@@ -609,7 +736,7 @@
     "
   >
     <ng-container *ngIf="!eventCancel && !applyFull && serverTimestamp < startDate">
-      {{ '尚未開放' }}
+      {{ 'universal_race_notYetOpen' | translate }}
     </ng-container>
     <ng-container *ngIf="!eventCancel && !applyFull && serverTimestamp > startDate && serverTimestamp < endDate">
       {{ '報名中' }}
