@@ -2,6 +2,8 @@
 @import 'font.scss';
 @import 'filter.scss';
 @import 'color.scss';
+@import 'transform.scss';
+@import 'transition.scss';
 
 $calender-shadow-color: rgba(0, 0, 0, 0.3);
 $calender-border-top: 10px solid;
@@ -79,11 +81,6 @@ $block-icon-size: 40px;
 
   >:first-of-type {
     position: relative;
-
-    >i {
-      font-size: 80px;
-      opacity: 0.3;
-    }
 
     >img {
       max-width: 220px;
@@ -242,7 +239,7 @@ $block-icon-size: 40px;
   position: absolute;
   width: 100%;
   height: 100%;
-  z-index: 1;
+  z-index: -2;
   color: rgba(170, 0, 0, 0.9);
   background-color: rgba(255, 255, 255, 0.5);
   @include bold-font(24px);
@@ -307,11 +304,93 @@ $block-icon-size: 40px;
   justify-content: space-between;
 }
 
+.filter__block {
+  margin: 0 10px;
+}
+
+.list__filter__label {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(100, 100, 100, 1);
+}
+
+.drop__area {
+  position: relative;
+}
+
+.filter__button {
+  position: relative;
+  background: $official-theme-color;
+  color: white;
+  border-radius: 10px;
+  padding: 5px 25px;
+  min-width: 150px;
+}
+
+.drop__icon {
+  position: absolute;
+  top: 10px;
+  right: 5px;
+  color: white;
+  height: fit-content;
+  @include transition(transform);
+}
+
+.drop__icon__rotate {
+  @include el-rotate(180deg);
+  @include transition(transform);
+}
+
+.list__status__menu {
+  $border-radius: 10px;
+  $border-width: 1px;
+  position: absolute;
+  list-style: none;
+  padding: 5px;
+  margin: 0;
+  min-width: 150px;
+  background-color: white;
+  border-radius: $border-radius;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: calc(-#{$border-width});
+    left: calc(-#{$border-width});
+    width: calc(100% + 2 * #{$border-width});
+    height: calc(100% + 2 * #{$border-width});
+    z-index: -1;
+    border-radius: $border-radius;
+    background: linear-gradient(180deg, #901417 0%, #B40C5B 45.83%, #E1490E 95.83%);
+  }
+  
+}
+
+.status__menu__content {
+  cursor: pointer;
+  
+  &:hover {
+    background-color: rgba(231, 186, 186, 1);
+  }
+
+}
+
+.drop__menu__check {
+  display: inline-block;
+  min-width: 24px;
+}
+
+.check__icon {
+  font-size: 16px;
+  @include center();
+}
+
 .manage__btn {
   border-radius: 5px;
   box-shadow: 1px 1px 3px $shadow-color-light, -1px -1px 3px $shadow-color-light;
   margin: 0 5px;
   color: rgba(100, 100, 100, 1);
+  height: fit-content;
 
   &:hover {
     box-shadow: 1px 1px 3px $shadow-color-deep, -1px -1px 3px $shadow-color-deep;
@@ -511,11 +590,21 @@ td.product__title, td.product__fee {
   position: relative;
   height: 25vh;
   overflow: hidden;
+}
 
-  >img {
-    width: 100%;
-  }
+.mobile__image {
+  width: 100%;
+}
 
+.pc__img, .mobile__image {
+  z-index: -3;
+}
+
+.placeholder__image {
+  position: absolute;
+  z-index: -4;
+  font-size: 80px;
+  opacity: 0.3;
 }
 
 .race__info__mobile {
@@ -645,3 +734,14 @@ td.product__title, td.product__fee {
 
 }
 
+@media (max-width: 480px) {
+
+  .filter__area {
+    flex-direction: column;
+  }
+
+  .filter__block {
+    margin: 5px 0;
+  }
+
+}

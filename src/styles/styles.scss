@@ -603,6 +603,7 @@ a.alatech-btn:hover {
 .access-bg {
   margin-top: -63px;
   min-height: 100vh;
+  min-height: calc(var(--vh, vh) * 100);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;

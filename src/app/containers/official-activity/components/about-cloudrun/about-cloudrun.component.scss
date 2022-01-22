@@ -1,0 +1,154 @@
+@import 'font.scss';
+@import 'transform.scss';
+@import 'keyframes.scss';
+
+$section-padding: 10px;
+
+@mixin section-title($font-size: 36px) {
+  margin-bottom: 30px;
+  @include bold-font($font-size);
+}
+
+.slide__in {
+  animation: bottom-slide-in 1s 1;
+  animation-timing-function: ease-in;
+  @include keyframes(bottom-slide-in) {
+    0% {
+      opacity: 0;
+      @include el-transform(translateY(100px));
+    }
+
+    100% {
+      opacity: 1;
+      @include el-transform(translateY(0));
+    }
+
+  }
+
+}
+
+.introduction {
+  display: flex;
+  align-items: center;
+  padding: 2vw $section-padding;
+
+  &:nth-of-type(odd) {
+    flex-direction: row;
+  }
+
+  &:nth-of-type(even) {
+    flex-direction: row-reverse;
+  }
+
+}
+
+.introduction__text, .introduction__image {
+  width: 50%;
+}
+
+.introduction__text, .download__text {
+  padding: 0 5vw;
+}
+
+.introduction__title {
+  text-align: center;
+  @include section-title();
+}
+
+.background__first {
+  background: linear-gradient(90deg, white 0%, #B3D1C6 100%);
+}
+
+.background__second {
+  background: linear-gradient(90deg, #DDCBAC 0%, white 100%);
+}
+
+.background__third {
+  background: linear-gradient(90deg, #B5C4D6 0%, white 100%);
+}
+
+.background__fourth {
+  background: linear-gradient(90deg, white 0%, #DC3133 100%);
+}
+
+.download__section {
+  display: flex;
+  flex-direction: row;
+  padding: $section-padding;
+  background: linear-gradient(90deg, #8A8A8A 0%, #FFFFFF 100%);
+}
+
+.cloudrun__introduction, .download__link__area {
+  width: 50%;
+}
+
+.download__title {
+  @include section-title();
+}
+
+.download__text {
+  width: 100%;
+}
+
+.download__link__area {
+  justify-content: center;
+  align-items: center;
+}
+
+.android__link {
+  width: 50%;
+}
+
+.ios__link {
+  width: 40%;
+}
+
+.download__img, .mock__img {
+  width: 100%;
+}
+
+/********************************************* media *******************************************/
+
+@media(max-width: 767px) {
+
+  .introduction {
+    flex-direction: column-reverse !important;
+  }
+
+  .download__section {
+    flex-direction: column !important;
+  }
+
+  .cloudrun__introduction,
+  .download__link__area,
+  .introduction__text,
+  .introduction__image {
+    width: 100%;
+  }
+
+  .introduction__image {
+    margin-bottom: 30px;
+  }
+
+  .background__first {
+    background: linear-gradient(90deg, #A8CEF7 0%, #B3D1C6 100%);
+  }
+  
+  .background__second {
+    background: linear-gradient(90deg, #DDCBAC 0%, #FADF95 100%);
+  }
+  
+  .background__third {
+    background: linear-gradient(90deg, #B5C4D6 0%, #C3CFDB 100%);
+  }
+  
+  .background__fourth {
+    background: linear-gradient(90deg, #D9D3FC 0%, #DC3133 100%);
+  }
+
+  .introduction__title, .download__title {
+    font-size: 28px;
+  }
+
+}
+

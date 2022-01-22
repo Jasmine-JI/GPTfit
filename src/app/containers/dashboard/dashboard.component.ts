@@ -112,6 +112,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.subscribeLangChange();
     this.getWebVersion();
     this.utilsService.checkBrowserLang();
+    this.utilsService.regulateHeight();
     this.handleGlobalEvent();
     this.onResize();
   }

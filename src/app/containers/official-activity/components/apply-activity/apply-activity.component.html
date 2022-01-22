@@ -306,7 +306,7 @@
           </div>
           <div class="flexRow form__input">
             <legend class="input__label">
-              {{ '性別' }}
+              {{ 'universal_userProfile_gender' | translate }}
             </legend>
             <div class="radio__item">
               <input
@@ -341,7 +341,7 @@
           </div>
           <div class="flexRow form__input">
             <label class="input__label">
-              {{ '出生日期' }}
+              {{ 'universal_userProfile_birthday' | translate }}
             </label>
             <app-date-range-picker
               (selectDateRange)="getSelectDate($event)"
@@ -437,9 +437,15 @@
                   name="emergency__contact__phone"
                   class="info__input"
                   placeholder="（選填）"
-                  [(ngModel)]="applyInfo.userProfile.emergencyContact.mobileNumber"
+                  [value]="applyInfo.userProfile.emergencyContact.mobileNumber"
                   (focus)="positionMark($event)"
+                  (focusout)="checkEmergencyPhoneFormat($event)"
                 >
+                <ng-container *ngIf="alert.emergencyContact.mobileNumber">
+                  <span *ngTemplateOutlet="inputAlert; context: {
+                    alert: alert.emergencyContact.mobileNumber
+                  }"></span>
+                </ng-container>
               </div>
               <div class="flexRow form__input">
                 <label for="emergency__contact__relationship" class="input__label">
@@ -630,7 +636,7 @@
                     {{ '項目' }}
                   </th>
                   <th>
-                    {{ '費用' }}
+                    {{ 'universal_group_cost' | translate }}
                   </th>
                 </tr>
               </thead>
@@ -664,7 +670,7 @@
               class="submit__button"
               (click)="navigateMyActivityPage()"
             >
-              {{ '返回' }}
+              {{ 'universal_operating_back' | translate }}
             </button>
           </ng-container>
         </div>
@@ -674,7 +680,7 @@
 </div>
 
 <ng-template #checkingHint>
-  <span class="checking__text">檢查中...</span>
+  <span class="checking__text">{{ 'universal_status_inspection' | translate }}...</span>
 </ng-template>
 
 <ng-template

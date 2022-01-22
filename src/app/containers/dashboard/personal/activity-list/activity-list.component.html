@@ -3,7 +3,7 @@
   <app-report-filter></app-report-filter>
 </section>
 <section class="cardSection" style="min-height: 200px;">
-  <ul class="flexRow activity__list">
+  <ul class="activity__list">
     <ng-container *ngIf="activityList.length > 0; else noData;">
       <ng-container *ngFor="let _list of activityList; let _idx = index;">
         <li

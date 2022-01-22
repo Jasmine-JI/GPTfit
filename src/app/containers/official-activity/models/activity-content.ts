@@ -97,3 +97,12 @@ export enum Nationality {
   taiwaness = 1,
   foreign
 }
+
+export enum ListStatus {
+  all,
+  applying,
+  applyCutOff,
+  racing,
+  eventFinished,
+  eventCancel
+};

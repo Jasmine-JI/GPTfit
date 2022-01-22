@@ -236,11 +236,22 @@ $declaration-color: rgba(100, 100, 100, 1);
   margin: 0 5px;
 }
 
-#main__page {
+.main__page {
   justify-content: space-between;
   width: 100vw;
+  height: calc(100vh - #{$nav-height}); /* Fallback for browsers that do not support Custom Properties */
   height: calc(var(--vh, 1vh) * 100 - #{$nav-height});
+  overflow-y: scroll;
   scrollbar-width: thin;
+}
+
+.scroll__not {
+  overflow-y: unset;
+}
+
+.full__height {
+  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
 }
 
 .noraml__link, .admin__link {
@@ -248,6 +259,7 @@ $declaration-color: rgba(100, 100, 100, 1);
 }
 
 .noraml__link {
+  top: 5vh;
   top: calc(var(--vh, 1vh) * 5);
 
   >a {
@@ -462,6 +474,7 @@ $declaration-color: rgba(100, 100, 100, 1);
   justify-content: space-between;
   border-top: 1px solid black;
   margin: 0 2vw;
+  padding-top: 3vh;
   padding-top: calc(var(--vh, 1vh) * 3);
 }
 

@@ -64,7 +64,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   language: Lang = 'zh-tw';
   TFTView = false;
   displayCountryCodeList = false;
-  focusInput = null;
   requestHeader = {};
 
   // 驗證用
@@ -835,17 +834,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.signupCue.account = '';
     this.checkAll(this.regCheck);    
     this.unsubscribeClickScrollEvent();
-  }
-
-  /**
-   * 記憶目前所聚焦的輸入框類型(搭配readonly避免瀏覽器記憶帳密)
-   * @param e {MouseEvent}
-   * @param input {InputType}-輸入欄位類型
-   * @author kidin-1110105
-   */
-  handleInputFocus(e: MouseEvent, input: InputType) {
-    e.stopPropagation();
-    this.focusInput = input;
   }
 
   /**

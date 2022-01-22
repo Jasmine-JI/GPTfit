@@ -23,6 +23,7 @@ const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ',
 export class ActivityListComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
   private scrollEvent = new Subscription();
+  private resizeEvent = new Subscription();
 
   /**
    * ui 會用到的flag
@@ -76,6 +77,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getNeedInfo();
     this.subscribeScroll();
+    this.setListWidth();
+    this.subscribeScreenSize();
   }
 
   /**
@@ -214,6 +217,34 @@ export class ActivityListComponent implements OnInit, OnDestroy {
 
     });
 
+  }
+
+  /**
+   * 訂閱resize事件
+   * @author kidin-1110118
+   */
+  subscribeScreenSize() {
+    const resize = fromEvent(window, 'resize');
+    this.resizeEvent = resize.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(e => {
+      this.setListWidth();
+    });
+
+  }
+
+  /**
+   * 設置活動列表寬度，讓清單可以使用margin: 0 auto搭配float: left整體置中，卡片靠左，且空隙不會太大
+   * @author kidin-1110118
+   */
+  setListWidth() {
+    const container = document.querySelector('.cardSection') as HTMLElement;
+    const windowWidth = window.innerWidth;
+    const maxWidth = container.getBoundingClientRect().width - 20;  // 20為padding
+    const cardWidth = windowWidth <= 767 ? 210 : 260;
+    const oneRowNum = Math.floor(maxWidth / cardWidth);
+    const targetElement = document.querySelector('.activity__list') as HTMLElement;
+    targetElement.style.width = oneRowNum === 1 ? `${maxWidth - 10}px` : `${oneRowNum * cardWidth}px`;
   }
 
   ngOnDestroy(): void {

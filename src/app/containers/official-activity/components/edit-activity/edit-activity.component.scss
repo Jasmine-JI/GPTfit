@@ -61,7 +61,9 @@ $placeholder-img-max-size: 220px;
 }
 
 #main__edit__content {
+  padding: 5vh 10vw;
   padding: calc(var(--vh, 1vh) * 5) 10vw;
+  height: calc(100vh - #{$edit-nav-height});
   height: calc(var(--vh, 1vh) * 100 - #{$edit-nav-height});
   overflow-y: scroll;
 }

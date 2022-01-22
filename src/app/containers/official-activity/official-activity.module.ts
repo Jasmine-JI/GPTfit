@@ -24,6 +24,8 @@ import { QRCodeModule } from 'angularx-qrcode';
 import { EditCarouselComponent } from './components/edit-carousel/edit-carousel.component';
 import { ContactUsComponent } from './components/contact-us/contact-us.component';
 import { GroupService } from '../../shared/services/group.service';
+import { ListStatusPipe } from './pipes/list-status.pipe';
+import { AboutCloudrunComponent } from './components/about-cloudrun/about-cloudrun.component';
 
 
 @NgModule({
@@ -50,7 +52,9 @@ import { GroupService } from '../../shared/services/group.service';
     PaidStatusPipe,
     ShippedStatusPipe,
     EditCarouselComponent,
-    ContactUsComponent
+    ContactUsComponent,
+    ListStatusPipe,
+    AboutCloudrunComponent
   ],
   providers: [
     EditGuard,
