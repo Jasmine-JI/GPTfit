@@ -15,3 +15,11 @@
     -ms-transform: scaleX($degree);
     transform: scaleX($degree);
 }
+
+@mixin el-transform($effect) {
+    -moz-transform: $effect;
+    -webkit-transform: $effect;
+    -o-transform: $effect;
+    -ms-transform: $effect;
+    transform: $effect;
+}

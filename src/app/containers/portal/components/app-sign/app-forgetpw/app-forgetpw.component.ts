@@ -51,7 +51,6 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
   newToken = '';
   ip = '';
   pcView = false;
-  focusInput: InputType = null;
   mobileSize = window.innerWidth < TFTViewMinWidth;
   requestHeader = {};
   flowComplete = false;
@@ -825,17 +824,6 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     this.regCheck.countryCodePass = true;
     this.cue.account = '';  
     this.unsubscribeClickScrollEvent();
-  }
-
-  /**
-   * 記憶目前所聚焦的輸入框類型(搭配readonly避免瀏覽器記憶帳密)
-   * @param e {MouseEvent}
-   * @param input {InputType}-輸入欄位類型
-   * @author kidin-1110105
-   */
-  handleInputFocus(e: MouseEvent, input: InputType) {
-    e.stopPropagation();
-    this.focusInput = input;
   }
 
   // 離開頁面則取消隱藏navbar和取消rxjs訂閱-kidin-1090514

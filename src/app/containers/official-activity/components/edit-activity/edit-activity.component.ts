@@ -401,25 +401,20 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   editComplete() {
     const emptyElement = document.querySelectorAll('.empty__warn');
-    if (emptyElement.length === 0) {
+    const { content } = this.eventDetail;
+    if (emptyElement.length) {
+      const message = '尚有必填欄位未完成';
+      this.utils.openAlert(message);
+    } else if (content.length === 0) {
+      const message = '請新增活動詳細內容';
+      this.utils.openAlert(message);
+    } else {
       const { editMode } = this.uiFlag;
       if (editMode === 'create') {
         this.createEvent();
       } else {
         this.saveEdit();
       }
-
-    } else {
-      const message = '尚有必填欄位未完成';
-      this.dialog.open(MessageBoxComponent, {
-        hasBackdrop: true,
-        data: {
-          title: 'Message',
-          body: message,
-          confirmText: '確定',
-        }
-
-      });
 
     }
 

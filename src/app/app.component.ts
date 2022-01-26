@@ -8,6 +8,14 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'app';
   constructor() {
+    this.checkDomain();
+  }
+
+  /**
+   * 確認若為舊domain或非https，則予以轉址
+   * @author kidin-1110119
+   */
+  checkDomain() {
     if (location.protocol === 'http:'
       &&
       (
@@ -24,5 +32,5 @@ export class AppComponent {
     }
 
   }
-
+  
 }

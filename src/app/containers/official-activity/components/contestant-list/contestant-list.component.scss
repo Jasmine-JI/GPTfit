@@ -3,6 +3,7 @@
 @import 'drop-triangle.scss';
 @import 'transition.scss';
 @import 'filter.scss';
+@import 'overflow-scroll';
 
 $map-icon-size: 10vw;
 $map-icon-max-size: 150px;
@@ -154,13 +155,13 @@ $edit-button-size: 30px;
 
 #filter__selector {
   @include box-shadow(rgba(0, 0, 0, 0.5));
+  @include overflow-y-scroll();
   width: 130px;
   padding: 5px;
   position: absolute;
   background-color: white;
   z-index: 1;
   max-height: 200px;
-  overflow-y: scroll;
   top: 25px;
   left: 20px;
   border-radius: 0 0 10px 10px;
@@ -370,13 +371,13 @@ $edit-button-size: 30px;
 
 #sort__menu {
   @include box-shadow();
+  @include overflow-y-scroll();
   position: absolute;
   top: 35px;
   z-index: 1;
   background-color: white;
   width: 150px;
   max-height: 170px;
-  overflow-y: scroll;
   padding: 5px;
 }
 

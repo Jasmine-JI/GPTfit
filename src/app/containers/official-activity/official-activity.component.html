@@ -1,5 +1,5 @@
 <app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
-<div class="flexCol" style="justify-content: center;">
+<div class="flexCol page__container">
   <nav
     id="nav"
     class="flexRow"
@@ -28,14 +28,14 @@
           class="page__link child__page__link"
           (click)="navigate($event, '/official-activity/activity-list')"
         >
-          {{ '活動' }}
+          {{ 'universal_vocabulary_activity' | translate }}
         </a>
         <a
           href="/official-activity/leaderboard"
           class="page__link child__page__link"
           (click)="navigate($event, '/official-activity/leaderboard')"
         >
-          {{ '排行榜' }}
+          {{ 'universal_race_leaderboard' | translate }}
         </a>
         <a
           href="/official-activity/my-activity"
@@ -45,24 +45,19 @@
         >
           {{ '我的競賽' }}
         </a>
+        <a
+          href="/official-activity/my-activity"
+          class="page__link child__page__link"
+          (click)="navigate($event, '/official-activity/about-cloudrun')"
+        >
+          {{ '關於雲跑' | translate }}
+        </a>
       </div>
       <div id="link__active__bar" *ngIf="!uiFlag.isMobile">
         <div id="link__active"></div>
       </div>
     </div>
     <div class="flexRow">
-      <div
-        id="search__btn"
-        class="flexRow"
-        [title]="'universal_operating_search' | translate"
-        [style.opacity]="uiFlag.showSearchInput ? 0 : 1"
-      >
-        <label for="search__input">
-          <button (click)="showSearchInput()">
-            <i class="icon-svg_web-icon_p1_014-search"></i>
-          </button>
-        </label>
-      </div>
       <div
         class="flexRow personal__menu__entry"
         (click)="showPersonalMenu($event)"
@@ -100,7 +95,7 @@
             class="page__link"
             (click)="$event.preventDefault();"
           >
-            {{ '聯絡我們' }}
+            {{ 'universal_vocabulary_contactUs' | translate }}
           </a>
         </li>
         <li (click)="navigate($event, '/')">
@@ -115,31 +110,6 @@
       </ul>
     </div>
   </nav>
-  <div
-    class="search__section"
-    [class.search__input--show]="uiFlag.showSearchInput"
-    *ngIf="!['edit-activity', 'apply-activity'].includes(uiFlag.currentPage)"
-  >
-    <div class="flexRow">
-      <button
-        (click)="hideSearchInput()"
-      >
-        <i class="icon-svg_web-icon_p1_012-close"></i>
-      </button>
-      <input
-        id="search__input"
-        type="text"
-        [placeholder]="'請輸入活動名稱'"
-        [(ngModel)]="activityKeyword"
-      >
-      <button
-        [title]="'universal_operating_search' | translate"
-        (click)="searchActivity(uiFlag.currentPage)"
-      >
-        <i class="icon-svg_web-icon_p1_014-search"></i>
-      </button>
-    </div>
-  </div>
   <ul id="mobile__entry__menu" *ngIf="uiFlag.showEntryMenu">
     <li [class.page__link--active]="uiFlag.currentPage === 'activity-list'">
       <a
@@ -147,7 +117,7 @@
         class="page__link child__page__link"
         (click)="navigate($event, '/official-activity/activity-list')"
       >
-        {{ '活動' }}
+        {{ 'universal_vocabulary_activity' | translate }}
       </a>
     </li>
     <li [class.page__link--active]="uiFlag.currentPage === 'leaderboard'">
@@ -156,7 +126,7 @@
         class="page__link child__page__link"
         (click)="navigate($event, '/official-activity/leaderboard')"
       >
-        {{ '排行榜' }}
+        {{ 'universal_race_leaderboard' | translate }}
       </a>
     </li>
     <li
@@ -171,27 +141,33 @@
         {{ '我的競賽' }}
       </a>
     </li>
+    <li [class.page__link--active]="uiFlag.currentPage === 'about-cloudrun'">
+      <a
+        href="/official-activity/my-activity"
+        class="page__link child__page__link"
+        (click)="navigate($event, '/official-activity/about-cloudrun')"
+      >
+        {{ '關於雲跑' | translate }}
+      </a>
+    </li>
   </ul>
   <section
-    id="main__page"
-    class="flexCol"
-    [style.overflow-y]="uiFlag.currentPage === 'edit-activity' ? 'unset' : 'scroll'"
-    [style.height]="uiFlag.currentPage === 'apply-activity' ? 'calc(var(--vh, 1vh) * 100)' : ''"
+    class="flexCol main__page"
+    [ngClass]="{
+      'scroll__not': uiFlag.currentPage === 'edit-activity',
+      'full__height': ['edit-activity', 'apply-activity'].includes(uiFlag.currentPage)
+    }"
   >
     <main
+      class="main__content"
       [style.padding]="
         [
           'activity-detail',
           'edit-activity',
           'apply-activity',
-          'contestant-list'
+          'contestant-list',
+          'about-cloudrun'
         ].includes(uiFlag.currentPage) ? 'unset' : '10px 2vw'
-      "
-      [style.height]="
-        [
-          'edit-activity',
-          'apply-activity'
-        ].includes(uiFlag.currentPage) ? 'calc(var(--vh, 1vh) * 100)' : ''
       "
     >
       <ng-container *ngIf="advertise.length > 0 && uiFlag.showAdvertise">
@@ -243,7 +219,12 @@
           'apply-activity',
           'contestant-list'
         ].includes(uiFlag.currentPage)"
-        [class.middle__page]="uiFlag.currentPage === 'activity-detail'"
+        [class.middle__page]="
+          [
+            'activity-detail',
+            'about-cloudrun'
+          ].includes(uiFlag.currentPage)
+        "
       >
         <router-outlet></router-outlet>
       </div>
@@ -281,21 +262,25 @@
           (click)="navigate($event, '/official-activity/contact-us')"
         >
           <a href="/official-activity/contact-us" (click)="$event.preventDefault();">
-            {{ '聯絡我們' }}
+            {{ 'universal_vocabulary_contactUs' | translate }}
           </a>
         </button>
       </div>
       <div class="flexCol" style="align-items: center;">
-        <img
+        <img                                  
           src="/assets/images/event-email.png"
-          alt="Official email"
-          style="height: 30px; width: 220px;"
-        >
+          alt="Official email"                
+          style="height: 30px; width: 220px;" 
+        >                                     
         <p id="footer__copyright">
-          英達科技有限公司 © 2021 Alatech Ltd. Co. All Rights Reserved.
+          英達科技有限公司 © 2022 Alatech Ltd. Co. All Rights Reserved.
         </p>
       </div>
     </footer>
+    <div
+      class="mobileFiller"
+      *ngIf="!['edit-activity', 'apply-activity'].includes(uiFlag.currentPage)"
+    ></div>
   </section>
 </div>
 

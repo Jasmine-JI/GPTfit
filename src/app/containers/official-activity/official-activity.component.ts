@@ -1,9 +1,9 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { UtilsService } from '../../shared/services/utils.service';
 import { UserProfileService } from '../../shared/services/user-profile.service';
 import { Subject, Subscription, fromEvent, merge, combineLatest, of } from 'rxjs';
-import { takeUntil, switchMap, tap } from 'rxjs/operators';
+import { takeUntil, switchMap, tap, debounceTime } from 'rxjs/operators';
 import { UserProfileInfo } from '../dashboard/models/userProfileInfo';
 import { OfficialActivityService } from './services/official-activity.service';
 import { AuthService } from '../../shared/services/auth.service';
@@ -31,14 +31,16 @@ type Page =
   | 'apply-activity'
   | 'leaderboard'
   | 'contestant-list'
-  | 'edit-activity';
+  | 'edit-activity'
+  | 'about-cloudrun';
 
 type AuthAction = 'login' | 'register' | 'qrLogin' | 'forgetPassword' | 'resetPassword' | 'sendVerifySuccess';
 
 enum PageCode {
   'activity-list',
   'leaderboard',
-  'my-activity'
+  'my-activity',
+  'about-cloudrun'
 }
 
 type AuthInput = 'accountInput' | 'passwordInput' | 'nicknameInput' | 'smsInput';
@@ -49,7 +51,7 @@ type AlertType = 'empty' | 'format' | 'mistake' | 'repeat' | 'improper' | 'overd
   templateUrl: './official-activity.component.html',
   styleUrls: ['./official-activity.component.scss']
 })
-export class OfficialActivityComponent implements OnInit, OnDestroy {
+export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();
   private pageResize = new Subscription;
   private globleEventSubscription = new Subscription;
@@ -152,12 +154,15 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
     this.utils.checkBrowserLang();
     this.detectParamChange();
     this.checkScreenSize();
-    this.checkCurrentPage();
     this.handlePageResize();
     this.loginCheck();
     this.getEventAdvertise();
     this.getCloudrunMapInfo();
     this.getDocumentUrl();
+  }
+
+  ngAfterViewInit() {
+    this.checkCurrentPage();
   }
 
   /**
@@ -220,7 +225,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
 
       if (event instanceof NavigationEnd) {
         this.closeAuthBox();
-        this.handleAdvertiseSize(window.innerWidth);
+        this.handleAdvertiseSize();
         this.checkCurrentPage();
         this.loginCheck();
       }
@@ -283,7 +288,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
 
       }
 
-    });
+    }, 500);
 
   }
 
@@ -294,6 +299,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
   handlePageResize() {
     const page = fromEvent(window, 'resize');
     this.pageResize = page.pipe(
+      debounceTime(300),
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
       this.checkScreenSize();
@@ -318,27 +324,17 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
     this.officialActivityService.setScreenSize(innerWidth);
     const { showAdvertise } = this.uiFlag;
     if (showAdvertise) {
-      this.handleAdvertiseSize(innerWidth);
+      this.handleAdvertiseSize();
     }
 
-    this.correctionHeight();
-  }
-
-  /**
-   * 校正高度以解決手機瀏覽器使用vh設定高度時，vh基準會包含網址列與控制列的問題
-   * @author kidin-1110105
-   */
-  correctionHeight() {
-    let vh = window.innerHeight * 0.01;
-    document.documentElement.style.setProperty('--vh', `${vh}px`);
   }
 
   /**
    * 根據螢幕大小設定輪播尺寸
-   * @param innerWidth {number}-螢幕寬度
    * @author kidin-1101005
    */
-  handleAdvertiseSize(innerWidth: number) {
+  handleAdvertiseSize() {
+    const innerWidth = document.documentElement.clientWidth;
     const { isMobile } = this.uiFlag,
           advertiseElement = document.querySelectorAll('.carousel__block')[0] as any,
           advertiseImg = document.querySelectorAll('.carousel__img'),
@@ -353,7 +349,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
 
     } else {
       setTimeout(() => {
-        this.handleAdvertiseSize(innerWidth);
+        this.handleAdvertiseSize();
       });
       
     }
@@ -407,7 +403,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
         const advertiseLength = this.advertise.length;
         const haveAdvertise = advertiseLength > 0;
         if (showAdvertise && haveAdvertise) {
-          this.handleAdvertiseSize(innerWidth);
+          this.handleAdvertiseSize();
           this.startCarousel();
         }
 
@@ -635,7 +631,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101014
    */
   subscribePluralEvent() {
-    const scrollElement = document.getElementById('main__page'),
+    const scrollElement = document.querySelector('.main__page'),
           clickEvent = fromEvent(document, 'click'),
           scrollEvent = fromEvent(scrollElement, 'scroll');
     this.globleEventSubscription = merge(clickEvent, scrollEvent).pipe(
@@ -1490,7 +1486,8 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
     const passCheck = !alertElement && checkEmptyPass;
     switch (authBox) {
       case 'login':
-        if (passCheck) this.login();
+        const { account: accountAlert } = this.authAlert;
+        if (passCheck || accountAlert === 'mistake') this.login();
         break;
       case 'register':
         if (passCheck && this.agreeDeclaration) this.register();

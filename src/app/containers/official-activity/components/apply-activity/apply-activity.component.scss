@@ -4,6 +4,7 @@
 @import 'button.scss';
 @import 'transform.scss';
 @import 'color.scss';
+@import 'overflow-scroll';
 
 $app-icon-size: 80px;
 $aside-width: 200px;
@@ -58,7 +59,7 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
   padding: 0;
   width: 180px;
   max-height: 200px;
-  overflow-y: scroll;
+  @include overflow-y-scroll();
 
   >li {
     padding: 5px;
@@ -131,7 +132,7 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
 #main__content {
   width: calc(100vw - #{$aside-width} - #{$margin-left});
   height: 100vh;
-  overflow-y: scroll;
+  @include overflow-y-scroll();
 }
 
 #progress__hint {
@@ -282,7 +283,7 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
 }
 
 .disable__account {
-  color: rgba(150, 150, 150, 1);
+  color: rgba(100, 100, 100, 1);
   cursor: no-drop;
 }
 
@@ -343,7 +344,8 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
     display: inline-block;
     width: $radio-size;
     height: $radio-size;
-    outline: 1px solid $official-theme-color-light;
+    box-shadow: 1px 1px  white,;
+    box-shadow: 1px 1px #e54444, -1px -1px #e54444, 1px -1px #e54444, -1px 1px #e54444;
     border: 3px solid white;
     border-radius: 50%;
     cursor: pointer;

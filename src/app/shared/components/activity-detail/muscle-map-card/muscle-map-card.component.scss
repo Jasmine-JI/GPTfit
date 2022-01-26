@@ -1,3 +1,5 @@
+@import 'overflow-scroll';
+
 $listBorderColor: rgb(229, 229, 229);
 $focusBodyPartColor: #6f6f6f;
 
@@ -14,6 +16,10 @@ $focusBodyPartColor: #6f6f6f;
 #list__block {
   width: 50%;
   max-width: 460px;
+}
+
+.muscle__list__container {
+  @include overflow-y-scroll();
 }
 
 .muscle__training__list {

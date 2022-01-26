@@ -73,29 +73,34 @@
           </button>
         </div>
       </div>
-      <table
-        id="countdonw"
-        *ngIf="!uiFlag.raceEnd && eventInfo.eventStatus !== EventStatus.cancel"
-      >
-        <tbody>
-          <tr>
-            <td>{{ raceEndCountdwon.day }}</td>
-            <td>{{ raceEndCountdwon.hour }}</td>
-            <td>{{ raceEndCountdwon.minute }}</td>
-            <td>{{ raceEndCountdwon.second }}</td>
-          </tr>
-        </tbody>
-        <tfoot>
-          <tr>
-            <th>{{ 'universal_time_day' | translate }}</th>
-            <th>{{ '時' }}</th>
-            <th>{{ 'universal_time_minute' | translate}}</th>
-            <th>{{ 'universal_time_second' | translate }}</th>
-          </tr>
-        </tfoot>
-      </table>
     </div>
   </header>
+  <div
+    class="flexCol countdown"
+    *ngIf="!uiFlag.raceEnd && eventInfo.eventStatus !== EventStatus.cancel"
+  >
+    <h6 class="cowndown__title">比賽截止還有</h6>
+    <div class="clock__container">
+      <div class="flexRow countdown__clock">
+        <div class="flexCol clock__colume">
+          <span class="clock__number">{{ raceEndCountdwon.day }}</span>
+          <span>{{ 'universal_time_day' | translate }}</span>
+        </div>
+        <div class="flexCol clock__colume">
+          <span class="clock__number">{{ raceEndCountdwon.hour }}</span>
+          <span>{{ '時' | translate }}</span>
+        </div>
+        <div class="flexCol clock__colume">
+          <span class="clock__number">{{ raceEndCountdwon.minute }}</span>
+          <span>{{ 'universal_time_minute' | translate }}</span>
+        </div>
+        <div class="flexCol clock__colume">
+          <span class="clock__number">{{ raceEndCountdwon.second }}</span>
+          <span>{{ 'universal_time_second' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
   <nav id="shortcut__section" class="flexRow">
     <button
       class="switch__buton"

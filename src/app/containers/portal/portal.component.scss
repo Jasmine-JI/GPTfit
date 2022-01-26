@@ -3,6 +3,7 @@
 @import 'color.scss';
 @import 'transition.scss';
 @import 'keyframes.scss';
+@import 'overflow-scroll';
 
 
 @mixin home-image ($image) {
@@ -31,10 +32,9 @@
 
 .main {
   height: 100vh;
-  overflow-y: scroll;
-  scrollbar-width: thin;
   padding-top: 63px;
   width: 100%;
+  @include overflow-y-scroll();
 }
 
 .hideNavbar {

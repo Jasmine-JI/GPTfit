@@ -74,7 +74,7 @@
         *ngIf="!isShowResetPwd"
         (click)="chooseNavItem(4)"
       >
-        <a class="nav-link">活動</a>
+        <a class="nav-link">{{ 'universal_vocabulary_activity' | translate }}</a>
       </li>
       <li class="nav-item" *ngIf="isShowResetPwd">
         <a class="nav-link" (click)="reloadPage()">Reset Password</a>

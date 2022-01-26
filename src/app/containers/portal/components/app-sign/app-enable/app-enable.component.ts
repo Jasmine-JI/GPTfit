@@ -525,11 +525,8 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 點擊email認證信後送出驗證碼給server驗證-kidin-1090518
   emailEnable (body) {
-    if (
-      this.logMessage.enable !== ''
-      && this.logMessage.success !== ''
-      && this.logMessage.confirm !== ''
-    ) {
+    const { enable, success, confirm } = this.logMessage;
+    if (enable !== '' && success !== '' && confirm !== '') {
       this.progress = 30;
       this.getClientIpaddress().pipe(
         switchMap(ipResult => this.signupService.fetchEnableAccount(body, this.requestHeader))
@@ -592,7 +589,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
         confirmText: this.logMessage.confirm,
       };
 
-      if (fn) Object.assign(data, fn.bind(this));
+      if (fn) Object.assign(data, {onConfirm: fn.bind(this)});
 
       this.dialog.open(MessageBoxComponent, {
         hasBackdrop: true,
@@ -615,7 +612,6 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
     } else if (this.appInfo.sys === 2) {
       (window as any).android.closeWebView('Close');
     } else {
-
       window.close();
       window.onunload = this.refreshParent;
       // 若無法關閉瀏覽器則導回登入頁

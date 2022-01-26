@@ -315,7 +315,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
    */
   handleScrollTarget(e: MouseEvent, id: number) {
     e.preventDefault();
-    const scrollElement = document.getElementById('main__page');
+    const scrollElement = document.querySelector('.main__page');
     const targetId = `content__${id}`;
     const targetElementTop = document.getElementById(targetId).offsetTop;
     const navHeight = 60;
