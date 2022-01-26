@@ -1,4 +1,5 @@
-<div class="slide__in">
+<app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
+<div class="page__standby" [class.slide__in]="uiFlag.progress === 100">
   <section *ngTemplateOutlet="introductionSection; context: {
     'title': 'universal_vocabulary_cloudrunIntroBestTrainer' | translate,
     'description': 'universal_vocabulary_cloudrunIntroBestTrainerContent' | translate,
@@ -35,6 +36,7 @@
         src="/assets/cloud_run/phone_mock.png"
         alt="Download Cloudrun"
         class="mock__img"
+        (load)="imageLoaded()"
       >
       <div class="flexCol download__text">
         <h3 class="download__title">
@@ -86,8 +88,13 @@
   >
     <div class="flexCol introduction__text">
       <h3 class="introduction__title">{{ title }}</h3>
-      <p class="introduction__description">{{ description }}</p>
+      <p class="introduction__description" [innerHTML]="description"></p>
     </div>
-    <img [src]="imgPath" [alt]="title" class="introduction__image">
+    <img
+      [src]="imgPath"
+      [alt]="title"
+      class="introduction__image"
+      (load)="imageLoaded()"
+    >
   </section>
 </ng-template>

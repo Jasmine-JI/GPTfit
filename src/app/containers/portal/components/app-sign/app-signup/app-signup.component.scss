@@ -2,6 +2,7 @@
 @import 'flex-center.scss';
 @import 'font.scss';
 @import 'transition.scss';
+@import 'overflow-scroll';
 
 $content-background-color: rgba(34, 34, 34, 1);
 $app-icon-size: 80px;
@@ -116,7 +117,7 @@ $app-icon-size: 80px;
 
   >div {
     height: 60vh;
-    overflow-y: scroll;
+    @include overflow-y-scroll();
   }
 
 }

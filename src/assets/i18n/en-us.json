@@ -885,6 +885,7 @@
  "universal_btDevice_pairPhoneNow": "Pair with mobile phone now",
  "universal_btDevice_pleaseSync": "Please synchronize",
  "universal_btDevice_priorityConnection": "Add sensors here. This sensor will be connected first when activity starts.",
+ "": "Adicione sensores aqui. Este sensor será ligado quando a atividade iniciar.",
  "universal_btDevice_readySync": "Ready for synchronization",
  "universal_btDevice_recordingActivity": "The device is recording the activity, please stop recording before synchronization",
  "universal_btDevice_removeDevice": "Remove device",

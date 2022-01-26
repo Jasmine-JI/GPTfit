@@ -10,6 +10,7 @@
 @import 'check-box.scss';
 @import 'radio-btn.scss';
 @import 'rod-bar.scss';
+@import 'fill-available.scss';
 
 @font-face {
   font-family: Matamata-Regular;
@@ -24,6 +25,34 @@
 $sky-blue: rgba(17, 166, 235, 1);
 $radio-size: 20px;
 $radio-active-size: 14px;
+
+body,
+html {
+  font-family: 'Microsoft JhengHei', sans-serif !important;
+  margin: 0;
+  position: fixed;
+  width: 100vw;
+  overflow-y: hidden;
+  @include full-height();
+}
+
+input, textarea {
+  background-color: transparent;
+  border: 1px solid rgba(120, 120, 120, 1);
+  padding: 0;
+}
+
+input[type="text"], input[type="password"], input[type="number"] {
+  border-radius: 0;
+}
+
+button {
+  background-color: transparent;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 .alpha-text {
   color: #F2850C;
@@ -270,13 +299,6 @@ $radio-active-size: 14px;
 
 .ng-bar-placeholder {
   height: 5px!important;
-}
-
-body,
-html {
-  font-family: 'Microsoft JhengHei', sans-serif !important;
-  height: 100vh;
-  margin: 0;
 }
 
 /* loading */
@@ -603,7 +625,6 @@ a.alatech-btn:hover {
 .access-bg {
   margin-top: -63px;
   min-height: 100vh;
-  min-height: calc(var(--vh, vh) * 100);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -842,6 +863,11 @@ a.ban-send:hover {
 
 .rodBar--active {
   @include rodBar-active();
+}
+
+.mobileFiller {
+  min-height: 60px;
+  flex-shrink: 0;
 }
 
 /************************************* media **************************************/

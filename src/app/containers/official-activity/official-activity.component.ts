@@ -159,7 +159,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     this.getEventAdvertise();
     this.getCloudrunMapInfo();
     this.getDocumentUrl();
-    this.utils.regulateHeight();
   }
 
   ngAfterViewInit() {
@@ -226,7 +225,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
 
       if (event instanceof NavigationEnd) {
         this.closeAuthBox();
-        this.handleAdvertiseSize(window.innerWidth);
+        this.handleAdvertiseSize();
         this.checkCurrentPage();
         this.loginCheck();
       }
@@ -300,7 +299,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
   handlePageResize() {
     const page = fromEvent(window, 'resize');
     this.pageResize = page.pipe(
-      debounceTime(200),
+      debounceTime(300),
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
       this.checkScreenSize();
@@ -325,17 +324,17 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     this.officialActivityService.setScreenSize(innerWidth);
     const { showAdvertise } = this.uiFlag;
     if (showAdvertise) {
-      this.handleAdvertiseSize(innerWidth);
+      this.handleAdvertiseSize();
     }
 
   }
 
   /**
    * 根據螢幕大小設定輪播尺寸
-   * @param innerWidth {number}-螢幕寬度
    * @author kidin-1101005
    */
-  handleAdvertiseSize(innerWidth: number) {
+  handleAdvertiseSize() {
+    const innerWidth = document.documentElement.clientWidth;
     const { isMobile } = this.uiFlag,
           advertiseElement = document.querySelectorAll('.carousel__block')[0] as any,
           advertiseImg = document.querySelectorAll('.carousel__img'),
@@ -350,7 +349,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
 
     } else {
       setTimeout(() => {
-        this.handleAdvertiseSize(innerWidth);
+        this.handleAdvertiseSize();
       });
       
     }
@@ -404,7 +403,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
         const advertiseLength = this.advertise.length;
         const haveAdvertise = advertiseLength > 0;
         if (showAdvertise && haveAdvertise) {
-          this.handleAdvertiseSize(innerWidth);
+          this.handleAdvertiseSize();
           this.startCarousel();
         }
 

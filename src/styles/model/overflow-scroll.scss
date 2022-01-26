@@ -1,0 +1,11 @@
+/**
+ * 使用fill-available
+ */
+@mixin overflow-y-scroll($showBar: true) {
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  @if $showBar {
+    scrollbar-width: thin;
+  }
+
+}

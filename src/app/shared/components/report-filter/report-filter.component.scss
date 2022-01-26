@@ -2,6 +2,7 @@
 @import 'flex-center.scss';
 @import 'font.scss';
 @import "transform.scss";
+@import 'overflow-scroll';
 
 $active-color: rgba(38, 171, 227, 1);
 $hover-bg-gray: rgba(240, 240, 240, 1);
@@ -252,6 +253,7 @@ $drop-list-width: 200px;
 }
 
 #map__drop__list {
+  @include overflow-y-scroll();
   position: absolute;
   z-index: 10;
   background-color: var(--scale-255-60);
@@ -259,8 +261,6 @@ $drop-list-width: 200px;
   padding: 5px 10px;
   min-width: $drop-list-width;
   max-height: 350px;
-  overflow: scroll;
-  scrollbar-width: thin;
   top: 28px;
 }
 

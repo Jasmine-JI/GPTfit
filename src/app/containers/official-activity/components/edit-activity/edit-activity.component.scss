@@ -7,6 +7,7 @@
 @import 'flex-center.scss';
 @import 'button.scss';
 @import 'check-box.scss';
+@import 'overflow-scroll';
 
 $placeholder-color: rgba(190, 190, 190, 1);
 $placeholder-font-size: 24px;
@@ -62,10 +63,8 @@ $placeholder-img-max-size: 220px;
 
 #main__edit__content {
   padding: 5vh 10vw;
-  padding: calc(var(--vh, 1vh) * 5) 10vw;
   height: calc(100vh - #{$edit-nav-height});
-  height: calc(var(--vh, 1vh) * 100 - #{$edit-nav-height});
-  overflow-y: scroll;
+  @include overflow-y-scroll();
 }
 
 #event__cancel {
@@ -199,7 +198,7 @@ $placeholder-img-max-size: 220px;
   z-index: 2;
   box-shadow: 1px 2px 4px $list-shadow-color, -1px -2px 4px $list-shadow-color;
   max-height: 350px;
-  overflow-y: scroll;
+  @include overflow-y-scroll();
 
   >li {
     padding: 5px;
@@ -341,7 +340,7 @@ $placeholder-img-max-size: 220px;
   background-color: white;
   z-index: 2;
   max-height: 150px;
-  overflow-y: scroll;
+  @include overflow-y-scroll();
 
   >li {
     padding: 2px 10px;

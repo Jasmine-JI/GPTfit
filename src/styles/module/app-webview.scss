@@ -3,6 +3,7 @@
 @import 'button.scss';
 @import 'font.scss';
 @import 'keyframes.scss';
+@import 'overflow-scroll';
 
 $border-style: 3px solid;
 $animation-setting: 0.5s $transition-effect;
@@ -47,8 +48,8 @@ $animation-setting: 0.5s $transition-effect;
   padding: 0;
   width: 180px;
   max-height: 200px;
-  overflow-y: scroll;
   cursor: pointer;
+  @include overflow-y-scroll();
 
   >li {
     padding: 5px;
