@@ -3,6 +3,8 @@
 @import 'flex-center.scss';
 @import 'color.scss';
 @import 'filter.scss';
+@import 'overflow-scroll';
+@import 'fill-available.scss';
 
 $avatar-size: 40px;
 $nav-height: 60px;
@@ -47,7 +49,7 @@ $declaration-color: rgba(100, 100, 100, 1);
   padding: 0;
   width: 180px;
   max-height: 200px;
-  overflow-y: scroll;
+  @include overflow-y-scroll();
 
   >li {
     padding: 5px;
@@ -77,6 +79,11 @@ $declaration-color: rgba(100, 100, 100, 1);
     @include transition(transform);
   }
 
+}
+
+.page__container {
+  justify-content: center;
+  overflow: hidden;
 }
 
 #nav {
@@ -237,12 +244,13 @@ $declaration-color: rgba(100, 100, 100, 1);
 }
 
 .main__page {
-  justify-content: space-between;
   width: 100vw;
-  height: calc(100vh - #{$nav-height}); /* Fallback for browsers that do not support Custom Properties */
-  height: calc(var(--vh, 1vh) * 100 - #{$nav-height});
-  overflow-y: scroll;
-  scrollbar-width: thin;
+  height: calc(100vh - #{$nav-height});
+  @include overflow-y-scroll();
+}
+
+.main__content {
+  display: block;
 }
 
 .scroll__not {
@@ -251,25 +259,6 @@ $declaration-color: rgba(100, 100, 100, 1);
 
 .full__height {
   height: 100vh;
-  height: calc(var(--vh, 1vh) * 100);
-}
-
-.noraml__link, .admin__link {
-  position: absolute;
-}
-
-.noraml__link {
-  top: 5vh;
-  top: calc(var(--vh, 1vh) * 5);
-
-  >a {
-    margin: 10px 0;
-  }
-
-}
-
-.admin__link {
-  bottom: 0px;
 }
 
 #carousel {
@@ -474,8 +463,8 @@ $declaration-color: rgba(100, 100, 100, 1);
   justify-content: space-between;
   border-top: 1px solid black;
   margin: 0 2vw;
-  padding-top: 3vh;
-  padding-top: calc(var(--vh, 1vh) * 3);
+  padding: 20px;
+  flex-shrink: 0;
 }
 
 .footer__link__area {

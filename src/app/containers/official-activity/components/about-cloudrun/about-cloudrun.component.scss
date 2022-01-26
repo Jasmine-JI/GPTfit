@@ -9,7 +9,12 @@ $section-padding: 10px;
   @include bold-font($font-size);
 }
 
+.page__standby {
+  opacity: 0;
+}
+
 .slide__in {
+  opacity: 1;
   animation: bottom-slide-in 1s 1;
   animation-timing-function: ease-in;
   @include keyframes(bottom-slide-in) {

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { Subject, fromEvent, Subscription, of } from 'rxjs';
+import { Subject, fromEvent, Subscription, of, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { UserProfileService } from '../../services/user-profile.service';
 import { UserProfileInfo, HrBase } from '../../../containers/dashboard/models/userProfileInfo';
@@ -266,7 +266,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   ) { }
 
   ngOnInit(): void {
-    this.getFileId(location.pathname);
     this.checkQueryString(location.search);
     this.checkScreenSize();
     this.handlePageResize();
@@ -279,22 +278,19 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   /**
-   * 判斷是否為登入後運動詳細頁面，並從url取得運動檔案id
+   * 取得userProfile
    * @param path {string}-url pathname
    * @author kidin-1100104
    */
-  getFileId(path: string) {
+  getUserProfile(path: string) {
     if (path.indexOf('dashboard') > -1) {
       this.uiFlag.isPortal = false;
-      this.getRxUserProfile();
+      return this.getRxUserProfile();
     } else {
       this.uiFlag.isPortal = true;
-      this.createUserProfile();
+      return this.createUserProfile();
     }
 
-    const pathArr = path.split('/');
-    this.fileInfo.fileId = pathArr[pathArr.length - 1];
-    this.progress = 10;
   }
 
   /**
@@ -376,9 +372,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     const token = this.utils.getToken();
     if (token) {
       this.userProfileService.refreshUserProfile({ token });
-      this.getRxUserProfile();
+      return this.getRxUserProfile();
     } else {
-      this.userProfile = {
+      const fakeUserProfile = {
         systemAccessRight: [99],
         autoTargetStep: 5000,
         avatarUrl: null,
@@ -412,6 +408,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         wheelSize: 600,
       }
 
+      return of(fakeUserProfile);
     }
 
   }
@@ -421,11 +418,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100104
    */
   getRxUserProfile() {
-    this.userProfileService.getRxUserProfile().pipe(
+    return this.userProfileService.getRxUserProfile().pipe(
       takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.userProfile = res;
-    });
+    );
 
   }
 
@@ -434,33 +429,32 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100104
    */
   getActivityDetail() {
-    let body: any;
     this.progress = 30;
-    if (this.uiFlag.isPortal) {
-      body = {
-        token: this.utils.getToken() || '',
-        fileId: this.fileInfo.fileId,
-        // displayDetailField: 3  // 新api回傳格式
-      };
-
-    } else {
-      body = {
-        token: this.utils.getToken(),
-        fileId: this.fileInfo.fileId,
-        // displayDetailField: 3, // 新api回傳格式
-      };
-
-    }
+    const { pathname } = location;
+    const pathArr = pathname.split('/');
+    const fileId = pathArr[pathArr.length - 1];
+    this.fileInfo.fileId = fileId;
+    let body: any = {
+      token: this.utils.getToken() || '',
+      fileId: fileId,
+      // displayDetailField: 3  // 新api回傳格式
+    };
 
     if (this.uiFlag.isDebug) {
       body = {debug: 'true', ...body};
     }
 
-    this.activityService.fetchSportListDetail(body).subscribe(res => {
-      switch (res.resultCode) {
+    combineLatest([
+      this.getUserProfile(pathname),
+      this.activityService.fetchSportListDetail(body)
+    ]).subscribe(resArr => {
+      const [userProfile, activityDetail] = resArr;
+      this.userProfile = userProfile;
+      const { resultCode, apiCode, resultMessage } = activityDetail;
+      switch (resultCode) {
         case 400:  // 找不到該筆運動檔案或其他
           this.progress = 100;
-          console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+          console.error(`${resultCode}: Api ${apiCode} ${resultMessage}`);
           this.router.navigateByUrl('/404');
           break;
         case 403: // 無權限觀看該運動檔案
@@ -469,11 +463,11 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           break;
         case 200:
           this.progress = 70;
-          this.handleActivityDetail(res);
+          this.handleActivityDetail(activityDetail);
           break;
         default:
           this.progress = 100;
-          console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+          console.error(`${resultCode}: Api ${apiCode} ${resultMessage}`);
           this.utils.openAlert(errMsg);
           break;
       }
@@ -559,14 +553,19 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         };
 
         this.userProfileService.getUserProfile(body).subscribe(res => {
-          if (res.processResult && res.processResult.resultCode === 200) {
-            const {userProfile} = res;
-            this.ownerProfile = {
-              icon: userProfile.avatarUrl,
-              name: userProfile.nickname
-            };
-          } else if (res.processResult && res.processResult.resultCode !== 200) {
-            console.error(`${res.processResult.resultCode}: Api ${res.processResult.apiCode} ${res.processResult.resultMessage}`);
+          const { processResult } = res;
+          if (processResult) {
+            const { resultCode, apiCode, resultMessage } = processResult;
+            if (resultCode !== 200) {
+              console.error(`${resultCode}: Api ${apiCode} ${resultMessage}`);
+            } else {
+              const {userProfile} = res;
+              this.ownerProfile = {
+                icon: userProfile.avatarUrl,
+                name: userProfile.nickname
+              };
+
+            } 
           } else {
             console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
           }
@@ -781,17 +780,22 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     };
 
     this.userProfileService.getUserProfile(body).subscribe(res => {
-      if (res.processResult && res.processResult.resultCode === 200) {
-        const {userProfile} = res;
-        this.otherInfo.teacherInfo = {
-          icon: userProfile[0].avatarUrl,
-          name: userProfile[0].nickname,
-          desc: userProfile[0].description
-        };
+      const { processResult } = res;
+      if (processResult) {
+        const { resultCode, apiCode, resultMessage } = processResult;
+        if (resultCode !== 200) {
+          console.error(`${resultCode}: Api ${apiCode} ${resultMessage}`);
+        } else {
+          const { userProfile} = res;
+          this.otherInfo.teacherInfo = {
+            icon: userProfile[0].avatarUrl,
+            name: userProfile[0].nickname,
+            desc: userProfile[0].description
+          };
 
-        this.checkGroupResLength('teacherDesc');
-      } else if (res.processResult && res.processResult.resultCode !== 200) {
-        console.error(`${res.processResult.resultCode}: Api ${res.processResult.apiCode} ${res.processResult.resultMessage}`);
+          this.checkGroupResLength('teacherDesc');
+        }
+
       } else {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       }

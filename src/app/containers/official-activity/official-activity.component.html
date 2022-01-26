@@ -1,5 +1,5 @@
 <app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
-<div class="flexCol" style="justify-content: center;">
+<div class="flexCol page__container">
   <nav
     id="nav"
     class="flexRow"
@@ -155,10 +155,11 @@
     class="flexCol main__page"
     [ngClass]="{
       'scroll__not': uiFlag.currentPage === 'edit-activity',
-      'full__height': uiFlag.currentPage === 'apply-activity'
+      'full__height': ['edit-activity', 'apply-activity'].includes(uiFlag.currentPage)
     }"
   >
     <main
+      class="main__content"
       [style.padding]="
         [
           'activity-detail',
@@ -167,12 +168,6 @@
           'contestant-list',
           'about-cloudrun'
         ].includes(uiFlag.currentPage) ? 'unset' : '10px 2vw'
-      "
-      [style.height]="
-        [
-          'edit-activity',
-          'apply-activity'
-        ].includes(uiFlag.currentPage) ? 'calc(var(--vh, 1vh) * 100)' : ''
       "
     >
       <ng-container *ngIf="advertise.length > 0 && uiFlag.showAdvertise">
@@ -272,11 +267,20 @@
         </button>
       </div>
       <div class="flexCol" style="align-items: center;">
+        <img                                  
+          src="/assets/images/event-email.png"
+          alt="Official email"                
+          style="height: 30px; width: 220px;" 
+        >                                     
         <p id="footer__copyright">
           英達科技有限公司 © 2022 Alatech Ltd. Co. All Rights Reserved.
         </p>
       </div>
     </footer>
+    <div
+      class="mobileFiller"
+      *ngIf="!['edit-activity', 'apply-activity'].includes(uiFlag.currentPage)"
+    ></div>
   </section>
 </div>
 
