@@ -1415,7 +1415,14 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     const title = (e as any).target.value;
     const targetIndex = id - 1;
     const oldTitle = this.eventDetail.applyFee[targetIndex].title;
-    if (title !== oldTitle) {
+    const repeat = this.eventDetail.applyFee.findIndex((_applyFee, index) => {
+      return _applyFee.title === title && targetIndex !== index;
+    });
+
+    if (repeat > -1) {
+      this.utils.showSnackBar('報名組合名稱重複');
+      this.eventDetail.applyFee[targetIndex].title = null;
+    } else if (title !== oldTitle) {
       this.eventDetail.applyFee[targetIndex].title = title;
       this.saveDraft();
     }

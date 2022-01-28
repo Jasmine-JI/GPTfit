@@ -47,8 +47,6 @@ router.post('/getAllMapInfo', (req, res, next) => {
           };
 
         } else {
-          data = fs.readFileSync(logFile);
-          data = JSON.parse(data.toString('utf8'));
           const _info = fs.readFileSync(mapFilePath),
                 _infoUtf8 = _info.toString('utf8').replace(/^\ufeff/g, ''), // 避免出現Unexpected token ﻿ in JSON at position 0 錯誤
                 _infoJson = JSON.parse(_infoUtf8),

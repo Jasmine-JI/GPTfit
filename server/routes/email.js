@@ -106,7 +106,7 @@ function checkContent(req) {
       名稱：${name}\n
       e-mail：${email}\n
       電話：${phone}\n
-      內容：${content}\n
+      內容：\n${content}\n
     `;
 
   }

@@ -7,7 +7,7 @@
     >
       <div class="flexCol filter__block">
         <label for="date__filter__button" class="list__filter__label">
-          {{ '競賽日期' | translate }}
+          {{ 'universal_vocabulary_raceDate' | translate }}
         </label>
         <div style="position: relative;">
           <div class="flexRow">
@@ -45,7 +45,7 @@
       </div>
       <div class="flexCol filter__block">
         <label for="status__filter__button" class="list__filter__label">
-          {{ '競賽狀態' | translate }}
+          {{ 'universal_group_status' | translate }}
         </label>
         <div class="drop__area">
           <div class="flexRow">
@@ -86,7 +86,7 @@
                   <mat-icon class="check__icon">done</mat-icon>
                 </ng-container>
               </span>
-              <span>{{ '報名中' | translate }}</span>
+              <span>{{ 'universal_vocabulary_signOpen' | translate }}</span>
             </li>
             <li
               class="flexRow status__menu__content"
@@ -99,7 +99,7 @@
                   <mat-icon class="check__icon">done</mat-icon>
                 </ng-container>
               </span>
-              <span>{{ '報名截止' | translate }}</span>
+              <span>{{ 'universal_vocabulary_signEnd' | translate }}</span>
             </li>
             <li
               class="flexRow status__menu__content"
@@ -112,7 +112,7 @@
                   <mat-icon class="check__icon">done</mat-icon>
                 </ng-container>
               </span>
-              <span>{{ '競賽進行中' | translate }}</span>
+              <span>{{ 'universal_vocabulary_raceInProgress' | translate }}</span>
             </li>
             <li
               class="flexRow status__menu__content"
@@ -125,7 +125,7 @@
                   <mat-icon class="check__icon">done</mat-icon>
                 </ng-container>
               </span>
-              <span>{{ '競賽結束' | translate }}</span>
+              <span>{{ 'universal_vocabulary_raceEnd' | translate }}</span>
             </li>
             <li
               class="flexRow status__menu__content"
@@ -138,7 +138,7 @@
                   <mat-icon class="check__icon">done</mat-icon>
                 </ng-container>
               </span>
-              <span>{{ '賽事取消' | translate }}</span>
+              <span>{{ 'universal_vocabulary_raceCancel' | translate }}</span>
             </li>
           </ul>
         </div>
@@ -229,11 +229,11 @@
               >
                 <div class="flexRow race__info__header">
                   <h3 class="race__title">
-                    {{ '無任何賽事' }}
+                    {{ 'universal_vocabulary_noRacesAtAll' | translate }}
                   </h3>
                 </div>
                 <p class="race__description">
-                  {{ '此時間範圍無任何賽事' }}
+                  {{ 'universal_vocabulary_noRaces' | translate }}
                 </p>
               </div>
             </div>
@@ -243,7 +243,7 @@
       <ng-container *ngIf="uiFlag.isMobile">
         <div class="flexCol" style="width: 90vw; margin: 0 auto;">
           <h3 class="race__title">
-            {{ '無任何賽事' }}
+            {{ 'universal_vocabulary_noRacesAtAll' | translate }}
           </h3>
           <div class="theme__img__mobile theme__no__img">
             <i class="icon-svg_web-icon_p3_072-photo no__img"></i>
@@ -255,7 +255,7 @@
             "
           >
             <p class="race__description__mobile">
-              {{ '此時間範圍無任何賽事' }}
+              {{ 'universal_vocabulary_noRaces' | translate }}
             </p>
           </div>
         </div>
@@ -296,10 +296,10 @@
                         _eventList.eventStatus !== EventStatus.cancel
                         && serverTimestamp > _eventList.raceDate.endDate"
                       >
-                        {{ '已結束' }}
+                        {{ 'universal_vocabulary_ended' | translate }}
                       </ng-container>
                       <ng-container *ngIf="_eventList.eventStatus === EventStatus.cancel">
-                        {{ '賽事取消' }}
+                        {{ 'universal_vocabulary_raceCancel' | translate }}
                       </ng-container>
                     </div>
                   </div>
@@ -487,10 +487,10 @@
                       _eventList.eventStatus !== EventStatus.cancel
                       && serverTimestamp > _eventList.raceDate.endDate"
                     >
-                      {{ '已結束' }}
+                      {{ 'universal_vocabulary_ended' | translate }}
                     </ng-container>
                     <ng-container *ngIf="_eventList.eventStatus === EventStatus.cancel">
-                      {{ '賽事取消' }}
+                      {{ 'universal_vocabulary_raceCancel' | translate }}
                     </ng-container>
                   </div>
                 </div>
@@ -554,7 +554,7 @@
                 <thead>
                   <tr>
                     <th class="product__title">
-                      {{ '項目' }}
+                      {{ 'universal_vocabulary_item' | translate }}
                     </th>
                     <th class="product__fee">
                       {{ 'universal_group_cost' | translate }}
@@ -632,8 +632,7 @@
   >
     <div class="official-dialogTitle">
       <h5>
-        <img class="official__icon" src="/assets/cloud_run/cloudrun-icon.svg">
-        {{ '建立排程賽局' }}
+        建立排程賽局
       </h5>
     </div>
     <div class="flexCol official-dialogContent">
@@ -739,16 +738,16 @@
       {{ 'universal_race_notYetOpen' | translate }}
     </ng-container>
     <ng-container *ngIf="!eventCancel && !applyFull && serverTimestamp > startDate && serverTimestamp < endDate">
-      {{ '報名中' }}
+      {{ 'universal_vocabulary_signOpen' | translate }}
     </ng-container>
     <ng-container *ngIf="!eventCancel && !applyFull && serverTimestamp > endDate">
-      {{ '報名截止' }}
+      {{ 'universal_vocabulary_signEnd' | translate }}
     </ng-container>
     <ng-container *ngIf="!eventCancel && applyFull">
-      {{ '額滿' }}
+      {{ 'universal_vocabulary_full' | translate }}
     </ng-container>
     <ng-container *ngIf="eventCancel">
-      {{ '賽事取消' }}
+      {{ 'universal_vocabulary_raceCancel' | translate }}
     </ng-container>
     <ng-container *ngIf="!eventCancel && !applyFull && uiFlag.currentPage !== 'my-activity'">
       {{ startDate * 1000 | timeFormat: 'MM/DD' }}~{{ endDate * 1000 | timeFormat: 'MM/DD' }}
@@ -763,7 +762,7 @@
   let-raceEnd="raceEnd"
 >
   <div class="flexCol race__date__area">
-    <h6>{{ '比賽日期' }}</h6>
+    <h6>{{ 'universal_vocabulary_raceDate' | translate }}</h6>
     <div class="flexRow">
       <div *ngTemplateOutlet="calender;
         context: {
@@ -868,13 +867,13 @@
           && fee > 0
         "
       >
-        {{ '點擊繳費' }}
+        {{ 'universal_vocabulary_tapToPay' | translate }}
       </button>
       <div 
         class="apply__schedule apply__schedule__warn"
         *ngIf="eventCancel || applyFull || serverTimestamp > endDate"
       >
-        {{ '已截止' }}
+        {{ 'universal_vocabulary_expired' | translate }}
       </div>
     </ng-container>
     <ng-container *ngIf="
@@ -883,12 +882,12 @@
     "
     >
       <div class="apply__schedule apply__schedule__finish">
-        {{ '報名完成' }}
+        {{ 'universal_vocabulary_signDone' | translate }}
       </div>
     </ng-container>
     <ng-container *ngIf="applyStatus === ApplyStatus.cancel">
       <div class="apply__schedule apply__schedule__undone">
-        {{ '已取消報名' }}
+        {{ 'universal_vocabulary_signCanceled' | translate }}
       </div>
     </ng-container>
     <ng-container>
@@ -902,16 +901,16 @@
         "
       >
         <ng-container *ngIf="!haveProduct">
-          {{ '無商品' }}
+          {{ 'universal_vocabulary_noPackage' | translate }}
         </ng-container>
         <ng-container *ngIf="haveProduct && productShipped === ProductShipped.unShip">
-          {{ '未出貨' }}
+          {{ 'universal_vocabulary_unshipped' | translate }}
         </ng-container>
         <ng-container *ngIf="haveProduct && productShipped === ProductShipped.shipped">
-          {{ '已出貨' }}
+          {{ 'universal_vocabulary_delivered' | translate }}
         </ng-container>
         <ng-container *ngIf="haveProduct && productShipped === ProductShipped.returnGoods">
-          {{ '已退貨' }}
+          {{ 'universal_vocabulary_returned' | translate }}
         </ng-container>
       </div>
     </ng-container>
@@ -973,7 +972,7 @@
   <div class="flexRow">
     <div class="flexCol history__record">
       <h6>
-        {{ '成績' }}
+        {{ 'universal_vocabulary_results' | translate }}
       </h6>
       <span>
         {{ record ? (record | sportTime: [false, false]) : '--:--' }}

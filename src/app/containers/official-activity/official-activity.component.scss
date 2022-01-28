@@ -136,7 +136,7 @@ $declaration-color: rgba(100, 100, 100, 1);
 }
 
 .official__icon {
-  height: 30px;
+  height: 24px;
   margin-right: 10px;
 }
 
@@ -481,18 +481,10 @@ $declaration-color: rgba(100, 100, 100, 1);
     color: black;
     white-space: nowrap;
 
-    &:first-of-type {
-      font-weight: bold;
-    }
-
-    &:not(:first-of-type) {
-
-      &:before {
-        content: '';
-        border-left: 3px solid $official-theme-color-light;
-        margin-right: 10px;
-      }
-
+    &:before {
+      content: '';
+      border-left: 3px solid $official-theme-color-light;
+      margin-right: 10px;
     }
 
   }
@@ -528,6 +520,10 @@ $declaration-color: rgba(100, 100, 100, 1);
 
 .checkbox__alert {
   box-shadow: 1px 1px 1px red, -1px -1px 1px red, 1px -1px 1px red, -1px 1px 1px red;
+}
+
+.web__title__color {
+  color: $official-theme-color-light;
 }
 
 /************************************************* media ****************************************/
