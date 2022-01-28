@@ -2595,4 +2595,8 @@
  "universal_vocabulary_cloudrunIntroEarn": "通过云跑可以得到什么!?",
  "universal_vocabulary_cloudrunIntroEarnContent": "实时的运动数据透过蓝牙传至ALA CloudRun纪录，并且及时传送至赛局，与其他跑者进行竞赛或模拟路跑练习。<br>活动期间及活动结束，都可取得重要的统计资料，例如距离、配速、速度、和燃烧的热量。<br>所有的运动数据分析、统计...等，都能在GPT Center上看到。",
  "universal_vocabulary_cloudrunIntroGet": "取得云跑",
- "universal_vocabulary_cloudrunIntroGetContent": "一款提供跑步机真实路线联机竞赛与社群互动应用，与兼容的Alatech跑步机配对后，可建立起云端路跑，将路线高度变化透过跑步机模拟实际路况。"}
+ "universal_vocabulary_cloudrunIntroGetContent": "一款提供跑步机真实路线联机竞赛与社群互动应用，与兼容的Alatech跑步机配对后，可建立起云端路跑，将路线高度变化透过跑步机模拟实际路况。",
+ "universal_vocabulary_typeRealName": "请输入您的真实姓名",
+ "universal_vocabulary_ids": "身份证或居留证号",
+ "universal_vocabulary_optional": "选填"
+}

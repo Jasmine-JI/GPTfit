@@ -12,15 +12,15 @@ export class ListStatusPipe implements PipeTransform {
       case ListStatus.all:
         return 'universal_adjective_all';
       case ListStatus.applying:
-        return '報名中';
+        return 'universal_vocabulary_signOpen';
       case ListStatus.applyCutOff:
-        return '報名截止';
+        return 'universal_vocabulary_signEnd';
       case ListStatus.racing:
-        return '競賽進行中';
+        return 'universal_vocabulary_raceInProgress';
       case ListStatus.eventFinished:
-        return '競賽結束';
+        return 'universal_vocabulary_raceEnd';
       case ListStatus.eventCancel:
-        return '賽事取消';
+        return 'universal_vocabulary_raceCancel';
     }
 
   }

@@ -11,8 +11,11 @@
         class="flexRow page__link"
         (click)="navigate($event, '/official-activity/activity-list')"
       >
-        <img class="official__icon" src="/assets/cloud_run/cloudrun-icon.svg">
-        <span style="white-space: nowrap;" *ngIf="!uiFlag.isMobile">{{ '雲跑活動網' }}</span>
+        <span
+          class="webTitle"
+          style="white-space: nowrap;"
+          *ngIf="!uiFlag.isMobile"
+        >GPTfit</span>
       </a>
       <button (click)="showEntryMenu($event)">
         <i
@@ -43,14 +46,14 @@
           (click)="navigate($event, '/official-activity/my-activity')"
           *ngIf="token"
         >
-          {{ '我的競賽' }}
+          {{ 'universal_vocabulary_myRaces' | translate }}
         </a>
         <a
           href="/official-activity/my-activity"
           class="page__link child__page__link"
           (click)="navigate($event, '/official-activity/about-cloudrun')"
         >
-          {{ '關於雲跑' | translate }}
+          {{ 'universal_deviceSetting_adout' | translate }}  {{ 'universal_app_cloudRun' | translate }}
         </a>
       </div>
       <div id="link__active__bar" *ngIf="!uiFlag.isMobile">
@@ -104,7 +107,7 @@
             class="page__link"
             (click)="$event.preventDefault();"
           >
-            GPTfit
+            {{ '首頁' | translate }}
           </a>
         </li>
       </ul>
@@ -138,7 +141,7 @@
         class="page__link child__page__link"
         (click)="navigate($event, '/official-activity/my-activity')"
       >
-        {{ '我的競賽' }}
+        {{ 'universal_vocabulary_myRaces' | translate }}
       </a>
     </li>
     <li [class.page__link--active]="uiFlag.currentPage === 'about-cloudrun'">
@@ -147,7 +150,7 @@
         class="page__link child__page__link"
         (click)="navigate($event, '/official-activity/about-cloudrun')"
       >
-        {{ '關於雲跑' | translate }}
+        {{ 'universal_deviceSetting_adout' | translate }}  {{ 'universal_app_cloudRun' | translate }}
       </a>
     </li>
   </ul>
@@ -235,20 +238,8 @@
       *ngIf="!['edit-activity', 'apply-activity'].includes(uiFlag.currentPage)"
     >
       <div class="flexRow footer__link__area">
-        <img
-          id="footer__logo"
-          src="/assets/cloud_run/cloudrun-icon.svg"
-        >
+        <span class="webTitle web__title__color">GPTfit</span>
         <div class="flexRow footer__link">
-          <a
-            id="about__me__link"
-            class="footer"
-            href="'/official-activity/about-me'"
-            (click)="navigate($event, '/official-activity/about-us')"
-            style="display: none;"
-          >
-            {{ '關於我們' }}
-          </a>
           <a [href]="privacyPolicyUrl" target="_blank">
             {{ 'universal_userAccount_privacyStatement' | translate }}
           </a>
@@ -270,7 +261,7 @@
         <img                                  
           src="/assets/images/event-email.png"
           alt="Official email"                
-          style="height: 30px; width: 220px;" 
+          style="height: 25px; width: 190px;" 
         >                                     
         <p id="footer__copyright">
           英達科技有限公司 © 2022 Alatech Ltd. Co. All Rights Reserved.
@@ -295,7 +286,6 @@
   >
     <div class="official-dialogTitle">
       <h5>
-        <img class="official__icon" src="/assets/cloud_run/cloudrun-icon.svg">
         <ng-container *ngIf="uiFlag.authBox === 'login'">
           {{ 'universal_userAccount_logIn' | translate }}
         </ng-container>
@@ -594,7 +584,7 @@
           class="hint__text"
           *ngIf="uiFlag.authBox === 'login'"
         >
-          {{ '還不是會員？' }}
+          {{ 'universal_vocabulary_notMember' | translate }}
         </span>
         <div
           class="flexRow button__area"

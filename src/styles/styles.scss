@@ -59,6 +59,11 @@ button {
   font-size: 14px;
 }
 
+.webTitle {
+  font-family: Eurostile-ExtendedTwo;
+  font-size: 22px;
+}
+
 .pageTitle {
   color: #157fcc;
   font-size: 20px;
@@ -866,6 +871,7 @@ a.ban-send:hover {
 }
 
 .mobileFiller {
+  min-width: 1px;
   min-height: 60px;
   flex-shrink: 0;
 }
