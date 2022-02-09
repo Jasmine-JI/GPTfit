@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { DashboardComponent } from './dashboard.component';
-import { CertificateComponent } from './components/certificate/certificate.component';
 import { DeviceLogComponent } from './components/device-log/device-log.component';
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
@@ -55,10 +54,6 @@ const routes: Routes = [
     component: DashboardComponent,
     canActivate: [AuthGuard],
     children: [
-      {
-        path: 'certificate',  // graphql測試用
-        component: CertificateComponent
-      },
       {
         path: 'coach-dashboard/:classId',
         component: CoachDashboardComponent

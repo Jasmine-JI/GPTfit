@@ -368,6 +368,8 @@ $block-icon-size: 40px;
 
 .status__menu__content {
   cursor: pointer;
+  position: relative;
+  z-index: 1;
   
   &:hover {
     background-color: rgba(231, 186, 186, 1);

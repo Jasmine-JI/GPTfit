@@ -142,6 +142,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
             } else {
               // this.uiFlag.editMode = 'close';  // 常駐編輯狀態
               this.dashboardService.setRxEditMode('complete');
+              this.updateRxUserProfile(newSet);
             }
 
           }
@@ -152,6 +153,19 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
       
     }
     
+  }
+
+  /**
+   * 更新rxjs儲存之userProfile
+   * @author kidin-1110208
+   */
+  updateRxUserProfile(newSet: any) {
+    this.userInfo = {
+      ...this.userInfo,
+      ...newSet
+    };
+
+    this.userProfileService.setRxUserProfile(this.userInfo);
   }
 
   /**

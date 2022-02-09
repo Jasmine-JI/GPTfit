@@ -518,6 +518,12 @@ $declaration-color: rgba(100, 100, 100, 1);
   @include filter(brightness(0.24) sepia(1) hue-rotate(310deg) saturate(8));
 }
 
+.fix__footer {
+  position: absolute;
+  bottom: 0;
+  width: 96%;
+}
+
 .checkbox__alert {
   box-shadow: 1px 1px 1px red, -1px -1px 1px red, 1px -1px 1px red, -1px 1px 1px red;
 }

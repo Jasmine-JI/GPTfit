@@ -97,16 +97,24 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (location.pathname.indexOf('web') > 0) {
       this.pcView = true;
-      this.utils.setHideNavbarStatus(false);
-      this.utils.setDarkModeStatus(false);
+      this.setPageStyle(false);
     } else {
       this.pcView = false;
-      this.utils.setHideNavbarStatus(true);
-      this.utils.setDarkModeStatus(true);
+      this.setPageStyle(true);
     }
 
     this.getUrlString(location.search);
     this.getUserInfo();
+  }
+
+  /**
+   * 根據裝置設定頁面樣式
+   * @param isPcView {boolean}-是否非行動裝置或TFT
+   * @author kidin-1110113
+   */
+  setPageStyle(isPcView: boolean) {
+    this.utils.setHideNavbarStatus(isPcView);
+    this.utils.setDarkModeStatus(isPcView);
   }
 
   /**
@@ -243,7 +251,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
   getClientIpaddress () {
     const { remoteAddr } = this.requestHeader as any;
     if (!remoteAddr) {
-      return this.getClientIp.requestJsonp('https://api.ipify.org', 'format=jsonp', 'callback').pipe(
+      return this.getClientIp.requestIpAddress().pipe(
         tap(res => {
           this.ip = (res as any).ip;
           this.requestHeader = {
@@ -635,6 +643,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 離開頁面則取消隱藏navbar-kidin-1090514
   ngOnDestroy () {
+    this.setPageStyle(false);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
 

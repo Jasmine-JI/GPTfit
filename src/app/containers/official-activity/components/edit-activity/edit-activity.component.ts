@@ -23,6 +23,7 @@ import {
   HaveProduct,
   EventStatus
 } from '../../models/activity-content';
+import { AccessRight } from '../../../../shared/models/accessright';
 
 
 const leaveMessage = '尚未儲存，是否仍要離開此頁面？';
@@ -78,6 +79,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   eventId: number;
   eventInfo: EventInfo;
   eventDetail: EventDetail;
+  originEventStatus: EventStatus = EventStatus.notAudit;
   deleteList = {
     contentId: [],
     groupId: [],
@@ -97,6 +99,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   readonly HaveProduct = HaveProduct;
   readonly EventStatus = EventStatus;
   readonly HaveNumberLimit = HaveNumberLimit;
+  readonly AccessRight = AccessRight;
   readonly toolbarConfig = {
     placeholder: '請輸入內文...',
     toolbar: {
@@ -147,20 +150,19 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           const { systemAccessRight } = res;
           this.userProfile = res;
           const maxAccessRight = systemAccessRight[0];
-          if (maxAccessRight !== 28) {
-            this.router.navigateByUrl('/official-activity/403');
-          }
-
-        } else {
-          this.router.navigateByUrl('/official-activity/403');
+          const accessList = [AccessRight.auditor, AccessRight.pusher];
+          if (accessList.includes(maxAccessRight)) return true;
         }
 
+        this.router.navigateByUrl('/official-activity/403');
+        return false;
       });
 
     } else {
       this.router.navigateByUrl('/official-activity/403');
+      return false;
     }
-
+    
   }
 
   /**
@@ -240,6 +242,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   importDraft(draft: any) {
     const { eventInfo, eventDetail, del } = draft;
     this.eventInfo = eventInfo;
+    this.originEventStatus = eventInfo.eventStatus;
     this.eventDetail = eventDetail;
     this.checkNumberLimit();
     if (this.uiFlag.editMode === 'edit') this.deleteList = del;
@@ -329,7 +332,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       eventName: '',
       eventId: -1,
       description: '',
-      eventStatus: EventStatus.normal,
+      eventStatus: EventStatus.notAudit,
       applyDate: {
           startDate: startTimestamp,
           endDate: endTimestamp
@@ -372,6 +375,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       if (this.utils.checkRes(res)) {
         const { eventInfo, eventDetail } = res;
         this.eventInfo = eventInfo;
+        this.originEventStatus = eventInfo.eventStatus;
         this.checkNumberLimit();
         const { eventStatus } = this.eventInfo;
         if (eventStatus === EventStatus.cancel) {
@@ -876,13 +880,56 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 跳出提示確認是否發佈賽事
+   * @author kidin-1110208
+   */
+  releaseEventAlert() {
+    const { eventStatus } = this.eventInfo;
+    if (eventStatus === EventStatus.cancel) {
+      this.eventInfo.eventStatus = EventStatus.notAudit;
+    } else {
+      const message = '確認是否發佈賽事？';
+      this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: 'Message',
+          body: message,
+          confirmText: '是',
+          onConfirm: () => this.confirmReleaseEvent(),
+          cancelText: '否',
+          onCancel: () => this.uncheckReleaseEvent()
+        }
+
+      });
+
+    }
+  }
+
+  /**
+   * 確認發布活動
+   * @author kidin-1110208
+   */
+  confirmReleaseEvent() {
+    this.eventInfo.eventStatus = EventStatus.audit;
+  }
+
+  /**
+   * 取消活動發布
+   */
+  uncheckReleaseEvent() {
+    this.eventInfo.eventStatus = EventStatus.notAudit;
+    const targetElement = document.getElementById('event__status__audit') as any;
+    targetElement.checked = false;
+  }
+
+  /**
    * 跳出提示確認是否取消賽事
    * @author kidin-1101115
    */
   cancelEventAlert() {
     const { eventStatus } = this.eventInfo;
     if (eventStatus === EventStatus.cancel) {
-      this.eventInfo.eventStatus = EventStatus.normal;
+      this.eventInfo.eventStatus = EventStatus.audit;
     } else {
       const message = '一旦取消賽事將凍結該賽事不得編輯，是否仍要取消賽事？';
       this.dialog.open(MessageBoxComponent, {
@@ -893,7 +940,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           confirmText: '是',
           onConfirm: () => this.confirmCancelEvent(),
           cancelText: '否',
-          onCancel: () => this.cancelChangeStatus()
+          onCancel: () => this.uncheckCancelEvent()
         }
 
       });
@@ -911,11 +958,11 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 取消變更賽事狀態
+   * 取消賽事取消
    * @author kidin-1101115
    */
-  cancelChangeStatus() {
-    this.eventInfo.eventStatus = EventStatus.normal;
+  uncheckCancelEvent() {
+    this.eventInfo.eventStatus = EventStatus.audit;
     const targetElement = document.getElementById('event__status__cancel') as any;
     targetElement.checked = false;
   }
