@@ -84,12 +84,10 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getTranslate();
     if (location.pathname.indexOf('web') > 0 || location.pathname.indexOf('signin') > 0) {
       this.pcView = true;
-      this.utils.setHideNavbarStatus(false);
-      this.utils.setDarkModeStatus(false);
+      this.setPageStyle(false);
     } else {
       this.pcView = false;
-      this.utils.setHideNavbarStatus(true);
-      this.utils.setDarkModeStatus(true);
+      this.setPageStyle(true);
     }
 
   }
@@ -101,6 +99,16 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
       this.accountInput.nativeElement.focus();
     }
 
+  }
+
+  /**
+   * 根據裝置設定頁面樣式
+   * @param isPcView {boolean}-是否非行動裝置或TFT
+   * @author kidin-1110113
+   */
+  setPageStyle(isPcView: boolean) {
+    this.utils.setHideNavbarStatus(isPcView);
+    this.utils.setDarkModeStatus(isPcView);
   }
 
   // 取得多國語系翻譯-kidin-1090620
@@ -579,6 +587,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 離開頁面則取消隱藏navbar和清除Interval-kidin-1090514
   ngOnDestroy() {
+    this.setPageStyle(false);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }

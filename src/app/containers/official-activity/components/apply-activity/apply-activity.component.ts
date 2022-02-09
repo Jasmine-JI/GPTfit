@@ -1200,8 +1200,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       && progress === 100
     ) {
       this.uiFlag.progress = 30;
-      const getIpApiDomain = 'https://api.ipify.org';
-      this.getClientIp.requestJsonp(getIpApiDomain, 'format=jsonp', 'callback').pipe(
+      this.getClientIp.requestIpAddress().pipe(
         switchMap(ipResult => {
           const header = { ip: (ipResult as any).ip };
           return this.signupService.fetchEditAccountInfo(this.editAccountBody, header).pipe(

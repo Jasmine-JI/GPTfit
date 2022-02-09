@@ -1,12 +1,13 @@
 import { Component, OnInit, HostListener, Inject, Input, Output, EventEmitter } from '@angular/core';
-import { GlobalEventsManager } from '../../../shared/global-events-manager';
+import { GlobalEventsManager } from '../../global-events-manager';
 import { Router } from '@angular/router';
-import { WINDOW } from '../../../shared/services/window.service';
-import { AuthService } from '../../../shared/services/auth.service';
+import { WINDOW } from '../../services/window.service';
+import { AuthService } from '../../services/auth.service';
 import { Observable } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../services/utils.service';
-import { langData } from '../../../shared/models/i18n';
+import { langData } from '../../models/i18n';
+import { GetClientIpService } from '../../services/get-client-ip.service';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -27,6 +28,7 @@ export class NavbarComponent implements OnInit {
   login$: Observable<boolean>;
   langName: string;
   hideLogout = false;
+  showActivityEntry = false;
 
   @Input() isAlphaVersion = false;
   @Output() selectPage = new EventEmitter<string>();
@@ -37,10 +39,12 @@ export class NavbarComponent implements OnInit {
     private authService: AuthService,
     private utilsService: UtilsService,
     @Inject(WINDOW) private window,
+    private getClientIp: GetClientIpService,
     private translateService: TranslateService
   ) {}
 
   ngOnInit() {
+    // this.getIpAddress();
     this.langName = langData[
       this.utilsService.getLocalStorageObject('locale')
     ];
@@ -193,5 +197,22 @@ export class NavbarComponent implements OnInit {
     this.utilsService.setLocalStorageObject('locale', lang);
     this.toggleMask();
   }
+
+  /**
+   * 取得使用者所在地區，台灣區才會顯示活動入口
+   * @author kidin-1110207
+   */
+  getIpAddress() {
+    this.getClientIp.requestIpAddress().subscribe(res => {
+      const { country: countryCode } = (res as any);
+      const openCountry = ['TW'];
+      if (openCountry.includes(countryCode)) {
+        this.showActivityEntry = true;
+      }
+
+    });
+
+  }
+  
 
 }

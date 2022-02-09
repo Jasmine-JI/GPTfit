@@ -8,6 +8,7 @@ import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { AccessRight } from '../../../../shared/models/accessright';
 
 @Component({
   selector: 'app-inner-settings',
@@ -20,12 +21,15 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
 
   systemDevelopers = [];
   systemMaintainers = [];
+  systemAuditor = [];
   systemPushners = [];
   marketingDevelopers = [];
   isLoading = false;
   userId: number;
   maxAccessRight: number;
   chooseType: number;
+  readonly AccessRight = AccessRight;
+
   constructor(
     private dialog: MatDialog,
     private groupService: GroupService,
@@ -50,16 +54,19 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
         _result.findIndex(_res => _res.userId === this.userId) > -1;
       if (isCanUse) {
         this.systemDevelopers = _result.filter(
-          _res => _res.accessRight === '10'
+          _res => _res.accessRight == AccessRight.god
         );
         this.systemMaintainers = _result.filter(
-          _res => _res.accessRight === '20'
+          _res => _res.accessRight == AccessRight.maintainer
+        );
+        this.systemAuditor = _result.filter(
+          _res => _res.accessRight == AccessRight.auditor
         );
         this.systemPushners = _result.filter(
-          _res => _res.accessRight === '28'
+          _res => _res.accessRight == AccessRight.pusher
         );
         this.marketingDevelopers = _result.filter(
-          _res => _res.accessRight === '29'
+          _res => _res.accessRight == AccessRight.marketing
         );
       }
 
@@ -87,22 +94,32 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
     let isCanOpen = false;
     this.chooseType = _type;
 
-    if (_type === 10) {
-      targetAdminName = '系統開發員(10)';
-      adminLists = cloneDeep(this.systemDevelopers); // 深拷貝，避免win修改先影響settings table
-      isCanOpen = this.maxAccessRight < 20;
-    } else if (_type === 20) {
-      targetAdminName = '系統維護員(20)';
-      adminLists = cloneDeep(this.systemMaintainers); // 深拷貝，避免win修改先影響settings table
-      isCanOpen = this.maxAccessRight < 30;
-    } else if (_type === 28) {
-      targetAdminName = '系統維護員(28)';
-      adminLists = cloneDeep(this.systemPushners); // 深拷貝，避免win修改先影響settings table
-      isCanOpen = this.maxAccessRight < 20;
-    } else {
-      targetAdminName = '行銷與企劃員(29)';
-      adminLists = cloneDeep(this.marketingDevelopers); // 深拷貝，避免win修改先影響settings table
-      isCanOpen = this.maxAccessRight < 30;
+    switch (_type) {
+      case AccessRight.god:
+        targetAdminName = `系統開發員(${_type})`;
+        adminLists = cloneDeep(this.systemDevelopers); // 深拷貝，避免win修改先影響settings table
+        isCanOpen = this.maxAccessRight === AccessRight.god;
+        break;
+      case AccessRight.maintainer:
+        targetAdminName = `系統維護員(${_type})`;
+        adminLists = cloneDeep(this.systemMaintainers);
+        isCanOpen = this.maxAccessRight <= AccessRight.maintainer;
+        break;
+      case AccessRight.auditor:
+        targetAdminName = `系統審核員(${_type})`;
+        adminLists = cloneDeep(this.systemAuditor);
+        isCanOpen = this.maxAccessRight === AccessRight.god;
+        break;
+      case AccessRight.pusher:
+        targetAdminName = `系統推播員(${_type})`;
+        adminLists = cloneDeep(this.systemPushners);
+        isCanOpen = this.maxAccessRight === AccessRight.god;
+        break;
+      case AccessRight.marketing:
+        targetAdminName = `系統行銷企劃員(${_type})`;
+        adminLists = cloneDeep(this.marketingDevelopers);
+        isCanOpen = this.maxAccessRight <= AccessRight.maintainer;
+        break;
     }
 
     if (isCanOpen) {
@@ -114,7 +131,7 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
           adminLists,
           type: 1,
           onConfirm: this.handleConfirm.bind(this),
-          isInnerAdmin: this.maxAccessRight < 30
+          isInnerAdmin: this.maxAccessRight < AccessRight.marketing
         }
       });
     } else {

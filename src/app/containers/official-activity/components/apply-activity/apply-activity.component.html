@@ -30,14 +30,14 @@
       </tbody>
     </table>
     <p class="aside__slogan">
-      {{ "單一帳號可以用在所有的Alatech服務" }}
+      {{ 'universal_vocabulary_accountForAllALA' | translate }}
     </p>
   </aside>
   <div id="main__content" class="flexRow">
     <ng-container *ngIf="!uiFlag.applyComplish">
       <div class="flexCol" id="progress__hint" *ngIf="uiFlag.showAside">
         <div class="apply__stage">
-          {{ '開始' }}
+          {{ 'universal_operating_start' | translate }}
         </div>
         <div
           class="apply__progress progress__bar__thick"
@@ -52,7 +52,7 @@
           <span class="step__index">
             1
           </span>
-          <span>{{ '填寫資料' }}</span>
+          <span>{{ 'universal_vocabulary_fillIn' | translate }}</span>
         </div>
         <div
           class="apply__progress progress__bar__thick"
@@ -67,7 +67,7 @@
           <span class="step__index">
             2
           </span>
-          <span>{{ '編輯中' }}</span>
+          <span>{{ 'universal_operating_edit' | translate }}</span>
         </div>
         <div
           class="apply__progress progress__bar__thin"
@@ -82,16 +82,16 @@
           <span class="step__index">
             3
           </span>
-          <span>{{ '未完成' }}</span>
+          <span>{{ 'universal_vocabulary_notDone' | translate }}</span>
         </div>
       </div>
       <section class="flexCol" id="apply__form">
         <h5 class="form__title">
-          {{ '報名' }}
+          {{ 'universal_vocabulary_signUp' | translate }}
         </h5>
         <p id="sign__hint">
-          {{ '已有帳號？請輸入帳密登入' }}
-          <br>登入後會自動帶入您的基本資料
+          {{ 'universal_vocabulary_accountExistLogin' | translate }}
+          <br>{{ 'universal_vocabulary_loginFill' | translate }}
         </p>
         <form id="form__content">
           <div class="login__form">
@@ -128,12 +128,9 @@
                 <input
                   type="text"
                   id="phone"
+                  class="input__placeholder"
                   [class.disable__account]="token && loginBody.signInType === SignTypeEnum.phone"
-                  [placeholder]="
-                    'universal_userAccount_enterInfo' | translate: {
-                      info: ('universal_userAccount_phone' | translate)
-                    }
-                  "
+                  [placeholder]="'universal_userAccount_phone' | translate"
                   [value]="applyInfo.userProfile.mobileNumber"
                   [disabled]="token && loginBody.signInType === SignTypeEnum.phone ? true : null"
                   (focus)="positionMark($event)"
@@ -163,12 +160,9 @@
                 <input
                   type="text"
                   id="email"
+                  class="input__placeholder"
                   [class.disable__account]="token && loginBody.signInType === SignTypeEnum.email"
-                  [placeholder]="
-                    'universal_userAccount_enterInfo' | translate: {
-                      info: ('universal_userAccount_email' | translate)
-                    }
-                  "
+                  [placeholder]="'universal_userAccount_email' | translate"
                   [value]="applyInfo.userProfile.email"
                   [disabled]="token && loginBody.signInType === SignTypeEnum.email ? true : null"
                   (focus)="positionMark($event)"
@@ -200,14 +194,10 @@
             <input
               type="text"
               id="nickname"
-              class="info__input"
+              class="info__input input__placeholder"
               maxLength="24"
               [value]="applyInfo.userProfile.nickname"
-              [placeholder]="
-                'universal_userAccount_enterInfo' | translate: {
-                  info: ('universal_userAccount_nickname' | translate)
-                }
-              "
+              [placeholder]="'universal_userAccount_nickname' | translate"
               (focus)="showNickNameHint($event)"
               (focusout)="checkNicknameFormat($event)"
             >
@@ -227,14 +217,14 @@
           </div>
           <div class="flexRow form__input">
             <label for="truth__name" class="input__label">
-              {{ '姓名' }}
+              {{ 'universal_vocabulary_name' | translate }}
             </label>
             <input
               type="text"
               id="truth__name"
-              class="info__input"
+              class="info__input input__placeholder"
               maxLength="24"
-              [placeholder]="'請輸入您的真實姓名'"
+              [placeholder]="'universal_vocabulary_typeRealName' | translate"
               [value]="applyInfo.userProfile.truthName"
               (focus)="positionMark($event)"
               (focusout)="checkTruthNameFormat($event)"
@@ -250,7 +240,7 @@
           </div>
           <div class="flexRow form__input">
             <legend class="input__label">
-              {{ '國籍' }}
+              {{ 'universal_vocabulary_nationality' | translate }}
             </legend>
             <div class="radio__item">
               <input
@@ -264,7 +254,7 @@
                 (focus)="positionMark($event)"
               >
               <label for="nationality__taiwan">
-                {{ '本國' }}
+                {{ 'universal_vocabulary_domestic' | translate }}
               </label>
             </div>
             <div class="radio__item">
@@ -278,19 +268,19 @@
                 (focus)="positionMark($event)"
               >
               <label for="nationality__foreign">
-                {{ '外國' }}
+                {{ 'universal_vocabulary_oversea' | translate }}
               </label>
             </div>
           </div>
           <div class="flexRow form__input">
             <label for="id__number" class="input__label">
-              {{ '證件號碼' }}
+              {{ 'universal_vocabulary_idNumber' | translate }}
             </label>
             <input
               type="text"
               id="id__number"
-              class="info__input"
-              [placeholder]="'身份證或居留證號'"
+              class="info__input input__placeholder"
+              [placeholder]="'universal_vocabulary_ids' | translate"
               [value]="applyInfo.userProfile.idCardNumber"
               (focus)="positionMark($event)"
               (focusout)="checkIdCardNumberFormat($event)"
@@ -362,16 +352,16 @@
           </div>
           <div class="flexRow form__input">
             <label for="address" class="input__label">
-              {{ '地址' }}
+              {{ 'universal_vocabulary_address' | translate }}
             </label>
             <input
               type="text"
               id="address"
-              class="info__input"
+              class="info__input input__placeholder"
               maxLength="50"
               [placeholder]="
                 'universal_userAccount_enterInfo' | translate: {
-                  info: ('地址')
+                  info: ('universal_vocabulary_address' | translate)
                 }
               "
               [value]="applyInfo.userProfile.address"
@@ -389,14 +379,14 @@
           </div>
           <div class="flexRow form__input">
             <label for="remark" class="input__label">
-              {{ '備註' }}
+              {{ 'universal_vocabulary_memo' | translate }}
             </label>
             <input
               type="text"
               id="remark"
               name="remark"
-              class="info__input"
-              placeholder="（選填）"
+              class="info__input input__placeholder"
+              [placeholder]="'(' + ('universal_vocabulary_optional' | translate) + ')'"
               maxLength="50"
               [(ngModel)]="applyInfo.userProfile.remark"
               (focus)="positionMark($event)"
@@ -408,16 +398,16 @@
               [class.drop__hint--hide]="uiFlag.showEmergencyContact"
             >
               <label for="emergency__contact__name" class="input__label">
-                {{ '緊急聯絡人' }}
+                {{ 'universal_vocabulary_emerContact' | translate }}
               </label>
               <div class="flexRow drop__hint">
                 <input
                   type="text"
                   id="emergency__contact__name"
                   name="emergency__contact__name"
-                  class="info__input"
+                  class="info__input input__placeholder"
                   maxLength="24"
-                  placeholder="（選填）"
+                  [placeholder]="'(' + ('universal_vocabulary_optional' | translate) + ')'"
                   [(ngModel)]="applyInfo.userProfile.emergencyContact.name"
                   (focus)="showEmergencyContact($event)"
                 >
@@ -429,14 +419,14 @@
             >
               <div class="flexRow form__input">
                 <label for="emergency__contact__phone" class="input__label">
-                  {{ '電話' }}
+                  {{ 'universal_vocabulary_phone' | translate }}
                 </label>
                 <input
                   type="text"
                   id="emergency__contact__phone"
                   name="emergency__contact__phone"
-                  class="info__input"
-                  placeholder="（選填）"
+                  class="info__input input__placeholder"
+                  [placeholder]="'(' + ('universal_vocabulary_optional' | translate) + ')'"
                   [value]="applyInfo.userProfile.emergencyContact.mobileNumber"
                   (focus)="positionMark($event)"
                   (focusout)="checkEmergencyPhoneFormat($event)"
@@ -449,13 +439,13 @@
               </div>
               <div class="flexRow form__input">
                 <label for="emergency__contact__relationship" class="input__label">
-                  {{ '關係' }}
+                  {{ 'universal_vocabulary_relation' | translate }}
                 </label>
                 <input
                   type="text"
                   id="emergency__contact__relationship"
                   name="emergency__contact__relationship"
-                  class="info__input"
+                  class="info__input input__placeholder"
                   placeholder="（選填）"
                   [(ngModel)]="applyInfo.userProfile.emergencyContact.relationship"
                   (focus)="positionMark($event)"
@@ -468,7 +458,7 @@
             *ngIf="eventDetail?.group.length > 0"
           >
             <label class="input__label">
-              {{ '競賽組別' }}
+              {{ 'universal_vocabulary_raceGroup' | translate }}
             </label>
             <div
               id="group__selector"
@@ -491,14 +481,14 @@
                       {{ _group.gender | sex: 'i18n' | translate }}
                     </ng-container>
                     <ng-container *ngIf="_group.gender === 2">
-                      {{ '無性別限制' }}
+                      {{ 'universal_vocabulary_noGenderLimit' | translate }}
                     </ng-container>
                     |
                     <ng-container *ngIf="_group.age">
                       {{ _group.age.min }}~{{ _group.age.max }} {{ 'universal_deviceSetting_yearsOld' | translate }}
                     </ng-container>
                     <ng-container *ngIf="!_group.age">
-                      {{ '無年齡限制' }}
+                      {{ 'universal_vocabulary_noAgeLimit' | translate }}
                     </ng-container>
                   </span>
                 </li>
@@ -512,7 +502,7 @@
             *ngIf="eventDetail?.applyFee.length > 0"
           >
             <label class="input__label">
-              {{ '報名組合' }}
+              {{ 'universal_vocabulary_racePackage' | translate }}
             </label>
             <ul class="fee__plan__menu">
               <li
@@ -545,31 +535,32 @@
               (click)="checkForm()"
             >
               <ng-container *ngIf="!uiFlag.notQualified">
-                {{ '報名' }}
+                {{ 'universal_vocabulary_signUp' | translate }}
               </ng-container>
               <ng-container *ngIf="uiFlag.notQualified">
-                {{ '資格不符' }}
+                {{ 'universal_vocabulary_notQualified' | translate }}
               </ng-container>
             </button>
           </div>
         </form>
+        <div class="mobileFiller"></div>
       </section>
     </ng-container>
     <ng-container *ngIf="uiFlag.applyComplish">
       <div id="apply__accomplish" class="flexCol">
         <div id="apply__accomplish__content" class="flexCol">
           <h5 class="form__title">
-            {{ '報名完成' }}
+            {{ 'universal_vocabulary_signDone' | translate }}
           </h5>
           <p id="apply__hint" class="flexCol">
             <span>
-              {{ '已經完成報名了!' }}
+              {{ 'universal_vocabulary_signedVerbose' | translate }}
             </span>
             <span
               class="apply__accomplish__text"
               *ngIf="uiFlag.newAccount"
             >
-              {{ '您在GPTfit的登入資訊如下' }}
+              {{ 'universal_vocabulary_loginInfo' | translate }}
             </span>
           </p>
           <ng-container *ngIf="uiFlag.newAccount">
@@ -583,19 +574,16 @@
             </p>
             <form id="reset__password">
               <h6 class="apply__accomplish__text">
-                {{ '我要設定密碼' }}
+                {{ 'universal_vocabulary_passwordWanted' | translate }}
               </h6>
               <div class="flexRow">
                 <div id="new__password__input" class="flexRow">
                   <mat-icon>vpn_key</mat-icon>
                   <input
                     id="reset__password__input"
+                    class="input__placeholder"
                     type="password"
-                    [placeholder]="
-                      'universal_userAccount_enterInfo' | translate: {
-                        info: ('universal_userAccount_password' | translate)
-                      }
-                    "
+                    [placeholder]="'universal_userAccount_password' | translate"
                     (focus)="showPasswordHint()"
                     (focusout)="checkPasswordFormat($event)"
                   >
@@ -614,7 +602,7 @@
                 </div>
               </div>
               <p id="not__reset__alert" *ngIf="!uiFlag.showPasswordHint">
-                {{ '不設定密碼，下次登入時請使用忘記密碼重新設定' }}
+                {{ 'universal_vocabulary_noPasswordWarning' | translate }}
               </p>
               <p
                 id="password__hint"
@@ -627,13 +615,13 @@
           </ng-container>
           <div class="apply__fee__content">
             <h6 class="apply__accomplish__text">
-              {{ '您所選擇的套裝為' }}：
+              {{ 'universal_vocabulary_itemPackage' | translate }}：
             </h6>
             <table class="apply__fee__detail">
               <thead>
                 <tr>
                   <th>
-                    {{ '項目' }}
+                    {{ 'universal_vocabulary_item' | translate }}
                   </th>
                   <th>
                     {{ 'universal_group_cost' | translate }}
@@ -656,13 +644,13 @@
         <div id="paid__button">
           <ng-container *ngIf="selectPlanInfo.fee !== 0">
             <p id="not__paid__alert">
-              {{ '此訂單尚未繳費' }}
+              {{ 'universal_vocabulary_thisOrderNotPaid' | translate }}
             </p>
             <button
               class="submit__button"
               (click)="navigatePaidPage()"
             >
-              {{ '前往繳費' }}
+              {{ 'universal_vocabulary_goToPay' | translate }}
             </button>
           </ng-container>
           <ng-container *ngIf="selectPlanInfo.fee === 0">
@@ -674,6 +662,7 @@
             </button>
           </ng-container>
         </div>
+        <div class="mobileFiller"></div>
       </div>
     </ng-container>
   </div>
@@ -700,10 +689,10 @@
       {{ 'universal_deviceSetting_repeat' | translate }}
     </ng-container>
     <ng-container *ngIf="alert === 'login' && accountType === SignTypeEnum.phone">
-      {{ '登入確認身份或請變更手機號碼' }}
+      {{ 'universal_vocabulary_loginChangePhone' | translate }}
     </ng-container>
     <ng-container *ngIf="alert === 'login' && accountType === SignTypeEnum.email">
-      {{ '登入確認身份或請變更email' }}
+      {{ 'universal_vocabulary_loginChangeEmail' | translate }}
     </ng-container>
   </span>
 </ng-template>
@@ -719,13 +708,10 @@
         <input
           [type]="uiFlag.displayPW ? 'text' : 'password'"
           id="password"
+          class="input__placeholder"
           maxlength="20"
           autocomplete="on"
-          [placeholder]="
-            'universal_userAccount_enterInfo' | translate: {
-              info: ('universal_userAccount_password' | translate)
-            }
-          "
+          [placeholder]="'universal_userAccount_password' | translate"
           (focusout)="checkPassword($event)"
         >
         <button class="appview-showPassword" (click)="toggleDisplayPW()">

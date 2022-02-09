@@ -118,8 +118,7 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
    * @author kidin-1091216
    */
   getDeviceSys () {
-    this.utils.setHideNavbarStatus(true);
-    this.utils.setDarkModeStatus(true);
+    this.setPageStyle(true);
     if ((window as any).webkit) {
       this.appSys = 1;
     } else if ((window as any).android) {
@@ -133,6 +132,16 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
       ...this.requestHeader
     };
 
+  }
+
+  /**
+   * 根據裝置設定頁面樣式
+   * @param isPcView {boolean}-是否非行動裝置或TFT
+   * @author kidin-1110113
+   */
+  setPageStyle(isPcView: boolean) {
+    this.utils.setHideNavbarStatus(isPcView);
+    this.utils.setDarkModeStatus(isPcView);
   }
 
   /**
@@ -273,6 +282,7 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
    * @author kidin-1100309
    */
    ngOnDestroy() {
+     this.setPageStyle(false);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }

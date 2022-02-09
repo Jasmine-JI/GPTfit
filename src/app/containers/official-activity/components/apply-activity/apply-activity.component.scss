@@ -634,6 +634,23 @@ label, legend {
   font-size: 18px;
 }
 
+.input__placeholder {
+  $font-size: 14px;
+
+  &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    font-size: $font-size;
+  }
+  
+  &:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    font-size: $font-size;
+  }
+  
+  &::-ms-input-placeholder { /* Microsoft Edge */
+    font-size: $font-size;
+  }
+
+}
+
 /***************************************************** media ***********************************************/
 
 @media (max-width: 767px) {

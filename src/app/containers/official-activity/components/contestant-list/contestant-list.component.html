@@ -32,20 +32,20 @@
             <div class="flexRow filter__entry">
               <span>
                 <ng-container *ngIf="!listFilter.type">
-                  {{ '顯示全部' }}
+                  {{ '顯示全部' | translate }}
                 </ng-container>
                 <ng-container *ngIf="listFilter.type === 'group'">
-                  {{ '分組' }} - {{ listFilter.groupName }}
+                  {{ 'universal_vocabulary_categroy' | translate }} - {{ listFilter.groupName }}
                 </ng-container>
                 <ng-container *ngIf="listFilter.type === 'paidStatus'">
-                  {{ '繳費' }} - {{ listFilter.value | paidStatus }}
+                  {{ 'universal_vocabulary_pay' | translate }} - {{ listFilter.value | paidStatus }}
                 </ng-container>
                 <ng-container *ngIf="['orderStatus', 'awardStatus'].includes(listFilter.type)">
                   <ng-container *ngIf="listFilter.type === 'orderStatus'">
-                    {{ '訂單' }} -
+                    {{ '訂單' | translate }} -
                   </ng-container>
                   <ng-container *ngIf="listFilter.type === 'awardStatus'">
-                    {{ '獎品' }} -
+                    {{ '獎品' | translate }} -
                   </ng-container>
                   {{ listFilter.value | shippedStatus }}
                 </ng-container>
@@ -64,11 +64,11 @@
                   class="status__show__all"
                   (click)="showAllList()"
                 >
-                  {{ '顯示全部' }}
+                  {{ '顯示全部' | translate }}
                 </button>
               </div>
               <div class="flexCol">
-                <h6 class="drop__type__title">{{ '分組' }}</h6>
+                <h6 class="drop__type__title">{{ 'universal_vocabulary_categroy' | translate }}</h6>
                 <ng-container *ngFor="let _group of groupList;">
                   <button
                     class="filter__group"
@@ -80,78 +80,78 @@
                 </ng-container>
               </div>
               <div class="flexCol">
-                <h6 class="drop__type__title">{{ '繳費狀態' }}</h6>
+                <h6 class="drop__type__title">{{ 'universal_vocabulary_payStatus' | translate }}</h6>
                 <button
                   class="status__yet"
                   (click)="filterPaidStatus(PaidStatusEnum.unPaid)"
                 >
-                  {{ '未繳費' }}
+                  {{ 'universal_vocabulary_notPaid' | translate }}
                 </button>
                 <button
                   class="status__already"
                   (click)="filterPaidStatus(PaidStatusEnum.paid)"
                 >
-                  {{ '已繳費' }}
+                  {{ 'universal_vocabulary_paid' | translate }}
                 </button>
                 <button
                   class="status__cancel"
                   (click)="filterPaidStatus(PaidStatusEnum.refund)"
                 >
-                  {{ '已退賽' }}
+                  {{ 'universal_vocabulary_withdrawed' | translate }}
                 </button>
               </div>
               <div class="flexCol">
-                <h6 class="drop__type__title">{{ '訂單狀態' }}</h6>
+                <h6 class="drop__type__title">{{ '訂單狀態' | translate }}</h6>
                 <button
                   class="status__yet"
                   (click)="filterOrderStatus(ProductShipped.unShip)"
                 >
-                  {{ '未出貨' }}
+                  {{ 'universal_vocabulary_unshipped' | translate }}
                 </button>
                 <button
                   class="status__already"
                   (click)="filterOrderStatus(ProductShipped.shipped)"
                 >
-                  {{ '已出貨' }}
+                  {{ 'universal_vocabulary_delivered' | translate }}
                 </button>
                 <button
                   class="status__cancel"
                   (click)="filterOrderStatus(ProductShipped.returnGoods)"
                 >
-                  {{ '已退貨' }}
+                  {{ 'universal_vocabulary_returned' | translate }}
                 </button>
                 <button
                   class="status__case__closed"
                   (click)="filterOrderStatus(ProductShipped.closeCase)"
                 >
-                  {{ '已結案' }}
+                  {{ 'universal_vocabulary_caseClosed' | translate }}
                 </button>
                 <button
                   class="status__not__action"
                   (click)="filterOrderStatus(ProductShipped.needNotShip)"
                 >
-                  {{ '不須出貨' }}
+                  {{ 'universal_vocabulary_noShipping' | translate }}
                 </button>
               </div>
               <div class="flexCol">
-                <h6 class="drop__type__title">{{ '獎品狀態' }}</h6>
+                <h6 class="drop__type__title">{{ '獎品狀態' | translate }}</h6>
                 <button
                   class="status__yet"
                   (click)="filterAwardStatus(ProductShipped.unShip)"
                 >
-                  {{ '未出貨' }}
+                  {{ 'universal_vocabulary_unshipped' | translate }}
                 </button>
                 <button
                   class="status__already"
                   (click)="filterAwardStatus(ProductShipped.shipped)"
                 >
-                  {{ '已出貨' }}
+                  {{ 'universal_vocabulary_delivered' | translate }}
                 </button>
                 <button
                   class="status__case__closed"
                   (click)="filterAwardStatus(ProductShipped.closeCase)"
                 >
-                  {{ '已結案' }}
+                  {{ 'universal_vocabulary_caseClosed' | translate }}
                 </button>
               </div>
             </div>
@@ -239,7 +239,7 @@
               (click)="changeSortType($event)"
             >
             <label class="radio__label" for="sort__group">
-              {{ '分組' }}
+              {{ 'universal_vocabulary_categroy' | translate }}
             </label>
           </div>
           <div>
@@ -252,7 +252,7 @@
               (click)="changeSortType($event)"
             >
             <label class="radio__label" for="sort__paid__status">
-              {{ '繳費狀態' }}
+              {{ 'universal_vocabulary_payStatus' | translate }}
             </label>
           </div>
           <div>
@@ -265,7 +265,7 @@
               (click)="changeSortType($event)"
             >
             <label class="radio__label" for="sort__paid__date">
-              {{ '繳費日期' }}
+              {{ 'universal_vocabulary_payDay' | translate }}
             </label>
           </div>
           <div>
@@ -356,9 +356,9 @@
       <div class="flexRow list__title">
         <h6 class="rank">#</h6>
         <h6 class="nickname">{{ 'universal_userAccount_nickname' | translate }}</h6>
-        <h6 class="group" *ngIf="uiFlag.screenSize > 500">{{ '分組' }}</h6>
-        <h6 class="paid__status" *ngIf="uiFlag.screenSize > 600">{{ '繳費狀態' }}</h6>
-        <h6 class="paid__date" *ngIf="uiFlag.screenSize > 700">{{ '繳費時間' }}</h6>
+        <h6 class="group" *ngIf="uiFlag.screenSize > 500">{{ 'universal_vocabulary_categroy' | translate }}</h6>
+        <h6 class="paid__status" *ngIf="uiFlag.screenSize > 600">{{ 'universal_vocabulary_payStatus' | translate }}</h6>
+        <h6 class="paid__date" *ngIf="uiFlag.screenSize > 700">{{ 'universal_vocabulary_paidTime' | translate }}</h6>
         <h6 class="order__status" *ngIf="uiFlag.screenSize > 800">{{ '訂單狀態' }}</h6>
         <h6 class="award__status" *ngIf="uiFlag.screenSize > 900">{{ '獎品' }}</h6>
       </div>
@@ -525,7 +525,7 @@
                     class="flexCol info__card"
                     *ngIf="uiFlag.screenSize <= 500"
                   >
-                    <h6 class="card__title">{{ '分組' }}</h6>
+                    <h6 class="card__title">{{ 'universal_vocabulary_categroy' | translate }}</h6>
                     <div
                       class="group"
                       [class.status__selector]="listType === 'normal'"
@@ -553,7 +553,7 @@
                     class="flexCol info__card"
                     *ngIf="uiFlag.screenSize <= 600"
                   >
-                    <h6 class="card__title">{{ '繳費狀態' }}</h6>
+                    <h6 class="card__title">{{ 'universal_vocabulary_payStatus' | translate }}</h6>
                     <span
                       class="paid__status"
                       [class.status__selector]="listType === 'normal'"
@@ -580,7 +580,7 @@
                     class="flexCol info__card"
                     *ngIf="uiFlag.screenSize <= 700"
                   >
-                    <h6 class="card__title">{{ '繳費時間' }}</h6>
+                    <h6 class="card__title">{{ 'universal_vocabulary_paidTime' | translate }}</h6>
                     <span class="paid__date">
                       {{ _list.paidDate ? (_list.paidDate * 1000 | timeFormat: 'YYYY-MM-DD HH:mm') : '----------' }}
                     </span>

@@ -4,7 +4,6 @@ import { DashboardComponent } from './dashboard.component';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 import { FormsModule } from '@angular/forms';
-import { CertificateComponent } from './components/certificate/certificate.component';
 import { MyDatePickerModule } from 'mydatepicker';
 import { MapService } from '../../shared/services/map.service';
 import { CustomMaterialModule } from '../../shared/custom-material.module';
@@ -17,7 +16,7 @@ import { DeviceLogComponent } from './components/device-log/device-log.component
 import { DeviceLogService } from './services/device-log.service';
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
-import { CoachService } from './services/coach.service';
+import { CoachService } from '../../shared/services/coach.service';
 import { UtilsService } from '../../shared/services/utils.service';
 import { SharedModule } from '../../shared/shared.module';
 import { AccessNamePipe } from './pipes/access-name.pipe';
@@ -84,103 +83,96 @@ import { GroupService } from '../../shared/services/group.service';
 
 
 @NgModule({
-  imports: [
-    DashboardRoutingModule,
-    CommonModule,
-    SharedComponentsModule,
-    FormsModule,
-    MyDatePickerModule,
-    CustomMaterialModule,
-    SharedPipes,
-    ReactiveFormsModule,
-    SharedModule,
-    NgProgressModule,
-    QRCodeModule
-  ],
-  providers: [
-    MapService,
-    GlobalEventsManager,
-    GpxService,
-    DeviceLogService,
-    CoachService,
-    UtilsService,
-    EditGroupGuard,
-    DashboardGuard,
-    ActivityService,
-    ReportService,
-    UserProfileService,
-    HashIdService,
-    InnerAdminService,
-    ActivityOtherDetailsService,
-    DetectInappService,
-    LifeTrackingService,
-    OfficialActivityService,
-    PersonCloudrunReport,
-    GroupService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: TokenInterceptor,
-      multi: true
-    }
-  ],
-  declarations: [
-    DashboardComponent,
-    CertificateComponent,
-    MsgDialogComponent,
-    DeviceLogComponent,
-    DeviceLogDetailComponent,
-    CoachDashboardComponent,
-    AccessNamePipe,
-    InnerSettingsComponent,
-    PeopleSelectorWinComponent,
-    ProductErrorLogPipe,
-    MyDeviceComponent,
-    TrainLiveComponent,
-    InnerTestComponent,
-    CloudRunGpxComponent,
-    InnerDevicePairComponent,
-    LifeTrackingComponent,
-    GroupSearchComponent,
-    AllGroupListComponent,
-    MyGroupListComponent,
-    CreateGroupComponent,
-    CommercePlanTableComponent,
-    ModifyBoxComponent,
-    QrcodeUploadComponent,
-    GroupInfoV2Component,
-    SearchGroupComponent,
-    GroupIntroductionComponent,
-    SportsReportComponent,
-    LifeTrackingV2Component,
-    MyClassReportComponent,
-    ClassAnalysisV2Component,
-    CommercePlanComponent,
-    MemberListComponent,
-    AdminListComponent,
-    GroupArchitectureComponent,
-    CloudrunReportComponent,
-    EditPushMessageComponent,
-    PushMessageListComponent,
-    SystemLogComponent,
-    SystemFolderPermissionComponent,
-    AlaAppAnalysisComponent,
-    PersonCloudrunReport,
-    DeviceInfoComponent,
-    DeviceListComponent,
-    PersonalComponent,
-    InfoComponent,
-    SettingBaseComponent,
-    SettingPreferComponent,
-    SettingPrivacyComponent,
-    SettingAccountComponent,
-    ActivityListComponent
-  ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  entryComponents: [
-    MsgDialogComponent,
-    PeopleSelectorWinComponent,
-    ShareGroupInfoDialogComponent,
-    ModifyBoxComponent
-  ]
+    imports: [
+        DashboardRoutingModule,
+        CommonModule,
+        SharedComponentsModule,
+        FormsModule,
+        MyDatePickerModule,
+        CustomMaterialModule,
+        SharedPipes,
+        ReactiveFormsModule,
+        SharedModule,
+        NgProgressModule,
+        QRCodeModule
+    ],
+    providers: [
+        MapService,
+        GlobalEventsManager,
+        GpxService,
+        DeviceLogService,
+        CoachService,
+        UtilsService,
+        EditGroupGuard,
+        DashboardGuard,
+        ActivityService,
+        ReportService,
+        UserProfileService,
+        HashIdService,
+        InnerAdminService,
+        ActivityOtherDetailsService,
+        DetectInappService,
+        LifeTrackingService,
+        OfficialActivityService,
+        PersonCloudrunReport,
+        GroupService,
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: TokenInterceptor,
+            multi: true
+        }
+    ],
+    declarations: [
+        DashboardComponent,
+        MsgDialogComponent,
+        DeviceLogComponent,
+        DeviceLogDetailComponent,
+        CoachDashboardComponent,
+        AccessNamePipe,
+        InnerSettingsComponent,
+        PeopleSelectorWinComponent,
+        ProductErrorLogPipe,
+        MyDeviceComponent,
+        TrainLiveComponent,
+        InnerTestComponent,
+        CloudRunGpxComponent,
+        InnerDevicePairComponent,
+        LifeTrackingComponent,
+        GroupSearchComponent,
+        AllGroupListComponent,
+        MyGroupListComponent,
+        CreateGroupComponent,
+        CommercePlanTableComponent,
+        ModifyBoxComponent,
+        QrcodeUploadComponent,
+        GroupInfoV2Component,
+        SearchGroupComponent,
+        GroupIntroductionComponent,
+        SportsReportComponent,
+        LifeTrackingV2Component,
+        MyClassReportComponent,
+        ClassAnalysisV2Component,
+        CommercePlanComponent,
+        MemberListComponent,
+        AdminListComponent,
+        GroupArchitectureComponent,
+        CloudrunReportComponent,
+        EditPushMessageComponent,
+        PushMessageListComponent,
+        SystemLogComponent,
+        SystemFolderPermissionComponent,
+        AlaAppAnalysisComponent,
+        PersonCloudrunReport,
+        DeviceInfoComponent,
+        DeviceListComponent,
+        PersonalComponent,
+        InfoComponent,
+        SettingBaseComponent,
+        SettingPreferComponent,
+        SettingPrivacyComponent,
+        SettingAccountComponent,
+        ActivityListComponent
+    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class DashboardModule {}

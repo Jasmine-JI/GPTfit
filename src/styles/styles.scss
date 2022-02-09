@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
-/* @import "~@angular/material/prebuilt-themes/pink-bluegrey.css"; */
+/* @import "@angular/material/prebuilt-themes/pink-bluegrey.css"; */
 @import '~normalize.css';
-@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
 @import 'transition.scss';
 @import 'font.scss';
 @import 'flex-center.scss';
@@ -57,6 +57,11 @@ button {
 .alpha-text {
   color: #F2850C;
   font-size: 14px;
+}
+
+.webTitle {
+  font-family: Eurostile-ExtendedTwo;
+  font-size: 22px;
 }
 
 .pageTitle {
@@ -866,6 +871,7 @@ a.ban-send:hover {
 }
 
 .mobileFiller {
+  min-width: 1px;
   min-height: 60px;
   flex-shrink: 0;
 }

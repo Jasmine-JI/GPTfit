@@ -14,90 +14,26 @@
   </thead>
   <tbody>
     <ng-container *ngIf="!isLoading">
-      <tr>
-        <td class="alatech-table__cell">{{'universal_group_systemDeveloper' | translate }} {{'universal_group_permissionSetting' | translate }}(10)</td>
-        <td class="alatech-table__cell"
-          *ngIf="systemDevelopers.length === 0"
-        >
-          {{'universal_group_noRelevantPersonnel' | translate }}
-        </td>
-        <td class="alatech-table__cell"
-          *ngIf="systemDevelopers && systemDevelopers.length > 0"
-        >
-          <span class="innerAdmin-name" *ngFor="let _systemDeveloper of systemDevelopers">
-            {{_systemDeveloper.userName}}
-          </span>
-        </td>
-        <td class="alatech-table__cell">{{'universal_group_systemDeveloperDescription' | translate }}</td>
-        <td class="alatech-table__cell">
-          <button class="icon-btn" (click)="openSelectorWin(10)">
-            <i class="fa fa-user-plus icon_fa"></i>
-          </button>
-        </td>
-      </tr>
-      <tr>
-        <td class="alatech-table__cell">{{'universal_group_systemMaintenance' | translate }} {{'universal_group_permissionSetting' | translate }}(20)</td>
-        <td class="alatech-table__cell"
-          *ngIf="systemMaintainers.length === 0"
-        >
-          {{'universal_group_noRelevantPersonnel' | translate }}
-        </td>
-        <td class="alatech-table__cell"
-          *ngIf="systemMaintainers && systemMaintainers.length > 0"
-        >
-          <span class="innerAdmin-name" *ngFor="let _systemMaintainers of systemMaintainers">
-            {{_systemMaintainers.userName}}
-          </span>
-        </td>
-        <td class="alatech-table__cell">{{'universal_group_systemMaintainerDescription' | translate }}</td>
-        <td class="alatech-table__cell">
-          <button class="icon-btn" (click)="openSelectorWin(20)">
-            <i class="fa fa-user-plus icon_fa"></i>
-          </button>
-        </td>
-      </tr>
-      <tr>
-        <td class="alatech-table__cell">系統-推播員 {{'universal_group_permissionSetting' | translate }}(28)</td>
-        <td class="alatech-table__cell"
-          *ngIf="systemPushners.length === 0"
-        >
-          {{'universal_group_noRelevantPersonnel' | translate }}
-        </td>
-        <td class="alatech-table__cell"
-          *ngIf="systemPushners && systemPushners.length > 0"
-        >
-          <span class="innerAdmin-name" *ngFor="let _systemPushners of systemPushners">
-            {{_systemPushners.userName}}
-          </span>
-        </td>
-        <td class="alatech-table__cell">設定各系統推播人員，便於申請人指定推播人員</td>
-        <td class="alatech-table__cell">
-          <button class="icon-btn" (click)="openSelectorWin(28)">
-            <i class="fa fa-user-plus icon_fa"></i>
-          </button>
-        </td>
-      </tr>
-      <tr>
-        <td class="alatech-table__cell">{{'universal_group_systemMarketing' | translate }} {{'universal_group_permissionSetting' | translate }}(29)</td>
-        <td class="alatech-table__cell"
-          *ngIf="marketingDevelopers.length === 0"
-        >
-          {{'universal_group_noRelevantPersonnel' | translate }}
-        </td>
-        <td class="alatech-table__cell"
-          *ngIf="marketingDevelopers && marketingDevelopers.length > 0"
-        >
-          <span class="innerAdmin-name" *ngFor="let _marketingDevelopers of marketingDevelopers">
-            {{_marketingDevelopers.userName}}
-          </span>
-        </td>
-        <td class="alatech-table__cell">{{'universal_group_marketingPermissionDescription' | translate }}</td>
-        <td class="alatech-table__cell">
-          <button class="icon-btn" (click)="openSelectorWin(29)">
-            <i class="fa fa-user-plus icon_fa"></i>
-          </button>
-        </td>
-      </tr>
+      <tr *ngTemplateOutlet="tableRow; context: {
+        accessright: AccessRight.god,
+        adminList: systemDevelopers
+      }"></tr>
+      <tr *ngTemplateOutlet="tableRow; context: {
+        accessright: AccessRight.maintainer,
+        adminList: systemMaintainers
+      }"></tr>
+      <tr *ngTemplateOutlet="tableRow; context: {
+        accessright: AccessRight.auditor,
+        adminList: systemAuditor
+      }"></tr>
+      <tr *ngTemplateOutlet="tableRow; context: {
+        accessright: AccessRight.pusher,
+        adminList: systemPushners
+      }"></tr>
+      <tr *ngTemplateOutlet="tableRow; context: {
+        accessright: AccessRight.marketing,
+        adminList: marketingDevelopers
+      }"></tr>
     </ng-container>
     <tr *ngIf="isLoading">
       <td class="alatech-table__cell" colspan="4" style="text-align: center">
@@ -108,3 +44,63 @@
     </tr>
   </tbody>
 </table>
+
+<ng-template
+  #tableRow
+  let-accessright="accessright"
+  let-adminList="adminList"
+>
+  <tr [ngSwitch]="accessright">
+    <td class="alatech-table__cell">
+      <ng-container *ngSwitchCase="AccessRight.god">
+        {{'universal_group_systemDeveloper' | translate }}
+      </ng-container>
+      <ng-container *ngSwitchCase="AccessRight.maintainer">
+        {{'universal_group_systemMaintenance' | translate }}
+      </ng-container>
+      <ng-container *ngSwitchCase="AccessRight.auditor">
+        系統-審核員
+      </ng-container>
+      <ng-container *ngSwitchCase="AccessRight.pusher">
+        系統-推播員
+      </ng-container>
+      <ng-container *ngSwitchCase="AccessRight.marketing">
+        {{'universal_group_systemMarketing' | translate }}
+      </ng-container>
+      {{'universal_group_permissionSetting' | translate }}({{ accessright }})
+    </td>
+    <td class="alatech-table__cell" *ngIf="adminList.length === 0">
+      {{'universal_group_noRelevantPersonnel' | translate }}
+    </td>
+    <td
+      class="alatech-table__cell"
+      *ngIf="adminList && adminList.length > 0"
+    >
+      <span class="innerAdmin-name" *ngFor="let admin of adminList">
+        {{ admin.userName }}
+      </span>
+    </td>
+    <td class="alatech-table__cell">
+      <ng-container *ngSwitchCase="AccessRight.god">
+        {{'universal_group_systemDeveloperDescription' | translate }}
+      </ng-container>
+      <ng-container *ngSwitchCase="AccessRight.maintainer">
+        {{'universal_group_systemMaintainerDescription' | translate }}
+      </ng-container>
+      <ng-container *ngSwitchCase="AccessRight.auditor">
+        設定各系統審核人員，便於申請人指定推播人員
+      </ng-container>
+      <ng-container *ngSwitchCase="AccessRight.pusher">
+        設定各系統推播人員，便於申請人指定推播人員
+      </ng-container>
+      <ng-container *ngSwitchCase="AccessRight.marketing">
+        {{'universal_group_marketingPermissionDescription' | translate }}
+      </ng-container>
+    </td>
+    <td class="alatech-table__cell">
+      <button class="icon-btn" (click)="openSelectorWin(accessright)">
+        <i class="fa fa-user-plus icon_fa"></i>
+      </button>
+    </td>
+  </tr>
+</ng-template>

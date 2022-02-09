@@ -158,11 +158,11 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin
    */
   tokenLogin() {
-    const token = this.utilsService.getToken() || '',
-          body = {
-            signInType: SignTypeEnum.token,
-            token
-          };
+    const body = {
+      signInType: SignTypeEnum.token,
+      token: this.utilsService.getToken()
+    };
+
     this.authService.loginCheck(body).subscribe(res => {
       const [userProfile, accessRight] = res;
       this.userProfile = 
@@ -170,10 +170,24 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
 
       if (this.userProfile) {
         this.isLoading = false;
+        this.subscribeUserProfileChange();
         this.checkQueryString(location.search);
         if (!this.isPreviewMode) this.checkTheme();
       }
 
+    });
+
+  }
+
+  /**
+   * 訂閱個人資訊變更
+   * @author kidin-1110208
+   */
+  subscribeUserProfileChange() {
+    this.userProfileService.getRxUserProfile().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      this.userProfile = res;
     });
 
   }

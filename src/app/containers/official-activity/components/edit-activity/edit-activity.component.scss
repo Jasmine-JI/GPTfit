@@ -67,7 +67,7 @@ $placeholder-img-max-size: 220px;
   @include overflow-y-scroll();
 }
 
-#event__cancel {
+#event__status {
   align-items: center;
   margin-bottom: 20px;
 
@@ -165,7 +165,8 @@ $placeholder-img-max-size: 220px;
   margin: 10px 0;
 
   >span {
-    @include placeholder-text();
+    @include placeholder-text(20px);
+    min-width: 300px;
   }
 
 }

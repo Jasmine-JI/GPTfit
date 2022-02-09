@@ -8,6 +8,9 @@ import { DetectInappService } from '../../shared/services/detect-inapp.service';
 import { fromEvent, Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { langList } from '../../shared/models/i18n';
+import { SignTypeEnum } from '../../shared/models/utils-type';
+import { AuthService } from '../../shared/services/auth.service';
+import { UserProfileService } from '../../shared/services/user-profile.service';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -39,7 +42,8 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     hideNavbar: false,
     isMaskShow: false,
     isCollapseOpen: false,
-    darkMode: false
+    darkMode: false,
+    showActivityEntry: false
   };
   
   constructor(
@@ -48,7 +52,9 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     private globalEventsManager: GlobalEventsManager,
     private utilsService: UtilsService,
     public translateService: TranslateService,
-    private detectInappService: DetectInappService
+    private detectInappService: DetectInappService,
+    private auth: AuthService,
+    private userProfileService: UserProfileService
   ) {
     if (location.search.indexOf('ipm=s') > -1) {
       this.uiFlag.isPreviewMode = true;
@@ -63,6 +69,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     this.checkLanguage();
     this.handleShowNavBar();
     this.listenTargetImg();
+    this.loginCheck();
   }
 
   ngAfterViewInit() {
@@ -150,6 +157,27 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
       default:
         this.uiFlag.page = 'other';
         break;
+    }
+
+  }
+
+  /**
+   * 如有登入，則取得使用者userProfile
+   * @author kidin-1110209
+   */
+  loginCheck() {
+    const token = this.utilsService.getToken();
+    if (token) {
+      const body = {
+        token,
+        signInType: SignTypeEnum.token
+      };
+
+      this.auth.loginCheck(body).subscribe(res => {
+        const [userProfile, accessRight] = res;
+        const userInfo = this.userProfileService.userProfileCombineAccessRight(userProfile, accessRight);
+      });
+
     }
 
   }
