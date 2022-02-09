@@ -43,6 +43,7 @@ import { AppCompressDataComponent } from './components/app-sign/app-compress-dat
 import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-account/app-destroy-account.component';
 import { HashIdService } from '../../shared/services/hash-id.service';
 import { GroupService } from '../../shared/services/group.service';
+import { CoachService } from '../../shared/services/coach.service';
 
 @NgModule({
   imports: [
@@ -78,6 +79,7 @@ import { GroupService } from '../../shared/services/group.service';
     HashIdService,
     DetectInappService,
     GroupService,
+    CoachService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: EmptyResponseBodyErrorInterceptor,

@@ -8,7 +8,6 @@ import { UserProfileInfo } from '../dashboard/models/userProfileInfo';
 import { OfficialActivityService } from './services/official-activity.service';
 import { AuthService } from '../../shared/services/auth.service';
 import { DetectInappService } from '../../shared/services/detect-inapp.service';
-import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { CloudrunService } from '../../shared/services/cloudrun.service';
 import { SignTypeEnum } from '../../shared/models/utils-type';

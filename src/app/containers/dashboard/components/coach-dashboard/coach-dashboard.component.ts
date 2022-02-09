@@ -15,7 +15,7 @@ import {
   animate
 } from '@angular/animations';
 import { demoCoachInfo, demoLessonInfo } from './fakeUsers';
-import { CoachService } from '../../services/coach.service';
+import { CoachService } from '../../../../shared/services/coach.service';
 import { ActivatedRoute } from '@angular/router';
 import { setOptions } from 'highcharts';
 import { webSocket } from 'rxjs/webSocket';
