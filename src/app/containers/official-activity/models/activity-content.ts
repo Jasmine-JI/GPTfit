@@ -7,7 +7,7 @@ export interface EventInfo {
   description: string;
   numberLimit?: number;
   currentApplyNumber?: number;
-  eventStatus: number;
+  eventStatus: EventStatus;
   applyDate: {
       startDate: number;
       endDate: number;
@@ -63,8 +63,9 @@ export enum CardTypeEnum {
 }
 
 export enum EventStatus {
-  normal,
-  cancel
+  notAudit,
+  cancel,
+  audit
 };
 
 export enum HaveProduct {

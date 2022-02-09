@@ -3,7 +3,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
-import { Subject, Subscription, fromEvent, merge } from 'rxjs';
+import { Subject, Subscription, fromEvent, merge, of } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { UserProfileInfo } from '../../../dashboard/models/userProfileInfo';
 import moment from 'moment';
@@ -340,17 +340,43 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 取得個人歷史資訊，未登入者導至登入頁面
+   * 取得個人歷史資訊，未登入者導至登入頁面，
+   * 自動檢查最新的那賽事繳費狀態是否未繳費，未繳費則使用api 6014更新繳費狀態再重新取得個人歷史資訊
    * @author kidin-1101006
    */
   getUserHistory() {
     const { token } = this;
     if (token) {
-
       const { progress } = this.uiFlag;
       if (progress === 100) {
         this.uiFlag.progress = 30;
-        this.officialActivityService.getParticipantHistory({token}).subscribe(res => {
+        this.officialActivityService.getParticipantHistory({token}).pipe(
+          switchMap(historyRes => {
+            if (this.utils.checkRes(historyRes)) {
+              const { history } = historyRes.info;
+              const { eventId, feeId, officialPaidId, paidStatus } = history[0];
+              if (paidStatus === 1) {
+                const body = {
+                  token,
+                  eventId,
+                  feeId,
+                  officialPaidId
+                };
+
+                return this.officialActivityService.updateProductOrder(body).pipe(
+                  switchMap(newHistoryRes => this.officialActivityService.getParticipantHistory({token}))
+                )
+
+              } else {
+                return of(historyRes);
+              }
+                
+            } else {
+              return of(historyRes);
+            }
+
+          })
+        ).subscribe(res => {
           if (this.utils.checkRes(res)) {
             const { info: { history }, currentTimestamp } = res;
             if (history) {

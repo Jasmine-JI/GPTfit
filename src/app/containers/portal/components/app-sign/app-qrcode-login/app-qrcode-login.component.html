@@ -55,7 +55,7 @@
         </ng-container>
         <ng-container *ngIf="displayPage === 'showQrcode'">
           <img *ngTemplateOutlet="alatechLogo">
-          <qrcode [qrdata]="qrURL" [size]="128" [level]="'M'" *ngIf="cue === ''"></qrcode>
+          <qrcode [qrdata]="qrURL" size="128" level="'M'" *ngIf="cue === ''"></qrcode>
           <p
             *ngIf="cue !== ''"
             style="margin: 50px; color: #ff9090; font-size: 20px; font-weight: bold;"
@@ -89,7 +89,7 @@
           <div class="access-panel-body">
             <ng-container *ngIf="displayPage === 'showQrcode'">
               <div class="flexCol" style="align-items: center;">
-                <qrcode [qrdata]="qrURL" [size]="128" [level]="'M'" *ngIf="cue === ''"></qrcode>
+                <qrcode [qrdata]="qrURL" size="128" level="'M'" *ngIf="cue === ''"></qrcode>
                 <span *ngIf="cue !== ''" style="margin: 50px; color: #ff9090; font-size: 20px; font-weight: bold;">
                   {{ cue | translate }}
                 </span>

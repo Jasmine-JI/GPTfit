@@ -2595,4 +2595,8 @@
  "universal_vocabulary_cloudrunIntroEarn": "What can you get by using CloudRun",
  "universal_vocabulary_cloudrunIntroEarnContent": "Instant motion data is transmitted via Bluetooth to ALA CloudRun records and timely to the game for racing or simulated road running practice with other runners. Important statistics such as distance, pace, speed, speed, and calories burned are available during and after the event. All exercise data analysis, statistics... etc., can be seen on the GPT Center.",
  "universal_vocabulary_cloudrunIntroGet": "Get the app",
- "universal_vocabulary_cloudrunIntroGetContent": "is a treadmill real route connection competition and social interaction application, paired with a compatible Alatech treadmill, can establish a cloud road run, The change in route height is simulated by a treadmill to simulate actual road conditions."}
+ "universal_vocabulary_cloudrunIntroGetContent": "is a treadmill real route connection competition and social interaction application, paired with a compatible Alatech treadmill, can establish a cloud road run, The change in route height is simulated by a treadmill to simulate actual road conditions.",
+ "universal_vocabulary_typeRealName": "Please type your real name",
+ "universal_vocabulary_ids": "Taiwan ID or ARC number",
+ "universal_vocabulary_optional": "Optional"
+}

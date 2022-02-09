@@ -16,11 +16,6 @@ enum ContentType {
 
 type AlertType = 'empty' | 'format';
 
-const operationalIssues = '您好，\n問題描述：\n問題發生時間點：\n問題發生的操作步驟：\n\n若已註冊帳號，請留下您的帳號暱稱\n帳號暱稱：\n\n我們將盡快回覆';
-const payIssues = '您好，\n帳號暱稱：\n欲參與的活動名稱：\n選擇的報名組合：\n選擇的付款方式：\n問題發生時間點：\n問題描述：\n\n\n我們將盡快回覆';
-const suggestion = '您好，\n意見內容：\n\n\n感謝您的意見回饋';
-const otherIssues = '您好，\n內容敘述：\n\n';
-
 @Component({
   selector: 'app-contact-us',
   templateUrl: './contact-us.component.html',
@@ -55,18 +50,69 @@ export class ContactUsComponent implements OnInit, OnDestroy {
     contentType: <AlertType>null
   }
 
-  templateText = operationalIssues;
+  templateText = null;
+  template = {
+    operationalIssues: null,
+    payIssues: null,
+    suggestion: null,
+    otherIssues: null
+  };
 
   readonly ContentType = ContentType;
 
   constructor(
     private officialActivityService: OfficialActivityService,
     private utils: UtilsService,
-    private translateService: TranslateService,
+    private translate: TranslateService,
     private ngLocation: Location
   ) { }
 
   ngOnInit(): void {
+    this.getTemplateTranslate();
+  }
+
+  /**
+   * 取得模板翻譯
+   * @author kidin-111-126
+   */
+  getTemplateTranslate() {
+    this.translate.get('hellow world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      const operationalIssues = `${this.translate.instant('universal_vocabulary_hello')
+        }\n${this.translate.instant('universal_vocabulary_problemDescription')
+        }:\n\n${this.translate.instant('universal_vocabulary_problemTime')
+        }:\n\n${this.translate.instant('universal_vocabulary_problemProcesss')
+        }:\n\n${this.translate.instant('universal_vocabulary_registeredLeaveName')
+        }:\n\n${this.translate.instant('universal_vocabulary_nickname')
+        }:\n\n\n${this.translate.instant('universal_vocabulary_replySoon')
+      }`;
+      const payIssues = `${this.translate.instant('universal_vocabulary_hello')
+        }\n${this.translate.instant('universal_vocabulary_nickname')
+        }:\n\n${this.translate.instant('universal_vocabulary_eventNameWanted')
+        }:\n\n${this.translate.instant('universal_vocabulary_signPackage')
+        }:\n\n${this.translate.instant('universal_vocabulary_payMethod')
+        }:\n\n${this.translate.instant('universal_vocabulary_problemTime')
+        }:\n\n${this.translate.instant('universal_vocabulary_problemDescription')
+        }:\n\n\n${this.translate.instant('universal_vocabulary_replySoon')
+      }`;
+      const suggestion = `${this.translate.instant('universal_vocabulary_hello')
+        }\n${this.translate.instant('universal_vocabulary_opiContents')
+        }:\n\n\n${this.translate.instant('universal_vocabulary_tksReply')
+      }`;
+      const otherIssues = `${this.translate.instant('universal_vocabulary_hello')
+        }\n\n${this.translate.instant('universal_vocabulary_contents')
+      }:\n`;
+      
+      this.templateText = operationalIssues;
+      this.template = {
+        operationalIssues,
+        payIssues,
+        suggestion,
+        otherIssues
+      };
+
+    });
 
   }
 
@@ -146,7 +192,7 @@ export class ContactUsComponent implements OnInit, OnDestroy {
   selectContentType(type: ContentType) {
     this.contentInfo.contentType = type;
     this.formAlert.contentType = null;
-
+    const { payIssues, suggestion, otherIssues, operationalIssues } = this.template;
     switch (type) {
       case ContentType.paymentsProblem:
         this.templateText = payIssues;
@@ -177,17 +223,17 @@ export class ContactUsComponent implements OnInit, OnDestroy {
         this.uiFlag.progress = 30;
         combineLatest([
           this.officialActivityService.fetchOfficialContactus(this.contentInfo),
-          this.translateService.get('hellow world')
+          this.translate.get('hellow world')
         ]).pipe(
           takeUntil(this.ngUnsubscribe)
         ).subscribe(res => {
           const result = res[0];
           const succeeded = this.utils.checkRes(result);
-          let msg = this.translateService.instant('universal_operating_send');
+          let msg = this.translate.instant('universal_operating_send');
           if (succeeded) {
-            msg = `${msg} ${this.translateService.instant('universal_status_success')}`;
+            msg = `${msg} ${this.translate.instant('universal_status_success')}`;
           } else {
-            msg = `${msg} ${this.translateService.instant('universal_status_failure')}`;
+            msg = `${msg} ${this.translate.instant('universal_status_failure')}`;
           }
 
           this.utils.showSnackBar(msg);

@@ -18,28 +18,28 @@
           [class.focus__type]="uiFlag.rankType === RankType.cumulativeClimb"
           (click)="selectRankType(RankType.cumulativeClimb)"
         >
-          {{ '累計爬升' }}
+          {{ 'universal_vocabulary_totalElev' | translate }}
         </li>
         <li
           class="switch__list"
           [class.focus__type]="uiFlag.rankType === RankType.cumulativeDistance"
           (click)="selectRankType(RankType.cumulativeDistance)"
         >
-          {{ '累計距離' }}
+          {{ 'universal_vocabulary_totalDistance' | translate }}
         </li>
         <li
           class="switch__list"
           [class.focus__type]="uiFlag.rankType === RankType.routine"
           (click)="selectRankType(RankType.routine)"
         >
-          {{ '例賽' }}
+          {{ 'universal_vocabulary_regularRaces' | translate }}
         </li>
         <li
           class="switch__list"
           [class.focus__type]="uiFlag.rankType === RankType.mapBest"
           (click)="selectRankType(RankType.mapBest)"
         >
-          {{ '各地圖最佳' }}
+          {{ 'universal_vocabulary_bestByMap' | translate }}
         </li>
       </ul>
       <div *ngTemplateOutlet="switchButton; context: {
@@ -144,10 +144,10 @@
           class="group"
           *ngIf="uiFlag.screenSize > 575 && uiFlag.rankType === RankType.event"
         >
-          {{ '分組' }}
+          {{ 'universal_vocabulary_categroy' | translate }}
         </span>
         <span class="record">
-          {{ '成績' }}
+          {{ 'universal_vocabulary_results' | translate }}
         </span>
       </div>
       <ul class="flexCol">

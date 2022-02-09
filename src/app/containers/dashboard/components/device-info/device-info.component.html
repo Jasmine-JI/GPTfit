@@ -309,7 +309,7 @@
         <div class="flexCol" *ngIf="fitPairInfo.status == 3 || systemAccessRight[0] <= 29">
           <h6 class="info-contentTitle">{{ 'universal_uiFitpair_createFitpairQr' | translate }}</h6>
           <div class="flexCol info-contentText">
-            <qrcode [qrdata]="deviceInfo.qrURL" [size]="128" [level]="'M'"></qrcode>
+            <qrcode [qrdata]="deviceInfo.qrURL" size="128" level="'M'"></qrcode>
             <p class="flexRow info-item" *ngIf="systemAccessRight[0] <= 29">
               <span class="info-itemTitle">Fitpair頁面：</span>
               <span class="info-itemValue">

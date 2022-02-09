@@ -26,11 +26,11 @@
           <table id="race__date">
             <tbody>
               <tr>
-                <th>{{ '競賽開始' }}</th>
+                <th>{{ 'universal_vocabulary_raceStart' | translate }}</th>
                 <td>{{ eventInfo.raceDate.startDate * 1000 | timeFormat: 'YYYY-MM-DD' }}</td>
               </tr>
               <tr>
-                <th>{{ '競賽結束' }}</th>
+                <th>{{ 'universal_vocabulary_raceEnd' | translate }}</th>
                 <td>{{ eventInfo.raceDate.endDate * 1000 | timeFormat: 'YYYY-MM-DD' }}</td>
               </tr>
             </tbody>
@@ -52,23 +52,23 @@
             (click)="navigateApplyPage()"
           >
             <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.canApply">
-              {{ '我要報名' }}
+              {{ 'universal_vocabulary_apply' | translate }}
             </ng-container>
             <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.applied">
-              {{ '已報名' }}
+              {{ 'universal_vocabulary_signed' | translate }}
             </ng-container>
             <ng-container
               *ngIf="
                 [ApplyButtonStatus.applyFull, ApplyButtonStatus.cutOff].includes(uiFlag.applyButtonStatus)
               "
             >
-              {{ '報名截止' }}
+              {{ 'universal_vocabulary_signEnd' | translate }}
             </ng-container>
             <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.eventCancelled">
-              {{ '賽事取消' }}
+              {{ 'universal_vocabulary_raceCancel' | translate }}
             </ng-container>
             <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.applyCancelled">
-              {{ '已取消報名' }}
+              {{ 'universal_vocabulary_signCanceled' | translate }}
             </ng-container>
           </button>
         </div>
@@ -79,7 +79,7 @@
     class="flexCol countdown"
     *ngIf="!uiFlag.raceEnd && eventInfo.eventStatus !== EventStatus.cancel"
   >
-    <h6 class="cowndown__title">比賽截止還有</h6>
+    <h6 class="cowndown__title">{{ 'universal_vocabulary_raceEndIn' | translate }}</h6>
     <div class="clock__container">
       <div class="flexRow countdown__clock">
         <div class="flexCol clock__colume">
@@ -88,7 +88,7 @@
         </div>
         <div class="flexCol clock__colume">
           <span class="clock__number">{{ raceEndCountdwon.hour }}</span>
-          <span>{{ '時' | translate }}</span>
+          <span>{{ 'universal_vocabulary_hour' | translate }}</span>
         </div>
         <div class="flexCol clock__colume">
           <span class="clock__number">{{ raceEndCountdwon.minute }}</span>

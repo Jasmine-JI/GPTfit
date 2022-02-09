@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { QrcodeService } from '../../../portal/services/qrcode.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UtilsService } from '../../../../shared/services/utils.service';
-import { CoachService } from '../../services/coach.service';
+import { CoachService } from '../../../../shared/services/coach.service';
 import { combineLatest, Subject, fromEvent, Subscription } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import moment from 'moment';

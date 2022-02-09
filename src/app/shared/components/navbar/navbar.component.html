@@ -1,6 +1,6 @@
 <nav class="navbar fixed-top navbar-expand-lg navabar-color bg-color navbar-toggle">
   <a class="navbar-brand nav-item" (click)="chooseNavItem(1)">
-    <h2 style="font-family: Eurostile-ExtendedTwo; font-size: 22px;">
+    <h2 class="webTitle">
       GPTfit
       <span class="alpha-text" *ngIf="isAlphaVersion">alpha</span>
     </h2>
@@ -21,14 +21,25 @@
       <a class="nav-link">{{"universal_userAccount_logIn" | translate}}</a>
     </li>
     <li class="nav-item nav-rwd" style="list-style: none;" *ngIf="(login$| async) && !hideLogout">
-      <a class="nav-link" (click)="logout()">{{ "universal_userAccount_logOut" | translate}}</a>
+      <a class="nav-link" (click)="logout()">
+        {{ "universal_userAccount_logOut" | translate}}
+      </a>
     </li>
     <li class="nav-item nav-rwd" style="list-style: none;margin-left: 10px" *ngIf="(login$| async)">
-      <a class="nav-link" [routerLink]="['/dashboard']">{{ "universal_uiFitpair_startUsing" | translate}}</a>
+      <a class="nav-link" [routerLink]="['/dashboard']">
+        {{ "universal_uiFitpair_startUsing" | translate}}
+      </a>
     </li>
     <div class="dropdown nav-rwd">
-      <button class="btn btn-secondary dropdown-toggle ala-btn__lang" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true"
-        aria-expanded="false" style="background-color: transparent;border-color: transparent">
+      <button 
+        class="btn btn-secondary dropdown-toggle ala-btn__lang"
+        type="button"
+        id="dropdownMenu2"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+        style="background-color: transparent;border-color: transparent"
+      >
         <i class="icon-svg_web-icon_p1_045-earth" style="font-size: 25px;"></i>
       </button>
       <div class="dropdown-menu dropdown-menu-lang" aria-labelledby="dropdownMenu2">
@@ -50,7 +61,9 @@
   >
     <ul class="navbar-nav">
       <li class="nav-item nav-rwd__hamburger" style="list-style: none;" *ngIf="(login$| async)">
-        <a class="nav-link" [routerLink]="['/dashboard']">{{ "universal_uiFitpair_startUsing" | translate}}</a>
+        <a class="nav-link" [routerLink]="['/dashboard']">
+          {{ "universal_uiFitpair_startUsing" | translate}}
+        </a>
       </li>
       <li class="nav-item" [class.active]="navItemNum === 1"
         *ngIf="!isShowResetPwd"
@@ -70,8 +83,9 @@
       >
         <a class="nav-link">{{ "universal_app_analyze" | translate}}</a>
       </li>
-      <li class="nav-item" [class.active]="navItemNum === 4"
-        *ngIf="!isShowResetPwd"
+      <li
+        class="nav-item"
+        *ngIf="!isShowResetPwd && showActivityEntry"
         (click)="chooseNavItem(4)"
       >
         <a class="nav-link">{{ 'universal_vocabulary_activity' | translate }}</a>
@@ -84,18 +98,25 @@
         *ngIf="!(login$| async)"
         (click)="chooseNavItem(5)"
       >
-        <a class="nav-link">{{"universal_userAccount_logIn" | translate}}</a>
+        <a class="nav-link">{{ "universal_userAccount_logIn" | translate }}</a>
       </li>
       <li class="nav-item nav-rwd__hamburger" style="list-style: none;" *ngIf="(login$| async)">
-        <a class="nav-link" (click)="logout()">{{ "universal_userAccount_logOut" | translate}}</a>
+        <a class="nav-link" (click)="logout()">
+          {{ "universal_userAccount_logOut" | translate }}
+        </a>
       </li>
 
       <div class="dropdown nav-rwd__hamburger">
-        <button class="btn btn-secondary dropdown-toggle ala-btn__lang" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true"
+        <button
+          class="btn btn-secondary dropdown-toggle ala-btn__lang"
+          type="button"
+          id="dropdownMenu2"
+          data-toggle="dropdown"
+          aria-haspopup="true"
           aria-expanded="false"
           style="background-color: transparent;border-color: transparent;padding: 0px"
         >
-          {{langName}}
+          {{ langName }}
         </button>
         <div class="dropdown-menu dropdown-menu-lang" aria-labelledby="dropdownMenu2">
           <button class="dropdown-item" type="button" (click)="switchLang('zh-tw')">繁體中文</button>

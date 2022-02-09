@@ -1,14 +1,10 @@
-export interface UserInfo {
-  isInitial: boolean;
-  [groupAccessRight: string]: any;
-}
-
 /**
  * 個人在系統或群組的權限
  */
 export enum AccessRight {
   god = 10,
   maintainer = 20,
+  auditor = 21,
   pusher = 28,
   marketing = 29,
   brandAdmin = 30,
