@@ -51,17 +51,37 @@
       <div 
         *ngIf="uiFlag.editMode === 'edit' && currentTimestamp < eventInfo.raceDate.endDate"
       >
-        <div id="event__cancel" class="flexRow">
-          <input
-            type="checkbox"
-            id="event__status__cancel"
-            name="eventStatusCancel"
-            class="radio__input"
-            [checked]="eventInfo.eventStatus === EventStatus.cancel"
-            [value]="EventStatus.cancel"
-            (click)="cancelEventAlert()"
-          >
-          <label>{{ 'universal_vocabulary_raceCancel' | translate }}</label>
+        <div id="event__status" class="flexRow">
+          <ng-container *ngIf="originEventStatus === EventStatus.notAudit">
+            <input
+              type="checkbox"
+              id="event__status__audit"
+              name="eventStatusCancel"
+              class="radio__input"
+              [checked]="eventInfo.eventStatus === EventStatus.audit"
+              [value]="EventStatus.audit"
+              [disabled]="userProfile?.systemAccessRight[0] !== AccessRight.auditor ? true : null"
+              (click)="releaseEventAlert()"
+            >
+            <label for="event__status__audit">
+              發佈活動
+            </label>
+          </ng-container>
+          <ng-container *ngIf="originEventStatus === EventStatus.audit">
+            <input
+              type="checkbox"
+              id="event__status__cancel"
+              name="eventStatusCancel"
+              class="radio__input"
+              [checked]="eventInfo.eventStatus === EventStatus.cancel"
+              [value]="EventStatus.cancel"
+              [disabled]="userProfile?.systemAccessRight[0] !== AccessRight.auditor ? true : null"
+              (click)="cancelEventAlert()"
+            >
+            <label for="event__status__cancel">
+              {{ 'universal_vocabulary_raceCancel' | translate }}
+            </label>
+          </ng-container>
         </div>
       </div>
       <div class="flexRow">

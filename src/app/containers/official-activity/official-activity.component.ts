@@ -79,7 +79,8 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     showPassword: false,
     sendingPhoneCaptcha: false,
     focusInput: false,
-    clickSubmit: false
+    clickSubmit: false,
+    fixFooter: false
   };
 
   /**
@@ -240,15 +241,12 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    */
   checkCurrentPage() {
     const { pathname } = location,
-          [, mainPath, childPath, ...rest] = pathname.split('/');
-    if (childPath) {
-      const childPage = childPath as Page;
+          [, mainPath, secondPath, ...rest] = pathname.split('/');
+    if (secondPath) {
+      const childPage = secondPath as Page;
       this.uiFlag.currentPage = childPage;
-      this.uiFlag.showAdvertise = [
-        'activity-list',
-        'my-activity',
-        'edit-carousel'
-      ].includes(childPath);
+      this.checkShowAdvertisePage(secondPath);
+      this.checkForbiddenPage(secondPath);
 
       if (!this.uiFlag.isMobile) this.checkPageUnderlinePosition(childPage);
     }
@@ -259,6 +257,28 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       this.stopCarousel();
     }
     
+  }
+
+  /**
+   * 確認目前路徑是否顯示廣告
+   * @param path {string}-參考路徑
+   * @author kidin-1110208
+   */
+  checkShowAdvertisePage(path: string) {
+    this.uiFlag.showAdvertise = [
+      'activity-list',
+      'my-activity',
+      'edit-carousel'
+    ].includes(path);
+  }
+
+  /**
+   * 確認目前路徑是否固定
+   * @param path {string}-參考路徑
+   * @author kidin-1110208
+   */
+  checkForbiddenPage(path: string) {
+    this.uiFlag.fixFooter = ['403', '404'].includes(path);
   }
 
   /**
@@ -1017,8 +1037,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     if (ip) {
       return of(this.userLocation);
     } else {
-      const getIpApiUrl = 'https://get.geojs.io/v1/ip/country.js';
-      return this.getClientIp.requestJsonp(getIpApiUrl, 'format=jsonp', 'callback').pipe(
+      return this.getClientIp.requestIpAddress().pipe(
         tap(res => {
           const { ip, country: countryCode } = (res as any);
           this.userLocation = { ip, countryCode };

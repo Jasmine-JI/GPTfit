@@ -39,7 +39,8 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     hideNavbar: false,
     isMaskShow: false,
     isCollapseOpen: false,
-    darkMode: false
+    darkMode: false,
+    showActivityEntry: false
   };
   
   constructor(

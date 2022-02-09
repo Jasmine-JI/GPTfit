@@ -9,6 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MapLanguageEnum } from '../../../../shared/models/i18n';
 import { developDomain, uatDomain, prodDomain } from '../../../../shared/models/utils-constant';
 import { formTest } from '../../../../shared/models/form-test';
+import { EventStatus } from '../../models/activity-content';
 
 type SwitchType = 'main' | 'sub';
 type SwitchAction = 'up' | 'down';
@@ -307,7 +308,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
 
       this.officialActivityService.getEventList(body).subscribe(res => {
         if (this.utils.checkRes(res)) {
-          const { eventList } = res;
+          const eventList = res.eventList.filter(list => list.eventStatus === EventStatus.audit);
           this.eventList = eventList;
           this.subList = eventList;
           if (eventList.length > 0) {

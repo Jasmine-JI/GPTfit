@@ -235,6 +235,7 @@
     <footer
       id="footer"
       class="flexCol"
+      [class.fix__footer]="uiFlag.fixFooter"
       *ngIf="!['edit-activity', 'apply-activity'].includes(uiFlag.currentPage)"
     >
       <div class="flexRow footer__link__area">

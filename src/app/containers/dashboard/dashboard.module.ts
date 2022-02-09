@@ -4,7 +4,6 @@ import { DashboardComponent } from './dashboard.component';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 import { FormsModule } from '@angular/forms';
-import { CertificateComponent } from './components/certificate/certificate.component';
 import { MyDatePickerModule } from 'mydatepicker';
 import { MapService } from '../../shared/services/map.service';
 import { CustomMaterialModule } from '../../shared/custom-material.module';
@@ -125,7 +124,6 @@ import { GroupService } from '../../shared/services/group.service';
   ],
   declarations: [
     DashboardComponent,
-    CertificateComponent,
     MsgDialogComponent,
     DeviceLogComponent,
     DeviceLogDetailComponent,
