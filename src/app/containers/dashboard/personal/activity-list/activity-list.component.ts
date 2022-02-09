@@ -3,17 +3,17 @@ import { ActivityService } from '../../../../shared/services/activity.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { SportCode } from '../../../../shared/models/report-condition';
 import moment from 'moment';
-import { UserInfoService } from '../../services/userInfo.service';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { ReportConditionOpt } from '../../../../shared/models/report-condition';
 import { ReportService } from '../../../../shared/services/report.service';
-import { unit } from '../../../../shared/models/bs-constant';
+import { Unit } from '../../../../shared/models/bs-constant';
+import { UserProfileService } from '../../../../shared/services/user-profile.service';
 
 
 const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ',
       defaultEnd = moment().endOf('day'),
-      defaultStart = moment(defaultEnd).subtract(1, 'years').startOf('day');
+      defaultStart = moment(defaultEnd).subtract(3, 'years').startOf('day');
 
 @Component({
   selector: 'app-activity-list',
@@ -23,6 +23,7 @@ const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ',
 export class ActivityListComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
   private scrollEvent = new Subscription();
+  private resizeEvent = new Subscription();
 
   /**
    * ui 會用到的flag
@@ -63,19 +64,21 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   activityList = [];
   targetUserId: number;
   totalCounts = 0;
-  unit = unit.metric;
+  unit = Unit.metric;
   readonly sportCode = SportCode;
 
   constructor(
     private activityService: ActivityService,
     private utils: UtilsService,
-    private userInfoService: UserInfoService,
-    private reportService: ReportService
+    private reportService: ReportService,
+    private userProfileService: UserProfileService
   ) { }
 
   ngOnInit(): void {
     this.getNeedInfo();
     this.subscribeScroll();
+    this.setListWidth();
+    this.subscribeScreenSize();
   }
 
   /**
@@ -83,12 +86,12 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1100816
    */
   getNeedInfo() {
-    this.userInfoService.getRxTargetUserInfo().pipe(
+    this.userProfileService.getRxTargetUserInfo().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       const { userId, systemAccessRight, unit: userUnit } = res;
       this.targetUserId = systemAccessRight ? undefined : userId;
-      this.unit = userUnit !== undefined ? userUnit : unit.metric;
+      this.unit = userUnit !== undefined ? userUnit : Unit.metric;
       this.reportService.setReportCondition(this.reportConditionOpt);
       this.getReportSelectedCondition();
     });
@@ -214,6 +217,34 @@ export class ActivityListComponent implements OnInit, OnDestroy {
 
     });
 
+  }
+
+  /**
+   * 訂閱resize事件
+   * @author kidin-1110118
+   */
+  subscribeScreenSize() {
+    const resize = fromEvent(window, 'resize');
+    this.resizeEvent = resize.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(e => {
+      this.setListWidth();
+    });
+
+  }
+
+  /**
+   * 設置活動列表寬度，讓清單可以使用margin: 0 auto搭配float: left整體置中，卡片靠左，且空隙不會太大
+   * @author kidin-1110118
+   */
+  setListWidth() {
+    const container = document.querySelector('.cardSection') as HTMLElement;
+    const windowWidth = window.innerWidth;
+    const maxWidth = container.getBoundingClientRect().width - 20;  // 20為padding
+    const cardWidth = windowWidth <= 767 ? 210 : 260;
+    const oneRowNum = Math.floor(maxWidth / cardWidth);
+    const targetElement = document.querySelector('.activity__list') as HTMLElement;
+    targetElement.style.width = oneRowNum === 1 ? `${maxWidth - 10}px` : `${oneRowNum * cardWidth}px`;
   }
 
   ngOnDestroy(): void {

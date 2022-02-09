@@ -33,25 +33,41 @@ router.post('/getAllMapInfo', (req, res, next) => {
       // 取得所有地圖資本資訊，並與地圖列表合併為一個完整清單
       const list = JSON.parse(data.toString('utf8'));
       list.mapList.raceMapInfo.forEach((_list, _index) => {
-        const { mapId, distance, incline, mapCode, mapInfo, mapName, smallFileName: mapImg } = _list,
-              _info = fs.readFileSync(`/var/www/html/app/public_html/cloudrun/update/${mapInfo}`),
-              _infoUtf8 = _info.toString('utf8').replace(/^\ufeff/g, ''), // 避免出現Unexpected token ﻿ in JSON at position 0 錯誤
-              _infoJson = JSON.parse(_infoUtf8),
-              { map: {basic: { info }, buildMap} } = _infoJson,
-              _mergeResult = {
-                mapId,
-                distance,
-                incline,
-                mapImg,
-                info,
-                gpxPath: `v${mapCode}/${mapName}/${buildMap.info[0].GPXName}`
-              };
+        const { mapId, distance, incline, mapCode, mapInfo, mapName, smallFileName: mapImg } = _list;
+        const mapFilePath = `/var/www/html/app/public_html/cloudrun/update/${mapInfo}`;
+        let _mergeResult;
+        if (!fs.existsSync(mapFilePath)) {
+          _mergeResult = {
+            mapId,
+            distance,
+            incline,
+            mapImg,
+            info: `Can not get file info.`,
+            gpxPath: null
+          };
+
+        } else {
+          data = fs.readFileSync(logFile);
+          data = JSON.parse(data.toString('utf8'));
+          const _info = fs.readFileSync(mapFilePath),
+                _infoUtf8 = _info.toString('utf8').replace(/^\ufeff/g, ''), // 避免出現Unexpected token ﻿ in JSON at position 0 錯誤
+                _infoJson = JSON.parse(_infoUtf8),
+                { map: {basic: { info }, buildMap} } = _infoJson;
+          _mergeResult = {
+            mapId,
+            distance,
+            incline,
+            mapImg,
+            info,
+            gpxPath: `v${mapCode}/${mapName}/${buildMap.info[0].GPXName}`
+          };
+
+        }
 
         resInfo.list.push(_mergeResult);
       });
 
       resInfo.list.sort((a, b) => a.mapId < b.mapId);
-
       return res.json({
         resultCode: 200,
         resultMessage: 'Get all map info success.',

@@ -1,19 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { GroupService } from '../../services/group.service';
+import { GroupService } from '../../../../shared/services/group.service';
 import { HttpParams } from '@angular/common/http';
-import { UtilsService } from '@shared/services/utils.service';
+import { UtilsService } from '../../../../shared/services/utils.service';
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
-import { HashIdService } from '@shared/services/hash-id.service';
-import { debounce } from '@shared/utils/';
-import { UserProfileService } from '@shared/services/user-profile.service';
+import { HashIdService } from '../../../../shared/services/hash-id.service';
+import { debounce } from '../../../../shared/utils/';
+import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { AuthService } from '../../../../shared/services/auth.service';
 import { Router } from '@angular/router';
-import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { last } from 'rxjs/operators';
 import moment from 'moment';
-import { accountTypeEnum } from '../../../dashboard/models/userProfileInfo';
+import { AccountTypeEnum } from '../../../dashboard/models/userProfileInfo';
 
 const errorMsg = 'Error!<br />Please try again later.';
 
@@ -42,7 +42,7 @@ interface UserInfo {
 export class InnerTestComponent implements OnInit {
   userInfo: UserInfo = {
     userName: '',
-    accountType: accountTypeEnum.email,
+    accountType: AccountTypeEnum.email,
     userId: null,
     userPageLink: '',
     userDeviceLog: '',
@@ -78,7 +78,7 @@ export class InnerTestComponent implements OnInit {
   hashUserId: string;
   groupLevel: number;
   flag = 402;
-  readonly accountType = accountTypeEnum;
+  readonly accountType = AccountTypeEnum;
 
   constructor(
     private groupService: GroupService,

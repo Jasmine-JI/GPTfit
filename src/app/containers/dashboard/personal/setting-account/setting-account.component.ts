@@ -3,16 +3,14 @@ import { Subject } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
-import { UserInfoService } from '../../services/userInfo.service';
-import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../../../shared/services/auth.service';
-import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
-import { accountTypeEnum } from '../../models/userProfileInfo';
+import { AccountTypeEnum } from '../../models/userProfileInfo';
+import { SignTypeEnum } from '../../../../shared/models/utils-type';
 
-enum thirdParty {
+enum ThirdParty {
   strava = 1,
   runKeeper,
   line
@@ -33,16 +31,14 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
   userInfo: any;
   clientId = 30689;
   stravaApiDomain = 'https://app.alatech.com.tw:5443';
-  readonly accountType = accountTypeEnum;
+  readonly accountType = AccountTypeEnum;
 
   constructor(
-    private userInfoService: UserInfoService,
-    private settingsService: SettingsService,
     private utils: UtilsService,
     private auth: AuthService,
-    private router: Router,
     private dialog: MatDialog,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private userProfileService: UserProfileService
   ) { }
 
   ngOnInit(): void {
@@ -59,11 +55,11 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
    */
   getNeedInfo() {
     const body = {
-      signInType: 3,
+      signInType: SignTypeEnum.token,
       token: this.utils.getToken()
     };
 
-    this.userInfoService.getRxTargetUserInfo().pipe(
+    this.userProfileService.getRxTargetUserInfo().pipe(
       switchMap(res => this.auth.loginServerV2(body).pipe(
         map(resp => {
           const { thirdPartyAgency, signIn, processResult } = resp;
@@ -72,13 +68,13 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
             thirdPartyAgency.forEach(_party => {
               const { interface: type, status } = _party;
               switch (type) {
-                case thirdParty.strava:
+                case ThirdParty.strava:
                   Object.assign(thirdObj, { strava: status });
                   break;
-                case thirdParty.runKeeper:
+                case ThirdParty.runKeeper:
                   Object.assign(thirdObj, { runKeeper: status });
                   break;
-                case thirdParty.line:
+                case ThirdParty.line:
                   Object.assign(thirdObj, { line: status });
                   break;
               }
@@ -172,7 +168,7 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
    * @author kidin-1100819
    */
   handleStravaAccess(body: any): void {
-    this.settingsService.updateThirdParty(body).subscribe(res => {
+    this.userProfileService.updateThirdParty(body).subscribe(res => {
       if (res.processResult.resultCode !== 200) {
         this.userInfo.thirdPartyAgency.strava = false;
         this.dialog.open(MessageBoxComponent, {

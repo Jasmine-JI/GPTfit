@@ -10,20 +10,22 @@ const request = require('request');
 const helmet = require('helmet');
 const { checkTokenExit } = require('./server/models/auth.model');
 const { getUserActivityInfo } = require('./server/models/officialActivity_model');
-
 const https = require('https');
 const fs = require('fs');
+const rateLimit = require('express-rate-limit');
 
-var address,
-  ifaces = os.networkInterfaces();
+var address;
+var ifaces = os.networkInterfaces();
 for (var dev in ifaces) {
   ifaces[dev].filter((details) => details.family === 'IPv4' && details.internal === false ? address = details.address : undefined);
 }
+
 const SERVER_CONFIG = {
   key: null,
   ca: null,
   cert: null
 };
+
 if (address === '192.168.1.231' || address === '192.168.1.235' || address === '192.168.1.234') {
   SERVER_CONFIG.key = fs.readFileSync('/etc/ssl/free.key'),
   SERVER_CONFIG.ca = fs.readFileSync('/etc/ssl/free_ca.crt'),
@@ -676,8 +678,18 @@ const authMiddleware = function (req, res, next) {
   }
 }
 
-// Set routes
+/**
+ * 使用express-rate-limit套件防止ddos攻擊
+ */
+ const limiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 限制時間
+  max: 2, // 限制請求數量
+  message: 'Too many requests, please try again later!'
+})
 
+app.set('trust proxy', 1);
+
+// Set routes
 const rankForm = require('./server/routes/rankForm.js');
 const resetPassword = require('./server/routes/resetPassword.js');
 const raceEnroll = require('./server/routes/raceEnroll.js');
@@ -694,6 +706,7 @@ const uploadSportFile = require('./server/routes/uploadSportFile.js');
 const officialActivity = require('./server/routes/officialActivity.js');
 const group = require('./server/routes/group.js');
 const cloudrun = require('./server/routes/cloudrun.js');
+const email = require('./server/routes/email.js');
 
 app.use('/nodejs/api/rankForm', rankForm.unprotected);
 app.use('/nodejs/api/rankForm', authMiddleware, rankForm.protected);
@@ -707,22 +720,26 @@ app.use('/nodejs/api/map', authMiddleware, map.protected);
 app.use('/nodejs/api/gpx', authMiddleware, runGpx);
 app.use('/nodejs/api/deviceLog', authMiddleware, deviceLog);
 app.use('/nodejs/api/coach', authMiddleware, coach);
-app.use('/nodejs/api/user', authMiddleware, user);
+app.use('/nodejs/api/user', user);
 app.use('/nodejs/api/center', authMiddleware, center);
 app.use('/nodejs/api/sport', authMiddleware, sport);
 app.use('/nodejs/api/uploadSportFile', uploadSportFile);
 app.use('/nodejs/api/officialActivity', officialActivity);
 app.use('/nodejs/api/group', group);
 app.use('/nodejs/api/cloudrun', cloudrun);
+app.use('/nodejs/api/email', email, limiter);
 app.use('/nodejs/img', express.static('/tmp/official-activity-img'));
 
 
 // Start the server
 const port = process.env.PORT || 3000;
-// app.listen(port, function () {
-//   console.log('Server running at ' + port);
-// });
+/**
+ app.listen(port, function () {
+   console.log('Server running at ' + port);
+ });
+ */
 // https server
+
 https.createServer(SERVER_CONFIG, app).listen(3000, function() {
   console.log('HTTPS sever started at ' + port);
 });

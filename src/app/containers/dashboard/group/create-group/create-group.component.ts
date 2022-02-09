@@ -6,8 +6,8 @@ import {
   OnDestroy
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { GroupService } from '../../services/group.service';
-import { UtilsService } from '@shared/services/utils.service';
+import { GroupService } from '../../../../shared/services/group.service';
+import { UtilsService } from '../../../../shared/services/utils.service';
 import { Router } from '@angular/router';
 import {
   FormBuilder,
@@ -19,11 +19,11 @@ import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.compo
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import { cloneDeep } from 'lodash';
-import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { planDatas } from '../desc';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
-import { HashIdService } from '@shared/services/hash-id.service';
+import { HashIdService } from '../../../../shared/services/hash-id.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 

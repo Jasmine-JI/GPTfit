@@ -17,7 +17,7 @@ import {
   rowData,
   personBallData
 } from '../../models/sports-report';
-import { Unit, mi, unit } from '../../models/bs-constant';
+import { Unit, mi } from '../../models/bs-constant';
 import { UserProfileService } from '../../services/user-profile.service';
 import {
   costTimeColor,
@@ -31,13 +31,13 @@ import {
   HrZoneRange
 } from '../../models/chart-data';
 import { Proficiency, ProficiencyCoefficient } from '../../models/weight-train';
-import { SettingsService } from '../../../containers/dashboard/services/settings.service';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../message-box/message-box.component';
-import { UserProfileInfo, hrBase } from '../../../containers/dashboard/models/userProfileInfo';
+import { UserProfileInfo, HrBase } from '../../../containers/dashboard/models/userProfileInfo';
 import { ShareGroupInfoDialogComponent } from '../share-group-info-dialog/share-group-info-dialog.component';
-import { UserInfoService } from '../../../containers/dashboard/services/userInfo.service';
+import { ActivityService } from '../../services/activity.service';
+
 
 const errMsg = 'Error!<br>Please try again later.';
 
@@ -221,7 +221,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     },
     hrzone: [0, 0, 0, 0, 0, 0],
     hrInfo: <HrZoneRange>{
-      hrBase: hrBase.max,
+      hrBase: HrBase.max,
       z0: 'Z0',
       z1: 'Z1',
       z2: 'Z2',
@@ -275,7 +275,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     name: '',
     id: null,
     accessRight: null,
-    unit: <Unit>unit.metric,
+    unit: <Unit>Unit.metric,
     icon: '',
     bodyWeight: 70,
     weightTrainLevel: Proficiency.metacarpus
@@ -300,7 +300,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   };
 
   readonly mi = mi;
-  readonly unitEnum = unit;
+  readonly unitEnum = Unit;
   readonly sportCode = SportCode;
   readonly proficiency = Proficiency;
   dateLen = 0; // 報告橫跨天數/週數
@@ -321,10 +321,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private userProfileService: UserProfileService,
     private changeDetectorRef: ChangeDetectorRef,
-    private settingsService: SettingsService,
     private route: ActivatedRoute,
     private dialog: MatDialog,
-    private userInfoService: UserInfoService
+    private activityService: ActivityService
   ) { }
 
   ngOnInit(): void {
@@ -456,7 +455,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     unit: Unit = 0,
     weightTrainLevel: ProficiencyCoefficient = Proficiency.metacarpus
   ) {    
-    this.userInfoService.getRxTargetUserInfo().pipe(
+    this.userProfileService.getRxTargetUserInfo().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       const { avatarUrl, nickname, userId } = res;
@@ -1278,7 +1277,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     switch (type) {
       case SportCode.cycle:
       case SportCode.ball:
-        if (userUnit === unit.metric) {  // km/h
+        if (userUnit === Unit.metric) {  // km/h
           avgVal = avgSpeed || 0;
           avgMaxVal = avgMaxSpeed || 0;
         } else {  // mi/h
@@ -1603,7 +1602,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           { unit: userUnit } = this.userInfo;
     let avgVal: number,
         avgMaxVal: number;
-    if (userUnit === unit.metric) {
+    if (userUnit === Unit.metric) {
       avgVal = avgSwingSpeed || 0;
       avgMaxVal = maxSwingSpeed || 0;
     } else {
@@ -1802,7 +1801,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
       };
 
-      this.settingsService.updateUserProfile(body).subscribe(res => {
+      this.userProfileService.updateUserProfile(body).subscribe(res => {
         const { processResult } = res;
         if (processResult && processResult.resultCode === 200) {
           this.userProfile.weightTrainingStrengthLevel = strengthLevel;
@@ -2254,7 +2253,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
             privacy: [1, 99]
           };
 
-    this.settingsService.editPrivacy(body).subscribe(res => {
+    this.activityService.editPrivacy(body).subscribe(res => {
       if (res.resultCode === 200) {
         this.showShareBox();
       } else {

@@ -1,22 +1,15 @@
 /**
  * 圖床圖片所屬對象/類別
  */
-export enum albumType {
+export enum AlbumType {
   all,
   personalIcon,
   personalScenery,
   personalSportFile,
   groupIcon = 11,
-  groupScenery
+  groupScenery,
+  eventTheme = 21,
+  eventContent,
+  eventApplyFee,
+  advertise,
 }
-
-/**
- * 圖床圖片所屬對象/類別
- */
-export type AlbumType = 
-  albumType.all
-  | albumType.personalIcon
-  | albumType.personalScenery
-  | albumType.personalSportFile
-  | albumType.groupIcon
-  | albumType.groupScenery;

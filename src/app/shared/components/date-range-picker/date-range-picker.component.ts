@@ -1,16 +1,15 @@
-import { Component, OnInit, Output, OnChanges, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, Output, OnChanges, OnDestroy, EventEmitter, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import jquery from 'jquery';
 import moment from 'moment';
 import 'daterangepicker';
-import { AUTO_STYLE } from '@angular/animations';
 
 @Component({
   selector: 'app-date-range-picker',
   templateUrl: './date-range-picker.component.html',
   styleUrls: ['./date-range-picker.component.scss']
 })
-export class DateRangePickerComponent implements OnInit, OnChanges {
+export class DateRangePickerComponent implements OnInit, OnChanges, OnDestroy {
 
   @Output() selectDateRange: EventEmitter<any> = new EventEmitter();
   @Input() default: string;
@@ -21,8 +20,11 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
   @Input() editStyle: string;
   @Input() openLeft = false;
   @Input() openPicker: boolean;
-  @Input() limitMax: boolean;
+  @Input() limitMin: number;
+  @Input() limitMax: number;
+  @Input() limitMaxCurrent: boolean;
   @Input() selectBirthday: boolean = false;
+  @Input() serialId: string = '';
 
   // 預設上週-kidin-1090330
   defaultDate = {
@@ -152,21 +154,40 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
       }
 
       if (this.openLeft) {
-        Object.assign(pickerOpt, {opens: 'left'});
+        pickerOpt = {
+          opens: 'left',
+          ...pickerOpt
+        };
+
       }
 
-      if (this.limitMax) {
-        Object.assign(pickerOpt, {maxDate: moment()})
+      if (this.limitMin) {
+        Object.assign(pickerOpt, {
+          minDate: moment(this.limitMin)
+        });
+
       }
 
-      jquery('input[name="dates"]').daterangepicker(pickerOpt);
-      jquery('input[name="dates"]').on('apply.daterangepicker', this.emitDateRange.bind(this));
-      if (this.openPicker) {
-        const picker = document.getElementById('picker');
-        picker.click();
-      } else if (this.openPicker === undefined) {
-        this.selectDateRange.emit(this.defaultDate);
+      if (this.limitMax || this.limitMaxCurrent) {
+        Object.assign(pickerOpt, {
+          maxDate: this.limitMax ? moment(this.limitMax) : moment()
+        });
+        
       }
+
+      setTimeout(() => {
+        
+        jquery(`#picker${this.serialId}`).daterangepicker(pickerOpt);
+        jquery(`#picker${this.serialId}`).on('apply.daterangepicker', this.emitDateRange.bind(this));
+        if (this.openPicker) {
+          const id = this.serialId ? `picker${this.serialId}` : 'picker';
+          const picker = document.getElementById(id);
+          picker.click();
+        } else if (this.openPicker === undefined) {
+          this.selectDateRange.emit(this.defaultDate);
+        }
+
+      });
       
     });
     
@@ -221,7 +242,7 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
           break;
         default:
           let [startDate, endDate] = this.default.split('_');
-          if (!endDate) endDate = moment().format('YYYY-MM-DDT23:59:59.999Z');
+          if (!endDate) endDate = moment(startDate).format('YYYY-MM-DDT23:59:59.999Z');
           this.defaultDate = {
             startDate: moment(startDate).format('YYYY-MM-DDT00:00:00.000Z'),
             endDate: moment(endDate).format('YYYY-MM-DDT23:59:59.999Z')
@@ -250,6 +271,18 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
       this.selectDateRange.emit(dateRange);
     }
 
+  }
+
+  /**
+   * 移除創建的日期選擇器
+   */
+  removePicker() {
+    if (!this.serialId) jquery('.daterangepicker').remove();    
+  }
+
+
+  ngOnDestroy() {
+    this.removePicker();
   }
 
 }

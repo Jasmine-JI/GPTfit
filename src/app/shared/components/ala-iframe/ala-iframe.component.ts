@@ -12,7 +12,11 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class AlaIframeComponent implements OnChanges {
   @Input() src: any;
-  @Input() type: 'trainLive' | 'signUp' = 'trainLive';  // 用於trainlive頁面或註冊頁面
+  @Input() type: 'trainLive' | 'signUp' | 'officialActivity' = 'trainLive';  // 用於trainlive頁面、註冊頁面、官方活動詳細頁
+  @Input() width: string;
+  @Input() height: string;
+  @Input() maxWidth: string;
+  @Input() maxHeight: string;
 
   constructor (
     private sanitizer: DomSanitizer

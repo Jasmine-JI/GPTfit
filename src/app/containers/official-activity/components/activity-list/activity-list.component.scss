@@ -1,0 +1,747 @@
+@import 'flex-center.scss';
+@import 'font.scss';
+@import 'filter.scss';
+@import 'color.scss';
+@import 'transform.scss';
+@import 'transition.scss';
+
+$calender-shadow-color: rgba(0, 0, 0, 0.3);
+$calender-border-top: 10px solid;
+$apply-date-height: 18px;
+$race-info-width: 60%;
+$race-info-width-media: 70%;
+$map-img-width: 50%;
+$map-img-width-media: 75px;
+$map-img-height-mobile: 40px;
+$list-border-bottom: 1px solid rgba(150, 150, 150, 1);
+$apply-schedule-finish-color: rgba(64, 237, 185, 1);
+$record-title-height: 20px;
+$shadow-color-light: rgba(175, 175, 175, 1);
+$shadow-color-deep: rgba(150, 150, 150, 1);
+$theme-img-height: 130px;
+$block-icon-size: 40px;
+
+@mixin apply-date($background-color) {
+  background-color: $background-color;
+  color: white;
+  padding: 0 10px;
+  margin: 2px 0;
+  width: fit-content;
+  font-size: 12px;
+  height: $apply-date-height;
+  border-radius: $apply-date-height;
+}
+
+@mixin map-detail($font-size: 18px) {
+  white-space: nowrap;
+  font-size: $font-size;
+
+  &:before {
+    content: '|';
+    margin: 0 3px;
+  }
+
+}
+
+@mixin race-description($max-height: 50px) {
+  max-height: $max-height;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0;
+}
+
+.activity__list__section {
+  list-style: none;
+  padding: 0;
+}
+
+.activity__list {
+  margin: 10px 0;
+
+  >a {
+    display: flex;
+    flex-direction: row;
+    color: unset;
+    text-decoration: unset;
+  }
+
+  &:hover {
+    background-color: rgba(200, 200, 200, 0.1);
+  }
+  
+}
+
+.theme__img {
+  @include center();
+  position: relative;
+  max-height: $theme-img-height;
+  overflow: hidden;
+  margin-right: 10px;
+  width: 20%;
+
+  >:first-of-type {
+    position: relative;
+
+    >img {
+      max-width: 220px;
+      position: absolute;
+    }
+
+  }
+  
+}
+
+.theme__no__img {
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.2);
+  min-height: $theme-img-height;
+  
+  >i {
+    font-size: 100px;
+    color: rgba(0, 0, 0, 0.1);
+  }
+
+}
+
+.apply__open__yet {
+  @include apply-date(rgba(0, 104, 183, 1));
+}
+
+.apply__opening {
+  @include apply-date(rgba(11, 200, 143, 1));
+}
+
+.apply__close {
+  @include apply-date(rgba(227, 55, 0, 1));
+}
+
+.race__list {
+  width: 75%;
+}
+
+.race__info {
+  width: $race-info-width;
+  padding-right: 20px;
+}
+
+.race__info__header {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.race__title {
+  font-weight: bold;
+}
+
+.race__date {
+  margin: 0 5px;
+  align-items: center;
+}
+
+.race__description {
+  @include race-description();
+  margin-top: 10px;
+}
+
+.calender {
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 7px;
+  box-shadow: 1px 2px 5px $calender-shadow-color, -1px 2px 5px $calender-shadow-color;
+}
+
+.calender__month, .calender__day {
+  line-height: 1;
+}
+
+.calender__month {
+  @include bold-font(12px);
+  white-space: nowrap;
+}
+
+.calender__day {
+  @include bold-font(20px);
+}
+
+.calender__start {
+  border-top: $calender-border-top rgba(64, 237, 186, 1);
+}
+
+.calender__end {
+  border-top: $calender-border-top rgba(227, 55, 0, 1);
+}
+
+.calender__race__end {
+  color: rgba(136, 136, 136, 1);
+}
+
+.race__date__area {
+  padding: 5px;
+  background-color: rgba(244, 244, 244, 1);
+  border-radius: 10px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+
+  >h6 {
+    text-align: center;
+    font-weight: bold;
+    color: rgba(100, 100, 100, 1);
+  }
+
+  >div {
+    align-items: center;
+  }
+
+}
+
+.calender__link {
+  margin: 0px 2px;
+  height: 35px;
+  width: 20px;
+  background: linear-gradient(to right, rgba(129, 224, 191, 1), rgba(231, 153, 148, 1));
+}
+
+.map__info {
+  width: calc(100% - #{$race-info-width});
+  align-items: center;
+  justify-content: space-between;
+  @include bold-font(20px);
+}
+
+.map__detail {
+  @include map-detail();
+}
+
+.map__description {
+  width: calc(100% - #{$map-img-width});
+  text-align: center;
+
+  >span {
+    max-width: 160px;
+    white-space: pre-wrap;
+  }
+  
+}
+
+.map__img {
+  @include center();
+  width: $map-img-width;
+  max-width: 175px;
+  border-radius: 50px;
+  height: fit-content;
+  overflow: hidden;
+
+  >img {
+    height: 120px;
+  }
+
+}
+
+.rece__end__mask {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  color: rgba(170, 0, 0, 0.9);
+  background-color: rgba(255, 255, 255, 0.5);
+  @include bold-font(24px);
+}
+
+.apply__schedule {
+  @include center();
+  @include bold-font(14px);
+  min-width: 100px;
+  padding: 7px 5px;
+  border-radius: 5px;
+  margin: 0 15px;
+}
+
+.apply__schedule__finish {
+  background-color: $apply-schedule-finish-color;
+}
+
+.apply__schedule__undone {
+  background-color: rgba(196, 196, 196, 1);
+}
+
+.apply__schedule__warn {
+  background-color: rgba(218, 65, 65, 1);
+  color: white;
+}
+
+.history__detail {
+  justify-content: space-around;
+  align-items: center;
+  height: 120px;
+  width: calc(100% - #{$race-info-width});
+}
+
+.history__record {
+  align-items: center;
+  margin: 0 5px;
+
+  >h6 {
+    @include center();
+    height: $record-title-height;
+    min-width: 120px;
+    padding: 2px 10px;
+    color: rgba(117, 117, 117, 1);
+    background-color: rgba(224, 224, 224, 1);
+    border-radius: $record-title-height;
+    margin-bottom: 0;
+  }
+
+  >span {
+    @include bold-font(22px);
+    text-align: center;
+  }
+
+}
+
+.divider__line {
+  border-bottom: $list-border-bottom;
+}
+
+.control__section {
+  justify-content: space-between;
+}
+
+.filter__block {
+  margin: 0 10px;
+}
+
+.list__filter__label {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(100, 100, 100, 1);
+}
+
+.drop__area {
+  position: relative;
+}
+
+.filter__button {
+  position: relative;
+  background: $official-theme-color;
+  color: white;
+  border-radius: 10px;
+  padding: 5px 25px;
+  min-width: 150px;
+}
+
+.drop__icon {
+  position: absolute;
+  top: 10px;
+  right: 5px;
+  color: white;
+  height: fit-content;
+  @include transition(transform);
+}
+
+.drop__icon__rotate {
+  @include el-rotate(180deg);
+  @include transition(transform);
+}
+
+.list__status__menu {
+  $border-radius: 10px;
+  $border-width: 1px;
+  position: absolute;
+  list-style: none;
+  padding: 5px;
+  margin: 0;
+  min-width: 150px;
+  background-color: white;
+  border-radius: $border-radius;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: calc(-#{$border-width});
+    left: calc(-#{$border-width});
+    width: calc(100% + 2 * #{$border-width});
+    height: calc(100% + 2 * #{$border-width});
+    z-index: -1;
+    border-radius: $border-radius;
+    background: linear-gradient(180deg, #901417 0%, #B40C5B 45.83%, #E1490E 95.83%);
+  }
+  
+}
+
+.status__menu__content {
+  cursor: pointer;
+  
+  &:hover {
+    background-color: rgba(231, 186, 186, 1);
+  }
+
+}
+
+.drop__menu__check {
+  display: inline-block;
+  min-width: 24px;
+}
+
+.check__icon {
+  font-size: 16px;
+  @include center();
+}
+
+.manage__btn {
+  border-radius: 5px;
+  box-shadow: 1px 1px 3px $shadow-color-light, -1px -1px 3px $shadow-color-light;
+  margin: 0 5px;
+  color: rgba(100, 100, 100, 1);
+  height: fit-content;
+
+  &:hover {
+    box-shadow: 1px 1px 3px $shadow-color-deep, -1px -1px 3px $shadow-color-deep;
+  }
+
+}
+
+.date__filter {
+  align-items: center;
+}
+
+.manage__menu__btn {
+
+  &:after {
+    content: '';
+    border: solid;
+    border-width: 8px 5px 0 5px;
+    border-color: black transparent transparent transparent;
+    margin-left: 2px;
+  }
+
+}
+
+.manage__menu {
+  position: absolute;
+  list-style: none;
+  top: 30px;
+  border: 1px solid rgba(150, 150, 150, 1);
+  border-radius: 5px;
+  padding: 0;
+  margin: 0;
+  background-color: white;
+  z-index: 5;
+
+  >li {
+    padding: 5px 20px;
+  }
+
+}
+
+.edit__btn {
+  width: calc(100% - #{$race-info-width});
+  justify-content: space-around;
+
+  >button {
+    font-size: 60px;
+    color: rgba(100, 100, 100, 1);
+    padding: 0;
+  }
+  
+}
+
+.product__detail {
+  display: flex;
+  justify-content: flex-end;
+  min-height: 80px;
+  width: 95%;
+
+  >table {
+    width: 30%;
+  }
+
+}
+
+.product__title, .product__fee {
+  $detail-table-width: 140px;
+  text-align: center;
+  min-width: $detail-table-width;
+  max-width: $detail-table-width;
+}
+
+td.product__title, td.product__fee {
+  color: rgba(175, 175, 175, 1);
+  white-space: pre-wrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.schedule__icon {
+  $icon-size: 40px;
+  width: $icon-size;
+  height: $icon-size;
+  @include filter(invert(50%) brightness(80%));
+}
+
+.dialog__section {
+  margin-bottom: 10px;
+
+  h6 {
+    font-weight: bold;
+  }
+
+}
+
+.dialog__map__img {
+  max-width: 100px;
+  max-height: 68px;
+}
+
+.dialog__map__info {
+  margin-left: 10px;
+  color: rgba(85, 85, 85, 1);
+
+  >p {
+    font-weight: bold;
+  }
+
+  >div {
+
+    >span {
+      @include bold-font(14px);
+      margin: 0 2px;
+    }
+
+  }
+
+}
+
+.schedule__name {
+  border: none;
+  outline: none;
+  border-bottom: 1px solid rgba(100, 100, 100, 1);
+}
+
+.dialog__icon {
+  font-size: 28px;
+  margin: auto 5px;
+}
+
+.schedule__time__selector {
+  border: none;
+  border-bottom: 1px solid rgba(100, 100, 100, 1);
+  margin-left: 5px;
+  color: rgba(100, 100, 100, 1);
+}
+
+.pagination__area {
+  justify-content: center;
+}
+
+.pagination__button {
+  min-width: 30px;
+  margin: 0 5px;
+  padding: 5px 0;
+  border: 1px solid $official-theme-color-light;
+  border-radius: 5px;
+}
+
+.pagination__button--active {
+  pointer-events: none;
+  background-color: $official-theme-color-light;
+  color: white;
+}
+
+.pagination__button--disabled {
+  pointer-events: none;
+  color: rgba(150, 150, 150, 1);
+}
+
+.pagination__index__button {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/*********************************************************** mobile style **********************************************/
+
+.map__img__mobile {
+  @include center();
+  width: $map-img-height-mobile;
+  height: $map-img-height-mobile;
+  border-radius: 50%;
+  overflow: hidden;
+
+  >img {
+    height: $map-img-height-mobile;
+  }
+
+}
+
+.map__info__mobile {
+  @include bold-font(16px);
+  margin-left: 5px;
+
+  >span {
+    @include text-overflow(230px, ellipsis);
+  }
+  
+}
+
+.map__detail__mobile {
+  @include map-detail(16px);
+}
+
+.theme__img__mobile {
+  @include center();
+  position: relative;
+  height: 25vh;
+  overflow: hidden;
+}
+
+.mobile__image {
+  width: 100%;
+}
+
+.pc__img, .mobile__image {
+  z-index: -3;
+}
+
+.placeholder__image {
+  position: absolute;
+  z-index: -4;
+  font-size: 80px;
+  opacity: 0.3;
+}
+
+.race__info__mobile {
+  align-items: center;
+  padding: 10px 0;
+}
+
+.race__description__mobile {
+  @include race-description(55px);
+  @include bold-font(12px);
+  margin-left: 5px;
+}
+
+.block__icon {
+  height: $block-icon-size;
+  width: $block-icon-size;
+  font-size: $block-icon-size;
+}
+
+
+/*************************************************************** media **********************************************/
+
+@media (max-width: 1150px) {
+
+  .race__info {
+    width: $race-info-width-media;
+    padding-right: 20px;
+  }
+
+  .map__info {
+    width: calc(100% - #{$race-info-width-media});
+  }
+
+  .map__description {
+
+    span {
+      font-size: 14px;
+    }
+
+  }
+
+  .map__img {
+    width: $map-img-width-media;
+    height: $map-img-width-media;
+    border-radius: 50%;
+
+    >img {
+      height: $map-img-width-media;
+    }
+
+  }
+
+  .history__detail {
+    justify-content: space-between;
+    height: 50px;
+    width: 100%;
+    border-bottom: $list-border-bottom;
+    padding: 5px 0;
+  }
+
+  .history__record {
+    flex-direction: row;
+
+    >span {
+      margin: 0 10px;
+      min-width: 90px;
+    }
+
+  }
+
+  .product__detail {
+    justify-content: flex-start;
+  }
+
+}
+
+@media (max-width: 950px) {
+
+  .race__info {
+    width: $race-info-width-media;
+    padding-right: 20px;
+  }
+
+  .map__info {
+    flex-direction: column-reverse;
+  }
+
+  .map__description {
+    width: 100%;
+  }
+
+}
+
+@media (max-width: 767px) {
+
+  .history__detail {
+    height: 110px;
+  }
+
+  .history__record {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .edit__btn {
+    width: 100%;
+    border-bottom: $list-border-bottom;
+  }
+
+  .control__section {
+    flex-direction: column-reverse;
+  }
+
+  .date__filter {
+    font-size: 14px;
+  }
+
+  .product__detail {
+    justify-content: center;
+    width: 98%;
+
+    >table {
+      width: 90%;
+    }
+
+  }
+
+}
+
+@media (max-width: 480px) {
+
+  .filter__area {
+    flex-direction: column;
+  }
+
+  .filter__block {
+    margin: 5px 0;
+  }
+
+}

@@ -1,0 +1,100 @@
+<app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
+<div class="page__standby" [class.slide__in]="uiFlag.progress === 100">
+  <section *ngTemplateOutlet="introductionSection; context: {
+    'title': 'universal_vocabulary_cloudrunIntroBestTrainer' | translate,
+    'description': 'universal_vocabulary_cloudrunIntroBestTrainerContent' | translate,
+    'imgPath': '/assets/cloud_run/cloudrun_intro_1.jpg',
+    'index': 1
+  }"></section>
+  <section *ngTemplateOutlet="introductionSection; context: {
+    'title': 'universal_vocabulary_cloudrunIntroBegin' | translate,
+    'description': 'universal_vocabulary_cloudrunIntroBeginContent' | translate,
+    'imgPath': '/assets/cloud_run/cloudrun_intro_2.jpg',
+    'index': 2
+  }"></section>
+  <section *ngTemplateOutlet="introductionSection; context: {
+    'title': 'universal_vocabulary_cloudrunIntroHowReal' | translate,
+    'description': 'universal_vocabulary_cloudrunIntroHowRealContent' | translate,
+    'imgPath': '/assets/cloud_run/cloudrun_intro_3.jpg',
+    'index': 3
+  }"></section>
+  <section *ngTemplateOutlet="introductionSection; context: {
+    'title': 'universal_vocabulary_cloudrunIntroSocial' | translate,
+    'description': 'universal_vocabulary_cloudrunIntroSocialContent' | translate,
+    'imgPath': '/assets/cloud_run/cloudrun_intro_4.jpg',
+    'index': 4
+  }"></section>
+  <section *ngTemplateOutlet="introductionSection; context: {
+    'title': 'universal_vocabulary_cloudrunIntroEarn' | translate,
+    'description': 'universal_vocabulary_cloudrunIntroEarnContent' | translate,
+    'imgPath': '/assets/cloud_run/cloudrun_intro_5.jpg',
+    'index': 5
+  }"></section>
+  <section class="download__section">
+    <div class="flexCol cloudrun__introduction">
+      <img 
+        src="/assets/cloud_run/phone_mock.png"
+        alt="Download Cloudrun"
+        class="mock__img"
+        (load)="imageLoaded()"
+      >
+      <div class="flexCol download__text">
+        <h3 class="download__title">
+          {{ 'universal_vocabulary_cloudrunIntroGet' | translate }}
+        </h3>
+        <p [innerHTML]="'universal_vocabulary_cloudrunIntroGetContent' | translate"></p>
+      </div>
+    </div>
+    <div class="flexCol download__link__area">
+      <a
+        href='https://play.google.com/store/apps/details?id=pack.ala.ala_cloudrun'
+        class="android__link"
+      >
+        <img
+          alt='Google Play Download'
+          src='/assets/google-play-download.svg'
+          class="download__img"
+        />
+      </a>
+      <a
+        href='https://apps.apple.com/us/app/cloud-run/id1316368345'
+        class="ios__link"
+      >
+        <img
+          alt='Apple Store Download'
+          src='/assets/app_store_download.svg'
+          class="download__img"
+        />
+      </a>
+    </div>
+  </section>
+</div>
+
+<ng-template
+  #introductionSection
+  let-title="title"
+  let-description="description"
+  let-imgPath="imgPath"
+  let-index="index"
+>
+  <section 
+    class="introduction"
+    [ngClass]="{
+      background__first: [1, 3].includes(index),
+      background__second: index === 2,
+      background__third: index === 4,
+      background__fourth: index === 5
+    }"
+  >
+    <div class="flexCol introduction__text">
+      <h3 class="introduction__title">{{ title }}</h3>
+      <p class="introduction__description" [innerHTML]="description"></p>
+    </div>
+    <img
+      [src]="imgPath"
+      [alt]="title"
+      class="introduction__image"
+      (load)="imageLoaded()"
+    >
+  </section>
+</ng-template>

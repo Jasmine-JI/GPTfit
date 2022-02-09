@@ -425,31 +425,22 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100128
    */
   createChart(points: Array<any>) {
-    const xOrigin = this.chartOpt.xAxis.origin,
-          yOrigin = this.chartOpt.yAxis.origin;
+    const { 
+      xAxis: { origin: xOrigin, type: xAxisType }, 
+      yAxis: { origin: yOrigin, type: yAxisType }
+    } = this.chartOpt;
     points.forEach(_points => {
-      const xPointArr = _points[this.handleDataKey(this.chartOpt.xAxis.type, this.sportType)],
-            yPointArr = _points[this.handleDataKey(this.chartOpt.yAxis.type, this.sportType)];
+      const xPointArr = _points[this.handleDataKey(xAxisType, this.sportType)];
+      const yPointArr = _points[this.handleDataKey(yAxisType, this.sportType)];
       this.chart.chartPoint.push(
         xPointArr.map((_xPoint, idx) => {
           const _yPoint = yPointArr[idx];
-
+          const { x: { max: xMax, min: xMin }, y: { max: yMax, min: yMin } } = this.chart;
           // 取得象限圖表邊界
-          if (this.chart.x.min === null || this.chart.x.min > _xPoint) {
-            this.chart.x.min = _xPoint;
-          }
-
-          if (this.chart.x.max === null || this.chart.x.max < _xPoint) {
-            this.chart.x.max = _xPoint;
-          }
-
-          if (this.chart.y.min === null || this.chart.y.min > _yPoint) {
-            this.chart.y.min = _yPoint;
-          }
-
-          if (this.chart.y.max === null || this.chart.y.max < _yPoint) {
-            this.chart.y.max = _yPoint;
-          }
+          this.chart.x.min = xMin === null || xMin > _xPoint ? _xPoint : xMin;
+          this.chart.x.max = xMax === null || xMax < _xPoint ? _xPoint : xMax;
+          this.chart.y.min = yMin === null || yMin > _yPoint ? _yPoint : yMin;
+          this.chart.y.max = yMax === null || yMax < _yPoint ? _yPoint : yMax;
 
           // 取得各象限所佔比例
           this.chart.pointNum.total++;
@@ -479,56 +470,54 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
 
     });
 
+    const { x: { max: xMax, min: xMin }, y: { max: yMax, min: yMin } } = this.chart;
     // 如數據皆在源點某側，則邊界取源點*1.2或源點*0.8
-    if (this.chart.x.min > xOrigin) {
-      this.chart.x.min = xOrigin;
-    }
-
-    if (this.chart.x.max < xOrigin) {
-      this.chart.x.max = xOrigin;
-    }
-
-    if (this.chart.y.min > yOrigin) {
-      this.chart.y.min = yOrigin;
-    }
-
-    if (this.chart.y.max < yOrigin) {
-      this.chart.y.max = yOrigin;
-    }
+    this.chart.x.min = xMin > xOrigin ? xOrigin : xMin;
+    this.chart.x.max = xMax < xOrigin ? xOrigin : xMax;
+    this.chart.y.min = yMin > yOrigin ? yOrigin : yMin;
+    this.chart.y.max = yMax < yOrigin ? yOrigin : yMax;
 
     // 補上padding
-    const xPadding = (this.chart.x.max - this.chart.x.min) * 0.2,
-          yPadding = (this.chart.y.max - this.chart.y.min) * 0.2;
+    const xPadding = (this.chart.x.max - this.chart.x.min) * 0.2;
+    const yPadding = (this.chart.y.max - this.chart.y.min) * 0.2;
     this.chart.x.min = this.chart.x.min - xPadding;
     this.chart.x.max = this.chart.x.max + xPadding;
     this.chart.y.min = this.chart.y.min - yPadding;
     this.chart.y.max = this.chart.y.max + yPadding;
 
+    const {
+      x: { max: xNewMax, min: xNewMin },
+      y: { max: yNweMax, min: yNewMin },
+      chartSvgWidth,
+      chartSvgHeight
+    } = this.chart;
     // 取得圖表軸線位置
-    const xAxisYPosition = +(((this.chart.y.max - yOrigin) / (this.chart.y.max - this.chart.y.min)) * this.chart.chartSvgHeight).toFixed(0),
-          yAxisXPosition = +(((xOrigin - this.chart.x.min) / (this.chart.x.max - this.chart.x.min)) * this.chart.chartSvgWidth).toFixed(0);
+    const yRange = yNweMax - yNewMin;
+    const xRange = xNewMax - xNewMin;
+    const xAxisYPosition = yRange ? +(((yNweMax - yOrigin) / yRange) * chartSvgHeight).toFixed(0) : 0,
+          yAxisXPosition = xRange ? +(((xOrigin - xNewMin) / xRange) * chartSvgWidth).toFixed(0) : 0;
     this.chart.line = {
       xAxis: {
-        x: [0, this.chart.chartSvgWidth],
+        x: [0, chartSvgWidth],
         y: xAxisYPosition
       },
       yAxis: {
         x: yAxisXPosition,
-        y: [0, this.chart.chartSvgHeight]
+        y: [0, chartSvgHeight]
       }
     }
 
     // 取得x、y軸數值標示位置
-    const xLabelYPosition = +(((this.chart.y.max - (this.chart.y.min - yPadding)) / (this.chart.y.max - this.chart.y.min)) * this.chart.chartSvgHeight).toFixed(0),
-          yLabelXPosition = +((((this.chart.x.min - xPadding) - this.chart.x.min) / (this.chart.x.max - this.chart.x.min)) * this.chart.chartSvgWidth).toFixed(0);
+    const xLabelYPosition = yRange ? +(((yNweMax - (yNewMin - yPadding)) / yRange) * chartSvgHeight).toFixed(0) : 0,
+          yLabelXPosition = xRange ? +((((xNewMin - xPadding) - xNewMin) / xRange) * chartSvgWidth).toFixed(0) : 0;
     this.chart.label = {
       xAxis: {
-        x: [0, this.chart.chartSvgWidth / 2, this.chart.chartSvgWidth],
+        x: [0, chartSvgWidth / 2, chartSvgWidth],
         y: xLabelYPosition
       },
       yAxis: {
         x: yLabelXPosition,
-        y: [this.chart.chartSvgHeight, this.chart.chartSvgHeight / 2, 0]
+        y: [chartSvgHeight, chartSvgHeight / 2, 0]
       },
       size: 16
     }
@@ -537,8 +526,8 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
     this.chart.chartPoint.forEach(_points => {
       _points.forEach(_point => {
         this.chart.displayPoint.push({
-            x: Math.round(((_point.x - this.chart.x.min) / (this.chart.x.max - this.chart.x.min)) * this.chart.chartSvgWidth),
-            y: Math.round(((this.chart.y.max - _point.y) / (this.chart.y.max - this.chart.y.min)) * this.chart.chartSvgHeight),
+            x: xRange ? Math.round(((_point.x - xNewMin) / xRange) * chartSvgWidth) : 0,
+            y: yRange ? Math.round(((yNweMax - _point.y) / yRange) * chartSvgHeight) : 0,
             color: _point.color
         });
 

@@ -3,8 +3,9 @@
   */
 
 
-@import "font.scss";
-@import "transition.scss";
+@import 'font.scss';
+@import 'transition.scss';
+@import 'overflow-scroll';
 
 $warn-color: rgba(255, 75, 75, 1);
 $group-btn-blue: rgba(0, 183, 238, 1);
@@ -394,8 +395,8 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   padding: 5px;
   border: 1px solid #bcbcbc;
   height: 150px;
-  overflow-y: scroll;
   background-color: var(--scale-255-90);
+  @include overflow-y-scroll();
 
   div {
     white-space: pre-wrap;

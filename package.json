@@ -46,6 +46,8 @@
     "@angular/router": "12.1.1",
     "@angular/service-worker": "12.1.1",
     "@apollo/client": "^3.0.0",
+    "@ckeditor/ckeditor5-angular": "^2.0.2",
+    "@ckeditor/ckeditor5-build-decoupled-document": "^31.0.0",
     "@ngx-progressbar/core": "5.3.1",
     "@ngx-translate/core": "^13.0.0",
     "@ngx-translate/http-loader": "^6.0.0",

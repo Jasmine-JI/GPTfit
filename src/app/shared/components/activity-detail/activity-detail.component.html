@@ -904,376 +904,381 @@
       </section>
     </sectoin>
   </secton>
-  <app-map-chart-compare
-    [isNormalCoordinate]="uiFlag.isNormalCoordinate"
-    [userPoint]="[activityPointLayer]"
-    [sportType]="+activityInfoLayer.type"
-    [sysAccessRight]="userProfile.systemAccessRight[0]"
-    [unit]="userProfile.unit"
-    [cloudrunMapId]="cloudrunMapId"
-    (chartSetting)="getChartSetting($event)"
-    *ngIf="(uiFlag.pcView || uiFlag.currentTag === 'summary') && [1, 2, 4, 6, 7].includes(+activityInfoLayer.type)"
-  ></app-map-chart-compare>
-  <ng-container *ngIf="uiFlag.pcView || uiFlag.currentTag === 'chart'">
-    <section class="card__section" *ngIf="+activityInfoLayer.type === 3">
-      <div class="flexRow cardTitle report-haveOptBtn">
-        <span class="cardSubtitle">
-          {{ 'universal_activityData_weightTrainingEffectiveness' | translate }}
-        </span>
-        <button>
-          <i 
-            class="icon-svg_web-icon_p1_001-setting settingIcon"
-            (click)="handleShowWeightTrainOptMenu($event)"
-          ></i>
-        </button>
-        <div
-          class="flexCol report-weightTrainSetting"
-          (click)="$event.stopPropagation()"
-          *ngIf="uiFlag.showWeightTrainingOpt"
-        >
-          <span>{{ 'universal_activityData_weightTrainingExtent' | translate }}</span>
-          <div class="flexCol" style="position: relative;">
-            <span
-              class="report-dropMenu report-weightTrainMenu"
-              [class.report-dropMenu--active]="uiFlag.showLevelSelector"
-              (click)="handleShowLevelSelector($event)"
-            >
-              <ng-container *ngIf="uiFlag.weightTrainLevel === 'novice'">
-                {{ 'universal_activityData_beginner' | translate }}
-              </ng-container>
-              <ng-container *ngIf="uiFlag.weightTrainLevel === 'metacarpus'">
-                {{ 'universal_activityData_advanced' | translate }}
-              </ng-container>
-              <ng-container *ngIf="uiFlag.weightTrainLevel === 'asept'">
-                {{ 'universal_activityData_highRanker' | translate }}
-              </ng-container>
-            </span>
-            <div class="report-dropMenuList" *ngIf="uiFlag.showLevelSelector">
-              <span class="levelOpt" (click)="changeLevel('novice')">
-                {{ 'universal_activityData_beginner' | translate }}
-              </span>
-              <span class="levelOpt" (click)="changeLevel('metacarpus')">
-                {{ 'universal_activityData_advanced' | translate }}
-              </span>
-              <span class="levelOpt" (click)="changeLevel('asept')">
-                {{ 'universal_activityData_highRanker' | translate }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <app-muscle-map-card
-        [mainPartData]="activityInfoLayer.weightTrainingInfo"
-        [vicePartList]="activityInfoLayer.useViceMuscle"
-        [level]="uiFlag.weightTrainLevel"
-        [userWeight]="userProfile.bodyWeight"
-        (levelSetting)="getLevelSetting($event)"
-      ></app-muscle-map-card>
-    </section>
-    <section class="card__section">
-      <div>
-        <div class="cardTitle">
-          <span class="cardSubtitle">{{ 'universal_activityData_heartRateAnalysis' | translate }}</span>
-        </div>
-        <div class="zone__section">
-          <div class="flexCol zone__chart">
-            <span class="instructionsText">{{ 'universal_activityData_hrStatisticsDuringThePeriod' | translate: {'number': 1} }}</span>
-            <app-hrzone-chart
-              [data]="chartData.hr"
-              [type]="mixHrZone"
-            ></app-hrzone-chart>
-          </div>
-          <app-hrzone-info
-            class="info__chart"
-            [hrZoneRange]="chartData.hrInfo"
-          ></app-hrzone-info>
-        </div>
-      </div>
-    </section>
-    <section class="card__section" *ngIf="(+activityInfoLayer.type === 2 && !uiFlag.noFtpData) || uiFlag.isDebug">
-      <div>
-        <div
-          class="cardTitle"
-        >
-          <span class="cardSubtitle">{{ 'universal_activityData_ftpZone' | translate }}</span>
-        </div>
-        <div class="zone__section">
-          <div class="flexCol zone__chart">
-            <app-threshold-chart
-              [data]="chartData.ftp"
-              [type]="'mixFtpZone'"
-              (checkData)="this.uiFlag.noFtpData = $event;"
-            ></app-threshold-chart>
-          </div>
-          <app-threshold-info
-            class="info__chart"
-            [cycleFtp]="userProfile.cycleFtp"
-          ></app-threshold-info>
-        </div>
-      </div>
-    </section>
-    <app-quadrant-chart
+  <ng-container *ngIf="activityPointLayer">
+    <app-map-chart-compare
+      [isNormalCoordinate]="uiFlag.isNormalCoordinate"
       [userPoint]="[activityPointLayer]"
       [sportType]="+activityInfoLayer.type"
       [sysAccessRight]="userProfile.systemAccessRight[0]"
       [unit]="userProfile.unit"
-      [hrRange]="chartData.hrInfo.z0 !== 'Z0' ? chartData.hrInfo : chartData.defaultHrInfo"
-      *ngIf="[1, 2, 4, 6].includes(+activityInfoLayer.type)"
-    ></app-quadrant-chart>
-    <div class="pageBreak" *ngIf="uiFlag.isPreviewMode && activityInfoLayer.type == 3"></div>
-    <section class="card__section">
-      <div class="flexRow cardTitle">
-        <span class="cardSubtitle">{{ 'universal_activityData_trend' | translate }}</span>
-        <button>
-          <i
-            class="icon-svg_web-icon_p1_001-setting settingIcon"
-            (click)="handleShowOptMenu($event)"
-            *ngIf="activityPointLayer.pointSecond.length > 1"
-          ></i>
-        </button>
-        <div id="map__opt__menu" (click)="$event.stopPropagation();" *ngIf="uiFlag.showChartOpt">
-          <div class="flexCol" *ngIf="trendChartOpt.haveDistanceChoice">
-            <span class="bold__font">{{ 'universal_activityData_inAccordanceWith' | translate }}</span>
-            <div class="flexRow radio__section">
-              <span class="flexRow radioSelector" (click)="changeXAxisType('pointSecond')">
-                <span class="radioBtn" [class.radioBtn--active]="trendChartOpt.xAxisType === 'pointSecond'"></span>
-                <span>{{ 'universal_activityData_time' | translate }}</span>
-              </span>
-              <span class="flexRow radioSelector" (click)="changeXAxisType('distanceMeters')">
-                <span class="radioBtn" [class.radioBtn--active]="trendChartOpt.xAxisType === 'distanceMeters'"></span>
-                <span>{{ 'universal_activityData_distance' | translate }}</span>
-              </span>
-            </div>
-          </div>
-          <div class="flexCol">
-            <span class="bold__font">{{ 'universal_vocabulary_type' | translate }}</span>
-            <div class="flexRow radio__section">
-              <span class="flexRow radioSelector" (click)="changeSegmentMode()">
-                <span class="radioBtn" [class.radioBtn--active]="!trendChartOpt.segmentMode"></span>
-                <span>{{ 'universal_activityData_trendOfChange' | translate }}</span>
-              </span>
-              <span class="flexRow radioSelector" (click)="changeSegmentMode()">
-                <span class="radioBtn" [class.radioBtn--active]="trendChartOpt.segmentMode"></span>
-                <span>{{ 'universal_activityData_segmentationResolution' | translate }}</span>
-              </span>
-            </div>
-          </div>
-          <div class="flexCol" *ngIf="trendChartOpt.segmentMode">
-            <span class="bold__font">{{ 'universal_activityData_segment' | translate }}</span>
+      [cloudrunMapId]="cloudrunMapId"
+      (chartSetting)="getChartSetting($event)"
+      *ngIf="(uiFlag.pcView || uiFlag.currentTag === 'summary') && [1, 2, 4, 6, 7].includes(+activityInfoLayer.type)"
+    ></app-map-chart-compare>
+    <ng-container *ngIf="uiFlag.pcView || uiFlag.currentTag === 'chart'">
+      <section class="card__section" *ngIf="+activityInfoLayer.type === 3">
+        <div class="flexRow cardTitle report-haveOptBtn">
+          <span class="cardSubtitle">
+            {{ 'universal_activityData_weightTrainingEffectiveness' | translate }}
+          </span>
+          <button>
+            <i 
+              class="icon-svg_web-icon_p1_001-setting settingIcon"
+              (click)="handleShowWeightTrainOptMenu($event)"
+            ></i>
+          </button>
+          <div
+            class="flexCol report-weightTrainSetting"
+            (click)="$event.stopPropagation()"
+            *ngIf="uiFlag.showWeightTrainingOpt"
+          >
+            <span>{{ 'universal_activityData_weightTrainingExtent' | translate }}</span>
             <div class="flexCol" style="position: relative;">
-              <div
-                class="report-dropMenu"
-                [class.report-dropMenu--active]="uiFlag.showSegmentRangeList"
-                (click)="handleShowDropList()"
+              <span
+                class="report-dropMenu report-weightTrainMenu"
+                [class.report-dropMenu--active]="uiFlag.showLevelSelector"
+                (click)="handleShowLevelSelector($event)"
               >
-                <ng-container *ngIf="trendChartOpt.xAxisType === 'pointSecond'">
-                  {{ 'universal_activityData_everyMinutes' | translate: {number: (trendChartOpt.segmentRange / 60)} }}
+                <ng-container *ngIf="uiFlag.weightTrainLevel === 'novice'">
+                  {{ 'universal_activityData_beginner' | translate }}
                 </ng-container>
-                <ng-container *ngIf="trendChartOpt.xAxisType === 'distanceMeters'">
-                  <ng-container *ngIf="trendChartOpt.segmentRange < 1000">
-                    {{ 'universal_activityData_everyUnit' | translate: {number: trendChartOpt.segmentRange, unit: 'm'} }}
-                  </ng-container>
-                  <ng-container *ngIf="trendChartOpt.segmentRange >= 1000">
-                    {{ 'universal_activityData_everyUnit' | translate: {number: trendChartOpt.segmentRange / 1000, unit: 'km'} }}
-                  </ng-container>
+                <ng-container *ngIf="uiFlag.weightTrainLevel === 'metacarpus'">
+                  {{ 'universal_activityData_advanced' | translate }}
                 </ng-container>
-              </div>
-              <div class="flexCol report-dropMenuList" *ngIf="uiFlag.showSegmentRangeList">
-                <ng-container *ngIf="trendChartOpt.xAxisType === 'pointSecond'">
-                  <span (click)="changeSegmentRange(60)">
-                    {{ 'universal_activityData_everyMinutes' | translate: {number: 1} }}
-                  </span>
-                  <span (click)="changeSegmentRange(300)">
-                    {{ 'universal_activityData_everyMinutes' | translate: {number: 5} }}
-                  </span>
-                  <span (click)="changeSegmentRange(600)">
-                    {{ 'universal_activityData_everyMinutes' | translate: {number: 10} }}
-                  </span>
-                  <span (click)="changeSegmentRange(1800)">
-                    {{ 'universal_activityData_everyMinutes' | translate: {number: 30} }}
-                  </span>
+                <ng-container *ngIf="uiFlag.weightTrainLevel === 'asept'">
+                  {{ 'universal_activityData_highRanker' | translate }}
                 </ng-container>
-                <ng-container *ngIf="trendChartOpt.xAxisType === 'distanceMeters'">
-                  <span (click)="changeSegmentRange(100)">
-                    {{ 'universal_activityData_everyUnit' | translate: {number: 100, unit: 'm'} }}
-                  </span>
-                  <span (click)="changeSegmentRange(500)">
-                    {{ 'universal_activityData_everyUnit' | translate: {number: 500, unit: 'm'} }}
-                  </span>
-                  <span (click)="changeSegmentRange(1000)">
-                    {{ 'universal_activityData_everyUnit' | translate: {number: 1, unit: 'km'} }}
-                  </span>
-                  <span (click)="changeSegmentRange(10000)">
-                    {{ 'universal_activityData_everyUnit' | translate: {number: 10, unit: 'km'} }}
-                  </span>
-                </ng-container>
+              </span>
+              <div class="report-dropMenuList" *ngIf="uiFlag.showLevelSelector">
+                <span class="levelOpt" (click)="changeLevel('novice')">
+                  {{ 'universal_activityData_beginner' | translate }}
+                </span>
+                <span class="levelOpt" (click)="changeLevel('metacarpus')">
+                  {{ 'universal_activityData_advanced' | translate }}
+                </span>
+                <span class="levelOpt" (click)="changeLevel('asept')">
+                  {{ 'universal_activityData_highRanker' | translate }}
+                </span>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <app-trend-info-chart
-        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.hr : trendChartOpt.yAxisDataRef.heartRateBpm"
-        [xAxisData]="trendChartOpt.xAxisDataRef"
-        [xAxisType]="trendChartOpt.xAxisType"
-        [sportType]="+activityInfoLayer.type"
-        [unit]="userProfile.unit"
-        [chartType]="'hr'"
-        [hrRange]="chartData.hrInfo.z0 === 'Z0' ? chartData.defaultHrInfo : chartData.hrInfo"
-        [showInfo]="true"
-        [page]="'detail'"
+        <app-muscle-map-card
+          [mainPartData]="activityInfoLayer.weightTrainingInfo"
+          [vicePartList]="activityInfoLayer.useViceMuscle"
+          [level]="uiFlag.weightTrainLevel"
+          [userWeight]="userProfile.bodyWeight"
+          (levelSetting)="getLevelSetting($event)"
+        ></app-muscle-map-card>
+      </section>
+      <section class="card__section">
+        <div>
+          <div class="cardTitle">
+            <span class="cardSubtitle">{{ 'universal_activityData_heartRateAnalysis' | translate }}</span>
+          </div>
+          <div class="zone__section">
+            <div class="flexCol zone__chart">
+              <span class="instructionsText">{{ 'universal_activityData_hrStatisticsDuringThePeriod' | translate: {'number': 1} }}</span>
+              <app-hrzone-chart
+                [data]="chartData.hr"
+                [type]="mixHrZone"
+              ></app-hrzone-chart>
+            </div>
+            <app-hrzone-info
+              class="info__chart"
+              [hrZoneRange]="chartData.hrInfo"
+            ></app-hrzone-info>
+          </div>
+        </div>
+      </section>
+      <section
+        class="card__section"
+        *ngIf="(+activityInfoLayer.type === 2 && !uiFlag.noFtpData) || uiFlag.isDebug"
       >
-      </app-trend-info-chart>
-      <app-trend-info-chart
-        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.speed : trendChartOpt.yAxisDataRef.speed"
-        [xAxisData]="trendChartOpt.xAxisDataRef"
-        [xAxisType]="trendChartOpt.xAxisType"
+        <div>
+          <div
+            class="cardTitle"
+          >
+            <span class="cardSubtitle">{{ 'universal_activityData_ftpZone' | translate }}</span>
+          </div>
+          <div class="zone__section">
+            <div class="flexCol zone__chart">
+              <app-threshold-chart
+                [data]="chartData.ftp"
+                [type]="'mixFtpZone'"
+                (checkData)="this.uiFlag.noFtpData = $event;"
+              ></app-threshold-chart>
+            </div>
+            <app-threshold-info
+              class="info__chart"
+              [cycleFtp]="userProfile.cycleFtp"
+            ></app-threshold-info>
+          </div>
+        </div>
+      </section>
+      <app-quadrant-chart
+        [userPoint]="[activityPointLayer]"
         [sportType]="+activityInfoLayer.type"
+        [sysAccessRight]="userProfile.systemAccessRight[0]"
         [unit]="userProfile.unit"
-        [chartType]="'pace'"
-        [showInfo]="true"
-        [page]="'detail'"
-        *ngIf="[1, 4, 6].includes(+activityInfoLayer.type) && activityPointLayer.speed"
-      >
-      </app-trend-info-chart>
-      <app-trend-info-chart
-        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.altitude : trendChartOpt.yAxisDataRef.altitudeMeters"
-        [xAxisData]="trendChartOpt.xAxisDataRef"
-        [xAxisType]="trendChartOpt.xAxisType"
-        [sportType]="+activityInfoLayer.type"
-        [unit]="userProfile.unit"
-        [chartType]="'altitude'"
-        [showInfo]="true"
-        [page]="'detail'"
-        *ngIf="[1, 2, 6, 7].includes(+activityInfoLayer.type) && activityPointLayer.altitudeMeters"
-      >
-      </app-trend-info-chart>
-      <app-trend-info-chart
-        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.speed : trendChartOpt.yAxisDataRef.speed"
-        [xAxisData]="trendChartOpt.xAxisDataRef"
-        [xAxisType]="trendChartOpt.xAxisType"
-        [sportType]="+activityInfoLayer.type"
-        [unit]="userProfile.unit"
-        [chartType]="'speed'"
-        [showInfo]="true"
-        [page]="'detail'"
-        *ngIf="[2, 7].includes(+activityInfoLayer.type)"
-      >
-      </app-trend-info-chart>
-      <app-trend-info-chart
-        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.runCadence"
-        [xAxisData]="trendChartOpt.xAxisDataRef"
-        [xAxisType]="trendChartOpt.xAxisType"
-        [sportType]="+activityInfoLayer.type"
-        [unit]="userProfile.unit"
-        [chartType]="'cadence'"
-        [showInfo]="true"
-        [page]="'detail'"
-        *ngIf="+activityInfoLayer.type === 1"
-      >
-      </app-trend-info-chart>
-      <app-trend-info-chart
-        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.cycleCadence"
-        [xAxisData]="trendChartOpt.xAxisDataRef"
-        [xAxisType]="trendChartOpt.xAxisType"
-        [sportType]="+activityInfoLayer.type"
-        [unit]="userProfile.unit"
-        [chartType]="'cadence'"
-        [showInfo]="true"
-        [page]="'detail'"
-        *ngIf="+activityInfoLayer.type === 2"
-      >
-      </app-trend-info-chart>
-      <app-trend-info-chart
-        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.moveRepetitions"
-        [xAxisData]="trendChartOpt.xAxisDataRef"
-        [xAxisType]="trendChartOpt.xAxisType"
-        [sportType]="+activityInfoLayer.type"
-        [unit]="userProfile.unit"
-        [chartType]="'cadence'"
-        [showInfo]="true"
-        [page]="'detail'"
-        *ngIf="+activityInfoLayer.type === 3 && activityPointLayer.moveRepetitions"
-      >
-      </app-trend-info-chart>
-      <app-trend-info-chart
-        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.swimCadence"
-        [xAxisData]="trendChartOpt.xAxisDataRef"
-        [xAxisType]="trendChartOpt.xAxisType"
-        [sportType]="+activityInfoLayer.type"
-        [unit]="userProfile.unit"
-        [chartType]="'cadence'"
-        [showInfo]="true"
-        [page]="'detail'"
-        *ngIf="+activityInfoLayer.type === 4"
-      >
-      </app-trend-info-chart>
-      <app-trend-info-chart
-        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.rowingCadence"
-        [xAxisData]="trendChartOpt.xAxisDataRef"
-        [xAxisType]="trendChartOpt.xAxisType"
-        [sportType]="+activityInfoLayer.type"
-        [unit]="userProfile.unit"
-        [chartType]="'cadence'"
-        [showInfo]="true"
-        [page]="'detail'"
-        *ngIf="+activityInfoLayer.type === 6"
-      >
-      </app-trend-info-chart>
-      <app-trend-info-chart
-        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.power : trendChartOpt.yAxisDataRef.cycleWatt"
-        [xAxisData]="trendChartOpt.xAxisDataRef"
-        [xAxisType]="trendChartOpt.xAxisType"
-        [sportType]="+activityInfoLayer.type"
-        [unit]="userProfile.unit"
-        [chartType]="'power'"
-        [showInfo]="true"
-        [page]="'detail'"
-        *ngIf="+activityInfoLayer.type === 2"
-      >
-      </app-trend-info-chart>
-      <app-trend-info-chart
-        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.power : trendChartOpt.yAxisDataRef.rowingWatt"
-        [xAxisData]="trendChartOpt.xAxisDataRef"
-        [xAxisType]="trendChartOpt.xAxisType"
-        [sportType]="+activityInfoLayer.type"
-        [unit]="userProfile.unit"
-        [chartType]="'power'"
-        [showInfo]="true"
-        [page]="'detail'"
-        *ngIf="+activityInfoLayer.type === 6"
-      >
-      </app-trend-info-chart>
-      <app-trend-info-chart
-        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.temperature : trendChartOpt.yAxisDataRef.temp"
-        [xAxisData]="trendChartOpt.xAxisDataRef"
-        [xAxisType]="trendChartOpt.xAxisType"
-        [sportType]="+activityInfoLayer.type"
-        [unit]="userProfile.unit"
-        [chartType]="'temperature'"
-        [showInfo]="true"
-        [page]="'detail'"
-      >
-      </app-trend-info-chart>
-      <app-trend-info-chart
-        [yAxisData]="
-          trendChartOpt.segmentMode ? 
-            [trendChartOpt.yAxisDataRef.gforceX, trendChartOpt.yAxisDataRef.gforceY, trendChartOpt.yAxisDataRef.gforceZ]
-            :
-            [trendChartOpt.yAxisDataRef.gsensorXRawData, trendChartOpt.yAxisDataRef.gsensorYRawData, trendChartOpt.yAxisDataRef.gsensorZRawData]
-        "
-        [xAxisData]="trendChartOpt.xAxisDataRef"
-        [xAxisType]="trendChartOpt.xAxisType"
-        [sportType]="+activityInfoLayer.type"
-        [unit]="userProfile.unit"
-        [chartType]="'gforce'"
-        [showInfo]="true"
-        [page]="'detail'"
-        *ngIf="+activityInfoLayer.type === 7"
-      >
-      </app-trend-info-chart>
-    </section>
-    <div class="pageBreak" *ngIf="uiFlag.isPreviewMode && activityInfoLayer.type == 5"></div>
+        [hrRange]="chartData.hrInfo.z0 !== 'Z0' ? chartData.hrInfo : chartData.defaultHrInfo"
+        *ngIf="[1, 2, 4, 6].includes(+activityInfoLayer.type)"
+      ></app-quadrant-chart>
+      <div class="pageBreak" *ngIf="uiFlag.isPreviewMode && activityInfoLayer.type == 3"></div>
+      <section class="card__section">
+        <div class="flexRow cardTitle">
+          <span class="cardSubtitle">{{ 'universal_activityData_trend' | translate }}</span>
+          <button>
+            <i
+              class="icon-svg_web-icon_p1_001-setting settingIcon"
+              (click)="handleShowOptMenu($event)"
+              *ngIf="activityPointLayer.pointSecond.length > 1"
+            ></i>
+          </button>
+          <div id="map__opt__menu" (click)="$event.stopPropagation();" *ngIf="uiFlag.showChartOpt">
+            <div class="flexCol" *ngIf="trendChartOpt.haveDistanceChoice">
+              <span class="bold__font">{{ 'universal_activityData_inAccordanceWith' | translate }}</span>
+              <div class="flexRow radio__section">
+                <span class="flexRow radioSelector" (click)="changeXAxisType('pointSecond')">
+                  <span class="radioBtn" [class.radioBtn--active]="trendChartOpt.xAxisType === 'pointSecond'"></span>
+                  <span>{{ 'universal_activityData_time' | translate }}</span>
+                </span>
+                <span class="flexRow radioSelector" (click)="changeXAxisType('distanceMeters')">
+                  <span class="radioBtn" [class.radioBtn--active]="trendChartOpt.xAxisType === 'distanceMeters'"></span>
+                  <span>{{ 'universal_activityData_distance' | translate }}</span>
+                </span>
+              </div>
+            </div>
+            <div class="flexCol">
+              <span class="bold__font">{{ 'universal_vocabulary_type' | translate }}</span>
+              <div class="flexRow radio__section">
+                <span class="flexRow radioSelector" (click)="changeSegmentMode()">
+                  <span class="radioBtn" [class.radioBtn--active]="!trendChartOpt.segmentMode"></span>
+                  <span>{{ 'universal_activityData_trendOfChange' | translate }}</span>
+                </span>
+                <span class="flexRow radioSelector" (click)="changeSegmentMode()">
+                  <span class="radioBtn" [class.radioBtn--active]="trendChartOpt.segmentMode"></span>
+                  <span>{{ 'universal_activityData_segmentationResolution' | translate }}</span>
+                </span>
+              </div>
+            </div>
+            <div class="flexCol" *ngIf="trendChartOpt.segmentMode">
+              <span class="bold__font">{{ 'universal_activityData_segment' | translate }}</span>
+              <div class="flexCol" style="position: relative;">
+                <div
+                  class="report-dropMenu"
+                  [class.report-dropMenu--active]="uiFlag.showSegmentRangeList"
+                  (click)="handleShowDropList()"
+                >
+                  <ng-container *ngIf="trendChartOpt.xAxisType === 'pointSecond'">
+                    {{ 'universal_activityData_everyMinutes' | translate: {number: (trendChartOpt.segmentRange / 60)} }}
+                  </ng-container>
+                  <ng-container *ngIf="trendChartOpt.xAxisType === 'distanceMeters'">
+                    <ng-container *ngIf="trendChartOpt.segmentRange < 1000">
+                      {{ 'universal_activityData_everyUnit' | translate: {number: trendChartOpt.segmentRange, unit: 'm'} }}
+                    </ng-container>
+                    <ng-container *ngIf="trendChartOpt.segmentRange >= 1000">
+                      {{ 'universal_activityData_everyUnit' | translate: {number: trendChartOpt.segmentRange / 1000, unit: 'km'} }}
+                    </ng-container>
+                  </ng-container>
+                </div>
+                <div class="flexCol report-dropMenuList" *ngIf="uiFlag.showSegmentRangeList">
+                  <ng-container *ngIf="trendChartOpt.xAxisType === 'pointSecond'">
+                    <span (click)="changeSegmentRange(60)">
+                      {{ 'universal_activityData_everyMinutes' | translate: {number: 1} }}
+                    </span>
+                    <span (click)="changeSegmentRange(300)">
+                      {{ 'universal_activityData_everyMinutes' | translate: {number: 5} }}
+                    </span>
+                    <span (click)="changeSegmentRange(600)">
+                      {{ 'universal_activityData_everyMinutes' | translate: {number: 10} }}
+                    </span>
+                    <span (click)="changeSegmentRange(1800)">
+                      {{ 'universal_activityData_everyMinutes' | translate: {number: 30} }}
+                    </span>
+                  </ng-container>
+                  <ng-container *ngIf="trendChartOpt.xAxisType === 'distanceMeters'">
+                    <span (click)="changeSegmentRange(100)">
+                      {{ 'universal_activityData_everyUnit' | translate: {number: 100, unit: 'm'} }}
+                    </span>
+                    <span (click)="changeSegmentRange(500)">
+                      {{ 'universal_activityData_everyUnit' | translate: {number: 500, unit: 'm'} }}
+                    </span>
+                    <span (click)="changeSegmentRange(1000)">
+                      {{ 'universal_activityData_everyUnit' | translate: {number: 1, unit: 'km'} }}
+                    </span>
+                    <span (click)="changeSegmentRange(10000)">
+                      {{ 'universal_activityData_everyUnit' | translate: {number: 10, unit: 'km'} }}
+                    </span>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <app-trend-info-chart
+          [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.hr : trendChartOpt.yAxisDataRef.heartRateBpm"
+          [xAxisData]="trendChartOpt.xAxisDataRef"
+          [xAxisType]="trendChartOpt.xAxisType"
+          [sportType]="+activityInfoLayer.type"
+          [unit]="userProfile.unit"
+          [chartType]="'hr'"
+          [hrRange]="chartData.hrInfo.z0 === 'Z0' ? chartData.defaultHrInfo : chartData.hrInfo"
+          [showInfo]="true"
+          [page]="'detail'"
+        >
+        </app-trend-info-chart>
+        <app-trend-info-chart
+          [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.speed : trendChartOpt.yAxisDataRef.speed"
+          [xAxisData]="trendChartOpt.xAxisDataRef"
+          [xAxisType]="trendChartOpt.xAxisType"
+          [sportType]="+activityInfoLayer.type"
+          [unit]="userProfile.unit"
+          [chartType]="'pace'"
+          [showInfo]="true"
+          [page]="'detail'"
+          *ngIf="[1, 4, 6].includes(+activityInfoLayer.type) && activityPointLayer.speed"
+        >
+        </app-trend-info-chart>
+        <app-trend-info-chart
+          [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.altitude : trendChartOpt.yAxisDataRef.altitudeMeters"
+          [xAxisData]="trendChartOpt.xAxisDataRef"
+          [xAxisType]="trendChartOpt.xAxisType"
+          [sportType]="+activityInfoLayer.type"
+          [unit]="userProfile.unit"
+          [chartType]="'altitude'"
+          [showInfo]="true"
+          [page]="'detail'"
+          *ngIf="[1, 2, 6, 7].includes(+activityInfoLayer.type) && activityPointLayer.altitudeMeters"
+        >
+        </app-trend-info-chart>
+        <app-trend-info-chart
+          [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.speed : trendChartOpt.yAxisDataRef.speed"
+          [xAxisData]="trendChartOpt.xAxisDataRef"
+          [xAxisType]="trendChartOpt.xAxisType"
+          [sportType]="+activityInfoLayer.type"
+          [unit]="userProfile.unit"
+          [chartType]="'speed'"
+          [showInfo]="true"
+          [page]="'detail'"
+          *ngIf="[2, 7].includes(+activityInfoLayer.type)"
+        >
+        </app-trend-info-chart>
+        <app-trend-info-chart
+          [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.runCadence"
+          [xAxisData]="trendChartOpt.xAxisDataRef"
+          [xAxisType]="trendChartOpt.xAxisType"
+          [sportType]="+activityInfoLayer.type"
+          [unit]="userProfile.unit"
+          [chartType]="'cadence'"
+          [showInfo]="true"
+          [page]="'detail'"
+          *ngIf="+activityInfoLayer.type === 1"
+        >
+        </app-trend-info-chart>
+        <app-trend-info-chart
+          [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.cycleCadence"
+          [xAxisData]="trendChartOpt.xAxisDataRef"
+          [xAxisType]="trendChartOpt.xAxisType"
+          [sportType]="+activityInfoLayer.type"
+          [unit]="userProfile.unit"
+          [chartType]="'cadence'"
+          [showInfo]="true"
+          [page]="'detail'"
+          *ngIf="+activityInfoLayer.type === 2"
+        >
+        </app-trend-info-chart>
+        <app-trend-info-chart
+          [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.moveRepetitions"
+          [xAxisData]="trendChartOpt.xAxisDataRef"
+          [xAxisType]="trendChartOpt.xAxisType"
+          [sportType]="+activityInfoLayer.type"
+          [unit]="userProfile.unit"
+          [chartType]="'cadence'"
+          [showInfo]="true"
+          [page]="'detail'"
+          *ngIf="+activityInfoLayer.type === 3 && activityPointLayer.moveRepetitions"
+        >
+        </app-trend-info-chart>
+        <app-trend-info-chart
+          [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.swimCadence"
+          [xAxisData]="trendChartOpt.xAxisDataRef"
+          [xAxisType]="trendChartOpt.xAxisType"
+          [sportType]="+activityInfoLayer.type"
+          [unit]="userProfile.unit"
+          [chartType]="'cadence'"
+          [showInfo]="true"
+          [page]="'detail'"
+          *ngIf="+activityInfoLayer.type === 4"
+        >
+        </app-trend-info-chart>
+        <app-trend-info-chart
+          [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.rowingCadence"
+          [xAxisData]="trendChartOpt.xAxisDataRef"
+          [xAxisType]="trendChartOpt.xAxisType"
+          [sportType]="+activityInfoLayer.type"
+          [unit]="userProfile.unit"
+          [chartType]="'cadence'"
+          [showInfo]="true"
+          [page]="'detail'"
+          *ngIf="+activityInfoLayer.type === 6"
+        >
+        </app-trend-info-chart>
+        <app-trend-info-chart
+          [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.power : trendChartOpt.yAxisDataRef.cycleWatt"
+          [xAxisData]="trendChartOpt.xAxisDataRef"
+          [xAxisType]="trendChartOpt.xAxisType"
+          [sportType]="+activityInfoLayer.type"
+          [unit]="userProfile.unit"
+          [chartType]="'power'"
+          [showInfo]="true"
+          [page]="'detail'"
+          *ngIf="+activityInfoLayer.type === 2"
+        >
+        </app-trend-info-chart>
+        <app-trend-info-chart
+          [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.power : trendChartOpt.yAxisDataRef.rowingWatt"
+          [xAxisData]="trendChartOpt.xAxisDataRef"
+          [xAxisType]="trendChartOpt.xAxisType"
+          [sportType]="+activityInfoLayer.type"
+          [unit]="userProfile.unit"
+          [chartType]="'power'"
+          [showInfo]="true"
+          [page]="'detail'"
+          *ngIf="+activityInfoLayer.type === 6"
+        >
+        </app-trend-info-chart>
+        <app-trend-info-chart
+          [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.temperature : trendChartOpt.yAxisDataRef.temp"
+          [xAxisData]="trendChartOpt.xAxisDataRef"
+          [xAxisType]="trendChartOpt.xAxisType"
+          [sportType]="+activityInfoLayer.type"
+          [unit]="userProfile.unit"
+          [chartType]="'temperature'"
+          [showInfo]="true"
+          [page]="'detail'"
+        >
+        </app-trend-info-chart>
+        <app-trend-info-chart
+          [yAxisData]="
+            trendChartOpt.segmentMode ? 
+              [trendChartOpt.yAxisDataRef.gforceX, trendChartOpt.yAxisDataRef.gforceY, trendChartOpt.yAxisDataRef.gforceZ]
+              :
+              [trendChartOpt.yAxisDataRef.gsensorXRawData, trendChartOpt.yAxisDataRef.gsensorYRawData, trendChartOpt.yAxisDataRef.gsensorZRawData]
+          "
+          [xAxisData]="trendChartOpt.xAxisDataRef"
+          [xAxisType]="trendChartOpt.xAxisType"
+          [sportType]="+activityInfoLayer.type"
+          [unit]="userProfile.unit"
+          [chartType]="'gforce'"
+          [showInfo]="true"
+          [page]="'detail'"
+          *ngIf="+activityInfoLayer.type === 7"
+        >
+        </app-trend-info-chart>
+      </section>
+      <div class="pageBreak" *ngIf="uiFlag.isPreviewMode && activityInfoLayer.type == 5"></div>
+    </ng-container>
   </ng-container>
   <section
     id="footer__section"
@@ -1364,7 +1369,7 @@
     <div class="imgSelector">
       <app-image-cropper
         [imgInputEvent]="editImage.origin"
-        [albumType]="albumType.personalSportFile"
+        [albumType]="AlbumType.personalSportFile"
         (closeSelector)="closeSelector($event)"
       ></app-image-cropper>
     </div>

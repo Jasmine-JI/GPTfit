@@ -1,3 +1,5 @@
+@import 'overflow-scroll';
+
 $zone-description-width: 100%;
 
 .zone__range {
@@ -25,11 +27,11 @@ $zone-description-width: 100%;
 }
 
 .zone__content {
+  @include overflow-y-scroll();
   display: block;
   font-size: 8px;
   width: $zone-description-width;
   max-height: 90px;
-  overflow-y: scroll;
 }
 
 .right__text {

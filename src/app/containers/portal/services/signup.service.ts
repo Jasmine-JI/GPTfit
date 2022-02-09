@@ -9,27 +9,13 @@ export class SignupService {
     private http: HttpClient
   ) {}
 
-  getSMSVerifyCode(body) {
-    return this.http.post('/api/v1/user/getSMSVerifyCode', body);
-  }
-
-  register(body) {
-    return this.http.post('/api/v1/user/register', body);
-  }
-
   /**
    * api-v2 1001
    * @param body {any}-api 所需參數
    * @param ip {string}-使用者ip位置
    */
-  fetchRegister (body: any, ip: string, regionCode: string) {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'remoteAddr': ip,
-        'regionCode': regionCode || 'US'
-      })
-    };
-
+  fetchRegister (body: any, newHeader: any) {
+    const httpOptions = this.setNewHeader(newHeader);
     return <any> this.http.post('/api/v2/user/register', body, httpOptions).pipe(
       catchError(err => throwError(err))
     );
@@ -40,16 +26,27 @@ export class SignupService {
    * @param body {any}-api 所需參數
    * @param ip {string}-使用者ip位置
    */
-  fetchEnableAccount (body: any, ip: string) {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'remoteAddr': ip,
-      })
-    };
-
+  fetchEnableAccount (body: any, newHeader: any) {
+    const httpOptions = this.setNewHeader(newHeader);
     return <any> this.http.post('/api/v2/user/enableAccount', body, httpOptions).pipe(
       catchError(err => throwError(err))
     );
+  }
+
+  /**
+   * Api-v2 1004-忘記密碼
+   */
+  fetchForgetpwd (body, newHeader: any) {
+    const httpOptions = this.setNewHeader(newHeader);
+    return this.http.post<any>('/api/v2/user/resetPassword', body, httpOptions);
+  }
+
+  /**
+   * Api-v2 1005-編輯帳密
+   */
+  fetchEditAccountInfo (body, newHeader: any) {
+    const httpOptions = this.setNewHeader(newHeader);
+    return this.http.post<any>('/api/v2/user/editAccount', body, httpOptions);
   }
 
   /**
@@ -57,13 +54,8 @@ export class SignupService {
    * @param body {any}-api 所需參數
    * @param ip {string}-使用者ip位置
    */
-  fetchCaptcha (body: any, ip: string) {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'remoteAddr': ip,
-      })
-    };
-
+  fetchCaptcha (body: any, newHeader: any) {
+    const httpOptions = this.setNewHeader(newHeader);
     return <any> this.http.post('/api/v2/user/captcha', body, httpOptions).pipe(
       catchError(err => throwError(err))
     );
@@ -74,13 +66,8 @@ export class SignupService {
    * @param body {any}-api 所需參數
    * @param ip {string}-使用者ip位置
    */
-  fetchQrcodeLogin (body: any, ip: string) {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'remoteAddr': ip,
-      })
-    };
-
+  fetchQrcodeLogin (body: any, newHeader: any) {
+    const httpOptions = this.setNewHeader(newHeader);
     return <any> this.http.post('/api/v2/user/qrSignIn', body, httpOptions).pipe(
       catchError(err => throwError(err))
     );
@@ -92,8 +79,9 @@ export class SignupService {
    * @param body {any}-api 所需參數
    * @author kidin-1091217
    */
-  fetchCompressData (body: any) {
-    return <any> this.http.post('/api/v2/archive/startCompressData', body).pipe(
+  fetchCompressData (body: any, newHeader: any) {
+    const httpOptions = this.setNewHeader(newHeader);
+    return <any> this.http.post('/api/v2/archive/startCompressData', body, httpOptions).pipe(
       catchError(err => throwError(err))
     );
   }
@@ -103,10 +91,20 @@ export class SignupService {
    * @param body {any}-api 所需參數
    * @author kidin-1091217
    */
-  fetchDestroyAccount (body: any) {
-    return <any> this.http.post('/api/v2/archive/destroyMe', body).pipe(
+  fetchDestroyAccount (body: any, newHeader: any) {
+    const httpOptions = this.setNewHeader(newHeader);
+    return <any> this.http.post('/api/v2/archive/destroyMe', body, httpOptions).pipe(
       catchError(err => throwError(err))
     );
+  }
+
+  /**
+   * 回傳欲添加的header物件
+   * @param options {any}-欲設置之header
+   * @author kidin-1110114
+   */
+  setNewHeader(options: any) {
+    return options ? { headers: new HttpHeaders(options)} : undefined;
   }
 
 }

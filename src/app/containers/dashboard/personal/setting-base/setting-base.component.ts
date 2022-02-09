@@ -1,14 +1,13 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { UserInfoService } from '../../services/userInfo.service';
-import { SettingsService } from '../../services/settings.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import moment from 'moment';
-import { Sex, sex } from '../../models/userProfileInfo';
-import { unit, ft, lb } from '../../../../shared/models/bs-constant';
-import { formTest } from '../../../portal/models/form-test';
+import { Sex } from '../../models/userProfileInfo';
+import { Unit, ft, lb } from '../../../../shared/models/bs-constant';
+import { formTest } from '../../../../shared/models/form-test';
+import { DashboardService } from '../../services/dashboard.service';
 
 
 @Component({
@@ -53,14 +52,13 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
   }
 
   userInfo: any;
-  readonly sex = sex;
-  readonly unit = unit;
+  readonly Sex = Sex;
+  readonly Unit = Unit;
 
   constructor(
-    private userInfoService: UserInfoService,
-    private settingService: SettingsService,
     private utils: UtilsService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private dashboardService: DashboardService
   ) { }
 
   ngOnInit(): void {
@@ -72,7 +70,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * @author kidin-1100818
    */
   getRxUserProfile() {
-    this.userInfoService.getRxTargetUserInfo().pipe(
+    this.userProfileService.getRxTargetUserInfo().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.userInfo = res;
@@ -87,9 +85,9 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    */
   openEditMode() {
     this.uiFlag.editMode = 'edit';
-    this.userInfoService.setRxEditMode('edit');
+    this.dashboardService.setRxEditMode('edit');
     const { nickname, birthday, bodyHeight, bodyWeight, gender, unit: userUnit } = this.userInfo,
-          isMetric = userUnit === unit.metric;
+          isMetric = userUnit === Unit.metric;
     this.setting = {
       nickname,
       bodyHeight: this.utils.bodyHeightTransfer(bodyHeight, !isMetric, true),
@@ -112,7 +110,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
   cancelEdit() {
     this.uiFlag.nicknameAlert = null;
     this.uiFlag.editMode = 'close';
-    // this.userInfoService.setRxEditMode('close');
+    // this.dashboardService.setRxEditMode('close');
   }
 
   /**
@@ -132,7 +130,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
           }
         };
 
-        this.settingService.updateUserProfile(body).subscribe(res => {
+        this.userProfileService.updateUserProfile(body).subscribe(res => {
           const {processResult} = res as any;
           if (!processResult) {
             const { apiCode, resultMessage, resultCode } = res as any;
@@ -143,7 +141,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
               this.utils.handleError(resultCode, apiCode, resultMessage);
             } else {
               // this.uiFlag.editMode = 'close';  // 常駐編輯狀態
-              this.userInfoService.setRxEditMode('complete');
+              this.dashboardService.setRxEditMode('complete');
             }
 
           }
@@ -207,7 +205,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * @author kidin-1100825
    */
   valueRevert(key: string, value: string | number) {
-    const isMetric = this.userInfo.unit === unit.metric,
+    const isMetric = this.userInfo.unit === Unit.metric,
           edited = this.editFlag[key];
     switch (key) {
       case 'bodyHeight':
@@ -297,7 +295,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * @author kidin-1100823
    */
   checkHeightFormat(e: KeyboardEvent) {
-    if (this.userInfo.unit === unit.metric) {
+    if (this.userInfo.unit === Unit.metric) {
       this.checkFormat(e);
     } else {
       const { key, target: { value } } = e as any,
@@ -319,7 +317,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * @author kidin-1100823
    */
   checkWeightFormat(e: KeyboardEvent) {
-    if (this.userInfo.unit === unit.metric) {
+    if (this.userInfo.unit === Unit.metric) {
       this.checkFormat(e);
     } else {
       const { key } = e as any,
@@ -338,7 +336,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * @author kidin-1100818
    */
   handleHeightInput(e: Event | MouseEvent) {
-    const isMetric = this.userInfo.unit === unit.metric,
+    const isMetric = this.userInfo.unit === Unit.metric,
           { decimalValue, imperialHeight } = formTest,
           oldValue = this.userInfo.bodyHeight,
           { value } = (e as any).target,
@@ -386,7 +384,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     const oldValue = this.userInfo.bodyWeight,
           inputValue = +(e as any).target.value,
           testFormat = formTest.decimalValue.test(`${inputValue}`),
-          isMetric = this.userInfo.unit === unit.metric,
+          isMetric = this.userInfo.unit === Unit.metric,
           newValue = this.utils.valueConvert(inputValue, !isMetric, false, lb, 0),
           valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {

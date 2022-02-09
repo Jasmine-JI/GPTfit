@@ -7,9 +7,8 @@ import { UtilsService } from '../../../shared/services/utils.service';
 import { HashIdService } from '../../../shared/services/hash-id.service';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { EditMode } from '../models/personal';
-import { albumType } from '../../../shared/models/image';
+import { AlbumType } from '../../../shared/models/image';
 import { DashboardService } from '../services/dashboard.service';
-import { UserInfoService } from '../services/userInfo.service';
 import { v5 as uuidv5 } from 'uuid';
 import moment from 'moment';
 import { ImageUploadService } from '../services/image-upload.service';
@@ -84,7 +83,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
   userProfile: UserProfileInfo;
   hashUserId: string;
   token = this.utils.getToken() || '';
-  readonly albumType = albumType;
+  readonly AlbumType = AlbumType;
   childPageList = [];
 
   constructor(
@@ -94,7 +93,6 @@ export class PersonalComponent implements OnInit, OnDestroy {
     private router: Router,
     private hashIdService: HashIdService,
     private dashboardService: DashboardService,
-    private userInfoService: UserInfoService,
     private imageUploadService: ImageUploadService,
     private dialog: MatDialog,
     private translate: TranslateService
@@ -171,24 +169,27 @@ export class PersonalComponent implements OnInit, OnDestroy {
       const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as any,
             headerDescriptionBlock = document.querySelectorAll('.info-headerDescriptionBlock')[0],
             headerDescription = document.querySelectorAll('.info-headerDescription')[0],
-            scenerySection = document.querySelectorAll('.info-scenerySection')[0],
-            { top: barTop } = pageListBar.getBoundingClientRect(),
+            scenerySection = document.querySelectorAll('.info-scenerySection')[0];
+      if (pageListBar && headerDescription && scenerySection) {
+        const { top: barTop } = pageListBar.getBoundingClientRect(),
             { bottom: descBottom } = headerDescription.getBoundingClientRect(),
             { width } = scenerySection.getBoundingClientRect();
-      if (barTop <= 51 && descBottom < 50) {
-        pageListBar.classList.add('info-pageListBar-fixed');
-        headerDescriptionBlock.classList.add('info-pageListBar-replace');  // 填充原本功能列的高度
-        pageListBar.style.width = `${width}px`;
-      } else {
-        pageListBar.classList.remove('info-pageListBar-fixed');
-        headerDescriptionBlock.classList.remove('info-pageListBar-replace');
-        pageListBar.style.width = `100%`;
-      }
+        if (barTop <= 51 && descBottom < 50) {
+          pageListBar.classList.add('info-pageListBar-fixed');
+          headerDescriptionBlock.classList.add('info-pageListBar-replace');  // 填充原本功能列的高度
+          pageListBar.style.width = `${width}px`;
+        } else {
+          pageListBar.classList.remove('info-pageListBar-fixed');
+          headerDescriptionBlock.classList.remove('info-pageListBar-replace');
+          pageListBar.style.width = `100%`;
+        }
 
-      if (this.uiFlag.isPortalMode) {
-        const cardSection = document.querySelectorAll('.cardSection')[0],
-              { left } = cardSection.getBoundingClientRect();
-        pageListBar.style.left = `${left}px`;
+        if (this.uiFlag.isPortalMode) {
+          const cardSection = document.querySelectorAll('.cardSection')[0],
+                { left } = cardSection.getBoundingClientRect();
+          pageListBar.style.left = `${left}px`;
+        }
+
       }
 
     }
@@ -217,7 +218,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1091123
    */
   checkEditMode() {
-    this.userInfoService.getRxEditMode().pipe(
+    this.dashboardService.getRxEditMode().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.upLoadImg(res);
@@ -328,7 +329,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
         } else {
           this.uiFlag.isPageOwner = userId === userProfile.userId;
           this.userProfile = userProfile;
-          this.userInfoService.setRxTargetUserInfo(userProfile);
+          this.userProfileService.setRxTargetUserInfo(userProfile);
           this.checkDescLen();
         }
 
@@ -352,7 +353,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
     ).subscribe(res => {
       this.uiFlag.hideScenery = false;
       this.userProfile = res;
-      this.userInfoService.setRxTargetUserInfo(res);
+      this.userProfileService.setRxTargetUserInfo(res);
       this.hashUserId = this.hashIdService.handleUserIdEncode(res.userId);
       this.childPageList = this.initChildPageList();
       this.getCurrentContentPage();
@@ -526,14 +527,15 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1100812
    */
   closeSelector(e: any) {
+    const { albumType: uploadType, origin, base64 } = e.img;
     if (e.action === 'complete') {
       this.editImage.edited = true;
-      if (e.img.albumType === albumType.personalIcon) {
-        this.editImage.icon.origin = e.img.origin;
-        this.editImage.icon.base64 = e.img.base64;
+      if (uploadType === AlbumType.personalIcon) {
+        this.editImage.icon.origin = origin;
+        this.editImage.icon.base64 = base64;
       } else {
-        this.editImage.scenery.origin = e.img.origin;
-        this.editImage.scenery.base64 = e.img.base64;
+        this.editImage.scenery.origin = origin;
+        this.editImage.scenery.base64 = base64;
         this.uiFlag.hideScenery = false;
       }
 
@@ -560,13 +562,13 @@ export class PersonalComponent implements OnInit, OnDestroy {
       if (icon.base64 !== null) {
         const fileName = this.createFileName(imgArr.length, `${userId}`);
         imgArr.unshift({
-          albumType: albumType.personalIcon,
+          albumType: AlbumType.personalIcon,
           fileNameFull: `${fileName}.jpg`
         })
 
         formData.append(
           'file',
-          this.utils.base64ToFile(albumType.personalIcon, icon.base64, fileName)
+          this.utils.base64ToFile(icon.base64, fileName)
         );
 
       }
@@ -575,13 +577,13 @@ export class PersonalComponent implements OnInit, OnDestroy {
       if (scenery.base64 !== null) {
         const fileName = this.createFileName(imgArr.length, `${userId}`);
         imgArr.unshift({
-          albumType: albumType.personalScenery,
+          albumType: AlbumType.personalScenery,
           fileNameFull: `${fileName}.jpg`
         })
 
         formData.append(
           'file',
-          this.utils.base64ToFile(albumType.personalScenery, scenery.base64, fileName)
+          this.utils.base64ToFile(scenery.base64, fileName)
         );
 
       }
@@ -590,7 +592,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
       this.sendImgUploadReq(formData);
     } else if (editMode === 'complete') {
       this.userProfileService.refreshUserProfile({ token: this.token });
-      // this.userInfoService.setRxEditMode('close');
+      // this.dashboardService.setRxEditMode('close');
     } else {
       this.uiFlag.editMode = editMode;
     }
@@ -611,7 +613,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
       } else {
         this.initImgSetting();
         this.userProfileService.refreshUserProfile({ token: this.token });
-        // this.userInfoService.setRxEditMode('close');
+        // this.dashboardService.setRxEditMode('close');
       }
 
     });

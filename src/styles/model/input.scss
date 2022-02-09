@@ -1,0 +1,19 @@
+/**
+ * input 相關樣式
+ */
+
+@mixin input-no-arrow() {
+
+  /* Chrome, Safari, Edge, Opera */
+  &::-webkit-outer-spin-button, 
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  &[type=number] {
+    -moz-appearance: textfield;
+  }
+
+}

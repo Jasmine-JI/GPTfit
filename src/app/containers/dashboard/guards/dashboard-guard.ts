@@ -23,27 +23,41 @@ export class DashboardGuard implements CanActivate {
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
 
-    return this.userProfileService.getRxUserProfile().pipe(
-      map(res => {
-        const { systemAccessRight } = res || {systemAccessRight: undefined};
-        if (systemAccessRight) {
+    const token = this.utils.getToken();
+    if (token) {
 
-          if (systemAccessRight[0] < 30) {
-            return true;
+      return this.userProfileService.getMemberAccessRight({token}).pipe(
+        map(res => {
+          if (this.utils.checkRes(res)) {
+            const { info: { groupAccessRight } } = res,
+                  maxAccessRight = +groupAccessRight[0].accessRight;
+            if (maxAccessRight < 30) {
+              return true;
+            } else {
+              return this.checkAccessRightFailed('403');
+            }
+
           } else {
-            this.router.navigateByUrl(`/403`);
-            return false;
+            return this.checkAccessRightFailed('signIn-web');
           }
 
-        } else {
-          this.router.navigateByUrl(`/signIn-web`);
-          return false;
-        }
+        })
 
-      })
+      );
 
-    );
+    } else {
+      return this.checkAccessRightFailed('signIn-web');
+    }
 
+  }
+
+  /**
+   * 驗證失敗後轉導其他路徑
+   * @param path {'403' | 'signIn-web'}-轉導路徑
+   */
+  checkAccessRightFailed(path: '403' | 'signIn-web') {
+    this.router.navigateByUrl(`/${path}`);
+    return false;
   }
 
 }

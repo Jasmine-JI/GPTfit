@@ -1,18 +1,27 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../../../../shared/services/utils.service';
-import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
 import { AuthService } from '../../../../../shared/services/auth.service';
 import { SignupService } from '../../../services/signup.service';
-import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
-
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Subscription, fromEvent, merge, of } from 'rxjs';
+import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { formTest } from '../../../models/form-test';
+import { formTest } from '../../../../../shared/models/form-test';
+import { codes } from '../../../../../shared/models/countryCode';
+import { SignTypeEnum } from '../../../../../shared/models/utils-type';
+import { TFTViewMinWidth } from '../../../models/app-webview';
+
+const errorCaptchaI18nKey = 'universal_userAccount_errorCaptcha';
+type InputType = 'account' | 'password';
+enum ResetFlow {
+  request = 1,
+  verify,
+  reset
+}
 
 @Component({
   selector: 'app-app-forgetpw',
@@ -22,23 +31,18 @@ import { formTest } from '../../../models/form-test';
 export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private ngUnsubscribe = new Subject();
+  private clickScrollEvent = new Subscription();
+  private resizeSubscription = new Subscription();
 
   readonly formReg = formTest;
+  readonly countryCodeList = codes;
+  readonly SignTypeEnum = SignTypeEnum;
+  readonly ResetFlow = ResetFlow;
 
-  i18n = {
-    account: '',
-    email: '',
-    phone: '',
-    password: '',
-    verificationCode: '',
-    errorCaptcha: '',
-    linkExpired: '',
-    confirm: ''
-  };
-  sending = false;
+  displayCountryCodeList = false;
+  progress = 100;
   appSys = 0;  // 0: web, 1: ios, 2: android
   showSendPhoneCaptcha = false;
-  sendingPhoneCaptcha = false;
   displayPW = false;
   phoneFormIncomplete = true;
   dataIncomplete = true;
@@ -47,12 +51,15 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
   newToken = '';
   ip = '';
   pcView = false;
+  mobileSize = window.innerWidth < TFTViewMinWidth;
+  requestHeader = {};
+  flowComplete = false;
 
   formValue = {
-    resetPasswordFlow: 1,
-    type: 1,  // 1. 信箱 2. 手機
+    resetPasswordFlow: ResetFlow.request,
+    type: SignTypeEnum.email,  // 1. 信箱 2. 手機
     email: '',
-    countryCode: 0,
+    countryCode: 886,
     phone: null,
     verificationCode: '',
     project: 0,
@@ -76,7 +83,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
   // 驗證用
   regCheck = {
     email: this.formReg.email,
-    countryCodePass: false,
+    countryCodePass: true,
     password: this.formReg.password
   };
 
@@ -85,33 +92,40 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     private utils: UtilsService,
     private authService: AuthService,
     private signupService: SignupService,
-    private userInfoService: UserInfoService,
     private dialog: MatDialog,
     private router: Router,
     public getClientIp: GetClientIpService,
     public userProfileService: UserProfileService
-  ) {
-    translate.onLangChange.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.getTranslate();
-    });
-
-  }
+  ) {}
 
   ngOnInit() {
-    this.getClientIpaddress();
-    this.getTranslate();
+    this.subscribeResizeEvent();
 
     if (location.pathname.indexOf('web') > 0) {
       this.pcView = true;
       this.utils.setHideNavbarStatus(false);
+      this.utils.setDarkModeStatus(false);
     } else {
       this.pcView = false;
       this.utils.setHideNavbarStatus(true);
+      this.utils.setDarkModeStatus(true);
     }
 
     this.getUrlString(location.search);
+  }
+
+  /**
+   * 訂閱頁面尺寸改變事件
+   * @author kidin-1101230
+   */
+  subscribeResizeEvent() {
+    const resizeEvent = fromEvent(window, 'resize');
+    this.resizeSubscription = resizeEvent.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(e => {
+      this.mobileSize = window.innerWidth < TFTViewMinWidth;
+    });
+
   }
 
   /**
@@ -125,26 +139,6 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  // 取得多國語系翻譯-kidin-1090620
-  getTranslate () {
-    this.translate.get('hollo word').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.i18n = {
-        account: this.translate.instant('universal_userAccount_account'),
-        email: this.translate.instant('universal_userAccount_email'),
-        phone: this.translate.instant('universal_userAccount_phone'),
-        password: this.translate.instant('universal_userAccount_newPassword'),
-        verificationCode: this.translate.instant('universal_userAccount_phoneCaptcha'),
-        errorCaptcha: this.translate.instant('universal_userAccount_errorCaptcha'),
-        linkExpired: this.translate.instant('universal_userAccount_linkHasExpired'),
-        confirm: this.translate.instant('universal_operating_confirm')
-      };
-
-    });
-
-  }
-
   // 取得裝置平台-kidin-1090518
   getDeviceSys () {
     if ((window as any).webkit) {
@@ -154,43 +148,50 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.appSys = 0;
     }
+
+    this.requestHeader = {
+      deviceType: this.appSys,
+      ...this.requestHeader
+    };
+
   }
 
   // 取得url query string-kidin-1090514
   getUrlString (urlStr) {
-
-    const query = urlStr.replace('?', '').split('&');
-
-    for (let i = 0; i < query.length; i++) {
-
-      const queryKey = query[i].split('=')[0];
-      switch (queryKey) {  // 不寫死避免之後新增參數
+    const query = this.utils.getUrlQueryStrings(urlStr);
+    this.requestHeader = {
+      ...this.requestHeader,
+      ...this.utils.headerKeyTranslate(query)
+    };
+    Object.entries(query).forEach(([_key, _value]) => {
+      const _valueStr = _value as string;
+      switch (_key) {
         case 'rpf':
-          this.formValue.resetPasswordFlow = +query[i].split('=')[1];
+          this.formValue.resetPasswordFlow = +_valueStr;
           break;
         case 'e':
-          this.formValue.email = this.currentAccount = decodeURIComponent(query[i].split('=')[1] || '') ;
+          this.formValue.email = this.currentAccount = decodeURIComponent(_valueStr || '') ;
           break;
         case 'mn':
-          this.currentAccount = query[i].split('=')[1] || '';
+          this.currentAccount = _valueStr || '';
           break;
         case 'cc':
-          this.formValue.countryCode = +query[i].split('=')[1] || null;
+          this.formValue.countryCode = +_valueStr || null;
           break;
         case 'p':
-          this.formValue.project = +query[i].split('=')[1];
+          this.formValue.project = +_valueStr;
 
-          if (+query[i].split('=')[1] === 0) {
+          if (+_valueStr === 0) {
             this.pcView = true;
           }
 
           break;
         case 'vc':
-          this.formValue.verificationCode = query[i].split('=')[1];
+          this.formValue.verificationCode = _valueStr;
           break;
       }
 
-    }
+    });
 
     if (this.currentAccount) {
       this.determineAccountType(this.currentAccount);
@@ -204,9 +205,21 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 取得使用者ip位址-kidin-1090521
   getClientIpaddress () {
-    this.getClientIp.requestJsonp('https://api.ipify.org', 'format=jsonp', 'callback').subscribe(res => {
-      this.ip = (res as any).ip;
-    });
+    const { remoteAddr } = this.requestHeader as any;
+    if (!remoteAddr) {
+      return this.getClientIp.requestJsonp('https://api.ipify.org', 'format=jsonp', 'callback').pipe(
+        tap(res => {
+          this.ip = (res as any).ip;
+          this.requestHeader = {
+            ...this.requestHeader,
+            remoteAddr: this.ip
+          };
+        })
+      );
+
+    } else {
+      return of(this.requestHeader);
+    }
 
   }
 
@@ -230,7 +243,6 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 判斷使用者輸入的帳號切換帳號類型-kidin-1090518
   determineAccountType(e: any) {
-
     if (e.key) {
       const account = e.currentTarget.value;
 
@@ -277,6 +289,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
         this.formValue.type = 2;
         this.cue.account = '';
         this.formValue.phone = account;
+        this.checkPhoneForm();
       } else {
         this.formValue.type = 1;
         this.formValue.email = account;
@@ -315,7 +328,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
   checkPhoneForm () {
 
     setTimeout(() => {  // 處理angular檢查時，狀態不一致的問題-kidin-1090519
-      if (this.regCheck.countryCodePass === true) {
+      if (this.regCheck.countryCodePass) {
         this.phoneFormIncomplete = false;
       } else {
         this.phoneFormIncomplete = true;
@@ -331,19 +344,18 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.imgCaptcha.show) {
       this.removeCaptcha('reciprocal');
     } else {
-
-      this.sendingPhoneCaptcha = true;
-
+      this.progress = 40;
       const body = {
-        resetPasswordFlow: 1,
-        accountType: 2,
+        resetPasswordFlow: ResetFlow.request,
+        accountType: SignTypeEnum.phone,
         countryCode: this.formValue.countryCode,
         mobileNumber: +this.formValue.phone,
         project: this.formValue.project
       };
 
-      this.userInfoService.fetchForgetpwd(body, this.ip).subscribe(res => {
-
+      this.getClientIpaddress().pipe(
+        switchMap(ipResult => this.signupService.fetchForgetpwd(body, this.requestHeader))
+      ).subscribe((res: any) => {
         const resultInfo = res.processResult;
         if (resultInfo.resultCode !== 200) {
 
@@ -357,30 +369,18 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
               break;
             default:
               const msgBody = 'Error!<br /> Please try again later.';
-              this.showMsgBox(msgBody);
+              this.showMsgBox(msgBody, this.turnBack);
               console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
               break;
           }
 
-          this.sendingPhoneCaptcha = false;
         } else if (resultInfo.resultCode === 200) {
-          this.dialog.open(MessageBoxComponent, {
-            hasBackdrop: true,
-            disableClose: true,
-            data: {
-              title: 'Message',
-              body: this.translate.instant('universal_userAccount_sendSmsSuccess'),
-              confirmText: this.i18n.confirm
-            }
-          });
-
+          const msg = this.translate.instant('universal_userAccount_sendSmsSuccess');
+          this.showMsgBox(msg, undefined);
           const btnInterval = setInterval(() => {
             this.timeCount--;
-
             if (this.timeCount === 0) {
-              this.sendingPhoneCaptcha = false;
               this.timeCount = 30;
-
               // 設any處理typescript報錯：Argument of type 'Timer' is not assignable to parameter of type 'number'-kidin-1090515
               window.clearInterval(btnInterval as any);
             }
@@ -389,6 +389,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
         }
 
+        this.progress = 100;
       });
 
     }
@@ -400,7 +401,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputPhoneCaptcha = e.currentTarget.value;
       if (inputPhoneCaptcha.length < 6) {
-        this.cue.verificationCode = this.i18n.errorCaptcha;
+        this.cue.verificationCode = errorCaptchaI18nKey;
       } else {
         this.formValue.verificationCode = inputPhoneCaptcha;
         this.cue.verificationCode = '';
@@ -416,18 +417,6 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  // 將使用者輸入的密碼進行隱藏-kidin-1090430
-  hidePassword () {
-    const pwInputType = (<HTMLInputElement>document.getElementById('signupPW'));
-
-    if (this.displayPW === true) {
-      pwInputType.type = 'text';
-    } else {
-      pwInputType.type = 'password';
-    }
-
-  }
-
   // 顯示密碼-kidin-1090429
   toggleDisplayPW () {
     if (this.displayPW === false) {
@@ -436,7 +425,6 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
       this.displayPW = false;
     }
 
-    this.hidePassword();
   }
 
   // 確認密碼格式-kidin-1090511
@@ -458,19 +446,18 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 寄發驗證信或檢查驗證碼-kidin-1090515
   submit () {
-    this.sending = true;
-
+    this.progress = 30;
     if (this.imgCaptcha.show) {
       this.removeCaptcha('submit');
     } else {
-
-      if (this.formValue.type === 1 && this.formValue.resetPasswordFlow === 1) {
+      const { type, resetPasswordFlow } = this.formValue;
+      if (type === SignTypeEnum.email && resetPasswordFlow === ResetFlow.request) {
         this.sendEmailCaptcha();
-      } else if (this.formValue.type === 1 && this.formValue.resetPasswordFlow === 2) {
+      } else if (type === SignTypeEnum.email && resetPasswordFlow === ResetFlow.verify) {
         this.emailVarify();
-      } else if (this.formValue.type === 2 && this.formValue.resetPasswordFlow !== 3) {
+      } else if (type === SignTypeEnum.phone && resetPasswordFlow !== ResetFlow.reset) {
         this.phoneVarify();
-      } else if (this.formValue.resetPasswordFlow === 3) {
+      } else if (resetPasswordFlow === ResetFlow.reset) {
         this.resetPWD();
       }
 
@@ -480,15 +467,17 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 寄發驗證信-kidin-1090519
   sendEmailCaptcha () {
+    const { email, project } = this.formValue;
     const body = {
-      resetPasswordFlow: 1,
-      accountType: 1,
-      email: this.formValue.email,
-      project: this.formValue.project
+      resetPasswordFlow: ResetFlow.request,
+      accountType: SignTypeEnum.email,
+      email,
+      project
     };
 
-    this.userInfoService.fetchForgetpwd(body, this.ip).subscribe(res => {
-
+    this.getClientIpaddress().pipe(
+      switchMap(ipResult => this.signupService.fetchForgetpwd(body, this.requestHeader))
+    ).subscribe((res: any) => {
       if (res.processResult.resultCode !== 200) {
 
         switch (res.processResult.apiReturnMessage) {
@@ -501,17 +490,17 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
             break;
           default:
             const msgBody = 'Error!<br /> Please try again later.';
-            this.showMsgBox(msgBody);
+            this.showMsgBox(msgBody, this.turnBack);
             console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
         }
 
       } else {
         const msgBody = this.translate.instant('universal_userAccount_sendCaptchaChackEmail');
-        this.showMsgBox(msgBody);
+        this.showMsgBox(msgBody, this.turnBack);
       }
 
-      this.sending = false;
+      this.progress = 100;
     });
 
   }
@@ -520,9 +509,8 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
   checkImgCaptcha (e) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputImgCaptcha = e.currentTarget.value;
-
       if (inputImgCaptcha.length === 0) {
-        this.imgCaptcha.cue = this.i18n.errorCaptcha;
+        this.imgCaptcha.cue = errorCaptchaI18nKey;
       } else {
         this.imgCaptcha.code = inputImgCaptcha;
         this.imgCaptcha.cue = '';
@@ -538,10 +526,11 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
       unlockKey: this.imgCaptcha.code
     };
 
-    this.signupService.fetchCaptcha(releaseBody, this.ip).subscribe(res => {
+    this.getClientIpaddress().pipe(
+      switchMap(ipResult => this.signupService.fetchCaptcha(releaseBody, this.requestHeader))
+    ).subscribe((res: any) => {
       if (res.processResult.resultCode === 200) {
         this.imgCaptcha.show = false;
-
         if (action === 'submit') {
           this.submit();
         } else {
@@ -552,12 +541,12 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
         switch (res.processResult.apiReturnMessage) {
           case 'Found a wrong unlock key.':
-            this.imgCaptcha.cue = this.i18n.errorCaptcha;
-            this.sending = false;
+            this.imgCaptcha.cue = errorCaptchaI18nKey;
+            this.progress = 100;
             break;
           default:
             const msgBody = `Error.<br />Please try again later.`;
-            this.showMsgBox(msgBody);
+            this.showMsgBox(msgBody, this.turnBack);
             console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
         }
@@ -570,68 +559,63 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 點擊認證信後送出認證碼並引導至下一步-kidin-1090519
   emailVarify () {
-    if (this.i18n.confirm !== '' && this.i18n.linkExpired !== '') {
-      const body = {
-        resetPasswordFlow: 2,
-        accountType: 1,
-        email: this.formValue.email,
-        verificationCode: this.formValue.verificationCode,
-        project: this.formValue.project
-      };
+    const { email, verificationCode, project } = this.formValue;
+    const body = {
+      resetPasswordFlow: ResetFlow.verify,
+      accountType: SignTypeEnum.email,
+      email,
+      verificationCode,
+      project
+    };
 
-      this.userInfoService.fetchForgetpwd(body, this.ip).subscribe(res => {
-
-        if (res.processResult.resultCode !== 200) {
-
-          let msgBody;
-          switch (res.processResult.apiReturnMessage) {
-            case 'Found attack, update status to lock!':
-            case 'Found lock!':
-              this.getImgCaptcha(res.processResult.imgLockCode);
-              break;
-            case 'Post fail, account was reset password.':
-            case 'Reset password fail, reset time expired.':
-            case 'Check and verification code is invalid.':
-              msgBody = this.i18n.linkExpired;
-              this.showMsgBox(msgBody);
-              break;
-            default:
-              msgBody = 'Error!<br /> Please try again later.';
-              console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
-              this.showMsgBox(msgBody);
-              break;
-          }
-
-        } else {
-          this.formValue.resetPasswordFlow = 3;
-          this.dataIncomplete = true;
+    this.getClientIpaddress().pipe(
+      switchMap(ipResult => this.signupService.fetchForgetpwd(body, this.requestHeader))
+    ).subscribe((res: any) => {
+      if (res.processResult.resultCode !== 200) {
+        let msgBody;
+        switch (res.processResult.apiReturnMessage) {
+          case 'Found attack, update status to lock!':
+          case 'Found lock!':
+            this.getImgCaptcha(res.processResult.imgLockCode);
+            break;
+          case 'Post fail, account was reset password.':
+          case 'Reset password fail, reset time expired.':
+          case 'Check and verification code is invalid.':
+            msgBody = 'universal_userAccount_linkHasExpired';
+            this.showMsgBox(msgBody, this.turnBack);
+            break;
+          default:
+            msgBody = 'Error!<br /> Please try again later.';
+            console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+            this.showMsgBox(msgBody, this.turnBack);
+            break;
         }
 
-        this.sending = false;
-      });
+      } else {
+        this.formValue.resetPasswordFlow = ResetFlow.reset;
+        this.dataIncomplete = true;
+      }
 
-    } else {
-      setTimeout(() => {
-        this.emailVarify();
-      }, 200);
-
-    }
+      this.progress = 100;
+    });
 
   }
 
   // 送出簡訊認證碼並引導至下一步-kidin-1090519
   phoneVarify () {
+    const { countryCode, phone, verificationCode, project } = this.formValue;
     const body = {
-      resetPasswordFlow: 2,
-      accountType: 2,
-      countryCode: this.formValue.countryCode,
-      mobileNumber: +this.formValue.phone,
-      verificationCode: this.formValue.verificationCode,
-      project: this.formValue.project
+      resetPasswordFlow: ResetFlow.verify,
+      accountType: SignTypeEnum.phone,
+      countryCode,
+      mobileNumber: +phone,
+      verificationCode,
+      project
     };
 
-    this.userInfoService.fetchForgetpwd(body, this.ip).subscribe(res => {
-
+    this.getClientIpaddress().pipe(
+      switchMap(ipResult => this.signupService.fetchForgetpwd(body, this.requestHeader))
+    ).subscribe((res: any) => {
       if (res.processResult.resultCode !== 200) {
 
         switch (res.processResult.apiReturnMessage) {
@@ -641,24 +625,24 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
             break;
           case 'SMS Code error.':
           case 'Get phone and sms infomation is not enough.':
-            this.cue.verificationCode = this.i18n.errorCaptcha;
+            this.cue.verificationCode = errorCaptchaI18nKey;
             break;
           case 'Post fail, account is not existing.':
             this.cue.account = 'universal_userAccount_noRegisterData';
             break;
           default:
             const msgBody = 'Error!<br /> Please try again later.';
-            this.showMsgBox(msgBody);
+            this.showMsgBox(msgBody, this.turnBack);
             console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
         }
 
       } else {
-        this.formValue.resetPasswordFlow = 3;
+        this.formValue.resetPasswordFlow = ResetFlow.reset;
         this.dataIncomplete = true;
       }
 
-      this.sending = false;
+      this.progress = 100;
     });
 
   }
@@ -676,27 +660,43 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 重設密碼-kidin-1090519
   resetPWD () {
+    const { email, countryCode, phone, type, password, verificationCode, project } = this.formValue;
     const body: any = {
-      resetPasswordFlow: 3,
-      accountType: this.formValue.type,
-      newPassword: this.formValue.password,
-      verificationCode: this.formValue.verificationCode,
-      project: this.formValue.project
+      resetPasswordFlow: ResetFlow.reset,
+      accountType: type,
+      newPassword: password,
+      verificationCode,
+      project
     };
 
-    if (this.formValue.type === 1) {
-      body.email = this.formValue.email;
+    if (type === SignTypeEnum.email) {
+      body.email = email;
     } else {
-      body.countryCode = this.formValue.countryCode;
-      body.mobileNumber = +this.formValue.phone;
+      body.countryCode = countryCode;
+      body.mobileNumber = +phone;
     }
 
-    this.userInfoService.fetchForgetpwd(body, this.ip).subscribe(res => {
-
+    this.getClientIpaddress().pipe(
+      switchMap(ipResult => this.signupService.fetchForgetpwd(body, this.requestHeader))
+    ).subscribe((res: any) => {
       let msgBody;
-      if (res.processResult.resultCode !== 200) {
-        msgBody = 'Error!<br /> Please try again later.';
-        console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+      if (!this.utils.checkRes(res, false)) {
+        const { processResult, resultMessage } = res;
+        const resultMsg = processResult ? processResult.apiReturnMessage : resultMessage;
+        switch (resultMsg) {
+          case 'Found attack, update status to lock!':
+          case 'Found lock!':
+            this.getImgCaptcha(processResult.imgLockCode);
+            break;
+          case 'Post fail, account is not existing.':
+            this.cue.account = 'universal_userAccount_noRegisterData';
+            break;
+          default:
+            const msgBody = 'Error. Please try again later.';
+            this.showMsgBox(msgBody, this.turnBack);
+            break;
+        }
+
       } else {
         msgBody = this.translate.instant('universal_userAccount_passwordResetComplete');
         this.newToken = res.resetPassword.newToken;
@@ -704,10 +704,11 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
         this.userProfileService.refreshUserProfile({token: this.newToken});
         this.authService.setLoginStatus(true);
         this.sendTokenToApp(this.newToken);
+        this.flowComplete = true;
       }
 
-      this.showMsgBox(msgBody);
-      this.sending = false;
+      this.showMsgBox(msgBody, this.turnBack);
+      this.progress = 100;
     });
 
   }
@@ -723,36 +724,110 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
       imgLockCode: code
     };
 
-    this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
+    this.getClientIpaddress().pipe(
+      switchMap(ipResult => this.signupService.fetchCaptcha(captchaBody, this.requestHeader))
+    ).subscribe((captchaRes: any) => {
       this.imgCaptcha = {
         show: true,
         imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
         cue: '',
         code: ''
       };
+      
     });
 
   }
 
   // 顯示彈跳視窗訊息-kidin-1090518
-  showMsgBox (msg) {
+  showMsgBox (msg: string, fn: Function) {
+    if (this.pcView) {
+      this.translate.get('hellow world').pipe(
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe(() => {
+        const data = {
+          title: 'Message',
+          body: msg,
+          confirmText: this.translate.instant('universal_operating_confirm')
+        };
+  
+        if (fn) Object.assign(data, { onConfirm: fn.bind(this) });
+  
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          disableClose: true,
+          data
+        });
 
-    this.dialog.open(MessageBoxComponent, {
-      hasBackdrop: true,
-      disableClose: true,
-      data: {
-        title: 'Message',
-        body: msg,
-        confirmText: this.i18n.confirm,
-        onConfirm: this.turnBack.bind(this)
+      });
+
+    } else {
+      this.utils.showSnackBar(msg);
+      if (fn) setTimeout(fn.bind(this), 2000);
+    }
+
+  }
+
+  /**
+   * 顯示國碼選擇清單
+   * @param e {MouseEvent}
+   * @author kidin-1110103
+   */
+   showCountryCodeList(e: MouseEvent) {
+    e.stopPropagation();
+    const { formValue: { type }, displayCountryCodeList } = this;
+    if (type === SignTypeEnum.phone) {
+      if (displayCountryCodeList) {
+        this.unsubscribeClickScrollEvent();
+      } else {
+        this.displayCountryCodeList = true;
+        this.subscribeClickScrollEvent();
       }
+
+    }
+    
+  }
+
+  /**
+   * 訂閱點擊與滾動事件
+   * @author kidin-1110103
+   */
+  subscribeClickScrollEvent() {
+    const targetElement = document.querySelector('main');
+    const clickEvent = fromEvent(document, 'click');
+    const scrollEvent = fromEvent(targetElement, 'scroll');
+    this.clickScrollEvent = merge(clickEvent, scrollEvent).pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.unsubscribeClickScrollEvent();
     });
 
   }
 
+  /**
+   * 取消訂閱全域點擊與滾動事件
+   * @author kidin-1110103
+   */
+  unsubscribeClickScrollEvent() {
+    this.displayCountryCodeList = false;
+    if (this.clickScrollEvent) this.clickScrollEvent.unsubscribe();
+  }
+  
+  /**
+   * 選擇國碼
+   * @param e {MouseEvent}
+   * @param code {string}-所選國碼
+   * @author kidin-1110103
+   */
+  selectCountryCode(e: MouseEvent, code: string) {
+    e.stopPropagation();
+    this.formValue.countryCode = +code.split('+')[1];
+    this.regCheck.countryCodePass = true;
+    this.cue.account = '';  
+    this.unsubscribeClickScrollEvent();
+  }
+
   // 離開頁面則取消隱藏navbar和取消rxjs訂閱-kidin-1090514
   ngOnDestroy () {
-    this.utils.setHideNavbarStatus(false);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }

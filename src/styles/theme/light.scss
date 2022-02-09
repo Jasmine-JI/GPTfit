@@ -40,6 +40,9 @@ $colors-light: (
 }
 
 .theme--change {
-  @include transition(color, 0.5s);
-  @include transition(background-color, 0.5s);
+  @include multiple-transition((
+    color $move-effect,
+    background-color $move-effect
+  ));
+
 }

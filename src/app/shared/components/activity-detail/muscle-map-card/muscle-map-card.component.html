@@ -1323,7 +1323,10 @@
     </svg>
   </section>
   <section id="list__block" class="flexCol">
-    <div *ngFor="let _list of mainPartData" style="overflow-y: scroll;">
+    <div
+      class=""
+      *ngFor="let _list of mainPartData"
+    >
       <div
         class="muscle__training__list"
         id="{{ _list.muscle }}"

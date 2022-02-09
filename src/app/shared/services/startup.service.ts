@@ -27,14 +27,6 @@ export class StartupService {
     if (!this.authService.isLogin()) {
       this.authService.logout();
       return false;
-    } else {
-      // 使用者登入就存取身體資訊供各種圖表使用-kidin-1081212
-      const userProfileBody = {
-        token: this.utils.getToken() || ''
-      };
-
-      this.userProfileService.refreshUserProfile(userProfileBody);
-      return true;
     }
 
   }

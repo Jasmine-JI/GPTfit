@@ -1,9 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ReplaySubject, Observable } from 'rxjs';
 import { tap, switchMap, map, retry } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import moment from 'moment';
 
 const { API_SERVER } = environment.url;
 
@@ -14,6 +13,16 @@ export class UserProfileService {
   ) {}
 
   userProfile$ = new ReplaySubject(1);
+  targetUserInfo$ = new ReplaySubject<any>(1); // 個人頁面的使用者資訊
+
+  /**
+   * api 1009-與第三方軟體連結同步運動資料。
+   * @param body {object}
+   * @author kidin-1090723
+   */
+  updateThirdParty(body: any): Observable<any> {
+    return this.http.post<any>('/api/v2/user/thirdPartyAccess', body);
+  }
 
   /**
    * api 1010-取得會員資料
@@ -23,6 +32,15 @@ export class UserProfileService {
    */
   getUserProfile(body: any) {
     return this.http.post<any>('/api/v2/user/getUserProfile',  body);
+  }
+
+  /**
+   * api 1011-編輯會員資料
+   * @param body {object}
+   * @author kidin-1090723
+   */
+  updateUserProfile(body: any): Observable<any> {
+    return this.http.post<any>('/api/v2/user/editUserProfile', body);
   }
 
   /**
@@ -44,30 +62,49 @@ export class UserProfileService {
    */
   refreshUserProfile(body: any) {
     this.getUserProfile(body).pipe(
-      switchMap(res => this.getMemberAccessRight(body).pipe(
-        map(resp => {
-          const { processResult, signIn } = res,
-                { resultCode: resCodeB } = resp,
-                getRes = processResult && processResult.resultCode === 200 && resCodeB === 200;
-          if (getRes) {
-            Object.assign(
-              res.userProfile,
-              {groupAccessRightList: resp.info.groupAccessRight},
-              {systemAccessRight: this.getAllAccessRight(resp.info.groupAccessRight)},
-              {accountType: signIn.accountType}
-            )
-
-          }
-
-          return res;
-        })
+      switchMap(userProfile => this.getMemberAccessRight(body).pipe(
+        map(accessRight => this.userProfileCombineAccessRight(userProfile, accessRight))
       )),
-      tap(result => {
-        this.userProfile$.next(result.userProfile);
-      }),
       retry(3)
     ).subscribe();
 
+  }
+
+  /**
+   * 將使用者權限加至使用者資訊內
+   * @param userProfile {any}
+   * @param accessRight {any}
+   * @author kidin-110104
+   */
+  userProfileCombineAccessRight(userProfile: any, accessRight: any) {
+    const { processResult, signIn: { accountType, accountStatus } } = userProfile,
+          { resultCode: resCodeB } = accessRight,
+          haveUserProfile = processResult && processResult.resultCode === 200,
+          haveMemberAccessRight = resCodeB === 200;
+    let result: any;
+    if (haveUserProfile && haveMemberAccessRight) {
+      const { userProfile: originUserProfile } = userProfile,
+            { groupAccessRight } = accessRight.info;
+      result = {
+        groupAccessRightList: groupAccessRight,
+        systemAccessRight: this.getAllAccessRight(groupAccessRight),
+        accountType,
+        accountStatus,
+        ...originUserProfile
+      };
+
+    }
+
+    this.setRxUserProfile(result);
+    return result;
+  }
+
+  /**
+   * 儲存會員資料
+   * @param userProfile 
+   */
+  setRxUserProfile(userProfile: any) {
+    this.userProfile$.next(userProfile);
   }
 
   /**
@@ -123,6 +160,15 @@ export class UserProfileService {
   }
 
   /**
+   * 使用nodejs取得指定資訊
+   * @param body {any}
+   * @author kidin-1101112
+   */
+  getAssignInfo(body: any) {
+    return this.http.post<any>(API_SERVER + 'user/alaql', body);
+  }
+
+  /**
    * 手動更新儲存在rxjs內的userProfile
    * @param profile {any}-更新過後的userProfile
    * @author kidin-1100615
@@ -139,6 +185,21 @@ export class UserProfileService {
     this.userProfile$.next(undefined);
   }
 
+  /**
+   * 儲存目標userProfile供個人子頁面使用
+   * @param info {any}-是否進入編輯模式或完成編輯
+   * @author kidin-1100816
+   */
+  setRxTargetUserInfo(info: any) {
+    this.targetUserInfo$.next(info);
+  }
 
+  /**
+   * 取得目標userProfile供個人子頁面使用
+   * @author kidin-1100816
+   */
+  getRxTargetUserInfo(): Observable<any> {
+    return this.targetUserInfo$;
+  }
 
 }

@@ -6,7 +6,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class SafeHtmlPipe implements PipeTransform {
   constructor(private sanitizer: DomSanitizer) {}
   /**
-   * 引入圖片時，可防止xss攻擊（目前引入的圖片為本地端圖片，頭像等圖片url已皆由後端處理過，故可用可不用）
+   * 略過消毒
    * @param _html {string}-網址
    * @returns {string} 
    */
@@ -14,5 +14,7 @@ export class SafeHtmlPipe implements PipeTransform {
     if (_html) {
       return this.sanitizer.bypassSecurityTrustUrl(_html);
     }
+
   }
+  
 }

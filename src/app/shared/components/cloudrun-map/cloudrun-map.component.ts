@@ -18,7 +18,8 @@ import { chinaAndTaiwanBorder } from '../../models/china-border-data';
 import { Unit } from '../../models/bs-constant';
 import { ActivityService } from '../../services/activity.service';
 import { mi } from '../../models/bs-constant';
-import { GroupService } from '../../../containers/dashboard/services/group.service';
+import { GroupService } from '../../services/group.service';
+import { SelectDate } from '../../models/utils-type';
 
 // 若google api或baidu api掛掉則建物件代替，避免造成gptfit卡住。
 const google: any = (window as any).google || { maps: { OverlayView: null }},
@@ -43,7 +44,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input('userList') userList: Array<any>;
   @Input('userId') userId: number;
   @Input('unit') unit: Unit;
-  @Input('selectDate') selectDate: {startDate: string; endDate: string};
+  @Input('selectDate') selectDate: SelectDate;
   @Input('groupId') groupId: string;
   @Input('mapId') mapId: number;
   @Input('mapSource') mapSource: MapSource;

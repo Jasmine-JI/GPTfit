@@ -18,16 +18,13 @@ import { DeviceLogService } from './services/device-log.service';
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
 import { CoachService } from './services/coach.service';
-import { UserInfoService } from './services/userInfo.service';
 import { UtilsService } from '../../shared/services/utils.service';
 import { SharedModule } from '../../shared/shared.module';
-import { GroupService } from './services/group.service';
 import { AccessNamePipe } from './pipes/access-name.pipe';
 import { EditGroupGuard } from './guards/edit-group-guard';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { PeopleSelectorWinComponent } from './components/people-selector-win/people-selector-win.component';
 import { DashboardGuard } from './guards/dashboard-guard';
-import { UnsaveGuard } from '../dashboard/guards/unsave-guard';
 import { ActivityService } from '../../shared/services/activity.service';
 import { ProductErrorLogPipe } from './pipes/product-error-log.pipe';
 import { NgProgressModule } from '@ngx-progressbar/core';
@@ -36,7 +33,6 @@ import { ReportService } from '../../shared/services/report.service';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from '../../shared/interceptors/token.interceptor';
-import { SettingsService } from './services/settings.service';
 import { UserProfileService } from '../../shared/services/user-profile.service';
 import { InnerTestComponent } from './components/inner-test/inner-test.component';
 import { HashIdService } from '../../shared/services/hash-id.service';
@@ -69,9 +65,6 @@ import { MemberListComponent } from './group-v2/group-info/member-list/member-li
 import { AdminListComponent } from './group-v2/group-info/admin-list/admin-list.component';
 import { GroupArchitectureComponent } from './group-v2/group-info/group-architecture/group-architecture.component';
 import { CloudrunReportComponent } from './group-v2/group-info/cloudrun-report/cloudrun-report.component';
-import { ActivityListManageComponent } from './components/official-activity-manage/activity-list-manage/activity-list-manage.component';
-import { EditOfficialActivityComponent } from './components/official-activity-manage/edit-official-activity/edit-official-activity.component';
-import { ParticipantsManageComponent } from './components/official-activity-manage/participants-manage/participants-manage.component';
 import { EditPushMessageComponent } from './components/push-message/edit-push-message/edit-push-message.component';
 import { PushMessageListComponent } from './components/push-message/push-message-list/push-message-list.component';
 import { SystemLogComponent } from './components/system-log/system-log.component';
@@ -87,6 +80,7 @@ import { SettingPreferComponent } from './personal/setting-prefer/setting-prefer
 import { SettingPrivacyComponent } from './personal/setting-privacy/setting-privacy.component';
 import { SettingAccountComponent } from './personal/setting-account/setting-account.component';
 import { ActivityListComponent } from './personal/activity-list/activity-list.component';
+import { GroupService } from '../../shared/services/group.service';
 
 
 @NgModule({
@@ -109,15 +103,11 @@ import { ActivityListComponent } from './personal/activity-list/activity-list.co
     GpxService,
     DeviceLogService,
     CoachService,
-    UserInfoService,
     UtilsService,
-    GroupService,
     EditGroupGuard,
     DashboardGuard,
-    UnsaveGuard,
     ActivityService,
     ReportService,
-    SettingsService,
     UserProfileService,
     HashIdService,
     InnerAdminService,
@@ -126,6 +116,7 @@ import { ActivityListComponent } from './personal/activity-list/activity-list.co
     LifeTrackingService,
     OfficialActivityService,
     PersonCloudrunReport,
+    GroupService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
@@ -168,9 +159,6 @@ import { ActivityListComponent } from './personal/activity-list/activity-list.co
     AdminListComponent,
     GroupArchitectureComponent,
     CloudrunReportComponent,
-    ActivityListManageComponent,
-    EditOfficialActivityComponent,
-    ParticipantsManageComponent,
     EditPushMessageComponent,
     PushMessageListComponent,
     SystemLogComponent,

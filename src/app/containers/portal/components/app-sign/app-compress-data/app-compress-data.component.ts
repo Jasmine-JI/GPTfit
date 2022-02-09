@@ -5,9 +5,19 @@ import { UtilsService } from '../../../../../shared/services/utils.service';
 import { SignupService } from '../../../services/signup.service';
 import moment from 'moment';
 import { AuthService } from '../../../../../shared/services/auth.service';
-import { Subject } from 'rxjs';
+import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
+import { TFTViewMinWidth } from '../../../models/app-webview';
+import { AlaApp } from '../../../../../shared/models/app-id';
+
+
+enum CompressStatus {
+  request,
+  processing,
+  complete,
+  prohibited
+}
 
 @Component({
   selector: 'app-app-compress-data',
@@ -19,18 +29,24 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
   @ViewChild('dataLink') dataLink: ElementRef;
 
   private ngUnsubscribe = new Subject();
+  private resizeSubscription = new Subscription();
+
+  readonly CompressStatus = CompressStatus;
 
   // ui用到的各種flag
   uiFlag = {
-    isLoading: false,
-    copied: false
+    progress: 100,
+    copied: false,
+    tftDevice: false
   };
 
   appSys: AppCode = 0;
   token: string;
+  mobileSize = window.innerWidth < TFTViewMinWidth;
+  requestHeader = {};
 
   compressResp = {
-    status: 0,
+    status: CompressStatus.request,
     archiveLink: '',
     archiveFakeLink: '',
     archiveLinkDate: null,
@@ -49,6 +65,7 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
   ) { }
 
   ngOnInit(): void {
+    this.subscribeResizeEvent();
   }
 
   /**
@@ -62,13 +79,35 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   /**
+   * 訂閱頁面尺寸改變事件
+   * @author kidin-1101230
+   */
+  subscribeResizeEvent() {
+    const resizeEvent = fromEvent(window, 'resize');
+    this.resizeSubscription = resizeEvent.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(e => {
+      this.mobileSize = window.innerWidth < TFTViewMinWidth;
+    });
+
+  }
+
+  /**
    * 確認是否有query string
    * @author kidin-1100120
    */
   checkQueryString(queryString: string) {
-    if (queryString.length > 0 && queryString.split('?')[1].split('=')[0] === 'code') {
+    const query = this.utils.getUrlQueryStrings(queryString);
+    this.requestHeader = {
+      ...this.requestHeader,
+      ...this.utils.headerKeyTranslate(query)
+    };
+
+    const { p: appId, code } = query;
+    this.uiFlag.tftDevice = appId && appId == AlaApp.tft;
+    if (code) {
       const downloadPort = location.hostname === 'www.gptfit.com' ? '6443' : '5443',
-            downloadUrl = `https://${location.hostname}:${downloadPort}/archive/click?${queryString.split('?')[1]}`;
+            downloadUrl = `https://${location.hostname}:${downloadPort}/archive/click?code=${code}`;
       location.href = downloadUrl;
     }
 
@@ -80,6 +119,7 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
    */
   getDeviceSys () {
     this.utils.setHideNavbarStatus(true);
+    this.utils.setDarkModeStatus(true);
     if ((window as any).webkit) {
       this.appSys = 1;
     } else if ((window as any).android) {
@@ -87,6 +127,11 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
     } else {
       this.appSys = 0;
     }
+
+    this.requestHeader = {
+      deviceType: this.appSys,
+      ...this.requestHeader
+    };
 
   }
 
@@ -98,13 +143,9 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
     if (this.appSys === 0) {
       this.token = this.utils.getToken() || '';
     } else {
-      
-      if (location.search.indexOf('tk') > -1) {
-        this.token = location.search.split('?tk=')[1];
-      } else {
-        this.token = '';
-      }
-
+      const { search } = location;
+      const { tk } = this.utils.getUrlQueryStrings(search);
+      this.token = tk ? tk : '';
     }
 
     if (this.token.length === 0) {
@@ -117,13 +158,13 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   /**
-   * 點擊藍色按鈕事件
+   * 點擊按鈕請求資料索取或下載資料
    * @author kidin-1091217
    */
   handleClickBtn() {
-    if (this.compressResp.status === 0) {
+    if (this.compressResp.status === CompressStatus.request) {
       this.applyCompress();
-    } else if (this.compressResp.status === 2) {
+    } else if (this.compressResp.status === CompressStatus.complete) {
       window.open(`${this.compressResp.archiveLink}`, '_self', 'noopener=yes,noreferrer=yes');
     }
 
@@ -160,21 +201,21 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
         flow: 1
       };
 
-      this.uiFlag.isLoading = true;
-      this.signupService.fetchCompressData(body).subscribe(res => {
-        this.uiFlag.isLoading = false;
+      this.uiFlag.progress = 30;
+      this.signupService.fetchCompressData(body, this.requestHeader).subscribe(res => {
+        this.uiFlag.progress = 100;
         const processResult = res.processResult;
         if (processResult.resultCode !== 200) {
           console.error(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
         } else {
           this.compressResp.status = res.status;
 
-          if (res.status === 2) {
+          if (res.status === CompressStatus.complete) {
             this.compressResp.archiveLink = location.hostname === 'www.gptfit.com' ? res.archiveLink.replace('5443', '6443') : res.archiveLink;
             this.compressResp.archiveFakeLink = `https://${location.hostname}/compressData?${res.archiveLink.split('?')[1]}`;
             this.compressResp.archiveLinkDate = moment(res.archiveLinkTimestamp * 1000).format('YYYY-MM-DD');
             this.compressResp.archiveLinkTime = moment(res.archiveLinkTimestamp * 1000).format('HH:mm');
-          } else if (res.status === 3) {
+          } else if (res.status === CompressStatus.prohibited) {
             this.compressResp.cooldownTimestamp = res.cooldownTimestamp;
             this.compressResp.cooldownDate = moment(res.cooldownTimestamp * 1000).format('YYYY-MM-DD');
             this.compressResp.cooldownTime = moment(res.cooldownTimestamp * 1000).format('HH:mm');
@@ -198,9 +239,9 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
       flow: 2
     };
 
-    this.uiFlag.isLoading = true;
-    this.signupService.fetchCompressData(body).subscribe(res => {
-      this.uiFlag.isLoading = false;
+    this.uiFlag.progress = 30;
+    this.signupService.fetchCompressData(body, this.requestHeader).subscribe(res => {
+      this.uiFlag.progress = 100;
       const processResult = res.processResult;
       if (processResult.resultCode !== 200) {
         console.error(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);

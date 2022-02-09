@@ -2,13 +2,10 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { PortalComponent } from './portal.component';
 import { SigninGuard } from '../../shared/guards/signin/signin.guard';
-import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { SportsReportComponent } from '../../shared/components/sports-report/sports-report.component';
-import { MyActivityComponent } from '../../shared/components/my-activity/my-activity.component';
 import { Page404Component } from '../../shared/components/page404/page404.component';
 import { Page403Component } from '../../shared/components/page403/page403.component';
 import { QrcodeUploadComponent } from '../dashboard/components/qrcode-upload/qrcode-upload.component';
-import { OfficialActivityComponent } from './components/official-activity/official-activity.component';
 import { AppSignupComponent } from './components/app-sign/app-signup/app-signup.component';
 import { AppSigninComponent } from './components/app-sign/app-signin/app-signin.component';
 import { AppEnableComponent } from './components/app-sign/app-enable/app-enable.component';
@@ -190,11 +187,17 @@ const routes: Routes = [
         component: AppFirstLoginComponent
       },
       {
-        path: 'official-activity',
-        component: OfficialActivityComponent
+        path: '404',
+        component: Page404Component
       },
-      { path: '404', component: Page404Component },
-      { path: '403', component: Page403Component }
+      {
+        path: '403',
+        component: Page403Component
+      },
+      {
+        path: '**',
+        redirectTo: '404'
+      }
     ]
   }
 ];

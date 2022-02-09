@@ -1,15 +1,15 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
-import { UserInfoService } from '../../services/userInfo.service';
-import { SettingsService } from '../../services/settings.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { privacyObj, allPrivacyItem, PrivacyCode, privacyEditObj } from '../../../../shared/models/user-privacy';
+import { PrivacyObj, allPrivacyItem, PrivacyEditObj } from '../../../../shared/models/user-privacy';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
+import { SelectDate } from '../../../../shared/models/utils-type';
+import { ActivityService } from '../../../../shared/services/activity.service';
 
-enum rangeType {
+enum RangeType {
   date = 1,
   all = 99
 }
@@ -30,7 +30,7 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
   uiFlag = {
     progress: 100,
     expand: false,
-    showEditDialog: <privacyEditObj>null,
+    showEditDialog: <PrivacyEditObj>null,
     batchEdit: false
   };
 
@@ -38,30 +38,29 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
    * 使用者設定
    */
   setting = {
-    activityTracking: [privacyObj.self],
-    activityTrackingReport: [privacyObj.self],
-    lifeTrackingReport: [privacyObj.self]
+    activityTracking: [PrivacyObj.self],
+    activityTrackingReport: [PrivacyObj.self],
+    lifeTrackingReport: [PrivacyObj.self]
   };
 
-  dateRange = rangeType.all;
+  dateRange = RangeType.all;
   selectDate = {
     startDate: '',
     endDate: ''
   };
 
-  openObj = [privacyObj.self];
+  openObj = [PrivacyObj.self];
   userInfo: any;
-  readonly privacyObj = privacyObj;
-  readonly privacyEditObj = privacyEditObj;
-  readonly rangeType = rangeType;
+  readonly PrivacyObj = PrivacyObj;
+  readonly PrivacyEditObj = PrivacyEditObj;
+  readonly RangeType = RangeType;
 
   constructor(
-    private userInfoService: UserInfoService,
-    private settingsService: SettingsService,
     private utils: UtilsService,
     private snackBar: MatSnackBar,
     private translate: TranslateService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private activityService: ActivityService
   ) { }
 
   ngOnInit(): void {
@@ -75,7 +74,7 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
   getRxUserProfile() {
     const checkPrivacy = (privacy: Array<string>) => {
       const transformPrivach = privacy.map(_privacy => +_privacy);
-      if (transformPrivach.includes(privacyObj.anyone)) {
+      if (transformPrivach.includes(PrivacyObj.anyone)) {
         return [...allPrivacyItem];
       } else {
         return transformPrivach;
@@ -83,7 +82,7 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
 
     };
 
-    this.userInfoService.getRxTargetUserInfo().pipe(
+    this.userProfileService.getRxTargetUserInfo().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.userInfo = res;
@@ -116,7 +115,7 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
 
     };
 
-    this.settingsService.updateUserProfile(body).subscribe(res => {
+    this.userProfileService.updateUserProfile(body).subscribe(res => {
       const {processResult} = res as any;
       if (!processResult) {
         const { apiCode, resultMessage, resultCode } = res as any;
@@ -158,26 +157,26 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
    * @param batchEdit {boolean}-是否為批次修改
    * @author kidin-1100923
    */
-  showEditDialog(type: privacyEditObj, batchEdit: boolean) {
+  showEditDialog(type: PrivacyEditObj, batchEdit: boolean) {
     this.uiFlag.showEditDialog = type;
     this.uiFlag.batchEdit = batchEdit;
     if (!batchEdit) {
       const { activityTracking, activityTrackingReport, lifeTrackingReport } = this.setting;
       switch (type) {
-        case privacyEditObj.file:
+        case PrivacyEditObj.file:
           this.openObj = this.utils.deepCopy(activityTracking);
           break;
-        case privacyEditObj.sportsReport:
+        case PrivacyEditObj.sportsReport:
           this.openObj = this.utils.deepCopy(activityTrackingReport);
           break;
-        case privacyEditObj.lifeTracking:
+        case PrivacyEditObj.lifeTracking:
           this.openObj = this.utils.deepCopy(lifeTrackingReport);
           break;
       }
       
     } else {
-      this.openObj = [privacyObj.self];
-      this.dateRange = rangeType.all;
+      this.openObj = [PrivacyObj.self];
+      this.dateRange = RangeType.all;
     }
 
     // 修正日期選擇器會覆蓋生日欄位日期選擇器的問題
@@ -202,13 +201,13 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
     if (!batchEdit) {
       
       switch (showEditDialog) {
-        case privacyEditObj.file:
+        case PrivacyEditObj.file:
           this.setting.activityTracking = this.utils.deepCopy(this.openObj);
           break;
-        case privacyEditObj.sportsReport:
+        case PrivacyEditObj.sportsReport:
           this.setting.activityTrackingReport = this.utils.deepCopy(this.openObj);
           break;
-        case privacyEditObj.lifeTracking:
+        case PrivacyEditObj.lifeTracking:
           this.setting.lifeTrackingReport = this.utils.deepCopy(this.openObj);
           break;
       }
@@ -231,62 +230,62 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
 
   /**
    * 取得所選日期
-   * @param date { {startDate: string; endDate: string} }-所選日期
+   * @param date {SelectDate}-所選日期
    * @author kidin-1100924
    */
-  getSelectDate (date: {startDate: string; endDate: string}) {
+  getSelectDate (date: SelectDate) {
     this.selectDate = date;
   }
   
   /**
    * 選擇開放隱私權的對象
-   * @param obj {PrivacyCode}-開放對象
+   * @param obj {PrivacyObj}-開放對象
    * @author kidin-1100831
    */
-  selectModifyRange(obj: PrivacyCode) {
+  selectModifyRange(obj: PrivacyObj) {
     switch (obj) {
-      case privacyObj.anyone:
+      case PrivacyObj.anyone:
 
-        if (this.openObj.includes(privacyObj.anyone)) {
-          this.openObj = [privacyObj.self];
+        if (this.openObj.includes(PrivacyObj.anyone)) {
+          this.openObj = [PrivacyObj.self];
         } else {
           this.openObj = [...allPrivacyItem];
         }
 
         break;
-      case privacyObj.myGroup:
+      case PrivacyObj.myGroup:
 
-        if (this.openObj.includes(privacyObj.myGroup)) {
+        if (this.openObj.includes(PrivacyObj.myGroup)) {
           this.openObj = this.openObj.filter(_setting => {
-            return _setting !== privacyObj.myGroup && _setting !== privacyObj.anyone;
+            return _setting !== PrivacyObj.myGroup && _setting !== PrivacyObj.anyone;
           });
         } else {
-          this.openObj.push(privacyObj.myGroup);
+          this.openObj.push(PrivacyObj.myGroup);
           // 群組管理員視為同群組成員
-          if (!this.openObj.includes(privacyObj.onlyGroupAdmin)) {
-            this.openObj.push(privacyObj.onlyGroupAdmin);
+          if (!this.openObj.includes(PrivacyObj.onlyGroupAdmin)) {
+            this.openObj.push(PrivacyObj.onlyGroupAdmin);
           }
 
         }
 
         break;
-      case privacyObj.onlyGroupAdmin:
+      case PrivacyObj.onlyGroupAdmin:
 
-        if (this.openObj.includes(privacyObj.onlyGroupAdmin)) {
+        if (this.openObj.includes(PrivacyObj.onlyGroupAdmin)) {
           this.openObj = this.openObj.filter(_setting => {
-            return ![obj, privacyObj.myGroup, privacyObj.anyone].includes(_setting);
+            return ![obj, PrivacyObj.myGroup, PrivacyObj.anyone].includes(_setting);
           });
         } else {
           this.openObj.push(obj);
         }
 
         break;
-      case privacyObj.self:
+      case PrivacyObj.self:
 
         if (this.openObj.length > 1) {
-          this.openObj = [privacyObj.self];
+          this.openObj = [PrivacyObj.self];
         } else {
-          this.openObj = [privacyObj.self, privacyObj.onlyGroupAdmin];
+          this.openObj = [PrivacyObj.self, PrivacyObj.onlyGroupAdmin];
         }
 
         break;
@@ -301,25 +300,25 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
    */
   modifyPrivacy () {
     let body: any;
-    if (this.dateRange === rangeType.all) {
+    if (this.dateRange === RangeType.all) {
       body = {
         token: this.utils.getToken() || '',
         editFileType: this.uiFlag.showEditDialog,
-        rangeType: this.dateRange,
+        RangeType: this.dateRange,
         privacy: this.openObj
       };
     } else {
       body = {
         token: this.utils.getToken() || '',
         editFileType: this.uiFlag.showEditDialog,
-        rangeType: this.dateRange,
+        RangeType: this.dateRange,
         startTime: this.selectDate.startDate,
         endTime: this.selectDate.endDate,
         privacy: this.openObj
       };
     }
 
-    this.settingsService.editPrivacy(body).subscribe(res => {
+    this.activityService.editPrivacy(body).subscribe(res => {
       if (res.resultCode === 200) {
         const refreshBody = {
           token: this.utils.getToken() || ''

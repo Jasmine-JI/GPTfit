@@ -1,4 +1,6 @@
 @import 'transition.scss';
+@import 'font.scss';
+
 
 @mixin img-hover($opacity: 0.05) {
   position: absolute;
@@ -14,6 +16,26 @@
   }
 }
 
+.activity__list {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+
+  &:before {
+    content: '';
+    display: block;
+  }
+
+  &:after {
+    content: "."; 
+    visibility: hidden; 
+    display: block; 
+    height: 0; 
+    clear: both;
+  }
+
+}
+
 .list__card, .list__img__block {
   width: 250px;
 }
@@ -26,6 +48,7 @@
   cursor: pointer;
   border: 1px solid rgba(200, 200, 200, 1);
   overflow: hidden;
+  float: left;
 
   &:hover {
     left: -1px;
@@ -58,13 +81,15 @@
   z-index: 1;
 }
 
+.list__card__info {
+  padding: 3px;
+}
+
 .list__title {
+  @include text-overflow(190px, ellipsis);
   font-weight: bold;
   font-size: 14px;
   color: var(--scale-75-230);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 
@@ -84,7 +109,12 @@
 
 @media(max-width: 485px) {
 
-  .list__card, .list__img__block {
+  .list__card {
+    width: 100%;
+    margin: 5px 0;
+  }
+
+  .list__img__block {
     width: 100%;
   }
 

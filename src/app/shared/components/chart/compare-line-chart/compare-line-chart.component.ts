@@ -14,7 +14,7 @@ import {
   landingColor,
   restHrColor
 } from '../../../models/chart-data';
-import { unit, Unit } from '../../../models/bs-constant';
+import { Unit } from '../../../models/bs-constant';
 import { day, month, week } from '../../../models/utils-constant';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -92,7 +92,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() searchDate: Array<number>;
   @Input() chartHeight = <number>110;
   @Input() page: DisplayPage;
-  @Input() unit = <Unit>unit.metric;
+  @Input() unit = <Unit>Unit.metric;
   @Input() isPreviewMode: boolean = false;
   @ViewChild('container', {static: false})
   container: ElementRef;

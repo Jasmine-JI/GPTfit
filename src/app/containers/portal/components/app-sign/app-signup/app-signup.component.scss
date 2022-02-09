@@ -1,3 +1,12 @@
+@import 'button.scss';
+@import 'flex-center.scss';
+@import 'font.scss';
+@import 'transition.scss';
+@import 'overflow-scroll';
+
+$content-background-color: rgba(34, 34, 34, 1);
+$app-icon-size: 80px;
+
 .terms__section {
   width: 100vw;
   height: calc(100vh - 10px);
@@ -15,4 +24,142 @@
   position: absolute;
   top: -10px;
   right: -10px;
+}
+
+.tft__page {
+  padding: 0 3vw;
+  justify-content: space-between;
+
+  >:first-child {
+    width: 66%;
+  }
+
+}
+
+.tft__Page__title {
+  @include bold-font(16px);
+  width: 50%;
+}
+
+.disable__title {
+  color: rgba(126, 126, 126, 1);
+}
+
+.divide__line {
+  margin: 0 0 20px 0;
+  border-bottom: 1px solid white;
+}
+
+.tft__page__content {
+
+  >div {
+    width: 50%;
+  }
+
+}
+
+.policy__link__button {
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+.sub__button {
+  @include button(16px, none, rgba(144, 144, 144, 1)) {
+    color: white;
+    border-radius: 5px;
+    width: 45%;
+    min-width: 100px;
+    padding: 5px 10px;
+  };
+  
+}
+
+.tft__content__area {
+  width: 80%;
+}
+
+.area__description {
+  font-size: 14px;
+}
+
+.account__area {
+  align-items: center;
+
+  >input {
+    width: 100%;
+  }
+
+}
+
+.password__area {
+  justify-content: space-between;
+}
+
+.content__dialog {
+  @include center();
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.policy__content {
+  align-items: center;
+  width: 95vw;
+  max-width: 1200px;
+  background-color: $content-background-color;
+  color: white;
+  border-radius: 10px;
+  padding: 20px;
+  margin: auto;
+
+  >div {
+    height: 60vh;
+    @include overflow-y-scroll();
+  }
+
+}
+
+.close__button {
+  margin-top: 20px;
+}
+
+#aside__bar {
+  position: relative;
+  align-items: center;
+  top: 0;
+  padding: 10px;
+  width: 300px;
+}
+
+.app__icon {
+  padding: 5px;
+
+  >img {
+    height: $app-icon-size;
+    width: $app-icon-size;
+  }
+  
+}
+
+.aside__slogan {
+  margin-top: 10vh;
+  padding: 0 10px;
+  color: white;
+  white-space: pre-wrap;
+  text-align: center;
+}
+
+.checkbox__label {
+  margin: 0;
+}
+
+.mobile__content {
+  align-items: center;
+}
+
+.mobile__footer {
+  min-height: 30vh;
 }

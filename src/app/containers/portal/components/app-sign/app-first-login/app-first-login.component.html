@@ -73,7 +73,7 @@
     </div>
     <button
       class="appview-btn"
-      [class.appview-btn-unclickable]="sending"
+      [class.appview-unclickable]="sending"
       (click)="submit()"
     >
       <span>{{ 'universal_operating_send' | translate }}</span>
@@ -163,7 +163,7 @@
             <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
               <button
                 class="btn btn-primary access-btn"
-                [class.appview-btn-unclickable]="sending"
+                [class.appview-unclickable]="sending"
                 [style.background]="sending ? '#2b819b54' : ''"
                 (click)="submit()"
               >

@@ -1,3 +1,5 @@
+@import 'overflow-scroll';
+
 .navabar-color a {
   color: #fff;
 }
@@ -68,9 +70,9 @@ input[type='email']::-webkit-input-placeholder {
 
 @media (max-width: 991px) {
   .show {
+    @include overflow-y-scroll();
     z-index: 5;
     max-height: calc(100vh - 65px);
-    overflow-y: scroll;
   }
 
   .nav-rwd {

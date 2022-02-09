@@ -1,66 +1,99 @@
-<ng-container>
-  <div class="flexCol">
-    <div class="flexRow appHeader" style="justify-content: space-between;">
-      <i
-        class="icon-svg_web-icon_p1_073-level_fold"
-        style="font-size: 30px; cursor: pointer;"
-        (click)="turnBack()"
-      ></i>
-      <span class="appview-header appview-header-position">
-        {{ 'universal_userAccount_performDataArchiving' | translate }}
-      </span>
+<app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
+<nav>
+  <button
+    class="flexRow appview-backButton"
+    (click)="turnBack()"
+  >
+    <i class="icon-svg_web-icon_p1_016-back"></i>
+    <span>{{ 'universal_operating_back' | translate }}</span>
+  </button>
+</nav>
+<main class="appview-whiteText">
+  <div class="flexCol appview-contentArea">
+    <h4
+      [ngClass]="{
+        'appview-tftPageTitle': !mobileSize,
+        'appview-mobilePageTitle': mobileSize
+      }"
+    >
+      {{ 'universal_userAccount_performDataArchiving' | translate }}
+    </h4>
+    <div class="flexCol">
+      <div class="flexCol appview-contentDetail">
+        <p style="margin: 0;">
+          {{ 'universal_userAccount_dataArchivingInstructions' | translate }}
+        </p>
+      </div>
+      <ng-container
+        *ngIf="![CompressStatus.complete, CompressStatus.prohibited].includes(compressResp.status)"
+      >
+        <div *ngTemplateOutlet="mainButton"></div>
+      </ng-container>
+      <div
+        class="flexCol appview-contentDetail"
+        *ngIf="[CompressStatus.complete, CompressStatus.prohibited].includes(compressResp.status)"
+      >
+        <ng-contaiiner *ngIf="compressResp.status === CompressStatus.complete">
+          <p>
+            {{ 'universal_userAccount_downloadPeriod' | translate: {
+              'yyyy-mm-dd': compressResp.archiveLinkDate,
+              'HH:MM': compressResp.archiveLinkTime
+            } }}
+          </p>
+          <textarea
+            #dataLink
+            id="compress__link"
+            [value]="compressResp.archiveFakeLink"
+            readonly
+          ></textarea>
+        </ng-contaiiner>
+        <p
+          style="color: rgba(255, 150, 150, 1); margin: 0;"
+          *ngIf="compressResp.status === CompressStatus.prohibited"
+        >
+          {{ 'universal_userAccount_duplicateArchive' | translate: {
+            'yyyy-mm-dd': compressResp.cooldownDate,
+            'HH:MM': compressResp.cooldownTime
+          } }}
+        </p>
+      </div>
+      <ng-container 
+        *ngIf="
+          (compressResp.status === CompressStatus.complete && !uiFlag.tftDevice)
+          || compressResp.status === CompressStatus.prohibited
+        "
+      >
+        <div *ngTemplateOutlet="mainButton"></div>
+      </ng-container>
     </div>
-    <section style="margin: 0 auto; max-width: 440px; padding: 0 20px;">
-      <div style="display: flex; justify-content: center; align-items: flex-start; margin: 20px 0;" *ngIf="compressResp.status !== 3">
-        {{ 'universal_userAccount_dataArchivingInstructions' | translate }}
-      </div>
-      <span style="color: red; margin-bottom: 10px;" *ngIf="compressResp.status === 1">
-        {{ 'universal_userAccount_undone' | translate }}
-      </span>
-      <div class="flexCol" *ngIf="compressResp.status === 2">
-        <span style="margin: 10px 0;">
-          {{ 'universal_userAccount_completeDataArchiving' | translate }}
-        </span>
-        <span style="color: red; margin-bottom: 10px;">
-          {{ 'universal_userAccount_downloadPeriod' | translate: {'yyyy-mm-dd': compressResp.archiveLinkDate, 'HH:MM': compressResp.archiveLinkTime } }}
-        </span>
-        <textarea
-          #dataLink
-          style="margin-bottom: 10px; border: 1px solid rgba(200, 200, 200, 1); font-size: 10px; height: 150px; overflow: scroll; outline: none; resize: none;"
-          [value]="compressResp.archiveFakeLink"
-          readonly
-        ></textarea>
-      </div>
-      <span style="display: block; margin: 20px 0 40px 0;" *ngIf="compressResp.status === 3">
-        {{ 'universal_userAccount_duplicateArchive' | translate: {'yyyy-mm-dd': compressResp.cooldownDate, 'HH:MM': compressResp.cooldownTime } }}
-      </span>
-      <button
-        style="margin-top: 0px; display: block;"
-        class="appview-btn"
-        [class.appview-btn-unclickable]="uiFlag.isLoading || compressResp.status === 1 || compressResp.status === 3"
-        (click)="handleClickBtn()"
-      >
-        <span *ngIf="compressResp.status === 0 || compressResp.status === 3">
-          {{ 'universal_userAccount_performDataArchiving' | translate }}
-        </span>
-        <span *ngIf="compressResp.status === 1 || compressResp.status === 2">
-          {{ 'universal_operating_download' | translate }}
-        </span>
-        <i *ngIf="uiFlag.isLoading" class="fa fa-spinner fa-pulse"></i>
-      </button>
-<!--
-      <button
-        style="margin-top: 0px; display: block; background-color: white; color: black; font-size: 16px; height: 20px;"
-        class="appview-btn"
-        (click)="handleCopyLink()"
-        *ngIf="compressResp.status === 2"
-      >
-        <span>
-          {{ 'universal_userAccount_copyLink' | translate }}
-        </span>
-      </button>
--->
-    </section>
   </div>
-</ng-container>
-
+</main>
+<ng-template #mainButton>
+  <div class="appview-buttonArea" [ngSwitch]="compressResp.status">
+    <button
+      class="appview-submitButton appview-center appview-unclickable"
+      *ngSwitchCase="CompressStatus.processing"
+    >
+      {{ 'universal_status_processing' | translate }}
+    </button>
+    <button
+      class="appview-submitButton appview-center"
+      [class.appview-unclickable]="uiFlag.progress !== 100"
+      (click)="handleClickBtn()"
+      *ngSwitchCase="CompressStatus.complete"
+    >
+      {{ 'universal_operating_download' | translate }}
+    </button>
+    <button
+      class="appview-submitButton appview-center"
+      [class.appview-unclickable]="
+        uiFlag.progress !== 100
+        || compressResp.status === CompressStatus.prohibited
+      "
+      (click)="handleClickBtn()"
+      *ngSwitchDefault
+    >
+      {{ 'universal_userAccount_performDataArchiving' | translate }}
+    </button>
+  </div>
+</ng-template>

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { GroupService } from '../../../services/group.service';
+import { GroupService } from '../../../../../shared/services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { ReportService } from '../../../../../shared/services/report.service';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
@@ -22,7 +22,7 @@ import {
   ballData,
   Regression
 } from '../../../../../shared/models/sports-report';
-import { Unit, mi, unit } from '../../../../../shared/models/bs-constant';
+import { Unit, mi } from '../../../../../shared/models/bs-constant';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import {
   costTimeColor,
@@ -37,7 +37,7 @@ import {
 import { GroupLevel, SettingObj } from '../../../../dashboard/models/group-detail';
 import { MuscleCode, MuscleGroup } from '../../../../../shared/models/weight-train';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { hrBase } from '../../../models/userProfileInfo';
+import { HrBase } from '../../../models/userProfileInfo';
 
 
 @Component({
@@ -227,7 +227,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     },
     hrzone: [0, 0, 0, 0, 0, 0],
     hrInfo: {
-      hrBase: hrBase.max,
+      hrBase: HrBase.max,
       z0: 'Z0',
       z1: 'Z1',
       z2: 'Z2',
@@ -351,7 +351,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   userInfo = {
     id: null,
     accessRight: null,
-    unit: <Unit>unit.metric
+    unit: <Unit>Unit.metric
   }
 
   /**
@@ -376,7 +376,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   readonly mi = mi;
   readonly tableLength = 8; // 分析列表預設顯示長度
   readonly groupLevelEnum = GroupLevel;
-  readonly unitEnum = unit;
+  readonly unitEnum = Unit;
   readonly sportCode = SportCode;
   groupFilterLevel = [30, 40, 60];  // 團體分析可篩選的階層
   dateLen = 0; // 報告橫跨天數/週數
@@ -721,7 +721,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       },
       hrzone: [0, 0, 0, 0, 0, 0,],
       hrInfo: {
-        hrBase: hrBase.max,
+        hrBase: HrBase.max,
         z0: 'Z0',
         z1: 'Z1',
         z2: 'Z2',
@@ -2594,7 +2594,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     switch (type) {
       case SportCode.cycle:
       case SportCode.ball:
-        if (userUnit === unit.metric) {  // km/h
+        if (userUnit === Unit.metric) {  // km/h
           avgVal = (avgSpeed / denominator) || 0;
           avgMaxVal = (avgMaxSpeed / denominator) || 0;
         } else {  // mi/h

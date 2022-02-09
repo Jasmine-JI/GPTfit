@@ -8,15 +8,15 @@ import { ShareGroupInfoDialogComponent } from '../../../../shared/components/sha
 import { GroupDetailInfo, UserSimpleInfo, EditMode } from '../../models/group-detail';
 import moment from 'moment';
 import { UtilsService } from '../../../../shared/services/utils.service';
-import { GroupService } from '../../services/group.service';
+import { GroupService } from '../../../../shared/services/group.service';
 import { HashIdService } from '../../../../shared/services/hash-id.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { v5 as uuidv5 } from 'uuid';
 import { ImageUploadService } from '../../services/image-upload.service';
-import { AlbumType, albumType } from '../../../../shared/models/image';
+import { AlbumType } from '../../../../shared/models/image';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { PrivacySettingDialogComponent } from '../../../../shared/components/privacy-setting-dialog/privacy-setting-dialog.component';
-import { unit } from '../../../../shared/models/bs-constant';
+import { Unit } from '../../../../shared/models/bs-constant';
 import { DashboardService } from '../../services/dashboard.service';
 
 const errMsg = `Error.<br />Please try again later.`;
@@ -62,7 +62,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   user = <UserSimpleInfo>{
     nickname: '',
     userId: null,
-    unit: unit.metric,
+    unit: Unit.metric,
     token: '',
     accessRight: [],
     joinStatus: 2,
@@ -209,10 +209,11 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as any,
           headerDescriptionBlock = document.querySelectorAll('.info-headerDescriptionBlock')[0],
           headerDescription = document.querySelectorAll('.info-headerDescription')[0],
-          scenerySection = document.querySelectorAll('.info-scenerySection')[0],
-          { top: barTop } = pageListBar.getBoundingClientRect(),
-          { bottom: descBottom } = headerDescription.getBoundingClientRect(),
-          { width } = scenerySection.getBoundingClientRect();
+          scenerySection = document.querySelectorAll('.info-scenerySection')[0];
+    if (pageListBar && headerDescription && scenerySection) {
+      const { top: barTop } = pageListBar.getBoundingClientRect(),
+            { bottom: descBottom } = headerDescription.getBoundingClientRect(),
+            { width } = scenerySection.getBoundingClientRect();
       if (barTop <= 51 && descBottom < 50) {
         pageListBar.classList.add('info-pageListBar-fixed');
         headerDescriptionBlock.classList.add('info-pageListBar-replace');  // 填充原本功能列的高度
@@ -228,6 +229,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
               { left } = cardSection.getBoundingClientRect();
         pageListBar.style.left = `${left}px`;
       }
+
+    }
 
   }
 
@@ -271,7 +274,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   upLoadImg(editMode: EditMode) {
     if (editMode === 'complete' && this.editImage.edited) {
       let imgArr = [];
-
       const formData = new FormData();
       formData.set('token', this.utils.getToken());
       formData.set('targetType', '2');
@@ -283,13 +285,13 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         if (this.editImage.icon.base64 !== null) {
           const fileName = this.createFileName(imgArr.length, this.currentGroupInfo.groupDetail.groupId);
           imgArr.unshift({
-            albumType: albumType.groupIcon,
+            albumType: AlbumType.groupIcon,
             fileNameFull: `${fileName}.jpg`
           })
 
           formData.append(
             'file',
-            this.utils.base64ToFile(albumType.groupIcon, this.editImage.icon.base64, fileName)
+            this.utils.base64ToFile(this.editImage.icon.base64, fileName)
           );
 
         }
@@ -298,13 +300,13 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         if (this.editImage.scenery.base64 !== null) {   
           const fileName = this.createFileName(imgArr.length, this.currentGroupInfo.groupDetail.groupId);
           imgArr.unshift({
-            albumType: albumType.groupScenery,
+            albumType: AlbumType.groupScenery,
             fileNameFull: `${fileName}.jpg`
           })
 
           formData.append(
             'file',
-            this.utils.base64ToFile(albumType.groupScenery, this.editImage.scenery.base64, fileName)
+            this.utils.base64ToFile(this.editImage.scenery.base64, fileName)
           );
 
         }
@@ -320,13 +322,13 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
           if (this.editImage.icon.base64 !== null) {
             const fileName = this.createFileName(imgArr.length, this.newGroupId);
             imgArr.unshift({
-              albumType: albumType.groupIcon,
+              albumType: AlbumType.groupIcon,
               fileNameFull: `${fileName}.jpg`
             })
 
             formData.append(
               'file',
-              this.utils.base64ToFile(albumType.groupIcon, this.editImage.icon.base64, fileName)
+              this.utils.base64ToFile(this.editImage.icon.base64, fileName)
             );
 
           }
@@ -335,13 +337,13 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
           if (this.editImage.scenery.base64 !== null) {   
             const fileName = this.createFileName(imgArr.length, this.newGroupId);
             imgArr.unshift({
-              albumType: albumType.groupScenery,
+              albumType: AlbumType.groupScenery,
               fileNameFull: `${fileName}.jpg`
             })
 
             formData.append(
               'file',
-              this.utils.base64ToFile(albumType.groupScenery, this.editImage.scenery.base64, fileName)
+              this.utils.base64ToFile(this.editImage.scenery.base64, fileName)
             );
           }
 
@@ -1412,7 +1414,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     if (e.action === 'complete') {
 
       this.editImage.edited = true;
-      if (e.img.albumType === albumType.groupIcon) {
+      if (e.img.albumType === AlbumType.groupIcon) {
         this.editImage.icon.origin = e.img.origin;
         this.editImage.icon.base64 = e.img.base64;
       } else {

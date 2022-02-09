@@ -1,0 +1,308 @@
+@import 'transition.scss';
+@import 'check-box.scss';
+@import 'button.scss';
+@import 'font.scss';
+@import 'keyframes.scss';
+@import 'overflow-scroll';
+
+$border-style: 3px solid;
+$animation-setting: 0.5s $transition-effect;
+
+@mixin page-title($width) {
+  @include bold-font(16px);
+  width: $width;
+}
+
+@mixin app-button ($bg-color, $font-color) {
+
+  @include button(16px, none, $bg-color) {
+    color: $font-color;
+    border-radius: 5px;
+    width: 45%;
+    min-width: 120px;
+    padding: 5px 10px;
+    margin: 10px 0;
+  };
+
+}
+
+@mixin drop-hint($border-top, $border-aside, $border-color) {
+
+  &:after {
+    content: '';
+    border-style: solid;
+    border-width: $border-top $border-aside 0px $border-aside;
+    border-color: $border-color transparent transparent transparent;
+    @include transition(transform);
+  }
+
+}
+
+@mixin drop-menu($top, $width, $height: 200px) {
+  list-style: none;
+  position: absolute;
+  background-color: rgba(75, 75, 75, 1);
+  top: $top;
+  left: 0;
+  z-index: 1;
+  padding: 0;
+  width: 180px;
+  max-height: 200px;
+  cursor: pointer;
+  @include overflow-y-scroll();
+
+  >li {
+    padding: 5px;
+    font-size: 14px;
+
+    &:hover {
+      background-color: rgba(100, 100, 100, 1);
+      color: white;
+    }
+
+  }
+
+}
+
+@mixin selector-list($width) {
+  display: inline-block;
+  width: $width;
+}
+
+.appview-backButton {
+  color: white;
+  align-items: center;
+  margin: 3vh 2vw;
+
+  >i {
+    font-size: 24px;
+  }
+
+}
+
+@mixin tft-page-title($color) {
+  @include page-title(100%);
+  padding: 0.5rem;
+  margin-bottom: 20px;
+  color: $color;
+  border-bottom: $border-style $color;
+}
+
+.appview-whiteText {
+  color: white;
+}
+
+.appview-tftPageTitle {
+  @include tft-page-title(white);
+}
+
+.appview-tftAlertTitle {
+  @include tft-page-title(rgba(238, 98, 98, 1));
+}
+
+.appview-mobilePageTitle {
+  @include page-title(90%);
+  margin-left: 10vw;
+}
+
+.appview-inputLabel {
+  font-size: 16px;
+  color: rgba(215, 215, 215, 1);
+}
+
+.appview-sectionSubTitle {
+  font-size: 14px;
+  color: rgba(150, 150, 150, 1);
+}
+
+.appview-activeLine {
+  position: relative;
+  border-bottom: $border-style white;
+  width: 50%;
+  @include multiple-transition(left 0.5s $transition-effect);
+}
+
+.appview-contentArea {
+  width: 300px;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.appview-contentDetail {
+  min-height: 100px;
+  background-color: rgba(34, 34, 34, 1);
+  border-radius: 10px;
+  padding: 3vh 20px;
+  margin-bottom: 10px;
+
+  >p {
+
+    &:last-of-type {
+      margin: 0;
+    }
+
+  }
+
+}
+
+.appview-agreeCheckbox {
+  width: fit-content;
+  margin: 20px 0 20px 20px;
+
+  >div {
+    @include aria-checkBox(20px);
+  }
+
+}
+
+.appview-buttonArea {
+  width: 80%;
+  min-width: 300px;
+}
+
+.appview-submitButton {
+  @include app-button(rgba(48, 60, 63, 1), white);
+}
+
+.appview-cancelButton {
+  @include app-button(rgba(197, 197, 197, 1), black);
+}
+
+.appview-alertButton {
+  @include app-button(rgba(140, 28, 49, 1), white);
+}
+
+.appview-subButton {
+  @include app-button(rgba(150, 150, 150, 1), white);
+}
+
+.appview-right {
+  float: right;
+}
+
+.appview-left {
+  float: left;
+}
+
+.appview-center {
+  margin: 0 auto;
+}
+
+.appview-unclickable {
+  @include transition(opacity);
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.appview-dataInput {
+  border: none;
+  outline: none;
+  color: white;
+  width: 100%;
+
+  &::placeholder {
+    font-size: 14px;
+    opacity: 1;
+    padding: 2px 0;
+  }
+  
+}
+
+.appview-inputBorder {
+  border-bottom: 1px solid white;
+}
+
+.appview-alertHint {
+  min-height: 18px;
+  color: red;
+  font-size: 12px;
+}
+
+.appview-hint {
+  color: rgba(150, 150, 150, 1);
+}
+
+.appview-countryCodeSelector {
+  position: relative;
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-right: 5px;
+  cursor: pointer;
+  @include drop-hint(6px, 4px, white);
+}
+
+.appview-countryCodeList {
+  @include drop-menu(27px, 180px);
+}
+
+.appview-countryNumber {
+  @include selector-list(45px);
+}
+
+.appview-countryName {
+  @include selector-list(100px);
+}
+
+.appview-smsInput {
+  width: 70%;
+  margin-bottom: 10px;
+}
+
+.appview-timeCount {
+  display: inline-block;
+  min-width: 28px;
+  font-size: 12px;
+}
+
+.appview-showPassword {
+
+  >i {
+    font-size: 26px;
+  }
+
+}
+
+.appview-breakAccount {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.appview-bottomSlideIn {
+  position: relative;
+  animation: bottom-in 0.5s 1;
+  animation-timing-function: ease-in;
+  @include keyframes(bottom-in) {
+    0% {
+      opacity: 0;
+      top: 100px;
+    }
+
+    100% {
+      opacity: 1;
+      top: 0;
+    }
+
+  }
+
+}
+
+.appview-rightSlideIn {
+  position: relative;
+  animation: right-in 0.5s 1;
+  animation-timing-function: ease-in;
+  @include keyframes(right-in) {
+    0% {
+      opacity: 0;
+      left: 100px;
+    }
+
+    100% {
+      opacity: 1;
+      left: 0;
+    }
+
+  }
+
+}

@@ -1,4 +1,5 @@
 @import 'transition.scss';
+@import 'overflow-scroll';
 
 
 .version {
@@ -10,21 +11,38 @@
   opacity: 0.3;
 }
 
+#aside__menu {
+  justify-content: space-between;
+  height: 90vh;
+  overflow-x: hidden;
+  @include overflow-y-scroll(false);
+}
+
 .main-body {
   width: calc(100% - 273px);
   position: relative;
   flex-grow: 1;
   height: 100vh;
   padding: 60px 0 0 0;
-  overflow-y: scroll;
   background-color: var(--scale-255-0);
+  @include overflow-y-scroll();
 }
 
 .main-body.preview {
   margin-top: 0px;
   padding: 5px 0 0 0;
-  overflow: scroll;
+  @include overflow-y-scroll();
 }
+
+.expand__mask {
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.3);
+  width: 100vw;
+  height: 100vh;
+  z-index: 998;
+  overflow: hidden;
+}
+
 .container {
   padding: 20px 10px 60px 10px;
   min-height: calc(100vh - 60px);

@@ -24,10 +24,8 @@ import { MessageBoxComponent } from '../../shared/components/message-box/message
 import { RandomCodeService } from './services/random-code.service';
 import { SignupService } from './services/signup.service';
 import { ForgetService } from './services/forget.service';
-import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { UserProfileService } from '../../shared/services/user-profile.service';
 import { CustomMaterialModule } from '../../shared/custom-material.module';
-import { BasicInfoComponent } from './components/user-profile/basic-info/basic-info.component';
 import { ActivityService } from '../../shared/services/activity.service';
 import { ReportService } from '../../shared/services/report.service';
 import { ActivityOtherDetailsService } from '../../shared/services/activity-other-details.service';
@@ -41,10 +39,10 @@ import { AppChangeAccountComponent } from './components/app-sign/app-change-acco
 import { AppQrcodeLoginComponent } from './components/app-sign/app-qrcode-login/app-qrcode-login.component';
 import { AppFirstLoginComponent } from './components/app-sign/app-first-login/app-first-login.component';
 import { QRCodeModule } from 'angularx-qrcode';
-import { OfficialActivityComponent } from './components/official-activity/official-activity.component';
-import { OfficialActivityService } from '../../shared/services/official-activity.service';
 import { AppCompressDataComponent } from './components/app-sign/app-compress-data/app-compress-data.component';
 import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-account/app-destroy-account.component';
+import { HashIdService } from '../../shared/services/hash-id.service';
+import { GroupService } from '../../shared/services/group.service';
 
 @NgModule({
   imports: [
@@ -77,8 +75,9 @@ import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-ac
     ActivityService,
     ReportService,
     ActivityOtherDetailsService,
+    HashIdService,
     DetectInappService,
-    OfficialActivityService,
+    GroupService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: EmptyResponseBodyErrorInterceptor,
@@ -89,8 +88,6 @@ import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-ac
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [
     PortalComponent,
-    UserProfileComponent,
-    BasicInfoComponent,
     AppSignupComponent,
     AppSigninComponent,
     AppEnableComponent,
@@ -99,7 +96,6 @@ import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-ac
     AppModifypwComponent,
     AppQrcodeLoginComponent,
     AppFirstLoginComponent,
-    OfficialActivityComponent,
     AppCompressDataComponent,
     AppDestroyAccountComponent
   ],

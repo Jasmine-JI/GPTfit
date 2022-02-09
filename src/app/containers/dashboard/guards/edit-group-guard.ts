@@ -7,9 +7,9 @@ import {
 } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { GroupService } from '../services/group.service'
-import { UtilsService } from '@shared/services/utils.service';
-import { HashIdService } from '@shared/services/hash-id.service';
+import { GroupService } from '../../../shared/services/group.service'
+import { UtilsService } from '../../../shared/services/utils.service';
+import { HashIdService } from '../../../shared/services/hash-id.service';
 
 @Injectable()
 export class EditGroupGuard implements CanActivate {

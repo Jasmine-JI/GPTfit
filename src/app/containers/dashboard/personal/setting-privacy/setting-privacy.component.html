@@ -38,7 +38,7 @@
       <span class="contentDescription">
         {{ 'universal_system_fileDetailPrivDesc' | translate }}
       </span>
-      <button class="editBtn" (click)="showEditDialog(privacyEditObj.file, false)">
+      <button class="editBtn" (click)="showEditDialog(PrivacyEditObj.file, false)">
         <i class="icon-svg_web-icon_p3_079-new-window openDialogIcon"></i>
       </button>
     </div>
@@ -56,7 +56,7 @@
       <span class="contentDescription">
         {{ 'universal_system_reportPrivDesc' | translate }}
       </span>
-      <button class="editBtn" (click)="showEditDialog(privacyEditObj.sportsReport, false)">
+      <button class="editBtn" (click)="showEditDialog(PrivacyEditObj.sportsReport, false)">
         <i class="icon-svg_web-icon_p3_079-new-window openDialogIcon"></i>
       </button>
     </div>
@@ -74,7 +74,7 @@
       <span class="contentDescription">
         {{ 'universal_system_lifeTrackingPrivDesc' | translate }}
       </span>
-      <button class="editBtn" (click)="showEditDialog(privacyEditObj.lifeTracking, false)">
+      <button class="editBtn" (click)="showEditDialog(PrivacyEditObj.lifeTracking, false)">
         <i class="icon-svg_web-icon_p3_079-new-window openDialogIcon"></i>
       </button>
     </div>
@@ -94,7 +94,7 @@
           <button
             id="patch__edit__file"
             class="folderIcon"
-            (click)="showEditDialog(privacyEditObj.file, true)"
+            (click)="showEditDialog(PrivacyEditObj.file, true)"
           >
             <i class="icon-svg_web-icon_p3_079-new-window"></i>
           </button>
@@ -106,7 +106,7 @@
           <button
             id="patch__edit__report"
             class="folderIcon"
-            (click)="showEditDialog(privacyEditObj.sportsReport, true)"
+            (click)="showEditDialog(PrivacyEditObj.sportsReport, true)"
           >
             <i class="icon-svg_web-icon_p3_079-new-window"></i>
           </button>
@@ -118,7 +118,7 @@
           <button
             id="patch__edit__lifeTracking"
             class="folderIcon"
-            (click)="showEditDialog(privacyEditObj.lifeTracking, true)"
+            (click)="showEditDialog(PrivacyEditObj.lifeTracking, true)"
           >
             <i class="icon-svg_web-icon_p3_079-new-window"></i>
           </button>
@@ -143,17 +143,17 @@
           {{ 'universal_privacy_set' | translate }}
         </ng-container>
         <ng-container *ngIf="uiFlag.batchEdit">
-          <ng-container *ngIf="uiFlag.showEditDialog === privacyEditObj.file">
+          <ng-container *ngIf="uiFlag.showEditDialog === PrivacyEditObj.file">
             {{ 'universal_privacy_batchEditPrivacy' | translate: {
               object: ('universal_activityData_eventArchive' | translate) 
             } }}
           </ng-container>
-          <ng-container *ngIf="uiFlag.showEditDialog === privacyEditObj.sportsReport">
+          <ng-container *ngIf="uiFlag.showEditDialog === PrivacyEditObj.sportsReport">
             {{ 'universal_privacy_batchEditPrivacy' | translate: {
               object: ('universal_activityData_sportsStatistics' | translate) 
             } }}
           </ng-container>
-          <ng-container *ngIf="uiFlag.showEditDialog === privacyEditObj.lifeTracking">
+          <ng-container *ngIf="uiFlag.showEditDialog === PrivacyEditObj.lifeTracking">
             {{ 'universal_privacy_batchEditPrivacy' | translate: {
               object: ('universal_lifeTracking_lifeStatistics' | translate) 
             } }}
@@ -163,13 +163,13 @@
     </div>
     <div class="dialog-content" style="padding: 10px 20px;">
       <span class="settingTitleDescription">
-        <ng-container *ngIf="uiFlag.showEditDialog === privacyEditObj.file">
+        <ng-container *ngIf="uiFlag.showEditDialog === PrivacyEditObj.file">
           {{ 'universal_activityData_eventFileInformation' | translate }}
         </ng-container>
-        <ng-container *ngIf="uiFlag.showEditDialog === privacyEditObj.sportsReport">
+        <ng-container *ngIf="uiFlag.showEditDialog === PrivacyEditObj.sportsReport">
           {{ 'universal_activityData_sportsStatisticsInformation' | translate }}
         </ng-container>
-        <ng-container *ngIf="uiFlag.showEditDialog === privacyEditObj.lifeTracking">
+        <ng-container *ngIf="uiFlag.showEditDialog === PrivacyEditObj.lifeTracking">
           {{ 'universal_lifeTracking_lifeStatisticsInformation' | translate }}
         </ng-container>
       </span>
@@ -178,22 +178,22 @@
           class="flexRow"
           style="flex-wrap: wrap; margin-bottom: 10px; margin-top: 10px;"
         >
-          <span class="flexRow radioSelector" (click)="selectDateRange(rangeType.all)">
+          <span class="flexRow radioSelector" (click)="selectDateRange(RangeType.all)">
             <span
               class="radioBtn"
-              [class.radioBtn--active]="dateRange === rangeType.all"
+              [class.radioBtn--active]="dateRange === RangeType.all"
             ></span>
             <span>{{ 'universal_adjective_all' | translate }}</span>
           </span>
-          <span class="flexRow radioSelector" (click)="selectDateRange(rangeType.date)">
+          <span class="flexRow radioSelector" (click)="selectDateRange(RangeType.date)">
             <span
               class="radioBtn"
-              [class.radioBtn--active]="dateRange === rangeType.date"
+              [class.radioBtn--active]="dateRange === RangeType.date"
             ></span>
             <span>{{ 'universal_operating_selectDate' | translate }}</span>
           </span>
         </div>
-        <div *ngIf="dateRange === rangeType.date">
+        <div *ngIf="dateRange === RangeType.date">
           <p class="itemTitle">{{ 'universal_activityData_dateRange' | translate }}</p>
           <div class="dateSelectArea" style="margin: 0 0 15px 50px;">
             <app-date-range-picker
@@ -211,7 +211,7 @@
           <div
             class="rodBar"
             [class.rodBar--active]="openObj.length > 1"
-            (click)="selectModifyRange(privacyObj.self)"
+            (click)="selectModifyRange(PrivacyObj.self)"
           ></div>
           <span style="margin-left: 10px;">
             {{ 'universal_privacy_openPrivacy' | translate }}
@@ -222,10 +222,10 @@
             <span class="flexRow checkBoxBlock">
               <button
                 id="anyone__opt"
-                [class.checkBox--active]="openObj.includes(privacyObj.anyone)"
-                (click)="selectModifyRange(privacyObj.anyone)"
+                [class.checkBox--active]="openObj.includes(PrivacyObj.anyone)"
+                (click)="selectModifyRange(PrivacyObj.anyone)"
               >
-                <span *ngIf="openObj.includes(privacyObj.anyone)">✔</span>
+                <span *ngIf="openObj.includes(PrivacyObj.anyone)">✔</span>
               </button>
               <label for="anyone__opt" class="checkBox__label">
                 {{ 'universal_privacy_allMember' | translate }}
@@ -235,10 +235,10 @@
               <span class="first__layer">└</span>
               <button
                 id="my__group__opt"
-                [class.checkBox--active]="openObj.includes(privacyObj.myGroup)"
-                (click)="selectModifyRange(privacyObj.myGroup)"
+                [class.checkBox--active]="openObj.includes(PrivacyObj.myGroup)"
+                (click)="selectModifyRange(PrivacyObj.myGroup)"
               >
-                <span *ngIf="openObj.includes(privacyObj.myGroup)">✔</span>
+                <span *ngIf="openObj.includes(PrivacyObj.myGroup)">✔</span>
               </button>
               <label for="my__group__opt" class="checkBox__label">
                 {{ 'universal_group_myGroup' | translate }}
@@ -248,10 +248,10 @@
               <span class="second__layer">└</span>
               <button
                 id="my__admin"
-                [class.checkBox--active]="openObj.includes(privacyObj.onlyGroupAdmin)"
-                (click)="selectModifyRange(privacyObj.onlyGroupAdmin)"
+                [class.checkBox--active]="openObj.includes(PrivacyObj.onlyGroupAdmin)"
+                (click)="selectModifyRange(PrivacyObj.onlyGroupAdmin)"
               >
-                <span *ngIf="openObj.includes(privacyObj.onlyGroupAdmin)">✔</span>
+                <span *ngIf="openObj.includes(PrivacyObj.onlyGroupAdmin)">✔</span>
               </button>
               <label for="my__admin" class="checkBox__label">
                 {{ 'universal_group_administrator' | translate }}
@@ -276,26 +276,26 @@
   let-privacyObjArr="privacyObjArr"
 >
   <span class="mainText">
-    <ng-container *ngIf="privacyObjArr.includes(privacyObj.anyone)">
+    <ng-container *ngIf="privacyObjArr.includes(PrivacyObj.anyone)">
       {{ 'universal_privacy_allMember' | translate }}
     </ng-container>
     <ng-container *ngIf="
-      !privacyObjArr.includes(privacyObj.anyone)
-      && privacyObjArr.includes(privacyObj.myGroup)
+      !privacyObjArr.includes(PrivacyObj.anyone)
+      && privacyObjArr.includes(PrivacyObj.myGroup)
     ">
       {{ 'universal_group_myGroup' | translate }}
     </ng-container>
     <ng-container *ngIf="
-      !privacyObjArr.includes(privacyObj.anyone)
-      && !privacyObjArr.includes(privacyObj.myGroup)
-      && privacyObjArr.includes(privacyObj.onlyGroupAdmin)
+      !privacyObjArr.includes(PrivacyObj.anyone)
+      && !privacyObjArr.includes(PrivacyObj.myGroup)
+      && privacyObjArr.includes(PrivacyObj.onlyGroupAdmin)
     ">
       {{ 'universal_group_groupAdministrator' | translate }}
     </ng-container>
     <ng-container *ngIf="
-      !privacyObjArr.includes(privacyObj.anyone)
-      && !privacyObjArr.includes(privacyObj.myGroup)
-      && !privacyObjArr.includes(privacyObj.onlyGroupAdmin)
+      !privacyObjArr.includes(PrivacyObj.anyone)
+      && !privacyObjArr.includes(PrivacyObj.myGroup)
+      && !privacyObjArr.includes(PrivacyObj.onlyGroupAdmin)
     ">
       {{ 'universal_privacy_onlyMe' | translate }}
     </ng-container>

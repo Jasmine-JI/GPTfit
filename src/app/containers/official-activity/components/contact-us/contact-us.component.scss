@@ -1,0 +1,95 @@
+.main__section {
+  align-items: center;
+
+  >h4 {
+    width: 75vw;
+    font-weight: bold;
+    margin: 2vh 0;
+  }
+
+}
+
+#form__content {
+  padding: 5vh 2vw;
+  border: 1px solid black;
+  border-radius: 2vw;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.content__input {
+  margin-bottom: 5vh;
+  min-height: 200px;
+}
+
+.user__info {
+  margin-right: 2vw;
+  justify-content: space-between;
+}
+
+.user__info__row {
+  border-bottom: 1px solid black;
+}
+
+.user__info__input {
+  border: none;
+  outline: none;
+  width: 200px;
+}
+
+#contact__content__input {
+  width: 50vw;
+  height: 200px;
+  resize: none;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.content__type__selector {
+  flex-wrap: wrap;
+  margin: 10px 0;
+
+  >button {
+    padding: 10px 0;
+    width: 100px;
+    text-align: center;
+    background-color: rgba(235, 235, 235, 1);
+    border-radius: 10px;
+    margin: 5px 10px 5px 0;
+  }
+
+}
+
+.form__operate__button {
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.form__alert {
+  border-color: red;
+
+  &:not(textarea) {
+    color: red;
+  }
+  
+}
+
+.hint__text {
+  font-size: 12px;
+  min-height: 20px;
+}
+
+
+/******************************************************* media ********************************************/
+
+@media (max-width: 575px) {
+
+  .content__input {
+    flex-direction: column;
+  }
+
+  #contact__content__input {
+    width: 100%;
+  }
+
+}

@@ -4,6 +4,7 @@
 @import 'transition.scss';
 @import 'radio-btn.scss';
 @import 'check-box.scss';
+@import 'overflow-scroll';
 
 $del-btn-size: 15px;
 $btn-height: 30px;
@@ -87,12 +88,12 @@ $btn-height: 30px;
 #auto__completed {
   position: absolute;
   max-height: 200px;
-  overflow-y: scroll;
   border: 1px solid rgba(200, 200, 200, 1);
   z-index: 1;
   background-color: var(--scale-255-0);
   padding: 2px;
   width: 100%;
+  @include overflow-y-scroll();
 
   >span {
     padding: 2px;

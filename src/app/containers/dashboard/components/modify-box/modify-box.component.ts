@@ -3,12 +3,12 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../../../shared/services/utils.service';
-import { SettingsService } from '../../services/settings.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
-import { privacyObj, allPrivacyItem, PrivacyCode, privacyEditObj } from '../../../../shared/models/user-privacy';
+import { PrivacyObj, allPrivacyItem, PrivacyEditObj } from '../../../../shared/models/user-privacy';
+import { ActivityService } from '../../../../shared/services/activity.service';
 
 
-enum rangeType {
+enum RangeType {
   date = 1,
   all = 99
 }
@@ -27,21 +27,21 @@ export class ModifyBoxComponent implements OnInit {
 
   type: string;
   title: string;
-  dateRange = rangeType.all;
+  dateRange = RangeType.all;
   selectDate = {
     startDate: '',
     endDate: ''
   };
-  openObj = [privacyObj.self];
-  readonly privacyObj = privacyObj;
-  readonly rangeType = rangeType;
+  openObj = [PrivacyObj.self];
+  readonly PrivacyObj = PrivacyObj;
+  readonly RangeType = RangeType;
   constructor(
     private utils: UtilsService,
-    private settingsService: SettingsService,
     private userProfileService: UserProfileService,
     private translate: TranslateService,
     private dialog: MatDialog,
     private snackbar: MatSnackBar,
+    private activityService: ActivityService,
     @Inject(MAT_DIALOG_DATA) private data: any
   ) { }
 
@@ -52,15 +52,15 @@ export class ModifyBoxComponent implements OnInit {
 
     let target;
     switch (this.data.type) {
-      case privacyEditObj.file:  // 運動檔案
+      case PrivacyEditObj.file:  // 運動檔案
         target = `${this.translate.instant('universal_activityData_eventArchive')}`;
         this.title = `${this.translate.instant('universal_privacy_batchEditPrivacy', {object: target})}`;
         break;
-      case privacyEditObj.sportsReport:  // 運動報告
+      case PrivacyEditObj.sportsReport:  // 運動報告
         target = `${this.translate.instant('universal_activityData_sportsStatistics')}`;
         this.title = `${this.translate.instant('universal_privacy_batchEditPrivacy', {object: target})}`;
         break;
-      case privacyEditObj.lifeTracking:  // 生活追蹤報告
+      case PrivacyEditObj.lifeTracking:  // 生活追蹤報告
         target = `${this.translate.instant('universal_lifeTracking_lifeStatistics')}`;
         this.title = `${this.translate.instant('universal_privacy_batchEditPrivacy', {object: target})}`;
         break;
@@ -86,54 +86,54 @@ export class ModifyBoxComponent implements OnInit {
 
   /**
    * 選擇開放隱私權的對象
-   * @param obj {PrivacyCode}-開放對象
+   * @param obj {PrivacyObj}-開放對象
    * @author kidin-1100831
    */
-  selectModifyRange(obj: PrivacyCode) {
+  selectModifyRange(obj: PrivacyObj) {
     switch (obj) {
 
-      case privacyObj.anyone:
+      case PrivacyObj.anyone:
 
-        if (this.openObj.includes(privacyObj.anyone)) {
-          this.openObj = [privacyObj.self];
+        if (this.openObj.includes(PrivacyObj.anyone)) {
+          this.openObj = [PrivacyObj.self];
         } else {
           this.openObj = [...allPrivacyItem];
         }
 
         break;
-      case privacyObj.myGroup:
+      case PrivacyObj.myGroup:
 
-        if (this.openObj.includes(privacyObj.myGroup)) {
+        if (this.openObj.includes(PrivacyObj.myGroup)) {
           this.openObj = this.openObj.filter(_setting => {
-            return _setting !== privacyObj.myGroup && _setting !== privacyObj.anyone;
+            return _setting !== PrivacyObj.myGroup && _setting !== PrivacyObj.anyone;
           });
         } else {
-          this.openObj.push(privacyObj.myGroup);
+          this.openObj.push(PrivacyObj.myGroup);
           // 群組管理員視為同群組成員
-          if (!this.openObj.includes(privacyObj.onlyGroupAdmin)) {
-            this.openObj.push(privacyObj.onlyGroupAdmin);
+          if (!this.openObj.includes(PrivacyObj.onlyGroupAdmin)) {
+            this.openObj.push(PrivacyObj.onlyGroupAdmin);
           }
 
         }
 
         break;
-      case privacyObj.onlyGroupAdmin:
+      case PrivacyObj.onlyGroupAdmin:
 
-        if (this.openObj.includes(privacyObj.onlyGroupAdmin)) {
+        if (this.openObj.includes(PrivacyObj.onlyGroupAdmin)) {
           this.openObj = this.openObj.filter(_setting => {
-            return ![obj, privacyObj.myGroup, privacyObj.anyone].includes(_setting);
+            return ![obj, PrivacyObj.myGroup, PrivacyObj.anyone].includes(_setting);
           });
         } else {
           this.openObj.push(obj);
         }
 
         break;
-      case privacyObj.self:
+      case PrivacyObj.self:
 
         if (this.openObj.length > 1) {
-          this.openObj = [privacyObj.self];
+          this.openObj = [PrivacyObj.self];
         } else {
-          this.openObj = [privacyObj.self, privacyObj.onlyGroupAdmin];
+          this.openObj = [PrivacyObj.self, PrivacyObj.onlyGroupAdmin];
         }
 
         break;
@@ -145,25 +145,25 @@ export class ModifyBoxComponent implements OnInit {
   // 根據使用者選擇修改隱私權-kidin-1090331
   modifyPrivacy () {
     let body;
-    if (this.dateRange === rangeType.all) {
+    if (this.dateRange === RangeType.all) {
       body = {
         token: this.utils.getToken() || '',
         editFileType: this.data.type,
-        rangeType: this.dateRange,
+        RangeType: this.dateRange,
         privacy: this.openObj
       };
     } else {
       body = {
         token: this.utils.getToken() || '',
         editFileType: this.data.type,
-        rangeType: this.dateRange,
+        RangeType: this.dateRange,
         startTime: this.selectDate.startDate,
         endTime: this.selectDate.endDate,
         privacy: this.openObj
       };
     }
 
-    this.settingsService.editPrivacy(body).subscribe(res => {
+    this.activityService.editPrivacy(body).subscribe(res => {
       if (res.resultCode === 200) {
 
         const refreshBody = {

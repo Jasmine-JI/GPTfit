@@ -230,7 +230,7 @@
               <mat-header-cell
                 *matHeaderCellDef
                 class="flexCenter tableArrangement"
-                [style.display]="groupTable.showDataType.includes(groupTableCol.completeNum) ? '' : 'none'"
+                [style.display]="groupTable.showDataType.includes(GroupTableCol.completeNum) ? '' : 'none'"
               >
                 <div class="tableTitle">
                   <span class="tableTitleWord">
@@ -241,7 +241,7 @@
               <mat-cell
                 *matCellDef="let row; let i = index;"
                 class="tableArrangement tableContent"
-                [style.display]="groupTable.showDataType.includes(groupTableCol.completeNum) ? '' : 'none'"
+                [style.display]="groupTable.showDataType.includes(GroupTableCol.completeNum) ? '' : 'none'"
               >
                 <div
                   class="visualizeData"
@@ -259,7 +259,7 @@
                 mat-sort-header
                 disableClear="true"
                 class="flexCenter tableArrangement"
-                [style.display]="groupTable.showDataType.includes(groupTableCol.avgTime) ? '' : 'none'"
+                [style.display]="groupTable.showDataType.includes(GroupTableCol.avgTime) ? '' : 'none'"
               >
                 <div class="tableTitle">
                   <span class="flexCenter tableTitleWord">
@@ -271,7 +271,7 @@
               <mat-cell
                 *matCellDef="let row; let i = index;"
                 class="tableArrangement tableContent"
-                [style.display]="groupTable.showDataType.includes(groupTableCol.avgTime) ? '' : 'none'"
+                [style.display]="groupTable.showDataType.includes(GroupTableCol.avgTime) ? '' : 'none'"
               >
                 <div
                   class="visualizeData"
@@ -293,7 +293,7 @@
                 mat-sort-header
                 disableClear="true"
                 class="flexCenter tableArrangement"
-                [style.display]="groupTable.showDataType.includes(groupTableCol.totalTime) ? '' : 'none'"
+                [style.display]="groupTable.showDataType.includes(GroupTableCol.totalTime) ? '' : 'none'"
               >
                 <div class="tableTitle">
                   <span class="flexCenter tableTitleWord">
@@ -305,7 +305,7 @@
               <mat-cell
                 *matCellDef="let row; let i = index;"
                 class="tableArrangement tableContent"
-                [style.display]="groupTable.showDataType.includes(groupTableCol.totalTime) ? '' : 'none'"
+                [style.display]="groupTable.showDataType.includes(GroupTableCol.totalTime) ? '' : 'none'"
               >
                 <div
                   class="visualizeData"
@@ -327,7 +327,7 @@
                 mat-sort-header
                 disableClear="true"
                 class="flexCenter tableArrangement"
-                [style.display]="groupTable.showDataType.includes(groupTableCol.avgPace) ? '' : 'none'"
+                [style.display]="groupTable.showDataType.includes(GroupTableCol.avgPace) ? '' : 'none'"
               >
                 <div class="tableTitle">
                   <span class="flexCenter tableTitleWord">
@@ -341,7 +341,7 @@
               <mat-cell
                 *matCellDef="let row; let i = index;"
                 class="tableArrangement tableContent"
-                [style.display]="groupTable.showDataType.includes(groupTableCol.avgPace) ? '' : 'none'"
+                [style.display]="groupTable.showDataType.includes(GroupTableCol.avgPace) ? '' : 'none'"
               >
                 <div
                   class="visualizeData"
@@ -363,7 +363,7 @@
                 mat-sort-header
                 disableClear="true"
                 class="flexCenter tableArrangement"
-                [style.display]="groupTable.showDataType.includes(groupTableCol.avgHr) ? '' : 'none'"
+                [style.display]="groupTable.showDataType.includes(GroupTableCol.avgHr) ? '' : 'none'"
               >
                 <div class="tableTitle">
                   <span class="tableTitleWord">
@@ -377,7 +377,7 @@
               <mat-cell
                 *matCellDef="let row; let i = index;"
                 class="tableArrangement tableContent"
-                [style.display]="groupTable.showDataType.includes(groupTableCol.avgHr) ? '' : 'none'"
+                [style.display]="groupTable.showDataType.includes(GroupTableCol.avgHr) ? '' : 'none'"
               >
                 <div
                   class="visualizeData"
@@ -399,7 +399,7 @@
                 mat-sort-header
                 disableClear="true"
                 class="flexCenter tableArrangement"
-                [style.display]="groupTable.showDataType.includes(groupTableCol.avgCalories) ? '' : 'none'"
+                [style.display]="groupTable.showDataType.includes(GroupTableCol.avgCalories) ? '' : 'none'"
               >
                 <div class="tableTitle">
                   <span class="tableTitleWord">
@@ -413,7 +413,7 @@
               <mat-cell
                 *matCellDef="let row; let i = index;"
                 class="tableArrangement tableContent"
-                [style.display]="groupTable.showDataType.includes(groupTableCol.avgCalories) ? '' : 'none'"
+                [style.display]="groupTable.showDataType.includes(GroupTableCol.avgCalories) ? '' : 'none'"
               >
                 <div
                   class="visualizeData"
@@ -435,7 +435,7 @@
                 mat-sort-header
                 disableClear="true"
                 class="flexCenter tableArrangement"
-                [style.display]="groupTable.showDataType.includes(groupTableCol.avgCadence) ? '' : 'none'"
+                [style.display]="groupTable.showDataType.includes(GroupTableCol.avgCadence) ? '' : 'none'"
               >
                 <div class="tableTitle">
                   <span class="tableTitleWord">
@@ -447,7 +447,7 @@
               <mat-cell
                 *matCellDef="let row; let i = index;"
                 class="tableArrangement tableContent"
-                [style.display]="groupTable.showDataType.includes(groupTableCol.avgCadence) ? '' : 'none'"
+                [style.display]="groupTable.showDataType.includes(GroupTableCol.avgCadence) ? '' : 'none'"
               >
                 <div
                   class="visualizeData"
@@ -469,7 +469,7 @@
                 disableClear="true"
                 class="flexCenter tableArrangement"
                 style="min-width: 180px;"
-                [style.display]="groupTable.showDataType.includes(groupTableCol.avgHr) ? '' : 'none'"
+                [style.display]="groupTable.showDataType.includes(GroupTableCol.avgHr) ? '' : 'none'"
               >
                 <div class="tableTitle">
                   <span class="tableTitleWord">{{ 'universal_activityData_hrZone' | translate }}</span>
@@ -480,7 +480,7 @@
                 *matCellDef="let row; let i = index;"
                 class="tableArrangement tableContent"
                 style="min-width: 180px;"
-                [style.display]="groupTable.showDataType.includes(groupTableCol.avgHr) ? '' : 'none'"
+                [style.display]="groupTable.showDataType.includes(GroupTableCol.avgHr) ? '' : 'none'"
               >
                 <ng-container *ngIf="groupTable.showAll || i < tableLength">
                   <div
@@ -667,7 +667,7 @@
                   mat-sort-header
                   disableClear="true"
                   class="flexCenter tableArrangement"
-                  [style.display]="memberTable.showDataType.includes(memberTableCol.gender) ? '' : 'none'"
+                  [style.display]="memberTable.showDataType.includes(MemberTableCol.gender) ? '' : 'none'"
                 >
                   <div class="tableTitle">
                     <span class="tableTitleWord">{{ 'universal_userProfile_gender' | translate }}</span>
@@ -676,7 +676,7 @@
                 <mat-cell
                   *matCellDef="let row; let i = index;"
                   class="tableArrangement tableContent"
-                  [style.display]="memberTable.showDataType.includes(memberTableCol.gender) ? '' : 'none'"
+                  [style.display]="memberTable.showDataType.includes(MemberTableCol.gender) ? '' : 'none'"
                 >
                   <div
                     class="visualizeData"
@@ -694,7 +694,7 @@
                   mat-sort-header
                   disableClear="true"
                   class="flexCenter tableArrangement"
-                  [style.display]="memberTable.showDataType.includes(memberTableCol.age) ? '' : 'none'"
+                  [style.display]="memberTable.showDataType.includes(MemberTableCol.age) ? '' : 'none'"
                 >
                   <div class="tableTitle">
                     <span class="tableTitleWord">{{ 'universal_userProfile_age' | translate }}</span>
@@ -703,7 +703,7 @@
                 <mat-cell
                   *matCellDef="let row; let i = index;"
                   class="tableArrangement tableContent"
-                  [style.display]="memberTable.showDataType.includes(memberTableCol.age) ? '' : 'none'"
+                  [style.display]="memberTable.showDataType.includes(MemberTableCol.age) ? '' : 'none'"
                 >
                   <div
                     class="visualizeData"
@@ -722,7 +722,7 @@
                 mat-sort-header
                 disableClear="true"
                 class="flexCenter tableArrangement"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.runTimes) ? '' : 'none'"
+                [style.display]="memberTable.showDataType.includes(MemberTableCol.runTimes) ? '' : 'none'"
               >
                 <div class="tableTitle">
                   <span class="tableTitleWord">{{ 'universal_activityData_totalActivity' | translate }}</span>
@@ -732,7 +732,7 @@
               <mat-cell
                 *matCellDef="let row; let i = index;"
                 class="tableArrangement tableContent"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.runTimes) ? '' : 'none'"
+                [style.display]="memberTable.showDataType.includes(MemberTableCol.runTimes) ? '' : 'none'"
               >
                 <div
                   class="visualizeData"
@@ -748,7 +748,7 @@
                 mat-sort-header
                 disableClear="true"
                 class="flexCenter tableArrangement"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.bestTime) ? '' : 'none'"
+                [style.display]="memberTable.showDataType.includes(MemberTableCol.bestTime) ? '' : 'none'"
               >
                 <div class="tableTitle">
                   <span class="flexCenter tableTitleWord">
@@ -760,7 +760,7 @@
               <mat-cell
                 *matCellDef="let row; let i = index;"
                 class="tableArrangement tableContent"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.bestTime) ? '' : 'none'"
+                [style.display]="memberTable.showDataType.includes(MemberTableCol.bestTime) ? '' : 'none'"
               >
                 <div
                   class="visualizeData"
@@ -782,7 +782,7 @@
                 mat-sort-header
                 disableClear="true"
                 class="flexCenter tableArrangement"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.avgTime) ? '' : 'none'"
+                [style.display]="memberTable.showDataType.includes(MemberTableCol.avgTime) ? '' : 'none'"
               >
                 <div class="tableTitle">
                   <span class="flexCenter tableTitleWord">
@@ -794,7 +794,7 @@
               <mat-cell
                 *matCellDef="let row; let i = index;"
                 class="tableArrangement tableContent"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.avgTime) ? '' : 'none'"
+                [style.display]="memberTable.showDataType.includes(MemberTableCol.avgTime) ? '' : 'none'"
               >
                 <div
                   class="visualizeData"
@@ -816,7 +816,7 @@
                 mat-sort-header
                 disableClear="true"
                 class="flexCenter tableArrangement"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.totalTime) ? '' : 'none'"
+                [style.display]="memberTable.showDataType.includes(MemberTableCol.totalTime) ? '' : 'none'"
               >
                 <div class="tableTitle">
                   <span class="flexCenter tableTitleWord">
@@ -828,7 +828,7 @@
               <mat-cell
                 *matCellDef="let row; let i = index;"
                 class="tableArrangement tableContent"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.totalTime) ? '' : 'none'"
+                [style.display]="memberTable.showDataType.includes(MemberTableCol.totalTime) ? '' : 'none'"
               >
                 <div
                   class="visualizeData"
@@ -850,7 +850,7 @@
                 mat-sort-header
                 disableClear="true"
                 class="flexCenter tableArrangement"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.avgPace) ? '' : 'none'"
+                [style.display]="memberTable.showDataType.includes(MemberTableCol.avgPace) ? '' : 'none'"
               >
                 <div class="tableTitle">
                   <span class="tableTitleWord">
@@ -864,7 +864,7 @@
               <mat-cell
                 *matCellDef="let row; let i = index;"
                 class="tableArrangement tableContent"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.avgPace) ? '' : 'none'"
+                [style.display]="memberTable.showDataType.includes(MemberTableCol.avgPace) ? '' : 'none'"
               >
                 <div
                   class="visualizeData"
@@ -886,7 +886,7 @@
                 mat-sort-header
                 disableClear="true"
                 class="flexCenter tableArrangement"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.avgHr) ? '' : 'none'"
+                [style.display]="memberTable.showDataType.includes(MemberTableCol.avgHr) ? '' : 'none'"
               >
                 <div class="tableTitle">
                   <span class="tableTitleWord">
@@ -897,7 +897,7 @@
               <mat-cell
                 *matCellDef="let row; let i = index;"
                 class="tableArrangement tableContent"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.avgHr) ? '' : 'none'"
+                [style.display]="memberTable.showDataType.includes(MemberTableCol.avgHr) ? '' : 'none'"
               >
                 <div
                   class="visualizeData"
@@ -919,7 +919,7 @@
                 mat-sort-header
                 disableClear="true"
                 class="flexCenter tableArrangement"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.totalCalories) ? '' : 'none'"
+                [style.display]="memberTable.showDataType.includes(MemberTableCol.totalCalories) ? '' : 'none'"
               >
                 <div class="tableTitle">
                   <span class="tableTitleWord">
@@ -931,7 +931,7 @@
               <mat-cell
                 *matCellDef="let row; let i = index;"
                 class="tableArrangement tableContent"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.totalCalories) ? '' : 'none'"
+                [style.display]="memberTable.showDataType.includes(MemberTableCol.totalCalories) ? '' : 'none'"
               >
                 <div
                   class="visualizeData"
@@ -953,7 +953,7 @@
                 mat-sort-header
                 disableClear="true"
                 class="flexCenter tableArrangement"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.avgCadence) ? '' : 'none'"
+                [style.display]="memberTable.showDataType.includes(MemberTableCol.avgCadence) ? '' : 'none'"
               >
                 <div class="tableTitle">
                   <span class="tableTitleWord">
@@ -965,7 +965,7 @@
               <mat-cell
                 *matCellDef="let row; let i = index;"
                 class="tableArrangement tableContent"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.avgCadence) ? '' : 'none'"
+                [style.display]="memberTable.showDataType.includes(MemberTableCol.avgCadence) ? '' : 'none'"
               >
                 <div
                   class="visualizeData"
@@ -987,7 +987,7 @@
                 disableClear="true"
                 class="flexCenter tableArrangement"
                 style="min-width: 180px;"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.hrZone) ? '' : 'none'"
+                [style.display]="memberTable.showDataType.includes(MemberTableCol.hrZone) ? '' : 'none'"
               >
                 <div class="tableTitle">
                   <span class="tableTitleWord">{{ 'universal_activityData_hrZone' | translate }}</span>
@@ -998,7 +998,7 @@
                 *matCellDef="let row; let i = index;"
                 class="tableArrangement tableContent"
                 style="min-width: 180px;"
-                [style.display]="memberTable.showDataType.includes(memberTableCol.hrZone) ? '' : 'none'"
+                [style.display]="memberTable.showDataType.includes(MemberTableCol.hrZone) ? '' : 'none'"
               >
                 <ng-container *ngIf="memberTable.showAll || i < tableLength">
                   <div

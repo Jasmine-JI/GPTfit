@@ -6,11 +6,15 @@ import { UtilsService } from '../../../../../shared/services/utils.service';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
-import { fromEvent, Subscription, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { fromEvent, Subscription, Subject, merge, of } from 'rxjs';
+import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { formTest } from '../../../models/form-test';
+import { formTest } from '../../../../../shared/models/form-test';
+import { Lang } from '../../../../../shared/models/i18n';
+import { codes } from '../../../../../shared/models/countryCode';
+import { SignTypeEnum } from '../../../../../shared/models/utils-type';
+import { TFTViewMinWidth } from '../../../models/app-webview';
 
 interface RegCheck {
   email: RegExp;
@@ -22,27 +26,28 @@ interface RegCheck {
   countryCodePass: boolean;
 }
 
+type PolicyType = 'termsConditions' | 'privacyPolicy';
+type InputType = 'account' | 'password' | 'nickname';
+
+
 @Component({
   selector: 'app-app-signup',
   templateUrl: './app-signup.component.html',
   styleUrls: ['./app-signup.component.scss']
 })
 export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
-
   private ngUnsubscribe = new Subject();
+  private resizeSubscription = new Subscription();
+  private clickScrollEvent = new Subscription();
 
   readonly formReg = formTest;
-
-  i18n = {
-    account: '',
-    password: '',
-    nickname: ''
-  };
+  readonly countryCodeList = codes;
+  readonly SignTypeEnum = SignTypeEnum;
 
   appSys = 0;  // 0:web, 1:ios, 2:android
   focusForm = '';
   displayPW = false;
-  sending = false;
+  progress = 100;
   dataIncomplete = true;
   needImgCaptcha = false;
   newToken: string;
@@ -51,11 +56,15 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   pcView = false;
   agreeTerms = false;
   termsText = '';
-  showTerms = <'termsConditions' | 'privacyPolicy' | null>null;
+  showTerms = <PolicyType>null;
   termsRxEvent = new Subscription();
   privacyRxEvent = new Subscription();
   termsLink: string;
   debounce = false;
+  language: Lang = 'zh-tw';
+  TFTView = false;
+  displayCountryCodeList = false;
+  requestHeader = {};
 
   // 驗證用
   regCheck: RegCheck = {
@@ -72,7 +81,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   signupData = {
     type: 1, // 1：信箱 2：手機
     email: '',
-    countryCode: 0, // 預設number type
+    countryCode: +codes[0].code.split('+')[1], // 預設number type
     phone: 0, // 預設number type
     password: '',
     nickname: '',
@@ -104,27 +113,23 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     public getClientIp: GetClientIpService,
     private authService: AuthService,
     private userProfileService: UserProfileService
-  ) {
-    translate.onLangChange.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.getTranslate();
-    });
-
-  }
+  ) {}
 
   ngOnInit(): void {
-    this.getClientIpaddress();
-    this.getTranslate();
-
+    this.getQueryString();
+    this.language = this.getUrlLanguageString(location.search);
     if (location.pathname.indexOf('web') > 0) {
       this.pcView = true;
       this.utils.setHideNavbarStatus(false);
+      this.utils.setDarkModeStatus(false);
     } else {
       this.pcView = false;
+      this.checkScreenWidth();
+      this.subscribeResizeEvent();
       this.utils.setHideNavbarStatus(true);
-
+      this.utils.setDarkModeStatus(true);
     }
+
   }
 
   /**
@@ -139,108 +144,21 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * 待套件載入完成再取得多國語系翻譯
-   * @author kidin-1090717
+   * 從url取得header
+   * @author kidin-1110114
    */
-  getTranslate(): void {
-    this.translate.get('hellow world').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.i18n = {
-        account: this.translate.instant('universal_userAccount_emailPerPhone'),
-        password: this.translate.instant('universal_userAccount_password'),
-        nickname: this.translate.instant('universal_userAccount_nickname')
-      };
+  getQueryString() {
+    const query = this.utils.getUrlQueryStrings(location.search);
+    this.requestHeader = {
+      ...this.requestHeader,
+      ...this.utils.headerKeyTranslate(query)
+    };
 
-      this.createMainContent();
-    });
-
-  }
-
-  /**
-   * 建立條款顯示內容
-   * @author kidin-1091216
-   */
-  createMainContent() {
-    const mainContent = document.getElementById('mainContent');
-    if (mainContent) {
-      mainContent.innerHTML = `${this.translate.instant('universal_userAccount_clauseContentPage1')
-        }<span id="terms" style="color: rgba(0, 123, 255, 1);">『${
-          this.translate.instant('universal_userAccount_clause')
-        }』</span>、<span id="privacy" style="color: rgba(0, 123, 255, 1);">『${
-          this.translate.instant('universal_userAccount_privacyStatement')
-        }』</span>${
-          this.translate.instant('universal_userAccount_clauseContentPage2')
-        }`.replace(/\n/gm, '');
-
-      this.listenClickTerms();
-
+    const { fi } = query;
+    if (fi) {
+      this.signupData.fromId = fi;
     }
 
-  }
-
-  /**
-   * 監聽條款、隱私權點擊事件
-   * @author kidin-1091209
-   */
-  listenClickTerms() {
-
-    setTimeout(() => {
-      const termsLink = document.getElementById('terms'),
-            privacyLink = document.getElementById('privacy'),
-            termsClickEvent = fromEvent(termsLink, 'click'),
-            privacyClickEvent = fromEvent(privacyLink, 'click');
-      
-      this.termsRxEvent = termsClickEvent.pipe(
-        takeUntil(this.ngUnsubscribe)
-      ).subscribe(e => {
-        this.handleShowTerms('termsConditions');
-      })
-
-      this.privacyRxEvent = privacyClickEvent.pipe(
-        takeUntil(this.ngUnsubscribe)
-      ).subscribe(e => {
-        this.handleShowTerms('privacyPolicy');
-      })
-
-    });
-
-  }
-
-  /**
-   * 處理顯示條款或隱私選詳細頁面
-   * @param action {'termsConditions' | 'privacyPolicy' | null}
-   * @author kidin-1091208
-   */
-  handleShowTerms(action: 'termsConditions' | 'privacyPolicy' | null) {
-    if (action !== null) {
-
-      let lang: string;
-      if ((window as any).android) {
-        lang = this.getUrlLanguageString(location.search);
-      } else {
-        lang = navigator.language.toLowerCase();
-      }
-
-      switch(lang) {
-        case 'zh-tw':
-          this.termsLink = `${location.origin}/app/public_html/appHelp/zh-TW/${action}.html`;
-          break;
-        case 'zh-cn':
-          this.termsLink = `${location.origin}/app/public_html/appHelp/zh-CN/${action}.html`;
-          break;
-        case 'pt-br':
-          this.termsLink = `${location.origin}/app/public_html/appHelp/pt-BR/${action}.html`;
-          break;
-        default:
-          this.termsLink = `${location.origin}/app/public_html/appHelp/en-US/${action}.html`;
-          break;
-      }
-
-    }
-
-    this.showTerms = action;
-    return false;
   }
 
   /**
@@ -248,9 +166,9 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param str {string}-query string
    * @author kidin-1091222
    */
-  getUrlLanguageString(str: string) {
+  getUrlLanguageString(str: string): Lang {
     if (navigator && navigator.language) {
-      return navigator.language.toLowerCase();
+      return navigator.language.toLowerCase() as Lang;
     } else if (str.indexOf('l=') > -1) {
       const tempStr = str.split('l=')[1];
       let lan: string;
@@ -270,7 +188,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
         case 'it-it':
         case 'pt-pt':
         case 'pt-br':
-          return lan;
+          return lan as Lang;
         default:
           return 'en-us';
       }
@@ -286,30 +204,16 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090717
    */
   turnBack(): void {
-    if (this.showTerms !== null) {
-      this.showTerms = null;
+    if (this.appSys === 1) {
+      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
+    } else if (this.appSys === 2) {
+      (window as any).android.closeWebView('Close');
+    } else {
 
-      // 避免關閉條款時，不小心連點而關閉webview
-      this.debounce = true;
-      setTimeout(() => {
-        this.debounce = false
-      }, 250);
-
-    } else if (!this.debounce) {
-
-      if (this.appSys === 1) {
-        (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
-      } else if (this.appSys === 2) {
-        (window as any).android.closeWebView('Close');
+      if (this.pcView) {
+        this.router.navigateByUrl('/signIn-web');
       } else {
-
-        if (this.pcView) {
-          this.router.navigateByUrl('/signIn-web');
-        } else {
-          this.router.navigateByUrl('/signIn');
-        }
-
-
+        this.router.navigateByUrl('/signIn');
       }
 
     }
@@ -330,31 +234,76 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       this.appSys = 0;
     }
 
-    const query = urlStr.replace('?', '').split('&');
+    this.requestHeader = {
+      deviceType: this.appSys,
+      ...this.requestHeader
+    };
 
-    for (let i = 0; i < query.length; i++) {
+  }
 
-      const queryKey = query[i].split('=')[0];
-      switch (queryKey) {  // 可能之後有更多參數，故不寫死
-        case 'fi':
-          this.signupData.fromId = query[i].split('=')[1];
-          break;
-      }
+  // 取得使用者ip位址-kidin-1090521
+  getClientIpaddress () {
+    const { remoteAddr } = this.requestHeader as any;
+    if (!remoteAddr) {
+      return this.getClientIp.requestJsonp('https://api.ipify.org', 'format=jsonp', 'callback').pipe(
+        tap(res => {
+          const { ip, country } = (res as any);
+          this.ip = ip;
+          this.requestHeader = {
+            ...this.requestHeader,
+            remoteAddr: ip,
+            regionCode: country || 'US'
+          };
 
+        })
+        
+      );
+
+    } else {
+      return of(this.requestHeader);
     }
 
   }
 
   /**
-   * 取得使用者ip位址
-   * @author kidin-1090521
+   * 訂閱頁面尺寸改變事件
+   * @author kidin-1101230
    */
-  getClientIpaddress(): void {
-    this.getClientIp.requestJsonp('https://get.geojs.io/v1/ip/country.js', 'format=jsonp', 'callback').subscribe(res => {
-      this.ip = (res as any).ip;
-      this.countryCode = (res as any).country;
+  subscribeResizeEvent() {
+    const resizeEvent = fromEvent(window, 'resize');
+    this.resizeSubscription = resizeEvent.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(e => {
+      this.checkScreenWidth();
+
     });
 
+  }
+
+  /**
+   * 確認裝置寬度
+   * @author kidin-1100103
+   */
+  checkScreenWidth() {
+    const { innerWidth } = window;
+    this.TFTView = innerWidth >= TFTViewMinWidth;
+  }
+
+  /**
+   * 顯示條款或隱私權聲明
+   * @param type {PolicyType}-條款或隱私權聲明
+   * @author kidin-1101230
+   */
+  showPolicyContent(type: PolicyType) {
+    this.showTerms = type;
+  }
+
+  /**
+   * 關閉條款或隱私權聲明
+   * @author kidin-1101230
+   */
+  closePolicyContent() {
+    this.showTerms = null;
   }
 
   // 判斷使用者輸入的帳號切換帳號類型-kidin-1090518
@@ -427,21 +376,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * 將使用者輸入的密碼進行隱藏
-   * @author kidin-1090430
-   */
-  hidePassword(): void {
-    const pwInputType = (<HTMLInputElement>document.getElementById('signupPW'));
-
-    if (this.displayPW === true) {
-      pwInputType.type = 'text';
-    } else {
-      pwInputType.type = 'password';
-    }
-
-  }
-
-  /**
    * 顯示密碼
    * @author kidin-1090429
    */
@@ -452,7 +386,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       this.displayPW = false;
     }
 
-    this.hidePassword();
   }
 
   /**
@@ -551,11 +484,11 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   checkAll(check: RegCheck): void {
     if (this.signupData.type === 1) {
-
-      if (!check.emailPass
-          || !check.passwordPass
-          || !check.nicknamePass
-          || (this.imgCaptcha.show && this.signupData.imgCaptcha.length === 0)
+      if (
+           !check.emailPass
+        || !check.passwordPass
+        || !check.nicknamePass
+        || (this.imgCaptcha.show && this.signupData.imgCaptcha.length === 0)
       ) {
         this.dataIncomplete = true;
       } else {
@@ -564,7 +497,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
     } else {
 
-      if (!check.countryCodePass) {
+      if (this.pcView && !check.countryCodePass) {
         this.signupCue.account = 'universal_userAccount_countryRegionCode';
         this.dataIncomplete = true;
       } else if (!check.passwordPass
@@ -585,7 +518,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090429
    */
   submit(): void {
-    this.sending = true;
+    this.progress = 30;
 
     if (this.imgCaptcha.show) {
       const releaseBody = {
@@ -593,7 +526,9 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
         unlockKey: this.signupData.imgCaptcha
       };
 
-      this.signupService.fetchCaptcha(releaseBody, this.ip).subscribe(res => {
+      this.getClientIpaddress().pipe(
+        switchMap(ipResult => this.signupService.fetchCaptcha(releaseBody, this.requestHeader))
+      ).subscribe((res: any) => {
         if (res.processResult && res.processResult.resultCode === 200) {
           this.imgCaptcha.show = false;
           this.submit();
@@ -604,7 +539,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
             switch (res.processResult.apiReturnMessage) {
               case 'Found a wrong unlock key.':
                 this.signupCue.imgCaptcha = 'errorValue';
-                this.sending = false;
+                this.progress = 100;
                 break;
               default:
                 this.dialog.open(MessageBoxComponent, {
@@ -669,8 +604,9 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       body.mobileNumber = this.signupData.phone;
     }
 
-    this.signupService.fetchRegister(body, this.ip, this.countryCode).subscribe(res => {
-
+    this.getClientIpaddress().pipe(
+      switchMap(ipResult => this.signupService.fetchRegister(body, this.requestHeader))
+    ).subscribe((res: any) => {
       if (res.processResult && res.processResult.resultCode !== 200) {
 
         switch (res.processResult.apiReturnMessage) {
@@ -687,7 +623,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
               imgLockCode: res.processResult.imgLockCode
             };
 
-            this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
+            this.signupService.fetchCaptcha(captchaBody, this.requestHeader).subscribe((captchaRes: any) => {
               this.imgCaptcha = {
                 show: true,
                 imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`
@@ -756,7 +692,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
       }
 
-      this.sending = false;
+      this.progress = 100;
     });
 
   }
@@ -800,9 +736,9 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   toEnableAccount(): void {
     this.utils.setHideNavbarStatus(false);
     if (this.pcView === true) {
-      this.router.navigateByUrl(`/enableAccount-web`);
+      this.router.navigate(['/enableAccount-web'], { queryParamsHandling: 'preserve' });
     } else {
-      this.router.navigateByUrl(`/enableAccount`);
+      this.router.navigate(['/enableAccount'], { queryParamsHandling: 'preserve' });
     }
 
   }
@@ -812,12 +748,92 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param action {boolean}-同意/不同意
    * @author kidin-1091208
    */
-  handleAgreeTerms(action: boolean) {
+  handleAgreeTerms(action: boolean, turnBack: boolean = true) {
     this.agreeTerms = action;
-    if (!action) {
+    if (!action && turnBack) {
       this.turnBack();
     }
 
+    if (!this.pcView && !this.TFTView) this.scrollToForm();
+  }
+
+  /**
+   * 待動畫結束後捲動至表單位置
+   * @author kidin-1100103
+   */
+  scrollToForm() {
+    setTimeout(() => {
+      const targetElement = document.querySelector('.register__area');
+      if (targetElement) {
+        const scrollTop = targetElement.getBoundingClientRect().top;
+        const scrollElement = document.querySelector('.main');
+        scrollElement.scrollTo({top: scrollTop, behavior: 'smooth'});
+      } else {
+        this.scrollToForm();
+      }
+      
+    }, 1);
+
+  }
+
+  /**
+   * 顯示國碼選擇清單
+   * @param e {MouseEvent}
+   * @author kidin-1110103
+   */
+  showCountryCodeList(e: MouseEvent) {
+    e.stopPropagation();
+    const { signupData: { type }, displayCountryCodeList } = this;
+    if (type === SignTypeEnum.phone) {
+      if (displayCountryCodeList) {
+        this.unsubscribeClickScrollEvent();
+      } else {
+        this.displayCountryCodeList = true;
+        this.subscribeClickScrollEvent();
+      }
+
+    }
+    
+  }
+
+  /**
+   * 訂閱點擊與滾動事件
+   * @author kidin-1110103
+   */
+  subscribeClickScrollEvent() {
+    const targetElement = document.querySelector('main');
+    const clickEvent = fromEvent(document, 'click');
+    const scrollEvent = fromEvent(targetElement, 'scroll');
+    this.clickScrollEvent = merge(clickEvent, scrollEvent).pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.unsubscribeClickScrollEvent();
+    });
+
+  }
+
+  /**
+   * 取消訂閱全域點擊與滾動事件
+   * @author kidin-1110103
+   */
+  unsubscribeClickScrollEvent() {
+    this.displayCountryCodeList = false;
+    if (this.clickScrollEvent) this.clickScrollEvent.unsubscribe();
+  }
+  
+  /**
+   * 選擇國碼
+   * @param e {MouseEvent}
+   * @param code {string}-所選國碼
+   * @author kidin-1110103
+   */
+  selectCountryCode(e: MouseEvent, code: string) {
+    e.stopPropagation();
+    this.signupData.countryCode = +code.split('+')[1];
+    this.regCheck.countryCodePass = true;
+    this.signupCue.account = '';
+    this.checkAll(this.regCheck);    
+    this.unsubscribeClickScrollEvent();
   }
 
   /**
@@ -825,7 +841,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090717
    */
   ngOnDestroy(): void {
-    this.utils.setHideNavbarStatus(false);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }

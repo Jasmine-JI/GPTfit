@@ -5,7 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FilletTrendChart, DisplayPage, planeGColor, planeMaxGColor, fitTimeColor } from '../../../models/chart-data';
-import { mi, ft, Unit, unit } from '../../../models/bs-constant';
+import { mi, ft, Unit } from '../../../models/bs-constant';
 import { day, month, week } from '../../../models/utils-constant';
 import { SportType, SportCode } from '../../../models/report-condition';
 
@@ -84,7 +84,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
   @Input() chartName: string;
   @Input() searchDate: Array<number>;
   @Input() page: DisplayPage;
-  @Input() unit = <Unit>unit.metric;
+  @Input() unit = <Unit>Unit.metric;
   @Input() sportType: SportType = SportCode.all;
   @Input() isPreviewMode: boolean = false;
   @ViewChild('container', {static: false})
@@ -254,7 +254,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
       
       } else if (this.chartType === 'distance') {
         // 處理公英制及顯示單位
-        if (this.unit === unit.imperial) {
+        if (this.unit === Unit.imperial) {
 
           trendChartOptions['yAxis'].labels = {
             formatter: function () {

@@ -3,10 +3,10 @@
   <app-report-filter></app-report-filter>
 </section>
 <section class="cardSection" style="min-height: 200px;">
-  <div class="flexRow" style="justify-content: center; flex-wrap: wrap;">
+  <ul class="activity__list">
     <ng-container *ngIf="activityList.length > 0; else noData;">
       <ng-container *ngFor="let _list of activityList; let _idx = index;">
-        <div
+        <li
           [id]="'card__' + _idx"
           class="flexCol list__card"
           (click)="handleNavigation(_idx)"
@@ -19,7 +19,7 @@
             >
             <i class="icon-svg_web-icon_p2_096-camera"></i>
           </div>
-          <div class="flexCol" style="padding: 3px;">
+          <div class="flexCol list__card__info">
             <span class="list__title">{{ _list.fileInfo.dispName }}</span>
             <div class="flexRow" style="justify-content: space-between; align-items: center;">
               <i
@@ -72,10 +72,10 @@
               </div>
             </div>
           </div>
-        </div>
+        </li>
       </ng-container>
     </ng-container>
-  </div>
+  </ul>
 </section>
 <ng-template #noData>
   <div style="color: var(--scale-100-205);">

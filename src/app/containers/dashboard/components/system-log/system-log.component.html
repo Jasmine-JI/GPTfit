@@ -79,11 +79,12 @@
             {{ (searchCondition.appId | appId) || '全部' }}
             <div class="flexCol" *ngIf="uiFlag.showAppSelector">
               <span (click)="saveAppId($event, null)">全部</span>
-              <span (click)="saveAppId($event, 0)">GPTfit</span>
-              <span (click)="saveAppId($event, 1)">Connect</span>
-              <span (click)="saveAppId($event, 2)">CloudRun</span>
-              <span (click)="saveAppId($event, 3)">TrainLive</span>
-              <span (click)="saveAppId($event, 4)">Fitness</span>
+              <span (click)="saveAppId($event, AlaApp.gptfit)">GPTfit</span>
+              <span (click)="saveAppId($event, AlaApp.connect)">Connect</span>
+              <span (click)="saveAppId($event, AlaApp.cloudrun)">CloudRun</span>
+              <span (click)="saveAppId($event, AlaApp.trainlive)">TrainLive</span>
+              <span (click)="saveAppId($event, AlaApp.fitness)">Fitness</span>
+              <span (click)="saveAppId($event, AlaApp.tft)">TFT</span>
             </div>
           </span>
         </div>

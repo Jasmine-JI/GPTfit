@@ -23,7 +23,7 @@ router.post('/getGroupNameList', function (req, res, next) {
       });
 
       return res.json({
-        apiCode: 'N9002', // 暫定
+        apiCode: 'N8002', // 暫定
         resultCode: 200,
         resultMessage: "Get result success.",
         nickname: result
@@ -31,7 +31,7 @@ router.post('/getGroupNameList', function (req, res, next) {
 
     } else {
       return res.json({
-        apiCode: 'N9002', // 暫定
+        apiCode: 'N8002', // 暫定
         resultCode: 400,
         resultMessage: "Get result failed.",
       })
