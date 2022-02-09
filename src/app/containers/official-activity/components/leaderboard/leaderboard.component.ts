@@ -336,6 +336,8 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
 
             this.getEventGroup(eventId);
             this.getLeaderboardStatistics(reqBody);
+          } else {
+            this.uiFlag.progress = 100;
           }
 
         }
