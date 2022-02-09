@@ -16,7 +16,7 @@ import { DeviceLogComponent } from './components/device-log/device-log.component
 import { DeviceLogService } from './services/device-log.service';
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
-import { CoachService } from './services/coach.service';
+import { CoachService } from '../../shared/services/coach.service';
 import { UtilsService } from '../../shared/services/utils.service';
 import { SharedModule } from '../../shared/shared.module';
 import { AccessNamePipe } from './pipes/access-name.pipe';

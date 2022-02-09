@@ -5,8 +5,8 @@ import {
   ElementRef,
   AfterViewInit
 } from '@angular/core';
-import { CoachService } from '../../services/coach.service';
-import { UtilsService } from '@shared/services/utils.service';
+import { CoachService } from '../../../../shared/services/coach.service';
+import { UtilsService } from '../../../../shared/services/utils.service';
 import { Router } from '@angular/router';
 
 @Component({
