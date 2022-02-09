@@ -23,7 +23,6 @@ import { CommonModule } from '@angular/common';
 import { A3FormatPipe } from './shared/pipes/a3-format.pipe';
 import { GroupIdSlicePipe } from './shared/pipes/group-id-slice.pipe';
 import { LongTextPipe } from './shared/pipes/long-text.pipe';
-import { GraphQLModule } from './graphql.module';
 
 export function startupServiceFactory(startupService: StartupService): Function { return () => startupService.load(); }
 export function createTranslateLoader(http: HttpClient) {
@@ -46,7 +45,6 @@ export function createTranslateLoader(http: HttpClient) {
       }
     }),
     NgProgressModule,
-    GraphQLModule,
     HttpClientModule
     // ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
