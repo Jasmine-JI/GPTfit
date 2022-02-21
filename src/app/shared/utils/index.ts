@@ -8,29 +8,7 @@ export function isObjectEmpty(object) {
   return Object.keys(object).length === 0 && object.constructor === Object;
 }
 
-export function buildPageMeta(_meta) {
-  const meta = Object.assign(
-    {},
-    {
-      pageNumber: 0,
-      pageSize: 0,
-      pageCount: 0
-    },
-    _meta
-  );
-  // const { pageSize, pageCount } = meta;
-  const pageSize = meta.pageSize;
-  const pageCount = meta.pageCount;
-  const maxPage = Math.ceil(pageCount / pageSize) || 0;
-  return {
-    maxPage: maxPage,
-    currentPage: meta.pageNumber,
-    perPage: pageSize,
-    total: pageCount
-  };
-}
-
-export function debounce(func, wait, immediate) {
+export function debounce(func, wait) {
   var timeout, args, context, timestamp, result;
   if (null == wait) wait = 100;
 
@@ -41,42 +19,23 @@ export function debounce(func, wait, immediate) {
       timeout = setTimeout(later, wait - last);
     } else {
       timeout = null;
-      if (!immediate) {
-        result = func.apply(context, args);
-        context = args = null;
-      }
+      result = func.apply(context, args);
+      context = args = null;
     }
+
   };
 
   var debounced = function () {
     context = this;
     args = arguments;
     timestamp = Date.now();
-    var callNow = immediate && !timeout;
-    if (!timeout) timeout = setTimeout(later, wait);
-    if (callNow) {
+    if (!timeout) {
+      timeout = setTimeout(later, wait);
       result = func.apply(context, args);
       context = args = null;
     }
 
     return result;
-  };
-
-  debounced.clear = function () {
-    if (timeout) {
-      clearTimeout(timeout);
-      timeout = null;
-    }
-  };
-
-  debounced.flush = function () {
-    if (timeout) {
-      result = func.apply(context, args);
-      context = args = null;
-
-      clearTimeout(timeout);
-      timeout = null;
-    }
   };
 
   return debounced;
@@ -124,3 +83,40 @@ export function speedConverttoPace(value, type) {
   }
 }
 
+/**
+ * 確認res resultCode是否回傳200(兼容兩個版本的response result)
+ * @param res {any}-api response
+ * @param showAlert {boolean}-是否顯示錯誤alert
+ * @returns {boolean} resultCode是否回傳200
+ * @author kidin-1100902
+ */
+export function checkResponse(res: any): boolean {
+  const { processResult, resultCode: resCode, apiCode: resApiCode, resultMessage: resMsg } = res;
+  if (!processResult) {
+
+    if (resCode !== 200) {
+      showErrorApiLog(resCode, resApiCode, resMsg);
+      return false;
+    }
+    
+  } else {
+    const { resultCode, apiCode, resultMessage } = processResult;
+    if (resultCode !== 200) {
+      showErrorApiLog(resultCode, apiCode, resultMessage);
+      return false;
+    }
+
+  }
+
+  return true;
+}
+
+/**
+ * 顯示api回傳之error log
+ * @param resultCode {number}-api resultCode
+ * @param apiCode {number}-api 流水編號
+ * @param msg {string}-api 回傳訊息
+ */
+export function showErrorApiLog(resultCode: number, apiCode: number, msg: string) {
+  console.error(`${resultCode}: Api ${apiCode} ${msg}`);
+}

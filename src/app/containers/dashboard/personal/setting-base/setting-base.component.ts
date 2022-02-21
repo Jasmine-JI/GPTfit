@@ -4,7 +4,7 @@ import { UserProfileService } from '../../../../shared/services/user-profile.ser
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import moment from 'moment';
-import { Sex } from '../../models/userProfileInfo';
+import { Sex } from '../../../../shared/models/user-profile-info';
 import { Unit, ft, lb } from '../../../../shared/models/bs-constant';
 import { formTest } from '../../../../shared/models/form-test';
 import { DashboardService } from '../../services/dashboard.service';

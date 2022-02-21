@@ -1,4 +1,4 @@
-import { HrBase } from '../../containers/dashboard/models/userProfileInfo';
+import { HrBase } from './user-profile-info';
 
 export type DisplayPage = 'cloudrun' | 'sport' | 'lifeTracking' | 'sportReport';
 

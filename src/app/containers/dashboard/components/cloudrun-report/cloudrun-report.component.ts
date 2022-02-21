@@ -21,7 +21,7 @@ import {
   costTimeColor,
   HrZoneRange
 } from '../../../../shared/models/chart-data';
-import { HrBase } from '../../models/userProfileInfo';
+import { HrBase } from '../../../../shared/models/user-profile-info';
 
 
 @Component({
@@ -248,6 +248,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     ]).pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(resArr => {
+      const [userProfile, allMapList] = resArr;
       const {
         unit,
         userId: id,
@@ -257,12 +258,13 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         heartRateMax,
         heartRateResting,
         birthday
-      } = resArr[0] as any;
+      } = userProfile;
       const age = this.reportService.countAge(birthday);
       this.userInfo = { unit, name, id, icon };
       this.hrZoneRange = this.utils.getUserHrRange(heartRateBase, age, heartRateMax, heartRateResting);
-      this.allMapList = resArr[1];
-      if (!this.uiFlag.isPreviewMode && !this.uiFlag.haveUrlCondition) {
+      this.allMapList = allMapList;
+      const { isPreviewMode, haveUrlCondition } = this.uiFlag;
+      if (!isPreviewMode && !haveUrlCondition) {
         this.reportConditionOpt.cloudRun.mapId = this.allMapList.leaderboard[0].mapId;  // 預設顯示本月例行賽報告
       }
 
@@ -338,12 +340,13 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100308
    */
   createReport() {
-    const { gpxPath, distance, incline, mapImg, info } = this.allMapList.list[this.currentMapId - 1];
+    const { mapId } = this.reportConditionOpt.cloudRun;
+    const { gpxPath, distance, incline, mapImg, info } = this.allMapList.list[mapId - 1];
     if (gpxPath) {
       this.progress = 30;
       this.initVar();
       const { startDate, endDate } = this.selectDate;
-      this.currentMapId = this.reportConditionOpt.cloudRun.mapId;
+      this.currentMapId = mapId;
       const body = {
         token: this.utils.getToken(),
         searchTime: {

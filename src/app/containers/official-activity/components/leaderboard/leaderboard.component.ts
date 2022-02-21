@@ -44,7 +44,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     screenSize: window.innerWidth
   };
 
-  token = this.utils.getToken() || '';
+  token = this.utils.getToken();
   subList = [];
   eventList = [];
   backupList = [];

@@ -70,7 +70,7 @@ export class DetectInappService {
           location.href += '&openExternalBrowser=1';
         }
 
-      } else {
+      }/* else {
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
           data: {
@@ -81,7 +81,7 @@ export class DetectInappService {
           
         });
 
-      }
+      }*/
 
     }
 

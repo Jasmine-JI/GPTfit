@@ -21,6 +21,8 @@ export class ListStatusPipe implements PipeTransform {
         return 'universal_vocabulary_raceEnd';
       case ListStatus.eventCancel:
         return 'universal_vocabulary_raceCancel';
+      case ListStatus.notAudit:
+        return '未審核';
     }
 
   }

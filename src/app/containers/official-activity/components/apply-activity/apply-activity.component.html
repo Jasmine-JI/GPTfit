@@ -96,12 +96,12 @@
         <form id="form__content">
           <div class="login__form">
             <div class="flexRow">
-              <div class="flexRow login__input">
+              <div class="flexRow icon__input">
                 <mat-icon>smartphone</mat-icon>
                 <div
                   [class.disable__account]="token && loginBody.signInType === SignTypeEnum.phone"
                   [class.country__code__selector]="!token || loginBody.signInType !== SignTypeEnum.phone"
-                  [class.selector--active]="uiFlag.showCountryCodeList"
+                  [class.official-selector--active]="uiFlag.showCountryCodeList"
                   (click)="showCountryCodeList($event)"
                 >
                   <span>
@@ -137,7 +137,7 @@
                   (focusout)="checkPhoneFormat($event)"
                 >
               </div>
-              <ng-container *ngIf="uiFlag.accountChecking === 'phone'">
+              <ng-container *ngIf="uiFlag.accountChecking === AccountTypeEnum.phone">
                 <span *ngTemplateOutlet="checkingHint"></span>
               </ng-container>
               <ng-container *ngIf="
@@ -149,13 +149,13 @@
                 }"></span>
               </ng-container>
             </div>
-            <ng-container *ngIf="uiFlag.showLoginButton === 'phone'">
+            <ng-container *ngIf="uiFlag.showLoginButton === AccountTypeEnum.phone">
               <div *ngTemplateOutlet="loginArea; context: {
                 accountType: SignTypeEnum.phone
               }"></div>
             </ng-container>
             <div class="flexRow">
-              <div class="flexRow login__input">
+              <div class="flexRow icon__input">
                 <mat-icon>email</mat-icon>
                 <input
                   type="text"
@@ -169,7 +169,7 @@
                   (focusout)="checkEmailFormat($event)"
                 >
               </div>
-              <ng-container *ngIf="uiFlag.accountChecking === 'email'">
+              <ng-container *ngIf="uiFlag.accountChecking === AccountTypeEnum.email">
                 <span *ngTemplateOutlet="checkingHint"></span>
               </ng-container>
               <ng-container *ngIf="
@@ -181,7 +181,7 @@
                 }"></span>
               </ng-container>
             </div>
-            <ng-container *ngIf="uiFlag.showLoginButton === 'email'">
+            <ng-container *ngIf="uiFlag.showLoginButton === AccountTypeEnum.email">
               <div *ngTemplateOutlet="loginArea; context: {
                 accountType: SignTypeEnum.email
               }"></div>
@@ -550,12 +550,9 @@
       <div id="apply__accomplish" class="flexCol">
         <div id="apply__accomplish__content" class="flexCol">
           <h5 class="form__title">
-            {{ 'universal_vocabulary_signDone' | translate }}
+            {{ 'universal_status_willComplete' | translate }}
           </h5>
           <p id="apply__hint" class="flexCol">
-            <span>
-              {{ 'universal_vocabulary_signedVerbose' | translate }}
-            </span>
             <span
               class="apply__accomplish__text"
               *ngIf="uiFlag.newAccount"
@@ -563,7 +560,8 @@
               {{ 'universal_vocabulary_loginInfo' | translate }}
             </span>
           </p>
-          <ng-container *ngIf="uiFlag.newAccount">
+
+          <ng-container *ngIf="!uiFlag.enableAccount || uiFlag.newAccount">
             <p class="apply__accomplish__text">
               <span>
                 {{ 'universal_userAccount_account' | translate }}：
@@ -572,45 +570,122 @@
                 +{{ applyInfo.userProfile.countryCode }} {{ applyInfo.userProfile.mobileNumber }}
               </span>
             </p>
-            <form id="reset__password">
+          </ng-container>
+
+          <ng-container *ngIf="
+            (!uiFlag.enableAccount && loginBody.signInType === SignTypeEnum.phone)
+            || uiFlag.enableAccomplishment
+          ">
+            <form id="enable__account" class="account__relation__form">
+              <h6 class="apply__accomplish__text">
+                {{ 'universal_userAccount_accountVerification' | translate }}
+              </h6>
+              <div>
+                <div id="sms__input" class="flexRow icon__input">
+                  <mat-icon>sms</mat-icon>
+                  <input
+                    #smsInput
+                    type="text"
+                    name="sms__verify"
+                    class="input__placeholder input__no__border"
+                    [placeholder]="'universal_userAccount_phoneCaptcha' | translate"
+                    [disabled]="uiFlag.enableAccomplishment ? true : null"
+                    [(ngModel)]="enableBody.verificationCode"
+                  >
+                </div>
+                <p class="error__hint">
+                  <ng-container *ngIf="uiFlag.smsError">
+                    {{ 'universal_userAccount_errorCaptcha' | translate }}
+                  </ng-container>
+                </p>
+              </div>
+              <div class="flexCol" *ngIf="imgLock && imgLock.lockImg">
+                <div class="flexRow">
+                  <input
+                    placeholder="{{ 'universal_userAccount_imgCaptcha' | translate }}"
+                    maxlength="8"
+                    class="input__placeholder info__input captcha__input"
+                    [class.input__alert__border]="imgLock.unlockKeyEmpty"
+                    (change)="imgLock.editUnlockKey($event.target.value)"
+                    (focusout)="imgLock.editUnlockKey($event.target.value)"
+                  />
+                  <img
+                    [src]="'data:image/png;base64,' + imgLock.lockImg"
+                    class="captcha__img"
+                  >
+                </div>
+                <p class="error__hint">
+                  <ng-container *ngIf="imgLock.foundUnlockKeyError">
+                    {{ 'universal_userAccount_errorCaptcha' | translate }}
+                  </ng-container>
+                </p>
+              </div>
+              <div class="flexRow" style="align-items: center;">
+                <button
+                  id="enable__account___button"
+                  class="request__update__button"
+                  [disabled]="imgLock && imgLock.unlockKeyEmpty ? true : null"
+                  (click)="handleEnableAccount()"
+                >
+                  {{ 'universal_operating_send' | translate }}
+                </button>
+                <button
+                  class="resend__button"
+                  [disabled]="timeCount !== 30 || (imgLock && imgLock.unlockKeyEmpty) ? true : null"
+                  (click)="getVerification()"
+                  *ngIf="!uiFlag.enableAccomplishment"
+                >
+                  {{ 'universal_vocabulary_resend' | translate }}
+                  <span class="time__count">({{ timeCount }}s)</span>
+                </button>
+                <i
+                  class="icon-svg_web-icon_p2_097-ok success__hint__icon"
+                  *ngIf="uiFlag.enableAccomplishment"
+                ></i>
+              </div>
+            </form>
+          </ng-container>
+
+          <ng-container *ngIf="uiFlag.newAccount && uiFlag.enableAccount">
+            <form id="reset__password" class="account__relation__form">
               <h6 class="apply__accomplish__text">
                 {{ 'universal_vocabulary_passwordWanted' | translate }}
               </h6>
-              <div class="flexRow">
-                <div id="new__password__input" class="flexRow">
-                  <mat-icon>vpn_key</mat-icon>
-                  <input
-                    id="reset__password__input"
-                    class="input__placeholder"
-                    type="password"
-                    [placeholder]="'universal_userAccount_password' | translate"
-                    (focus)="showPasswordHint()"
-                    (focusout)="checkPasswordFormat($event)"
-                  >
-                </div>
-                <div class="flexRow" style="align-items: center;">
-                  <button
-                    id="update__password___button"
-                    (click)="handleUpdatePassword()"
-                  >
-                    {{ 'universal_operating_update' | translate }}
-                  </button>
-                  <i
-                    class="icon-svg_web-icon_p2_097-ok success__hint__icon"
-                    *ngIf="uiFlag.newPasswordUpdated"
-                  ></i>
-                </div>
+              <div id="new__password__input" class="flexRow icon__input">
+                <mat-icon>vpn_key</mat-icon>
+                <input
+                  id="reset__password__input"
+                  class="input__placeholder input__no__border"
+                  type="password"
+                  [placeholder]="'universal_userAccount_password' | translate"
+                  [disabled]="uiFlag.newPasswordUpdated ? true : null"
+                  (focus)="showPasswordHint()"
+                  (focusout)="checkPasswordFormat($event)"
+                >
               </div>
               <p id="not__reset__alert" *ngIf="!uiFlag.showPasswordHint">
                 {{ 'universal_vocabulary_noPasswordWarning' | translate }}
               </p>
               <p
                 id="password__hint"
-                [class.password__format___error]="uiFlag.newPasswordFormatError"
+                [class.error__hint]="uiFlag.newPasswordFormatError"
                 *ngIf="uiFlag.showPasswordHint"
               >
                 {{ 'universal_userAccount_passwordFormat' | translate }}
               </p>
+              <div class="flexRow" style="align-items: center;">
+                <button
+                  id="update__password___button"
+                  class="request__update__button"
+                  (click)="handleUpdatePassword()"
+                >
+                  {{ 'universal_operating_update' | translate }}
+                </button>
+                <i
+                  class="icon-svg_web-icon_p2_097-ok success__hint__icon"
+                  *ngIf="uiFlag.newPasswordUpdated"
+                ></i>
+              </div>
             </form>
           </ng-container>
           <div class="apply__fee__content">
@@ -642,18 +717,19 @@
           </div>
         </div>
         <div id="paid__button">
-          <ng-container *ngIf="selectPlanInfo.fee !== 0">
+          <ng-container *ngIf="selectPlanInfo.fee !== 0 && loginBody.signInType === SignTypeEnum.phone">
             <p id="not__paid__alert">
               {{ 'universal_vocabulary_thisOrderNotPaid' | translate }}
             </p>
             <button
               class="submit__button"
+              [class.submit__button--disabled]="!uiFlag.enableAccount"
               (click)="navigatePaidPage()"
             >
               {{ 'universal_vocabulary_goToPay' | translate }}
             </button>
           </ng-container>
-          <ng-container *ngIf="selectPlanInfo.fee === 0">
+          <ng-container *ngIf="selectPlanInfo.fee === 0 || loginBody.signInType === SignTypeEnum.email">
             <button
               class="submit__button"
               (click)="navigateMyActivityPage()"
@@ -703,7 +779,7 @@
 >
   <div class="flexCol">
     <div class="flexRow password__input">
-      <div class="flexRow login__input">
+      <div class="flexRow icon__input">
         <mat-icon>vpn_key</mat-icon>
         <input
           [type]="uiFlag.displayPW ? 'text' : 'password'"

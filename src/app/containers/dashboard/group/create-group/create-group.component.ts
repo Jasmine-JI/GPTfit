@@ -181,7 +181,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
 
     this.buildForm(this.createType);
     this.getCreatorInfo();
-    this.token = this.utils.getToken() || '';
+    this.token = this.utils.getToken();
     const body = {
       token: this.token,
       groupId: this.groupId,

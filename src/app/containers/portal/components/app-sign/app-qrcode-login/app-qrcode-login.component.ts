@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { AuthService } from '../../../../../shared/services/auth.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
-import { SignupService } from '../../../services/signup.service';
+import { SignupService } from '../../../../../shared/services/signup.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
@@ -68,7 +68,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
   ) { }
 
   ngOnInit() {
-    this.loginBody.token = this.utils.getToken() || '';
+    this.loginBody.token = this.utils.getToken();
     this.getQueryString();
     this.checkPage(location.pathname);
     this.subscribeResizeEvent();

@@ -14,7 +14,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../../../shared/services/auth.service';
-import { UserProfileInfo } from '../../models/userProfileInfo';
+import { UserProfileInfo } from '../../../../shared/models/user-profile-info';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { PaginationSetting } from '../../../../shared/models/pagination';
 

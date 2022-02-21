@@ -1,5 +1,5 @@
 #!/bin/bash
-HOME="/home/project/alatech_api"
+HOME="/home/project/alatech_api_py38"
 API_SERVER="/var/web"
 IP_ADDR=$(ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
 rm -rf /var/www/html/dist
@@ -39,9 +39,6 @@ elif [ $IP_ADDR == "192.168.1.234" ]; then
   fi
   if [ ! -L /var/www/html/dist/RD_FW ]; then
           ln -s /var/www/html/RD_FW /var/www/html/dist/RD_FW
-  fi
-  if [ ! -h /var/www/html/dist/redirect.php ]; then
-          ln -s $HOME/redirect/redirect.php /var/www/html/dist/
   fi
   if [ ! -h /var/www/html/dist/api ]; then
           ln -s /var/www/html/api /var/www/html/dist/api
@@ -93,9 +90,6 @@ elif [ $IP_ADDR == "192.168.1.232" ]; then
   if [ ! -L /var/www/html/dist/RD_FW ]; then
           ln -s /var/www/html/RD_FW /var/www/html/dist/RD_FW
   fi
-  if [ ! -L /var/www/html/dist/redirect.php ]; then
-          ln -s /home/vincent/gitlab/alatech_api/redirect/redirect.php /var/www/html/dist/
-  fi
   if [ ! -L /var/www/html/dist/test ]; then
           ln -s /var/www/html/test /var/www/html/dist/test
   fi
@@ -115,9 +109,6 @@ else
   fi
   if [ ! -L /var/www/html/dist/RD_FW ]; then
           ln -s /var/www/html/RD_FW /var/www/html/dist/RD_FW
-  fi
-  if [ ! -h /var/www/html/dist/redirect.php ]; then
-          ln -s $HOME/redirect/redirect.php /var/www/html/dist/
   fi
   if [ ! -L /var/www/html/dist/ba19f544a4fc779ec2c689184906748c ]; then
           ln -s /var/www/html/ba19f544a4fc779ec2c689184906748c /var/www/html/dist/ba19f544a4fc779ec2c689184906748c
