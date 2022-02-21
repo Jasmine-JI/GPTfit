@@ -44,7 +44,7 @@ export class NavbarComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // this.getIpAddress();
+    this.getIpAddress();
     this.langName = langData[
       this.utilsService.getLocalStorageObject('locale')
     ];

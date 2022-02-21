@@ -246,7 +246,7 @@ export class CoachDashboardComponent
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
     this.classType = queryStrings.type;
     this.classId = this.route.snapshot.paramMap.get('classId');
-    this.token = this.utils.getToken() || '';
+    this.token = this.utils.getToken();
     const body = {
       token: this.token,
       classId: this.classId,

@@ -2,7 +2,7 @@ import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../../shared/services/auth.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
-import { SignupService } from '../../../services/signup.service';
+import { SignupService } from '../../../../../shared/services/signup.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { formTest } from '../../../../../shared/models/form-test';
-import { AccountTypeEnum } from '../../../../dashboard/models/userProfileInfo';
+import { AccountTypeEnum } from '../../../../../shared/models/user-profile-info';
 import { SignTypeEnum } from '../../../../../shared/models/utils-type';
 import { TFTViewMinWidth } from '../../../models/app-webview';
 import { Subject, Subscription, fromEvent, of } from 'rxjs';
@@ -165,7 +165,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     if (tk) this.editBody.token = tk;
 
     if (this.editBody.token === '') {
-      this.editBody.token = this.utils.getToken() || '';
+      this.editBody.token = this.utils.getToken();
     }
 
   }

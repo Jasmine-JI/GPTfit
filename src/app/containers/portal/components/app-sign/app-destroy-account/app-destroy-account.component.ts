@@ -2,14 +2,14 @@ import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { AppCode } from '../../../models/app-webview';
 import { Router } from '@angular/router';
 import { UtilsService } from '../../../../../shared/services/utils.service';
-import { SignupService } from '../../../services/signup.service';
+import { SignupService } from '../../../../../shared/services/signup.service';
 import moment from 'moment';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../../shared/services/auth.service';
-import { AccountTypeEnum } from '../../../../dashboard/models/userProfileInfo';
+import { AccountTypeEnum } from '../../../../../shared/models/user-profile-info';
 import { TFTViewMinWidth } from '../../../models/app-webview';
 
 enum DestroyFlow {
@@ -158,7 +158,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
    */
   getUserToken() {
     if (this.appSys === 0) {
-      this.token = this.utils.getToken() || '';
+      this.token = this.utils.getToken();
     } else {
       const { search } = location;
       const { tk } = this.utils.getUrlQueryStrings(search);

@@ -20,7 +20,7 @@
         <div class="flexRow account__area appview-inputBorder">
           <div
             [class.appview-countryCodeSelector]="loginBody.signInType === SignTypeEnum.phone"
-            [class.selector--active]="displayCountryCodeList"
+            [class.official-selector--active]="displayCountryCodeList"
             (click)="showCountryCodeList($event)"
             *ngIf="loginBody.signInType === SignTypeEnum.phone"
           >

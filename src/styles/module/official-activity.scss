@@ -7,6 +7,8 @@
 @import 'font.scss';
 @import 'color.scss';
 @import 'button.scss';
+@import 'drop-triangle.scss';
+@import 'overflow-scroll';
 
  
 @mixin main-button() {
@@ -14,6 +16,37 @@
   width: 120px;
   min-height: 40px;
   font-weight: bold;
+}
+
+@mixin drop-menu($top, $width, $height: 200px) {
+  list-style: none;
+  position: absolute;
+  background-color: white;
+  top: $top;
+  left: 0;
+  z-index: 1;
+  box-shadow: 2px 2px 4px rgba(200, 200, 200, 1), -2px 2px 4px rgba(200, 200, 200, 1);
+  padding: 0;
+  width: 180px;
+  max-height: 200px;
+  @include overflow-y-scroll();
+
+  >li {
+    padding: 5px;
+    font-size: 14px;
+
+    &:hover {
+      background-color: $primary-blue;
+      color: white;
+    }
+
+  }
+
+}
+
+@mixin selector-list($width) {
+  display: inline-block;
+  width: $width;
 }
 
 .official-dialog {
@@ -109,4 +142,34 @@
     font-size: 20px;
   }
 
+}
+
+.official-countryCodeSelector {
+  position: relative;
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  @include drop-hint(6px, 4px, black);
+}
+
+.official-selector--active {
+
+  &:after {
+    @include drop-active();
+  }
+  
+}
+
+.official-countryCodeList {
+  @include drop-menu(27px, 180px);
+}
+
+.official-countryNumber {
+  @include selector-list(45px);
+}
+
+.official-countryName {
+  @include selector-list(100px);
 }

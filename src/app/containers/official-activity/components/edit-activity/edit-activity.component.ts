@@ -6,11 +6,10 @@ import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import moment from 'moment';
-import { UserProfileInfo } from '../../../dashboard/models/userProfileInfo';
+import { UserProfileInfo, Sex } from '../../../../shared/models/user-profile-info';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MapLanguageEnum } from '../../../../shared/models/i18n';
-import { Sex } from '../../../dashboard/models/userProfileInfo';
 import * as DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
 import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
 import { AlbumType } from '../../../../shared/models/image';
@@ -129,6 +128,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+console.log('edit');
     this.getAccessRight();
     this.checkEditMode();
     this.getEvent();
@@ -137,7 +137,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 確認權限，權限不符則進入404頁面
+   * 確認權限，權限不符則進入403頁面
    * @author kidin-1101015
    */
   getAccessRight() {
@@ -146,21 +146,9 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       this.userProfileService.getRxUserProfile().pipe(
         takeUntil(this.ngUnsubscribe)
       ).subscribe(res => {
-        if (res) {
-          const { systemAccessRight } = res;
-          this.userProfile = res;
-          const maxAccessRight = systemAccessRight[0];
-          const accessList = [AccessRight.auditor, AccessRight.pusher];
-          if (accessList.includes(maxAccessRight)) return true;
-        }
-
-        this.router.navigateByUrl('/official-activity/403');
-        return false;
+        this.userProfile = res;
       });
 
-    } else {
-      this.router.navigateByUrl('/official-activity/403');
-      return false;
     }
     
   }

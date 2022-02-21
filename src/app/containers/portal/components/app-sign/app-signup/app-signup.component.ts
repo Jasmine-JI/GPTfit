@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../../shared/services/auth.service';
-import { SignupService } from '../../../services/signup.service';
+import { SignupService } from '../../../../../shared/services/signup.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';

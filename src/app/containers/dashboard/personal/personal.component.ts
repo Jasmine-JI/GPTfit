@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { UserProfileService } from '../../../shared/services/user-profile.service';
-import { UserProfileInfo } from '../models/userProfileInfo';
+import { UserProfileInfo } from '../../../shared/models/user-profile-info';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { UtilsService } from '../../../shared/services/utils.service';
@@ -82,7 +82,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
 
   userProfile: UserProfileInfo;
   hashUserId: string;
-  token = this.utils.getToken() || '';
+  token = this.utils.getToken();
   readonly AlbumType = AlbumType;
   childPageList = [];
 

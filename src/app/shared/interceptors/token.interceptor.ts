@@ -39,7 +39,7 @@ export class TokenInterceptor implements HttpInterceptor {
       utcZone: moment().format('Z')
     };
 
-    const token = this.utils.getToken() || '';
+    const token = this.utils.getToken();
     if (token) {
       setHeaders = {
         ...setHeaders,

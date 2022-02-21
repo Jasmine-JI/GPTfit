@@ -4,7 +4,7 @@ import { UserProfileService } from '../../../../shared/services/user-profile.ser
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { Unit, ft, inch, lb } from '../../../../shared/models/bs-constant';
-import { HrBase } from '../../models/userProfileInfo';
+import { HrBase } from '../../../../shared/models/user-profile-info';
 import { formTest } from '../../../../shared/models/form-test';
 import { HrZoneRange } from '../../../../shared/models/chart-data';
 import moment from 'moment';

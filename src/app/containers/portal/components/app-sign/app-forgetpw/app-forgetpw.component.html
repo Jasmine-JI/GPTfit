@@ -31,7 +31,7 @@
               <div class="flexRow account__area appview-inputBorder">
                 <div
                   [class.appview-countryCodeSelector]="formValue.type === SignTypeEnum.phone"
-                  [class.selector--active]="displayCountryCodeList"
+                  [class.official-selector--active]="displayCountryCodeList"
                   (click)="showCountryCodeList($event)"
                   *ngIf="formValue.type === SignTypeEnum.phone"
                 >
@@ -296,7 +296,7 @@
                     class="form__message form__message--placeholder"
                     *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''"
                   >
-                    {{ imgCaptcha.cue }}
+                    {{ imgCaptcha.cue | translate }}
                   </span>
                   
                 </div>

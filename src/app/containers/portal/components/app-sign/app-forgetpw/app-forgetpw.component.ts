@@ -2,7 +2,7 @@ import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { AuthService } from '../../../../../shared/services/auth.service';
-import { SignupService } from '../../../services/signup.service';
+import { SignupService } from '../../../../../shared/services/signup.service';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
@@ -14,9 +14,9 @@ import { formTest } from '../../../../../shared/models/form-test';
 import { codes } from '../../../../../shared/models/countryCode';
 import { SignTypeEnum } from '../../../../../shared/models/utils-type';
 import { TFTViewMinWidth } from '../../../models/app-webview';
+import { LockCaptcha } from '../../../../../shared/classes/lock-captcha';
 
 const errorCaptchaI18nKey = 'universal_userAccount_errorCaptcha';
-type InputType = 'account' | 'password';
 enum ResetFlow {
   request = 1,
   verify,

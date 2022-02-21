@@ -460,4 +460,12 @@ $edit-button-size: 30px;
     right: 10px;
   }
 
+  .list__detail {
+    flex-direction: column;
+  }
+
+  .list__edit__button {
+    flex-direction: row;
+  }
+
 }

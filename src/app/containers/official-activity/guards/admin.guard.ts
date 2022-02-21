@@ -9,6 +9,8 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { UtilsService } from '../../../shared/services/utils.service';
 import { UserProfileService } from '../../../shared/services/user-profile.service';
+import { pageNoAccessright } from '../models/official-activity-const';
+import { AccessRight } from '../../../shared/models/accessright';
 
 
 @Injectable({
@@ -28,21 +30,16 @@ export class AdminGuard implements CanActivate {
     const token = this.utils.getToken();
     if (token) {
 
-      return this.userProfileService.getMemberAccessRight({token}).pipe(
+      return this.userProfileService.getMemberAccessRight({ token }).pipe(
         map(res => {
           if (this.utils.checkRes(res)) {
-            const { info: { groupAccessRight } } = res,
-                  maxAccessRight = +groupAccessRight[0].accessRight;
-            if (maxAccessRight === 28) {
-              return true;
-            } else {
-              return this.checkAccessRightFailed();
-            }
-
-          } else {
-            return this.checkAccessRightFailed();
+            const { info: { groupAccessRight } } = res;
+            const maxAccessRight = +groupAccessRight[0].accessRight;
+            const passAdmin = [AccessRight.auditor, AccessRight.pusher];
+            if (passAdmin.includes(maxAccessRight)) return true;
           }
 
+          return this.checkAccessRightFailed();
         })
 
       );
@@ -58,7 +55,7 @@ export class AdminGuard implements CanActivate {
    * @author kidin-1101209
    */
   checkAccessRightFailed() {
-    this.router.navigateByUrl(`/official-activity/403`);
+    this.router.navigateByUrl(pageNoAccessright);
     return false;
   }
   

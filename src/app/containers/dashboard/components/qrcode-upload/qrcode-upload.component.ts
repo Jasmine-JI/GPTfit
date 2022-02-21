@@ -55,7 +55,7 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // 未登入則導至登入頁，接著導至dashboard以取得user infomation-kidin-1090525
-    const token = this.utils.getToken() || '';
+    const token = this.utils.getToken();
     if (token.length === 0) {
       this.auth.backUrl = location.href;
       this.router.navigateByUrl('/signIn-web');
@@ -207,7 +207,7 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
     }
 
     const data = this.translatedInfo,
-          token = this.utils.getToken() || '';
+          token = this.utils.getToken();
     const body = {
       token: token,
       userId: this.userInfo.userId,

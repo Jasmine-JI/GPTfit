@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../../../../shared/services/utils.service';
-import { SignupService } from '../../../services/signup.service';
+import { SignupService } from '../../../../../shared/services/signup.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
@@ -9,10 +9,11 @@ import { Subject, fromEvent, Subscription, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { AccountTypeEnum } from '../../../../dashboard/models/userProfileInfo';
+import { AccountTypeEnum } from '../../../../../shared/models/user-profile-info';
 import { TFTViewMinWidth } from '../../../models/app-webview';
 
 const errorMsg = 'Error!<br /> Please try again later.';
+type RedirectPage = 'sign' | 'setting' | 'event';
 
 @Component({
   selector: 'app-app-enable',
@@ -73,6 +74,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
   sendEmail = false;
   enableSuccess = false;
   requestHeader = {};
+  redirectPage: RedirectPage = 'sign';
   readonly AccountTypeEnum = AccountTypeEnum;
 
   constructor(
@@ -199,12 +201,15 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
         case 'vc':
           this.emailLinkString.verificationCode = _value as string;
           break;
+        case 'ru':
+          this.redirectPage = _value as RedirectPage;
+          break;
       }
 
     });
 
     if (this.appInfo.token === '') {
-      this.appInfo.token = this.utils.getToken() || '';
+      this.appInfo.token = this.utils.getToken();
     }
 
     if (this.emailLinkString.enableAccountFlow !== 0) {
@@ -280,15 +285,30 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
         window.onunload = this.refreshParent;
       }
 
-      // 若無法關閉視窗就導回登入頁
-      if (this.pcView === true) {
-        this.router.navigateByUrl('/signIn-web');
-      } else {
-        this.router.navigateByUrl('/signIn');
-      }
-
+      this.redirect();
     }
 
+  }
+
+  /**
+   * 轉導至指定頁面
+   * @author kidin-1110218
+   */
+  redirect() {
+    let path: string;
+    switch (this.redirectPage) {
+      case 'event':
+        path = '/official-activity/my-activity';
+        break;
+      case 'setting':
+        path = '/dashboard/user-settings';
+        break;
+      default:
+        path = this.pcView ? '/signIn-web' : '/signIn';
+        break;
+    }
+
+    this.router.navigateByUrl(path);
   }
 
   // 倒數計時倒數計時並取得server手機驗證碼-kidin-1090519
@@ -339,7 +359,6 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
           this.translate.get('hellow world').pipe(
             takeUntil(this.ngUnsubscribe)
           ).subscribe(() => {
-            this.progress = 100;
             const msg = this.translate.instant('universal_userAccount_sendSmsSuccess');
             this.debounceBack(msg);
 
@@ -359,6 +378,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
         }
 
+        this.progress = 100;
       });
 
     }
@@ -410,6 +430,10 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
         (body as any).verificationCode = this.phoneCaptcha.value;
       } else {
         body.enableAccountFlow = 1;
+        if (this.redirectPage === 'event') {
+          Object.assign(body, { redirectUrl: 'event' });
+        }
+
       }
 
       this.getClientIpaddress().pipe(
@@ -508,7 +532,6 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
         switch (res.processResult.apiReturnMessage) {
           case 'Found a wrong unlock key.':
             this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
-            this.progress = 100;
             break;
           default:
             this.dialog.open(MessageBoxComponent, {
@@ -527,6 +550,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
       }
 
+      this.progress = 100;
     });
 
   }
@@ -620,15 +644,12 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
     } else if (this.appInfo.sys === 2) {
       (window as any).android.closeWebView('Close');
     } else {
-      window.close();
+
+      if (this.redirectPage !== 'event') window.close();
       window.onunload = this.refreshParent;
       // 若無法關閉瀏覽器則導回登入頁
-      if (this.pcView === true) {
-        this.router.navigateByUrl(this.utils.getToken() ? '/dashboard/user-settings' : '/signIn-web');
-      } else {
-        this.router.navigateByUrl(this.utils.getToken() ? '/dashboard/user-settings' : '/signIn');
-      }
-
+      if (this.redirectPage === 'sign') this.redirectPage = 'setting';
+      this.redirect();
     }
 
   }

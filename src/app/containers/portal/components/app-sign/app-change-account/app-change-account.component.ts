@@ -3,14 +3,14 @@ import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { AuthService } from '../../../../../shared/services/auth.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
-import { SignupService } from '../../../services/signup.service';
+import { SignupService } from '../../../../../shared/services/signup.service';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { Subject, Subscription, fromEvent, merge, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { formTest } from '../../../../../shared/models/form-test';
-import { AccountTypeEnum } from '../../../../dashboard/models/userProfileInfo';
+import { AccountTypeEnum } from '../../../../../shared/models/user-profile-info';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 import { SignTypeEnum } from '../../../../../shared/models/utils-type';
 import { codes } from '../../../../../shared/models/countryCode';
@@ -205,7 +205,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     if (tk) this.editBody.token = tk;
 
     if (this.editBody.token === '') {
-      this.editBody.token = this.utils.getToken() || '';
+      this.editBody.token = this.utils.getToken();
     }
 
   }

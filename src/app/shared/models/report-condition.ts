@@ -1,4 +1,4 @@
-import { Sex } from '../../containers/dashboard/models/userProfileInfo';
+import { Sex } from './user-profile-info';
 
 /**
  * 報告頁面可讓使用者篩選的條件

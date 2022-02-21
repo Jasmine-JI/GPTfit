@@ -5,7 +5,7 @@ import { UtilsService } from '../../../../shared/services/utils.service';
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import { HashIdService } from '../../../../shared/services/hash-id.service';
-import { debounce } from '../../../../shared/utils/';
+import { debounce } from '../../../../shared/utils/index';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { AuthService } from '../../../../shared/services/auth.service';
 import { Router } from '@angular/router';
@@ -13,7 +13,7 @@ import { MessageBoxComponent } from '../../../../shared/components/message-box/m
 import { TranslateService } from '@ngx-translate/core';
 import { last } from 'rxjs/operators';
 import moment from 'moment';
-import { AccountTypeEnum } from '../../../dashboard/models/userProfileInfo';
+import { AccountTypeEnum } from '../../../../shared/models/user-profile-info';
 
 const errorMsg = 'Error!<br />Please try again later.';
 

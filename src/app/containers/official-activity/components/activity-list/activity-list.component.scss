@@ -20,6 +20,14 @@ $shadow-color-light: rgba(175, 175, 175, 1);
 $shadow-color-deep: rgba(150, 150, 150, 1);
 $theme-img-height: 130px;
 $block-icon-size: 40px;
+$image-width: 20%;
+$info-width: 75%;
+$person-detail-color: rgba(140, 140, 140, 1);
+$apply-info-width: 250px;
+$step-height: 30px;
+$step-width: 70px;
+$button-padding: 7px 5px;
+
 
 @mixin apply-date($background-color) {
   background-color: $background-color;
@@ -77,7 +85,7 @@ $block-icon-size: 40px;
   max-height: $theme-img-height;
   overflow: hidden;
   margin-right: 10px;
-  width: 20%;
+  width: $image-width;
 
   >:first-of-type {
     position: relative;
@@ -115,7 +123,7 @@ $block-icon-size: 40px;
 }
 
 .race__list {
-  width: 75%;
+  width: $info-width;
 }
 
 .race__info {
@@ -249,7 +257,7 @@ $block-icon-size: 40px;
   @include center();
   @include bold-font(14px);
   min-width: 100px;
-  padding: 7px 5px;
+  padding: $button-padding;
   border-radius: 5px;
   margin: 0 15px;
 }
@@ -445,18 +453,6 @@ $block-icon-size: 40px;
   
 }
 
-.product__detail {
-  display: flex;
-  justify-content: flex-end;
-  min-height: 80px;
-  width: 95%;
-
-  >table {
-    width: 30%;
-  }
-
-}
-
 .product__title, .product__fee {
   $detail-table-width: 140px;
   text-align: center;
@@ -556,6 +552,149 @@ td.product__title, td.product__fee {
   list-style: none;
   padding: 0;
   margin: 0;
+}
+
+.detail__section {
+  padding: 10px 5px;
+  padding-right: calc(100% - #{$image-width} - #{$info-width});
+}
+
+.person__event__detail {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  background: rgba(250, 250, 250, 1);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.quit__button {
+  height: 35px;
+}
+
+.column__info {
+  margin: 5px;
+}
+
+.column__title {
+  font-weight: bold;
+}
+
+.column__value {
+  color: rgba(140, 140, 140, 1);
+  margin: 0;
+}
+
+.input__section {
+  $width: 300px;
+  width: 300px;
+  min-width: 300px;
+}
+
+.input__column {
+  margin: 5px 0;
+}
+
+.input__value {
+  color: $person-detail-color;
+  font-size: 15px;
+}
+
+.mobile__input {
+  border: none;
+  padding: 0 5px;
+  outline: none;
+}
+
+.event__userProfile__input {
+  border: none;
+  border-bottom: 1px solid black;
+  min-width: 100%;
+  padding: 0 5px;
+  outline: none;
+}
+
+.forbidden__edit {
+  cursor: not-allowed;
+}
+
+.disabled__input {
+  pointer-events: none;
+  border: none;
+}
+
+.apply__info {
+  width: $apply-info-width;
+  min-width: $apply-info-width;
+}
+
+.quit__button--disable {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.show__detail__button {
+  position: relative;
+  width: 105px;
+  font-size: 15px;
+  border-radius: 5px;
+  padding: $button-padding;
+
+  &:hover {
+    $blur: 2px;
+    $color: rgba(225, 225, 225, 1);
+    box-shadow: 1px 1px $blur $color, 1px -1px $blur $color, -1px 1px $blur $color, -1px -1px $blur $color;
+  }
+
+}
+
+.detail__drop__icon {
+  height: -moz-fit-content;
+  height: fit-content;
+  transition: transform 0.2s cubic-bezier(0.5, 0.5, 0.5, 0.5);
+  @include transition(transform);
+}
+
+.apply__steps {
+  margin: 10px 0;
+  justify-content: space-between;
+  width: $apply-info-width;
+  min-width: $apply-info-width;
+}
+
+.apply__step {
+  @include center();
+  width: $step-width;
+  min-width: $step-width;
+  height: $step-height;
+  min-height: $step-height;
+  font-size: 14px;
+  border: 1px solid $apply-schedule-finish-color;
+  border-radius: 5px;
+}
+
+.apply__step--active {
+  position: relative;
+  color: white;
+  background-color: $apply-schedule-finish-color;
+
+  &:not(:last-of-type) {
+
+    &:after {
+      --bar-width: calc((#{$apply-info-width} - #{$step-width} * 3) / 2);
+      --bar-shift: calc((var(--bar-width) / -1) - 1px);
+      $height: 10px;
+      content: '';
+      position: absolute;
+      width: var(--bar-width);
+      height: $height;
+      background-color: $apply-schedule-finish-color;
+      right: var(--bar-shift);
+      top: calc((#{$step-height} - #{$height}) / 2);
+    }
+
+  }
+
 }
 
 /*********************************************************** mobile style **********************************************/
@@ -677,8 +816,10 @@ td.product__title, td.product__fee {
 
   }
 
-  .product__detail {
-    justify-content: flex-start;
+  .apply__info {
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
   }
 
 }
@@ -702,10 +843,6 @@ td.product__title, td.product__fee {
 
 @media (max-width: 767px) {
 
-  .history__detail {
-    height: 110px;
-  }
-
   .history__record {
     flex-direction: column;
     align-items: center;
@@ -724,19 +861,18 @@ td.product__title, td.product__fee {
     font-size: 14px;
   }
 
-  .product__detail {
-    justify-content: center;
-    width: 98%;
-
-    >table {
-      width: 90%;
-    }
-
-  }
-
 }
 
-@media (max-width: 480px) {
+@media (max-width: 500px) {
+
+  .history__detail {
+    height: 110px;
+  }
+
+  .apply__info {
+    flex-direction: column;
+    align-items: center;
+  }
 
   .filter__area {
     flex-direction: column;

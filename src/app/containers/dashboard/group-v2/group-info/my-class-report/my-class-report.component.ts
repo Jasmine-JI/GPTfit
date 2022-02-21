@@ -16,7 +16,7 @@ import { chart, charts, color, each } from 'highcharts';
 import { ReportService } from '../../../../../shared/services/report.service';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
 import { HrZoneRange } from '../../../../../shared/models/chart-data';
-import { HrBase } from '../../../models/userProfileInfo';
+import { HrBase } from '../../../../../shared/models/user-profile-info';
 
 
 // 建立圖表用-kidin-1081212
@@ -378,7 +378,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
 
   // 使用者送出表單後顯示相關資料-kidin-1081209
   handleSubmitSearch () {
-    this.token = this.utils.getToken() || '';
+    this.token = this.utils.getToken();
     this.reportCompleted = false;
     this.initVariable();
     this.getUserInfo();

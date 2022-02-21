@@ -94,7 +94,7 @@ export class MyActivityComponent implements OnInit, OnDestroy {
       active: '',
       direction: ''
     };
-    this.token = this.utils.getToken() || '';
+    this.token = this.utils.getToken();
     this.getLists();
 
     // 分頁切換時，重新取得資料

@@ -29,6 +29,7 @@
         <a
           href="/official-activity/activity-list"
           class="page__link child__page__link"
+          name="activity-list"
           (click)="navigate($event, '/official-activity/activity-list')"
         >
           {{ 'universal_vocabulary_activity' | translate }}
@@ -36,6 +37,7 @@
         <a
           href="/official-activity/leaderboard"
           class="page__link child__page__link"
+          name="leaderboard"
           (click)="navigate($event, '/official-activity/leaderboard')"
         >
           {{ 'universal_race_leaderboard' | translate }}
@@ -43,6 +45,7 @@
         <a
           href="/official-activity/my-activity"
           class="page__link child__page__link"
+          name="my-activity"
           (click)="navigate($event, '/official-activity/my-activity')"
           *ngIf="token"
         >
@@ -51,6 +54,7 @@
         <a
           href="/official-activity/my-activity"
           class="page__link child__page__link"
+          name="about-cloudrun"
           (click)="navigate($event, '/official-activity/about-cloudrun')"
         >
           {{ '關於雲跑' | translate }}
@@ -150,7 +154,7 @@
         class="page__link child__page__link"
         (click)="navigate($event, '/official-activity/about-cloudrun')"
       >
-        {{ 'universal_deviceSetting_adout' | translate }}  {{ 'universal_app_cloudRun' | translate }}
+        {{ '關於雲跑' | translate }}
       </a>
     </li>
   </ul>
@@ -317,16 +321,15 @@
             <ng-container *ngIf="authInfo.signInType === SignTypeEnum.phone">
               <mat-icon>smartphone</mat-icon>
               <div
-                id="country__code"
-                class="country__code__selector"
-                [class.selector--active]="uiFlag.showCountryCodeList"
+                class="official-countryCodeSelector"
+                [class.official-selector--active]="uiFlag.showCountryCodeList"
                 (click)="showCountryCodeList($event)"
               >
                 <span>
                   +{{ authInfo?.countryCode }}
                 </span>
                 <ul
-                  class="country__code___list"
+                  class="official-countryCodeList"
                   *ngIf="uiFlag.showCountryCodeList"
                 >
                   <li
@@ -334,10 +337,10 @@
                     (click)="selectCountryCode($event, _list.code)"
                     *ngFor="let _list of countryCodeList;"
                   >
-                    <span class="country__number">
+                    <span class="official-countryNumber">
                       {{ _list.code }}
                     </span>
-                    <span class="country__name">
+                    <span class="official-countryName">
                       {{ _list.name }}
                     </span>
                   </li>

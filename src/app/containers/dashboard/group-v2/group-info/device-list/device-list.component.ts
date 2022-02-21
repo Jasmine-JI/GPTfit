@@ -63,7 +63,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
    */
   userSimpleInfo: UserSimpleInfo;
 
-  token = this.utils.getToken() || '';
+  token = this.utils.getToken();
   deviceList: Array<any>;  // 目前顯示的清單
   groupDeviceList: Array<any>;  // 群組裝置清單
   myDeviceList: Array<any>;  // 個人裝置清單
