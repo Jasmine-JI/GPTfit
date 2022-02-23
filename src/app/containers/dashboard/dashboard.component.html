@@ -90,7 +90,7 @@
     >
       <div
         class="flexRow ala-dashboard-logo nav__color"
-        style="height: 30px; justify-content: space-between;"
+        style="height: 40px; justify-content: space-between;"
       >
         <span
           style="cursor: pointer;"
@@ -98,7 +98,11 @@
           [style.display]="uiFlag.sidebarMode !== 'expand' && !uiFlag.navFixed ? 'none' : flex"
           (click)="navigateHomePage()"
         >
-          GPTfit
+          <img 
+            src="/assets/icons/logo.svg"
+            alt="GPTfit"
+            class="webLogo"
+          >
           <span class="alpha-text" *ngIf="isAlphaVersion">alpha</span>
         </span>
         <div

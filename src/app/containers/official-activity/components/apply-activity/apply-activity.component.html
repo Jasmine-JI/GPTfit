@@ -446,7 +446,7 @@
                   id="emergency__contact__relationship"
                   name="emergency__contact__relationship"
                   class="info__input input__placeholder"
-                  placeholder="（選填）"
+                  [placeholder]="'（' + ('universal_vocabulary_optional' | translate) + '）'"
                   [(ngModel)]="applyInfo.userProfile.emergencyContact.relationship"
                   (focus)="positionMark($event)"
                 >
@@ -717,7 +717,10 @@
           </div>
         </div>
         <div id="paid__button">
-          <ng-container *ngIf="selectPlanInfo.fee !== 0 && loginBody.signInType === SignTypeEnum.phone">
+          <ng-container *ngIf="
+            selectPlanInfo.fee !== 0
+            && (uiFlag.enableAccount || loginBody.signInType === SignTypeEnum.phone)
+          ">
             <p id="not__paid__alert">
               {{ 'universal_vocabulary_thisOrderNotPaid' | translate }}
             </p>
@@ -729,7 +732,10 @@
               {{ 'universal_vocabulary_goToPay' | translate }}
             </button>
           </ng-container>
-          <ng-container *ngIf="selectPlanInfo.fee === 0 || loginBody.signInType === SignTypeEnum.email">
+          <ng-container *ngIf="
+            selectPlanInfo.fee === 0
+            || (!uiFlag.enableAccount && loginBody.signInType === SignTypeEnum.email)
+          ">
             <button
               class="submit__button"
               (click)="navigateMyActivityPage()"

@@ -67,7 +67,8 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     screenSize: window.innerWidth,
     listEditMode: false,
     showSortMenu: false,
-    focusInput: false
+    focusInput: false,
+    listType: <ListType>'normal'
   };
 
   sortSet = <SortSet>{
@@ -1435,6 +1436,15 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    */
   focusInput() {
     this.uiFlag.focusInput = true;
+  }
+
+  /**
+   * 切換清單
+   * @param type {ListType}-清單類別
+   * @author kidin-1110222
+   */
+  switchList(type: ListType) {
+    this.uiFlag.listType = type;
   }
 
   /**

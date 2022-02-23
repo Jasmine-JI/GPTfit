@@ -326,17 +326,44 @@
       <i class="icon-svg_web-icon_p1_008-edit"></i>
     </button>
   </div>
-  <div *ngTemplateOutlet="contestantList; context: {
-    displayList: reArrangeList,
-    listType: 'normal'
-  }"></div>
-  <ng-container *ngIf="leavingList.length > 0">
+
+  <div class="flexRow tab__section">
+    <button 
+      class="tab__button"
+      [class.tab__button--active]="uiFlag.listType === 'normal'"
+      (click)="switchList('normal')"
+    >參賽者</button>
+    <button
+      class="tab__button"
+      [class.tab__button--active]="uiFlag.listType === 'leaving'"
+      (click)="switchList('leaving')"
+    >
+      退賽申請
+      <i
+        class="icon-svg_web-icon_p1_069-about alert__icon"
+        *ngIf="leavingList.length > 0"
+      ></i>
+    </button>
+    <button 
+      class="tab__button"
+      [class.tab__button--active]="uiFlag.listType === 'leave'"
+      (click)="switchList('leave')"
+    >已退賽</button>
+  </div>
+
+  <ng-container *ngIf="uiFlag.listType === 'normal'">
+    <div *ngTemplateOutlet="contestantList; context: {
+      displayList: reArrangeList,
+      listType: 'normal'
+    }"></div>
+  </ng-container>
+  <ng-container *ngIf="uiFlag.listType === 'leaving'">
     <div *ngTemplateOutlet="contestantList; context: {
       displayList: leavingList,
       listType: 'leaving'
     }"></div>
   </ng-container>
-  <ng-container *ngIf="leaveList.length > 0">
+  <ng-container *ngIf="uiFlag.listType === 'leave'">
     <div *ngTemplateOutlet="contestantList; context: {
       displayList: leaveList,
       listType: 'leave'

@@ -26,8 +26,8 @@ import { AccessRight } from '../../../../shared/models/accessright';
 
 
 const leaveMessage = '尚未儲存，是否仍要離開此頁面？';
-const contentTextLimit = 500;  // 詳細內容單一區塊字數上限
-const contentInnerHtmlLimit = 1000;  // 詳細內容含html標籤後的字數上限
+const contentTextLimit = 2500;  // 詳細內容單一區塊字數上限
+const contentInnerHtmlLimit = 4096;  // 詳細內容含html標籤後的字數上限
 
 type DateType = 'applyStartDate' | 'applyEndDate' | 'raceStartDate' | 'raceEndDate';
 type EditSection = 'content' | 'group' | 'applyFee';
@@ -128,7 +128,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-console.log('edit');
     this.getAccessRight();
     this.checkEditMode();
     this.getEvent();

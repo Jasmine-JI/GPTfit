@@ -72,6 +72,12 @@ $declaration-color: rgba(100, 100, 100, 1);
 
 }
 
+.sub__logo {
+  position: relative;
+  top: -2px;
+  right: 4px;
+}
+
 .child__page__entry {
 
   >a {
@@ -331,6 +337,9 @@ $declaration-color: rgba(100, 100, 100, 1);
 }
 
 .icon__button {
+  $width: 42px;
+  width: $width;
+  min-width: $width;
   font-size: 30px;
 }
 

@@ -4,6 +4,7 @@
 @import 'color.scss';
 @import 'transform.scss';
 @import 'transition.scss';
+@import 'filter.scss';
 
 $calender-shadow-color: rgba(0, 0, 0, 0.3);
 $calender-border-top: 10px solid;
@@ -27,6 +28,9 @@ $apply-info-width: 250px;
 $step-height: 30px;
 $step-width: 70px;
 $button-padding: 7px 5px;
+$progress-apply: rgba(143, 21, 21, 1);
+$progress-pay: rgba(181, 12, 93, 1);
+$progress-record: rgba(234, 84, 0, 1);
 
 
 @mixin apply-date($background-color) {
@@ -38,6 +42,7 @@ $button-padding: 7px 5px;
   font-size: 12px;
   height: $apply-date-height;
   border-radius: $apply-date-height;
+  z-index: -2;
 }
 
 @mixin map-detail($font-size: 18px) {
@@ -56,6 +61,18 @@ $button-padding: 7px 5px;
   overflow: hidden;
   text-overflow: ellipsis;
   margin-bottom: 0;
+}
+
+@mixin input-width($width) {
+  width: $width;
+  min-width: $width;
+}
+
+@mixin step-flag($filter) {
+  $width: 70px;
+  width: $width;
+  min-width: $width;
+  @include filter($filter);
 }
 
 .activity__list__section {
@@ -561,15 +578,34 @@ td.product__title, td.product__fee {
 
 .person__event__detail {
   flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
   padding: 5px 0;
   background: rgba(250, 250, 250, 1);
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.order__detail {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+  border-bottom: 1px solid rgba(100, 100, 100, 1);
 }
 
 .quit__button {
   height: 35px;
+  max-width: 120px;
+}
+
+.quit__button--disable {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.info__input {
+  flex-wrap: wrap;
+  width: 50%;
+}
+
+.remark__input {
+  width: 40%;
 }
 
 .column__info {
@@ -580,19 +616,22 @@ td.product__title, td.product__fee {
   font-weight: bold;
 }
 
+.label__icon {
+  font-size: 24px;
+  font-weight: bold;
+}
+
 .column__value {
   color: rgba(140, 140, 140, 1);
   margin: 0;
 }
 
 .input__section {
-  $width: 300px;
-  width: 300px;
-  min-width: 300px;
+  flex-wrap: wrap;
 }
 
 .input__column {
-  margin: 5px 0;
+  margin: 5px 10px;
 }
 
 .input__value {
@@ -600,18 +639,27 @@ td.product__title, td.product__fee {
   font-size: 15px;
 }
 
-.mobile__input {
-  border: none;
+.event__userProfile__input {
   padding: 0 5px;
-  outline: none;
+  border-radius: 5px;
+  resize: none;
 }
 
-.event__userProfile__input {
-  border: none;
-  border-bottom: 1px solid black;
-  min-width: 100%;
-  padding: 0 5px;
-  outline: none;
+#mobile__number {
+  @include input-width(120px);
+}
+
+#email {
+  @include input-width(240px);
+}
+
+#address {
+  @include input-width(300px);
+}
+
+#remark {
+  min-width: 280px;
+  min-height: 85px;
 }
 
 .forbidden__edit {
@@ -626,11 +674,6 @@ td.product__title, td.product__fee {
 .apply__info {
   width: $apply-info-width;
   min-width: $apply-info-width;
-}
-
-.quit__button--disable {
-  pointer-events: none;
-  opacity: 0.5;
 }
 
 .show__detail__button {
@@ -662,39 +705,71 @@ td.product__title, td.product__fee {
   min-width: $apply-info-width;
 }
 
-.apply__step {
-  @include center();
-  width: $step-width;
-  min-width: $step-width;
-  height: $step-height;
-  min-height: $step-height;
-  font-size: 14px;
-  border: 1px solid $apply-schedule-finish-color;
-  border-radius: 5px;
+.apply__step__flag {
+  justify-content: space-between;
 }
 
-.apply__step--active {
+.apply__step {
   position: relative;
-  color: white;
-  background-color: $apply-schedule-finish-color;
+  $width: 70px;
+  width: $width;
+  min-width: $width;
+}
 
-  &:not(:last-of-type) {
+.step__apply {
+  $filter: none;
+  @include step-flag($filter);
+}
 
-    &:after {
-      --bar-width: calc((#{$apply-info-width} - #{$step-width} * 3) / 2);
-      --bar-shift: calc((var(--bar-width) / -1) - 1px);
-      $height: 10px;
-      content: '';
-      position: absolute;
-      width: var(--bar-width);
-      height: $height;
-      background-color: $apply-schedule-finish-color;
-      right: var(--bar-shift);
-      top: calc((#{$step-height} - #{$height}) / 2);
-    }
+.step__pay {
+  $filter: saturate(5) hue-rotate(330deg) brightness(0.75);
+  @include step-flag($filter);
+}
 
-  }
+.step__record {
+  $filter: saturate(5) hue-rotate(45deg) brightness(1.3);
+  @include step-flag($filter);
+}
 
+.step__label {
+  $width: 60px;
+  position: absolute;
+  z-index: 1;
+  top: 3px;
+  right: 5px;
+  background-color: white;
+  border-radius: 18px;
+  width: $width;
+  min-width: $width;
+  text-align: center;
+  @include bold-font(12px);
+}
+
+.step__progress {
+  height: 20px;
+  border: 1px solid rgba(140, 140, 140, 1);
+  border-radius: 20px;
+  padding: 2px;
+}
+
+.current__progress {
+  height: 100%;
+  border-radius: 16px;
+}
+
+.step__apply__progress {
+  width: 33%;
+  background-color: $progress-apply;
+}
+
+.step__pay__progress {
+  width: 66%;
+  background: linear-gradient(90deg, $progress-apply, $progress-pay);
+}
+
+.step__record__progress {
+  width: 100%;
+  background: linear-gradient(90deg, $progress-apply 0%, $progress-pay 51.89%, $progress-record 100%);
 }
 
 /*********************************************************** mobile style **********************************************/
@@ -800,7 +875,7 @@ td.product__title, td.product__fee {
 
   .history__detail {
     justify-content: space-between;
-    height: 50px;
+    height: 80px;
     width: 100%;
     border-bottom: $list-border-bottom;
     padding: 5px 0;
@@ -841,6 +916,22 @@ td.product__title, td.product__fee {
 
 }
 
+@media (max-width: 995px) {
+
+  .input__section {
+    flex-direction: column;
+  }
+
+  .info__input, .remark__input {
+    width: 100%;
+  }
+
+  #address, #remark {
+    @include input-width(75vw);
+  }
+
+}
+
 @media (max-width: 767px) {
 
   .history__record {
@@ -861,12 +952,16 @@ td.product__title, td.product__fee {
     font-size: 14px;
   }
 
+  .detail__section {
+    flex-direction: column;
+  }
+
 }
 
 @media (max-width: 500px) {
 
   .history__detail {
-    height: 110px;
+    height: 120px;
   }
 
   .apply__info {

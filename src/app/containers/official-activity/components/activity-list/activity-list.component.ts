@@ -63,7 +63,6 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     openDatePicker: false,
     showCreateScheduleBox: false,
     showListStatusMenu: false,
-    showCountryCodeList: false,
     showDetail: null
   }
 
@@ -390,7 +389,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       }
 
     } else {
-      this.router.navigateByUrl('/signIn-web');
+      this.router.navigateByUrl(`/official-activity/activity-list`);
     }
 
   }
@@ -501,7 +500,6 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     this.uiFlag.showManageMenu = false;
     this.uiFlag.openDatePicker = false;
     this.uiFlag.showListStatusMenu = false;
-    this.uiFlag.showCountryCodeList = false;
     this.globelEventSubscription.unsubscribe();
   }
 
@@ -581,7 +579,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
 
     this.officialActivityService.createProductOrder(body).subscribe(res => {
       if (this.utils.checkRes(res)) {
-        const { responseHtml } = res;
+        let { responseHtml } = res;
         const newElement = document.createElement('div');
         const target = document.querySelector('.main__page');
         newElement.innerHTML = responseHtml as any;
@@ -920,25 +918,6 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 更新國碼
-   * @param e {MouseEvent}
-   * @param index {number}-欲更新資訊之活動編號
-   * @author kidin-1110216
-   */
-  updateCountryCode(e: MouseEvent, code: string, index: number) {
-    e.stopPropagation();
-    const { accountType } = this.userProfile;
-    if (this.checkCanEdit(index)) {
-      const countryCode = code.split('+')[1];
-      const userProfile = { countryCode };
-      this.updateEventUserProfile(index, { userProfile });
-      this.utils.setLocalStorageObject('countryCode', countryCode);
-    }
-    
-    this.unsubscribePluralEvent();
-  }
-
-  /**
    * 確認電話號碼格式與更新電話號碼
    * @param e {Event}-change event
    * @param index {number}-欲更新資訊之活動編號
@@ -952,7 +931,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
         this.translate.get('hellow world').pipe(
           takeUntil(this.ngUnsubscribe)
         ).subscribe(res => {
-          const msg = 'universal_status_wrongFormat';
+          const msg = this.translate.instant('universal_status_wrongFormat');
           this.utils.showSnackBar(msg);
         });
         
@@ -979,7 +958,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
         this.translate.get('hellow world').pipe(
           takeUntil(this.ngUnsubscribe)
         ).subscribe(res => {
-          const msg = 'universal_status_wrongFormat';
+          const msg = this.translate.instant('universal_status_wrongFormat');
           this.utils.showSnackBar(msg);
         });
         
@@ -1005,7 +984,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
         this.translate.get('hellow world').pipe(
           takeUntil(this.ngUnsubscribe)
         ).subscribe(res => {
-          const msg = 'universal_status_wrongFormat';
+          const msg = this.translate.instant('universal_status_wrongFormat');
           this.utils.showSnackBar(msg);
         });
         
@@ -1097,30 +1076,6 @@ export class ActivityListComponent implements OnInit, OnDestroy {
 
     }
 
-  }
-
-  /**
-   * 顯示國碼選擇清單
-   * @param e {MouseEvent}
-   * @param index {number}-欲更新資訊之活動編號
-   * @author kidin-1101108
-   */
-  showCountryCodeList(e: MouseEvent, index: number) {
-    e.stopPropagation();
-    e.preventDefault();
-    const { showCountryCodeList } = this.uiFlag;
-    if (showCountryCodeList) {
-      this.unsubscribePluralEvent();
-    } else {
-      const { accountType } = this.userProfile;
-      const notPhoneAccount = accountType !== AccountTypeEnum.phone;
-      if (this.checkCanEdit(index) && notPhoneAccount) {
-        this.uiFlag.showCountryCodeList = true;
-        this.subscribePluralEvent();
-      }
-
-    }
-    
   }
 
   /**
