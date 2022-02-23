@@ -540,11 +540,11 @@
                 </div>
               </div>
             </ng-container>
-            <ng-container *ngIf="uiFlag.showDetail === index">
-              <div *ngTemplateOutlet="applyInfo; context: { index, list: _eventList }"></div>
-            </ng-container>
           </div>
         </a>
+        <ng-container *ngIf="uiFlag.showDetail === index">
+          <div *ngTemplateOutlet="applyInfo; context: { index, list: _eventList }"></div>
+        </ng-container>
       </li>
     </ng-container>
   </ul>
@@ -825,23 +825,42 @@
   let-record="record"
 >
   <div class="flexCol apply__info">
-    <div class="flexRow apply__steps">
-      <div 
-        class="apply__step apply__step--active"
-      >
-        {{ 'universal_vocabulary_signUp' | translate }}
+    <div class="flexCol apply__steps">
+
+      <div class="flexRow apply__step__flag">
+        <div class="apply__step">
+          <img 
+            src="/assets/icons/progress_label.svg"
+            alt="Step 1"
+            class="step__apply"
+          >
+          <span class="step__label">{{ 'universal_vocabulary_signUp' | translate }}</span>
+        </div>
+        <div class="apply__step">
+          <img
+            src="/assets/icons/progress_label.svg"
+            alt="Step 2"
+            class="step__pay"
+          >
+          <span class="step__label">{{ 'universal_vocabulary_pay' | translate }}</span>
+        </div>
+        <div class="apply__step">
+          <img
+            src="/assets/icons/progress_label.svg"
+            alt="Step 3"
+            class="step__record"
+          >
+          <span class="step__label">{{ 'universal_vocabulary_results' | translate }}</span>
+        </div>
       </div>
-      <div
-        class="apply__step"
-        [class.apply__step--active]="paidStatus === PaidStatusEnum.paid"
-      >
-        {{ 'universal_vocabulary_pay' | translate }}
-      </div>
-      <div
-        class="apply__step"
-        [class.apply__step--active]="record"
-      >
-        {{ 'universal_vocabulary_results' | translate }}
+
+      <div class="step__progress">
+        <div
+          class="current__progress"
+          [class.step__apply__progress]="paidStatus === PaidStatusEnum.unPaid"
+          [class.step__pay__progress]="paidStatus === PaidStatusEnum.paid && !record"
+          [class.step__record__progress]="record ? true : false"
+        ></div>
       </div>
     </div>
     <div class="flexRow" style="align-items: center;">
@@ -850,7 +869,7 @@
         (click)="openEnablePage()"
         *ngIf="checkAllStatus(index) === AllStatus.notEnable"
       >
-        {{ '點擊驗證' | translate }}
+        {{ 'univerisalsystem_tapToVerify' | translate }}
       </button>
       <button
         class="apply__schedule apply__schedule__warn"
@@ -875,7 +894,7 @@
         class="apply__schedule apply__schedule__warn"
         *ngIf="checkAllStatus(index) === AllStatus.personCanceling"
       >
-        {{ '退賽申請中' | translate }}
+        {{ 'univerisalsystem_leaving' | translate }}
       </div>
       <div
         class="apply__schedule apply__schedule__undone"
@@ -953,151 +972,126 @@
   let-index="index"
   let-list="list"
 >
-  <div 
-    class="flexCol detail__section"
+  <div
+    class="flexRow detail__section"
     (click)="$event.preventDefault();"
   >
+    <button
+      class="apply__schedule apply__schedule__warn quit__button"
+      [class.quit__button--disable]="
+        serverTimestamp > list.raceDate.endDate
+        || list.applyStatus === ApplyStatus.cancel
+      "
+      (click)="quitEvent($event, index)"
+    >
+      <ng-container *ngIf="list.applyStatus === ApplyStatus.applied">
+        {{ 'univerisalsystem_leave' | translate }}
+      </ng-container>
+      <ng-container *ngIf="list.applyStatus === ApplyStatus.applyingQuit">
+        {{ 'univerisalvocabulary_cancelLeave' | translate }}
+      </ng-container>
+      <ng-container *ngIf="list.applyStatus === ApplyStatus.cancel">
+        {{ 'universal_vocabulary_withdrawed' | translate }}
+      </ng-container>
+    </button>
     <div class="flexRow person__event__detail">
-      <button
-        class="apply__schedule apply__schedule__warn quit__button"
-        [class.quit__button--disable]="
-          serverTimestamp > list.raceDate.endDate
-          || list.applyStatus === ApplyStatus.cancel
-        "
-        (click)="quitEvent($event, index)"
-      >
-        <ng-container *ngIf="list.applyStatus === ApplyStatus.applied">
-          {{ '退出賽事' | translate }}
-        </ng-container>
-        <ng-container *ngIf="list.applyStatus === ApplyStatus.applyingQuit">
-          {{ '取消退賽' | translate }}
-        </ng-container>
-        <ng-container *ngIf="list.applyStatus === ApplyStatus.cancel">
-          {{ 'universal_vocabulary_withdrawed' | translate }}
-        </ng-container>
-      </button>
-      <div *ngTemplateOutlet="infoColumn; context: {
-        title: '訂單編號' | translate,
-        value: list.officialPaidId || '**********'
-      }"></div>
-      <div *ngTemplateOutlet="infoColumn; context: {
-        title: 'universal_vocabulary_itemName' | translate,
-        value: list.feeTitle
-      }"></div>
-      <div *ngTemplateOutlet="infoColumn; context: {
-        title: 'universal_vocabulary_itemPrice' | translate,
-        value: list.fee
-      }"></div>
-      <div *ngTemplateOutlet="infoColumn; context: {
-        title: 'universal_group_status' | translate,
-        value: list.productShipped | shippedStatus | translate
-      }"></div>
-      <div *ngTemplateOutlet="infoColumn; context: {
-        title: 'universal_vocabulary_results' | translate,
-        value: list.record ? (list.record | sportTime: [false, false]) : 'N/A'
-      }"></div>
-      <div *ngTemplateOutlet="infoColumn; context: {
-        title: list.groupName,
-        value: list.rank ? (list.rank + '/' + list.totalRacerCounts) : 'N/A'
-      }"></div>
-    </div>
-    <div class="flexCol input__section">
-      <div
-        class="flexCol input__column"
-        [class.forbidden__edit]="!checkCanEdit(index)"
-      >
-        <label for="mobile__number" class="column__title">
-          {{ 'universal_vocabulary_phoneNumber' | translate }}
-        </label>
-        <div
-          class="flexRow event__userProfile__input"
-          [class.disabled__input]="!checkCanEdit(index)"
-        >
+      <div class="flexRow order__detail">
+        <div *ngTemplateOutlet="infoColumn; context: {
+          title: 'univerisalvocabulary_orderNumber' | translate,
+          value: list.officialPaidId || '**********'
+        }"></div>
+        <div *ngTemplateOutlet="infoColumn; context: {
+          title: 'universal_vocabulary_itemName' | translate,
+          value: list.feeTitle
+        }"></div>
+        <div *ngTemplateOutlet="infoColumn; context: {
+          title: 'universal_vocabulary_itemPrice' | translate,
+          value: list.fee
+        }"></div>
+        <div *ngTemplateOutlet="infoColumn; context: {
+          title: 'universal_group_status' | translate,
+          value: list.productShipped | shippedStatus | translate
+        }"></div>
+        <div *ngTemplateOutlet="infoColumn; context: {
+          title: 'universal_vocabulary_results' | translate,
+          value: list.record ? (list.record | sportTime: [false, false]) : 'N/A'
+        }"></div>
+        <div *ngTemplateOutlet="infoColumn; context: {
+          title: list.groupName,
+          value: list.rank ? (list.rank + '/' + list.totalRacerCounts) : 'N/A'
+        }"></div>
+      </div>
+      <div class="flexRow input__section">
+        <div class="flexRow info__input">
           <div
-            [ngClass]="{
-              'official-countryCodeSelector': userProfile.accountType !== AccountTypeEnum.phone && checkCanEdit(index),
-              'official-selector--active': uiFlag.showCountryCodeList
-            }"
-            (click)="showCountryCodeList($event, index)"
+            class="flexCol input__column"
+            [class.forbidden__edit]="!checkCanEdit(index)"
           >
-            <span class="input__value">
-              +{{ list.userProfile.countryCode }}
-            </span>
-            <ul
-              class="official-countryCodeList"
-              *ngIf="uiFlag.showCountryCodeList"
+            <label for="mobile__number" class="column__title">
+              <i class="icon-svg_web-icon_p1_039-phone label__icon"></i>
+              {{ 'universal_vocabulary_phoneNumber' | translate }}
+            </label>
+            <input
+              id="mobile__number"
+              type="text"
+              class="event__userProfile__input input__value"
+              [class.disabled__input]="!checkCanEdit(index)"
+              [value]="list.userProfile?.mobileNumber"
+              (change)="updatePhoneNumber($event, index)"
             >
-              <li
-                class="flexRow"
-                (click)="updateCountryCode($event, _list.code)"
-                *ngFor="let _list of countryCodeList;"
-              >
-                <span class="official-countryNumber">
-                  {{ _list.code }}
-                </span>
-                <span class="official-countryName">
-                  {{ _list.name }}
-                </span>
-              </li>
-            </ul>
           </div>
-          <input
-            id="mobile__number"
-            type="text"
-            class="mobile__input input__value"
-            [class.disabled__input]="!checkCanEdit(index)"
-            [value]="list.userProfile?.mobileNumber"
-            (change)="updatePhoneNumber($event, index)"
+          <div
+            class="flexCol input__column"
+            [class.forbidden__edit]="!checkCanEdit(index)"
           >
+            <label for="email" class="column__title">
+              <i class="icon-svg_web-icon_p1_028-email label__icon"></i>
+              Email
+            </label>
+            <input
+              id="email"
+              type="text"
+              class="event__userProfile__input input__value"
+              [class.disabled__input]="!checkCanEdit(index)"
+              [value]="list.userProfile?.email"
+              (change)="updateEmail($event, index)"
+            >
+          </div>
+          <div
+            class="flexCol input__column"
+            [class.forbidden__edit]="!checkCanEdit(index)"
+          >
+            <label for="address" class="column__title">
+              <i class="icon-svg_web-icon_p1_034-home label__icon"></i>
+              {{ 'universal_vocabulary_shippingAddress' | translate }}
+            </label>
+            <input
+              id="address"
+              type="text"
+              class="event__userProfile__input input__value"
+              [class.disabled__input]="!checkCanEdit(index)"
+              [value]="list.userProfile?.address"
+              (change)="updateAddress($event, index)"
+            >
+          </div>
         </div>
-      </div>
-      <div
-        class="flexCol input__column"
-        [class.forbidden__edit]="!checkCanEdit(index)"
-      >
-        <label for="email" class="column__title">
-          Email
-        </label>
-        <input
-          id="email"
-          type="text"
-          class="event__userProfile__input input__value"
-          [class.disabled__input]="!checkCanEdit(index)"
-          [value]="list.userProfile?.email"
-          (change)="updateEmail($event, index)"
+        <div
+          class="flexCol input__column remark__input"
+          [class.forbidden__edit]="!checkCanEdit(index)"
         >
-      </div>
-      <div
-        class="flexCol input__column"
-        [class.forbidden__edit]="!checkCanEdit(index)"
-      >
-        <label for="address" class="column__title">
-          {{ 'universal_vocabulary_shippingAddress' | translate }}
-        </label>
-        <input
-          id="address"
-          type="text"
-          class="event__userProfile__input input__value"
-          [class.disabled__input]="!checkCanEdit(index)"
-          [value]="list.userProfile?.address"
-          (change)="updateAddress($event, index)"
-        >
-      </div>
-      <div
-        class="flexCol input__column"
-        [class.forbidden__edit]="!checkCanEdit(index)"
-      >
-        <label for="remark" class="column__title">
-          {{ 'universal_vocabulary_memo' | translate }}
-        </label>
-        <input
-          id="remark"
-          type="text"
-          class="event__userProfile__input input__value"
-          [class.disabled__input]="!checkCanEdit(index)"
-          [value]="list.userProfile?.remark"
-          (change)="updateRemark($event, index)"
-        >
+          <label for="remark" class="column__title">
+            <i class="icon-svg_web-icon_p1_008-edit label__icon"></i>
+            {{ 'universal_vocabulary_memo' | translate }}
+          </label>
+          <textarea
+            id="remark"
+            type="text"
+            class="event__userProfile__input input__value"
+            [class.disabled__input]="!checkCanEdit(index)"
+            [value]="list.userProfile?.remark"
+            (change)="updateRemark($event, index)"
+          ></textarea>
+        </div>
       </div>
     </div>
   </div>

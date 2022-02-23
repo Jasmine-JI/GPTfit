@@ -1045,10 +1045,16 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
           const { targetGroupId } = this.applyInfo;
           const { name } = this.eventDetail.group[targetGroupId - 1];
           const { title, fee } = this.selectPlanInfo;
-          const msg = `請確認以下資訊<br><br>報名分組: ${
-            name}<br>報名組合: ${
-            title}<br>報名費用: $${
-            fee}<br><br>報名成功後將無法進行修改
+          const checkI18n = this.translate.instant('universal_vocabulary_infoConfirm');
+          const applyGroupI18n = this.translate.instant('universal_vocabulary_raceCatagory');
+          const feeNameI18n = this.translate.instant('universal_vocabulary_racePackage');
+          const feeI18n = this.translate.instant('universal_vocabulary_raceFee');
+          const unEditableI18n = this.translate.instant('universal_vocabulary_noChangeAfterSign');
+
+          const msg = `${checkI18n}<br><br>${applyGroupI18n}: ${
+            name}<br>${feeNameI18n}: ${
+            title}<br>${feeI18n}: $${
+            fee}<br><br>${unEditableI18n}
           `;
           this.dialog.open(MessageBoxComponent, {
             hasBackdrop: true,

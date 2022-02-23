@@ -11,11 +11,16 @@
         class="flexRow page__link"
         (click)="navigate($event, '/official-activity/activity-list')"
       >
-        <span
-          class="webTitle"
-          style="white-space: nowrap;"
-          *ngIf="!uiFlag.isMobile"
-        >GPTfit</span>
+        <img 
+          src="/assets/icons/logo.svg"
+          alt="GPTfit"
+          class="webLogo"
+        >
+        <img 
+          src="/assets/icons/event.svg"
+          alt="Event"
+          class="webSubLogo sub__logo"
+        >
       </a>
       <button (click)="showEntryMenu($event)">
         <i
@@ -57,7 +62,7 @@
           name="about-cloudrun"
           (click)="navigate($event, '/official-activity/about-cloudrun')"
         >
-          {{ '關於雲跑' | translate }}
+          {{ 'universal_vocabulary_aboutCloudrun' | translate }}
         </a>
       </div>
       <div id="link__active__bar" *ngIf="!uiFlag.isMobile">
@@ -111,7 +116,7 @@
             class="page__link"
             (click)="$event.preventDefault();"
           >
-            {{ '首頁' | translate }}
+            {{ 'univerisalsystem_homePage' | translate }}
           </a>
         </li>
       </ul>
@@ -154,7 +159,7 @@
         class="page__link child__page__link"
         (click)="navigate($event, '/official-activity/about-cloudrun')"
       >
-        {{ '關於雲跑' | translate }}
+        {{ 'universal_vocabulary_aboutCloudrun' | translate }}
       </a>
     </li>
   </ul>

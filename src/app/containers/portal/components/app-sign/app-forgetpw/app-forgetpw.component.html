@@ -65,7 +65,6 @@
                       info: ('universal_userAccount_emailPerPhone' | translate)
                     }
                   "
-                  (click)="handleInputFocus($event, 'account')"
                   (keydown)="determineAccountType($event)"
                   (change)="saveAccount($event)"
                 >
@@ -118,6 +117,13 @@
               <span class="appview-timeCount">({{ timeCount }}s)</span>
             </button>
           </div>
+          <ng-container *ngIf="
+            formValue.resetPasswordFlow !== ResetFlow.reset
+            && imgCaptcha.show
+            && formValue.type === SignTypeEnum.email
+          ">
+            <div *ngTemplateOutlet="imgCaptchaArea"></div>
+          </ng-container>
         </div>
         <div
           class="appview-contentDetail"
@@ -149,7 +155,6 @@
                   }
                 "
                 maxlength="20"
-                (click)="handleInputFocus($event, 'password')"
                 (focusout)="checkPassword($event)"
                 (keypress)="checkPassword($event)"
               >

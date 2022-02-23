@@ -86,7 +86,6 @@ export class LockCaptcha {
    * 送出驗證碼請求解鎖
    */
   requestUnlock() {
-console.log('requestUnlock');
     const { unlockFlow, unlockKey } = this;
     const body = { unlockFlow, unlockKey };
     return this.signupService.fetchCaptcha(body, this.header).pipe(

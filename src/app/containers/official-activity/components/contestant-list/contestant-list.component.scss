@@ -348,6 +348,46 @@ $edit-button-size: 30px;
   margin: 20px 0 10px 0;
 }
 
+.function__btn {
+  width: 42px;
+}
+
+.tab__section {
+  border-bottom: 1px solid rgba(150, 150, 150, 1);
+  margin: 0 4vw;
+  padding: 5px 0;
+}
+
+.tab__button {
+  @include bold-font(24px);
+  position: relative;
+  color: rgba(140, 140, 140, 1);
+  padding: 0 10px;
+}
+
+.tab__button--active {
+  color: black;
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background-color: black;
+  }
+
+}
+
+.alert__icon {
+  position: absolute;
+  right: -7px;
+  top: 0;
+  font-size: 24px;
+  color: red;
+}
+
 #leave__title {
   margin: 0 5vw 2vh 5vw;
   @include bold-font(24px);
@@ -466,6 +506,18 @@ $edit-button-size: 30px;
 
   .list__edit__button {
     flex-direction: row;
+  }
+
+  .tab__section {
+    justify-content: center;
+  }
+
+  .tab__button {
+    font-size: 18px;
+  }
+
+  .alert__icon {
+    top: -7px;
   }
 
 }

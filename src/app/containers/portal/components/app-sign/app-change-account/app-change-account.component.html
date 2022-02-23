@@ -41,7 +41,6 @@
                 }
               "
               maxlength="20"
-              (click)="handleInputFocus($event, 'password')"
               (focusout)="checkPassword($event)"
               (keypress)="checkPassword($event)"
             >
@@ -100,7 +99,6 @@
                     info: ('universal_userAccount_emailPerPhone' | translate)
                   }
                 "
-                (click)="handleInputFocus($event, 'account')"
                 (keydown)="determineAccountType($event)"
                 (change)="saveAccount($event)"
               >
