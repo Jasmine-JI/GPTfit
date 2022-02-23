@@ -7,8 +7,8 @@ import {
   OnChanges,
   SimpleChanges
 } from '@angular/core';
-import { DEFAULT_MAXLENGTH } from '@shared/utils/';
-import { UtilsService } from '@shared/services/utils.service';
+import { DEFAULT_MAXLENGTH } from '../../utils/index';
+import { UtilsService } from '../../services/utils.service';
 import { FormGroup } from '@angular/forms';
 
 @Component({

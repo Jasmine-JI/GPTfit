@@ -5,9 +5,10 @@ import { UtilsService } from '../../../../shared/services/utils.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { formTest } from '../../../../shared/models/form-test';
 import { Subject, Subscription, fromEvent, of } from 'rxjs';
-import { takeUntil, switchMap, map } from 'rxjs/operators';
+import { takeUntil, switchMap, map, tap } from 'rxjs/operators';
 import { pageNotFoundPath } from '../../models/official-activity-const';
 import { EventStatus, ApplyStatus } from '../../models/activity-content';
+import { AccessRight } from '../../../../shared/models/accessright';
 
 const switchButtonWidth = 40;
 enum ApplyButtonStatus {
@@ -38,7 +39,8 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     raceEnd: false,
     isMobile: false,
     showSwitchButton: false,
-    currentShortcutIndex: 0
+    currentShortcutIndex: 0,
+    canBrowserPage: false
   }
 
   eventId: number;
@@ -66,7 +68,6 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.checkEventId();
-    this.getAccessRight();
     this.getActivityDetail();
     this.handlePageResize();
   }
@@ -90,7 +91,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
    * @author kidin-1101015
    */
   getAccessRight() {
-    this.userProfileService.getRxUserProfile().pipe(
+    return this.userProfileService.getRxUserProfile().pipe(
       switchMap(userProfile => {
         if (userProfile) {
           const token = this.utils.getToken();
@@ -103,22 +104,25 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
         }
 
       }),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
+      tap(res => {
         const [userProfile, checkApplied] = res;
         if (userProfile) {
           const { systemAccessRight } = userProfile;
-          
           const { applyStatus } = checkApplied.result[0] || { applyStatus: ApplyStatus.notYet };
-          this.uiFlag.isAdmin = systemAccessRight[0] === 28;
+          const maxAccessRight = systemAccessRight[0];
+          const passAccessRight = [AccessRight.auditor, AccessRight.pusher];
+          this.uiFlag.isAdmin = passAccessRight.includes(maxAccessRight);
+          this.uiFlag.canBrowserPage = maxAccessRight <= AccessRight.marketing;
           this.handleApplyStatus(applyStatus);
         } else {
           this.uiFlag.applyButtonStatus = ApplyButtonStatus.canApply;
           this.uiFlag.isAdmin = false;
+          this.uiFlag.canBrowserPage = false;
           if (this.eventInfo) this.checkApplyDate(this.currentTimestamp);
         }
-        
-      });
+      }),
+      takeUntil(this.ngUnsubscribe)
+    )
 
   }
 
@@ -147,12 +151,22 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     this.uiFlag.progress = 30;
     this.eventId = +this.activatedRoute.snapshot.paramMap.get('eventId');
     const body = { eventId: this.eventId };
-    this.officialActivityService.getEventDetail(body).subscribe(res => {
+    this.officialActivityService.getEventDetail(body).pipe(
+      switchMap(res => {
+        const token = this.utils.getToken();
+        if (token) {
+          return this.getAccessRight().pipe(map(accessRight => res));
+        }
+
+        return of(res);
+      })
+    ).subscribe(res => {
       if (this.utils.checkRes(res, false)) {
         const { eventInfo, eventDetail, currentTimestamp } = res;
+        this.checkEventStatus(eventInfo.eventStatus);
         this.eventInfo = eventInfo;
         this.eventDetail = eventDetail;
-        this.currentTimestamp = currentTimestamp;
+        if (!this.countdownInterval) this.currentTimestamp = currentTimestamp;
         this.checkCanApply();
       } else {
         this.router.navigateByUrl(pageNotFoundPath);
@@ -164,31 +178,47 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 確認活動狀態是否為已審核，若非已審核，且非有權限之管理員，則轉跳404頁面
+   * @author kidin-1110210
+   */
+  checkEventStatus(eventStatus: EventStatus) {
+    const { canBrowserPage } = this.uiFlag;
+    if (eventStatus === EventStatus.audit || canBrowserPage) {
+      return true;
+    }
+
+    this.router.navigateByUrl(pageNotFoundPath);
+  }
+
+  /**
    * 設定倒數計時器，同時確認報名與競賽日期
    * @author kidin-1101018
    */
   setCountdown() {
-    this.countdownInterval = setInterval(() => {
-      const { raceEnd, applyButtonStatus } = this.uiFlag;
-      const { eventStatus } = this.eventInfo;
-      const eventCancel = eventStatus === EventStatus.cancel;
-      if (!raceEnd && !eventCancel) {
-        this.currentTimestamp++;
-        this.checkRaceDate(this.currentTimestamp);
-        if (applyButtonStatus === ApplyButtonStatus.canApply) {
-          this.checkApplyDate(this.currentTimestamp);
+    if (!this.countdownInterval) {
+      this.countdownInterval = setInterval(() => {
+        const { raceEnd, applyButtonStatus } = this.uiFlag;
+        const { eventStatus } = this.eventInfo;
+        const eventCancel = eventStatus === EventStatus.cancel;
+        if (!raceEnd && !eventCancel) {
+          this.currentTimestamp++;
+          this.checkRaceDate(this.currentTimestamp);
+          if (applyButtonStatus === ApplyButtonStatus.canApply) {
+            this.checkApplyDate(this.currentTimestamp);
+          }
+
+        } else {
+
+          if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+            this.countdownInterval = undefined;
+          }
+
         }
 
-      } else {
+      }, 1000);
 
-        if (this.countdownInterval) {
-          clearInterval(this.countdownInterval);
-          this.countdownInterval = undefined;
-        }
-
-      }
-
-    }, 1000);
+    }
 
   }
 

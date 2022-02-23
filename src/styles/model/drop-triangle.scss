@@ -24,6 +24,18 @@
 
 }
 
+@mixin drop-hint($border-top, $border-aside, $border-color) {
+
+  &:after {
+    content: '';
+    border-style: solid;
+    border-width: $border-top $border-aside 0px $border-aside;
+    border-color: $border-color transparent transparent transparent;
+    @include transition(transform);
+  }
+
+}
+
 @mixin drop-active() {
   @include transition(transform);
   @include el-rotate(180deg);

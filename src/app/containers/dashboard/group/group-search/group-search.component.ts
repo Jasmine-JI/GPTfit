@@ -57,7 +57,7 @@ export class GroupSearchComponent implements OnInit {
       pageSize: 10,
       length: null
     };
-    this.token = this.utils.getToken() || '';
+    this.token = this.utils.getToken();
     // 分頁切換時，重新取得資料
     this.paginator.page.subscribe((page: PageEvent) => {
       this.currentPage = page;

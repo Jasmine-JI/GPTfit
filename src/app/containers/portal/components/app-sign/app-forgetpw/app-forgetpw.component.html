@@ -31,7 +31,7 @@
               <div class="flexRow account__area appview-inputBorder">
                 <div
                   [class.appview-countryCodeSelector]="formValue.type === SignTypeEnum.phone"
-                  [class.selector--active]="displayCountryCodeList"
+                  [class.official-selector--active]="displayCountryCodeList"
                   (click)="showCountryCodeList($event)"
                   *ngIf="formValue.type === SignTypeEnum.phone"
                 >
@@ -65,7 +65,6 @@
                       info: ('universal_userAccount_emailPerPhone' | translate)
                     }
                   "
-                  (click)="handleInputFocus($event, 'account')"
                   (keydown)="determineAccountType($event)"
                   (change)="saveAccount($event)"
                 >
@@ -118,6 +117,13 @@
               <span class="appview-timeCount">({{ timeCount }}s)</span>
             </button>
           </div>
+          <ng-container *ngIf="
+            formValue.resetPasswordFlow !== ResetFlow.reset
+            && imgCaptcha.show
+            && formValue.type === SignTypeEnum.email
+          ">
+            <div *ngTemplateOutlet="imgCaptchaArea"></div>
+          </ng-container>
         </div>
         <div
           class="appview-contentDetail"
@@ -149,7 +155,6 @@
                   }
                 "
                 maxlength="20"
-                (click)="handleInputFocus($event, 'password')"
                 (focusout)="checkPassword($event)"
                 (keypress)="checkPassword($event)"
               >
@@ -296,7 +301,7 @@
                     class="form__message form__message--placeholder"
                     *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''"
                   >
-                    {{ imgCaptcha.cue }}
+                    {{ imgCaptcha.cue | translate }}
                   </span>
                   
                 </div>

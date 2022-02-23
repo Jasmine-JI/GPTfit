@@ -3,9 +3,9 @@ import { Router, NavigationEnd } from '@angular/router';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
-import { Subject, Subscription, fromEvent, merge, of } from 'rxjs';
+import { Subject, Subscription, fromEvent, merge, of, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { UserProfileInfo } from '../../../dashboard/models/userProfileInfo';
+import { UserProfileInfo, AccountTypeEnum, AccountStatusEnum } from '../../../../shared/models/user-profile-info';
 import moment from 'moment';
 import { MapLanguageEnum } from '../../../../shared/models/i18n';
 import { SelectDate } from '../../../../shared/models/utils-type';
@@ -20,8 +20,22 @@ import {
   ApplyStatus,
   ListStatus
 } from '../../models/activity-content';
+import { AccessRight } from '../../../../shared/models/accessright';
+import { TranslateService } from '@ngx-translate/core';
+import { codes } from '../../../../shared/models/countryCode';
+
 
 type Page = 'activity-list' | 'my-activity';
+
+enum AllStatus {
+  notEnable,
+  unPaid,
+  paid,
+  personCanceling,
+  personCancelled,
+  eventCutoff,
+  eventCancelled,
+}
 
 const defaultRaceDate = {
   start: moment().subtract(6, 'months'),
@@ -48,7 +62,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     showManageMenu: false,
     openDatePicker: false,
     showCreateScheduleBox: false,
-    showListStatusMenu: false
+    showListStatusMenu: false,
+    showDetail: null
   }
 
   /**
@@ -105,7 +120,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   eventList = [];
   effectEventList = [];
   serverTimestamp: number;
-  token = this.utils.getToken() || '';
+  token = this.utils.getToken();
   userProfile: UserProfileInfo;
   timeInterval: any;
   allMapInfo: Array<any>;
@@ -117,6 +132,11 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   readonly HaveProduct = HaveProduct;
   readonly ApplyStatus = ApplyStatus;
   readonly ListStatus = ListStatus;
+  readonly AccessRight = AccessRight;
+  readonly passAdmin = [AccessRight.auditor, AccessRight.pusher];
+  readonly countryCodeList = codes;
+  readonly AccountTypeEnum = AccountTypeEnum;
+  readonly AllStatus = AllStatus;
 
   constructor(
     private officialActivityService: OfficialActivityService,
@@ -124,7 +144,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     private userProfileService: UserProfileService,
     private router: Router,
     private sanitizer: DomSanitizer,
-    private cloudrunService: CloudrunService
+    private cloudrunService: CloudrunService,
+    private translate: TranslateService
   ) { }
 
   ngOnInit(): void {
@@ -160,7 +181,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     ).subscribe(res => {
       this.userProfile = res;
       if (res) {
-        this.token = this.utils.getToken() || '';
+        this.token = this.utils.getToken();
         this.checkCurrentPage();
       } else {
         this.uiFlag.editMode = false;
@@ -350,33 +371,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       const { progress } = this.uiFlag;
       if (progress === 100) {
         this.uiFlag.progress = 30;
-        this.officialActivityService.getParticipantHistory({token}).pipe(
-          switchMap(historyRes => {
-            if (this.utils.checkRes(historyRes)) {
-              const { history } = historyRes.info;
-              const { eventId, feeId, officialPaidId, paidStatus } = history[0];
-              if (paidStatus === 1) {
-                const body = {
-                  token,
-                  eventId,
-                  feeId,
-                  officialPaidId
-                };
-
-                return this.officialActivityService.updateProductOrder(body).pipe(
-                  switchMap(newHistoryRes => this.officialActivityService.getParticipantHistory({token}))
-                )
-
-              } else {
-                return of(historyRes);
-              }
-                
-            } else {
-              return of(historyRes);
-            }
-
-          })
-        ).subscribe(res => {
+        this.officialActivityService.getParticipantHistory({token}).subscribe(res => {
           if (this.utils.checkRes(res)) {
             const { info: { history }, currentTimestamp } = res;
             if (history) {
@@ -394,7 +389,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       }
 
     } else {
-      this.router.navigateByUrl('/signIn-web');
+      this.router.navigateByUrl(`/official-activity/activity-list`);
     }
 
   }
@@ -461,7 +456,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       endTimestamp: moment(endDate).valueOf()
     }
 
-    this.unSubscribeClickEvent();
+    this.unsubscribePluralEvent();
     this.checkCurrentPage();
   }
 
@@ -473,26 +468,26 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     e.stopPropagation();
     const { showManageMenu } = this.uiFlag;
     if (showManageMenu) {
-      this.unSubscribeClickEvent();
+      this.unsubscribePluralEvent();
     } else {
       this.uiFlag.showManageMenu = true;
-      this.subscribeClickEvent();
+      this.subscribePluralEvent();
     }
 
   }
 
   /**
-   * 訂閱全域點擊事件
+   * 訂閱全域點擊與滾動事件
    * @author kidin-1101013
    */
-  subscribeClickEvent() {
-    const scrollElement = document.querySelector('.main__page'),
-          clickEvent = fromEvent(scrollElement, 'click'),
-          scrollEvent = fromEvent(scrollElement, 'scroll');
+  subscribePluralEvent() {
+    const scrollElement = document.querySelector('.main__page');
+    const clickEvent = fromEvent(scrollElement, 'click');
+    const scrollEvent = fromEvent(scrollElement, 'scroll');
     this.globelEventSubscription = merge(clickEvent, scrollEvent).pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(e => {
-      this.unSubscribeClickEvent();
+      this.unsubscribePluralEvent();
     });
 
   }
@@ -501,7 +496,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * 取消訂閱全域點擊事件
    * @author kidin-1101013
    */
-  unSubscribeClickEvent() {
+  unsubscribePluralEvent() {
     this.uiFlag.showManageMenu = false;
     this.uiFlag.openDatePicker = false;
     this.uiFlag.showListStatusMenu = false;
@@ -533,7 +528,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       }
 
     } else {
-      this.unSubscribeClickEvent();
+      this.unsubscribePluralEvent();
     }
 
   }
@@ -554,7 +549,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    */
   openDateRangePicker() {
     this.uiFlag.openDatePicker = true;
-    this.subscribeClickEvent();
+    this.subscribePluralEvent();
   }
 
   /**
@@ -584,7 +579,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
 
     this.officialActivityService.createProductOrder(body).subscribe(res => {
       if (this.utils.checkRes(res)) {
-        const { responseHtml } = res;
+        let { responseHtml } = res;
         const newElement = document.createElement('div');
         const target = document.querySelector('.main__page');
         newElement.innerHTML = responseHtml as any;
@@ -858,10 +853,10 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     e.stopPropagation();
     const { showListStatusMenu } = this.uiFlag;
     if (showListStatusMenu) {
-      this.unSubscribeClickEvent();
+      this.unsubscribePluralEvent();
     } else {
       this.uiFlag.showListStatusMenu = true;
-      this.subscribeClickEvent();
+      this.subscribePluralEvent();
     }
 
   }
@@ -876,7 +871,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     e.stopPropagation();
     this.eventListCondition.filterListStatus = status;
     this.initPageIndex();
-    this.unSubscribeClickEvent();
+    this.unsubscribePluralEvent();
     this.checkCurrentPage();
   }
 
@@ -887,6 +882,227 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   initPageIndex() {
     this.eventListCondition.page.index = 0;
     this.setQueryString();
+  }
+
+  /**
+   * 展開或收合詳細資訊
+   * @param e {MouseEvent}
+   * @param index {number}-指定之賽事序列
+   * @author kidin-1110217
+   */
+  toggleDetail(e: MouseEvent, index: number) {
+    e.stopPropagation();
+    e.preventDefault();
+    const { showDetail } = this.uiFlag;
+    this.uiFlag.showDetail = showDetail === index ? null : index;
+  }
+
+  /**
+   * 申請退出賽市或取消申請退出
+   * @param e {MouseEvent}
+   * @param index {number}-欲更新資訊之活動編號
+   * @author kidin-1110216
+   */
+  quitEvent(e: MouseEvent, index: number) {
+    e.preventDefault();
+    e.stopPropagation();
+    const { applyDate: { endDate }, applyStatus } = this.effectEventList[index];
+    const eventNotEnd = this.serverTimestamp < endDate;
+    const notLeave = applyStatus !== ApplyStatus.cancel;
+    if (eventNotEnd && notLeave) {
+      const newStatus = applyStatus === ApplyStatus.applied ? ApplyStatus.applyingQuit : ApplyStatus.applied;
+      const userProfile = { applyStatus: newStatus };
+      this.updateEventUserProfile(index, { userProfile });
+    }
+
+  }
+
+  /**
+   * 確認電話號碼格式與更新電話號碼
+   * @param e {Event}-change event
+   * @param index {number}-欲更新資訊之活動編號
+   * @author kidin-1110216
+   */
+  updatePhoneNumber(e: Event, index: number) {
+    const { accountType } = this.userProfile;
+    if (this.checkCanEdit(index)) {
+      const phone = +(e as any).target.value.trim();
+      if (!formTest.phone.test(`${phone}`)) {
+        this.translate.get('hellow world').pipe(
+          takeUntil(this.ngUnsubscribe)
+        ).subscribe(res => {
+          const msg = this.translate.instant('universal_status_wrongFormat');
+          this.utils.showSnackBar(msg);
+        });
+        
+      } else {
+        const userProfile = { phone };
+        this.updateEventUserProfile(index, { userProfile });
+      }
+
+    }
+
+  }
+
+  /**
+   * 確認email格式與更新email
+   * @param e {Event}-change event
+   * @param index {number}-欲更新資訊之活動編號
+   * @author kidin-1110216
+   */
+  updateEmail(e: Event, index: number) {
+    const { accountType } = this.userProfile;
+    if (this.checkCanEdit(index)) {
+      const email = (e as any).target.value.trim();
+      if (!formTest.email.test(email)) {
+        this.translate.get('hellow world').pipe(
+          takeUntil(this.ngUnsubscribe)
+        ).subscribe(res => {
+          const msg = this.translate.instant('universal_status_wrongFormat');
+          this.utils.showSnackBar(msg);
+        });
+        
+      } else {
+        const userProfile = { email };
+        this.updateEventUserProfile(index, { userProfile });
+      }
+
+    }
+
+  }
+
+  /**
+   * 確認地址格式與更新地址
+   * @param e {Event}-change event
+   * @param index {number}-欲更新資訊之活動編號
+   * @author kidin-1110216
+   */
+  updateAddress(e: Event, index: number) {
+    if (this.checkCanEdit(index)) {
+      const address = (e as any).target.value.trim();
+      if (address.length < 10) {
+        this.translate.get('hellow world').pipe(
+          takeUntil(this.ngUnsubscribe)
+        ).subscribe(res => {
+          const msg = this.translate.instant('universal_status_wrongFormat');
+          this.utils.showSnackBar(msg);
+        });
+        
+      } else {
+        const userProfile = { address };
+        this.updateEventUserProfile(index, { userProfile });
+      }
+
+    }
+
+  }
+
+  /**
+   * 更新備註
+   * @param e {Event}-change event
+   * @param index {number}-欲更新資訊之活動編號
+   * @author kidin-1110216
+   */
+  updateRemark(e: Event, index: number) {
+    if (this.checkCanEdit(index)) {
+      const remark = (e as any).target.value.trim();
+      const userProfile = { remark };
+      this.updateEventUserProfile(index, { userProfile });
+    }
+
+  }
+
+  /**
+   * 確認是否可編輯欄位
+   * @param index {number}-欲更新資訊之活動編號
+   * @param checkShipped {boolean}-是否
+   * @author kidin-1110216
+   */
+  checkCanEdit(index: number, checkShipped: boolean = true) {
+    const { raceDate: { endDate }, applyStatus, eventStatus, productShipped } = this.effectEventList[index];
+    const allowStatus = [ApplyStatus.notYet, ApplyStatus.applied];
+    const normalHeldEvent = eventStatus === EventStatus.audit;
+    const eventNotEnd = this.serverTimestamp < endDate;
+    const notLeaveEvent = allowStatus.includes(applyStatus);
+    const productUnShip = !checkShipped || productShipped === ProductShipped.unShip;
+    return normalHeldEvent && eventNotEnd && notLeaveEvent && productUnShip;
+  }
+
+  /**
+   * 使用api 6015更新指定賽事報名資訊
+   * @param index {number}-欲更新資訊之活動編號
+   * @param update {any}-欲更新的項目
+   * @author kidin-1110216
+   */
+  updateEventUserProfile(index: number, update: any) {
+    const { progress } = this.uiFlag;
+    if (progress === 100) {
+      this.uiFlag.progress = 30;
+      const { eventId } = this.effectEventList[index];
+      const body = {
+        token: this.token,
+        targetEventId: eventId,
+        ...update
+      };
+
+      combineLatest([
+        this.translate.get('hellow world'),
+        this.officialActivityService.updateEventUserProfile(body)
+      ]).subscribe(resArray => {
+        const [translateResult, updateResult] = resArray;
+        let msg: string;
+        if (this.utils.checkRes(updateResult)) {
+          msg = this.translate.instant('universal_status_updateCompleted');
+          const { userProfile: newUserProfle } = update;
+          const { applyStatus } = newUserProfle;
+          if (applyStatus) {
+            this.effectEventList[index].applyStatus = applyStatus;
+          } else {
+            const { userProfile: oldUserProfile } = this.effectEventList[index];
+            this.effectEventList[index].userProfile = {
+              ...oldUserProfile,
+              ...newUserProfle
+            };
+
+          }
+
+        } else {
+          msg = this.translate.instant('universal_popUpMessage_updateFailed');
+        }
+
+        this.utils.showSnackBar(msg);
+        this.uiFlag.progress = 100;
+      });
+
+    }
+
+  }
+
+  /**
+   * 確認帳號是否驗證、報名狀態、繳費狀態、賽事狀態
+   * @param index {number}-活動編號
+   * @author kidin-1110217
+   */
+  checkAllStatus(index: number) {
+    const { serverTimestamp, effectEventList, userProfile } = this;
+    const { fee, paidStatus, applyStatus, eventStatus, raceDate: { endDate } } = effectEventList[index];
+    if (eventStatus === EventStatus.cancel) return AllStatus.eventCancelled;
+    if (serverTimestamp > endDate) return AllStatus.eventCutoff;
+    if (applyStatus === ApplyStatus.cancel) return AllStatus.personCancelled;
+
+    const accountEnable = userProfile && userProfile.accountStatus === AccountStatusEnum.enabled;
+    if (!accountEnable) return AllStatus.notEnable;
+    if (applyStatus === ApplyStatus.applyingQuit) return AllStatus.personCanceling;
+
+    return fee === 0 || paidStatus === PaidStatusEnum.paid ? AllStatus.paid : AllStatus.unPaid;
+  }
+
+  /**
+   * 開啟啟用帳號頁面
+   * @author kidin-1110217
+   */
+  openEnablePage() {
+    window.open(`/enableAccount?ru=event`, '', 'height=700,width=375,resizable=no');
   }
 
   /**

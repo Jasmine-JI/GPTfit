@@ -15,14 +15,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { PaidStatusPipe } from '../../pipes/paid-status.pipe';
 import { ShippedStatusPipe } from '../../pipes/shipped-status.pipe';
 import { TranslateService } from '@ngx-translate/core';
-import { Sex } from '../../../dashboard/models/userProfileInfo';
+import { Sex } from '../../../../shared/models/user-profile-info';
 import { AgePipe } from '../../../../shared/pipes/age.pipe';
 
 
 type SortType = 'rank' | 'group' | 'paidStatus' | 'orderStatus' | 'awardStatus' | 'paidDate' | 'shippedDate';
 type SortSequence = 'asc' | 'desc';
 type ShippedType = 'productShipped' | 'awardShipped';
-type ListType = 'normal' | 'leave';
+type ListType = 'normal' | 'leaving' | 'leave';
 type ProfileEditType = 
     'truthName'
   | 'address'
@@ -65,9 +65,10 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     showAwardStatusSelector: null,
     detailEditable: false,
     screenSize: window.innerWidth,
-    deleteMode: false,
+    listEditMode: false,
     showSortMenu: false,
-    focusInput: false
+    focusInput: false,
+    listType: <ListType>'normal'
   };
 
   sortSet = <SortSet>{
@@ -109,15 +110,16 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    */
   groupList: any;
 
-
   serverTimeDiff = null;
   token: string;
   eventId: number;
   eventInfo: any;
   leaderboard: any;
-  participantList: Array<any>;
   allMapInfo: Array<any>;
+  participantList: Array<any>;
   reArrangeList = [];
+  backupLeavingList = [];
+  leavingList = [];
   backupLeaveList = [];
   leaveList = [];
   readonly mapIconPath = '/app/public_html/cloudrun/update/';
@@ -142,21 +144,18 @@ export class ContestantListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getToken();
     this.checkEventId();
-    this.getAccessRight();
     this.getActivityDetail();
     this.handlePageResize();
   }
 
   /**
-   * 從localstorage取得token，若無token則導向登入頁
+   * 從localstorage取得token
    */
   getToken() {
     const token = this.utils.getToken();
     if (token) {
       this.token = token;
       this.searchInfo.token = token;
-    } else {
-      this.router.navigateByUrl('/official-activity/login');
     }
     
   }
@@ -173,27 +172,6 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     } else {
       this.router.navigateByUrl(pageNotFoundPath);
     }
-
-  }
-
-  /**
-   * 如為登入狀態，則取得個人權限
-   * @author kidin-1101015
-   */
-  getAccessRight() {
-    this.userProfileService.getRxUserProfile().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      if (res) {
-        const { systemAccessRight } = res;
-        const notAdmin = systemAccessRight[0] !== 28;
-        if (notAdmin) this.router.navigateByUrl(officialHomePage);
-
-      } else {
-        this.router.navigateByUrl(officialHomePage);
-      }
-
-    });
 
   }
 
@@ -293,10 +271,12 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         }),
         map(reEditList => this.bindRecord(reEditList))
       ).subscribe(bindResult => {
-        const [normalList, leaveList] = this.filterApplyStatus(bindResult);
+        const [normalList, leavingList, leaveList] = this.filterApplyStatus(bindResult);
         this.participantList = normalList;
-        this.backupLeaveList = leaveList;
-        this.leaveList = leaveList;
+        this.backupLeavingList = this.utils.deepCopy(leavingList);
+        this.leavingList = this.utils.deepCopy(leavingList);
+        this.backupLeaveList = this.utils.deepCopy(leaveList);
+        this.leaveList = this.utils.deepCopy(leaveList);
         of(this.participantList).pipe(
           map(list => this.sortList(list)),
           map(sortList => this.assignRank(sortList))
@@ -318,17 +298,24 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    */
   filterApplyStatus(list: Array<any>) {
     const normalList = [];
+    const leavingList = [];
     const leaveList = [];
     list.forEach(_list => {
-      if (_list.applyStatus === ApplyStatus.applied) {
-        normalList.push(_list);
-      } else {
-        leaveList.push(_list);
+      switch (_list.applyStatus) {
+        case ApplyStatus.applied:
+          normalList.push(_list);
+          break;
+        case ApplyStatus.applyingQuit:
+          leavingList.push(_list);
+          break;
+        case ApplyStatus.cancel:
+          leaveList.push(_list);
+          break;
       }
 
     });
 
-    return [normalList, leaveList];
+    return [normalList, leavingList, leaveList];
   }
 
   /**
@@ -537,7 +524,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 搜尋指定參賽者(含回收區)
+   * 所有清單搜尋指定參賽者
    * @param e {MouseEvent}
    * @author kidin-1101123
    */
@@ -548,9 +535,11 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     const isEmailWord = formTest.email.test(keyword);
     if (isPhoneWord) {
       this.reArrangeList = this.participantList.filter(_list => `${_list.mobileNumber}`.includes(keyword));
+      this.leavingList = this.backupLeavingList.filter(_list => `${_list.mobileNumber}`.includes(keyword));
       this.leaveList = this.backupLeaveList.filter(_list => `${_list.mobileNumber}`.includes(keyword));
     } else if (isEmailWord) {
       this.reArrangeList = this.participantList.filter(_list => _list.email.includes(keyword));
+      this.leavingList = this.backupLeavingList.filter(_list => _list.email.includes(keyword));
       this.leaveList = this.backupLeaveList.filter(_list => _list.email.includes(keyword));
     } else {
       const matchKeyword = (list) => {
@@ -562,6 +551,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
       }
 
       this.reArrangeList = this.participantList.filter(_list => matchKeyword(_list));
+      this.leavingList = this.backupLeavingList.filter(_list => matchKeyword(_list));
       this.leaveList = this.backupLeaveList.filter(_list => matchKeyword(_list));
     }
 
@@ -702,15 +692,20 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         break;
     }
 
+    this.filterParticipant(item, value);
+    this.filterLeavingList(item, value);
+    this.filterLeaveList(item, value);
+  }
+
+  /**
+   * 篩選一般參賽者名單
+   * @param item {string}-欲篩選之key名稱
+   * @param value {string | number}-篩選之值
+   * @author kidin-1110221
+   */
+  filterParticipant(item: string, value: string | number) {
     of(this.participantList).pipe(
-      map(list => {
-        if (item) {
-          return list.filter(_list => _list[item] === value);
-        } else {
-          return list;
-        }
-        
-      }),
+      map(list => item ? list.filter(_list => _list[item] === value) : list),
       map(filterList => this.sortList(filterList, defaultSortSet)),
       map(sortList => this.assignRank(sortList)),
       map(rankList => this.sortList(rankList))
@@ -718,6 +713,28 @@ export class ContestantListComponent implements OnInit, OnDestroy {
       this.reArrangeList = finalList;
     });
 
+  }
+
+  /**
+   * 篩選退賽申請名單
+   * @param item {string}-欲篩選之key名稱
+   * @param value {string | number}-篩選之值
+   * @author kidin-1110221
+   */
+  filterLeavingList(item: string, value: string | number) {
+    const backupLeavingList = this.utils.deepCopy(this.backupLeavingList);
+    this.leavingList = item ? backupLeavingList.filter(_list => _list[item] === value) : backupLeavingList;
+  }
+
+  /**
+   * 篩選已退賽名單
+   * @param item {string}-欲篩選之key名稱
+   * @param value {string | number}-篩選之值
+   * @author kidin-1110221
+   */
+  filterLeaveList(item: string, value: string | number) {
+    const backupLeaveList = this.utils.deepCopy(this.backupLeaveList);
+    this.leaveList = item ? backupLeaveList.filter(_list => _list[item] === value) : backupLeaveList;
   }
 
   /**
@@ -752,7 +769,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     index: number
   ) {
     e.stopPropagation();
-    if (listType === 'normal') {
+    if (listType !== 'leave') {
       const oldIndex = this.uiFlag[type];
       if (oldIndex !== index) {
         this.uiFlag[type] = index;
@@ -820,12 +837,12 @@ export class ContestantListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 移除參賽者
+   * 從一般參賽者名單移除參賽者至確認退賽清單
    * @param e {MouseEvent}
    * @param index {number}-顯示順位
    * @author kidin-1101126
    */
-  removeContestant(e: MouseEvent, index: number) {
+  removeNormalContestant(e: MouseEvent, index: number) {
     e.stopPropagation();
     const { userId: targetUserId } = this.reArrangeList[index];
     const update = [{
@@ -838,6 +855,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         const leaveIndex = this.participantList.findIndex(_list => _list.userId == targetUserId);
         const [leaveContestant] = this.participantList.splice(leaveIndex, 1);
         this.backupLeaveList.push(leaveContestant);
+        this.leaveList.push(leaveContestant);
         of(this.participantList).pipe(
           map(list => this.sortList(list, defaultSortSet)),
           map(sortList => this.assignRank(sortList)),
@@ -846,7 +864,6 @@ export class ContestantListComponent implements OnInit, OnDestroy {
           this.reArrangeList = result;
         });
 
-        this.leaveList = this.utils.deepCopy(this.backupLeaveList);
       }
 
     });
@@ -854,11 +871,13 @@ export class ContestantListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 將移除的參賽者加回參賽名單中
-   * @param delIndex {number}-回收區顯示順位
+   * 從確認退賽清單將參賽者加回一般參賽名單中
+   * @param e {MouseEvent}
+   * @param delIndex {number}-確認退賽清單顯示順位
    * @author kidin-1101126
    */
-  addContestant(delIndex: number) {
+  cancelLeaveContestant(e: MouseEvent, delIndex: number) {
+    e.stopPropagation();
     const { userId: targetUserId } = this.backupLeaveList[delIndex];
     const update = [{
       targetUserId,
@@ -867,6 +886,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
 
     this.updateUserEventProfile(update).subscribe(success => {
       if (success) {
+        this.leaveList = this.leaveList.filter(_list => _list.userId !== targetUserId);
         const [addContestant] = this.backupLeaveList.splice(delIndex, 1);
         this.participantList.push(addContestant);
         of(this.participantList).pipe(
@@ -876,7 +896,65 @@ export class ContestantListComponent implements OnInit, OnDestroy {
           this.reArrangeList = result;
         });
 
-        this.leaveList = this.utils.deepCopy(this.backupLeaveList);
+      }
+
+    });
+
+  }
+
+  /**
+   * 從退賽申請清單移除參賽者至確認退賽清單
+   * @param e {MouseEvent}
+   * @param index {number}-顯示順位
+   * @author kidin-1101126
+   */
+  removeLeavingContestant(e: MouseEvent, index: number) {
+    e.stopPropagation();
+    const { userId: targetUserId } = this.leavingList[index];
+    const update = [{
+      targetUserId,
+      applyStatus: ApplyStatus.cancel
+    }];
+
+    this.updateUserEventProfile(update).subscribe(success => {
+      if (success) {
+        const leaveIndex = this.backupLeavingList.findIndex(_list => _list.userId == targetUserId);
+        const [leaveContestant] = this.backupLeavingList.splice(leaveIndex, 1);
+        this.leavingList = this.utils.deepCopy(this.backupLeavingList);
+        this.backupLeaveList.push(leaveContestant);
+        this.leaveList.push(leaveContestant);
+      }
+
+    });
+
+  }
+
+  /**
+   * 從退賽申請清單將參賽者加回一般參賽者清單
+   * @param e {MouseEvent}
+   * @param delIndex {number}-確認退賽顯示順位
+   * @author kidin-1101126
+   */
+  cancelLeavingContestant(e: MouseEvent, delIndex: number) {
+    e.stopPropagation();
+    const { userId: targetUserId } = this.backupLeavingList[delIndex];
+    const update = [{
+      targetUserId,
+      applyStatus: ApplyStatus.applied
+    }];
+
+    this.updateUserEventProfile(update).subscribe(success => {
+      if (success) {
+        const [addContestant] = this.backupLeavingList.splice(delIndex, 1);
+        this.leavingList = this.leavingList.filter(_list => _list.userId !== targetUserId);
+        this.participantList.push(addContestant);
+        of(this.participantList).pipe(
+          map(list => this.sortList(list, defaultSortSet)),
+          map(sortList => this.assignRank(sortList))
+        ).subscribe(result => {
+          this.reArrangeList = result;
+        });
+
       }
 
     });
@@ -1174,8 +1252,6 @@ export class ContestantListComponent implements OnInit, OnDestroy {
 
     csvData += '\n';
     const { reArrangeList, leaveList } = this;
-    const dateFormat = 'YYYY-MM-DD';
-    const applyDateFormat = `${dateFormat} HH:mm`;
     const createRowInfo = (list) => {
       const {
         appliedDate,
@@ -1214,27 +1290,27 @@ export class ContestantListComponent implements OnInit, OnDestroy {
       const ageBase = {
         birth: birthday,
         birthFormat: 'YYYYMMDD',
-        baseDate: appliedDate ? appliedDate * 1000 : null,
+        baseDate: this.convertTimestamp(appliedDate),
         baseFormat: null
       };
 
       return `${
-        appliedDate ? moment(appliedDate).format(applyDateFormat) : ''
+        this.convertDateFormat(appliedDate)
         },${userId
         },${nickname
         },${groupName
         },${feeTitle
         },${fee
         },${this.paidStatusPipe.transform(paidStatus)
-        },${paidDate ? moment(paidDate).format(dateFormat) : ''
+        },${this.convertDateFormat(paidDate)
         },${officialPaidId ? officialPaidId : ''
         },${thirdPartyPaidId ? thirdPartyPaidId : ''
         },${this.shippedStatusPipe.transform(productShipped)
-        },${productShippingDate ? moment(productShippingDate).format(dateFormat) : ''
+        },${this.convertDateFormat(productShippingDate)
         },${rank ? rank : ''
         },${record ? record : ''
         },${this.shippedStatusPipe.transform(awardShipped)
-        },${awardShippingDate ? moment(awardShippingDate).format(dateFormat) : ''
+        },${this.convertDateFormat(awardShippingDate)
         },${truthName
         },${this.agePipe.transform(ageBase)
         },${gender === Sex.male ? '男' : '女'
@@ -1256,7 +1332,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     });
 
     /*************************
-     * 暫不將回收區資訊列入csv
+     * 暫不將確認退賽資訊列入csv
      * 方便使用者使用excel篩選功能
     
     const blank = ',,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n';
@@ -1271,11 +1347,30 @@ export class ContestantListComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 將timestamp轉換為指定字串格式
+   * @param timestamp {number}-timestamp(second)
+   * @author kidin-1110211
+   */
+  convertDateFormat(timestamp: number) {
+    const dateFormat = 'YYYY-MM-DD HH:mm';
+    return timestamp ? moment(this.convertTimestamp(timestamp)).format(dateFormat) : '';
+  }
+
+  /**
+   * 確認時間是否有值，有值即轉換為milisecond
+   * @param date {number}-timestamp(second)
+   * @author kidin-1110211
+   */
+  convertTimestamp(date: number) {
+    return date ? date * 1000 : null;
+  }
+
+  /**
    * 開啟或關閉移除參賽者模式
    * @author kidin-1101126
    */
-  handleDeleteMode() {
-    this.uiFlag.deleteMode = !this.uiFlag.deleteMode;
+  handleListEditMode() {
+    this.uiFlag.listEditMode = !this.uiFlag.listEditMode;
   }
 
   /**
@@ -1341,6 +1436,15 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    */
   focusInput() {
     this.uiFlag.focusInput = true;
+  }
+
+  /**
+   * 切換清單
+   * @param type {ListType}-清單類別
+   * @author kidin-1110222
+   */
+  switchList(type: ListType) {
+    this.uiFlag.listType = type;
   }
 
   /**

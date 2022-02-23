@@ -34,7 +34,7 @@ import { Proficiency, ProficiencyCoefficient } from '../../models/weight-train';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../message-box/message-box.component';
-import { UserProfileInfo, HrBase } from '../../../containers/dashboard/models/userProfileInfo';
+import { UserProfileInfo, HrBase } from '../../models/user-profile-info';
 import { ShareGroupInfoDialogComponent } from '../share-group-info-dialog/share-group-info-dialog.component';
 import { ActivityService } from '../../services/activity.service';
 
@@ -328,7 +328,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const { pathname, search } = location;
-    this.token = this.utils.getToken() || '';
+    this.token = this.utils.getToken();
     this.checkPathName(pathname);
     this.checkQueryString(search);
     if (this.uiFlag.isDashboardPage || this.token.length > 0) {

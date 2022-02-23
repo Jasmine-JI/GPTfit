@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, Cha
 import { Subject, fromEvent, Subscription, of, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { UserProfileService } from '../../services/user-profile.service';
-import { UserProfileInfo, HrBase } from '../../../containers/dashboard/models/userProfileInfo';
+import { UserProfileInfo, HrBase } from '../../models/user-profile-info';
 import { UtilsService } from '../../services/utils.service';
 import { ActivityService } from '../../services/activity.service';
 import { Router } from '@angular/router';

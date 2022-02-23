@@ -1,4 +1,4 @@
-import { Sex } from '../../dashboard/models/userProfileInfo';
+import { Sex } from '../../../shared/models/user-profile-info';
 
 export interface EventInfo {
   eventId?: number;
@@ -91,7 +91,8 @@ export enum ProductShipped {
 export enum ApplyStatus {
   notYet,
   applied,
-  cancel
+  cancel,
+  applyingQuit
 }
 
 export enum Nationality {
@@ -105,5 +106,6 @@ export enum ListStatus {
   applyCutOff,
   racing,
   eventFinished,
-  eventCancel
+  eventCancel,
+  notAudit
 };

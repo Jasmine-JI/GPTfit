@@ -6,7 +6,7 @@ import { fromEvent, Subject, Subscription, merge, of, combineLatest } from 'rxjs
 import { takeUntil, switchMap, map, tap } from 'rxjs/operators';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { codes } from '../../../../shared/models/countryCode';
-import { Sex } from '../../../dashboard/models/userProfileInfo';
+import { Sex } from '../../../../shared/models/user-profile-info';
 import { nicknameDefaultList } from '../../../../shared/models/nickname-list';
 import { SelectDate } from '../../../../shared/models/utils-type';
 import { SignTypeEnum } from '../../../../shared/models/utils-type';
@@ -14,17 +14,20 @@ import moment from 'moment';
 import { AuthService } from '../../../../shared/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
-import { UserProfileInfo } from '../../../dashboard/models/userProfileInfo';
+import { UserProfileInfo, AccountTypeEnum, AccountStatusEnum } from '../../../../shared/models/user-profile-info';
 import { GetClientIpService } from '../../../../shared/services/get-client-ip.service';
-import { Nationality, ApplyStatus } from '../../models/activity-content';
+import { Nationality, ApplyStatus, EventStatus } from '../../models/activity-content';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
-import { SignupService } from '../../../portal/services/signup.service';
+import { SignupService } from '../../../../shared/services/signup.service';
+import { AlaApp } from '../../../../shared/models/app-id';
+import { EnableAccountFlow } from '../../../../shared/models/signup-response';
+import { LockCaptcha } from '../../../../shared/classes/lock-captcha';
+import { checkResponse } from '../../../../shared/utils/index';
 
 
 const stageHeight = 90;
-type AccountType = 'phone' | 'email';
 type InputAlert = 'format' | 'empty' | 'repeat' | 'login';
 interface NewRegister {
   token: string;
@@ -47,16 +50,19 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   uiFlag = {
     progress: 100,
-    showLoginButton: <AccountType>null,
+    showLoginButton: <AccountTypeEnum>null,
     showAside: true,
     haveAccount: false,
-    accountChecking: <AccountType>null,
+    accountChecking: <AccountTypeEnum>null,
     showCountryCodeList: false,
     showNicknameHint: false,
     showEmergencyContact: false,
     showGroupList: false,
     currentFocusInput: '#phone',
     applyComplish: false,
+    enableAccount: false,
+    smsError: false,
+    enableAccomplishment: false,
     showPasswordHint: false,
     newPasswordFormatError: false,
     newPasswordUpdated: false,
@@ -139,11 +145,25 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
 
   };
 
+  /**
+   * 登入request
+   */
   loginBody = <any>{
     signInType: <SignTypeEnum>SignTypeEnum.phone,
     password: null
   };
 
+  /**
+   * 啟用request
+   */
+  enableBody = <any>{
+    enableAccountFlow: EnableAccountFlow.request,
+    project: AlaApp.gptfit
+  };
+
+  /**
+   * 編輯密碼request
+   */
   editAccountBody = {
     editType: 1,
     token: null,
@@ -151,16 +171,24 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     newPassword: null
   }
 
+  /**
+   * 紀錄所選方案組合
+   */
   selectPlanInfo = {
     feeId: null,
     title: null,
     fee: null
   }
 
+  imgLock: LockCaptcha;
   groupList = [];  // 使用者可選擇之分組類別
   defaultBirthday = moment().subtract(40, 'year').startOf('year'); 
   token = this.utils.getToken();
+  userId: number;
+  intervals: NodeJS.Timeout;
+  timeCount = 30;
   readonly SignTypeEnum = SignTypeEnum;
+  readonly AccountTypeEnum = AccountTypeEnum;
   readonly countryCodeList = codes;
   readonly Nationality = Nationality;
   readonly Sex = Sex;
@@ -255,59 +283,30 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   /**
-   * 取得使用者最近一次之報名資訊
+   * 取得使用者最近一次之報名資訊與userProfile
    * @param token {string}-權杖
    * @author kidin-1101111
    */
   getEventUserProfile(token: string) {
-    const alaqlBody = {
-      token,
-      search: {
-        userProfile: {
-          target: ['signInType']
-        }
-
-      }
-
-    };
-
     combineLatest([
       this.officialActivityService.getEventUserProfile({token}),
-      this.userProfileService.getAssignInfo(alaqlBody)
+      this.userProfileService.getUserProfile({ token })
     ]).pipe(
-      switchMap(result => {
-        const [eventUserProfile, signType] = result;
-        this.loginBody.signInType = +signType.result[0].signInType;
-        if (this.utils.checkRes(eventUserProfile)) {
-          const { userProfile } = eventUserProfile;
-          const notEmptyProfile = !this.utils.isObjectEmpty(userProfile);
-          if (notEmptyProfile) {
-            this.handleEventUserProfile(userProfile);
-            return of(eventUserProfile);
-          } else {
-            return this.userProfileService.getUserProfile({token}).pipe(
-              map(profileResult => {
-                if (this.utils.checkRes(profileResult)) {
-                  const { userProfile } = profileResult;
-                  this.handleRxUserProfile(userProfile);
-                  return userProfile;
-                } else {
-                  return null;
-                }
-                
-                
-              })
-
-            );
-
-          }
-
-        } else {
-          return eventUserProfile;
+      tap(result => {
+        const [eventUserProfileResult, userProfileResult] = result;
+        if (this.utils.checkRes(eventUserProfileResult)) {
+          const { userProfile: eventUserProfile } = eventUserProfileResult;
+          this.handleEventUserProfile(eventUserProfile);
         }
 
-      }),
-      takeUntil(this.ngUnsubscribe)
+        if (this.utils.checkRes(userProfileResult)) {
+          const { signIn: { accountStatus, accountType }, userProfile } = userProfileResult;
+          this.loginBody.signInType = accountType;
+          this.uiFlag.enableAccount = accountStatus === AccountStatusEnum.enabled;
+          this.handleUserProfile(userProfile);
+        }
+
+      })
     ).subscribe();
 
   }
@@ -319,11 +318,9 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   handleEventUserProfile(eventUserProfile: any) {
     for (let _key in this.applyInfo.userProfile) {
-      const preValue = eventUserProfile[_key];
-      const newValue = this.applyInfo.userProfile[_key];
-      const recoverKey = !['email', 'phone'].includes(_key);
-      if (recoverKey || newValue === null) {
-        this.applyInfo.userProfile[_key] = preValue;
+      const value = eventUserProfile[_key];
+      if (value !== null && value !== undefined) {
+        this.applyInfo.userProfile[_key] = value;
       }
 
     }
@@ -334,27 +331,32 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   /**
-   * 將使用者部份資訊填入表單
-   * @param userRxProfile {UserProfileInfo}-使用者資訊
+   * 將使用者部份資訊填入表單(覆蓋eventUserProfile以避免資訊並非最新的)
+   * @param userProfile {UserProfileInfo}-使用者資訊
    * @author kidin-1101116
    */
-  handleRxUserProfile(userRxProfile: UserProfileInfo) {
+  handleUserProfile(userProfile: UserProfileInfo) {
     const {
       nickname,
       email,
       birthday,
       gender,
       countryCode,
-      mobileNumber
-    } = userRxProfile;
+      mobileNumber,
+      userId
+    } = userProfile;
 
     this.applyInfo.userProfile.nickname = nickname;
-    this.applyInfo.userProfile.email = email ? email : null;
-    this.applyInfo.userProfile.countryCode = countryCode ? `${countryCode}` : '886';
-    this.applyInfo.userProfile.mobileNumber = mobileNumber ? mobileNumber : null;
     this.applyInfo.userProfile.gender = gender;
     this.applyInfo.userProfile.birthday = +birthday;
     this.defaultBirthday = moment(birthday, 'YYYYMMDD');
+    this.userId = userId;
+    if (email) this.applyInfo.userProfile.email = email;
+    if (countryCode) {
+      this.applyInfo.userProfile.countryCode = `${countryCode}`;
+      this.applyInfo.userProfile.mobileNumber = mobileNumber;
+    }
+
     this.initAlert();
   }
 
@@ -388,23 +390,23 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   getEventDetail(eventId: number) {
     this.officialActivityService.getEventDetail({eventId}).subscribe(res => {
-      if (this.utils.checkRes(res, false)) {
+      if (checkResponse(res)) {
         const { eventInfo, eventDetail } = res;
+        const { eventStatus } = eventInfo;
         const { applyDate: { startDate, endDate } } = eventInfo;
         const overApplyDate = this.checkApplyDateOver(startDate, endDate);
-        if (overApplyDate) {
-          this.navigate404();
-        } else {
+        const canApply = !overApplyDate && eventStatus === EventStatus.audit;
+        if (canApply) {
           this.eventInfo = eventInfo;
           this.eventDetail = eventDetail;
           this.filterGroupList();
           this.handleDefaultApplyFee(eventDetail);
+          return true;
         }
 
-      } else {
-        this.navigate404();
-      }
+      } 
 
+      return this.navigate404();
     });
 
   }
@@ -473,7 +475,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101104
    */
   checkStagePosition() {
-// 使用setTimeout處理ExpressionChangedAfterItHasBeenCheckedError報錯
+    // 使用setTimeout處理ExpressionChangedAfterItHasBeenCheckedError報錯
     setTimeout(() => {
       const { showAside, currentFocusInput } = this.uiFlag;
       if (showAside) {
@@ -634,7 +636,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     if (!trimValue) {
       this.alert.mobileNumber = 'empty';
       const { showLoginButton } = this.uiFlag;
-      if (showLoginButton === 'phone') this.uiFlag.showLoginButton = null;
+      if (showLoginButton === AccountTypeEnum.phone) this.uiFlag.showLoginButton = null;
     } else {
       const newPhone = `${+trimValue}`;  // 藉由轉數字將開頭所有0去除
       if (!formTest.phone.test(newPhone)) {
@@ -677,17 +679,17 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       const args = { countryCode, phone: mobileNumber };
       const target = ['phone'];
       this.checkRepeat(args, target).subscribe(res => {
-        if (this.utils.checkRes(res, false)) {
+        if (checkResponse(res)) {
           const { phone } = res.result[0] ?? {};
           if (phone) {
             delete this.loginBody.email;  // 避免多帳號者更換帳號
             this.loginBody.signInType = SignTypeEnum.phone;
             this.loginBody.countryCode = countryCode;
             this.loginBody.mobileNumber = mobileNumber;
-            this.handleLoginButton('phone');
+            this.handleLoginButton(AccountTypeEnum.phone);
           } else {
             const { showLoginButton } = this.uiFlag;
-            if (showLoginButton === 'phone') this.uiFlag.showLoginButton = null;
+            if (showLoginButton === AccountTypeEnum.phone) this.uiFlag.showLoginButton = null;
           }
 
         }
@@ -708,7 +710,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     if (!newEmail) {
       this.alert.email = 'empty';
       const { showLoginButton } = this.uiFlag;
-      if (showLoginButton === 'email') this.uiFlag.showLoginButton = null;
+      if (showLoginButton === AccountTypeEnum.email) this.uiFlag.showLoginButton = null;
     } else {
 
       if (!formTest.email.test(newEmail)) {
@@ -733,17 +735,17 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     const target = ['email'];
     if (!this.token) {
       this.checkRepeat(args, target).subscribe(res => {
-        if (this.utils.checkRes(res, false)) {
+        if (checkResponse(res)) {
           const { email } = res.result[0] ?? {};
           if (email) {
             delete this.loginBody.countryCode;  // 避免多帳號者更換帳號
             delete this.loginBody.mobileNumber;
             this.loginBody.signInType = SignTypeEnum.email;
             this.loginBody.email = email;
-            this.handleLoginButton('email');
+            this.handleLoginButton(AccountTypeEnum.email);
           } else {
             const { showLoginButton } = this.uiFlag;
-            if (showLoginButton === 'email') this.uiFlag.showLoginButton = null;
+            if (showLoginButton === AccountTypeEnum.email) this.uiFlag.showLoginButton = null;
           }
 
         }
@@ -805,8 +807,9 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       this.uiFlag.progress = 30;
       this.auth.loginServerV2(this.loginBody, false).pipe(
         switchMap(loginResponse => {
-          if (this.utils.checkRes(loginResponse, false)) {
-            const { signIn: { token } } = loginResponse;
+          if (checkResponse(loginResponse)) {
+            const { signIn: { token, accountStatus } } = loginResponse;
+            this.uiFlag.enableAccount = accountStatus === AccountStatusEnum.enabled;
             this.handleLoginSuccess(token);
             const args = { eventId: this.applyInfo.targetEventId };
             const target = ['eventId'];
@@ -1042,10 +1045,16 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
           const { targetGroupId } = this.applyInfo;
           const { name } = this.eventDetail.group[targetGroupId - 1];
           const { title, fee } = this.selectPlanInfo;
-          const msg = `請確認以下資訊<br><br>報名分組: ${
-            name}<br>報名組合: ${
-            title}<br>報名費用: $${
-            fee}<br><br>報名成功後將無法進行修改
+          const checkI18n = this.translate.instant('universal_vocabulary_infoConfirm');
+          const applyGroupI18n = this.translate.instant('universal_vocabulary_raceCatagory');
+          const feeNameI18n = this.translate.instant('universal_vocabulary_racePackage');
+          const feeI18n = this.translate.instant('universal_vocabulary_raceFee');
+          const unEditableI18n = this.translate.instant('universal_vocabulary_noChangeAfterSign');
+
+          const msg = `${checkI18n}<br><br>${applyGroupI18n}: ${
+            name}<br>${feeNameI18n}: ${
+            title}<br>${feeI18n}: $${
+            fee}<br><br>${unEditableI18n}
           `;
           this.dialog.open(MessageBoxComponent, {
             hasBackdrop: true,
@@ -1073,20 +1082,25 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101111
    */
   applyActivity() {
-    const { uiFlag: { progress, isApplied }, token } = this;
+    const { uiFlag: { progress, isApplied, enableAccount }, token } = this;
     if (!isApplied && progress === 100) {
       this.uiFlag.progress = 30;
 
       if (token) Object.assign(this.applyInfo, { token });
 
       this.officialActivityService.applyEvent(this.applyInfo).subscribe(res => {
+        this.uiFlag.progress = 100;
         if (this.utils.checkRes(res)) {
           const { register } = res;
-          if (!token) this.handleNewAccount(register);
+          if (!token) {
+            this.handleNewAccount(register);
+          } else if (!enableAccount) {
+            this.getVerification();
+          }
+
           this.uiFlag.applyComplish = true;
         }
 
-        this.uiFlag.progress = 100;
       });
 
     }
@@ -1119,7 +1133,20 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       token
     };
 
-    this.auth.loginServerV2(body).subscribe();
+    this.auth.loginServerV2(body).subscribe(res => {
+      if (checkResponse(res)) {
+        const {
+          signIn: { accountStatus, accountType },
+          userProfile: { userId }
+        } = res;
+
+        this.userId = userId;
+        this.uiFlag.enableAccount = accountStatus === AccountStatusEnum.enabled;
+        this.getVerification();
+      }
+
+    });
+
   }
 
   /**
@@ -1149,10 +1176,10 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
 
   /**
    * 根據是否已經登入與是否有帳號顯示登入按鈕
-   * @param type {AccountType}-帳號類別
+   * @param type {AccountTypeEnum}-帳號類別
    * @author kidin-1101115
    */
-  handleLoginButton(type: AccountType) {
+  handleLoginButton(type: AccountTypeEnum) {
     this.uiFlag.showLoginButton = this.token ? null : type;
   }
 
@@ -1213,7 +1240,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
           this.token = newToken;
           this.utils.writeToken(newToken);
           this.uiFlag.newPasswordUpdated = true;
-          this.disabledPasswordInput();
           const msg = 'Update success.';
           this.snackbar.open(msg, 'OK', { duration: 3000 } );
         } else {
@@ -1226,15 +1252,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
 
     }
 
-  }
-
-  /**
-   * 變更密碼成功後，將密碼輸入框disabled
-   * @author kidin-1101222
-   */
-  disabledPasswordInput() {
-    const targetElement = document.getElementById('reset__password__input');
-    targetElement.setAttribute('disabled', 'disabled');
   }
 
   /**
@@ -1256,7 +1273,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     this.officialActivityService.createProductOrder(body).subscribe(res => {
-      if (this.utils.checkRes(res)) {
+      if (checkResponse(res)) {
         const { responseHtml } = res;
         const newElement = document.createElement('div');
         const target = document.querySelector('.main__page');
@@ -1317,7 +1334,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     this.translate.get('hellow world').pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
-      const msg = '年齡與性別不符本次賽事分組，請確認年齡性別是否無誤';
+      const msg = this.translate.instant('universal_vocabulary_notQualifiedWarning');
       this.utils.openAlert(msg);
     })
     
@@ -1354,9 +1371,135 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   /**
-   * 解除rxjs訂閱
+   * 根據帳號類別取得驗證信/驗證簡訊
+   * @author kidin-1110214
+   */
+  getVerification() {
+    const { uiFlag: { progress }, timeCount, imgLock } = this;
+    this.enableBody.enableAccountFlow = EnableAccountFlow.request;
+    if (progress === 100) {
+      
+      if (imgLock) {
+        this.handleCaptchaUnlock(this.getVerification.bind(this));
+      } else if (timeCount === 30) {
+        this.uiFlag.progress = 30;
+        const { token, loginBody: { signInType } } = this;
+        let enableBody = { ...this.enableBody, token };
+        let msgKey = 'universal_userAccount_sendSmsSuccess';
+
+        if (signInType === SignTypeEnum.email) {
+          enableBody = { ...enableBody, redirectUrl: 'event' };
+          msgKey = 'universal_userAccount_sendCaptchaChackEmail';
+        }
+
+        this.getClientIp.requestIpAddress().pipe(
+          switchMap((ipResult: any) => {
+            const header = { remoteAddr: ipResult.ip };
+            return this.signupService.fetchEnableAccount(enableBody, header);
+          })
+        ).subscribe((res: any) => {
+          if (!checkResponse(res)) {
+            const { processResult } = res;
+            if (processResult) {
+              const { apiReturnMessage } = processResult;
+              switch (apiReturnMessage) {
+                case 'Found attack, update status to lock!':
+                case 'Found lock!':
+                  const { imgLockCode } = processResult;
+                  this.imgLock = new LockCaptcha(imgLockCode, this.signupService, this.getClientIp);
+                  break;
+              }
+
+            }
+                
+          } else {
+            const msg = this.translate.instant(msgKey);
+            this.utils.showSnackBar(msg);
+            this.enableBody.enableAccountFlow = EnableAccountFlow.verify;
+            if (signInType === SignTypeEnum.phone) this.reciprocal();
+          }
+
+          this.uiFlag.progress = 100;
+        });
+
+      }
+
+    }
+
+  }
+
+  /**
+   * 倒數計時避免濫用認證簡訊
+   * @author kidin-1101206
+   */
+  reciprocal() {
+    this.intervals = setInterval(() => {
+      this.timeCount--;
+      if (this.timeCount === 0) {
+        this.timeCount = 30;
+        window.clearInterval(this.intervals);
+      }
+
+    }, 1000);
+
+  }
+
+  /**
+   * 驗證簡訊碼
+   * @author kidin-1110214
+   */
+  handleEnableAccount() {
+    const { uiFlag: { progress }, imgLock } = this;
+    if (progress === 100) {
+
+      if (imgLock) {
+        this.handleCaptchaUnlock(this.handleEnableAccount.bind(this));
+      } else {
+        this.enableBody = { ...this.enableBody, userId: this.userId };
+        this.getClientIp.requestIpAddress().pipe(
+          switchMap((ipResult: any) => {
+            const header = { remoteAddr: ipResult.ip };
+            return this.signupService.fetchEnableAccount(this.enableBody, header);
+          })
+        ).subscribe((res: any) => {
+          if (!checkResponse(res)) {
+            this.uiFlag.smsError = true;
+          } else {
+            this.uiFlag.enableAccount = true;
+            this.uiFlag.enableAccomplishment = true;
+          }
+
+        })
+
+      }
+
+    }
+
+  }
+
+  /**
+   * 解瑣圖碼
+   * @param callback {any}-callback function
+   * @author kidin-1101206
+   */
+  handleCaptchaUnlock(callback: Function = null) {
+    this.imgLock.requestUnlock().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(isUnlock => {
+      if (isUnlock) {
+        this.imgLock = undefined;
+        callback();
+      }
+
+    });
+    
+  }
+
+  /**
+   * 解除rxjs訂閱及定時器
    */
   ngOnDestroy() {
+    if (this.intervals) window.clearInterval(this.intervals);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }

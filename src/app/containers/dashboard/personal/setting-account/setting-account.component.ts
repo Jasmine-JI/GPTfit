@@ -7,7 +7,7 @@ import { AuthService } from '../../../../shared/services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
-import { AccountTypeEnum } from '../../models/userProfileInfo';
+import { AccountTypeEnum } from '../../../../shared/models/user-profile-info';
 import { SignTypeEnum } from '../../../../shared/models/utils-type';
 
 enum ThirdParty {

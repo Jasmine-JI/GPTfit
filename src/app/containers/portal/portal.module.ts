@@ -22,7 +22,7 @@ import { UtilsService } from '../../shared/services/utils.service';
 import { SharedModule } from '../../shared/shared.module';
 import { MessageBoxComponent } from '../../shared/components/message-box/message-box.component';
 import { RandomCodeService } from './services/random-code.service';
-import { SignupService } from './services/signup.service';
+import { SignupService } from '../../shared/services/signup.service';
 import { ForgetService } from './services/forget.service';
 import { UserProfileService } from '../../shared/services/user-profile.service';
 import { CustomMaterialModule } from '../../shared/custom-material.module';

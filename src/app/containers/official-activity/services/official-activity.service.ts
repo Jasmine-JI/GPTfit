@@ -216,7 +216,6 @@ export class OfficialActivityService {
     
   }
 
-  
   /**
    * api 6014-更新商品訂單資訊
    * @param body {any}
@@ -224,6 +223,21 @@ export class OfficialActivityService {
    */
   updateProductOrder(body: any) {
     return this.http.post<any>('api/v2/event/updateProductOrder', body).pipe(
+      catchError(err => {
+        return throwError(err);
+      })
+
+    );
+    
+  }
+
+  /**
+   * api 6015-更新使用者活動報名資訊
+   * @param body {any}
+   * @author kidin-1100928
+   */
+  updateEventUserProfile(body: any) {
+    return this.http.post<any>('api/v2/event/updateEventUserProfile', body).pipe(
       catchError(err => {
         return throwError(err);
       })

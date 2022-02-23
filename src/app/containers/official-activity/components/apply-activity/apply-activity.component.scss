@@ -4,7 +4,8 @@
 @import 'button.scss';
 @import 'transform.scss';
 @import 'color.scss';
-@import 'overflow-scroll';
+@import 'overflow-scroll.scss';
+@import 'drop-triangle.scss';
 
 $app-icon-size: 80px;
 $aside-width: 200px;
@@ -82,27 +83,6 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
 @mixin input-hint-text($color: $hint-text-color) {
   color: $color;
   font-size: 12px;
-}
-
-@mixin drop-hint($border-top, $border-aside, $border-color) {
-
-  &:after {
-    content: '';
-    border-style: solid;
-    border-width: $border-top $border-aside 0px $border-aside;
-    border-color: $border-color transparent transparent transparent;
-    @include transition(transform);
-  }
-
-}
-
-@mixin drop-hint-active() {
-
-  &:after {
-    @include el-rotate(180deg);
-    @include transition(transform);
-  }
-
 }
 
 @mixin apply-fee-text() {
@@ -277,7 +257,7 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
   width: 100%;
 }
 
-.login__input {
+.icon__input {
   border-bottom: $input-border-bottom;
   width: 240px;
 }
@@ -295,10 +275,6 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
   justify-content: space-between;
   cursor: pointer;
   @include drop-hint(6px, 4px, black);
-}
-
-.selector--active {
-  @include drop-hint-active();
 }
 
 .country__code___list {
@@ -458,7 +434,7 @@ label, legend {
 }
 
 .group__selector--active {
-  @include drop-hint-active();
+  @include drop-active();
 }
 
 .group__menu {
@@ -561,24 +537,18 @@ label, legend {
   @include bold-font(16px);
 }
 
-#update__password___button {
+.request__update__button {
   @include bold-font(14px);
   background-color: rgba(225, 225, 225, 1);
   color: rgba(125, 125, 125, 1);
   width: 70px;
   height: 22px;
-  margin-left: 20px;
 }
 
-#new__password__input {
-  border-bottom: $input-border-bottom;
-
-  >input {
-    @include input-no-border();
-    margin-left: 10px;
-    max-width: 150px;
-  }
-
+.input__no__border {
+  @include input-no-border();
+  margin-left: 10px;
+  max-width: 150px;
 }
 
 #not__reset__alert {
@@ -595,8 +565,9 @@ label, legend {
   text-align: center;
 }
 
-.password__format___error {
+.error__hint {
   color: red;
+  font-size: 12px;
 }
 
 .can__not__submit {
@@ -649,6 +620,34 @@ label, legend {
     font-size: $font-size;
   }
 
+}
+
+.captcha__input {
+  width: 120px;
+}
+
+.captcha__img {
+  width: 120px;
+  height: 40px;
+}
+
+.resend__button {
+  color: rgba(150, 150, 150, 1);
+  font-size: 14px;
+  margin: 0 10px;
+}
+
+.time__count {
+  font-size: 12px;
+}
+
+.input__alert__border {
+  border-color: red;
+}
+
+.account__relation__form {
+  margin: 10px 0;
+  width: 240px;
 }
 
 /***************************************************** media ***********************************************/

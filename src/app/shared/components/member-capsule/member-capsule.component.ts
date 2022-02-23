@@ -93,7 +93,7 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.getTranslate();
-    this.token = this.utils.getToken() || '';
+    this.token = this.utils.getToken();
   }
 
   ngOnChanges() {
