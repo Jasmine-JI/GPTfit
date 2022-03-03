@@ -304,14 +304,14 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
       body = {
         token: this.utils.getToken() || '',
         editFileType: this.uiFlag.showEditDialog,
-        RangeType: this.dateRange,
+        rangeType: this.dateRange,
         privacy: this.openObj
       };
     } else {
       body = {
         token: this.utils.getToken() || '',
         editFileType: this.uiFlag.showEditDialog,
-        RangeType: this.dateRange,
+        rangeType: this.dateRange,
         startTime: this.selectDate.startDate,
         endTime: this.selectDate.endDate,
         privacy: this.openObj

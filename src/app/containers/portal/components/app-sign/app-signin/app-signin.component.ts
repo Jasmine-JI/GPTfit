@@ -201,6 +201,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
         this.loginBody.signInType = SignTypeEnum.phone;
         this.cue.account = '';
         this.loginBody.mobileNumber = account;
+        if (!this.loginBody.countryCode) this.loginBody.countryCode = this.setCountryCode();
         this.checkAll();
 
         if (this.loginBody.email) {

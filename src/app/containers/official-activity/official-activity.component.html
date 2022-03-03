@@ -248,7 +248,18 @@
       *ngIf="!['edit-activity', 'apply-activity'].includes(uiFlag.currentPage)"
     >
       <div class="flexRow footer__link__area">
-        <span class="webTitle web__title__color">GPTfit</span>
+        <span>
+          <img 
+            src="/assets/icons/logo.svg"
+            alt="GPTfit"
+            class="webLogo footer__logo"
+          >
+          <img 
+            src="/assets/icons/event.svg"
+            alt="Event"
+            class="webSubLogo sub__logo footer__sub__logo"
+          >
+        </span>
         <div class="flexRow footer__link">
           <a [href]="privacyPolicyUrl" target="_blank">
             {{ 'universal_userAccount_privacyStatement' | translate }}

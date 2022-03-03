@@ -79,6 +79,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   eventInfo: EventInfo;
   eventDetail: EventDetail;
   originEventStatus: EventStatus = EventStatus.notAudit;
+  selectedMap: string;
   deleteList = {
     contentId: [],
     groupId: [],
@@ -231,6 +232,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     this.eventInfo = eventInfo;
     this.originEventStatus = eventInfo.eventStatus;
     this.eventDetail = eventDetail;
+    this.getSelectMapName();
     this.checkNumberLimit();
     if (this.uiFlag.editMode === 'edit') this.deleteList = del;
   }
@@ -303,7 +305,8 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     this.officialActivityService.getRxAllMapInfo().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
-      this.mapList = res as Array<any>;
+      this.mapList = (res as Array<any>).sort((a, b) => +a.distance - +b.distance);
+      this.getSelectMapName();
     });
 
   }
@@ -363,6 +366,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         const { eventInfo, eventDetail } = res;
         this.eventInfo = eventInfo;
         this.originEventStatus = eventInfo.eventStatus;
+        this.getSelectMapName();
         this.checkNumberLimit();
         const { eventStatus } = this.eventInfo;
         if (eventStatus === EventStatus.cancel) {
@@ -1192,16 +1196,33 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @param id {string}-map id
    * @author kidin-1101021
    */
-  selectMap(e: KeyboardEvent, id: string) {
+  selectMap(e: KeyboardEvent, id: string, index: number) {
     e.stopPropagation();
     const oldMapId = this.eventInfo.cloudrunMapId;
     const newMapId = +id;
     if (newMapId !== oldMapId) {
       this.eventInfo.cloudrunMapId = newMapId;
+      this.getSelectMapName(newMapId);
       this.saveDraft();
     }
     
     this.unSubscribeGlobalEvent();
+  }
+
+  /**
+   * 取得所選雲跑地圖名稱
+   * @param mapId {number}-雲跑地圖流水編號
+   * @author kidin-1110301
+   */
+  getSelectMapName(mapId: number = null) {
+    const { mapList, eventInfo, language } = this;
+    if (eventInfo && mapList && mapId > 0) {
+      const { cloudrunMapId } = eventInfo;
+      const id = mapId ?? cloudrunMapId;
+      const index = mapList.findIndex(_map => _map.mapId == id);
+      this.selectedMap = mapList[index].info[language].mapName;
+    }
+
   }
 
   /**
@@ -1431,7 +1452,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
 
     if (repeat > -1) {
       this.utils.showSnackBar('分組名稱重複');
-      this.eventDetail.group[targetIndex].name = null;
+      this.eventDetail.group[targetIndex].name = '';
     } else if (name !== oldName) {
       this.eventDetail.group[targetIndex].name = name;
       this.saveDraft();
@@ -1455,7 +1476,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
 
     if (repeat > -1) {
       this.utils.showSnackBar('報名組合名稱重複');
-      this.eventDetail.applyFee[targetIndex].title = null;
+      this.eventDetail.applyFee[targetIndex].title = '';
     } else if (title !== oldTitle) {
       this.eventDetail.applyFee[targetIndex].title = title;
       this.saveDraft();

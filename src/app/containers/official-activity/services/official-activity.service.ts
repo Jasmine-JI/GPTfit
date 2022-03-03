@@ -262,6 +262,21 @@ export class OfficialActivityService {
   }
 
   /**
+   * api N7002-寄信通知管理員使用者申請或取消申請退賽
+   * @param body {any}
+   * @author kidin-1110302
+   */
+  notifyLeavingEvent(body: any) {
+    return this.http.post<any>(API_SERVER + 'email/leave-event', body).pipe(
+      catchError(err => {
+        return throwError(err);
+      })
+
+    );
+
+  }
+
+  /**
    * 儲存所有雲跑地圖資訊供子頁面使用
    * @param info {any}-cloudrun 所有地圖資訊
    * @author kidin-1101007

@@ -295,10 +295,7 @@
         *ngIf="mapList"
       >
         <span>
-          {{
-            eventInfo.cloudrunMapId < 0 ?
-              '地圖選擇' : mapList[eventInfo.cloudrunMapId - 1].info[language].mapName
-          }}
+          {{ selectedMap ?? '地圖選擇' }}
         </span>
         <ul
           id="map__list"
@@ -306,7 +303,7 @@
         >
           <li
             (click)="selectMap($event, _list.mapId)"
-            *ngFor="let _list of mapList;"
+            *ngFor="let _list of mapList; let index = index;"
           >
             <span class="map__distance">
               {{ _list.distance }}
