@@ -1119,7 +1119,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     this.editAccountBody.oldPassword = password;
     this.token = token;
     this.utils.writeToken(token);
-    this.tokenLogin(token);
+    this.tokenLogin(token, true);
   }
 
   /**
@@ -1127,7 +1127,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @param token {string}-權杖
    * @author kidin-1101116
    */
-  tokenLogin(token: string) {
+  tokenLogin(token: string, newAccount: boolean = false) {
     const body = {
       signInType: SignTypeEnum.token,
       token
@@ -1142,7 +1142,8 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
 
         this.userId = userId;
         this.uiFlag.enableAccount = accountStatus === AccountStatusEnum.enabled;
-        this.getVerification();
+        this.loginBody.signInType = accountType;
+        if (newAccount) this.getVerification();
       }
 
     });
@@ -1375,9 +1376,14 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1110214
    */
   getVerification() {
-    const { uiFlag: { progress }, timeCount, imgLock } = this;
+    const {
+      uiFlag: { progress },
+      timeCount,
+      imgLock,
+      selectPlanInfo: { fee }
+    } = this;
     this.enableBody.enableAccountFlow = EnableAccountFlow.request;
-    if (progress === 100) {
+    if (progress === 100 && fee > 0) {
       
       if (imgLock) {
         this.handleCaptchaUnlock(this.getVerification.bind(this));
@@ -1465,6 +1471,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
           if (!checkResponse(res)) {
             this.uiFlag.smsError = true;
           } else {
+            this.uiFlag.smsError = false;
             this.uiFlag.enableAccount = true;
             this.uiFlag.enableAccomplishment = true;
           }

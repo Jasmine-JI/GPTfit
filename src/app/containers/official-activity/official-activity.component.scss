@@ -476,6 +476,14 @@ $declaration-color: rgba(100, 100, 100, 1);
   color: $official-theme-color-light;
 }
 
+.footer__logo {
+  @include filter(brightness(0.6) sepia(1) hue-rotate(310deg) saturate(7));
+}
+
+.footer__sub__logo {
+  @include filter(saturate(2));
+}
+
 /************************************************* media ****************************************/
 
 @media (max-width: 767px) {

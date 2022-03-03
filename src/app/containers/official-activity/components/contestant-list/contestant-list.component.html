@@ -926,12 +926,12 @@
 >
   <ul
     class="drop__menu"
-    *ngIf="listType === 'normal' && uiFlag.showPaidStatusSelector === index"
+    *ngIf="listType !== 'leave' && uiFlag.showPaidStatusSelector === index"
   >
     <li *ngIf="!thirdPartyPaidId">
       <button
         class="status__yet"
-        (click)="changePaidStatus($event, PaidStatusEnum.unPaid, index)"
+        (click)="changePaidStatus($event, listType, PaidStatusEnum.unPaid, index)"
         *ngIf="paidDate === null"
       >
         {{ '未繳費' }}
@@ -940,7 +940,7 @@
     <li>
       <button
         class="status__already"
-        (click)="changePaidStatus($event, PaidStatusEnum.paid, index)"
+        (click)="changePaidStatus($event, listType, PaidStatusEnum.paid, index)"
       >
         {{ '已繳費' }}
       </button>
@@ -948,7 +948,7 @@
     <li>
       <button
         class="status__cancel"
-        (click)="changePaidStatus($event, PaidStatusEnum.refund, index)"
+        (click)="changePaidStatus($event, listType, PaidStatusEnum.refund, index)"
       >
         {{ '已退費' }}
       </button>
@@ -965,7 +965,7 @@
   <ul
     class="drop__menu"
     *ngIf="
-      listType === 'normal'
+      listType !== 'leave'
       && (
            (type === 'productShipped' && uiFlag.showOrderStatusSelector === index)
         || (type === 'awardShipped' && uiFlag.showAwardStatusSelector === index)
@@ -975,7 +975,7 @@
     <li>
       <button
         class="status__yet"
-        (click)="changeShippedStatus($event, ProductShipped.unShip, index, type)"
+        (click)="changeShippedStatus($event, listType, ProductShipped.unShip, index, type)"
       >
         {{ '未出貨' }}
       </button>
@@ -983,7 +983,7 @@
     <li>
       <button
         class="status__already"
-        (click)="changeShippedStatus($event, ProductShipped.shipped, index, type)"
+        (click)="changeShippedStatus($event, listType, ProductShipped.shipped, index, type)"
       >
         {{ '已出貨' }}
       </button>
@@ -991,7 +991,7 @@
     <li>
       <button
         class="status__cancel"
-        (click)="changeShippedStatus($event, ProductShipped.returnGoods, index, type)"
+        (click)="changeShippedStatus($event, listType, ProductShipped.returnGoods, index, type)"
         *ngIf="type === 'productShipped'"
       >
         {{ '已退貨' }}

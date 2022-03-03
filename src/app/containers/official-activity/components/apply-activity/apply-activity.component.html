@@ -561,20 +561,28 @@
             </span>
           </p>
 
-          <ng-container *ngIf="!uiFlag.enableAccount || uiFlag.newAccount">
+          <ng-container
+            *ngIf="(selectPlanInfo.fee !== 0 && !uiFlag.enableAccount) || uiFlag.newAccount"
+          >
             <p class="apply__accomplish__text">
               <span>
                 {{ 'universal_userAccount_account' | translate }}：
               </span>
-              <span>
+              <span *ngIf="loginBody.signInType === SignTypeEnum.phone">
                 +{{ applyInfo.userProfile.countryCode }} {{ applyInfo.userProfile.mobileNumber }}
+              </span>
+              <span *ngIf="loginBody.signInType === SignTypeEnum.email">
+                {{ applyInfo.userProfile.email }}
               </span>
             </p>
           </ng-container>
 
           <ng-container *ngIf="
-            (!uiFlag.enableAccount && loginBody.signInType === SignTypeEnum.phone)
-            || uiFlag.enableAccomplishment
+            selectPlanInfo.fee !== 0
+            && (
+              (!uiFlag.enableAccount && loginBody.signInType === SignTypeEnum.phone)
+              || uiFlag.enableAccomplishment
+            )
           ">
             <form id="enable__account" class="account__relation__form">
               <h6 class="apply__accomplish__text">
@@ -646,7 +654,9 @@
             </form>
           </ng-container>
 
-          <ng-container *ngIf="uiFlag.newAccount && uiFlag.enableAccount">
+          <ng-container
+            *ngIf="uiFlag.newAccount && (uiFlag.enableAccount || selectPlanInfo.fee === 0)"
+          >
             <form id="reset__password" class="account__relation__form">
               <h6 class="apply__accomplish__text">
                 {{ 'universal_vocabulary_passwordWanted' | translate }}

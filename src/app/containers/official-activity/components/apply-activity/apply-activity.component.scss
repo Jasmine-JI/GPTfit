@@ -434,7 +434,11 @@ label, legend {
 }
 
 .group__selector--active {
-  @include drop-active();
+
+  &:after {
+    @include drop-active();
+  }
+  
 }
 
 .group__menu {

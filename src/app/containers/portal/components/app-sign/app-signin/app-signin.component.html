@@ -57,6 +57,7 @@
             "
             (keydown)="determineAccountType($event)"
             (change)="saveAccount($event)"
+            (focusout)="saveAccount($event)"
           >
         </div>
         <p class="appview-alertHint">
@@ -158,6 +159,7 @@
                       class="form-control"
                       (keydown)="determineAccountType($event)"
                       (change)="saveAccount($event)"
+                      (focusout)="saveAccount($event)"
                     />
                     <i
                       class="icon-svg_web-icon_p1_004-qr_code qrcode__login__icon"
