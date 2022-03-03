@@ -3,6 +3,7 @@ const async = require('async')
 const router = express.Router();
 const fs = require('fs');
 const moment = require('moment');
+const request = require('request');
 
 /**
  * 取得例行賽事列表及所有地圖資訊
@@ -129,6 +130,61 @@ router.post('/getMapGpx', (req, res, next) => {
 
       });
 
+    }
+
+  });
+
+});
+
+/**
+ * 取得api 2016資料
+ * @author kidin-1100319
+ */
+ router.post('/getLeaderboardStatistics', (req, res, next) => {
+  const { con, body } = req;
+  let host;
+  switch (body.hostname) {
+    case 'cloud.alatech.com.tw':
+    case 'www.gptfit.com':
+    case '152.101.90.130':
+      host = '127.0.1.1';  // 68主機
+      break;
+    default:
+      host = '192.168.1.234';
+      break;
+  }
+
+  const optons = {
+    url: `http://${host}:5555/api/v1/race/getLeaderboardStatistics`,
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Accept-Encoding': 'gzip/deflate',
+      'chartset': 'utf-8',
+      'Authorization': 'required',
+      'deviceType': '2',
+      'deviceName': 'Alatech',
+      'deviceOSVersion': 'Linux',
+      'deviceID': 'IMEIxxxxxxx',
+      'appVersionCode': '1.0.0',
+      'appVersionName': '1.0.0',
+      'language': 'zh',
+      'regionCode': 'TW',
+      'appName': 'AlaCenter'
+    },
+    json: body
+  };
+
+  request.post(optons, (err, response) => {
+    if (err) {
+      return res.json({
+        resultCode: 400,
+        resultMessage: "Get leaderboard statistics failed.",
+        nodejsApiCode: "C1003",
+        errMsg: "Connect failed."
+      });
+    } else {
+      return res.send(response.body);
     }
 
   });

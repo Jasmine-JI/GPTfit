@@ -49,7 +49,7 @@ const defaultSortSet = <SortSet>{
 export class ContestantListComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
   private resizeSubscription = new Subscription;
-  private clickScrollEvent = new Subscription;
+  private PluralEvent = new Subscription;
 
   /**
    * ui會用到的flag
@@ -566,10 +566,10 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     e.stopPropagation();
     const { showFilterSelector } = this.uiFlag;
     if (showFilterSelector) {
-      this.unsubscribeClickScrollEvent();
+      this.unsubscribePluralEvent();
     } else {
       this.uiFlag.showFilterSelector = true;
-      this.subscribeClickScrollEvent();
+      this.subscribePluralEvent();
     }
 
   }
@@ -578,14 +578,14 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    * 訂閱點擊與滾動事件
    * @author kidin-1101108
    */
-  subscribeClickScrollEvent() {
+  subscribePluralEvent() {
     const targetElement = document.querySelector('.main__page');
     const clickEvent = fromEvent(document, 'click');
     const scrollEvent = fromEvent(targetElement, 'scroll');
-    this.clickScrollEvent = merge(clickEvent, scrollEvent).pipe(
+    this.PluralEvent = merge(clickEvent, scrollEvent).pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
-      this.unsubscribeClickScrollEvent();
+      this.unsubscribePluralEvent();
     });
 
   }
@@ -594,14 +594,14 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    * 取消訂閱全域點擊與滾動事件
    * @author kidin-1101108
    */
-  unsubscribeClickScrollEvent() {
+  unsubscribePluralEvent() {
     this.uiFlag.showFilterSelector = false;
     this.uiFlag.showGroupList = null;
     this.uiFlag.showPaidStatusSelector = null;
     this.uiFlag.showOrderStatusSelector = null;
     this.uiFlag.showAwardStatusSelector = null;
     this.uiFlag.showSortMenu = false;
-    if (this.clickScrollEvent) this.clickScrollEvent.unsubscribe();
+    if (this.PluralEvent) this.PluralEvent.unsubscribe();
   }
 
   /**
@@ -769,13 +769,16 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     index: number
   ) {
     e.stopPropagation();
-    if (listType !== 'leave') {
+    const isNormalList = listType === 'normal';
+    const passType = ['showPaidStatusSelector', 'showOrderStatusSelector'];
+    const isLeavingList = listType === 'leaving' && passType.includes(type);
+    if (isNormalList || isLeavingList) {
       const oldIndex = this.uiFlag[type];
       if (oldIndex !== index) {
         this.uiFlag[type] = index;
-        this.subscribeClickScrollEvent();
+        this.subscribePluralEvent();
       } else {
-        this.unsubscribeClickScrollEvent();
+        this.unsubscribePluralEvent();
       }
 
     }
@@ -833,7 +836,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
 
     }
 
-    this.unsubscribeClickScrollEvent();
+    this.unsubscribePluralEvent();
   }
 
   /**
@@ -964,22 +967,26 @@ export class ContestantListComponent implements OnInit, OnDestroy {
   /**
    * 變更指定參賽者繳費狀態
    * @param e {MouseEvent}
+   * @param listType {ListType}-清單類別
    * @param targetUserId {number}-使用者流水id
    * @param paidStatus {PaidStatusEnum}-繳費狀態
    * @author kidin-1101125
    */
   changePaidStatus(
     e: MouseEvent,
+    listType: ListType,
     paidStatus: PaidStatusEnum,
     index: number
   ) {
     e.stopPropagation();
+    const { reArrangeList, leavingList } = this;
+    const list = listType === 'normal' ? reArrangeList : leavingList;
     const {
       paidStatus: oldPaidStatus,
       userId: targetUserId
-    } = this.reArrangeList[index];
+    } = list[index];
     if (paidStatus !== oldPaidStatus) {
-      this.reArrangeList[index].paidStatus = paidStatus;
+      list[index].paidStatus = paidStatus;
       const update = [{
         targetUserId,
         paidStatus
@@ -990,19 +997,20 @@ export class ContestantListComponent implements OnInit, OnDestroy {
           const replace = { paidStatus };
           this.updateOriginProfile(targetUserId, replace);
         } else {
-          this.reArrangeList[index].paidStatus = oldPaidStatus;
+          list[index].paidStatus = oldPaidStatus;
         }
 
       });
 
     }
 
-    this.unsubscribeClickScrollEvent();
+    this.unsubscribePluralEvent();
   }
 
   /**
    * 變更指定參賽者訂單或獎品出貨狀態
    * @param e {MouseEvent}
+   * @param listType {ListType}-清單類別
    * @param targetUserId {number}-使用者流水id
    * @param productShipped {ProductShipped}-繳費狀態
    * @param type {ShippedType}-出貨類別（訂單/獎品）
@@ -1010,15 +1018,18 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    */
   changeShippedStatus(
     e: MouseEvent,
+    listType: ListType,
     shipped: ProductShipped,
     index: number,
     type: ShippedType
   ) {
     e.stopPropagation();
-    const { userId: targetUserId} = this.reArrangeList[index];
-    const oldStatus = this.reArrangeList[index][type];
+    const { reArrangeList, leavingList } = this;
+    const list = listType === 'normal' ? reArrangeList : leavingList;
+    const { userId: targetUserId} = list[index];
+    const oldStatus = list[index][type];
     if (shipped !== oldStatus) {
-      this.reArrangeList[index][type] = shipped;
+      list[index][type] = shipped;
       const shippingDate = this.getShippingDate(type, shipped);
       const update = [{
         targetUserId,
@@ -1031,14 +1042,14 @@ export class ContestantListComponent implements OnInit, OnDestroy {
           const replace = { [type]: shipped, ...shippingDate };
           this.updateOriginProfile(targetUserId, replace);
         } else {
-          this.reArrangeList[index][type] = oldStatus;
+          list[index][type] = oldStatus;
         }
 
       });
 
     }
 
-    this.unsubscribeClickScrollEvent();
+    this.unsubscribePluralEvent();
   }
 
   /**
@@ -1180,10 +1191,10 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     e.stopPropagation();
     const { showSortMenu } = this.uiFlag;
     if (showSortMenu) {
-      this.unsubscribeClickScrollEvent();
+      this.unsubscribePluralEvent();
     } else {
       this.uiFlag.showSortMenu = true;
-      this.subscribeClickScrollEvent();
+      this.subscribePluralEvent();
     }
 
   }
@@ -1445,6 +1456,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    */
   switchList(type: ListType) {
     this.uiFlag.listType = type;
+    this.unsubscribePluralEvent();
   }
 
   /**

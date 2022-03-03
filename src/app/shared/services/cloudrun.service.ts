@@ -46,17 +46,6 @@ export class CloudrunService {
   }
 
   /**
-   * api-2016 取得其他排行榜統計資料
-   * @param body {any}
-   * @author kidin-1090421
-   */
-  getLeaderboardStatistics (body: any) {
-    return this.http.post<any>('/api/v1/race/getLeaderboardStatistics', body).pipe(
-      catchError(err => throwError(err))
-    );
-  }
-
-  /**
    * 雲跑地圖清單
    */
   mapList: any;
@@ -103,7 +92,7 @@ export class CloudrunService {
    * @author kidin-1100322
    */
   getMapGpx(body: any) {
-    return this.http.post<any>(API_SERVER + 'cloudrun/getMapGpx', body).pipe(
+    return this.http.post<any>(`${API_SERVER}cloudrun/getMapGpx`, body).pipe(
       map(res => {
         if (res.resultCode !== 200) {
           const msg = 'Get map GPX fail.<br>Please try again later.';
@@ -121,6 +110,18 @@ export class CloudrunService {
 
     );
 
+  }
+
+  /**
+   * 透過nodejs取得api-2016 （取得其他排行榜統計資料）資料
+   * （競賽主機憑證為自簽憑證，故需透過中介程式）
+   * @param body {any}
+   * @author kidin-1090421
+   */
+  getLeaderboardStatistics (body: any) {
+    return this.http.post<any>(`${API_SERVER}cloudrun/getLeaderboardStatistics`, body).pipe(
+      catchError(err => throwError(err))
+    );
   }
 
 }

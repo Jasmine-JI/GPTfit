@@ -1010,7 +1010,7 @@
         }"></div>
         <div *ngTemplateOutlet="infoColumn; context: {
           title: 'universal_group_status' | translate,
-          value: list.productShipped | shippedStatus | translate
+          value: (list.fee === 0 ? ProductShipped.needNotShip : list.productShipped) | shippedStatus | translate
         }"></div>
         <div *ngTemplateOutlet="infoColumn; context: {
           title: 'universal_vocabulary_results' | translate,

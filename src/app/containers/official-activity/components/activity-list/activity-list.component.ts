@@ -924,10 +924,9 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1110216
    */
   updatePhoneNumber(e: Event, index: number) {
-    const { accountType } = this.userProfile;
     if (this.checkCanEdit(index)) {
-      const phone = +(e as any).target.value.trim();
-      if (!formTest.phone.test(`${phone}`)) {
+      const mobileNumber = +(e as any).target.value.trim();
+      if (!formTest.phone.test(`${mobileNumber}`)) {
         this.translate.get('hellow world').pipe(
           takeUntil(this.ngUnsubscribe)
         ).subscribe(res => {
@@ -936,7 +935,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
         });
         
       } else {
-        const userProfile = { phone };
+        const userProfile = { mobileNumber };
         this.updateEventUserProfile(index, { userProfile });
       }
 
@@ -1038,7 +1037,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     const { progress } = this.uiFlag;
     if (progress === 100) {
       this.uiFlag.progress = 30;
-      const { eventId } = this.effectEventList[index];
+      const { eventId, eventName } = this.effectEventList[index];
       const body = {
         token: this.token,
         targetEventId: eventId,
@@ -1057,6 +1056,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
           const { applyStatus } = newUserProfle;
           if (applyStatus) {
             this.effectEventList[index].applyStatus = applyStatus;
+            this.notifyAdmin(applyStatus, eventId, eventName);
           } else {
             const { userProfile: oldUserProfile } = this.effectEventList[index];
             this.effectEventList[index].userProfile = {
@@ -1079,6 +1079,25 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 告知管理員參賽者申請或取消申請退賽
+   * @param applyStatus {ApplyStatus}-報名狀態
+   * @param eventId {ApplyStatus}-活動編號
+   * @param eventName {ApplyStatus}-活動名稱
+   * @author kidin-1110302
+   */
+  notifyAdmin(applyStatus: ApplyStatus, eventId: number, eventName: string) {
+    const body = {
+      token: this.token,
+      applyStatus,
+      eventId,
+      eventName,
+      reason: ''
+    };
+
+    this.officialActivityService.notifyLeavingEvent(body).subscribe();
+  }
+
+  /**
    * 確認帳號是否驗證、報名狀態、繳費狀態、賽事狀態
    * @param index {number}-活動編號
    * @author kidin-1110217
@@ -1091,7 +1110,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     if (applyStatus === ApplyStatus.cancel) return AllStatus.personCancelled;
 
     const accountEnable = userProfile && userProfile.accountStatus === AccountStatusEnum.enabled;
-    if (!accountEnable) return AllStatus.notEnable;
+    if (fee > 0 && !accountEnable) return AllStatus.notEnable;
     if (applyStatus === ApplyStatus.applyingQuit) return AllStatus.personCanceling;
 
     return fee === 0 || paidStatus === PaidStatusEnum.paid ? AllStatus.paid : AllStatus.unPaid;

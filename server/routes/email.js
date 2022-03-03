@@ -1,7 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
+const getTargetInfo = require('../models/user_id').getTargetInfo;
 
+const EVENT_MAIL_ADDRESS = 'event_service@alatech.com.tw';
+const eventTransporter = nodemailer.createTransport({
+  host: 'exchange.alatechtw.com',
+  secureConnecton: true,
+  port: 25,
+  auth: {
+    user: 'event_service',
+    pass: 'Alatech8@@5'
+  }
+
+});
+
+/**
+ * 官方活動頁面-聯絡我們
+ * 將使用者輸入內容透過email寄送
+ */
 router.post('/official-contactus', function (req, res, next) {
   const {
     errorMsg,
@@ -17,26 +34,15 @@ router.post('/official-contactus', function (req, res, next) {
     });
 
   }
-  
-  const transporter = nodemailer.createTransport({
-    host: 'exchange.alatechtw.com',
-    secureConnecton: true,
-    port: 25,
-    auth: {
-      user: 'event_service',
-      pass: 'Alatech8@@5'
-    }
 
-  });
-
-  const mailOptions = {
-    from: 'event_service@alatech.com.tw',
-    to: 'event_service@alatech.com.tw',
+  const eventMailOptions = {
+    from: EVENT_MAIL_ADDRESS,
+    to: EVENT_MAIL_ADDRESS,
     subject,
     text
   };
 
-  transporter.sendMail(mailOptions, function(error, info){
+  eventTransporter.sendMail(eventMailOptions, function(error, info){
     if (error) {
       return res.json({
         resultCode: 400,
@@ -55,6 +61,56 @@ router.post('/official-contactus', function (req, res, next) {
     }
 
   });
+
+});
+
+/**
+ * 透過email寄送申請或取消申請退賽通知信件給管理者
+ */
+router.post('/leave-event', function (req, res, next) {
+  const { body } = req;
+  const { token } = body;
+  if (!token) {
+    return res.json({
+      resultCode: 400,
+      resultMessage: "Need token.",
+      apiCode: 'N7002'
+    });
+
+  } else {
+    const sql = `select user_id as userId, login_acc as nickname from ?? where access_token = ?`;
+    const algebra = ['user_profile', token];
+    const result = getTargetInfo(sql, algebra)
+    .then(response => {
+      const { nickname, userId } = response[0];
+      const info = {...body, nickname, userId};
+      const { subject, text } = getLeaveMailContent(req, info);
+      sendLeaveMail(subject, text)
+        .then(emailResult => {
+          return res.json({
+            apiCode: 'N7002',
+            resultCode: 200,
+            resultMessage: 'Update success.'
+          });
+        }).catch(emailError => {
+          return res.json({
+            resultCode: 400,
+            resultMessage: emailError,
+            apiCode: 'N7002'
+          });
+        });
+      
+    })
+    .catch(error => {
+      return res.json({
+        apiCode: 'N7002',
+        resultCode: 400,
+        resultMessage: error
+      });
+
+    });
+
+  }
 
 });
 
@@ -97,9 +153,7 @@ function checkContent(req) {
 
   }
 
-  const host = req.get('host');
-  const notProduction = !host.includes('www.gptfit.com');
-  const prefix = notProduction ? '(測試)' : '';
+  const prefix = getSubjectPrefix(req);
   if (!result.errorMsg) {
     result.subject = `${prefix}[官方活動]${getContentType(contentType)}-${name}`;
     result.text = `
@@ -134,6 +188,54 @@ function getContentType(type) {
 
 }
 
+/**
+ * 確認環境，區分是否為測試信件
+ * @param {*} req -api 請求
+ */
+function getSubjectPrefix(req) {
+  const host = req.get('host');
+  const notProduction = !host.includes('www.gptfit.com');
+  return notProduction ? '(測試)' : '';
+}
+
+/**
+ * 取得信件標題與內容
+ * @param {*} req -api 請求
+ * @param {*} info -使用者資訊
+ */
+function getLeaveMailContent(req, info) {
+  const { applyStatus, eventId, eventName, userId, nickname, reason } = info;
+  const prefix = getSubjectPrefix(req);
+  const result = { 
+    // applyStatus詳見api 6015 userProfile.applyStatus
+    subject: `${prefix}${applyStatus === 3 ? '【退賽申請】通知' : '【取消退賽】通知'}`,
+    text: `
+      活動編號：${eventId}
+      活動名稱：${eventName}
+      使用者編號：${userId}
+      暱稱：${nickname}\n
+      原因：\n${reason}\n
+    `
+   };
+
+   return result;
+}
+
+/**
+ * 寄送email
+ * @param {string} subject -信件標題
+ * @param {string} text -信件內容
+ */
+function sendLeaveMail(subject, text) {
+  const mailOptions = {
+    from: EVENT_MAIL_ADDRESS,
+    to: EVENT_MAIL_ADDRESS,
+    subject,
+    text
+  };
+
+  return eventTransporter.sendMail(mailOptions);
+}
 
 // Exports
 module.exports = router;

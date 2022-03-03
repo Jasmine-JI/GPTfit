@@ -50,25 +50,7 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.checkAccessRight();
     this.getCarousel();
-  }
-
-  /**
-   * 確認權限是否可操作此頁面
-   * @author kidin-1101210
-   */
-  checkAccessRight() {
-    this.userProfileService.getRxUserProfile().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      const isAdmin = res && res.systemAccessRight[0] === 28;
-      if (!isAdmin) {
-        this.navigateHomePage();
-      }
-
-    });
-
   }
 
   /**
