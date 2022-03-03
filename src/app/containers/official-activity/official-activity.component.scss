@@ -38,49 +38,6 @@ $declaration-color: rgba(100, 100, 100, 1);
   font-weight: bold;
 }
 
-@mixin drop-menu($top, $width, $height: 200px) {
-  list-style: none;
-  position: absolute;
-  background-color: white;
-  top: $top;
-  left: 0;
-  z-index: 1;
-  box-shadow: 2px 2px 4px rgba(200, 200, 200, 1), -2px 2px 4px rgba(200, 200, 200, 1);
-  padding: 0;
-  width: 180px;
-  max-height: 200px;
-  @include overflow-y-scroll();
-
-  >li {
-    padding: 5px;
-    font-size: 14px;
-
-    &:hover {
-      background-color: $primary-blue;
-      color: white;
-    }
-
-  }
-
-}
-
-@mixin selector-list($width) {
-  display: inline-block;
-  width: $width;
-}
-
-@mixin drop-hint($border-top, $border-aside, $border-color) {
-
-  &:after {
-    content: '';
-    border-style: solid;
-    border-width: $border-top $border-aside 0px $border-aside;
-    border-color: $border-color transparent transparent transparent;
-    @include transition(transform);
-  }
-
-}
-
 .page__container {
   justify-content: center;
   overflow: hidden;
@@ -113,6 +70,12 @@ $declaration-color: rgba(100, 100, 100, 1);
     
   }
 
+}
+
+.sub__logo {
+  position: relative;
+  top: -2px;
+  right: 4px;
 }
 
 .child__page__entry {
@@ -374,6 +337,9 @@ $declaration-color: rgba(100, 100, 100, 1);
 }
 
 .icon__button {
+  $width: 42px;
+  width: $width;
+  min-width: $width;
   font-size: 30px;
 }
 
@@ -399,28 +365,6 @@ $declaration-color: rgba(100, 100, 100, 1);
 .button__sms--disable {
   pointer-events: none;
   background-color: rgba(250, 150, 150, 1);
-}
-
-.country__code__selector {
-  position: relative;
-  min-width: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  @include drop-hint(6px, 4px, black);
-}
-
-.country__code___list {
-  @include drop-menu(27px, 180px);
-}
-
-.country__number {
-  @include selector-list(45px);
-}
-
-.country__name {
-  @include selector-list(100px);
 }
 
 .captcha__area {
@@ -530,6 +474,14 @@ $declaration-color: rgba(100, 100, 100, 1);
 
 .web__title__color {
   color: $official-theme-color-light;
+}
+
+.footer__logo {
+  @include filter(brightness(0.6) sepia(1) hue-rotate(310deg) saturate(7));
+}
+
+.footer__sub__logo {
+  @include filter(saturate(2));
 }
 
 /************************************************* media ****************************************/

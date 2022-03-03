@@ -41,7 +41,6 @@
                 }
               "
               maxlength="20"
-              (click)="handleInputFocus($event, 'password')"
               (focusout)="checkPassword($event)"
               (keypress)="checkPassword($event)"
             >
@@ -66,7 +65,7 @@
             <div class="flexRow account__area appview-inputBorder">
               <div
                 [class.appview-countryCodeSelector]="editBody.newAccountType === SignTypeEnum.phone"
-                [class.selector--active]="displayCountryCodeList"
+                [class.official-selector--active]="displayCountryCodeList"
                 (click)="showCountryCodeList($event)"
                 *ngIf="editBody.newAccountType === SignTypeEnum.phone"
               >
@@ -100,7 +99,6 @@
                     info: ('universal_userAccount_emailPerPhone' | translate)
                   }
                 "
-                (click)="handleInputFocus($event, 'account')"
                 (keydown)="determineAccountType($event)"
                 (change)="saveAccount($event)"
               >

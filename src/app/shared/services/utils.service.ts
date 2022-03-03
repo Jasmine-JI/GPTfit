@@ -11,7 +11,7 @@ import moment from 'moment';
 import { Unit, mi, ft, inch } from '../models/bs-constant';
 import { SportType, SportCode } from '../models/report-condition';
 import { GroupLevel } from '../../containers/dashboard/models/group-detail';
-import { HrBase } from '../../containers/dashboard/models/userProfileInfo';
+import { HrBase } from '../models/user-profile-info';
 import { version } from '../../shared/version';
 import { v5 as uuidv5 } from 'uuid';
 import { SelectDate } from '../models/utils-type';
@@ -72,7 +72,7 @@ export class UtilsService {
   }
 
   getToken(token: string = TOKEN) {
-    return localStorage.getItem(token);
+    return localStorage.getItem(token) || '';
   }
 
   removeToken(token: string = TOKEN) {

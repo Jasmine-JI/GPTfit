@@ -642,12 +642,13 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100308
    */
   createReport() {
-    const { gpxPath, distance, incline, mapImg, info } = this.allMapList.list[this.currentMapId - 1];
+    const { mapId } = this.reportConditionOpt.cloudRun;
+    const { gpxPath, distance, incline, mapImg, info } = this.allMapList.list[mapId - 1];
     if (gpxPath) {
       this.progress = 30;
       this.initVar();
       const { startDate, endDate } = this.selectDate;
-      this.currentMapId = this.reportConditionOpt.cloudRun.mapId;
+      this.currentMapId = mapId;
       const body = {
         token: this.utils.getToken(),
         privacyCheck: 2,

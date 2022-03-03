@@ -10,13 +10,13 @@ export class PaidStatusPipe implements PipeTransform {
   transform(value: PaidStatusEnum): any {
     switch (value) {
       case PaidStatusEnum.unPaid:
-        return '未繳費';
+        return 'universal_vocabulary_notPaid';
       case PaidStatusEnum.paid:
-        return '已繳費';
+        return 'universal_vocabulary_paid';
       case PaidStatusEnum.approve:
         return '已審核';
       case PaidStatusEnum.refund:
-        return '已退費';
+        return 'universal_vocabulary_refunded';
     }
 
   }

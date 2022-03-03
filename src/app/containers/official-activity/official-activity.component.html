@@ -11,11 +11,16 @@
         class="flexRow page__link"
         (click)="navigate($event, '/official-activity/activity-list')"
       >
-        <span
-          class="webTitle"
-          style="white-space: nowrap;"
-          *ngIf="!uiFlag.isMobile"
-        >GPTfit</span>
+        <img 
+          src="/assets/icons/logo.svg"
+          alt="GPTfit"
+          class="webLogo"
+        >
+        <img 
+          src="/assets/icons/event.svg"
+          alt="Event"
+          class="webSubLogo sub__logo"
+        >
       </a>
       <button (click)="showEntryMenu($event)">
         <i
@@ -29,6 +34,7 @@
         <a
           href="/official-activity/activity-list"
           class="page__link child__page__link"
+          name="activity-list"
           (click)="navigate($event, '/official-activity/activity-list')"
         >
           {{ 'universal_vocabulary_activity' | translate }}
@@ -36,6 +42,7 @@
         <a
           href="/official-activity/leaderboard"
           class="page__link child__page__link"
+          name="leaderboard"
           (click)="navigate($event, '/official-activity/leaderboard')"
         >
           {{ 'universal_race_leaderboard' | translate }}
@@ -43,6 +50,7 @@
         <a
           href="/official-activity/my-activity"
           class="page__link child__page__link"
+          name="my-activity"
           (click)="navigate($event, '/official-activity/my-activity')"
           *ngIf="token"
         >
@@ -51,9 +59,10 @@
         <a
           href="/official-activity/my-activity"
           class="page__link child__page__link"
+          name="about-cloudrun"
           (click)="navigate($event, '/official-activity/about-cloudrun')"
         >
-          {{ '關於雲跑' | translate }}
+          {{ 'universal_vocabulary_aboutCloudrun' | translate }}
         </a>
       </div>
       <div id="link__active__bar" *ngIf="!uiFlag.isMobile">
@@ -107,7 +116,7 @@
             class="page__link"
             (click)="$event.preventDefault();"
           >
-            {{ '首頁' | translate }}
+            {{ 'univerisalsystem_homePage' | translate }}
           </a>
         </li>
       </ul>
@@ -150,7 +159,7 @@
         class="page__link child__page__link"
         (click)="navigate($event, '/official-activity/about-cloudrun')"
       >
-        {{ 'universal_deviceSetting_adout' | translate }}  {{ 'universal_app_cloudRun' | translate }}
+        {{ 'universal_vocabulary_aboutCloudrun' | translate }}
       </a>
     </li>
   </ul>
@@ -239,7 +248,18 @@
       *ngIf="!['edit-activity', 'apply-activity'].includes(uiFlag.currentPage)"
     >
       <div class="flexRow footer__link__area">
-        <span class="webTitle web__title__color">GPTfit</span>
+        <span>
+          <img 
+            src="/assets/icons/logo.svg"
+            alt="GPTfit"
+            class="webLogo footer__logo"
+          >
+          <img 
+            src="/assets/icons/event.svg"
+            alt="Event"
+            class="webSubLogo sub__logo footer__sub__logo"
+          >
+        </span>
         <div class="flexRow footer__link">
           <a [href]="privacyPolicyUrl" target="_blank">
             {{ 'universal_userAccount_privacyStatement' | translate }}
@@ -317,16 +337,15 @@
             <ng-container *ngIf="authInfo.signInType === SignTypeEnum.phone">
               <mat-icon>smartphone</mat-icon>
               <div
-                id="country__code"
-                class="country__code__selector"
-                [class.selector--active]="uiFlag.showCountryCodeList"
+                class="official-countryCodeSelector"
+                [class.official-selector--active]="uiFlag.showCountryCodeList"
                 (click)="showCountryCodeList($event)"
               >
                 <span>
                   +{{ authInfo?.countryCode }}
                 </span>
                 <ul
-                  class="country__code___list"
+                  class="official-countryCodeList"
                   *ngIf="uiFlag.showCountryCodeList"
                 >
                   <li
@@ -334,10 +353,10 @@
                     (click)="selectCountryCode($event, _list.code)"
                     *ngFor="let _list of countryCodeList;"
                   >
-                    <span class="country__number">
+                    <span class="official-countryNumber">
                       {{ _list.code }}
                     </span>
-                    <span class="country__name">
+                    <span class="official-countryName">
                       {{ _list.name }}
                     </span>
                   </li>

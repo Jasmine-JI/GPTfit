@@ -9,7 +9,7 @@ import { ReportConditionOpt } from '../../models/report-condition';
 import { mi, Unit } from '../../models/bs-constant';
 import { UserProfileService } from '../../services/user-profile.service';
 import { stepColor } from '../../models/chart-data';
-import { Sex } from '../../../containers/dashboard/models/userProfileInfo';
+import { Sex } from '../../models/user-profile-info';
 import { chart } from 'highcharts';
 import highcharts from 'highcharts';
 

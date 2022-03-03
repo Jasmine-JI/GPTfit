@@ -16,7 +16,7 @@ import { HashIdService } from '../../shared/services/hash-id.service';
 import { DetectInappService } from '../../shared/services/detect-inapp.service';
 import { Subject, forkJoin } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { UserProfileInfo } from './models/userProfileInfo';
+import { UserProfileInfo } from '../../shared/models/user-profile-info';
 import { DashboardService } from './services/dashboard.service';
 import { langData } from '../../shared/models/i18n';
 import { SignTypeEnum } from '../../shared/models/utils-type';

@@ -38,7 +38,7 @@
                   {{ 'universal_vocabulary_categroy' | translate }} - {{ listFilter.groupName }}
                 </ng-container>
                 <ng-container *ngIf="listFilter.type === 'paidStatus'">
-                  {{ 'universal_vocabulary_pay' | translate }} - {{ listFilter.value | paidStatus }}
+                  {{ 'universal_vocabulary_pay' | translate }} - {{ listFilter.value | paidStatus | translate }}
                 </ng-container>
                 <ng-container *ngIf="['orderStatus', 'awardStatus'].includes(listFilter.type)">
                   <ng-container *ngIf="listFilter.type === 'orderStatus'">
@@ -47,7 +47,7 @@
                   <ng-container *ngIf="listFilter.type === 'awardStatus'">
                     {{ '獎品' | translate }} -
                   </ng-container>
-                  {{ listFilter.value | shippedStatus }}
+                  {{ listFilter.value | shippedStatus | translate }}
                 </ng-container>
               </span>
               <i
@@ -97,7 +97,7 @@
                   class="status__cancel"
                   (click)="filterPaidStatus(PaidStatusEnum.refund)"
                 >
-                  {{ 'universal_vocabulary_withdrawed' | translate }}
+                  {{ 'universal_vocabulary_refunded' | translate }}
                 </button>
               </div>
               <div class="flexCol">
@@ -321,16 +321,49 @@
       class="function__btn"
       [class.delete__mode]="uiFlag.deleteMode"
       [title]="'universal_operating_delete' | translate"
-      (click)="handleDeleteMode()"
+      (click)="handleListEditMode()"
     >
       <i class="icon-svg_web-icon_p1_008-edit"></i>
     </button>
   </div>
-  <div *ngTemplateOutlet="contestantList; context: {
-    displayList: reArrangeList,
-    listType: 'normal'
-  }"></div>
-  <ng-container *ngIf="leaveList.length > 0">
+
+  <div class="flexRow tab__section">
+    <button 
+      class="tab__button"
+      [class.tab__button--active]="uiFlag.listType === 'normal'"
+      (click)="switchList('normal')"
+    >參賽者</button>
+    <button
+      class="tab__button"
+      [class.tab__button--active]="uiFlag.listType === 'leaving'"
+      (click)="switchList('leaving')"
+    >
+      退賽申請
+      <i
+        class="icon-svg_web-icon_p1_069-about alert__icon"
+        *ngIf="leavingList.length > 0"
+      ></i>
+    </button>
+    <button 
+      class="tab__button"
+      [class.tab__button--active]="uiFlag.listType === 'leave'"
+      (click)="switchList('leave')"
+    >已退賽</button>
+  </div>
+
+  <ng-container *ngIf="uiFlag.listType === 'normal'">
+    <div *ngTemplateOutlet="contestantList; context: {
+      displayList: reArrangeList,
+      listType: 'normal'
+    }"></div>
+  </ng-container>
+  <ng-container *ngIf="uiFlag.listType === 'leaving'">
+    <div *ngTemplateOutlet="contestantList; context: {
+      displayList: leavingList,
+      listType: 'leaving'
+    }"></div>
+  </ng-container>
+  <ng-container *ngIf="uiFlag.listType === 'leave'">
     <div *ngTemplateOutlet="contestantList; context: {
       displayList: leaveList,
       listType: 'leave'
@@ -347,12 +380,19 @@
     <div
       style="padding: 2vh 2vw;"
       class="flexCol"
-      [class.leave__list]="listType === 'leave'"
+      [class.leave__list]="listType !== 'normal'"
     >
       <h5
         id="leave__title"
-        *ngIf="listType === 'leave'"
-      >{{ '回收區' }}</h5>
+        *ngIf="listType !== 'normal'"
+      >
+        <ng-container *ngIf="listType === 'leaving'">
+          {{ '退賽申請中' }}
+        </ng-container>
+        <ng-container *ngIf="listType === 'leave'">
+          {{ '確認退賽' }}
+        </ng-container>
+      </h5>
       <div class="flexRow list__title">
         <h6 class="rank">#</h6>
         <h6 class="nickname">{{ 'universal_userAccount_nickname' | translate }}</h6>
@@ -405,7 +445,7 @@
               </span>
               <span
                 class="paid__status"
-                [class.status__selector]="listType === 'normal'"
+                [class.status__selector]="listType !== 'leave'"
                 *ngIf="uiFlag.screenSize > 600"
               >
                 <button
@@ -416,7 +456,7 @@
                   }"
                   (click)="showSelector($event, listType, 'showPaidStatusSelector', index)"
                 >
-                  {{ _list.paidStatus | paidStatus }}
+                  {{ _list.paidStatus | paidStatus | translate }}
                 </button>
                 <div *ngTemplateOutlet="paidStatusSelector; context: {
                   index,
@@ -434,7 +474,7 @@
               <span
                 class="order__status"
                 [class.status__selector]="
-                  listType === 'normal' && _list.productShipped !== ProductShipped.needNotShip
+                  listType !== 'leave' && _list.productShipped !== ProductShipped.needNotShip
                 "
                 *ngIf="uiFlag.screenSize > 800"
               >
@@ -451,7 +491,7 @@
                   "
                   (click)="showSelector($event, listType, 'showOrderStatusSelector', index)"
                 >
-                  {{ _list.productShipped | shippedStatus }}
+                  {{ _list.productShipped | shippedStatus | translate }}
                 </button>
                 <div *ngTemplateOutlet="shippedStatusSelector; context: {
                   index,
@@ -472,7 +512,7 @@
                   }"
                   (click)="showSelector($event, listType, 'showAwardStatusSelector', index)"
                 >
-                  {{ _list.awardShipped | shippedStatus }}
+                  {{ _list.awardShipped | shippedStatus | translate }}
                 </button>
                 <div *ngTemplateOutlet="shippedStatusSelector; context: {
                   index,
@@ -483,18 +523,22 @@
             </div>
             <div
               style="width: 100%;"
-              class="flexRow"
+              class="flexRow list__detail"
               *ngIf="uiFlag.expandDetail === (listType + index)"
             >
               <div 
-                class="flexCol"
-                *ngIf="listType === 'normal'"
+                class="flexCol list__edit__button"
+                *ngIf="listType !== 'leave'"
               >
                 <button
                   class="edit__button"
                   title="更新狀態"
                   (click)="refreshUserInfo($event, index)"
-                  *ngIf="!uiFlag.editDetail && _list.paidStatus === PaidStatusEnum.unPaid"
+                  *ngIf="
+                    !uiFlag.editDetail
+                    && _list.paidStatus === PaidStatusEnum.unPaid
+                    && listType === 'normal'
+                  "
                 >
                   <mat-icon>autorenew</mat-icon>
                 </button>
@@ -556,7 +600,7 @@
                     <h6 class="card__title">{{ 'universal_vocabulary_payStatus' | translate }}</h6>
                     <span
                       class="paid__status"
-                      [class.status__selector]="listType === 'normal'"
+                      [class.status__selector]="listType !== 'leave'"
                     >
                       <button
                         [ngClass]="{
@@ -566,7 +610,7 @@
                         }"
                         (click)="showSelector($event, listType, 'showPaidStatusSelector', index)"
                       >
-                        {{ _list.paidStatus | paidStatus }}
+                        {{ _list.paidStatus | paidStatus | translate }}
                       </button>
                       <div *ngTemplateOutlet="paidStatusSelector; context: {
                          index,
@@ -592,7 +636,7 @@
                     <h6 class="card__title">{{ '訂單狀態' }}</h6>
                     <span
                       class="order__status"
-                      [class.status__selector]="listType === 'normal'"
+                      [class.status__selector]="listType !== 'leave'"
                     >
                       <button
                         [ngClass]="{
@@ -604,7 +648,7 @@
                         }"
                         (click)="showSelector($event, listType, 'showOrderStatusSelector', index)"
                       >
-                        {{ _list.productShipped | shippedStatus }}
+                        {{ _list.productShipped | shippedStatus | translate }}
                       </button>
                       <div *ngTemplateOutlet="shippedStatusSelector; context: {
                         index,
@@ -630,7 +674,7 @@
                         }"
                         (click)="showSelector($event, listType, 'showAwardStatusSelector', index)"
                       >
-                        {{ _list.awardShipped | shippedStatus }}
+                        {{ _list.awardShipped | shippedStatus | translate }}
                       </button>
                       <div *ngTemplateOutlet="shippedStatusSelector; context: {
                         index,
@@ -649,8 +693,8 @@
                   <div *ngTemplateOutlet="infoCard; context: {
                     title: '姓名',
                     value: _list.truthName,
-                    canEdit: true,
-                    index: index,
+                    canEdit: listType === 'normal',
+                    index,
                     type: 'truthName'
                   }"
                   ></div>
@@ -710,8 +754,8 @@
                     title: '收件地址',
                     value: _list.address,
                     break: true,
-                    canEdit: true,
-                    index: index,
+                    canEdit: listType === 'normal',
+                    index,
                     type: 'address'
                   }"
                   ></div>
@@ -739,12 +783,22 @@
                   ></div>
                   <br>
                   <div *ngTemplateOutlet="infoCard; context: {
-                    title: '備註',
-                    value: _list.remark ? _list.remark : '*********',
+                    title: 'universal_vocabulary_memo' | translate,
+                    value: _list.remark ? _list.remark : '',
+                    break: true,
+                    canEdit: listType === 'normal',
+                    index,
+                    type: 'remark'
+                  }"
+                  ></div>
+                  <br>
+                  <div *ngTemplateOutlet="infoCard; context: {
+                    title: '管理員備註',
+                    value: _list.adminRemark ? _list.adminRemark : '',
                     break: true,
                     canEdit: true,
-                    index: index,
-                    type: 'remark'
+                    index,
+                    type: 'adminRemark'
                   }"
                   ></div>
                 </div>
@@ -752,24 +806,24 @@
                   <div *ngTemplateOutlet="infoCard; context: {
                     title: '緊急聯絡人',
                     value: _list.emergencyContact.name,
-                    canEdit: true,
-                    index: index,
+                    canEdit: listType === 'normal',
+                    index,
                     type: 'name'
                   }"
                   ></div>
                   <div *ngTemplateOutlet="infoCard; context: {
                     title: '關係',
                     value: _list.emergencyContact.relationship,
-                    canEdit: true,
-                    index: index,
+                    canEdit: listType === 'normal',
+                    index,
                     type: 'relationship'
                   }"
                   ></div>
                   <div *ngTemplateOutlet="infoCard; context: {
                     title: '聯絡電話',
                     value: _list.emergencyContact.mobileNumber,
-                    canEdit: true,
-                    index: index,
+                    canEdit: listType === 'normal',
+                    index,
                     type: 'mobileNumber'
                   }"
                   ></div>
@@ -777,20 +831,22 @@
               </div>
             </div>
           </div>
-          <button
-            title="移除參賽者"
-            (click)="removeContestant($event, index)"
-            *ngIf="uiFlag.deleteMode && listType === 'normal'"
-          >
-            <i class="icon-svg_web-icon_p1_012-close delete__icon"></i>
-          </button>
-          <button
-            title="加回參賽者"
-            (click)="addContestant(index)"
-            *ngIf="listType === 'leave'"
-          >
-            <i class="icon-svg_web-icon_p1_029-add add__icon"></i>
-          </button>
+          <ng-container *ngIf="uiFlag.listEditMode">
+            <button
+              title="移除參賽者"
+              (click)="listType === 'normal' ? removeNormalContestant($event, index) : removeLeavingContestant($event, index)"
+              *ngIf="listType !== 'leave'"
+            >
+              <i class="icon-svg_web-icon_p1_012-close delete__icon"></i>
+            </button>
+            <button
+              title="加回參賽者"
+              (click)="listType === 'leave' ? cancelLeaveContestant($event, index) : cancelLeavingContestant($event, index)"
+              *ngIf="listType !== 'normal'"
+            >
+              <i class="icon-svg_web-icon_p1_029-add add__icon"></i>
+            </button>
+          </ng-container>
         </li>
       </ul>
     </div>
@@ -870,12 +926,12 @@
 >
   <ul
     class="drop__menu"
-    *ngIf="listType === 'normal' && uiFlag.showPaidStatusSelector === index"
+    *ngIf="listType !== 'leave' && uiFlag.showPaidStatusSelector === index"
   >
     <li *ngIf="!thirdPartyPaidId">
       <button
         class="status__yet"
-        (click)="changePaidStatus($event, PaidStatusEnum.unPaid, index)"
+        (click)="changePaidStatus($event, listType, PaidStatusEnum.unPaid, index)"
         *ngIf="paidDate === null"
       >
         {{ '未繳費' }}
@@ -884,7 +940,7 @@
     <li>
       <button
         class="status__already"
-        (click)="changePaidStatus($event, PaidStatusEnum.paid, index)"
+        (click)="changePaidStatus($event, listType, PaidStatusEnum.paid, index)"
       >
         {{ '已繳費' }}
       </button>
@@ -892,7 +948,7 @@
     <li>
       <button
         class="status__cancel"
-        (click)="changePaidStatus($event, PaidStatusEnum.refund, index)"
+        (click)="changePaidStatus($event, listType, PaidStatusEnum.refund, index)"
       >
         {{ '已退費' }}
       </button>
@@ -909,7 +965,7 @@
   <ul
     class="drop__menu"
     *ngIf="
-      listType === 'normal'
+      listType !== 'leave'
       && (
            (type === 'productShipped' && uiFlag.showOrderStatusSelector === index)
         || (type === 'awardShipped' && uiFlag.showAwardStatusSelector === index)
@@ -919,7 +975,7 @@
     <li>
       <button
         class="status__yet"
-        (click)="changeShippedStatus($event, ProductShipped.unShip, index, type)"
+        (click)="changeShippedStatus($event, listType, ProductShipped.unShip, index, type)"
       >
         {{ '未出貨' }}
       </button>
@@ -927,7 +983,7 @@
     <li>
       <button
         class="status__already"
-        (click)="changeShippedStatus($event, ProductShipped.shipped, index, type)"
+        (click)="changeShippedStatus($event, listType, ProductShipped.shipped, index, type)"
       >
         {{ '已出貨' }}
       </button>
@@ -935,7 +991,7 @@
     <li>
       <button
         class="status__cancel"
-        (click)="changeShippedStatus($event, ProductShipped.returnGoods, index, type)"
+        (click)="changeShippedStatus($event, listType, ProductShipped.returnGoods, index, type)"
         *ngIf="type === 'productShipped'"
       >
         {{ '已退貨' }}

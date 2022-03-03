@@ -72,7 +72,7 @@ export class SystemFolderPermissionComponent implements OnInit {
     folder: <Array<string>>[]
   };
 
-  token = this.utils.getToken() || '';
+  token = this.utils.getToken();
   userList: Array<string>;
   folderList: Array<string>;
   tempAddFolderName: string = '';

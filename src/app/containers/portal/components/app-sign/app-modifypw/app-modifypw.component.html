@@ -44,7 +44,6 @@
               [type]="displayPW.oldPassword ? 'text' : 'password'"
               [placeholder]="'universal_userAccount_enterOldPassword' | translate"
               maxlength="20"
-              (click)="handleInputFocus($event, 'oldPassword')"
               (focusout)="checkPassword($event, 'oldPassword')"
               (keypress)="checkPassword($event, 'oldPassword')"
             >
@@ -74,7 +73,6 @@
                 }
               "
               maxlength="20"
-              (click)="handleInputFocus($event, 'newPassword')"
               (focusout)="checkPassword($event, 'newPassword')"
               (keypress)="checkPassword($event, 'newPassword')"
             >

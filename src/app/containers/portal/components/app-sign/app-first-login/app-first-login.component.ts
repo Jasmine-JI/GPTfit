@@ -82,7 +82,7 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
     }
 
     this.getDefaultBirthday();
-    this.editBody.token = this.utils.getToken() || '';
+    this.editBody.token = this.utils.getToken();
     this.getUserInfo();
 
     // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)

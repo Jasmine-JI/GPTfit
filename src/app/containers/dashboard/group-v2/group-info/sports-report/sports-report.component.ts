@@ -37,7 +37,7 @@ import {
 import { GroupLevel, SettingObj } from '../../../../dashboard/models/group-detail';
 import { MuscleCode, MuscleGroup } from '../../../../../shared/models/weight-train';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { HrBase } from '../../../models/userProfileInfo';
+import { HrBase } from '../../../../../shared/models/user-profile-info';
 
 
 @Component({

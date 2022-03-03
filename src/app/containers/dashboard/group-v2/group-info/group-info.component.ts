@@ -620,7 +620,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1090716
    */
   getToken() {
-    this.user.token = this.utils.getToken() || '';
+    this.user.token = this.utils.getToken();
     if (location.pathname.indexOf('dashboard') < 0 && this.user.token !== '') {
       this.router.navigateByUrl(`/dashboard${location.pathname}${location.search}`);
     } else if (location.pathname.indexOf('dashboard') < 0) {

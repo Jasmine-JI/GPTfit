@@ -4,7 +4,7 @@ import { UtilsService } from '../../shared/services/utils.service';
 import { UserProfileService } from '../../shared/services/user-profile.service';
 import { Subject, Subscription, fromEvent, merge, combineLatest, of } from 'rxjs';
 import { takeUntil, switchMap, tap, debounceTime } from 'rxjs/operators';
-import { UserProfileInfo } from '../dashboard/models/userProfileInfo';
+import { UserProfileInfo } from '../../shared/models/user-profile-info';
 import { OfficialActivityService } from './services/official-activity.service';
 import { AuthService } from '../../shared/services/auth.service';
 import { DetectInappService } from '../../shared/services/detect-inapp.service';
@@ -16,8 +16,8 @@ import { formTest } from '../../shared/models/form-test';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { KeyCode } from '../../shared/models/key-code';
 import { GetClientIpService } from '../../shared/services/get-client-ip.service';
-import { SignupService } from '../portal/services/signup.service';
-import { ResetPasswordFlow, UnlockFlow, QrSignInFlow } from '../portal/models/signup-response';
+import { SignupService } from '../../shared/services/signup.service';
+import { ResetPasswordFlow, UnlockFlow, QrSignInFlow } from '../../shared/models/signup-response';
 import { AlaApp } from '../../shared/models/app-id';
 
 
@@ -34,14 +34,6 @@ type Page =
   | 'about-cloudrun';
 
 type AuthAction = 'login' | 'register' | 'qrLogin' | 'forgetPassword' | 'resetPassword' | 'sendVerifySuccess';
-
-enum PageCode {
-  'activity-list',
-  'leaderboard',
-  'my-activity',
-  'about-cloudrun'
-}
-
 type AuthInput = 'accountInput' | 'passwordInput' | 'nicknameInput' | 'smsInput';
 type AlertType = 'empty' | 'format' | 'mistake' | 'repeat' | 'improper' | 'overdue' | 'notExist';
 
@@ -76,7 +68,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     progress: 100,
     showNicknameHint: false,
     showPassword: false,
-    sendingPhoneCaptcha: false,
     focusInput: false,
     clickSubmit: false,
     fixFooter: false
@@ -119,7 +110,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
 
   qrLoginUrl: string;
   userInfo: UserProfileInfo;
-  token = this.utils.getToken() || '';
+  token = this.utils.getToken();
   advertise = [];
   carousel: { img: string; advertiseId: number; link: string; };
   carouselProgress: any;
@@ -239,8 +230,8 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin-1101004
    */
   checkCurrentPage() {
-    const { pathname } = location,
-          [, mainPath, secondPath, ...rest] = pathname.split('/');
+    const { pathname } = location;
+    const [, mainPath, secondPath, ...rest] = pathname.split('/');
     if (secondPath) {
       const childPage = secondPath as Page;
       this.uiFlag.currentPage = childPage;
@@ -287,19 +278,16 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    */
   checkPageUnderlinePosition(page: Page) {
     setTimeout(() => {
-      const targetEntryIndex = PageCode[page],
-            linkActiveUnderline = document.getElementById('link__active') as any;
-      if (targetEntryIndex !== undefined) {
-          const pageEntryElement = document.querySelector('.child__page__entry'),
-                pageLinkElement = document.querySelectorAll('.child__page__link');
-          if (pageEntryElement && pageLinkElement) {
-            const targetEntryIndex = PageCode[page],
-                  targetEntry = pageLinkElement[targetEntryIndex],
-                  entryXPosition = pageEntryElement.getBoundingClientRect().x,
-                  { width, x } = targetEntry.getBoundingClientRect();
-            linkActiveUnderline.style.width = `${width}px`;
-            linkActiveUnderline.style.left = `${x - entryXPosition}px`;
-          }
+      const target = document.querySelector(`[name=${page}]`);
+      const linkActiveUnderline = document.getElementById('link__active') as any;
+      if (target) {
+        const pageEntryElement = document.querySelector('.child__page__entry');
+        if (pageEntryElement && target) {
+          const entryXPosition = pageEntryElement.getBoundingClientRect().x;
+          const { width, x } = target.getBoundingClientRect();
+          linkActiveUnderline.style.width = `${width}px`;
+          linkActiveUnderline.style.left = `${x - entryXPosition}px`;
+        }
 
       } else {
 
@@ -1736,7 +1724,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     this.intervals = setInterval(() => {
       this.timeCount--;
       if (this.timeCount === 0) {
-        this.uiFlag.sendingPhoneCaptcha = false;
         this.timeCount = 30;
         window.clearInterval(this.intervals);
       }

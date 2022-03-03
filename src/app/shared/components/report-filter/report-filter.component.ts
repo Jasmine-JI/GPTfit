@@ -7,7 +7,7 @@ import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CloudrunService } from '../../services/cloudrun.service';
 import { Lang } from '../../models/i18n';
-import { Sex } from '../../../containers/dashboard/models/userProfileInfo';
+import { Sex } from '../../models/user-profile-info';
 import { DashboardService } from '../../../containers/dashboard/services/dashboard.service';
 import { SelectDate } from '../../models/utils-type';
 

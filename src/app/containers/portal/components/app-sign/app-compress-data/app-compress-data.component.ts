@@ -2,7 +2,7 @@ import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } fr
 import { AppCode } from '../../../models/app-webview';
 import { Router } from '@angular/router';
 import { UtilsService } from '../../../../../shared/services/utils.service';
-import { SignupService } from '../../../services/signup.service';
+import { SignupService } from '../../../../../shared/services/signup.service';
 import moment from 'moment';
 import { AuthService } from '../../../../../shared/services/auth.service';
 import { Subject, Subscription, fromEvent } from 'rxjs';
@@ -150,7 +150,7 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
    */
   getUserToken() {
     if (this.appSys === 0) {
-      this.token = this.utils.getToken() || '';
+      this.token = this.utils.getToken();
     } else {
       const { search } = location;
       const { tk } = this.utils.getUrlQueryStrings(search);

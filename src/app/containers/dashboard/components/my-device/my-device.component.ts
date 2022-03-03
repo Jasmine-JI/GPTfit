@@ -44,7 +44,7 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
     onePageSize: 10
   };
 
-  token = this.utils.getToken() || '';
+  token = this.utils.getToken();
   deviceList: Array<any>;
   readonly onePageSizeOpt = [5, 10, 20];
   readonly imgStoragePath = 

@@ -140,6 +140,20 @@
               </span>
               <span>{{ 'universal_vocabulary_raceCancel' | translate }}</span>
             </li>
+            <li
+              class="flexRow status__menu__content"
+              (click)="chooseListStatus($event, ListStatus.notAudit)"
+              *ngIf="userProfile && userProfile.systemAccessRight[0] <= AccessRight.marketing"
+            >
+              <span class="drop__menu__check">
+                <ng-container 
+                  *ngIf="eventListCondition.filterListStatus === ListStatus.notAudit"
+                >
+                  <mat-icon class="check__icon">done</mat-icon>
+                </ng-container>
+              </span>
+              <span>{{ '未審核' | translate }}</span>
+            </li>
           </ul>
         </div>
       </div>
@@ -147,7 +161,7 @@
     <div
       class="flexRow"
       *ngIf="
-        userProfile?.systemAccessRight[0] === 28
+        passAdmin.includes(userProfile?.systemAccessRight[0])
         && !uiFlag.isMobile
         && uiFlag.currentPage === 'activity-list'
       "
@@ -177,7 +191,7 @@
       class="flexRow"
       style="position: relative; justify-content: flex-end;"
       *ngIf="
-        userProfile?.systemAccessRight[0] === 28
+        passAdmin.includes(userProfile?.systemAccessRight[0])
         && uiFlag.isMobile
         && uiFlag.currentPage === 'activity-list'
       "
@@ -261,11 +275,8 @@
         </div>
       </ng-container>
     </li>
-    <ng-container *ngFor="let _eventList of effectEventList;">
-      <li
-        class="activity__list"
-        *ngIf="serverTimestamp >= _eventList.applyDate.startDate || userProfile?.systemAccessRight[0] <= 28"
-      >
+    <ng-container *ngFor="let _eventList of effectEventList; let index = index;">
+      <li class="activity__list">
         <a
           [href]="'/official-activity/activity-detail/' + _eventList.eventId"
           target="_blank"
@@ -382,23 +393,17 @@
                         *ngIf="uiFlag.currentPage === 'my-activity' && screenSize > 1150"
                       >
                         <div *ngTemplateOutlet="applySchedule; context: {
+                          index,
                           eventId: _eventList.eventId,
-                          haveProduct: _eventList.haveProduct === HaveProduct.yes,
                           feeTitle: _eventList.feeTitle,
                           feeId: _eventList.feeId,
                           fee: _eventList.fee,
                           applyStatus: _eventList.applyStatus,
                           paidStatus: _eventList.paidStatus,
-                          productShipped: _eventList.productShipped,
                           endDate: _eventList.applyDate.endDate,
                           eventCancel: _eventList.eventStatus === EventStatus.cancel,
-                          applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit
-                        }"></div>
-                        <div *ngTemplateOutlet="historyRecord; context: {
-                          record: _eventList.record,
-                          rank: _eventList.rank,
-                          totalRacer: _eventList.totalRacerCounts,
-                          groupName: _eventList.groupName
+                          applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit,
+                          record: _eventList.record
                         }"></div>
                       </div>
                     </div>
@@ -409,24 +414,19 @@
                   *ngIf="uiFlag.currentPage === 'my-activity' && screenSize <= 1150 && screenSize > 767"
                 >
                   <div *ngTemplateOutlet="applySchedule; context: {
+                    index,
                     eventId: _eventList.eventId,
-                    haveProduct: _eventList.haveProduct === HaveProduct.yes,
                     feeTitle: _eventList.feeTitle,
                     feeId: _eventList.feeId,
                     fee: _eventList.fee,
                     applyStatus: _eventList.applyStatus,
                     paidStatus: _eventList.paidStatus,
-                    productShipped: _eventList.productShipped,
                     endDate: _eventList.applyDate.endDate,
                     eventCancel: _eventList.eventStatus === EventStatus.cancel,
-                    applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit
+                    applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit,
+                    record: _eventList.record
                   }"></div>
-                  <div *ngTemplateOutlet="historyRecord; context: {
-                    record: _eventList.record,
-                    rank: _eventList.rank,
-                    totalRacer: _eventList.totalRacerCounts,
-                    groupName: _eventList.groupName
-                  }"></div>
+                  
                 </div>
               </div>
             </ng-container>
@@ -525,56 +525,26 @@
                   *ngIf="uiFlag.currentPage === 'my-activity'"
                 >
                   <div *ngTemplateOutlet="applySchedule; context: {
+                    index,
                     eventId: _eventList.eventId,
-                    haveProduct: _eventList.haveProduct === HaveProduct.yes,
                     feeTitle: _eventList.feeTitle,
                     feeId: _eventList.feeId,
                     fee: _eventList.fee,
                     applyStatus: _eventList.applyStatus,
                     paidStatus: _eventList.paidStatus,
-                    productShipped: _eventList.productShipped,
                     endDate: _eventList.applyDate.endDate,
                     eventCancel: _eventList.eventStatus === EventStatus.cancel,
-                    applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit
-                  }"></div>
-                  <div *ngTemplateOutlet="historyRecord; context: {
-                    record: _eventList.record,
-                    rank: _eventList.rank,
-                    totalRacer: _eventList.totalRacerCounts,
-                    groupName: _eventList.groupName
+                    applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit,
+                    record: _eventList.record
                   }"></div>
                 </div>
               </div>
             </ng-container>
-            <div
-              class="product__detail"
-              *ngIf="uiFlag.currentPage === 'my-activity'"
-            >
-              <table>
-                <thead>
-                  <tr>
-                    <th class="product__title">
-                      {{ 'universal_vocabulary_item' | translate }}
-                    </th>
-                    <th class="product__fee">
-                      {{ 'universal_group_cost' | translate }}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="product__title">
-                      {{ _eventList.feeTitle }}
-                    </td>
-                    <td class="product__fee">
-                      {{ _eventList.fee }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
           </div>
         </a>
+        <ng-container *ngIf="uiFlag.showDetail === index">
+          <div *ngTemplateOutlet="applyInfo; context: { index, list: _eventList }"></div>
+        </ng-container>
       </li>
     </ng-container>
   </ul>
@@ -842,78 +812,113 @@
 
 <ng-template
   #applySchedule
+  let-index="index"
   let-eventId="eventId"
-  let-haveProduct="haveProduct"
   let-feeTitle="feeTitle"
   let-feeId="feeId"
   let-fee="fee"
   let-applyStatus="applyStatus"
   let-paidStatus="paidStatus"
-  let-productShipped="productShipped"
   let-endDate="endDate"
   let-eventCancel="eventCancel"
   let-applyFull="applyFull"
+  let-record="record"
 >
-  <div class="flexRow" style="align-items: center;">
-    <ng-container *ngIf="paidStatus === PaidStatusEnum.unPaid">
+  <div class="flexCol apply__info">
+    <div class="flexCol apply__steps">
+
+      <div class="flexRow apply__step__flag">
+        <div class="apply__step">
+          <img 
+            src="/assets/icons/progress_label.svg"
+            alt="Step 1"
+            class="step__apply"
+          >
+          <span class="step__label">{{ 'universal_vocabulary_signUp' | translate }}</span>
+        </div>
+        <div class="apply__step">
+          <img
+            src="/assets/icons/progress_label.svg"
+            alt="Step 2"
+            class="step__pay"
+          >
+          <span class="step__label">{{ 'universal_vocabulary_pay' | translate }}</span>
+        </div>
+        <div class="apply__step">
+          <img
+            src="/assets/icons/progress_label.svg"
+            alt="Step 3"
+            class="step__record"
+          >
+          <span class="step__label">{{ 'universal_vocabulary_results' | translate }}</span>
+        </div>
+      </div>
+
+      <div class="step__progress">
+        <div
+          class="current__progress"
+          [class.step__apply__progress]="paidStatus === PaidStatusEnum.unPaid"
+          [class.step__pay__progress]="paidStatus === PaidStatusEnum.paid && !record"
+          [class.step__record__progress]="record ? true : false"
+        ></div>
+      </div>
+    </div>
+    <div class="flexRow" style="align-items: center;">
+      <button
+        class="apply__schedule apply__schedule__warn"
+        (click)="openEnablePage()"
+        *ngIf="checkAllStatus(index) === AllStatus.notEnable"
+      >
+        {{ 'univerisalsystem_tapToVerify' | translate }}
+      </button>
       <button
         class="apply__schedule apply__schedule__warn"
         (click)="navigatePaidPage($event, eventId, feeId, feeTitle, fee)"
-        *ngIf="
-          !eventCancel
-          && !applyFull
-          && applyStatus !== ApplyStatus.cancel
-          && serverTimestamp < endDate
-          && fee > 0
-        "
+        *ngIf="checkAllStatus(index) === AllStatus.unPaid"
       >
         {{ 'universal_vocabulary_tapToPay' | translate }}
       </button>
       <div 
         class="apply__schedule apply__schedule__warn"
-        *ngIf="eventCancel || applyFull || serverTimestamp > endDate"
+        *ngIf="checkAllStatus(index) === AllStatus.eventCutoff"
       >
         {{ 'universal_vocabulary_expired' | translate }}
       </div>
-    </ng-container>
-    <ng-container *ngIf="
-      applyStatus === ApplyStatus.applied
-      && (paidStatus !== PaidStatusEnum.unPaid || fee === 0)
-    "
-    >
-      <div class="apply__schedule apply__schedule__finish">
-        {{ 'universal_vocabulary_signDone' | translate }}
-      </div>
-    </ng-container>
-    <ng-container *ngIf="applyStatus === ApplyStatus.cancel">
-      <div class="apply__schedule apply__schedule__undone">
-        {{ 'universal_vocabulary_signCanceled' | translate }}
-      </div>
-    </ng-container>
-    <ng-container>
       <div
         class="apply__schedule apply__schedule__finish"
-        [class.apply__schedule__undone]="
-          !haveProduct || productShipped === ProductShipped.unShip
-        "
-        [class.apply__schedule__warn]="
-          productShipped === ProductShipped.returnGoods
-        "
+        *ngIf="checkAllStatus(index) === AllStatus.paid"
       >
-        <ng-container *ngIf="!haveProduct">
-          {{ 'universal_vocabulary_noPackage' | translate }}
-        </ng-container>
-        <ng-container *ngIf="haveProduct && productShipped === ProductShipped.unShip">
-          {{ 'universal_vocabulary_unshipped' | translate }}
-        </ng-container>
-        <ng-container *ngIf="haveProduct && productShipped === ProductShipped.shipped">
-          {{ 'universal_vocabulary_delivered' | translate }}
-        </ng-container>
-        <ng-container *ngIf="haveProduct && productShipped === ProductShipped.returnGoods">
-          {{ 'universal_vocabulary_returned' | translate }}
-        </ng-container>
+        {{ 'universal_vocabulary_signDone' | translate }}
       </div>
-    </ng-container>
+      <div
+        class="apply__schedule apply__schedule__warn"
+        *ngIf="checkAllStatus(index) === AllStatus.personCanceling"
+      >
+        {{ 'univerisalsystem_leaving' | translate }}
+      </div>
+      <div
+        class="apply__schedule apply__schedule__undone"
+        *ngIf="checkAllStatus(index) === AllStatus.personCancelled"
+      >
+        {{ 'universal_vocabulary_signCanceled' | translate }}
+      </div>
+      <div
+        class="apply__schedule apply__schedule__warn"
+        *ngIf="checkAllStatus(index) === AllStatus.eventCancelled"
+      >
+        {{ 'universal_vocabulary_raceCancel' | translate }}
+      </div>
+      <button
+        class="show__detail__button"
+        (click)="toggleDetail($event, index)"
+      >
+        {{ 'universal_activityData_detailsData' | translate }}
+        <i
+          class="icon-svg_web-icon_p1_006-unfold detail__drop__icon"
+          [class.drop__icon__rotate]="uiFlag.showDetail === index"
+        ></i>
+      </button>
+    </div>
   </div>
 </ng-template>
 
@@ -963,28 +968,142 @@
 </ng-template>
 
 <ng-template
- #historyRecord
- let-record="record"
- let-rank="rank"
- let-totalRacer="totalRacer"
- let-groupName="groupName"
+  #applyInfo
+  let-index="index"
+  let-list="list"
 >
-  <div class="flexRow">
-    <div class="flexCol history__record">
-      <h6>
-        {{ 'universal_vocabulary_results' | translate }}
-      </h6>
-      <span>
-        {{ record ? (record | sportTime: [false, false]) : '--:--' }}
-      </span>
+  <div
+    class="flexRow detail__section"
+    (click)="$event.preventDefault();"
+  >
+    <button
+      class="apply__schedule apply__schedule__warn quit__button"
+      [class.quit__button--disable]="
+        serverTimestamp > list.raceDate.endDate
+        || list.applyStatus === ApplyStatus.cancel
+      "
+      (click)="quitEvent($event, index)"
+    >
+      <ng-container *ngIf="list.applyStatus === ApplyStatus.applied">
+        {{ 'univerisalsystem_leave' | translate }}
+      </ng-container>
+      <ng-container *ngIf="list.applyStatus === ApplyStatus.applyingQuit">
+        {{ 'univerisalvocabulary_cancelLeave' | translate }}
+      </ng-container>
+      <ng-container *ngIf="list.applyStatus === ApplyStatus.cancel">
+        {{ 'universal_vocabulary_withdrawed' | translate }}
+      </ng-container>
+    </button>
+    <div class="flexRow person__event__detail">
+      <div class="flexRow order__detail">
+        <div *ngTemplateOutlet="infoColumn; context: {
+          title: 'univerisalvocabulary_orderNumber' | translate,
+          value: list.officialPaidId || '**********'
+        }"></div>
+        <div *ngTemplateOutlet="infoColumn; context: {
+          title: 'universal_vocabulary_itemName' | translate,
+          value: list.feeTitle
+        }"></div>
+        <div *ngTemplateOutlet="infoColumn; context: {
+          title: 'universal_vocabulary_itemPrice' | translate,
+          value: list.fee
+        }"></div>
+        <div *ngTemplateOutlet="infoColumn; context: {
+          title: 'universal_group_status' | translate,
+          value: (list.fee === 0 ? ProductShipped.needNotShip : list.productShipped) | shippedStatus | translate
+        }"></div>
+        <div *ngTemplateOutlet="infoColumn; context: {
+          title: 'universal_vocabulary_results' | translate,
+          value: list.record ? (list.record | sportTime: [false, false]) : 'N/A'
+        }"></div>
+        <div *ngTemplateOutlet="infoColumn; context: {
+          title: list.groupName,
+          value: list.rank ? (list.rank + '/' + list.totalRacerCounts) : 'N/A'
+        }"></div>
+      </div>
+      <div class="flexRow input__section">
+        <div class="flexRow info__input">
+          <div
+            class="flexCol input__column"
+            [class.forbidden__edit]="!checkCanEdit(index)"
+          >
+            <label for="mobile__number" class="column__title">
+              <i class="icon-svg_web-icon_p1_039-phone label__icon"></i>
+              {{ 'universal_vocabulary_phoneNumber' | translate }}
+            </label>
+            <input
+              id="mobile__number"
+              type="text"
+              class="event__userProfile__input input__value"
+              [class.disabled__input]="!checkCanEdit(index)"
+              [value]="list.userProfile?.mobileNumber"
+              (change)="updatePhoneNumber($event, index)"
+            >
+          </div>
+          <div
+            class="flexCol input__column"
+            [class.forbidden__edit]="!checkCanEdit(index)"
+          >
+            <label for="email" class="column__title">
+              <i class="icon-svg_web-icon_p1_028-email label__icon"></i>
+              Email
+            </label>
+            <input
+              id="email"
+              type="text"
+              class="event__userProfile__input input__value"
+              [class.disabled__input]="!checkCanEdit(index)"
+              [value]="list.userProfile?.email"
+              (change)="updateEmail($event, index)"
+            >
+          </div>
+          <div
+            class="flexCol input__column"
+            [class.forbidden__edit]="!checkCanEdit(index)"
+          >
+            <label for="address" class="column__title">
+              <i class="icon-svg_web-icon_p1_034-home label__icon"></i>
+              {{ 'universal_vocabulary_shippingAddress' | translate }}
+            </label>
+            <input
+              id="address"
+              type="text"
+              class="event__userProfile__input input__value"
+              [class.disabled__input]="!checkCanEdit(index)"
+              [value]="list.userProfile?.address"
+              (change)="updateAddress($event, index)"
+            >
+          </div>
+        </div>
+        <div
+          class="flexCol input__column remark__input"
+          [class.forbidden__edit]="!checkCanEdit(index)"
+        >
+          <label for="remark" class="column__title">
+            <i class="icon-svg_web-icon_p1_008-edit label__icon"></i>
+            {{ 'universal_vocabulary_memo' | translate }}
+          </label>
+          <textarea
+            id="remark"
+            type="text"
+            class="event__userProfile__input input__value"
+            [class.disabled__input]="!checkCanEdit(index)"
+            [value]="list.userProfile?.remark"
+            (change)="updateRemark($event, index)"
+          ></textarea>
+        </div>
+      </div>
     </div>
-    <div class="flexCol history__record">
-      <h6>
-        {{ groupName }}
-      </h6>
-      <span>
-        {{ rank || '--' }}/{{ totalRacer || '--' }}
-      </span>
-    </div>
+  </div>
+</ng-template>
+
+<ng-template
+ #infoColumn
+ let-title="title"
+ let-value="value"
+>
+  <div class="flexCol column__info">
+    <h6 class="column__title">{{ title }}</h6>
+    <p class="column__value">{{ value }}</p>
   </div>
 </ng-template>

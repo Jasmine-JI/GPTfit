@@ -21,3 +21,8 @@ export enum QrSignInFlow {
   longPolling,
   allowLogin
 }
+
+export enum EnableAccountFlow {
+  request = 1,
+  verify
+}

@@ -11,15 +11,15 @@ export class ShippedStatusPipe implements PipeTransform {
   transform(value: ProductShipped): any {
     switch (value) {
       case ProductShipped.unShip:
-        return '未出貨';
+        return 'universal_vocabulary_unshipped';
       case ProductShipped.shipped:
-        return '已出貨';
+        return 'universal_vocabulary_delivered';
       case ProductShipped.returnGoods:
-        return '已退貨';
+        return 'universal_vocabulary_returned';
       case ProductShipped.needNotShip:
-        return '不須出貨';
+        return 'universal_vocabulary_noShipping';
       case ProductShipped.closeCase:
-        return '已結案';
+        return 'universal_vocabulary_caseClosed';
     }
 
   }

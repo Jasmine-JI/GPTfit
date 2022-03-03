@@ -4,6 +4,7 @@
 @import 'color.scss';
 @import 'transform.scss';
 @import 'transition.scss';
+@import 'filter.scss';
 
 $calender-shadow-color: rgba(0, 0, 0, 0.3);
 $calender-border-top: 10px solid;
@@ -20,6 +21,17 @@ $shadow-color-light: rgba(175, 175, 175, 1);
 $shadow-color-deep: rgba(150, 150, 150, 1);
 $theme-img-height: 130px;
 $block-icon-size: 40px;
+$image-width: 20%;
+$info-width: 75%;
+$person-detail-color: rgba(140, 140, 140, 1);
+$apply-info-width: 250px;
+$step-height: 30px;
+$step-width: 70px;
+$button-padding: 7px 5px;
+$progress-apply: rgba(143, 21, 21, 1);
+$progress-pay: rgba(181, 12, 93, 1);
+$progress-record: rgba(234, 84, 0, 1);
+
 
 @mixin apply-date($background-color) {
   background-color: $background-color;
@@ -30,6 +42,7 @@ $block-icon-size: 40px;
   font-size: 12px;
   height: $apply-date-height;
   border-radius: $apply-date-height;
+  z-index: -2;
 }
 
 @mixin map-detail($font-size: 18px) {
@@ -48,6 +61,18 @@ $block-icon-size: 40px;
   overflow: hidden;
   text-overflow: ellipsis;
   margin-bottom: 0;
+}
+
+@mixin input-width($width) {
+  width: $width;
+  min-width: $width;
+}
+
+@mixin step-flag($filter) {
+  $width: 70px;
+  width: $width;
+  min-width: $width;
+  @include filter($filter);
 }
 
 .activity__list__section {
@@ -77,7 +102,7 @@ $block-icon-size: 40px;
   max-height: $theme-img-height;
   overflow: hidden;
   margin-right: 10px;
-  width: 20%;
+  width: $image-width;
 
   >:first-of-type {
     position: relative;
@@ -115,7 +140,7 @@ $block-icon-size: 40px;
 }
 
 .race__list {
-  width: 75%;
+  width: $info-width;
 }
 
 .race__info {
@@ -249,7 +274,7 @@ $block-icon-size: 40px;
   @include center();
   @include bold-font(14px);
   min-width: 100px;
-  padding: 7px 5px;
+  padding: $button-padding;
   border-radius: 5px;
   margin: 0 15px;
 }
@@ -445,18 +470,6 @@ $block-icon-size: 40px;
   
 }
 
-.product__detail {
-  display: flex;
-  justify-content: flex-end;
-  min-height: 80px;
-  width: 95%;
-
-  >table {
-    width: 30%;
-  }
-
-}
-
 .product__title, .product__fee {
   $detail-table-width: 140px;
   text-align: center;
@@ -556,6 +569,207 @@ td.product__title, td.product__fee {
   list-style: none;
   padding: 0;
   margin: 0;
+}
+
+.detail__section {
+  padding: 10px 5px;
+  padding-right: calc(100% - #{$image-width} - #{$info-width});
+}
+
+.person__event__detail {
+  flex-wrap: wrap;
+  padding: 5px 0;
+  background: rgba(250, 250, 250, 1);
+}
+
+.order__detail {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+  border-bottom: 1px solid rgba(100, 100, 100, 1);
+}
+
+.quit__button {
+  height: 35px;
+  max-width: 120px;
+}
+
+.quit__button--disable {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.info__input {
+  flex-wrap: wrap;
+  width: 50%;
+}
+
+.remark__input {
+  width: 40%;
+}
+
+.column__info {
+  margin: 5px;
+}
+
+.column__title {
+  font-weight: bold;
+}
+
+.label__icon {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.column__value {
+  color: rgba(140, 140, 140, 1);
+  margin: 0;
+}
+
+.input__section {
+  flex-wrap: wrap;
+}
+
+.input__column {
+  margin: 5px 10px;
+}
+
+.input__value {
+  color: $person-detail-color;
+  font-size: 15px;
+}
+
+.event__userProfile__input {
+  padding: 0 5px;
+  border-radius: 5px;
+  resize: none;
+}
+
+#mobile__number {
+  @include input-width(120px);
+}
+
+#email {
+  @include input-width(240px);
+}
+
+#address {
+  @include input-width(300px);
+}
+
+#remark {
+  min-width: 280px;
+  min-height: 85px;
+}
+
+.forbidden__edit {
+  cursor: not-allowed;
+}
+
+.disabled__input {
+  pointer-events: none;
+  border: none;
+}
+
+.apply__info {
+  width: $apply-info-width;
+  min-width: $apply-info-width;
+}
+
+.show__detail__button {
+  position: relative;
+  width: 105px;
+  font-size: 15px;
+  border-radius: 5px;
+  padding: $button-padding;
+
+  &:hover {
+    $blur: 2px;
+    $color: rgba(225, 225, 225, 1);
+    box-shadow: 1px 1px $blur $color, 1px -1px $blur $color, -1px 1px $blur $color, -1px -1px $blur $color;
+  }
+
+}
+
+.detail__drop__icon {
+  height: -moz-fit-content;
+  height: fit-content;
+  transition: transform 0.2s cubic-bezier(0.5, 0.5, 0.5, 0.5);
+  @include transition(transform);
+}
+
+.apply__steps {
+  margin: 10px 0;
+  justify-content: space-between;
+  width: $apply-info-width;
+  min-width: $apply-info-width;
+}
+
+.apply__step__flag {
+  justify-content: space-between;
+}
+
+.apply__step {
+  position: relative;
+  $width: 70px;
+  width: $width;
+  min-width: $width;
+}
+
+.step__apply {
+  $filter: none;
+  @include step-flag($filter);
+}
+
+.step__pay {
+  $filter: saturate(5) hue-rotate(330deg) brightness(0.75);
+  @include step-flag($filter);
+}
+
+.step__record {
+  $filter: saturate(5) hue-rotate(45deg) brightness(1.3);
+  @include step-flag($filter);
+}
+
+.step__label {
+  $width: 60px;
+  position: absolute;
+  z-index: 1;
+  top: 3px;
+  right: 5px;
+  background-color: white;
+  border-radius: 18px;
+  width: $width;
+  min-width: $width;
+  text-align: center;
+  @include bold-font(12px);
+}
+
+.step__progress {
+  height: 20px;
+  border: 1px solid rgba(140, 140, 140, 1);
+  border-radius: 20px;
+  padding: 2px;
+}
+
+.current__progress {
+  height: 100%;
+  border-radius: 16px;
+}
+
+.step__apply__progress {
+  width: 33%;
+  background-color: $progress-apply;
+}
+
+.step__pay__progress {
+  width: 66%;
+  background: linear-gradient(90deg, $progress-apply, $progress-pay);
+}
+
+.step__record__progress {
+  width: 100%;
+  background: linear-gradient(90deg, $progress-apply 0%, $progress-pay 51.89%, $progress-record 100%);
 }
 
 /*********************************************************** mobile style **********************************************/
@@ -661,7 +875,7 @@ td.product__title, td.product__fee {
 
   .history__detail {
     justify-content: space-between;
-    height: 50px;
+    height: 80px;
     width: 100%;
     border-bottom: $list-border-bottom;
     padding: 5px 0;
@@ -677,8 +891,10 @@ td.product__title, td.product__fee {
 
   }
 
-  .product__detail {
-    justify-content: flex-start;
+  .apply__info {
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
   }
 
 }
@@ -700,11 +916,23 @@ td.product__title, td.product__fee {
 
 }
 
-@media (max-width: 767px) {
+@media (max-width: 995px) {
 
-  .history__detail {
-    height: 110px;
+  .input__section {
+    flex-direction: column;
   }
+
+  .info__input, .remark__input {
+    width: 100%;
+  }
+
+  #address, #remark {
+    @include input-width(75vw);
+  }
+
+}
+
+@media (max-width: 767px) {
 
   .history__record {
     flex-direction: column;
@@ -724,19 +952,22 @@ td.product__title, td.product__fee {
     font-size: 14px;
   }
 
-  .product__detail {
-    justify-content: center;
-    width: 98%;
-
-    >table {
-      width: 90%;
-    }
-
+  .detail__section {
+    flex-direction: column;
   }
 
 }
 
-@media (max-width: 480px) {
+@media (max-width: 500px) {
+
+  .history__detail {
+    height: 120px;
+  }
+
+  .apply__info {
+    flex-direction: column;
+    align-items: center;
+  }
 
   .filter__area {
     flex-direction: column;
