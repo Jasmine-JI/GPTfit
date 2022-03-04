@@ -14,6 +14,7 @@ import moment from 'moment';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PaidStatusPipe } from '../../pipes/paid-status.pipe';
 import { ShippedStatusPipe } from '../../pipes/shipped-status.pipe';
+import { SportTimePipe } from '../../../../shared/pipes/sport-time.pipe';
 import { TranslateService } from '@ngx-translate/core';
 import { Sex } from '../../../../shared/models/user-profile-info';
 import { AgePipe } from '../../../../shared/pipes/age.pipe';
@@ -138,7 +139,8 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     private paidStatusPipe: PaidStatusPipe,
     private shippedStatusPipe: ShippedStatusPipe,
     private translate: TranslateService,
-    private agePipe: AgePipe
+    private agePipe: AgePipe,
+    private sportTimePipe: SportTimePipe
   ) {}
 
   ngOnInit(): void {
@@ -1312,15 +1314,15 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         },${groupName
         },${feeTitle
         },${fee
-        },${this.paidStatusPipe.transform(paidStatus)
+        },${this.getPaidStatus(paidStatus)
         },${this.convertDateFormat(paidDate)
         },${officialPaidId ? officialPaidId : ''
         },${thirdPartyPaidId ? thirdPartyPaidId : ''
-        },${this.shippedStatusPipe.transform(productShipped)
+        },${this.getShippedStatus(productShipped)
         },${this.convertDateFormat(productShippingDate)
         },${rank ? rank : ''
-        },${record ? record : ''
-        },${this.shippedStatusPipe.transform(awardShipped)
+        },${record ? this.sportTimePipe.transform(record) : 0
+        },${this.getShippedStatus(awardShipped)
         },${this.convertDateFormat(awardShippingDate)
         },${truthName
         },${this.agePipe.transform(ageBase)
@@ -1355,6 +1357,26 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     **************************/
 
     return csvData;
+  }
+
+  /**
+   * 取得運送狀態多國語系
+   * @param status {PaidStatusEnum}-繳費狀態
+   * @author kidin-1110304
+   */
+  getPaidStatus(status: PaidStatusEnum) {
+    const i18nKey = this.paidStatusPipe.transform(status);
+    return this.translate.instant(i18nKey);
+  }
+
+  /**
+   * 取得出貨狀態多國語系
+   * @param status {ProductShipped}-出貨狀態
+   * @author kidin-1110304
+   */
+  getShippedStatus(status: ProductShipped) {
+    const i18nKey = this.shippedStatusPipe.transform(status);
+    return this.translate.instant(i18nKey);
   }
 
   /**

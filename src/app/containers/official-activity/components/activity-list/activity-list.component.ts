@@ -1104,7 +1104,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    */
   checkAllStatus(index: number) {
     const { serverTimestamp, effectEventList, userProfile } = this;
-    const { fee, paidStatus, applyStatus, eventStatus, raceDate: { endDate } } = effectEventList[index];
+    const { fee, paidStatus, applyStatus, eventStatus, applyDate: { endDate } } = effectEventList[index];
     if (eventStatus === EventStatus.cancel) return AllStatus.eventCancelled;
     if (serverTimestamp > endDate) return AllStatus.eventCutoff;
     if (applyStatus === ApplyStatus.cancel) return AllStatus.personCancelled;

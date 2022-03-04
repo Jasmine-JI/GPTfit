@@ -141,13 +141,13 @@ router.post('/getMapGpx', (req, res, next) => {
  * @author kidin-1100319
  */
  router.post('/getLeaderboardStatistics', (req, res, next) => {
-  const { con, body } = req;
+  const { body, hostname } = req;
   let host;
-  switch (body.hostname) {
+  switch (hostname) {
     case 'cloud.alatech.com.tw':
     case 'www.gptfit.com':
     case '152.101.90.130':
-      host = '127.0.1.1';  // 68主機
+      host = '152.101.90.68';  // 68主機
       break;
     default:
       host = '192.168.1.234';
