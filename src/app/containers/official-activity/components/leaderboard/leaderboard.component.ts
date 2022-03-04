@@ -223,7 +223,11 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     switch (type) {
       case RankType.event:
         this.subList = this.utils.deepCopy(eventList);
-        if (eventList.length > 0) this.getEventRank(0);
+        if (eventList.length > 0) {
+          this.getEventRank(0);
+        } else {
+          this.uiFlag.progress = 30;
+        };
         break;
       case RankType.mapBest:
         this.subList = this.utils.deepCopy(mapInfo);
