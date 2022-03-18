@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivityService } from '../../../../shared/services/activity.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
-import { SportCode } from '../../../../shared/models/report-condition';
-import moment from 'moment';
+import { SportType } from '../../../../shared/enum/sports';
+import dayjs from 'dayjs';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { ReportConditionOpt } from '../../../../shared/models/report-condition';
@@ -12,8 +12,8 @@ import { UserProfileService } from '../../../../shared/services/user-profile.ser
 
 
 const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ',
-      defaultEnd = moment().endOf('day'),
-      defaultStart = moment(defaultEnd).subtract(3, 'years').startOf('day');
+      defaultEnd = dayjs().endOf('day'),
+      defaultStart = dayjs(defaultEnd).subtract(3, 'years').startOf('day');
 
 @Component({
   selector: 'app-activity-list',
@@ -43,7 +43,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       endTimestamp: defaultEnd.valueOf(),
       type: 'custom'
     },
-    sportType: SportCode.all,
+    sportType: SportType.all,
     keyword: '',
     hideConfirmBtn: false
   }
@@ -53,7 +53,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    */
   listReq = {
     token: this.utils.getToken() || '',
-    type: SportCode.all,
+    type: SportType.all,
     searchWords: '',
     page: 0,
     pageCounts: 12,
@@ -65,7 +65,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   targetUserId: number;
   totalCounts = 0;
   unit = Unit.metric;
-  readonly sportCode = SportCode;
+  readonly sportCode = SportType;
 
   constructor(
     private activityService: ActivityService,
@@ -116,8 +116,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
               { date: { startTimestamp, endTimestamp }, sportType, keyword } = condition;
         this.reportConditionOpt = this.utils.deepCopy(res);
         this.listReq.type = sportType;
-        this.listReq.filterStartTime = moment(startTimestamp).format(dateFormat);
-        this.listReq.filterEndTime = moment(endTimestamp).format(dateFormat);
+        this.listReq.filterStartTime = dayjs(startTimestamp).format(dateFormat);
+        this.listReq.filterEndTime = dayjs(endTimestamp).format(dateFormat);
         this.listReq.searchWords = keyword;
         this.getActivityList('filter');
       }

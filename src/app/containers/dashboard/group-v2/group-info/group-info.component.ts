@@ -6,7 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { ShareGroupInfoDialogComponent } from '../../../../shared/components/share-group-info-dialog/share-group-info-dialog.component';
 import { GroupDetailInfo, UserSimpleInfo, EditMode } from '../../models/group-detail';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { GroupService } from '../../../../shared/services/group.service';
 import { HashIdService } from '../../../../shared/services/hash-id.service';
@@ -413,7 +413,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   createFileName(length: number, groupId: string) {
     const nameSpace = uuidv5('https://www.gptfit.com', uuidv5.URL),
-          keyword = `${moment().valueOf().toString()}${length}${groupId.split('-').join('')}`;
+          keyword = `${dayjs().valueOf().toString()}${length}${groupId.split('-').join('')}`;
     return uuidv5(keyword, nameSpace);
   }
 
@@ -803,9 +803,11 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       if (res.info.groupId === '0-0-0-0-0-0') {
         this.saveDefaultGroupDetail();
       } else {
-        this.user.joinStatus = res.info.selfJoinStatus;
-        this.currentGroupInfo.groupDetail = res.info;
-        this.groupService.saveGroupDetail(res.info);
+        const { info } = res;
+        this.user.joinStatus = info.selfJoinStatus;
+        this.currentGroupInfo.groupDetail = info;
+        this.groupService.getCurrentGroupInfo().groupDetail = info;
+        this.groupService.saveGroupDetail(info);
         this.checkGroupResLength();
       }
 
@@ -852,16 +854,17 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.utils.openAlert(errMsg);
       console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
     } else {
-
-      if (moment(res.info.commercePlanExpired).valueOf() < moment().valueOf()) {
-        Object.assign(res.info, {expired: true});
+      const { info } = res;
+      if (dayjs(info.commercePlanExpired).valueOf() < dayjs().valueOf()) {
+        Object.assign(info, {expired: true});
       } else {
-        Object.assign(res.info, {expired: false});
+        Object.assign(info, {expired: false});
         
       }
 
-      this.currentGroupInfo.commerceInfo = res.info;
-      this.groupService.saveCommerceInfo(res.info);
+      this.currentGroupInfo.commerceInfo = info;
+      this.groupService.getCurrentGroupInfo().commerceInfo = info;
+      this.groupService.saveCommerceInfo(info);
     }
 
   }
@@ -874,7 +877,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   handleMemberList(childGroupRes: any, adminRes: any, memberRes: any) {
     if (childGroupRes.resultCode !== 200 || adminRes.resultCode !== 200 || memberRes.resultCode !== 200) {
-      this.utils.openAlert(errMsg);
       console.error(`${childGroupRes.resultCode}: Api ${childGroupRes.apiCode} ${childGroupRes.resultMessage}`);
       console.error(`${adminRes.resultCode}: Api ${adminRes.apiCode} ${adminRes.resultMessage}`);
       console.error(`${memberRes.resultCode}: Api ${memberRes.apiCode} ${memberRes.resultMessage}`);
@@ -893,6 +895,10 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.groupService.setAllLevelGroupData(childGroupRes.info.subGroupInfo);
       this.groupService.setAdminList(adminRes.info.groupMemberInfo);
       this.groupService.setNormalMemberList(memberRes.info.groupMemberInfo);
+
+      this.groupService.getCurrentGroupInfo().immediateGroupList = childGroupRes.info.subGroupInfo;
+      this.groupService.getCurrentGroupInfo().adminList = adminRes.info.groupMemberInfo;
+      this.groupService.getCurrentGroupInfo().memberList = memberRes.info.groupMemberInfo;
 
       adminRes.info.groupMemberInfo = adminRes.info.groupMemberInfo.filter(_admin => _admin.groupId === this.currentGroupInfo.groupId);
       Object.assign(this.currentGroupInfo.groupDetail, {adminNum: adminRes.info.groupMemberInfo.length});

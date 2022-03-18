@@ -4,7 +4,7 @@ import { ReportConditionOpt } from '../models/report-condition'
 import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
 import { paiCofficient, dayPaiTarget } from '../models/sports-report';
 import { MuscleCode, MuscleGroup } from '../models/weight-train';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class ReportService {
@@ -189,8 +189,8 @@ export class ReportService {
    * @author kidin-1100618
    */
   countAge(birthday: string) {
-    const todayMoment = moment(),
-          birthMoment = moment(birthday, 'YYYYMMDD');
+    const todayMoment = dayjs(),
+          birthMoment = dayjs(birthday, 'YYYYMMDD');
     return todayMoment.diff(birthMoment, 'year');
   }
 

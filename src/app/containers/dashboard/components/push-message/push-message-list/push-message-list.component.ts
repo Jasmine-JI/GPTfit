@@ -9,7 +9,7 @@ import { UtilsService } from './../../../../../shared/services/utils.service';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { PushMessageService } from '../../../services/push-message.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 
 @Component({
@@ -33,10 +33,10 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
   };
 
   pushCondition = ['地區', '系統', '應用', '群組', '會員'];
-  currentTime = moment().valueOf();
+  currentTime = dayjs().valueOf();
   filterCondition = {
-    startTimeStamp: moment().subtract(6, 'month').valueOf(),
-    endTimeStamp: moment().subtract(-6, 'month').valueOf(),
+    startTimeStamp: dayjs().subtract(6, 'month').valueOf(),
+    endTimeStamp: dayjs().subtract(-6, 'month').valueOf(),
     pushState: [],
     countryRegion: [],
     system: [],
@@ -201,7 +201,7 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
     this.uiFlag.haveReservation = false;
     for (let i = 0; i < this.res.length; i++) {
 
-      if (this.res[i].pushStatus === 1 && this.res[i].pushTimeStamp > moment().unix()) {
+      if (this.res[i].pushStatus === 1 && this.res[i].pushTimeStamp > dayjs().unix()) {
         this.uiFlag.haveReservation = true;
         break;
       }
@@ -233,7 +233,7 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
    */
   checkPushTime() {
     for (let i = 0; i < this.res.length; i++) {
-      if (moment(this.res[i].pushTimeStamp * 1000).format('YYYYMMDDHHmmss') === moment(this.currentTime).format('YYYYMMDDHHmmss')) {
+      if (dayjs(this.res[i].pushTimeStamp * 1000).format('YYYYMMDDHHmmss') === dayjs(this.currentTime).format('YYYYMMDDHHmmss')) {
         this.getPushMessage();
         break;
       }
@@ -248,8 +248,8 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
    * @author kidin-1090923
    */
   getSelectDate(e: any) {
-    this.filterCondition.startTimeStamp = moment(e.startDate).valueOf();
-    this.filterCondition.endTimeStamp = moment(e.endDate).valueOf();
+    this.filterCondition.startTimeStamp = dayjs(e.startDate).valueOf();
+    this.filterCondition.endTimeStamp = dayjs(e.endDate).valueOf();
   }
 
   /**
@@ -267,7 +267,7 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
       data: {
         title: '取消預約發送',
         body: `是否取消預約此訊息？<br>${
-          moment(this.res[index].pushTimeStamp * 1000).format('YYYY-MM-DD HH:mm:ss')
+          dayjs(this.res[index].pushTimeStamp * 1000).format('YYYY-MM-DD HH:mm:ss')
         }<br>標題：${this.res[index].title}`,
         jusCon: 'space-between',
         confirmText: '確定取消發送',

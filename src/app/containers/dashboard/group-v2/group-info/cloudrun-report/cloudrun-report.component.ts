@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, Chang
 import { Subject, combineLatest, fromEvent, Subscription } from 'rxjs';
 import { takeUntil, switchMap, map, first } from 'rxjs/operators';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { ReportService } from '../../../../../shared/services/report.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { GroupService } from '../../../../../shared/services/group.service';
@@ -92,14 +92,14 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   reportConditionOpt: ReportConditionOpt = {
     pageType: 'cloudRun',
     date: {
-      startTimestamp: moment().startOf('month').valueOf(),
-      endTimestamp: moment().endOf('month').valueOf(),
+      startTimestamp: dayjs().startOf('month').valueOf(),
+      endTimestamp: dayjs().endOf('month').valueOf(),
       type: 'thisMonth'
     },
     sportType: 1,
     cloudRun: {
       mapId: 1,
-      month: moment().format('YYYYMM'),
+      month: dayjs().format('YYYYMM'),
       checkCompletion: true
     },
     age: {
@@ -114,8 +114,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * 使用者所選時間
    */
   selectDate = {
-    startDate: moment().startOf('month').format('YYYY-MM-DDT00:00:00.000Z'),
-    endDate: moment().endOf('month').format('YYYY-MM-DDT23:59:59.999Z')
+    startDate: dayjs().startOf('month').format('YYYY-MM-DDT00:00:00.000Z'),
+    endDate: dayjs().endOf('month').format('YYYY-MM-DDT23:59:59.999Z')
   };
 
   /**
@@ -476,13 +476,13 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
             this.uiFlag.isPreviewMode = true;
             break;
           case 'startdate':
-            this.selectDate.startDate = moment(_value, 'YYYY-MM-DD').startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
-            this.reportConditionOpt.date.startTimestamp = moment(this.selectDate.startDate).valueOf();
+            this.selectDate.startDate = dayjs(_value, 'YYYY-MM-DD').startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+            this.reportConditionOpt.date.startTimestamp = dayjs(this.selectDate.startDate).valueOf();
             this.reportConditionOpt.date.type = 'custom';
             break;
           case 'enddate':
-            this.selectDate.endDate = moment(_value, 'YYYY-MM-DD').endOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
-            this.reportConditionOpt.date.endTimestamp = moment(this.selectDate.endDate).valueOf();
+            this.selectDate.endDate = dayjs(_value, 'YYYY-MM-DD').endOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+            this.reportConditionOpt.date.endTimestamp = dayjs(this.selectDate.endDate).valueOf();
             this.reportConditionOpt.date.type = 'custom';
             break;
           case 'mapid':
@@ -581,8 +581,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     ).subscribe(res => {
       if (res.date) {
         this.selectDate = {
-          startDate: moment(res.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-          endDate: moment(res.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ')
+          startDate: dayjs(res.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          endDate: dayjs(res.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ')
         };
   
         this.handleSubmitSearch('click');
@@ -755,9 +755,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     this.translate.get('hellow world').pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
-      this.createTime = moment().format('YYYY-MM-DD HH:mm');
+      this.createTime = dayjs().format('YYYY-MM-DD HH:mm');
       const { startDate, endDate } = this.selectDate,
-            range = moment(endDate).diff(startDate, 'day') + 1;
+            range = dayjs(endDate).diff(startDate, 'day') + 1;
       this.reportEndDate = endDate.split('T')[0];
       this.reportTimeRange = `${range} ${this.translate.instant('universal_time_day')}`;
     });
@@ -1119,7 +1119,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100310
    */
   groupCombineUser(groupList: any, memList: any, memberData: any) {
-    const refDate = moment(this.selectDate.startDate),
+    const refDate = dayjs(this.selectDate.startDate),
           { gender: genderFilter, age: { max: ageMax, min: ageMin } } = this.reportConditionOpt;
     for (let i = 0, len = memList.length; i < len; i++) {
       const { 
@@ -1130,7 +1130,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         birthday,
         gender
       } = memList[i];
-      const age = refDate.diff(moment(birthday, 'YYYYMMDD'), 'year'),  // 年齡以報告開始日為基準
+      const age = refDate.diff(dayjs(birthday, 'YYYYMMDD'), 'year'),  // 年齡以報告開始日為基準
             groupLevel = +this.utils.displayGroupLevel(groupId),
             brandsGroupId = `${this.groupService.getPartGroupId(groupId, 3)}-0-0-0`,
             branchesGroupId = `${this.groupService.getPartGroupId(groupId, 4)}-0-0`,
@@ -1989,8 +1989,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   goGroupPage(id: string, page: NavigationPage) {
     const hashGroupId = this.hashIdService.handleGroupIdEncode(id),
-          startDateString = moment(this.selectDate.startDate).format('YYYY-MM-DD'),
-          endDateString = moment(this.selectDate.endDate).format('YYYY-MM-DD'),
+          startDateString = dayjs(this.selectDate.startDate).format('YYYY-MM-DD'),
+          endDateString = dayjs(this.selectDate.endDate).format('YYYY-MM-DD'),
           reportConditionString = `?startdate=${startDateString}&enddate=${endDateString}`;
     switch (page) {
       case 'info':
@@ -2015,8 +2015,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   goMemberPage(id: number, page: NavigationPage) {
     const hashUserId = this.hashIdService.handleUserIdEncode(id.toString()),
-          startDateString = moment(this.selectDate.startDate).format('YYYY-MM-DD'),
-          endDateString = moment(this.selectDate.endDate).format('YYYY-MM-DD'),
+          startDateString = dayjs(this.selectDate.startDate).format('YYYY-MM-DD'),
+          endDateString = dayjs(this.selectDate.endDate).format('YYYY-MM-DD'),
           reportConditionString = `?startdate=${startDateString}&enddate=${endDateString}`;
     switch (page) {
       case 'info':

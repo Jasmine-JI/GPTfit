@@ -1,3 +1,5 @@
+import { GroupSportTarget } from '../../../shared/models/sport-target';
+
 /**
  * api 1102 的info
  */
@@ -21,6 +23,7 @@ export interface GroupDetailInfo {
   shareAvatarToMember: object;
   shareReportToMember: object;
   groupLevel?: number;
+  target?: GroupSportTarget;
 }
 
 /**

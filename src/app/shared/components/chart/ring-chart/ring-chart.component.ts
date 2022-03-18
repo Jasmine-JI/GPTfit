@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Input, OnChanges } from '@angular/core';
-import { SportType, SportCode } from '../../../models/report-condition';
+import { SportType } from '../../../enum/sports';
 import { TranslateService } from '@ngx-translate/core';
 import { chart } from 'highcharts';
 import { Subject } from 'rxjs';
@@ -85,8 +85,8 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
       for (let i = 0; i < this.data.length; i++) {
         if (this.data[i] !== 0) {
           switch (i + 1) {
-            case SportCode.run:
-              if (this.selectType !== SportCode.run && this.selectType !== SportCode.all) {
+            case SportType.run:
+              if (this.selectType !== SportType.run && this.selectType !== SportType.all) {
                 sportPercentageDataset.push({
                   name: this.translateService.instant('universal_activityData_run'), y: this.data[0], color: '#9e9e9e'
                 });
@@ -96,8 +96,8 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
                 });
               }
               break;
-            case SportCode.cycle:
-              if (this.selectType !== SportCode.cycle && this.selectType !== SportCode.all) {
+            case SportType.cycle:
+              if (this.selectType !== SportType.cycle && this.selectType !== SportType.all) {
                 sportPercentageDataset.push({
                   name: this.translateService.instant('universal_activityData_cycle'), y: this.data[1], color: '#9e9e9e'
                 });
@@ -107,8 +107,8 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
                 });
               }
             break;
-            case SportCode.weightTrain:
-              if (this.selectType !== SportCode.weightTrain && this.selectType !== SportCode.all) {
+            case SportType.weightTrain:
+              if (this.selectType !== SportType.weightTrain && this.selectType !== SportType.all) {
                 sportPercentageDataset.push({
                   name: this.translateService.instant('universal_activityData_weightTraining'), y: this.data[2], color: '#9e9e9e'
                 });
@@ -118,8 +118,8 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
                 });
               }
             break;
-            case SportCode.swim:
-              if (this.selectType !== SportCode.swim && this.selectType !== SportCode.all) {
+            case SportType.swim:
+              if (this.selectType !== SportType.swim && this.selectType !== SportType.all) {
                 sportPercentageDataset.push({
                   name: this.translateService.instant('universal_activityData_swin'), y: this.data[3], color: '#9e9e9e'
                 });
@@ -129,8 +129,8 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
                 });
               }
             break;
-            case SportCode.aerobic:
-              if (this.selectType !== SportCode.aerobic && this.selectType !== SportCode.all) {
+            case SportType.aerobic:
+              if (this.selectType !== SportType.aerobic && this.selectType !== SportType.all) {
                 sportPercentageDataset.push({
                   name: this.translateService.instant('universal_activityData_aerobic'), y: this.data[4], color: '#9e9e9e'
                 });
@@ -140,8 +140,8 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
                 });
               }
             break;
-            case SportCode.row:
-              if (this.selectType !== SportCode.row && this.selectType !== SportCode.all) {
+            case SportType.row:
+              if (this.selectType !== SportType.row && this.selectType !== SportType.all) {
                 sportPercentageDataset.push({
                   name: this.translateService.instant('universal_sportsName_boating'), y: this.data[5], color: '#9e9e9e'
                 });
@@ -151,8 +151,8 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
                 });
               }
             break;
-            case SportCode.ball:
-              if (this.selectType !== SportCode.ball && this.selectType !== SportCode.all) {
+            case SportType.ball:
+              if (this.selectType !== SportType.ball && this.selectType !== SportType.all) {
                 sportPercentageDataset.push({
                   name: this.translateService.instant('universal_activityData_ballSports'), y: this.data[6], color: '#9e9e9e'
                 });

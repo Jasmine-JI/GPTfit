@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { last } from 'rxjs/operators';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { AccountTypeEnum } from '../../../../shared/models/user-profile-info';
 
 const errorMsg = 'Error!<br />Please try again later.';
@@ -127,7 +127,7 @@ export class InnerTestComponent implements OnInit {
 
         let lastResetPasswordd: string;
         if (lastResetPwd !== null && lastResetPwd !== '') {
-          lastResetPasswordd = moment.unix(+lastResetPwd).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+          lastResetPasswordd = dayjs.unix(+lastResetPwd).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
         } else {
           lastResetPasswordd = '未重設';
         }
@@ -145,7 +145,7 @@ export class InnerTestComponent implements OnInit {
           countryCode,
           phone,
           enableStatus,
-          lastLogin: moment.unix(+lastLogin).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          lastLogin: dayjs.unix(+lastLogin).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
           lastResetPwd: lastResetPasswordd
         };
 

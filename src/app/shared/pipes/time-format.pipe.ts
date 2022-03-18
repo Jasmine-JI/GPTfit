@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 @Pipe({name: 'timeFormat'})
 export class TimeFormatPipe implements PipeTransform {
@@ -11,7 +11,7 @@ export class TimeFormatPipe implements PipeTransform {
    * @author kidin
    */
   transform(value: string | number, args: string): string {
-    return moment(value).format(args);
+    return dayjs(value).format(args);
   }
 
 }

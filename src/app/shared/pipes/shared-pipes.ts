@@ -43,6 +43,8 @@ import { SafeStylePipe } from './safe-style.pipe';
 import { PatchUnitPipe } from './patch-unit.pipe';
 import { AgePipe } from './age.pipe';
 import { RankSuffixPipe } from './rank-suffix.pipe';
+import { TargetFieldNamePipe } from './target-field-name.pipe';
+import { TargetFieldUnitPipe } from './target-field-unit.pipe';
 
 @NgModule({
   imports: [
@@ -92,7 +94,9 @@ import { RankSuffixPipe } from './rank-suffix.pipe';
     SafeStylePipe,
     PatchUnitPipe,
     AgePipe,
-    RankSuffixPipe
+    RankSuffixPipe,
+    TargetFieldNamePipe,
+    TargetFieldUnitPipe
   ],
   exports: [
     SexPipe,
@@ -138,7 +142,9 @@ import { RankSuffixPipe } from './rank-suffix.pipe';
     SafeStylePipe,
     PatchUnitPipe,
     AgePipe,
-    RankSuffixPipe
+    RankSuffixPipe,
+    TargetFieldNamePipe,
+    TargetFieldUnitPipe
   ],
   providers: [
     AgePipe

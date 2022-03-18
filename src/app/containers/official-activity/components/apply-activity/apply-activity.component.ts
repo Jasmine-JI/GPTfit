@@ -10,7 +10,7 @@ import { Sex } from '../../../../shared/models/user-profile-info';
 import { nicknameDefaultList } from '../../../../shared/models/nickname-list';
 import { SelectDate } from '../../../../shared/models/utils-type';
 import { SignTypeEnum } from '../../../../shared/models/utils-type';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { AuthService } from '../../../../shared/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
@@ -182,7 +182,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
 
   imgLock: LockCaptcha;
   groupList = [];  // 使用者可選擇之分組類別
-  defaultBirthday = moment().subtract(40, 'year').startOf('year'); 
+  defaultBirthday = dayjs().subtract(40, 'year').startOf('year'); 
   token = this.utils.getToken();
   userId: number;
   intervals: NodeJS.Timeout;
@@ -192,7 +192,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   readonly countryCodeList = codes;
   readonly Nationality = Nationality;
   readonly Sex = Sex;
-  readonly limitMinBirth = moment().subtract(100, 'year').startOf('year');
+  readonly limitMinBirth = dayjs().subtract(100, 'year').startOf('year');
 
   constructor(
     private route: ActivatedRoute,
@@ -325,7 +325,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
 
     }
 
-    this.defaultBirthday = moment(eventUserProfile.birthday, 'YYYYMMDD');
+    this.defaultBirthday = dayjs(eventUserProfile.birthday, 'YYYYMMDD');
     this.initAlert();
     this.uiFlag.showLoginButton = null;
   }
@@ -349,7 +349,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     this.applyInfo.userProfile.nickname = nickname;
     this.applyInfo.userProfile.gender = gender;
     this.applyInfo.userProfile.birthday = +birthday;
-    this.defaultBirthday = moment(birthday, 'YYYYMMDD');
+    this.defaultBirthday = dayjs(birthday, 'YYYYMMDD');
     this.userId = userId;
     if (email) this.applyInfo.userProfile.email = email;
     if (countryCode) {
@@ -941,7 +941,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   getSelectDate(date: SelectDate) {
     const { startDate } = date;
-    const birthday = +moment(startDate).format('YYYYMMDD');
+    const birthday = +dayjs(startDate).format('YYYYMMDD');
     this.applyInfo.userProfile.birthday = birthday;
     this.filterGroupList();
   }
@@ -1305,8 +1305,8 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   filterGroupList() {
     if (this.eventDetail) {
       const { gender, birthday } = this.applyInfo.userProfile;
-      const momentBirthday = birthday ? moment(birthday, 'YYYYMMDD') : this.defaultBirthday;
-      const age = moment().diff(momentBirthday, 'year');
+      const momentBirthday = birthday ? dayjs(birthday, 'YYYYMMDD') : this.defaultBirthday;
+      const age = dayjs().diff(momentBirthday, 'year');
       this.groupList = this.eventDetail.group.filter(_list => {
         const { gender: groupGender, age: groupAge } = _list;
         const { max, min } = groupAge || { max: 100, min: 0 };

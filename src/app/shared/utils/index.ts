@@ -90,19 +90,19 @@ export function speedConverttoPace(value, type) {
  * @returns {boolean} resultCode是否回傳200
  * @author kidin-1100902
  */
-export function checkResponse(res: any): boolean {
+export function checkResponse(res: any, showErrorMessage: boolean = true): boolean {
   const { processResult, resultCode: resCode, apiCode: resApiCode, resultMessage: resMsg } = res;
   if (!processResult) {
 
     if (resCode !== 200) {
-      showErrorApiLog(resCode, resApiCode, resMsg);
+      if (showErrorMessage) showErrorApiLog(resCode, resApiCode, resMsg);
       return false;
     }
     
   } else {
     const { resultCode, apiCode, resultMessage } = processResult;
     if (resultCode !== 200) {
-      showErrorApiLog(resultCode, apiCode, resultMessage);
+      if (showErrorMessage) showErrorApiLog(resultCode, apiCode, resultMessage);
       return false;
     }
 
@@ -119,4 +119,86 @@ export function checkResponse(res: any): boolean {
  */
 export function showErrorApiLog(resultCode: number, apiCode: number, msg: string) {
   console.error(`${resultCode}: Api ${apiCode} ${msg}`);
+}
+
+/**
+ * 物件深拷貝
+ * @param obj
+ * @param cache
+ * @author kidin-1090902
+ */
+export function deepCopy(obj: any, cache = new WeakMap()) {
+  // 基本型別 & function
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+
+  // Date 及 RegExp
+  if (obj instanceof Date || obj instanceof RegExp) {
+    return obj.constructor(obj);
+  }
+
+  // Set
+  if (obj instanceof Set) {
+    return new Set(obj);
+  }
+
+  // 檢查快取
+  if (cache.has(obj)) {
+    return cache.get(obj);
+  }
+
+  // 使用原物件的 constructor
+  const copy = new obj.constructor();
+
+  // 先放入 cache 中
+  cache.set(obj, copy);
+
+  // 取出所有一般屬性 & 所有 key 為 symbol 的屬性
+  [...Object.getOwnPropertyNames(obj), ...Object.getOwnPropertySymbols(obj)].forEach(key => {
+    copy[key] = deepCopy(obj[key], cache);
+  });
+
+  return copy;
+}
+
+/**
+ * 將query string轉為物件，以方便取值
+ * @param _search {string}-query string
+ * @returns {any}-物件 {queryKey: queryValue }
+ * @author kidin-1100707
+ */
+export function getUrlQueryStrings(search: string = undefined) {
+  const queryString = search || window.location.search;
+  const queryObj = {} as any;
+  let queryArr: Array<string>;
+
+  if (!queryString) {
+    return queryObj;
+  } else {
+
+    if (queryString.includes('?')) {
+      queryArr = queryString.split('?')[1].split('&');
+    } else {
+      queryArr = queryString.split('&');
+    }
+
+    queryArr.forEach(_query => {
+      const [_key, _value] = _query.split('=');
+      Object.assign(queryObj, {[_key]: _value});
+    });
+
+    return queryObj;
+  }
+
+}
+
+/**
+ * 四捨五入至小數點特定位數
+ * @param decimal {number}-數值
+ * @param digit {number}-位數
+ * @author kidin-1110318
+ */
+export function mathRounding(decimal: number, digit: number) {
+  return parseFloat(decimal.toFixed(digit));
 }

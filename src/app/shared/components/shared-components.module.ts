@@ -62,6 +62,7 @@ import { EquidistantChartComponent } from './chart/equidistant-chart/equidistant
 import { RelativeColumnChartComponent } from './chart/relative-column-chart/relative-column-chart.component';
 import { TermsComponent } from './terms/terms.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
+import { ConditionSelectorComponent } from './condition-selector/condition-selector.component';
 
 @NgModule({
   imports: [
@@ -129,7 +130,8 @@ import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.componen
     EquidistantChartComponent,
     RelativeColumnChartComponent,
     TermsComponent,
-    PrivacyPolicyComponent
+    PrivacyPolicyComponent,
+    ConditionSelectorComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -179,7 +181,8 @@ import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.componen
     ThresholdChartComponent,
     RelativeColumnChartComponent,
     TermsComponent,
-    PrivacyPolicyComponent
+    PrivacyPolicyComponent,
+    ConditionSelectorComponent
   ]
 })
 export class SharedComponentsModule {}
