@@ -16,7 +16,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import moment from 'moment';
+import dayjs, { Dayjs } from 'dayjs';
 import {
   BreakpointObserver,
   Breakpoints
@@ -169,7 +169,7 @@ export class DeviceLogDetailComponent implements OnInit {
           this.userInfo = res.datas[0].info;
         }
         this.totalCount = res.meta.pageCount;
-        this.getDataTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        this.getDataTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
       },
       err => {
         this.isLoadingResults = false;
@@ -179,15 +179,15 @@ export class DeviceLogDetailComponent implements OnInit {
     );
   }
 
-  logStartDateChange($event: MatDatepickerInputEvent<moment.Moment>) {
+  logStartDateChange($event: MatDatepickerInputEvent<Dayjs>) {
     // 配合save_device_log的time欄位 是YYYY-MM-DD hh:mm:ss.000000
-    const value = moment($event.value).format('YYYY-MM-DD 00:00:00.000000');
+    const value = dayjs($event.value).format('YYYY-MM-DD 00:00:00.000000');
     this.complexForm.patchValue({ startDate: value });
   }
 
-  logEndDateChange($event: MatDatepickerInputEvent<moment.Moment>) {
+  logEndDateChange($event: MatDatepickerInputEvent<Dayjs>) {
     // 配合save_device_log的time欄位 是YYYY-MM-DD hh:mm:ss.000000
-    const value = moment($event.value).format('YYYY-MM-DD 23:59:59.000000');
+    const value = dayjs($event.value).format('YYYY-MM-DD 23:59:59.000000');
     this.complexForm.patchValue({ endDate: value });
   }
   submit({ value, valid }) {

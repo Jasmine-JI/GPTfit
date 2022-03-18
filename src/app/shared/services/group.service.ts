@@ -1,11 +1,15 @@
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, ReplaySubject, throwError } from 'rxjs';
+import { Observable, BehaviorSubject, ReplaySubject, throwError, of } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { UtilsService } from './utils.service';
 import { UserProfileService } from './user-profile.service'
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { GroupDetailInfo, UserSimpleInfo } from '../../containers/dashboard/models/group-detail';
+import { GroupInfo } from '../classes/group-info';
+import { AllGroupMember } from '../classes/all-group-member';
+import { UserService } from '../../core/services/user.service';
+import { checkResponse } from '../utils/index';
 
 const { API_SERVER } = environment.url;
 
@@ -34,10 +38,21 @@ export class GroupService {
 
   newGroupId$ = new ReplaySubject<any>(1); // 創建群組的group id，以上傳圖床。
 
+  /**
+   * 目前瀏覽中群組資訊
+   */
+  currentGroupInfo = new GroupInfo();
+
+  /**
+   * 目前瀏覽中群組所有成員清單
+   */
+  allGroupMemberList = new AllGroupMember();
+
   constructor(
     private http: HttpClient,
     private userProfileService: UserProfileService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private userService: UserService
   ) {}
 
   /**
@@ -536,6 +551,49 @@ export class GroupService {
     });
     
     return idArr.join('-');
+  }
+
+  /**
+   * 取得目前瀏覽的群組資訊
+   * @author kidin-1110314
+   */
+  getCurrentGroupInfo() {
+    return this.currentGroupInfo;
+  }
+
+  /**
+   * 取得目前所有成員清單
+   * @param groupId {string}-群組編號
+   * @author kidin-1110317
+   */
+  getAllGroupMemberList(groupId: string) {
+    // 確認先前所存之成員清單是否為此群組所屬，若非則重新取得成員清單
+    if (groupId !== this.allGroupMemberList.belongGroupId) {
+      const body = {
+        avatarType: 3,
+        groupId,
+        groupLevel: GroupInfo.getGroupLevel(groupId),
+        infoType: 5,
+        token: this.userService.getToken()
+      };
+
+      return this.fetchGroupMemberList(body).pipe(
+        map(res => {
+          if (!checkResponse(res)) {
+            this.allGroupMemberList.clearMemberList();
+          } else {
+            const { groupMemberInfo } = res.info;
+            this.allGroupMemberList.saveNewMemberList(groupId, groupMemberInfo);
+          }
+
+          return this.allGroupMemberList;
+        })
+
+      )
+    } else {
+      return of(this.allGroupMemberList);
+    }
+
   }
 
 }

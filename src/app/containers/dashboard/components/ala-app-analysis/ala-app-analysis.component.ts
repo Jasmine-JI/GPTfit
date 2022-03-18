@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { AlaAppAnalysisService } from '../../services/ala-app-analysis.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { AlaApp } from '../../../../shared/models/app-id';
 import { AlbumType } from '../../../../shared/models/image';
 import { GroupService } from '../../../../shared/services/group.service';
@@ -97,16 +97,16 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    * 供日期選擇器用
    */
   selectTime = {
-    startTimestamp: moment().startOf('month').valueOf(),
-    endTimestamp: moment().valueOf(),
+    startTimestamp: dayjs().startOf('month').valueOf(),
+    endTimestamp: dayjs().valueOf(),
   }
 
   /**
    * api所需日期資訊
    */
   searchTime = {
-    startTime: moment().startOf('month').format(dateFormat),
-    endTime: moment().format(dateFormat)
+    startTime: dayjs().startOf('month').format(dateFormat),
+    endTime: dayjs().format(dateFormat)
   };
 
   /**
@@ -825,7 +825,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
               const { appId, byte, fileCount } = _analysis;
               this.searchRes.fileCount += fileCount;
               this.searchRes.totalSpace += byte;
-              const startTimestamp = moment(startTime).valueOf(),
+              const startTimestamp = dayjs(startTime).valueOf(),
                     oneRangeData = [startTimestamp, byte];
               switch (appId) {
                 case AlaApp.gptfit:
@@ -852,7 +852,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
 
           });
 
-          this.searchRes.createTime = moment().format('YYYY-MM-DD HH:mm');
+          this.searchRes.createTime = dayjs().format('YYYY-MM-DD HH:mm');
           this.uiFlag.progress = 100;
         }
         
@@ -892,7 +892,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
 
           });
 
-          this.searchRes.createTime = moment().format('YYYY-MM-DD HH:mm');
+          this.searchRes.createTime = dayjs().format('YYYY-MM-DD HH:mm');
           this.uiFlag.progress = 100;
         }
         
@@ -932,7 +932,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
 
           });
 
-          this.searchRes.createTime = moment().format('YYYY-MM-DD HH:mm');
+          this.searchRes.createTime = dayjs().format('YYYY-MM-DD HH:mm');
           this.uiFlag.progress = 100;
         }
         

@@ -7,7 +7,7 @@ import { Unit, ft, inch, lb } from '../../../../shared/models/bs-constant';
 import { HrBase } from '../../../../shared/models/user-profile-info';
 import { formTest } from '../../../../shared/models/form-test';
 import { HrZoneRange } from '../../../../shared/models/chart-data';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { DashboardService } from '../../services/dashboard.service';
@@ -1035,7 +1035,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   handleCountHrZone() {
     const { birthday } = this.userInfo,
           { heartRateBase, heartRateMax, heartRateResting } = this.setting,
-          age = moment().diff(moment(birthday, 'YYYYMMDD'), 'year');
+          age = dayjs().diff(dayjs(birthday, 'YYYYMMDD'), 'year');
     this.userHrZone = this.utils.getUserHrRange(heartRateBase, age, heartRateMax, heartRateResting);
   }
 

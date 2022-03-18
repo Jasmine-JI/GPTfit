@@ -10,7 +10,7 @@ import { EditMode } from '../models/personal';
 import { AlbumType } from '../../../shared/models/image';
 import { DashboardService } from '../services/dashboard.service';
 import { v5 as uuidv5 } from 'uuid';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { ImageUploadService } from '../services/image-upload.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ShareGroupInfoDialogComponent } from '../../../shared/components/share-group-info-dialog/share-group-info-dialog.component';
@@ -628,7 +628,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
    */
   createFileName(length: number, userId: string) {
     const nameSpace = uuidv5('https://www.gptfit.com', uuidv5.URL),
-          keyword = `${moment().valueOf().toString()}${length}${userId.split('-').join('')}`;
+          keyword = `${dayjs().valueOf().toString()}${length}${userId.split('-').join('')}`;
     return uuidv5(keyword, nameSpace);
   }
 

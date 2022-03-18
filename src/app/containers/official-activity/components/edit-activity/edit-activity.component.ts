@@ -5,7 +5,7 @@ import { Subject, Subscription, fromEvent, merge, of } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 import { OfficialActivityService } from '../../services/official-activity.service';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { UserProfileInfo, Sex } from '../../../../shared/models/user-profile-info';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -71,7 +71,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     applyFee: {}
   }
 
-  currentTimestamp = moment().startOf('day').unix();
+  currentTimestamp = dayjs().startOf('day').unix();
   language = MapLanguageEnum.TW;
   mapList: Array<any>;
   userProfile: UserProfileInfo;
@@ -316,8 +316,8 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101020
    */
   createNewEventBody() {
-    const startTimestamp = moment().add(30, 'day').startOf('day').unix();
-    const endTimestamp = moment().add(60, 'day').endOf('day').unix();
+    const startTimestamp = dayjs().add(30, 'day').startOf('day').unix();
+    const endTimestamp = dayjs().add(60, 'day').endOf('day').unix();
     this.eventInfo = {
       eventName: '',
       eventId: -1,
@@ -1046,8 +1046,8 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         endDate: raceEndTimestamp
       }
     } = this.eventInfo;
-    const newStartTimestamp = moment(date.startDate).unix();
-    const newEndTimestamp = moment(date.endDate).unix();
+    const newStartTimestamp = dayjs(date.startDate).unix();
+    const newEndTimestamp = dayjs(date.endDate).unix();
 
     switch (type) {
       case 'applyStartDate':

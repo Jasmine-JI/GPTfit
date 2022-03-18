@@ -1,4 +1,8 @@
-import { Sex } from './user-profile-info';
+import { Sex } from '../enum/personal';
+import { BrandType, GroupLevel } from '../enum/professional';
+import { SportType } from '../enum/sports';
+import { DateRange } from '../classes/date-range';
+import { ReportDateUnit } from '../classes/report-date-unit';
 
 /**
  * 報告頁面可讓使用者篩選的條件
@@ -51,22 +55,64 @@ export interface GroupTree {
 }
 
 /**
- * 運動類別代碼清單
+ * 所屬模組(以container資料夾內的module進行區分)
  */
-export enum SportCode {
-  rest,
-  run,
-  cycle,
-  weightTrain,
-  swim,
-  aerobic,
-  row,
-  ball,
-  all = 99
+export type ModuleType = 'professional' | 'personal' | 'official-activity' | 'device-manage' | 'admin-manage' | 'home';
+
+/**
+ * 頁面類別
+ */
+export type PageType = 'sportsReport' | 'lifeTracking' | 'cloudRun' | 'sportsfile';
+
+/**
+ * 條件選擇器所需參數（用於報告或檔案篩選）
+ */
+export interface ReportCondition {
+  moduleType: ModuleType;
+  pageType: PageType;
+  baseTime: DateRange;
+  compareTime?: DateRange;
+  dateUnit?: ReportDateUnit;
+  group?: {
+    brandType: BrandType;
+    currentLevel: GroupLevel;
+    focusGroup: {
+      id: string;
+      name: string;
+    };
+    brand: Array<GroupSimpleInfo>;
+    branches: Array<GroupSimpleInfo>;
+    classes: Array<GroupSimpleInfo>;
+  };
+  sportType?: SportType;
+  cloudRun?: {
+    mapId: number;
+    month: string;
+    checkCompletion: boolean;
+  };
+  filter?: {
+    age?: {
+      min: number;
+      max: number;
+    };
+    gender: Sex;
+  };
 }
 
 /**
- * 運動代碼
+ * 時間範圍類別
  */
-export type SportType = 
-  SportCode.all | SportCode.run | SportCode.cycle | SportCode.weightTrain | SportCode.swim | SportCode.aerobic | SportCode.row | SportCode.ball;
+export type DateRangeType =
+    'today'
+  | 'sevenDay'
+  | 'thirtyDay'
+  | 'sixMonth'
+  | 'thisWeek'
+  | 'thisMonth'
+  | 'thisYear'
+  | 'lastWeek'
+  | 'lastMonth'
+  | 'sameRangeLastYear'
+  | 'custom'
+  | 'none'
+;

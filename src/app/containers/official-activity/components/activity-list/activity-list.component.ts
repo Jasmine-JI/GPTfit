@@ -6,7 +6,7 @@ import { UserProfileService } from '../../../../shared/services/user-profile.ser
 import { Subject, Subscription, fromEvent, merge, of, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { UserProfileInfo, AccountTypeEnum, AccountStatusEnum } from '../../../../shared/models/user-profile-info';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { MapLanguageEnum } from '../../../../shared/models/i18n';
 import { SelectDate } from '../../../../shared/models/utils-type';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -38,8 +38,8 @@ enum AllStatus {
 }
 
 const defaultRaceDate = {
-  start: moment().subtract(6, 'months'),
-  end: moment().add(6, 'months')
+  start: dayjs().subtract(6, 'months'),
+  end: dayjs().add(6, 'months')
 }
 
 @Component({
@@ -448,12 +448,12 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    */
   getSelectDate(date: SelectDate) {
     const { startDate, endDate } = date;
-    this.eventListCondition.filterRaceStartTime = moment(startDate).unix();
-    this.eventListCondition.filterRaceEndTime = moment(endDate).unix();
+    this.eventListCondition.filterRaceStartTime = dayjs(startDate).unix();
+    this.eventListCondition.filterRaceEndTime = dayjs(endDate).unix();
     this.initPageIndex();
     this.selectDate = {
-      startTimestamp: moment(startDate).valueOf(),
-      endTimestamp: moment(endDate).valueOf()
+      startTimestamp: dayjs(startDate).valueOf(),
+      endTimestamp: dayjs(endDate).valueOf()
     }
 
     this.unsubscribePluralEvent();
@@ -601,8 +601,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   showCreateScheduleBox(e: MouseEvent, eventName: string, mapId: number, canEdit: boolean) {
     e.preventDefault();
     if (canEdit) {
-      const defaultSchedule = moment().add(3, 'day').unix();
-      const defaultDate = moment(defaultSchedule * 1000).startOf('day').unix();
+      const defaultSchedule = dayjs().add(3, 'day').unix();
+      const defaultDate = dayjs(defaultSchedule * 1000).startOf('day').unix();
       const defaultTime = defaultSchedule - defaultDate;
       this.uiFlag.showCreateScheduleBox = true;
       this.scheduleRace.token = this.token;
@@ -610,7 +610,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       this.scheduleRace.raceName = eventName;
       this.scheduleRace.schedTimestamp = defaultSchedule;
       this.scheduleTime = {
-        today: moment().unix(),
+        today: dayjs().unix(),
         date: defaultSchedule,
         time: defaultTime
       };
@@ -663,7 +663,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    */
   getScheduleDate(date: SelectDate) {
     const { startDate } = date;
-    this.scheduleTime.date = moment(startDate).unix();
+    this.scheduleTime.date = dayjs(startDate).unix();
     this.checkScheduleTime();
   }
 
@@ -682,9 +682,9 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1101208
    */
   checkScheduleTime() {
-    const today = moment().unix();
+    const today = dayjs().unix();
     const { date, time } = this.scheduleTime;
-    const compareDate = moment(today * 1000).startOf('day').unix();
+    const compareDate = dayjs(today * 1000).startOf('day').unix();
     const bufferTime = 20 * 60;
     if (date < compareDate) {
       this.scheduleTime = {

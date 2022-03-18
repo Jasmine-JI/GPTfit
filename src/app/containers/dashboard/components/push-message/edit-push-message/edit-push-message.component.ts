@@ -8,7 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from './../../people-selector-win/people-selector-win.component';
 import { Component, OnInit } from '@angular/core';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { PushMessageService } from '../../../services/push-message.service';
 
 @Component({
@@ -88,7 +88,7 @@ export class EditPushMessageComponent implements OnInit {
   reservation = {
     date: null,
     time: null,
-    timeFormat: moment().format('HH:mm')
+    timeFormat: dayjs().format('HH:mm')
   };
 
   constructor(
@@ -116,7 +116,7 @@ export class EditPushMessageComponent implements OnInit {
       this.getPushMessageDetail();
       return true;
     } else {
-      this.reservation.time = this.getTimeUnix(moment().format('HH:mm'));
+      this.reservation.time = this.getTimeUnix(dayjs().format('HH:mm'));
       return false;
     }
 
@@ -213,11 +213,11 @@ export class EditPushMessageComponent implements OnInit {
    * @author kidin-1090917
    */
   getSelectDate(e: any) {
-    this.reservation.date = moment(e.startDate).unix();
+    this.reservation.date = dayjs(e.startDate).unix();
 
     // 若日期選擇今日，則時間必須大於10分鐘以上
-    if (moment(e.startDate).unix() === moment().unix()) {
-      this.uiFlag.minTime = moment(moment().unix() + 10 * 60).format('HH:mm');
+    if (dayjs(e.startDate).unix() === dayjs().unix()) {
+      this.uiFlag.minTime = dayjs(dayjs().unix() + 10 * 60).format('HH:mm');
     } else {
       this.uiFlag.minTime = null;
     }
@@ -422,7 +422,7 @@ export class EditPushMessageComponent implements OnInit {
    * @author kidin-1090922
    */
   getRelativeTime() {
-    const relativeTimeStamp = this.req.pushMode.timeStamp - moment().unix(),
+    const relativeTimeStamp = this.req.pushMode.timeStamp - dayjs().unix(),
           day = 60 * 60 * 24,
           hour = 60 * 60;
 
@@ -490,8 +490,8 @@ export class EditPushMessageComponent implements OnInit {
    * @author kidin-1090921
    */
   checkTimeStamp() {
-    const setTimeStamp = moment(this.reservation.date) + this.reservation.time;
-    if (setTimeStamp < moment().unix() + 5 * 60) {
+    const setTimeStamp = dayjs(this.reservation.date) + this.reservation.time;
+    if (setTimeStamp < dayjs().unix() + 5 * 60) {
       this.req.pushMode.timeStamp = setTimeStamp + 6 * 60;
     } else {
       this.req.pushMode.timeStamp = setTimeStamp;

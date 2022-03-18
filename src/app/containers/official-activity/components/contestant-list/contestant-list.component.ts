@@ -10,7 +10,7 @@ import { pageNotFoundPath, officialHomePage } from '../../models/official-activi
 import { CloudrunService } from '../../../../shared/services/cloudrun.service';
 import { RankType } from '../../../../shared/models/cloudrun-leaderboard';
 import { ProductShipped, HaveProduct, ApplyStatus, PaidStatusEnum, Nationality } from '../../models/activity-content';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PaidStatusPipe } from '../../pipes/paid-status.pipe';
 import { ShippedStatusPipe } from '../../pipes/shipped-status.pipe';
@@ -327,7 +327,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    */
   reEditList(list: Array<any>) {
     // 出貨7天過後即可視為結案
-    const closeCaseDate = moment().add(7, 'day').unix();
+    const closeCaseDate = dayjs().add(7, 'day').unix();
     return list.map(_list => {
       const {
         productShipped,
@@ -1386,7 +1386,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    */
   convertDateFormat(timestamp: number) {
     const dateFormat = 'YYYY-MM-DD HH:mm';
-    return timestamp ? moment(this.convertTimestamp(timestamp)).format(dateFormat) : '';
+    return timestamp ? dayjs(this.convertTimestamp(timestamp)).format(dateFormat) : '';
   }
 
   /**

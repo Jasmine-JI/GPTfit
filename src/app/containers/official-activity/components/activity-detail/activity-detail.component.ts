@@ -17,7 +17,8 @@ enum ApplyButtonStatus {
   applyFull,
   cutOff,
   eventCancelled,
-  applyCancelled
+  applyCancelled,
+  applyCancelling
 };
 
 @Component({
@@ -138,6 +139,9 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
         break;
       case ApplyStatus.cancel:
         this.uiFlag.applyButtonStatus = ApplyButtonStatus.applyCancelled;
+        break;
+      case ApplyStatus.applyingQuit:
+        this.uiFlag.applyButtonStatus = ApplyButtonStatus.applyCancelling;
         break;
     }
 

@@ -1,9 +1,10 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
 import { chart } from 'highcharts';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
 import { TranslateService } from '@ngx-translate/core';
 import { ZoneTrendData, DisplayPage, zoneColor, sleepColor } from '../../../models/chart-data';
-import { day, month, week } from '../../../models/utils-constant';
+import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
 
 
 // 建立圖表用-kidin-1081212
@@ -164,11 +165,11 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
     if (this.page !== 'cloudrun') {
 
       if (this.dateRange === 'day' && this.perZoneData.zoneZero.length <= 7) {
-        HRTrendChartOptions['xAxis'].tickInterval = day;
+        HRTrendChartOptions['xAxis'].tickInterval = DAY;
       } else if (this.dateRange === 'day' && this.perZoneData.zoneZero.length > 7) {
-        HRTrendChartOptions['xAxis'].tickInterval = week;
+        HRTrendChartOptions['xAxis'].tickInterval = WEEK;
       } else {
-        HRTrendChartOptions['xAxis'].tickInterval = month;
+        HRTrendChartOptions['xAxis'].tickInterval = MONTH;
       }
 
     }
@@ -230,12 +231,12 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
           totalZoneTime = `${totalHr}:${timeTotalMin}:${timeTotalSecond}`;
         }
 
-        if (this.series.xAxis.tickInterval === month) {
-          return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * day).format('YYYY-MM-DD')}
+        if (this.series.xAxis.tickInterval === MONTH) {
+          return `${dayjs(this.x).format('YYYY-MM-DD')}~${dayjs(this.x + 6 * DAY).format('YYYY-MM-DD')}
             <br/>${this.series.name}: ${zoneTime}
             <br/>Total: ${totalZoneTime}`;
         } else {
-          return `${moment(this.x).format('YYYY-MM-DD')}
+          return `${dayjs(this.x).format('YYYY-MM-DD')}
             <br/>${this.series.name}: ${zoneTime}
             <br/>Total: ${totalZoneTime}`;
         }
@@ -287,11 +288,11 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
     const isDayReport = this.dateRange === 'day',
           overSevenDay = this.dateList.length > 7 || dataLength > 7;
     if (isDayReport && !overSevenDay) {
-      chartOptions['xAxis'].tickInterval = day;  // 間距一天
+      chartOptions['xAxis'].tickInterval = DAY;  // 間距一天
     } else if (isDayReport && overSevenDay) {
-      chartOptions['xAxis'].tickInterval = week;  // 間距一週
+      chartOptions['xAxis'].tickInterval = WEEK;  // 間距一週
     } else {
-      chartOptions['xAxis'].tickInterval = month;  // 間距一個月
+      chartOptions['xAxis'].tickInterval = MONTH;  // 間距一個月
     }
 
     // 設定圖表y軸單位格式-kidin-1090204
@@ -362,12 +363,12 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
           totalZoneTime = `${totalHr}:${timeTotalMin}`;
         }
 
-        if (this.series.xAxis.tickInterval === month) {
-          return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * day).format('YYYY-MM-DD')}
+        if (this.series.xAxis.tickInterval === MONTH) {
+          return `${dayjs(this.x).format('YYYY-MM-DD')}~${dayjs(this.x + 6 * DAY).format('YYYY-MM-DD')}
             <br/>${this.series.name}: ${zoneTime}
             <br/>Total: ${totalZoneTime}`;
         } else {
-          return `${moment(this.x).format('YYYY-MM-DD')}
+          return `${dayjs(this.x).format('YYYY-MM-DD')}
             <br/>${this.series.name}: ${zoneTime}
             <br/>Total: ${totalZoneTime}`;
         }
@@ -385,31 +386,31 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         weekStartDay,
         weekEndDay;
     if (this.dateRange === 'day') {
-      diff = (this.searchDate[1] - this.searchDate[0]) / (day);
+      diff = (this.searchDate[1] - this.searchDate[0]) / (DAY);
 
       for (let i = 0; i < diff + 1; i++) {
-        this.dateList.push(this.searchDate[0] + day * i);
+        this.dateList.push(this.searchDate[0] + DAY * i);
       }
 
     } else if (this.dateRange === 'week') {
 
       // 周報告開頭是星期日-kidin-1090220
-      if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-        weekStartDay = this.searchDate[0] - day * moment(this.searchDate[0]).isoWeekday();
+      if (dayjs(this.searchDate[0]).isoWeekday() !== 7) {
+        weekStartDay = this.searchDate[0] - DAY * dayjs(this.searchDate[0]).isoWeekday();
       } else {
         weekStartDay = this.searchDate[0];
       }
 
-      if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-        weekEndDay = this.searchDate[1] - day * moment(this.searchDate[1]).isoWeekday();
+      if (dayjs(this.searchDate[0]).isoWeekday() !== 7) {
+        weekEndDay = this.searchDate[1] - DAY * dayjs(this.searchDate[1]).isoWeekday();
       } else {
         weekEndDay = this.searchDate[1];
       }
 
-      diff = ((weekEndDay - weekStartDay) / (week)) + 1;
+      diff = ((weekEndDay - weekStartDay) / (WEEK)) + 1;
 
       for (let i = 0; i < diff + 1; i++) {
-        this.dateList.push(weekStartDay + week * i);
+        this.dateList.push(weekStartDay + WEEK * i);
       }
     }
 
@@ -484,7 +485,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
 
         };
 
-        return `${moment(this.x).format('YYYY-MM-DD')}
+        return `${dayjs(this.x).format('YYYY-MM-DD')}
           <br/>${this.series.name}: ${getFinalText(this.y)}
           <br/>Total: ${getFinalText(this.total)}`;
       }

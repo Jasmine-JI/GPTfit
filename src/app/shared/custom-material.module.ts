@@ -131,7 +131,7 @@ export class CustomMaterialModule {
           lang = 'zh-TW';
           break;
         case 'en-us':
-          lang = 'en-GB'; // 這個直接去 node_modules/moment/locale/資料夾下，看妳目標語系的檔名，就是
+          lang = 'en-GB'; // 這個直接去 node_modules/dayjs/locale/資料夾下，看妳目標語系的檔名，就是
           break;
         default:
           break;

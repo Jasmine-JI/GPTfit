@@ -7,9 +7,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HrZoneRange } from '../models/chart-data';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
 import { Unit, mi, ft, inch } from '../models/bs-constant';
-import { SportType, SportCode } from '../models/report-condition';
+import { SportType } from '../enum/sports';
 import { GroupLevel } from '../../containers/dashboard/models/group-detail';
 import { HrBase } from '../models/user-profile-info';
 import { version } from '../../shared/version';
@@ -810,7 +811,7 @@ export class UtilsService {
    */
   getDateInterval(date: SelectDate) {
     const { startDate, endDate } = date;
-    if ((moment(endDate).diff(moment(startDate), 'days') + 1) <= 52) {
+    if ((dayjs(endDate).diff(dayjs(startDate), 'days') + 1) <= 52) {
       return 'day';
     } else {
       return 'week';
@@ -826,9 +827,9 @@ export class UtilsService {
   createTimeStampArr(date: SelectDate) {
   const timeStampArr = [],
         { startDate, endDate } = date,
-        range = moment(endDate).diff(moment(startDate), 'days') + 1,
-        startTimestamp = moment(startDate).startOf('day').valueOf(),
-        endTimestamp = moment(endDate).startOf('day').valueOf();
+        range = dayjs(endDate).diff(dayjs(startDate), 'days') + 1,
+        startTimestamp = dayjs(startDate).startOf('day').valueOf(),
+        endTimestamp = dayjs(endDate).startOf('day').valueOf();
 
     if (this.getDateInterval(date) === 'day') {
 
@@ -861,14 +862,14 @@ export class UtilsService {
 
     let weekEndDate: number;
     // 周報告開頭是星期日-kidin-1090312
-    if (moment(startTimestamp).isoWeekday() !== 7) {
-      week.startDate = startTimestamp - 86400 * 1000 * moment(startTimestamp).isoWeekday();
+    if (dayjs(startTimestamp).isoWeekday() !== 7) {
+      week.startDate = startTimestamp - 86400 * 1000 * dayjs(startTimestamp).isoWeekday();
     } else {
       week.startDate = startTimestamp;
     }
 
-    if (moment(startTimestamp).isoWeekday() !== 7) {
-      weekEndDate = endTimestamp - 86400 * 1000 * moment(endTimestamp).isoWeekday();
+    if (dayjs(startTimestamp).isoWeekday() !== 7) {
+      weekEndDate = endTimestamp - 86400 * 1000 * dayjs(endTimestamp).isoWeekday();
     } else {
       weekEndDate = endTimestamp;
     }
@@ -894,10 +895,10 @@ export class UtilsService {
   ): number | string {
     let convertSpeed: number;
     switch (sportType) {
-      case SportCode.swim:
+      case SportType.swim:
         convertSpeed = value * 10;
         break;
-      case SportCode.row:
+      case SportType.row:
         convertSpeed = value * 2;
         break;
       default:
@@ -1113,7 +1114,7 @@ export class UtilsService {
    */
   createImgFileName(index: number, id: string | number) {
     const nameSpace = uuidv5('https://www.gptfit.com', uuidv5.URL),
-          keyword = `${moment().valueOf().toString()}${index}${id}`;
+          keyword = `${dayjs().valueOf().toString()}${index}${id}`;
     return uuidv5(keyword, nameSpace);
   }
 

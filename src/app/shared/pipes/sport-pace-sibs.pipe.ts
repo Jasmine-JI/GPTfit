@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { mi } from '../models/bs-constant';
-import { SportCode } from '../models/report-condition';
+import { SportType } from '../enum/sports';
 
 @Pipe({name: 'sportPaceSibs'})
 export class SportPaceSibsPipe implements PipeTransform {
@@ -17,22 +17,22 @@ export class SportPaceSibsPipe implements PipeTransform {
 
     let unit: string;
     switch (type) {
-      case SportCode.run:
+      case SportType.run:
         if (unitType === 0) {
           unit = 'min/km';
         } else {
           unit = 'min/mi';
         }
         break;
-      case SportCode.swim:
+      case SportType.swim:
         unit = 'min/100m';
         break;
-      case SportCode.row:
+      case SportType.row:
         unit = 'min/500m';
         break;
     }
 
-    if ([SportCode.run, SportCode.swim, SportCode.row].includes(type)) {
+    if ([SportType.run, SportType.swim, SportType.row].includes(type)) {
 
       // 速度為0則配速一律顯示60'00"
       if (value == 0) {
@@ -40,7 +40,7 @@ export class SportPaceSibsPipe implements PipeTransform {
       } else {
         let yVal: number;
         switch (type) {
-          case SportCode.run:  // 跑步配速
+          case SportType.run:  // 跑步配速
             if (unitType === 0) {
               yVal = (60 / value) * 60;
             } else {
@@ -48,10 +48,10 @@ export class SportPaceSibsPipe implements PipeTransform {
             }
             
             break;
-          case SportCode.swim:  // 游泳配速
+          case SportType.swim:  // 游泳配速
             yVal = (60 / value) * 60 / 10;
             break;
-          case SportCode.row:  // 划船配速
+          case SportType.row:  // 划船配速
             yVal = (60 / value) * 60 / 2;
             break;
         }

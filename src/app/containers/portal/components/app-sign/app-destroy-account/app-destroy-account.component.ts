@@ -3,7 +3,7 @@ import { AppCode } from '../../../models/app-webview';
 import { Router } from '@angular/router';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { SignupService } from '../../../../../shared/services/signup.service';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
@@ -240,8 +240,8 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
             this.checkoutIsGroupAdmin();
           } else if (status === DestroyStatus.destroying) {
             this.destroyResp.destroyTimestamp = destroyTimestamp;
-            const destroyDate = moment(destroyTimestamp * 1000).format('YYYY-MM-DD'),
-                  destroyTime = moment(destroyTimestamp * 1000).format('HH:mm');
+            const destroyDate = dayjs(destroyTimestamp * 1000).format('YYYY-MM-DD'),
+                  destroyTime = dayjs(destroyTimestamp * 1000).format('HH:mm');
             this.getTranslate(destroyDate, destroyTime);
           }
 
@@ -379,8 +379,8 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
             destroyTimestamp,
           };
 
-          const destroyDate = moment(destroyTimestamp * 1000).format('YYYY-MM-DD'),
-                destroyTime = moment(destroyTimestamp * 1000).format('HH:mm');
+          const destroyDate = dayjs(destroyTimestamp * 1000).format('YYYY-MM-DD'),
+                destroyTime = dayjs(destroyTimestamp * 1000).format('HH:mm');
           this.getTranslate(destroyDate, destroyTime);
         }
 

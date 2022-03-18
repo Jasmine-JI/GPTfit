@@ -13,7 +13,7 @@ import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
 import { Router } from '@angular/router';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { HashIdService } from '../../../../shared/services/hash-id.service';
-import moment from 'moment';
+import dayjs, { Dayjs } from 'dayjs';
 import { chart, charts, each } from 'highcharts';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -108,12 +108,12 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   iswalkElevLossChartTargetDisplay = false;
   islocalPressureChartTargetDisplay = false;
 
-  filterStartTime = moment().format('YYYY-MM-DDT00:00:00.000+08:00');
-  filterEndTime = moment().format('YYYY-MM-DDT00:00:00.000+08:00');
+  filterStartTime = dayjs().format('YYYY-MM-DDT00:00:00.000+08:00');
+  filterEndTime = dayjs().format('YYYY-MM-DDT00:00:00.000+08:00');
   /**
    * 此搜尋時間在轉換為GMT之後，搜尋到的生活追蹤資料會變成兩天
    */
-  //filterEndTime = moment().format('YYYY-MM-DDT23:59:59.000+08:00');
+  //filterEndTime = dayjs().format('YYYY-MM-DDT23:59:59.000+08:00');
 
   isShowChart = true;
   chartTargets: any;
@@ -196,8 +196,8 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
             .replace(')', '');
         }
 
-        this.syncDate = moment(this.fileInfo.syncDate).format('YYYY-MM-DD HH:mm:SS');
-        this.editDate = moment(this.fileInfo.syncDate).format('YYYY-MM-DD HH:mm:SS');
+        this.syncDate = dayjs(this.fileInfo.syncDate).format('YYYY-MM-DD HH:mm:SS');
+        this.editDate = dayjs(this.fileInfo.syncDate).format('YYYY-MM-DD HH:mm:SS');
         this.infoDate = this.handleDate(this.fileInfo.creationDate);
       }
 
@@ -351,11 +351,11 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleDateChange($event: MatDatepickerInputEvent<moment.Moment>) {
-    this.filterStartTime = moment($event.value).format(
+  handleDateChange($event: MatDatepickerInputEvent<Dayjs>) {
+    this.filterStartTime = dayjs($event.value).format(
       'YYYY-MM-DDTHH:mm:00.000+08:00'
     );
-    this.filterEndTime = moment($event.value).format(
+    this.filterEndTime = dayjs($event.value).format(
       'YYYY-MM-DDT00:00:00.000+08:00'
     );
   }

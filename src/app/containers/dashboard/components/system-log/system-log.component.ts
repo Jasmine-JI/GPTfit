@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { UtilsService } from '../../../../shared/services/utils.service';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { AlaApp } from '../../../../shared/models/app-id';
 import { InnerSystemService } from '../../services/inner-system.service';
 import { Subject, Subscription, fromEvent } from 'rxjs';
@@ -48,8 +48,8 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     serverity: <Serverity>null,
     appId: <AlaApp>null,
     apiCode: <string>null,
-    startTime: moment().subtract(3, 'month').format(apiDateFormat),
-    endTime: moment().format(apiDateFormat),
+    startTime: dayjs().subtract(3, 'month').format(apiDateFormat),
+    endTime: dayjs().format(apiDateFormat),
     page: 0,
     pageCounts: 30
   }
@@ -58,8 +58,8 @@ export class SystemLogComponent implements OnInit, OnDestroy {
    * 日期顯示和暫存用
    */
   selectedDate = {
-    startTimeStamp: moment().subtract(3, 'month').valueOf(),
-    endTimeStamp: moment().valueOf(),
+    startTimeStamp: dayjs().subtract(3, 'month').valueOf(),
+    endTimeStamp: dayjs().valueOf(),
     startDate: null,
     endDate: null
   }
@@ -309,8 +309,8 @@ export class SystemLogComponent implements OnInit, OnDestroy {
       this.progress = 0;
       this.uiFlag.notChoiceTarget = false;
       this.searchCondition.targetUserId = targetType === 'user' ? +this.targetUser.id : null;
-      this.searchCondition.startTime = moment(this.selectedDate.startDate).format(apiDateFormat);
-      this.searchCondition.endTime = moment(this.selectedDate.endDate).format(apiDateFormat);
+      this.searchCondition.startTime = dayjs(this.selectedDate.startDate).format(apiDateFormat);
+      this.searchCondition.endTime = dayjs(this.selectedDate.endDate).format(apiDateFormat);
       let body = {};
       for (let key in this.searchCondition) {
 
@@ -356,15 +356,15 @@ export class SystemLogComponent implements OnInit, OnDestroy {
       serverity: <Serverity>null,
       appId: <AlaApp>null,
       apiCode: <string>null,
-      startTime: moment().subtract(3, 'month').format(apiDateFormat),
-      endTime: moment().format(apiDateFormat),
+      startTime: dayjs().subtract(3, 'month').format(apiDateFormat),
+      endTime: dayjs().format(apiDateFormat),
       page: 0,
       pageCounts: 30
     }
 
     this.selectedDate = {
-      startTimeStamp: moment().subtract(3, 'month').valueOf(),
-      endTimeStamp: moment().valueOf(),
+      startTimeStamp: dayjs().subtract(3, 'month').valueOf(),
+      endTimeStamp: dayjs().valueOf(),
       startDate: null,
       endDate: null
     }

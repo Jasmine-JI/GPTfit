@@ -5,7 +5,7 @@ import { UtilsService } from '../../../../shared/services/utils.service';
 import { CoachService } from '../../../../shared/services/coach.service';
 import { combineLatest, Subject, fromEvent, Subscription } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import moment from 'moment';
+import dayjs, { Dayjs } from 'dayjs';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { TranslateService } from '@ngx-translate/core';
 import { langList } from '../../../../shared/models/i18n';
@@ -104,8 +104,8 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * 裝置日誌日期範圍
    */
    logDate = {
-    filterStartTime: moment().subtract(6, 'month').format('YYYY-MM-DDT00:00:00.000Z'),
-    filterEndTime: moment().format('YYYY-MM-DDT23:59:59Z')
+    filterStartTime: dayjs().subtract(6, 'month').format('YYYY-MM-DDT00:00:00.000Z'),
+    filterEndTime: dayjs().format('YYYY-MM-DDT23:59:59Z')
   }
 
   /**
@@ -589,7 +589,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1100706
    */
   checkUpload(sn: string): boolean {
-    const currentTimestamp = moment().valueOf(),
+    const currentTimestamp = dayjs().valueOf(),
           manufactureTimestamp = this.getManufactureTimestamp(sn);
     if (currentTimestamp < manufactureTimestamp) {
       return false;
@@ -608,7 +608,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     const baseYear = 1952,
           manufactureYear = sn.charCodeAt(0) + baseYear,
           manufactureWeek = +sn.slice(1, 3),
-          manufactureTimestamp = moment(manufactureYear, 'YYYY').valueOf() + manufactureWeek * 7 * 86400 * 1000;
+          manufactureTimestamp = dayjs(manufactureYear, 'YYYY').valueOf() + manufactureWeek * 7 * 86400 * 1000;
     return manufactureTimestamp;
   }
 
@@ -706,7 +706,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
         mainApp,
         secondaryApp,
         deviceEnableDate: null,
-        manufactureDate: moment(this.getManufactureTimestamp(sn)).format('YYYY-MM'),
+        manufactureDate: dayjs(this.getManufactureTimestamp(sn)).format('YYYY-MM'),
         qrURL: null,
         manual: {},
         relatedLinks: {}
@@ -1278,20 +1278,20 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
 
   /**
    * 取得使用者選擇的日期
-   * @param $event {MatDatepickerInputEvent<moment.Moment>}
+   * @param $event {MatDatepickerInputEvent<Dayjs>}
    * @param isStartTime {boolean}
    * @author kidin-1100712
    */
    handleDateChange(
-    $event: MatDatepickerInputEvent<moment.Moment>,
+    $event: MatDatepickerInputEvent<Dayjs>,
     isStartTime: boolean
   ) {
     if (isStartTime) {
-      this.logDate.filterStartTime = moment($event.value).format(
+      this.logDate.filterStartTime = dayjs($event.value).format(
         'YYYY-MM-DDT00:00:00.000Z'
       );
     } else {
-      this.logDate.filterEndTime = moment($event.value).format(
+      this.logDate.filterEndTime = dayjs($event.value).format(
         'YYYY-MM-DDT23:59:59.000Z'
       );
 

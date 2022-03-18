@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { HrZoneRange } from '../../../models/chart-data';
 import { mi, ft,  } from '../../../models/bs-constant';
-import { SportType, SportCode } from '../../../models/report-condition';
+import { SportType } from '../../../enum/sports';
 import { TemperatureSibsPipe } from '../../../pipes/temperature-sibs.pipe';
 
 type ChartType = 'hr' | 'pace' | 'altitude' | 'speed' | 'cadence' | 'power' | 'temperature' | 'gforce';
@@ -217,13 +217,13 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
             
             let _yAxisConvert: number;
             switch (this.sportType) {
-              case SportCode.run:  // 公里或英里配速
+              case SportType.run:  // 公里或英里配速
                 _yAxisConvert = this.unit === 0 ? _yAxisAfterCheck : _yAxisAfterCheck / mi;
                 break;
-              case SportCode.swim:  // 百米配速
+              case SportType.swim:  // 百米配速
                 _yAxisConvert = _yAxisAfterCheck * 10;
                 break;
-              case SportCode.row:  // 500米配速
+              case SportType.row:  // 500米配速
                 _yAxisConvert = _yAxisAfterCheck * 2;
                 break;
             }
@@ -745,15 +745,15 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
       case 'cadence':
         // hsla 220 -> 0 (藍 ～ 紅)
         switch (sportType) {
-          case SportCode.run:
-          case SportCode.cycle:
+          case SportType.run:
+          case SportType.cycle:
             // 超過220一律紅色
             return 220 - data < 0 ? `hsla(0, 70%, 65%, 1)` : `hsla(${220 - data}, 70%, 65%, 1)`;
-          case SportCode.weightTrain:
+          case SportType.weightTrain:
             // 超過30一律橙色
             return 30 - data < 0 ? `hsla(33, 70%, 65%, 1)` : `hsla(${220 - data}, 70%, 65%, 1)`;
-          case SportCode.swim:
-          case SportCode.row:
+          case SportType.swim:
+          case SportType.row:
             // 超過60一律紅色
             const maxVal = 60;
             return maxVal - data < 0 ? `hsla(0, 70%, 65%, 1)` : `hsla(${(maxVal - data) * (220 / maxVal)}, 70%, 65%, 1)`;
@@ -780,15 +780,15 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
    */
   getCadenceKey(type: SportType): string {
     switch (type) {
-      case SportCode.run:
+      case SportType.run:
         return 'universal_activityData_stepCadence';
-      case SportCode.cycle:
+      case SportType.cycle:
         return 'universal_activityData_CyclingCadence';
-      case SportCode.weightTrain:
+      case SportType.weightTrain:
         return 'universal_activityData_repeatTempo';
-      case SportCode.swim:
+      case SportType.swim:
         return 'universal_activityData_swimCadence';
-      case SportCode.row:
+      case SportType.row:
         return 'universal_activityData_rowCadence';
     }
   }
