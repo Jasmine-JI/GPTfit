@@ -1,10 +1,8 @@
-import { Component, OnInit, Input, Output, OnChanges, OnDestroy, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, OnChanges, OnDestroy, EventEmitter, SimpleChanges } from '@angular/core';
 import { DateRange } from '../../classes/date-range';
-import { ReportCondition, DateRangeType } from '../../models/report-condition';
+import { ReportCondition, DateRangeType, ReportDateType } from '../../models/report-condition';
 import { DateUnit } from '../../enum/report';
 import dayjs from 'dayjs';
-import { UserService } from '../../../core/services/user.service';
-import { GroupService } from '../../services/group.service';
 import { SportType } from '../../enum/sports';
 import { deepCopy } from '../../utils/index';
 import { GroupLevel, BrandType } from '../../enum/professional';
@@ -12,7 +10,7 @@ import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DefaultDateRange } from '../../classes/default-date-range';
 import { DAY } from '../../models/utils-constant';
-
+import { GroupInfo } from '../../classes/group-info';
 
 @Component({
   selector: 'app-condition-selector',
@@ -21,7 +19,19 @@ import { DAY } from '../../models/utils-constant';
 })
 export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy {
 
+  /**
+   * 初始條件
+   */
   @Input() initialCondition: ReportCondition;
+
+  /**
+   * 該頁面載入進度
+   */
+  @Input() progress: number;
+
+  /**
+   * 報告條件的發送器
+   */
   @Output() onConfirm: EventEmitter<ReportCondition> = new EventEmitter();
 
   private ngUnsubscribe = new Subject();
@@ -56,16 +66,16 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
   readonly BrandType = BrandType;
   readonly DateUnit = DateUnit;
 
-  constructor(
-    private userService: UserService,
-    private groupService: GroupService
-  ) { }
+  constructor() { }
 
   ngOnInit(): void {}
 
 
-  ngOnChanges(): void {
-    this.resetCondition();
+  ngOnChanges(e: SimpleChanges): void {
+    if (e.initialCondition) {
+      this.resetCondition();
+    }
+    
   }
 
   /**
@@ -87,7 +97,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   /**
-   * 顯示群組清單與否
+   * 顯示基準日期範圍選擇清單與否
    * @param e {MouseEvent}
    * @author kidin-1110315
    */
@@ -105,7 +115,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   /**
-   * 顯示群組清單與否
+   * 顯示比較日期範圍選擇清單與否
    * @param e {MouseEvent}
    * @author kidin-1110315
    */
@@ -123,7 +133,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   /**
-   * 顯示群組清單與否
+   * 顯示報告日期單位選擇清單與否
    * @param e {MouseEvent}
    * @author kidin-1110315
    */
@@ -147,10 +157,12 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    * @author kidin-111315
    */
   selectGroup(id: string, name: string) {
-    this.reportCondition.group.focusGroup = {
-      id,
-      name
-    };
+    const { id: oldId } = this.reportCondition.group.focusGroup;
+    if (id !== oldId) {
+      const level = GroupInfo.getGroupLevel(id);
+      this.reportCondition.group.focusGroup = { id, level, name };
+      this.reportCondition.needRefreshData = true;
+    }
 
     this.unSubscribePluralEvent();
   }
@@ -171,15 +183,20 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
   resetCondition() {
     this.reportCondition = deepCopy(this.initialCondition);
     this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
+    this.reportCondition.needRefreshData = true;
 console.log('init condition', this.reportCondition);
   }
 
   /**
-   * 送出條件
+   * 送出條件，並將 needRefreshData 變數重置
    * @author kidin-1110315
    */
   submitCondition() {
-    this.onConfirm.emit(this.reportCondition);
+    if (this.progress === 100) {
+      this.onConfirm.emit(this.reportCondition);
+      this.reportCondition.needRefreshData = false;
+    }
+      
   }
 
   /**
@@ -230,7 +247,9 @@ console.log('init condition', this.reportCondition);
       target.value = this.reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD');
     }
 
-    this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
+    this.checkDateRange('base', 'endTimestamp');
+    if (this.dateRange.compare === 'sameRangeLastYear') this.selectCompareDateRange('sameRangeLastYear');
+    this.afterChangeDate();
   }
 
   /**
@@ -242,14 +261,16 @@ console.log('init condition', this.reportCondition);
     const { target } = e as any;
     const { value } = target;
     if (value) {
-      const timestamp = dayjs(value, 'YYYY-MM-DD').valueOf();
+      const timestamp = dayjs(value, 'YYYY-MM-DD').endOf('day').valueOf();
       this.reportCondition.baseTime.endTimestamp = timestamp;
       this.dateRange.base = 'custom';
     } else {
       target.value = this.reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD');
     }
 
-    this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
+    this.checkDateRange('base', 'startTimestamp');
+    if (this.dateRange.compare === 'sameRangeLastYear') this.selectCompareDateRange('sameRangeLastYear');
+    this.afterChangeDate();
   }
 
   /**
@@ -265,12 +286,13 @@ console.log('init condition', this.reportCondition);
       const timestamp = dayjs(value, 'YYYY-MM-DD').valueOf();
       this.reportCondition.compareTime.startTimestamp = timestamp;
       this.dateRange.compare = 'custom';
+      this.checkDateRange('compare', 'endTimestamp');
     } else {
       this.reportCondition.compareTime = null;
       this.dateRange.compare = 'none';
     }
 
-    this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
+    this.afterChangeDate();
   }
 
   /**
@@ -283,15 +305,42 @@ console.log('init condition', this.reportCondition);
     const { value } = target;
     if (value) {
       if (!this.reportCondition.compareTime) this.reportCondition.compareTime = new DateRange;
-      const timestamp = dayjs(value, 'YYYY-MM-DD').valueOf();
+      const timestamp = dayjs(value, 'YYYY-MM-DD').endOf('day').valueOf();
       this.reportCondition.compareTime.endTimestamp = timestamp;
       this.dateRange.compare = 'custom';
+      this.checkDateRange('compare', 'startTimestamp');
     } else {
       this.reportCondition.compareTime = null;
-      this.dateRange.base = 'none';
+      this.dateRange.compare = 'none';
     }
 
+    this.afterChangeDate();
+  }
+
+  /**
+   * 變更日期後，確認日期單位與更新旗標
+   * @author kidin-1110325
+   */
+  afterChangeDate() {
     this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
+    this.reportCondition.needRefreshData = true;
+  }
+
+  /**
+   * 確認日期是否結束時間大於開始時間
+   * @param type {ReportDateType}-日期範圍類別
+   * @param checkKey {'startTimestamp' | 'endTimestamp'}-受檢查的鍵名
+   * @author kidin-1110325
+   */
+  checkDateRange(type: ReportDateType, checkKey: 'startTimestamp' | 'endTimestamp') {
+    const datetTypeKey = type === 'base' ? 'baseTime' : 'compareTime';
+    const { startTimestamp, endTimestamp } = this.reportCondition[datetTypeKey];
+    if (endTimestamp < startTimestamp) {
+      const changeKey = checkKey === 'startTimestamp' ? 'endTimestamp' : 'startTimestamp'
+      const changeValue = this.reportCondition[datetTypeKey][changeKey];
+      this.reportCondition[datetTypeKey][checkKey] = changeValue;
+    }
+
   }
 
   /**
@@ -305,6 +354,7 @@ console.log('init condition', this.reportCondition);
     this.reportCondition.baseTime.endTimestamp = endTime;
     if (this.dateRange.compare === 'sameRangeLastYear') this.selectCompareDateRange('sameRangeLastYear');
     this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
+    this.reportCondition.needRefreshData = true;
   }
 
   /**
@@ -332,6 +382,7 @@ console.log('init condition', this.reportCondition);
     }
 
     this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
+    this.reportCondition.needRefreshData = true;
   }
 
   /**
@@ -369,6 +420,7 @@ console.log('init condition', this.reportCondition);
    */
   selectDateUnit(unit: DateUnit) {
     this.reportCondition.dateUnit.unit = unit;
+    this.reportCondition.needRefreshData = true;
   }
 
   /**

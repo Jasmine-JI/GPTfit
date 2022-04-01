@@ -80,6 +80,7 @@ import { SettingPrivacyComponent } from './personal/setting-privacy/setting-priv
 import { SettingAccountComponent } from './personal/setting-account/setting-account.component';
 import { ActivityListComponent } from './personal/activity-list/activity-list.component';
 import { GroupService } from '../../shared/services/group.service';
+import { SharedComponentsModule as ProfessionalSharedModule } from '../professional/shared/shared-components.module';
 
 
 @NgModule({
@@ -94,7 +95,8 @@ import { GroupService } from '../../shared/services/group.service';
         ReactiveFormsModule,
         SharedModule,
         NgProgressModule,
-        QRCodeModule
+        QRCodeModule,
+        ProfessionalSharedModule
     ],
     providers: [
         MapService,

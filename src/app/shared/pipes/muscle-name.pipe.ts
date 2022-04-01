@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { MuscleCode } from '../models/weight-train';
+import { MuscleCode } from '../enum/weight-train';
 
 
 @Pipe({name: 'muscleName'})

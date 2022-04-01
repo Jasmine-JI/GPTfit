@@ -2,9 +2,9 @@ import { ConditionSymbols } from '../enum/sport-target';
 import { DateUnit } from '../enum/report';
 
 export type TargetField = 
-    'frequency'
+    'totalActivities'
   | 'totalTime'
-  | 'effectTime'
+  | 'benefitTime'
   | 'pai'
   | 'calories'
   | 'runDistance'

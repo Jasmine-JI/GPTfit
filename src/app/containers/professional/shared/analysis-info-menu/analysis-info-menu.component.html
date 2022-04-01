@@ -1,0 +1,65 @@
+<div
+  class="flexCol analysis__assign__menu"
+  [style.top]="getMenuPosition().y"
+  [style.left]="getMenuPosition().x"
+>
+  <div class="flexCol">
+    <h6 class="name__list__title">
+      <ng-container *ngIf="assignInfo.object === 'group'">
+        {{ 'universal_group_member' | translate }}
+      </ng-container>
+      <ng-container *ngIf="assignInfo.object === 'person'">
+        {{ 'universal_group_groupList' | translate }}
+      </ng-container>
+    </h6>
+    <div class="name__list__section">
+      <ul class="flexRow name__list">
+        <li
+          class="name__list__item"
+          *ngFor="let _list of assignInfo.nameList;"
+        >
+            <a
+              [href]="getAssignInfoUrl(assignInfo.object === 'group' ? _list.memberId : _list.groupId)"
+              target="_blank"
+              class="flexRow name__list__card"
+              [class.not__achieved]="
+                assignInfo.object === 'group'
+                && !_list.targetAchieved
+              "
+            >
+              <i
+                class="icon-svg_web-icon_p1_059-lock lock__icon"
+                *ngIf="
+                  assignInfo.object === 'group'
+                  && !_list.openPrivacy
+                "
+              ></i>
+              {{ _list.memberName }}
+            </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <a
+    [href]="getMainInfoUrl(assignInfo.id)"
+    target="_blank"
+    class="redirect__link"
+  >
+    <ng-container *ngIf="assignInfo.object === 'group'">
+      {{ 'universal_group_groupInfo' | translate }}
+    </ng-container>
+    <ng-container *ngIf="assignInfo.object === 'person'">
+      {{ 'universal_userProfile_basicInformation' | translate }}
+    </ng-container>
+  </a>
+  <a
+    [href]="getSportsReportUrl(assignInfo.id)"
+    target="_blank"
+    class="redirect__link"
+    *ngIf="['sports', 'cloudrun'].includes(assignInfo.reportType)"
+  >
+    <ng-container>
+      {{ 'universal_activityData_sportReport' | translate }}
+    </ng-container>
+  </a>
+</div>

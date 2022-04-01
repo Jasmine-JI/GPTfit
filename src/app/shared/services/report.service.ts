@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ReportConditionOpt } from '../models/report-condition'
 import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
-import { paiCofficient, dayPaiTarget } from '../models/sports-report';
-import { MuscleCode, MuscleGroup } from '../models/weight-train';
+import { PAI_COFFICIENT, DAY_PAI_TARGET } from '../models/sports-report';
+import { MuscleCode, MuscleGroup } from '../enum/weight-train';
 import dayjs from 'dayjs';
 
 @Injectable()
@@ -94,10 +94,10 @@ export class ReportService {
    * @author kidin-1100423
    */
   countPai(hrZone: Array<number>, weekNum: number) {
-    const { z0, z1, z2, z3, z4, z5 } = paiCofficient,
+    const { z0, z1, z2, z3, z4, z5 } = PAI_COFFICIENT,
           [zone0, zone1, zone2, zone3, zone4, zone5] = [...hrZone],
           weightedValue = z0 * zone0 + z1 * zone1 + z2 * zone2 + z3 * zone3 + z4 * zone4 + z5 * zone5;
-    return parseFloat((((weightedValue / (dayPaiTarget * 7)) * 100) / weekNum).toFixed(1));
+    return parseFloat((((weightedValue / (DAY_PAI_TARGET * 7)) * 100) / weekNum).toFixed(1));
   }
 
   /**

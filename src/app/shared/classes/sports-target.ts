@@ -107,7 +107,11 @@ export class SportsTarget {
     if (sameUnit || conditionNotSet) return _condition;
 
     const coefficient = this.getDateTransformCoefficient(reportUnit);
-    return _condition.map(_con => Math.round(_con.filedValue * coefficient));
+    return _condition.map(_con => {
+      _con.filedValue = Math.round(_con.filedValue * coefficient);
+      return _con;
+    });
+
   }
 
   /**

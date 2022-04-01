@@ -1,7 +1,8 @@
 export const DAY = 24 * 60 * 60 * 1000;  // 一天的毫秒數
 export const WEEK = 7 * DAY;
 export const MONTH = 30 * WEEK;
-export const YEAR = 365 * MONTH;
+export const SEASON = 3 * MONTH;
+export const YEAR = 4 * SEASON;
 
 export const TOKEN = 'ala_token';
 

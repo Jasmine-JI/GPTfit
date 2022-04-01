@@ -7,6 +7,7 @@
 @import 'font.scss';
 @import 'transition.scss';
 @import 'transform.scss';
+@import 'color.scss';
 
 .report-headerIcon{
   font-size: 30px;
@@ -110,12 +111,6 @@
   font-weight: bold;
   color:grey;
   margin: 10px 0px 10px 10px
-}
-
-.report-infoDataUnit {
-  font-size: 16px;
-  color: var(--scale-150-180);
-  font-weight: bold;
 }
 
 .report-ringChart {
@@ -390,4 +385,137 @@
     flex-shrink: 0;
   }
 
+}
+
+
+/************************************************* 新 report 的樣式 ***********************************/
+.report-mainContent {
+  
+}
+
+.report-headTitleSection {
+  align-items: center;
+  margin: 20px 0;
+}
+
+.report-sportsIcon {
+  font-size: 54px;
+  margin-right: 10px;
+}
+
+.report-dateRange {
+  font-size: 12px;
+  margin: 0;
+}
+
+.report-mainTitle {
+  @include bold-font(32px);
+}
+
+.report-compareDate {
+  color: rgba(120, 120, 120, 1);
+}
+
+.report-infoRow {
+  flex-wrap: wrap;
+}
+
+.report-infoItem {
+  align-items: center;
+  min-width: 120px;
+  margin: 10px;
+}
+
+.report-infoDataValue {
+  @include bold-font(24px);
+}
+
+.report-infoDataUnit {
+  font-size: 14px;
+  color: var(--scale-150-180);
+  font-weight: bold;
+}
+
+.report-infoDataType {
+  font-size: 14px;
+  color: rgba(115, 115, 115, 1);
+}
+
+.report-analysisHeader {
+  cursor: pointer;
+}
+
+.report-analysisHeaderText {
+  line-height: 1;
+  align-items: center;
+}
+
+.report-analysisTitle {
+  margin: 0;
+  color: $sport-analysis-color;
+  text-align: center;
+  width: 100%;
+  @include bold-font(16px);
+}
+
+.report-analysisUnit {
+  color: rgba(145, 145, 145, 1);
+  font-size: 12px;
+}
+
+.report-analysisRowData {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.report-analysisHintArea {
+  margin: 10px 0;
+  justify-content: center;
+}
+
+.report-baseHint {
+  display: inline-block;
+  min-width: 27px;
+  min-height: 20px;
+  margin: 0 10px 0 20px;
+  background-color: $report-base-color;
+}
+
+.report-compareHint {
+  @extend .report-baseHint;
+  background-color: $report-compare-color;
+}
+
+.report-analysisDateHint {
+  font-size: 12px;
+  color: rgb(74, 74, 80, 1);
+}
+
+.report-progressiveHint {
+  display: inline-block;
+  min-width: 20px;
+}
+
+.report-progressiveIcon {
+  color: rgba(255, 76, 215, 1);
+  @include bold-font(20px);
+}
+
+.report-regressiveIcon {
+  @extend .report-progressiveIcon;
+  color: rgba(0, 186, 255, 1);
+}
+
+.report-analysisColumnData {
+  font-weight: 700;
+  color: $sport-analysis-color;
+}
+
+.report-optionSection {
+  position: relative;
+}
+
+.report-settingIcon {
+  font-size: 24px;
 }

@@ -47,8 +47,8 @@ export class DefaultDateRange {
    */
   static getSixMonth() {
     const dateRange = {
-      startTime: dayjs().subtract(6, 'month').startOf('day').valueOf(),
-      endTime: dayjs().endOf('day').valueOf()
+      startTime: dayjs().subtract(6, 'month').startOf('month').valueOf(),
+      endTime: dayjs().subtract(1, 'month').endOf('month').valueOf()
     };
 
     return dateRange;

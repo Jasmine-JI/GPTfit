@@ -14,10 +14,10 @@ export class TargetFieldUnitPipe implements PipeTransform {
    */
   transform(value: TargetField): string {
     switch (value) {
-      case 'frequency':
+      case 'totalActivities':
         return 'universal_unit_times';
       case 'totalTime':
-      case 'effectTime':
+      case 'benefitTime':
         return 'universal_time_minute';
       case 'pai':
         return '';

@@ -3,6 +3,7 @@ import { REGEX_GROUP_ID } from '../models/utils-constant';
 import { GroupLevel, GroupJoinStatus, GroupStatus } from '../enum/professional';
 import dayjs from 'dayjs';
 import { DateUnit } from '../enum/report';
+import { deepCopy } from '../utils/index';
 
 export class GroupInfo {
 
@@ -100,6 +101,54 @@ export class GroupInfo {
   }
 
   /**
+   * 取得相關群組清單物件（以groupId當鍵名，用於報告頁面）
+   */
+  get immediateGroupObj(): any {
+    let result = {};
+    const { groupLevel, immediateGroupList: { brands, branches, coaches } } = this;
+
+    // 用來紀錄其他所需資訊
+    const otherTemplate = { base: {}, compare: {}, member: [] };
+
+    coaches.forEach(_coach => {
+      const { groupId: _groupId } = _coach;
+      const _groupLevel = GroupInfo.getGroupLevel(_groupId);
+      result = {
+        ...result,
+        [_groupId]: { groupId: _groupId, ..._coach, ...deepCopy(otherTemplate), groupLevel: _groupLevel }
+      };
+
+    });
+
+    if (groupLevel <= GroupLevel.branch) {
+      branches.forEach(_branch => {
+        const { groupId: _groupId } = _branch;
+        const _groupLevel = GroupInfo.getGroupLevel(_groupId);
+        result = {
+          ...result, [_groupId]: { groupId: _groupId, ..._branch, ...deepCopy(otherTemplate), groupLevel: _groupLevel }
+        };
+
+      });
+
+    }
+
+    if (groupLevel <= GroupLevel.brand) {
+      brands.forEach(_brand => {
+        const { groupId: _groupId } = _brand;
+        const _groupLevel = GroupInfo.getGroupLevel(_groupId);
+        result = {
+          ...result,
+          [_groupId]: { groupId: _groupId, ..._brand, ...deepCopy(otherTemplate), groupLevel: _groupLevel }
+        };
+        
+      });
+
+    }
+
+    return result;
+  }
+
+  /**
    * 儲存管理員清單
    */
   set adminList(adminList: any) {
@@ -153,6 +202,25 @@ export class GroupInfo {
   }
 
   /**
+   * 取得不重複之所有所屬群組清單（下層階層成員納入上層階層群組）
+   * @param groupIdList {string}-群組id
+   */
+  static getBelongGroup(groupIdList: Array<string>): Array<string> {
+    const belongGroupList = new Set();
+    groupIdList.forEach((_id: string) => {
+      const { groups: { brandId, branchId, classId } } = REGEX_GROUP_ID.exec(_id);
+      const brandGroupId = `0-0-${brandId}-0-0-0`;
+      const branchGroupId = `0-0-${brandId}-${branchId}-0-0`;
+      const classGroupId = `0-0-${brandId}-${branchId}-${classId}-0`;
+      belongGroupList.add(brandGroupId);
+      if (+branchId !== 0) belongGroupList.add(branchGroupId);
+      if (+classId !== 0) belongGroupList.add(classGroupId);
+    });
+
+    return Array.from(belongGroupList) as Array<string>;
+  }
+
+  /**
    * 取得群組目標
    */
   get sportTarget() {
@@ -160,6 +228,10 @@ export class GroupInfo {
     const referenceLevel = target.name;
     if (referenceLevel) {
       const targetReference = +referenceLevel as GroupLevel;
+      // 若繼承目標之群組階層與目前群組相同，代表為自訂目標
+      if (targetReference === groupLevel) return target;
+
+      // 透過繼承目標的階層取得目標
       let referenceIndex: number = -1;
       switch (targetReference) {
         case GroupLevel.brand:
@@ -168,8 +240,6 @@ export class GroupInfo {
         case GroupLevel.branch:
           referenceIndex = 3;
           break;
-        default:
-          return target;
       }
 
       const referenceTarget = groupRootInfo[referenceIndex].target;
