@@ -78,6 +78,7 @@ export interface ReportCondition {
     currentLevel: GroupLevel;
     focusGroup: {
       id: string;
+      level: GroupLevel;
       name: string;
     };
     brand: Array<GroupSimpleInfo>;
@@ -97,6 +98,7 @@ export interface ReportCondition {
     };
     gender: Sex;
   };
+  needRefreshData: boolean;
 }
 
 /**
@@ -116,3 +118,8 @@ export type DateRangeType =
   | 'custom'
   | 'none'
 ;
+
+/**
+ * 報告日期範圍的類別（基準日期/比較日期）
+ */
+export type ReportDateType = 'base' | 'compare';

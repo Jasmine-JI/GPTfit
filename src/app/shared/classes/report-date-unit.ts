@@ -1,5 +1,6 @@
 import { DateUnit } from '../enum/report';
 import { PageType } from '../models/report-condition';
+import { DAY, MONTH, WEEK, SEASON, YEAR } from '../models/utils-constant';
 
 /**
  * 處理時間範圍單位
@@ -38,6 +39,25 @@ export class ReportDateUnit {
         return DateUnit.month;
       default:
         return this._dateUnit;
+    }
+
+  }
+
+  /**
+   * 取得報告時間範圍
+   */
+  get reportDatePeroid() {
+    switch (this._dateUnit) {
+      case DateUnit.year:
+        return YEAR;
+      case DateUnit.season:
+        return SEASON;
+      case DateUnit.month:
+        return MONTH;
+      case DateUnit.week:
+        return WEEK;
+      case DateUnit.day:
+        return DAY;
     }
 
   }

@@ -297,8 +297,8 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
               case 'Waiting for QR sign in time out.':
                 // tft 裝置常駐qrcode，故過時就更新qrcode
                 if (this.tftView) {
-                  this.waitQrcodeLogin();
                   this.createLoginQrcode();
+                  this.waitQrcodeLogin();
                 }
                 this.cue = 'universal_userAccount_idleForTooLong';
                 break;

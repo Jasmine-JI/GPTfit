@@ -23,6 +23,7 @@ import {
   EventStatus
 } from '../../models/activity-content';
 import { AccessRight } from '../../../../shared/models/accessright';
+import { deepCopy } from '../../../../shared/utils/index';
 
 
 const leaveMessage = '尚未儲存，是否仍要離開此頁面？';
@@ -304,8 +305,8 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   getAllCloudrunMap() {
     this.officialActivityService.getRxAllMapInfo().pipe(
       takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.mapList = (res as Array<any>).sort((a, b) => +a.distance - +b.distance);
+    ).subscribe((res: any) => {
+      this.mapList = deepCopy(res).sort((a, b) => +a.distance - +b.distance);
       this.getSelectMapName();
     });
 
@@ -374,7 +375,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           this.router.navigateByUrl('/official-activity/activity-list');
         } else {
           this.eventDetail = eventDetail;
-          this.compareContent = this.utils.deepCopy({
+          this.compareContent = deepCopy({
             eventInfo,
             eventDetail
           });
@@ -1196,7 +1197,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @param id {string}-map id
    * @author kidin-1101021
    */
-  selectMap(e: KeyboardEvent, id: string, index: number) {
+  selectMap(e: KeyboardEvent, id: string) {
     e.stopPropagation();
     const oldMapId = this.eventInfo.cloudrunMapId;
     const newMapId = +id;
@@ -1216,7 +1217,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   getSelectMapName(mapId: number = null) {
     const { mapList, eventInfo, language } = this;
-    if (eventInfo && mapList && mapId > 0) {
+    if (eventInfo && mapList && (!mapId || mapId > 0)) {
       const { cloudrunMapId } = eventInfo;
       const id = mapId ?? cloudrunMapId;
       const index = mapList.findIndex(_map => _map.mapId == id);
@@ -1408,9 +1409,9 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101222
    */
   shiftContent(index: number, direction: 'up' | 'down') {
-    const targetContent = this.utils.deepCopy(this.eventDetail.content[index]);
+    const targetContent = deepCopy(this.eventDetail.content[index]);
     const switchIndex = index + (direction === 'up' ? -1 : 1);
-    const switchContent = this.utils.deepCopy(this.eventDetail.content[switchIndex]);
+    const switchContent = deepCopy(this.eventDetail.content[switchIndex]);
     [this.eventDetail.content[index], this.eventDetail.content[switchIndex]] = [switchContent, targetContent];
     const imgUploadCache = {};
     this.eventDetail.content = this.eventDetail.content.map((_content, index) => {

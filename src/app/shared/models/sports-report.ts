@@ -1,7 +1,10 @@
+import { SportsTarget } from '../classes/sports-target';
+import { ReportCondition, ReportDateType } from '../models/report-condition';
+
 /**
  * 各運動類別共通所需數據
  */
-export const commonData = [
+export const COMMON_DATA = [
   'avgHeartRateBpm',
   'avgMaxHeartRateBpm',
   'calories',
@@ -18,7 +21,7 @@ export const commonData = [
 /**
  * 跑步類別所需數據
  */
- export const runData = [
+ export const RUN_DATA = [
   'avgMaxSpeed',
   'avgRunMaxCadence',
   'avgSpeed',
@@ -30,7 +33,7 @@ export const commonData = [
 /**
  * 騎乘類別所需數據
  */
- export const rideData = [
+ export const RIDE_DATA = [
   'avgCycleMaxCadence',
   'avgCycleMaxWatt',
   'avgMaxSpeed',
@@ -50,7 +53,7 @@ export const commonData = [
 /**
  * 重訓類別所需數據
  */
- export const weightTrainData = [
+ export const WEIGHT_TRAIN_DATA = [
   'totalReps',
   'totalWeightKg',
   'totalActivitySecond'
@@ -59,7 +62,7 @@ export const commonData = [
 /**
  * 游泳類別所需數據
  */
- export const swimData = [
+ export const SWIM_DATA = [
   'avgMaxSpeed',
   'avgSpeed',
   'avgSwimMaxCadence',
@@ -78,7 +81,7 @@ export const commonData = [
 /**
  * 划船類別所需數據
  */
- export const rowData = [
+ export const ROW_DATA = [
   'avgMaxSpeed',
   'avgRowingMaxCadence',
   'avgSpeed',
@@ -91,7 +94,7 @@ export const commonData = [
 /**
  * 球類類別所需數據
  */
- export const ballData = [
+ export const BALL_DATA = [
   'avgMaxSpeed',
   'avgSpeed',
   'totalDistanceMeters',
@@ -106,11 +109,11 @@ export const commonData = [
   'maxGforceZ',
   'miniGforceX',
   'miniGforceY',
-  'miniGforceZ'
+  'miniGforceZ',
 ];
 
 // 個人球類運動所需額外數據
-export const personBallData = ballData.concat([
+export const PERSON_BALL_DATA = BALL_DATA.concat([
   'totalSwingCount',
   'totalForehandSwingCount',
   'totalBackhandSwingCount',
@@ -121,7 +124,7 @@ export const personBallData = ballData.concat([
 /**
  * PAI加權係數(pai = 該心率區間心率總秒數 * 該區間pai係數)
  */
-export const paiCofficient = {
+export const PAI_COFFICIENT = {
   z0: 0,
   z1: 0.5,
   z2: 1,
@@ -133,9 +136,20 @@ export const paiCofficient = {
 /**
  * 一天pai指標秒數（即經加權後運動時間等於該指標秒數，則pai為100）
  */
-export const dayPaiTarget = 1285;
+export const DAY_PAI_TARGET = 1285;
 
 /**
  * 區間趨勢（上升/下降）
  */
 export type Regression = 'up' | 'down';
+
+/**
+ * 建立運動報告數據的參數界面
+ */
+export interface SportsParameter {
+  openPrivacy: boolean;
+  target?: SportsTarget;
+  condition?: ReportCondition;
+  data?: Array<any>;
+  timeType?: ReportDateType;
+}

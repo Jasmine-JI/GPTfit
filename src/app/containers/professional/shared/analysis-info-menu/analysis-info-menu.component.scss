@@ -1,0 +1,66 @@
+@import 'color.scss';
+@import 'font.scss';
+
+.analysis__assign__menu {
+  position: fixed;
+  z-index: 5;
+  background-color: white;
+  border: 1px solid rgba(225, 225, 225, 1);
+  box-shadow: 3px 3px rgba(125, 125, 125, 1);
+  width: 250px;
+  padding: 5px;
+}
+
+.name__list__title {
+  color: var(--scale-100-255);
+  font-weight: bold;
+}
+
+.name__list__section {
+  height: 150px;
+  padding: 5px;
+  background-color: var(--scale-255-90);
+  border: 1px solid #bcbcbc;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  
+}
+
+.name__list {
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.name__list__card {
+  background-color: rgba(222, 222, 222, 1);
+  border-radius: 5px;
+  margin: 3px;
+  padding: 0 5px;
+  text-decoration: none;
+  white-space: pre-wrap;
+  @include bold-font(12px);
+}
+
+.redirect__link {
+  @extend .name__list__title;
+  text-decoration: none;
+  margin: 2px 0;
+  padding: 5px 2px;
+
+  &:hover {
+    color: white;
+    background-color: $primary-blue;
+  }
+
+}
+
+.not__achieved {
+  color: rgba(255, 0, 0, 1);
+}
+
+.lock__icon {
+  font-size: 16px;
+}

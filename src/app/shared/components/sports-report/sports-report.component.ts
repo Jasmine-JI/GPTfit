@@ -9,13 +9,13 @@ import { HashIdService } from '../../services/hash-id.service';
 import dayjs from 'dayjs';
 import { SportType } from '../../enum/sports';
 import {
-  commonData,
-  runData,
-  rideData,
-  weightTrainData,
-  swimData,
-  rowData,
-  personBallData
+  COMMON_DATA,
+  RUN_DATA,
+  RIDE_DATA,
+  WEIGHT_TRAIN_DATA,
+  SWIM_DATA,
+  ROW_DATA,
+  PERSON_BALL_DATA
 } from '../../models/sports-report';
 import { Unit, mi } from '../../models/bs-constant';
 import { UserProfileService } from '../../services/user-profile.service';
@@ -30,7 +30,7 @@ import {
   RelativeTrendChart,
   HrZoneRange
 } from '../../models/chart-data';
-import { Proficiency, ProficiencyCoefficient } from '../../models/weight-train';
+import { Proficiency } from '../../enum/weight-train';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../message-box/message-box.component';
@@ -453,7 +453,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   getReportUserInfo(
     unit: Unit = 0,
-    weightTrainLevel: ProficiencyCoefficient = Proficiency.metacarpus
+    weightTrainLevel: Proficiency = Proficiency.metacarpus
   ) {    
     this.userProfileService.getRxTargetUserInfo().pipe(
       takeUntil(this.ngUnsubscribe)
@@ -1769,10 +1769,10 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
   /**
    * 取得對應的訓練程度(api用)
-   * @param level { ProficiencyCoefficient }-重訓程度係數
+   * @param level { Proficiency }-重訓程度係數
    * @author kidin-1100610
    */
-  getStrengthLevel(proficiency: ProficiencyCoefficient) {
+  getStrengthLevel(proficiency: Proficiency) {
     switch (proficiency) {
       case Proficiency.novice:
         return 50;
@@ -1786,10 +1786,10 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
   /**
    * 變更重訓程度（係數），並儲存雲端
-   * @param level {ProficiencyCoefficient}-重訓係數
+   * @param level {Proficiency}-重訓係數
    * @author kidin-1100610
    */
-  changeLevel(level: ProficiencyCoefficient) {
+  changeLevel(level: Proficiency) {
     this.userInfo.weightTrainLevel = level;
     const strengthLevel = this.getStrengthLevel(level);
     if (this.uiFlag.isDashboardPage || this.uiFlag.isReportOwner) {
@@ -1992,19 +1992,19 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   getNeedKey(type: SportType) {
     switch (type) {
       case SportType.run:
-        return commonData.concat(runData);
+        return COMMON_DATA.concat(RUN_DATA);
       case SportType.cycle:
-        return commonData.concat(rideData);
+        return COMMON_DATA.concat(RIDE_DATA);
       case SportType.weightTrain:
-        return commonData.concat(weightTrainData);
+        return COMMON_DATA.concat(WEIGHT_TRAIN_DATA);
       case SportType.swim:
-        return commonData.concat(swimData);
+        return COMMON_DATA.concat(SWIM_DATA);
       case SportType.row:
-        return commonData.concat(rowData);
+        return COMMON_DATA.concat(ROW_DATA);
       case SportType.ball:
-        return commonData.concat(personBallData);
+        return COMMON_DATA.concat(PERSON_BALL_DATA);
       default: // 共同、有氧
-        return commonData;
+        return COMMON_DATA;
     }
 
   }

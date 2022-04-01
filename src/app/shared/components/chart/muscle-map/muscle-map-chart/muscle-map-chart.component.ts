@@ -3,8 +3,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import {
-  MuscleGroup,
-  MuscleCode,
   ArmMuscle,
   PectoralsMuscle,
   ShoulderMuscle,
@@ -14,9 +12,8 @@ import {
   asept,
   metacarpus,
   novice,
-  Proficiency,
-  ProficiencyCoefficient
 } from '../../../../models/weight-train';
+import { MuscleGroup, MuscleCode, Proficiency } from '../../../../enum/weight-train';
 import { UtilsService } from '../../../../services/utils.service';
 
 @Component({
@@ -28,7 +25,7 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject();
   @Input() description: string;
   @Input() data: any;
-  @Input() proficiencyCoefficient: ProficiencyCoefficient; // 訓練等級係數
+  @Input() proficiencyCoefficient: Proficiency; // 訓練等級係數
   @Input() page: string;
   @Input() userWeight: number;
   @Output() clickData = new EventEmitter;
@@ -206,10 +203,10 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * 根據係數取得訓練級別
-   * @param coefficient {ProficiencyCoefficient}-訓練等級係數
+   * @param coefficient {Proficiency}-訓練等級係數
    * @author kidin-1100610
    */
-  getLevel(coefficient: ProficiencyCoefficient) {
+  getLevel(coefficient: Proficiency) {
     switch (coefficient) {
       case Proficiency.novice:
         return novice;

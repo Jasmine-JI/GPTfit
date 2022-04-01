@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { MuscleGroup } from '../models/weight-train';
+import { MuscleGroup } from '../enum/weight-train';
 
 
 @Pipe({name: 'muscleGroupIcon'})

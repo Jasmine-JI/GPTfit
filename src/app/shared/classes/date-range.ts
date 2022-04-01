@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { DateUnit } from '../enum/report';
 
 const UTC_FORMAT = 'YYYY-MM-DDTHH:mm:ss.sssZ';
 
@@ -82,6 +83,33 @@ export class DateRange {
    */
   getEndTimeFormat(formatString: string): string {
     return dayjs(this._endTime).format(formatString);
+  }
+
+  /**
+   * 依報告使用之日期範圍單位，取得實際報告日期範圍
+   * ex. 使用者選擇報告日期為「3/11-3/22」，但日期計算單位選「月」，則報告實際日期範圍為3/1-3/31
+   * @param unit {DateUnit}-報告日期計算單位
+   * @author kidin-1110322
+   */
+  getReportRealTimeRange(unit: DateUnit) {
+    let realStartTime: number;
+    let realEndTime: number;
+    const { _startTime, _endTime } = this;
+    switch (unit) {
+      case DateUnit.day:
+        [realStartTime, realEndTime] = [_startTime, _endTime];
+        break;
+      case DateUnit.week:
+        realStartTime = dayjs(_startTime).startOf('week').valueOf();
+        realEndTime = dayjs(_endTime).endOf('week').valueOf();
+        break;
+      default:
+        realStartTime = dayjs(_startTime).startOf('month').valueOf();
+        realEndTime = dayjs(_endTime).endOf('month').valueOf();
+        break ;
+    }
+
+    return { realStartTime, realEndTime };
   }
   
 }

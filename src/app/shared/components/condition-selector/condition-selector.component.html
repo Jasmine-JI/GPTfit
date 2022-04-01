@@ -316,7 +316,7 @@
             <ng-container *ngSwitchCase="'sixMonth'">
               {{ 'universal_deviceSetting_lastNumberUnit' | translate: {
                 number: 6,
-                unit: 'universal_time_months' | translate
+                unit: 'universal_time_month' | translate
               } }}
             </ng-container>
             <ng-container *ngSwitchCase="'thisWeek'">
@@ -386,7 +386,7 @@
             >
               {{ 'universal_deviceSetting_lastNumberUnit' | translate: {
                 number: 6,
-                unit: 'universal_time_months' | translate
+                unit: 'universal_time_month' | translate
               } }}
             </li>
             <li
@@ -449,7 +449,7 @@
         type="date"
         class="date__input"
         [value]="endTime"
-        (focusout)="type === 'base' ? baseEndTimeChange($event, type) : compareStartTimeChange($event)"
+        (focusout)="type === 'base' ? baseEndTimeChange($event, type) : compareEndTimeChange($event)"
       >
     </div>
   </div>

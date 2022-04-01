@@ -1,0 +1,161 @@
+@import 'transition.scss';
+@import 'transform.scss';
+@import 'flex-center.scss';
+@import 'color.scss';
+
+@mixin analysis-column($width) {
+  @include center();
+  white-space: pre-wrap;
+  margin: 0 5px;
+  min-width: $width;
+  max-width: $width;
+}
+
+
+$arrow-rotate-degree: 45deg;
+
+.analysis__header__row {
+  border-bottom: 1px solid black;
+  padding: 5px 0;
+}
+
+.arrow__backbone {
+  background: currentColor;
+  height: 10px;
+  width: 2px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+}
+
+.left__wing {
+  
+}
+
+.left__wing__down {
+  
+}
+
+.right__wing {
+  
+}
+
+.right__wing__down {
+  
+}
+
+.analysis__row {
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(175, 175, 175, 1);
+
+  &:hover {
+    cursor: pointer;
+    background-color: rgba(245, 245, 245, 1);
+  }
+
+}
+
+.analysis__row__title {
+  font-size: 14px;
+}
+
+.analysis__data__section {
+  width: 100%;
+}
+
+.analysis__data__row {
+  min-height: 40px;
+  margin: 2px 0;
+  padding: 2px 0;
+  width: 100%;
+  justify-content: space-around;
+}
+
+.analysis__base__row {
+  background-color: $report-base-color;
+}
+
+.analysis__compare__row {
+  background-color: $report-compare-color;
+}
+
+.analysis__name {
+  @include analysis-column(120px);
+}
+
+.analysis__activity__people {
+  @include analysis-column(120px);
+}
+
+.analysis__achieved__people {
+  @include analysis-column(120px);
+}
+
+.analysis__total__activities {
+  @include analysis-column(120px);
+}
+
+.analysis__total__second {
+  @include analysis-column(120px);
+}
+
+.analysis__benefit__time {
+  @include analysis-column(120px);
+}
+
+.analysis__pai {
+  @include analysis-column(120px);
+}
+
+.analysis__calories {
+  @include analysis-column(120px);
+}
+
+.analysis__avg__hr {
+  @include analysis-column(120px);
+}
+
+.analysis__distance {
+  @include analysis-column(120px);
+}
+
+.analysis__pace {
+  @include analysis-column(120px);
+}
+
+.analysis__cadence {
+  @include analysis-column(120px);
+}
+
+.analysis__power {
+  @include analysis-column(120px);
+}
+
+.analysis__activity__second {
+  @include analysis-column(120px);
+}
+
+.sort__arrow {
+  min-width: 10px;
+}
+
+.sort_arrow__icon {
+  $size: 12px;
+  font-size: $size;
+  width: $size;
+  height: $size;
+}
+
+.see__more {
+  margin: 5px 0;
+  box-sizing: border-box;
+}
+
+.see__more__button {
+  color: rgba(21, 127, 204, 1);
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+}
