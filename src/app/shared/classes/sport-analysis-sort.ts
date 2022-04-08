@@ -1,3 +1,5 @@
+import { MuscleGroup } from '../enum/weight-train';
+
 
 /**
  * 處理Array<Object>數據排序相關
@@ -84,6 +86,30 @@ export class SportAnalysisSort {
       case 'activityPeople':
         this.sortNormalData();
         break;
+      case 'preferMuscle':
+        this.sortPreferMuscle();
+        break;
+      case 'armMuscle':
+        this.sortMuscleData(MuscleGroup.armMuscle);
+        break;
+      case 'pectoralsMuscle':
+        this.sortMuscleData(MuscleGroup.pectoralsMuscle);
+        break;
+      case 'shoulderMuscle':
+        this.sortMuscleData(MuscleGroup.shoulderMuscle);
+        break;
+      case 'backMuscle':
+        this.sortMuscleData(MuscleGroup.backMuscle);
+        break;
+      case 'abdominalMuscle':
+        this.sortMuscleData(MuscleGroup.abdominalMuscle);
+        break;
+      case 'legMuscle':
+        this.sortMuscleData(MuscleGroup.legMuscle);
+        break;
+      case 'preferSports':
+        this.sortPreferSports();
+        break;
       default:
         _isGroupAnalysis ? this.sortPersonAvgData() : this.sortNormalData();
         break;
@@ -132,6 +158,57 @@ export class SportAnalysisSort {
   }
 
   /**
+   * 根據使用者第一偏好運動進行排序
+   */
+  sortPreferSports() {
+    const { _isAscending } = this;
+    this._data.sort((a, b) => {
+      const aPrefer = a.base.preferSports;
+      const aFirstPrefer = aPrefer && aPrefer.length > 0 ? aPrefer[0] : 0;
+      const bPrefer = b.base.preferSports;
+      const bFirstPrefer = bPrefer && bPrefer.length > 0 ? bPrefer[0] : 0;
+
+      // 無運動資料者必排最後
+      return aFirstPrefer > 0 ? (_isAscending ? aFirstPrefer - bFirstPrefer : bFirstPrefer - aFirstPrefer) : 1;
+    });
+
+  }
+
+  /**
+   * 根據使用者第一偏好肌群進行排序
+   */
+  sortPreferMuscle() {
+    const { _isAscending } = this;
+    this._data.sort((a, b) => {
+      const aPrefer = a.base.preferMuscleGroup;
+      const aFirstPrefer = aPrefer && aPrefer.length > 0 ? aPrefer[0] : 0;
+      const bPrefer = b.base.preferMuscleGroup;
+      const bFirstPrefer = bPrefer && bPrefer.length > 0 ? bPrefer[0] : 0;
+
+      // 無重訓資料者必排最後
+      return aFirstPrefer > 0 ? (_isAscending ? aFirstPrefer - bFirstPrefer : bFirstPrefer - aFirstPrefer) : 1;
+    });
+
+  }
+
+  /**
+   * 根據指定的肌群重訓數據進行排序
+   * @param muscle {MuscleGroup}-肌群
+   */
+  sortMuscleData(muscle: MuscleGroup) {
+    const countWeight = (data: Array<number>) => data.reduce((prev, current) => prev * current);
+    const { _isAscending } = this;
+    this._data.sort((a, b) => {
+      const aBaseData = a.base.muscleGroupData;
+      const bBaseData = b.base.muscleGroupData;
+      const aWeight = countWeight(aBaseData ? aBaseData[muscle] : [0, 0, 0]);
+      const bWeight = countWeight(bBaseData ? bBaseData[muscle] : [0, 0, 0]);
+      return _isAscending ? aWeight - bWeight : bWeight - aWeight;
+    });
+
+  }
+
+  /**
    * 針對一般數據進行排序
    */
   sortNormalData() {
@@ -141,6 +218,7 @@ export class SportAnalysisSort {
       const bValue = b.base[_type] || 0;
       return _isAscending ? aValue - bValue : bValue - aValue;
     });
+
   }
 
   /**

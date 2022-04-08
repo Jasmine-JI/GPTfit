@@ -15,7 +15,15 @@ export enum AnalysisSportsColumn {
   speedOrPace,
   cadence,
   totalActivitySecond,
+  preferMuscle,
+  armMuscle,
+  pectoralsMuscle,
+  shoulderMuscle,
+  backMuscle,
+  abdominalMuscle,
+  legMuscle,
   totalWeight,
   power,
+  preferSports,
   hrChart
 }

@@ -133,7 +133,7 @@ export enum MuscleCode {
  * 肌群代碼（目前無文件規範，故自定義）
  */
 export enum MuscleGroup {
-  armMuscle,
+  armMuscle = 1,
   pectoralsMuscle,
   shoulderMuscle,
   backMuscle,

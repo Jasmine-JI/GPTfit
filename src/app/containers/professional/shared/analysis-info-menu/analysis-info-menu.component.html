@@ -34,7 +34,7 @@
                   && !_list.openPrivacy
                 "
               ></i>
-              {{ _list.memberName }}
+              {{ assignInfo.object === 'group' ? _list.memberName : _list.groupName }}
             </a>
         </li>
       </ul>

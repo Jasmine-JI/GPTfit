@@ -42,7 +42,8 @@ class ChartOptions {
         },
         series: {
           pointPadding: 0,
-          groupPadding: 0
+          groupPadding: 0,
+          borderColor: 'rgba(48, 48, 48, 1)'
         }
       },
       tooltip: {
@@ -73,7 +74,6 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
   highestHRZoneColor = '';
 
   @Input() data: Array<number>; // 各心率區間總秒數，ex.[992, 123, 1534, 1234, 1231, 321]
-  @Input() isPrint: boolean;
   @Input() type: 'mixHrZone' | 'personalAnalysis';
   @Input() isPreviewMode: boolean = false;
   @ViewChild('container', {static: false})

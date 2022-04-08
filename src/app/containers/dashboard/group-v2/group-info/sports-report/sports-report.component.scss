@@ -135,8 +135,24 @@ $arrow-rotate-degree: 45deg;
   @include analysis-column(120px);
 }
 
+.analysis__prefer__sports {
+  @include analysis-column(120px);
+}
+
+.analysis__prefer__muscle {
+  @include analysis-column(120px);
+}
+
+.analysis__muscle__group {
+  @include analysis-column(120px);
+}
+
+.analysis__hr__chart {
+  @include analysis-column(180px);
+}
+
 .sort__arrow {
-  min-width: 10px;
+  min-width: 12px;
 }
 
 .sort_arrow__icon {
@@ -144,6 +160,14 @@ $arrow-rotate-degree: 45deg;
   font-size: $size;
   width: $size;
   height: $size;
+}
+
+.prefer__icon {
+  font-size: 24px;
+}
+
+.target__not__Achieved {
+  color: rgba(255, 0, 0, 1);
 }
 
 .see__more {

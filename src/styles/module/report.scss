@@ -393,6 +393,10 @@
   
 }
 
+.report-section {
+  margin-bottom: 30px;
+}
+
 .report-headTitleSection {
   align-items: center;
   margin: 20px 0;
@@ -443,6 +447,11 @@
 
 .report-analysisHeader {
   cursor: pointer;
+}
+
+.report-headerCorrection {
+  position: relative;
+  left: 6px;
 }
 
 .report-analysisHeaderText {
@@ -517,5 +526,9 @@
 }
 
 .report-settingIcon {
+  font-size: 24px;
+}
+
+.report-lockIcon {
   font-size: 24px;
 }

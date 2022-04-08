@@ -734,6 +734,9 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         case 'themeImg':
           // img 另外使用圖床api處理
           break;
+        // 最後編輯時間不予處理
+        case 'lastEditDate':
+          break;
         default:
 
           if (newValue !== compareValue) {

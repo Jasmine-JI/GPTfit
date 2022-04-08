@@ -126,11 +126,35 @@
             <ng-container *ngSwitchCase="AnalysisSportsColumn.totalActivitySecond">
               {{ '總活動時間' | translate }}
             </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.preferMuscle">
+              {{ 'universal_muscleName_preferredMuscleGroup' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.armMuscle">
+              {{ 'universal_muscleName_armMuscles' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.pectoralsMuscle">
+              {{ 'universal_muscleName_pectoralsMuscle' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.shoulderMuscle">
+              {{ 'universal_muscleName_shoulderMuscle' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.backMuscle">
+              {{ 'universal_muscleName_backMuscle' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.abdominalMuscle">
+              {{ 'universal_muscleName_abdominalMuscle' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.legMuscle">
+              {{ 'universal_muscleName_legMuscle' | translate }}
+            </ng-container>
             <ng-container *ngSwitchCase="AnalysisSportsColumn.totalWeight">
               {{ 'universal_activityData_totalWeight' | translate }}
             </ng-container>
             <ng-container *ngSwitchCase="AnalysisSportsColumn.power">
               {{ 'universal_activityData_avgPower' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.preferSports">
+              {{ 'universal_activityData_activityPreferences' | translate }}
             </ng-container>
             <ng-container *ngSwitchCase="AnalysisSportsColumn.hrChart">
               {{ 'universal_activityData_hrZone' | translate }}
