@@ -8,8 +8,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '../../../../../shared/services/hash-id.service';
 import { MatSort, Sort } from '@angular/material/sort';
 import dayjs from 'dayjs';
-import { MatTableDataSource } from '@angular/material/table';
-import SimpleLinearRegression from 'ml-regression-simple-linear';
 import { SportType } from '../../../../../shared/enum/sports';
 import {
   COMMON_DATA,
@@ -31,9 +29,7 @@ import {
   DiscolorTrendData,
   RelativeTrendChart
 } from '../../../../../shared/models/chart-data';
-import { SettingObj } from '../../../../dashboard/models/group-detail';
 import { MuscleCode, MuscleGroup } from '../../../../../shared/enum/weight-train';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import { HrBase } from '../../../../../shared/models/user-profile-info';
 import { getUrlQueryStrings, deepCopy, mathRounding, subscribePluralEvent } from '../../../../../shared/utils/index';
 import { QueryString } from '../../../../../shared/enum/query-string';
@@ -53,7 +49,7 @@ import { speedToPace } from '../../../../../shared/utils/sports';
 import { SportAnalysisSort } from '../../../../../shared/classes/sport-analysis-sort';
 import { AnalysisOption } from '../../../../professional/classes/analysis-option';
 import { AnalysisSportsColumn } from '../../../../professional/enum/report-analysis';
-import { AnalysisAssignMenu, AnalysisObject } from '../../../../professional/models/report-analysis';
+import { AnalysisAssignMenu } from '../../../../professional/models/report-analysis';
 
 const ERROR_MESSAGE = 'Error! Please try again later.';
 
@@ -126,9 +122,19 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   groupSportsInfo: GroupSportsReportInfo;
 
   /**
-   * 圖表所需數據
+   * 個人部份基本資訊與運動概要數據
    */
-  groupChartData: GroupSportsChartData;
+  memberSportsInfo: AllGroupMember;
+
+  /**
+   * 基準日期圖表所需數據
+   */
+  groupBaseChartData: GroupSportsChartData;
+
+  /**
+   * 比較日期圖表所需數據
+   */
+  groupCompareChartData: GroupSportsChartData;
 
   /**
    * 使用者使用之數據單位（公制/英制）
@@ -183,6 +189,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   readonly GroupLevel = GroupLevel;
   readonly Unit = Unit;
   readonly AnalysisSportsColumn = AnalysisSportsColumn;
+  readonly muscleMetricUnit = 'kg*rep*set';
+  readonly muscleImperialUnit = 'lb*rep*set';
+  readonly MuscleGroup = MuscleGroup;
 
   constructor(
     private utils: UtilsService,
@@ -344,7 +353,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     if (this.uiFlag.progress === 100) {
       this.uiFlag.progress = 30;
       this.reportCondition = deepCopy(condition);
-console.log('condition', condition);
       const {
         group: { focusGroup: { id, level } },
         sportType,
@@ -435,15 +443,15 @@ console.log('condition', condition);
    */
   createReport(condition: ReportCondition, data: Array<any>) {
     const [allGroupMemberList, baseSportSummary, compareSportSummary] = data;
-    const sportTarget = new SportsTarget(this.getGroupInfo().sportTarget);
-    this.handlePersonalData('base', condition, allGroupMemberList, baseSportSummary, sportTarget);
+    const sportsTarget = new SportsTarget(this.getGroupInfo().sportTarget);
+    this.handlePersonalData('base', condition, allGroupMemberList, baseSportSummary, sportsTarget);
 
     if (this.uiFlag.isCompareMode) {
-      this.handlePersonalData('compare', condition, allGroupMemberList, compareSportSummary, sportTarget);
+      this.handlePersonalData('compare', condition, allGroupMemberList, compareSportSummary, sportsTarget);
     }
 
+    this.handleGroupChartData(condition, baseSportSummary, compareSportSummary, sportsTarget);
     this.handleGroupInfoData(allGroupMemberList);
-    this.handleGroupChartData(condition, baseSportSummary, compareSportSummary);
     this.uiFlag.progress = 100;
   }
 
@@ -475,9 +483,10 @@ console.log('condition', condition);
       }
 
       const sportData = new GroupSportsReport(parameter);
-      allGroupList.savePersonalData(_userId, timeType, sportData);
+      allGroupList.savePersonalData(_userId, timeType, sportData.infoData);
     });
 
+    this.memberSportsInfo = allGroupList;
     this.personAnalysis = new SportAnalysisSort(Object.values(allGroupList.memberList), 'memberName');
 console.log('allGroupList', this.personAnalysis);
   }
@@ -495,14 +504,19 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
   }
 
   /**
-   * 計算圖表所需數據
+   * 計算基準日期範圍圖表所需數據
    * @param condition {ReportCondition}-報告篩選條件
    * @param baseData {Array<any>}-多人的基準運動數據陣列
    * @param compareData {Array<any>}-多人的比較運動數據陣列
    * @author kidin-1110322
    */
-  handleGroupChartData(condition: ReportCondition, baseData: Array<any>, compareData: Array<any>) {
-
+  handleGroupChartData(
+    condition: ReportCondition,
+    baseData: Array<any>,
+    compareData: Array<any>,
+    sportsTarget: SportsTarget
+  ) {
+    this.groupBaseChartData = new GroupSportsChartData(condition, baseData, compareData, sportsTarget);
   }
 
   /**
@@ -593,14 +607,64 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
   }
 
   /**
+   * 取得個人概要數據
+   * @param data {any}-運動概要數據
+   * @param key {string}-指定數據的鍵名
+   * @author kidin-1110324 
+   */
+  getPersonalData(data: any, key: string) {
+    if (this.uiFlag.progress !== 100) return 0;
+    
+    const isMetric = this.userUnit === Unit.metric;
+    const { sportType } = this.reportCondition;
+    let result: string | number = 0;
+    const value = data[key];
+    if (value) {
+      
+      switch (key) {
+        case 'totalDistanceMeters':
+          // 距離統一使用千位數單位進行四捨五入
+          const thousandsNumber = value / 1000;
+          const distanceConverse = mathRounding(thousandsNumber / (isMetric ? 1 : mi), 2);
+
+          // 不足0.1公里或0.1英哩，則以 '< 0.1' 表示
+          result = distanceConverse >= 0.1 ? distanceConverse : '< 0.1';
+          break;
+        case 'elevGain':
+          result = isMetric ? value : mathRounding(value / ft, 1);
+          break;
+        case 'avgSpeed':
+          const paceList = [SportType.run, SportType.swim, SportType.row];
+          if (paceList.includes(sportType)) {
+            result = speedToPace(value, sportType, this.userUnit).value;
+          } else {
+            result = isMetric ? value : mathRounding(value / mi, 2);
+          }
+          
+          break;
+        case 'totalWeightKg':
+          result = isMetric ? value : mathRounding(value / lb, 1);
+          break;
+        default:
+          result = Math.round(value);
+          break;
+      }
+
+    }
+    
+    return result;
+  }
+
+  /**
    * 取得目標達成率
-   * @param denominator {number}-總人數
-   * @param molecular {number}-統計人數
+   * @param totalPeople {number}-總人數
+   * @param statistics {number}-統計人數
    * @author kidin-1110329
    */
-  getAchievedNumber(denominator: number, molecular: number) {
+  getAchievedNumber(totalPeople: number, statistics: number) {
+    const molecular = statistics ?? 0;
     return {
-      value: denominator ? `${mathRounding((molecular / denominator) * 100, 1)}%` : '0%',
+      value: totalPeople ? `${mathRounding((molecular / totalPeople) * 100, 1)}%` : '0%',
       unit: ''
     };
 
@@ -609,10 +673,11 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
   /**
    * 取得人數相關統計數據
    * @param denominator {number}-總人數
-   * @param molecular {number}-統計人數
+   * @param statistics {number}-統計人數
    * @author kidin-1110325
    */
-  getPeopleNumber(denominator: number, molecular: number) {
+  getPeopleNumber(denominator: number, statistics: number) {
+    const molecular = statistics ?? 0;
     return {
       value: denominator ? `${molecular}/${denominator}` : '0/0',
       unit: ''
@@ -638,13 +703,25 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
   }
 
   /**
-   * 確認基準數據與比較數據差
-   * @param groupId {string}-群組編號
-   * @param dataKey {string}-欲比較的數據
-   * @author kidin-1110328
+   * 團體分析將基準數據與比較數據比對是否進步
+   * @param id {string}-群組編號
+   * @param key {string}-欲比較的數據
+   * @author kidin-1110406
    */
-  checkProgressive(groupId: string, dataKey: string) {
-    return this.groupSportsInfo.checkProgressive(groupId, dataKey);
+  checkGroupProgressive(id: string, key: string) {
+    const { progress, isCompareMode } = this.uiFlag;
+    if (progress === 100 && isCompareMode) return this.groupSportsInfo.checkProgressive(id, key);
+  }
+
+  /**
+   * 個人分析將基準數據與比較數據比對是否進步
+   * @param id {string}-使用者編號
+   * @param key {string}-欲比較的數據
+   * @author kidin-1110406
+   */
+  checkPersonProgressive(id: string, key: string) {
+    const { progress, isCompareMode } = this.uiFlag;
+    if (progress === 100 && isCompareMode) return this.memberSportsInfo.checkProgressive(id, key);
   }
 
   /**
@@ -668,7 +745,8 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
    * 顯示個人分析設定
    * @author kidin-1110330
    */
-  showPersonalAnalysisOption() {
+  showPersonalAnalysisOption(e: MouseEvent) {
+    e.stopPropagation();
     const { showPersonalAnalysisOption } = this.uiFlag;
     if (showPersonalAnalysisOption) {
       this.unSubscribePluralEvent();
@@ -750,10 +828,18 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
    * @author kidin-1110401
    */
   showAssignPersonMenu(e: MouseEvent, info: any) {
-console.log('showAssignGroupMenu', e, info);
     e.stopPropagation();
     const { x, y } = (e as any);
-    const { memberId, belongGroup } = info;
+    const { memberId, groupId } = info;
+    const belongGroup = groupId.map(_id => {
+      const { groupSportInfo } = this.groupSportsInfo;
+      return {
+        groupId: _id,
+        groupName: groupSportInfo[_id].groupName
+      }
+
+    });
+
     this.analysisAssignMenu = {
       show: true,
       position: { x, y },

@@ -113,7 +113,7 @@ export class AnalysisOption {
   }
 
   /**
-   * 建立運動報告可選擇的欄位選項清單
+   * 建立運動報告團體分析可選擇的欄位選項清單
    */
   createGroupSportOption() {
     const { sportType } = this._optionInfo;
@@ -171,11 +171,67 @@ export class AnalysisOption {
   }
 
   /**
-   * 建立運動報告可選擇的欄位選項清單
-   * @param info {AnalysisOptionInfo}-建立選項所需資訊
+   * 建立運動報告個人分析可選擇的欄位選項清單
    */
   createPersonalSportOption() {
-    return '';
+    const { sportType } = this._optionInfo;
+    let list = [
+      AnalysisSportsColumn.activities,
+      AnalysisSportsColumn.totalSecond,
+      AnalysisSportsColumn.calories,
+      AnalysisSportsColumn.averageHeartRate,
+      AnalysisSportsColumn.preferSports,
+      AnalysisSportsColumn.hrChart
+    ];
+
+    switch (sportType) {
+      case SportType.all:
+        list = list.concat([
+          AnalysisSportsColumn.benefitTime,
+          AnalysisSportsColumn.pai
+        ]);
+        break;
+      case SportType.run:
+      case SportType.swim:
+        list = list.concat([
+          AnalysisSportsColumn.distance,
+          AnalysisSportsColumn.speedOrPace,
+          AnalysisSportsColumn.cadence
+        ]);
+        break;
+      case SportType.cycle:
+      case SportType.row:
+        list = list.concat([
+          AnalysisSportsColumn.distance,
+          AnalysisSportsColumn.speedOrPace,
+          AnalysisSportsColumn.cadence,
+          AnalysisSportsColumn.power
+        ]);
+        break;
+      case SportType.weightTrain:
+        list = list.concat([
+          AnalysisSportsColumn.totalActivitySecond,
+          AnalysisSportsColumn.preferMuscle,
+          AnalysisSportsColumn.armMuscle,
+          AnalysisSportsColumn.pectoralsMuscle,
+          AnalysisSportsColumn.shoulderMuscle,
+          AnalysisSportsColumn.backMuscle,
+          AnalysisSportsColumn.abdominalMuscle,
+          AnalysisSportsColumn.legMuscle
+        ]);
+        break;
+      case SportType.ball:
+        list = list.concat([
+          AnalysisSportsColumn.distance
+        ]);
+        break;
+    }
+
+    this._itemList = list.sort((a, b) => a - b)
+      .map(_item => new OneOption({ item: _item }));
+    
+    this._storageKey = `groupReport-${sportType}`;
+    return;
   }
 
   /**
@@ -208,11 +264,14 @@ export class AnalysisOption {
   loadStorageOption(StorageOption: any) {
     const { object } = this._optionInfo;
     const storage = StorageOption[object];
-    storage.forEach(_item => {
-      const _itemValue = +_item;
-      const index = this._itemList.findIndex(_list => _list.info.item === _itemValue);
-      this._itemList[index].toggleSelected();
-    });
+    if (storage) {
+      storage.forEach(_item => {
+        const _itemValue = +_item;
+        const index = this._itemList.findIndex(_list => _list.info.item === _itemValue);
+        if (index > -1) this._itemList[index].toggleSelected();
+      });
+
+    }
 
     return;
   }
@@ -353,7 +412,7 @@ export class AnalysisOption {
   }
 
   /**
-   * 將分析欄位設定儲存於localStorage中
+   * 依分析類別將分析欄位設定儲存於localStorage中
    */
   saveOption() {
     const { _storageKey, _optionInfo: { object } } = this;
@@ -379,7 +438,6 @@ export class AnalysisOption {
    * 是否選擇數目達到上限
    */
   itemSelectedFull() {
-console.log('itemFull', this.getSelectedList(), this.getSelectedList().length, this.maxSelectedNumber);
     return this.getSelectedList().length >= this.maxSelectedNumber;
   }
 
@@ -404,7 +462,8 @@ console.log('itemFull', this.getSelectedList(), this.getSelectedList().length, t
    */
   getItemSelectStatus(item: AnalysisSportsColumn) {
     const index = this._itemList.findIndex(_item => _item.info.item === item);
-    return this._itemList[index].selected;
+    const assignItem = this._itemList[index];
+    return assignItem ? assignItem.selected : false;
   }
 
   /**

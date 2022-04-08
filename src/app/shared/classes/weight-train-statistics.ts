@@ -65,7 +65,6 @@ export class WeightTrainStatistics {
     const muscleGroup = WeightTrainStatistics.getBelongMuscleGroup(muscle);
     const [weight, reps, sets] = this._muscleGroupData[muscleGroup];
     this._muscleGroupData[muscleGroup] = [weight + totalWeightKg, reps + totalReps, sets + totalSets];
-console.log('muscle', muscle, muscleGroup, weight, reps, sets, this._muscleGroupData[muscleGroup]);
   }
 
   /**

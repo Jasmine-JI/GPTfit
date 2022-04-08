@@ -24,6 +24,10 @@ import { PreferSportType } from './prefer-sport-type';
 import { WeightTrainStatistics } from './weight-train-statistics';
 import { AllGroupMember } from './all-group-member';
 import { GroupInfo } from './group-info';
+import { of } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+import { ReportDateUnit } from './report-date-unit';
+import dayjs from 'dayjs';
 
 /**
  * 處理 api 2104 response
@@ -49,7 +53,6 @@ export class SportsReport {
     // 將統計數據另存至物件中
     let dataObj = { openPrivacy } as any;
     if (openPrivacy) {
-console.log('create', target, data);
       const { sportType } = condition;
       const dataKey = this.getDataKey(sportType);
 
@@ -100,7 +103,7 @@ console.log('create', target, data);
         dataObj = {
           ...dataObj,
           ...this.postProcessingData({ target, condition, dataObj, timeType }),
-          preferType: preferSports.preferSport
+          preferSports: preferSports.preferSport
         };
 
         if (sportType === SportType.weightTrain) {
@@ -349,10 +352,9 @@ export class GroupSportsReportInfo {
       } = memberList[_userId];
 
       // 群組成員清單只存基準日期範圍的運動達成人數和隱私權開放狀態
-      const { infoData: _baseInfoData } = _base;
-      const { openPrivacy } = _baseInfoData;
-      const targetAchieved = _baseInfoData.targetAchieved ?? false;
-      const _totalActivities = _baseInfoData.totalActivities ?? 0;
+      const { openPrivacy } = _base;
+      const targetAchieved = _base.targetAchieved ?? false;
+      const _totalActivities = _base.totalActivities ?? 0;
 
       GroupInfo.getBelongGroup(_groupId).forEach(_list => {
         const _gId = _list as string;
@@ -370,10 +372,9 @@ export class GroupSportsReportInfo {
           _groupBaseData.targetAchievedPeople =
             (_groupBaseData.targetAchievedPeople ?? 0) + (targetAchieved ? 1 : 0);  // 達成目標人數
           if (_compare) {
-            const { infoData: _compareInfoData } = _compare;
-            const { openPrivacy: _compareOpenPrivacy } = _baseInfoData;
-            const _compareTargetAchieved = _compareInfoData.targetAchieved ?? false;
-            const _compareTotalActivities = _compareInfoData.totalActivities ?? 0;
+            const { openPrivacy: _compareOpenPrivacy } = _compare;
+            const _compareTargetAchieved = _compare.targetAchieved ?? false;
+            const _compareTotalActivities = _compare.totalActivities ?? 0;
             const _groupCompareData = groupObj[_gId].compare;
 
             _groupCompareData.activityPeople = 
@@ -385,7 +386,7 @@ export class GroupSportsReportInfo {
 
           const excludeKey = [
             'openPrivacy',
-            'preferType',
+            'preferSports',
             'targetAchieved',
             'muscleGroupData',
             'preferMuscleGroup',
@@ -393,13 +394,13 @@ export class GroupSportsReportInfo {
           ];
 
           // 將個人基準數據加總至該所屬群組中
-          Object.entries(_baseInfoData).forEach(([_key, _value]) => {
+          Object.entries(_base).forEach(([_key, _value]) => {
             if (!excludeKey.includes(_key)) {
               const accumulator = groupObj[_gId].base[_key] ?? 0;
               if (!_key.includes('_')) {
 
                 if (_key.toLowerCase().includes('avg')) {
-                  const effectActivities = _baseInfoData[`${_key}_Activities`];
+                  const effectActivities = _base[`${_key}_Activities`];
                   const _checkValue = effectActivities ? (_value as number / effectActivities) : 0;
                   groupObj[_gId].base[_key] = accumulator + _checkValue;
                 } else {
@@ -414,14 +415,13 @@ export class GroupSportsReportInfo {
 
           // 將個人比較數據加總至該所屬群組中
           if (_compare) {
-            const { infoData: _compareInfoData } = _compare;
-            Object.entries(_compare.infoData).forEach(([_key, _value]) => {
+            Object.entries(_compare).forEach(([_key, _value]) => {
               if (!excludeKey.includes(_key)) {
                 const accumulator = groupObj[_gId].compare[_key] ?? 0;
                 if (!_key.includes('_')) {
                   
                   if (_key.toLowerCase().includes('avg') && !_key.includes('_')) {
-                    const effectActivities = _compareInfoData[`${_key}_Activities`];
+                    const effectActivities = _compare[`${_key}_Activities`];
                     groupObj[_gId].compare[_key] = accumulator + ((_value as number / effectActivities) || 0);
                   } else {
                     groupObj[_gId].compare[_key] = accumulator + _value;
@@ -464,7 +464,7 @@ export class GroupSportsReportInfo {
    * @param groupId {string}-群組編號
    * @param dataKey {string}-欲比較的數據
    */
-   checkProgressive(groupId: string, dataKey: string) {
+  checkProgressive(groupId: string, dataKey: string) {
     const { base, compare } = this._groupSportInfo[groupId];
     const baseData = base[dataKey] || 0;
     const compareData = compare[dataKey] || 0;
@@ -477,5 +477,213 @@ export class GroupSportsReportInfo {
  * 處理群組運動報告圖表數據
  */
 export class GroupSportsChartData {
+
+  private _isCompareMode = false;
+
+  constructor(
+    condition: ReportCondition,
+    baseData: Array<any>,
+    compareData: Array<any>,
+    sportsTarget: SportsTarget
+  ) {
+    const { sportType, dateUnit } = condition;
+    of([baseData, compareData]).pipe(
+      map(data => this.concatData(data, dateUnit, sportType)),
+      map(concatData => this.sortData(concatData)),
+      map(sortData => this.handleChartData(sortData, sportsTarget))
+    ).subscribe()
+
+  }
+
+  /**
+   * 篩選所有成員的基準與比較概要陣列運動數據，並合併為一陣列
+   * @param data {Array<any>}-基準數據與比較數據
+   * @param dateUnit {ReportDateUnit}-報告所選擇得的時間單位
+   */
+  concatData(data: Array<any>, dateUnit: ReportDateUnit, sportType: SportType) {
+    const dataKey = dateUnit.getReportKey('sportsReport');
+    const [baseData, compareData] = data;
+    const baseConcatData = this.flatData(baseData, sportType, dataKey);
+
+    if (!compareData) return [baseConcatData, undefined];
+
+    const compareConcatData = this.flatData(compareData, sportType, dataKey);
+    return [baseConcatData, compareConcatData];
+  }
+
+  /**
+   * 將所有成員的基準數據與比較數據混合後依據時間進行排序
+   * @param data {Array<any>}-已篩選運動類別的基準數據與比較數據
+   */
+  sortData(data: Array<any>) {
+    const sortByStartTime = (data: Array<any>) => {
+      return data.sort((_a, _b) => {
+        const _aStartTimestamp = dayjs(_a.startTime).valueOf();
+        const _bStartTimestamp = dayjs(_b.startTime).valueOf();
+        return _aStartTimestamp - _bStartTimestamp;
+      });
+      
+    };
+
+    const [baseData, compareData] = data;
+    const baseSortResult = sortByStartTime(baseData);
+
+    if (!compareData) return [baseSortResult, undefined];
+
+    const compareSortResult = sortByStartTime(compareData);
+    return [baseSortResult, compareSortResult];
+  }
+
+  /**
+   * 將基準數據與比較數據進行整合，產生圖表所需數據
+   * @param data {Array<any>}-已篩選運動類別且已魂混合並依時間排序的基準數據與比較數據
+   * @param sportsTarget {SportsTarget}-運動目標
+   */
+  handleChartData(data: Array<any>, sportsTarget: SportsTarget) {
+console.log('handleChartData', data);
+    const [baseData, compareData] = data;
+    if (!compareData) return this.handleChart(baseData);
+    return this.handleChartWithCompare(data);
+  }
+
+  /**
+   * 將基準數據整理成各圖表所需數據
+   * @param data {Array<any>}-基準運動概要陣列數據
+   */
+  handleChart(data: Array<any>) {
+    data.forEach(_data => {
+
+    });
+
+  }
+
+  /**
+   * 將基準與比較數據整理成各圖表所需數據
+   * @param data {Array<any>}-基準與比較之運動概要陣列數據
+   */
+  handleChartWithCompare(data: Array<any>) {
+
+  }
+
+  /**
+   * 將數據依運動類別篩選並扁平化
+   * @param data {Array<any>}-運動概要陣列數據
+   * @param sportType {SportType}-運動目標
+   * @param key {string}-運動陣列所在的物件鍵名
+   */
+  flatData(data: Array<any>, sportType: SportType, key: string) {
+    const checkDataOpen = (resultCode: number) => resultCode === 200;
+    return data.reduce((_prev, _current) => {
+      const { resultCode: _baseResultCode } = _current;
+      if (checkDataOpen(_baseResultCode)) {
+        _prev = _prev.concat(this.filterSportType(_current[key], sportType));
+      }
+
+      return _prev;
+    }, []);
+  }
+
+  /**
+   * 根據運動類別將數據過濾
+   * @param data {Array<any>}-運動數據
+   * @param sportType {boolean}-運動類別
+   */
+  filterSportType(data: Array<any>, sportType: SportType) {
+    const isAllType = sportType === SportType.all;
+    if (isAllType) return data;
+    let result = [];
+    data.forEach(_data => {
+      _data.activities = _data.activities.filter(_activity => +_activity.type === sportType);
+      if (_data.activities.length > 0) result = result.concat(_data);
+    });
+
+    return result;
+  }
+
+}
+
+/**
+ * 處理佔比圖表數據
+ */
+export class RingChartData {
+
+  private _statistics = [0, 0, 0, 0, 0, 0, 0];
+
+  /**
+   * 統計各類別數據
+   * @param sportType {SportType}-運動類別
+   * @param count {number}-欲累加的數值
+   */
+  add(sportType: SportType, count: number) {
+    const index = sportType - 1;
+    this._statistics[index] += +count;
+  }
+
+  /**
+   * 取得統計數據
+   */
+  get statistics() {
+    return this._statistics;
+  }
+
+}
+
+/**
+ * 處理成效分佈圖數據
+ */
+export class DistributionChartData {
+
+  private _dotList = [];
+
+  /**
+   * 新增一筆數據
+   * @param dot {any}-一筆數據
+   */
+  addDot(dot: any) {
+    this._dotList.push(dot);
+  }
+
+  /**
+   * 取得分佈圖數據
+   */
+  get dotList() {
+    return this._dotList;
+  }
+
+}
+
+/**
+ * 處理心率區間數據
+ */
+export class HrZoneChartData {
+
+  private _hrZone = [0, 0, 0, 0, 0, 0];
+
+  /**
+   * 統計各心率區間數據
+   * @param count 
+   */
+  add(data: Array<number>) {
+    this._hrZone = this._hrZone.map((_second, _index) => _second + data[_index]);
+  }
+
+  /**
+   * 取得心率區間數據
+   */
+  get hrZone() {
+    return this._hrZone;
+  }
+
+}
+
+
+export class HrZoneTrendChartData {
+
+  private _hrZoneTrend = [];
+
+
+  add(baseData: any, compareData: any) {
+
+  }
 
 }

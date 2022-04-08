@@ -29,8 +29,8 @@ export class SportsTarget {
   constructor(target: PersonalTarget | GroupSportTarget) {
     const { name, cycle, condition } = target as GroupSportTarget;
     if (name) this.reference = name;
-    this.cycle = cycle;
-    this.condition = condition;
+    this._cycle = cycle;
+    this._condition = condition;
   }
 
   /**
@@ -101,14 +101,15 @@ export class SportsTarget {
    * @param reportUnit {DateUnit}-報告所選的時間單位
    */
   getTransformCondition(reportUnit: DateUnit) {
-    const { _cycle, _condition } = this;
+    const _condition = deepCopy(this._condition);
+    const { _cycle } = this;
     const sameUnit = _cycle === reportUnit;
     const conditionNotSet = _condition.length === 0;
     if (sameUnit || conditionNotSet) return _condition;
 
     const coefficient = this.getDateTransformCoefficient(reportUnit);
     return _condition.map(_con => {
-      _con.filedValue = Math.round(_con.filedValue * coefficient);
+      _con.filedValue = Math.round(+_con.filedValue * coefficient);
       return _con;
     });
 

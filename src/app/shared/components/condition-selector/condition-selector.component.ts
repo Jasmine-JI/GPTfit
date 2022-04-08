@@ -184,7 +184,6 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     this.reportCondition = deepCopy(this.initialCondition);
     this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
     this.reportCondition.needRefreshData = true;
-console.log('init condition', this.reportCondition);
   }
 
   /**
