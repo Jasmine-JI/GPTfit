@@ -244,7 +244,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   checkNumberLimit() {
     const { numberLimit } = this.eventInfo;
-    if (numberLimit) {
+    if (numberLimit && numberLimit > 0) {
       this.uiFlag.numberLimit = HaveNumberLimit.yes;
     } else {
       this.uiFlag.numberLimit = HaveNumberLimit.no;
@@ -731,15 +731,15 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           }
 
           break;
+        // img 另外使用圖床api處理
         case 'themeImg':
-          // img 另外使用圖床api處理
-          break;
-        // 最後編輯時間不予處理
+        // 不予處理
         case 'lastEditDate':
+        case 'currentApplyNumber':
           break;
         default:
 
-          if (newValue !== compareValue) {
+          if (compareValue !== newValue) {
             editPart = {
               [_key]: newValue,
               ...editPart
@@ -1117,9 +1117,9 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   selectPeopleLimit(e: MouseEvent) {
     const { value } = (e as any).target;
-    if (!value) {
+    if (value == HaveNumberLimit.no) {
       this.uiFlag.numberLimit = HaveNumberLimit.no;
-      delete this.eventInfo.numberLimit;
+      this.eventInfo.numberLimit = -1;  // 使用-1當作無限制人數
     } else {
       this.uiFlag.numberLimit = HaveNumberLimit.yes;
       Object.assign(this.eventInfo, { numberLimit: this.defaultNumberLimit });

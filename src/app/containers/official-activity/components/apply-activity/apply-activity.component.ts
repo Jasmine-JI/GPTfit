@@ -773,16 +773,19 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101109
    */
   checkNicknameFormat(e: MouseEvent) {
-    this.uiFlag.showNicknameHint = false;
-    const nickname = (e as any).target.value.trim();
-    if (nickname.length === 0) {
-      this.alert.nickname = 'empty';
-    } else if (!formTest.nickname.test(nickname)) {
-      this.alert.nickname = 'format';
-    } else {
-      this.alert.nickname = null;
-      this.applyInfo.userProfile.nickname = nickname;
-      this.checkNickname(nickname);
+    if (!this.token) {
+      this.uiFlag.showNicknameHint = false;
+      const nickname = (e as any).target.value.trim();
+      if (nickname.length === 0) {
+        this.alert.nickname = 'empty';
+      } else if (!formTest.nickname.test(nickname)) {
+        this.alert.nickname = 'format';
+      } else {
+        this.alert.nickname = null;
+        this.applyInfo.userProfile.nickname = nickname;
+        this.checkNickname(nickname);
+      }
+
     }
 
   }

@@ -97,10 +97,11 @@ export class SportsTarget {
   }
 
   /**
-   * 取得依報告所選時間單位進行換算的個人目標
+   * 取得依報告所選時間單位進行換算的目標數值
    * @param reportUnit {DateUnit}-報告所選的時間單位
+   * @param peopleNumber {number}-人數（用於團體運動報告，計算所有人加總所需的目標值）
    */
-  getTransformCondition(reportUnit: DateUnit) {
+  getTransformCondition(reportUnit: DateUnit, peopleNumber: number = 1) {
     const _condition = deepCopy(this._condition);
     const { _cycle } = this;
     const sameUnit = _cycle === reportUnit;
@@ -109,7 +110,7 @@ export class SportsTarget {
 
     const coefficient = this.getDateTransformCoefficient(reportUnit);
     return _condition.map(_con => {
-      _con.filedValue = Math.round(+_con.filedValue * coefficient);
+      _con.filedValue = Math.round(+_con.filedValue * coefficient * peopleNumber);
       return _con;
     });
 

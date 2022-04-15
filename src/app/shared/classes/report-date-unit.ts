@@ -22,10 +22,32 @@ export class ReportDateUnit {
   }
 
   /**
-   * 取得時間範圍單位
+   * 取得時間範圍單位（enum）
    */
   get unit() {
     return this._dateUnit;
+  }
+
+  /**
+   * 取得時間範圍單位(string)（用於dayjs）
+   * 如需使用dayjs quarter相關參數，則需引入plugin
+   * import quarterOfYear from 'dayjs/plugin/quarterOfYear';
+   * dayjs.extend(quarterOfYear);
+   */
+  getUnitString(): any {
+    switch (this._dateUnit) {
+      case DateUnit.day:
+        return 'day';
+      case DateUnit.week:
+        return 'week';
+      case DateUnit.month:
+        return 'month';
+      case DateUnit.season:
+        return 'quarter';
+      case DateUnit.year:
+        return 'year';
+    }
+
   }
 
   /**

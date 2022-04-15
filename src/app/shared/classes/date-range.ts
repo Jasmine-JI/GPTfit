@@ -1,5 +1,8 @@
 import dayjs from 'dayjs';
+import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { DateUnit } from '../enum/report';
+dayjs.extend(quarterOfYear);
+
 
 const UTC_FORMAT = 'YYYY-MM-DDTHH:mm:ss.sssZ';
 
@@ -110,6 +113,24 @@ export class DateRange {
     }
 
     return { realStartTime, realEndTime };
+  }
+
+  /**
+   * 取得該日期範圍相差數目
+   * @param unit {string}-日期相差單位（day/week/month/year）
+   */
+  getDiffRange(unit: string, showDecimal: boolean = false) {
+    return dayjs(this._endTime).diff(this._startTime, unit as any, showDecimal);
+  }
+
+  /**
+   * 取得該日期範圍跨越數目（ex. 1101201~1110105 ＝> 跨了2年度）
+   * @param unit {string}-日期相差單位（day/week/month/year）
+   */
+  getCrossRange(unit: any) {
+    const diff = Math.ceil(this.getDiffRange(unit, true));
+    const cross = dayjs(this._startTime).add(diff - 1, unit).endOf(unit).valueOf() !== dayjs(this._endTime).endOf(unit).valueOf();
+    return cross ? diff + 1 : diff;
   }
   
 }
