@@ -246,7 +246,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     } else {
 
       if (applyButtonStatus !== ApplyButtonStatus.applied) {
-        const applyFull = numberLimit ? currentApplyNumber >= numberLimit : false;
+        const applyFull = numberLimit && numberLimit > 0 ? currentApplyNumber >= numberLimit : false;
         if (applyFull) this.uiFlag.applyButtonStatus = ApplyButtonStatus.applyFull;
       }
       

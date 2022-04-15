@@ -38,8 +38,8 @@ enum AllStatus {
 }
 
 const defaultRaceDate = {
-  start: dayjs().subtract(6, 'months'),
-  end: dayjs().add(6, 'months')
+  start: dayjs().subtract(6, 'month'),
+  end: dayjs().add(6, 'month')
 }
 
 @Component({

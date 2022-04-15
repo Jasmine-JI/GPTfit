@@ -11,6 +11,21 @@
   max-width: $width;
 }
 
+@mixin hrzone-trend-hint($color) {
+  font-size: 12px;
+
+  &:before {
+    $size: 12px;
+    content: '';
+    display: inline-block;
+    width: $size;
+    height: $size;
+    border: 1px solid $color;
+    margin: 0 2px 0 10px;
+  }
+
+}
+
 
 $arrow-rotate-degree: 45deg;
 
@@ -26,22 +41,6 @@ $arrow-rotate-degree: 45deg;
   margin: auto;
   display: flex;
   align-items: center;
-}
-
-.left__wing {
-  
-}
-
-.left__wing__down {
-  
-}
-
-.right__wing {
-  
-}
-
-.right__wing__down {
-  
 }
 
 .analysis__row {
@@ -182,4 +181,12 @@ $arrow-rotate-degree: 45deg;
     text-decoration: underline;
   }
 
+}
+
+.base__hrzone__trend {
+  @include hrzone-trend-hint(black);
+}
+
+.compare__hrzone__trend {
+  @include hrzone-trend-hint(rgba(255, 89, 89, 1));
 }

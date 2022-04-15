@@ -50,6 +50,7 @@ import { SportAnalysisSort } from '../../../../../shared/classes/sport-analysis-
 import { AnalysisOption } from '../../../../professional/classes/analysis-option';
 import { AnalysisSportsColumn } from '../../../../professional/enum/report-analysis';
 import { AnalysisAssignMenu } from '../../../../professional/models/report-analysis';
+import { SPORT_TYPE_COLOR } from '../../../../../shared/models/chart-data';
 
 const ERROR_MESSAGE = 'Error! Please try again later.';
 
@@ -80,7 +81,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     showGroupAnalysisOption: false,
     showPersonalAnalysisOption: false,
     analysisSeeMoreGroup: false,
-    analysisSeeMorePerson: false
+    analysisSeeMorePerson: false,
+    selectedType: SportType.all  // 活動分析圖表用，與條件選擇器運動類別作用不同
   };
 
   /**
@@ -91,7 +93,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     pageType: 'sportsReport',
     baseTime: new DateRange(),
     compareTime: null,
-    dateUnit: new ReportDateUnit(DateUnit.month),
+    dateUnit: new ReportDateUnit(DateUnit.week),
     group: {
       brandType: BrandType.brand,
       currentLevel: GroupLevel.class,
@@ -127,14 +129,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   memberSportsInfo: AllGroupMember;
 
   /**
-   * 基準日期圖表所需數據
+   * 圖表所需數據
    */
-  groupBaseChartData: GroupSportsChartData;
-
-  /**
-   * 比較日期圖表所需數據
-   */
-  groupCompareChartData: GroupSportsChartData;
+  groupChartData: GroupSportsChartData;
 
   /**
    * 使用者使用之數據單位（公制/英制）
@@ -192,6 +189,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   readonly muscleMetricUnit = 'kg*rep*set';
   readonly muscleImperialUnit = 'lb*rep*set';
   readonly MuscleGroup = MuscleGroup;
+  readonly SPORT_TYPE_COLOR = SPORT_TYPE_COLOR;
 
   constructor(
     private utils: UtilsService,
@@ -504,7 +502,7 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
   }
 
   /**
-   * 計算基準日期範圍圖表所需數據
+   * 計算圖表所需數據
    * @param condition {ReportCondition}-報告篩選條件
    * @param baseData {Array<any>}-多人的基準運動數據陣列
    * @param compareData {Array<any>}-多人的比較運動數據陣列
@@ -516,7 +514,10 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
     compareData: Array<any>,
     sportsTarget: SportsTarget
   ) {
-    this.groupBaseChartData = new GroupSportsChartData(condition, baseData, compareData, sportsTarget);
+    const { dateUnit } = condition;
+    const totalPeople = this.groupSportsInfo.getAssignGroupInfo(this.getFocusGroupId(), 'totalPeople')
+    const transformTarget = sportsTarget.getTransformCondition(dateUnit.unit, totalPeople);
+    this.groupChartData = new GroupSportsChartData(condition, baseData, compareData, transformTarget);
   }
 
   /**
@@ -866,6 +867,15 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
    */
   seeMorePerson() {
     this.uiFlag.analysisSeeMorePerson = true;
+  }
+
+  /**
+   * 變更活動分析的運動類別
+   * @param type {SportType}-運動類別
+   */
+  changeSelectedType(type: SportType) {
+    const { selectedType } = this.uiFlag;
+    this.uiFlag.selectedType = type === selectedType ? SportType.all : type;
   }
 
   /**

@@ -1,4 +1,6 @@
 import { fromEvent, merge } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
+import dayjs from 'dayjs';
 
 export const DEFAULT_MAXLENGTH = {
   TEXT: 100,
@@ -190,4 +192,37 @@ export function subscribePluralEvent(className: string) {
   const scrollEvent = fromEvent(scrollElement, 'scroll');
   const clickEvent = fromEvent(document, 'click');
   return merge(scrollEvent, clickEvent);
+}
+
+/**
+ * 取得各心率區間翻譯詞彙
+ * @param translate {TranslateService}-翻譯套件
+ */
+export function getHrZoneTranslation(translate: TranslateService) {
+  return [
+    translate.instant('universal_activityData_limit_generalZone'),
+    translate.instant('universal_activityData_limit_warmUpZone'),
+    translate.instant('universal_activityData_limit_aerobicZone'),
+    translate.instant('universal_activityData_limit_enduranceZone'),
+    translate.instant('universal_activityData_limit_marathonZone'),
+    translate.instant('universal_activityData_limit_anaerobicZone')
+  ];
+
+}
+
+/**
+ * 取得各閾值區間翻譯詞彙
+ * @param translate {TranslateService}-翻譯套件
+ */
+export function getFtpZoneTranslation(translate: TranslateService) {
+  return [
+    translate.instant('universal_activityData_limit_ftpZ0'),
+    translate.instant('universal_activityData_limit_ftpZ1'),
+    translate.instant('universal_activityData_limit_ftpZ2'),
+    translate.instant('universal_activityData_limit_ftpZ3'),
+    translate.instant('universal_activityData_limit_ftpZ4'),
+    translate.instant('universal_activityData_limit_ftpZ5'),
+    translate.instant('universal_activityData_limit_ftpZ6')
+  ];
+
 }

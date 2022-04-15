@@ -332,7 +332,7 @@
                                 startDate: _eventList.applyDate.startDate,
                                 endDate: _eventList.applyDate.endDate,
                                 eventCancel: _eventList.eventStatus === EventStatus.cancel,
-                                applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit
+                                applyFull: _eventList.numberLimit && _eventList.numberLimit > 0 && _eventList.currentApplyNumber >= _eventList.numberLimit
                               }"
                             ></span>
                             <h3 class="race__title">{{ _eventList.eventName }}</h3>
@@ -402,7 +402,7 @@
                           paidStatus: _eventList.paidStatus,
                           endDate: _eventList.applyDate.endDate,
                           eventCancel: _eventList.eventStatus === EventStatus.cancel,
-                          applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit,
+                          applyFull: _eventList.numberLimit && _eventList.numberLimit > 0 && _eventList.currentApplyNumber >= _eventList.numberLimit,
                           record: _eventList.record
                         }"></div>
                       </div>
@@ -423,7 +423,7 @@
                     paidStatus: _eventList.paidStatus,
                     endDate: _eventList.applyDate.endDate,
                     eventCancel: _eventList.eventStatus === EventStatus.cancel,
-                    applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit,
+                    applyFull: _eventList.numberLimit && _eventList.numberLimit > 0 && _eventList.currentApplyNumber >= _eventList.numberLimit,
                     record: _eventList.record
                   }"></div>
                   
@@ -438,7 +438,7 @@
                     startDate: _eventList.applyDate.startDate,
                     endDate: _eventList.applyDate.endDate,
                     eventCancel: _eventList.eventStatus === EventStatus.cancel,
-                    applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit
+                    applyFull: _eventList.numberLimit && _eventList.numberLimit > 0 && _eventList.currentApplyNumber >= _eventList.numberLimit
                   }"
                 ></span>
                 <div
@@ -534,7 +534,7 @@
                     paidStatus: _eventList.paidStatus,
                     endDate: _eventList.applyDate.endDate,
                     eventCancel: _eventList.eventStatus === EventStatus.cancel,
-                    applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit,
+                    applyFull: _eventList.numberLimit && _eventList.numberLimit > 0 && _eventList.currentApplyNumber >= _eventList.numberLimit,
                     record: _eventList.record
                   }"></div>
                 </div>

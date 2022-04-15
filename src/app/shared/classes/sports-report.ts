@@ -1,4 +1,5 @@
 
+import { Inject } from '@angular/core';
 import { TargetField, GroupSportTarget, TargetCondition } from '../models/sport-target';
 import { DateUnit } from '../enum/report';
 import { mathRounding, deepCopy } from '../utils/index';
@@ -28,6 +29,12 @@ import { of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { ReportDateUnit } from './report-date-unit';
 import dayjs from 'dayjs';
+import quarterOfYear from 'dayjs/plugin/quarterOfYear';
+import { DateRange } from './date-range';
+import { zoneColor } from '../models/chart-data';
+import { COLUMN_BORDER_COLOR, COMPARE_COLUMN_BORDER_COLOR, trendChartColor } from '../models/chart-data';
+
+dayjs.extend(quarterOfYear);
 
 /**
  * 處理 api 2104 response
@@ -413,7 +420,7 @@ export class GroupSportsReportInfo {
 
           });
 
-          // 將個人比較數據加總至該所屬群組中
+          // 將個人比較數據加總至該所屬群組中(使用底線區隔)
           if (_compare) {
             Object.entries(_compare).forEach(([_key, _value]) => {
               if (!excludeKey.includes(_key)) {
@@ -478,19 +485,48 @@ export class GroupSportsReportInfo {
  */
 export class GroupSportsChartData {
 
-  private _isCompareMode = false;
+  private _baseTypeAllChart = new TypeAllChart();
 
+
+  private _compareTypeAllChart = new TypeAllChart();
+
+
+  private _baseHrZone = new HrZoneChartData();
+
+
+  private _compareHrZone = new HrZoneChartData();
+
+
+  private _hrZoneTrend: HrZoneTrendChartData;
+
+
+  private _totalSecondTrend: CompareTrendData;
+
+
+  private _caloriesTrend: CompareTrendData;
+
+
+  private _achievementRate: CompareTrendData;
+
+  /**
+   * @param condition {ReportCondition}-報告條件
+   * @param baseData {Array<any>}-基準數據
+   * @param compareData {Array<any>}-比較數據
+   * @param transformTarget {SportsTarget}-依時間單位轉換之所有人加總的目標
+   */
   constructor(
     condition: ReportCondition,
     baseData: Array<any>,
     compareData: Array<any>,
-    sportsTarget: SportsTarget
+    transformTarget: SportsTarget 
   ) {
-    const { sportType, dateUnit } = condition;
+    const { sportType, dateUnit, baseTime, compareTime } = condition;
     of([baseData, compareData]).pipe(
       map(data => this.concatData(data, dateUnit, sportType)),
       map(concatData => this.sortData(concatData)),
-      map(sortData => this.handleChartData(sortData, sportsTarget))
+      map(sortData => this.mergeSameDateData(sortData, dateUnit, sportType === SportType.all)),
+      map(mergeData => this.fillUpDate(mergeData, dateUnit, baseTime, compareTime)),
+      map(fillUpData => this.handleChartData(fillUpData, transformTarget, sportType))
     ).subscribe()
 
   }
@@ -498,7 +534,7 @@ export class GroupSportsChartData {
   /**
    * 篩選所有成員的基準與比較概要陣列運動數據，並合併為一陣列
    * @param data {Array<any>}-基準數據與比較數據
-   * @param dateUnit {ReportDateUnit}-報告所選擇得的時間單位
+   * @param dateUnit {ReportDateUnit}-報告所選擇的時間單位
    */
   concatData(data: Array<any>, dateUnit: ReportDateUnit, sportType: SportType) {
     const dataKey = dateUnit.getReportKey('sportsReport');
@@ -535,24 +571,137 @@ export class GroupSportsChartData {
   }
 
   /**
+   * 將同時間範圍的數據合併為一筆，同時將日期轉為timestamp
+   * 若運動類別為不分類別，則同時處理數量與時間佔比圖與成效分佈圖數據
+   * @param data {Array<any>}-已經根據起始時間排序過後的數據
+   * @param dateUnit {ReportDateUnit}-報告所選擇的時間單位
+   * @param isAllType {boolean}-運動類別是否為不分類別
+   */
+  mergeSameDateData(data: Array<any>, dateUnit: ReportDateUnit, isAllType: boolean) {    
+    const mergeData = (data: Array<any>, isCompareData: boolean) => {
+      const result = [];
+      const temporaryCount = new TemporaryCount();
+      data.forEach((_data, _index) => {
+        const { startTime: _startTime, endTime: _endTime, activities: _activities } = _data;
+        const { start, end } = this.getSameRangeDate(_startTime, _endTime, dateUnit);
+        const { startTime } = temporaryCount.dateRange;
+        const isFirstData = _index === 0;
+        const isLastData = _index + 1 === data.length;
+        if (isFirstData) {
+          temporaryCount.saveDate(start, end);
+          this.mergingData(_activities, temporaryCount, isAllType, isCompareData);
+          if (isLastData) result.push(temporaryCount.result);
+
+        } else if (start === startTime) {
+          this.mergingData(_activities, temporaryCount, isAllType, isCompareData);
+          if (isLastData) result.push(temporaryCount.result);
+
+        } else {
+          result.push(temporaryCount.result);
+          temporaryCount.init();
+          temporaryCount.saveDate(start, end);
+          this.mergingData(_activities, temporaryCount, isAllType, isCompareData);
+          if (isLastData) result.push(temporaryCount.result);
+        }
+
+      });
+
+      return result;
+    }
+
+    const [baseData, compareData] = data;
+    return [mergeData(baseData, false), compareData ? mergeData(compareData, true) : undefined];
+  }
+
+  /**
+   * 將基準數據與比較數據，根據所選日期範圍將日期填補完整
+   * 讓圖表呈現時不會跳過無數據之日期
+   * @param data {Array<any>}-基準與比較日期範圍之運動數據
+   * @param dateUnit {ReportDateUnit}-選擇的報告日期單位
+   * @param baseTime {DateRange}-報告基準日期
+   * @param compareTime {DateRange}-報告比較日期
+   */
+  fillUpDate(data: Array<any>, dateUnit: ReportDateUnit, baseTime: DateRange, compareTime: DateRange) {
+    const [baseDateList, compareDateList] = this.createCompleteDate(dateUnit, baseTime, compareTime);
+    const [baseData, compareData] = data;
+    const baseDataResult = [];
+    const compareDataResult = [];
+    let baseDataIndex = 0;
+    let compareDataIndex = 0;
+
+    baseDateList.forEach((_date, _index) => {
+      const { start: _baseStart, end: _baseEnd } = _date;
+      const baseDataStart = baseData[baseDataIndex] ? baseData[baseDataIndex].startTime : null;
+      if (_baseStart !== baseDataStart) {
+        baseDataResult.push({ activities: {}, startTime: _baseStart, endTime: _baseEnd });
+      } else {
+        baseDataResult.push(baseData[baseDataIndex]);
+        baseDataIndex++;
+      }
+
+      if (compareData) {
+        const { start: _compareStart, end: _compareEnd } = compareDateList[_index];
+        const compareDataStart = compareData[compareDataIndex] ? compareData[compareDataIndex].startTime : null;
+        if (_compareStart !== compareDataStart) {
+          compareDataResult.push({ activities: {}, startTime: _compareStart, endTime: _compareEnd });
+        } else {
+          compareDataResult.push(compareData[compareDataIndex]);
+          compareDataIndex++;
+        }
+
+      }
+
+    });
+
+    return [baseDataResult, compareData ? compareDataResult : undefined];
+  }
+
+  /**
    * 將基準數據與比較數據進行整合，產生圖表所需數據
    * @param data {Array<any>}-已篩選運動類別且已魂混合並依時間排序的基準數據與比較數據
-   * @param sportsTarget {SportsTarget}-運動目標
+   * @param transformTarget {SportsTarget}-依日期單位轉換的所有人加總的運動目標
+   * @param sportType {SportType}-運動類別
    */
-  handleChartData(data: Array<any>, sportsTarget: SportsTarget) {
+  handleChartData(data: Array<any>, transformTarget: SportsTarget, sportType: SportType) {
 console.log('handleChartData', data);
     const [baseData, compareData] = data;
-    if (!compareData) return this.handleChart(baseData);
-    return this.handleChartWithCompare(data);
+    if (!compareData) return this.handleChart(baseData, transformTarget);
+    return this.handleChartWithCompare(data, transformTarget, sportType);
   }
 
   /**
    * 將基準數據整理成各圖表所需數據
    * @param data {Array<any>}-基準運動概要陣列數據
+   * @param transformTarget {SportsTarget}-依時間單位轉換之所有人加總的目標
    */
-  handleChart(data: Array<any>) {
+  handleChart(data: Array<any>, transformTarget: SportsTarget) {
+    this._hrZoneTrend = new HrZoneTrendChartData(false);
+    this._totalSecondTrend = new CompareTrendData(false, trendChartColor.totalSecond);
+    this._caloriesTrend = new CompareTrendData(false, trendChartColor.calories);
+    this._achievementRate = new CompareTrendData(false, trendChartColor.target);
+    
     data.forEach(_data => {
+      const { activities: _activities, startTime: _startTime, endTime: _endTime } = _data;
+      const {
+        totalHrZone0Second: _z0,
+        totalHrZone1Second: _z1,
+        totalHrZone2Second: _z2,
+        totalHrZone3Second: _z3,
+        totalHrZone4Second: _z4,
+        totalHrZone5Second: _z5,
+        calories: _calories,
+        totalSecond: _totalSecond,
+        totalActivitySecond: _totalActivitySecond
+      } = _activities;
 
+      const dateRange = [_startTime, _endTime];
+      const hrZone = [_z0, _z1, _z2, _z3, _z4, _z5].map(_zone => _zone ? _zone : 0);
+      this._hrZoneTrend.addBaseData(hrZone, dateRange);
+      this._totalSecondTrend.addBaseData(_totalSecond, dateRange);
+      this._caloriesTrend.addBaseData(_calories, dateRange);
+
+
+      // this._achievementRate.addBaseData(, dateRange);
     });
 
   }
@@ -560,8 +709,52 @@ console.log('handleChartData', data);
   /**
    * 將基準與比較數據整理成各圖表所需數據
    * @param data {Array<any>}-基準與比較之運動概要陣列數據
+   * @param transformTarget {SportsTarget}-依時間單位轉換之所有人加總的目標
    */
-  handleChartWithCompare(data: Array<any>) {
+  handleChartWithCompare(data: Array<any>, transformTarget: SportsTarget, sportType: SportType) {
+    this._hrZoneTrend = new HrZoneTrendChartData(true);
+    this._totalSecondTrend = new CompareTrendData(true, trendChartColor.totalSecond);
+    this._caloriesTrend = new CompareTrendData(true, trendChartColor.calories);
+    this._achievementRate = new CompareTrendData(true, trendChartColor.target);
+    const [baseData, compareData] = data;
+    baseData.forEach((_baseData, _index) => {
+      const { activities: _baseActivities, startTime: _baseStartTime, endTime: _baseEndTime } = _baseData;
+      const {
+        totalHrZone0Second: _baseZ0,
+        totalHrZone1Second: _baseZ1,
+        totalHrZone2Second: _baseZ2,
+        totalHrZone3Second: _baseZ3,
+        totalHrZone4Second: _baseZ4,
+        totalHrZone5Second: _baseZ5,
+        calories: _baseCalories,
+        totalSecond: _baseTotalSecond,
+        totalActivitySecond: _baseTotalActivitySecond
+      } = _baseActivities;
+
+      const { activities: _compareActivities, startTime: _compareStartTime, endTime: _compareEndTime } = compareData[_index];
+      const {
+        totalHrZone0Second: _compareZ0,
+        totalHrZone1Second: _compareZ1,
+        totalHrZone2Second: _compareZ2,
+        totalHrZone3Second: _compareZ3,
+        totalHrZone4Second: _compareZ4,
+        totalHrZone5Second: _compareZ5,
+        calories: _compareCalories,
+        totalSecond: _compareTotalSecond,
+        totalActivitySecond: _compareTotalActivitySecond
+      } = _compareActivities;
+
+      const _baseHrZone = [_baseZ0, _baseZ1, _baseZ2, _baseZ3, _baseZ4, _baseZ5].map(_zone => _zone ? _zone : 0);
+      const _baseDateRange = [_baseStartTime, _baseEndTime];
+      const _compareHrZone = [_compareZ0, _compareZ1, _compareZ2, _compareZ3, _compareZ4, _compareZ5].map(_zone => _zone ? _zone : 0);
+      const _compareDateRange = [_compareStartTime, _compareEndTime];
+      this._hrZoneTrend.addMixData(_baseHrZone, _baseDateRange, _compareHrZone, _compareDateRange);
+      this._totalSecondTrend.addMixData(_baseTotalSecond, _baseDateRange, _compareTotalSecond, _compareDateRange);
+      this._caloriesTrend.addMixData(_baseCalories, _baseDateRange, _compareCalories, _compareDateRange);
+
+
+      // this._achievementRate.addMixData(, _baseDateRange, , _compareDateRange);
+    });
 
   }
 
@@ -600,47 +793,404 @@ console.log('handleChartData', data);
     return result;
   }
 
+  /**
+   * 根據報告日期單位與報告日期，取得所屬範圍
+   * @param startTime {string}-開始時間
+   * @param endTime {string}-結束時間
+   * @param dateUnit {ReportDateUnit}-報告所選擇的時間單位
+   */
+  getSameRangeDate(startTime: string, endTime: string, dateUnit: ReportDateUnit) {
+    const startTimestamp = dayjs(startTime).valueOf();
+    const endTimestamp = dayjs(endTime).valueOf();
+    switch (dateUnit.unit) {
+      case DateUnit.season:
+        const seasonStart = dayjs(startTimestamp).startOf('quarter').valueOf();
+        const seasonEnd = dayjs(endTimestamp).startOf('quarter').valueOf();
+        return { start: seasonStart, end: seasonEnd };
+      case DateUnit.year:
+        const rangeStart = dayjs(startTimestamp).startOf('year').valueOf();
+        const rangeEnd = dayjs(endTimestamp).endOf('year').valueOf();
+        return { start: rangeStart, end: rangeEnd };
+      default:
+        return { start: startTimestamp, end: endTimestamp };
+    }
+
+  };
+
+  /**
+   * 處理合併中數據，並一併處理部份圖表數據
+   * @param activities {Array<any>}-單一時間單一類別運動數據
+   * @param temporaryCount {TemporaryCount}-合併數據用變數
+   * @param isAllType {boolean}-運動類別是否為不分類別
+   * @param isCompareData {boolean}-是否為比較的數據
+   */
+  mergingData(activities: Array<any>, temporaryCount: TemporaryCount, isAllType: boolean, isCompareData: boolean) {
+    activities.forEach(_activity => {
+      const {
+        totalHrZone0Second,
+        totalHrZone1Second,
+        totalHrZone2Second,
+        totalHrZone3Second,
+        totalHrZone4Second,
+        totalHrZone5Second,
+        totalSecond,
+        totalActivities,
+        avgHeartRateBpm,
+        type
+       } = _activity;
+
+      // 合併同時間範圍數據
+      temporaryCount.countData(_activity);
+
+      // 統計心率區間數據
+      if (isCompareData) {
+        this._compareHrZone.add([
+          totalHrZone0Second,
+          totalHrZone1Second,
+          totalHrZone2Second,
+          totalHrZone3Second,
+          totalHrZone4Second,
+          totalHrZone5Second
+        ]);
+
+      } else {
+        this._baseHrZone.add([
+          totalHrZone0Second,
+          totalHrZone1Second,
+          totalHrZone2Second,
+          totalHrZone3Second,
+          totalHrZone4Second,
+          totalHrZone5Second
+        ]);
+
+      }
+
+      // 處理成效分佈圖數據
+      if (isAllType) {
+
+        if (isCompareData) {
+          this._compareTypeAllChart.count({
+            type: +type as SportType,
+            totalSecond,
+            totalActivities,
+            avgHeartRateBpm
+          });
+
+        } else {
+          this._baseTypeAllChart.count({
+            type: +type as SportType,
+            totalSecond,
+            totalActivities,
+            avgHeartRateBpm
+          });
+
+        }
+        
+      }
+
+    });
+
+  }
+
+  /**
+   * 根據報告時間單位、基準日期範圍與比較日期範圍產生完整的日期序列
+   * @param dateUnit {ReportDateUnit}-選擇的報告日期單位
+   * @param baseTime {DateRange}-報告基準日期
+   * @param compareTime {DateRange}-報告比較日期
+   */
+  createCompleteDate(dateUnit: ReportDateUnit, baseTime: DateRange, compareTime: DateRange) {
+    const unitString = dateUnit.getUnitString();
+    const baseDiffTime = baseTime.getCrossRange(unitString);
+    const compareDiffTime = compareTime ? compareTime.getCrossRange(unitString) : -1;
+
+    // 若有比較時間，則先確認基準與比較日期何者較長，以較長的日期作為日期範圍長度
+    let baseDateList = [];
+    let compareDateList = [];
+    const { startTimestamp: baseStart, endTimestamp: baseEnd } = baseTime;
+    if (baseDiffTime >= compareDiffTime) {
+      baseDateList = this.createDateList([], unitString, baseStart, baseEnd);
+      if (compareTime) {
+        const { startTimestamp: compareStart } = compareTime;
+        const extentCompareEnd = dayjs(compareStart)
+          .add(baseDiffTime - 1, unitString as any)
+          .endOf(unitString)
+          .valueOf();
+        
+        compareDateList = this.createDateList([], unitString, compareStart, extentCompareEnd);
+      }
+
+    } else {
+      const extentBaseEnd = dayjs(baseStart)
+        .add(compareDiffTime - 1, unitString as any)
+        .endOf(unitString)
+        .valueOf();
+      
+      baseDateList = this.createDateList([], unitString, baseStart, extentBaseEnd);
+
+      const { startTimestamp: compareStart, endTimestamp: compareEnd } = compareTime;
+      compareDateList = this.createDateList([], unitString, compareStart, compareEnd);
+    }
+    
+    return [baseDateList, compareTime ? compareDateList : undefined];
+  }
+
+  /**
+   * 根據時間範圍單位與所選時間，建立一時間清單
+   * @param list {Array<{ start: number; end: number }>}
+   * @param unitString {string}-日期單位字串（使用any以符合dayjs type）
+   * @param dateStart {number}-報告日期範圍開始時間
+   * @param dateEnd {number}-報告日期範圍結束時間
+   */
+  createDateList(
+    list: Array<{ start: number; end: number }>,
+    unitString: any,
+    dateStart: number,
+    dateEnd: number
+  ) {
+
+    if (list.length > 0) {
+      const { start: prevStart } = list[list.length - 1];
+      const start = dayjs(prevStart).add(1, unitString).valueOf();
+
+      // 將時間逐漸疊加至超過所選時間後，即完成日期清單
+      if (start <= dateEnd) {
+        const end = dayjs(start).endOf(unitString).valueOf();
+        list.push({ start, end });
+        return this.createDateList(list, unitString, dateStart, dateEnd);
+      } else {
+        return list;
+      }
+
+    } else {
+      const start = dayjs(dateStart).startOf(unitString).valueOf();
+      const end = dayjs(start).endOf(unitString).valueOf();
+      list.push({ start, end });
+      return this.createDateList(list, unitString, dateStart, dateEnd);
+    }
+
+  }
+
+  /**
+   * 取得基準日期範圍活動分析用數據（圓環圖/成效分佈圖）
+   */
+  get baseTypeAllChart() {
+    return this._baseTypeAllChart;
+  }
+
+  /**
+   * 取得比較日期範圍活動分析用數據（圓環圖/成效分佈圖）
+   */
+  get compareTypeAllChart() {
+    return this._compareTypeAllChart;
+  }
+
+  /**
+   * 取得基準日期範圍心率區間用數據
+   */
+  get baseHrZone() {
+    return this._baseHrZone;
+  }
+
+  /**
+   * 取得比較模式心率樹狀圖數據
+   */
+  get compareHrZone() {
+    return this._compareHrZone;
+  }
+
+  /**
+   * 取得心率區間趨勢數據
+   */
+  get hrZoneTrend() {
+    return this._hrZoneTrend;
+  }
+
+  /**
+   * 取得總時間趨勢數據
+   */
+  get totalSecondTrend() {
+    return this._totalSecondTrend;
+  }
+
+  /**
+   * 取得卡路里趨勢數據
+   */
+  get caloriesTrend() {
+    return this._caloriesTrend;
+  }
+
+  /**
+   * 取得達標率趨勢數據
+   */
+  get achievementRate() {
+    return this._achievementRate;
+  }
+
 }
 
 /**
- * 處理佔比圖表數據
+ * 計算同一時間範圍數據用
  */
-export class RingChartData {
+class TemporaryCount {
 
-  private _statistics = [0, 0, 0, 0, 0, 0, 0];
+  private _countObj = {};
+
+
+  private _totalActivities = 0;
+
+
+  private _startTime: number = 0;
+
+
+  private _endTime: number = 0;
 
   /**
-   * 統計各類別數據
-   * @param sportType {SportType}-運動類別
-   * @param count {number}-欲累加的數值
+   * 將變數初始化
    */
-  add(sportType: SportType, count: number) {
-    const index = sportType - 1;
-    this._statistics[index] += +count;
+  init() {
+    this._countObj = {};
+    this._totalActivities = 0;
+    this._startTime = 0;
+    this._endTime = 0;
+  }
+
+  /**
+   * 將各數據加總
+   * @param data {any}-一個日期範圍內的一個運動類別數據
+   */
+  countData(data: any) {
+    const isAvgData = (str: string) => str.toLowerCase().includes('avg') || str.toLowerCase().includes('average');
+    const isSpecialData = (str: string, keyword: string) => !isAvgData(str) && str.toLowerCase().includes(keyword);
+    const excludeKey = ['type', 'weightTrainingInfo'];
+    const { totalActivities } = data;
+    this._totalActivities += totalActivities;
+    for (let _key in data) {
+      
+      if (!excludeKey.includes(_key)) {
+        const value = Math.abs(+data[_key]);
+
+        // 處理舊有數據正負值與該數據類型牴觸的情形（球類）
+        const checkValue = isSpecialData(_key, 'min') ? -value : value;
+
+        // 確認是否為最大或最小類型的數據（球類）
+        if (isSpecialData(_key, 'max')) {
+          if (this._countObj[_key] < checkValue) this._countObj[_key] = checkValue;
+        } else if (isSpecialData(_key, 'mini')) {
+          if (this._countObj[_key] > checkValue) this._countObj[_key] = checkValue;
+        } else {
+          // 平均數據需依運動數目加權回來再進行加總
+          const totalValue = isAvgData(_key) ? checkValue * totalActivities : checkValue;
+          this._countObj[_key] = this._countObj[_key] ? this._countObj[_key] + totalValue : totalValue;
+        }
+
+      }
+
+    }
+
+  }
+
+  /**
+   * 將加總的平均數據依運動數目進行均化
+   */
+  handleDataAverage(obj: any) {
+    const isAvgData = (str: string) => str.toLowerCase().includes('avg');
+    let result = {};
+    for (let _key in obj) {
+      const totalValue = obj[_key];
+      result[_key] = mathRounding(isAvgData(_key) ? totalValue / this._totalActivities : totalValue, 1);      
+    }
+
+    return result;
+  }
+
+  /**
+   * 儲存日期範圍供比對用
+   * @param start {number}-開始時間(timestamp)
+   * @param end {number}-結束時間(timestamp)
+   */
+  saveDate(start: number, end: number) {
+    this._startTime = start;
+    this._endTime = end;
+  }
+
+  /**
+   * 取得目前數據所屬日期範圍
+   */
+  get dateRange() {
+    return { startTime: this._startTime, endTime: this._endTime };
+  }
+
+  /**
+   * 取得運動數目
+   */
+  get totalActivities() {
+    return this._totalActivities;
+  }
+
+  /**
+   * 取得結果
+   */
+  get result() {
+    return {
+      activities: this.handleDataAverage(this._countObj),
+      startTime: this._startTime,
+      endTime: this._endTime
+    };
+
+  }
+
+
+}
+
+/**
+ * 不分運動類別時處理佔比圖表數據與成效分佈圖
+ */
+export class TypeAllChart {
+
+  /**
+   * 成效分佈圖用數據
+   */
+  private _dotList = [];
+
+  /**
+   * 數量佔比圖數據
+   */
+  private _activitiesStatistics = [0, 0, 0, 0, 0, 0, 0];
+
+  /**
+   * 時間佔比圖數據
+   */
+  private _totalSecondStatistics = [0, 0, 0, 0, 0, 0, 0];
+
+  /**
+   * 統計各圖表所需數據
+   * @param data {{ type: SportType; totalSecond: number; totalActivities: number; avgHeartRateBpm: number; }}
+   */
+  count(data: {
+    type: SportType;
+    totalSecond: number;
+    totalActivities: number;
+    avgHeartRateBpm: number;
+  }) {
+    const { type, totalSecond, totalActivities, avgHeartRateBpm } = data;
+    const index = +type - 1;
+    this._activitiesStatistics[index] += +totalActivities;
+    this._totalSecondStatistics[index] += +totalSecond;
+    this._dotList.push({ sportType: +type, avgSecond: mathRounding(+totalSecond / +totalActivities, 0), avgHeartRateBpm });
   }
 
   /**
    * 取得統計數據
    */
-  get statistics() {
-    return this._statistics;
+  get activitiesStatistics() {
+    return this._activitiesStatistics;
   }
 
-}
-
-/**
- * 處理成效分佈圖數據
- */
-export class DistributionChartData {
-
-  private _dotList = [];
-
   /**
-   * 新增一筆數據
-   * @param dot {any}-一筆數據
+   * 取得統計數據
    */
-  addDot(dot: any) {
-    this._dotList.push(dot);
+  get totalSecondStatistics() {
+    return this._totalSecondStatistics;
   }
 
   /**
@@ -653,7 +1203,7 @@ export class DistributionChartData {
 }
 
 /**
- * 處理心率區間數據
+ * 處理心率區間數據(用於心率佔比圖)
  */
 export class HrZoneChartData {
 
@@ -664,26 +1214,254 @@ export class HrZoneChartData {
    * @param count 
    */
   add(data: Array<number>) {
-    this._hrZone = this._hrZone.map((_second, _index) => _second + data[_index]);
+    if (data[0] !== null) this._hrZone = this._hrZone.map((_second, _index) => _second + data[_index]);
   }
 
   /**
    * 取得心率區間數據
    */
-  get hrZone() {
+  get chartData() {
     return this._hrZone;
   }
 
 }
 
-
+/**
+ * 處理心率趨勢數據
+ */
 export class HrZoneTrendChartData {
 
-  private _hrZoneTrend = [];
+  private _hrZoneTrend: Array<any>;
 
 
-  add(baseData: any, compareData: any) {
+  constructor(isCompareMode: boolean) {
+    isCompareMode ? this.createCompareOption() : this.createNormalOption();
+  }
 
+  /**
+   * 變數進行格式化成非比較模式之圖表
+   */
+  createNormalOption() {
+    this._hrZoneTrend = new Array(6).fill(null).map((_arr, _index) => {
+      const _reverseIndex = this.getReverseIndex(_index);
+      return {
+        name: `Zone${_reverseIndex}`,
+        data: [],
+        showInLegend: false,
+        color: zoneColor[_reverseIndex],
+        borderColor: COLUMN_BORDER_COLOR,
+        custom: {
+          dateRange: []
+        }
+
+      };
+
+    });
+
+  }
+
+  /**
+   * 變數進行格式化成比較模式之圖表
+   */
+  createCompareOption() {
+    this._hrZoneTrend = new Array(12).fill(null).map((_arr, _index) => {
+      // 陣列依序為[baseZ5, baseZ4, ..., baseZ0, compareZ5, compareZ4, ..., compareZ0]
+      const isCompare = _index > 5;
+      const _zoneIndex = isCompare ? _index - 6 : _index;
+      const _reverseIndex = this.getReverseIndex(_zoneIndex);
+      return {
+        name: `Zone${_reverseIndex}`,
+        data: [],
+        stack: isCompare ? 'compare' : 'base',
+        borderColor: isCompare ? COMPARE_COLUMN_BORDER_COLOR : COLUMN_BORDER_COLOR,
+        color: zoneColor[_reverseIndex],
+        showInLegend: false,
+        custom: {
+          dateRange: []
+        }
+
+      };
+
+    });
+    
+  }
+
+  /**
+   * 將單筆心率數據與日期範圍加至圖表數據陣列中
+   * @param baseData {Array<number>}-基準心率區間
+   * @param dateRange {Array<number>}-該筆數據所屬時間
+   */
+  addBaseData(baseData: Array<number>, dateRange: Array<number>) {
+    // highchart 堆疊柱狀圖堆疊順序由上到下為數據陣列前到後，故z5要放陣列最前面
+    baseData.forEach((_hrZone, _index) => {
+      const reverseIndex = this.getReverseIndex(_index);
+      this._hrZoneTrend[reverseIndex].data.push([dateRange[0], _hrZone || 0]); // [startTimestamp, hrZone]
+      this._hrZoneTrend[reverseIndex].custom.dateRange.push(dateRange);  // [startTimestamp, endTimestamp]
+    });
+
+  }
+
+  /**
+   * 將基準與比較的單筆心率數據與日期範圍加至圖表數據陣列中
+   * @param baseData {Array<number>}-基準心率區間
+   * @param baseDateRange {Array<number>}-該筆數據所屬時間
+   * @param baseData {Array<number>}-比較心率區間
+   * @param compareDateRange {Array<number>}-該筆數據所屬時間
+   */
+  addMixData(
+    baseData: Array<number>,
+    baseDateRange: Array<number>,
+    compareData: Array<number>,
+    compareDateRange: Array<number>
+  ) {
+    baseData.forEach((_baseHrZone, _index) => {
+      const _compareHrZone = compareData[_index];
+      const _baseReverseIndex = this.getReverseIndex(_index)
+      const _compareReverseIndex = _baseReverseIndex + 6;
+      this._hrZoneTrend[_baseReverseIndex].data.push(_baseHrZone);
+      this._hrZoneTrend[_baseReverseIndex].custom.dateRange.push(baseDateRange);
+      this._hrZoneTrend[_compareReverseIndex].data.push(_compareHrZone);
+      this._hrZoneTrend[_compareReverseIndex].custom.dateRange.push(compareDateRange);
+    });
+
+  }
+
+  /**
+   * highchart 堆疊柱狀圖堆疊順序由上到下為數據陣列前到後，故需將序列反過來
+   * @param index {number}-原序列
+   */
+  getReverseIndex(index: number) {
+    return Math.abs(index - 5);
+  }
+
+  /**
+   * 取得圖表數據
+   */
+  get chartData() {
+    return this._hrZoneTrend;
+  }
+
+}
+
+/**
+ * 比較趨勢圖
+ */
+export class CompareTrendData {
+  
+  /**
+   * 用來標註目標線(yAxis.plotLines)
+   */
+  private _target: number;
+
+  /**
+   * 顏色設定
+   */
+  private _colorOption: any;
+
+  /**
+   * 圖表所需數據與設定
+   */
+  private _trendData = [{
+    color: {
+      linearGradient: {
+        x1: 0,
+        x2: 0,
+        y1: 0,
+        y2: 1
+      },
+      stops: []
+    },
+    showInLegend: false,
+    custom: {
+      dateRange: []
+    },
+    data: []
+  }];
+
+  constructor(isCompareMode: boolean, colorOption: any) {
+    this._colorOption = colorOption;
+    isCompareMode ? this.initCompareOption(colorOption) : this.initNormalOption(colorOption);
+  }
+
+  /**
+   * 非比較模式的圖表設定值
+   * @param colorOption {any}-柱狀圖顏色設定
+   */
+  initNormalOption(colorOption: any) {
+    const { top, bottom } = colorOption.base;
+    this._trendData[0].color.stops = [
+      [0, top],
+      [1, bottom]
+    ];
+
+  }
+
+  /**
+   * 比較模式的圖表設定值
+   * @param colorOption {any}-柱狀圖顏色設定
+   */
+  initCompareOption(colorOption: any) {
+    const { base, compare } = colorOption;
+    const optionModel = deepCopy(this._trendData[0]);
+    this._trendData.push(optionModel);
+    this._trendData[0].color.stops = [[0, base.top], [1, base.bottom]];
+    this._trendData[1].color.stops = [[0, compare.top], [1, compare.bottom]];
+  }
+
+  /**
+   * 將單筆心率數據與日期範圍加至圖表數據陣列中
+   * @param data {number}-數據
+   * @param dateRange {Array<number>}-該筆數據所屬時間
+   */
+  addBaseData(data: number, dateRange: Array<number>) {
+    this._trendData[0].data.push([dateRange[0], data || 0]);
+    this._trendData[0].custom.dateRange.push(dateRange);
+  }
+
+  /**
+   * 將基準與比較的單筆心率數據與日期範圍加至圖表數據陣列中
+   * @param baseData {Array<number>}-基準數據
+   * @param baseDateRange {Array<number>}-該筆數據所屬時間
+   * @param baseData {Array<number>}-比較數據
+   * @param compareDateRange {Array<number>}-該筆數據所屬時間
+   */
+  addMixData(
+    baseData: Array<number>,
+    baseDateRange: Array<number>,
+    compareData: Array<number>,
+    compareDateRange: Array<number>
+  ) {
+    this._trendData[0].data.push([baseDateRange[0], baseData || 0]);
+    this._trendData[0].custom.dateRange.push(baseDateRange);
+    this._trendData[1].data.push([compareDateRange[0], compareData || 0]);
+    this._trendData[1].custom.dateRange.push(compareDateRange);
+  }
+
+  /**
+   * 儲存目標值
+   * @param value {number}-目標值
+   */
+  set target(value: number) {
+    this._target = value;
+  }
+
+  /**
+   * 取得目標值
+   */
+  get target() {
+    return this._target;
+  }
+
+
+  get colorOption() {
+    return this._colorOption;
+  }
+
+  /**
+   * 取得圖表數據與設定值
+   */
+  get chartData() {
+    return this._trendData;
   }
 
 }

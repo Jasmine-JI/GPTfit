@@ -9,6 +9,9 @@
 @import 'transform.scss';
 @import 'color.scss';
 
+
+$sport-chart-width: 80%;
+
 .report-headerIcon{
   font-size: 30px;
   color: var(--scale-100-230);
@@ -531,4 +534,42 @@
 
 .report-lockIcon {
   font-size: 24px;
+}
+
+.report-distributionChartSection {
+  width: 50%;
+}
+
+.report-oneRingChart {
+  min-width: 150px;
+}
+
+.report-dateHint {
+  font-size: 12px;
+  color: rgba(120, 120, 120, 1);
+}
+
+.report-ringChartLabel {
+  justify-content: center;
+}
+
+.report-zoneChartInfo {
+  align-items: center;
+}
+
+.report-trendChart {
+  background-color: rgba(245, 245, 245, 1);
+}
+
+.report-chartHint {
+  width: calc(100% - #{$sport-chart-width});
+}
+
+.report-chartFigure {
+  width: $sport-chart-width;
+}
+
+.report-trendChartTitle {
+  @include bold-font(24px);
+  color: rgba(115, 115, 115, 1);
 }

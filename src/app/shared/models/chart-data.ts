@@ -2,6 +2,30 @@ import { HrBase } from './user-profile-info';
 
 export type DisplayPage = 'cloudrun' | 'sport' | 'lifeTracking' | 'sportReport';
 
+export const costTimeColor = 'rgba(188, 226, 58, 1)';
+export const strokeNumColor = 'rgba(53, 168, 201, 1)';
+export const caloriesColor = 'rgba(248, 181, 81, 1)';
+export const distanceColor = 'rgba(110, 155, 255, 1)';
+export const rightMoveColor = 'rgba(110, 168, 255, 1)';
+export const leftMoveColor = 'rgba(206, 110, 255, 1)';
+export const acclerateColor = 'rgba(35, 255, 181, 1)';
+export const hitColor = 'rgba(255, 110, 170, 1)';
+export const jumpColor = 'rgba(152, 255, 110, 1)';
+export const landingColor = 'rgba(255, 165, 0, 1)';
+export const planeGColor = 'rgba(85, 54, 255, 1)';
+export const planeMaxGColor = 'rgba(255, 54, 240, 1)';
+export const forehandSwingColor = 'rgba(0, 137, 152, 1)';
+export const backHandSwingColor = 'rgba(197, 118, 16, 1)';
+export const paceTrendColor = ['#6a4db8', '#e04c62', '#ffd451'];
+export const speedTrendColor = ['#ff00ff', '#ffff00', '#ffff00'];
+export const cadenceTrendColor = ['#aafc42', '#d6ff38', '#f56300'];
+export const swolfTrendColor = ['#aafc42', '#d6ff38', '#7fd9ff'];
+export const swingSpeedTrendColor = ['#3da200', '#0012ff', '#0012ff'];
+export const fitTimeColor = 'rgba(248, 181, 81, 1)';
+export const COLUMN_BORDER_COLOR = 'rgba(48, 48, 48, 1)';
+export const COMPARE_COLUMN_BORDER_COLOR = 'rgba(255, 89, 89, 1)';
+export const TARGET_LINE_COLOR = 'rgba(255, 48, 110, 1)';
+
 /**
  * 心率或閾值各區間代表色
  */
@@ -26,6 +50,17 @@ export const infoColor = [
   'rgba(234, 164, 4, 1)',
   'rgba(243, 105, 83, 1)',
   'rgba(239, 56, 150, 1)'
+];
+
+
+export const SPORT_TYPE_COLOR = [
+  'rgba(234, 87, 87, 1)',
+  'rgba(255, 154, 34, 1)',
+  'rgba(249, 204, 61, 1)',
+  'rgba(207, 239, 75, 1)',
+  'rgba(117, 242, 95, 1)',
+  'rgba(114, 232, 176, 1)',
+  'rgba(107, 235, 249, 1)'
 ];
 
 /**
@@ -80,28 +115,6 @@ export const restHrColor = {
   max: '#e23333'
 };
 
-
-export const costTimeColor = 'rgba(188, 226, 58, 1)',
-             strokeNumColor = 'rgba(53, 168, 201, 1)',
-             caloriesColor = 'rgba(248, 181, 81, 1)',
-             distanceColor = 'rgba(110, 155, 255, 1)',
-             rightMoveColor = 'rgba(110, 168, 255, 1)',
-             leftMoveColor = 'rgba(206, 110, 255, 1)',
-             acclerateColor = 'rgba(35, 255, 181, 1)',
-             hitColor = 'rgba(255, 110, 170, 1)',
-             jumpColor = 'rgba(152, 255, 110, 1)',
-             landingColor = 'rgba(255, 165, 0, 1)',
-             planeGColor = 'rgba(85, 54, 255, 1)',
-             planeMaxGColor = 'rgba(255, 54, 240, 1)',
-             forehandSwingColor = 'rgba(0, 137, 152, 1)',
-             backHandSwingColor = 'rgba(197, 118, 16, 1)',
-             paceTrendColor = ['#6a4db8', '#e04c62', '#ffd451'],
-             speedTrendColor = ['#ff00ff', '#ffff00', '#ffff00'],
-             cadenceTrendColor = ['#aafc42', '#d6ff38', '#f56300'],
-             swolfTrendColor = ['#aafc42', '#d6ff38', '#7fd9ff'],
-             swingSpeedTrendColor = ['#3da200', '#0012ff', '#0012ff'],
-             fitTimeColor = 'rgba(248, 181, 81, 1)';
-
 export const maleBodyBoundary = {
   fatRate: [17, 21, 50],
   FFMI: [18, 21, 28]
@@ -111,6 +124,43 @@ export const femaleBodyBoundary = {
   fatRate: [23, 27, 56],
   FFMI: [15, 18, 25]
 };
+
+/**
+ * 運動報告趨勢圖顏色設定
+ */
+export const trendChartColor = {
+  totalSecond: {
+    base: {
+      top: 'rgba(106, 162, 203, 1)',
+      bottom: 'rgba(39, 181, 190, 1)'
+    },
+    compare: {
+      top: 'rgba(106, 203, 122, 1)',
+      bottom: 'rgba(178, 190, 39, 1)'
+    }
+  },
+  calories: {
+    base: {
+      top: 'rgba(255, 84, 55, 1)',
+      bottom: 'rgba(255, 150, 34, 1)'
+    },
+    compare: {
+      top: 'rgba(68, 71, 196, 1)',
+      bottom: 'rgba(241, 69, 160, 1)'
+    }
+  },
+  target: {
+    base: {
+      top: 'rgba(255, 84, 55, 1)',
+      bottom: 'rgba(255, 150, 34, 1)'
+    },
+    compare: {
+      top: 'rgba(96, 198, 80, 1)',
+      bottom: 'rgba(45, 147, 195, 1)'
+    }
+  }
+
+}
 
 export interface HrZoneRange {
   hrBase: HrBase;

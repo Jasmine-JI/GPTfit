@@ -63,6 +63,9 @@ import { RelativeColumnChartComponent } from './chart/relative-column-chart/rela
 import { TermsComponent } from './terms/terms.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { ConditionSelectorComponent } from './condition-selector/condition-selector.component';
+import { CompareHrzoneTrendComponent } from './chart/compare-hrzone-trend/compare-hrzone-trend.component';
+import { CompareColumnTrendComponent } from './chart/compare-column-trend/compare-column-trend.component';
+import { TreeMapChartComponent } from './chart/tree-map-chart/tree-map-chart.component';
 
 @NgModule({
   imports: [
@@ -131,7 +134,10 @@ import { ConditionSelectorComponent } from './condition-selector/condition-selec
     RelativeColumnChartComponent,
     TermsComponent,
     PrivacyPolicyComponent,
-    ConditionSelectorComponent
+    ConditionSelectorComponent,
+    CompareHrzoneTrendComponent,
+    CompareColumnTrendComponent,
+    TreeMapChartComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -182,7 +188,10 @@ import { ConditionSelectorComponent } from './condition-selector/condition-selec
     RelativeColumnChartComponent,
     TermsComponent,
     PrivacyPolicyComponent,
-    ConditionSelectorComponent
+    ConditionSelectorComponent,
+    CompareHrzoneTrendComponent,
+    CompareColumnTrendComponent,
+    TreeMapChartComponent
   ]
 })
 export class SharedComponentsModule {}
