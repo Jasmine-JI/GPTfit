@@ -1,4 +1,15 @@
-import { Component, OnInit, Input, Output, OnChanges, OnDestroy, EventEmitter, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  OnChanges,
+  OnDestroy,
+  EventEmitter,
+  SimpleChanges,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef
+} from '@angular/core';
 import { DateRange } from '../../classes/date-range';
 import { ReportCondition, DateRangeType, ReportDateType } from '../../models/report-condition';
 import { DateUnit } from '../../enum/report';
@@ -15,7 +26,8 @@ import { GroupInfo } from '../../classes/group-info';
 @Component({
   selector: 'app-condition-selector',
   templateUrl: './condition-selector.component.html',
-  styleUrls: ['./condition-selector.component.scss']
+  styleUrls: ['./condition-selector.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy {
 
@@ -66,7 +78,9 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
   readonly BrandType = BrandType;
   readonly DateUnit = DateUnit;
 
-  constructor() { }
+  constructor(
+    private changeDetectorRef: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {}
 
@@ -174,6 +188,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    */
   selectSportType(type: SportType) {
     this.reportCondition.sportType = type;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -184,6 +199,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     this.reportCondition = deepCopy(this.initialCondition);
     this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
     this.reportCondition.needRefreshData = true;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -210,6 +226,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.unSubscribePluralEvent();
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -228,6 +245,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     };
 
     this.pluralEvent.unsubscribe();
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -323,6 +341,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
   afterChangeDate() {
     this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
     this.reportCondition.needRefreshData = true;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -354,6 +373,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     if (this.dateRange.compare === 'sameRangeLastYear') this.selectCompareDateRange('sameRangeLastYear');
     this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
     this.reportCondition.needRefreshData = true;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -382,6 +402,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
 
     this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
     this.reportCondition.needRefreshData = true;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**

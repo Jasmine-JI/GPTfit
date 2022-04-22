@@ -1131,7 +1131,16 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     const { value } = (e as any).target;
     if (formTest.number.test(value)) {
       this.newCondition.filedValue = +value;
-      if (this.newCondition.filedName) this.addNewCondition();
+      const { filedName, filedValue } = this.newCondition;
+      if (filedName) {
+        // 若目標項目跟時間有關，則將數值由分轉為秒
+        if (filedName.toLocaleLowerCase().includes('time')) {
+          this.newCondition.filedValue = filedValue * 60;
+        }
+
+        this.addNewCondition();
+      }
+
     }
 
     (e as any).target.value = '';

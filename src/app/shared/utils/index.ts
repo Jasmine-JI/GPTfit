@@ -175,7 +175,7 @@ export function getUrlQueryStrings(search: string = undefined) {
 
 /**
  * 四捨五入至小數點特定位數
- * @param decimal {number}-數值
+ * @param decimal {number}-四捨五入位數
  * @param digit {number}-位數
  * @author kidin-1110318
  */
@@ -225,4 +225,24 @@ export function getFtpZoneTranslation(translate: TranslateService) {
     translate.instant('universal_activityData_limit_ftpZ6')
   ];
 
+}
+
+/**
+ * 計算百分比數據
+ * @param molecular {number}-分子
+ * @param denominator {number}-分母
+ * @param decimal {number}-四捨五入位數
+ */
+export function countPercentage(molecular: number, denominator: number, decimal: number = 0) {
+  return mathRounding((molecular ?? 0) / (denominator ?? Infinity) * 100, decimal);
+}
+
+/**
+ * 變更顏色透明度
+ * @param color {string}-顏色，格式為rgba
+ */
+export function changeOpacity(color: string, newOpacity: string | number) {
+  const trimColor = color.replace(/\s/g,'');
+  const rgbaReg = /^(rgba\(\d+,\d+,\d+,)(\d+)(\))$/;
+  return trimColor.replace(rgbaReg, `$1${newOpacity}$3`);
 }

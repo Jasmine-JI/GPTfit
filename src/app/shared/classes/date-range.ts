@@ -117,7 +117,7 @@ export class DateRange {
 
   /**
    * 取得該日期範圍相差數目
-   * @param unit {string}-日期相差單位（day/week/month/year）
+   * @param unit {string}-日期相差單位（day/week/month/quarter/year）
    */
   getDiffRange(unit: string, showDecimal: boolean = false) {
     return dayjs(this._endTime).diff(this._startTime, unit as any, showDecimal);
@@ -125,7 +125,7 @@ export class DateRange {
 
   /**
    * 取得該日期範圍跨越數目（ex. 1101201~1110105 ＝> 跨了2年度）
-   * @param unit {string}-日期相差單位（day/week/month/year）
+   * @param unit {string}-日期相差單位（day/week/month/quarter/year）
    */
   getCrossRange(unit: any) {
     const diff = Math.ceil(this.getDiffRange(unit, true));

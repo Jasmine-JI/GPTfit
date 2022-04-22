@@ -63,6 +63,57 @@ export const SPORT_TYPE_COLOR = [
   'rgba(107, 235, 249, 1)'
 ];
 
+export const DISTRIBUTION_CHART_COLOR = {
+  axis: 'rgba(210, 210, 210, 1)',
+  axisText: 'rgba(135, 135, 135, 1)',
+  leftTop: {
+    background: 'rgba(213, 249, 246, 1)',
+    fill: 'rgba(92, 232, 221, 1)',
+    textShadow: 'rgba(95, 179, 172, 1)',
+  },
+  leftMiddle: {
+    background: 'rgba(213, 244, 249, 1)',
+    fill: 'rgba(92, 213, 232, 1)',
+    textShadow: 'rgba(71, 164, 178, 1)',
+  },
+  leftBottom: {
+    background: 'rgba(213, 237, 249, 1)',
+    fill: 'rgba(92, 187, 232, 1)',
+    textShadow: 'rgba(71, 145, 178, 1)',
+  },
+  middleTop: {
+    background: 'rgba(237, 249, 213, 1)',
+    fill: 'rgba(187, 232, 92, 1)',
+    textShadow: 'rgba(145, 178, 71, 1)',
+  },
+  center: {
+    background: 'rgba(217, 248, 214, 1)',
+    fill: 'rgba(105, 232, 92, 1)',
+    textShadow: 'rgba(82, 178, 71, 1)',
+  },
+  middleBottom: {
+    background: 'rgba(214, 248, 231, 1)',
+    fill: 'rgba(92, 232, 157, 1)',
+    textShadow: 'rgba(71, 178, 121, 1)',
+  },
+  rightTop: {
+    background: 'rgba(249, 220, 216, 1)',
+    fill: 'rgba(233, 121, 101, 1)',
+    textShadow: 'rgba(178, 92, 77, 1)',
+  },
+  rightMiddle: {
+    background: 'rgba(248, 231, 213, 1)',
+    fill: 'rgba(232, 161, 92, 1)',
+    textShadow: 'rgba(178, 125, 71, 1)',
+  },
+  rightBottom: {
+    background: 'rgba(250, 240, 213, 1)',
+    fill: 'rgba(232, 197, 92, 1)',
+    textShadow: 'rgba(178, 152, 71, 1)',
+  }
+
+};
+
 /**
  * 步數趨勢圖顏色
  */
@@ -149,10 +200,10 @@ export const trendChartColor = {
       bottom: 'rgba(241, 69, 160, 1)'
     }
   },
-  target: {
+  achieveRate: {
     base: {
-      top: 'rgba(255, 84, 55, 1)',
-      bottom: 'rgba(255, 150, 34, 1)'
+      top: 'rgba(35, 148, 255, 1)',
+      bottom: 'rgba(200, 59, 255, 1)'
     },
     compare: {
       top: 'rgba(96, 198, 80, 1)',

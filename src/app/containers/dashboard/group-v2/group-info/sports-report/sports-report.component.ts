@@ -1,36 +1,11 @@
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { GroupService } from '../../../../../shared/services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { ReportCondition, ReportDateType } from '../../../../../shared/models/report-condition';
-import { Subject, of, combineLatest, fromEvent, Subscription, merge, Observable } from 'rxjs';
+import { Subject, of, combineLatest, fromEvent, Subscription } from 'rxjs';
 import { takeUntil, switchMap, map, tap } from 'rxjs/operators';
-import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '../../../../../shared/services/hash-id.service';
-import { MatSort, Sort } from '@angular/material/sort';
-import dayjs from 'dayjs';
 import { SportType } from '../../../../../shared/enum/sports';
-import {
-  COMMON_DATA,
-  RUN_DATA,
-  RIDE_DATA,
-  WEIGHT_TRAIN_DATA,
-  SWIM_DATA,
-  ROW_DATA,
-  BALL_DATA,
-  Regression
-} from '../../../../../shared/models/sports-report';
-import {
-  costTimeColor,
-  FilletTrendChart,
-  CompareLineTrendChart,
-  strokeNumColor,
-  caloriesColor,
-  distanceColor,
-  DiscolorTrendData,
-  RelativeTrendChart
-} from '../../../../../shared/models/chart-data';
-import { MuscleCode, MuscleGroup } from '../../../../../shared/enum/weight-train';
-import { HrBase } from '../../../../../shared/models/user-profile-info';
 import { getUrlQueryStrings, deepCopy, mathRounding, subscribePluralEvent } from '../../../../../shared/utils/index';
 import { QueryString } from '../../../../../shared/enum/query-string';
 import { DateRange } from '../../../../../shared/classes/date-range';
@@ -50,21 +25,20 @@ import { SportAnalysisSort } from '../../../../../shared/classes/sport-analysis-
 import { AnalysisOption } from '../../../../professional/classes/analysis-option';
 import { AnalysisSportsColumn } from '../../../../professional/enum/report-analysis';
 import { AnalysisAssignMenu } from '../../../../professional/models/report-analysis';
-import { SPORT_TYPE_COLOR } from '../../../../../shared/models/chart-data';
+import { SPORT_TYPE_COLOR, trendChartColor } from '../../../../../shared/models/chart-data';
+import { TargetCondition, TargetField } from '../../../../../shared/models/sport-target';
+import { MuscleGroup } from '../../../../../shared/enum/weight-train';
+
 
 const ERROR_MESSAGE = 'Error! Please try again later.';
 
 @Component({
   selector: 'app-sports-report',
   templateUrl: './sports-report.component.html',
-  styleUrls: ['./sports-report.component.scss', '../group-child-page.scss']
+  styleUrls: ['./sports-report.component.scss', '../group-child-page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SportsReportComponent implements OnInit, OnDestroy {
-
-  @ViewChild('groupSortTable', {static: false})
-  groupSortTable: MatSort;
-  @ViewChild('personSortTable', {static: false})
-  personSortTable: MatSort;
 
   private ngUnsubscribe = new Subject();
   pluralEvent = new Subscription();
@@ -182,6 +156,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     nameList: []
   };
 
+  /**
+   * 依報告時間單位與群組總人數換算過後的總目標條件
+   */
+  transformCondition: Array<TargetCondition>;
+
   readonly SportType = SportType;
   readonly GroupLevel = GroupLevel;
   readonly Unit = Unit;
@@ -190,12 +169,12 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   readonly muscleImperialUnit = 'lb*rep*set';
   readonly MuscleGroup = MuscleGroup;
   readonly SPORT_TYPE_COLOR = SPORT_TYPE_COLOR;
+  readonly trendChartColor = trendChartColor;
 
   constructor(
     private utils: UtilsService,
     private groupService: GroupService,
     private hashIdService: HashIdService,
-    private translate: TranslateService,
     private changeDetectorRef: ChangeDetectorRef,
     private userService: UserService,
     private api21xxService: Api21xxService,
@@ -219,6 +198,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     ).subscribe(e => {
       this.windowWidth = (e as any).target.innerWidth;
       this.checkWindowSize(this.windowWidth);
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -408,6 +388,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         this.changeColumnOption(sportType, level);
         this.initFlag();
         this.createReport(condition, resultArray);
+        this.changeDetectorRef.markForCheck();
       });
 
     }
@@ -448,8 +429,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       this.handlePersonalData('compare', condition, allGroupMemberList, compareSportSummary, sportsTarget);
     }
 
-    this.handleGroupChartData(condition, baseSportSummary, compareSportSummary, sportsTarget);
     this.handleGroupInfoData(allGroupMemberList);
+    this.handleGroupChartData(condition, baseSportSummary, compareSportSummary, sportsTarget);
     this.uiFlag.progress = 100;
   }
 
@@ -486,7 +467,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
     this.memberSportsInfo = allGroupList;
     this.personAnalysis = new SportAnalysisSort(Object.values(allGroupList.memberList), 'memberName');
-console.log('allGroupList', this.personAnalysis);
   }
 
   /**
@@ -498,7 +478,6 @@ console.log('allGroupList', this.personAnalysis);
     const { immediateGroupObj } = this.getGroupInfo();
     this.groupSportsInfo = new GroupSportsReportInfo(immediateGroupObj, allGroupList);
     this.groupAnalysis = new SportAnalysisSort(Object.values(this.groupSportsInfo.groupSportInfo), 'targetAchievedPeople');
-console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
   }
 
   /**
@@ -516,8 +495,9 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
   ) {
     const { dateUnit } = condition;
     const totalPeople = this.groupSportsInfo.getAssignGroupInfo(this.getFocusGroupId(), 'totalPeople')
-    const transformTarget = sportsTarget.getTransformCondition(dateUnit.unit, totalPeople);
-    this.groupChartData = new GroupSportsChartData(condition, baseData, compareData, transformTarget);
+    this.transformCondition = sportsTarget.getTransformCondition(dateUnit.unit, totalPeople);
+    const perTransformCondition = sportsTarget.getTransformCondition(dateUnit.unit, 1);
+    this.groupChartData = new GroupSportsChartData(condition, baseData, compareData, perTransformCondition, totalPeople);
   }
 
   /**
@@ -701,6 +681,7 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
       analysis.changeOrder();
     }
 
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -740,6 +721,7 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
       this.subscribePluralEvent();
     }
 
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -756,6 +738,7 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
       this.subscribePluralEvent();
     }
 
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -780,6 +763,7 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
     this.uiFlag.showPersonalAnalysisOption = false;
     this.analysisAssignMenu.show = false;
     this.pluralEvent.unsubscribe();
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -789,6 +773,7 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
    */
   groupOptionChange(e: AnalysisOption) {
     this.groupAnalysisOption = e;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -798,6 +783,7 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
    */
   personalOptionChange(e: AnalysisOption) {
     this.personalAnalysisOption = e;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -820,6 +806,7 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
     };
 
     this.subscribePluralEvent();
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -851,6 +838,7 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
     };
 
     this.subscribePluralEvent();
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -858,7 +846,8 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
    * @author kidin-1110401
    */
   seeMoreGroup() {
-    this.uiFlag.analysisSeeMoreGroup = true;   
+    this.uiFlag.analysisSeeMoreGroup = true;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -867,6 +856,7 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
    */
   seeMorePerson() {
     this.uiFlag.analysisSeeMorePerson = true;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -876,6 +866,17 @@ console.log('GroupInfo', this.groupSportsInfo, this.groupAnalysis);
   changeSelectedType(type: SportType) {
     const { selectedType } = this.uiFlag;
     this.uiFlag.selectedType = type === selectedType ? SportType.all : type;
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 取得與此圖表有關的運動目標條件
+   * @param type {TargetField}-此圖表的類別
+   * @author kidin-1110418
+   */
+  getAssignCondition(type: TargetField) {
+    const relatedIndex = this.transformCondition.findIndex(_condition => _condition.filedName === type);
+    return relatedIndex > -1 ? this.transformCondition[relatedIndex].filedValue : null;
   }
 
   /**

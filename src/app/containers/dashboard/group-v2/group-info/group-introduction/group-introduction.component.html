@@ -273,7 +273,7 @@
           </button>
           {{ condition.filedName | targetFieldName | translate }}
           &ge;
-          {{ condition.filedValue }}
+          {{ condition.filedName.toLocaleLowerCase().includes('time') ? condition.filedValue / 60 : condition.filedValue }}
           {{ condition.filedName | targetFieldUnit | translate }}
           / {{ (sportTarget.cycle === DateUnit.week ? 'universal_time_week' : 'universal_time_day') | translate }}
         </li>
@@ -332,7 +332,7 @@
         <input
           class="target__input"
           type="text"
-          [placeHolder]="'數值' | translate"
+          [placeHolder]="'整數' | translate"
           [value]="newCondition.filedValue ? newCondition.filedValue : ''"
           (focusout)="setNewConditionValue($event)"
         >

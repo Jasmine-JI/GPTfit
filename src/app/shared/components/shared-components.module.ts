@@ -66,6 +66,8 @@ import { ConditionSelectorComponent } from './condition-selector/condition-selec
 import { CompareHrzoneTrendComponent } from './chart/compare-hrzone-trend/compare-hrzone-trend.component';
 import { CompareColumnTrendComponent } from './chart/compare-column-trend/compare-column-trend.component';
 import { TreeMapChartComponent } from './chart/tree-map-chart/tree-map-chart.component';
+import { SmallHrzoneChartComponent } from './chart/small-hrzone-chart/small-hrzone-chart.component';
+import { DistributionCanvasChartComponent } from './chart/distribution-canvas-chart/distribution-canvas-chart.component';
 
 @NgModule({
   imports: [
@@ -137,7 +139,9 @@ import { TreeMapChartComponent } from './chart/tree-map-chart/tree-map-chart.com
     ConditionSelectorComponent,
     CompareHrzoneTrendComponent,
     CompareColumnTrendComponent,
-    TreeMapChartComponent
+    TreeMapChartComponent,
+    SmallHrzoneChartComponent,
+    DistributionCanvasChartComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -191,7 +195,9 @@ import { TreeMapChartComponent } from './chart/tree-map-chart/tree-map-chart.com
     ConditionSelectorComponent,
     CompareHrzoneTrendComponent,
     CompareColumnTrendComponent,
-    TreeMapChartComponent
+    TreeMapChartComponent,
+    SmallHrzoneChartComponent,
+    DistributionCanvasChartComponent
   ]
 })
 export class SharedComponentsModule {}

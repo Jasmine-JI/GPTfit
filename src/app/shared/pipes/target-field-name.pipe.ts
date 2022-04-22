@@ -7,7 +7,7 @@ export class TargetFieldNamePipe implements PipeTransform {
   constructor() {}
 
   /**
-   * 根據運動目標條件項目回覆對應的多國語系鍵名
+   * 根據運動目標條件項目或圖表回覆對應的多國語系鍵名
    * @param value {TargetField}-運動目標條件項目
    * @return {string}-多國語系鍵名
    * @author kidin-1110307
@@ -24,6 +24,8 @@ export class TargetFieldNamePipe implements PipeTransform {
         return 'PAI';
       case 'calories':
         return 'universal_userProfile_calories';
+      case 'achievementRate':
+        return '達成率';
     }
 
   }
