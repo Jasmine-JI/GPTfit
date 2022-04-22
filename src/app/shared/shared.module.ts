@@ -5,6 +5,7 @@ import { DataTypeTranslatePipe } from './pipes/data-type-translate.pipe';
 import { DataTypeUnitPipe } from './pipes/data-type-unit.pipe';
 import { TemperatureSibsPipe } from './pipes/temperature-sibs.pipe';
 import { SportPaceSibsPipe } from './pipes/sport-pace-sibs.pipe';
+import { TargetFieldNamePipe } from './pipes/target-field-name.pipe';
 
 @NgModule({
   exports: [
@@ -15,7 +16,8 @@ import { SportPaceSibsPipe } from './pipes/sport-pace-sibs.pipe';
     DataTypeTranslatePipe,
     DataTypeUnitPipe,
     TemperatureSibsPipe,
-    SportPaceSibsPipe
+    SportPaceSibsPipe,
+    TargetFieldNamePipe
   ]
 })
 

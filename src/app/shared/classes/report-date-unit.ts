@@ -51,6 +51,24 @@ export class ReportDateUnit {
   }
 
   /**
+   * 取得目前使用之時間單位的多國語系翻譯的鍵
+   */
+  getUnitI18nKey() {
+    switch (this._dateUnit) {
+      case DateUnit.day:
+        return 'universal_time_day';
+      case DateUnit.week:
+        return 'universal_time_week';
+      case DateUnit.month:
+        return 'universal_time_months';
+      case DateUnit.season:
+        return '季';
+      case DateUnit.year:
+        return 'universal_time_year';
+    }
+  }
+
+  /**
    * 取得報告時間範圍單位（用於api 2104/2107）
    */
   get reportDateType() {

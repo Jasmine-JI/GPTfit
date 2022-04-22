@@ -1,5 +1,4 @@
-import { TargetField, GroupSportTarget, PersonalTarget, TargetCondition } from '../models/sport-target';
-import { ConditionSymbols } from '../enum/sport-target';
+import { GroupSportTarget, PersonalTarget, TargetCondition } from '../models/sport-target';
 import { GroupLevel } from '../enum/professional';
 import { deepCopy, mathRounding } from '../utils/index';
 import { DateUnit } from '../enum/report';
@@ -106,7 +105,7 @@ export class SportsTarget {
     const { _cycle } = this;
     const sameUnit = _cycle === reportUnit;
     const conditionNotSet = _condition.length === 0;
-    if (sameUnit || conditionNotSet) return _condition;
+    if (conditionNotSet || (peopleNumber === 1 && sameUnit)) return _condition;
 
     const coefficient = this.getDateTransformCoefficient(reportUnit);
     return _condition.map(_con => {

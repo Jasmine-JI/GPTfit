@@ -1,13 +1,9 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { zoneColor } from '../../../models/chart-data';
 import { chart } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
-import dayjs from 'dayjs';
-import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
-import { COLUMN_BORDER_COLOR, COMPARE_COLUMN_BORDER_COLOR } from '../../../models/chart-data';
-import { getHrZoneTranslation, getFtpZoneTranslation } from '../../../utils/index';
+import { yAxisTimeFormat, tooltipHrZoneFormat, getDateTimeLabelFormats } from '../../../utils/chart-formatter';
 
 
 @Component({
@@ -109,23 +105,7 @@ class ChartOption {
         text: ''
       },
       labels: {
-        formatter: function () {
-          const yVal = this.value;
-          const costhr = Math.floor(yVal / 3600);
-          const costmin = Math.floor((yVal - costhr * 60 * 60) / 60);
-          const costsecond = Math.round(yVal - costmin * 60);
-          const timeMin = ('0' + costmin).slice(-2);
-          const timeSecond = ('0' + costsecond).slice(-2);
-  
-          if (costhr === 0 && timeMin === '00') {
-            return `0:${timeSecond}`;
-          } else if (costhr === 0) {
-            return `${timeMin}:${timeSecond}`;
-          } else {
-            return `${costhr}:${timeMin}:${timeSecond}`;
-          }
-
-        }
+        formatter: yAxisTimeFormat
       },
       startOnTick: false,
       minPadding: 0.01,
@@ -133,46 +113,7 @@ class ChartOption {
       tickAmount: 5
     },
     tooltip: {
-      formatter: function () {
-        const yVal = this.y;
-        const costhr = Math.floor(yVal / 3600);
-        const costmin = Math.floor((yVal - costhr * 60 * 60) / 60);
-        const costsecond = Math.round(yVal - costmin * 60);
-        const timeMin = ('0' + costmin).slice(-2);
-        const timeSecond = ('0' + costsecond).slice(-2);
-        let zoneTime = '';
-
-        if (costhr === 0 && timeMin === '00') {
-          zoneTime = `0:${timeSecond}`;
-        } else if (costhr === 0) {
-          zoneTime = `${timeMin}:${timeSecond}`;
-        } else {
-          zoneTime = `${costhr}:${timeMin}:${timeSecond}`;
-        }
-
-        const yTotal = this.total;
-        const totalHr = Math.floor(yTotal / 3600);
-        const totalmin = Math.floor(Math.round(yTotal - totalHr * 60 * 60) / 60);
-        const totalsecond = Math.round(yTotal - totalmin * 60);
-        const timeTotalMin = ('0' + totalmin).slice(-2);
-        const timeTotalSecond = ('0' + totalsecond).slice(-2);
-        let totalZoneTime = '';
-
-        if (totalHr === 0 && timeTotalMin === '00') {
-          totalZoneTime = `0:${timeTotalSecond}`;
-        } else if (totalHr === 0) {
-          totalZoneTime = `${timeTotalMin}:${timeTotalSecond}`;
-        } else {
-          totalZoneTime = `${totalHr}:${timeTotalMin}:${timeTotalSecond}`;
-        }
-
-        const dateRangeIndex = this.point.index;
-        const [startTime, endTime] = this.series.options.custom.dateRange[dateRangeIndex];
-        return `${dayjs(startTime).format('YYYY-MM-DD')}~${dayjs(endTime).format('YYYY-MM-DD')}
-          <br/>${this.series.name}: ${zoneTime}
-          <br/>Total: ${totalZoneTime}`;
-
-      }
+      formatter: tooltipHrZoneFormat
     },
     plotOptions: {
       column: <any>{
@@ -199,7 +140,6 @@ class ChartOption {
     const isCompareMode = (data.length / 2) >= 5;
     if (isCompareMode) {
       this.handleCompareOption(data);
-      
     } else {
       this.handleNormalOption(data);
     }
@@ -217,16 +157,7 @@ class ChartOption {
       xAxis: {
         ...xAxis,
         type: 'datetime',
-        dateTimeLabelFormats: {
-          millisecond: '%m/%d',
-          second: '%m/%d',
-          minute: '%m/%d',
-          hour: '%m/%d',
-          day: '%m/%d',
-          week: '%m/%d',
-          month: '%Y/%m',
-          year: '%Y'
-        },
+        dateTimeLabelFormats: getDateTimeLabelFormats(),
         title: {
           enabled: false
         },

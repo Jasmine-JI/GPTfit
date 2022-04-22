@@ -44,7 +44,6 @@ export class TreeMapChartComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.zoneInfo.data) {
       this.noData = true;
     } else {
-console.log('zoneInfo', this.zoneInfo);
       of(this.zoneInfo).pipe(
         map(zoneInfo => [zoneInfo.data, this.getZoneTranslate(zoneInfo.type)]),
         map(([data, translation]) => this.initChart(data, translation)),

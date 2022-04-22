@@ -1,1 +1,11 @@
-<p>compare-column-trend works!</p>
+<span style="font-weight: bold; color:grey;" *ngIf="noData">
+  {{'universal_status_noData' | translate}}
+</span>
+<figure id="mainSeciton">
+  <div
+    #container
+    id="chartBlock"
+  >
+    chart
+  </div>
+</figure>

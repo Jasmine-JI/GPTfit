@@ -1,6 +1,9 @@
 import { ConditionSymbols } from '../enum/sport-target';
 import { DateUnit } from '../enum/report';
 
+/**
+ * 可設定之目標類別或運動報告趨勢圖使用
+ */
 export type TargetField = 
     'totalActivities'
   | 'totalTime'
@@ -13,6 +16,7 @@ export type TargetField =
   | 'cycleAscent'
   | 'swimDistance'
   | 'rowDistance'
+  | 'achievementRate'
 ;
 
 export interface TargetCondition {
