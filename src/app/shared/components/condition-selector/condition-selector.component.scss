@@ -3,6 +3,7 @@
 @import 'drop-triangle.scss';
 @import 'color.scss';
 @import 'transition.scss';
+@import 'transform.scss';
 
 
 @mixin menu-list($padding) {
@@ -14,6 +15,23 @@
     background-color: $primary-blue;
   }
 
+}
+
+.selector__title__button {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.selector__unfold {
+  display: inline-block;
+  margin-left: 10px;
+  @include transition(transform);
+}
+
+.selector__fold {
+  display: inline-block;
+  @include el-rotate(180deg);
+  @include transition(transform);
 }
 
 .selector__section {
@@ -183,6 +201,7 @@
   border-radius: 28px;
   margin: 0 5px;
   font-size: 14px;
+  min-height: 25px;
 }
 
 .sport__type__selector {

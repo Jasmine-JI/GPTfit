@@ -24,7 +24,7 @@ export class DefaultDateRange {
   static getSevenDay() {
     const dateRange = {
       startTime: dayjs().subtract(7, 'day').startOf('day').valueOf(),
-      endTime: dayjs().endOf('day').valueOf()
+      endTime: dayjs().subtract(1, 'day').endOf('day').valueOf()
     };
 
     return dateRange;
@@ -36,7 +36,7 @@ export class DefaultDateRange {
   static getThirtyDay() {
     const dateRange = {
       startTime: dayjs().subtract(30, 'day').startOf('day').valueOf(),
-      endTime: dayjs().endOf('day').valueOf()
+      endTime: dayjs().subtract(1, 'day').endOf('day').valueOf()
     };
 
     return dateRange;

@@ -15,6 +15,7 @@ import { TargetField, GroupSportTarget, TargetCondition } from '../../../../../s
 import { ConditionSymbols } from '../../../../../shared/enum/sport-target';
 import { DateUnit } from '../../../../../shared/enum/report';
 import { formTest } from '../../../../../shared/models/form-test';
+import { deepCopy } from '../../../../../shared/utils/index';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -208,7 +209,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         changeStatus: this.groupDetail.groupStatus
       };
 
-      this.getSportTarget();
+      this.sportTarget = deepCopy(res.target);
     });
 
   }
@@ -795,7 +796,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   saveEditContent() {
     const { editBody, sportTarget: target } = this;
-    const editGroupBody = this.utils.deepCopy(editBody);
+    const editGroupBody = deepCopy(editBody);
     if (target.name) Object.assign(editGroupBody, { target });
     const { token, groupLevel, groupId, changeStatus } = editBody;
     const changeGroupStatusBody = { token, groupLevel, groupId, changeStatus };
@@ -984,45 +985,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 取得群組運動目標（自訂或繼承其他階層目標）
-   * @author kidin-1110307
-   */
-  getSportTarget() {
-    const { target } = this.groupDetail;
-    const { groupLevel } = this.editBody;
-    if (target && target.name) {
-      const targetReferenceLevel = +target.name;
-      let targetReference: GroupSportTarget;
-      if (targetReferenceLevel == groupLevel) {
-        targetReference = target;
-      } else {
-        targetReference = this.getReferenceTarget(targetReferenceLevel);
-      }
-
-      if (targetReference.name) this.sportTarget = this.utils.deepCopy(targetReference);
-    } else {
-      this.sportTarget.name = `${groupLevel}`;
-    }
-
-  }
-
-  /**
-   * 取得繼承對象之目標
-   * @param level {GroupLevel}-對象階層
-   * @author kidin-1110309
-   */
-  getReferenceTarget(level: GroupLevel) {
-    if (level > GroupLevel.brand) {
-      const { groupRootInfo } = this.groupDetail;
-      const referenceIndex = level === GroupLevel.brand ? 2 : 3;
-      return this.utils.deepCopy(groupRootInfo[referenceIndex].target);
-    } else {
-      return this.sportTarget;
-    }
-
-  }
-
-  /**
    * 選擇繼承指定的運動目標
    * @param referenceLevel {GroupLevel}-欲繼承目標的階層
    * @author kidin-1110307
@@ -1030,7 +992,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   setTargetReference(referenceLevel: GroupLevel) {
     const targetName = `${referenceLevel}`;
     const referenceIndex = this.targetInheritList.findIndex(_list => _list.level === referenceLevel);
-    const { cycle, condition } = this.utils.deepCopy(this.targetInheritList[referenceIndex]);
+    const { cycle, condition } = deepCopy(this.targetInheritList[referenceIndex]);
     if (cycle) {
       this.sportTarget = { name: targetName, cycle, condition };
     } else {
@@ -1156,7 +1118,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       .findIndex(_condition => _condition.filedName === filedName);
     
     if (repeatIndex >= 0) this.deleteCondition(repeatIndex);
-    const newCondition = this.utils.deepCopy(this.newCondition);
+    const newCondition = deepCopy(this.newCondition);
     this.sportTarget.condition.push(newCondition);
     this.newCondition = {
       filedName: <TargetField>'',
@@ -1237,25 +1199,12 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         case GroupLevel.brand:
           break;
         case GroupLevel.class:
-          const { target: { cycle: brandCycle, condition: brandCondition }, brandName } = groupRootInfo[2];
-          const brandTarget = { 
-            groupName: brandName,
-            level: GroupLevel.brand,
-            cycle: brandCycle,
-            condition: brandCondition
-          };
-          
-          this.targetInheritList.unshift(brandTarget);
+          const { target: brandTarget, brandName } = groupRootInfo[2];          
+          this.targetInheritList.unshift(this.checkReferenceTarget(brandTarget, brandName, GroupLevel.brand));
+          // 這邊不中斷（break）;
         case GroupLevel.branch:
-          const { cycle: upLayerCycle, condition: upLayerCondition } = target;
-          const upLayerTarget = {
-            groupName,
-            level: createLevel == GroupLevel.branch ? GroupLevel.brand : GroupLevel.branch,
-            cycle: upLayerCycle,
-            condition: upLayerCondition
-          };
-
-          this.targetInheritList.unshift(upLayerTarget);
+          const referenceLevel = createLevel == GroupLevel.branch ? GroupLevel.brand : GroupLevel.branch;
+          this.targetInheritList.unshift(this.checkReferenceTarget(target, groupName, referenceLevel));
           break;
       }
 
@@ -1263,30 +1212,32 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       const { groupLevel } = this.editBody;
       switch (groupLevel) {
         case GroupLevel.class:
-          const { target: { cycle: branchCycle, condition: branchCondition }, branchName } = groupRootInfo[3];
-          const branchTarget = {
-            groupName: branchName,
-            level: GroupLevel.brand,
-            cycle: branchCycle,
-            condition: branchCondition
-          };
-
-          this.targetInheritList.unshift(branchTarget);
+          const { target: branchTarget, branchName } = groupRootInfo[3];
+          this.targetInheritList.unshift(this.checkReferenceTarget(branchTarget, branchName, GroupLevel.branch));
+          // 這邊不中斷（break）;
         case GroupLevel.branch:
-          const { target: { cycle: brandCycle, condition: brandCondition }, brandName } = groupRootInfo[2];
-          const brandTarget = {
-            groupName: brandName,
-            level: GroupLevel.brand,
-            cycle: brandCycle,
-            condition: brandCondition
-          };
-
-          this.targetInheritList.unshift(brandTarget);
+          const { target: brandTarget, brandName } = groupRootInfo[2];
+          this.targetInheritList.unshift(this.checkReferenceTarget(brandTarget, brandName, GroupLevel.brand));
           break;
       }
 
     }
 
+  }
+
+  /**
+   * 確認目標是否有效，無效則回傳預設值
+   * @param target {GroupSportTarget}-運動目標
+   * @param groupName {string}-群組名稱
+   * @param level {GroupLevel}-群組階層
+   */
+  checkReferenceTarget(target: GroupSportTarget, groupName: string, level: GroupLevel) {
+    if (target.name) {
+      const { cycle, condition } = target;
+      return { groupName, level, cycle, condition };
+    }
+
+    return { groupName, level, cycle: DateUnit.week, condition: [] };
   }
 
   /**

@@ -30,6 +30,7 @@ export class SportAnalysisSort {
     this._data = data;
     this._type = sortType;
     this._isGroupAnalysis = sortType === 'targetAchievedPeople';
+    this._isAscending = sortType === 'memberName';
     this.sortData();
   }
 

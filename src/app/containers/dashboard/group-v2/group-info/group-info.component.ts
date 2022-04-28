@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ElementRef, AfterViewChecked, ViewChild } from '@angular/core';
 import { fromEvent, Subscription, Subject, forkJoin } from 'rxjs';
-import { takeUntil, tap, switchMap, map } from 'rxjs/operators';
+import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
@@ -17,7 +17,10 @@ import { AlbumType } from '../../../../shared/models/image';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { PrivacySettingDialogComponent } from '../../../../shared/components/privacy-setting-dialog/privacy-setting-dialog.component';
 import { Unit } from '../../../../shared/models/bs-constant';
-import { DashboardService } from '../../services/dashboard.service';
+import { GlobalEventsService } from '../../../../core/services/global-events.service';
+import { DateUnit } from '../../../../shared/enum/report';
+import { GroupLevel } from '../../models/group-detail';
+import { deepCopy } from '../../../../shared/utils/index';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -150,7 +153,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     private userProfileService: UserProfileService,
     private dialog: MatDialog,
     private imageUploadService: ImageUploadService,
-    private dashboardService: DashboardService
+    private globalEventsService: GlobalEventsService
   ) {}
 
   /**
@@ -239,7 +242,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091111
    */
   handleSideBarSwitch() {
-    this.dashboardService.getRxSideBarMode().pipe(
+    this.globalEventsService.getRxSideBarMode().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
 
@@ -807,7 +810,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.user.joinStatus = info.selfJoinStatus;
         this.currentGroupInfo.groupDetail = info;
         this.groupService.getCurrentGroupInfo().groupDetail = info;
-        this.groupService.saveGroupDetail(info);
+        this.groupService.saveGroupDetail(this.handleSportTarget(info));
         this.checkGroupResLength();
       }
 
@@ -838,7 +841,12 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       selfJoinStatus: 5,
       shareActivityToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "2"},
       shareAvatarToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "1"},
-      shareReportToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "2"}
+      shareReportToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "2"},
+      target: {
+        name: `${GroupLevel.brand}`,
+        cycle: DateUnit.week,
+        condition: []
+      }
     }
 
     this.groupService.saveGroupDetail(rootGroupDetail);
@@ -906,6 +914,41 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.groupService.saveGroupDetail(this.currentGroupInfo.groupDetail);
     }
 
+  }
+
+  /**
+   * 取得群組運動目標（自訂或繼承其他階層目標）
+   * @param info {any}-群組詳細資訊
+   * @author kidin-1110307
+   */
+  handleSportTarget(info: any) {
+    const { target } = info;
+    const groupLevel = this.utils.displayGroupLevel(info.groupId);
+    let sportTarget: any;
+    if (target && target.name) {
+      const targetReferenceLevel = +target.name;
+      const targetReference =
+        targetReferenceLevel == groupLevel ? target : this.getReferenceTarget(info, targetReferenceLevel);
+      if (targetReference.name) sportTarget = targetReference;
+    } else {
+      // 若舊有子群組從未設置目標，則預設繼承品牌目標
+      sportTarget = groupLevel == GroupLevel.brand ? target : this.getReferenceTarget(info, GroupLevel.brand);
+    }
+
+    Object.assign(info, { target: sportTarget });
+    return info;
+  }
+
+  /**
+   * 取得繼承對象之目標
+   * @param info {any}-群組詳細資訊
+   * @param level {GroupLevel}-對象階層
+   * @author kidin-1110309
+   */
+  getReferenceTarget(info: any, level: GroupLevel) {
+    const { groupRootInfo } = info;
+    const referenceIndex = level === GroupLevel.brand ? 2 : 3;
+    return deepCopy(groupRootInfo[referenceIndex].target);
   }
 
   /**

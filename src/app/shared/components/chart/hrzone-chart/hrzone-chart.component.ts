@@ -4,6 +4,7 @@ import { chart } from 'highcharts';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { zoneColor } from '../../../models/chart-data';
+import { GlobalEventsService } from '../../../../core/services/global-events.service';
 
 
 /**
@@ -80,20 +81,35 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
   container: ElementRef;
 
   constructor(
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private globalEventsService: GlobalEventsService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.subscribeGlobalEvents();
   }
 
-  ngOnChanges () {
-    if (this.data.reduce((accumulator, current) => accumulator + current) === 0) {
-      this.noHRZoneData = true;
-    } else {
-      this.noHRZoneData = false;
-    }
+  ngOnChanges() {
+    this.handleChart();
+  }
 
+  /**
+   * 處理繪製圖表流程
+   */
+  handleChart() {
+    this.noHRZoneData = this.data.reduce((accumulator, current) => accumulator + current) === 0;
     this.initInfoHighChart();
+  }
+
+  /**
+   * 訂閱全域自定義事件
+   */
+  subscribeGlobalEvents() {
+    this.globalEventsService.getRxSideBarMode().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.handleChart();
+    });
   }
 
   /**

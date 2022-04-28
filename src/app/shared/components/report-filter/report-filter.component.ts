@@ -8,7 +8,7 @@ import { takeUntil } from 'rxjs/operators';
 import { CloudrunService } from '../../services/cloudrun.service';
 import { Lang } from '../../models/i18n';
 import { Sex } from '../../models/user-profile-info';
-import { DashboardService } from '../../../containers/dashboard/services/dashboard.service';
+import { GlobalEventsService } from '../../../core/services/global-events.service';
 import { SelectDate } from '../../models/utils-type';
 import { SportType } from '../../enum/sports';
 
@@ -109,7 +109,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     private reportService: ReportService,
     private cloudrunService: CloudrunService,
     private changeDetectorRef: ChangeDetectorRef,
-    private dashboardService: DashboardService
+    private globalEventsService: GlobalEventsService
   ) {}
 
   ngOnInit(): void {
@@ -129,7 +129,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     this.date.openSelector = null;
     this.resizeSubScription = merge(
       resizeEvent,
-      this.dashboardService.getRxSideBarMode()
+      this.globalEventsService.getRxSideBarMode()
     ).pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(e => {

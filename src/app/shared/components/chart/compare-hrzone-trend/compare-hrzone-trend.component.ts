@@ -1,9 +1,11 @@
-import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
-import { of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
+import { of, Subject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
-import { yAxisTimeFormat, tooltipHrZoneFormat, getDateTimeLabelFormats } from '../../../utils/chart-formatter';
+import { yAxisTimeFormat, tooltipHrZoneFormat } from '../../../utils/chart-formatter';
+import dayjs from 'dayjs';
+import { GlobalEventsService } from '../../../../core/services/global-events.service';
 
 
 @Component({
@@ -12,6 +14,8 @@ import { yAxisTimeFormat, tooltipHrZoneFormat, getDateTimeLabelFormats } from '.
   styleUrls: ['./compare-hrzone-trend.component.scss']
 })
 export class CompareHrzoneTrendComponent implements OnInit {
+
+  private ngUnsubscribe = new Subject();
 
   @Input('data') data: Array<any>;
 
@@ -25,14 +29,22 @@ export class CompareHrzoneTrendComponent implements OnInit {
   noData = true;
 
   constructor(
-    private translate: TranslateService
+    private translate: TranslateService,
+    private globalEventsService: GlobalEventsService
   ) { }
 
   ngOnInit(): void {
+    this.subscribeGlobalEvents();
   }
 
   ngOnChanges() {
+    this.handleChart();
+  }
 
+  /**
+   * 處理繪製圖表流程
+   */
+  handleChart() {
     if (!this.data) {
       this.noData = true;
     } else {
@@ -43,7 +55,17 @@ export class CompareHrzoneTrendComponent implements OnInit {
 
       this.noData = false;
     }
+  }
 
+  /**
+   * 訂閱全域自定義事件
+   */
+  subscribeGlobalEvents() {
+    this.globalEventsService.getRxSideBarMode().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.handleChart();
+    });
   }
 
   /**
@@ -86,7 +108,7 @@ class ChartOption {
       type: 'column',
       height: 200,
       backgroundColor: 'transparent',
-      marginLeft: 65
+      marginLeft: 85
     },
     title: {
       text: ''
@@ -157,16 +179,17 @@ class ChartOption {
       xAxis: {
         ...xAxis,
         type: 'datetime',
-        dateTimeLabelFormats: getDateTimeLabelFormats(),
-        title: {
-          enabled: false
-        },
+        tickPositions: data[0].custom.dateRange.map(_range => _range[0]),
+        labels: {
+          formatter: function() {
+            return dayjs(this.value).format('MM/DD');
+          }
+        }
       },
       plotOptions: {
         ...plotOptions,
         column: {
-          ...plotOptions.column,
-          pointPlacement: 0.2
+          ...plotOptions.column
         }
       },
       series: data
@@ -176,10 +199,11 @@ class ChartOption {
 
   /**
    * 處理比較圖表的設定
-   * @param data {Array<any>}-圖表數據
+   * @param chartData {Array<any>}-圖表數據
    */
-  handleCompareOption(data: Array<any>) {
-    const categories = new Array(data.length).map((_arr, _index) => _index + 1);
+  handleCompareOption(chartData: Array<any>) {
+    const dataLength = chartData[0].data.length;
+    const categories = new Array(dataLength).fill(0).map((_arr, _index) => _index + 1);
     const { xAxis } = this._option;
     this._option = {
       ...this._option,
@@ -188,7 +212,7 @@ class ChartOption {
         categories,
         crosshair: true,
       },
-      series: data
+      series: chartData
     };
 
   }

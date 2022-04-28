@@ -3,54 +3,67 @@ import { SportType } from '../../../enum/sports';
 import { TranslateService } from '@ngx-translate/core';
 import { chart } from 'highcharts';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, debounceTime } from 'rxjs/operators';
 import { SPORT_TYPE_COLOR } from '../../../models/chart-data';
+import { GlobalEventsService } from '../../../../core/services/global-events.service';
 
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
-  constructor (dataset) {
-    return {
-      chart: {
-        height: 200,
-        margin: [0, 0, 0, 0],
-        backgroundColor: 'transparent'
-      },
-      title: {
-        text: ''
-      },
-      credits: {
-        enabled: false
-      },
-      tooltip: {
-        pointFormat: '{point.percentage:.1f}%'
-      },
-      plotOptions: {
-        pie: {
-          dataLabels: {
-            distance: -15,
-            formatter: function () {
-              return Math.round(this.point.percentage) + '%';
-            },
-            style: {
-              fontWeight: 'bold',
-              fontSize: '10px',
-              color: 'black'
-            }
+
+  private _option = {
+    chart: {
+      height: 200,
+      margin: [0, 0, 0, 0],
+      backgroundColor: 'transparent'
+    },
+    title: {
+      text: ''
+    },
+    credits: {
+      enabled: false
+    },
+    tooltip: {
+      pointFormat: '{point.percentage:.1f}%'
+    },
+    plotOptions: {
+      pie: {
+        dataLabels: {
+          distance: -15,
+          formatter: function () {
+            return Math.round(this.point.percentage) + '%';
           },
-          startAngle: -90,
-          endAngle: -90,
-          center: ['50%', '50%'],
-          size: '95%'
-        }
-      },
-      series: [{
-        type: 'pie',
-        innerSize: '60%',
-        data: dataset
-      }]
-    };
+          style: {
+            fontWeight: 'bold',
+            fontSize: '10px',
+            color: 'black'
+          }
+        },
+        startAngle: -90,
+        endAngle: -90,
+        center: ['50%', '50%'],
+        size: '95%'
+      }
+    },
+    series: [{
+      type: 'pie',
+      innerSize: '60%',
+      data: []
+    }]
+  };
+
+  constructor (dataset) {
+    this._option.series[0].data = dataset;
   }
+
+  set height(height: number) {
+    this._option.chart.height = height;
+  }
+
+  get option(): any {
+    return this._option;
+  }
+
 }
 
 @Component({
@@ -69,13 +82,38 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
   container: ElementRef;
 
   constructor(
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private globalEventsService: GlobalEventsService
   ) { }
 
-  ngOnInit() { }
+  ngOnInit(): void {
+    this.subscribeGlobalEvents();
+  }
 
   ngOnChanges() {
     this.initInfoHighChart();
+  }
+
+  /**
+   * 取得容器寬度
+   */
+  getChartHeight() {
+    const maxHeight = 250;
+    const element = this.container ? this.container.nativeElement as HTMLElement : null;
+    const width = element ? element.parentElement.parentElement.getBoundingClientRect().width : maxHeight;
+    return width > maxHeight ? maxHeight : width;
+  }
+
+  /**
+   * 訂閱全域自定義事件
+   */
+  subscribeGlobalEvents() {
+    this.globalEventsService.getRxSideBarMode().pipe(
+      debounceTime(500),
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.initInfoHighChart();
+    });
   }
 
   // 初始化highChart-kidin-1081211
@@ -124,20 +162,21 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
 
       // 根據圖表清單依序將圖表顯示出來-kidin-1081217
       const ringChartOptions = new ChartOptions(sportPercentageDataset);
+      ringChartOptions.height = this.getChartHeight();
       this.createChart(ringChartOptions);
     });
 
   }
 
   // 確認取得元素才建立圖表-kidin-1090706
-  createChart (option: ChartOptions) {
+  createChart (chartOptions: ChartOptions) {
 
     setTimeout (() => {
       if (!this.container) {
-        this.createChart(option);
+        this.createChart(chartOptions);
       } else {
         const chartDiv = this.container.nativeElement;
-        chart(chartDiv, option);
+        chart(chartDiv, chartOptions.option);
       }
     }, 200);
 

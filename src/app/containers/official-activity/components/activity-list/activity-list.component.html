@@ -869,7 +869,7 @@
         (click)="openEnablePage()"
         *ngIf="checkAllStatus(index) === AllStatus.notEnable"
       >
-        {{ 'univerisalsystem_tapToVerify' | translate }}
+        {{ 'universal_system_tapToVerify' | translate }}
       </button>
       <button
         class="apply__schedule apply__schedule__warn"
@@ -894,7 +894,7 @@
         class="apply__schedule apply__schedule__warn"
         *ngIf="checkAllStatus(index) === AllStatus.personCanceling"
       >
-        {{ 'univerisalsystem_leaving' | translate }}
+        {{ 'universal_system_leaving' | translate }}
       </div>
       <div
         class="apply__schedule apply__schedule__undone"
@@ -985,10 +985,10 @@
       (click)="quitEvent($event, index)"
     >
       <ng-container *ngIf="list.applyStatus === ApplyStatus.applied">
-        {{ 'univerisalsystem_leave' | translate }}
+        {{ 'universal_system_leave' | translate }}
       </ng-container>
       <ng-container *ngIf="list.applyStatus === ApplyStatus.applyingQuit">
-        {{ 'univerisalvocabulary_cancelLeave' | translate }}
+        {{ 'universal_vocabulary_cancelLeave' | translate }}
       </ng-container>
       <ng-container *ngIf="list.applyStatus === ApplyStatus.cancel">
         {{ 'universal_vocabulary_withdrawed' | translate }}
@@ -997,7 +997,7 @@
     <div class="flexRow person__event__detail">
       <div class="flexRow order__detail">
         <div *ngTemplateOutlet="infoColumn; context: {
-          title: 'univerisalvocabulary_orderNumber' | translate,
+          title: 'universal_vocabulary_orderNumber' | translate,
           value: list.officialPaidId || '**********'
         }"></div>
         <div *ngTemplateOutlet="infoColumn; context: {

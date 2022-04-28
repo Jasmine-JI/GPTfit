@@ -40,17 +40,18 @@ export class TreeMapChartComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges() {
-
     if (!this.zoneInfo.data) {
       this.noData = true;
     } else {
+      this.noData = this.zoneInfo.data.reduce((prev, current) => prev + current) === 0;
+      if (this.noData) return false;
+
       of(this.zoneInfo).pipe(
         map(zoneInfo => [zoneInfo.data, this.getZoneTranslate(zoneInfo.type)]),
         map(([data, translation]) => this.initChart(data, translation)),
         map(chartData => this.createChart(chartData))
       ).subscribe();
 
-      this.noData = false;
     }
 
   }

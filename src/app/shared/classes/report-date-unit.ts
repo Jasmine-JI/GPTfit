@@ -62,7 +62,7 @@ export class ReportDateUnit {
       case DateUnit.month:
         return 'universal_time_months';
       case DateUnit.season:
-        return '季';
+        return 'universal_system_season';
       case DateUnit.year:
         return 'universal_time_year';
     }
