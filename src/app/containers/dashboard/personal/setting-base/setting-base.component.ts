@@ -38,7 +38,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     nickname: '',
     bodyHeight: <string | number>175,
     bodyWeight: 70,
-    birthday: dayjs().subtract(30, 'years').startOf('year').valueOf(),  // 預設30歲
+    birthday: dayjs().subtract(30, 'year').startOf('year').valueOf(),  // 預設30歲
     gender: 0
   }
 

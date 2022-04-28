@@ -169,7 +169,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   brandName: string;
   branchName: string;
   selectDate = {
-    startDate: dayjs().subtract(6, 'days').format('YYYY-MM-DDT00:00:00.000Z'),
+    startDate: dayjs().subtract(6, 'day').format('YYYY-MM-DDT00:00:00.000Z'),
     endDate: dayjs().format('YYYY-MM-DDT23:59:59.999Z')
   };
   startDate: string;
@@ -240,7 +240,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     brandType: 1,
     pageType: 'sport',
     date: {
-      startTimestamp: dayjs().startOf('day').subtract(6, 'days').valueOf(),
+      startTimestamp: dayjs().startOf('day').subtract(6, 'day').valueOf(),
       endTimestamp: dayjs().endOf('day').valueOf(),
       type: 'sevenDay'
     },
@@ -494,7 +494,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
         this.hrZoneRange['z4'] = 'Z4';
         this.hrZoneRange['z5'] = 'Z5';
       } else {
-        const userAge = dayjs().diff(res.birthday, 'years'),
+        const userAge = dayjs().diff(res.birthday, 'year'),
               userHRBase = res.heartRateBase,
               userMaxHR = res.heartRateMax,
               userRestHR = res.heartRateResting;

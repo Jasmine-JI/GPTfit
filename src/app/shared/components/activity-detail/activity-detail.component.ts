@@ -645,7 +645,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       info.totalHrZone5Second
     ];
     
-    const userAge = this.uiFlag.isFileOwner ? dayjs().diff(this.userProfile.birthday, 'years') : null,
+    const userAge = this.uiFlag.isFileOwner ? dayjs().diff(this.userProfile.birthday, 'year') : null,
           userHRBase = this.userProfile.heartRateBase,
           userMaxHR = this.userProfile.heartRateMax,
           userRestHR = this.userProfile.heartRateResting;

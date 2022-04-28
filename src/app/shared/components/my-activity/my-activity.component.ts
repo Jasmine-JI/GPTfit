@@ -42,7 +42,7 @@ export class MyActivityComponent implements OnInit, OnDestroy {
   isLoading = false;
   isEmpty = false;
   targetUserId: string;
-  filterStartTime = dayjs().add(-1, 'years').format('YYYY-MM-DDTHH:mm:00.000Z');
+  filterStartTime = dayjs().add(-1, 'year').format('YYYY-MM-DDTHH:mm:00.000Z');
   filterEndTime = dayjs().format('YYYY-MM-DDTHH:mm:00.000Z');
   sportType = '99';
   searchWords = '';
@@ -75,7 +75,7 @@ export class MyActivityComponent implements OnInit, OnDestroy {
     const { pageNumber, startTime, endTime, type, searchWords, debug } = queryStrings;
     this.filterStartTime = startTime
       ? dayjs(startTime).format('YYYY-MM-DDTHH:mm:00.000Z')
-      : dayjs().add(-1, 'years').format('YYYY-MM-DDTHH:mm:00.000Z');
+      : dayjs().add(-1, 'year').format('YYYY-MM-DDTHH:mm:00.000Z');
     this.filterEndTime = endTime
       ? dayjs(endTime).format('YYYY-MM-DDT23:59:00.000Z')
       : dayjs().format('YYYY-MM-DDT23:59:00.000Z');
@@ -244,7 +244,7 @@ export class MyActivityComponent implements OnInit, OnDestroy {
   }
 
   reset() {
-    this.filterStartTime = dayjs().add(-1, 'years').format('YYYY-MM-DDTHH:mm:00.000Z');
+    this.filterStartTime = dayjs().add(-1, 'year').format('YYYY-MM-DDTHH:mm:00.000Z');
     this.filterEndTime = dayjs().format('YYYY-MM-DDTHH:mm:00.000Z');
     this.sportType = '99';
     this.searchWords = '';

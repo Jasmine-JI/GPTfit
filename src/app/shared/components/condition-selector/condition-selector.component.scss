@@ -36,12 +36,13 @@
 
 .selector__section {
   box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
-  padding: 15px;
-  border-radius: 50px;
+  padding-bottom: 15px;
+  border-radius: 30px;
 }
 
 .selector__title__row {
   align-items: center;
+  margin: 0;
 }
 
 .filter__icon {

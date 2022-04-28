@@ -811,7 +811,7 @@ export class UtilsService {
    */
   getDateInterval(date: SelectDate) {
     const { startDate, endDate } = date;
-    if ((dayjs(endDate).diff(dayjs(startDate), 'days') + 1) <= 52) {
+    if ((dayjs(endDate).diff(dayjs(startDate), 'day') + 1) <= 52) {
       return 'day';
     } else {
       return 'week';
@@ -827,7 +827,7 @@ export class UtilsService {
   createTimeStampArr(date: SelectDate) {
   const timeStampArr = [],
         { startDate, endDate } = date,
-        range = dayjs(endDate).diff(dayjs(startDate), 'days') + 1,
+        range = dayjs(endDate).diff(dayjs(startDate), 'day') + 1,
         startTimestamp = dayjs(startDate).startOf('day').valueOf(),
         endTimestamp = dayjs(endDate).startOf('day').valueOf();
 
