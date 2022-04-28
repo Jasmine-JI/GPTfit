@@ -13,7 +13,7 @@ import { UserProfileService } from '../../../../shared/services/user-profile.ser
 
 const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ',
       defaultEnd = dayjs().endOf('day'),
-      defaultStart = dayjs(defaultEnd).subtract(3, 'years').startOf('day');
+      defaultStart = dayjs(defaultEnd).subtract(3, 'year').startOf('day');
 
 @Component({
   selector: 'app-activity-list',

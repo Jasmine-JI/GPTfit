@@ -227,7 +227,7 @@
             <span *ngTemplateOutlet="chartInfoTemplate; context: {
               key: 'universal_activityData_totalTime',
               value: (
-                (groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').totalSecond || 0) / (groupChartData.totalSecondTrend.baseDataLength ?? Infinity)
+                (groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').totalSecond || 0) / (groupChartData.totalSecondTrend.baseDataLength || Infinity)
               ) | sportTime,
               dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
             }"></span>
@@ -271,7 +271,7 @@
             <span *ngTemplateOutlet="chartInfoTemplate; context: {
               key: 'universal_activityData_totalCalories',
               value: (
-                (groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').calories || 0) / (groupChartData.totalSecondTrend.baseDataLength ?? Infinity)
+                (groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').calories || 0) / (groupChartData.totalSecondTrend.baseDataLength || Infinity)
               ) | number: '1.0-0',
               dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
             }"></span>

@@ -234,7 +234,7 @@ export function getFtpZoneTranslation(translate: TranslateService) {
  * @param decimal {number}-四捨五入位數
  */
 export function countPercentage(molecular: number, denominator: number, decimal: number = 0) {
-  return mathRounding((molecular ?? 0) / (denominator ?? Infinity) * 100, decimal);
+  return mathRounding((molecular ?? 0) / (denominator || Infinity) * 100, decimal);
 }
 
 /**

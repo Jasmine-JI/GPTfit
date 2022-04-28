@@ -87,7 +87,7 @@ export class DateRangePickerComponent implements OnInit, OnChanges, OnDestroy {
             };
 
           } else {
-            const minDate = dayjs().subtract(120, 'years').startOf('year');
+            const minDate = dayjs().subtract(120, 'year').startOf('year');
             pickerOpt = {
               minYear: +minDate.format('YYYY'),
               minDate: minDate,
@@ -136,8 +136,8 @@ export class DateRangePickerComponent implements OnInit, OnChanges, OnDestroy {
             },
             ranges: {
               [this.translate.instant('universal_time_today')]: [dayjs(), dayjs()],
-              [this.translate.instant('universal_time_last7Days')]: [dayjs().subtract(6, 'days'), dayjs()],
-              [this.translate.instant('universal_time_last30Days')]: [dayjs().subtract(29, 'days'), dayjs()],
+              [this.translate.instant('universal_time_last7Days')]: [dayjs().subtract(6, 'day'), dayjs()],
+              [this.translate.instant('universal_time_last30Days')]: [dayjs().subtract(29, 'day'), dayjs()],
               [this.translate.instant('universal_time_thisWeek')]: [dayjs().startOf('week'), dayjs().endOf('week')],
               [this.translate.instant('universal_time_lastWeek')]:
                 [dayjs().subtract(1, 'week').startOf('week'), dayjs().subtract(1, 'week').endOf('week')],
@@ -206,7 +206,7 @@ export class DateRangePickerComponent implements OnInit, OnChanges, OnDestroy {
           break;
         case 'last7Days':
           this.defaultDate = {
-            startDate: dayjs().subtract(6, 'days').format('YYYY-MM-DDT00:00:00.000Z'),
+            startDate: dayjs().subtract(6, 'day').format('YYYY-MM-DDT00:00:00.000Z'),
             endDate: dayjs().format('YYYY-MM-DDT23:59:59.999Z')
           };
           break;
@@ -218,14 +218,14 @@ export class DateRangePickerComponent implements OnInit, OnChanges, OnDestroy {
           break;
         case 'last30Days':
           this.defaultDate = {
-            startDate: dayjs().subtract(29, 'days').format('YYYY-MM-DDT00:00:00.000Z'),
+            startDate: dayjs().subtract(29, 'day').format('YYYY-MM-DDT00:00:00.000Z'),
             endDate: dayjs().format('YYYY-MM-DDT23:59:59.999Z')
           };
           break;
         case 'nextDay':
           this.defaultDate = {
-            startDate: dayjs().subtract(-1, 'days').format('YYYY-MM-DDT00:00:00.000Z'),
-            endDate: dayjs().subtract(-1, 'days').format('YYYY-MM-DDT23:59:59.999Z')
+            startDate: dayjs().subtract(-1, 'day').format('YYYY-MM-DDT00:00:00.000Z'),
+            endDate: dayjs().subtract(-1, 'day').format('YYYY-MM-DDT23:59:59.999Z')
           };
           break;
         case 'nextMonth': // 曆期下個月
