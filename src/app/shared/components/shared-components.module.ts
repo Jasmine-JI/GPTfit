@@ -62,6 +62,12 @@ import { EquidistantChartComponent } from './chart/equidistant-chart/equidistant
 import { RelativeColumnChartComponent } from './chart/relative-column-chart/relative-column-chart.component';
 import { TermsComponent } from './terms/terms.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
+import { ConditionSelectorComponent } from './condition-selector/condition-selector.component';
+import { CompareHrzoneTrendComponent } from './chart/compare-hrzone-trend/compare-hrzone-trend.component';
+import { CompareColumnTrendComponent } from './chart/compare-column-trend/compare-column-trend.component';
+import { TreeMapChartComponent } from './chart/tree-map-chart/tree-map-chart.component';
+import { SmallHrzoneChartComponent } from './chart/small-hrzone-chart/small-hrzone-chart.component';
+import { DistributionCanvasChartComponent } from './chart/distribution-canvas-chart/distribution-canvas-chart.component';
 
 @NgModule({
   imports: [
@@ -129,7 +135,13 @@ import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.componen
     EquidistantChartComponent,
     RelativeColumnChartComponent,
     TermsComponent,
-    PrivacyPolicyComponent
+    PrivacyPolicyComponent,
+    ConditionSelectorComponent,
+    CompareHrzoneTrendComponent,
+    CompareColumnTrendComponent,
+    TreeMapChartComponent,
+    SmallHrzoneChartComponent,
+    DistributionCanvasChartComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -179,7 +191,13 @@ import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.componen
     ThresholdChartComponent,
     RelativeColumnChartComponent,
     TermsComponent,
-    PrivacyPolicyComponent
+    PrivacyPolicyComponent,
+    ConditionSelectorComponent,
+    CompareHrzoneTrendComponent,
+    CompareColumnTrendComponent,
+    TreeMapChartComponent,
+    SmallHrzoneChartComponent,
+    DistributionCanvasChartComponent
   ]
 })
 export class SharedComponentsModule {}

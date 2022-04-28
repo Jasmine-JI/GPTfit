@@ -1,3 +1,7 @@
+import { fromEvent, merge } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
+import dayjs from 'dayjs';
+
 export const DEFAULT_MAXLENGTH = {
   TEXT: 100,
   TEXTAREA: 2000,
@@ -41,46 +45,22 @@ export function debounce(func, wait) {
   return debounced;
 };
 
+/**
+ * 設定localStorage
+ * @param key {any}-儲存localStorage時所使用的名稱
+ * @param value {any}
+ */
 export function setLocalStorageObject(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
+/**
+ * 取得指定的localStorage資訊
+ * @param key {any}-儲存localStorage時所使用的名稱
+ */
 export function getLocalStorageObject(key) {
   const value = localStorage.getItem(key);
   return value && JSON.parse(value);
-}
-
-export function speedConverttoPace(value, type) {
-  if (+value === 0 && (type === '1' || type === '4' || type === '6')) {
-    return `60'00"`;
-  }
-  let yVal = (60 / +value) * 60;
-  if (type === '1') {
-    // 跑步配速
-    const costminperkm = Math.floor(yVal / 60);
-    const costsecondperkm = Math.round(yVal - costminperkm * 60);
-    const timeMin = ('0' + costminperkm).slice(-2);
-    const timeSecond = ('0' + costsecondperkm).slice(-2);
-    return `${timeMin}'${timeSecond}"`;
-  } else if (type === '4') {
-    // 游泳配速
-    yVal = ((60 / +value) * 60) / 10;
-    const costminperkm = Math.floor(yVal / 60);
-    const costsecondperkm = Math.round(yVal - costminperkm * 60);
-    const timeMin = ('0' + costminperkm).slice(-2);
-    const timeSecond = ('0' + costsecondperkm).slice(-2);
-    return `${timeMin}'${timeSecond}"`;
-  } else if (type === '6') {
-    // 划水配速
-    yVal = ((60 / +value) * 60) / 2;
-    const costminperkm = Math.floor(yVal / 60);
-    const costsecondperkm = Math.round(yVal - costminperkm * 60);
-    const timeMin = ('0' + costminperkm).slice(-2);
-    const timeSecond = ('0' + costsecondperkm).slice(-2);
-    return `${timeMin}'${timeSecond}"`;
-  } else {
-    return +value;
-  }
 }
 
 /**
@@ -90,19 +70,19 @@ export function speedConverttoPace(value, type) {
  * @returns {boolean} resultCode是否回傳200
  * @author kidin-1100902
  */
-export function checkResponse(res: any): boolean {
+export function checkResponse(res: any, showErrorMessage: boolean = true): boolean {
   const { processResult, resultCode: resCode, apiCode: resApiCode, resultMessage: resMsg } = res;
   if (!processResult) {
 
     if (resCode !== 200) {
-      showErrorApiLog(resCode, resApiCode, resMsg);
+      if (showErrorMessage) showErrorApiLog(resCode, resApiCode, resMsg);
       return false;
     }
     
   } else {
     const { resultCode, apiCode, resultMessage } = processResult;
     if (resultCode !== 200) {
-      showErrorApiLog(resultCode, apiCode, resultMessage);
+      if (showErrorMessage) showErrorApiLog(resultCode, apiCode, resultMessage);
       return false;
     }
 
@@ -119,4 +99,150 @@ export function checkResponse(res: any): boolean {
  */
 export function showErrorApiLog(resultCode: number, apiCode: number, msg: string) {
   console.error(`${resultCode}: Api ${apiCode} ${msg}`);
+}
+
+/**
+ * 物件深拷貝
+ * @param obj
+ * @param cache
+ * @author kidin-1090902
+ */
+export function deepCopy(obj: any, cache = new WeakMap()) {
+  // 基本型別 & function
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+
+  // Date 及 RegExp
+  if (obj instanceof Date || obj instanceof RegExp) {
+    return obj.constructor(obj);
+  }
+
+  // Set
+  if (obj instanceof Set) {
+    return new Set(obj);
+  }
+
+  // 檢查快取
+  if (cache.has(obj)) {
+    return cache.get(obj);
+  }
+
+  // 使用原物件的 constructor
+  const copy = new obj.constructor();
+
+  // 先放入 cache 中
+  cache.set(obj, copy);
+
+  // 取出所有一般屬性 & 所有 key 為 symbol 的屬性
+  [...Object.getOwnPropertyNames(obj), ...Object.getOwnPropertySymbols(obj)].forEach(key => {
+    copy[key] = deepCopy(obj[key], cache);
+  });
+
+  return copy;
+}
+
+/**
+ * 將query string轉為物件，以方便取值
+ * @param _search {string}-query string
+ * @returns {any}-物件 {queryKey: queryValue }
+ * @author kidin-1100707
+ */
+export function getUrlQueryStrings(search: string = undefined) {
+  const queryString = search || window.location.search;
+  const queryObj = {} as any;
+  let queryArr: Array<string>;
+
+  if (!queryString) {
+    return queryObj;
+  } else {
+
+    if (queryString.includes('?')) {
+      queryArr = queryString.split('?')[1].split('&');
+    } else {
+      queryArr = queryString.split('&');
+    }
+
+    queryArr.forEach(_query => {
+      const [_key, _value] = _query.split('=');
+      Object.assign(queryObj, {[_key]: _value});
+    });
+
+    return queryObj;
+  }
+
+}
+
+/**
+ * 四捨五入至小數點特定位數
+ * @param decimal {number}-四捨五入位數
+ * @param digit {number}-位數
+ * @author kidin-1110318
+ */
+export function mathRounding(decimal: number, digit: number) {
+  return parseFloat(decimal.toFixed(digit));
+}
+
+/**
+ * 訂閱點擊與滾動事件
+ * @param className {string}-html element class name
+ */
+export function subscribePluralEvent(className: string) {
+  const scrollElement = document.querySelector(className);
+  const scrollEvent = fromEvent(scrollElement, 'scroll');
+  const clickEvent = fromEvent(document, 'click');
+  return merge(scrollEvent, clickEvent);
+}
+
+/**
+ * 取得各心率區間翻譯詞彙
+ * @param translate {TranslateService}-翻譯套件
+ */
+export function getHrZoneTranslation(translate: TranslateService) {
+  return [
+    translate.instant('universal_activityData_limit_generalZone'),
+    translate.instant('universal_activityData_limit_warmUpZone'),
+    translate.instant('universal_activityData_limit_aerobicZone'),
+    translate.instant('universal_activityData_limit_enduranceZone'),
+    translate.instant('universal_activityData_limit_marathonZone'),
+    translate.instant('universal_activityData_limit_anaerobicZone')
+  ];
+
+}
+
+/**
+ * 取得各閾值區間翻譯詞彙
+ * @param translate {TranslateService}-翻譯套件
+ */
+export function getFtpZoneTranslation(translate: TranslateService) {
+  return [
+    translate.instant('universal_activityData_limit_ftpZ0'),
+    translate.instant('universal_activityData_limit_ftpZ1'),
+    translate.instant('universal_activityData_limit_ftpZ2'),
+    translate.instant('universal_activityData_limit_ftpZ3'),
+    translate.instant('universal_activityData_limit_ftpZ4'),
+    translate.instant('universal_activityData_limit_ftpZ5'),
+    translate.instant('universal_activityData_limit_ftpZ6')
+  ];
+
+}
+
+/**
+ * 計算百分比數據
+ * @param molecular {number}-分子
+ * @param denominator {number}-分母
+ * @param decimal {number}-四捨五入位數
+ */
+export function countPercentage(molecular: number, denominator: number, decimal: number = 0) {
+  return mathRounding((molecular ?? 0) / (denominator ?? Infinity) * 100, decimal);
+}
+
+/**
+ * 變更顏色透明度
+ * @param color {string}-顏色，格式為rgba
+ */
+export function changeOpacity(color: string, newOpacity: string | number) {
+  const trimColor = color.replace(/\s/g,'');
+  const rgbaReg = /^(rgba\(\d+,\d+,\d+,)(\d+)(\))$/;
+  return trimColor.replace(rgbaReg, `$1${newOpacity}$3`);
 }

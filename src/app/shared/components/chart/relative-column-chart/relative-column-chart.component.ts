@@ -1,6 +1,6 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
 import { chart } from 'highcharts';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { TranslateService } from '@ngx-translate/core';
 import {
   rightMoveColor,
@@ -13,7 +13,7 @@ import {
   backHandSwingColor,
   RelativeTrendChart
 } from '../../../models/chart-data';
-import { day, month, week } from '../../../models/utils-constant';
+import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
 
 
 // 建立圖表用-kidin-1081212
@@ -170,22 +170,22 @@ export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestro
 
     // 設定圖表x軸時間間距-kidin-1090204
     if (this.dateRange === 'day' && positiveData.length <= 7) {
-      chartOptions['xAxis'].tickInterval = day;
+      chartOptions['xAxis'].tickInterval = DAY;
     } else if (this.dateRange === 'day' && positiveData.length > 7) {
-      chartOptions['xAxis'].tickInterval = week;
+      chartOptions['xAxis'].tickInterval = WEEK;
     } else {
-      chartOptions['xAxis'].tickInterval = month;
+      chartOptions['xAxis'].tickInterval = MONTH;
     }
 
     // 設定浮動提示框顯示格式-kidin-1090204
     chartOptions['tooltip'] = {
       formatter: function () {
         const yVal = parseFloat(this.y.toFixed(1));
-        if (this.series.xAxis.tickInterval === month) {
-          return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * day).format('YYYY-MM-DD')}
+        if (this.series.xAxis.tickInterval === MONTH) {
+          return `${dayjs(this.x).format('YYYY-MM-DD')}~${dayjs(this.x + 6 * DAY).format('YYYY-MM-DD')}
             <br/>${this.series.name}: ${yVal}`;
         } else {
-          return `${moment(this.x).format('YYYY-MM-DD')}
+          return `${dayjs(this.x).format('YYYY-MM-DD')}
             <br/>${this.series.name}: ${yVal}`;
         }
 

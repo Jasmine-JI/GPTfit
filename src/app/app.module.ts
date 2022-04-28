@@ -6,7 +6,7 @@ import { PortalModule } from './containers/portal/portal.module';
 import { SharedComponentsModule } from './shared/components/shared-components.module';
 import { WINDOW_PROVIDERS } from './shared/services/window.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StartupService } from './shared/services/startup.service';
+import { StartupService } from './core/services/startup.service';
 import { AuthGuard } from './shared/guards/auth/auth.guard';
 import { SigninGuard } from './shared/guards/signin/signin.guard';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -23,6 +23,7 @@ import { CommonModule } from '@angular/common';
 import { A3FormatPipe } from './shared/pipes/a3-format.pipe';
 import { GroupIdSlicePipe } from './shared/pipes/group-id-slice.pipe';
 import { LongTextPipe } from './shared/pipes/long-text.pipe';
+import { CoreModule } from './core/core.module';
 
 export function startupServiceFactory(startupService: StartupService): Function { return () => startupService.load(); }
 export function createTranslateLoader(http: HttpClient) {
@@ -33,6 +34,7 @@ export function createTranslateLoader(http: HttpClient) {
   imports: [
     BrowserModule,
     AppRoutingModule,
+    CoreModule,
     PortalModule,
     SharedComponentsModule,
     BrowserAnimationsModule,

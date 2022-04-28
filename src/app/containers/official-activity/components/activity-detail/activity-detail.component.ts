@@ -17,7 +17,8 @@ enum ApplyButtonStatus {
   applyFull,
   cutOff,
   eventCancelled,
-  applyCancelled
+  applyCancelled,
+  applyCancelling
 };
 
 @Component({
@@ -139,6 +140,9 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
       case ApplyStatus.cancel:
         this.uiFlag.applyButtonStatus = ApplyButtonStatus.applyCancelled;
         break;
+      case ApplyStatus.applyingQuit:
+        this.uiFlag.applyButtonStatus = ApplyButtonStatus.applyCancelling;
+        break;
     }
 
   }
@@ -242,7 +246,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     } else {
 
       if (applyButtonStatus !== ApplyButtonStatus.applied) {
-        const applyFull = numberLimit ? currentApplyNumber >= numberLimit : false;
+        const applyFull = numberLimit && numberLimit > 0 ? currentApplyNumber >= numberLimit : false;
         if (applyFull) this.uiFlag.applyButtonStatus = ApplyButtonStatus.applyFull;
       }
       

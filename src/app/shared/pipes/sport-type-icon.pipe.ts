@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { SportCode } from '../models/report-condition';
+import { SportType } from '../enum/sports';
 
 
 @Pipe({name: 'sportTypeIcon'})
@@ -12,21 +12,21 @@ export class SportTypeIconPipe implements PipeTransform {
    */
   transform(value: string | number): any {
     switch (+value) {
-      case SportCode.run:
+      case SportType.run:
         return 'icon-svg_web-icon_p1_083-run';
-      case SportCode.cycle:
+      case SportType.cycle:
         return 'icon-svg_web-icon_p1_084-cycle';
-      case SportCode.weightTrain:
+      case SportType.weightTrain:
         return 'icon-svg_web-icon_p1_086-weight_training';
-      case SportCode.swim:
+      case SportType.swim:
         return 'icon-svg_web-icon_p1_085-swim';
-      case SportCode.aerobic:
+      case SportType.aerobic:
         return 'icon-svg_web-icon_p1_087-aerobic';
-      case SportCode.row:
+      case SportType.row:
         return 'icon-svg_web-icon_p1_088-row';
-      case SportCode.ball:
+      case SportType.ball:
         return 'icon-svg_web-icon_p3_056-ball';
-      case SportCode.all:
+      case SportType.all:
         return 'icon-svg_web-icon_p2_038-complex';
       default:
         return 'icon-svg_web-icon_p2_038-complex';

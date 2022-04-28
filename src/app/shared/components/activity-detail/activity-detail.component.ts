@@ -8,13 +8,14 @@ import { ActivityService } from '../../services/activity.service';
 import { Router } from '@angular/router';
 import { QrcodeService } from '../../../containers/portal/services/qrcode.service';
 import { GroupService } from '../../services/group.service';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import weekday from 'dayjs/plugin/weekday';
 import { TranslateService } from '@ngx-translate/core';
 import { MuscleNamePipe } from '../../pipes/muscle-name.pipe';
 import { mi, lb } from '../../models/bs-constant';
 import { charts } from 'highcharts';
 import { HrZoneRange } from '../../models/chart-data';
-import { SportType, SportCode } from '../../models/report-condition';
+import { SportType } from '../../enum/sports';
 import { UserLevel } from '../../models/weight-train';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../message-box/message-box.component';
@@ -22,7 +23,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShareGroupInfoDialogComponent } from '../share-group-info-dialog/share-group-info-dialog.component';
 import { PrivacyObj } from '../../models/user-privacy';
 import { EditIndividualPrivacyComponent } from '../edit-individual-privacy/edit-individual-privacy.component';
-import { Proficiency } from '../../models/weight-train';
+import { Proficiency } from '../../enum/weight-train';
 import { AlbumType } from '../../models/image';
 import { v5 as uuidv5 } from 'uuid';
 import { ImageUploadService } from '../../../containers/dashboard/services/image-upload.service';
@@ -222,7 +223,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   clickEvent: Subscription;
   muscleTranslate = {};
   newFileName = '';
-  printDateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+  printDateTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
   previewUrl = '';
   progress = 0;
   compareChartQueryString = '';
@@ -594,7 +595,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100105
    */
   handleFileCreateDate(date: string) {
-    const dayInWeek = moment(date).weekday();
+    const dayInWeek = dayjs(date).weekday();
     let weekDay: string;
     this.translate.get('hollow world').pipe(
       takeUntil(this.ngUnsubscribe)
@@ -623,7 +624,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           break;
       }
 
-      this.fileTime = moment(date).format('YYYY-MM-DDTHH:mm').replace('T', ` ${weekDay} `);
+      this.fileTime = dayjs(date).format('YYYY-MM-DDTHH:mm').replace('T', ` ${weekDay} `);
     });
     
 
@@ -644,7 +645,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       info.totalHrZone5Second
     ];
     
-    const userAge = this.uiFlag.isFileOwner ? moment().diff(this.userProfile.birthday, 'years') : null,
+    const userAge = this.uiFlag.isFileOwner ? dayjs().diff(this.userProfile.birthday, 'years') : null,
           userHRBase = this.userProfile.heartRateBase,
           userMaxHR = this.userProfile.heartRateMax,
           userRestHR = this.userProfile.heartRateResting;
@@ -1236,7 +1237,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   getCountList(sportType: SportType): Array<Array<string>> {
     let arr: Array<Array<string>>;
     switch (sportType) {
-      case SportCode.run:
+      case SportType.run:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],
@@ -1245,7 +1246,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['speed', 'speed']
         ];
         break;
-      case SportCode.cycle:
+      case SportType.cycle:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],
@@ -1255,14 +1256,14 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['speed', 'speed']
         ];
         break;
-      case SportCode.weightTrain:
+      case SportType.weightTrain:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],
           ['cadence', 'moveRepetitions']
         ];
         break;
-      case SportCode.swim:
+      case SportType.swim:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],
@@ -1270,13 +1271,13 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['speed', 'speed']
         ];
         break;
-      case SportCode.aerobic:
+      case SportType.aerobic:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp']
         ];
         break;
-      case SportCode.row:
+      case SportType.row:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],
@@ -1286,7 +1287,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['power', 'rowingWatt']
         ];
         break;
-      case SportCode.ball:
+      case SportType.ball:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],
@@ -1954,7 +1955,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       fileId: this.fileInfo.fileId,
       fileInfo: {
         dispName: this.newFileName,
-        editDate: moment().format('YYYY-MM-DDTHH:mm:ss.SSSZ')
+        editDate: dayjs().format('YYYY-MM-DDTHH:mm:ss.SSSZ')
       }
     };
 
@@ -2050,7 +2051,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   switchGpxFile(points: Array<any>, startTime: string, dispName: string) {
     let content = '';
-    const startTimestamp = moment(startTime).valueOf();
+    const startTimestamp = dayjs(startTime).valueOf();
     points.forEach(_point => {
       const { 
         latitudeDegrees,
@@ -2070,17 +2071,17 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       let power = null,
           cadence = null;
       switch (+this.activityInfoLayer.type) {
-        case SportCode.run:
+        case SportType.run:
           cadence = runCadence;
           break;
-        case SportCode.cycle:
+        case SportType.cycle:
           power = cycleWatt;
           cadence = cycleCadence;
           break;
-        case SportCode.swim:
+        case SportType.swim:
           cadence = swimCadence;
           break;
-        case SportCode.row:
+        case SportType.row:
           power = rowingWatt;
           cadence = rowingCadence;
       }
@@ -2088,7 +2089,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       const checkLat = latitudeDegrees && parseFloat(latitudeDegrees) !== 100,
             checkLng = longitudeDegrees && parseFloat(longitudeDegrees) !== 100,
             alt = altitudeMeters || 0,
-            pointTime = moment(startTimestamp + pointSecond * 1000).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+            pointTime = dayjs(startTimestamp + pointSecond * 1000).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
       // if (checkLat && checkLng) {  // 暫不做座標是否有效的判斷
         content += `<trkpt lat="${latitudeDegrees}" lon="${longitudeDegrees}">
             <ele>${alt}</ele>
@@ -2285,7 +2286,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   createFileName(length: number, userId: string) {
     const nameSpace = uuidv5('https://www.gptfit.com', uuidv5.URL),
-          keyword = `${moment().valueOf().toString()}${length}${userId.split('-').join('')}`;
+          keyword = `${dayjs().valueOf().toString()}${length}${userId.split('-').join('')}`;
     return uuidv5(keyword, nameSpace);
   }
 

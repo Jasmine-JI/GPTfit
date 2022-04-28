@@ -6,16 +6,16 @@ import { Subject, fromEvent, Subscription, merge } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '../../services/hash-id.service';
-import moment from 'moment';
-import { SportType, SportCode } from '../../models/report-condition';
+import dayjs from 'dayjs';
+import { SportType } from '../../enum/sports';
 import {
-  commonData,
-  runData,
-  rideData,
-  weightTrainData,
-  swimData,
-  rowData,
-  personBallData
+  COMMON_DATA,
+  RUN_DATA,
+  RIDE_DATA,
+  WEIGHT_TRAIN_DATA,
+  SWIM_DATA,
+  ROW_DATA,
+  PERSON_BALL_DATA
 } from '../../models/sports-report';
 import { Unit, mi } from '../../models/bs-constant';
 import { UserProfileService } from '../../services/user-profile.service';
@@ -30,7 +30,7 @@ import {
   RelativeTrendChart,
   HrZoneRange
 } from '../../models/chart-data';
-import { Proficiency, ProficiencyCoefficient } from '../../models/weight-train';
+import { Proficiency } from '../../enum/weight-train';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../message-box/message-box.component';
@@ -61,7 +61,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     progress: 100,
     noData: true,
     inited: false,
-    analysisType: SportCode.all,
+    analysisType: SportType.all,
     noFtpData: true,
     haveQueryString: false,
     openPrivacy: false,
@@ -76,11 +76,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   reportConditionOpt: ReportConditionOpt = {
     pageType: 'sport',
     date: {
-      startTimestamp: moment().startOf('day').subtract(6, 'days').valueOf(),
-      endTimestamp: moment().endOf('day').valueOf(),
+      startTimestamp: dayjs().startOf('day').subtract(6, 'days').valueOf(),
+      endTimestamp: dayjs().endOf('day').valueOf(),
       type: 'sevenDay'
     },
-    sportType: SportCode.all,
+    sportType: SportType.all,
     hideConfirmBtn: true
   }
 
@@ -301,7 +301,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
   readonly mi = mi;
   readonly unitEnum = Unit;
-  readonly sportCode = SportCode;
+  readonly sportCode = SportType;
   readonly proficiency = Proficiency;
   dateLen = 0; // 報告橫跨天數/週數
   haveDataLen = 0;  // 有數據的天（週）數
@@ -371,11 +371,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
             this.uiFlag.isPreviewMode = true;
             break;
           case 'startdate':
-            this.reportConditionOpt.date.startTimestamp = moment(_value, 'YYYY-MM-DD').startOf('day').valueOf();
+            this.reportConditionOpt.date.startTimestamp = dayjs(_value, 'YYYY-MM-DD').startOf('day').valueOf();
             this.reportConditionOpt.date.type = 'custom';
             break;
           case 'enddate':
-            this.reportConditionOpt.date.endTimestamp = moment(_value, 'YYYY-MM-DD').endOf('day').valueOf();
+            this.reportConditionOpt.date.endTimestamp = dayjs(_value, 'YYYY-MM-DD').endOf('day').valueOf();
             this.reportConditionOpt.date.type = 'custom';
             break;
           case 'sporttype':
@@ -453,7 +453,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   getReportUserInfo(
     unit: Unit = 0,
-    weightTrainLevel: ProficiencyCoefficient = Proficiency.metacarpus
+    weightTrainLevel: Proficiency = Proficiency.metacarpus
   ) {    
     this.userProfileService.getRxTargetUserInfo().pipe(
       takeUntil(this.ngUnsubscribe)
@@ -681,7 +681,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
               { date: { startTimestamp: preStartTimestamp, endTimestamp: preEndTimestamp}} = this.reportConditionOpt;
 
         // 日期範圍大於52天則取週報告
-        if (moment(endTimestamp).diff(moment(startTimestamp), 'day') <= 52) {
+        if (dayjs(endTimestamp).diff(dayjs(startTimestamp), 'day') <= 52) {
           this.reportTime.type = 1;
           this.dataKey = 'reportActivityDays';
         } else {
@@ -721,8 +721,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
             token: this.utils.getToken() || '',
             type: this.reportTime.type,
             targetUserId: [userId],
-            filterStartTime: moment(startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-            filterEndTime: moment(endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+            filterStartTime: dayjs(startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+            filterEndTime: dayjs(endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
           };
 
     this.reportService.fetchSportSummaryArray(body).subscribe(res => {
@@ -759,12 +759,12 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         reportStartDate = startTimestamp,
         reportEndDate = endTimestamp;
     if (type === 1) {
-      this.dateLen = moment(endTimestamp).diff(moment(startTimestamp), 'day') + 1;
+      this.dateLen = dayjs(endTimestamp).diff(dayjs(startTimestamp), 'day') + 1;
       dateRange = 86400000; // 間隔1天(ms)
     } else {
-      reportStartDate = moment(startTimestamp).startOf('week').valueOf(),
-      reportEndDate = moment(endTimestamp).startOf('week').valueOf();
-      this.dateLen = moment(reportEndDate).diff(moment(reportStartDate), 'week') + 1;
+      reportStartDate = dayjs(startTimestamp).startOf('week').valueOf(),
+      reportEndDate = dayjs(endTimestamp).startOf('week').valueOf();
+      this.dateLen = dayjs(reportEndDate).diff(dayjs(reportStartDate), 'week') + 1;
       dateRange = 604800000;  // 間隔7天(ms)
     }
 
@@ -794,7 +794,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         activities.forEach(_activities => {
           const { type: sportType } = _activities,
                 { sportType: currentSportType } = this.reportConditionOpt;
-          if (currentSportType === SportCode.all || currentSportType == sportType) {
+          if (currentSportType === SportType.all || currentSportType == sportType) {
             haveData = true;
             originData.push({
               activities: [_activities],
@@ -822,10 +822,10 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         const { date: {startTimestamp, endTimestamp} } = this.reportConditionOpt,
               rangeUnit = this.translate.instant('universal_time_day');
         this.reportTime = {
-          create: moment().format('YYYY-MM-DD HH:mm'),
-          endDate: moment(endTimestamp).format('YYYY-MM-DD'),
-          range: `${moment(endTimestamp).diff(moment(startTimestamp), 'day') + 1}${rangeUnit}`,
-          diffWeek: (moment(endTimestamp).diff(moment(startTimestamp), 'day') + 1) / 7,
+          create: dayjs().format('YYYY-MM-DD HH:mm'),
+          endDate: dayjs(endTimestamp).format('YYYY-MM-DD'),
+          range: `${dayjs(endTimestamp).diff(dayjs(startTimestamp), 'day') + 1}${rangeUnit}`,
+          diffWeek: (dayjs(endTimestamp).diff(dayjs(startTimestamp), 'day') + 1) / 7,
           type: this.reportTime.type
         };
 
@@ -845,7 +845,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   handleData(originData: Array<any>) {
     const { sportType } = this.reportConditionOpt;
-    originData.sort((a, b) => moment(a.startTime).valueOf() - moment(b.startTime).valueOf());
+    originData.sort((a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf());
     this.chartXAxis = this.createChartXaxis(this.reportConditionOpt.date, this.reportTime.type);
     const noRepeatDateData = this.mergeSameDateData(originData),
           needKey = this.getNeedKey(this.reportConditionOpt.sportType);
@@ -859,7 +859,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         const activitiesLen = activities.length;
         for (let j = 0; j < activitiesLen; j++) {
           const _activity = activities[j];
-          if (sportType === SportCode.all) this.createAnalysisChartData(_activity);
+          if (sportType === SportType.all) this.createAnalysisChartData(_activity);
 
           for (let k = 0, keyLen = needKey.length; k < keyLen; k++) {
             const key = needKey[k],
@@ -924,7 +924,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           }
 
           // 處理訓練部位數據
-          if (sportType === SportCode.weightTrain) {
+          if (sportType === SportType.weightTrain) {
             sameDateData = {
               weightTrainingInfo: _activity['weightTrainingInfo'],
               ...sameDateData
@@ -945,7 +945,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         }
 
         // 處理訓練部位數據
-        if (sportType === SportCode.weightTrain) {
+        if (sportType === SportType.weightTrain) {
           zeroData = {
             weightTrainingInfo: [],
             ...zeroData
@@ -961,7 +961,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     this.getTrendAvgValue();
     // 針對不同類別所需數據進行加工
     switch (sportType) {
-      case SportCode.all:
+      case SportType.all:
         const {
           totalHrZone0Second: z0,
           totalHrZone1Second: z1,
@@ -975,7 +975,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
               pai = this.reportService.countPai([z0, z1, z2, z3, z4, z5], this.reportTime.diffWeek); // pai指數
         this.info = { totalBenefitSecond, pai, ...this.info };
         break;
-      case SportCode.ball:
+      case SportType.ball:
         const { totalPlusGforceX, totalPlusGforceY, totalMinusGforceX, totalMinusGforceY } = this.info as any,
         countElementArr = [totalPlusGforceX, totalPlusGforceY, totalMinusGforceX, totalMinusGforceY],
         totalPlaneAcceleration = this.reportService.pythagorean(countElementArr);
@@ -1002,50 +1002,50 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     }
     
     switch (sportType) {
-      case SportCode.all:
+      case SportType.all:
         this.createHrZoneChart(strokeData, startTimestamp);
         break;
-      case SportCode.run:
+      case SportType.run:
         this.createHrZoneChart(strokeData, startTimestamp);
         this.createDistanceChart(strokeData, startTimestamp);
-        this.createSpeedPaceChart(strokeData, startTimestamp, SportCode.run);
-        this.createCadenceChart(strokeData, startTimestamp, SportCode.run);
+        this.createSpeedPaceChart(strokeData, startTimestamp, SportType.run);
+        this.createCadenceChart(strokeData, startTimestamp, SportType.run);
         break;
-      case SportCode.cycle:
+      case SportType.cycle:
         this.createHrZoneChart(strokeData, startTimestamp);
         this.createThresholdChart(strokeData, startTimestamp);
         this.createDistanceChart(strokeData, startTimestamp);
-        this.createPowerChart(strokeData, startTimestamp, SportCode.cycle);
-        this.createSpeedPaceChart(strokeData, startTimestamp, SportCode.cycle);
-        this.createCadenceChart(strokeData, startTimestamp, SportCode.cycle);
+        this.createPowerChart(strokeData, startTimestamp, SportType.cycle);
+        this.createSpeedPaceChart(strokeData, startTimestamp, SportType.cycle);
+        this.createCadenceChart(strokeData, startTimestamp, SportType.cycle);
         break;
-      case SportCode.weightTrain:
+      case SportType.weightTrain:
         this.weightTrainDescription = this.translate.instant('universal_activityData_muscleColorIllustration');
         this.createMuscleMap(strokeData, startTimestamp);
         break;
-      case SportCode.swim:
+      case SportType.swim:
         this.createHrZoneChart(strokeData, startTimestamp);
         this.createDistanceChart(strokeData, startTimestamp);
-        this.createSpeedPaceChart(strokeData, startTimestamp, SportCode.swim);
-        this.createCadenceChart(strokeData, startTimestamp, SportCode.swim);
+        this.createSpeedPaceChart(strokeData, startTimestamp, SportType.swim);
+        this.createCadenceChart(strokeData, startTimestamp, SportType.swim);
         this.createSwolfChart(strokeData, startTimestamp);
         break;
-      case SportCode.aerobic:
+      case SportType.aerobic:
         this.createHrZoneChart(strokeData, startTimestamp);
         break;
-      case SportCode.row:
+      case SportType.row:
         this.createHrZoneChart(strokeData, startTimestamp);
         this.createDistanceChart(strokeData, startTimestamp);
-        this.createPowerChart(strokeData, startTimestamp, SportCode.row);
-        this.createSpeedPaceChart(strokeData, startTimestamp, SportCode.row);
-        this.createCadenceChart(strokeData, startTimestamp, SportCode.row);
+        this.createPowerChart(strokeData, startTimestamp, SportType.row);
+        this.createSpeedPaceChart(strokeData, startTimestamp, SportType.row);
+        this.createCadenceChart(strokeData, startTimestamp, SportType.row);
         break;
-      case SportCode.ball:
+      case SportType.ball:
         this.createHrZoneChart(strokeData, startTimestamp);
         this.createDistanceChart(strokeData, startTimestamp);
         this.createTotalGForceChart(strokeData, startTimestamp);
         this.createExtremeGForceChart(strokeData, startTimestamp);
-        this.createSpeedPaceChart(strokeData, startTimestamp, SportCode.ball);
+        this.createSpeedPaceChart(strokeData, startTimestamp, SportType.ball);
         this.createExtremePlaneChart(strokeData, startTimestamp);
         this.createTotalPlaneChart(strokeData, startTimestamp);
         this.createSwingSpeedChart(strokeData, startTimestamp);
@@ -1083,37 +1083,37 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     }
     
     switch (sportType) {
-      case SportCode.all:
+      case SportType.all:
         
         break;
-      case SportCode.run:
+      case SportType.run:
         this.chart.distanceTrend.avgDistance = distance / this.haveDataLen;
         this.chart.speedPaceTrend.avgSpeed = speed / this.haveDataLen;
         this.chart.cadenceTrend.avgCadence = cadence / this.haveDataLen;
         break;
-      case SportCode.cycle:
+      case SportType.cycle:
         this.chart.distanceTrend.avgDistance = distance / this.haveDataLen;
         this.chart.powerTrend.avgPower = power / this.haveDataLen;
         this.chart.speedPaceTrend.avgSpeed = speed / this.haveDataLen;
         this.chart.cadenceTrend.avgCadence = cadence / this.haveDataLen;
         break;
-      case SportCode.weightTrain:
+      case SportType.weightTrain:
         break;
-      case SportCode.swim:
+      case SportType.swim:
         this.chart.distanceTrend.avgDistance = distance / this.haveDataLen;
         this.chart.speedPaceTrend.avgSpeed = speed / this.haveDataLen;
         this.chart.cadenceTrend.avgCadence = cadence / this.haveDataLen;
         break;
-      case SportCode.aerobic:
+      case SportType.aerobic:
         
         break;
-      case SportCode.row:
+      case SportType.row:
         this.chart.distanceTrend.avgDistance = distance / this.haveDataLen;
         this.chart.powerTrend.avgPower = power / this.haveDataLen;
         this.chart.speedPaceTrend.avgSpeed = speed / this.haveDataLen;
         this.chart.cadenceTrend.avgCadence = cadence / this.haveDataLen;
         break;
-      case SportCode.ball:
+      case SportType.ball:
         this.chart.distanceTrend.avgDistance = distance / this.haveDataLen;
         this.chart.speedPaceTrend.avgSpeed = speed / this.haveDataLen;
         this.chart.planeAcceleration.avgPlaneGForce = planeGForce / this.haveDataLen;
@@ -1165,7 +1165,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   createTotalTimeChart(data: any, startTimestamp: number) {
     const { totalSecond, totalActivitySecond } = data,
           { totalTime, maxTotalTime } = this.chart.totalTimeTrend,
-          ref = this.reportConditionOpt.sportType === SportCode.weightTrain ? +totalActivitySecond : +totalSecond;
+          ref = this.reportConditionOpt.sportType === SportType.weightTrain ? +totalActivitySecond : +totalSecond;
     totalTime.push([startTimestamp, ref]);
     this.totalCount.totalTime += ref;
     if (ref > maxTotalTime) {
@@ -1240,11 +1240,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     let maxRef: string,
         avgRef: string;
     switch (type) {
-      case SportCode.cycle:
+      case SportType.cycle:
         maxRef = 'avgCycleMaxWatt';
         avgRef = 'cycleAvgWatt';
         break;
-      case SportCode.row:
+      case SportType.row:
         maxRef = 'rowingMaxWatt';
         avgRef = 'rowingAvgWatt';
         break;
@@ -1275,8 +1275,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     let avgVal,
         avgMaxVal;
     switch (type) {
-      case SportCode.cycle:
-      case SportCode.ball:
+      case SportType.cycle:
+      case SportType.ball:
         if (userUnit === Unit.metric) {  // km/h
           avgVal = avgSpeed || 0;
           avgMaxVal = avgMaxSpeed || 0;
@@ -1285,16 +1285,16 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           avgMaxVal = (avgMaxSpeed / mi) || 0;
         }
         break;
-      case SportCode.run:
-      case SportCode.swim:
-      case SportCode.row:
+      case SportType.run:
+      case SportType.swim:
+      case SportType.row:
         avgVal = avgSpeed || 0;
         avgMaxVal = avgMaxSpeed || 0;
         break;
     }
 
     const { dataArr, maxSpeed, minSpeed } = this.chart.speedPaceTrend;
-    if ([SportCode.run, SportCode.swim, SportCode.row].includes(type)) {
+    if ([SportType.run, SportType.swim, SportType.row].includes(type)) {
 
       if (avgVal !== 0) {
         dataArr.push({
@@ -1341,22 +1341,22 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     let avgCadence: number,
         rangeMaxCadence: number;
     switch (type) {
-      case SportCode.run:
+      case SportType.run:
         const { runAvgCadence, avgRunMaxCadence } = data;
         avgCadence = runAvgCadence || 0;
         rangeMaxCadence = avgRunMaxCadence || 0;
         break
-      case SportCode.cycle:
+      case SportType.cycle:
         const { cycleAvgCadence, avgCycleMaxCadence } = data;
         avgCadence = cycleAvgCadence || 0;
         rangeMaxCadence = avgCycleMaxCadence || 0;
         break
-      case SportCode.swim:
+      case SportType.swim:
         const { swimAvgCadence, avgSwimMaxCadence } = data;
         avgCadence = swimAvgCadence || 0;
         rangeMaxCadence = avgSwimMaxCadence || 0;
         break
-      case SportCode.row:
+      case SportType.row:
         const { rowingAvgCadence, avgRowingMaxCadence } = data;
         avgCadence = rowingAvgCadence || 0;
         rangeMaxCadence = avgRowingMaxCadence || 0;
@@ -1769,10 +1769,10 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
   /**
    * 取得對應的訓練程度(api用)
-   * @param level { ProficiencyCoefficient }-重訓程度係數
+   * @param level { Proficiency }-重訓程度係數
    * @author kidin-1100610
    */
-  getStrengthLevel(proficiency: ProficiencyCoefficient) {
+  getStrengthLevel(proficiency: Proficiency) {
     switch (proficiency) {
       case Proficiency.novice:
         return 50;
@@ -1786,10 +1786,10 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
   /**
    * 變更重訓程度（係數），並儲存雲端
-   * @param level {ProficiencyCoefficient}-重訓係數
+   * @param level {Proficiency}-重訓係數
    * @author kidin-1100610
    */
-  changeLevel(level: ProficiencyCoefficient) {
+  changeLevel(level: Proficiency) {
     this.userInfo.weightTrainLevel = level;
     const strengthLevel = this.getStrengthLevel(level);
     if (this.uiFlag.isDashboardPage || this.uiFlag.isReportOwner) {
@@ -1991,20 +1991,20 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   getNeedKey(type: SportType) {
     switch (type) {
-      case SportCode.run:
-        return commonData.concat(runData);
-      case SportCode.cycle:
-        return commonData.concat(rideData);
-      case SportCode.weightTrain:
-        return commonData.concat(weightTrainData);
-      case SportCode.swim:
-        return commonData.concat(swimData);
-      case SportCode.row:
-        return commonData.concat(rowData);
-      case SportCode.ball:
-        return commonData.concat(personBallData);
+      case SportType.run:
+        return COMMON_DATA.concat(RUN_DATA);
+      case SportType.cycle:
+        return COMMON_DATA.concat(RIDE_DATA);
+      case SportType.weightTrain:
+        return COMMON_DATA.concat(WEIGHT_TRAIN_DATA);
+      case SportType.swim:
+        return COMMON_DATA.concat(SWIM_DATA);
+      case SportType.row:
+        return COMMON_DATA.concat(ROW_DATA);
+      case SportType.ball:
+        return COMMON_DATA.concat(PERSON_BALL_DATA);
       default: // 共同、有氧
-        return commonData;
+        return COMMON_DATA;
     }
 
   }
@@ -2026,7 +2026,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
         if (!sameDateData['startTimestamp']) {
           sameDateData = {
-            startTimestamp: moment(startDate, 'YYYY-MM-DD').valueOf(),
+            startTimestamp: dayjs(startDate, 'YYYY-MM-DD').valueOf(),
             activities
           };
         } else {
@@ -2037,7 +2037,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
         if (!sameDateData['startTimestamp']) {
           result.push({
-            startTimestamp: moment(startDate, 'YYYY-MM-DD').valueOf(),
+            startTimestamp: dayjs(startDate, 'YYYY-MM-DD').valueOf(),
             activities 
           });
         } else {
@@ -2131,7 +2131,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     let focusMuscle = '',
         proficiency = '',
         list = [];
-    if (this.reportConditionOpt.sportType === SportCode.weightTrain) {
+    if (this.reportConditionOpt.sportType === SportType.weightTrain) {
       proficiency = `&level=${this.userInfo.weightTrainLevel}`;
       this.chart.muscleTrendList.forEach(_list => {
         if (_list.isFocus === true) {
@@ -2154,8 +2154,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           { origin } = location,
           hashUserId = this.hashIdService.handleUserIdEncode(id),
           path = this.uiFlag.isDashboardPage ? '/dashboard' : `/user-profile/${hashUserId}`,
-          startDate = moment(startTimestamp).format('YYYY-MM-DD'),
-          endDate = moment(endTimestamp).format('YYYY-MM-DD');
+          startDate = dayjs(startTimestamp).format('YYYY-MM-DD'),
+          endDate = dayjs(endTimestamp).format('YYYY-MM-DD');
     this.previewUrl = `${origin
       }${path
       }/sport-report?startdate=${startDate
@@ -2187,7 +2187,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    assignAnalysisType(sportType: SportType) {
     let { analysisType } = this.uiFlag;
     if (sportType === analysisType) {
-      this.uiFlag.analysisType = SportCode.all;
+      this.uiFlag.analysisType = SportType.all;
     } else {
       this.uiFlag.analysisType = sportType;
     }
@@ -2242,8 +2242,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   editReportPrivacy() {
     const format = 'YYYY-MM-DDTHH:mm:ss.SSSZ',
           { startTimestamp, endTimestamp } = this.reportConditionOpt.date,
-          startTime = moment(startTimestamp).format(format),
-          endTime = moment(endTimestamp).format(format),
+          startTime = dayjs(startTimestamp).format(format),
+          endTime = dayjs(endTimestamp).format(format),
           body = {
             token: this.utils.getToken(),
             editFileType: '2',

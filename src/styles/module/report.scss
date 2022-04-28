@@ -7,6 +7,29 @@
 @import 'font.scss';
 @import 'transition.scss';
 @import 'transform.scss';
+@import 'color.scss';
+
+/**
+ * 概要資訊各欄位顏色
+ */
+@mixin info-color() {
+
+  @for $i from 1 through 10 {
+
+    &:nth-of-type(#{$i}) {
+
+      &:before {
+        background-color: hsla(360 * $i / 10, 100%, 40%, 0.3);
+      }
+
+    }
+
+  }
+
+}
+
+
+$sport-chart-width: 80%;
 
 .report-headerIcon{
   font-size: 30px;
@@ -112,19 +135,17 @@
   margin: 10px 0px 10px 10px
 }
 
-.report-infoDataUnit {
-  font-size: 16px;
-  color: var(--scale-150-180);
-  font-weight: bold;
-}
-
 .report-ringChart {
   width: 40%;
 }
 
 .report-ringChartTitle {
+  display: inline-block;
   color: var(--scale-0-255);
   font-weight: bold;
+  text-align: center;
+  margin: 10px;
+  min-height: 48px;
 }
 
 .report-ringChartSection {
@@ -144,6 +165,10 @@
   &:hover{
     cursor: pointer;;
   }
+}
+
+.report-typeFullInfo {
+  min-width: 200px;
 }
 
 .report-dot {
@@ -388,6 +413,335 @@
   .report-durationChart {
     width: initial;
     flex-shrink: 0;
+  }
+
+}
+
+
+/************************************************* 新 report 的樣式 ***********************************/
+
+.report-section {
+  margin-bottom: 30px;
+}
+
+.report-headTitleSection {
+  align-items: center;
+  margin: 20px 0;
+}
+
+.report-sportsIcon {
+  font-size: 54px;
+  margin-right: 10px;
+}
+
+.report-dateRange {
+  font-size: 12px;
+  margin: 0;
+}
+
+.report-mainTitle {
+  @include bold-font(32px);
+}
+
+.report-compareDate {
+  color: rgba(120, 120, 120, 1);
+}
+
+.report-infoRow {
+  flex-wrap: wrap;
+}
+
+.report-infoItem {
+  align-items: center;
+  min-width: 120px;
+  margin: 10px;
+  background-color: rgba(200, 200, 200, 0.1);
+
+  &:before {
+    content: '';
+    display: inline-block;
+    height: 3px;
+    width: 100%;
+  }
+
+}
+
+.report-baseInfo {
+  @include info-color();
+}
+
+.report-compareInfo {
+  @include info-color();
+}
+
+.report-infoDataValue {
+  @include bold-font(24px);
+}
+
+.report-infoDataUnit {
+  font-size: 14px;
+  color: var(--scale-150-180);
+  font-weight: bold;
+}
+
+.report-infoDataType {
+  font-size: 14px;
+  color: rgba(115, 115, 115, 1);
+}
+
+.report-analysisHeader {
+  cursor: pointer;
+}
+
+.report-headerCorrection {
+  position: relative;
+  left: 6px;
+}
+
+.report-analysisHeaderText {
+  line-height: 1;
+  align-items: center;
+}
+
+.report-analysisTitle {
+  margin: 0;
+  color: $sport-analysis-color;
+  text-align: center;
+  width: 100%;
+  @include bold-font(16px);
+}
+
+.report-analysisUnit {
+  color: rgba(145, 145, 145, 1);
+  font-size: 12px;
+}
+
+.report-analysisRowData {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.report-analysisHintArea {
+  margin: 10px 0;
+  justify-content: center;
+}
+
+.report-analysisHintRow {
+  align-items: center;
+  margin-right: 20px;
+}
+
+.report-baseHint {
+  display: inline-block;
+  min-width: 27px;
+  min-height: 20px;
+  margin-right: 10px;
+  background-color: $report-base-color;
+}
+
+.report-compareHint {
+  @extend .report-baseHint;
+  background-color: $report-compare-color;
+}
+
+.report-analysisDateHint {
+  font-size: 12px;
+  color: rgb(74, 74, 80, 1);
+}
+
+.report-progressiveHint {
+  display: inline-block;
+  min-width: 20px;
+}
+
+.report-progressiveIcon {
+  color: rgba(255, 76, 215, 1);
+  @include bold-font(20px);
+}
+
+.report-regressiveIcon {
+  @extend .report-progressiveIcon;
+  color: rgba(0, 186, 255, 1);
+}
+
+.report-analysisColumnData {
+  font-weight: 700;
+  color: $sport-analysis-color;
+}
+
+.report-optionSection {
+  position: relative;
+}
+
+.report-settingIcon {
+  font-size: 24px;
+}
+
+.report-lockIcon {
+  font-size: 24px;
+}
+
+.report-anlysisChartRow {
+  justify-content: space-between;
+}
+
+.report-ringchartRow {
+  height: 100%;
+  max-height: 300px;
+}
+
+.report-ringChartBlock {
+  width: 40%;
+  max-height: 300px;
+}
+
+.report-distributionChartBlock {
+  width: 55%;
+}
+
+.report-oneRingChart {
+  min-width: 150px;
+  width: 50%;
+  height: 100%;
+  justify-content: space-around;
+  align-items: center;
+  overflow: hidden;
+}
+
+.report-dateHint {
+  font-size: 12px;
+  color: rgba(120, 120, 120, 1);
+}
+
+.report-zoneChartInfo {
+  align-items: center;
+}
+
+.report-trendChart {
+  align-items: center;
+  padding: 10px 2vw;
+  margin-bottom: 15px;
+  background-color: rgba(245, 245, 245, 1);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.report-chartHint {
+  width: calc(100% - #{$sport-chart-width});
+}
+
+.report-chartFigure {
+  width: $sport-chart-width;
+}
+
+.report-trendChartTitle {
+  @include bold-font(24px);
+  color: rgba(115, 115, 115, 1);
+}
+
+.report-targetLineHint {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  margin-top: 20px;
+
+  &:before {
+    $size: 14px;
+    content: '';
+    display: inline-block;
+    width: $size;
+    height: $size;
+    border-radius: 50%;
+    background-color: rgba(255, 48, 110, 1);
+    margin-right: 5px;
+  }
+
+}
+
+.report-trendChartInfo {
+  align-items: center;
+  margin: 10px 0;
+}
+
+.report-chartDataAnnotation {
+  font-size: 12px;
+  color: rgba(120, 120, 120, 1);
+}
+
+.report-chartDataValue {
+  line-height: 1;
+  @include bold-font(28px);
+}
+
+.report-ChartHintBar {
+  height: 38px;
+  width: 8px;
+  border-radius: 8px;
+  margin-right: 10px;
+}
+
+.report-chartDescription {
+  font-size: 14px;
+  color: var(--scale-150-180);
+}
+
+
+/*********************************************************** media *****************************************/
+
+@media (max-width: 950px) {
+
+  .report-anlysisChartRow {
+    flex-direction: column;
+    justify-content: unset;
+  }
+
+  .report-ringChartBlock, .report-distributionChartBlock {
+    width: 100%;
+  }
+
+}
+
+@media (max-width: 767px) {
+
+  .report-trendChart, .report-zoneChartInfo {
+    flex-direction: column;
+  }
+
+  .report-chartHint,
+  .report-chartFigure,
+  .report-zoneChart,
+  .report-infoChart {
+    width: 100%;
+  }
+
+  .report-chartHint {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+}
+
+@media (max-width: 575px) {
+
+  .report-chartHint {
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .report-analysisHintArea {
+    flex-direction: column;
+    width: fit-content;
+    margin: 0 auto;
+  }
+
+  .report-baseHint, .report-compareHint {
+    margin: 5px 10px 5px 0;
+  }
+
+  .report-analysisHintRow {
+    justify-content: center;
   }
 
 }

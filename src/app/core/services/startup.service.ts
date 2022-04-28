@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
-import { AuthService } from './auth.service';
-import { UserProfileService } from '../services/user-profile.service';
-import { UtilsService } from '../services/utils.service';
+import { AuthService } from '../../shared/services/auth.service';
+import { UserService } from './user.service';
+import { TOKEN } from '../../shared/models/utils-constant';
 
 @Injectable()
 export class StartupService {
   constructor(
     private authService: AuthService,
-    private userProfileService: UserProfileService,
-    private utils: UtilsService
+    private userService: UserService
   ) {}
 
   /**
@@ -26,7 +25,10 @@ export class StartupService {
   checkStatus(): boolean {
     if (!this.authService.isLogin()) {
       this.authService.logout();
+      this.userService.logout();
       return false;
+    } else {
+      this.userService.tokenLogin();
     }
 
   }

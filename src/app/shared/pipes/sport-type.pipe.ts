@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { SportCode } from '../models/report-condition';
+import { SportType } from '../enum/sports';
 
 
 @Pipe({name: 'sportType'})
@@ -12,21 +12,21 @@ export class SportTypePipe implements PipeTransform {
    */
   transform(value: string | number): string {
     switch (+value) {
-      case SportCode.run:
+      case SportType.run:
         return 'universal_activityData_run';
-      case SportCode.cycle:
+      case SportType.cycle:
         return 'universal_activityData_cycle';
-      case SportCode.weightTrain:
+      case SportType.weightTrain:
         return 'universal_activityData_weightTraining';
-      case SportCode.swim:
+      case SportType.swim:
         return 'universal_activityData_swin';
-      case SportCode.aerobic:
+      case SportType.aerobic:
         return 'universal_activityData_aerobic';
-      case SportCode.row:
+      case SportType.row:
         return 'universal_sportsName_boating';
-      case SportCode.ball:
+      case SportType.ball:
         return 'universal_activityData_ballSports';
-      case SportCode.all:
+      case SportType.all:
         return 'universal_adjective_all';
       default:
         return 'universal_userAccount_otherTypes';

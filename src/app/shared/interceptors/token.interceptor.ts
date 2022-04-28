@@ -8,7 +8,7 @@ import {
 import { UtilsService } from '../services/utils.service';
 import { Observable } from 'rxjs';
 import { version } from '../version';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
@@ -36,7 +36,7 @@ export class TokenInterceptor implements HttpInterceptor {
       // deviceID: '0', // browser沒有唯一碼
       language: this.utils.getLocalStorageObject('locale') || 'en-us',
       regionCode,
-      utcZone: moment().format('Z')
+      utcZone: dayjs().format('Z')
     };
 
     const token = this.utils.getToken();

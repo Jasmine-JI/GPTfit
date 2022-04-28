@@ -1,0 +1,289 @@
+@import 'min-size.scss';
+@import 'font.scss';
+@import 'drop-triangle.scss';
+@import 'color.scss';
+@import 'transition.scss';
+@import 'transform.scss';
+
+
+@mixin menu-list($padding) {
+  cursor: pointer;
+  padding: $padding;
+
+  &:hover {
+    color: white;
+    background-color: $primary-blue;
+  }
+
+}
+
+.selector__title__button {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.selector__unfold {
+  display: inline-block;
+  margin-left: 10px;
+  @include transition(transform);
+}
+
+.selector__fold {
+  display: inline-block;
+  @include el-rotate(180deg);
+  @include transition(transform);
+}
+
+.selector__section {
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  border-radius: 50px;
+}
+
+.selector__title__row {
+  align-items: center;
+}
+
+.filter__icon {
+  font-size: 60px;
+}
+
+.selector__title {
+  color: rgba(38, 171, 227, 1);
+  @include bold-font(24px);
+}
+
+.selector__content {
+  margin-left: 20px;
+}
+
+.unordered__list {
+  position: absolute;
+  z-index: 5;
+  background-color: white;
+  list-style: none;
+  margin: 0;
+  padding: 5px;
+  box-shadow: 1px 1px 4px rgb(0, 0, 0, 0.7);
+  max-width: 180px;
+  max-height: 150px;
+  overflow-y: scroll;
+}
+
+.group__selector {
+  align-items: center;
+}
+
+.group__icon {
+  $size: 30px;
+  font-size: 28px;
+  @include min-size($size, $size);
+}
+
+.group__text {
+  @include bold-font(18px);
+}
+
+.group__layer__title {
+  margin: 0;
+  color: $primary-blue;
+  @include bold-font(14px);
+}
+
+.list__no__data {
+  $space: 3px;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: $space $space $space 10px;
+}
+
+.list__group__name {
+  $space: 3px;
+  @extend .list__no__data;
+  @include menu-list($space $space $space 10px);
+}
+
+.no__data {
+  color: rgba(150, 150, 150, 1);
+}
+
+.drop__list {
+  margin: 0 10px;
+  border-bottom: 1px solid black;
+  cursor: pointer;
+}
+
+.date__drop {
+  position: relative;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.date__drop__list {
+  top: 25px;
+}
+
+.drop__icon {
+  display: inline-block;
+  @include transition(transform);
+}
+
+.drop__icon--active {
+  @include drop-active();
+}
+
+.current__list__selected {
+  padding: 0 10px;
+}
+
+.date__selector__section {
+  flex-wrap: wrap;
+}
+
+.date__setting__section {
+  position: relative;
+  padding: 8px 20px;
+  box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 90px;
+  margin: 10px;
+  width: fit-content;
+}
+
+.data__setting__card {
+  min-width: 280px;
+}
+
+.gray__background__section {
+  background-color: rgba(246, 246, 246, 1);
+}
+
+.date__unit__title {
+  $horizen-space: 15px;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  margin: 0 $horizen-space 10px $horizen-space;
+}
+
+.date__unit__icon {
+  font-size: 32px;
+}
+
+.date__unit__list {
+  @include menu-list(5px 10px);
+}
+
+.time__title {
+  margin: 10px 0;
+  align-items: center;
+}
+
+.time__title__text {
+  font-weight: bold;
+}
+
+.time__icon {
+  @include bold-font(18px);
+}
+
+.icon-svg_web-icon_p3_084-compare_time {
+  font-size: 24px;
+}
+
+.date__range__list {
+  @include menu-list(5px);
+}
+
+.date__input {
+  padding: 0 10px;
+  border-radius: 28px;
+  margin: 0 5px;
+  font-size: 14px;
+  min-height: 25px;
+}
+
+.sport__type__selector {
+  flex-wrap: wrap;
+  max-width: 767px;
+}
+
+.sport__type__button {
+  flex-grow: 1;
+  margin: 5px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.type__button--active {
+  color: black;
+}
+
+.sport__type__icon {
+  $size: 44px;
+  font-size: $size;
+  @include min-size($size, $size);
+}
+
+.main__button__section {
+  justify-content: flex-end;
+}
+
+.reset__button, .submit__button {
+  margin: 0 5px;
+  border-radius: 7px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  @include min-size(44px, 110px);
+}
+
+.main__button__icon {
+  font-size: 20px;
+}
+
+.reset__button {
+  color: rgba(86, 86, 86, 1);
+  border: 1px solid rgba(189, 189, 189, 1);
+
+  &:hover {
+    background-color: rgba(240, 240, 240, 1);
+  }
+
+}
+
+.submit__button {
+  color: white;
+  background-color: rgba(229, 68, 68, 1);
+
+  &:hover {
+    background-color: rgba(229, 50, 50, 1);
+  }
+
+}
+
+
+/*********************************************** media **********************************/
+
+@media (max-width: 575px) {
+
+  .selector__section {
+    border-radius: 30px;
+    padding: 10px 5px;
+  }
+
+  .date__selector__section, .date__range__input {
+    flex-direction: column;
+  }
+
+  .date__setting__section {
+    border-radius: 30px;
+  }
+
+  .time__title__text, .current__list__selected {
+    font-size: 14px;
+  }
+
+  .selector__content {
+    margin-left: 0;
+  }
+
+}

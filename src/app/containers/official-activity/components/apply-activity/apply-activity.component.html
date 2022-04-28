@@ -198,6 +198,7 @@
               maxLength="24"
               [value]="applyInfo.userProfile.nickname"
               [placeholder]="'universal_userAccount_nickname' | translate"
+              [disabled]="token ? true : null"
               (focus)="showNickNameHint($event)"
               (focusout)="checkNicknameFormat($event)"
             >
@@ -446,6 +447,7 @@
                   id="emergency__contact__relationship"
                   name="emergency__contact__relationship"
                   class="info__input input__placeholder"
+                  maxlength="8"
                   [placeholder]="'（' + ('universal_vocabulary_optional' | translate) + '）'"
                   [(ngModel)]="applyInfo.userProfile.emergencyContact.relationship"
                   (focus)="positionMark($event)"

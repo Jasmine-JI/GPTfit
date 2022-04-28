@@ -281,7 +281,7 @@
             type="number"
             class="people__limit__input"
             [class.empty__warn]="uiFlag.numberLimit === HaveNumberLimit.yes && !eventInfo.numberLimit"
-            [value]="eventInfo.numberLimit || defaultNumberLimit"
+            [value]="eventInfo.numberLimit && eventInfo.numberLimit > 0 ? eventInfo.numberLimit : defaultNumberLimit"
             (focusout)="handlePeopleLimitInput($event)"
           >
           <span>{{ 'universal_unit_members' | translate }}</span>

@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 interface DateValue {
   birth: number | string;  // 生日
@@ -18,12 +18,12 @@ export class AgePipe implements PipeTransform {
    */
   transform(value: DateValue): number {
     const { birth, birthFormat, baseDate, baseFormat } = value; 
-    const birthMoment = birthFormat ? moment(birth, birthFormat) : moment(birth);
+    const birthMoment = birthFormat ? dayjs(birth, birthFormat) : dayjs(birth);
     let baseDateMoment: any;
     if (baseDate) {
-      baseDateMoment = baseFormat ? moment(baseDate, baseFormat) : moment(baseDate);
+      baseDateMoment = baseFormat ? dayjs(baseDate, baseFormat) : dayjs(baseDate);
     } else {
-      baseDateMoment = moment();
+      baseDateMoment = dayjs();
     }
 
     return baseDateMoment.diff(birthMoment, 'year');

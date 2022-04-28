@@ -10,7 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import md5 from 'md5';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 
@@ -145,13 +145,13 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
   // 上傳運動檔案-kidin-1090420
   uploadFile () {
     const { createdTime } = this.displayInfo,
-          fileTimestamp = moment(createdTime, timeFormat).valueOf(),
+          fileTimestamp = dayjs(createdTime, timeFormat).valueOf(),
           { totalSecond } = this.translatedInfo.activityInfoLayer,
           totalUnix = totalSecond * 1000;
-    this.coverTimestamp = moment().valueOf() - totalUnix;
+    this.coverTimestamp = dayjs().valueOf() - totalUnix;
     // 運動時間距離現在時間超過一天即跳出彈跳視窗確認是否覆蓋時間（避免裝置沒電或忘記設定日期）
     if (this.coverTimestamp - fileTimestamp > 24 * 60 * 60 * 1000) {
-      const coverTime = moment(this.coverTimestamp).format(timeFormat);
+      const coverTime = dayjs(this.coverTimestamp).format(timeFormat);
       this.translate.get('hellow world').pipe(
         takeUntil(this.ngUnsubscribe)
       ).subscribe(() => {
@@ -187,9 +187,9 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
    * @author kidin-1100426
    */
   coverFileTime() {
-    const date = moment(this.coverTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+    const date = dayjs(this.coverTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
     this.translatedInfo.activityInfoLayer.startTime = date;
-    this.translatedInfo.fileInfo.editDate = moment().format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+    this.translatedInfo.fileInfo.editDate = dayjs().format('YYYY-MM-DDTHH:mm:ss.SSSZ');
     this.createMd5File();
   }
 
@@ -266,7 +266,7 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
         }
 
       case 'file':
-        return moment(time).format(timeFormat);
+        return dayjs(time).format(timeFormat);
     }
   }
 

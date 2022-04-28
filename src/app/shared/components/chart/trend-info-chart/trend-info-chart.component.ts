@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { HrZoneRange } from '../../../models/chart-data';
 import { mi, ft,  } from '../../../models/bs-constant';
-import { SportType, SportCode } from '../../../models/report-condition';
+import { SportType } from '../../../enum/sports';
 import { TemperatureSibsPipe } from '../../../pipes/temperature-sibs.pipe';
 
 type ChartType = 'hr' | 'pace' | 'altitude' | 'speed' | 'cadence' | 'power' | 'temperature' | 'gforce';
@@ -156,36 +156,39 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
       this.initInfo();
-      let processedData = [],
-          type = 'line',
-          total = 0,
-          Denominator: number,
-          seriesSet: any,
-          chartOptions: any;
+      let processedData = [];
+      let type = 'line';
+      let total = 0;
+      let Denominator: number;
+      let seriesSet: any;
+      let chartOptions: any;
 
       switch (this.chartType) {
         case 'hr':
           type = 'column';
+          Denominator = 0;
           this.yAxisData.forEach((_yAxis, _index) => {
-            const _xAxis = this.xAxisData[_index],
-                  _yAxisAfterCheck = _xAxis === 0 ? 0 : _yAxis,
-                  chartData = {
-                    x: this.page === 'detail' && this.xAxisType === 'pointSecond' ? _xAxis * 1000 : _xAxis,
-                    y: _yAxisAfterCheck,
-                    color: this.getColor(_yAxisAfterCheck, 'hr')
-                  };
+            const _xAxis = this.xAxisData[_index];
+            const _yAxisAfterCheck = _xAxis === 0 ? 0 : _yAxis;
+            const chartData = {
+              x: this.page === 'detail' && this.xAxisType === 'pointSecond' ? _xAxis * 1000 : _xAxis,
+              y: _yAxisAfterCheck,
+              color: this.getColor(_yAxisAfterCheck, 'hr')
+            };
 
             processedData.push(chartData);
-            total += _yAxisAfterCheck;
+            // 平均心率僅計算心率不為0的數據
+            if (_yAxisAfterCheck > 0) {
+              total += _yAxisAfterCheck;
+              Denominator += 1;
+            }
+            
             if (_yAxisAfterCheck > this.infoData.best) {
               this.infoData.best = _yAxisAfterCheck;
             }
 
           });
 
-          // 補上time = 0s的點
-          Denominator = processedData[0].x === 0 ? processedData.length - 1 : processedData.length;
-          Denominator = Denominator > 0 ? Denominator : 1;
           if (processedData[0].x !== 0) {
             processedData = [{x: 0, y: 0, color: '#6e9bff'}, ...processedData];
           }
@@ -212,18 +215,18 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
           break;
         case 'pace':
           this.yAxisData.forEach((_yAxis, _index) => {
-            const _xAxis = this.xAxisData[_index],
-                  _yAxisAfterCheck = _xAxis === 0 ? 0 : _yAxis;
+            const _xAxis = this.xAxisData[_index];
+            const _yAxisAfterCheck = _xAxis === 0 ? 0 : _yAxis;
             
             let _yAxisConvert: number;
             switch (this.sportType) {
-              case SportCode.run:  // 公里或英里配速
+              case SportType.run:  // 公里或英里配速
                 _yAxisConvert = this.unit === 0 ? _yAxisAfterCheck : _yAxisAfterCheck / mi;
                 break;
-              case SportCode.swim:  // 百米配速
+              case SportType.swim:  // 百米配速
                 _yAxisConvert = _yAxisAfterCheck * 10;
                 break;
-              case SportCode.row:  // 500米配速
+              case SportType.row:  // 500米配速
                 _yAxisConvert = _yAxisAfterCheck * 2;
                 break;
             }
@@ -274,11 +277,11 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
           // 將y軸修改為符合配速的格式
           chartOptions['yAxis'].labels = {
             formatter: function() {
-              const val = +this.value,
-                    costminperkm = Math.floor(val / 60),
-                    costsecondperkm = Math.round(val - costminperkm * 60),
-                    timeMin = ('0' + costminperkm).slice(-2),
-                    timeSecond = ('0' + costsecondperkm).slice(-2);
+              const val = +this.value;
+              const costminperkm = Math.floor(val / 60);
+              const costsecondperkm = Math.round(val - costminperkm * 60);
+              const timeMin = ('0' + costminperkm).slice(-2);
+              const timeSecond = ('0' + costsecondperkm).slice(-2);
               return `${timeMin}'${timeSecond}"`;
             }
           };
@@ -286,12 +289,12 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
           // 將tooltip內的資料修改為符合配速的格式
           chartOptions['tooltip'] = {
             pointFormatter: function() {
-              const val = this.y,
-                    costminperkm = Math.floor(val / 60),
-                    costsecondperkm = Math.round(val - costminperkm * 60),
-                    timeMin = ('0' + costminperkm).slice(-2),
-                    timeSecond = ('0' + costsecondperkm).slice(-2),
-                    paceVal = `${timeMin}'${timeSecond}"`;
+              const val = this.y;
+              const costminperkm = Math.floor(val / 60);
+              const costsecondperkm = Math.round(val - costminperkm * 60);
+              const timeMin = ('0' + costminperkm).slice(-2);
+              const timeSecond = ('0' + costsecondperkm).slice(-2);
+              const paceVal = `${timeMin}'${timeSecond}"`;
               return `<br><span style="color: ${this.series.color};">●</span> ${this.series.name}: <b>${paceVal}</b><br>`;
             },
             xDateFormat: '%H:%M:%S'
@@ -304,13 +307,13 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
           break;
         case 'altitude':
           this.yAxisData.forEach((_yAxis, _index) => {
-            const _xAxis = this.xAxisData[_index],
-                  _yAxisAfterCheck = _xAxis === 0 ? 0 : _yAxis,
-                  _yAxisConvert = this.unit === 0 ? _yAxisAfterCheck : +(_yAxisAfterCheck / ft).toFixed(1),
-                  chartData = {
-                    x: this.page === 'detail' && this.xAxisType === 'pointSecond' ? _xAxis * 1000 : _xAxis,
-                    y: _yAxisConvert
-                  };
+            const _xAxis = this.xAxisData[_index];
+            const _yAxisAfterCheck = _xAxis === 0 ? 0 : _yAxis;
+            const _yAxisConvert = this.unit === 0 ? _yAxisAfterCheck : +(_yAxisAfterCheck / ft).toFixed(1);
+            const chartData = {
+              x: this.page === 'detail' && this.xAxisType === 'pointSecond' ? _xAxis * 1000 : _xAxis,
+              y: _yAxisConvert
+            };
 
             processedData.push(chartData);
             total += _yAxisConvert;
@@ -350,13 +353,13 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
           break;
         case 'speed':
           this.yAxisData.forEach((_yAxis, _index) => {
-            const _xAxis = this.xAxisData[_index],
-                  _yAxisAfterCheck = _xAxis === 0 ? 0 : _yAxis,
-                  _yAxisConvert = this.unit === 0 ? _yAxisAfterCheck : +(_yAxisAfterCheck / mi).toFixed(1),
-                  chartData = {
-                    x: this.page === 'detail' && this.xAxisType === 'pointSecond' ? _xAxis * 1000 : _xAxis,
-                    y: _yAxisConvert
-                  };
+            const _xAxis = this.xAxisData[_index];
+            const _yAxisAfterCheck = _xAxis === 0 ? 0 : _yAxis;
+            const _yAxisConvert = this.unit === 0 ? _yAxisAfterCheck : +(_yAxisAfterCheck / mi).toFixed(1);
+            const chartData = {
+              x: this.page === 'detail' && this.xAxisType === 'pointSecond' ? _xAxis * 1000 : _xAxis,
+              y: _yAxisConvert
+            };
 
             processedData.push(chartData);
             total += _yAxisConvert;
@@ -402,13 +405,13 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
         case 'cadence':
           type = 'scatter';
           this.yAxisData.forEach((_yAxis, _index) => {
-            const _xAxis = this.xAxisData[_index],
-                  _yAxisAfterCheck = _xAxis === 0 ? 0 : _yAxis,
-                  chartData = {
-                    x: this.page === 'detail' && this.xAxisType === 'pointSecond' ? _xAxis * 1000 : _xAxis,
-                    y: _yAxisAfterCheck,
-                    color: this.getColor(_yAxisAfterCheck, 'cadence')
-                  };
+            const _xAxis = this.xAxisData[_index];
+            const _yAxisAfterCheck = _xAxis === 0 ? 0 : _yAxis;
+            const chartData = {
+              x: this.page === 'detail' && this.xAxisType === 'pointSecond' ? _xAxis * 1000 : _xAxis,
+              y: _yAxisAfterCheck,
+              color: this.getColor(_yAxisAfterCheck, 'cadence')
+            };
 
             processedData.push(chartData);
             total += _yAxisAfterCheck;
@@ -427,9 +430,9 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
 
           this.infoData.avg = +(total / Denominator).toFixed(1) || 0;
           const pointFormat = this.xAxisType === 'pointSecond' ? 
-              `{point.x: %H:%M:%S}<br> {point.y} ${[1, 3, 4].includes(this.sportType) ? 'spm' : 'rpm'}` 
-              : 
-              `{point.x}<br> {point.y} ${[1, 4].includes(this.sportType) ? 'spm' : 'rpm'}`;
+            `{point.x: %H:%M:%S}<br> {point.y} ${[1, 3, 4].includes(this.sportType) ? 'spm' : 'rpm'}` 
+            : 
+            `{point.x}<br> {point.y} ${[1, 4].includes(this.sportType) ? 'spm' : 'rpm'}`;
 
           seriesSet = [{
             name: this.translate.instant(this.getCadenceKey(this.sportType)),
@@ -453,12 +456,12 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
           break;
         case 'power':
           this.yAxisData.forEach((_yAxis, _index) => {
-            const _xAxis = this.xAxisData[_index],
-                  _yAxisAfterCheck = _xAxis === 0 ? 0 : _yAxis,
-                  chartData = {
-                    x: this.page === 'detail' && this.xAxisType === 'pointSecond' ? _xAxis * 1000 : _xAxis,
-                    y: _yAxisAfterCheck || 0
-                  };
+            const _xAxis = this.xAxisData[_index];
+            const _yAxisAfterCheck = _xAxis === 0 ? 0 : _yAxis;
+            const chartData = {
+              x: this.page === 'detail' && this.xAxisType === 'pointSecond' ? _xAxis * 1000 : _xAxis,
+              y: _yAxisAfterCheck || 0
+            };
 
             processedData.push(chartData);
             total += _yAxisAfterCheck;
@@ -504,14 +507,14 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
         case 'temperature':
           let maxTemp = 0;
           this.yAxisData.forEach((_yAxis, _index) => {
-            const _xAxis = this.xAxisData[_index],
-                  _yAxisAfterCheck = _xAxis === 0 ? 0 : _yAxis,
-                  _yAxisConvert = this.unit === 0 ? (_yAxisAfterCheck || 0) : this.temperatureSibsPipe.transform((_yAxisAfterCheck || 0), [this.unit, 1]),
-                  chartData = {
-                    x: this.page === 'detail' && this.xAxisType === 'pointSecond' ? _xAxis * 1000 : _xAxis,
-                    y: _yAxisConvert,
-                    color: this.getColor(_yAxisAfterCheck, 'temperature')
-                  };
+            const _xAxis = this.xAxisData[_index];
+            const _yAxisAfterCheck = _xAxis === 0 ? 0 : _yAxis;
+            const _yAxisConvert = this.unit === 0 ? (_yAxisAfterCheck || 0) : this.temperatureSibsPipe.transform((_yAxisAfterCheck || 0), [this.unit, 1]);
+            const chartData = {
+              x: this.page === 'detail' && this.xAxisType === 'pointSecond' ? _xAxis * 1000 : _xAxis,
+              y: _yAxisConvert,
+              color: this.getColor(_yAxisAfterCheck, 'temperature')
+            };
 
             processedData.push(chartData);
             total += _yAxisConvert;
@@ -574,25 +577,25 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
         case 'gforce':
           this.initGForceData();
           const xGForce = {
-                  ref: this.yAxisData[0],
-                  final: []
-                },
-                yGForce = {
-                  ref: this.yAxisData[1],
-                  final: []
-                },
-                zGForce = {
-                  ref: this.yAxisData[2],
-                  final: []
-                };
+            ref: this.yAxisData[0],
+            final: []
+          };
+          const yGForce = {
+            ref: this.yAxisData[1],
+            final: []
+          };
+          const zGForce = {
+            ref: this.yAxisData[2],
+            final: []
+          };
 
           // let chartMax = null; // 預埋此變數避免圖表y軸線需對稱
                 
           // 整理成圖表可用的數據並取得各方向G力最大及平均值      
           this.xAxisData.forEach((_xAxis, _index) => {
-            const _xGForce = _xAxis === 0 ? 0 : xGForce.ref[_index],
-                  _yGForce = _xAxis === 0 ? 0 : yGForce.ref[_index],
-                  _zGForce = _xAxis === 0 ? 0 : zGForce.ref[_index];
+            const _xGForce = _xAxis === 0 ? 0 : xGForce.ref[_index];
+            const _yGForce = _xAxis === 0 ? 0 : yGForce.ref[_index];
+            const _zGForce = _xAxis === 0 ? 0 : zGForce.ref[_index];
 
             xGForce.final.push({
               x: this.page === 'detail' && this.xAxisType === 'pointSecond' ? _xAxis * 1000 : _xAxis,
@@ -745,15 +748,15 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
       case 'cadence':
         // hsla 220 -> 0 (藍 ～ 紅)
         switch (sportType) {
-          case SportCode.run:
-          case SportCode.cycle:
+          case SportType.run:
+          case SportType.cycle:
             // 超過220一律紅色
             return 220 - data < 0 ? `hsla(0, 70%, 65%, 1)` : `hsla(${220 - data}, 70%, 65%, 1)`;
-          case SportCode.weightTrain:
+          case SportType.weightTrain:
             // 超過30一律橙色
             return 30 - data < 0 ? `hsla(33, 70%, 65%, 1)` : `hsla(${220 - data}, 70%, 65%, 1)`;
-          case SportCode.swim:
-          case SportCode.row:
+          case SportType.swim:
+          case SportType.row:
             // 超過60一律紅色
             const maxVal = 60;
             return maxVal - data < 0 ? `hsla(0, 70%, 65%, 1)` : `hsla(${(maxVal - data) * (220 / maxVal)}, 70%, 65%, 1)`;
@@ -780,15 +783,15 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
    */
   getCadenceKey(type: SportType): string {
     switch (type) {
-      case SportCode.run:
+      case SportType.run:
         return 'universal_activityData_stepCadence';
-      case SportCode.cycle:
+      case SportType.cycle:
         return 'universal_activityData_CyclingCadence';
-      case SportCode.weightTrain:
+      case SportType.weightTrain:
         return 'universal_activityData_repeatTempo';
-      case SportCode.swim:
+      case SportType.swim:
         return 'universal_activityData_swimCadence';
-      case SportCode.row:
+      case SportType.row:
         return 'universal_activityData_rowCadence';
     }
   }

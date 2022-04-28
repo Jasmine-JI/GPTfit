@@ -70,6 +70,9 @@
             <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.applyCancelled">
               {{ 'universal_vocabulary_signCanceled' | translate }}
             </ng-container>
+            <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.applyCancelling">
+              {{ 'universal_system_leaving' | translate }}
+            </ng-container>
           </button>
         </div>
       </div>

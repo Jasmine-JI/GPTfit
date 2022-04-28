@@ -5,7 +5,7 @@ import { Subject, Subscription, fromEvent, merge, of } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 import { OfficialActivityService } from '../../services/official-activity.service';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { UserProfileInfo, Sex } from '../../../../shared/models/user-profile-info';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -23,6 +23,7 @@ import {
   EventStatus
 } from '../../models/activity-content';
 import { AccessRight } from '../../../../shared/models/accessright';
+import { deepCopy } from '../../../../shared/utils/index';
 
 
 const leaveMessage = '尚未儲存，是否仍要離開此頁面？';
@@ -71,7 +72,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     applyFee: {}
   }
 
-  currentTimestamp = moment().startOf('day').unix();
+  currentTimestamp = dayjs().startOf('day').unix();
   language = MapLanguageEnum.TW;
   mapList: Array<any>;
   userProfile: UserProfileInfo;
@@ -243,7 +244,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   checkNumberLimit() {
     const { numberLimit } = this.eventInfo;
-    if (numberLimit) {
+    if (numberLimit && numberLimit > 0) {
       this.uiFlag.numberLimit = HaveNumberLimit.yes;
     } else {
       this.uiFlag.numberLimit = HaveNumberLimit.no;
@@ -304,8 +305,8 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   getAllCloudrunMap() {
     this.officialActivityService.getRxAllMapInfo().pipe(
       takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.mapList = (res as Array<any>).sort((a, b) => +a.distance - +b.distance);
+    ).subscribe((res: any) => {
+      this.mapList = deepCopy(res).sort((a, b) => +a.distance - +b.distance);
       this.getSelectMapName();
     });
 
@@ -316,8 +317,8 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101020
    */
   createNewEventBody() {
-    const startTimestamp = moment().add(30, 'day').startOf('day').unix();
-    const endTimestamp = moment().add(60, 'day').endOf('day').unix();
+    const startTimestamp = dayjs().add(30, 'day').startOf('day').unix();
+    const endTimestamp = dayjs().add(60, 'day').endOf('day').unix();
     this.eventInfo = {
       eventName: '',
       eventId: -1,
@@ -374,7 +375,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           this.router.navigateByUrl('/official-activity/activity-list');
         } else {
           this.eventDetail = eventDetail;
-          this.compareContent = this.utils.deepCopy({
+          this.compareContent = deepCopy({
             eventInfo,
             eventDetail
           });
@@ -730,12 +731,15 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           }
 
           break;
+        // img 另外使用圖床api處理
         case 'themeImg':
-          // img 另外使用圖床api處理
+        // 不予處理
+        case 'lastEditDate':
+        case 'currentApplyNumber':
           break;
         default:
 
-          if (newValue !== compareValue) {
+          if (compareValue !== newValue) {
             editPart = {
               [_key]: newValue,
               ...editPart
@@ -1046,8 +1050,8 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         endDate: raceEndTimestamp
       }
     } = this.eventInfo;
-    const newStartTimestamp = moment(date.startDate).unix();
-    const newEndTimestamp = moment(date.endDate).unix();
+    const newStartTimestamp = dayjs(date.startDate).unix();
+    const newEndTimestamp = dayjs(date.endDate).unix();
 
     switch (type) {
       case 'applyStartDate':
@@ -1113,9 +1117,9 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   selectPeopleLimit(e: MouseEvent) {
     const { value } = (e as any).target;
-    if (!value) {
+    if (value == HaveNumberLimit.no) {
       this.uiFlag.numberLimit = HaveNumberLimit.no;
-      delete this.eventInfo.numberLimit;
+      this.eventInfo.numberLimit = -1;  // 使用-1當作無限制人數
     } else {
       this.uiFlag.numberLimit = HaveNumberLimit.yes;
       Object.assign(this.eventInfo, { numberLimit: this.defaultNumberLimit });
@@ -1196,7 +1200,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @param id {string}-map id
    * @author kidin-1101021
    */
-  selectMap(e: KeyboardEvent, id: string, index: number) {
+  selectMap(e: KeyboardEvent, id: string) {
     e.stopPropagation();
     const oldMapId = this.eventInfo.cloudrunMapId;
     const newMapId = +id;
@@ -1216,7 +1220,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   getSelectMapName(mapId: number = null) {
     const { mapList, eventInfo, language } = this;
-    if (eventInfo && mapList && mapId > 0) {
+    if (eventInfo && mapList && (!mapId || mapId > 0)) {
       const { cloudrunMapId } = eventInfo;
       const id = mapId ?? cloudrunMapId;
       const index = mapList.findIndex(_map => _map.mapId == id);
@@ -1408,9 +1412,9 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101222
    */
   shiftContent(index: number, direction: 'up' | 'down') {
-    const targetContent = this.utils.deepCopy(this.eventDetail.content[index]);
+    const targetContent = deepCopy(this.eventDetail.content[index]);
     const switchIndex = index + (direction === 'up' ? -1 : 1);
-    const switchContent = this.utils.deepCopy(this.eventDetail.content[switchIndex]);
+    const switchContent = deepCopy(this.eventDetail.content[switchIndex]);
     [this.eventDetail.content[index], this.eventDetail.content[switchIndex]] = [switchContent, targetContent];
     const imgUploadCache = {};
     this.eventDetail.content = this.eventDetail.content.map((_content, index) => {

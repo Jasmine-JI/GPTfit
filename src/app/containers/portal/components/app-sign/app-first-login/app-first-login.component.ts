@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -128,7 +128,7 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
 
   // 取得預設生日(30歲)-kidin-1090525
   getDefaultBirthday () {
-    const currentYear = +moment().year();
+    const currentYear = +dayjs().year();
     this.editBody.userProfile.birthday = +`${currentYear - 30}0101`;
   }
 
@@ -172,7 +172,7 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
             dayReg = /[0][1-9]|[1-2][0-9]|[3][0-1]/,  // 01-31日
             bigMonthReg = /[0][13578]|[1][02]/,  // 大月
             smallMonthReg = /[0][469]|[1][1]/,  // 小月，2月另外判斷
-            currentYear = +moment().year();
+            currentYear = +dayjs().year();
 
       // 先判斷年份是否合乎範圍值
       if (year < currentYear - 80) {

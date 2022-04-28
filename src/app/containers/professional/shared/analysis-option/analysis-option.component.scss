@@ -1,0 +1,46 @@
+@import 'min-size.scss';
+@import 'check-box.scss';
+@import 'color.scss';
+
+.option__menu {
+  $shadow-blur: 4px rgba(0, 0, 0, 0.5);
+  $shadow-offset: 1px;
+  position: absolute;
+  right: 0;
+  z-index: 5;
+  padding: 5px;
+  max-height: 250px;
+  overflow-y: scroll;
+  background-color: white;
+  box-shadow:
+    $shadow-offset $shadow-offset $shadow-blur,
+    calc(-#{$shadow-offset}) $shadow-offset $shadow-blur;
+  @include min-width(200px);
+}
+
+.option__menu__list {
+  list-style: none;
+  margin: 0;
+  padding: 5px;
+}
+
+.list__title {
+  display: block;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--003c67-0096ff);
+}
+
+.menu__item {
+  @include aria-checkBox(20px, white, white, 1px solid rgba(0, 0, 0, 0.5), $primary-blue);
+}
+
+.column__option__hint {
+  font-size: 12px;
+  margin-left: 5px;
+  color: rgb(171, 171, 171);
+}
+
+.option__hint--active {
+  color: rgba(255, 0, 0, 1);
+}

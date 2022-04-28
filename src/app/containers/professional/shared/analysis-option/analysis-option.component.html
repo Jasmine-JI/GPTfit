@@ -1,0 +1,167 @@
+<div
+  class="flexCol option__menu"
+  (click)="$event.stopPropagation();"
+>
+  <ul
+    class="option__menu__list"
+    *ngIf="analysisOption.optionInfo.object === 'group' && analysisOption.layerList.length > 0"
+  >
+    <h6 class="list__title">
+      {{ 'universal_operating_filter' | translate }} {{ 'universal_group_layer' | translate }}
+    </h6>
+    <li *ngFor="let _layer of analysisOption.layerList;">
+      <div
+        role="checkbox"
+        class="menu__item"
+        [tabindex]="index"
+        [attr.aria-checked]="_layer.selected"
+        [ngSwitch]="_layer.info.level"
+        (click)="changeLayerSelectedStatus(_layer)"
+      >
+        <ng-container
+          *ngSwitchCase="GroupLevel.brand"
+        >
+          {{ (
+            analysisOption.optionInfo.brandType === BrandType.brand ?
+              'universal_group_brand' : 'universal_group_enterprise'
+            ) | translate
+          }}
+        </ng-container>
+        <ng-container
+          *ngSwitchCase="GroupLevel.branch"
+        >
+          {{ (
+            analysisOption.optionInfo.brandType === BrandType.brand ?
+              'universal_group_branch' : 'universal_group_companyBranch'
+            ) | translate
+          }}
+        </ng-container>
+        <ng-container
+          *ngSwitchCase="GroupLevel.class"
+        >
+          {{ (
+            analysisOption.optionInfo.brandType === BrandType.brand ?
+              'universal_group_class' : 'universal_group_department'
+            ) | translate
+          }}
+        </ng-container>
+      </div>
+    </li>
+  </ul>
+  <ul class="option__menu__list">
+    <h6 class="list__title">
+      {{ 'universal_activityData_fieldDisplay' | translate }}
+      <span
+        class="column__option__hint"
+        [class.option__hint--active]="analysisOption.itemSelectedFull"
+      >
+        ({{ 'universal_activityData_most' | translate: { number: analysisOption.maxSelectedNumber } }})
+      </span>
+    </h6>
+    <li *ngFor="let _column of analysisOption.itemList; let index = index;">
+      <div
+        role="checkbox"
+        class="menu__item"
+        [tabindex]="index"
+        [attr.aria-checked]="_column.selected"
+        [attr.aria-disabled]="
+          ( _column.selected && !_column.canCancel)
+          || (!_column.selected && !_column.canSelect)
+        "
+        [ngSwitch]="analysisOption.optionInfo.reportType"
+        (click)="changeColumnSelectedStatus(_column)"
+      >
+        <ng-container *ngSwitchCase="'sports'">
+          <ng-container [ngSwitch]="_column.info.item">
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.targetAchievedRate">
+              {{ 'universal_lifeTracking_achievementRate' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.activityPeople">
+              {{ 'universal_vocabulary_activeUsers' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.activities">
+              {{ 'universal_activityData_numberOfActivity' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.totalSecond">
+              {{ 'universal_activityData_totalTime' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.benefitTime">
+              {{ 'universal_activityData_benefitime' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.pai">
+              {{ 'universal_activityData_pai' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.calories">
+              {{ 'universal_activityData_totalCalories' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.averageHeartRate">
+              {{ 'universal_activityData_avgHr' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.distance">
+              {{ 'universal_activityData_totalDistance' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.speedOrPace">
+              {{ (
+                analysisOption.optionInfo.sportType === SportType.cycle ?
+                  'universal_activityData_avgSpeed' : 'universal_activityData_avgPace'
+                ) | translate
+              }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.cadence">
+              <ng-container [ngSwitch]="analysisOption.optionInfo.sportType">
+                <ng-container *ngSwitchCase="SportType.run">
+                  {{ 'universal_activityData_avgStepCadence' | translate }}
+                </ng-container>
+                <ng-container *ngSwitchCase="SportType.cycle">
+                  {{ 'universal_activityData_avgCyclingCadence' | translate }}
+                </ng-container>
+                <ng-container *ngSwitchCase="SportType.swim">
+                  {{ 'universal_activityData_avgSwimReps' | translate }}
+                </ng-container>
+                <ng-container *ngSwitchCase="SportType.row">
+                  {{ 'universal_activityData_avgRowCadence' | translate }}
+                </ng-container>
+              </ng-container>
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.totalActivitySecond">
+              {{ '總活動時間' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.preferMuscle">
+              {{ 'universal_muscleName_preferredMuscleGroup' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.armMuscle">
+              {{ 'universal_muscleName_armMuscles' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.pectoralsMuscle">
+              {{ 'universal_muscleName_pectoralsMuscle' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.shoulderMuscle">
+              {{ 'universal_muscleName_shoulderMuscle' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.backMuscle">
+              {{ 'universal_muscleName_backMuscle' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.abdominalMuscle">
+              {{ 'universal_muscleName_abdominalMuscle' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.legMuscle">
+              {{ 'universal_muscleName_legMuscle' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.totalWeight">
+              {{ 'universal_activityData_totalWeight' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.power">
+              {{ 'universal_activityData_avgPower' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.preferSports">
+              {{ 'universal_activityData_activityPreferences' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.hrChart">
+              {{ 'universal_activityData_hrZone' | translate }}
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </div>
+    </li>
+  </ul>
+</div>

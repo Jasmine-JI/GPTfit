@@ -12,7 +12,7 @@ export class SportTimePipe implements PipeTransform {
    */
   transform(value: string, args: Array<boolean> = [true, false]): string {
     const [showZeroHour, hideSecond] = args;
-    if (value !== 'N/A') {
+    if (typeof(value) === 'number') {
       const yVal = +value,
             costhr = Math.floor(yVal / 3600),
             costmin = Math.floor(Math.round(yVal - costhr * 60 * 60) / 60),
@@ -41,7 +41,7 @@ export class SportTimePipe implements PipeTransform {
       }
 
     } else {
-      return '-:-:-';
+      return '--';
     }
     
   }

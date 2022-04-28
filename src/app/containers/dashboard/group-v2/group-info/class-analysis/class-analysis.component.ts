@@ -7,7 +7,8 @@ import { GroupService } from '../../../../../shared/services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { Subject, combineLatest, of } from 'rxjs';
 import { takeUntil, map, switchMap, first } from 'rxjs/operators';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import weekday from 'dayjs/plugin/weekday';
 import { ActivityService } from '../../../../../shared/services/activity.service';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { chart, charts } from 'highcharts';
@@ -137,9 +138,9 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    * 行事曆所需變數
    */
   calender = {
-    currentTimestamp: moment().endOf('day').valueOf(),
-    startTimestamp: moment().subtract(1, 'weeks').startOf('week').valueOf(),
-    endTimestamp: moment().endOf('week').valueOf(),
+    currentTimestamp: dayjs().endOf('day').valueOf(),
+    startTimestamp: dayjs().subtract(1, 'weeks').startOf('week').valueOf(),
+    endTimestamp: dayjs().endOf('week').valueOf(),
     weekOne: <Array<CalenderDay>>[],
     weekTwo: <Array<CalenderDay>>[],
     queryClassTime: null
@@ -194,7 +195,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     { y: 0, z: '', color: '#f3b353' },
     { y: 0, z: '', color: '#f36953' }
   ];
-  reportCreatedTime = moment().format('YYYY-MM-DD HH:mm');
+  reportCreatedTime = dayjs().format('YYYY-MM-DD HH:mm');
   HRZoneThree: any = 0;
   classLink: HTMLElement;
   previewUrl: any;
@@ -288,9 +289,9 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           case 'classTime':
             this.uiFlag.queryStringShowDate = true;
             this.calender.queryClassTime = +_query.split('=')[1];
-            this.uiFlag.queryIndex = moment(this.calender.queryClassTime).weekday();
-            this.calender.startTimestamp = moment(this.calender.queryClassTime).subtract(1, 'weeks').startOf('week').valueOf();
-            this.calender.endTimestamp = moment(this.calender.queryClassTime).endOf('week').valueOf();
+            this.uiFlag.queryIndex = dayjs(this.calender.queryClassTime).weekday();
+            this.calender.startTimestamp = dayjs(this.calender.queryClassTime).subtract(1, 'weeks').startOf('week').valueOf();
+            this.calender.endTimestamp = dayjs(this.calender.queryClassTime).endOf('week').valueOf();
             break;
         }
 
@@ -309,7 +310,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     let idx: number;
     for (let i = 0, activitiesLength = this.focusDayActivities.length; i < activitiesLength; i++) {
 
-      if (moment(this.focusDayActivities[i].activityInfoLayer.startTime).valueOf() === classTime) {
+      if (dayjs(this.focusDayActivities[i].activityInfoLayer.startTime).valueOf() === classTime) {
         idx = i;
         break;
       }
@@ -398,14 +399,14 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       
       if (i < 7) {
         this.calender.weekOne.push({
-          day: +moment(this.calender.startTimestamp).add(i, 'days').format('DD'),
-          timestamp: moment(this.calender.startTimestamp).add(i, 'days').endOf('day').valueOf(),
+          day: +dayjs(this.calender.startTimestamp).add(i, 'days').format('DD'),
+          timestamp: dayjs(this.calender.startTimestamp).add(i, 'days').endOf('day').valueOf(),
           haveDate: false
         })
       } else {
         this.calender.weekTwo.push({
-          day: +moment(this.calender.startTimestamp).add(i, 'days').format('DD'),
-          timestamp: moment(this.calender.startTimestamp).add(i, 'days').endOf('day').valueOf(),
+          day: +dayjs(this.calender.startTimestamp).add(i, 'days').format('DD'),
+          timestamp: dayjs(this.calender.startTimestamp).add(i, 'days').endOf('day').valueOf(),
           haveDate: false
         })
 
@@ -425,8 +426,8 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       searchTime: {
         type: '1',
         fuzzyTime: '',
-        filterStartTime: moment(this.calender.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-        filterEndTime: moment(this.calender.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+        filterStartTime: dayjs(this.calender.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+        filterEndTime: dayjs(this.calender.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
         filterSameTime: this.uiFlag.isDebugMode ? '1' : '2'
       },
       searchRule: {
@@ -476,11 +477,11 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
             weekTwo = this.calender.weekTwo;
       for (let i = 0; i < 7; i++) {
 
-        if (weekOne[i].timestamp === moment(_activity.fileInfo.creationDate).endOf('day').valueOf()) {
+        if (weekOne[i].timestamp === dayjs(_activity.fileInfo.creationDate).endOf('day').valueOf()) {
           weekOne[i].haveDate = true;
         }
 
-        if (weekTwo[i].timestamp === moment(_activity.fileInfo.creationDate).endOf('day').valueOf()) {
+        if (weekTwo[i].timestamp === dayjs(_activity.fileInfo.creationDate).endOf('day').valueOf()) {
           weekTwo[i].haveDate = true;
         }
 
@@ -521,11 +522,11 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   switchCalender(action: 'pre' | 'next') {
     this.uiFlag.focusActivity = null;
     if (action === 'pre') {
-      this.calender.startTimestamp = moment(this.calender.startTimestamp).subtract( 14, 'days').valueOf();
-      this.calender.endTimestamp = moment(this.calender.endTimestamp).subtract(14, 'days').valueOf();
+      this.calender.startTimestamp = dayjs(this.calender.startTimestamp).subtract( 14, 'days').valueOf();
+      this.calender.endTimestamp = dayjs(this.calender.endTimestamp).subtract(14, 'days').valueOf();
     } else {
-      this.calender.startTimestamp = moment(this.calender.startTimestamp).add(14, 'days').valueOf();
-      this.calender.endTimestamp = moment(this.calender.endTimestamp).add(14, 'days').valueOf();
+      this.calender.startTimestamp = dayjs(this.calender.startTimestamp).add(14, 'days').valueOf();
+      this.calender.endTimestamp = dayjs(this.calender.endTimestamp).add(14, 'days').valueOf();
     }
 
     this.debounceCreateCalender();
@@ -568,7 +569,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   showSelectDayActivities(week: 'weekOne' | 'weekTwo', dayIdx: number) {
     this.focusDayActivities.length = 0;
     this.calenderActivities.forEach(_activity => {
-      if (moment(_activity.fileInfo.creationDate).endOf('day').valueOf() === this.calender[week][dayIdx].timestamp) {
+      if (dayjs(_activity.fileInfo.creationDate).endOf('day').valueOf() === this.calender[week][dayIdx].timestamp) {
         this.focusDayActivities.unshift(_activity);
       }
 
@@ -639,7 +640,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           this.updateUrl(false);
         } else {
           this.uiFlag.noData = false;
-          this.reportCreatedTime = moment().format('YYYY-MM-DD HH:mm');
+          this.reportCreatedTime = dayjs().format('YYYY-MM-DD HH:mm');
           this.handleTableData('showPart');
           const infoData = this.activityDetail[0];
           this.fileInfo = infoData.fileInfo;
@@ -794,7 +795,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     let newUrl;
 
     if (action) {
-      const searchString = `classTime=${moment(this.activityDetail[0].activityInfoLayer.startTime).valueOf()}`;
+      const searchString = `classTime=${dayjs(this.activityDetail[0].activityInfoLayer.startTime).valueOf()}`;
 
       if (location.search.indexOf('?') > -1) {
         if (location.search.indexOf('classTime=') > -1) {
