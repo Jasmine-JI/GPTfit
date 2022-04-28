@@ -18,7 +18,7 @@ import { SportType } from '../../enum/sports';
 import { deepCopy } from '../../utils/index';
 import { GroupLevel, BrandType } from '../../enum/professional';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, debounceTime } from 'rxjs/operators';
 import { DefaultDateRange } from '../../classes/default-date-range';
 import { DAY } from '../../models/utils-constant';
 import { GroupInfo } from '../../classes/group-info';
@@ -48,6 +48,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
 
   private ngUnsubscribe = new Subject();
   private pluralEvent = new Subscription();
+  private resizeEvent = new Subscription();
 
   /**
    * ui 會用到的 flag
@@ -57,7 +58,9 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     showBaseDateRangeList: false,
     showCompareDateRangeList: false,
     showDateUnitList: false,
-    hideDayUnit: false
+    hideDayUnit: false,
+    unfold: true,
+    isMobile: false
   };
 
   /**
@@ -87,9 +90,37 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
 
   ngOnChanges(e: SimpleChanges): void {
     if (e.initialCondition) {
+      this.checkDeviceWidth();
+      this.subscribeResizeEvent();
       this.resetCondition();
+      this.submitCondition();
     }
     
+  }
+
+  /**
+   * 確認是否為攜帶裝置寬度
+   * @author kidin-1110427
+   */
+  checkDeviceWidth() {
+    const { innerWidth } = window;
+    this.uiFlag.isMobile = innerWidth < 767;
+  }
+
+
+  /**
+   * 訂閱resize事件
+   * @author kidin-1110427
+   */
+  subscribeResizeEvent() {
+    const resizeEvent = fromEvent(window, 'resize');
+    this.resizeEvent = resizeEvent.pipe(
+      debounceTime(500),
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.checkDeviceWidth();
+    });
+
   }
 
   /**
@@ -208,8 +239,10 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    */
   submitCondition() {
     if (this.progress === 100) {
+      this.changeDetectorRef.markForCheck();
       this.onConfirm.emit(this.reportCondition);
       this.reportCondition.needRefreshData = false;
+      if (this.uiFlag.isMobile) this.uiFlag.unfold = false;
     }
       
   }
@@ -441,6 +474,13 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
   selectDateUnit(unit: DateUnit) {
     this.reportCondition.dateUnit.unit = unit;
     this.reportCondition.needRefreshData = true;
+  }
+
+  /**
+   * 展開/收合條件篩選器
+   */
+  foldSelector() {
+    this.uiFlag.unfold = !this.uiFlag.unfold;
   }
 
   /**

@@ -9,7 +9,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { TranslateService } from '@ngx-translate/core';
 import { langList } from '../../../../shared/models/i18n';
-import { DashboardService } from '../../services/dashboard.service';
+import { GlobalEventsService } from '../../../../core/services/global-events.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -154,7 +154,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private router: Router,
     private auth: AuthService,
-    private dashboardService: DashboardService
+    private globalEventsService: GlobalEventsService
   ) { }
 
   ngOnInit(): void {
@@ -341,7 +341,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1091111
    */
    handleSideBarSwitch() {
-    this.dashboardService.getRxSideBarMode().pipe(
+    this.globalEventsService.getRxSideBarMode().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
 

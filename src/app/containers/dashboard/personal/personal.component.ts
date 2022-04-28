@@ -9,6 +9,7 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { EditMode } from '../models/personal';
 import { AlbumType } from '../../../shared/models/image';
 import { DashboardService } from '../services/dashboard.service';
+import { GlobalEventsService } from '../../../core/services/global-events.service';
 import { v5 as uuidv5 } from 'uuid';
 import dayjs from 'dayjs';
 import { ImageUploadService } from '../services/image-upload.service';
@@ -92,6 +93,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private hashIdService: HashIdService,
+    private globalEventsService: GlobalEventsService,
     private dashboardService: DashboardService,
     private imageUploadService: ImageUploadService,
     private dialog: MatDialog,
@@ -134,7 +136,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
   handlePageResize() {
     const page = fromEvent(window, 'resize');
     this.pageResize = page.pipe(
-      switchMap(res => this.dashboardService.getRxSideBarMode().pipe(
+      switchMap(res => this.globalEventsService.getRxSideBarMode().pipe(
         map(resp => res)
       )),
       takeUntil(this.ngUnsubscribe)
@@ -201,7 +203,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1091111
    */
   handleSideBarSwitch() {
-    this.dashboardService.getRxSideBarMode().pipe(
+    this.globalEventsService.getRxSideBarMode().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
 

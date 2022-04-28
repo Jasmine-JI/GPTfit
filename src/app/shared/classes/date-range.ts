@@ -4,7 +4,7 @@ import { DateUnit } from '../enum/report';
 dayjs.extend(quarterOfYear);
 
 
-const UTC_FORMAT = 'YYYY-MM-DDTHH:mm:ss.sssZ';
+const UTC_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 
 /**
  * 處理選擇日期範圍

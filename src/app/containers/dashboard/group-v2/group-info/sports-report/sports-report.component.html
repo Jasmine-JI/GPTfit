@@ -1,4 +1,9 @@
 <app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
+<div [class.loadingMask]="uiFlag.progress !== 100" *ngIf="uiFlag.progress !== 100">
+  <div class="loadingMaskAnimation"></div>
+  <div class="loadingMaskAnimation"></div>
+  <div class="loadingMaskAnimation"></div>
+</div>
 <app-condition-selector
   [progress]="uiFlag.progress"
   [initialCondition]="initReportCondition"
@@ -37,20 +42,22 @@
         infoData: groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base'),
         startDate: reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD'),
         endDate: reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD'),
-        memberNumber: groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'totalPeople')
+        memberNumber: groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'totalPeople'),
+        isBaseData: true
       }"></div>
       <ng-container *ngIf="uiFlag.isCompareMode">
         <div *ngTemplateOutlet="infoDataRow; context: {
           infoData: groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'compare'),
           startDate: reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD'),
           endDate: reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD'),
-          memberNumber: groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'totalPeople')
+          memberNumber: groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'totalPeople'),
+          isBaseData: false
         }"></div>
       </ng-container>
     </div>
   </section>
 
-  <section class="report-section">
+  <section class="report-section" *ngIf="reportCondition.sportType === SportType.all">
     <div class="flexRow cardTitle">
       <h6 class="cardSubtitle">
         {{ 'universal_activityData_activityAnalysis' | translate }}
@@ -59,7 +66,7 @@
     <p class="report-areaDescription">
       {{ 'universal_activityData_activityAnalysisReportDescription' | translate }}
     </p>
-    <div class="flexRow">
+    <div class="flexRow report-anlysisChartRow">
       <div *ngTemplateOutlet="ringChartSection; context: {
         timeRange: reportCondition.baseTime,
         activities: groupChartData.baseTypeAllChart.activitiesStatistics,
@@ -74,7 +81,7 @@
       </div>
     </div>
     <ng-container *ngIf="uiFlag.isCompareMode">
-      <div class="flexRow">
+      <div class="flexRow report-anlysisChartRow">
         <div *ngTemplateOutlet="ringChartSection; context: {
           timeRange: reportCondition.compareTime,
           activities: groupChartData.compareTypeAllChart.activitiesStatistics,
@@ -89,12 +96,13 @@
         </div>
       </div>
     </ng-container>
-    <div class="flexRowWrap report-ringChartBlock">
+    <div class="flexRowWrap">
       <ng-container
         *ngFor="let _activity of groupChartData.baseTypeAllChart.activitiesStatistics; let _index = index;"
       >
         <div
           class="flexCol report-perTypeInfo"
+          [class.report-typeFullInfo]="!uiFlag.isCompareMode"
           (click)="changeSelectedType(_index + 1)"
           *ngIf="_activity !== 0 || uiFlag.isCompareMode"
           >
@@ -128,7 +136,7 @@
     </div>
     <p class="report-areaDescription">
       {{ 'universal_activityData_hrStatisticsDuringThePeriod' | translate: {
-        number: uiFlag.isCompareMode ? 'n' : groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').totalActivities
+        number: uiFlag.isCompareMode ? 'n' : (groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').totalActivities || 0)
       } }}
     </p>
     <div class="flexRow report-zoneChartInfo">
@@ -181,7 +189,7 @@
         <div class="flexCol report-chartHint">
           <p class="report-chartDescription">
             {{ 'universal_activityData_hrStatisticsDuringThePeriod' | translate: {
-              number: uiFlag.isCompareMode ? 'n' : groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').totalActivities
+              number: uiFlag.isCompareMode ? 'n' : (groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').totalActivities || 0)
             } }}
           </p>
           <ng-container *ngIf="uiFlag.isCompareMode">
@@ -214,12 +222,12 @@
           <ng-container *ngIf="!uiFlag.isCompareMode">
             <span *ngTemplateOutlet="chartInfoTemplate; context: {
               key: 'universal_activityData_totalTime',
-              value: groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').totalSecond | sportTime
+              value: (groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').totalSecond || 0) | sportTime
             }"></span>
             <span *ngTemplateOutlet="chartInfoTemplate; context: {
               key: 'universal_activityData_totalTime',
               value: (
-                groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').totalSecond / (groupChartData.totalSecondTrend.baseDataLength ?? Infinity)
+                (groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').totalSecond || 0) / (groupChartData.totalSecondTrend.baseDataLength ?? Infinity)
               ) | sportTime,
               dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
             }"></span>
@@ -227,17 +235,17 @@
           <ng-container *ngIf="uiFlag.isCompareMode">
             <div *ngTemplateOutlet="chartCompareModeInfo; context: {
               timeRange: reportCondition.baseTime,
-              value: groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').totalSecond | sportTime,
+              value: (groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').totalSecond || 0) | sportTime,
               color: trendChartColor.totalSecond.base
             }"></div>
             <div *ngTemplateOutlet="chartCompareModeInfo; context: {
               timeRange: reportCondition.compareTime,
-              value: groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'compare').totalSecond | sportTime,
+              value: (groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'compare').totalSecond || 0) | sportTime,
               color: trendChartColor.totalSecond.compare
             }"></div>
           </ng-container>
           <span class="report-targetLineHint" *ngIf="getAssignCondition('totalTime')">
-            {{ '目標總時間' | translate }} {{ getAssignCondition('totalTime') | sportTime }}/{{ reportCondition.dateUnit.getUnitI18nKey() | translate }}
+            {{ 'universal_vocabulary_targetTime' | translate }} {{ getAssignCondition('totalTime') | sportTime }}/{{ reportCondition.dateUnit.getUnitI18nKey() | translate }}
           </span>
         </div>
         <div class="report-chartFigure">
@@ -258,12 +266,12 @@
           <ng-container *ngIf="!uiFlag.isCompareMode">
             <span *ngTemplateOutlet="chartInfoTemplate; context: {
               key: 'universal_activityData_totalCalories',
-              value: groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').calories | number: '1.0-0'
+              value: (groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').calories || 0) | number: '1.0-0'
             }"></span>
             <span *ngTemplateOutlet="chartInfoTemplate; context: {
               key: 'universal_activityData_totalCalories',
               value: (
-                groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').calories / (groupChartData.totalSecondTrend.baseDataLength ?? Infinity)
+                (groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').calories || 0) / (groupChartData.totalSecondTrend.baseDataLength ?? Infinity)
               ) | number: '1.0-0',
               dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
             }"></span>
@@ -271,17 +279,17 @@
           <ng-container *ngIf="uiFlag.isCompareMode">
             <div *ngTemplateOutlet="chartCompareModeInfo; context: {
               timeRange: reportCondition.baseTime,
-              value: groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').calories | number: '1.0-0',
+              value: (groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').calories || 0) | number: '1.0-0',
               color: trendChartColor.calories.base
             }"></div>
             <div *ngTemplateOutlet="chartCompareModeInfo; context: {
               timeRange: reportCondition.compareTime,
-              value: groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'compare').calories | number: '1.0-0',
+              value: (groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'compare').calories || 0) | number: '1.0-0',
               color: trendChartColor.calories.compare
             }"></div>
           </ng-container>
           <span class="report-targetLineHint" *ngIf="getAssignCondition('calories')">
-            {{ '目標卡路里' | translate }} {{ getAssignCondition('calories') }} car/{{ reportCondition.dateUnit.getUnitI18nKey() | translate }}
+            {{ 'universal_lifeTracking_targetCalories' | translate }} {{ getAssignCondition('calories') }} car/{{ reportCondition.dateUnit.getUnitI18nKey() | translate }}
           </span>
         </div>
         <div class="report-chartFigure">
@@ -296,12 +304,12 @@
     </div>
 
     <div class="flexCol">
-      <h6 class="report-trendChartTitle">{{ '目標達成率' | translate }}</h6>
+      <h6 class="report-trendChartTitle">{{ 'universal_vocabulary_targetAchievementRate' | translate }}</h6>
       <div class="flexRow report-trendChart">
         <div class="flexCol report-chartHint">
           <ng-container *ngIf="!uiFlag.isCompareMode">
             <span *ngTemplateOutlet="chartInfoTemplate; context: {
-              key: '目標達成率',
+              key: 'universal_vocabulary_targetAchievementRate',
               value: getAchievedNumber(
                 groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'totalPeople'),
                 groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').targetAchievedPeople
@@ -337,7 +345,6 @@
         </div>
       </div>
     </div>
-
   </section>
 
   <section class="report-section" *ngIf="groupAnalysis">
@@ -378,7 +385,7 @@
         <div *ngTemplateOutlet="analysisHeader; context: {
           isGroupAnalysis: true,
           columnType: 'targetAchievedPeople',
-          title: '達標率' | translate,
+          title: 'universal_lifeTracking_achievementRate' | translate,
           dataUnit: 'person',
           className: 'analysis__achieved__people',
           showHeader: groupAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.targetAchievedRate)
@@ -386,7 +393,7 @@
         <div *ngTemplateOutlet="analysisHeader; context: {
           isGroupAnalysis: true,
           columnType: 'activityPeople',
-          title: '活動人數' | translate,
+          title: 'universal_vocabulary_activeUsers' | translate,
           dataUnit: 'person',
           className: 'analysis__activity__people',
           showHeader: groupAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.activityPeople)
@@ -464,7 +471,7 @@
           title: (
             reportCondition.sportType === SportType.cycle ? 'universal_activityData_avgSpeed' : 'universal_activityData_avgPace'
           ) | translate,
-          dataUnit: '(min/km)/per',
+          dataUnit: getSpeedPaceUnit() + '/per',
           isPersonAvgData: true,
           className: 'analysis__pace',
           showHeader:
@@ -899,6 +906,9 @@
         startDate: reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD'),
         endDate: reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD')
       }"></span>
+      <span class="not__achieved__hint">
+        {{ 'universal_vocabulary_missTarget' | translate }}
+      </span>
     </div>
     <div class="flexRow analysis__header__row">
       <div *ngTemplateOutlet="analysisHeader; context: {
@@ -975,7 +985,7 @@
           title: (
             reportCondition.sportType === SportType.cycle ? 'universal_activityData_avgSpeed' : 'universal_activityData_avgPace'
           ) | translate,
-          dataUnit: '(min/km)',
+          dataUnit: getSpeedPaceUnit(),
           className: 'analysis__pace',
           showHeader:
             [SportType.run, SportType.cycle, SportType.swim, SportType.row ].includes(reportCondition.sportType)
@@ -1121,8 +1131,6 @@
       </div>
     </div>
 
-
-
     <ul class="flexCol report-analysisRowData">
       <ng-container
         *ngFor="let _person of personAnalysis.data; let index = index;"
@@ -1134,7 +1142,7 @@
         >
           <div
             class="analysis__row__title analysis__name"
-            [class.target__not__Achieved]="!_person.base.openPrivacy || !_person.base.targetAchieved"
+            [class.target__not__achieved]="!_person.base.openPrivacy || !_person.base.targetAchieved"
           >
             {{ _person.memberName }}
           </div>
@@ -1143,7 +1151,6 @@
               class="flexRow analysis__data__row"
               [class.analysis__base__row]="uiFlag.isCompareMode"
             >
-
               <span *ngTemplateOutlet="analysisData; context: {
                 data: getPersonalData(_person.base, 'totalActivities'),
                 diff: checkPersonProgressive(_person.memberId, 'totalActivities'),
@@ -1160,7 +1167,7 @@
               }"></span>
               <ng-container *ngIf="reportCondition.sportType === SportType.all">
                 <span *ngTemplateOutlet="analysisData; context: {
-                  data:getPersonalData(_person.base, 'benefitTime') | sportTime,
+                  data: getPersonalData(_person.base, 'benefitTime') | sportTime,
                   diff: checkPersonProgressive(_person.memberId, 'benefitTime'),
                   className: 'analysis__benefit__time',
                   showData: personalAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.benefitTime),
@@ -1580,6 +1587,7 @@
 
 <app-analysis-info-menu
   [assignInfo]="analysisAssignMenu"
+  [reportCondition]="reportCondition"
   *ngIf="analysisAssignMenu.show"
 ></app-analysis-info-menu>
 
@@ -1589,6 +1597,7 @@
   let-startDate="startDate"
   let-endDate="endDate"
   let-memberNumber="memberNumber"
+  let-isBaseData="isBaseData"
 >
   <div class="flexCol">
     <span class="report-compareDate" *ngIf="uiFlag.isCompareMode">
@@ -1597,37 +1606,45 @@
     <div class="flexRow report-infoRow">
       <div *ngTemplateOutlet="oneInfoData; context: {
         data: getAchievedNumber(memberNumber, infoData.targetAchievedPeople),
-        type: 'targetAchievedPeople'
+        type: 'targetAchievedPeople',
+        isBaseData
       }"></div>
       <div *ngTemplateOutlet="oneInfoData; context: {
         data: getPeopleNumber(memberNumber, infoData.activityPeople),
-        type: 'activityPeople'
+        type: 'activityPeople',
+        isBaseData
       }"></div>
       <div *ngTemplateOutlet="oneInfoData; context: {
         data: getPerAvgData(infoData, 'totalActivities'),
-        type: 'perActivities'
+        type: 'perActivities',
+        isBaseData
       }"></div>
       <div *ngTemplateOutlet="oneInfoData; context: {
         data: getPerAvgData(infoData, 'totalSecond'),
-        type: 'perTime'
+        type: 'perTime',
+        isBaseData
       }"></div>
       <ng-container *ngIf="reportCondition.sportType === SportType.all">
         <div *ngTemplateOutlet="oneInfoData; context: {
           data: getPerAvgData(infoData, 'benefitTime'),
-          type: 'perBenefitTime'
+          type: 'perBenefitTime',
+          isBaseData
         }"></div>
         <div *ngTemplateOutlet="oneInfoData; context: {
           data: getPerAvgData(infoData, 'pai'),
-          type: 'perPai'
+          type: 'perPai',
+          isBaseData
         }"></div>
       </ng-container>
       <div *ngTemplateOutlet="oneInfoData; context: {
         data: getPerAvgData(infoData, 'calories'),
-        type: 'perCalories'
+        type: 'perCalories',
+        isBaseData
       }"></div>
       <div *ngTemplateOutlet="oneInfoData; context: {
         data: getPerAvgData(infoData, 'avgHeartRateBpm'),
-        type: 'perAvgHr'
+        type: 'perAvgHr',
+        isBaseData
       }"></div>
       <ng-container
         *ngIf="[
@@ -1640,59 +1657,70 @@
       ">
         <div *ngTemplateOutlet="oneInfoData; context: {
           data: getPerAvgData(infoData, 'totalDistanceMeters'),
-          type: 'perDistance'
+          type: 'perDistance',
+          isBaseData
         }"></div>
       </ng-container>
       <ng-container *ngIf="reportCondition.sportType === SportType.run">
         <div *ngTemplateOutlet="oneInfoData; context: {
           data: getPerAvgData(infoData, 'elevGain'),
-          type: 'perClimb'
+          type: 'perClimb',
+          isBaseData
         }"></div>
         <div *ngTemplateOutlet="oneInfoData; context: {
           data: getPerAvgData(infoData, 'avgSpeed'),
-          type: 'perKmPace'
+          type: 'perKmPace',
+          isBaseData
         }"></div>
       </ng-container>
       <ng-container *ngIf="[SportType.cycle, SportType.ball].includes(reportCondition.sportType)">
         <div *ngTemplateOutlet="oneInfoData; context: {
           data: getPerAvgData(infoData, 'avgSpeed'),
-          type: 'perSpeed'
+          type: 'perSpeed',
+          isBaseData
         }"></div>
       </ng-container>
       <ng-container *ngIf="reportCondition.sportType === SportType.cycle">
         <div *ngTemplateOutlet="oneInfoData; context: {
           data: getPerAvgData(infoData, 'cycleAvgCadence'),
-          type: 'perCycleCadence'
+          type: 'perCycleCadence',
+          isBaseData
         }"></div>
       </ng-container>
       <ng-container *ngIf="reportCondition.sportType === SportType.weightTrain">
         <div *ngTemplateOutlet="oneInfoData; context: {
           data: getPerAvgData(infoData, 'totalWeightKg'),
-          type: 'perTotalWeight'
+          type: 'perTotalWeight',
+          isBaseData
         }"></div>
       </ng-container>
       <ng-container *ngIf="reportCondition.sportType === SportType.swim">
         <div *ngTemplateOutlet="oneInfoData; context: {
           data: getPerAvgData(infoData, 'avgSpeed'),
-          type: 'perOneHundredPace'
+          type: 'perOneHundredPace',
+          isBaseData
         }"></div>
         <div *ngTemplateOutlet="oneInfoData; context: {
           data: getPerAvgData(infoData, 'swimAvgCadence'),
-          type: 'perSwimCadence'
+          type: 'perSwimCadence',
+          isBaseData
         }"></div>
       </ng-container>
       <ng-container *ngIf="reportCondition.sportType === SportType.row">
         <div *ngTemplateOutlet="oneInfoData; context: {
           data: getPerAvgData(infoData, 'avgSpeed'),
-          type: 'perFiveHundredPace'
+          type: 'perFiveHundredPace',
+          isBaseData
         }"></div>
         <div *ngTemplateOutlet="oneInfoData; context: {
           data: getPerAvgData(infoData, 'rowingAvgCadence'),
-          type: 'perRowCadence'
+          type: 'perRowCadence',
+          isBaseData
         }"></div>
         <div *ngTemplateOutlet="oneInfoData; context: {
           data: getPerAvgData(infoData, 'rowingAvgWatt'),
-          type: 'perPower'
+          type: 'perPower',
+          isBaseData
         }"></div>
       </ng-container>
     </div>
@@ -1703,8 +1731,13 @@
   #oneInfoData
   let-data="data"
   let-type="type"
+  let-isBaseData="isBaseData"
 >
-  <div class="flexCol report-infoItem">
+  <div
+    class="flexCol report-infoItem"
+    [class.report-baseInfo]="isBaseData"
+    [class.report-compareInfo]="!isBaseData"
+  >
     <span>
       <span class="report-infoDataValue">
         {{ type.toLowerCase().includes('time') ? (data.value | sportTime) : data.value }}
@@ -1718,10 +1751,10 @@
       [ngSwitch]="type"
     >
       <ng-container *ngSwitchCase="'activityPeople'">
-        {{ '活動人數' | translate }}
+        {{ 'universal_vocabulary_activeUsers' | translate }}
       </ng-container>
       <ng-container *ngSwitchCase="'targetAchievedPeople'">
-        {{ '達標率' | translate }}
+        {{ 'universal_lifeTracking_achievementRate' | translate }}
       </ng-container>
       <ng-container *ngSwitchCase="'perBenefitTime'">
         {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_benefitime' | translate }}
@@ -1784,7 +1817,7 @@
   let-startDate="startDate"
   let-endDate="endDate"
 >
-  <span class="flexRow">
+  <span class="flexRow report-analysisHintRow">
     <span [class]="isBaseData ? 'report-baseHint' : 'report-compareHint'"></span>
     <span class="report-analysisDateHint">
       {{ startDate }} ~ {{ endDate }}

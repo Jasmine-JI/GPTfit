@@ -17,7 +17,7 @@ import { DetectInappService } from '../../shared/services/detect-inapp.service';
 import { Subject, forkJoin } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UserProfileInfo } from '../../shared/models/user-profile-info';
-import { DashboardService } from './services/dashboard.service';
+import { GlobalEventsService } from '../../core/services/global-events.service';
 import { langData } from '../../shared/models/i18n';
 import { SignTypeEnum } from '../../shared/models/utils-type';
 
@@ -101,7 +101,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     private hashIdService: HashIdService,
     private detectInappService: DetectInappService,
     private userProfileService: UserProfileService,
-    private dashboardService: DashboardService
+    private globalEventsService: GlobalEventsService
   ) {}
 
   ngOnInit() {
@@ -470,7 +470,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   handleSideBarMode(mode: 'expand' | 'hide' | 'narrow') {
     this.uiFlag.sidebarMode = mode;
-    this.dashboardService.setSideBarMode(mode);
+    this.globalEventsService.setSideBarMode(mode);
   }
 
   /**

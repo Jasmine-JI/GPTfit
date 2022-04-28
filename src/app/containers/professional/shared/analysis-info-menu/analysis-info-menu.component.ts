@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { HashIdService } from '../../../../shared/services/hash-id.service';
-import { AnalysisObject } from '../../models/report-analysis';
+import { ReportCondition } from '../../../../shared/models/report-condition';
+import { QueryString } from '../../../../shared/enum/query-string';
 
 @Component({
   selector: 'app-analysis-info-menu',
@@ -13,6 +14,11 @@ export class AnalysisInfoMenuComponent implements OnInit {
    * 指定的群組/個人資訊
    */
   @Input('assignInfo') assignInfo: any;
+
+  /**
+   * 報告條件
+   */
+  @Input('reportCondition') reportCondition: ReportCondition;
 
 
   constructor(
@@ -82,7 +88,7 @@ export class AnalysisInfoMenuComponent implements OnInit {
   getGroupSportsReportUrl(id: string) {
     const { origin } = location;
     const hashId = this.hashIdService.handleGroupIdEncode(id);
-    return `${origin}/dashboard/group-info/${hashId}/sports-report`;
+    return `${origin}/dashboard/group-info/${hashId}/sports-report${this.addReportQueryString()}`;
   }
 
   /**
@@ -94,6 +100,27 @@ export class AnalysisInfoMenuComponent implements OnInit {
     const { origin } = location;
     const hashId = this.hashIdService.handleUserIdEncode(`${id}`);
     return `${origin}/user-profile/${hashId}/sport-report`;
+  }
+
+  /**
+   * 將報告條件加入query string，以顯示相同條件之報告
+   */
+  addReportQueryString() {
+    const { baseTime, compareTime, sportType, dateUnit } = this.reportCondition;
+    const { startTimestamp: baseStartTime, endTimestamp: baseEndTime } = baseTime;
+    let query = `?${
+      QueryString.baseStartTime}=${baseStartTime
+    }&${QueryString.baseEndTime}=${baseEndTime
+    }&${QueryString.dateRangeUnit}=${dateUnit.unit
+    }&${QueryString.sportType}=${sportType
+    }`;
+
+    if (compareTime) {
+      const { startTimestamp: compareStartTime, endTimestamp: compareEndTime } = compareTime;
+      query += `&${QueryString.compareStartTime}=${compareStartTime}&${QueryString.compareEndTime}=${compareEndTime}`;
+    }
+    
+    return query;
   }
 
   /**

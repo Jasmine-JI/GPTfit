@@ -74,10 +74,10 @@
         <ng-container *ngSwitchCase="'sports'">
           <ng-container [ngSwitch]="_column.info.item">
             <ng-container *ngSwitchCase="AnalysisSportsColumn.targetAchievedRate">
-              {{ '達標率' | translate }}
+              {{ 'universal_lifeTracking_achievementRate' | translate }}
             </ng-container>
             <ng-container *ngSwitchCase="AnalysisSportsColumn.activityPeople">
-              {{ '活動人數' | translate }}
+              {{ 'universal_vocabulary_activeUsers' | translate }}
             </ng-container>
             <ng-container *ngSwitchCase="AnalysisSportsColumn.activities">
               {{ 'universal_activityData_numberOfActivity' | translate }}

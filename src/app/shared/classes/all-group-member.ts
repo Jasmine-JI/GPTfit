@@ -137,14 +137,22 @@ export class AllGroupMember {
     if (userData) {
       const assignData = userData[dateType];
       if (assignData) {
-        const { muscleGroupData } = userData[dateType];
-        const [weight, reps, sets] = muscleGroupData ? muscleGroupData[muscleGroup] : [0, 0, 0];
-        return `${Math.round(weight)}*${Math.round(reps)}*${Math.round(sets)}`;
+        const { muscleGroupData } = assignData;
+        if (muscleGroupData) {
+          const assignGroupData = muscleGroupData[muscleGroup];
+          const totalWeight = assignGroupData.reduce((prev, current) => prev + current);
+          if (totalWeight > 0) {
+            const [weight, reps, sets] = assignGroupData;
+            return `${Math.round(weight)}*${Math.round(reps)}*${Math.round(sets)}`;
+          }
+          
+        }
+        
       }
 
     }
 
-    return '0*0*0';
+    return '--';
   }
 
   /**

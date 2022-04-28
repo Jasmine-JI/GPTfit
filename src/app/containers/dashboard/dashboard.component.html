@@ -12,7 +12,7 @@
         </div>
       </div>
       <div style="display: flex; position: fixed; right: 20px; align-items: center;">
-        <div class="flexCenter" *ngIf="userProfile.systemAccessRight[0] <= 20">
+        <div class="flexCenter" *ngIf="userProfile.systemAccessRight[0] <= 20 && false">
           <button style="border: none; background-color: transparent;" (click)="changeTheme()">
             <span style="font-size: 22px;" [style.color]="theme === 'light' ? 'black' : 'yellow'">
               ☀

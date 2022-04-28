@@ -1,4 +1,4 @@
-import { AnalysisOptionInfo, AnalysisObject } from '../models/report-analysis';
+import { AnalysisOptionInfo } from '../models/report-analysis';
 import { GroupLevel } from '../../../shared/enum/professional';
 import { SportType } from '../../../shared/enum/sports';
 import { AnalysisSportsColumn } from '../enum/report-analysis';
@@ -242,8 +242,7 @@ export class AnalysisOption {
     const storage = getLocalStorageObject(_storageKey);
     const { ver } = storage ?? '';
     if (this.checkStorageVersion(ver)) {
-      this.loadStorageOption(storage);
-      return _storageKey;
+      return this.loadStorageOption(storage);
     }
     
     return this.setDefaultOption();
@@ -271,9 +270,10 @@ export class AnalysisOption {
         if (index > -1) this._itemList[index].toggleSelected();
       });
 
+      return;
     }
 
-    return;
+    return this.setDefaultOption();
   }
 
   /**
@@ -312,15 +312,16 @@ export class AnalysisOption {
       const index = this._itemList.findIndex(_list => _list.info.item === _itemValue);
       this._itemList[index].toggleSelected();
     });
-    
+
     return this.saveOption();
   }
 
   /**
    * 確認已選擇的欄位項目是否超出極限值
+   * @param width {number}-容器寬度
    */
-  checkOverLimit() {
-    this.checkSelectNumberLimit(window.innerWidth);
+  checkOverLimit(width: number = window.innerWidth) {
+    this.checkSelectNumberLimit(width);
     const { _maxSelected, _minSelected } = this;
     let selectedNumber = 0;
     this._itemList = this._itemList.map(_list => {
@@ -453,6 +454,8 @@ export class AnalysisOption {
    * @param level {GroupLevel}-群組階層
    */
   getLayerSelectStatus(level: GroupLevel) {
+    // 若沒有階層清單代表為課程階，必為選擇狀態
+    if (this.layerList.length === 0) return true;
     const index = this._layerList.findIndex(_layer => _layer.info.level === level);
     return this._layerList[index].selected;
   }

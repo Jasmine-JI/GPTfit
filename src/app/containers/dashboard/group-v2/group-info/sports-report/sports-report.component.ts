@@ -2,8 +2,8 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRe
 import { GroupService } from '../../../../../shared/services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { ReportCondition, ReportDateType } from '../../../../../shared/models/report-condition';
-import { Subject, of, combineLatest, fromEvent, Subscription } from 'rxjs';
-import { takeUntil, switchMap, map, tap } from 'rxjs/operators';
+import { Subject, of, combineLatest, fromEvent, Subscription, merge } from 'rxjs';
+import { takeUntil, switchMap, map, tap, debounceTime } from 'rxjs/operators';
 import { HashIdService } from '../../../../../shared/services/hash-id.service';
 import { SportType } from '../../../../../shared/enum/sports';
 import { getUrlQueryStrings, deepCopy, mathRounding, subscribePluralEvent } from '../../../../../shared/utils/index';
@@ -28,6 +28,8 @@ import { AnalysisAssignMenu } from '../../../../professional/models/report-analy
 import { SPORT_TYPE_COLOR, trendChartColor } from '../../../../../shared/models/chart-data';
 import { TargetCondition, TargetField } from '../../../../../shared/models/sport-target';
 import { MuscleGroup } from '../../../../../shared/enum/weight-train';
+import { REGEX_GROUP_ID } from '../../../../../shared/models/utils-constant';
+import { GlobalEventsService } from '../../../../../core/services/global-events.service';
 
 
 const ERROR_MESSAGE = 'Error! Please try again later.';
@@ -88,9 +90,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 儲存變更過後的報告條件
    */
   reportCondition: ReportCondition;
-
-
-  windowWidth = 320;  // 視窗寬度
 
   /**
    * 各群組運動概要數據
@@ -178,7 +177,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef,
     private userService: UserService,
     private api21xxService: Api21xxService,
-    private reportService: ReportService
+    private reportService: ReportService,
+    private globalEventsService: GlobalEventsService
   ) { }
 
   ngOnInit(): void {
@@ -193,11 +193,16 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
    subscribeWindowSize() {
     const resize = fromEvent(window, 'resize');
-    this.resizeEvent = resize.pipe(
+    this.resizeEvent = merge(
+      resize,
+      this.globalEventsService.getRxSideBarMode()
+    ).pipe(
+      debounceTime(500),
       takeUntil(this.ngUnsubscribe)
     ).subscribe(e => {
-      this.windowWidth = (e as any).target.innerWidth;
-      this.checkWindowSize(this.windowWidth);
+      const element = document.querySelector('.main-body') as HTMLElement;
+      const containerWidth = element.getBoundingClientRect().width;
+      this.checkWindowSize(containerWidth);
       this.changeDetectorRef.markForCheck();
     });
 
@@ -205,29 +210,31 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
   /**
    * 根據視窗寬度調整分析列表最大與最小可顯示數量
-   * @param width {number}-視窗寬度
+   * @param width {number}-容器寬度
    * @author kidin-1100519
    */
   checkWindowSize(width: number) {
-    this.checkGroupAnalysisOption();
-    this.checkPersonalAnalysisOption();
+    this.checkGroupAnalysisOption(width);
+    this.checkPersonalAnalysisOption(width);
   }
 
   /**
    * 確認團體分析欄位是否超出限制
+   * @param width {number}-容器寬度
    * @author kidin-1110401
    */
-  checkGroupAnalysisOption() {
-    this.groupAnalysisOption.checkOverLimit();
+  checkGroupAnalysisOption(width: number) {
+    this.groupAnalysisOption.checkOverLimit(width);
     this.groupAnalysisOption.fillItem();
   }
 
   /**
    * 確認個人分析欄位是否超出限制
+   * @param width {number}-容器寬度
    * @author kidin-1110401
    */
-  checkPersonalAnalysisOption() {
-    this.personalAnalysisOption.checkOverLimit();
+  checkPersonalAnalysisOption(width: number) {
+    this.personalAnalysisOption.checkOverLimit(width);
     this.personalAnalysisOption.fillItem();
   }
 
@@ -244,7 +251,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 取得群組資訊
+   * 取得目前群組資訊與根群組資訊
    * @author kidin-1110315
    */
   getGroupInfo() {
@@ -305,7 +312,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           this.initReportCondition.compareTime.endTimestamp = +value;
           break;
         case QueryString.dateRangeUnit:
-          this.initReportCondition.dateUnit = value;
+          this.initReportCondition.dateUnit.unit = +value;
           break;
         case QueryString.sportType:
           this.initReportCondition.sportType = +value;
@@ -388,6 +395,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         this.changeColumnOption(sportType, level);
         this.initFlag();
         this.createReport(condition, resultArray);
+        this.scrollToReport();
         this.changeDetectorRef.markForCheck();
       });
 
@@ -475,9 +483,32 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * @author kidin-1110322
    */
   handleGroupInfoData(allGroupList: AllGroupMember) {
-    const { immediateGroupObj } = this.getGroupInfo();
-    this.groupSportsInfo = new GroupSportsReportInfo(immediateGroupObj, allGroupList);
+    const rootGroupInfo = this.getBelongGroupObj();
+    this.groupSportsInfo = new GroupSportsReportInfo(rootGroupInfo, allGroupList);
     this.groupAnalysis = new SportAnalysisSort(Object.values(this.groupSportsInfo.groupSportInfo), 'targetAchievedPeople');
+  }
+
+  /**
+   * 只取得所屬群組、子群組之資訊
+   * @author kidin-1110427
+   */
+  getBelongGroupObj() {
+    const { id, level } = this.reportCondition.group.focusGroup;
+    const allGroupInfo = deepCopy(this.groupService.getCurrentGroupInfo().immediateGroupObj);
+    if (level === GroupLevel.brand) return allGroupInfo;
+
+    const { groups: { branchId, classId } } = REGEX_GROUP_ID.exec(id);
+    for (let _id in allGroupInfo) {
+      const { groups: { brandId: _brandId, branchId: _branchId, classId: _classId } } = REGEX_GROUP_ID.exec(_id);
+      if (_branchId !== branchId) {
+        delete allGroupInfo[_id];
+        continue;
+      }
+
+      if (level === GroupLevel.class && _classId !== classId) delete allGroupInfo[_id];
+    }
+
+    return allGroupInfo;
   }
 
   /**
@@ -494,7 +525,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     sportsTarget: SportsTarget
   ) {
     const { dateUnit } = condition;
-    const totalPeople = this.groupSportsInfo.getAssignGroupInfo(this.getFocusGroupId(), 'totalPeople')
+    const totalPeople = this.groupSportsInfo.getAssignGroupInfo(this.getFocusGroupId(), 'totalPeople');
     this.transformCondition = sportsTarget.getTransformCondition(dateUnit.unit, totalPeople);
     const perTransformCondition = sportsTarget.getTransformCondition(dateUnit.unit, 1);
     this.groupChartData = new GroupSportsChartData(condition, baseData, compareData, perTransformCondition, totalPeople);
@@ -633,7 +664,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
     }
     
-    return result;
+    return result ? result : '--';
   }
 
   /**
@@ -877,6 +908,42 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   getAssignCondition(type: TargetField) {
     const relatedIndex = this.transformCondition.findIndex(_condition => _condition.filedName === type);
     return relatedIndex > -1 ? this.transformCondition[relatedIndex].filedValue : null;
+  }
+
+  /**
+   * 根據運動類別與使用者使用單位取得配速單位
+   */
+  getSpeedPaceUnit() {
+    const { sportType } = this.reportCondition;
+    const isMetric = this.userUnit === Unit.metric;
+    switch (sportType) {
+      case SportType.run:
+        return isMetric ? 'min/km' : 'min/mi';
+      case SportType.cycle:
+        return isMetric ? 'km/hr' : 'mi/hr';
+      case SportType.swim:
+        return 'min/100m';
+      case SportType.row:
+        return 'min/500m';
+      default:
+        return '';
+    }
+
+  }
+
+  /**
+   * 捲動至報告位置
+   * @author kidin-1110427
+   */
+  scrollToReport() {
+
+    setTimeout(() => {
+      const element = document.querySelector('.report-headTitleSection') as HTMLElement;
+      const top = element.offsetTop - 70;
+      const scrollElement = document.querySelector('.main-body');
+      scrollElement.scrollTo({ top, behavior: 'smooth' });
+    }, 200);
+    
   }
 
   /**

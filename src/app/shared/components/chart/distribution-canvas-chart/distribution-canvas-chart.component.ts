@@ -7,7 +7,7 @@ import { map, debounceTime, takeUntil, tap } from 'rxjs/operators';
 import { ChartBlock } from '../../../enum/chart';
 import { Percentage } from '../../../classes/percentage';
 import { DISTRIBUTION_CHART_COLOR } from '../../../models/chart-data';
-
+import { GlobalEventsService } from '../../../../core/services/global-events.service';
 
 @Component({
   selector: 'app-distribution-canvas-chart',
@@ -112,7 +112,8 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
 
   constructor(
     private translate: TranslateService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private globalEventsService: GlobalEventsService
   ) { }
 
   ngOnInit() {
@@ -134,7 +135,11 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
    */
   subscribePluralEvent() {
     const resizeEvent = fromEvent(window, 'resize');
-    this.pluralEventSubscription = merge(resizeEvent, this.translate.onLangChange).pipe(
+    this.pluralEventSubscription = merge(
+      resizeEvent,
+      this.translate.onLangChange,
+      this.globalEventsService.getRxSideBarMode()
+    ).pipe(
       debounceTime(200),
       tap(() => this.handleScale()),
       takeUntil(this.ngUnsubscribe)

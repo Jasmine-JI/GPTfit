@@ -210,7 +210,7 @@
           <ng-container *ngIf="
             sportTarget.name == (uiFlag.editMode === 'create' ? uiFlag.createLevel : editBody.groupLevel)
           ">
-            {{ '自訂' | translate }}
+            {{ 'universal_system_custom' | translate }}
           </ng-container>
           <i
             class="icon-svg_web-icon_p1_006-unfold unfold__icon"
@@ -229,7 +229,7 @@
             class="list__item"
             (click)="setTargetReference(editBody.groupLevel)"
           >
-            {{ '自訂' | translate }}
+            {{ 'universal_system_custom' | translate }}
           </li>
         </ul>
       </div>

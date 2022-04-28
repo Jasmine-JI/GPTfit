@@ -1,9 +1,7 @@
 
-import { Inject } from '@angular/core';
-import { TargetField, GroupSportTarget, TargetCondition } from '../models/sport-target';
+import { TargetCondition } from '../models/sport-target';
 import { DateUnit } from '../enum/report';
 import { mathRounding, deepCopy, countPercentage } from '../utils/index';
-import { SportsTarget } from '../classes/sports-target';
 import { ReportCondition } from '../models/report-condition';
 import {
   COMMON_DATA,
@@ -26,7 +24,7 @@ import { WeightTrainStatistics } from './weight-train-statistics';
 import { AllGroupMember } from './all-group-member';
 import { GroupInfo } from './group-info';
 import { of } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { ReportDateUnit } from './report-date-unit';
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
@@ -59,14 +57,14 @@ export class SportsReport {
     const { openPrivacy, target, condition, data, timeType } = parameter;
     // 將統計數據另存至物件中
     let dataObj = { openPrivacy } as any;
+    let avgDataIntermediary = {};
     if (openPrivacy) {
       const { sportType } = condition;
       const dataKey = this.getDataKey(sportType);
-
       let preferSports = new PreferSportType();
       let preferWeightTrainGroup = new WeightTrainStatistics();
       data.forEach(_data => {
-        const { startTime: _startTime, endTime: _endTime, activities: _activities } = _data;
+        const { activities: _activities } = _data;
         _activities.forEach(_activity => {
           const  _sportType = +_activity.type as SportType;
           if (sportType === SportType.all || _sportType === sportType) {
@@ -90,10 +88,12 @@ export class SportsReport {
 
               // 平均數據需再乘該期間筆數，之後再除有效總筆數
               if (_key.toLowerCase().includes('avg')) {
-                const effectCountKey = `${_key}_Activities`;
-                dataObj[_key] = (dataObj[_key] ?? 0) + _value * _totalActivities;
-                // 有值且大於0才視為有效值
-                dataObj[effectCountKey] = (dataObj[effectCountKey] ?? 0) + (_value ? _totalActivities : 0);
+                const dataIntermediary = avgDataIntermediary[_key];
+                const currentWeightedValue = _value * _totalActivities;
+                let [ total, effectActivities ] = dataIntermediary ?? [0, 0];
+                total += currentWeightedValue;
+                effectActivities += _value ? _totalActivities : 0;
+                avgDataIntermediary[_key] = [ total, effectActivities ];
               } else {
                 dataObj[_key] = (dataObj[_key] ?? 0) + _value;
               }
@@ -110,6 +110,7 @@ export class SportsReport {
       if (Object.keys(dataObj).length > 0) {
         dataObj = {
           ...dataObj,
+          ...this.getAvgData(avgDataIntermediary),
           ...this.postProcessingData({ target, condition, dataObj, timeType }),
           preferSports: preferSports.preferSport
         };
@@ -159,6 +160,20 @@ export class SportsReport {
   }
 
   /**
+   * 處理已加總的平均數據以取得此報告期間之各項平均數據
+   * @param intermediary {any}-各項加總之數據
+   */
+  getAvgData(intermediary: any) {
+    let result = {};
+    for (let _key in intermediary) {
+      const [ total, effectActivities ] = intermediary[_key];
+      result = { ...result, [_key]: Math.round(total / (effectActivities ? effectActivities : Infinity)) };
+    }
+
+    return result;
+  }
+
+  /**
    * 將統計完成的數據再進行後續處理（PAI/效益時間/目標達成與否）
    * @param parameter {any}-統計運動數據所需參數與數據
    */
@@ -182,7 +197,7 @@ export class SportsReport {
     } = dataObj;
 
     const { realStartTime, realEndTime } = 
-      timeType === 'base' ? baseTime.getReportRealTimeRange(dateUnit) : compareTime.getReportRealTimeRange(dateUnit);
+      timeType === 'base' ? baseTime.getReportRealTimeRange(dateUnit.unit) : compareTime.getReportRealTimeRange(dateUnit.unit);
     const reportPeriodDay = Math.round((realEndTime - realStartTime) / DAY);
     const hrZone = [zone0, zone1, zone2, zone3, zone4, zone5];
     const { pai, totalWeightedValue } = SportsReport.countPai(hrZone, reportPeriodDay);
@@ -413,18 +428,7 @@ export class GroupSportsReportInfo {
           Object.entries(_base).forEach(([_key, _value]) => {
             if (!excludeKey.includes(_key)) {
               const accumulator = groupObj[_gId].base[_key] ?? 0;
-              if (!_key.includes('_')) {
-
-                if (_key.toLowerCase().includes('avg')) {
-                  const effectActivities = _base[`${_key}_Activities`];
-                  const _checkValue = effectActivities ? (_value as number / effectActivities) : 0;
-                  groupObj[_gId].base[_key] = accumulator + _checkValue;
-                } else {
-                  groupObj[_gId].base[_key] = accumulator + _value;
-                }
-
-              }
-
+              groupObj[_gId].base[_key] = accumulator + _value;
             }
 
           });
@@ -434,17 +438,7 @@ export class GroupSportsReportInfo {
             Object.entries(_compare).forEach(([_key, _value]) => {
               if (!excludeKey.includes(_key)) {
                 const accumulator = groupObj[_gId].compare[_key] ?? 0;
-                if (!_key.includes('_')) {
-                  
-                  if (_key.toLowerCase().includes('avg') && !_key.includes('_')) {
-                    const effectActivities = _compare[`${_key}_Activities`];
-                    groupObj[_gId].compare[_key] = accumulator + ((_value as number / effectActivities) || 0);
-                  } else {
-                    groupObj[_gId].compare[_key] = accumulator + _value;
-                  }
-
-                }
-
+                groupObj[_gId].compare[_key] = accumulator + _value;
               }
   
             });
@@ -587,7 +581,12 @@ export class GroupSportsChartData {
             const isAllType = sportType === SportType.all;
             if (isAllType || sportType === +type) {
               // 扁平化方便之後依相同日期範圍合併數據
-              result.unshift({ activities: _activity, startTime, endTime });
+              result.unshift({
+                activities: _activity,
+                startTime: this.alignTimeZone(startTime, 'start'),
+                endTime: this.alignTimeZone(endTime, 'end')
+              });
+
               this.handleGroupHrZoneData(_activity, isCompareData);
             }
 
@@ -912,12 +911,12 @@ export class GroupSportsChartData {
    * @param dateUnit {ReportDateUnit}-報告所選擇的時間單位
    */
   getSameRangeDate(startTime: string, endTime: string, dateUnit: ReportDateUnit) {
-    const startTimestamp = dayjs(startTime).valueOf();
-    const endTimestamp = dayjs(endTime).valueOf();
+    const startTimestamp = dayjs(startTime).startOf('day').valueOf();
+    const endTimestamp = dayjs(endTime).endOf('day').valueOf();
     switch (dateUnit.unit) {
       case DateUnit.season:
         const seasonStart = dayjs(startTimestamp).startOf('quarter').valueOf();
-        const seasonEnd = dayjs(endTimestamp).startOf('quarter').valueOf();
+        const seasonEnd = dayjs(endTimestamp).endOf('quarter').valueOf();
         return { start: seasonStart, end: seasonEnd };
       case DateUnit.year:
         const rangeStart = dayjs(startTimestamp).startOf('year').valueOf();
@@ -1095,6 +1094,16 @@ export class GroupSportsChartData {
       return this.createDateList(list, unitString, dateStart, dateEnd);
     }
 
+  }
+
+  /**
+   * 統一時區，以utc字串之日期部份進行對齊
+   * @param utcTime {string}-utc time
+   * @param type {'start' | 'end'}-開始或結束日期
+   */
+  alignTimeZone(utcTime: string, type: 'start' | 'end') {
+    const alignTime = dayjs(utcTime.split('T')[0], 'YYYY-MM-DD');
+    return type === 'start' ? alignTime.startOf('day').valueOf() : alignTime.endOf('day').valueOf();
   }
 
   /**

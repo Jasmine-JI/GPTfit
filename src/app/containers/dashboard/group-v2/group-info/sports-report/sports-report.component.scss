@@ -28,6 +28,7 @@
 
 
 $arrow-rotate-degree: 45deg;
+$not-achieved-color: rgba(255, 0, 0, 1);
 
 .analysis__header__row {
   border-bottom: 1px solid black;
@@ -165,8 +166,25 @@ $arrow-rotate-degree: 45deg;
   font-size: 24px;
 }
 
-.target__not__Achieved {
-  color: rgba(255, 0, 0, 1);
+.target__not__achieved {
+  color: $not-achieved-color;
+}
+
+.not__achieved__hint {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: rgb(74, 74, 80, 1);
+
+  &:before {
+    content: '';
+    display: inline-block;
+    margin-right: 10px;
+    background-color: $not-achieved-color;
+    height: 2px;
+    width: 27px;
+  }
+
 }
 
 .see__more {
