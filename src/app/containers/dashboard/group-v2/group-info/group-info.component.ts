@@ -23,6 +23,19 @@ import { GroupLevel } from '../../models/group-detail';
 import { deepCopy } from '../../../../shared/utils/index';
 
 const errMsg = `Error.<br />Please try again later.`;
+const replaceResult = {
+  resultCode: 200,
+  resultMessage: '',
+  msgCode: 5008,
+  apiCode: 1103,
+  info: {
+    groupMemberInfo: [],
+    rtnMsg: '',
+    subGroupInfo: {},
+    totalCounts: 0
+  }
+
+};
 
 @Component({
   selector: 'app-group-info-v2',
@@ -744,12 +757,19 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.groupService.fetchGroupMemberList(childGroupBody),
         this.groupService.fetchGroupMemberList(adminListBody),
         this.groupService.fetchGroupMemberList(memberListBody)
-      ]).subscribe(resArr => {
+      ]).pipe(
+        map(resArr => {
+          // 處理創建群組模式時api 1103 exception的問題
+          if (resArr[4].resultCode !== 200) resArr[4] = deepCopy(replaceResult);
+          return resArr;
+        })
+      ).subscribe(resArr => {
+        const [detail, commerceInfo, GroupList, adminList, memberList] = resArr;
         this.uiFlag.isLoading = false;
         this.uiFlag.hideScenery = false;
-        this.handleDetail(resArr[0]);
-        this.handleCommerce(resArr[1]);
-        this.handleMemberList(resArr[2], resArr[3], resArr[4]);
+        this.handleDetail(detail);
+        this.handleCommerce(commerceInfo);
+        this.handleMemberList(GroupList, adminList, memberList);
         this.checkUserAccessRight();
         this.childPageList = this.initChildPageList();
         this.getCurrentContentPage();
@@ -802,7 +822,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       }
 
     } else {
-      
+  
       if (res.info.groupId === '0-0-0-0-0-0') {
         this.saveDefaultGroupDetail();
       } else {
@@ -850,6 +870,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
 
     this.groupService.saveGroupDetail(rootGroupDetail);
+    this.currentGroupInfo.groupDetail = rootGroupDetail;
   }
 
   /**
@@ -889,7 +910,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       console.error(`${adminRes.resultCode}: Api ${adminRes.apiCode} ${adminRes.resultMessage}`);
       console.error(`${memberRes.resultCode}: Api ${memberRes.apiCode} ${memberRes.resultMessage}`);
     } else {
-
       const groupLevel = this.utils.displayGroupLevel(this.currentGroupInfo.groupId);
       if (groupLevel <= 30) {
         Object.assign(this.currentGroupInfo.groupDetail, {branchNum: childGroupRes.info.subGroupInfo.branches.length});

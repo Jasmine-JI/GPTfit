@@ -68,6 +68,7 @@ import { CompareColumnTrendComponent } from './chart/compare-column-trend/compar
 import { TreeMapChartComponent } from './chart/tree-map-chart/tree-map-chart.component';
 import { SmallHrzoneChartComponent } from './chart/small-hrzone-chart/small-hrzone-chart.component';
 import { DistributionCanvasChartComponent } from './chart/distribution-canvas-chart/distribution-canvas-chart.component';
+import { SportsTargetTipComponent } from './tooltips/sports-target-tip/sports-target-tip.component';
 
 @NgModule({
   imports: [
@@ -141,7 +142,8 @@ import { DistributionCanvasChartComponent } from './chart/distribution-canvas-ch
     CompareColumnTrendComponent,
     TreeMapChartComponent,
     SmallHrzoneChartComponent,
-    DistributionCanvasChartComponent
+    DistributionCanvasChartComponent,
+    SportsTargetTipComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -197,7 +199,8 @@ import { DistributionCanvasChartComponent } from './chart/distribution-canvas-ch
     CompareColumnTrendComponent,
     TreeMapChartComponent,
     SmallHrzoneChartComponent,
-    DistributionCanvasChartComponent
+    DistributionCanvasChartComponent,
+    SportsTargetTipComponent
   ]
 })
 export class SharedComponentsModule {}

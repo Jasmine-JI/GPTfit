@@ -2631,4 +2631,6 @@
  "universal_vocabulary_targetAchievementRate": "目標達成率",
  "universal_vocabulary_targetTime": "目標總計時",
  "universal_vocabulary_missTarget": "未達標",
- "universal_vocabulary_comparePeriod": "比較時間"}
+ "universal_vocabulary_comparePeriod": "比較時間",
+ "universal_vocabulary_activityTarget": "運動目標"
+}
