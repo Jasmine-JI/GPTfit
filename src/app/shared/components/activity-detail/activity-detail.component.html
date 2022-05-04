@@ -818,12 +818,7 @@
                     <div class="flexCol">
                       <span class="segmentation__title">{{ 'universal_activityData_limit_liveLapPace' | translate }}</span>
                       <span class="segmentation__unit">
-                        <ng-container *ngIf="userProfile.unit == 0">
-                          km
-                        </ng-container>
-                        <ng-container *ngIf="userProfile.unit == 1">
-                          mi
-                        </ng-container>
+                        {{ getPaceUnit() }}
                       </span>
                     </div>
                   </th>
@@ -878,7 +873,7 @@
                           _layer.lapTotalDistanceMeters / 1000 : (_layer.lapTotalDistanceMeters / 1000) / unit.mi) | number: '1.0-2' || 0 }}
                     </td>
                     <td class="segmentation__text" *ngIf="[1, 4, 6].includes(+activityInfoLayer.type)">
-                      {{ _layer.lapAvgSpeed | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit, 1] || 0 }}
+                      {{ _layer.lapAvgSpeed | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit, 0] || 0 }}
                     </td>
                     <td class="segmentation__text" *ngIf="[2, 7].includes(+activityInfoLayer.type)">
                       {{ (userProfile.unit == 0 ? _layer.lapAvgSpeed : _layer.lapAvgSpeed / unit.mi) | number: '1.0-2' || 0 }}

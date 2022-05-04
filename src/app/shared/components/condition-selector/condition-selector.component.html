@@ -13,7 +13,7 @@
     <div class="flexCol selector__content">
       <div
         class="flexRow group__selector"
-        *ngIf="reportCondition.group.currentLevel < GroupLevel.class"
+        *ngIf="reportCondition.group && reportCondition.group.currentLevel < GroupLevel.class"
       >
         <mat-icon class="group__icon">group</mat-icon>
         <span class="group__text">{{ 'universal_group_group' | translate }}</span>

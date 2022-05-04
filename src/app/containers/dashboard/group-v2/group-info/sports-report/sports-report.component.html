@@ -8,6 +8,7 @@
   [progress]="uiFlag.progress"
   [initialCondition]="initReportCondition"
   (onConfirm)="getReportCondition($event)"
+  *ngIf="getGroupInfo().groupDetail"
 ></app-condition-selector>
 <article class="flexCol report-mainContent" *ngIf="reportCondition && groupSportsInfo">
   <section class="flexRow report-headTitleSection">
@@ -30,6 +31,30 @@
         {{ reportCondition.sportType | sportType | translate }}
         {{ 'universal_activityData_sportReport' | translate }}
       </h4>
+    </div>
+  </section>
+
+  <section class="report-section">
+    <div class="flexRow cardTitle">
+      <h6 class="cardSubtitle">
+        {{ 'universal_vocabulary_activityTarget' | translate }}
+        <span class="title__description">({{ 'universal_activityData_perCapita' | translate }})</span>
+      </h6>
+    </div>
+    <div class="flexRow">
+      <div class="report-targetCycle">
+        {{ 'universal_activityData_everyUnit' | translate: {
+          number: '', unit: ((sportsTarget.personalSportTarget.cycle === DateUnit.week ? 'universal_time_week' : 'universal_time_day') | translate)
+        } }}
+      </div>
+      <div class="flexRowWrap">
+        <span class="report-targetCondition" *ngFor="let _condition of sportsTarget.personalSportTarget.condition">
+          {{ _condition.filedName | targetFieldName | translate }}
+          &ge;
+          {{ _condition.filedName.toLocaleLowerCase().includes('time') ? _condition.filedValue / 60 : _condition.filedValue }}
+          {{ _condition.filedName | targetFieldUnit | translate }}
+        </span>
+      </div>
     </div>
   </section>
 
@@ -289,7 +314,9 @@
             }"></div>
           </ng-container>
           <span class="report-targetLineHint" *ngIf="getAssignCondition('calories')">
-            {{ 'universal_lifeTracking_targetCalories' | translate }} {{ getAssignCondition('calories') }} car/{{ reportCondition.dateUnit.getUnitI18nKey() | translate }}
+            {{ 'universal_lifeTracking_targetCalories' | translate }}
+            {{ getAssignCondition('calories') }}
+            car/{{ reportCondition.dateUnit.getUnitI18nKey() | translate }}
           </span>
         </div>
         <div class="report-chartFigure">

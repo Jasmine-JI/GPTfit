@@ -2631,5 +2631,6 @@
  "universal_vocabulary_targetAchievementRate": "Target rate",
  "universal_vocabulary_targetTime": "Target time",
  "universal_vocabulary_missTarget": "Miss target",
- "universal_vocabulary_comparePeriod": "Compare"
+ "universal_vocabulary_comparePeriod": "Compare",
+ "universal_vocabulary_activityTarget": "Activity target"
 }

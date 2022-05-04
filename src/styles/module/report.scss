@@ -8,6 +8,7 @@
 @import 'transition.scss';
 @import 'transform.scss';
 @import 'color.scss';
+@import 'flex-center.scss';
 
 /**
  * 概要資訊各欄位顏色
@@ -30,6 +31,7 @@
 
 
 $sport-chart-width: 80%;
+$target-list-color: rgba(120, 120, 120, 1);
 
 .report-headerIcon{
   font-size: 30px;
@@ -683,6 +685,24 @@ $sport-chart-width: 80%;
 .report-chartDescription {
   font-size: 14px;
   color: var(--scale-150-180);
+}
+
+.report-targetCycle {
+  @include center();
+  min-width: 50px;
+  min-height: 34px;
+  font-weight: bold;
+  color: $target-list-color;
+}
+
+.report-targetCondition {
+  display: inline-block;
+  width: fit-content;
+  padding: 2px 5px;
+  border-radius: 5px;
+  border: 1px solid rgba(125, 125, 125, 1);
+  color: $target-list-color;
+  margin: 2px 10px;
 }
 
 

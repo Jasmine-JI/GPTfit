@@ -303,7 +303,7 @@
       'info-portalMode': uiFlag.portalMode
     }"
   >
-    <ng-container *ngIf="currentGroupInfo.groupDetail.groupId">
+    <ng-container *ngIf="currentGroupInfo.groupDetail?.groupId">
       <router-outlet></router-outlet>
     </ng-container>
   </article>

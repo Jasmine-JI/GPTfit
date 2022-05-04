@@ -160,6 +160,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   transformCondition: Array<TargetCondition>;
 
+  /**
+   * 群組運動目標
+   */
+  sportsTarget: SportsTarget;
+
   readonly SportType = SportType;
   readonly GroupLevel = GroupLevel;
   readonly Unit = Unit;
@@ -169,6 +174,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   readonly MuscleGroup = MuscleGroup;
   readonly SPORT_TYPE_COLOR = SPORT_TYPE_COLOR;
   readonly trendChartColor = trendChartColor;
+  readonly DateUnit = DateUnit;
 
   constructor(
     private utils: UtilsService,
@@ -430,15 +436,15 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   createReport(condition: ReportCondition, data: Array<any>) {
     const [allGroupMemberList, baseSportSummary, compareSportSummary] = data;
-    const sportsTarget = new SportsTarget(this.getGroupInfo().sportTarget);
-    this.handlePersonalData('base', condition, allGroupMemberList, baseSportSummary, sportsTarget);
+    this.sportsTarget = new SportsTarget(this.getGroupInfo().sportTarget);
+    this.handlePersonalData('base', condition, allGroupMemberList, baseSportSummary, this.sportsTarget);
 
     if (this.uiFlag.isCompareMode) {
-      this.handlePersonalData('compare', condition, allGroupMemberList, compareSportSummary, sportsTarget);
+      this.handlePersonalData('compare', condition, allGroupMemberList, compareSportSummary, this.sportsTarget);
     }
 
     this.handleGroupInfoData(allGroupMemberList);
-    this.handleGroupChartData(condition, baseSportSummary, compareSportSummary, sportsTarget);
+    this.handleGroupChartData(condition, baseSportSummary, compareSportSummary, this.sportsTarget);
     this.uiFlag.progress = 100;
   }
 
