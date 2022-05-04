@@ -67,7 +67,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   date: DateCondition = {
     type: 'sevenDay',
     maxTimestamp: dayjs().endOf('day').valueOf(),
-    startTimestamp: dayjs().startOf('day').subtract(6, 'days').valueOf(),
+    startTimestamp: dayjs().startOf('day').subtract(6, 'day').valueOf(),
     endTimestamp: dayjs().endOf('day').valueOf(),
     endOfShift: true,
     openSelector: null
@@ -221,7 +221,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     this.date = {
       type: 'sevenDay',
       maxTimestamp: dayjs().endOf('day').valueOf(),
-      startTimestamp: dayjs().startOf('day').subtract(6, 'days').valueOf(),
+      startTimestamp: dayjs().startOf('day').subtract(6, 'day').valueOf(),
       endTimestamp: dayjs().endOf('day').valueOf(),
       endOfShift: true,
       openSelector: null
@@ -307,7 +307,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     switch (opt) {
       case 0:
         this.date.type = 'sevenDay';
-        this.date.startTimestamp = dayjs().startOf('day').subtract(6, 'days').valueOf();
+        this.date.startTimestamp = dayjs().startOf('day').subtract(6, 'day').valueOf();
         this.date.endTimestamp = dayjs().endOf('day').valueOf();
         this.date.openSelector = null;
         if (this.reportConditionOpt.hideConfirmBtn) {
@@ -317,7 +317,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         break;
       case 1:
         this.date.type = 'thirtyDay';
-        this.date.startTimestamp = dayjs().startOf('day').subtract(29, 'days').valueOf();
+        this.date.startTimestamp = dayjs().startOf('day').subtract(29, 'day').valueOf();
         this.date.endTimestamp = dayjs().endOf('day').valueOf();
         this.date.openSelector = null;
         if (this.reportConditionOpt.hideConfirmBtn) {
@@ -327,7 +327,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         break;
       case 2:
         this.date.type = 'sixMonth';
-        this.date.startTimestamp = dayjs().subtract(6, 'month').add(1, 'days').valueOf();
+        this.date.startTimestamp = dayjs().subtract(6, 'month').add(1, 'day').valueOf();
         this.date.endTimestamp = dayjs().endOf('day').valueOf();
         this.date.openSelector = null;
         if (this.reportConditionOpt.hideConfirmBtn) {
@@ -481,19 +481,19 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     switch (this.date.type) {
       case 'sevenDay':
       case 'thisWeek':
-        this.date.startTimestamp = startTime.subtract(7, 'days').valueOf();
-        this.date.endTimestamp = startTime.add(6, 'days').endOf('day').valueOf();
+        this.date.startTimestamp = startTime.subtract(7, 'day').valueOf();
+        this.date.endTimestamp = startTime.add(6, 'day').endOf('day').valueOf();
         break;
       case 'thirtyDay':
-        this.date.startTimestamp = startTime.subtract(30, 'days').valueOf();
-        this.date.endTimestamp = startTime.add(29, 'days').endOf('day').valueOf();
+        this.date.startTimestamp = startTime.subtract(30, 'day').valueOf();
+        this.date.endTimestamp = startTime.add(29, 'day').endOf('day').valueOf();
         break;
       case 'sixMonth':
         this.date.startTimestamp = startTime.subtract(6, 'month').valueOf();
-        this.date.endTimestamp = startTime.add(6, 'month').subtract(1, 'days').endOf('day').valueOf();
+        this.date.endTimestamp = startTime.add(6, 'month').subtract(1, 'day').endOf('day').valueOf();
         break;
       case 'today':
-        this.date.startTimestamp = startTime.subtract(1, 'days').valueOf();
+        this.date.startTimestamp = startTime.subtract(1, 'day').valueOf();
         this.date.endTimestamp = startTime.endOf('day').valueOf();
         break;
       case 'thisMonth':
@@ -535,19 +535,19 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     switch (this.date.type) {
       case 'sevenDay':
       case 'thisWeek':
-        this.date.startTimestamp = startTime.add(7, 'days').valueOf();
-        this.date.endTimestamp = startTime.add(6, 'days').endOf('day').valueOf();
+        this.date.startTimestamp = startTime.add(7, 'day').valueOf();
+        this.date.endTimestamp = startTime.add(6, 'day').endOf('day').valueOf();
         break;
       case 'thirtyDay':
-        this.date.startTimestamp = startTime.add(30, 'days').valueOf();
-        this.date.endTimestamp = startTime.add(29, 'days').endOf('day').valueOf();
+        this.date.startTimestamp = startTime.add(30, 'day').valueOf();
+        this.date.endTimestamp = startTime.add(29, 'day').endOf('day').valueOf();
         break;
       case 'sixMonth':
         this.date.startTimestamp = startTime.add(6, 'month').valueOf();
-        this.date.endTimestamp = startTime.add(6, 'month').subtract(1, 'days').endOf('day').valueOf();
+        this.date.endTimestamp = startTime.add(6, 'month').subtract(1, 'day').endOf('day').valueOf();
         break;
       case 'today':
-        this.date.startTimestamp = startTime.add(1, 'days').valueOf();
+        this.date.startTimestamp = startTime.add(1, 'day').valueOf();
         this.date.endTimestamp = startTime.endOf('day').valueOf();
         break;
       case 'thisMonth':

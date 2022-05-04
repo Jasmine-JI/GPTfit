@@ -139,7 +139,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    */
   calender = {
     currentTimestamp: dayjs().endOf('day').valueOf(),
-    startTimestamp: dayjs().subtract(1, 'weeks').startOf('week').valueOf(),
+    startTimestamp: dayjs().subtract(1, 'week').startOf('week').valueOf(),
     endTimestamp: dayjs().endOf('week').valueOf(),
     weekOne: <Array<CalenderDay>>[],
     weekTwo: <Array<CalenderDay>>[],
@@ -290,7 +290,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
             this.uiFlag.queryStringShowDate = true;
             this.calender.queryClassTime = +_query.split('=')[1];
             this.uiFlag.queryIndex = dayjs(this.calender.queryClassTime).weekday();
-            this.calender.startTimestamp = dayjs(this.calender.queryClassTime).subtract(1, 'weeks').startOf('week').valueOf();
+            this.calender.startTimestamp = dayjs(this.calender.queryClassTime).subtract(1, 'week').startOf('week').valueOf();
             this.calender.endTimestamp = dayjs(this.calender.queryClassTime).endOf('week').valueOf();
             break;
         }
@@ -399,14 +399,14 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       
       if (i < 7) {
         this.calender.weekOne.push({
-          day: +dayjs(this.calender.startTimestamp).add(i, 'days').format('DD'),
-          timestamp: dayjs(this.calender.startTimestamp).add(i, 'days').endOf('day').valueOf(),
+          day: +dayjs(this.calender.startTimestamp).add(i, 'day').format('DD'),
+          timestamp: dayjs(this.calender.startTimestamp).add(i, 'day').endOf('day').valueOf(),
           haveDate: false
         })
       } else {
         this.calender.weekTwo.push({
-          day: +dayjs(this.calender.startTimestamp).add(i, 'days').format('DD'),
-          timestamp: dayjs(this.calender.startTimestamp).add(i, 'days').endOf('day').valueOf(),
+          day: +dayjs(this.calender.startTimestamp).add(i, 'day').format('DD'),
+          timestamp: dayjs(this.calender.startTimestamp).add(i, 'day').endOf('day').valueOf(),
           haveDate: false
         })
 
@@ -522,11 +522,11 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   switchCalender(action: 'pre' | 'next') {
     this.uiFlag.focusActivity = null;
     if (action === 'pre') {
-      this.calender.startTimestamp = dayjs(this.calender.startTimestamp).subtract( 14, 'days').valueOf();
-      this.calender.endTimestamp = dayjs(this.calender.endTimestamp).subtract(14, 'days').valueOf();
+      this.calender.startTimestamp = dayjs(this.calender.startTimestamp).subtract( 14, 'day').valueOf();
+      this.calender.endTimestamp = dayjs(this.calender.endTimestamp).subtract(14, 'day').valueOf();
     } else {
-      this.calender.startTimestamp = dayjs(this.calender.startTimestamp).add(14, 'days').valueOf();
-      this.calender.endTimestamp = dayjs(this.calender.endTimestamp).add(14, 'days').valueOf();
+      this.calender.startTimestamp = dayjs(this.calender.startTimestamp).add(14, 'day').valueOf();
+      this.calender.endTimestamp = dayjs(this.calender.endTimestamp).add(14, 'day').valueOf();
     }
 
     this.debounceCreateCalender();

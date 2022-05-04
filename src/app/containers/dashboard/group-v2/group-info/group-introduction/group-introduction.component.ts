@@ -48,7 +48,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     statusChange: false,
     openStatusSelector: false,
     isLoading: false,
-    showTargetHint: false,
     showInheritList: false,
     showCycleList: false,
     showFiledNameList: false
@@ -143,7 +142,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   };
 
   /**
-   * 取得該群組
+   * 該群組運動目標
    */
   sportTarget: GroupSportTarget = {
     name: '',
@@ -198,7 +197,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       )),
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
-      this.groupDetail = res;
+      this.groupDetail = deepCopy(res);
       this.editBody = {
         token: this.utils.getToken() || '',
         groupName: this.groupDetail.groupName,
@@ -209,7 +208,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         changeStatus: this.groupDetail.groupStatus
       };
 
-      this.sportTarget = deepCopy(res.target);
+      if (res.target && Object.keys(res.target).length > 0) this.sportTarget = deepCopy(res.target);
     });
 
   }
@@ -492,7 +491,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   foldAllList() {
     this.uiFlag.openStatusSelector = false;
-    this.uiFlag.showTargetHint = false;
     this.uiFlag.showInheritList = false;
     this.uiFlag.showCycleList = false;
     this.uiFlag.showFiledNameList = false;
@@ -1149,40 +1147,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     const { editMode, createLevel } = this.uiFlag;
     const currentLevel = editMode === 'create' ? createLevel : groupLevel;
     this.sportTarget.name = `${currentLevel}`;
-  }
-
-  /**
-   * 開關運動目標提示
-   * @param e {MouseEvent}
-   * @author kidin-1110307
-   */
-  toggleTargetHint(e: MouseEvent) {
-    e.stopPropagation();
-    const { showTargetHint } = this.uiFlag;
-    if (showTargetHint) {
-      this.closeTargetHint();
-    } else {
-      this.openTargetHint();
-    }
-
-  }
-
-  /**
-   * 顯示運動目標提示
-   * @author kidin-1110307
-   */
-  openTargetHint() {
-    this.uiFlag.showTargetHint = true;
-    this.listenPluralEvent();
-  }
-
-  /**
-   * 隱藏運動目標提示
-   * @author kidin-1110307
-   */
-  closeTargetHint() {
-    this.uiFlag.showTargetHint = false;
-    this.cancelListenPluralEvent();
   }
 
   /**

@@ -27,6 +27,9 @@ import { Proficiency } from '../../enum/weight-train';
 import { AlbumType } from '../../models/image';
 import { v5 as uuidv5 } from 'uuid';
 import { ImageUploadService } from '../../../containers/dashboard/services/image-upload.service';
+import { getPaceUnit } from '../../utils/sports';
+
+dayjs.extend(weekday);
 
 
 const errMsg = `Error! Please try again later.`;
@@ -645,7 +648,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       info.totalHrZone5Second
     ];
     
-    const userAge = this.uiFlag.isFileOwner ? dayjs().diff(this.userProfile.birthday, 'years') : null,
+    const userAge = this.uiFlag.isFileOwner ? dayjs().diff(this.userProfile.birthday, 'year') : null,
           userHRBase = this.userProfile.heartRateBase,
           userMaxHR = this.userProfile.heartRateMax,
           userRestHR = this.userProfile.heartRateResting;
@@ -2311,6 +2314,15 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   getPhotoName(url: string) {
     const pathArr = url.split('/');
     return pathArr[pathArr.length - 1];
+  }
+
+  /**
+   * 根據運動類別與使用者使用單位取得對應配速單位
+   */
+  getPaceUnit() {
+    const sportType = +this.activityInfoLayer.type;
+    const { unit } = this.userProfile;
+    return getPaceUnit(sportType, unit);
   }
 
   /**

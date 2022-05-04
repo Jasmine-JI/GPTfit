@@ -76,7 +76,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   reportConditionOpt: ReportConditionOpt = {
     pageType: 'sport',
     date: {
-      startTimestamp: dayjs().startOf('day').subtract(6, 'days').valueOf(),
+      startTimestamp: dayjs().startOf('day').subtract(6, 'day').valueOf(),
       endTimestamp: dayjs().endOf('day').valueOf(),
       type: 'sevenDay'
     },

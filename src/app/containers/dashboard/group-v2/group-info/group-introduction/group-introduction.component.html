@@ -169,26 +169,7 @@
   >
     <h6 class="flexRow info-contentTitle">
       {{ 'universal_lifeTracking_target' | translate}}
-      <div class="target__hint__area">
-        <mat-icon
-          class="target__hint"
-          (mouseenter)="openTargetHint()"
-          (mouseleave)="closeTargetHint()"
-          (click)="toggleTargetHint($event)"
-        >
-          help_outline
-        </mat-icon>
-        <div
-          class="flexCol target__hint__box"
-          *ngIf="uiFlag.showTargetHint"
-        >
-          <img src="/assets/images/target_example.PNG" alt="Target hint">
-          <span class="chart__label">{{ 'universal_lifeTracking_target' | translate }}</span>
-          <p class="hint__description">
-            {{ '設定群組運動目標，會在運動報告頁面顯示目標，並計算達成率' | translate }}
-          </p>
-        </div>
-      </div>
+      <app-sports-target-tip></app-sports-target-tip>
     </h6>
     <div class="flexCol info-contentText">
       <div
@@ -205,7 +186,7 @@
           <ng-container *ngIf="
             sportTarget.name != (uiFlag.editMode === 'create' ? uiFlag.createLevel : editBody.groupLevel)
           ">
-            {{ targetInheritList[sportTarget.name == GroupLevel.brand ? 0 : 1].groupName }}
+            {{ targetInheritList[sportTarget.name == GroupLevel.branch ? 1 : 0].groupName }}
           </ng-container>
           <ng-container *ngIf="
             sportTarget.name == (uiFlag.editMode === 'create' ? uiFlag.createLevel : editBody.groupLevel)
