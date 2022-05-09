@@ -165,6 +165,11 @@ class ChartOption {
     xAxis: <any>{
       title: {
         enabled: false
+      },
+      labels: {
+        style: {
+          fontSize: '10px'
+        }
       }
     },
     yAxis: {
@@ -216,6 +221,7 @@ class ChartOption {
   handleDataType(type: TargetField) {
     switch (type) {
       case 'totalTime':
+      case 'benefitTime':
         this._option.yAxis['labels'] = {
           formatter: yAxisTimeFormat
         };
@@ -223,7 +229,6 @@ class ChartOption {
         this._option['tooltip'] = {
           formatter: tooltipTimeFormat
         };
-
         
         break;
       case 'achievementRate':
@@ -250,6 +255,7 @@ class ChartOption {
    */
   handleNormalOption(data: Array<any>) {
     const { xAxis, plotOptions } = this._option;
+    const { labels } = xAxis;
     this._option = {
       ...this._option,
       xAxis: {
@@ -257,6 +263,7 @@ class ChartOption {
         type: 'datetime',
         tickPositions: data[0].custom.dateRange.map(_range => _range[0]),
         labels: {
+          ...labels,
           formatter: function() {
             return dayjs(this.value).format('MM/DD');
           }

@@ -32,6 +32,7 @@ export interface GroupSportTarget {
 }
 
 export interface PersonalTarget {
+  name: string;
   cycle: DateUnit;
   condition: Array<TargetCondition>;
 }

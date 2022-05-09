@@ -180,7 +180,6 @@ export class AnalysisOption {
       AnalysisSportsColumn.totalSecond,
       AnalysisSportsColumn.calories,
       AnalysisSportsColumn.averageHeartRate,
-      AnalysisSportsColumn.preferSports,
       AnalysisSportsColumn.hrChart
     ];
 
@@ -188,7 +187,8 @@ export class AnalysisOption {
       case SportType.all:
         list = list.concat([
           AnalysisSportsColumn.benefitTime,
-          AnalysisSportsColumn.pai
+          AnalysisSportsColumn.pai,
+          AnalysisSportsColumn.preferSports
         ]);
         break;
       case SportType.run:
