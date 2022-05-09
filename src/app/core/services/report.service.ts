@@ -12,13 +12,25 @@ export class ReportService {
    * 儲存api 2104回傳之基準運動數據，
    * 供僅切換報告運動類別時直接存取不call api
    */
-  baseData: Array<any>;
+  baseActivityData: Array<any>;
 
   /**
    * 儲存api 2104回傳之比較運動數據，
    * 供僅切換報告運動類別時直接存取不call api
    */
-  compareData: Array<any>;
+  compareActivityData: Array<any>;
+
+  /**
+   * 儲存api 2107回傳之基準運動數據，
+   * 供僅切換報告運動類別時直接存取不call api
+   */
+  baseLifeTracking: Array<any>;
+
+  /**
+   * 儲存api 2107回傳之比較運動數據，
+   * 供僅切換報告運動類別時直接存取不call api
+   */
+  compareLifeTracking: Array<any>;
 
   constructor(private api21xxService: Api21xxService) {}
 
@@ -27,16 +39,16 @@ export class ReportService {
    * @param data {Array<any>}
    * @author kidin-1110321
    */
-  saveBaseData(data: Array<any>) {
-    this.baseData = deepCopy(data);
+  saveBaseActivitiesData(data: Array<any>) {
+    this.baseActivityData = deepCopy(data);
   }
 
   /**
    * 取得先前儲存的基準數據
    * @author kidin-1110321
    */
-  getBaseData() {
-    return this.baseData;
+  getBaseActivitiesData() {
+    return this.baseActivityData;
   }
 
   /**
@@ -44,16 +56,50 @@ export class ReportService {
    * @param data {Array<any>}
    * @author kidin-1110321
    */
-  saveCompareData(data: Array<any>) {
-    this.compareData = deepCopy(data);
+  saveCompareActivitiesData(data: Array<any>) {
+    this.compareActivityData = deepCopy(data);
   }
 
   /**
    * 取得先前儲存的比較數據
    * @author kidin-1110321
    */
-  getCompareData() {
-    return this.compareData;
+  getCompareActivitiesData() {
+    return this.compareActivityData;
+  }
+
+  /**
+   * 儲存基準數據
+   * @param data {Array<any>}
+   * @author kidin-1110321
+   */
+  saveBaseLifeTracking(data: Array<any>) {
+    this.baseLifeTracking = deepCopy(data);
+  }
+
+  /**
+   * 取得先前儲存的基準數據
+   * @author kidin-1110321
+   */
+  getBaseLifeTracking() {
+    return this.baseLifeTracking;
+  }
+
+  /**
+   * 儲存比較數據
+   * @param data {Array<any>}
+   * @author kidin-1110321
+   */
+  saveCompareLifeTracking(data: Array<any>) {
+    this.compareLifeTracking = deepCopy(data);
+  }
+
+  /**
+   * 取得先前儲存的比較數據
+   * @author kidin-1110321
+   */
+  getCompareLifeTracking() {
+    return this.compareLifeTracking;
   }
 
 }

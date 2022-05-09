@@ -81,7 +81,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     editNameMode: false,
     isFileOwner: false,
     imageLoaded: false,
-    openImgSelector: false
+    openImgSelector: false,
+    deviceIndex: 0
   };
 
   /**
@@ -825,14 +826,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       if (res.resultCode !== 200) {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
-        const {productInfo} = res.info;
-        // 暫時只顯示單一裝置，待有顯示多裝置需求再修改
-        this.otherInfo.deviceInfo = {
-          icon: `/app/public_html/products${productInfo[0].modelImg}`,
-          name: productInfo[0].modelName,
-          type: productInfo[0].modelTypeName
-        };
-
+        this.otherInfo.deviceInfo = res.info.productInfo;
       }
 
       this.changeDetectorRef.markForCheck();
@@ -2323,6 +2317,42 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     const sportType = +this.activityInfoLayer.type;
     const { unit } = this.userProfile;
     return getPaceUnit(sportType, unit);
+  }
+
+  /**
+   * 切至前一個裝置資訊
+   */
+  switchPreviewDevice() {
+    const { deviceInfo } = this.otherInfo;
+    if (deviceInfo) {
+      const { deviceIndex } = this.uiFlag;
+      if (deviceIndex !== 0) this.uiFlag.deviceIndex--;
+    }
+
+  }
+
+  /**
+   * 切至下一個裝置資訊
+   */
+  switchNextDevice() {
+    const { deviceInfo } = this.otherInfo;
+    if (deviceInfo) {
+      const { deviceIndex } = this.uiFlag;
+      if (deviceIndex < deviceInfo.length - 1) this.uiFlag.deviceIndex++;
+    }
+
+  }
+
+  /**
+   * 切換至指定裝置資訊
+   * @param index {number}-指定之裝置資訊序列
+   */
+  switchAssignDeviceInfo(index: number) {
+    const { deviceIndex } = this.uiFlag;
+    if (deviceIndex !== index) {
+      this.uiFlag.deviceIndex = index;
+    }
+
   }
 
   /**

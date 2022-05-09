@@ -6,7 +6,7 @@ import { deepCopy, checkResponse } from '../utils/index';
 import { Api10xxService } from '../../core/services/api-10xx.service';
 import { combineLatest } from 'rxjs';
 import { SignTypeEnum } from '../models/utils-type';
-
+import { AccessRight } from '../models/accessright';
 
 const guestProfile: UserProfileDetail = {
   avatarUrl: '/assets/images/user2.png',
@@ -44,7 +44,6 @@ export class User {
    */
   private _thirdPartyAgency: Array<any>;
 
-
   constructor(
     private api10xxService: Api10xxService
   ) {}
@@ -65,13 +64,13 @@ export class User {
         const [loginResult, userProfileResult] = resultArray;
         if (checkResponse(loginResult, false)) {
           const { thirdPartyAgency } = loginResult as any;
-          this.thirdPartyAgency = thirdPartyAgency;
+          this._thirdPartyAgency = thirdPartyAgency;
         }
 
         if (checkResponse(userProfileResult, true)) {
           const { signIn, userProfile } = userProfileResult as any;
-          this.signInfo = signIn;
-          this.userProfile = userProfile;
+          this._signInfo = signIn;
+          this._userProfile = userProfile;
         }
 
       });
@@ -150,8 +149,15 @@ export class User {
    * 取得系統使用權限
    * @author kidin-1110314
    */
-  get systemAccessright() {
+  get systemAccessright(): AccessRight {
     return this._signInfo ? this._signInfo.developerValue : 99;
+  }
+
+  /**
+   * 取得使用者編號
+   */
+  get userId() {
+    return this._userProfile.userId;
   }
 
 }

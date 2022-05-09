@@ -3,12 +3,13 @@ import { ActivityService } from '../../../../shared/services/activity.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { SportType } from '../../../../shared/enum/sports';
 import dayjs from 'dayjs';
-import { Subject, Subscription, fromEvent } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
+import { Subject, Subscription, fromEvent, merge } from 'rxjs';
+import { takeUntil, tap, debounceTime } from 'rxjs/operators';
 import { ReportConditionOpt } from '../../../../shared/models/report-condition';
 import { ReportService } from '../../../../shared/services/report.service';
 import { Unit } from '../../../../shared/models/bs-constant';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
+import { GlobalEventsService } from '../../../../core/services/global-events.service';
 
 
 const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ',
@@ -71,7 +72,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     private activityService: ActivityService,
     private utils: UtilsService,
     private reportService: ReportService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private globalEventsService: GlobalEventsService
   ) { }
 
   ngOnInit(): void {
@@ -225,7 +227,11 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    */
   subscribeScreenSize() {
     const resize = fromEvent(window, 'resize');
-    this.resizeEvent = resize.pipe(
+    this.resizeEvent = merge(
+      resize,
+      this.globalEventsService.getRxSideBarMode()
+    ).pipe(
+      debounceTime(500),
       takeUntil(this.ngUnsubscribe)
     ).subscribe(e => {
       this.setListWidth();

@@ -30,9 +30,11 @@ import { TargetCondition, TargetField } from '../../../../../shared/models/sport
 import { MuscleGroup } from '../../../../../shared/enum/weight-train';
 import { REGEX_GROUP_ID } from '../../../../../shared/models/utils-constant';
 import { GlobalEventsService } from '../../../../../core/services/global-events.service';
+import { DefaultDateRange } from '../../../../../shared/classes/default-date-range';
 
 
 const ERROR_MESSAGE = 'Error! Please try again later.';
+const sevenDay = DefaultDateRange.getSevenDay();
 
 @Component({
   selector: 'app-sports-report',
@@ -67,9 +69,12 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   initReportCondition: ReportCondition = {
     moduleType: 'professional',
     pageType: 'sportsReport',
-    baseTime: new DateRange(),
+    baseTime: new DateRange(
+      sevenDay.startTime,
+      sevenDay.endTime
+    ),
     compareTime: null,
-    dateUnit: new ReportDateUnit(DateUnit.week),
+    dateUnit: new ReportDateUnit(DateUnit.day),
     group: {
       brandType: BrandType.brand,
       currentLevel: GroupLevel.class,
@@ -361,8 +366,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           
           // 若僅變更運動類別，則不需透過api重新取得數據
           if (!needRefreshData) {
-            const result = [res, this.reportService.getBaseData()];
-            if (this.uiFlag.isCompareMode) result.push(this.reportService.getCompareData());
+            const result = [res, this.reportService.getBaseActivitiesData()];
+            if (this.uiFlag.isCompareMode) result.push(this.reportService.getCompareActivitiesData());
             return of(result);
           } else {
             
@@ -463,7 +468,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     dataArray: Array<any>,
     sportTarget: SportsTarget
   ) {
-    timeType === 'base' ? this.reportService.saveBaseData(dataArray) : this.reportService.saveCompareData(dataArray);
+    timeType === 'base' ? this.reportService.saveBaseActivitiesData(dataArray) : this.reportService.saveCompareActivitiesData(dataArray);
     const { dateUnit } = condition;
     dataArray.forEach(_data => {
       const { userId: _userId, resultCode } = _data;
@@ -522,6 +527,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * @param condition {ReportCondition}-報告篩選條件
    * @param baseData {Array<any>}-多人的基準運動數據陣列
    * @param compareData {Array<any>}-多人的比較運動數據陣列
+   * @param sportsTarget {SportsTarget}-群組設定的運動目標
    * @author kidin-1110322
    */
   handleGroupChartData(

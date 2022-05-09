@@ -120,6 +120,11 @@ class ChartOption {
       title: {
         enabled: false
       },
+      labels: {
+        style: {
+          fontSize: '10px'
+        }
+      }
     },
     yAxis: {
       min: 0,
@@ -174,6 +179,7 @@ class ChartOption {
    */
   handleNormalOption(data: Array<any>) {
     const { xAxis, plotOptions } = this._option;
+    const { labels } = xAxis;
     this._option = {
       ...this._option,
       xAxis: {
@@ -181,6 +187,7 @@ class ChartOption {
         type: 'datetime',
         tickPositions: data[0].custom.dateRange.map(_range => _range[0]),
         labels: {
+          ...labels,
           formatter: function() {
             return dayjs(this.value).format('MM/DD');
           }

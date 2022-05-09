@@ -1124,7 +1124,7 @@
         >
         </app-trend-info-chart>
         <app-trend-info-chart
-          [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.speed : trendChartOpt.yAxisDataRef.speed"
+          [yAxisData]="trendChartOpt.yAxisDataRef.speed"
           [xAxisData]="trendChartOpt.xAxisDataRef"
           [xAxisType]="trendChartOpt.xAxisType"
           [sportType]="+activityInfoLayer.type"
@@ -1148,7 +1148,7 @@
         >
         </app-trend-info-chart>
         <app-trend-info-chart
-          [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.speed : trendChartOpt.yAxisDataRef.speed"
+          [yAxisData]="trendChartOpt.yAxisDataRef.speed"
           [xAxisData]="trendChartOpt.xAxisDataRef"
           [xAxisType]="trendChartOpt.xAxisType"
           [sportType]="+activityInfoLayer.type"
@@ -1279,21 +1279,38 @@
     id="footer__section"
     *ngIf="fileInfo.author && (uiFlag.pcView || uiFlag.currentTag === 'summary')"
   >
-    <div class="flexCol footer__Info" *ngIf="fileInfo.equipmentSN && fileInfo.equipmentSN.length > 0 && otherInfo.deviceInfo">
+    <div
+      class="flexCol footer__Info"
+      *ngIf="fileInfo?.equipmentSN?.length > 0 && otherInfo.deviceInfo"
+    >
       <div class="flexRow cardTitle">
         <span class="cardSubtitle">{{ 'universal_deviceSetting_productInfo' | translate }}</span>
       </div>
-      <div class="flexCenter footer__header">
-        <img
-          style="max-height: 200px; max-width: 300px;"
-          [src]="otherInfo.deviceInfo.icon"
-          (error)="this.otherInfo.deviceInfo.icon = '/app/public_html/products/img/unknown.png'"
-        >
+      <div class="flexRow device__info">
+        <button
+          class="switch__preview__button"
+          [class.switch__button--disable]="!otherInfo.deviceInfo || uiFlag.deviceIndex === 0"
+          (click)="switchPreviewDevice()"
+        ></button>
+        <div *ngTemplateOutlet="deviceInfoTemplate; context: {
+          templateInfo: otherInfo.deviceInfo[uiFlag.deviceIndex]
+        }"></div>
+        <button
+          class="switch__next__button"
+          [class.switch__button--disable]="
+            !otherInfo.deviceInfo || uiFlag.deviceIndex >= otherInfo.deviceInfo?.length - 1
+          "
+          (click)="switchNextDevice()"
+        ></button>
       </div>
-      <span class="footer__content">{{ 'universal_deviceSetting_modeCode' | translate }}：{{ otherInfo.deviceInfo.name }}</span>
-      <span class="footer__content">
-        {{ 'universal_deviceSetting_modeType' | translate }}：{{ otherInfo.deviceInfo.type | productType | translate }}
-      </span>
+      <div class="flexCenter">
+        <button
+          class="index__dot__button"
+          [class.index__dot__button--active]="uiFlag.deviceIndex === _index"
+          *ngFor="let _device of otherInfo.deviceInfo; let _index = index;"
+          (click)="switchAssignDeviceInfo(_index)"
+        ></button>
+      </div>
     </div>
     <div class="flexCol footer__Info" *ngIf="fileInfo.class && otherInfo.classInfo">
       <div class="flexRow cardTitle">
@@ -1370,3 +1387,24 @@
     </div>
   </section>
 </main>
+
+<ng-template
+  #deviceInfoTemplate
+  let-templateInfo="templateInfo"
+>
+  <div class="flexCol device__info__content">
+    <div class="flexCenter device__img__container">
+      <img
+        class="device__img"
+        [src]="templateInfo.modelImg"
+        (error)="templateInfo.modelImg = '/app/public_html/products/img/unknown.png'"
+      >
+    </div>
+    <span class="footer__content">
+      {{ 'universal_deviceSetting_modeCode' | translate }}：{{ templateInfo.modelName }}
+    </span>
+    <span class="footer__content">
+      {{ 'universal_deviceSetting_modeType' | translate }}：{{ templateInfo.modelTypeName | productType | translate }}
+    </span>
+  </div>
+</ng-template>
