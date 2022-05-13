@@ -190,6 +190,36 @@ export const trendChartColor = {
       bottom: 'rgba(178, 190, 39, 1)'
     }
   },
+  benefitTime: {
+    base: {
+      top: 'rgba(204, 4, 222, 1)',
+      bottom: 'rgba(222, 124, 4, 1)'
+    },
+    compare: {
+      top: 'rgba(164, 222, 4, 1)',
+      bottom: 'rgba(4, 215, 222, 1)'
+    }
+  },
+  pai: {
+    base: {
+      top: 'rgba(227, 213, 23, 1)',
+      bottom: 'rgba(166, 227, 23, 1)'
+    },
+    compare: {
+      top: 'rgba(27, 133, 209, 1)',
+      bottom: 'rgba(91, 27, 209, 1)'
+    }
+  },
+  totalActivities: {
+    base: {
+      top: 'rgba(4, 222, 95, 1)',
+      bottom: 'rgba(4, 222, 207, 1)'
+    },
+    compare: {
+      top: 'rgba(4, 168, 222, 1)',
+      bottom: 'rgba(4, 55, 222, 1)'
+    }
+  },
   calories: {
     base: {
       top: 'rgba(255, 84, 55, 1)',

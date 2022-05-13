@@ -43,9 +43,9 @@ export class SportsTarget {
   /**
    * 取得個人運動目標資訊
    */
-  get personalSportTarget() {
+  get personalSportTarget(): PersonalTarget {
     const { _cycle: cycle, _condition: condition } = this;
-    return { cycle, condition };
+    return { name: '', cycle, condition };
   }
 
   /**

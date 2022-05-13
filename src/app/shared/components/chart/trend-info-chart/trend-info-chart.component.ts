@@ -105,6 +105,11 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('container') container: ElementRef;
 
   /**
+   * 跑步類別讓使用者可切換顯示配速或速度
+   */
+  typeRunShowPace = true;
+
+  /**
    * 顯示最高（佳）和平均數據用
    */
   infoData = {
@@ -129,6 +134,14 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
       min: null
     }
   }
+
+  /**
+   * 因應跑步類別可自由切換配速與速度
+   */
+  finalChartType: ChartType;
+
+
+  readonly SportType = SportType;
 
   constructor(
     private translate: TranslateService,
@@ -163,7 +176,9 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
       let seriesSet: any;
       let chartOptions: any;
 
-      switch (this.chartType) {
+      const { sportType, chartType, typeRunShowPace } = this;
+      this.finalChartType = !typeRunShowPace && sportType === SportType.run && chartType === 'pace' ? 'speed' : chartType;
+      switch (this.finalChartType) {
         case 'hr':
           type = 'column';
           Denominator = 0;
@@ -219,7 +234,7 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
             const _yAxisAfterCheck = _xAxis === 0 ? 0 : _yAxis;
             
             let _yAxisConvert: number;
-            switch (this.sportType) {
+            switch (sportType) {
               case SportType.run:  // 公里或英里配速
                 _yAxisConvert = this.unit === 0 ? _yAxisAfterCheck : _yAxisAfterCheck / mi;
                 break;
@@ -430,12 +445,12 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
 
           this.infoData.avg = +(total / Denominator).toFixed(1) || 0;
           const pointFormat = this.xAxisType === 'pointSecond' ? 
-            `{point.x: %H:%M:%S}<br> {point.y} ${[1, 3, 4].includes(this.sportType) ? 'spm' : 'rpm'}` 
+            `{point.x: %H:%M:%S}<br> {point.y} ${[1, 3, 4].includes(sportType) ? 'spm' : 'rpm'}` 
             : 
-            `{point.x}<br> {point.y} ${[1, 4].includes(this.sportType) ? 'spm' : 'rpm'}`;
+            `{point.x}<br> {point.y} ${[1, 4].includes(sportType) ? 'spm' : 'rpm'}`;
 
           seriesSet = [{
-            name: this.translate.instant(this.getCadenceKey(this.sportType)),
+            name: this.translate.instant(this.getCadenceKey(sportType)),
             data: processedData,
             turboThreshold: 100000,
             showInLegend: false,
@@ -813,6 +828,14 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
       }
     }, 200);
 
+  }
+
+  /**
+   * 配速與速度顯示切換
+   */
+  conversePaceSpeed() {
+    this.typeRunShowPace = !this.typeRunShowPace;
+    this.initChart();
   }
 
   ngOnDestroy () {

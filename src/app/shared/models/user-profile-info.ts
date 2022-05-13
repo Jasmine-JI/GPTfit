@@ -1,4 +1,5 @@
 import { AccessRight } from './accessright';
+import { PersonalTarget } from './sport-target';
 
 /**
  * 合併api v2 1010 和 api 1113
@@ -57,6 +58,7 @@ export interface UserProfileInfo {
   themeImgUrl?: string;
   accountType?: AccountTypeEnum;
   accountStatus?: AccountStatusEnum;
+  workoutTarget?: PersonalTarget;
 }
 
 /**

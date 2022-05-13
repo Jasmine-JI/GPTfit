@@ -142,6 +142,15 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   };
 
   /**
+   * 紀錄舊有目標，避免使用者取消修改
+   */
+  originSportsTarget: GroupSportTarget = {
+    name: '',
+    cycle: DateUnit.week,
+    condition: []
+  };
+
+  /**
    * 該群組運動目標
    */
   sportTarget: GroupSportTarget = {
@@ -208,7 +217,12 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         changeStatus: this.groupDetail.groupStatus
       };
 
-      if (res.target && Object.keys(res.target).length > 0) this.sportTarget = deepCopy(res.target);
+      if (res.target && Object.keys(res.target).length > 0) {
+        const { target } = res;
+        this.originSportsTarget = deepCopy(target);
+        this.sportTarget = deepCopy(target);
+      }
+
     });
 
   }
@@ -366,6 +380,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   closeEditMode(action: 'complete' | 'close') {
     if (this.uiFlag.editMode === 'edit') {
       this.uiFlag.editMode = 'close';
+      this.recoverTarget();
       this.groupService.setEditMode(action);
     } else if (this.uiFlag.editMode === 'create' && action !== 'complete') {
       this.cancelCreateMode();
@@ -1078,7 +1093,15 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   selectNewConditionFiled(field: TargetField) {
     this.newCondition.filedName = field;
-    if (this.newCondition.filedValue) this.addNewCondition();
+    if (this.newCondition.filedValue) {
+      // 若條件跟時間有關，則將數值由分轉為秒
+      if (field.toLowerCase().includes('time')) {
+        this.newCondition.filedValue = this.newCondition.filedValue * 60;
+      }
+
+      this.addNewCondition();
+    }
+
     this.foldFiledNameList();
   }
 
@@ -1202,6 +1225,13 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     }
 
     return { groupName, level, cycle: DateUnit.week, condition: [] };
+  }
+
+  /**
+   * 將已編輯運動目標恢復未修改的狀態
+   */
+  recoverTarget() {
+    this.sportTarget = deepCopy(this.originSportsTarget);
   }
 
   /**

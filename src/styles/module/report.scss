@@ -3,7 +3,7 @@
  * (品牌課程的我的課程和課程分析待重構或ui v2時，再依ui套用共用樣式)
  * @prefix report-
  */
-
+@use 'sass:math';
 @import 'font.scss';
 @import 'transition.scss';
 @import 'transform.scss';
@@ -20,7 +20,7 @@
     &:nth-of-type(#{$i}) {
 
       &:before {
-        background-color: hsla(360 * $i / 10, 100%, 40%, 0.3);
+        background-color: hsla(math.div(360 * $i, 10), 100%, 40%, 0.3);
       }
 
     }
@@ -589,13 +589,11 @@ $target-list-color: rgba(120, 120, 120, 1);
 }
 
 .report-ringchartRow {
-  height: 100%;
   max-height: 300px;
 }
 
 .report-ringChartBlock {
   width: 40%;
-  max-height: 300px;
 }
 
 .report-distributionChartBlock {
@@ -605,7 +603,6 @@ $target-list-color: rgba(120, 120, 120, 1);
 .report-oneRingChart {
   min-width: 150px;
   width: 50%;
-  height: 100%;
   justify-content: space-around;
   align-items: center;
   overflow: hidden;
