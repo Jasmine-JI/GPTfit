@@ -947,9 +947,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     let sportTarget: any;
     if (target && target.name) {
       const targetReferenceLevel = +target.name;
-      const targetReference =
+      sportTarget =
         targetReferenceLevel == groupLevel ? target : this.getReferenceTarget(info, targetReferenceLevel);
-      if (targetReference.name) sportTarget = targetReference;
     } else {
       // 若舊有子群組從未設置目標，則預設繼承品牌目標
       sportTarget = groupLevel == GroupLevel.brand ? target : this.getReferenceTarget(info, GroupLevel.brand);
