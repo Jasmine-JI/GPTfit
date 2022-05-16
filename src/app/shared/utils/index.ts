@@ -246,3 +246,18 @@ export function changeOpacity(color: string, newOpacity: string | number) {
   const rgbaReg = /^(rgba\(\d+,\d+,\d+,)(\d+)(\))$/;
   return trimColor.replace(rgbaReg, `$1${newOpacity}$3`);
 }
+
+/**
+ * 根據fileInfo資訊之規則（以問號分隔參數）取得參數
+ * @param info {string}-運動檔案之fileInfo內的任一資訊
+ */
+export function getFileInfoParam(info: string) {
+  const [origin, ...rest] = info.split('?');
+  let result: any = { origin };
+  rest.forEach(_param => {
+    const [key, value] = _param.split('=');
+    result = { ...result, [key]: value };
+  });
+
+  return result;
+}

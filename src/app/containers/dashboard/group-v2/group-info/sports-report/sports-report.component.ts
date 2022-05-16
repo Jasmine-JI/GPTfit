@@ -585,16 +585,17 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           // 距離統一使用千位數單位進行四捨五入
           const thousandsNumber = value / 1000;
           let distanceConverse: number | string;
+          let unit: string;
           if (isMetric) {
             distanceConverse = mathRounding(thousandsNumber, 2);
-            result.unit = 'km';
+            unit = 'km';
           } else {
             distanceConverse = mathRounding(thousandsNumber / mi, 2);
-            result.unit = 'mi';
+            unit = 'mi';
           }
 
           // 不足0.1公里或0.1英哩，則以 '< 0.1' 表示
-          result.update(distanceConverse >= 0.1 ? distanceConverse : '< 0.1');
+          result.update(distanceConverse >= 0.1 ? distanceConverse : '< 0.1', unit);
           break;
         case 'elevGain':
           isMetric ? result.update(value, 'm') : result.update(mathRounding(value / ft, 1), 'ft');

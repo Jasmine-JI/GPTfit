@@ -1396,7 +1396,7 @@
     <div class="flexCenter device__img__container">
       <img
         class="device__img"
-        [src]="templateInfo.modelImg"
+        [src]="'/app/public_html/products'  + templateInfo.modelImg"
         (error)="templateInfo.modelImg = '/app/public_html/products/img/unknown.png'"
       >
     </div>

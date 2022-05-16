@@ -11,7 +11,8 @@ export class DistanceSibsPipe implements PipeTransform {
    * @return {string}-長度單位
    * @author kidin-1100106
    */
-  transform(value: number, args: [number, boolean]): string {
+  transform(value: number, args: [number, boolean]): string | number {
+    if (value === undefined) return value;
     const [unitType, showUnit] = [...args];
     let finalValue: number,
         unit: string;

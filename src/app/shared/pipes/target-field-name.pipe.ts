@@ -25,7 +25,9 @@ export class TargetFieldNamePipe implements PipeTransform {
       case 'calories':
         return 'universal_userProfile_calories';
       case 'achievementRate':
-        return '達成率';
+        return 'universal_lifeTracking_achievementRate';
+      case 'distance':
+        return 'universal_activityData_totalDistance';
     }
 
   }

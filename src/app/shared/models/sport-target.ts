@@ -17,6 +17,7 @@ export type TargetField =
   | 'swimDistance'
   | 'rowDistance'
   | 'achievementRate'
+  | 'distance'
 ;
 
 export interface TargetCondition {
