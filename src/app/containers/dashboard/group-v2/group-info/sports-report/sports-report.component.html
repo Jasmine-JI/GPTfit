@@ -1696,7 +1696,7 @@
         }"></div>
         <div *ngTemplateOutlet="oneInfoData; context: {
           data: getPerAvgData(infoData, 'avgSpeed'),
-          type: 'perKmPace',
+          type: userUnit === Unit.metric ? 'perKmPace' : 'perMiPace',
           isBaseData
         }"></div>
       </ng-container>
@@ -1809,6 +1809,9 @@
       </ng-container>
       <ng-container *ngSwitchCase="'perKmPace'">
         {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_kilometerPace' | translate }}
+      </ng-container>
+      <ng-container *ngSwitchCase="'perMiPace'">
+        {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_milePace' | translate }}
       </ng-container>
       <ng-container *ngSwitchCase="'perSpeed'">
         {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_speed' | translate }}

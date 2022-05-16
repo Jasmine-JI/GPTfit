@@ -1,6 +1,6 @@
 import { GroupDetail } from '../models/group';
 import { REGEX_GROUP_ID } from '../models/utils-constant';
-import { GroupLevel, GroupJoinStatus, GroupStatus } from '../enum/professional';
+import { GroupLevel } from '../enum/professional';
 import dayjs from 'dayjs';
 import { DateUnit } from '../enum/report';
 import { deepCopy } from '../utils/index';

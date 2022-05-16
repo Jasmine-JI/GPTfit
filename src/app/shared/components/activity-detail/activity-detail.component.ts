@@ -28,6 +28,7 @@ import { AlbumType } from '../../models/image';
 import { v5 as uuidv5 } from 'uuid';
 import { ImageUploadService } from '../../../containers/dashboard/services/image-upload.service';
 import { getPaceUnit } from '../../utils/sports';
+import { getFileInfoParam } from '../../utils/index';
 
 dayjs.extend(weekday);
 
@@ -537,11 +538,12 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.fileInfo = fileInfo;
     const { cloudRunMapId } = this.fileInfo;
     if (cloudRunMapId) {
-      this.cloudrunMapId = cloudRunMapId.includes('=') ? +cloudRunMapId.split('?mapId=')[1] : +cloudRunMapId;
+      const cloudrunInfo = getFileInfoParam(cloudRunMapId);
+      this.cloudrunMapId = +(cloudrunInfo.mapId ?? cloudrunInfo.origin);
     }
 
     this.handleFileCreateDate(this.fileInfo.creationDate);
-    const targetUserId = this.fileInfo.author ? +this.fileInfo.author.split('=')[1] : undefined;
+    const targetUserId = this.fileInfo.author ? +getFileInfoParam(this.fileInfo.author).userId : undefined;
     if (!this.uiFlag.isPortal) {
       
       if (this.userProfile.userId === targetUserId) {
@@ -681,16 +683,18 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100104
    */
   getOtherInfo(fileInfo: any) {
-    if (fileInfo.author) {
+    const { author, class: groupClass, teacher, equipmentSN } = fileInfo;
+    if (author) {
 
-      if (fileInfo.class) {
-        const groupId = fileInfo.class.split('=')[1] || fileInfo.class.split('=')[0];
+      if (groupClass) {
+        const classInfo = getFileInfoParam(groupClass);
+        const groupId = classInfo.groupId ?? classInfo.origin;
         if (groupId.includes('-')) this.getClassInfo(groupId);  // 確認是否抓到正確的groupId
-        this.getTeacherInfo(+fileInfo.teacher.split('=')[1]);
+        this.getTeacherInfo(+getFileInfoParam(teacher).userId);
       }
 
-      if (fileInfo.equipmentSN.length !== 0) {
-        this.getProductInfo(fileInfo.equipmentSN);
+      if (equipmentSN.length !== 0) {
+        this.getProductInfo(equipmentSN);
       }
 
     } else {
