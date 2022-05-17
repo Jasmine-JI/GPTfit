@@ -21,7 +21,7 @@ import { PeopleSelectorWinComponent } from '../../components/people-selector-win
 import { cloneDeep } from 'lodash';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { planDatas } from '../desc';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '../../../../shared/services/hash-id.service';
 import { Subject } from 'rxjs';
@@ -725,27 +725,27 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     let date = '';
     switch (e.value) {
       case '1':
-        date = moment()
+        date = dayjs()
           .add(1, 'month')
           .format('YYYY-MM-DDTHH:mm:ss.000+08:00');
         break;
       case '2':
-        date = moment()
+        date = dayjs()
           .add(2, 'month')
           .format('YYYY-MM-DDTHH:mm:ss.000+08:00');
         break;
       case '3':
-        date = moment()
+        date = dayjs()
           .add(3, 'month')
           .format('YYYY-MM-DDTHH:mm:ss.000+08:00');
         break;
       case '6':
-        date = moment()
+        date = dayjs()
           .add(6, 'month')
           .format('YYYY-MM-DDTHH:mm:ss.000+08:00');
         break;
       default:
-        date = moment()
+        date = dayjs()
           .add(12, 'month')
           .format('YYYY-MM-DDTHH:mm:ss.000+08:00');
         break;

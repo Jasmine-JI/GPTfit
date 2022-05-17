@@ -1,5 +1,6 @@
 import { Component, OnInit, OnChanges, OnDestroy, Input } from '@angular/core';
-import { UserLevel, asept, metacarpus, novice, MuscleCode, ProficiencyCoefficient, muscleMapColorSetting } from '../../../models/weight-train';
+import { UserLevel, asept, metacarpus, novice, muscleMapColorSetting } from '../../../models/weight-train';
+import { MuscleCode, Proficiency } from '../../../enum/weight-train';
 
 
 @Component({
@@ -52,20 +53,20 @@ export class MuscleMapCardComponent implements OnInit, OnChanges, OnDestroy {
    */
   initMuscleMap() {
     this.clearColor();
-    let proficiencyCoefficient: ProficiencyCoefficient;
+    let proficiencyCoefficient: Proficiency;
 
     switch (this.level) {
       case 'novice':
         this.weightTraining.colorBarInfo = novice;
-        proficiencyCoefficient = 4;
+        proficiencyCoefficient = Proficiency.novice;
         break;
       case 'metacarpus':
         this.weightTraining.colorBarInfo = metacarpus;
-        proficiencyCoefficient = 2;
+        proficiencyCoefficient = Proficiency.metacarpus;
         break;
       default:
         this.weightTraining.colorBarInfo = asept;
-        proficiencyCoefficient = 1;
+        proficiencyCoefficient = Proficiency.asept;
         break;
     }
 

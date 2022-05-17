@@ -1,12 +1,12 @@
 import { Component, OnInit, OnDestroy, ElementRef, AfterViewChecked, ViewChild } from '@angular/core';
 import { fromEvent, Subscription, Subject, forkJoin } from 'rxjs';
-import { takeUntil, tap, switchMap, map } from 'rxjs/operators';
+import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { ShareGroupInfoDialogComponent } from '../../../../shared/components/share-group-info-dialog/share-group-info-dialog.component';
 import { GroupDetailInfo, UserSimpleInfo, EditMode } from '../../models/group-detail';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { GroupService } from '../../../../shared/services/group.service';
 import { HashIdService } from '../../../../shared/services/hash-id.service';
@@ -17,9 +17,25 @@ import { AlbumType } from '../../../../shared/models/image';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { PrivacySettingDialogComponent } from '../../../../shared/components/privacy-setting-dialog/privacy-setting-dialog.component';
 import { Unit } from '../../../../shared/models/bs-constant';
-import { DashboardService } from '../../services/dashboard.service';
+import { GlobalEventsService } from '../../../../core/services/global-events.service';
+import { DateUnit } from '../../../../shared/enum/report';
+import { GroupLevel } from '../../models/group-detail';
+import { deepCopy } from '../../../../shared/utils/index';
 
 const errMsg = `Error.<br />Please try again later.`;
+const replaceResult = {
+  resultCode: 200,
+  resultMessage: '',
+  msgCode: 5008,
+  apiCode: 1103,
+  info: {
+    groupMemberInfo: [],
+    rtnMsg: '',
+    subGroupInfo: {},
+    totalCounts: 0
+  }
+
+};
 
 @Component({
   selector: 'app-group-info-v2',
@@ -150,7 +166,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     private userProfileService: UserProfileService,
     private dialog: MatDialog,
     private imageUploadService: ImageUploadService,
-    private dashboardService: DashboardService
+    private globalEventsService: GlobalEventsService
   ) {}
 
   /**
@@ -239,7 +255,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091111
    */
   handleSideBarSwitch() {
-    this.dashboardService.getRxSideBarMode().pipe(
+    this.globalEventsService.getRxSideBarMode().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
 
@@ -413,7 +429,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   createFileName(length: number, groupId: string) {
     const nameSpace = uuidv5('https://www.gptfit.com', uuidv5.URL),
-          keyword = `${moment().valueOf().toString()}${length}${groupId.split('-').join('')}`;
+          keyword = `${dayjs().valueOf().toString()}${length}${groupId.split('-').join('')}`;
     return uuidv5(keyword, nameSpace);
   }
 
@@ -741,12 +757,19 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.groupService.fetchGroupMemberList(childGroupBody),
         this.groupService.fetchGroupMemberList(adminListBody),
         this.groupService.fetchGroupMemberList(memberListBody)
-      ]).subscribe(resArr => {
+      ]).pipe(
+        map(resArr => {
+          // 處理創建群組模式時api 1103 exception的問題
+          if (resArr[4].resultCode !== 200) resArr[4] = deepCopy(replaceResult);
+          return resArr;
+        })
+      ).subscribe(resArr => {
+        const [detail, commerceInfo, GroupList, adminList, memberList] = resArr;
         this.uiFlag.isLoading = false;
         this.uiFlag.hideScenery = false;
-        this.handleDetail(resArr[0]);
-        this.handleCommerce(resArr[1]);
-        this.handleMemberList(resArr[2], resArr[3], resArr[4]);
+        this.handleDetail(detail);
+        this.handleCommerce(commerceInfo);
+        this.handleMemberList(GroupList, adminList, memberList);
         this.checkUserAccessRight();
         this.childPageList = this.initChildPageList();
         this.getCurrentContentPage();
@@ -799,13 +822,15 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       }
 
     } else {
-      
+  
       if (res.info.groupId === '0-0-0-0-0-0') {
         this.saveDefaultGroupDetail();
       } else {
-        this.user.joinStatus = res.info.selfJoinStatus;
-        this.currentGroupInfo.groupDetail = res.info;
-        this.groupService.saveGroupDetail(res.info);
+        const { info } = res;
+        this.user.joinStatus = info.selfJoinStatus;
+        this.currentGroupInfo.groupDetail = info;
+        this.groupService.getCurrentGroupInfo().groupDetail = info;
+        this.groupService.saveGroupDetail(this.handleSportTarget(info));
         this.checkGroupResLength();
       }
 
@@ -836,10 +861,16 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       selfJoinStatus: 5,
       shareActivityToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "2"},
       shareAvatarToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "1"},
-      shareReportToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "2"}
+      shareReportToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "2"},
+      target: {
+        name: `${GroupLevel.brand}`,
+        cycle: DateUnit.week,
+        condition: []
+      }
     }
 
     this.groupService.saveGroupDetail(rootGroupDetail);
+    this.currentGroupInfo.groupDetail = rootGroupDetail;
   }
 
   /**
@@ -852,16 +883,17 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.utils.openAlert(errMsg);
       console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
     } else {
-
-      if (moment(res.info.commercePlanExpired).valueOf() < moment().valueOf()) {
-        Object.assign(res.info, {expired: true});
+      const { info } = res;
+      if (dayjs(info.commercePlanExpired).valueOf() < dayjs().valueOf()) {
+        Object.assign(info, {expired: true});
       } else {
-        Object.assign(res.info, {expired: false});
+        Object.assign(info, {expired: false});
         
       }
 
-      this.currentGroupInfo.commerceInfo = res.info;
-      this.groupService.saveCommerceInfo(res.info);
+      this.currentGroupInfo.commerceInfo = info;
+      this.groupService.getCurrentGroupInfo().commerceInfo = info;
+      this.groupService.saveCommerceInfo(info);
     }
 
   }
@@ -874,12 +906,10 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   handleMemberList(childGroupRes: any, adminRes: any, memberRes: any) {
     if (childGroupRes.resultCode !== 200 || adminRes.resultCode !== 200 || memberRes.resultCode !== 200) {
-      this.utils.openAlert(errMsg);
       console.error(`${childGroupRes.resultCode}: Api ${childGroupRes.apiCode} ${childGroupRes.resultMessage}`);
       console.error(`${adminRes.resultCode}: Api ${adminRes.apiCode} ${adminRes.resultMessage}`);
       console.error(`${memberRes.resultCode}: Api ${memberRes.apiCode} ${memberRes.resultMessage}`);
     } else {
-
       const groupLevel = this.utils.displayGroupLevel(this.currentGroupInfo.groupId);
       if (groupLevel <= 30) {
         Object.assign(this.currentGroupInfo.groupDetail, {branchNum: childGroupRes.info.subGroupInfo.branches.length});
@@ -894,12 +924,50 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.groupService.setAdminList(adminRes.info.groupMemberInfo);
       this.groupService.setNormalMemberList(memberRes.info.groupMemberInfo);
 
+      this.groupService.getCurrentGroupInfo().immediateGroupList = childGroupRes.info.subGroupInfo;
+      this.groupService.getCurrentGroupInfo().adminList = adminRes.info.groupMemberInfo;
+      this.groupService.getCurrentGroupInfo().memberList = memberRes.info.groupMemberInfo;
+
       adminRes.info.groupMemberInfo = adminRes.info.groupMemberInfo.filter(_admin => _admin.groupId === this.currentGroupInfo.groupId);
       Object.assign(this.currentGroupInfo.groupDetail, {adminNum: adminRes.info.groupMemberInfo.length});
       Object.assign(this.currentGroupInfo.groupDetail, {memberNum: memberRes.info.groupMemberInfo.length});
       this.groupService.saveGroupDetail(this.currentGroupInfo.groupDetail);
     }
 
+  }
+
+  /**
+   * 取得群組運動目標（自訂或繼承其他階層目標）
+   * @param info {any}-群組詳細資訊
+   * @author kidin-1110307
+   */
+  handleSportTarget(info: any) {
+    const { target } = info;
+    const groupLevel = this.utils.displayGroupLevel(info.groupId);
+    let sportTarget: any;
+    if (target && target.name) {
+      const targetReferenceLevel = +target.name;
+      sportTarget =
+        targetReferenceLevel == groupLevel ? target : this.getReferenceTarget(info, targetReferenceLevel);
+    } else {
+      // 若舊有子群組從未設置目標，則預設繼承品牌目標
+      sportTarget = groupLevel == GroupLevel.brand ? target : this.getReferenceTarget(info, GroupLevel.brand);
+    }
+
+    Object.assign(info, { target: sportTarget });
+    return info;
+  }
+
+  /**
+   * 取得繼承對象之目標
+   * @param info {any}-群組詳細資訊
+   * @param level {GroupLevel}-對象階層
+   * @author kidin-1110309
+   */
+  getReferenceTarget(info: any, level: GroupLevel) {
+    const { groupRootInfo } = info;
+    const referenceIndex = level === GroupLevel.brand ? 2 : 3;
+    return deepCopy(groupRootInfo[referenceIndex].target);
   }
 
   /**

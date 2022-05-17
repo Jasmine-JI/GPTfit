@@ -4,7 +4,7 @@ import { UtilsService } from './utils.service';
 import { environment } from '../../../environments/environment';
 import { throwError, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { SportCode } from '../models/report-condition';
+import { SportType } from '../enum/sports';
 
 const { API_SERVER } = environment.url;
 
@@ -103,25 +103,25 @@ export class ActivityService {
   handleSceneryImg(type: number, subtype: number) {
     let sportType: string;
     switch (type) {
-      case SportCode.run:
+      case SportType.run:
         sportType = 'run';
         break;
-      case SportCode.cycle:
+      case SportType.cycle:
         sportType = 'cycle';
         break;
-      case SportCode.weightTrain:
+      case SportType.weightTrain:
         sportType = 'weightTraining';
         break;
-      case SportCode.swim:
+      case SportType.swim:
         sportType = 'swim';
         break;
-      case SportCode.aerobic:
+      case SportType.aerobic:
         sportType = 'aerobic';
         break;
-      case SportCode.row:
+      case SportType.row:
         sportType = 'rowing';
         break;
-      case SportCode.ball:
+      case SportType.ball:
         sportType = 'ball';
         break;
     }

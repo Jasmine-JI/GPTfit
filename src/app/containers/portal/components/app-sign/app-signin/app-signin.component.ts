@@ -163,10 +163,12 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
 
       } else if (this.formReg.number.test(account) && this.formReg.number.test(key)) {
         this.loginBody.signInType = SignTypeEnum.phone;
+        this.loginBody.mobileNumber = '';
         this.loginBody.countryCode = this.setCountryCode();
       } else if (!this.formReg.number.test(key)) {
         this.loginBody.signInType = SignTypeEnum.email;
         if (this.loginBody.countryCode) delete this.loginBody.countryCode;
+        if (this.loginBody.mobileNumber) delete this.loginBody.mobileNumber;
       }
 
     }

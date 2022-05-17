@@ -19,7 +19,7 @@ import { CoachService } from '../../../../shared/services/coach.service';
 import { ActivatedRoute } from '@angular/router';
 import { setOptions } from 'highcharts';
 import { webSocket } from 'rxjs/webSocket';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { stockChart } from 'highcharts/highstock';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { cloneDeep, keyBy } from 'lodash';
@@ -303,7 +303,7 @@ export class CoachDashboardComponent
       this.handleLessonInfo(demoLessonInfo);
 
       this.currentMemberNum = 6;
-      this.demoTime = moment().format('YYYY-MM-DD Ahh:mm');
+      this.demoTime = dayjs().format('YYYY-MM-DD Ahh:mm');
       this.getDemoData(type);
     }
     const hrOptions: any = {
@@ -426,7 +426,7 @@ export class CoachDashboardComponent
           const watt = +_data[wattIdx] || 0;
           const pace = +_data[paceIdx] || 0;
           const distance = +_data[distanceIdx] || 0;
-          const time = moment().unix() * 1000;
+          const time = dayjs().unix() * 1000;
 
           if (this.classType === '5') {
             this.series1[idx].data.push([time, +liveHr]);
@@ -676,7 +676,7 @@ export class CoachDashboardComponent
         }
         _demoData.colorIdx = this.handleDemoColor(_demoData.liveHr);
 
-        const time = moment().unix() * 1000;
+        const time = dayjs().unix() * 1000;
         if (type === 0) {
           this.chart.series[idx].addPoint(
             [time, _demoData.liveHr],

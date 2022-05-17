@@ -1,4 +1,9 @@
-<ng-container *ngIf="!pcView">
+<ng-container *ngIf="tftView">
+  <div class="flexCenter tft__qrcode">
+    <qrcode [qrdata]="qrURL" [width]="256" level="'M'"></qrcode>
+  </div>
+</ng-container>
+<ng-container *ngIf="!pcView && !tftView">
   <!--
   <app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
   -->

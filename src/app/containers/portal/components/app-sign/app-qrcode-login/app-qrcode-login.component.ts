@@ -10,8 +10,9 @@ import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { TFTViewMinWidth } from '../../../models/app-webview';
+import { AlaApp } from '../../../../../shared/models/app-id';
 
 enum QrSignInFlow {
   submitGuid = 1,
@@ -38,9 +39,9 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
   guid = '';
   qrURL = '';
   ip = '';
-  callIpCount = 0;
-  currentTimeStamp = moment().valueOf();
+  currentTimeStamp = dayjs().valueOf();
   pcView = false;
+  tftView = false;
   appSys = 0;
   mobileSize = window.innerWidth < TFTViewMinWidth;
   requestHeader = {};
@@ -87,6 +88,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
    */
   getQueryString() {
     const query = this.utils.getUrlQueryStrings(location.search);
+    this.tftView = query.p == AlaApp.tft;
     this.requestHeader = {
       ...this.requestHeader,
       ...this.utils.headerKeyTranslate(query)
@@ -262,65 +264,62 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
 
   // 等待B裝置登入-kidin-1090527
   waitQrcodeLogin () {
-    if (this.ip.length === 0 && this.callIpCount < 3) {
+    const body = {
+      qrSignInFlow: QrSignInFlow.submitGuid,
+      guid: this.guid
+    };
 
-      setTimeout(() => {
-        this.callIpCount++;
-        this.waitQrcodeLogin();
-      }, 1000);
+    this.getClientIpaddress().pipe(
+      switchMap(ipResult => this.signupService.fetchQrcodeLogin(body, this.requestHeader))
+    ).subscribe((res: any) => {
+      if (res.processResult.resultCode !== 200) {
 
-    } else {
-      const body = {
-        qrSignInFlow: QrSignInFlow.submitGuid,
-        guid: this.guid
-      };
-
-      this.getClientIpaddress().pipe(
-        switchMap(ipResult => this.signupService.fetchQrcodeLogin(body, this.requestHeader))
-      ).subscribe((res: any) => {
-        if (res.processResult.resultCode !== 200) {
-
-          switch (res.processResult.apiReturnMessage) {  // 不寫死方便新增回應訊息
-            default:
-              this.showMsg(errorMsg, true);
-              console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
-              break;
-
-          }
-
-        } else {
-          const waitBody = {
-            qrSignInFlow: QrSignInFlow.polling,
-            guid: this.guid
-          };
-
-          this.getClientIpaddress().pipe(
-            switchMap(ipResult => this.signupService.fetchQrcodeLogin(waitBody, this.requestHeader))
-          ).subscribe((response: any) => {
-            if (response.processResult.resultCode !== 200) {
-
-              switch (response.processResult.apiReturnMessage) {
-                case 'Waiting for QR sign in time out.':
-                  this.cue = 'universal_userAccount_idleForTooLong';
-                  break;
-                default:
-                  this.showMsg(errorMsg, true);
-                  console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
-                  break;
-              }
-
-            } else {
-              this.cue = 'universal_userAccount_signSuceesfully';
-              const token = response.qrSignIn.token;
-              this.userLogin(token);
-            }
-
-          });
+        switch (res.processResult.apiReturnMessage) {  // 不寫死方便新增回應訊息
+          default:
+            this.showMsg(errorMsg, true);
+            console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+            break;
 
         }
 
-      });
-    }
+      } else {
+        const waitBody = {
+          qrSignInFlow: QrSignInFlow.polling,
+          guid: this.guid
+        };
+
+        this.getClientIpaddress().pipe(
+          switchMap(ipResult => this.signupService.fetchQrcodeLogin(waitBody, this.requestHeader))
+        ).subscribe((response: any) => {
+          if (response.processResult.resultCode !== 200) {
+
+            switch (response.processResult.apiReturnMessage) {
+              case 'Waiting for QR sign in time out.':
+                // tft 裝置常駐qrcode，故過時就更新qrcode
+                if (this.tftView) {
+                  this.createLoginQrcode();
+                  this.waitQrcodeLogin();
+                }
+                this.cue = 'universal_userAccount_idleForTooLong';
+                break;
+              default:
+                this.showMsg(errorMsg, true);
+                console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+                break;
+            }
+
+          } else {
+            this.cue = 'universal_userAccount_signSuceesfully';
+            const token = response.qrSignIn.token;
+            this.userLogin(token);
+          }
+
+        });
+
+      }
+
+    });
+
   }
 
   // 使用者登入-kidin-1090714

@@ -371,6 +371,67 @@ $info-height: 340px;
   cursor: pointer;
 }
 
+.switch__preview__button {
+  width: 10px;
+  height: 10px;
+  margin: 0 5px;
+  border-style: solid;
+  border-width: 8px 5px 8px 0px;
+  width: 10px;
+  border-color: transparent black transparent transparent;
+}
+
+.switch__next__button {
+  width: 10px;
+  height: 10px;
+  margin: 0 5px;
+  border-style: solid;
+  border-width: 8px 0px 8px 5px ;
+  width: 10px;
+  border-color: transparent transparent transparent black;
+}
+
+.switch__button--disable {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.device__info {
+  justify-content: center;
+  align-items: center;
+}
+
+.device__info__content {
+  min-height: 200px;
+  min-width: 280px;
+  height: 100%;
+}
+
+.index__dot__button {
+  $size: 8px;
+  width: $size;
+  height: $size;
+  border-radius: 50%;
+  border: 1px solid black;
+  padding: unset;
+  margin: 5px;
+}
+
+.index__dot__button--active {
+  background-color: black;
+}
+
+.device__img__container {
+  height: 100%;
+  margin: 5px 0;
+}
+
+.device__img {
+  max-height: 200px;
+  max-width: 300px;
+}
+
+
 /******************************************* media *****************************************/
 
 

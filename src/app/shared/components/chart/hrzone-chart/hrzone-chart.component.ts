@@ -4,6 +4,7 @@ import { chart } from 'highcharts';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { zoneColor } from '../../../models/chart-data';
+import { GlobalEventsService } from '../../../../core/services/global-events.service';
 
 
 /**
@@ -42,7 +43,8 @@ class ChartOptions {
         },
         series: {
           pointPadding: 0,
-          groupPadding: 0
+          groupPadding: 0,
+          borderColor: 'rgba(48, 48, 48, 1)'
         }
       },
       tooltip: {
@@ -73,27 +75,41 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
   highestHRZoneColor = '';
 
   @Input() data: Array<number>; // 各心率區間總秒數，ex.[992, 123, 1534, 1234, 1231, 321]
-  @Input() isPrint: boolean;
   @Input() type: 'mixHrZone' | 'personalAnalysis';
   @Input() isPreviewMode: boolean = false;
   @ViewChild('container', {static: false})
   container: ElementRef;
 
   constructor(
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private globalEventsService: GlobalEventsService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.subscribeGlobalEvents();
   }
 
-  ngOnChanges () {
-    if (this.data.reduce((accumulator, current) => accumulator + current) === 0) {
-      this.noHRZoneData = true;
-    } else {
-      this.noHRZoneData = false;
-    }
+  ngOnChanges() {
+    this.handleChart();
+  }
 
+  /**
+   * 處理繪製圖表流程
+   */
+  handleChart() {
+    this.noHRZoneData = this.data.reduce((accumulator, current) => accumulator + current) === 0;
     this.initInfoHighChart();
+  }
+
+  /**
+   * 訂閱全域自定義事件
+   */
+  subscribeGlobalEvents() {
+    this.globalEventsService.getRxSideBarMode().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.handleChart();
+    });
   }
 
   /**

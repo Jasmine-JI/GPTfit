@@ -10,10 +10,11 @@ import { pageNotFoundPath, officialHomePage } from '../../models/official-activi
 import { CloudrunService } from '../../../../shared/services/cloudrun.service';
 import { RankType } from '../../../../shared/models/cloudrun-leaderboard';
 import { ProductShipped, HaveProduct, ApplyStatus, PaidStatusEnum, Nationality } from '../../models/activity-content';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PaidStatusPipe } from '../../pipes/paid-status.pipe';
 import { ShippedStatusPipe } from '../../pipes/shipped-status.pipe';
+import { SportTimePipe } from '../../../../shared/pipes/sport-time.pipe';
 import { TranslateService } from '@ngx-translate/core';
 import { Sex } from '../../../../shared/models/user-profile-info';
 import { AgePipe } from '../../../../shared/pipes/age.pipe';
@@ -138,7 +139,8 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     private paidStatusPipe: PaidStatusPipe,
     private shippedStatusPipe: ShippedStatusPipe,
     private translate: TranslateService,
-    private agePipe: AgePipe
+    private agePipe: AgePipe,
+    private sportTimePipe: SportTimePipe
   ) {}
 
   ngOnInit(): void {
@@ -325,7 +327,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    */
   reEditList(list: Array<any>) {
     // 出貨7天過後即可視為結案
-    const closeCaseDate = moment().add(7, 'day').unix();
+    const closeCaseDate = dayjs().add(7, 'day').unix();
     return list.map(_list => {
       const {
         productShipped,
@@ -1312,15 +1314,15 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         },${groupName
         },${feeTitle
         },${fee
-        },${this.paidStatusPipe.transform(paidStatus)
+        },${this.getPaidStatus(paidStatus)
         },${this.convertDateFormat(paidDate)
         },${officialPaidId ? officialPaidId : ''
         },${thirdPartyPaidId ? thirdPartyPaidId : ''
-        },${this.shippedStatusPipe.transform(productShipped)
+        },${this.getShippedStatus(productShipped)
         },${this.convertDateFormat(productShippingDate)
         },${rank ? rank : ''
-        },${record ? record : ''
-        },${this.shippedStatusPipe.transform(awardShipped)
+        },${record ? this.sportTimePipe.transform(record) : 0
+        },${this.getShippedStatus(awardShipped)
         },${this.convertDateFormat(awardShippingDate)
         },${truthName
         },${this.agePipe.transform(ageBase)
@@ -1358,13 +1360,33 @@ export class ContestantListComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 取得運送狀態多國語系
+   * @param status {PaidStatusEnum}-繳費狀態
+   * @author kidin-1110304
+   */
+  getPaidStatus(status: PaidStatusEnum) {
+    const i18nKey = this.paidStatusPipe.transform(status);
+    return this.translate.instant(i18nKey);
+  }
+
+  /**
+   * 取得出貨狀態多國語系
+   * @param status {ProductShipped}-出貨狀態
+   * @author kidin-1110304
+   */
+  getShippedStatus(status: ProductShipped) {
+    const i18nKey = this.shippedStatusPipe.transform(status);
+    return this.translate.instant(i18nKey);
+  }
+
+  /**
    * 將timestamp轉換為指定字串格式
    * @param timestamp {number}-timestamp(second)
    * @author kidin-1110211
    */
   convertDateFormat(timestamp: number) {
     const dateFormat = 'YYYY-MM-DD HH:mm';
-    return timestamp ? moment(this.convertTimestamp(timestamp)).format(dateFormat) : '';
+    return timestamp ? dayjs(this.convertTimestamp(timestamp)).format(dateFormat) : '';
   }
 
   /**

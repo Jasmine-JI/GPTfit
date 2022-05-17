@@ -1,15 +1,16 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { UtilsService } from '../../services/utils.service';
 import { ReportService } from '../../services/report.service';
-import moment from 'moment';
-import { ReportConditionOpt, SportType, SportCode } from '../../models/report-condition';
+import dayjs from 'dayjs';
+import { ReportConditionOpt } from '../../models/report-condition';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CloudrunService } from '../../services/cloudrun.service';
 import { Lang } from '../../models/i18n';
 import { Sex } from '../../models/user-profile-info';
-import { DashboardService } from '../../../containers/dashboard/services/dashboard.service';
+import { GlobalEventsService } from '../../../core/services/global-events.service';
 import { SelectDate } from '../../models/utils-type';
+import { SportType } from '../../enum/sports';
 
 interface DateCondition {
   type: 'sevenDay' | 'thirtyDay' | 'sixMonth' | 'today' | 'thisWeek' | 'thisMonth' | 'thisYear' | 'custom';
@@ -65,9 +66,9 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    */
   date: DateCondition = {
     type: 'sevenDay',
-    maxTimestamp: moment().endOf('day').valueOf(),
-    startTimestamp: moment().startOf('day').subtract(6, 'days').valueOf(),
-    endTimestamp: moment().endOf('day').valueOf(),
+    maxTimestamp: dayjs().endOf('day').valueOf(),
+    startTimestamp: dayjs().startOf('day').subtract(6, 'day').valueOf(),
+    endTimestamp: dayjs().endOf('day').valueOf(),
     endOfShift: true,
     openSelector: null
   }
@@ -76,14 +77,14 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * 運動類別清單
    */
   sportCondition = [
-    SportCode.all,
-    SportCode.run,
-    SportCode.cycle,
-    SportCode.weightTrain,
-    SportCode.swim,
-    SportCode.aerobic,
-    SportCode.row,
-    SportCode.ball
+    SportType.all,
+    SportType.run,
+    SportType.cycle,
+    SportType.weightTrain,
+    SportType.swim,
+    SportType.aerobic,
+    SportType.row,
+    SportType.ball
   ];
 
   /**
@@ -108,7 +109,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     private reportService: ReportService,
     private cloudrunService: CloudrunService,
     private changeDetectorRef: ChangeDetectorRef,
-    private dashboardService: DashboardService
+    private globalEventsService: GlobalEventsService
   ) {}
 
   ngOnInit(): void {
@@ -128,7 +129,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     this.date.openSelector = null;
     this.resizeSubScription = merge(
       resizeEvent,
-      this.dashboardService.getRxSideBarMode()
+      this.globalEventsService.getRxSideBarMode()
     ).pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(e => {
@@ -219,9 +220,9 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   initDate() {
     this.date = {
       type: 'sevenDay',
-      maxTimestamp: moment().endOf('day').valueOf(),
-      startTimestamp: moment().startOf('day').subtract(6, 'days').valueOf(),
-      endTimestamp: moment().endOf('day').valueOf(),
+      maxTimestamp: dayjs().endOf('day').valueOf(),
+      startTimestamp: dayjs().startOf('day').subtract(6, 'day').valueOf(),
+      endTimestamp: dayjs().endOf('day').valueOf(),
       endOfShift: true,
       openSelector: null
     }
@@ -306,8 +307,8 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     switch (opt) {
       case 0:
         this.date.type = 'sevenDay';
-        this.date.startTimestamp = moment().startOf('day').subtract(6, 'days').valueOf();
-        this.date.endTimestamp = moment().endOf('day').valueOf();
+        this.date.startTimestamp = dayjs().startOf('day').subtract(6, 'day').valueOf();
+        this.date.endTimestamp = dayjs().endOf('day').valueOf();
         this.date.openSelector = null;
         if (this.reportConditionOpt.hideConfirmBtn) {
           this.submit();
@@ -316,8 +317,8 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         break;
       case 1:
         this.date.type = 'thirtyDay';
-        this.date.startTimestamp = moment().startOf('day').subtract(29, 'days').valueOf();
-        this.date.endTimestamp = moment().endOf('day').valueOf();
+        this.date.startTimestamp = dayjs().startOf('day').subtract(29, 'day').valueOf();
+        this.date.endTimestamp = dayjs().endOf('day').valueOf();
         this.date.openSelector = null;
         if (this.reportConditionOpt.hideConfirmBtn) {
           this.submit();
@@ -326,8 +327,8 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         break;
       case 2:
         this.date.type = 'sixMonth';
-        this.date.startTimestamp = moment().subtract(6, 'month').add(1, 'days').valueOf();
-        this.date.endTimestamp = moment().endOf('day').valueOf();
+        this.date.startTimestamp = dayjs().subtract(6, 'month').add(1, 'day').valueOf();
+        this.date.endTimestamp = dayjs().endOf('day').valueOf();
         this.date.openSelector = null;
         if (this.reportConditionOpt.hideConfirmBtn) {
           this.submit();
@@ -424,20 +425,20 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     this.date.type = opt;
     switch (opt) {
       case 'today':
-        this.date.startTimestamp = moment().startOf('day').valueOf();
-        this.date.endTimestamp = moment().endOf('day').valueOf();
+        this.date.startTimestamp = dayjs().startOf('day').valueOf();
+        this.date.endTimestamp = dayjs().endOf('day').valueOf();
         break;
       case 'thisWeek':
-        this.date.startTimestamp = moment().startOf('week').valueOf();
-        this.date.endTimestamp = moment().endOf('day').valueOf();
+        this.date.startTimestamp = dayjs().startOf('week').valueOf();
+        this.date.endTimestamp = dayjs().endOf('day').valueOf();
         break;
       case 'thisMonth':
-        this.date.startTimestamp = moment().startOf('month').valueOf();
-        this.date.endTimestamp = moment().endOf('day').valueOf();
+        this.date.startTimestamp = dayjs().startOf('month').valueOf();
+        this.date.endTimestamp = dayjs().endOf('day').valueOf();
         break;
       case 'thisYear':
-        this.date.startTimestamp = moment().startOf('year').valueOf();
-        this.date.endTimestamp = moment().endOf('day').valueOf();
+        this.date.startTimestamp = dayjs().startOf('year').valueOf();
+        this.date.endTimestamp = dayjs().endOf('day').valueOf();
         break;
     }
 
@@ -458,8 +459,8 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    */
   getSelectDate(e: SelectDate) {
     if (this.date.openSelector === 'custom') {
-      this.date.startTimestamp = moment(e.startDate).valueOf();
-      this.date.endTimestamp = moment(e.endDate).valueOf();
+      this.date.startTimestamp = dayjs(e.startDate).valueOf();
+      this.date.endTimestamp = dayjs(e.endDate).valueOf();
       this.date.openSelector = null;
       if (this.reportConditionOpt.hideConfirmBtn) {
         this.submit();
@@ -476,23 +477,23 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1091023
    */
   shiftPreTime() {
-    const startTime = moment(this.date.startTimestamp);
+    const startTime = dayjs(this.date.startTimestamp);
     switch (this.date.type) {
       case 'sevenDay':
       case 'thisWeek':
-        this.date.startTimestamp = startTime.subtract(7, 'days').valueOf();
-        this.date.endTimestamp = startTime.add(6, 'days').endOf('day').valueOf();
+        this.date.startTimestamp = startTime.subtract(7, 'day').valueOf();
+        this.date.endTimestamp = startTime.add(6, 'day').endOf('day').valueOf();
         break;
       case 'thirtyDay':
-        this.date.startTimestamp = startTime.subtract(30, 'days').valueOf();
-        this.date.endTimestamp = startTime.add(29, 'days').endOf('day').valueOf();
+        this.date.startTimestamp = startTime.subtract(30, 'day').valueOf();
+        this.date.endTimestamp = startTime.add(29, 'day').endOf('day').valueOf();
         break;
       case 'sixMonth':
         this.date.startTimestamp = startTime.subtract(6, 'month').valueOf();
-        this.date.endTimestamp = startTime.add(6, 'month').subtract(1, 'days').endOf('day').valueOf();
+        this.date.endTimestamp = startTime.add(6, 'month').subtract(1, 'day').endOf('day').valueOf();
         break;
       case 'today':
-        this.date.startTimestamp = startTime.subtract(1, 'days').valueOf();
+        this.date.startTimestamp = startTime.subtract(1, 'day').valueOf();
         this.date.endTimestamp = startTime.endOf('day').valueOf();
         break;
       case 'thisMonth':
@@ -504,9 +505,9 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         this.date.endTimestamp = startTime.endOf('year').valueOf();
         break;
       case 'custom':
-        const range = moment(this.date.endTimestamp).diff(startTime);
-        this.date.startTimestamp = moment(this.date.startTimestamp - range - 1).startOf('day').valueOf();
-        this.date.endTimestamp = moment(this.date.startTimestamp + range).endOf('day').valueOf();
+        const range = dayjs(this.date.endTimestamp).diff(startTime);
+        this.date.startTimestamp = dayjs(this.date.startTimestamp - range - 1).startOf('day').valueOf();
+        this.date.endTimestamp = dayjs(this.date.startTimestamp + range).endOf('day').valueOf();
         break;
     }
 
@@ -530,23 +531,23 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1091023
    */
   shiftNextTime() {
-    const startTime = moment(this.date.startTimestamp);
+    const startTime = dayjs(this.date.startTimestamp);
     switch (this.date.type) {
       case 'sevenDay':
       case 'thisWeek':
-        this.date.startTimestamp = startTime.add(7, 'days').valueOf();
-        this.date.endTimestamp = startTime.add(6, 'days').endOf('day').valueOf();
+        this.date.startTimestamp = startTime.add(7, 'day').valueOf();
+        this.date.endTimestamp = startTime.add(6, 'day').endOf('day').valueOf();
         break;
       case 'thirtyDay':
-        this.date.startTimestamp = startTime.add(30, 'days').valueOf();
-        this.date.endTimestamp = startTime.add(29, 'days').endOf('day').valueOf();
+        this.date.startTimestamp = startTime.add(30, 'day').valueOf();
+        this.date.endTimestamp = startTime.add(29, 'day').endOf('day').valueOf();
         break;
       case 'sixMonth':
         this.date.startTimestamp = startTime.add(6, 'month').valueOf();
-        this.date.endTimestamp = startTime.add(6, 'month').subtract(1, 'days').endOf('day').valueOf();
+        this.date.endTimestamp = startTime.add(6, 'month').subtract(1, 'day').endOf('day').valueOf();
         break;
       case 'today':
-        this.date.startTimestamp = startTime.add(1, 'days').valueOf();
+        this.date.startTimestamp = startTime.add(1, 'day').valueOf();
         this.date.endTimestamp = startTime.endOf('day').valueOf();
         break;
       case 'thisMonth':
@@ -558,9 +559,9 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         this.date.endTimestamp = startTime.endOf('year').valueOf();
         break;
       case 'custom':
-        const range = moment(this.date.endTimestamp).diff(startTime);
-        this.date.startTimestamp = moment(this.date.startTimestamp + range + 1).startOf('day').valueOf();
-        this.date.endTimestamp = moment(this.date.startTimestamp + range).endOf('day').valueOf();
+        const range = dayjs(this.date.endTimestamp).diff(startTime);
+        this.date.startTimestamp = dayjs(this.date.startTimestamp + range + 1).startOf('day').valueOf();
+        this.date.endTimestamp = dayjs(this.date.startTimestamp + range).endOf('day').valueOf();
         break;
     }
 
@@ -741,14 +742,14 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    */
   chooseRoutine(index: number) {
     const {month, mapId} = this.routineRaceList[index],
-          isThisMonth = moment().format('YYYYMM') === month;
+          isThisMonth = dayjs().format('YYYYMM') === month;
     this.reportConditionOpt.cloudRun.month = month;
     this.reportConditionOpt.cloudRun.mapId = +mapId;
     this.date = {
       type: 'thisMonth',
-      maxTimestamp: moment().endOf('day').valueOf(),
-      startTimestamp: moment(month, 'YYYYMM').startOf('month').valueOf(),
-      endTimestamp: moment(month, 'YYYYMM').endOf('month').valueOf(),
+      maxTimestamp: dayjs().endOf('day').valueOf(),
+      startTimestamp: dayjs(month, 'YYYYMM').startOf('month').valueOf(),
+      endTimestamp: dayjs(month, 'YYYYMM').endOf('month').valueOf(),
       endOfShift: !isThisMonth,
       openSelector: null
     }

@@ -12,5 +12,6 @@ export enum AccessRight {
   coachAdmin = 50,
   teacher = 60,
   normalAdmin = 80,
-  member = 90
+  member = 90,
+  guest = 99
 }

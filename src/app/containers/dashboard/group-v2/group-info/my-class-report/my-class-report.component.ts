@@ -4,7 +4,7 @@ import { GroupService } from '../../../../../shared/services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { ActivityService } from '../../../../../shared/services/activity.service';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { getOptions } from 'highcharts';
@@ -169,11 +169,11 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   brandName: string;
   branchName: string;
   selectDate = {
-    startDate: moment().subtract(6, 'days').format('YYYY-MM-DDT00:00:00.000Z'),
-    endDate: moment().format('YYYY-MM-DDT23:59:59.999Z')
+    startDate: dayjs().subtract(6, 'day').format('YYYY-MM-DDT00:00:00.000Z'),
+    endDate: dayjs().format('YYYY-MM-DDT23:59:59.999Z')
   };
   startDate: string;
-  reportCreatedTime = moment().format('YYYY-MM-DD HH:mm');
+  reportCreatedTime = dayjs().format('YYYY-MM-DD HH:mm');
   groupImg: string;
   groupId: string;
   sportType = 99;
@@ -240,8 +240,8 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     brandType: 1,
     pageType: 'sport',
     date: {
-      startTimestamp: moment().startOf('day').subtract(6, 'days').valueOf(),
-      endTimestamp: moment().endOf('day').valueOf(),
+      startTimestamp: dayjs().startOf('day').subtract(6, 'day').valueOf(),
+      endTimestamp: dayjs().endOf('day').valueOf(),
       type: 'sevenDay'
     },
     sportType: 99,
@@ -329,9 +329,9 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     for (let i = 0; i < queryString.length; i++) {
       if (queryString[i].indexOf('startdate=') > -1) {
         this.startDate = queryString[i].replace('startdate=', '');
-        this.reportConditionOpt.date.startTimestamp = moment(queryString[i].replace('startdate=', '')).valueOf();
+        this.reportConditionOpt.date.startTimestamp = dayjs(queryString[i].replace('startdate=', '')).valueOf();
       } else if (queryString[i].indexOf('enddate=') > -1) {
-        this.reportConditionOpt.date.endTimestamp = moment(queryString[i].replace('endDate=', '')).valueOf();
+        this.reportConditionOpt.date.endTimestamp = dayjs(queryString[i].replace('endDate=', '')).valueOf();
       } else if (queryString[i].indexOf('sportType=') > -1) {
         this.sportType = +queryString[i].replace('sportType=', '');
       } else if (queryString[i].indexOf('id=') > -1) {
@@ -345,8 +345,8 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       this.getReportSelectedCondition();
     } else {
       this.selectDate = {
-        startDate: moment(this.reportConditionOpt.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-        endDate: moment(this.reportConditionOpt.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ')
+        startDate: dayjs(this.reportConditionOpt.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+        endDate: dayjs(this.reportConditionOpt.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ')
       }
 
       this.handleSubmitSearch();
@@ -364,8 +364,8 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     ).subscribe(res => {
       if (res.date) {
         this.selectDate = {
-          startDate: moment(res.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-          endDate: moment(res.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ')
+          startDate: dayjs(res.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          endDate: dayjs(res.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ')
         };
   
         this.sportType = res.sportType;
@@ -494,7 +494,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
         this.hrZoneRange['z4'] = 'Z4';
         this.hrZoneRange['z5'] = 'Z5';
       } else {
-        const userAge = moment().diff(res.birthday, 'years'),
+        const userAge = dayjs().diff(res.birthday, 'year'),
               userHRBase = res.heartRateBase,
               userMaxHR = res.heartRateMax,
               userRestHR = res.heartRateResting;
@@ -699,8 +699,8 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     this.translateService.get('hellow world').subscribe(() => {
       targetDiv.innerHTML = this.translateService.instant('universal_group_myReportOnPeriod', {
         'class': `[<span id="classLink" class="activity-Link">${this.fileInfo.dispName}</span>]`,
-        'startDate': moment(this.selectDate.startDate).format('YYYY-MM-DD'),
-        'endDate': moment(this.selectDate.endDate).format('YYYY-MM-DD'),
+        'startDate': dayjs(this.selectDate.startDate).format('YYYY-MM-DD'),
+        'endDate': dayjs(this.selectDate.endDate).format('YYYY-MM-DD'),
         'number': `<span class="fileAmount">${this.activityLength}</span>`
       });
 

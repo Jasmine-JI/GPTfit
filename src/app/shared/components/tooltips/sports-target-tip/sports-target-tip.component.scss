@@ -1,0 +1,54 @@
+.target__hint__area {
+  position: relative;
+}
+
+.target__hint {
+  $size: 22px;
+  position: relative;
+  top: -1px;
+  left: 1px;
+  height: $size;
+  $weight: $size;
+  $font-size: $size;
+}
+
+
+.target__hint__box {
+  $width: 260px;
+  $radius: 10px;
+  $shadow: 4px rgba(0, 0, 0, 0.3);
+  position: absolute;
+  bottom: 35px;
+  left: 20px;
+  z-index: 1;
+  width: $width;
+  min-width: $width;
+  padding: 15px;
+  background-color: white;
+  border-radius: $radius $radius $radius 0;
+  box-shadow: 2px 2px $shadow, 1px 1px $shadow, -1px 1px $shadow, -1px -1px $shadow;
+}
+
+.chart__label {
+  margin: 5px;
+  text-align: center;
+
+  &:before {
+    $size: 12px;
+    content: '';
+    display: inline-block;
+    position: relative;
+    background-color: rgba(255, 48, 110, 1);
+    border-radius: 50%;
+    width: $size;
+    min-width: $size;
+    height: $size;
+    min-height: $size;
+    margin-right: 5px;
+  }
+
+}
+
+.hint__description {
+  white-space: pre-line;
+}

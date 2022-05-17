@@ -1,0 +1,17 @@
+/**
+ * 設定元素大小同時綁定最小尺寸
+ */
+@mixin min-size($height, $width) {
+  @include min-height($height);
+  @include min-width($width);
+}
+
+@mixin min-width($width) {
+  width: $width;
+  min-width: $width;
+}
+
+@mixin min-height($height) {
+  height: $height;
+  min-height: $height;
+}

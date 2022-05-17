@@ -8,13 +8,14 @@ import { ActivityService } from '../../services/activity.service';
 import { Router } from '@angular/router';
 import { QrcodeService } from '../../../containers/portal/services/qrcode.service';
 import { GroupService } from '../../services/group.service';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import weekday from 'dayjs/plugin/weekday';
 import { TranslateService } from '@ngx-translate/core';
 import { MuscleNamePipe } from '../../pipes/muscle-name.pipe';
 import { mi, lb } from '../../models/bs-constant';
 import { charts } from 'highcharts';
 import { HrZoneRange } from '../../models/chart-data';
-import { SportType, SportCode } from '../../models/report-condition';
+import { SportType } from '../../enum/sports';
 import { UserLevel } from '../../models/weight-train';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../message-box/message-box.component';
@@ -22,10 +23,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShareGroupInfoDialogComponent } from '../share-group-info-dialog/share-group-info-dialog.component';
 import { PrivacyObj } from '../../models/user-privacy';
 import { EditIndividualPrivacyComponent } from '../edit-individual-privacy/edit-individual-privacy.component';
-import { Proficiency } from '../../models/weight-train';
+import { Proficiency } from '../../enum/weight-train';
 import { AlbumType } from '../../models/image';
 import { v5 as uuidv5 } from 'uuid';
 import { ImageUploadService } from '../../../containers/dashboard/services/image-upload.service';
+import { getPaceUnit } from '../../utils/sports';
+import { getFileInfoParam } from '../../utils/index';
+
+dayjs.extend(weekday);
 
 
 const errMsg = `Error! Please try again later.`;
@@ -77,7 +82,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     editNameMode: false,
     isFileOwner: false,
     imageLoaded: false,
-    openImgSelector: false
+    openImgSelector: false,
+    deviceIndex: 0
   };
 
   /**
@@ -222,7 +228,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   clickEvent: Subscription;
   muscleTranslate = {};
   newFileName = '';
-  printDateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+  printDateTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
   previewUrl = '';
   progress = 0;
   compareChartQueryString = '';
@@ -532,11 +538,12 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.fileInfo = fileInfo;
     const { cloudRunMapId } = this.fileInfo;
     if (cloudRunMapId) {
-      this.cloudrunMapId = cloudRunMapId.includes('=') ? +cloudRunMapId.split('?mapId=')[1] : +cloudRunMapId;
+      const cloudrunInfo = getFileInfoParam(cloudRunMapId);
+      this.cloudrunMapId = +(cloudrunInfo.mapId ?? cloudrunInfo.origin);
     }
 
     this.handleFileCreateDate(this.fileInfo.creationDate);
-    const targetUserId = this.fileInfo.author ? +this.fileInfo.author.split('=')[1] : undefined;
+    const targetUserId = this.fileInfo.author ? +getFileInfoParam(this.fileInfo.author).userId : undefined;
     if (!this.uiFlag.isPortal) {
       
       if (this.userProfile.userId === targetUserId) {
@@ -594,7 +601,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100105
    */
   handleFileCreateDate(date: string) {
-    const dayInWeek = moment(date).weekday();
+    const dayInWeek = dayjs(date).weekday();
     let weekDay: string;
     this.translate.get('hollow world').pipe(
       takeUntil(this.ngUnsubscribe)
@@ -623,7 +630,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           break;
       }
 
-      this.fileTime = moment(date).format('YYYY-MM-DDTHH:mm').replace('T', ` ${weekDay} `);
+      this.fileTime = dayjs(date).format('YYYY-MM-DDTHH:mm').replace('T', ` ${weekDay} `);
     });
     
 
@@ -644,7 +651,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       info.totalHrZone5Second
     ];
     
-    const userAge = this.uiFlag.isFileOwner ? moment().diff(this.userProfile.birthday, 'years') : null,
+    const userAge = this.uiFlag.isFileOwner ? dayjs().diff(this.userProfile.birthday, 'year') : null,
           userHRBase = this.userProfile.heartRateBase,
           userMaxHR = this.userProfile.heartRateMax,
           userRestHR = this.userProfile.heartRateResting;
@@ -676,16 +683,18 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100104
    */
   getOtherInfo(fileInfo: any) {
-    if (fileInfo.author) {
+    const { author, class: groupClass, teacher, equipmentSN } = fileInfo;
+    if (author) {
 
-      if (fileInfo.class) {
-        const groupId = fileInfo.class.split('=')[1] || fileInfo.class.split('=')[0];
+      if (groupClass) {
+        const classInfo = getFileInfoParam(groupClass);
+        const groupId = classInfo.groupId ?? classInfo.origin;
         if (groupId.includes('-')) this.getClassInfo(groupId);  // 確認是否抓到正確的groupId
-        this.getTeacherInfo(+fileInfo.teacher.split('=')[1]);
+        this.getTeacherInfo(+getFileInfoParam(teacher).userId);
       }
 
-      if (fileInfo.equipmentSN.length !== 0) {
-        this.getProductInfo(fileInfo.equipmentSN);
+      if (equipmentSN.length !== 0) {
+        this.getProductInfo(equipmentSN);
       }
 
     } else {
@@ -821,14 +830,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       if (res.resultCode !== 200) {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
-        const {productInfo} = res.info;
-        // 暫時只顯示單一裝置，待有顯示多裝置需求再修改
-        this.otherInfo.deviceInfo = {
-          icon: `/app/public_html/products${productInfo[0].modelImg}`,
-          name: productInfo[0].modelName,
-          type: productInfo[0].modelTypeName
-        };
-
+        this.otherInfo.deviceInfo = res.info.productInfo;
       }
 
       this.changeDetectorRef.markForCheck();
@@ -1236,7 +1238,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   getCountList(sportType: SportType): Array<Array<string>> {
     let arr: Array<Array<string>>;
     switch (sportType) {
-      case SportCode.run:
+      case SportType.run:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],
@@ -1245,7 +1247,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['speed', 'speed']
         ];
         break;
-      case SportCode.cycle:
+      case SportType.cycle:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],
@@ -1255,14 +1257,14 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['speed', 'speed']
         ];
         break;
-      case SportCode.weightTrain:
+      case SportType.weightTrain:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],
           ['cadence', 'moveRepetitions']
         ];
         break;
-      case SportCode.swim:
+      case SportType.swim:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],
@@ -1270,13 +1272,13 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['speed', 'speed']
         ];
         break;
-      case SportCode.aerobic:
+      case SportType.aerobic:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp']
         ];
         break;
-      case SportCode.row:
+      case SportType.row:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],
@@ -1286,7 +1288,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['power', 'rowingWatt']
         ];
         break;
-      case SportCode.ball:
+      case SportType.ball:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],
@@ -1954,7 +1956,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       fileId: this.fileInfo.fileId,
       fileInfo: {
         dispName: this.newFileName,
-        editDate: moment().format('YYYY-MM-DDTHH:mm:ss.SSSZ')
+        editDate: dayjs().format('YYYY-MM-DDTHH:mm:ss.SSSZ')
       }
     };
 
@@ -2050,7 +2052,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   switchGpxFile(points: Array<any>, startTime: string, dispName: string) {
     let content = '';
-    const startTimestamp = moment(startTime).valueOf();
+    const startTimestamp = dayjs(startTime).valueOf();
     points.forEach(_point => {
       const { 
         latitudeDegrees,
@@ -2070,17 +2072,17 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       let power = null,
           cadence = null;
       switch (+this.activityInfoLayer.type) {
-        case SportCode.run:
+        case SportType.run:
           cadence = runCadence;
           break;
-        case SportCode.cycle:
+        case SportType.cycle:
           power = cycleWatt;
           cadence = cycleCadence;
           break;
-        case SportCode.swim:
+        case SportType.swim:
           cadence = swimCadence;
           break;
-        case SportCode.row:
+        case SportType.row:
           power = rowingWatt;
           cadence = rowingCadence;
       }
@@ -2088,7 +2090,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       const checkLat = latitudeDegrees && parseFloat(latitudeDegrees) !== 100,
             checkLng = longitudeDegrees && parseFloat(longitudeDegrees) !== 100,
             alt = altitudeMeters || 0,
-            pointTime = moment(startTimestamp + pointSecond * 1000).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+            pointTime = dayjs(startTimestamp + pointSecond * 1000).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
       // if (checkLat && checkLng) {  // 暫不做座標是否有效的判斷
         content += `<trkpt lat="${latitudeDegrees}" lon="${longitudeDegrees}">
             <ele>${alt}</ele>
@@ -2285,7 +2287,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   createFileName(length: number, userId: string) {
     const nameSpace = uuidv5('https://www.gptfit.com', uuidv5.URL),
-          keyword = `${moment().valueOf().toString()}${length}${userId.split('-').join('')}`;
+          keyword = `${dayjs().valueOf().toString()}${length}${userId.split('-').join('')}`;
     return uuidv5(keyword, nameSpace);
   }
 
@@ -2310,6 +2312,51 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   getPhotoName(url: string) {
     const pathArr = url.split('/');
     return pathArr[pathArr.length - 1];
+  }
+
+  /**
+   * 根據運動類別與使用者使用單位取得對應配速單位
+   */
+  getPaceUnit() {
+    const sportType = +this.activityInfoLayer.type;
+    const { unit } = this.userProfile;
+    return getPaceUnit(sportType, unit);
+  }
+
+  /**
+   * 切至前一個裝置資訊
+   */
+  switchPreviewDevice() {
+    const { deviceInfo } = this.otherInfo;
+    if (deviceInfo) {
+      const { deviceIndex } = this.uiFlag;
+      if (deviceIndex !== 0) this.uiFlag.deviceIndex--;
+    }
+
+  }
+
+  /**
+   * 切至下一個裝置資訊
+   */
+  switchNextDevice() {
+    const { deviceInfo } = this.otherInfo;
+    if (deviceInfo) {
+      const { deviceIndex } = this.uiFlag;
+      if (deviceIndex < deviceInfo.length - 1) this.uiFlag.deviceIndex++;
+    }
+
+  }
+
+  /**
+   * 切換至指定裝置資訊
+   * @param index {number}-指定之裝置資訊序列
+   */
+  switchAssignDeviceInfo(index: number) {
+    const { deviceIndex } = this.uiFlag;
+    if (deviceIndex !== index) {
+      this.uiFlag.deviceIndex = index;
+    }
+
   }
 
   /**

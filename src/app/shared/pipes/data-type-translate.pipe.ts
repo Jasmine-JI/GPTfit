@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Unit } from '../models/bs-constant';
-import { SportCode } from '../models/report-condition';
+import { SportType } from '../enum/sports';
 
 @Pipe({name: 'dataTypeTranslate'})
 export class DataTypeTranslatePipe implements PipeTransform {
@@ -22,26 +22,26 @@ export class DataTypeTranslatePipe implements PipeTransform {
       case 'pace':
 
         switch (sportType) {
-          case SportCode.run:
+          case SportType.run:
             return userUnit === Unit.metric ? 'universal_activityData_kilometerPace' : 'universal_activityData_milePace';
-          case SportCode.swim:
+          case SportType.swim:
             return 'universal_activityData_100mPace';
-          case SportCode.row:
+          case SportType.row:
             return 'universal_activityData_500mPace';
         }
 
       case 'cadence':
         
         switch (sportType) {
-          case SportCode.run:
+          case SportType.run:
             return 'universal_activityData_stepCadence';
-          case SportCode.cycle:
+          case SportType.cycle:
             return 'universal_activityData_CyclingCadence';
-          case SportCode.weightTrain:
+          case SportType.weightTrain:
             return 'universal_activityData_repeatTempo';
-          case SportCode.swim:
+          case SportType.swim:
             return 'universal_activityData_swimCadence';
-          case SportCode.row:
+          case SportType.row:
             return 'universal_activityData_rowCadence';
         }
 
@@ -63,7 +63,7 @@ export class DataTypeTranslatePipe implements PipeTransform {
         return 'universal_unit_gforceZ';
       case 'totalTime':
         switch (sportType) {
-          case SportCode.weightTrain:
+          case SportType.weightTrain:
             return 'universal_activityData_activityTime';
           default:
             return 'universal_activityData_totalTime';

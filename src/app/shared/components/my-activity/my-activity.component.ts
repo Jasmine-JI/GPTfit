@@ -15,7 +15,7 @@ import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { HashIdService } from '@shared/services/hash-id.service';
-import moment from 'moment';
+import dayjs, { Dayjs } from 'dayjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
@@ -42,8 +42,8 @@ export class MyActivityComponent implements OnInit, OnDestroy {
   isLoading = false;
   isEmpty = false;
   targetUserId: string;
-  filterStartTime = moment().add(-1, 'years').format('YYYY-MM-DDTHH:mm:00.000Z');
-  filterEndTime = moment().format('YYYY-MM-DDTHH:mm:00.000Z');
+  filterStartTime = dayjs().add(-1, 'year').format('YYYY-MM-DDTHH:mm:00.000Z');
+  filterEndTime = dayjs().format('YYYY-MM-DDTHH:mm:00.000Z');
   sportType = '99';
   searchWords = '';
   unit: Unit = 0;
@@ -74,11 +74,11 @@ export class MyActivityComponent implements OnInit, OnDestroy {
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
     const { pageNumber, startTime, endTime, type, searchWords, debug } = queryStrings;
     this.filterStartTime = startTime
-      ? moment(startTime).format('YYYY-MM-DDTHH:mm:00.000Z')
-      : moment().add(-1, 'years').format('YYYY-MM-DDTHH:mm:00.000Z');
+      ? dayjs(startTime).format('YYYY-MM-DDTHH:mm:00.000Z')
+      : dayjs().add(-1, 'year').format('YYYY-MM-DDTHH:mm:00.000Z');
     this.filterEndTime = endTime
-      ? moment(endTime).format('YYYY-MM-DDT23:59:00.000Z')
-      : moment().format('YYYY-MM-DDT23:59:00.000Z');
+      ? dayjs(endTime).format('YYYY-MM-DDT23:59:00.000Z')
+      : dayjs().format('YYYY-MM-DDT23:59:00.000Z');
     this.sportType = type ? type.toString() : '99';
     this.searchWords = searchWords && searchWords.length > 0 ? searchWords.toString() : '';
     this.targetUserId = this.hashIdService.handleUserIdDecode(
@@ -160,8 +160,8 @@ export class MyActivityComponent implements OnInit, OnDestroy {
     if (this.filterEndTime.length > 0 && this.filterStartTime.length === 0) {
       isAfter = true;
     } else {
-      isAfter = moment(this.filterEndTime).isAfter(
-        moment(this.filterStartTime)
+      isAfter = dayjs(this.filterEndTime).isAfter(
+        dayjs(this.filterStartTime)
       );
     }
     if (isAfter) {
@@ -188,9 +188,9 @@ export class MyActivityComponent implements OnInit, OnDestroy {
         (this.currentPage && this.currentPage.pageSize.toString()) || '10',
       searchWords: this.searchWords,
       filterStartTime: this.filterStartTime
-        ? moment(this.filterStartTime).format('YYYY-MM-DDTHH:mm:00.000Z')
+        ? dayjs(this.filterStartTime).format('YYYY-MM-DDTHH:mm:00.000Z')
         : '',
-      filterEndTime: moment(this.filterEndTime).format(
+      filterEndTime: dayjs(this.filterEndTime).format(
         'YYYY-MM-DDTHH:mm:00.000Z'
       ),
       targetUserId: ''
@@ -215,15 +215,15 @@ export class MyActivityComponent implements OnInit, OnDestroy {
   }
 
   handleDateChange(
-    $event: MatDatepickerInputEvent<moment.Moment>,
+    $event: MatDatepickerInputEvent<Dayjs>,
     isStartTime: boolean
   ) {
     if (isStartTime) {
-      this.filterStartTime = moment($event.value).format(
+      this.filterStartTime = dayjs($event.value).format(
         'YYYY-MM-DDTHH:mm:00.000Z'
       );
     } else {
-      this.filterEndTime = moment($event.value).format(
+      this.filterEndTime = dayjs($event.value).format(
         'YYYY-MM-DDT23:59:00.000Z'
       );
     }
@@ -244,8 +244,8 @@ export class MyActivityComponent implements OnInit, OnDestroy {
   }
 
   reset() {
-    this.filterStartTime = moment().add(-1, 'years').format('YYYY-MM-DDTHH:mm:00.000Z');
-    this.filterEndTime = moment().format('YYYY-MM-DDTHH:mm:00.000Z');
+    this.filterStartTime = dayjs().add(-1, 'year').format('YYYY-MM-DDTHH:mm:00.000Z');
+    this.filterEndTime = dayjs().format('YYYY-MM-DDTHH:mm:00.000Z');
     this.sportType = '99';
     this.searchWords = '';
   }

@@ -1,6 +1,5 @@
 import { Component, OnInit, OnChanges, Input } from '@angular/core';
 import {
-  MuscleGroup,
   ArmMuscle,
   PectoralsMuscle,
   ShoulderMuscle,
@@ -8,6 +7,7 @@ import {
   AbdominalMuscle,
   LegMuscle
 } from '../../../../models/weight-train';
+import { MuscleGroup } from '../../../../enum/weight-train';
 
 @Component({
   selector: 'app-muscle-svg-icon',

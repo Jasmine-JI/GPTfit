@@ -45,7 +45,11 @@
       <div class="reprotHeadArea" [class.fitWindow]="!isPreviewMode">
         <div style="display: flex; flex-direction: row;">
           <div style="margin-right: 10px;">
-            <img src="{{brandImg}}" (error)="this.brandImg = '/assets/images/group-default.svg'">
+            <img
+              style="max-width: 64px; max-height: 64px;"
+              src="{{brandImg}}"
+              (error)="this.brandImg = '/assets/images/group-default.svg'"
+            >
           </div>
           <div style="display: flex; flex-direction: column;">
             <span class="brandName">{{brandName}}</span>

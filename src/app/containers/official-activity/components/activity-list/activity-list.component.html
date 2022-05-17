@@ -332,7 +332,7 @@
                                 startDate: _eventList.applyDate.startDate,
                                 endDate: _eventList.applyDate.endDate,
                                 eventCancel: _eventList.eventStatus === EventStatus.cancel,
-                                applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit
+                                applyFull: _eventList.numberLimit && _eventList.numberLimit > 0 && _eventList.currentApplyNumber >= _eventList.numberLimit
                               }"
                             ></span>
                             <h3 class="race__title">{{ _eventList.eventName }}</h3>
@@ -402,7 +402,7 @@
                           paidStatus: _eventList.paidStatus,
                           endDate: _eventList.applyDate.endDate,
                           eventCancel: _eventList.eventStatus === EventStatus.cancel,
-                          applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit,
+                          applyFull: _eventList.numberLimit && _eventList.numberLimit > 0 && _eventList.currentApplyNumber >= _eventList.numberLimit,
                           record: _eventList.record
                         }"></div>
                       </div>
@@ -423,7 +423,7 @@
                     paidStatus: _eventList.paidStatus,
                     endDate: _eventList.applyDate.endDate,
                     eventCancel: _eventList.eventStatus === EventStatus.cancel,
-                    applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit,
+                    applyFull: _eventList.numberLimit && _eventList.numberLimit > 0 && _eventList.currentApplyNumber >= _eventList.numberLimit,
                     record: _eventList.record
                   }"></div>
                   
@@ -438,7 +438,7 @@
                     startDate: _eventList.applyDate.startDate,
                     endDate: _eventList.applyDate.endDate,
                     eventCancel: _eventList.eventStatus === EventStatus.cancel,
-                    applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit
+                    applyFull: _eventList.numberLimit && _eventList.numberLimit > 0 && _eventList.currentApplyNumber >= _eventList.numberLimit
                   }"
                 ></span>
                 <div
@@ -534,7 +534,7 @@
                     paidStatus: _eventList.paidStatus,
                     endDate: _eventList.applyDate.endDate,
                     eventCancel: _eventList.eventStatus === EventStatus.cancel,
-                    applyFull: _eventList.numberLimit && _eventList.currentApplyNumber >= _eventList.numberLimit,
+                    applyFull: _eventList.numberLimit && _eventList.numberLimit > 0 && _eventList.currentApplyNumber >= _eventList.numberLimit,
                     record: _eventList.record
                   }"></div>
                 </div>
@@ -869,7 +869,7 @@
         (click)="openEnablePage()"
         *ngIf="checkAllStatus(index) === AllStatus.notEnable"
       >
-        {{ 'univerisalsystem_tapToVerify' | translate }}
+        {{ 'universal_system_tapToVerify' | translate }}
       </button>
       <button
         class="apply__schedule apply__schedule__warn"
@@ -894,7 +894,7 @@
         class="apply__schedule apply__schedule__warn"
         *ngIf="checkAllStatus(index) === AllStatus.personCanceling"
       >
-        {{ 'univerisalsystem_leaving' | translate }}
+        {{ 'universal_system_leaving' | translate }}
       </div>
       <div
         class="apply__schedule apply__schedule__undone"
@@ -985,10 +985,10 @@
       (click)="quitEvent($event, index)"
     >
       <ng-container *ngIf="list.applyStatus === ApplyStatus.applied">
-        {{ 'univerisalsystem_leave' | translate }}
+        {{ 'universal_system_leave' | translate }}
       </ng-container>
       <ng-container *ngIf="list.applyStatus === ApplyStatus.applyingQuit">
-        {{ 'univerisalvocabulary_cancelLeave' | translate }}
+        {{ 'universal_vocabulary_cancelLeave' | translate }}
       </ng-container>
       <ng-container *ngIf="list.applyStatus === ApplyStatus.cancel">
         {{ 'universal_vocabulary_withdrawed' | translate }}
@@ -997,7 +997,7 @@
     <div class="flexRow person__event__detail">
       <div class="flexRow order__detail">
         <div *ngTemplateOutlet="infoColumn; context: {
-          title: 'univerisalvocabulary_orderNumber' | translate,
+          title: 'universal_vocabulary_orderNumber' | translate,
           value: list.officialPaidId || '**********'
         }"></div>
         <div *ngTemplateOutlet="infoColumn; context: {
@@ -1010,7 +1010,7 @@
         }"></div>
         <div *ngTemplateOutlet="infoColumn; context: {
           title: 'universal_group_status' | translate,
-          value: (list.fee === 0 ? ProductShipped.needNotShip : list.productShipped) | shippedStatus | translate
+          value: (list.haveProduct === HaveProduct.yes ? list.productShipped : ProductShipped.needNotShip) | shippedStatus | translate
         }"></div>
         <div *ngTemplateOutlet="infoColumn; context: {
           title: 'universal_vocabulary_results' | translate,

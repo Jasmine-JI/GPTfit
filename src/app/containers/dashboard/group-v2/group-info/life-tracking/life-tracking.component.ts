@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, ChangeDetec
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import SimpleLinearRegression from 'ml-regression-simple-linear';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { Subject, Subscription, fromEvent, combineLatest, of, merge } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
@@ -51,8 +51,8 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     brandType: 2,
     pageType: 'lifeTracking',
     date: {
-      startTimestamp: moment().startOf('day').subtract(6, 'days').valueOf(),
-      endTimestamp: moment().endOf('day').valueOf(),
+      startTimestamp: dayjs().startOf('day').subtract(6, 'day').valueOf(),
+      endTimestamp: dayjs().endOf('day').valueOf(),
       type: 'sevenDay'
     },
     group: {
@@ -338,11 +338,11 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
             this.uiFlag.isPreviewMode = true;
             break;
           case 'startdate':
-            this.reportConditionOpt.date.startTimestamp = moment(_value, 'YYYY-MM-DD').startOf('day').valueOf();
+            this.reportConditionOpt.date.startTimestamp = dayjs(_value, 'YYYY-MM-DD').startOf('day').valueOf();
             this.reportConditionOpt.date.type = 'custom';
             break;
           case 'enddate':
-            this.reportConditionOpt.date.endTimestamp = moment(_value, 'YYYY-MM-DD').endOf('day').valueOf();
+            this.reportConditionOpt.date.endTimestamp = dayjs(_value, 'YYYY-MM-DD').endOf('day').valueOf();
             this.reportConditionOpt.date.type = 'custom';
             break;
           case 'seemore':
@@ -505,7 +505,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
               } = condition;
         const { group: { selectGroup: preSelectGroup } } = this.reportConditionOpt;
         // 日期範圍大於52天則取週報告
-        this.reportTime.type = moment(endTimestamp).diff(moment(startTimestamp), 'day') <= 52 ? 1 : 2;
+        this.reportTime.type = dayjs(endTimestamp).diff(dayjs(startTimestamp), 'day') <= 52 ? 1 : 2;
         this.reportConditionOpt = this.utils.deepCopy(condition);
         // 若群組id不變，則使用已儲存之人員清單
         let memIdArr: Array<number>;
@@ -850,8 +850,8 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
             token: this.utils.getToken(),
             type: this.reportTime.type,
             targetUserId: idList,
-            filterStartTime: moment(startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-            filterEndTime: moment(endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+            filterStartTime: dayjs(startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+            filterEndTime: dayjs(endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
           };
 
     this.reportService.fetchTrackingSummaryArray(body).subscribe(res => {
@@ -886,12 +886,12 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
         reportStartDate = startTimestamp,
         reportEndDate = endTimestamp;
     if (type === 1) {
-      this.dateLen = moment(endTimestamp).diff(moment(startTimestamp), 'day') + 1;
+      this.dateLen = dayjs(endTimestamp).diff(dayjs(startTimestamp), 'day') + 1;
       dateRange = 86400000; // 間隔1天(ms)
     } else {
-      reportStartDate = moment(startTimestamp).startOf('week').valueOf(),
-      reportEndDate = moment(endTimestamp).startOf('week').valueOf();
-      this.dateLen = moment(reportEndDate).diff(moment(reportStartDate), 'week') + 1;
+      reportStartDate = dayjs(startTimestamp).startOf('week').valueOf(),
+      reportEndDate = dayjs(endTimestamp).startOf('week').valueOf();
+      this.dateLen = dayjs(reportEndDate).diff(dayjs(reportStartDate), 'week') + 1;
       dateRange = 604800000;  // 間隔7天(ms)
     }
 
@@ -941,10 +941,10 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
         const { date: {startTimestamp, endTimestamp} } = this.reportConditionOpt,
               rangeUnit = this.translate.instant('universal_time_day');
         this.reportTime = {
-          create: moment().format('YYYY-MM-DD HH:mm'),
-          endDate: moment(endTimestamp).format('YYYY-MM-DD'),
-          range: `${moment(endTimestamp).diff(moment(startTimestamp), 'day') + 1}${rangeUnit}`,
-          diffWeek: (moment(endTimestamp).diff(moment(startTimestamp), 'day') + 1) / 7,
+          create: dayjs().format('YYYY-MM-DD HH:mm'),
+          endDate: dayjs(endTimestamp).format('YYYY-MM-DD'),
+          range: `${dayjs(endTimestamp).diff(dayjs(startTimestamp), 'day') + 1}${rangeUnit}`,
+          diffWeek: (dayjs(endTimestamp).diff(dayjs(startTimestamp), 'day') + 1) / 7,
           type: this.reportTime.type,
           typeTranslate: this.translate.instant(this.reportTime.type === 1 ? 'universal_time_day' : 'universal_time_week')
         };
@@ -1044,7 +1044,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       const BMI = this.reportService.countBMI(bodyHeight, bodyWeight),
             FFMI = this.reportService.countFFMI(bodyHeight, bodyWeight, fatRate);
 
-      const startTimestamp = moment(startTime).valueOf();
+      const startTimestamp = dayjs(startTime).valueOf();
       regressionObj.timestampArr.push(startTimestamp);
       regressionObj = this.handleRegression(regressionObj, 'bodyWeight', bodyWeight, userId, startTimestamp);
       regressionObj = this.handleRegression(regressionObj, 'fatRate', fatRate, userId, startTimestamp);
@@ -1127,7 +1127,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    * @author kidin-1100617
    */
    handleMixData(mixData: Array<any>) {
-    mixData.sort((a, b) => moment(a.startTime).valueOf() - moment(b.startTime).valueOf());
+    mixData.sort((a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf());
     const dateArr = this.createChartXaxis(this.reportConditionOpt.date, this.reportTime.type),
           noRepeatDateData = this.mergeSameDateData(mixData),
           needKey = this.getNeedKey();
@@ -1570,7 +1570,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
 
         if (!sameDateData['startTimestamp']) {
           sameDateData = {
-            startTimestamp: moment(startDate, 'YYYY-MM-DD').valueOf(),
+            startTimestamp: dayjs(startDate, 'YYYY-MM-DD').valueOf(),
             tracking: [rest]
           };
         } else {
@@ -1581,7 +1581,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
 
         if (!sameDateData['startTimestamp']) {
           result.push({
-            startTimestamp: moment(startDate, 'YYYY-MM-DD').valueOf(),
+            startTimestamp: dayjs(startDate, 'YYYY-MM-DD').valueOf(),
             tracking: [rest]
           });
         } else {
@@ -2198,8 +2198,8 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
           { id } = this.groupInfo,
           { origin } = location,
           hashGroupId = this.hashIdService.handleGroupIdEncode(id),
-          startDate = moment(startTimestamp).format('YYYY-MM-DD'),
-          endDate = moment(endTimestamp).format('YYYY-MM-DD');
+          startDate = dayjs(startTimestamp).format('YYYY-MM-DD'),
+          endDate = dayjs(endTimestamp).format('YYYY-MM-DD');
     let seeMore = '';
     if (this.groupTable.showAll) seeMore += 'g';
     if (this.personTable.showAll) seeMore += 'p';

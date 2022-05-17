@@ -7,7 +7,7 @@ import { CloudrunService } from '../../../../shared/services/cloudrun.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { TranslateService } from '@ngx-translate/core';
 import { MapLanguageEnum } from '../../../../shared/models/i18n';
-import { developDomain, uatDomain, prodDomain } from '../../../../shared/models/utils-constant';
+import { DEVELOP_DOMAIN, UAT_DOMAIN, PROD_DOMAIN } from '../../../../shared/models/utils-constant';
 import { formTest } from '../../../../shared/models/form-test';
 import { EventStatus } from '../../models/activity-content';
 
@@ -96,8 +96,8 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
    */
   getIconHost() {
     const { host } = location;
-    const isDevelop = host.includes(developDomain) || host.includes(uatDomain);
-    return isDevelop ? uatDomain : prodDomain;
+    const isDevelop = host.includes(DEVELOP_DOMAIN) || host.includes(UAT_DOMAIN);
+    return isDevelop ? UAT_DOMAIN : PROD_DOMAIN;
   }
 
   /**
@@ -223,7 +223,11 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     switch (type) {
       case RankType.event:
         this.subList = this.utils.deepCopy(eventList);
-        if (eventList.length > 0) this.getEventRank(0);
+        if (eventList.length > 0) {
+          this.getEventRank(0);
+        } else {
+          this.uiFlag.progress = 30;
+        };
         break;
       case RankType.mapBest:
         this.subList = this.utils.deepCopy(mapInfo);
@@ -312,7 +316,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
           this.eventList = eventList;
           this.subList = eventList;
           if (eventList.length > 0) {
-            const index = this.queryEventId ? eventList.findIndex(_list => _list.eventId === this.queryEventId) : 0;
+            const index = this.getAssignLeaderboardIndex(eventList);
             this.uiFlag.currentFocusList = index;
             const { 
               eventId,
@@ -344,6 +348,22 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
 
       });
 
+    }
+
+  }
+
+  /**
+   * 取得指定之活動列表序列
+   * @param list {Array<any>}-活動列表
+   * @param eventId {number}-欲顯示之
+   * @author kidin-1110307
+   */
+  getAssignLeaderboardIndex(list: Array<any>) {
+    if (this.queryEventId) {
+      const index = list.findIndex(_list => _list.eventId === this.queryEventId);
+      return index >= 0 ? index : 0;
+    } else {
+      return 0;
     }
 
   }

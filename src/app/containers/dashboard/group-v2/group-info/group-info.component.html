@@ -288,7 +288,6 @@
     [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
     *ngIf="[
       'myclass-report',
-      'sports-report',
       'life-tracking',
       'cloudrun-report',
       'device-list'
@@ -296,9 +295,18 @@
   >
     <app-report-filter></app-report-filter>
   </section>
-  <main id="main__section" class="cardSection" [class.info-portalMode]="uiFlag.portalMode">
-    <router-outlet></router-outlet>
-  </main>
+  <article
+    id="main__section"
+    class="cardSection"
+    [ngClass]="{
+      'cardSection': uiFlag.currentPage !== 'sports-report',
+      'info-portalMode': uiFlag.portalMode
+    }"
+  >
+    <ng-container *ngIf="currentGroupInfo.groupDetail?.groupId">
+      <router-outlet></router-outlet>
+    </ng-container>
+  </article>
   <section
     class="flexCenter info-editMask"
     *ngIf="uiFlag.editMode !== 'close' && (uiFlag.openSceneryImgSelector || uiFlag.openIconImgSelector)"

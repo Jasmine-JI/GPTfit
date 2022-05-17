@@ -1,51 +1,55 @@
 <section class="flexCol pageBreakAvoid">
   <div class="flexRow" style="align-items: center; justify-content: space-between;">
-    <h6 id="chart__title">{{ chartType | dataTypeTranslate: [sportType, unit] | translate }}</h6>
+    <h6 id="chart__title">{{ finalChartType | dataTypeTranslate: [sportType, unit] | translate }}</h6>
+    <button
+      class="switch__button"
+      (click)="conversePaceSpeed()"
+      *ngIf="sportType === SportType.run && chartType === 'pace'"
+    >
+      <i class="icon-svg_web-icon_p3_086-switch_spd" *ngIf="typeRunShowPace"></i>
+      <i class="icon-svg_web-icon_p3_087-switch_pace" *ngIf="!typeRunShowPace"></i>
+    </button>
     <span id="row__line"></span>
   </div>
   <main id="main__seciton">
-    <div class="flexRow info__block" style="justify-content: space-between;" *ngIf="chartType !== 'gforce'">
+    <div class="flexRow info__block" style="justify-content: space-between;" *ngIf="finalChartType !== 'gforce'">
       <div class="flexCol info__section">
         <span class="data__number">
-          <ng-container *ngIf="chartType === 'pace'">
+          <ng-container *ngIf="finalChartType === 'pace'">
             {{ infoData.best | sportPaceSibs: [sportType, unit, 1] }}
           </ng-container>
-          <ng-container *ngIf="chartType !== 'pace'">
+          <ng-container *ngIf="finalChartType !== 'pace'">
             {{ infoData.best }}
-          </ng-container>
-          <ng-container *ngIf="chartType !== 'pace'">
-            {{ chartType | dataTypeUnit: [sportType, unit] }}
+            {{ finalChartType | dataTypeUnit: [sportType, unit] }}
           </ng-container>
         </span>
         <span class="data__description">
-          <ng-container *ngIf="chartType === 'pace'">
+          <ng-container *ngIf="finalChartType === 'pace'">
             {{ 'universal_adjective_maxBest' | translate }}
           </ng-container>
-          <ng-container *ngIf="chartType !== 'pace'">
+          <ng-container *ngIf="finalChartType !== 'pace'">
             {{ 'universal_adjective_maxHight' | translate }}
           </ng-container>
-          {{ chartType | dataTypeTranslate: [sportType, unit] | translate }}
+          {{ finalChartType | dataTypeTranslate: [sportType, unit] | translate }}
         </span>
       </div>
       <div class="flexCol info__section">
         <span class="data__number">
-          <ng-container *ngIf="chartType === 'pace'">
+          <ng-container *ngIf="finalChartType === 'pace'">
             {{ infoData.avg | sportPaceSibs: [sportType, unit, 1] }}
           </ng-container>
-          <ng-container *ngIf="chartType !== 'pace'">
+          <ng-container *ngIf="finalChartType !== 'pace'">
             {{ infoData.avg }}
-          </ng-container>
-          <ng-container *ngIf="chartType !== 'pace'">
-            {{ chartType | dataTypeUnit: [sportType, unit] }}
+            {{ finalChartType | dataTypeUnit: [sportType, unit] }}
           </ng-container>
         </span>
         <span class="data__description">
           {{ 'universal_adjective_avg' | translate }}
-          {{ chartType | dataTypeTranslate: [sportType, unit] | translate }}
+          {{ finalChartType | dataTypeTranslate: [sportType, unit] | translate }}
         </span>
       </div>
     </div>
-    <div class="flexCol info__block" *ngIf="chartType === 'gforce'">
+    <div class="flexCol info__block" *ngIf="finalChartType === 'gforce'">
       <div class="flexRow">
         <div class="flexCol info__section">
           <span class="data__number gforce__x">

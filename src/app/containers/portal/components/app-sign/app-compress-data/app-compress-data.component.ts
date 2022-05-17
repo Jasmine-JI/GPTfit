@@ -3,7 +3,7 @@ import { AppCode } from '../../../models/app-webview';
 import { Router } from '@angular/router';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { SignupService } from '../../../../../shared/services/signup.service';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { AuthService } from '../../../../../shared/services/auth.service';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -222,12 +222,12 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
           if (res.status === CompressStatus.complete) {
             this.compressResp.archiveLink = location.hostname === 'www.gptfit.com' ? res.archiveLink.replace('5443', '6443') : res.archiveLink;
             this.compressResp.archiveFakeLink = `https://${location.hostname}/compressData?${res.archiveLink.split('?')[1]}`;
-            this.compressResp.archiveLinkDate = moment(res.archiveLinkTimestamp * 1000).format('YYYY-MM-DD');
-            this.compressResp.archiveLinkTime = moment(res.archiveLinkTimestamp * 1000).format('HH:mm');
+            this.compressResp.archiveLinkDate = dayjs(res.archiveLinkTimestamp * 1000).format('YYYY-MM-DD');
+            this.compressResp.archiveLinkTime = dayjs(res.archiveLinkTimestamp * 1000).format('HH:mm');
           } else if (res.status === CompressStatus.prohibited) {
             this.compressResp.cooldownTimestamp = res.cooldownTimestamp;
-            this.compressResp.cooldownDate = moment(res.cooldownTimestamp * 1000).format('YYYY-MM-DD');
-            this.compressResp.cooldownTime = moment(res.cooldownTimestamp * 1000).format('HH:mm');
+            this.compressResp.cooldownDate = dayjs(res.cooldownTimestamp * 1000).format('YYYY-MM-DD');
+            this.compressResp.cooldownTime = dayjs(res.cooldownTimestamp * 1000).format('HH:mm');
           }
 
         }

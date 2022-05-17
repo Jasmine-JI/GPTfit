@@ -3,7 +3,7 @@ import { UtilsService } from '../../../../shared/services/utils.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Sex } from '../../../../shared/models/user-profile-info';
 import { Unit, ft, lb } from '../../../../shared/models/bs-constant';
 import { formTest } from '../../../../shared/models/form-test';
@@ -38,7 +38,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     nickname: '',
     bodyHeight: <string | number>175,
     bodyWeight: 70,
-    birthday: moment().subtract(30, 'years').startOf('year').valueOf(),  // 預設30歲
+    birthday: dayjs().subtract(30, 'year').startOf('year').valueOf(),  // 預設30歲
     gender: 0
   }
 
@@ -92,7 +92,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
       nickname,
       bodyHeight: this.utils.bodyHeightTransfer(bodyHeight, !isMetric, true),
       bodyWeight: this.utils.valueConvert(bodyWeight, !isMetric, true, lb, 0),
-      birthday: moment(birthday, 'YYYYMMDD').valueOf(),
+      birthday: dayjs(birthday, 'YYYYMMDD').valueOf(),
       gender,
     };
 
@@ -235,7 +235,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
           return this.userInfo[key];
         }
       case 'birthday':
-        return moment(value).format('YYYYMMDD');
+        return dayjs(value).format('YYYYMMDD');
       default:
         return value;
         
@@ -430,7 +430,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    */
   getSelectDate(e: any) {
     const { startDate } = e;
-    this.setting.birthday = moment(startDate).valueOf();
+    this.setting.birthday = dayjs(startDate).valueOf();
     this.editComplete();
   }
 

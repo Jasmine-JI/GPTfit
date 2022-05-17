@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Unit } from '../models/bs-constant';
-import { SportCode } from '../models/report-condition';
+import { SportType } from '../enum/sports';
 
 @Pipe({name: 'dataTypeUnit'})
 export class DataTypeUnitPipe implements PipeTransform {
@@ -21,22 +21,22 @@ export class DataTypeUnitPipe implements PipeTransform {
         return userUnit === Unit.metric ? 'km/h' : 'mi/h';
       case 'pace':
         switch (sportType) {
-          case SportCode.run:
+          case SportType.run:
             return userUnit === Unit.metric ? 't/km' : 't/mi';
-          case SportCode.swim:
+          case SportType.swim:
             return 't/100m';
-          case SportCode.row:
+          case SportType.row:
             return 't/500m';
         }
 
       case 'cadence':
         switch (sportType) {
-          case SportCode.run:
-          case SportCode.weightTrain:
-          case SportCode.swim:
+          case SportType.run:
+          case SportType.weightTrain:
+          case SportType.swim:
             return 'spm';
-          case SportCode.cycle:
-          case SportCode.row:
+          case SportType.cycle:
+          case SportType.row:
             return 'rpm';
         }
 
