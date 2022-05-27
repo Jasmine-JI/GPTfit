@@ -1,4 +1,5 @@
 import { GroupSportTarget } from '../../../shared/models/sport-target';
+import { AccessRight } from '../../../shared/enum/accessright';
 
 /**
  * api 1102 的info
@@ -43,7 +44,7 @@ export interface UserSimpleInfo {
   nickname: string;
   userId: number;
   token: string;
-  accessRight: Array<number>;
+  accessRight: AccessRight;
   joinStatus: number;
   isGroupAdmin: boolean;
   unit: number;

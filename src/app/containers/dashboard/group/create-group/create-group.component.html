@@ -56,10 +56,8 @@
           <span style="color: #26abe3; font-weight:700"
             *ngIf="createType === 2"
           >
-            <span *ngIf="coachType === 1 && brandType == 1">{{'universal_group_courseInformationProfessionalClass' | translate}}</span>
-            <span *ngIf="coachType === 2 && brandType == 1">{{'universal_group_courseInformationFitnessClass' | translate}}</span>
-            <span *ngIf="coachType === 1 && brandType == 2">{{'universal_group_generalGroup' | translate}}</span>
-            <span *ngIf="coachType === 2 && brandType == 2">{{'universal_group_department' | translate}}</span>
+            <span *ngIf="brandType == 1">{{'universal_group_courseInformationFitnessClass' | translate}}</span>
+            <span *ngIf="brandType == 2">{{'universal_group_department' | translate}}</span>
           </span>
           <span style="color: #26abe3; font-weight:700"
             *ngIf="createType === 3"
@@ -185,13 +183,7 @@
             </label>
             <label class="ala-form__label"
               [class.form__label--required]="createType === 2 && brandType == 2"
-              *ngIf="coachType === 1 && brandType == 2"
-            >
-              {{'universal_activityData_name' | translate}}：
-            </label>
-            <label class="ala-form__label"
-              [class.form__label--required]="createType === 2 && brandType == 2"
-              *ngIf="(coachType === 2 || createType === 1 ) && brandType == 2"
+              *ngIf="createType === 1 && brandType == 2"
             >
               {{'universal_group_department' | translate}} {{'universal_activityData_name' | translate}}：
             </label>
@@ -254,7 +246,7 @@
             <li>
               {{'universal_group_canSee' | translate: {'object': i18n.myGroup, 'info': i18n.nickname} }}
             </li>
-            <ng-container *ngIf="coachType === 2 && brandType == 1">
+            <ng-container *ngIf="brandType == 1">
               <li>
                 {{'universal_group_canSee' | translate: {'object': i18n.myGym, 'info': i18n.activityRecord} }}
               </li>
@@ -262,7 +254,7 @@
                 {{'universal_group_canSee' | translate: {'object': i18n.myGym, 'info': i18n.sportReport} }}
               </li>
             </ng-container>
-            <ng-container *ngIf="coachType === 2 && brandType == 2">
+            <ng-container *ngIf="brandType == 2">
               <li>
                 {{'universal_group_canSee' | translate: {'object': i18n.myGroup, 'info': i18n.activityRecord} }}
               </li>
@@ -282,20 +274,11 @@
             [class.form__label--required]="createType !== 3"
             style="min-width: 140px"
           >
-            <span *ngIf="coachType === 1 && brandType == 1">
-              {{'universal_group_addObject' | translate: {'position': i18n.teacher} }}：
-            </span>
-            <span *ngIf="coachType === 2 && brandType == 1">
+            <span *ngIf="brandType == 1">
               {{'universal_group_addObject' | translate: {'position': i18n.coach} }}：
             </span>
-            <span *ngIf="coachType === 1 && brandType == 2">
-              {{'universal_group_addObject' | translate: {'position': i18n.leagueAdministrator} }}：
-            </span>
-            <span *ngIf="coachType === 2 && brandType == 2">
+            <span *ngIf="brandType == 2">
               {{'universal_group_addObject' | translate: {'position': i18n.departmentAdministrator} }}：
-            </span>
-            <span *ngIf="coachType !== 1 && coachType !== 2">
-              {{'universal_group_assignAdmin' | translate}}：
             </span>
           </label>
           <div class="ala-form__col assign-admin">

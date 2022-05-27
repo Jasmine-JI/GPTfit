@@ -5,11 +5,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-
-import { AuthService } from '@shared/services/auth.service';
-import { UserProfileService } from '../../../../../shared/services/user-profile.service';
-import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
-import { UtilsService } from '@shared/services/utils.service';
+import { AuthService } from '../../../../../core/services/auth.service';
+import { Api10xxService } from '../../../../../core/services/api-10xx.service';
+import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
+import { UtilsService } from '../../../../../shared/services/utils.service';
 
 @Component({
   selector: 'app-app-first-login',
@@ -60,7 +59,7 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private router: Router,
     private authService: AuthService,
-    private userProfileService: UserProfileService
+    private api10xxService: Api10xxService
   ) {
     translate.onLangChange.pipe(
       takeUntil(this.ngUnsubscribe)
@@ -82,16 +81,16 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
     }
 
     this.getDefaultBirthday();
-    this.editBody.token = this.utils.getToken();
+    this.editBody.token = this.authService.token;
     this.getUserInfo();
 
     // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)
-    this.authService.getLoginStatus().pipe(
+    this.authService.isLogin.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
-      if (res === false && this.pcView === true) {
+      if (!res && this.pcView === true) {
         return this.router.navigateByUrl('/signIn-web');
-      } else if (res === false && this.pcView === false) {
+      } else if (!res && !this.pcView) {
         return this.router.navigateByUrl('/signIn');
       }
 
@@ -134,11 +133,8 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
 
   // 使用token取得使用者帳號資訊-kidin-1090514
   getUserInfo () {
-    const body = {
-      token: this.utils.getToken() || ''
-    };
-
-    this.userProfileService.getUserProfile(body).subscribe(res => {
+    const body = { token: this.authService.token };
+    this.api10xxService.fetchGetUserProfile(body).subscribe(res => {
       this.nickName = res.userProfile.nickname;
     });
 
@@ -281,7 +277,7 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
     this.editBody.userProfile.avatar.mid = this.imageToDataUri(image, 128, 128);
     this.editBody.userProfile.avatar.small = this.imageToDataUri(image, 64, 64);
 
-    this.userProfileService.updateUserProfile(this.editBody).subscribe(res => {
+    this.api10xxService.fetchEditUserProfile(this.editBody).subscribe(res => {
       if (res.processResult.resultCode !== 200) {
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,

@@ -4,15 +4,16 @@ import { takeUntil } from 'rxjs/operators';
 import { GroupDetailInfo, UserSimpleInfo } from '../../../models/group-detail';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { GroupService } from '../../../../../shared/services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
-import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+import { Api10xxService } from '../../../../../core/services/api-10xx.service';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
 import { ReportService } from '../../../../../shared/services/report.service';
 import { GroupLevel } from '../../../../dashboard/models/group-detail';
+import { deepCopy } from '../../../../../shared/utils/index';
+import { AuthService } from '../../../../../core/services/auth.service';
 
 type EditMode = 'add' | 'del';
 
@@ -63,7 +64,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
    */
   userSimpleInfo: UserSimpleInfo;
 
-  token = this.utils.getToken();
+  token = this.authService.token;
   deviceList: Array<any>;  // 目前顯示的清單
   groupDeviceList: Array<any>;  // 群組裝置清單
   myDeviceList: Array<any>;  // 個人裝置清單
@@ -81,10 +82,10 @@ export class DeviceListComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private dialog: MatDialog,
     private translateService: TranslateService,
-    private snackbar: MatSnackBar,
     private qrcodeService: QrcodeService,
-    private userProfileService: UserProfileService,
-    private reportService: ReportService
+    private api10xxService: Api10xxService,
+    private reportService: ReportService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -157,7 +158,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
     this.reportService.getReportCondition().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
-      this.reportConditionOpt = this.utils.deepCopy(res);
+      this.reportConditionOpt = deepCopy(res);
       const { selectGroup } = this.reportConditionOpt.group;
       let targetGroupId: string;
       if (selectGroup) {
@@ -274,7 +275,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
         token: this.token,
         targetUserId: idList
       };
-      querry.push(this.userProfileService.getUserProfile(body));
+      querry.push(this.api10xxService.fetchGetUserProfile(body));
     }
 
     this.uiFlag.progress = 70;

@@ -3,11 +3,12 @@ import { Router } from '@angular/router';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { Subject, combineLatest, of } from 'rxjs';
-import { takeUntil, switchMap } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { AlbumType } from '../../../../shared/models/image';
 import { ImageUploadService } from '../../../dashboard/services/image-upload.service';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
+import { getCurrentTimestamp, deepCopy } from '../../../../shared/utils/index';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-edit-carousel',
@@ -35,8 +36,8 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
 
   originCarouselList = [];
   carouselList = [];
-  token = this.utils.getToken();
-  currentTimestamp = this.utils.getCurrentTimestamp('ms');
+  token = this.authService.token;
+  currentTimestamp = getCurrentTimestamp('ms');
   defaultEffectTimestamp = this.currentTimestamp + 7 * 86400 * 1000;  // 預設7天後到期
   readonly AlbumType = AlbumType;
 
@@ -46,7 +47,7 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
     private translateService: TranslateService,
     private router: Router,
     private imageUploadService: ImageUploadService,
-    private userProfileService: UserProfileService
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -253,7 +254,7 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
     if (passCheck && progress === 100) {
       this.uiFlag.progress = 30;
       const { token } = this;
-      let advertise = this.utils.deepCopy(this.carouselList);
+      let advertise = deepCopy(this.carouselList);
       advertise = advertise.concat(this.getInvalidList());
       const body = { token, advertise };
       combineLatest([
@@ -277,7 +278,7 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
         })
       ).subscribe(res => {
         if (this.utils.checkRes(res)) {
-          const currentTimeStamp = this.utils.getCurrentTimestamp('ms');
+          const currentTimeStamp = getCurrentTimestamp('ms');
           this.officialActivityService.setCarouselTime(currentTimeStamp);
           const msg = this.translateService.instant('universal_status_updateCompleted');
           this.utils.showSnackBar(msg);

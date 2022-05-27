@@ -1,4 +1,4 @@
-import { Sex } from '../../../shared/models/user-profile-info';
+import { Sex } from '../../../shared/enum/personal';
 
 export interface EventInfo {
   eventId?: number;

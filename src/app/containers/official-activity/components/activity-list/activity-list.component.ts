@@ -2,10 +2,11 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
+import { UserService } from '../../../../core/services/user.service';
 import { Subject, Subscription, fromEvent, merge, of, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { UserProfileInfo, AccountTypeEnum, AccountStatusEnum } from '../../../../shared/models/user-profile-info';
+import { UserProfileInfo } from '../../../../shared/models/user-profile-info';
+import { AccountTypeEnum, AccountStatusEnum } from '../../../../shared/enum/account';
 import dayjs from 'dayjs';
 import { MapLanguageEnum } from '../../../../shared/models/i18n';
 import { SelectDate } from '../../../../shared/models/utils-type';
@@ -20,9 +21,11 @@ import {
   ApplyStatus,
   ListStatus
 } from '../../models/activity-content';
-import { AccessRight } from '../../../../shared/models/accessright';
+import { AccessRight } from '../../../../shared/enum/accessright';
 import { TranslateService } from '@ngx-translate/core';
 import { codes } from '../../../../shared/models/countryCode';
+import { getLocalStorageObject, setUrlQueryString, getUrlQueryStrings } from '../../../../shared/utils/index';
+import { AuthService } from '../../../../core/services/auth.service';
 
 
 type Page = 'activity-list' | 'my-activity';
@@ -120,8 +123,9 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   eventList = [];
   effectEventList = [];
   serverTimestamp: number;
-  token = this.utils.getToken();
+  token = this.authService.token;
   userProfile: UserProfileInfo;
+  systemAccessright = AccessRight.guest;
   timeInterval: any;
   allMapInfo: Array<any>;
   mapLanguage = 0;
@@ -141,11 +145,12 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   constructor(
     private officialActivityService: OfficialActivityService,
     private utils: UtilsService,
-    private userProfileService: UserProfileService,
+    private userService: UserService,
     private router: Router,
     private sanitizer: DomSanitizer,
     private cloudrunService: CloudrunService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -162,7 +167,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1110113
    */
    checkPage() {
-    const { p } = this.utils.getUrlQueryStrings(location.search);
+    const { p } = getUrlQueryStrings(location.search);
     if (p && formTest.number.test(p)) {
       const idx = +p - 1;
       const index = idx >= 0 ? idx : 0;
@@ -176,12 +181,12 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1101006
    */
   getUserProfile() {
-    this.userProfileService.getRxUserProfile().pipe(
+    this.userService.getUser().rxUserProfile.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.userProfile = res;
+      this.systemAccessright = this.userService.getUser().systemAccessright;
       if (res) {
-        this.token = this.utils.getToken();
         this.checkCurrentPage();
       } else {
         this.uiFlag.editMode = false;
@@ -236,7 +241,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     ).subscribe(e => {
       if (e instanceof NavigationEnd) {
         this.checkPage();
-        const { search } = this.utils.getUrlQueryStrings(location.search);
+        const { search } = getUrlQueryStrings(location.search);
         const searchWords = decodeURIComponent(search);
         const { currentPage } = this.uiFlag;
         switch (currentPage) {
@@ -270,7 +275,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1101007
    */
   checkLanguage() {
-    const lan = this.utils.getLocalStorageObject('locale');
+    const lan = getLocalStorageObject('locale');
     switch (lan) {
       case 'zh-tw':
         this.mapLanguage = MapLanguageEnum.TW;
@@ -345,7 +350,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   handleEffectEvent() {
     const { eventList, userProfile, serverTimestamp } = this;
     if (eventList.length > 0) {
-      const isAdmin = userProfile && userProfile.systemAccessRight[0] <= 28;
+      const isAdmin = userProfile && this.systemAccessright <= AccessRight.pusher;
       const effectEvent = eventList.filter(_list => serverTimestamp >= _list.applyDate.startDate);
       if (isAdmin) {
         this.effectEventList = eventList;
@@ -834,9 +839,9 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   setQueryString() {
     const { index } = this.eventListCondition.page;
     const { origin, pathname, search } = location;
-    const query = this.utils.getUrlQueryStrings(search);
+    const query = getUrlQueryStrings(search);
     Object.assign(query, { p: index + 1 });
-    const newSearch = this.utils.setUrlQueryString(query);
+    const newSearch = setUrlQueryString(query);
     if (newSearch !== search && history.pushState) {
       const newUrl = `${origin}${pathname}${newSearch}`;
       window.history.pushState({path: newUrl}, '', newUrl);
@@ -950,7 +955,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1110216
    */
   updateEmail(e: Event, index: number) {
-    const { accountType } = this.userProfile;
+    const { accountType } = this.userService.getUser().signInfo;
     if (this.checkCanEdit(index)) {
       const email = (e as any).target.value.trim();
       if (!formTest.email.test(email)) {
@@ -1109,7 +1114,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     if (serverTimestamp > endDate) return AllStatus.eventCutoff;
     if (applyStatus === ApplyStatus.cancel) return AllStatus.personCancelled;
 
-    const accountEnable = userProfile && userProfile.accountStatus === AccountStatusEnum.enabled;
+    const { accountStatus } = this.userService.getUser().signInfo;
+    const accountEnable = userProfile && accountStatus === AccountStatusEnum.enabled;
     if (fee > 0 && !accountEnable) return AllStatus.notEnable;
     if (applyStatus === ApplyStatus.applyingQuit) return AllStatus.personCanceling;
 

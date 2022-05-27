@@ -14,7 +14,7 @@ import {
   landingColor,
   restHrColor
 } from '../../../models/chart-data';
-import { Unit } from '../../../models/bs-constant';
+import { Unit } from '../../../enum/value-conversion';
 import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';

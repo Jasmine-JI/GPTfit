@@ -109,7 +109,9 @@ export class SportsTarget {
 
     const coefficient = this.getDateTransformCoefficient(reportUnit);
     return _condition.map(_con => {
-      _con.filedValue = Math.round(+_con.filedValue * coefficient * peopleNumber);
+      const { filedName } = _con;
+      const coefficientNum = filedName === 'pai' ? 1 : coefficient;  // pai已包含時間概念，故不需轉換
+      _con.filedValue = mathRounding(+_con.filedValue * coefficientNum * peopleNumber, 1);
       return _con;
     });
 

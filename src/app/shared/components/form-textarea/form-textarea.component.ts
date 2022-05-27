@@ -8,7 +8,6 @@ import {
   SimpleChanges
 } from '@angular/core';
 import { DEFAULT_MAXLENGTH } from '../../utils/index';
-import { UtilsService } from '../../services/utils.service';
 import { FormGroup } from '@angular/forms';
 
 @Component({
@@ -32,7 +31,7 @@ export class FormTextareaComponent implements OnInit, OnChanges {
   countText: string;
   preContent: string;
   invalidClassName = `${this.class_name} ${this.class_name}--invalid`;
-  constructor(private utils: UtilsService) { }
+  constructor() { }
 
   ngOnInit() {
     this.preContent = this.content;

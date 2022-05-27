@@ -1,20 +1,20 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../../../../shared/services/utils.service';
-import { AuthService } from '../../../../../shared/services/auth.service';
+import { AuthService } from '../../../../../core/services/auth.service';
 import { SignupService } from '../../../../../shared/services/signup.service';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
-import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { Subject, Subscription, fromEvent, merge, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { formTest } from '../../../../../shared/models/form-test';
 import { codes } from '../../../../../shared/models/countryCode';
-import { SignTypeEnum } from '../../../../../shared/models/utils-type';
+import { SignTypeEnum } from '../../../../../shared/enum/account';
 import { TFTViewMinWidth } from '../../../models/app-webview';
-import { LockCaptcha } from '../../../../../shared/classes/lock-captcha';
+import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../shared/utils/index';
+
 
 const errorCaptchaI18nKey = 'universal_userAccount_errorCaptcha';
 enum ResetFlow {
@@ -94,8 +94,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     private signupService: SignupService,
     private dialog: MatDialog,
     private router: Router,
-    public getClientIp: GetClientIpService,
-    public userProfileService: UserProfileService
+    public getClientIp: GetClientIpService
   ) {}
 
   ngOnInit() {
@@ -166,10 +165,10 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 取得url query string-kidin-1090514
   getUrlString (urlStr) {
-    const query = this.utils.getUrlQueryStrings(urlStr);
+    const query = getUrlQueryStrings(urlStr);
     this.requestHeader = {
       ...this.requestHeader,
-      ...this.utils.headerKeyTranslate(query)
+      ...headerKeyTranslate(query)
     };
     Object.entries(query).forEach(([_key, _value]) => {
       const _valueStr = _value as string;
@@ -708,9 +707,8 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
       } else {
         msgBody = this.translate.instant('universal_userAccount_passwordResetComplete');
         this.newToken = res.resetPassword.newToken;
-        this.utils.writeToken(this.newToken);  // 直接在瀏覽器幫使用者登入
-        this.userProfileService.refreshUserProfile({token: this.newToken});
-        this.authService.setLoginStatus(true);
+        this.authService.setToken(this.newToken);  // 直接在瀏覽器幫使用者登入
+        this.authService.tokenLogin();
         this.sendTokenToApp(this.newToken);
         this.flowComplete = true;
       }

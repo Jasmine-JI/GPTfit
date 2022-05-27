@@ -5,8 +5,8 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DataTypeUnitPipe } from '../../../pipes/data-type-unit.pipe';
 import { mi } from '../../../models/bs-constant';
-import { Unit } from '../../../models/bs-constant';
-import { UtilsService } from '../../../services/utils.service';
+import { Unit } from '../../../enum/value-conversion';
+import { countDistance } from '../../../utils/index';
 
 
 /**
@@ -107,8 +107,7 @@ export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private renderer: Renderer2,
     private translate: TranslateService,
-    private dataTypeUnitPipe: DataTypeUnitPipe,
-    private utils: UtilsService
+    private dataTypeUnitPipe: DataTypeUnitPipe
   ) {}
 
   ngOnInit(): void {}
@@ -133,7 +132,7 @@ export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
             gpxB = this.gpx[i + 1];
       if (i !== this.gpx.length - 1) {
 
-        const nextDis = this.utils.countDistance(gpxA, gpxB);
+        const nextDis = countDistance(gpxA, gpxB);
         // 去除相同位置的gpx資訊
         if (nextDis) {
           totalDis += nextDis;

@@ -6,8 +6,10 @@ import {
   AfterViewInit
 } from '@angular/core';
 import { CoachService } from '../../../../shared/services/coach.service';
-import { UtilsService } from '../../../../shared/services/utils.service';
 import { Router } from '@angular/router';
+import { buildBase64ImgString } from '../../../../shared/utils/index';
+import { AuthService } from '../../../../core/services/auth.service';
+
 
 @Component({
   selector: 'app-train-live',
@@ -22,15 +24,16 @@ export class TrainLiveComponent implements OnInit, AfterViewInit {
   you always have one foot on the floor. you don't do any jumping or hopping. High-impact aerobics moves at a slower pace,
   but you jump around a lot. High-low combines the two types of routines.`;
   @ViewChild('desc') descElement: ElementRef;
+
   constructor(
     private coachService: CoachService,
-    private utils: UtilsService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
     const body = {
-      token: this.utils.getToken() || '',
+      token: this.authService.token,
       classType: '7'
     };
     this.coachService.fetchClassRoomList(body).subscribe(res => {
@@ -38,8 +41,7 @@ export class TrainLiveComponent implements OnInit, AfterViewInit {
       this.classLists = this.classLists.map(_list => {
         _list.coachAvatar =
           _list.coachAvatar && _list.coachAvatar.length > 0
-            ? this.utils.buildBase64ImgString(_list.coachAvatar)
-            : '/assets/images/user2.png';
+            ? buildBase64ImgString(_list.coachAvatar) : '/assets/images/user2.png';
         _list.groupDesc = this.handleClassInfo(_list.groupDesc);
         return _list;
       });

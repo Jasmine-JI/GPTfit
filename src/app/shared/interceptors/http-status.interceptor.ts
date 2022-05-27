@@ -7,11 +7,9 @@ import {
   HttpResponse,
   HttpErrorResponse
 } from '@angular/common/http';
-import { UtilsService } from '../services/utils.service';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../../core/services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../components/message-box/message-box.component';
 
@@ -22,9 +20,8 @@ import { MessageBoxComponent } from '../components/message-box/message-box.compo
 @Injectable()
 export class HttpStatusInterceptor implements HttpInterceptor {
   constructor(
-    public utils: UtilsService,
     public dialog: MatDialog,
-    private injector: Injector
+    private authService: AuthService
   ) {}
   intercept(
     request: HttpRequest<any>,
@@ -39,8 +36,7 @@ export class HttpStatusInterceptor implements HttpInterceptor {
             if (typeof (event.body) !== 'object' && event.body.slice(0, 5) !== '<?xml') {
               parseBody = JSON.parse(event.body);
               if (parseBody.processResult && parseBody.processResult.resultCode === 401) {
-                const auth = this.injector.get(AuthService);
-                auth.logout();
+                this.authService.logout();
                 console.error('Login identity error!');
               }
             }
@@ -50,9 +46,6 @@ export class HttpStatusInterceptor implements HttpInterceptor {
         (err: any) => {
           if (err instanceof HttpErrorResponse) {
             if (err.status === 401 || err.status === 402 || err.status === 403) {
-              const router = this.injector.get(Router);
-              const auth = this.injector.get(AuthService);
-
               this.dialog.open(MessageBoxComponent, {
                 hasBackdrop: true,
                 data: {
@@ -63,7 +56,7 @@ export class HttpStatusInterceptor implements HttpInterceptor {
 
               });
 
-              auth.logout();
+              this.authService.logout();
             }
             if (err.status === 504) {
               this.dialog.open(MessageBoxComponent, {

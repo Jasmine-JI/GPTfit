@@ -1,12 +1,12 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { UtilsService } from '../../../../shared/services/utils.service';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
+import { UserService } from '../../../../core/services/user.service';
 import { Subject, Subscription, fromEvent, merge, of } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import dayjs from 'dayjs';
-import { UserProfileInfo, Sex } from '../../../../shared/models/user-profile-info';
+import { Sex } from '../../../../shared/enum/personal';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MapLanguageEnum } from '../../../../shared/models/i18n';
@@ -15,15 +15,12 @@ import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
 import { AlbumType } from '../../../../shared/models/image';
 import { ImageUploadService } from '../../../dashboard/services/image-upload.service';
 import { SelectDate } from '../../../../shared/models/utils-type';
-import { 
-  EventInfo,
-  EventDetail,
-  CardTypeEnum,
-  HaveProduct,
-  EventStatus
-} from '../../models/activity-content';
-import { AccessRight } from '../../../../shared/models/accessright';
+import { EventInfo, EventDetail, CardTypeEnum, HaveProduct, EventStatus } from '../../models/activity-content';
+import { AccessRight } from '../../../../shared/enum/accessright';
 import { deepCopy } from '../../../../shared/utils/index';
+import { setLocalStorageObject, getLocalStorageObject, removeLocalStorageObject } from '../../../../shared/utils/index';
+import { AuthService } from '../../../../core/services/auth.service';
+import { DAY } from '../../../../shared/models/utils-constant';
 
 
 const leaveMessage = '尚未儲存，是否仍要離開此頁面？';
@@ -73,9 +70,10 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   }
 
   currentTimestamp = dayjs().startOf('day').unix();
+  startDateMin = this.currentTimestamp * 1000;
   language = MapLanguageEnum.TW;
   mapList: Array<any>;
-  userProfile: UserProfileInfo;
+  systemAccessright = AccessRight.guest;
   eventId: number;
   eventInfo: EventInfo;
   eventDetail: EventDetail;
@@ -121,12 +119,13 @@ export class EditActivityComponent implements OnInit, OnDestroy {
 
   constructor(
     private utils: UtilsService,
-    private userProfileService: UserProfileService,
+    private userService: UserService,
     private router: Router,
     private route: ActivatedRoute,
     private officialActivityService: OfficialActivityService,
     private dialog: MatDialog,
-    private imageUploadService: ImageUploadService
+    private imageUploadService: ImageUploadService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -142,12 +141,12 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101015
    */
   getAccessRight() {
-    const token = this.utils.getToken();
+    const token = this.authService.token;
     if (token) {
-      this.userProfileService.getRxUserProfile().pipe(
+      this.userService.getUser().rxUserProfile.pipe(
         takeUntil(this.ngUnsubscribe)
       ).subscribe(res => {
-        this.userProfile = res;
+        this.systemAccessright = this.userService.getUser().systemAccessright;
       });
 
     }
@@ -181,7 +180,13 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   checkEditMode() {
     this.eventId = +this.route.snapshot.paramMap.get('eventId');
-    this.uiFlag.editMode = this.eventId < 0 ? 'create' : 'edit';
+    if (this.eventId < 0) {
+      this.uiFlag.editMode = 'create';
+    } else {
+      this.uiFlag.editMode = 'edit';
+      this.startDateMin = this.currentTimestamp * 1000 + DAY;
+    }
+
   }
 
   /**
@@ -190,7 +195,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101029
    */
   checkDraft(eventId: number) {
-    const eventDraftString = this.utils.getLocalStorageObject('eventDraft');
+    const eventDraftString = getLocalStorageObject('eventDraft');
     if (eventDraftString) {
       const eventDraft = JSON.parse(eventDraftString);
       const { eventId: draftEventId } = eventDraft.eventInfo;
@@ -272,7 +277,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101029
    */
   removeDraft() {
-    this.utils.removeLocalStorageObject('eventDraft');
+    removeLocalStorageObject('eventDraft');
   }
 
   /**
@@ -280,7 +285,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101021
    */
   getMapLanguage() {
-    const language = this.utils.getLocalStorageObject('locale');
+    const language = getLocalStorageObject('locale');
     switch (language) {
       case 'zh-tw':
         this.language = MapLanguageEnum.TW;
@@ -459,7 +464,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     if (this.uiFlag.progress === 100) {
       this.uiFlag.progress = 30;
       delete this.eventInfo.eventId;
-      const token = this.utils.getToken();
+      const token = this.authService.token;
       const { eventInfo, eventDetail } = this;
       const body = {
         token,
@@ -507,7 +512,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   uploadImg(eventId: number) {
     let imgArray = [];
     let formData = new FormData();
-    const token = this.utils.getToken();
+    const token = this.authService.token;
     const { theme, content, applyFee } = this.imgUpload;
     formData.set('token', token);
     formData.set('targetType', '3');
@@ -611,7 +616,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     const { progress } = this.uiFlag;
     if (progress === 100) {
       this.uiFlag.progress = 30;
-      const token = this.utils.getToken();
+      const token = this.authService.token;
       const { eventInfo, eventDetail, compareContent, eventId: targetEventId } = this;
       const newContent = { eventInfo, eventDetail };
       const editContent = this.getEditContent(compareContent, newContent);
@@ -694,19 +699,19 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           const editedObjSize = Object.keys(editedObj).length;
           if (editedObjSize > 0) {
             editPart = {
-              [_key]: editedObj,
-              ...editPart
+              ...editPart,
+              [_key]: editedObj
             };
 
           } else {
             // eventInfo, eventDetail沒編輯亦要帶空物件
             editPart = {
-              [_key]: {},
-              ...editPart
+              ...editPart,
+              [_key]: {}
             };
 
           }
-          
+
           break;
         case 'applyDate':
         case 'raceDate':
@@ -771,7 +776,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       for (let _key in oldObj) {
         const _oldValue = oldObj[_key];
         const _newValue = newObj[_key];
-
         if (_newValue !== _oldValue) isDifferent = true;
       }
 
@@ -1220,7 +1224,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   getSelectMapName(mapId: number = null) {
     const { mapList, eventInfo, language } = this;
-    if (eventInfo && mapList && (!mapId || mapId > 0)) {
+    if (eventInfo && mapList && mapId && mapId > 0) {
       const { cloudrunMapId } = eventInfo;
       const id = mapId ?? cloudrunMapId;
       const index = mapList.findIndex(_map => _map.mapId == id);
@@ -1879,7 +1883,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     };
 
     const eventDraft = JSON.stringify(draft);
-    this.utils.setLocalStorageObject('eventDraft', eventDraft);
+    setLocalStorageObject('eventDraft', eventDraft);
   }
 
   /**

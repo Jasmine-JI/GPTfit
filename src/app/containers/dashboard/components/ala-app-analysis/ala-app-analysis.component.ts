@@ -8,6 +8,7 @@ import { GroupService } from '../../../../shared/services/group.service';
 import { Subject, fromEvent, Subscription } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { HttpParams } from '@angular/common/http';
+import { AuthService } from '../../../../core/services/auth.service';
 
 enum StatisticTypeEnum {
   sports = 1,
@@ -87,7 +88,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    * api 4003 reqbody
    */
   imageReqBody = {
-    token: this.utils.getToken(),
+    token: this.authService.token,
     objectType: ObjType.all,
     subset: false,
     imgType: AlbumType.all
@@ -136,7 +137,8 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
   constructor(
     private alaAppAnalysisService: AlaAppAnalysisService,
     private utils: UtilsService,
-    private groupService: GroupService
+    private groupService: GroupService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -380,7 +382,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    */
   getGroupSearch(str: string) {
     const body = {
-      token: this.utils.getToken(),
+      token: this.authService.token,
       searchName: str
     };
     this.groupService.searchGroup(body).subscribe(res => {
@@ -593,7 +595,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    */
   imgConditionRecovery() {
     this.imageReqBody = {
-      token: this.utils.getToken(),
+      token: this.authService.token,
       objectType: ObjType.all,
       subset: false,
       imgType: AlbumType.all
@@ -611,7 +613,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
     let body: any;
     if (statisticMethod === 'pre') {
       body = {
-        token: this.utils.getToken(),
+        token: this.authService.token,
         searchFileType: statisticType,
         searchTime: this.searchTime,
         filterCondition: this.filterCondition
@@ -680,7 +682,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
     condition: any
   ) {
     const body = {
-      token: this.utils.getToken(),
+      token: this.authService.token,
       searchFileType,
       searchTime,
       filterCondition: {}

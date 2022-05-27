@@ -1,6 +1,6 @@
 import { fromEvent, merge } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import dayjs from 'dayjs';
+import { QueryString } from '../enum/query-string';
 
 export const DEFAULT_MAXLENGTH = {
   TEXT: 100,
@@ -50,7 +50,7 @@ export function debounce(func, wait) {
  * @param key {any}-儲存localStorage時所使用的名稱
  * @param value {any}
  */
-export function setLocalStorageObject(key, value) {
+export function setLocalStorageObject(key: string, value: any) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
@@ -58,9 +58,19 @@ export function setLocalStorageObject(key, value) {
  * 取得指定的localStorage資訊
  * @param key {any}-儲存localStorage時所使用的名稱
  */
-export function getLocalStorageObject(key) {
+export function getLocalStorageObject(key: string) {
   const value = localStorage.getItem(key);
   return value && JSON.parse(value);
+}
+
+/**
+ * 移除指定的localStorage資訊
+ * @param key {string}-儲存localStorage時所使用的名稱
+ */
+export function removeLocalStorageObject(key: string) {
+  if (getLocalStorageObject(key)) {
+    localStorage.removeItem(key);
+  }
 }
 
 /**
@@ -174,6 +184,19 @@ export function getUrlQueryStrings(search: string = undefined) {
 }
 
 /**
+ * 將參數物件轉為url query string
+ * @param query {any}-參數物件
+ */
+export function setUrlQueryString(query: any) {
+  let queryString = '';
+  Object.entries(query).forEach(([key, value]) => {
+    queryString += `${key}=${value}`;
+  });
+
+  return queryString ? `?${queryString}` : queryString;
+}
+
+/**
  * 四捨五入至小數點特定位數
  * @param decimal {number}-四捨五入位數
  * @param digit {number}-位數
@@ -228,6 +251,21 @@ export function getFtpZoneTranslation(translate: TranslateService) {
 }
 
 /**
+ * 取得各肌群翻譯詞彙
+ * @param translate {TranslateService}-翻譯套件
+ */
+export function getMuscleGroupTranslation(translate: TranslateService) {
+  return [
+    translate.instant('universal_muscleName_armMuscles'),
+    translate.instant('universal_muscleName_pectoralsMuscle'),
+    translate.instant('universal_muscleName_shoulderMuscle'),
+    translate.instant('universal_muscleName_backMuscle'),
+    translate.instant('universal_muscleName_abdominalMuscle'),
+    translate.instant('universal_muscleName_legMuscle')
+  ];
+}
+
+/**
  * 計算百分比數據
  * @param molecular {number}-分子
  * @param denominator {number}-分母
@@ -260,4 +298,106 @@ export function getFileInfoParam(info: string) {
   });
 
   return result;
+}
+
+/**
+ * 將數值依係數轉換為另一值
+ * @param value {number}-待轉換的值
+ * @param convert {boolean}-是否轉換
+ * @param forward {boolean}-是否為公制轉英制
+ * @param coefficient {number}-轉換係數
+ * @param digit {number}-四捨五入的位數
+ */
+export function valueConvert(
+  value: number,
+  convert: boolean,
+  forward: boolean,
+  coefficient: number,
+  digit: number = null
+) {
+  if (convert) value = forward ? value / coefficient : value * coefficient;
+  return digit !== null ? mathRounding(value, digit) : value;
+}
+
+/**
+ * 計算兩點gpx之間的距離（大圓距離）
+ * @param gpxA {Array<number>}
+ * @param gpxB {Array<number>}
+ */
+export function countDistance(gpxA: Array<number>, gpxB: Array<number>) {
+  const earthR = 6371;  // km
+  const radConst = Math.PI / 180;
+  const [φA, λA] = [...gpxA];
+  const [φB, λB] = [...gpxB];
+  if (φA !== φB || λA !== λB) {
+    const [φRA, λRA] = [...[φA * radConst, λA * radConst]];
+    const [φRB, λRB] = [...[φB * radConst, λB * radConst]];
+    const sigma = Math.acos(Math.sin(φRA) * Math.sin(φRB) + Math.cos(φRA) * Math.cos(φRB) * Math.cos(Math.abs(λRB - λRA)));
+    return +(earthR * sigma * 1000).toFixed(0);
+  } else {
+    return 0;
+  }
+  
+}
+
+/**
+ * 將query string物件內有效的參數轉為定義之header名稱
+ * @param query {any}-url query string物件
+ */
+export function headerKeyTranslate(query: any) {
+  let option = {};
+  Object.entries(query).forEach(([_key, _value]) => {
+    switch (_key) {
+      case QueryString.deviceName:
+        option = { deviceName: _value, ...option };
+        break;
+      case QueryString.appName:
+        option = { appName: _value, ...option };
+        break;
+      case QueryString.appVersionCode:
+        option = { appVersionCode: _value, ...option };
+        break;
+      case QueryString.appVersionName:
+        option = { appVersionName: _value, ...option };
+        break;
+      case QueryString.equipmentSN:
+        option = { equipmentSN: _value, ...option };
+        break;
+    }
+
+  });
+
+  return option;
+}
+
+/**
+ * 將字串轉為有效base64字串
+ * @param value {string}-待轉換之字串
+ */
+export function buildBase64ImgString(value: string) {
+  if (!value) {
+    return '';
+  } else if (value.indexOf('data:image') > -1) {
+    return value;
+  } else if (value.indexOf('https://') > -1) {
+    return value;
+  } else {
+    return `data:image/jpg; base64, ${value}`.replace(/\s+/g, '');
+  }
+}
+
+/**
+ * 取得現在時間
+ * @param timeUnit {'s' | 'ms'}-時間單位
+ * @author kidin-1101216
+ */
+export function getCurrentTimestamp(timeUnit: 's' | 'ms' = 's') {
+  const currentTimeStamp = (new Date()).getTime();
+  switch (timeUnit) {
+    case 's':
+      return Math.round(currentTimeStamp / 1000);
+    case 'ms':
+      return currentTimeStamp;
+  }
+
 }

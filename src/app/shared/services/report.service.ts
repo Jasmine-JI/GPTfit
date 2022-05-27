@@ -125,53 +125,6 @@ export class ReportService {
   }
 
   /**
-   * 回傳肌肉所屬肌群
-   * @param muscleCode {MuscleCode}-肌肉部位編碼
-   * @return MusecleGroup
-   * @author kidin-1100526
-   */
-  getBelongMuscleGroup(muscleCode: MuscleCode): MuscleGroup {
-    switch (muscleCode) {
-      case MuscleCode.bicepsInside:
-      case MuscleCode.triceps:
-      case MuscleCode.wristFlexor:
-        return MuscleGroup.armMuscle;
-      case MuscleCode.pectoralsMuscle:
-      case MuscleCode.pectoralisUpper:
-      case MuscleCode.pectoralisLower:
-      case MuscleCode.pectoralsInside:
-      case MuscleCode.pectoralsOutside:
-      case MuscleCode.frontSerratus:
-        return MuscleGroup.pectoralsMuscle;
-      case MuscleCode.shoulderMuscle:
-      case MuscleCode.deltoidMuscle:
-      case MuscleCode.deltoidAnterior:
-      case MuscleCode.deltoidLateral:
-      case MuscleCode.deltoidPosterior:
-      case MuscleCode.trapezius:
-        return MuscleGroup.shoulderMuscle;
-      case MuscleCode.backMuscle:
-      case MuscleCode.latissimusDorsi:
-      case MuscleCode.erectorSpinae:
-        return MuscleGroup.backMuscle;
-      case MuscleCode.abdominalMuscle:
-      case MuscleCode.rectusAbdominis:
-      case MuscleCode.rectusAbdominisUpper:
-      case MuscleCode.rectusAbdominisLower:
-      case MuscleCode.abdominisOblique:
-        return MuscleGroup.abdominalMuscle;
-      case MuscleCode.legMuscle:
-      case MuscleCode.hipMuscle:
-      case MuscleCode.quadricepsFemoris:
-      case MuscleCode.hamstrings:
-      case MuscleCode.ankleFlexor:
-      case MuscleCode.gastrocnemius:
-        return MuscleGroup.legMuscle;
-    }
-    
-  }
-
-  /**
    * 計算BMI
    * @param height {number}-身高(cm)
    * @param weight {number}-體重(kg)

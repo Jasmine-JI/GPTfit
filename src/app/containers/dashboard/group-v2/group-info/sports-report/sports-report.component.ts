@@ -14,15 +14,18 @@ import { UserService } from '../../../../../core/services/user.service';
 import { DateUnit } from '../../../../../shared/enum/report';
 import { ReportDateUnit } from '../../../../../shared/classes/report-date-unit';
 import { Api21xxService } from '../../../../../core/services/api-21xx.service';
-import { GroupSportsReport, GroupSportsReportInfo, GroupSportsChartData } from '../../../../../shared/classes/sports-report';
+import { GroupSportsChartData } from '../../../../../shared/classes/sports-report/group-sports-chart-data';
+import { GroupSportsReport } from '../../../../../shared/classes/sports-report/sports-report';
+import { GroupSportsReportInfo } from '../../../../../shared/classes/sports-report/group-sports-report-info';
 import { AllGroupMember } from '../../../../../shared/classes/all-group-member';
 import { ReportService } from '../../../../../core/services/report.service';
 import { SportsTarget } from '../../../../../shared/classes/sports-target';
 import { SportsParameter } from '../../../../../shared/models/sports-report';
-import { Unit, mi, ft, lb } from '../../../../../shared/models/bs-constant';
+import { mi, ft, lb } from '../../../../../shared/models/bs-constant';
+import { Unit } from '../../../../../shared/enum/value-conversion';
 import { speedToPace } from '../../../../../shared/utils/sports';
 import { SportAnalysisSort } from '../../../../../shared/classes/sport-analysis-sort';
-import { AnalysisOption } from '../../../../professional/classes/analysis-option';
+import { ProfessionalAnalysisOption } from '../../../../professional/classes/professional-analysis-option';
 import { AnalysisSportsColumn } from '../../../../professional/enum/report-analysis';
 import { AnalysisAssignMenu } from '../../../../professional/models/report-analysis';
 import { SPORT_TYPE_COLOR, trendChartColor } from '../../../../../shared/models/chart-data';
@@ -31,6 +34,7 @@ import { MuscleGroup } from '../../../../../shared/enum/weight-train';
 import { REGEX_GROUP_ID } from '../../../../../shared/models/utils-constant';
 import { GlobalEventsService } from '../../../../../core/services/global-events.service';
 import { DefaultDateRange } from '../../../../../shared/classes/default-date-range';
+import { AuthService } from '../../../../../core/services/auth.service';
 
 
 const ERROR_MESSAGE = 'Error! Please try again later.';
@@ -129,7 +133,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   /**
    * 分析列表篩選群組皆設定
    */
-  groupAnalysisOption = new AnalysisOption({
+  groupAnalysisOption = new ProfessionalAnalysisOption({
     reportType: 'sports',
     sportType: SportType.all,
     object: 'group',
@@ -140,7 +144,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   /**
    * 分析列表篩選顯示欄位設定
    */
-  personalAnalysisOption = new AnalysisOption({
+  personalAnalysisOption = new ProfessionalAnalysisOption({
     reportType: 'sports',
     sportType: SportType.all,
     object: 'person',
@@ -189,7 +193,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private api21xxService: Api21xxService,
     private reportService: ReportService,
-    private globalEventsService: GlobalEventsService
+    private globalEventsService: GlobalEventsService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -374,7 +379,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
             const targetUserId = res.getNoRepeatMemberId(id);
             const { utcStartTime, utcEndTime } = baseTime;
             const baseBody = {
-              token: this.userService.getToken(),
+              token: this.authService.token,
               targetUserId,
               filterStartTime: utcStartTime,
               filterEndTime: utcEndTime,
@@ -812,20 +817,20 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
   /**
    * 群組分析之群組篩選與欄位設定變更，依設定顯示項目
-   * @param e {AnalysisOption}-群組篩選與欄位設定
+   * @param e {ProfessionalAnalysisOption}-群組篩選與欄位設定
    * @author kidin-1110331
    */
-  groupOptionChange(e: AnalysisOption) {
+  groupOptionChange(e: ProfessionalAnalysisOption) {
     this.groupAnalysisOption = e;
     this.changeDetectorRef.markForCheck();
   }
 
   /**
    * 個人分析分析之群組篩選與欄位設定變更，依設定顯示項目
-   * @param e {AnalysisOption}-群組篩選與欄位設定
+   * @param e {ProfessionalAnalysisOption}-群組篩選與欄位設定
    * @author kidin-1110401
    */
-  personalOptionChange(e: AnalysisOption) {
+  personalOptionChange(e: ProfessionalAnalysisOption) {
     this.personalAnalysisOption = e;
     this.changeDetectorRef.markForCheck();
   }

@@ -3,12 +3,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../people-selector-win/people-selector-win.component';
 import { GroupService } from '../../../../shared/services/group.service';
 import { cloneDeep } from 'lodash';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
+import { UserService } from '../../../../core/services/user.service';
 import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { AccessRight } from '../../../../shared/models/accessright';
+import { AccessRight } from '../../../../shared/enum/accessright';
 
 @Component({
   selector: 'app-inner-settings',
@@ -34,16 +34,17 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private groupService: GroupService,
     private router: Router,
-    private userProfileService: UserProfileService
+    private userService: UserService
   ) {}
 
   ngOnInit() {
     this.fetchInnerAdmin();
-    this.userProfileService.getRxUserProfile().pipe(
+    this.userService.getUser().rxUserProfile.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
-      this.userId = res['userId'];
-      this.maxAccessRight = res['systemAccessRight'][0];
+      const { userId, systemAccessright } = this.userService.getUser();
+      this.userId = userId;
+      this.maxAccessRight = systemAccessright;
     });
   }
 

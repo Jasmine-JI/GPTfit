@@ -5,6 +5,8 @@ User-agent: *
 Disallow: /enroll/*
 Disallow: /event/*
 Disallow: /system/*
+Disallow: /resetPassword-web/*
+Disallow: /pair/*
 Disallow: /403
 Disallow: /404
 

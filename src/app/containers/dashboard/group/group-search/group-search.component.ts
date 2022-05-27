@@ -10,8 +10,9 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { UtilsService } from '../../../../shared/services/utils.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { HashIdService } from '../../../../shared/services/hash-id.service';
+import { getUrlQueryStrings } from '../../../../shared/utils/index';
 
 @Component({
   selector: 'app-group-search',
@@ -39,15 +40,16 @@ export class GroupSearchComponent implements OnInit {
   sortTable: MatSort;
   @ViewChild('filter', {static: false})
   filter: ElementRef;
+
   constructor(
     private groupService: GroupService,
     private router: Router,
-    private utils: UtilsService,
-    private hashIdService: HashIdService
+    private hashIdService: HashIdService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
-    const queryStrings = this.utils.getUrlQueryStrings(location.search);
+    const queryStrings = getUrlQueryStrings(location.search);
     const { pageNumber, searchWords, groupLevel } = queryStrings;
 
     this.searchWords = searchWords || '';
@@ -57,7 +59,7 @@ export class GroupSearchComponent implements OnInit {
       pageSize: 10,
       length: null
     };
-    this.token = this.utils.getToken();
+    this.token = this.authService.token;
     // 分頁切換時，重新取得資料
     this.paginator.page.subscribe((page: PageEvent) => {
       this.currentPage = page;

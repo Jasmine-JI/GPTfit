@@ -1,132 +1,154 @@
 @import 'overflow-scroll';
 
-$listBorderColor: rgb(229, 229, 229);
+$switch-bar-width: 10px;
+$switch-bar-height: 36px;
+$switch-rod-size: 18px;
+$slider-bar-height: 12px;
+$slider-bar-width: 100px;
+$slider-over-color: rgba(240, 166, 168, 1);
+$slider-yet-color: rgba(230, 230, 230, 1);
+$rod-color: rgba(209, 66, 122, 1);
 
-.muscleMapSec {
-  width: 55%;
-}
 
-.musclePartList {
-  @include overflow-y-scroll();
-  width: 45%;
-  max-height: 500px;
-  flex-wrap: wrap;
-  justify-content: space-around;
-}
-
-.muscleGroupList {
-  justify-content: center;
+.muscle__map__figure {
   align-items: center;
-  width: 47%;
-  border: 1px solid grey;
-  border-radius: 5px;
-  padding: 2px 0px;
-  min-width: 120px;
-  max-height: 160px;
-  margin: 2px 0px;
+  margin-bottom: 20px;
+}
+
+.muscle__map__distribution {
+  display: flex;
+  justify-content: center;
+}
+
+.slider__section {
+  flex-wrap: wrap-reverse;
+  justify-content: center;
+}
+
+.slider__row, .date__type__switcher {
+  margin: 10px 0;
+}
+
+.date__type__switcher {
+  align-items: center;
+}
+
+.date__type__switch {
+  position: relative;
+  width: $switch-bar-width;
+  height: $switch-bar-height;
+  border-radius: $switch-bar-width;
+  background-color: rgba(230, 230, 230, 1);
   cursor: pointer;
-
-  i {
-    font-size: 40px;
-  }
 }
 
-.muscleMapSvg {
-  height: 80px;
+.date__type__switch--active {
+  background-color: $slider-over-color;
 }
 
-.musclePartInfo {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
-  margin-left: 10px;
+.switch--disable {
+  position: absolute;
+  width: $switch-bar-width;
+  height: $switch-bar-height;
+  border-radius: $switch-bar-width;
+  background-color: $slider-over-color;
+  transform: scaleY(0);
 }
 
-.muscleData {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin-left: 5px;
+.switch--active {
+  transform: scaleY(1);
 }
 
-.muscleDataText {
-  margin: 0px;
-  text-align: end;
+.switch__rod {
+  position: absolute;
+  height: $switch-rod-size;
+  width: $switch-rod-size;
+  border-radius: 50%;
+  background-color: $rod-color;
+  left: calc(-#{$switch-rod-size - $switch-bar-width} / 2);
 }
 
-@media(max-width: 1200px) {
-  .musclePartList {
-    max-height: 415px;
-  }
+.switch__rod--active {
+  transform: translateY($switch-bar-height - $switch-rod-size);
 }
+
+.date__slider {
+  position: relative;
+  background-color: $slider-over-color;
+  height: $slider-bar-height;
+  border-radius: $slider-bar-height;
+  min-width: $slider-bar-width;
+}
+
+.slider__row {
+  align-items: center;
+}
+
+.date__description {
+  font-size: 12px;
+  color: rgba(135, 135, 135, 1);
+  margin: 0 15px;
+}
+
+.slider__over__yet {
+  position: absolute;
+  z-index: 1;
+  background-color: $slider-yet-color;
+  height: $slider-bar-height;
+  width: $slider-bar-width;
+  border-radius: $slider-bar-height;
+}
+
+.date__slider__rod {
+  $size: 20px;
+  position: absolute;
+  z-index: 2;
+  height: $size;
+  width: $size;
+  border-radius: $size;
+  background-color: rgba(209, 66, 122, 1);
+  left: calc(-#{$size} / 2);
+  top: calc(-#{$size - $slider-bar-height} / 2);
+  user-select: none;
+  cursor: grab;
+}
+
+
+/************************************************ media ********************************************/
 
 @media(max-width: 940px) {
 
-  .muscleMapSec {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .muscleMapDistribution {
+  .muscle__map__distribution {
     width: 60%;
     margin: 0 auto;
   }
 
-  .musclePartList {
-    width: 60%;
-    margin: 0 auto;
-  }
 }
 
 @media(max-width: 840px) {
-  .muscleMapDistribution {
+  .muscle__map__distribution {
     width: 70%;
   }
 
-  .musclePartList {
-    width: 70%;
-  }
 }
 
 @media(max-width: 740px) {
-  .muscleMapDistribution {
+  .muscle__map__distribution {
     width: 80%;
   }
 
-  .musclePartList {
-    width: 80%;
-  }
 }
 
 @media(max-width: 640px) {
-  .muscleMapDistribution {
+  .muscle__map__distribution {
     width: 90%;
-  }
-
-  .musclePartList {
-    width: 90%;
-  }
-}
-
-@media(max-width: 540px) {
-  .muscleMapDistribution {
-    width: 100%;
-  }
-
-  .musclePartList {
-    width: 100%;
   }
 
 }
 
-@media print {
-  .media-940-Col {
-    flex-direction: row;
-  }
-
-  .musclePartList {
+@media(max-width: 540px) {
+  .muscle__map__distribution {
     width: 100%;
   }
+
 }

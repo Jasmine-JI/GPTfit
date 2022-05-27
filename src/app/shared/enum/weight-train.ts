@@ -1,4 +1,15 @@
+/**
+ * api 1010用重訓程度係數
+ */
+export enum WeightTrainingLevel {
+  novice = 50,
+  metacarpus = 100,
+  asept = 200
+}
 
+/**
+ * 重訓程度係數
+ */
 export enum Proficiency {
   asept = 1,
   metacarpus = 2,
@@ -127,8 +138,6 @@ export enum MuscleCode {
   wristFlexor = 128
 }
 
-
-
 /**
  * 肌群代碼（目前無文件規範，故自定義）
  */
@@ -139,4 +148,16 @@ export enum MuscleGroup {
   backMuscle,
   abdominalMuscle,
   legMuscle
+}
+
+/**
+ * 重訓動作分析欄位
+ */
+export enum MuscleAnalysisColumn {
+  oneRepMax = 1,
+  totalSets,
+  totalReps,
+  avgWeightKg,
+  trainingLevel,
+  belongMuscleGroup
 }

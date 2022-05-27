@@ -7,22 +7,23 @@ import {
 } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { GroupService } from '../../../shared/services/group.service'
 import { UtilsService } from '../../../shared/services/utils.service';
 import { HashIdService } from '../../../shared/services/hash-id.service';
+import { ProfessionalService } from '../../professional/services/professional.service';
+import { AccessRight } from '../../../shared/enum/accessright';
+import { UserService } from '../../../core/services/user.service';
 
 @Injectable()
 export class EditGroupGuard implements CanActivate {
 
-  systemAccessRight = 99;
-  groupAccessRight = 99;
   visittingId = '';
 
   constructor(
     private utils: UtilsService,
     private router: Router,
     private hashIdService: HashIdService,
-    private groupService: GroupService
+    private professoinalService: ProfessionalService,
+    private userService: UserService
   ) {}
 
   canActivate(
@@ -37,17 +38,15 @@ export class EditGroupGuard implements CanActivate {
     }
 
     const groupLevel = +this.utils.displayGroupLevel(this.visittingId);
-    return this.groupService.checkAccessRight(this.visittingId).pipe(
-      map(res => {
-        const maxAccessRight = res[0] || 99;
-        if (maxAccessRight <= groupLevel) {
-          return true;
-        } else {
-          const hashGroupId = this.hashIdService.handleGroupIdEncode(this.visittingId);
-          this.router.navigateByUrl(`/dashboard/group-info/${hashGroupId}`);
-          return false;
-        }
+    return this.professoinalService.groupAccessright.pipe(
+      map(groupAccessright => {
+        const { systemAccessright } = this.userService.getUser();
+        if (systemAccessright <= AccessRight.marketing) return true;
+        if (groupAccessright <= groupLevel) return true;
 
+        const hashGroupId = this.hashIdService.handleGroupIdEncode(this.visittingId);
+        this.router.navigateByUrl(`/dashboard/group-info/${hashGroupId}`);
+        return false;
       })
 
     );

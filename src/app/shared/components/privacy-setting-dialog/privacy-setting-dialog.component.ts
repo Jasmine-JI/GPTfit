@@ -1,8 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { UtilsService } from '../../services/utils.service';
 import { TranslateService } from '@ngx-translate/core';
-import { UserProfileService } from '../../services/user-profile.service';
+import { UserService } from '../../../core/services/user.service';
 
 @Component({
   selector: 'app-privacy-setting-dialog',
@@ -34,8 +33,7 @@ export class PrivacySettingDialogComponent implements OnInit {
 
   constructor(
     private dialog: MatDialog,
-    private utils: UtilsService,
-    private userProfileService: UserProfileService,
+    private userService: UserService,
     private translate: TranslateService,
     @Inject(MAT_DIALOG_DATA) private data: any
   ) {}
@@ -76,24 +74,15 @@ export class PrivacySettingDialogComponent implements OnInit {
   }
 
   confirm() {
-    const body = {
-      token: this.utils.getToken() || '',
-      userProfile: {
-        privacy: {
-          activityTracking: this.tempActivityTracking,
-          activityTrackingReport: this.tempActivityTrackingReport,
-          lifeTrackingReport: this.tempLifeTracking
-        }
+    const updateContent = {
+      privacy: {
+        activityTracking: this.tempActivityTracking,
+        activityTrackingReport: this.tempActivityTrackingReport,
+        lifeTrackingReport: this.tempLifeTracking
       }
     };
 
-    this.userProfileService.updateUserProfile(body).subscribe(() => {
-      // 重新存取身體資訊供各種圖表使用-kidin-1081212
-      const refreshBody = {
-        token : this.utils.getToken() || ''
-      };
-
-      this.userProfileService.refreshUserProfile(refreshBody);
+    this.userService.updateUserProfile(updateContent).subscribe(() => {
       this.onConfirm();
       this.dialog.closeAll();
     });

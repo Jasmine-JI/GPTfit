@@ -2,11 +2,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UtilsService } from '../../../../shared/services/utils.service';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { formTest } from '../../../../shared/models/form-test';
 import { Subject, Subscription, fromEvent, combineLatest, merge, of } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { pageNotFoundPath, officialHomePage } from '../../models/official-activity-const';
+import { pageNotFoundPath } from '../../models/official-activity-const';
 import { CloudrunService } from '../../../../shared/services/cloudrun.service';
 import { RankType } from '../../../../shared/models/cloudrun-leaderboard';
 import { ProductShipped, HaveProduct, ApplyStatus, PaidStatusEnum, Nationality } from '../../models/activity-content';
@@ -16,8 +15,10 @@ import { PaidStatusPipe } from '../../pipes/paid-status.pipe';
 import { ShippedStatusPipe } from '../../pipes/shipped-status.pipe';
 import { SportTimePipe } from '../../../../shared/pipes/sport-time.pipe';
 import { TranslateService } from '@ngx-translate/core';
-import { Sex } from '../../../../shared/models/user-profile-info';
+import { Sex } from '../../../../shared/enum/personal';
 import { AgePipe } from '../../../../shared/pipes/age.pipe';
+import { getCurrentTimestamp, deepCopy } from '../../../../shared/utils/index';
+import { AuthService } from '../../../../core/services/auth.service';
 
 
 type SortType = 'rank' | 'group' | 'paidStatus' | 'orderStatus' | 'awardStatus' | 'paidDate' | 'shippedDate';
@@ -133,14 +134,14 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private utils: UtilsService,
     private router: Router,
-    private userProfileService: UserProfileService,
     private cloudrunService: CloudrunService,
     private snackbar: MatSnackBar,
     private paidStatusPipe: PaidStatusPipe,
     private shippedStatusPipe: ShippedStatusPipe,
     private translate: TranslateService,
     private agePipe: AgePipe,
-    private sportTimePipe: SportTimePipe
+    private sportTimePipe: SportTimePipe,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -154,7 +155,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    * 從localstorage取得token
    */
   getToken() {
-    const token = this.utils.getToken();
+    const token = this.authService.token;
     if (token) {
       this.token = token;
       this.searchInfo.token = token;
@@ -275,10 +276,10 @@ export class ContestantListComponent implements OnInit, OnDestroy {
       ).subscribe(bindResult => {
         const [normalList, leavingList, leaveList] = this.filterApplyStatus(bindResult);
         this.participantList = normalList;
-        this.backupLeavingList = this.utils.deepCopy(leavingList);
-        this.leavingList = this.utils.deepCopy(leavingList);
-        this.backupLeaveList = this.utils.deepCopy(leaveList);
-        this.leaveList = this.utils.deepCopy(leaveList);
+        this.backupLeavingList = deepCopy(leavingList);
+        this.leavingList = deepCopy(leavingList);
+        this.backupLeaveList = deepCopy(leaveList);
+        this.leaveList = deepCopy(leaveList);
         of(this.participantList).pipe(
           map(list => this.sortList(list)),
           map(sortList => this.assignRank(sortList))
@@ -724,7 +725,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    * @author kidin-1110221
    */
   filterLeavingList(item: string, value: string | number) {
-    const backupLeavingList = this.utils.deepCopy(this.backupLeavingList);
+    const backupLeavingList = deepCopy(this.backupLeavingList);
     this.leavingList = item ? backupLeavingList.filter(_list => _list[item] === value) : backupLeavingList;
   }
 
@@ -735,7 +736,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    * @author kidin-1110221
    */
   filterLeaveList(item: string, value: string | number) {
-    const backupLeaveList = this.utils.deepCopy(this.backupLeaveList);
+    const backupLeaveList = deepCopy(this.backupLeaveList);
     this.leaveList = item ? backupLeaveList.filter(_list => _list[item] === value) : backupLeaveList;
   }
 
@@ -925,7 +926,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
       if (success) {
         const leaveIndex = this.backupLeavingList.findIndex(_list => _list.userId == targetUserId);
         const [leaveContestant] = this.backupLeavingList.splice(leaveIndex, 1);
-        this.leavingList = this.utils.deepCopy(this.backupLeavingList);
+        this.leavingList = deepCopy(this.backupLeavingList);
         this.backupLeaveList.push(leaveContestant);
         this.leaveList.push(leaveContestant);
       }
@@ -1067,7 +1068,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         ServerCurrentTimeStamp = 0;
         break;
       case ProductShipped.shipped:
-        ServerCurrentTimeStamp = this.utils.getCurrentTimestamp() + this.serverTimeDiff;
+        ServerCurrentTimeStamp = getCurrentTimestamp() + this.serverTimeDiff;
         break;
       case ProductShipped.unShip:
         return {};
@@ -1459,7 +1460,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    * @author kidin-1101216
    */
   saveServerTime(serverTime: number) {
-    const currentTimeStamp = this.utils.getCurrentTimestamp();
+    const currentTimeStamp = getCurrentTimestamp();
     this.serverTimeDiff = currentTimeStamp - serverTime;
   }
 

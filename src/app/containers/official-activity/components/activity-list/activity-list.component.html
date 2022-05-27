@@ -143,7 +143,7 @@
             <li
               class="flexRow status__menu__content"
               (click)="chooseListStatus($event, ListStatus.notAudit)"
-              *ngIf="userProfile && userProfile.systemAccessRight[0] <= AccessRight.marketing"
+              *ngIf="systemAccessright <= AccessRight.marketing"
             >
               <span class="drop__menu__check">
                 <ng-container 
@@ -161,7 +161,7 @@
     <div
       class="flexRow"
       *ngIf="
-        passAdmin.includes(userProfile?.systemAccessRight[0])
+        passAdmin.includes(systemAccessright)
         && !uiFlag.isMobile
         && uiFlag.currentPage === 'activity-list'
       "
@@ -191,7 +191,7 @@
       class="flexRow"
       style="position: relative; justify-content: flex-end;"
       *ngIf="
-        passAdmin.includes(userProfile?.systemAccessRight[0])
+        passAdmin.includes(systemAccessright)
         && uiFlag.isMobile
         && uiFlag.currentPage === 'activity-list'
       "

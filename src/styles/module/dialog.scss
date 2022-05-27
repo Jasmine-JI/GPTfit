@@ -59,6 +59,7 @@ $btn-padding: 5px 10px;
 }
 
 .dialog-confirmBtn {
+  position: relative;
   @include transition(background-color);
   @include button($btn-font-size, none, rgba(0, 0, 0, 0)) {
     color: rgba(112, 149, 255, 1);
@@ -70,4 +71,13 @@ $btn-padding: 5px 10px;
     @include transition(background-color);
   }
 
+}
+
+.dialog-confirmButton--disabled {
+  opacity: 0.5;
+}
+
+.dialog-loadingSpinner {
+  position: absolute;
+  margin: 0 auto;
 }

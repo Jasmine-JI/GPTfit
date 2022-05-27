@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import { Router } from '@angular/router';
-import { UtilsService } from '../../../../shared/services/utils.service';
+import { getUrlQueryStrings } from '../../../../shared/utils/index';
 
 @Component({
   selector: 'app-inner-device-pair',
@@ -16,12 +16,11 @@ export class InnerDevicePairComponent implements OnInit {
 
   constructor(
     public dialog: MatDialog,
-    private router: Router,
-    private utils: UtilsService
+    private router: Router
   ) {}
   
   ngOnInit() {
-    const queryStrings = this.utils.getUrlQueryStrings(location.search);
+    const queryStrings = getUrlQueryStrings(location.search);
     this.targetUserId = queryStrings.targetUserId;
   }
 
