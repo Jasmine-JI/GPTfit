@@ -1,15 +1,17 @@
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MessageBoxComponent } from './../../../../../shared/components/message-box/message-box.component';
+import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
-import { UserProfileService } from './../../../../../shared/services/user-profile.service';
+import { UserService } from '../../../../../core/services/user.service';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-import { UtilsService } from './../../../../../shared/services/utils.service';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { PushMessageService } from '../../../services/push-message.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import dayjs from 'dayjs';
+import { NodejsApiService } from '../../../../../core/services/nodejs-api.service';
+import { AuthService } from '../../../../../core/services/auth.service';
+import { AccessRight } from '../../../../../shared/enum/accessright';
 
 
 @Component({
@@ -45,10 +47,10 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
     userId: []
   };
 
-  userProfile: any;
+  systemAccessright = this.userService.getUser().systemAccessright;
 
   req = {
-    token: this.utils.getToken(),
+    token: this.authService.token,
       filter: {},
       page: {
         index: 1,
@@ -57,37 +59,26 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
   };
 
   res: Array<any> = [];
-
   totalCount: number;
   currentPage: PageEvent;
-
   pushList: any;
 
+  readonly AccessRight = AccessRight;
+
   constructor(
-    private utils: UtilsService,
     private pushMessageService: PushMessageService,
-    private userProfileService: UserProfileService,
+    private userService: UserService,
     private dialog: MatDialog,
     private snackbar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private nodejsApiService: NodejsApiService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
-    this.getUserProfile();
     this.checkCurrentPage();
     this.getPushMessage();
     this.createClock();
-  }
-
-  /**
-   * 從rxjs取得使用者的userProfile
-   * @author kidin-1090922
-   */
-  getUserProfile() {
-    this.userProfileService.getRxUserProfile().subscribe(res => {
-      this.userProfile = res;
-    });
-
   }
 
   /**
@@ -156,7 +147,7 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
             userIdList: userIdArr
           };
 
-          return this.userProfileService.getUserList(body).pipe(
+          return this.nodejsApiService.getUserList(body).pipe(
             map(resp => {
               if (resp.resultCode !== 200) {
                 console.error(`${resp.apiCode}：${resp.resultMessage}`);
@@ -285,7 +276,7 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
    */
   cancelPush() {
     const body = {
-      token: this.utils.getToken(),
+      token: this.authService.token,
       pushNotifyId: [this.res[this.uiFlag.cancelIndex].pushNotifyId]
     };
 

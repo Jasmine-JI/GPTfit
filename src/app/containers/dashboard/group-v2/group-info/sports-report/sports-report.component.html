@@ -218,12 +218,12 @@
             } }}
           </p>
           <ng-container *ngIf="uiFlag.isCompareMode">
-            <span class="base__hrzone__trend">
+            <span class="report-baseHrzoneTrend">
               {{ reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD') }}
               ~
               {{ reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD') }}
             </span>
-            <span class="compare__hrzone__trend">
+            <span class="report-compareHrzoneTrend">
               {{ reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD') }}
               ~
               {{ reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD') }}
@@ -233,6 +233,7 @@
         <div class="report-chartFigure">
           <app-compare-hrzone-trend
             [data]="groupChartData.hrZoneTrend.chartData"
+            [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
           ></app-compare-hrzone-trend>
         </div>
       </div>
@@ -278,6 +279,7 @@
             [data]="groupChartData.totalSecondTrend.chartData"
             [type]="'totalTime'"
             [condition]="transformCondition"
+            [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
             *ngIf="groupChartData.totalSecondTrend.chartData"
           ></app-compare-column-trend>
         </div>
@@ -324,6 +326,7 @@
             [data]="groupChartData.caloriesTrend.chartData"
             [type]="'calories'"
             [condition]="transformCondition"
+            [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
             *ngIf="groupChartData.caloriesTrend.chartData"
           ></app-compare-column-trend>
         </div>
@@ -367,6 +370,7 @@
             [data]="groupChartData.achievementRate.chartData"
             [type]="'achievementRate'"
             [condition]="[]"
+            [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
             *ngIf="groupChartData.achievementRate.chartData"
           ></app-compare-column-trend>
         </div>
@@ -400,7 +404,7 @@
         endDate: reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD')
       }"></span>
     </div>
-    <div class="flexRow analysis__header__row">
+    <div class="flexRow report-analysisHeaderRow">
       <div *ngTemplateOutlet="analysisHeader; context: {
         isGroupAnalysis: true,
         columnType: 'groupName',
@@ -408,7 +412,7 @@
         className: 'analysis__name',
         showHeader: true
       }"></div>
-      <div class="flexRow analysis__data__row">
+      <div class="flexRow report-analysisDataRow">
         <div *ngTemplateOutlet="analysisHeader; context: {
           isGroupAnalysis: true,
           columnType: 'targetAchievedPeople',
@@ -592,20 +596,20 @@
         *ngFor="let _group of groupAnalysis.data; let index = index;"
       >
         <li
-          class="flexRow analysis__row"
+          class="flexRow report-analysisRow"
           (click)="showAssignGroupMenu($event, _group)"
           *ngIf="
             groupAnalysisOption.getLayerSelectStatus(_group.groupLevel)
             && (index < 10 || uiFlag.analysisSeeMoreGroup)
           "
         >
-          <div class="analysis__row__title analysis__name">
+          <div class="report-analysisRowTitle analysis__name">
             {{ _group.groupName }}
           </div>
-          <div class="flexCol analysis__data__section">
+          <div class="flexCol report-analysisDataSection">
             <div
-              class="flexRow analysis__data__row"
-              [class.analysis__base__row]="uiFlag.isCompareMode"
+              class="flexRow report-analysisDataRow"
+              [class.report-analysisBaseRow]="uiFlag.isCompareMode"
             >
               <span *ngTemplateOutlet="analysisData; context: {
                 data: getAchievedNumber(_group.totalPeople, _group.base.targetAchievedPeople).value,
@@ -757,8 +761,8 @@
               </div>
             </div>
             <div
-              class="flexRow analysis__data__row"
-              [class.analysis__compare__row]="uiFlag.isCompareMode"
+              class="flexRow report-analysisDataRow"
+              [class.report-analysisCompareRow]="uiFlag.isCompareMode"
               *ngIf="uiFlag.isCompareMode"
             >
               <span *ngTemplateOutlet="analysisData; context: {
@@ -897,9 +901,9 @@
         </li>
       </ng-container>
     </ul>
-    <div class="flexCenter see__more">
+    <div class="flexCenter report-seeMore">
       <button
-        class="see__more__button"
+        class="report-seeMoreButton"
         (click)="seeMoreGroup()"
         *ngIf="groupAnalysis.data.length > 10 && !uiFlag.analysisSeeMoreGroup"
       >
@@ -922,22 +926,24 @@
         ></app-analysis-option>
       </div>
     </div>
-    <div class="flexRow report-analysisHintArea" *ngIf="uiFlag.isCompareMode">
-      <span *ngTemplateOutlet="analysisDateHint; context: {
-        isBaseData: true,
-        startDate: reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD'),
-        endDate: reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD')
-      }"></span>
-      <span *ngTemplateOutlet="analysisDateHint; context: {
-        isBaseData: false,
-        startDate: reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD'),
-        endDate: reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD')
-      }"></span>
+    <div class="flexRow report-analysisHintArea">
+      <ng-container *ngIf="uiFlag.isCompareMode">
+        <span *ngTemplateOutlet="analysisDateHint; context: {
+          isBaseData: true,
+          startDate: reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD'),
+          endDate: reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD')
+        }"></span>
+        <span *ngTemplateOutlet="analysisDateHint; context: {
+          isBaseData: false,
+          startDate: reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD'),
+          endDate: reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD')
+        }"></span>
+      </ng-container>
       <span class="not__achieved__hint">
         {{ 'universal_vocabulary_missTarget' | translate }}
       </span>
     </div>
-    <div class="flexRow analysis__header__row">
+    <div class="flexRow report-analysisHeaderRow">
       <div *ngTemplateOutlet="analysisHeader; context: {
         isGroupAnalysis: false,
         columnType: 'memberName',
@@ -945,7 +951,7 @@
         className: 'analysis__name',
         showHeader: true
       }"></div>
-      <div class="flexRow analysis__data__row">
+      <div class="flexRow report-analysisDataRow">
         <div *ngTemplateOutlet="analysisHeader; context: {
           isGroupAnalysis: false,
           columnType: 'totalActivities',
@@ -1163,20 +1169,20 @@
         *ngFor="let _person of personAnalysis.data; let index = index;"
       >
         <li
-          class="flexRow analysis__row"
+          class="flexRow report-analysisRow"
           (click)="showAssignPersonMenu($event, _person)"
           *ngIf="index < 10 || uiFlag.analysisSeeMorePerson"
         >
           <div
-            class="analysis__row__title analysis__name"
+            class="report-analysisRowTitle analysis__name"
             [class.target__not__achieved]="!_person.base.openPrivacy || !_person.base.targetAchieved"
           >
             {{ _person.memberName }}
           </div>
-          <div class="flexCol analysis__data__section">
+          <div class="flexCol report-analysisDataSection">
             <div
-              class="flexRow analysis__data__row"
-              [class.analysis__base__row]="uiFlag.isCompareMode"
+              class="flexRow report-analysisDataRow"
+              [class.report-analysisBaseRow]="uiFlag.isCompareMode"
             >
               <span *ngTemplateOutlet="analysisData; context: {
                 data: getPersonalData(_person.base, 'totalActivities'),
@@ -1396,8 +1402,8 @@
               </div>
             </div>
             <div
-              class="flexRow analysis__data__row"
-              [class.analysis__compare__row]="uiFlag.isCompareMode"
+              class="flexRow report-analysisDataRow"
+              [class.report-analysisCompareRow]="uiFlag.isCompareMode"
               *ngIf="uiFlag.isCompareMode"
             >
               <span *ngTemplateOutlet="analysisData; context: {
@@ -1600,9 +1606,9 @@
         </li>
       </ng-container>
     </ul>
-    <div class="flexCenter see__more">
+    <div class="flexCenter report-seeMore">
       <button
-        class="see__more__button"
+        class="report-seeMoreButton"
         (click)="seeMorePerson()"
         *ngIf="personAnalysis.data.length > 10 && !uiFlag.analysisSeeMorePerson"
       >
@@ -1889,18 +1895,18 @@
       </span>
     </div>
     <ng-container *ngIf="columnType">
-      <div class="sort__arrow">
+      <div class="report-sortArrow">
         <ng-container
           *ngIf="isGroupAnalysis ? groupAnalysis.isSorting(columnType) : personAnalysis.isSorting(columnType)"
         >
           <mat-icon
-            class="sort_arrow__icon"
+            class="report-sortArrowIcon"
             *ngIf="isGroupAnalysis ? !groupAnalysis.isAscending : !personAnalysis.isAscending"
           >
             arrow_upward
           </mat-icon>
           <mat-icon
-            class="sort_arrow__icon"
+            class="report-sortArrowIcon"
             *ngIf="isGroupAnalysis ? groupAnalysis.isAscending : personAnalysis.isAscending"
           >
             arrow_downward

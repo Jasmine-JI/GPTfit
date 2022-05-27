@@ -1,28 +1,33 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, OnDestroy, OnChanges } from '@angular/core';
 import { of, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
 import { TargetCondition, TargetField } from '../../../models/sport-target';
-import { TARGET_LINE_COLOR } from '../../../models/chart-data';
+import { TARGET_LINE_COLOR, compareChartDefault } from '../../../models/chart-data';
 import {
   yAxisTimeFormat,
   tooltipTimeFormat,
   yAxisPercentageFormat,
   tooltipPercentageFormat,
   tooltipFormat,
+  distanceAxisFormat,
+  distanceTooltipFormat
 } from '../../../utils/chart-formatter';
 import { TargetFieldNamePipe } from '../../../pipes/target-field-name.pipe';
 import dayjs from 'dayjs';
 import { GlobalEventsService } from '../../../../core/services/global-events.service';
+import { UserService } from '../../../../core/services/user.service';
+import { Unit } from '../../../enum/value-conversion';
+import { deepCopy } from '../../../utils/index';
 
 
 @Component({
   selector: 'app-compare-column-trend',
   templateUrl: './compare-column-trend.component.html',
-  styleUrls: ['./compare-column-trend.component.scss']
+  styleUrls: ['./compare-column-trend.component.scss', '../chart-share-style.scss']
 })
-export class CompareColumnTrendComponent implements OnInit, OnDestroy {
+export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy {
 
   private ngUnsubscribe = new Subject();
 
@@ -31,6 +36,8 @@ export class CompareColumnTrendComponent implements OnInit, OnDestroy {
   @Input('type') type: TargetField;
 
   @Input('condition') condition: Array<TargetCondition>;
+
+  @Input('xAxisTitle') xAxisTitle: string;
 
   @ViewChild('container', {static: false})
   container: ElementRef;
@@ -43,7 +50,8 @@ export class CompareColumnTrendComponent implements OnInit, OnDestroy {
   constructor(
     private translate: TranslateService,
     private targetFieldNamePipe: TargetFieldNamePipe,
-    private globalEventsService: GlobalEventsService
+    private globalEventsService: GlobalEventsService,
+    private userService: UserService
   ) { }
 
   ngOnInit(): void {
@@ -66,7 +74,7 @@ export class CompareColumnTrendComponent implements OnInit, OnDestroy {
         map(() => this.getRelatedCondition(type, condition)),
         map(targetLineValue => this.initChart(data, type, targetLineValue)),
         map(option => this.handleSeriesName(option, type)),
-        map(chartData => this.createChart(chartData))
+        map(final => this.createChart(final))
       ).subscribe();
 
       this.noData = false;
@@ -97,13 +105,14 @@ export class CompareColumnTrendComponent implements OnInit, OnDestroy {
 
   /**
    * 初始化圖表
-   * @param data {Array<number>}-各區間數據
+   * @param data {Array<number>}-圖表所需數據
    * @param type {TargetField}-數據類別
    * @param targetLineValue {number}-運動目標線數值
    * @author kidin-1110413
    */
   initChart(data: Array<number>, type: TargetField, targetLineValue: number) {
-    const chartOption = new ChartOption(data, type, targetLineValue);
+    const userUnit = this.userService.getUser().userProfile.unit;
+    const chartOption = new ChartOption(data, type, targetLineValue, userUnit, this.xAxisTitle);
     return chartOption.option;
   }
 
@@ -149,65 +158,31 @@ export class CompareColumnTrendComponent implements OnInit, OnDestroy {
 
 class ChartOption {
 
-  private _option = {
-    chart: {
-      type: 'column',
-      height: 200,
-      backgroundColor: 'transparent',
-      marginLeft: 85
-    },
-    title: {
-      text: ''
-    },
-    credits: {
-      enabled: false
-    },
-    xAxis: <any>{
-      title: {
-        enabled: false
-      },
-      labels: {
-        style: {
-          fontSize: '10px'
-        }
-      }
-    },
-    yAxis: {
-      min: 0,
-      title: {
-        text: ''
-      },
-      startOnTick: false,
-      minPadding: 0.01,
-      maxPadding: 0.01,
-      tickAmount: 5
-    },
-    plotOptions: {
-      column: {},
-      series: {
-        pointWidth: null,
-        maxPointWidth: 30,
-        borderRadius: 5
-      }
-    },
-    series: []
-  };
+  private _option = deepCopy(compareChartDefault);
 
-  constructor(data: Array<any>, type: TargetField, targetLineValue: number) {
-    this.initChart(data);
-    this.handleDataType(type);
+
+  constructor(
+    data: Array<any>,
+    type: TargetField,
+    targetLineValue: number,
+    unit: Unit,
+    xAxisTitle: string
+  ) {
+    this.initChart(data, xAxisTitle);
+    this.handleDataType(type, unit);
     if (targetLineValue) this.handleTargetLine(targetLineValue);
   }
 
   /**
    * 確認是否為比較模式，並初始化圖表
    * @param allData {Array<any>}-圖表數據
-   * @author kidin-1110413
+   * @param xAxisTitle {string}-x軸標題
    */
-  initChart(data: Array<any>) {
+  initChart(data: Array<any>, xAxisTitle: string) {
+    this.setOtherOption();
     const isCompareMode = data.length === 2;
     if (isCompareMode) {
-      this.handleCompareOption(data);
+      this.handleCompareOption(data, xAxisTitle);
     } else {
       this.handleNormalOption(data);
     }
@@ -215,10 +190,19 @@ class ChartOption {
   }
 
   /**
+   * 設定此圖表專用設定值
+   */
+  setOtherOption() {
+    this._option.chart.type = 'column';
+    this._option.plotOptions.series.borderRadius = 5;
+  }
+
+  /**
    * 根據數據類別設定y軸與浮動框顯示格式
    * @param type {TargetField}-數據類別
+   * @param unit {Unit}-使用者使用單位
    */
-  handleDataType(type: TargetField) {
+  handleDataType(type: TargetField, unit: Unit) {
     switch (type) {
       case 'totalTime':
       case 'benefitTime':
@@ -239,11 +223,23 @@ class ChartOption {
         this._option['tooltip'] = {
           formatter: tooltipPercentageFormat
         };
+
+        break;
+      case 'distance':
+        this._option.yAxis['labels'] = {
+          formatter: distanceAxisFormat(unit)
+        };
+
+        this._option['tooltip'] = {
+          formatter: distanceTooltipFormat(unit)
+        };
+
         break;
       default:
         this._option['tooltip'] = {
           formatter: tooltipFormat
         };
+
         break;
     }
 
@@ -284,7 +280,7 @@ class ChartOption {
    * 處理比較圖表的設定
    * @param chartData {Array<any>}-圖表數據
    */
-  handleCompareOption(chartData: Array<any>) {
+  handleCompareOption(chartData: Array<any>, xAxisTitle: string) {
     const dataLength = chartData[0].data.length;
     const categories = new Array(dataLength).fill(0).map((_arr, _index) => _index + 1);
     const { xAxis } = this._option;
@@ -292,6 +288,10 @@ class ChartOption {
       ...this._option,
       xAxis: {
         ...xAxis,
+        title: {
+          ...xAxis.title,
+          text: `( ${xAxisTitle} )`
+        },
         categories,
         crosshair: true,
       },

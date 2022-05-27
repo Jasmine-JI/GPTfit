@@ -1,10 +1,8 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
 import { chart } from 'highcharts';
 import dayjs from 'dayjs';
-import isoWeek from 'dayjs/plugin/isoWeek';
 import { TranslateService } from '@ngx-translate/core';
 import {
-  DiscolorTrendData,
   DisplayPage,
   paceTrendColor,
   speedTrendColor,
@@ -12,11 +10,16 @@ import {
   swolfTrendColor,
   swingSpeedTrendColor
 } from '../../../models/chart-data';
-import { Unit } from '../../../models/bs-constant';
+import { Unit } from '../../../enum/value-conversion';
 import { SportType } from '../../../enum/sports';
 import { DataTypeTranslatePipe } from '../../../pipes/data-type-translate.pipe';
 import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
-import { UtilsService } from '../../../services/utils.service';
+import { speedToPaceSecond } from '../../../utils/sports';
+import isoWeek from 'dayjs/plugin/isoWeek';
+
+
+dayjs.extend(isoWeek);
+
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -99,8 +102,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
 
   constructor(
     private translate: TranslateService,
-    private dataTypeTranslate: DataTypeTranslatePipe,
-    private utils: UtilsService
+    private dataTypeTranslate: DataTypeTranslatePipe
   ) { }
 
   ngOnInit() {}
@@ -110,30 +112,28 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
   }
 
   initChart () {
-    let trendDataset: any,
-        chartData = [],
-        colorSet: Array<string>;
+    const { sportType, unit } = this;
+    let trendDataset: any;
+    let chartData = [];
+    let colorSet: Array<string>;
     switch (this.chartName) {
       case 'Pace':
         this.chartType = 'pace';
         colorSet = paceTrendColor;
         this.chartTitle = [
           `${this.translate.instant('universal_adjective_maxBest')} ${this.translate.instant(
-            this.dataTypeTranslate.transform('pace', [this.sportType, this.unit])
+            this.dataTypeTranslate.transform('pace', [sportType, unit])
           )}`,
           this.translate.instant(
-            this.dataTypeTranslate.transform('pace', [this.sportType, this.unit])
+            this.dataTypeTranslate.transform('pace', [sportType, unit])
           ),
         ];
 
         const { dataArr: paceDataArr, minSpeed: paceminSpeed, maxSpeed: paceSpeed } = this.data;
         this.dataLength = paceDataArr.length;
         chartData = paceDataArr;
-        this.highestPoint = 
-          this.utils.convertSpeed(paceminSpeed || 0, this.sportType, this.unit, 'second') as number;
-        this.lowestPoint = 
-          this.utils.convertSpeed(paceSpeed, this.sportType, this.unit, 'second') as number;
-
+        this.highestPoint = speedToPaceSecond(paceminSpeed || 0, sportType, unit);
+        this.lowestPoint = speedToPaceSecond(paceSpeed, sportType, unit);
         break;
       case 'Cadence':
         colorSet = cadenceTrendColor;
@@ -159,10 +159,10 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         this.chartType = 'speed';
         this.chartTitle = [
           `${this.translate.instant('universal_adjective_maxBest')} ${this.translate.instant(
-            this.dataTypeTranslate.transform('speed', [this.sportType, this.unit])
+            this.dataTypeTranslate.transform('speed', [sportType, unit])
           )}`,
           this.translate.instant(
-            this.dataTypeTranslate.transform('speed', [this.sportType, this.unit])
+            this.dataTypeTranslate.transform('speed', [sportType, unit])
           ),
         ];
 

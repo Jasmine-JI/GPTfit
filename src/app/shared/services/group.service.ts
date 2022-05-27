@@ -1,15 +1,16 @@
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, ReplaySubject, throwError, of } from 'rxjs';
-import { map, switchMap, catchError } from 'rxjs/operators';
+import { Observable, BehaviorSubject, ReplaySubject, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { UtilsService } from './utils.service';
-import { UserProfileService } from './user-profile.service'
+import { UserService } from '../../core/services/user.service'
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { GroupDetailInfo, UserSimpleInfo } from '../../containers/dashboard/models/group-detail';
 import { GroupInfo } from '../classes/group-info';
 import { AllGroupMember } from '../classes/all-group-member';
-import { UserService } from '../../core/services/user.service';
 import { checkResponse } from '../utils/index';
+import { AuthService } from '../../core/services/auth.service';
+import { Api11xxService } from '../../core/services/api-11xx.service';
 
 const { API_SERVER } = environment.url;
 
@@ -50,9 +51,10 @@ export class GroupService {
 
   constructor(
     private http: HttpClient,
-    private userProfileService: UserProfileService,
+    private userService: UserService,
     private utils: UtilsService,
-    private userService: UserService
+    private authService: AuthService,
+    private api11xxService: Api11xxService
   ) {}
 
   /**
@@ -248,56 +250,6 @@ export class GroupService {
    */
   getGroupNameList(body: object) {
     return this.http.post<any>(API_SERVER + 'group/getGroupNameList', body);
-  }
-
-  /**
-   * 確認使用者在該群組的權限
-   * @param currentId {string}-所在頁面的群組ID
-   * @author kidin-1090729
-   */
-  checkAccessRight(currentId: string): Observable<any> {
-    return this.userProfileService.getRxUserProfile().pipe(
-      map(res => {
-        const accessRightSet = new Set(),
-              currentGroupAccessRight: number[] = res['systemAccessRight'].filter(_accessRight => _accessRight < 30),
-              groupLevel = +this.utils.displayGroupLevel(currentId),
-              accessRightList = res['groupAccessRightList'];
-
-        switch (groupLevel) {
-          case 30:
-            accessRightList.forEach(_list => {
-              if (this.isSameGroup(_list.groupId, currentId , 3)) {
-                accessRightSet.add(+_list.accessRight);
-              }
-
-            });
-            break;
-          case 40:
-            accessRightList.forEach(_list => {
-              if (this.isSameGroup(_list.groupId, currentId , 4)) {
-                accessRightSet.add(+_list.accessRight);
-              }
-
-            });
-            break;
-          case 50:
-          case 60:
-            accessRightList.forEach(_list => {
-              if (this.isSameGroup(_list.groupId, currentId , 5)) {
-                accessRightSet.add(+_list.accessRight);
-              }
-
-            });
-            break;
-        }
-
-        accessRightSet.add(99);  // 給予最低權限
-        const accessRightArr = Array.from(accessRightSet);
-        return currentGroupAccessRight.concat(accessRightArr as number[]).sort((a, b) => a - b);
-      })
-
-    );
-
   }
 
   /**
@@ -574,7 +526,7 @@ export class GroupService {
         groupId,
         groupLevel: GroupInfo.getGroupLevel(groupId),
         infoType: 5,
-        token: this.userService.getToken()
+        token: this.authService.token
       };
 
       return this.fetchGroupMemberList(body).pipe(

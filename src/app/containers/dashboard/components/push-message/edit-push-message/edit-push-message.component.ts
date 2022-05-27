@@ -1,15 +1,15 @@
-import { UserProfileService } from './../../../../../shared/services/user-profile.service';
 import { switchMap, map } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { MessageBoxComponent } from './../../../../../shared/components/message-box/message-box.component';
-import { UtilsService } from './../../../../../shared/services/utils.service';
+import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { PeopleSelectorWinComponent } from './../../people-selector-win/people-selector-win.component';
+import { PeopleSelectorWinComponent } from '../../people-selector-win/people-selector-win.component';
 import { Component, OnInit } from '@angular/core';
 import dayjs from 'dayjs';
 import { PushMessageService } from '../../../services/push-message.service';
+import { NodejsApiService } from '../../../../../core/services/nodejs-api.service';
+import { AuthService } from '../../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-edit-push-message',
@@ -49,7 +49,7 @@ export class EditPushMessageComponent implements OnInit {
 
   // api 9002所需request
   req = {
-    token: this.utils.getToken(),
+    token: this.authService.token,
     pushMode: {
       type: 2,
       timeStamp: null,
@@ -95,9 +95,9 @@ export class EditPushMessageComponent implements OnInit {
     private dialog: MatDialog,
     private snackbar: MatSnackBar,
     private pushMessageService: PushMessageService,
-    private utils: UtilsService,
-    private userProfileService: UserProfileService,
-    private router: Router
+    private router: Router,
+    private nodejsApiService: NodejsApiService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -128,7 +128,7 @@ export class EditPushMessageComponent implements OnInit {
    */
   getPushMessageDetail() {
     const body = {
-            token: this.utils.getToken(),
+            token: this.authService.token,
             pushNotifyId: this.pushNotifyId
           };
 
@@ -150,7 +150,7 @@ export class EditPushMessageComponent implements OnInit {
               userIdList: userIdArr
             };
 
-            return this.userProfileService.getUserList(ubody).pipe(
+            return this.nodejsApiService.getUserList(ubody).pipe(
               map(resp => {
                 if (resp.resultCode !== 200) {
                   console.error(`${resp.apiCode}：${resp.resultMessage}`);
@@ -506,7 +506,7 @@ export class EditPushMessageComponent implements OnInit {
    */
   cancelPush() {
     const body = {
-      token: this.utils.getToken(),
+      token: this.authService.token,
       pushNotifyId: this.pushNotifyId
     };
 

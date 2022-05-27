@@ -20,7 +20,7 @@ import { GroupLevel, BrandType } from '../../enum/professional';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
 import { DefaultDateRange } from '../../classes/default-date-range';
-import { DAY } from '../../models/utils-constant';
+import { DAY, WEEK } from '../../models/utils-constant';
 import { GroupInfo } from '../../classes/group-info';
 
 @Component({
@@ -58,7 +58,6 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     showBaseDateRangeList: false,
     showCompareDateRangeList: false,
     showDateUnitList: false,
-    hideDayUnit: false,
     unfold: true,
     isMobile: false
   };
@@ -228,7 +227,8 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    */
   resetCondition() {
     this.reportCondition = deepCopy(this.initialCondition);
-    this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
+    this.selectBaseDateRange('sevenDay');
+    this.selectCompareDateRange('none');
     this.reportCondition.needRefreshData = true;
     this.changeDetectorRef.markForCheck();
   }
@@ -298,6 +298,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     }
 
     this.checkDateRange('base', 'endTimestamp');
+    this.checkDateOverRange('base');
     if (this.dateRange.compare === 'sameRangeLastYear') this.selectCompareDateRange('sameRangeLastYear');
     this.afterChangeDate();
   }
@@ -319,6 +320,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     }
 
     this.checkDateRange('base', 'startTimestamp');
+    this.checkDateOverRange('base');
     if (this.dateRange.compare === 'sameRangeLastYear') this.selectCompareDateRange('sameRangeLastYear');
     this.afterChangeDate();
   }
@@ -337,6 +339,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
       this.reportCondition.compareTime.startTimestamp = timestamp;
       this.dateRange.compare = 'custom';
       this.checkDateRange('compare', 'endTimestamp');
+      this.checkDateOverRange('compare');
     } else {
       this.reportCondition.compareTime = null;
       this.dateRange.compare = 'none';
@@ -359,6 +362,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
       this.reportCondition.compareTime.endTimestamp = timestamp;
       this.dateRange.compare = 'custom';
       this.checkDateRange('compare', 'startTimestamp');
+      this.checkDateOverRange('compare');
     } else {
       this.reportCondition.compareTime = null;
       this.dateRange.compare = 'none';
@@ -372,7 +376,6 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    * @author kidin-1110325
    */
   afterChangeDate() {
-    this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
     this.reportCondition.needRefreshData = true;
     this.changeDetectorRef.markForCheck();
   }
@@ -404,7 +407,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     this.reportCondition.baseTime.startTimestamp = startTime;
     this.reportCondition.baseTime.endTimestamp = endTime;
     if (this.dateRange.compare === 'sameRangeLastYear') this.selectCompareDateRange('sameRangeLastYear');
-    this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
+    this.checkDateOverRange('base');
     this.reportCondition.needRefreshData = true;
     this.changeDetectorRef.markForCheck();
   }
@@ -433,47 +436,45 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
         break;
     }
 
-    this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
+    this.checkDateOverRange('compare');
     this.reportCondition.needRefreshData = true;
     this.changeDetectorRef.markForCheck();
   }
 
   /**
-   * 若選擇範圍過大（> 52天），則日期單位清單隱藏"日"的選項
-   * @author kidin-1110316
+   * 若選擇範圍過大，則日期單位調整為合理單位
+   * @param type {ReportDateType}-報告日期類型
    */
-  checkDayOptionsHide() {
-    const overRange = 52 * DAY;
-    const { baseTime, compareTime, dateUnit: { unit } } = this.reportCondition;
-    const { startTimestamp, endTimestamp } = baseTime;
-    if (endTimestamp - startTimestamp > overRange) return this.resolveDateUnitConflict(unit);
-
-    if (compareTime) {
-      const { startTimestamp: startTime, endTimestamp: endTime } = compareTime;
-      if (endTime - startTime > overRange)  return this.resolveDateUnitConflict(unit);
+  checkDateOverRange(type: ReportDateType) {
+    const dayOverRange = 52 * DAY;
+    const weekOverRanage = 52 * WEEK;
+    const datetTypeKey = type === 'base' ? 'baseTime' : 'compareTime';
+    if (this.reportCondition[datetTypeKey]) {
+      const { startTimestamp, endTimestamp } = this.reportCondition[datetTypeKey];
+      const diffTime = endTimestamp - startTimestamp;
+      if (diffTime > weekOverRanage) return this.selectDateUnit(DateUnit.month, true);
+      if (diffTime > dayOverRange) return this.selectDateUnit(DateUnit.week, true);
     }
 
-    return false;
-  }
-
-  /**
-   * 若時間範圍超出52天，且日期範圍單位選擇日，則變更為週
-   * @param unit {DateUnit}-時間範圍單位
-   * @author kidin-1110316
-   */
-  resolveDateUnitConflict(unit: DateUnit) {
-    if (unit === DateUnit.day) this.selectDateUnit(DateUnit.week);
-    return true;
   }
 
   /**
    * 變更日期範圍單位
    * @param unit {DateUnit}-日期範圍單位
-   * @author kidin-1110316
+   * @param checkChange {boolean}-是否為檢查日期範圍變更而非由使用者變更
    */
-  selectDateUnit(unit: DateUnit) {
-    this.reportCondition.dateUnit.unit = unit;
-    this.reportCondition.needRefreshData = true;
+  selectDateUnit(unit: DateUnit, checkChange = false) {
+    if (unit !== this.reportCondition.dateUnit.unit) {
+      this.reportCondition.dateUnit.unit = unit;
+      this.reportCondition.needRefreshData = true;
+
+      if (!checkChange) {
+        this.resetCondition();
+        this.reportCondition.dateUnit.unit = unit;
+      }
+      
+    }
+
   }
 
   /**

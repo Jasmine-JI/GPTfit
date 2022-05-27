@@ -5,18 +5,21 @@ import SimpleLinearRegression from 'ml-regression-simple-linear';
 import dayjs from 'dayjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { Subject, Subscription, fromEvent, combineLatest, of, merge } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { HashIdService } from '../../../../../shared/services/hash-id.service';
 import { ReportService } from '../../../../../shared/services/report.service';
 import { GroupService } from '../../../../../shared/services/group.service';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
-import { mi, Unit } from '../../../../../shared/models/bs-constant';
-import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+import { mi } from '../../../../../shared/models/bs-constant';
+import { Unit } from '../../../../../shared/enum/value-conversion';
+import { UserService } from '../../../../../core/services/user.service';
 import { GroupLevel, SettingObj } from '../../../../dashboard/models/group-detail';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { stepColor } from '../../../../../shared/models/chart-data';
+import { setLocalStorageObject, getLocalStorageObject, deepCopy } from '../../../../../shared/utils/index';
+import { AuthService } from '../../../../../core/services/auth.service';
+
 
 @Component({
   selector: 'app-life-tracking',
@@ -245,14 +248,14 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   columnTranslate = {};  // 分析列表所需的欄位名稱翻譯
 
   constructor(
-    private route: ActivatedRoute,
     private utils: UtilsService,
     private hashIdService: HashIdService,
     private reportService: ReportService,
     private translate: TranslateService,
     private groupService: GroupService,
-    private userProfileService: UserProfileService,
-    private changeDetectorRef: ChangeDetectorRef
+    private userService: UserService,
+    private changeDetectorRef: ChangeDetectorRef,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -364,23 +367,19 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   getNeedInfo() {
     combineLatest([
       this.groupService.getAllLevelGroupData(),
-      this.userProfileService.getRxUserProfile(),
+      this.userService.getUser().rxUserProfile,
       this.translate.get('hellow world')
     ]).pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(resArr => {
+      const { systemAccessright } = this.userService.getUser();
       this.createTranslate();
       this.groupList.originList = resArr[0];
-      const { groupId, brands, branches, coaches } = resArr[0] as any,
-            { userId, unit, heartRateBase, systemAccessRight } = resArr[1] as any,
-            groupLevel = this.utils.displayGroupLevel(groupId),
-            group = this.reportConditionOpt.group;
-
-      this.userInfo = {
-        id: userId,
-        accessRight: systemAccessRight,
-        unit
-      };
+      const { groupId, brands, branches, coaches } = resArr[0] as any;
+      const { userId, unit } = resArr[1] as any;
+      const groupLevel = this.utils.displayGroupLevel(groupId);
+      const group = this.reportConditionOpt.group;
+      this.userInfo = { id: userId, accessRight: systemAccessright, unit };
 
       group.coaches = coaches;
       switch (groupLevel) {
@@ -463,7 +462,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
         } else {
           this.groupInfo = this.assignGroupInfo(completeGroupId);
           const listBody = {
-            token: this.utils.getToken(),
+            token: this.authService.token,
             groupId: completeGroupId,
             groupLevel: this.utils.displayGroupLevel(completeGroupId),
             infoType: 5,
@@ -506,7 +505,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
         const { group: { selectGroup: preSelectGroup } } = this.reportConditionOpt;
         // 日期範圍大於52天則取週報告
         this.reportTime.type = dayjs(endTimestamp).diff(dayjs(startTimestamp), 'day') <= 52 ? 1 : 2;
-        this.reportConditionOpt = this.utils.deepCopy(condition);
+        this.reportConditionOpt = deepCopy(condition);
         // 若群組id不變，則使用已儲存之人員清單
         let memIdArr: Array<number>;
         if (selectGroup === preSelectGroup && this.uiFlag.inited) {
@@ -517,10 +516,10 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
           this.createGroupAnalysisObj(this.groupList.originList);
           const memIdSet = this.handlePersonAnalysisObj(memberList);
           memIdArr = (Array.from(memIdSet) as Array<number>).sort((a, b) => a - b);
-          this.memberList.noRepeatList = this.utils.deepCopy(memIdArr);
+          this.memberList.noRepeatList = deepCopy(memIdArr);
         }
 
-        this.personAnalysis = this.utils.deepCopy(this.memberList.analysisObj);
+        this.personAnalysis = deepCopy(this.memberList.analysisObj);
         this.getMemberData(memIdArr);
       }
 
@@ -847,7 +846,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    getMemberData(idList: Array<number>) {
     const { startTimestamp, endTimestamp } = this.reportConditionOpt.date,
           body = {
-            token: this.utils.getToken(),
+            token: this.authService.token,
             type: this.reportTime.type,
             targetUserId: idList,
             filterStartTime: dayjs(startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
@@ -918,7 +917,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       // 針對關閉隱私權的使用者建立對應物件
       if (resultCode !== 403) {
         this.personAnalysis[userId].openPrivacy = true;
-        if (lifeTracking.length > 0) {
+        if (lifeTracking?.length > 0) {
           haveData = true;
           mixData = mixData.concat(lifeTracking);
           recordPeopleSet.add(_data.userId); // 計算有效人數
@@ -1226,7 +1225,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    * @author kidin-1100617
    */
   handleGroupAnalysis(personData: any) {
-    this.groupAnalysis = this.utils.deepCopy(this.groupList.analysisObj);
+    this.groupAnalysis = deepCopy(this.groupList.analysisObj);
     for (let gid in (this.groupAnalysis as any)) {
       if (this.groupAnalysis.hasOwnProperty(gid)) {
         const { memberSet, memberList } = this.groupAnalysis[gid],
@@ -1484,7 +1483,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    */
    setDisplayCol() {
     const { max } = this.tableColumn,
-          opt = JSON.parse(this.utils.getLocalStorageObject('groupLifeTrackingReport'));
+          opt = JSON.parse(getLocalStorageObject('groupLifeTrackingReport'));
     if (opt) {
       const { group, person } = opt;
       if (group.length > max) {
@@ -1550,7 +1549,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    */
    saveAnalysisOpt(opt: {group: Array<string>; person: Array<string>}) {
     const optStr = JSON.stringify(opt);
-    this.utils.setLocalStorageObject('groupLifeTrackingReport', optStr);
+    setLocalStorageObject('groupLifeTrackingReport', optStr);
   }
 
   /**

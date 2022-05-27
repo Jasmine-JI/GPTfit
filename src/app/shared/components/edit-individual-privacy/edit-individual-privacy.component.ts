@@ -2,9 +2,10 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
-import { UtilsService } from '../../services/utils.service';
 import { PrivacyObj, allPrivacyItem } from '../../models/user-privacy';
 import { ActivityService } from '../../services/activity.service';
+import { AuthService } from '../../../core/services/auth.service';
+
 
 @Component({
   selector: 'app-edit-individual-privacy',
@@ -20,11 +21,11 @@ export class EditIndividualPrivacyComponent implements OnInit {
   readonly PrivacyObj = PrivacyObj;
 
   constructor(
-    private utils: UtilsService,
     private translate: TranslateService,
     private dialog: MatDialog,
     private snackbar: MatSnackBar,
     private activityService: ActivityService,
+    private authService: AuthService,
     @Inject(MAT_DIALOG_DATA) private data: any
   ) { }
 
@@ -135,7 +136,7 @@ export class EditIndividualPrivacyComponent implements OnInit {
     let body;
     if (this.data.editType == 1) {
       body = {
-        token: this.utils.getToken() || '',
+        token: this.authService.token,
         editFileType: this.data.editType,
         rangeType: '2',
         editFileId: [this.data.fileId],
@@ -143,7 +144,7 @@ export class EditIndividualPrivacyComponent implements OnInit {
       };
     } else {
       body = {
-        token: this.utils.getToken() || '',
+        token: this.authService.token,
         editFileType: this.data.editType,
         rangeType: '1',
         startTime: this.data.startDate,

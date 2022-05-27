@@ -1,6 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { UtilsService } from './utils.service';
 import { environment } from '../../../environments/environment';
 import { throwError, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -12,8 +11,7 @@ const { API_SERVER } = environment.url;
 export class ActivityService {
 
   constructor(
-    private http: HttpClient,
-    private utils: UtilsService
+    private http: HttpClient
   ) {}
 
   /**

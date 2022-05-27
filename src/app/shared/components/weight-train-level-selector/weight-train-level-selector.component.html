@@ -1,0 +1,34 @@
+<div
+  class="flexCol weight__train__setting"
+  (click)="$event.stopPropagation()"
+>
+  <span>{{ 'universal_activityData_weightTrainingExtent' | translate }}</span>
+  <div class="flexCol" style="position: relative;">
+    <span
+      class="report-dropMenu weight__train__menu"
+      [class.report-dropMenu--active]="showLevelSelector"
+      (click)="handleShowLevelSelector($event)"
+    >
+      <ng-container *ngIf="weightTrainLevel === WeightTrainingLevel.novice">
+        {{ 'universal_activityData_beginner' | translate }}
+      </ng-container>
+      <ng-container *ngIf="weightTrainLevel === WeightTrainingLevel.metacarpus">
+        {{ 'universal_activityData_advanced' | translate }}
+      </ng-container>
+      <ng-container *ngIf="weightTrainLevel === WeightTrainingLevel.asept">
+        {{ 'universal_activityData_highRanker' | translate }}
+      </ng-container>
+    </span>
+    <ul class="drop__menu__list" *ngIf="showLevelSelector">
+      <li class="list__option" (click)="changeLevel(WeightTrainingLevel.novice)">
+        {{ 'universal_activityData_beginner' | translate }}
+      </li>
+      <li class="list__option" (click)="changeLevel(WeightTrainingLevel.metacarpus)">
+        {{ 'universal_activityData_advanced' | translate }}
+      </li>
+      <li class="list__option" (click)="changeLevel(WeightTrainingLevel.asept)">
+        {{ 'universal_activityData_highRanker' | translate }}
+      </li>
+    </ul>
+  </div>
+</div>

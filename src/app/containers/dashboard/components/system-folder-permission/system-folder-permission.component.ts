@@ -4,6 +4,7 @@ import { UtilsService } from '../../../../shared/services/utils.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
+import { AuthService } from '../../../../core/services/auth.service';
 
 
 enum DevelopGroup {
@@ -30,7 +31,8 @@ export class SystemFolderPermissionComponent implements OnInit {
     private systemFolderPermissionService: SystemFolderPermissionService,
     private utils: UtilsService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private authService: AuthService
   ) { }
 
   /**
@@ -72,7 +74,7 @@ export class SystemFolderPermissionComponent implements OnInit {
     folder: <Array<string>>[]
   };
 
-  token = this.utils.getToken();
+  token = this.authService.token;
   userList: Array<string>;
   folderList: Array<string>;
   tempAddFolderName: string = '';

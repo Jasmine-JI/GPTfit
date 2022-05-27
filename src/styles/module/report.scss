@@ -29,9 +29,25 @@
 
 }
 
+@mixin hrzone-trend-hint($color) {
+  font-size: 12px;
+
+  &:before {
+    $size: 12px;
+    content: '';
+    display: inline-block;
+    width: $size;
+    height: $size;
+    border: 1px solid $color;
+    margin-right: 2px;
+  }
+
+}
+
 
 $sport-chart-width: 80%;
 $target-list-color: rgba(120, 120, 120, 1);
+$color-dot-hint-size: 20px;
 
 .report-headerIcon{
   font-size: 30px;
@@ -292,7 +308,7 @@ $target-list-color: rgba(120, 120, 120, 1);
 
   }
 
-  .levelOpt {
+  .report-levelOpt {
     text-align: right;
     padding-right: 20px;
   }
@@ -342,6 +358,76 @@ $target-list-color: rgba(120, 120, 120, 1);
   }
 
 }
+
+.report-analysisHeaderRow {
+  border-bottom: 1px solid black;
+  padding: 5px 0;
+}
+
+.report-analysisRow {
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(175, 175, 175, 1);
+
+  &:hover {
+    cursor: pointer;
+    background-color: rgba(245, 245, 245, 1);
+  }
+
+}
+
+.report-analysisRowTitle {
+  font-size: 14px;
+}
+
+.report-analysisDataSection {
+  width: 100%;
+}
+
+.report-analysisDataRow {
+  min-height: 40px;
+  margin: 2px 0;
+  padding: 2px 0;
+  width: 100%;
+  justify-content: space-around;
+}
+
+.report-analysisBaseRow {
+  background-color: $report-base-color;
+}
+
+.report-analysisCompareRow {
+  background-color: $report-compare-color;
+}
+
+.report-sortArrow {
+  min-width: 12px;
+}
+
+.report-sortArrowIcon {
+  $size: 12px;
+  font-size: $size;
+  width: $size !important;
+  height: $size !important;
+}
+
+.report-seeMore {
+  margin: 5px 0;
+  box-sizing: border-box;
+}
+
+.report-seeMoreButton {
+  color: rgba(21, 127, 204, 1);
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+}
+
+.report-analysisIcon {
+  font-size: 24px;
+}
+
 
 /***************************** media ******************************/
 
@@ -473,6 +559,10 @@ $target-list-color: rgba(120, 120, 120, 1);
 }
 
 .report-compareInfo {
+  @include info-color();
+}
+
+.report-diffInfo {
   @include info-color();
 }
 
@@ -672,11 +762,36 @@ $target-list-color: rgba(120, 120, 120, 1);
   @include bold-font(28px);
 }
 
-.report-ChartHintBar {
+.report-personalAchieveHint {
+  font-weight: bold;
+}
+
+.report-chartHintBar {
   height: 38px;
   width: 8px;
   border-radius: 8px;
   margin-right: 10px;
+}
+
+.report-dotHintRow {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+  @include bold-font(14px);
+}
+
+.report-chartHintDot {
+  display: inline-block;
+  height: $color-dot-hint-size;
+  width: $color-dot-hint-size;
+  min-width: $color-dot-hint-size;
+  border-radius: 50%;
+  margin: 0 5px;
+}
+
+.report-chartHintDash {
+  border-style: solid;
+  border-width: 4px;
 }
 
 .report-chartDescription {
@@ -702,6 +817,42 @@ $target-list-color: rgba(120, 120, 120, 1);
   margin: 2px 10px;
 }
 
+.report-baseHrzoneTrend {
+  @include hrzone-trend-hint(black);
+}
+
+.report-compareHrzoneTrend {
+  @include hrzone-trend-hint(rgba(255, 89, 89, 1));
+}
+
+.report-plusValue {
+  color: rgba(255, 43, 43, 1);
+
+  &:before {
+    content: '+';
+    position: relative;
+    right: -5px;
+  }
+
+}
+
+.report-minusValue {
+  color: rgba(32, 181, 73, 1);
+}
+
+.report-diffInfo {
+  align-items: center;
+}
+
+.report-diffTitle {
+  @extend .report-chartDataAnnotation;
+  margin-right: 10px;
+}
+
+.report-diffDataUnit {
+  font-size: 12px;
+  margin-left: 5px;
+}
 
 /*********************************************************** media *****************************************/
 
@@ -735,6 +886,10 @@ $target-list-color: rgba(120, 120, 120, 1);
     flex-direction: row;
     justify-content: space-between;
     margin-bottom: 10px;
+  }
+
+  .report-trendInfoColumn {
+    align-items: center;
   }
 
 }

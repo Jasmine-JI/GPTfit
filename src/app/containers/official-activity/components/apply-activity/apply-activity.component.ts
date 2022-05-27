@@ -6,15 +6,16 @@ import { fromEvent, Subject, Subscription, merge, of, combineLatest } from 'rxjs
 import { takeUntil, switchMap, map, tap } from 'rxjs/operators';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { codes } from '../../../../shared/models/countryCode';
-import { Sex } from '../../../../shared/models/user-profile-info';
+import { Sex } from '../../../../shared/enum/personal';
 import { nicknameDefaultList } from '../../../../shared/models/nickname-list';
 import { SelectDate } from '../../../../shared/models/utils-type';
-import { SignTypeEnum } from '../../../../shared/models/utils-type';
+import { SignTypeEnum } from '../../../../shared/enum/account';
 import dayjs from 'dayjs';
-import { AuthService } from '../../../../shared/services/auth.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
-import { UserProfileInfo, AccountTypeEnum, AccountStatusEnum } from '../../../../shared/models/user-profile-info';
+import { Api10xxService } from '../../../../core/services/api-10xx.service';
+import { UserProfileInfo } from '../../../../shared/models/user-profile-info';
+import { AccountTypeEnum, AccountStatusEnum } from '../../../../shared/enum/account';
 import { GetClientIpService } from '../../../../shared/services/get-client-ip.service';
 import { Nationality, ApplyStatus, EventStatus } from '../../models/activity-content';
 import { MatDialog } from '@angular/material/dialog';
@@ -24,7 +25,8 @@ import { SignupService } from '../../../../shared/services/signup.service';
 import { AlaApp } from '../../../../shared/models/app-id';
 import { EnableAccountFlow } from '../../../../shared/models/signup-response';
 import { LockCaptcha } from '../../../../shared/classes/lock-captcha';
-import { checkResponse } from '../../../../shared/utils/index';
+import { checkResponse, getCurrentTimestamp } from '../../../../shared/utils/index';
+import { NodejsApiService } from '../../../../core/services/nodejs-api.service';
 
 
 const stageHeight = 90;
@@ -183,7 +185,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   imgLock: LockCaptcha;
   groupList = [];  // 使用者可選擇之分組類別
   defaultBirthday = dayjs().subtract(40, 'year').startOf('year'); 
-  token = this.utils.getToken();
+  token = this.auth.token;
   userId: number;
   intervals: NodeJS.Timeout;
   timeCount = 30;
@@ -201,11 +203,12 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     private utils: UtilsService,
     private auth: AuthService,
     private snackbar: MatSnackBar,
-    private userProfileService: UserProfileService,
+    private api10xxService: Api10xxService,
     private getClientIp: GetClientIpService,
     private dialog: MatDialog,
     private translate: TranslateService,
-    private signupService: SignupService
+    private signupService: SignupService,
+    private nodejsApiService: NodejsApiService
   ) { }
 
   ngOnInit(): void {
@@ -259,7 +262,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       }
     };
 
-    this.userProfileService.getAssignInfo(body).subscribe(res => {
+    this.nodejsApiService.getAssignInfo(body).subscribe(res => {
       if (this.utils.checkRes(res)) {
         const { applyStatus } = res.result[0] ?? { applyStatus: ApplyStatus.notYet };
         if (applyStatus !== ApplyStatus.notYet) {
@@ -290,7 +293,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   getEventUserProfile(token: string) {
     combineLatest([
       this.officialActivityService.getEventUserProfile({token}),
-      this.userProfileService.getUserProfile({ token })
+      this.api10xxService.fetchGetUserProfile({ token })
     ]).pipe(
       tap(result => {
         const [eventUserProfileResult, userProfileResult] = result;
@@ -431,7 +434,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101104
    */
   checkApplyDateOver(startTimestamp: number, endTimestamp: number) {
-    const now = this.utils.getCurrentTimestamp('ms');
+    const now = getCurrentTimestamp('ms');
     const currentTimestamp = Math.round(now / 1000);
     const beforeStart = currentTimestamp < startTimestamp;
     const afterEnd = currentTimestamp > endTimestamp;
@@ -455,7 +458,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101110
    */
   createRandomId() {
-    const timestamp = `${this.utils.getCurrentTimestamp('ms')}`;
+    const timestamp = `${getCurrentTimestamp('ms')}`;
     const timestampLength = timestamp.length;
     return timestamp.slice(timestampLength - 4, timestampLength);
   }
@@ -808,7 +811,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     const { progress } = this.uiFlag;
     if (progress === 100) {
       this.uiFlag.progress = 30;
-      this.auth.loginServerV2(this.loginBody, false).pipe(
+      this.auth.accountLogin(this.loginBody).pipe(
         switchMap(loginResponse => {
           if (checkResponse(loginResponse)) {
             const { signIn: { token, accountStatus } } = loginResponse;
@@ -841,7 +844,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   handleLoginSuccess(token: string) {
     this.token = token;
-    this.utils.writeToken(token);
+    this.auth.setToken(token);
     this.tokenLogin(token);
     this.uiFlag.showLoginButton = null;
     this.getEventUserProfile(token);
@@ -1121,7 +1124,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     this.editAccountBody.token = token;
     this.editAccountBody.oldPassword = password;
     this.token = token;
-    this.utils.writeToken(token);
+    this.auth.setToken(token);
     this.tokenLogin(token, true);
   }
 
@@ -1136,7 +1139,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       token
     };
 
-    this.auth.loginServerV2(body).subscribe(res => {
+    this.auth.accountLogin(body).subscribe(res => {
       if (checkResponse(res)) {
         const {
           signIn: { accountStatus, accountType },
@@ -1175,7 +1178,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     if (token) Object.assign(body, { token });
-    return this.userProfileService.getAssignInfo(body);
+    return this.nodejsApiService.getAssignInfo(body);
   }
 
   /**
@@ -1242,7 +1245,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         if (this.utils.checkRes(res)) {
           const { newToken } = res.editAccount;
           this.token = newToken;
-          this.utils.writeToken(newToken);
+          this.auth.setToken(newToken);
           this.uiFlag.newPasswordUpdated = true;
           const msg = 'Update success.';
           this.snackbar.open(msg, 'OK', { duration: 3000 } );

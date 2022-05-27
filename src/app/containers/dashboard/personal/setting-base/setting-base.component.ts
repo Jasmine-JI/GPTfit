@@ -1,13 +1,17 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { UtilsService } from '../../../../shared/services/utils.service';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
+import { UserService } from '../../../../core/services/user.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import dayjs from 'dayjs';
-import { Sex } from '../../../../shared/models/user-profile-info';
-import { Unit, ft, lb } from '../../../../shared/models/bs-constant';
+import { Sex } from '../../../../shared/enum/personal';
+import { lb } from '../../../../shared/models/bs-constant';
+import { Unit } from '../../../../shared/enum/value-conversion';
 import { formTest } from '../../../../shared/models/form-test';
 import { DashboardService } from '../../services/dashboard.service';
+import { checkResponse, valueConvert } from '../../../../shared/utils/index';
+import { NodejsApiService } from '../../../../core/services/nodejs-api.service';
+import { AuthService } from '../../../../core/services/auth.service';
 
 
 @Component({
@@ -57,8 +61,10 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
 
   constructor(
     private utils: UtilsService,
-    private userProfileService: UserProfileService,
-    private dashboardService: DashboardService
+    private userService: UserService,
+    private dashboardService: DashboardService,
+    private nodejsApiService: NodejsApiService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -70,7 +76,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * @author kidin-1100818
    */
   getRxUserProfile() {
-    this.userProfileService.getRxTargetUserInfo().pipe(
+    this.userService.getUser().rxUserProfile.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.userInfo = res;
@@ -86,12 +92,12 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
   openEditMode() {
     this.uiFlag.editMode = 'edit';
     this.dashboardService.setRxEditMode('edit');
-    const { nickname, birthday, bodyHeight, bodyWeight, gender, unit: userUnit } = this.userInfo,
-          isMetric = userUnit === Unit.metric;
+    const { nickname, birthday, bodyHeight, bodyWeight, gender, unit: userUnit } = this.userInfo;
+    const isMetric = userUnit === Unit.metric;
     this.setting = {
       nickname,
       bodyHeight: this.utils.bodyHeightTransfer(bodyHeight, !isMetric, true),
-      bodyWeight: this.utils.valueConvert(bodyWeight, !isMetric, true, lb, 0),
+      bodyWeight: valueConvert(bodyWeight, !isMetric, true, lb, 0),
       birthday: dayjs(birthday, 'YYYYMMDD').valueOf(),
       gender,
     };
@@ -118,54 +124,18 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * @author kidin-1100818
    */
   editComplete() {
-    const token = this.utils.getToken(),
-          newSet = this.checkEdit(this.userInfo, this.setting);
+    const newSet = this.checkEdit(this.userInfo, this.setting);
     if (newSet) {
       const { nicknameAlert, heightAlert } = this.uiFlag;
       if (!nicknameAlert && !heightAlert) {
-        const body = {
-          token,
-          userProfile: {
-            ...newSet
-          }
-        };
-
-        this.userProfileService.updateUserProfile(body).subscribe(res => {
-          const {processResult} = res as any;
-          if (!processResult) {
-            const { apiCode, resultMessage, resultCode } = res as any;
-            this.utils.handleError(resultCode, apiCode, resultMessage);
-          } else {
-            const { apiCode, resultMessage, resultCode } = processResult;
-            if (resultCode !== 200) {
-              this.utils.handleError(resultCode, apiCode, resultMessage);
-            } else {
-              // this.uiFlag.editMode = 'close';  // 常駐編輯狀態
-              this.dashboardService.setRxEditMode('complete');
-              this.updateRxUserProfile(newSet);
-            }
-
-          }
-
+        this.userService.updateUserProfile(newSet).subscribe(res => {
+          if (checkResponse(res)) this.dashboardService.setRxEditMode('complete');
         });
 
       }
       
     }
     
-  }
-
-  /**
-   * 更新rxjs儲存之userProfile
-   * @author kidin-1110208
-   */
-  updateRxUserProfile(newSet: any) {
-    this.userInfo = {
-      ...this.userInfo,
-      ...newSet
-    };
-
-    this.userProfileService.setRxUserProfile(this.userInfo);
   }
 
   /**
@@ -230,7 +200,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
         }
       case 'bodyWeight':
         if (edited) {
-          return isMetric ? value : this.utils.valueConvert((value as number), true, false, lb, 1);
+          return isMetric ? value : valueConvert((value as number), true, false, lb, 1);
         } else {
           return this.userInfo[key];
         }
@@ -257,11 +227,11 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
 
       if (name !== this.userInfo.nickname) {
         const body = {
-          token: this.utils.getToken(),
+          token: this.authService.token,
           nickname: name
         };
 
-        this.userProfileService.checkNickname(body).subscribe(res => {
+        this.nodejsApiService.checkNickname(body).subscribe(res => {
           const { resultCode, resultMessage, apiCode, repeat } = res;
           if (resultCode !== 200) {
             this.utils.handleError(resultCode, apiCode, resultMessage);
@@ -399,16 +369,16 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
           inputValue = +(e as any).target.value,
           testFormat = formTest.decimalValue.test(`${inputValue}`),
           isMetric = this.userInfo.unit === Unit.metric,
-          newValue = this.utils.valueConvert(inputValue, !isMetric, false, lb, 0),
+          newValue = valueConvert(inputValue, !isMetric, false, lb, 0),
           valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       this.editFlag.bodyWeight = true;
       const min = 40,
             max = 255;
       if (newValue < min) {
-        this.setting.bodyWeight = this.utils.valueConvert(min, !isMetric, true, lb, 0);
+        this.setting.bodyWeight = valueConvert(min, !isMetric, true, lb, 0);
       } else if (newValue > max) {
-        this.setting.bodyWeight = this.utils.valueConvert(max, !isMetric, true, lb, 0);
+        this.setting.bodyWeight = valueConvert(max, !isMetric, true, lb, 0);
       } else {
         this.setting.bodyWeight = +inputValue;
       }
@@ -418,7 +388,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     } else {
       this.editFlag.bodyWeight = false;
       const { bodyWeight } = this.userInfo;
-      (e as any).target.value = this.utils.valueConvert(bodyWeight, !isMetric, true, lb, 0);
+      (e as any).target.value = valueConvert(bodyWeight, !isMetric, true, lb, 0);
     }
 
   }

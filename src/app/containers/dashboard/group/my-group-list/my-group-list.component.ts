@@ -9,8 +9,9 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { UtilsService } from '../../../../shared/services/utils.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { HashIdService } from '../../../../shared/services/hash-id.service';
+import { getUrlQueryStrings } from '../../../../shared/utils/index';
 
 @Component({
   selector: 'app-my-group-list',
@@ -36,13 +37,13 @@ export class MyGroupListComponent implements OnInit {
   constructor(
     private groupService: GroupService,
     private router: Router,
-    private utils: UtilsService,
-    private hashIdService: HashIdService
+    private hashIdService: HashIdService,
+    private authService: AuthService
   ) {
   }
 
   ngOnInit() {
-    const queryStrings = this.utils.getUrlQueryStrings(location.search);
+    const queryStrings = getUrlQueryStrings(location.search);
     const { pageNumber } = queryStrings;
 
     this.currentPage = {
@@ -55,7 +56,7 @@ export class MyGroupListComponent implements OnInit {
       active: '',
       direction: ''
     };
-    this.token = this.utils.getToken();
+    this.token = this.authService.token;
     this.getLists();
 
     // 分頁切換時，重新取得資料

@@ -48,7 +48,7 @@
     *ngIf="eventInfo && eventDetail"
   >
     <section class="flexCol">
-      <div 
+      <div
         *ngIf="uiFlag.editMode === 'edit' && currentTimestamp < eventInfo.raceDate.endDate"
       >
         <div id="event__status" class="flexRow">
@@ -60,7 +60,7 @@
               class="radio__input"
               [checked]="eventInfo.eventStatus === EventStatus.audit"
               [value]="EventStatus.audit"
-              [disabled]="userProfile?.systemAccessRight[0] !== AccessRight.auditor ? true : null"
+              [disabled]="systemAccessright !== AccessRight.auditor ? true : null"
               (click)="releaseEventAlert()"
             >
             <label for="event__status__audit">
@@ -75,7 +75,7 @@
               class="radio__input"
               [checked]="eventInfo.eventStatus === EventStatus.cancel"
               [value]="EventStatus.cancel"
-              [disabled]="userProfile?.systemAccessRight[0] !== AccessRight.auditor ? true : null"
+              [disabled]="systemAccessright !== AccessRight.auditor ? true : null"
               (click)="cancelEventAlert()"
             >
             <label for="event__status__cancel">
@@ -146,7 +146,7 @@
                 [refStartDate]="eventInfo.applyDate.startDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
                 [default]="eventInfo.applyDate.startDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
                 [serialId]="'1'"
-                [limitMin]="currentTimestamp * 1000"
+                [limitMin]="startDateMin"
                 [editStyle]="'
                   border: none;
                   border-bottom: 1px solid black;
@@ -173,7 +173,7 @@
                 [refStartDate]="eventInfo.applyDate.endDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
                 [default]="eventInfo.applyDate.endDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
                 [serialId]="'2'"
-                [limitMin]="currentTimestamp * 1000"
+                [limitMin]="startDateMin"
                 [limitMax]="
                   currentTimestamp >= eventInfo.raceDate.startDate && uiFlag.editMode !== 'create' ?
                     eventInfo.raceDate.endDate * 1000 : undefined

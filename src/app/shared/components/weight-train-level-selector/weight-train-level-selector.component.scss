@@ -1,0 +1,40 @@
+@import 'transition.scss';
+
+.weight__train__setting {
+  position: absolute;
+  top: 28px;
+  right: 0px;
+  width: 260px;
+  padding: 15px;
+  background-color: white;
+  z-index: 1;
+  border: 1px solid black;
+}
+
+.drop__menu__list {
+  cursor: pointer;
+  position: absolute;
+  width: 100%;
+  border: 1px solid black;
+  padding: 5px;
+  z-index: 2;
+  background-color: white;
+  top: 34px;
+}
+
+.list__option {
+  padding: 2px;
+  display: block;
+  text-align: right;
+  padding-right: 20px;
+
+  &:hover {
+    background-color: rgba(17, 166, 235, 1);
+    color: white;
+    @include transition(background-color);
+  }
+}
+
+.weight__train__menu {
+  justify-content: flex-end;
+}

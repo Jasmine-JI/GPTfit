@@ -8,9 +8,7 @@ import { DetectInappService } from '../../shared/services/detect-inapp.service';
 import { fromEvent, Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { langList } from '../../shared/models/i18n';
-import { SignTypeEnum } from '../../shared/models/utils-type';
-import { AuthService } from '../../shared/services/auth.service';
-import { UserProfileService } from '../../shared/services/user-profile.service';
+import { setLocalStorageObject, getLocalStorageObject } from '../../shared/utils/index';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -52,9 +50,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     private globalEventsManager: GlobalEventsManager,
     private utilsService: UtilsService,
     public translateService: TranslateService,
-    private detectInappService: DetectInappService,
-    private auth: AuthService,
-    private userProfileService: UserProfileService
+    private detectInappService: DetectInappService
   ) {
     if (location.search.indexOf('ipm=s') > -1) {
       this.uiFlag.isPreviewMode = true;
@@ -69,7 +65,6 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     this.checkLanguage();
     this.handleShowNavBar();
     this.listenTargetImg();
-    this.loginCheck();
   }
 
   ngAfterViewInit() {
@@ -97,7 +92,6 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    * @author kidin-1101229
    */
   checkUiSetting () {
-    let rxHideNavbar = false;
     combineLatest([
       this.utilsService.getHideNavbarStatus(),
       this.utilsService.getDarkModeStatus()
@@ -162,27 +156,6 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * 如有登入，則取得使用者userProfile
-   * @author kidin-1110209
-   */
-  loginCheck() {
-    const token = this.utilsService.getToken();
-    if (token) {
-      const body = {
-        token,
-        signInType: SignTypeEnum.token
-      };
-
-      this.auth.loginCheck(body).subscribe(res => {
-        const [userProfile, accessRight] = res;
-        const userInfo = this.userProfileService.userProfileCombineAccessRight(userProfile, accessRight);
-      });
-
-    }
-
-  }
-
-  /**
    * 移除appview變更之設定
    * @author kidin-1110114
    */
@@ -203,7 +176,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     } else if ((window as any).webkit) {
       browserLang = navigator.language.toLowerCase() || 'en-us';
     } else {
-      browserLang = this.utilsService.getLocalStorageObject('locale') || navigator.language.toLowerCase();
+      browserLang = getLocalStorageObject('locale') || navigator.language.toLowerCase();
     }
 
     if (browserLang === 'pt-br') {
@@ -213,7 +186,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.translateService.use(browserLang);
-    this.utilsService.setLocalStorageObject('locale', browserLang);
+    setLocalStorageObject('locale', browserLang);
   }
 
   /**
@@ -382,7 +355,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    * @author kidin-1091012
    */
   handleNavigation(code: number) {
-    const currentLang = this.utilsService.getLocalStorageObject('locale');
+    const currentLang = getLocalStorageObject('locale');
     let lang: string;
     switch (currentLang) {
       case 'zh-tw':

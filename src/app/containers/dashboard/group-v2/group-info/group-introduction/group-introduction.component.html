@@ -4,10 +4,10 @@
     style="justify-content: flex-end; margin: 10px;"
     *ngIf="
       userSimpleInfo
-      && (userSimpleInfo.accessRight[0] <= editBody.groupLevel || uiFlag.editMode === 'create')
+      && (userSimpleInfo.accessRight <= editBody.groupLevel || uiFlag.editMode === 'create')
       && groupDetail.groupStatus !== 4
       && groupDetail.groupStatus !== 5
-      && (groupDetail.groupStatus !== 6 || (userSimpleInfo.accessRight[0] < editBody.groupLevel && userSimpleInfo.accessRight[0] < 50))
+      && (groupDetail.groupStatus !== 6 || (userSimpleInfo.accessRight < editBody.groupLevel && userSimpleInfo.accessRight < 50))
       && !groupDetail.expired
       && groupDetail.commerceStatus === 1
     "
@@ -108,8 +108,8 @@
           *ngIf="
             uiFlag.editMode === 'edit'
             && editBody.groupLevel > 30
-            && userSimpleInfo.accessRight[0] < editBody.groupLevel
-            && userSimpleInfo.accessRight[0] < 50"
+            && userSimpleInfo.accessRight < editBody.groupLevel
+            && userSimpleInfo.accessRight < 50"
         >{{ 'universal_status_disable' | translate }}</span>
       </div>
     </div>

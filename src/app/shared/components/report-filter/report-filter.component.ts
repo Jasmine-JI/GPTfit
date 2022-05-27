@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { UtilsService } from '../../services/utils.service';
 import { ReportService } from '../../services/report.service';
 import dayjs from 'dayjs';
 import { ReportConditionOpt } from '../../models/report-condition';
@@ -7,10 +6,11 @@ import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CloudrunService } from '../../services/cloudrun.service';
 import { Lang } from '../../models/i18n';
-import { Sex } from '../../models/user-profile-info';
+import { Sex } from '../../enum/personal';
 import { GlobalEventsService } from '../../../core/services/global-events.service';
 import { SelectDate } from '../../models/utils-type';
 import { SportType } from '../../enum/sports';
+import { getLocalStorageObject } from '../../utils/index';
 
 interface DateCondition {
   type: 'sevenDay' | 'thirtyDay' | 'sixMonth' | 'today' | 'thisWeek' | 'thisMonth' | 'thisYear' | 'custom';
@@ -105,7 +105,6 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   timeout: any;
   readonly Sex = Sex;
   constructor(
-    private utils: UtilsService,
     private reportService: ReportService,
     private cloudrunService: CloudrunService,
     private changeDetectorRef: ChangeDetectorRef,
@@ -113,7 +112,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.uiFlag.currentLanguage = this.utils.getLocalStorageObject('locale');
+    this.uiFlag.currentLanguage = getLocalStorageObject('locale');
     this.pageSizeChange();
     this.onResize();
     this.getReportCondition();
@@ -659,9 +658,8 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1100304
    */
   clickSubscribe() {
-    const isDashboard = location.pathname.includes('dashboard'),
-          listenEle = document.querySelector(isDashboard ? '.main-body' : 'main'),
-          clickEvent = fromEvent(listenEle, 'click');
+    const listenEle = document.querySelector('.main__container');
+    const clickEvent = fromEvent(listenEle, 'click');
     this.clickSubscription = clickEvent.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(e => {
