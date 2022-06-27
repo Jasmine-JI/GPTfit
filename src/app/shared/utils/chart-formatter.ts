@@ -1,4 +1,9 @@
 import dayjs from 'dayjs';
+import { Unit } from '../enum/value-conversion';
+import { mi, ft } from '../models/bs-constant';
+import { mathRounding } from './index';
+import { getPaceUnit, paceSecondTimeFormat } from './sports';
+import { SportType } from '../enum/sports';
 
 /**
  * 預設x軸日期顯示格式(highchart用)
@@ -121,4 +126,157 @@ export function tooltipPercentageFormat() {
   const [startTime, endTime] = this.series.options.custom.dateRange[dateRangeIndex];
   return `${dayjs(startTime).format('YYYY-MM-DD')}~${dayjs(endTime).format('YYYY-MM-DD')}
     <br/>${this.series.name}: ${this.y}%`;
+}
+
+/**
+ * 依使用者單位取得距離相關圖表軸線格式
+ * @param unit {Unit}-使用者使用單位
+ */
+export function distanceAxisFormat(unit: Unit) {
+  const isMetric = unit === Unit.metric;
+  let formatter: Function;
+  if (isMetric) {
+    formatter = function() {
+      const [yVal, userUnit] = this.value >= 1000 ? [this.value / 1000, 'km'] : [this.value, 'm'];
+      return `${mathRounding(yVal, 1)} ${userUnit}`;
+    };
+
+  } else {
+    formatter = function() {
+      // 大於1英哩才顯示英哩，否則以呎表示
+      const miValue = this.value / mi;
+      const [yVal, userUnit] = miValue >= 1000 ? [miValue, 'mi'] : [this.value / ft, 'ft'];
+      return `${mathRounding(yVal, 1)} ${userUnit}`;      
+    }
+
+  }
+
+  return formatter;
+}
+
+/**
+ * 依使用者單位與數值大小，距離相關圖表提示框格式
+ * @param unit {Unit}-使用者使用單位
+ */
+export function distanceTooltipFormat(unit: Unit) {
+  const isMetric = unit === Unit.metric;
+  let formatter: Function;
+  if (isMetric) {
+    formatter = function() {
+      const dateRangeIndex = this.point.index;
+      const [startTime, endTime] = this.series.options.custom.dateRange[dateRangeIndex];
+      const [value, suffix] = this.y >= 1000 ? [(this.y / 1000), 'km'] : [this.y, 'm'];
+      return `${dayjs(startTime).format('YYYY-MM-DD')}~${dayjs(endTime).format('YYYY-MM-DD')}
+        <br/>${this.series.name}: ${mathRounding(value, 1)} ${suffix}
+      `;
+
+    };
+
+  } else {
+    formatter = function() {
+      const dateRangeIndex = this.point.index;
+      const [startTime, endTime] = this.series.options.custom.dateRange[dateRangeIndex];
+      const miValue = this.y / mi;
+      const [value, suffix] = miValue >= 1000 ? [miValue, 'mi'] : [this.y / ft, 'ft'];
+      return `${dayjs(startTime).format('YYYY-MM-DD')}~${dayjs(endTime).format('YYYY-MM-DD')}
+        <br/>${this.series.name}: ${mathRounding(value, 1)} ${suffix}
+      `;
+
+    };
+
+  }
+
+  return formatter;
+}
+
+/**
+ * 用於個人目標達成率圖表浮動框時間轉換成指定格式
+ */
+export function targetAchieveTooltip() {
+  const { baseDateRange, compareDateRange } = this.series.options.custom;
+  const { index } = this.point;
+  const dateRangeIndex = compareDateRange ? Math.floor(index / 2) : index;
+  const [startTime, endTime] = this.y === 1 ? compareDateRange[dateRangeIndex] : baseDateRange[dateRangeIndex];
+  return `${dayjs(startTime).format('YYYY-MM-DD')}~${dayjs(endTime).format('YYYY-MM-DD')}`;
+}
+
+/**
+ * 用於個人最大與平均圖表浮動框轉換成指定格式
+ * @param unit {string}-圖表數據單位
+ */
+export function complexTrendTooltip(unit: string) {
+  const formatter = function() {
+    const [baseMaxHrInfo, baseAvgHrInfo, compareMaxHrInfo, compareAvgHrInfo] = this.points;
+    const getText = (maxInfo: any, avgInfo: any) => {
+      const [startDate, endDate] = avgInfo.point.additionalInfo;
+      return `${dayjs(startDate).format('YYYY-MM-DD')}~${dayjs(endDate).format('YYYY-MM-DD')}
+        <br/>${maxInfo.series.name}: ${mathRounding(maxInfo.y, 1)} ${unit}
+        <br/>${avgInfo.series.name}: ${mathRounding(avgInfo.y, 1)} ${unit}
+      `;
+    }
+
+    let result = getText(baseMaxHrInfo, baseAvgHrInfo);
+    if (compareAvgHrInfo) result += `<br/><br/>${getText(compareMaxHrInfo, compareAvgHrInfo)}`;
+
+    return result;
+  }
+
+  return formatter;
+}
+
+/**
+ * 用於個人最大與平均心率圖表浮動框轉換成指定格式
+ * @param isMetric {boolean}-是否為公制單位
+ */
+ export function bodyWeightTooltip(isMetric: boolean = true) {
+  const unit = isMetric ? 'kg' : 'lb';
+  const formatter = function() {
+    const [baseFatRateInfo, baseWeightInfo, compareFatRateInfo, compareWeightInfo] = this.points;
+    const getText = (fatRateInfo: any, weightInfo: any) => {
+      const [startDate, endDate] = weightInfo.point.additionalInfo;
+      return `${dayjs(startDate).format('YYYY-MM-DD')}~${dayjs(endDate).format('YYYY-MM-DD')}
+        <br/>${fatRateInfo.series.name}: ${mathRounding(fatRateInfo.y, 1)} %
+        <br/>${weightInfo.series.name}: ${mathRounding(weightInfo.y, 1)} ${unit}
+      `;
+    };
+
+    let result = getText(baseFatRateInfo, baseWeightInfo);
+    if (compareWeightInfo) result += `<br/><br/>${getText(compareFatRateInfo, compareWeightInfo)}`;
+
+    return result;
+  }
+
+  return formatter;
+}
+
+/**
+ * 用於個人配速圖表浮動框轉換成指定格式
+ */
+export function paceTooltipFormatter(sportType: SportType, userUnit: Unit) {
+  const unit = getPaceUnit(sportType, userUnit);
+  const formatter = function() {
+    const [baseMaxPaceInfo, baseAvgPaceInfo, compareMaxPaceInfo, compareAvgPaceInfo] = this.points;
+    const getText = (maxPaceInfo: any, avgPaceInfo: any) => {
+      const [startDate, endDate] = avgPaceInfo.point.additionalInfo;
+      return `${dayjs(startDate).format('YYYY-MM-DD')}~${dayjs(endDate).format('YYYY-MM-DD')}
+        <br/>${maxPaceInfo.series.name}: ${paceSecondTimeFormat(maxPaceInfo.y)} ${unit}
+        <br/>${avgPaceInfo.series.name}: ${paceSecondTimeFormat(avgPaceInfo.y)} ${unit}
+      `;
+    };
+
+    let result = getText(baseMaxPaceInfo, baseAvgPaceInfo);
+    if (compareAvgPaceInfo) result += `<br/><br/>${getText(compareMaxPaceInfo, compareAvgPaceInfo)}`;
+
+    return result;
+  }
+
+  return formatter;
+}
+
+/**
+ * 用於個人配速圖表y軸轉換成指定格式
+ */
+export function paceYAxisFormatter() {
+  if (this.value === 0) return `00'00"`;
+  return paceSecondTimeFormat(this.value);
 }

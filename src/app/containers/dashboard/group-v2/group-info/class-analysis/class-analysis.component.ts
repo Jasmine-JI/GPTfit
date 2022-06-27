@@ -13,9 +13,13 @@ import { ActivityService } from '../../../../../shared/services/activity.service
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { chart, charts } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
-import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+import { Api10xxService } from '../../../../../core/services/api-10xx.service';
 import { Router } from '@angular/router';
 import { HashIdService } from '../../../../../shared/services/hash-id.service';
+import { AuthService } from '../../../../../core/services/auth.service';
+
+
+dayjs.extend(weekday);
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -234,10 +238,11 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private activityService: ActivityService,
     private translate: TranslateService,
-    private userProfileService: UserProfileService,
+    private api10xxService: Api10xxService,
     private hashIdService: HashIdService,
     private router: Router,
-    private qrcodeService: QrcodeService
+    private qrcodeService: QrcodeService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -422,7 +427,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    */
   getClassList() {
     const body = {
-      token: this.utils.getToken() || '',
+      token: this.authService.token,
       searchTime: {
         type: '1',
         fuzzyTime: '',
@@ -586,7 +591,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.uiFlag.focusActivity = index;
 
     const body = {
-      token: this.utils.getToken() || '',
+      token: this.authService.token,
       searchTime: {
         type: '2',
         fuzzyTime: [this.focusDayActivities[index].fileInfo.creationDate],
@@ -1269,11 +1274,8 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     });
 
     // 取得教練資訊-kidin-1081218
-    const bodyForCoach = {
-      targetUserId: coachId
-    };
-
-    this.userProfileService.getUserProfile(bodyForCoach).subscribe(res => {
+    const bodyForCoach = { targetUserId: coachId };
+    this.api10xxService.fetchGetUserProfile(bodyForCoach).subscribe(res => {
       if (res.processResult.resultCode === 200) {
         this.coachInfo = res.userProfile;
       } else {

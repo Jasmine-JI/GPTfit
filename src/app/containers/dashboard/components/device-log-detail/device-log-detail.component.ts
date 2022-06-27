@@ -23,9 +23,9 @@ import {
 } from '@angular/cdk/layout';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Location, DOCUMENT } from '@angular/common';
+import { WINDOW } from '../../../../shared/services/window.service';
+import { getUrlQueryStrings } from '../../../../shared/utils/index';
 
-import { WINDOW } from '@shared/services/window.service';
-import { UtilsService } from '@shared/services/utils.service';
 
 @Component({
   selector: 'app-device-log-detail',
@@ -61,7 +61,6 @@ export class DeviceLogDetailComponent implements OnInit {
     private router: Router,
     private breakpointObserver: BreakpointObserver,
     private fb: FormBuilder,
-    private utils: UtilsService,
     @Inject(DOCUMENT) private document: Document,
     @Inject(WINDOW) private window,
     public _location: Location // 調用location.back()，來回到上一頁
@@ -74,7 +73,7 @@ export class DeviceLogDetailComponent implements OnInit {
   }
 
   ngOnInit() {
-    const queryStrings = this.utils.getUrlQueryStrings(location.search);
+    const queryStrings = getUrlQueryStrings(location.search);
     const { pageNumber } = queryStrings;
     this.isHandset$ = this.breakpointObserver
       .observe(Breakpoints.Handset)

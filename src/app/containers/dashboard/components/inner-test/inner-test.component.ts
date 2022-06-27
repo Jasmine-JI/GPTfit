@@ -1,21 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { GroupService } from '../../../../shared/services/group.service';
-import { HttpParams } from '@angular/common/http';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import { HashIdService } from '../../../../shared/services/hash-id.service';
-import { debounce } from '../../../../shared/utils/index';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
-import { AuthService } from '../../../../shared/services/auth.service';
+import { debounce, buildBase64ImgString } from '../../../../shared/utils/index';
+import { Api10xxService } from '../../../../core/services/api-10xx.service';
 import { Router } from '@angular/router';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { last } from 'rxjs/operators';
 import dayjs from 'dayjs';
-import { AccountTypeEnum } from '../../../../shared/models/user-profile-info';
-
-const errorMsg = 'Error!<br />Please try again later.';
+import { AccountTypeEnum } from '../../../../shared/enum/account';
+import { AuthService } from '../../../../core/services/auth.service';
 
 interface UserInfo {
   userName: string;
@@ -85,10 +82,10 @@ export class InnerTestComponent implements OnInit {
     private utils: UtilsService,
     public dialog: MatDialog,
     private hashIdService: HashIdService,
-    private userProfileService: UserProfileService,
-    private auth: AuthService,
+    private api10xxService: Api10xxService,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private authService: AuthService
   ) {
     this.onGroupEncode = debounce(this.onGroupEncode, 1000);
     this.onGroupDecode = debounce(this.onGroupDecode, 1000);
@@ -102,9 +99,8 @@ export class InnerTestComponent implements OnInit {
    * @author kidin-1090806
    */
   getUserAvartar(userId: number): void {
-
     const body = {
-      token: this.utils.getToken(),
+      token: this.authService.token,
       userId: userId
     };
 
@@ -138,9 +134,9 @@ export class InnerTestComponent implements OnInit {
           userId: userId,
           userPageLink: `https://${location.hostname}/user-profile/${this.hashIdService.handleUserIdEncode(userId.toString())}`,
           userDeviceLog: `https://${location.hostname}/dashboard/system/device_log/detail/${userId}`,
-          smallIcon: this.utils.buildBase64ImgString(smallIcon),
-          middleIcon: this.utils.buildBase64ImgString(middleIcon),
-          largeIcon: this.utils.buildBase64ImgString(largeIcon),
+          smallIcon: buildBase64ImgString(smallIcon),
+          middleIcon: buildBase64ImgString(middleIcon),
+          largeIcon: buildBase64ImgString(largeIcon),
           email,
           countryCode,
           phone,
@@ -230,7 +226,7 @@ export class InnerTestComponent implements OnInit {
     ) {
       const body = {
         groupId: this.groupId,
-        token: this.utils.getToken() || '',
+        token: this.authService.token,
         avatarType: 2
       };
       this.groupService.fetchGroupListDetail(body).subscribe(res => {
@@ -252,7 +248,7 @@ export class InnerTestComponent implements OnInit {
         targetUserId: this.userId || this.hashIdService.handleUserIdDecode(this.hashUserId)
       };
 
-      this.userProfileService.getUserProfile(body).pipe(
+      this.api10xxService.fetchGetUserProfile(body).pipe(
         last()
       ).subscribe(res => {
         if (res.processResult.resultCode !== 200) {

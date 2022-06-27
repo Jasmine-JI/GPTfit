@@ -1,42 +1,137 @@
-.fold__icon {
-  position: relative;
-  margin: 10px 0 0 10px;
-  font-size: 20px;
-  cursor: pointer;
-  color: var(--scale-100-230);
+@import 'flex-center.scss';
+@import 'transform.scss';
+@import 'transition.scss';
+
+@mixin analysis-column($width) {
+  @include center();
+  white-space: pre-wrap;
+  margin: 0 5px;
+  min-width: $width;
+  max-width: $width;
 }
 
-.muscle__name {
-  color: var(--scale-0-255);
-  text-align: center;
+.chart__switch__button {
+  display: inline;
+  font-size: 32px;
+  padding: 0;
 }
 
-.fold__content {
+.muscle__hint__row {
   align-items: center;
-  margin-left: 30px;
-  width: 80px;
+  margin: 10px 0 10px 100px;
 }
 
-.muscle__trend__chart {
-  width: calc(100% - 110px);
+.muscle__color__hint {
+  $width: 8px;
+  height: 48px;
+  width: $width;
+  border-radius: $width;
 }
 
-.muscle__content__trend__chart {
-  width: calc(100% - 140px);
+.analysis__icon {
+  font-size: 36px;
+  margin: 0 10px;
+}
+
+.muscle__group__name {
+  font-weight: bold;
+  text-shadow: 1px 1px 1px black;
+}
+
+.menu__padding {
+  height: 60px;
+}
+
+.analysis__name {
+  @include analysis-column(120px);
+}
+
+.analysis__rep__max {
+  @include analysis-column(120px);
+}
+
+.analysis__total__sets {
+  @include analysis-column(120px);
+}
+
+.analysis__total__reps {
+  @include analysis-column(120px);
+}
+
+.analysis__avg__weight {
+  @include analysis-column(120px);
+}
+
+.analysis__training__level {
+  @include analysis-column(120px);
+}
+
+.analysis__muscle__group {
+  @include analysis-column(120px);
+}
+
+.training__analysis__row {
+
+  &:hover {
+    cursor: default;
+  }
+
+}
+
+.muscle__icon__section {
+  width: 20%;
+}
+
+.muscle__group__icon {
+  font-size: 96px;
+}
+
+.muscle__part__icon {
+  font-size: 144px;
+}
+
+.fold__icon {
+  font-size: 16px;
+  @include transition(transform);
+}
+
+.muscle__icon--unfold {
+  @include transition(transform);
+  @include el-rotate(180deg);
+}
+
+.part__trend__chart {
+  padding: 10px 2vw;
+}
+
+.gradient__hint__section {
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.gradient__hint__text {
+  font-weight: bold;
+  color: rgba(135, 135, 135, 1);
+}
+
+.gradient__hint__bar {
+  $height: 16px;
+  height: $height;
+  width: 200px;
+  border-radius: $height;
+  margin: 0 10px;
+  background: linear-gradient(90deg, #7BDEFD 0%, #74F49F 24.29%, #F7EED0 50.33%, #FF4A4A 76.37%, #DB4AFF 100%);
 }
 
 
 /***************************************** media ***************************************/
 
-@media (max-width: 767px){
-  .muscle__trend__chart,
-  .muscle__content__trend__chart,
-  .fold__content {
-    width: 100%;
-  }
+@media (max-width: 767px) {
 
-  .muscle__chart__list {
+  .part__trend__chart {
     flex-direction: column;
+    align-items: center;
   }
-
+  
 }

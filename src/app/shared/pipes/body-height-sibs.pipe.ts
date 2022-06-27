@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { UtilsService } from '../services/utils.service';
-import { Unit } from '../models/bs-constant';
+import { Unit } from '../enum/value-conversion';
 
 @Pipe({name: 'bodyHeightSibs'})
 export class BodyHeightSibsPipe implements PipeTransform {
@@ -17,8 +17,8 @@ export class BodyHeightSibsPipe implements PipeTransform {
    * @author kidin-1100106
    */
   transform(value: number, args: [number, boolean]): string {
-    const [unitType, showUnit] = [...args],
-          result = this.utils.bodyHeightTransfer(value, unitType === Unit.imperial, true);
+    const [unitType, showUnit] = [...args];
+    const result = this.utils.bodyHeightTransfer(value, unitType === Unit.imperial, true);
     let unitStr: string;
     if (unitType === Unit.imperial) {
       unitStr = 'inch';

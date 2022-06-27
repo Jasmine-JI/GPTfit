@@ -2,7 +2,7 @@
   <section
     class="flexRow"
     style="justify-content: flex-end;"
-    *ngIf="userSimpleInfo && userSimpleInfo.accessRight[0] <= 29">
+    *ngIf="userSimpleInfo && userSimpleInfo.accessRight <= 29">
     <button class="childPageBtn" (click)="handleCancelEdit()" *ngIf="uiFlag.editMode">
       <span>{{ 'universal_operating_cancel' | translate}}</span>
     </button>
@@ -47,10 +47,10 @@
                 <mat-option value="2">
                   {{'universal_group_outOfService' | translate}}
                 </mat-option>
-                <mat-option value="3" *ngIf="userSimpleInfo.accessRight[0] <= 10">
+                <mat-option value="3" *ngIf="userSimpleInfo.accessRight <= 10">
                   {{'universal_group_outOfBusiness' | translate}}
                 </mat-option>
-                <mat-option value="4" *ngIf="userSimpleInfo.accessRight[0] <= 10">
+                <mat-option value="4" *ngIf="userSimpleInfo.accessRight <= 10">
                   {{'universal_group_toBeDestroyed' | translate}}
                 </mat-option>
               </mat-select>

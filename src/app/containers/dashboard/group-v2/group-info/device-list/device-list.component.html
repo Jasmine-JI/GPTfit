@@ -186,7 +186,7 @@
   id="edit__btn__group"
   (mousedown)="changeBtnPositionStart($event, 'mouse')"
   (touchstart)="changeBtnPositionStart($event, 'touch')"
-  *ngIf="uiFlag.editMode === null && groupInfo.groupLevel == 40 && userSimpleInfo?.accessRight[0] <= 40"
+  *ngIf="uiFlag.editMode === null && groupInfo.groupLevel == 40 && userSimpleInfo?.accessRight <= 40"
 >
   <button id="delete__btn" (click)="openEditMode('del')" *ngIf="deviceList?.length > 0">
     <i class="icon-svg_web-icon_p1_012-close"></i>

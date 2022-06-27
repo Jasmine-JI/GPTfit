@@ -1,4 +1,4 @@
-import { HrBase } from './user-profile-info';
+import { HrBase } from '../enum/personal';
 
 export type DisplayPage = 'cloudrun' | 'sport' | 'lifeTracking' | 'sportReport';
 
@@ -113,6 +113,16 @@ export const DISTRIBUTION_CHART_COLOR = {
   }
 
 };
+
+/**
+ * 重訓肌肉地圖與趨勢圖顏色設定（hsla）
+ */
+export const WEIGHT_TRAIN_COLOR = {
+  saturation: '100%',  // 主訓練部位色彩飽和度
+  brightnessFor1RM: '70%',  // 主訓練部位色彩明亮度(1RM)
+  brightnessForAvgWeight: '80%',  // 主訓練部位色彩明亮度(平均重量)
+  transparency: 0.7,  // 主訓練部位色彩透明度
+}
 
 /**
  * 步數趨勢圖顏色
@@ -239,6 +249,75 @@ export const trendChartColor = {
       top: 'rgba(96, 198, 80, 1)',
       bottom: 'rgba(45, 147, 195, 1)'
     }
+  },
+  distance: {
+    base: {
+      top: 'rgba(195, 201, 20, 1)',
+      bottom: 'rgba(201, 144, 20, 1)'
+    },
+    compare: {
+      top: 'rgba(86, 150, 199, 1)',
+      bottom: 'rgba(86, 188, 199, 1)'
+    }
+  },
+  personalAchieve: {
+    achieve: 'rgba(145, 239, 160, 1)',
+    notAchieve: 'rgba(243, 110, 110, 1)',
+    nodata: 'rgba(255, 255, 255, 0)'
+  },
+  complexHrTrend: {
+    base: {
+      max: 'rgba(208, 184, 218, 1)',
+      avg: 'rgba(200, 59, 255, 1)'
+    },
+    compare: {
+      max: 'rgba(140, 190, 209, 1)',
+      avg: 'rgba(71, 190, 209, 1)'
+    }
+  },
+  bodyWeightTrend: {
+    base: 'rgba(255, 217, 81, 1)',
+    compare: 'rgba(46, 113, 242, 1)'
+  },
+  speedPaceTrend: {
+    base: {
+      max: 'rgba(206, 224, 83, 1)',
+      avg: 'rgba(132, 214, 0, 1)'
+    },
+    compare: {
+      max: 'rgba(137, 119, 186, 1)',
+      avg: 'rgba(106, 77, 184, 1)'
+    }
+  },
+  cadenceTrend: {
+    base: {
+      max: 'rgba(242, 166, 114, 1)',
+      avg: 'rgba(245, 99, 0, 1)'
+    },
+    compare: {
+      max: 'rgba(103, 240, 201, 1)',
+      avg: 'rgba(0, 245, 176, 1)'
+    }
+  },
+  powerTrend: {
+    base: {
+      max: 'rgba(189, 242, 179, 1)',
+      avg: 'rgba(117, 242, 95, 1)'
+    },
+    compare: {
+      max: 'rgba(247, 200, 143, 1)',
+      avg: 'rgba(255, 154, 34, 1)'
+    }
+  },
+  gForceTrend: {
+    base: {
+      max: 'rgba(52, 113, 235, 1)',
+      min: 'rgba(235, 64, 52, 1)'
+    },
+    compare: {
+      max: 'rgba(118, 112, 230, 1)',
+      min: 'rgba(212, 118, 227, 1)'
+    }
   }
 
 }
@@ -351,4 +430,56 @@ export interface RelativeTrendChart {
   minGForce?: number;
   maxForehandCount?: number;
   maxBackhandCount?: number;
+}
+
+/**
+ * 比較圖表預設設定值
+ */
+export const compareChartDefault: any = {
+  chart: {
+    height: 200,
+    backgroundColor: 'transparent',
+    marginLeft: 85,
+    marginRight: 40
+  },
+  title: {
+    text: ''
+  },
+  credits: {
+    enabled: false
+  },
+  xAxis: {
+    title: {
+      text: '',
+      offset: 20,
+    },
+    labels: {
+      style: {
+        fontSize: '10px'
+      }
+    },
+  },
+  yAxis: {
+    min: 0,
+    title: {
+      enabled: false
+    },
+    labels: {},
+    startOnTick: false,
+    minPadding: 0.01,
+    maxPadding: 0.01,
+    tickAmount: 5
+  },
+  tooltip: {},
+  plotOptions: {
+    column: {},
+    series: {
+      pointWidth: null,
+      maxPointWidth: 30
+    }
+  },
+  legend: {
+    enabled: false
+  },
+  series: []
 }

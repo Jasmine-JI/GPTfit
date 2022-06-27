@@ -5,10 +5,14 @@ import isoWeek from 'dayjs/plugin/isoWeek';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { FilletTrendChart, DisplayPage, planeGColor, planeMaxGColor, fitTimeColor } from '../../../models/chart-data';
-import { mi, ft, Unit } from '../../../models/bs-constant';
+import { DisplayPage, planeGColor, planeMaxGColor, fitTimeColor } from '../../../models/chart-data';
+import { mi, ft } from '../../../models/bs-constant';
+import { Unit } from '../../../enum/value-conversion';
 import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
 import { SportType } from '../../../enum/sports';
+
+
+dayjs.extend(isoWeek);
 
 
 // 建立圖表用-kidin-1081212

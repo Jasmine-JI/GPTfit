@@ -17,6 +17,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { chart, charts, each } from 'highcharts';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import { MatDialog } from '@angular/material/dialog';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-life-tracking',
@@ -126,7 +127,8 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     private hashIdService: HashIdService,
     private router: Router,
     private renderer: Renderer2,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private authService: AuthService
   ) {
 
   }
@@ -166,7 +168,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
 
   fetchTrackingDayDetail() {
     const body = {
-      token: this.utils.getToken() || '',
+      token: this.authService.token,
       targetUserId: (this.targetUserId && this.targetUserId.toString()) || '',
       filterStartTime: this.filterStartTime,
       filterEndTime: this.filterEndTime

@@ -10,14 +10,14 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import { GroupService } from '../../services/group.service';
-import { UtilsService } from '../../services/utils.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MessageBoxComponent } from '../message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '../../services/hash-id.service';
-import { UserProfileService } from '../../services/user-profile.service';
 import { LongTextPipe } from '../../pipes/long-text.pipe';
+import { ProfessionalService } from '../../../containers/professional/services/professional.service';
 
 @Component({
   selector: 'app-member-capsule',
@@ -70,13 +70,13 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
   constructor(
     myElement: ElementRef,
     private groupService: GroupService,
-    private utils: UtilsService,
-    private userProfileService: UserProfileService,
+    private professionalService: ProfessionalService,
     private router: Router,
     public dialog: MatDialog,
     private translate: TranslateService,
     private hashIdService: HashIdService,
-    private longTextPipe: LongTextPipe
+    private longTextPipe: LongTextPipe,
+    private authService: AuthService
   ) {
     this.elementRef = myElement;
   }
@@ -93,7 +93,7 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.getTranslate();
-    this.token = this.utils.getToken();
+    this.token = this.authService.token;
   }
 
   ngOnChanges() {
@@ -189,10 +189,7 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
 
     this.groupService.editGroupMember(body).subscribe(res => {
       if (res.resultCode === 200) {
-        const refreshBody = {
-          token: this.token
-        };
-        this.userProfileService.refreshUserProfile(refreshBody);
+        this.professionalService.refreshAllGroupAccessright();
         return this.onRemoveAdmin.emit(this.userId);
       }
 
@@ -266,10 +263,7 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
     
     this.groupService.editGroupMember(body).subscribe(res => {
       if (res.resultCode === 200) {
-        const refreshBody = {
-          token: this.token
-        };
-        this.userProfileService.refreshUserProfile(refreshBody);
+        this.professionalService.refreshAllGroupAccessright();
         this.onAssignAdmin.emit(this.userId);
         this.dialog.closeAll();
       }

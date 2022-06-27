@@ -1,7 +1,7 @@
-import { AccessRight } from './accessright';
+import { AccessRight } from '../enum/accessright';
 import { GroupJoinStatus } from '../enum/professional';
 import { GroupSportTarget } from './sport-target';
-import { Sex } from './user-profile-info';
+import { Sex } from '../enum/personal';
 
 /**
  * api 1103 response 的 info.groupAccessRight[] 的內容

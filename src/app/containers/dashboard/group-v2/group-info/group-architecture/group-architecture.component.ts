@@ -161,13 +161,14 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
    * @author kidin-1091105
    */
   addGroup(type: string) {
+    const { groupId, brandType } = this.groupInfo;
     if (type === 'branch') {
       this.router.navigateByUrl(
-        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId)}/group-introduction?createType=branch`
+        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}/group-introduction?createType=branch&brandType=${brandType}`
       );
-    } else if (type === 'class' && this.groupInfo.brandType === 2) {
+    } else if (type === 'class' && brandType === 2) {
       this.router.navigateByUrl(
-        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId)}/group-introduction?createType=department`
+        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}/group-introduction?createType=department&brandType=${brandType}`
       );
     } else {
       this.translateService.get('hellow world').pipe(
@@ -182,7 +183,7 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
             cancelText: this.translateService.instant('universal_operating_disagree'),
             onConfirm: () => {
               this.router.navigateByUrl(
-                `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId)}/group-introduction?createType=coach`
+                `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}/group-introduction?createType=coach`
               );
   
             }

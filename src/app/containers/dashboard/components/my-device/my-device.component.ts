@@ -11,10 +11,12 @@ import { UtilsService } from '../../../../shared/services/utils.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
+import { Api10xxService } from '../../../../core/services/api-10xx.service';
 import { PaginationSetting } from '../../../../shared/models/pagination';
 import { Subject, fromEvent, Subscription, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
+import { AuthService } from '../../../../core/services/auth.service';
+
 
 @Component({
   selector: 'app-my-device',
@@ -44,7 +46,7 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
     onePageSize: 10
   };
 
-  token = this.utils.getToken();
+  token = this.authService.token;
   deviceList: Array<any>;
   readonly onePageSizeOpt = [5, 10, 20];
   readonly imgStoragePath = 
@@ -57,7 +59,8 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
     public dialog: MatDialog,
     private translateService: TranslateService,
     private snackbar: MatSnackBar,
-    private userProfileService: UserProfileService
+    private api10xxService: Api10xxService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -153,7 +156,7 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
         token: this.token,
         targetUserId: idList
       };
-      querry.push(this.userProfileService.getUserProfile(body));
+      querry.push(this.api10xxService.fetchGetUserProfile(body));
     }
 
     this.uiFlag.progress = 70;
@@ -237,7 +240,7 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
       deviceSettingJson: '',
       fitPairStatus,
       myEquipmentSN: this.deviceList[this.uiFlag.openMenu].myEquipmentSN,
-      token: this.utils.getToken() || ''
+      token: this.token
     };
 
     this.qrcodeService.editDeviceInfo(body).pipe(

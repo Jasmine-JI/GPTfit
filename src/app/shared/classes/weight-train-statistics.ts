@@ -1,6 +1,7 @@
 import { MuscleCode, MuscleGroup } from '../enum/weight-train';
 import { WeightTrainingInfo } from '../models/weight-train';
 import { mathRounding } from '../utils/index';
+import { getCorrespondingMuscleGroup } from '../utils/sports';
 
 
 /**
@@ -26,11 +27,11 @@ export class WeightTrainStatistics {
   };
 
   /**
-   * 更新運動類別次數
+   * 更新各肌群訓練次數
    */
   countMuscleGroup(muscleCode: MuscleCode, count: number) {
     const { _preferMuscleGroup } = this;
-    const muscleGroup = WeightTrainStatistics.getBelongMuscleGroup(muscleCode);
+    const muscleGroup = getCorrespondingMuscleGroup(muscleCode);
     if (_preferMuscleGroup[muscleGroup]) {
       this._preferMuscleGroup[muscleGroup] += count;
     } else {
@@ -40,7 +41,7 @@ export class WeightTrainStatistics {
   }
 
   /**
-   * 取得次數前三多的運動類別
+   * 取得次數前三多的肌群
    */
   get preferMuscleGroup() {
     const sortMuscleGroup = Object.entries(this._preferMuscleGroup)
@@ -62,7 +63,7 @@ export class WeightTrainStatistics {
    */
   countMuscleGroupData(info: WeightTrainingInfo) {
     const { muscle, totalWeightKg, totalSets, totalReps } = info;
-    const muscleGroup = WeightTrainStatistics.getBelongMuscleGroup(muscle);
+    const muscleGroup = getCorrespondingMuscleGroup(muscle);
     const [weight, reps, sets] = this._muscleGroupData[muscleGroup];
     this._muscleGroupData[muscleGroup] = [weight + totalWeightKg, reps + totalReps, sets + totalSets];
   }
@@ -84,48 +85,17 @@ export class WeightTrainStatistics {
   }
 
   /**
-   * 判斷肌肉部位所屬肌群
+   * 取得各肌群總訓練次數
    */
-  static getBelongMuscleGroup(muscleCode: MuscleCode): MuscleGroup {
-    switch (+muscleCode) {
-      case MuscleCode.bicepsInside:
-      case MuscleCode.triceps:
-      case MuscleCode.wristFlexor:
-        return MuscleGroup.armMuscle;
-      case MuscleCode.pectoralsMuscle:
-      case MuscleCode.pectoralisUpper:
-      case MuscleCode.pectoralisLower:
-      case MuscleCode.pectoralsInside:
-      case MuscleCode.pectoralsOutside:
-      case MuscleCode.frontSerratus:
-        return MuscleGroup.pectoralsMuscle;
-      case MuscleCode.shoulderMuscle:
-      case MuscleCode.deltoidMuscle:
-      case MuscleCode.deltoidAnterior:
-      case MuscleCode.deltoidLateral:
-      case MuscleCode.deltoidPosterior:
-      case MuscleCode.trapezius:
-        return MuscleGroup.shoulderMuscle;
-      case MuscleCode.backMuscle:
-      case MuscleCode.latissimusDorsi:
-      case MuscleCode.erectorSpinae:
-        return MuscleGroup.backMuscle;
-      case MuscleCode.abdominalMuscle:
-      case MuscleCode.rectusAbdominis:
-      case MuscleCode.rectusAbdominisUpper:
-      case MuscleCode.rectusAbdominisLower:
-      case MuscleCode.abdominisOblique:
-        return MuscleGroup.abdominalMuscle;
-      case MuscleCode.legMuscle:
-      case MuscleCode.hipMuscle:
-      case MuscleCode.quadricepsFemoris:
-      case MuscleCode.hamstrings:
-      case MuscleCode.ankleFlexor:
-      case MuscleCode.gastrocnemius:
-        return MuscleGroup.legMuscle;
-    }
+  get muscleGroupTotalReps() {
+    const result = [0, 0, 0, 0, 0, 0];
+    Object.entries(this._muscleGroupData).forEach(_muscleGroup => {
+      const [key, valueArray] = _muscleGroup;
+      const [totalWeight, totalReps, ...rest] = valueArray;
+      result[+key - 1] = totalReps;
+    });
 
+    return result;
   }
-
 
 }

@@ -2,13 +2,16 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UtilsService } from '../../../../shared/services/utils.service';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
+import { UserService } from '../../../../core/services/user.service';
 import { formTest } from '../../../../shared/models/form-test';
 import { Subject, Subscription, fromEvent, of } from 'rxjs';
 import { takeUntil, switchMap, map, tap } from 'rxjs/operators';
 import { pageNotFoundPath } from '../../models/official-activity-const';
 import { EventStatus, ApplyStatus } from '../../models/activity-content';
-import { AccessRight } from '../../../../shared/models/accessright';
+import { AccessRight } from '../../../../shared/enum/accessright';
+import { NodejsApiService } from '../../../../core/services/nodejs-api.service';
+import { AuthService } from '../../../../core/services/auth.service';
+
 
 const switchButtonWidth = 40;
 enum ApplyButtonStatus {
@@ -64,7 +67,9 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private utils: UtilsService,
     private router: Router,
-    private userProfileService: UserProfileService
+    private userService: UserService,
+    private nodejsApiService: NodejsApiService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -92,10 +97,10 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
    * @author kidin-1101015
    */
   getAccessRight() {
-    return this.userProfileService.getRxUserProfile().pipe(
+    return this.userService.getUser().rxUserProfile.pipe(
       switchMap(userProfile => {
         if (userProfile) {
-          const token = this.utils.getToken();
+          const token = this.authService.token;
           const { eventId } = this;
           return this.checkApplied(token, eventId).pipe(
             map(applyResult => [userProfile, applyResult])
@@ -108,12 +113,11 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
       tap(res => {
         const [userProfile, checkApplied] = res;
         if (userProfile) {
-          const { systemAccessRight } = userProfile;
+          const { systemAccessright } = this.userService.getUser();
           const { applyStatus } = checkApplied.result[0] || { applyStatus: ApplyStatus.notYet };
-          const maxAccessRight = systemAccessRight[0];
           const passAccessRight = [AccessRight.auditor, AccessRight.pusher];
-          this.uiFlag.isAdmin = passAccessRight.includes(maxAccessRight);
-          this.uiFlag.canBrowserPage = maxAccessRight <= AccessRight.marketing;
+          this.uiFlag.isAdmin = passAccessRight.includes(systemAccessright);
+          this.uiFlag.canBrowserPage = systemAccessright <= AccessRight.marketing;
           this.handleApplyStatus(applyStatus);
         } else {
           this.uiFlag.applyButtonStatus = ApplyButtonStatus.canApply;
@@ -157,7 +161,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     const body = { eventId: this.eventId };
     this.officialActivityService.getEventDetail(body).pipe(
       switchMap(res => {
-        const token = this.utils.getToken();
+        const token = this.authService.token;
         if (token) {
           return this.getAccessRight().pipe(map(accessRight => res));
         }
@@ -289,7 +293,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
       }
     };
 
-    return this.userProfileService.getAssignInfo(body);
+    return this.nodejsApiService.getAssignInfo(body);
   }
 
   /**

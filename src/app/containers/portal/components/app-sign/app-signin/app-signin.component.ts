@@ -1,15 +1,15 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../../../../shared/services/utils.service';
-import { AuthService } from '../../../../../shared/services/auth.service';
+import { AuthService } from '../../../../../core/services/auth.service';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { formTest } from '../../../../../shared/models/form-test';
-import { UserProfileService } from '../../../../../shared/services/user-profile.service';
-import { SignTypeEnum } from '../../../../../shared/models/utils-type';
+import { SignTypeEnum } from '../../../../../shared/enum/account';
+import { getLocalStorageObject } from '../../../../../shared/utils/index';
 
 
 @Component({
@@ -68,8 +68,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
     private utils: UtilsService,
     private authService: AuthService,
     private dialog: MatDialog,
-    private router: Router,
-    private userProfileService: UserProfileService
+    private router: Router
   ) {
     // 當語系變換就重新取得翻譯-kidin-1090720
     this.translate.onLangChange.pipe(
@@ -180,7 +179,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1110111
    */
   setCountryCode() {
-    const countryCode = this.utils.getLocalStorageObject('countryCode');
+    const countryCode = getLocalStorageObject('countryCode');
     this.checkAll();
     return countryCode ? +countryCode : 886;
   }
@@ -330,7 +329,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
     this.checkAll();
     if (this.doulbleCheck() || !this.dataIncomplete) {
       this.loginStatus = 'logging';
-      this.authService.loginServerV2(this.loginBody, false).subscribe(res => {
+      this.authService.accountLogin(this.loginBody).subscribe(res => {
 
         if (res.processResult.resultCode === 200) {
           this.cue.signResult = '';
@@ -424,7 +423,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
 
     } else {
 
-      const lan = this.utils.getLocalStorageObject('locale');
+      const lan = getLocalStorageObject('locale');
       switch (lan) {
         case 'zh-tw':
           text = `${this.translate.instant('universal_userAccount_clauseContentPage1')

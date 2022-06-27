@@ -3,15 +3,15 @@ import dayjs from 'dayjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { UtilsService } from '../../services/utils.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { ReportService } from '../../services/report.service';
 import { ReportConditionOpt } from '../../models/report-condition';
-import { mi, Unit } from '../../models/bs-constant';
-import { UserProfileService } from '../../services/user-profile.service';
+import { mi } from '../../models/bs-constant';
+import { Unit } from '../../enum/value-conversion';
+import { UserService } from '../../../core/services/user.service';
 import { stepColor } from '../../models/chart-data';
-import { Sex } from '../../models/user-profile-info';
-import { chart } from 'highcharts';
-import highcharts from 'highcharts';
+import { Sex } from '../../enum/personal';
+import { deepCopy } from '../../utils/index';
 
 type CommentType = 'fatRate' | 'muscleRate' | 'moistureRate';
 
@@ -154,11 +154,11 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
   xAxisArr = []; // 圖表x軸全部值
 
   constructor(
-    private utils: UtilsService,
     private reportService: ReportService,
     private translate: TranslateService,
-    private userProfileService: UserProfileService,
-    private changeDetectorRef: ChangeDetectorRef
+    private userService: UserService,
+    private changeDetectorRef: ChangeDetectorRef,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -219,20 +219,15 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
    * @author kidin-1091028
    */
    getLoginUserInfo() {
-    this.userProfileService.getRxUserProfile().pipe(
+    this.userService.getUser().rxUserProfile.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
-      const {
-        userId,
-        unit,
-        systemAccessRight,
-        avatarUrl,
-        nickname
-      } = res as any;
+      const { systemAccessright } = this.userService.getUser();
+      const { userId, unit, avatarUrl, nickname } = res as any;
       this.userInfo = {
         name: nickname,
         id: userId,
-        accessRight: systemAccessRight,
+        accessRight: systemAccessright,
         unit,
         icon: avatarUrl
       };
@@ -263,7 +258,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
               { date: { startTimestamp, endTimestamp }} = condition;
         // 日期範圍大於52天則取週報告
         this.reportTime.type = dayjs(endTimestamp).diff(dayjs(startTimestamp), 'day') <= 52 ? 1 : 2;
-        this.reportConditionOpt = this.utils.deepCopy(condition);
+        this.reportConditionOpt = deepCopy(condition);
         this.getData(this.userInfo.id);
       }
 
@@ -351,14 +346,14 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
    * @author kidin-1100617
    */
    getData(id: number) {
-    const { startTimestamp, endTimestamp } = this.reportConditionOpt.date,
-          body = {
-            token: this.utils.getToken(),
-            type: this.reportTime.type,
-            targetUserId: [id],
-            filterStartTime: dayjs(startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-            filterEndTime: dayjs(endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-          };
+    const { startTimestamp, endTimestamp } = this.reportConditionOpt.date;
+    const body = {
+      token: this.authService.token,
+      type: this.reportTime.type,
+      targetUserId: [id],
+      filterStartTime: dayjs(startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+      filterEndTime: dayjs(endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+    };
 
     this.reportService.fetchTrackingSummaryArray(body).subscribe(res => {
       if (res.length && res.length > 0) {

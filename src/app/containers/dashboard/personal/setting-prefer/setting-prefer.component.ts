@@ -1,16 +1,22 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UtilsService } from '../../../../shared/services/utils.service';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { Unit, ft, inch, lb } from '../../../../shared/models/bs-constant';
-import { HrBase } from '../../../../shared/models/user-profile-info';
+import { ft, inch, lb } from '../../../../shared/models/bs-constant';
+import { Unit } from '../../../../shared/enum/value-conversion';
+import { HrBase } from '../../../../shared/enum/personal';
 import { formTest } from '../../../../shared/models/form-test';
 import { HrZoneRange } from '../../../../shared/models/chart-data';
 import dayjs from 'dayjs';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { DashboardService } from '../../services/dashboard.service';
+import { TargetField, PersonalTarget, TargetCondition } from '../../../../shared/models/sport-target';
+import { ConditionSymbols } from '../../../../shared/enum/sport-target';
+import { DateUnit } from '../../../../shared/enum/report';
+import { deepCopy, checkResponse, mathRounding, valueConvert } from '../../../../shared/utils/index';
+import { SportsTargetDefault } from '../../../../shared/models/variable-init';
+import { UserService } from '../../../../core/services/user.service';
+import { getUserHrRange, getUserFtpZone } from '../../../../shared/utils/sports';
 
 enum DominantHand {
   right,
@@ -23,7 +29,7 @@ enum AutoStepTarget {
 }
 
 type TimeEditType = 'hour' | 'min';
-type SetType = 'hr' | 'ftp' | 'activity' | 'sleep' | 'target';
+type SetType = 'hr' | 'ftp' | 'activity' | 'sleep' | 'target' | 'sportsTarget';
 const wheelSizeCoefficient = inch * 10;
 
 @Component({
@@ -36,6 +42,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   private clickEvent = new Subscription();
   private wheelEvent = new Subscription();
   private touchEvent = new Subscription();
+  private dialogClickEvent = new Subscription();
 
   /**
    * ui 會用到的flag
@@ -46,7 +53,9 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     valueShifting: false,
     isMobile: 'ontouchmove' in window,
     expand: false,
-    showEditDialog: <SetType>null
+    showEditDialog: <SetType>null,
+    showCycleList: false,
+    showFiledNameList: false
   };
 
   /**
@@ -79,6 +88,20 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   };
 
   /**
+   * 個人運動目標(預設值)
+   */
+  sportsTarget: PersonalTarget = deepCopy(SportsTargetDefault);
+
+  /**
+   * 新的目標條件
+   */
+  newCondition: TargetCondition = {
+    filedName: <TargetField>'',
+    symbols: ConditionSymbols.greaterEqual,
+    filedValue: null
+  };
+
+  /**
    * 紀錄需公英制轉換的數據，其數值是否更新，
    * 避免因四捨五入造成每次儲存皆異動到該數值
    */
@@ -106,13 +129,13 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   readonly Unit = Unit;
   readonly DominantHand = DominantHand;
   readonly AutoStepTarget = AutoStepTarget;
+  readonly DateUnit = DateUnit;
 
   constructor(
     private utils: UtilsService,
-    private userProfileService: UserProfileService,
-    private snackBar: MatSnackBar,
     private translate: TranslateService,
-    private dashboardService: DashboardService
+    private dashboardService: DashboardService,
+    private userService: UserService
   ) { }
 
   ngOnInit(): void {
@@ -124,7 +147,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    * @author kidin-1100818
    */
   getRxUserProfile() {
-    this.userProfileService.getRxTargetUserInfo().pipe(
+    this.userService.getUser().rxUserProfile.pipe(
       map(resp => {
         const { handedness } = resp;
         if (handedness === undefined || resp.length === 0) {
@@ -147,6 +170,32 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   showEditDialog(type: SetType) {
     this.uiFlag.showEditDialog = type;
+    switch (type) {
+      case 'sportsTarget':
+        this.handleSportTargetDialog();
+        break;
+      default:
+        this.handleSettingDialog();
+        break;
+    }
+
+  }
+
+  /**
+   * 處理設定運動目標所需資訊
+   */
+  handleSportTargetDialog() {
+    const { workoutTarget } = this.userInfo;
+    if (workoutTarget && Object.keys(workoutTarget).length > 0) {
+      this.sportsTarget = deepCopy(workoutTarget);
+    }
+    
+  }
+
+  /**
+   * 處理設定其他偏好設定所需資訊
+   */
+  handleSettingDialog() {
     const {
       unit: userUnit,
       strideLengthCentimeter,
@@ -175,24 +224,24 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     const isMetric = userUnit === Unit.metric;
     this.setting = {
       unit: userUnit,
-      strideLengthCentimeter: this.utils.valueConvert(strideLengthCentimeter, !isMetric, true, inch, 1),
+      strideLengthCentimeter: valueConvert(strideLengthCentimeter, !isMetric, true, inch, 1),
       heartRateBase,
       heartRateMax,
       heartRateResting,
       normalBedTime,
       normalWakeTime,
-      wheelSize: isMetric ? wheelSize : this.utils.valueConvert(wheelSize, !isMetric, true, wheelSizeCoefficient, 1),
+      wheelSize: isMetric ? wheelSize : valueConvert(wheelSize, !isMetric, true, wheelSizeCoefficient, 1),
       autoTargetStep,
       cycleFtp,
       handedness,
       target: {
         calorie,
-        distance: this.utils.valueConvert(distance, !isMetric, true, ft, 2),
+        distance: valueConvert(distance, !isMetric, true, ft, 2),
         elevGain,
-        fitTime: this.utils.rounding(fitTime / 60, 0),
-        sleep: this.utils.rounding(sleep / 3600, 1),
+        fitTime: mathRounding(fitTime / 60, 0),
+        sleep: mathRounding(sleep / 3600, 1),
         step,
-        bodyWeight: this.utils.valueConvert(bodyWeight, !isMetric, true, lb, 1),
+        bodyWeight: valueConvert(bodyWeight, !isMetric, true, lb, 1),
         muscleRate,
         fatRate
       }
@@ -211,11 +260,13 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 取消編輯
-   * @author kidin-1100818
+   * 關閉彈跳視窗
    */
-  cancelEdit() {
-    this.uiFlag.showEditDialog = null;
+  closeDialog() {
+    if (this.uiFlag.progress === 100) {
+      this.uiFlag.showEditDialog = null;
+    }
+    
   }
 
   /**
@@ -223,45 +274,56 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    * @author kidin-1100818
    */
   editComplete() {
-    const token = this.utils.getToken(),
-          newSet = this.checkEdit(this.userInfo, this.setting);
-    if (newSet) {
-      const body = {
-        token,
-        userProfile: {
-          ...newSet
-        }
-      };
+    const { showEditDialog } = this.uiFlag;
+    if (showEditDialog === 'sportsTarget') return this.updateSportsTarget();
+    return this.updatePreferSetting();
+  }
 
-      this.userProfileService.updateUserProfile(body).pipe(
+  /**
+   * 更新運動目標設定
+   */
+  updateSportsTarget() {
+    const updateContent = { workoutTarget: this.sportsTarget };
+    this.saveSettingChange(updateContent);
+  }
+
+  /**
+   * 更新運動目標以外的偏好設定，若未編輯任何選項則僅關閉視窗 
+   */
+  updatePreferSetting() {
+    const newSet = this.checkEdit(this.userInfo, this.setting);
+    newSet ? this.saveSettingChange(newSet) : this.closeDialog();
+  }
+
+  /**
+   * 將變更之設定儲存至雲端
+   * @param updateContent {any}-欲更新的內容
+   */
+  saveSettingChange(updateContent: any) {
+    if (this.uiFlag.progress === 100) {
+      this.uiFlag.progress = 30;
+      this.userService.updateUserProfile(updateContent).pipe(
         switchMap(res => this.translate.get('hellow world').pipe(
           map(resp => res)
         )),
         takeUntil(this.ngUnsubscribe)
       ).subscribe(res => {
-        const {processResult} = res as any;
-        if (!processResult) {
-          const { apiCode, resultMessage, resultCode } = res as any;
-          this.utils.handleError(resultCode, apiCode, resultMessage);
+        if (!checkResponse(res, false)) {
+          const errorMsg = this.translate.instant('universal_popUpMessage_updateFailed');
+          this.utils.showSnackBar(errorMsg);
+          this.uiFlag.progress = 100;
         } else {
-          const { apiCode, resultMessage, resultCode } = processResult;
-          if (resultCode !== 200) {
-            this.utils.handleError(resultCode, apiCode, resultMessage);
-          } else {
-            this.uiFlag.showEditDialog = null;
-            const successMsg = this.translate.instant('universal_status_updateCompleted');
-            this.snackBar.open(successMsg, 'OK', { duration: 2000 });
-            this.dashboardService.setRxEditMode('complete');
-          }
-
+          this.uiFlag.progress = 100;
+          this.closeDialog();
+          const successMsg = this.translate.instant('universal_status_updateCompleted');
+          this.utils.showSnackBar(successMsg);
+          this.dashboardService.setRxEditMode('complete');
         }
 
       });
 
-    } else {
-      this.cancelEdit();
     }
-    
+
   }
 
   /**
@@ -320,32 +382,32 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     switch (key) {
       case 'strideLengthCentimeter':
         if (edited) {
-          return isMetric ? value : this.utils.valueConvert(+value, true, false, inch, 1);
+          return isMetric ? value : valueConvert(+value, true, false, inch, 1);
         } else {
           return this.userInfo[key];
         }
       case 'wheelSize':
         if (edited) {
-          return isMetric ? value : this.utils.valueConvert(+value, true, false, wheelSizeCoefficient, 1);
+          return isMetric ? value : valueConvert(+value, true, false, wheelSizeCoefficient, 1);
         } else {
           return this.userInfo[key];
         }
       case 'distance':
         if (edited) {
-          return isMetric ? value : this.utils.valueConvert(+value, true, false, ft, 2);
+          return isMetric ? value : valueConvert(+value, true, false, ft, 2);
         } else {
           return this.userInfo.target[key];
         }
       case 'bodyWeight':
         if (edited) {
-          return isMetric ? value : this.utils.valueConvert(+value, true, false, lb, 1);
+          return isMetric ? value : valueConvert(+value, true, false, lb, 1);
         } else {
           return this.userInfo.target[key];
         }
       case 'fitTime':
-          return this.utils.rounding(+value * 60, 0);
+          return mathRounding(+value * 60, 0);
       case 'sleep':
-          return this.utils.rounding(+value * 3600, 0);
+          return mathRounding(+value * 3600, 0);
       default:
         return value;
         
@@ -484,35 +546,35 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
         // 判斷是否編輯該數值，避免連續切換單位設定造成數值因四捨五入而異動
         if (stepLenChange) {
           this.setting.strideLengthCentimeter = 
-            this.utils.valueConvert(strideLengthCentimeter, true, false, inch, 1);
+            valueConvert(strideLengthCentimeter, true, false, inch, 1);
         } else {
           this.setting.strideLengthCentimeter = this.userInfo.strideLengthCentimeter;
         }
 
         if (wheelSizeChange) {
-          this.setting.wheelSize = this.utils.valueConvert(wheelSize, true, false, wheelSizeCoefficient, 1);
+          this.setting.wheelSize = valueConvert(wheelSize, true, false, wheelSizeCoefficient, 1);
         } else {
           this.setting.wheelSize = this.userInfo.wheelSize;
         }
         
         if (distanceChange) {
-          this.setting.target.distance = this.utils.valueConvert(distance, true, false, ft, 2);
+          this.setting.target.distance = valueConvert(distance, true, false, ft, 2);
         } else {
           this.setting.target.distance = this.userInfo.target.distance;
         }
 
         if (bodyWeightChange) {
-          this.setting.target.bodyWeight = this.utils.valueConvert(bodyWeight, true, false, ft, 2);
+          this.setting.target.bodyWeight = valueConvert(bodyWeight, true, false, ft, 2);
         } else {
           this.setting.target.bodyWeight = this.userInfo.target.bodyWeight;
         }
         
       } else {
         this.setting.strideLengthCentimeter = 
-          this.utils.valueConvert(strideLengthCentimeter, true, true, inch, 1);
-        this.setting.wheelSize = this.utils.valueConvert(wheelSize, true, true, wheelSizeCoefficient, 1);
-        this.setting.target.distance = this.utils.valueConvert(distance, true, true, ft, 2);
-        this.setting.target.bodyWeight = this.utils.valueConvert(bodyWeight, true, true, lb, 1);
+          valueConvert(strideLengthCentimeter, true, true, inch, 1);
+        this.setting.wheelSize = valueConvert(wheelSize, true, true, wheelSizeCoefficient, 1);
+        this.setting.target.distance = valueConvert(distance, true, true, ft, 2);
+        this.setting.target.bodyWeight = valueConvert(bodyWeight, true, true, lb, 1);
       }
 
     }
@@ -538,16 +600,16 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
           inputValue = +(e as any).target.value,
           isMetric = this.setting.unit === Unit.metric,
           testFormat = formTest.decimalValue.test(`${inputValue}`),
-          newValue = this.utils.valueConvert(inputValue, !isMetric, false, inch, 1),
+          newValue = valueConvert(inputValue, !isMetric, false, inch, 1),
           valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       this.editFlag.strideLengthCentimeter = true;
       const min = 30,
             max = 255;
       if (newValue < min) {
-        this.setting.strideLengthCentimeter = this.utils.valueConvert(min, !isMetric, true, inch, 1);
+        this.setting.strideLengthCentimeter = valueConvert(min, !isMetric, true, inch, 1);
       } else if (newValue > max) {
-        this.setting.strideLengthCentimeter = this.utils.valueConvert(max, !isMetric, true, inch, 1);
+        this.setting.strideLengthCentimeter = valueConvert(max, !isMetric, true, inch, 1);
       } else {
         this.setting.strideLengthCentimeter = inputValue;
       }
@@ -556,7 +618,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     } else {
       this.editFlag.strideLengthCentimeter = false;
       const { strideLengthCentimeter } = this.userInfo;
-      (e as any).target.value = this.utils.valueConvert(strideLengthCentimeter, !isMetric, true, inch, 1);
+      (e as any).target.value = valueConvert(strideLengthCentimeter, !isMetric, true, inch, 1);
     }
 
   }
@@ -571,16 +633,16 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
           inputValue = +(e as any).target.value,
           isMetric = this.setting.unit === Unit.metric,
           testFormat = formTest.decimalValue.test(`${inputValue}`),
-          newValue = this.utils.valueConvert(inputValue, !isMetric, false, wheelSizeCoefficient, 1),
+          newValue = valueConvert(inputValue, !isMetric, false, wheelSizeCoefficient, 1),
           valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       this.editFlag.wheelSize = true;
       const min = 300,
             max = 9000;
       if (newValue < min) {
-        this.setting.wheelSize = this.utils.valueConvert(min, !isMetric, true, wheelSizeCoefficient, 1);
+        this.setting.wheelSize = valueConvert(min, !isMetric, true, wheelSizeCoefficient, 1);
       } else if (newValue > max) {
-        this.setting.wheelSize = this.utils.valueConvert(max, !isMetric, true, wheelSizeCoefficient, 1);
+        this.setting.wheelSize = valueConvert(max, !isMetric, true, wheelSizeCoefficient, 1);
       } else {
         this.setting.wheelSize = inputValue;
       }
@@ -589,7 +651,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     } else {
       this.editFlag.wheelSize = false;
       const { wheelSize } = this.userInfo;
-      (e as any).target.value = this.utils.valueConvert(wheelSize, !isMetric, true, wheelSizeCoefficient, 1);
+      (e as any).target.value = valueConvert(wheelSize, !isMetric, true, wheelSizeCoefficient, 1);
     }
 
   }
@@ -638,13 +700,13 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
           inputValue = +(e as any).target.value,
           isMetric = this.setting.unit === Unit.metric,
           testFormat = formTest.decimalValue.test(`${inputValue}`),
-          newValue = this.utils.valueConvert(inputValue, !isMetric, false, ft, 2),
+          newValue = valueConvert(inputValue, !isMetric, false, ft, 2),
           valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       this.editFlag.distance = true;
       const max = 65535;
       if (newValue > max) {
-        this.setting.target.distance = this.utils.valueConvert(max, !isMetric, true, ft, 2);
+        this.setting.target.distance = valueConvert(max, !isMetric, true, ft, 2);
       } else {
         this.setting.target.distance = inputValue;
       }
@@ -653,7 +715,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     } else {
       this.editFlag.distance = false;
       const { distance } = this.userInfo.target;
-      (e as any).target.value = this.utils.valueConvert(distance, !isMetric, true, ft, 2);
+      (e as any).target.value = valueConvert(distance, !isMetric, true, ft, 2);
     }
 
   }
@@ -714,15 +776,15 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     const oldValue = this.userInfo.target.fitTime,
           inputValue = +(e as any).target.value,
           testFormat = formTest.number.test(`${inputValue}`),
-          newValue = this.utils.rounding(inputValue * 60, 0),
+          newValue = mathRounding(inputValue * 60, 0),
           valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       const min = 60,
             max = 64800;
       if (newValue < min) {
-        this.setting.target.fitTime = this.utils.rounding(min / 60, 0);
+        this.setting.target.fitTime = mathRounding(min / 60, 0);
       } else if (newValue > max) {
-        this.setting.target.fitTime = this.utils.rounding(max / 60, 0);
+        this.setting.target.fitTime = mathRounding(max / 60, 0);
       } else {
         this.setting.target.fitTime = inputValue;
       }
@@ -730,7 +792,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       (e as any).target.value = this.setting.target.fitTime;
     } else {
       const { fitTime } = this.userInfo.target;
-      (e as any).target.value = this.utils.rounding(fitTime / 60, 0);
+      (e as any).target.value = mathRounding(fitTime / 60, 0);
     }
 
   }
@@ -744,23 +806,23 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     const oldValue = this.userInfo.target.sleep,
           inputValue = +(e as any).target.value,
           testFormat = formTest.decimalValue.test(`${inputValue}`),
-          newValue = this.utils.rounding(inputValue * 3600, 0),
+          newValue = mathRounding(inputValue * 3600, 0),
           valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       const min = 600,
             max = 64800;
       if (newValue < min) {
-        this.setting.target.sleep = this.utils.rounding(min / 3600, 1);
+        this.setting.target.sleep = mathRounding(min / 3600, 1);
       } else if (newValue > max) {
-        this.setting.target.sleep = this.utils.rounding(max / 3600, 1);
+        this.setting.target.sleep = mathRounding(max / 3600, 1);
       } else {
-        this.setting.target.sleep = this.utils.rounding(inputValue, 1);
+        this.setting.target.sleep = mathRounding(inputValue, 1);
       }
 
       (e as any).target.value = this.setting.target.sleep;
     } else {
       const { sleep } = this.userInfo.target;
-      (e as any).target.value = this.utils.rounding(sleep / 3600, 1);
+      (e as any).target.value = mathRounding(sleep / 3600, 1);
     }
 
   }
@@ -775,16 +837,16 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
           inputValue = +(e as any).target.value,
           isMetric = this.setting.unit === Unit.metric,
           testFormat = formTest.decimalValue.test(`${inputValue}`),
-          newValue = this.utils.valueConvert(inputValue, !isMetric, false, lb, 1),
+          newValue = valueConvert(inputValue, !isMetric, false, lb, 1),
           valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       this.editFlag.bodyWeight = true;
       const min = 40,
             max = 255;
       if (newValue < min) {
-        this.setting.target.bodyWeight = this.utils.valueConvert(min, !isMetric, true, lb, 1);
+        this.setting.target.bodyWeight = valueConvert(min, !isMetric, true, lb, 1);
       } else if (newValue > max) {
-        this.setting.target.bodyWeight = this.utils.valueConvert(max, !isMetric, true, lb, 1);
+        this.setting.target.bodyWeight = valueConvert(max, !isMetric, true, lb, 1);
       } else {
         this.setting.target.bodyWeight = inputValue;
       }
@@ -793,7 +855,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     } else {
       this.editFlag.bodyWeight = false;
       const { bodyWeight } = this.userInfo.target;
-      (e as any).target.value = this.utils.valueConvert(bodyWeight, !isMetric, true, lb, 1);
+      (e as any).target.value = valueConvert(bodyWeight, !isMetric, true, lb, 1);
     }
 
   }
@@ -990,6 +1052,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
       this.closeTimeSelector();
+      this.unsubscribeEvent();
     });
 
   }
@@ -1000,7 +1063,13 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   closeTimeSelector() {
     this.uiFlag.showTimeSelector = null;
-    this.clickEvent.unsubscribe();
+  }
+
+  /**
+   * 取消訂閱事件
+   */
+  unsubscribeEvent() {
+    if (this.clickEvent) this.clickEvent.unsubscribe();
     if (this.wheelEvent) this.wheelEvent.unsubscribe();
     if (this.touchEvent) this.touchEvent.unsubscribe();
   }
@@ -1036,7 +1105,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     const { birthday } = this.userInfo,
           { heartRateBase, heartRateMax, heartRateResting } = this.setting,
           age = dayjs().diff(dayjs(birthday, 'YYYYMMDD'), 'year');
-    this.userHrZone = this.utils.getUserHrRange(heartRateBase, age, heartRateMax, heartRateResting);
+    this.userHrZone = getUserHrRange(heartRateBase, age, heartRateMax, heartRateResting);
   }
 
   /**
@@ -1045,7 +1114,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   handleCountFtpZone() {
     const { cycleFtp } = this.setting;
-    this.userFtpZone = this.utils.getUserFtpZone(cycleFtp);
+    this.userFtpZone = getUserFtpZone(cycleFtp);
   }
 
   /**
@@ -1056,6 +1125,169 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   handleClickDialog(e: KeyboardEvent) {
     e.stopPropagation();
     this.closeTimeSelector();
+  }
+
+  /**
+   * 展開/收合日期計算基準清單
+   * @param e {MouseEvent}
+   */
+  toggleCycleList(e: MouseEvent) {
+    e.stopPropagation();
+    const { showCycleList } = this.uiFlag;
+    showCycleList ? this.foldCycleList() : this.unfoldCycleList();
+  }
+
+  /**
+   * 展開日期計算基準清單
+   */
+  unfoldCycleList() {
+    this.foldAllList();
+    this.uiFlag.showCycleList = true;
+    this.subscribeDialogClickEvent();
+  }
+
+  /**
+   * 收合日期計算基準清單
+   */
+  foldCycleList() {
+    this.uiFlag.showCycleList = false;
+    this.unsubscribeEvent();
+  }
+
+  /**
+   * 選擇目標條件之日期基準
+   * @param cycle {DateUnit}-指定的基準序位
+   */
+  selectDateCycle(cycle: DateUnit) {
+    this.sportsTarget.cycle = cycle;
+    this.foldCycleList();
+  }
+
+  /**
+   * 展開/收合目標條件名稱清單
+   * @param e {MouseEvent}
+   */
+  toggleFiledNameList(e: MouseEvent) {
+    e.stopPropagation();
+    const { showFiledNameList } = this.uiFlag;
+    showFiledNameList ? this.foldFiledNameList() : this.unfoldFiledNameList();
+  }
+
+  /**
+   * 展開目標條件名稱清單
+   */
+  unfoldFiledNameList() {
+    this.foldAllList();
+    this.uiFlag.showFiledNameList = true;
+    this.subscribeDialogClickEvent();
+  }
+
+  /**
+   * 收合目標條件名稱
+   */
+  foldFiledNameList() {
+    this.uiFlag.showFiledNameList = false;
+    this.unsubscribeEvent();
+  }
+
+  /**
+   * 選擇新的條件名稱
+   * @param field {TargetField}
+   */
+  selectNewConditionFiled(field: TargetField) {
+    this.newCondition.filedName = field;
+    const { filedValue } = this.newCondition;
+    if (filedValue) {
+      
+      if (field.toLowerCase().includes('time')) {
+        this.newCondition.filedValue = filedValue * 60;
+      }
+      
+      this.addNewCondition();
+    }
+
+    this.foldFiledNameList();
+  }
+
+  /**
+   * 設定目標條件之達成值
+   * @param e {MouseEvent}
+   */
+  setNewConditionValue(e: MouseEvent) {
+    const { value } = (e as any).target;
+    if (formTest.number.test(value)) {
+      this.newCondition.filedValue = +value;
+      const { filedName, filedValue } = this.newCondition;
+      if (filedName) {
+        // 若目標項目跟時間有關，則將數值由分轉為秒
+        if (filedName.toLocaleLowerCase().includes('time')) {
+          this.newCondition.filedValue = filedValue * 60;
+        }
+
+        this.addNewCondition();
+      }
+
+    }
+
+    (e as any).target.value = '';
+  }
+
+  /**
+   * 將設定好的新條件納入目標中，若條件名稱重複則覆蓋舊條件
+   */
+  addNewCondition() {
+    const { filedName } = this.newCondition;
+    const repeatIndex = this.sportsTarget.condition
+      .findIndex(_condition => _condition.filedName === filedName);
+    
+    if (repeatIndex >= 0) this.deleteCondition(repeatIndex);
+    const newCondition = deepCopy(this.newCondition);
+    this.sportsTarget.condition.push(newCondition);
+    this.newCondition = {
+      filedName: <TargetField>'',
+      symbols: ConditionSymbols.greaterEqual,
+      filedValue: null
+    };
+
+  }
+
+  /**
+   * 移除指定之條件
+   * @param index {number}-條件序列
+   */
+  deleteCondition(index: number) {
+    this.sportsTarget.condition.splice(index, 1);
+  }
+
+  /**
+   * 將所有已顯示清單收合
+   * @author kidin-1110308
+   */
+  foldAllList() {
+    this.uiFlag.showCycleList = false;
+    this.uiFlag.showFiledNameList = false;
+  }
+
+  /**
+   * 訂閱彈跳設定視窗點擊事件
+   */
+  subscribeDialogClickEvent() {
+    const element = document.querySelector('.dialog-box');
+    const clickEvent = fromEvent(element, 'click');
+    this.dialogClickEvent = clickEvent.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.foldAllList();
+      this.unsubscribeDialogClickEvent();
+    });
+
+  }
+
+  /**
+   * 取消訂閱彈跳設定視窗點擊事件
+   */
+  unsubscribeDialogClickEvent() {
+    this.dialogClickEvent.unsubscribe();
   }
 
   /**

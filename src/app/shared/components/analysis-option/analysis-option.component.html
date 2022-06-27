@@ -4,7 +4,7 @@
 >
   <ul
     class="option__menu__list"
-    *ngIf="analysisOption.optionInfo.object === 'group' && analysisOption.layerList.length > 0"
+    *ngIf="analysisOption.optionInfo?.object === 'group' && analysisOption.layerList?.length > 0"
   >
     <h6 class="list__title">
       {{ 'universal_operating_filter' | translate }} {{ 'universal_group_layer' | translate }}
@@ -68,7 +68,7 @@
           ( _column.selected && !_column.canCancel)
           || (!_column.selected && !_column.canSelect)
         "
-        [ngSwitch]="analysisOption.optionInfo.reportType"
+        [ngSwitch]="analysisOption.optionInfo?.reportType"
         (click)="changeColumnSelectedStatus(_column)"
       >
         <ng-container *ngSwitchCase="'sports'">
@@ -161,6 +161,30 @@
             </ng-container>
           </ng-container>
         </ng-container>
+
+        <ng-container *ngSwitchDefault>
+          <ng-container [ngSwitch]="_column.info.item">
+            <ng-container *ngSwitchCase="MuscleAnalysisColumn.oneRepMax">
+              {{ 'universal_activityData_max1Rm' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="MuscleAnalysisColumn.totalSets">
+              {{ 'universal_activityData_totalSets' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="MuscleAnalysisColumn.totalReps">
+              {{ 'universal_activityData_totalReps' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="MuscleAnalysisColumn.avgWeightKg">
+              {{ 'universal_activityData_avgWeight' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="MuscleAnalysisColumn.trainingLevel">
+              {{ 'universal_activityData_weightTrainingExtent' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="MuscleAnalysisColumn.belongMuscleGroup">
+              {{ '肌群' | translate }}
+            </ng-container>
+          </ng-container>
+        </ng-container>
+
       </div>
     </li>
   </ul>

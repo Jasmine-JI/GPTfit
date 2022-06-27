@@ -4,12 +4,12 @@ import { Router } from '@angular/router';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { SignupService } from '../../../../../shared/services/signup.service';
 import dayjs from 'dayjs';
-import { AuthService } from '../../../../../shared/services/auth.service';
+import { AuthService } from '../../../../../core/services/auth.service';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { TranslateService } from '@ngx-translate/core';
 import { TFTViewMinWidth } from '../../../models/app-webview';
 import { AlaApp } from '../../../../../shared/models/app-id';
+import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../shared/utils/index';
 
 
 enum CompressStatus {
@@ -60,8 +60,7 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
     private router: Router,
     private utils: UtilsService,
     private signupService: SignupService,
-    private auth: AuthService,
-    private translate: TranslateService
+    private auth: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -97,10 +96,10 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
    * @author kidin-1100120
    */
   checkQueryString(queryString: string) {
-    const query = this.utils.getUrlQueryStrings(queryString);
+    const query = getUrlQueryStrings(queryString);
     this.requestHeader = {
       ...this.requestHeader,
-      ...this.utils.headerKeyTranslate(query)
+      ...headerKeyTranslate(query)
     };
 
     const { p: appId, code } = query;
@@ -150,10 +149,10 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
    */
   getUserToken() {
     if (this.appSys === 0) {
-      this.token = this.utils.getToken();
+      this.token = this.auth.token;
     } else {
       const { search } = location;
-      const { tk } = this.utils.getUrlQueryStrings(search);
+      const { tk } = getUrlQueryStrings(search);
       this.token = tk ? tk : '';
     }
 

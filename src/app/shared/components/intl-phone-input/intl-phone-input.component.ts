@@ -2,14 +2,13 @@ import {
   Component,
   OnInit,
   OnChanges,
-  HostListener,
   Input,
   Output,
   EventEmitter
 } from '@angular/core';
 import { codes } from '../../models/countryCode';
 import { TranslateService } from '@ngx-translate/core';
-import { UtilsService } from '../../services/utils.service';
+import { getLocalStorageObject } from '../../utils/index';
 
 @Component({
   selector: 'app-intl-phone-input',
@@ -31,8 +30,7 @@ export class IntlPhoneInputComponent implements OnInit, OnChanges {
   @Output() onChange = new EventEmitter();
 
   constructor(
-    public translate: TranslateService,
-    private utils: UtilsService
+    public translate: TranslateService
   ) {
     translate.onLangChange.subscribe(() => {
       this.getTranslate();
@@ -50,9 +48,9 @@ export class IntlPhoneInputComponent implements OnInit, OnChanges {
     if (this.currentCountryCode) {
       this.countryCode = `+${this.currentCountryCode}`;
       this.onChange.emit(this.countryCode);
-    } else if (this.utils.getLocalStorageObject('countryCode')) {
+    } else if (getLocalStorageObject('countryCode')) {
       setTimeout(() => { // 處理develop mode的angular檢查機制
-        this.countryCode = `+${this.utils.getLocalStorageObject('countryCode')}`;
+        this.countryCode = `+${getLocalStorageObject('countryCode')}`;
         this.onChange.emit(this.countryCode);
       });
 

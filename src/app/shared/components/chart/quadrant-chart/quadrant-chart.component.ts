@@ -5,8 +5,10 @@ import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../../services/utils.service';
 import { HrZoneRange } from '../../../models/chart-data';
-import { mi, Unit } from '../../../models/bs-constant';
+import { mi } from '../../../models/bs-constant';
+import { Unit } from '../../../enum/value-conversion';
 import { SportPaceSibsPipe } from '../../../pipes/sport-pace-sibs.pipe';
+import { setLocalStorageObject, getLocalStorageObject, deepCopy } from '../../../utils/index';
 
 type QuadrantDataOpt = 'hr' | 'speed' | 'pace' | 'cadence' | 'power';
 type Axis = 'xAxis' | 'yAxis';
@@ -394,11 +396,11 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100128
    */
   setUserOpt() {
-    const storageOpt = this.utils.getLocalStorageObject(`quadrantOpt__${this.sportType}`);
-    this.chartOpt = storageOpt ? JSON.parse(storageOpt) : this.utils.deepCopy(this.defaultOpt);
+    const storageOpt = getLocalStorageObject(`quadrantOpt__${this.sportType}`);
+    this.chartOpt = storageOpt ? JSON.parse(storageOpt) : deepCopy(this.defaultOpt);
     if (!this.chartOpt.customMeaning) {
       // 若使用者無更改過象限意義，則依多國語系使用預設值
-      this.chartOpt.meaning = this.utils.deepCopy(this.defaultOpt.meaning);
+      this.chartOpt.meaning = deepCopy(this.defaultOpt.meaning);
     }
 
     this.handleAxisInput(
@@ -607,7 +609,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
     e.stopPropagation();
     if (!this.uiFlag.showChartOpt) {
       this.uiFlag.showChartOpt = true;
-      this.tempOpt = this.utils.deepCopy(this.chartOpt);
+      this.tempOpt = deepCopy(this.chartOpt);
       this.subscribeClick();
     } else {
       this.uiFlag.showChartOpt = false;
@@ -840,10 +842,10 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100202
    */
   restoreDefaultOpt() {
-    this.chartOpt = this.utils.deepCopy(this.defaultOpt);
+    this.chartOpt = deepCopy(this.defaultOpt);
     this.restoreOrigin();
     this.redrawChart();
-    this.utils.setLocalStorageObject(`quadrantOpt__${this.sportType}`, JSON.stringify(this.chartOpt));
+    setLocalStorageObject(`quadrantOpt__${this.sportType}`, JSON.stringify(this.chartOpt));
   }
 
   /**
@@ -874,9 +876,9 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100202
    */
   saveChartOpt() {
-    this.chartOpt = this.utils.deepCopy(this.tempOpt);
+    this.chartOpt = deepCopy(this.tempOpt);
     this.redrawChart();
-    this.utils.setLocalStorageObject(`quadrantOpt__${this.sportType}`, JSON.stringify(this.chartOpt));
+    setLocalStorageObject(`quadrantOpt__${this.sportType}`, JSON.stringify(this.chartOpt));
   }
 
   /**

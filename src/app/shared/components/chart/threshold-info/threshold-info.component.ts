@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
-import { UtilsService } from '../../../services/utils.service';
+import { getUserFtpZone } from '../../../utils/sports';
 
 @Component({
   selector: 'app-threshold-info',
@@ -21,11 +21,10 @@ export class ThresholdInfoComponent implements OnInit, OnChanges {
   };
 
   constructor(
-    private utils: UtilsService
   ) { }
 
   ngOnInit(): void {
-    this.ftpZoneRange = this.utils.getUserFtpZone(this.cycleFtp);
+    this.ftpZoneRange = getUserFtpZone(this.cycleFtp);
   }
 
   ngOnChanges () {}

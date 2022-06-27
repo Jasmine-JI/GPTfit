@@ -11,8 +11,8 @@ import {
 } from '@angular/core';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
 import { ImageCropperComponent } from 'ngx-image-cropper';
-import { fromEvent, Subject } from 'rxjs';
-import { takeUntil, map, switchMap } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { UtilsService } from '../../services/utils.service';
 import { AlbumType } from '../../models/image';
 import { advertiseRatio } from '../../../containers/official-activity/models/official-activity-const';
@@ -205,12 +205,7 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
    * @author kidin-1091125
    */
   finishCrop() {
-    if (this.uiFlag.selectedImg) {
-      this.result.action = 'complete';
-    } else {
-      this.result.action = 'close';
-    }
-    
+    this.result.action = this.uiFlag.selectedImg ? 'complete' : 'close';
     this.closeSelector.emit(this.result);
   }
 

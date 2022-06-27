@@ -38,7 +38,7 @@
       class="function__btn"
       [title]="'universal_operating_share' | translate"
       (click)="showPrivacyAlert()"
-      *ngIf="(uiFlag.isFileOwner || userProfile.systemAccessRight[0] <= 29) && !uiFlag.isPreviewMode"
+      *ngIf="(uiFlag.isFileOwner || systemAccessright <= AccessRight.marketing) && !uiFlag.isPreviewMode"
     >
       <i class="icon-svg_web-icon_p1_013-share" ></i>
     </button>
@@ -679,7 +679,7 @@
             </div>
             <div
               class="flexCol"
-              *ngIf="activityInfoLayer.type == 7 && userProfile.systemAccessRight[0] <= 20"
+              *ngIf="activityInfoLayer.type == 7 && systemAccessright <= AccessRight.maintainer"
             >
               <span class="table__list__title">{{ 'universal_unit_gforce' | translate }}</span>
               <div class="flexCol table__list__block">
@@ -904,7 +904,7 @@
       [isNormalCoordinate]="uiFlag.isNormalCoordinate"
       [userPoint]="[activityPointLayer]"
       [sportType]="+activityInfoLayer.type"
-      [sysAccessRight]="userProfile.systemAccessRight[0]"
+      [sysAccessRight]="systemAccessright"
       [unit]="userProfile.unit"
       [cloudrunMapId]="cloudrunMapId"
       (chartSetting)="getChartSetting($event)"
@@ -945,13 +945,13 @@
                 </ng-container>
               </span>
               <div class="report-dropMenuList" *ngIf="uiFlag.showLevelSelector">
-                <span class="levelOpt" (click)="changeLevel('novice')">
+                <span class="report-levelOpt" (click)="changeLevel('novice')">
                   {{ 'universal_activityData_beginner' | translate }}
                 </span>
-                <span class="levelOpt" (click)="changeLevel('metacarpus')">
+                <span class="report-levelOpt" (click)="changeLevel('metacarpus')">
                   {{ 'universal_activityData_advanced' | translate }}
                 </span>
-                <span class="levelOpt" (click)="changeLevel('asept')">
+                <span class="report-levelOpt" (click)="changeLevel('asept')">
                   {{ 'universal_activityData_highRanker' | translate }}
                 </span>
               </div>
@@ -1014,7 +1014,7 @@
       <app-quadrant-chart
         [userPoint]="[activityPointLayer]"
         [sportType]="+activityInfoLayer.type"
-        [sysAccessRight]="userProfile.systemAccessRight[0]"
+        [sysAccessRight]="systemAccessright"
         [unit]="userProfile.unit"
         [hrRange]="chartData.hrInfo.z0 !== 'Z0' ? chartData.hrInfo : chartData.defaultHrInfo"
         *ngIf="[1, 2, 4, 6].includes(+activityInfoLayer.type)"
@@ -1289,7 +1289,7 @@
       <div class="flexRow device__info">
         <button
           class="switch__preview__button"
-          [class.switch__button--disable]="!otherInfo.deviceInfo || uiFlag.deviceIndex === 0"
+          [class.switch__button--disable]="uiFlag.deviceIndex === 0"
           (click)="switchPreviewDevice()"
         ></button>
         <div *ngTemplateOutlet="deviceInfoTemplate; context: {
@@ -1297,13 +1297,11 @@
         }"></div>
         <button
           class="switch__next__button"
-          [class.switch__button--disable]="
-            !otherInfo.deviceInfo || uiFlag.deviceIndex >= otherInfo.deviceInfo?.length - 1
-          "
+          [class.switch__button--disable]="uiFlag.deviceIndex >= otherInfo.deviceInfo?.length - 1"
           (click)="switchNextDevice()"
         ></button>
       </div>
-      <div class="flexCenter">
+      <div class="flexCenter" *ngIf="otherInfo.deviceInfo.length > 1">
         <button
           class="index__dot__button"
           [class.index__dot__button--active]="uiFlag.deviceIndex === _index"

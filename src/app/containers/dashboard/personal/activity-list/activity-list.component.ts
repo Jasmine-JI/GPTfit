@@ -7,14 +7,17 @@ import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil, tap, debounceTime } from 'rxjs/operators';
 import { ReportConditionOpt } from '../../../../shared/models/report-condition';
 import { ReportService } from '../../../../shared/services/report.service';
-import { Unit } from '../../../../shared/models/bs-constant';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
+import { Unit } from '../../../../shared/enum/value-conversion';
 import { GlobalEventsService } from '../../../../core/services/global-events.service';
+import { UserService } from '../../../../core/services/user.service';
+import { HashIdService } from '../../../../shared/services/hash-id.service';
+import { deepCopy } from '../../../../shared/utils/index';
+import { AuthService } from '../../../../core/services/auth.service';
 
 
-const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ',
-      defaultEnd = dayjs().endOf('day'),
-      defaultStart = dayjs(defaultEnd).subtract(3, 'year').startOf('day');
+const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
+const defaultEnd = dayjs().endOf('day');
+const defaultStart = dayjs(defaultEnd).subtract(3, 'year').startOf('day');
 
 @Component({
   selector: 'app-activity-list',
@@ -53,7 +56,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * api 2102 req body
    */
   listReq = {
-    token: this.utils.getToken() || '',
+    token: this.authService.token,
     type: SportType.all,
     searchWords: '',
     page: 0,
@@ -72,8 +75,10 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     private activityService: ActivityService,
     private utils: UtilsService,
     private reportService: ReportService,
-    private userProfileService: UserProfileService,
-    private globalEventsService: GlobalEventsService
+    private userService: UserService,
+    private globalEventsService: GlobalEventsService,
+    private hashIdService: HashIdService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -88,11 +93,16 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1100816
    */
   getNeedInfo() {
-    this.userProfileService.getRxTargetUserInfo().pipe(
+    const [empty, firstPath, secondPath, ...rest] = location.pathname.split('/');
+    const isOtherOwner = firstPath === 'user-profile';
+    const pageOwnerId = isOtherOwner ?
+        +this.hashIdService.handleUserIdDecode(secondPath) : this.userService.getUser().userId;
+
+    this.userService.getTargetUserInfo(pageOwnerId).pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
-      const { userId, systemAccessRight, unit: userUnit } = res;
-      this.targetUserId = systemAccessRight ? undefined : userId;
+      const { userId, unit: userUnit } = res;
+      this.targetUserId = isOtherOwner ? userId : undefined;
       this.unit = userUnit !== undefined ? userUnit : Unit.metric;
       this.reportService.setReportCondition(this.reportConditionOpt);
       this.getReportSelectedCondition();
@@ -116,7 +126,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       if (this.uiFlag.progress >= 10 && this.uiFlag.progress < 100) {
         const condition = res as any,
               { date: { startTimestamp, endTimestamp }, sportType, keyword } = condition;
-        this.reportConditionOpt = this.utils.deepCopy(res);
+        this.reportConditionOpt = deepCopy(res);
         this.listReq.type = sportType;
         this.listReq.filterStartTime = dayjs(startTimestamp).format(dateFormat);
         this.listReq.filterEndTime = dayjs(endTimestamp).format(dateFormat);
@@ -199,9 +209,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1100816
    */
   subscribeScroll() {
-    const scrollEleClass = this.uiFlag.isPortalMode ? '.main' : '.main-body',
-          targetEle = document.querySelectorAll(scrollEleClass)[0],
-          scrollEvent = fromEvent(targetEle, 'scroll');
+    const targetEle = document.querySelector('.main__container');
+    const scrollEvent = fromEvent(targetEle, 'scroll');
     this.scrollEvent = scrollEvent.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(e => {

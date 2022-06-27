@@ -6,9 +6,8 @@ import {
   OnDestroy
 } from '@angular/core';
 import { GlobalEventsManager } from '../../shared/global-events-manager';
-import { AuthService } from '../../shared/services/auth.service';
+import { AuthService } from '../../core/services/auth.service';
 import { Router } from '@angular/router';
-import { UserProfileService } from '../../shared/services/user-profile.service';
 import { UtilsService } from '../../shared/services/utils.service';
 import { TranslateService } from '@ngx-translate/core';
 import { NavigationEnd } from '@angular/router';
@@ -19,7 +18,9 @@ import { takeUntil } from 'rxjs/operators';
 import { UserProfileInfo } from '../../shared/models/user-profile-info';
 import { GlobalEventsService } from '../../core/services/global-events.service';
 import { langData } from '../../shared/models/i18n';
-import { SignTypeEnum } from '../../shared/models/utils-type';
+import { UserService } from '../../core/services/user.service';
+import { AccessRight } from '../../shared/enum/accessright';
+import { setLocalStorageObject, getLocalStorageObject } from '../../shared/utils/index';
 
 enum Dashboard {
   trainLive,
@@ -77,7 +78,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   langName: string;
   userProfile = <UserProfileInfo>{};
   isPreviewMode = false;
-  isLoading = false;
   isMaskShow = false;
   isCollapseOpen = false;
   target = Dashboard.myActivity; // 目前預設是我的活動
@@ -90,6 +90,11 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   debounce: any;
   sideBarList = Dashboard;
   theme: Theme = 'light';
+  systemAccessright = this.userService.getUser().systemAccessright;
+  isLoading = true;
+  accountStatus = this.userService.getUser().signInfo?.accountStatus;
+
+  readonly AccessRight = AccessRight;
 
   constructor(
     private globalEventsManager: GlobalEventsManager,
@@ -100,13 +105,14 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     private cdRef: ChangeDetectorRef,
     private hashIdService: HashIdService,
     private detectInappService: DetectInappService,
-    private userProfileService: UserProfileService,
+    private userService: UserService,
     private globalEventsService: GlobalEventsService
   ) {}
 
   ngOnInit() {
-    this.isLoading = true;
-    this.tokenLogin();
+    this.getUserProfile();
+    this.checkQueryString(location.search);
+    if (!this.isPreviewMode) this.checkTheme();
     this.checkCurrentPage(location.pathname);
     this.subscribeRouter();
     this.subscribeLangChange();
@@ -137,9 +143,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
             break;
           case 'theme':
             // 暗黑模式尚未完成，故只先開放20權
-            const checkValue = ['light', 'dark'].includes(value),
-                  isPreviewMode = queryString.includes('ipm='),
-                  checkAccessRight = this.userProfile.systemAccessRight[0] <= 20;
+            const checkValue = ['light', 'dark'].includes(value);
+            const isPreviewMode = queryString.includes('ipm=');
+            const checkAccessRight = this.systemAccessright <= AccessRight.maintainer;
             if (checkValue && !isPreviewMode && checkAccessRight) {
               this.changeTheme(value as Theme);
             }
@@ -154,40 +160,17 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   /**
-   * 使用token進行登入
-   * @author kidin
+   * 取得已儲存之user profile
    */
-  tokenLogin() {
-    const body = {
-      signInType: SignTypeEnum.token,
-      token: this.utilsService.getToken()
-    };
-
-    this.authService.loginCheck(body).subscribe(res => {
-      const [userProfile, accessRight] = res;
-      this.userProfile = 
-        this.userProfileService.userProfileCombineAccessRight(userProfile, accessRight);
-
-      if (this.userProfile) {
-        this.isLoading = false;
-        this.subscribeUserProfileChange();
-        this.checkQueryString(location.search);
-        if (!this.isPreviewMode) this.checkTheme();
-      }
-
-    });
-
-  }
-
-  /**
-   * 訂閱個人資訊變更
-   * @author kidin-1110208
-   */
-  subscribeUserProfileChange() {
-    this.userProfileService.getRxUserProfile().pipe(
+  getUserProfile() {
+    this.userService.getUser().rxUserProfile.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
+      const { systemAccessright, signInfo } = this.userService.getUser();
       this.userProfile = res;
+      this.systemAccessright = systemAccessright;
+      this.accountStatus = signInfo?.accountStatus;
+      this.isLoading = this.userService.getUser().signInfo === undefined;
     });
 
   }
@@ -499,10 +482,11 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1100603
    */
   checkTheme() {
-    const storeTheme = this.utilsService.getLocalStorageObject('theme');
-    if (this.userProfile.systemAccessRight[0] <= 20 && storeTheme) {
+    const storeTheme = getLocalStorageObject('theme');
+    const isMaintainer = this.systemAccessright <= AccessRight.maintainer;
+    if (isMaintainer && storeTheme) {
       this.changeTheme(storeTheme);
-    } else if (this.userProfile.systemAccessRight[0] <= 20 && storeTheme === undefined){
+    } else if (isMaintainer && storeTheme === undefined){
       // 避免狀態與class name不符
       const checkClassName = document.body.classList.value.includes('theme__dark');
       if (checkClassName) {
@@ -536,7 +520,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       if (!checkClassName) document.body.classList.add('theme__dark');
     }
 
-    if (save) this.utilsService.setLocalStorageObject('theme', nextTheme);
+    if (save) setLocalStorageObject('theme', nextTheme);
     this.theme = nextTheme;
   }
 
@@ -548,7 +532,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   switchLang(lang: string) {
     this.langName = langData[lang];
     this.translateService.use(lang);
-    this.utilsService.setLocalStorageObject('locale', lang);
+    setLocalStorageObject('locale', lang);
   }
 
   /**

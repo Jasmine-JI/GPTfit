@@ -2,7 +2,8 @@ import { Component, OnInit, OnDestroy, OnChanges, Output, EventEmitter, Input } 
 import { fromEvent, Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PaginationSetting } from '../../models/pagination';
-import { UtilsService } from '../../services/utils.service';
+import { deepCopy } from '../../utils/index';
+
 
 @Component({
   selector: 'app-pagination',
@@ -26,14 +27,12 @@ export class PaginationComponent implements OnInit, OnDestroy, OnChanges {
   pageSettingObj: PaginationSetting;
   debounce: any;
 
-  constructor(
-    private utils: UtilsService
-  ) {}
+  constructor() {}
 
   ngOnInit() {}
 
   ngOnChanges(): void {
-    this.pageSettingObj = this.utils.deepCopy(this.pageSetting);
+    this.pageSettingObj = deepCopy(this.pageSetting);
   }
 
   /**

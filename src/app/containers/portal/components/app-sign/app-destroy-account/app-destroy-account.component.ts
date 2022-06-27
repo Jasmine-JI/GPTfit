@@ -4,13 +4,15 @@ import { Router } from '@angular/router';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { SignupService } from '../../../../../shared/services/signup.service';
 import dayjs from 'dayjs';
-import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+import { Api10xxService } from '../../../../../core/services/api-10xx.service';
+import { Api11xxService } from '../../../../../core/services/api-11xx.service';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-import { AuthService } from '../../../../../shared/services/auth.service';
-import { AccountTypeEnum } from '../../../../../shared/models/user-profile-info';
+import { AuthService } from '../../../../../core/services/auth.service';
+import { AccountTypeEnum } from '../../../../../shared/enum/account';
 import { TFTViewMinWidth } from '../../../models/app-webview';
+import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../shared/utils/index';
 
 enum DestroyFlow {
   search = 1,
@@ -75,7 +77,8 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
     private utils: UtilsService,
     private router: Router,
     private signupService: SignupService,
-    private userProfileService: UserProfileService,
+    private api10xxService: Api10xxService,
+    private api11xxService: Api11xxService,
     private translate: TranslateService,
     private auth: AuthService
   ) {}
@@ -99,10 +102,10 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
    * @author kidin-1110114
    */
   getQueryString() {
-    const query = this.utils.getUrlQueryStrings(location.search);
+    const query = getUrlQueryStrings(location.search);
     this.requestHeader = {
       ...this.requestHeader,
-      ...this.utils.headerKeyTranslate(query)
+      ...headerKeyTranslate(query)
     };
 
   }
@@ -158,10 +161,10 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
    */
   getUserToken() {
     if (this.appSys === 0) {
-      this.token = this.utils.getToken();
+      this.token = this.auth.token;
     } else {
       const { search } = location;
-      const { tk } = this.utils.getUrlQueryStrings(search);
+      const { tk } = getUrlQueryStrings(search);
       this.token = tk ? tk : '';
     }
 
@@ -180,7 +183,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
    * @author kidin-1091223
    */
   checkQueryString() {
-    const { vc } = this.utils.getUrlQueryStrings(location.search);
+    const { vc } = getUrlQueryStrings(location.search);
     if (vc) {
       this.checkBox.compressed = true;
       this.verifyIdentidy(vc);
@@ -196,7 +199,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
    */
   getUserProfile() {
     this.uiFlag.progress = 30;
-    this.userProfileService.getUserProfile({token: this.token}).subscribe(res => {
+    this.api10xxService.fetchGetUserProfile({token: this.token}).subscribe(res => {
       const {
         signIn,
         userProfile,
@@ -260,7 +263,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
    */
   checkoutIsGroupAdmin() {
     this.uiFlag.progress = 30
-    this.userProfileService.getMemberAccessRight({token: this.token}).pipe(
+    this.api11xxService.fetchMemberAccessRight({token: this.token}).pipe(
       switchMap(response => this.translate.get('hellow world').pipe(
         map(resp => response)
       )),

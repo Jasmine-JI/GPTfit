@@ -15,15 +15,18 @@ import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UtilsService } from '../../services/utils.service';
 import { chinaAndTaiwanBorder } from '../../models/china-border-data';
-import { Unit } from '../../models/bs-constant';
+import { Unit } from '../../enum/value-conversion';
 import { ActivityService } from '../../services/activity.service';
 import { mi } from '../../models/bs-constant';
 import { GroupService } from '../../services/group.service';
 import { SelectDate } from '../../models/utils-type';
+import { deepCopy } from '../../utils/index';
+import { AuthService } from '../../../core/services/auth.service';
+
 
 // 若google api或baidu api掛掉則建物件代替，避免造成gptfit卡住。
-const google: any = (window as any).google || { maps: { OverlayView: null }},
-      BMap: any = (window as any).BMap || { Overlay: null };
+const google: any = (window as any).google || { maps: { OverlayView: null }};
+const BMap: any = (window as any).BMap || { Overlay: null };
 declare const BMAP_SATELLITE_MAP: any;
 
 type MapSource = 'google' | 'baidu';
@@ -51,7 +54,6 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input('compareList') compareList: Array<number>;
   @Input('isPreviewMode') isPreviewMode: boolean;
   @Input('page') page: 'group' | 'person';
-  @Input('systemAccessRight') systemAccessRight: Array<number> = [99];
   @Output() mapSourceChange: EventEmitter<MapSource> = new EventEmitter();
   @Output() comparePlayer: EventEmitter<number> = new EventEmitter();
 
@@ -127,7 +129,8 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
     private utils: UtilsService,
     private activityService: ActivityService,
     private changeDetectorRef: ChangeDetectorRef,
-    private groupService: GroupService
+    private groupService: GroupService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -540,7 +543,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
 
     if (fileIdArr.length > 0) {
       const body = {
-        token: this.utils.getToken(),
+        token: this.authService.token,
         privacyCheck: this.groupId ? 2 : 1,
         searchTime: {
           type: 1,
@@ -668,7 +671,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100326
    */
   removePlayer(fileId: number) {
-    const obj = this.utils.deepCopy(this.loadedList);
+    const obj = deepCopy(this.loadedList);
     delete obj[fileId];
     this.loadedList = obj;  // 變更loadedList記憶體位置以觸發子組件change事件
     this.mapPlay.playerMark[fileId].onRemove();
@@ -704,7 +707,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
     const random = (Math.random() * 300).toFixed(0),
           { fileId, name, icon } = this.playerList[index],
           { distanceBase, secondBase } = this.dataStore[fileId],
-          obj = this.utils.deepCopy(this.loadedList);
+          obj = deepCopy(this.loadedList);
 
     Object.assign(obj, {
       [fileId]: {

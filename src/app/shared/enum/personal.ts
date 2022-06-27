@@ -6,3 +6,11 @@ export enum Sex {
   female,
   unlimit
 }
+
+/**
+ * 心率區間計算法
+ */
+export enum HrBase {
+  max,
+  reserve
+}

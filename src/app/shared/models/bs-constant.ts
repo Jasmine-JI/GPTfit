@@ -21,11 +21,3 @@ export const inch = 2.54;
  * 1英磅 = 0.45公斤
  */
 export const lb = 0.45;
-
-/**
- * 0.公制 1.英制
- */
-export enum Unit {
-  metric,
-  imperial
-}

@@ -1,16 +1,15 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { UtilsService } from '../../shared/services/utils.service';
-import { UserProfileService } from '../../shared/services/user-profile.service';
+import { UserService } from '../../core/services/user.service';
 import { Subject, Subscription, fromEvent, merge, combineLatest, of } from 'rxjs';
 import { takeUntil, switchMap, tap, debounceTime } from 'rxjs/operators';
 import { UserProfileInfo } from '../../shared/models/user-profile-info';
 import { OfficialActivityService } from './services/official-activity.service';
-import { AuthService } from '../../shared/services/auth.service';
 import { DetectInappService } from '../../shared/services/detect-inapp.service';
 import { TranslateService } from '@ngx-translate/core';
 import { CloudrunService } from '../../shared/services/cloudrun.service';
-import { SignTypeEnum } from '../../shared/models/utils-type';
+import { SignTypeEnum } from '../../shared/enum/account';
 import { codes } from '../../shared/models/countryCode';
 import { formTest } from '../../shared/models/form-test';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -19,6 +18,9 @@ import { GetClientIpService } from '../../shared/services/get-client-ip.service'
 import { SignupService } from '../../shared/services/signup.service';
 import { ResetPasswordFlow, UnlockFlow, QrSignInFlow } from '../../shared/models/signup-response';
 import { AlaApp } from '../../shared/models/app-id';
+import { NodejsApiService } from '../../core/services/nodejs-api.service';
+import { AuthService } from '../../core/services/auth.service';
+import { setLocalStorageObject, getLocalStorageObject, getCurrentTimestamp, deepCopy } from '../../shared/utils/index';
 
 
 const errorMsg = 'Something error! Please try again later.';
@@ -31,7 +33,9 @@ type Page =
   | 'leaderboard'
   | 'contestant-list'
   | 'edit-activity'
-  | 'about-cloudrun';
+  | 'about-cloudrun'
+  | '403'
+  | '404';
 
 type AuthAction = 'login' | 'register' | 'qrLogin' | 'forgetPassword' | 'resetPassword' | 'sendVerifySuccess';
 type AuthInput = 'accountInput' | 'passwordInput' | 'nicknameInput' | 'smsInput';
@@ -110,7 +114,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
 
   qrLoginUrl: string;
   userInfo: UserProfileInfo;
-  token = this.utils.getToken();
+  token = this.auth.token;
   advertise = [];
   carousel: { img: string; advertiseId: number; link: string; };
   carouselProgress: any;
@@ -129,7 +133,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
 
   constructor(
     private utils: UtilsService,
-    private userProfileService: UserProfileService,
+    private userService: UserService,
     private router: Router,
     private officialActivityService: OfficialActivityService,
     private auth: AuthService,
@@ -138,7 +142,8 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     private cloudrunService: CloudrunService,
     private snackbar: MatSnackBar,
     private getClientIp: GetClientIpService,
-    private signupService: SignupService
+    private signupService: SignupService,
+    private nodejsApiService: NodejsApiService
   ) { }
 
   ngOnInit(): void {
@@ -146,7 +151,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     this.detectParamChange();
     this.checkScreenSize();
     this.handlePageResize();
-    this.loginCheck();
+    this.getUserProfile();
     this.getEventAdvertise();
     this.getCloudrunMapInfo();
     this.getDocumentUrl();
@@ -218,7 +223,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
         this.closeAuthBox();
         this.handleAdvertiseSize();
         this.checkCurrentPage();
-        this.loginCheck();
       }
 
     })
@@ -268,7 +272,10 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin-1110208
    */
   checkForbiddenPage(path: string) {
-    this.uiFlag.fixFooter = ['403', '404'].includes(path);
+    setTimeout(() => {
+      this.uiFlag.fixFooter = ['403', '404'].includes(path);
+    });
+    
   }
 
   /**
@@ -278,21 +285,23 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    */
   checkPageUnderlinePosition(page: Page) {
     setTimeout(() => {
-      const target = document.querySelector(`[name=${page}]`);
-      const linkActiveUnderline = document.getElementById('link__active') as any;
-      if (target) {
-        const pageEntryElement = document.querySelector('.child__page__entry');
-        if (pageEntryElement && target) {
-          const entryXPosition = pageEntryElement.getBoundingClientRect().x;
-          const { width, x } = target.getBoundingClientRect();
-          linkActiveUnderline.style.width = `${width}px`;
-          linkActiveUnderline.style.left = `${x - entryXPosition}px`;
+      if (!['403', '404'].includes(page)) {
+        const target = document.querySelector(`[name=${page}]`);
+        const linkActiveUnderline = document.getElementById('link__active') as any;
+        if (target) {
+          const pageEntryElement = document.querySelector('.child__page__entry');
+          if (pageEntryElement && target) {
+            const entryXPosition = pageEntryElement.getBoundingClientRect().x;
+            const { width, x } = target.getBoundingClientRect();
+            linkActiveUnderline.style.width = `${width}px`;
+            linkActiveUnderline.style.left = `${x - entryXPosition}px`;
+          }
+
+        } else {
+
+          if (linkActiveUnderline) linkActiveUnderline.style.width = '0px';
+
         }
-
-      } else {
-
-        if (linkActiveUnderline) linkActiveUnderline.style.width = '0px';
-
       }
 
     }, 500);
@@ -311,6 +320,18 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     ).subscribe(() => {
       this.checkScreenSize();
       this.unsubscribePluralEvent();
+    });
+
+  }
+
+  /**
+   * 取得登入者資訊
+   */
+  getUserProfile() {
+    this.userService.getUser().rxUserProfile.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      this.userInfo = res;
     });
 
   }
@@ -359,28 +380,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
         this.handleAdvertiseSize();
       });
       
-    }
-
-  }
-
-  /**
-   * 如有登入，則取得使用者userProfile
-   * @author kidin-1100928
-   */
-  loginCheck() {
-    this.token = this.utils.getToken();
-    if (this.token  && !this.userInfo) {
-      const body = {
-        token: this.token,
-        signInType: SignTypeEnum.token
-      };
-
-      this.auth.loginCheck(body).subscribe(res => {
-        const [userProfile, accessRight] = res;
-        this.userInfo = 
-          this.userProfileService.userProfileCombineAccessRight(userProfile, accessRight);
-      });
-
     }
 
   }
@@ -766,7 +765,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin-1101207
    */
   getCountryCode() {
-    const countryCode = this.utils.getLocalStorageObject('countryCode');
+    const countryCode = getLocalStorageObject('countryCode');
     return countryCode ? countryCode : 886;
   }
 
@@ -818,7 +817,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     const { countryCode: oldCountryCode } = this.authInfo;
     if (newCountryCode !== oldCountryCode) {
       this.authInfo.countryCode = newCountryCode;
-      this.utils.setLocalStorageObject('countryCode', newCountryCode);
+      setLocalStorageObject('countryCode', newCountryCode);
     }
     
     this.unsubscribePluralEvent();
@@ -961,7 +960,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     if (progress === 100) {
       this.uiFlag.progress = 30;
       combineLatest([
-        this.auth.loginServerV2(this.authInfo, false),
+        this.auth.accountLogin(this.authInfo),
         this.translate.get('hellow world')  // 確保翻譯載入完成
       ]).subscribe(result => {
         const loginResult = result[0];
@@ -986,8 +985,8 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    */
   handleLoginSuccess(token: any) {
     this.token = token;
-    this.utils.writeToken(token);
-    this.loginCheck();
+    this.auth.setToken(token);
+    this.auth.tokenLogin();
     this.closeAuthBox();
     const msg = this.translate.instant('universal_userAccount_signSuceesfully');
     this.snackbar.open(msg, 'OK', { duration: 3000 } );
@@ -1048,7 +1047,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       } else {
         this.uiFlag.progress = 30;
         const { signInType: registerType, nickname: name } = this.authInfo;
-        let body = this.utils.deepCopy(this.authInfo);
+        let body = deepCopy(this.authInfo);
         delete body.signInType;
         delete body.nickname;
         body = {
@@ -1142,10 +1141,8 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin-1101206
    */
   handleLoginFollowUp(token: string) {
-    this.utils.writeToken(token);
-    this.auth.setLoginStatus(true);
-    this.loginCheck();
-    this.userProfileService.refreshUserProfile({ token });
+    this.auth.setToken(token);
+    this.auth.tokenLogin();
   }
 
   /**
@@ -1431,7 +1428,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       }
     };
 
-    return this.userProfileService.getAssignInfo(body);
+    return this.nodejsApiService.getAssignInfo(body);
   }
 
   /**
@@ -1544,7 +1541,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin-1101206
    */
   storageCountryCode(countryCode: number) {
-    this.utils.setLocalStorageObject('countryCode', countryCode);
+    setLocalStorageObject('countryCode', countryCode);
   }
 
   /**
@@ -1552,23 +1549,23 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin-1101206
    */
   checkFrequency () {
-    const timeStampCount = this.utils.getLocalStorageObject('count');
-    const currentTimeStamp = this.utils.getCurrentTimestamp('ms');
+    const timeStampCount = getLocalStorageObject('count');
+    const currentTimeStamp = getCurrentTimestamp('ms');
     if (!timeStampCount) {
       // 字串由timestamp+次數所組成
-      this.utils.setLocalStorageObject('count', `${currentTimeStamp}1`);
+      setLocalStorageObject('count', `${currentTimeStamp}1`);
       return true;
     } else {
       const timeStamp = +timeStampCount.slice(0, timeStampCount.length - 1);
       const count = +timeStampCount.slice(timeStampCount.length - 1, timeStampCount.length);
       const minute = 60 * 1000;
       if (currentTimeStamp - timeStamp >= 3 * minute) {
-        this.utils.setLocalStorageObject('count', `${currentTimeStamp}1`);
+        setLocalStorageObject('count', `${currentTimeStamp}1`);
         return true;  // 超過三分鐘解瑣
       } else if (count > 4) {  
         return false;  // 操作超過四次則上鎖
       } else {
-        this.utils.setLocalStorageObject('count', `${timeStamp} ${count + 1}`);
+        setLocalStorageObject('count', `${timeStamp} ${count + 1}`);
         return true;
       }
 
@@ -1641,7 +1638,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin-1101206
    */
   createGuid () {
-    const currentTimeStamp = this.utils.getCurrentTimestamp('ms');;
+    const currentTimeStamp = getCurrentTimestamp('ms');;
     const hexadecimalTimeStamp = currentTimeStamp.toString(16);
     let guid = '';
     for (let i = 0; i < 32 - hexadecimalTimeStamp.length; i++) {

@@ -1,8 +1,8 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../../../../shared/services/utils.service';
-import { AuthService } from '../../../../../shared/services/auth.service';
-import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+import { AuthService } from '../../../../../core/services/auth.service';
+import { Api10xxService } from '../../../../../core/services/api-10xx.service';
 import { SignupService } from '../../../../../shared/services/signup.service';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { Subject, Subscription, fromEvent, merge, of } from 'rxjs';
@@ -10,14 +10,14 @@ import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { formTest } from '../../../../../shared/models/form-test';
-import { AccountTypeEnum } from '../../../../../shared/models/user-profile-info';
+import { AccountTypeEnum } from '../../../../../shared/enum/account';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
-import { SignTypeEnum } from '../../../../../shared/models/utils-type';
+import { SignTypeEnum } from '../../../../../shared/enum/account';
 import { codes } from '../../../../../shared/models/countryCode';
 import { TFTViewMinWidth } from '../../../models/app-webview';
+import { headerKeyTranslate, getUrlQueryStrings, getLocalStorageObject } from '../../../../../shared/utils/index';
 
 
-type InputType = 'account' | 'password';
 
 @Component({
   selector: 'app-app-change-account',
@@ -89,7 +89,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     private utils: UtilsService,
     private authService: AuthService,
     private signupService: SignupService,
-    private userProfileService: UserProfileService,
+    private api10xxService: Api10xxService,
     private dialog: MatDialog,
     private router: Router,
     private getClientIp: GetClientIpService
@@ -114,16 +114,6 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
       this.pcView = false;
       this.setPageStyle(true);
     }
-
-    // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)
-    this.authService.getLoginStatus().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      if (res === false && this.pcView === true) {
-        return this.router.navigateByUrl('/signIn-web');
-      }
-
-    });
 
   }
 
@@ -195,17 +185,17 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
   // 取得url query string和token-kidin-1090514
   getUrlString (urlStr) {
-    const query = this.utils.getUrlQueryStrings(location.search);
+    const query = getUrlQueryStrings(location.search);
     this.requestHeader = {
       ...this.requestHeader,
-      ...this.utils.headerKeyTranslate(query)
+      ...headerKeyTranslate(query)
     };
 
     const { tk } = query;
     if (tk) this.editBody.token = tk;
 
     if (this.editBody.token === '') {
-      this.editBody.token = this.utils.getToken();
+      this.editBody.token = this.authService.token;
     }
 
   }
@@ -236,7 +226,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
       token: this.editBody.token || ''
     };
 
-    this.userProfileService.getUserProfile(body).subscribe(res => {
+    this.api10xxService.fetchGetUserProfile(body).subscribe(res => {
       if (this.utils.checkRes(res)) {
         const { signIn: { accountType }, userProfile } = res;
         this.accountType = accountType;
@@ -333,7 +323,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin-1110111
    */
   setCountryCode() {
-    const countryCode = this.utils.getLocalStorageObject('countryCode');
+    const countryCode = getLocalStorageObject('countryCode');
     this.editBody.newCountryCode = countryCode ? +countryCode : 886;
     this.checkAll(this.regCheck);
   }
@@ -546,9 +536,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
         } else {
           this.newToken = res.editAccount.newToken;
-          this.utils.writeToken(this.newToken);  // 直接在瀏覽器幫使用者登入
-          this.userProfileService.refreshUserProfile({token: this.newToken});
-          this.authService.setLoginStatus(true);
+          this.authService.setToken(this.newToken);  // 直接在瀏覽器幫使用者登入
 
           if (this.appSys === 1) {
             (window as any).webkit.messageHandlers.returnToken.postMessage(this.newToken);

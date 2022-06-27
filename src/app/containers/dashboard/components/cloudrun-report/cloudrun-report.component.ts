@@ -7,10 +7,9 @@ import { ReportService } from '../../../../shared/services/report.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { ActivityService } from '../../../../shared/services/activity.service';
 import { CloudrunService } from '../../../../shared/services/cloudrun.service';
-import { HashIdService } from '../../../../shared/services/hash-id.service';
 import { TranslateService } from '@ngx-translate/core';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
-import { Unit } from '../../../../shared/models/bs-constant';
+import { UserService } from '../../../../core/services/user.service';
+import { Unit } from '../../../../shared/enum/value-conversion';
 import {
   ZoneTrendData,
   DiscolorTrendData,
@@ -21,7 +20,12 @@ import {
   costTimeColor,
   HrZoneRange
 } from '../../../../shared/models/chart-data';
-import { HrBase } from '../../../../shared/models/user-profile-info';
+import { HrBase } from '../../../../shared/enum/personal';
+import { AuthService } from '../../../../core/services/auth.service';
+import { getLocalStorageObject, mathRounding } from '../../../../shared/utils/index';
+import { getUserHrRange, speedToPaceSecond, speedToPace } from '../../../../shared/utils/sports';
+import { SportType } from '../../../../shared/enum/sports';
+
 
 
 @Component({
@@ -57,7 +61,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       endTimestamp: dayjs().endOf('month').valueOf(),
       type: 'thisMonth'
     },
-    sportType: 1,
+    sportType: SportType.run,
     cloudRun: {
       mapId: 1,
       month: dayjs().format('YYYYMM'),
@@ -165,9 +169,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private activityService: ActivityService,
     private cloudrunService: CloudrunService,
-    private hashIdService: HashIdService,
+    private authService: AuthService,
     private translate: TranslateService,
-    private userProfileService: UserProfileService
+    private userService: UserService
   ) { }
 
   ngOnInit(): void {
@@ -243,7 +247,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */   
   getNeedInfo() {
     combineLatest([
-      this.userProfileService.getRxUserProfile(),
+      this.userService.getUser().rxUserProfile,
       this.cloudrunService.getAllMapInfo()
     ]).pipe(
       takeUntil(this.ngUnsubscribe)
@@ -261,7 +265,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       } = userProfile;
       const age = this.reportService.countAge(birthday);
       this.userInfo = { unit, name, id, icon };
-      this.hrZoneRange = this.utils.getUserHrRange(heartRateBase, age, heartRateMax, heartRateResting);
+      this.hrZoneRange = getUserHrRange(heartRateBase, age, heartRateMax, heartRateResting);
       this.allMapList = allMapList;
       const { isPreviewMode, haveUrlCondition } = this.uiFlag;
       if (!isPreviewMode && !haveUrlCondition) {
@@ -348,7 +352,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       const { startDate, endDate } = this.selectDate;
       this.currentMapId = mapId;
       const body = {
-        token: this.utils.getToken(),
+        token: this.authService.token,
         searchTime: {
           type: 1,
           fuzzyTime: [],
@@ -579,10 +583,10 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         totalSecond,
         startTime
       } = data[i];
-      const { startTime: nextStartTime } = data[i + 1] || {startTime: undefined},
-            startTimestamp = dayjs(startTime).startOf('day').valueOf(),
-            paceSecond = this.utils.convertSpeed(avgSpeed, 1, this.userInfo.unit, 'second') as number,
-            bestPaceSecond = this.utils.convertSpeed(maxSpeed, 1, this.userInfo.unit, 'second') as number;
+      const { startTime: nextStartTime } = data[i + 1] || {startTime: undefined};
+      const startTimestamp = dayjs(startTime).startOf('day').valueOf();
+      const paceSecond = speedToPaceSecond(avgSpeed, SportType.run, this.userInfo.unit);
+      const bestPaceSecond = speedToPaceSecond(maxSpeed, SportType.run, this.userInfo.unit);
       let nextStartTimestamp: number;
       if (nextStartTime) nextStartTimestamp = dayjs(nextStartTime).startOf('day').valueOf();
       if (startTimestamp !== nextStartTimestamp) {
@@ -627,18 +631,18 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           if (maxSpeed > sameDateData.maxSpeed) sameDateData.maxSpeed = maxSpeed;
           if (maxHeartRateBpm > sameDateData.maxHr) sameDateData.maxHr = maxHeartRateBpm;
 
-          const oneDayAvgSpeed = +(sameDateData.avgSpeed / sameDateLen).toFixed(1),
-                oneDayAvgHr = +(sameDateData.avgHr / sameDateLen).toFixed(0),
-                oneDayAvgSeconds = +(sameDateData.avgSeconds / sameDateLen).toFixed(0),
-                oneDayAvgPace = this.utils.convertSpeed(oneDayAvgSpeed, 1, this.userInfo.unit, 'second') as number,
-                sameDateMaxPace = this.utils.convertSpeed(sameDateData.maxSpeed, 1, this.userInfo.unit, 'second') as number;
+          const oneDayAvgSpeed = mathRounding(sameDateData.avgSpeed / sameDateLen, 1);
+          const oneDayAvgHr = Math.round(sameDateData.avgHr / sameDateLen);
+          const oneDayAvgSeconds = Math.round(sameDateData.avgSeconds / sameDateLen);
+          const oneDayAvgPace = speedToPaceSecond(oneDayAvgSpeed, SportType.run, this.userInfo.unit);
+          const sameDateMaxPace = speedToPaceSecond(sameDateData.maxSpeed, SportType.run, this.userInfo.unit);
           // 圖表用數據                
-          this.chartData.hrTrend.zoneZero.push([startTimestamp, +(sameDateData.z0 / sameDateLen).toFixed(0)]);
-          this.chartData.hrTrend.zoneOne.push([startTimestamp, +(sameDateData.z1 / sameDateLen).toFixed(0)]);
-          this.chartData.hrTrend.zoneTwo.push([startTimestamp, +(sameDateData.z2 / sameDateLen).toFixed(0)]);
-          this.chartData.hrTrend.zoneThree.push([startTimestamp, +(sameDateData.z3 / sameDateLen).toFixed(0)]);
-          this.chartData.hrTrend.zoneFour.push([startTimestamp, +(sameDateData.z4 / sameDateLen).toFixed(0)]);
-          this.chartData.hrTrend.zoneFive.push([startTimestamp, +(sameDateData.z5 / sameDateLen).toFixed(0)]);
+          this.chartData.hrTrend.zoneZero.push([startTimestamp, Math.round(sameDateData.z0 / sameDateLen)]);
+          this.chartData.hrTrend.zoneOne.push([startTimestamp, Math.round(sameDateData.z1 / sameDateLen)]);
+          this.chartData.hrTrend.zoneTwo.push([startTimestamp, Math.round(sameDateData.z2 / sameDateLen)]);
+          this.chartData.hrTrend.zoneThree.push([startTimestamp, Math.round(sameDateData.z3 / sameDateLen)]);
+          this.chartData.hrTrend.zoneFour.push([startTimestamp, Math.round(sameDateData.z4 / sameDateLen)]);
+          this.chartData.hrTrend.zoneFive.push([startTimestamp, Math.round(sameDateData.z5 / sameDateLen)]);
           this.chartData.paceTrend.dataArr.push({
             x: startTimestamp,
             y: sameDateMaxPace,
@@ -688,13 +692,11 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     const dataLen = date.length;
     this.chartData.paceTrend.maxSpeed = oneRangeMaxSpeed;
     this.chartData.paceTrend.minSpeed = oneRangeMinSpeed;
-    this.chartData.paceTrend.oneRangeBestPace = 
-      this.utils.convertSpeed(oneRangeMaxSpeed, 1, this.userInfo.unit, 'minute') as string;
-    this.chartData.paceTrend.avgPace = 
-      this.utils.convertSpeed(((totalSpeed / dataLen) || 0), 1, this.userInfo.unit, 'minute') as string;
-    this.chartData.hrCompareLine.avgHR = +((totalHr / dataLen) || 0).toFixed(0);
+    this.chartData.paceTrend.oneRangeBestPace = speedToPace(oneRangeMaxSpeed, 1, this.userInfo.unit).value as string;
+    this.chartData.paceTrend.avgPace = speedToPace(((totalSpeed / dataLen) || 0), 1, this.userInfo.unit).value as string;
+    this.chartData.hrCompareLine.avgHR = Math.round((totalHr / dataLen) || 0);
     this.chartData.hrCompareLine.oneRangeBestHR = oneRangeMaxHr;
-    this.chartData.costTime.avgCostTime = +((totalCostTime / dataLen) || 0).toFixed(0);
+    this.chartData.costTime.avgCostTime = Math.round((totalCostTime / dataLen) || 0);
     this.chartData.costTime.bestCostTime = oneRangeMinCostTime;
     this.chartData.costTime.date = date;
   }
@@ -757,7 +759,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100309
    */
   checkRaceComplete(distance: number, totalStep: number): boolean {
-    const mapDistance = parseFloat((+this.mapInfo.distance * 1000).toFixed(0));
+    const mapDistance = Math.round(this.mapInfo.distance * 1000);
     if (distance >= mapDistance && distance / 2 < totalStep) {
       return true;
     } else {
@@ -771,7 +773,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100309
    */
   checkLanguage() {
-    const lan = this.utils.getLocalStorageObject('locale');
+    const lan = getLocalStorageObject('locale');
     switch (lan) {
       case 'zh-tw':
         return 0;

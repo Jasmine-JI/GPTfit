@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Domain } from './shared/enum/domain';
+import { Router, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -7,8 +9,13 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'app';
-  constructor() {
+  appLoaded = false;
+
+  constructor(
+    private router: Router
+  ) {
     this.checkDomain();
+    this.subscribeNavigation();
   }
 
   /**
@@ -16,20 +23,32 @@ export class AppComponent {
    * @author kidin-1110119
    */
   checkDomain() {
-    if (location.protocol === 'http:'
-      &&
-      (
-        location.hostname === 'app.alatech.com.tw'
-        // || location.hostname === 'cloud.alatech.com.tw'
-        || location.hostname === 'www.gptfit.com'
-      )
-    ) {
-      location.href = location.href.replace('http://', 'https://'); // 以由後端(google domain設定http轉導)，待穩定後移除此段
-    } else if (location.protocol === 'http:' && location.hostname === 'cloud.alatech.com.tw') {
-      location.href = location.href.replace('http://cloud.alatech.com.tw', 'https://www.gptfit.com');
-    } else if (location.hostname === 'cloud.alatech.com.tw') {
-      location.href = location.href.replace('cloud.alatech.com.tw', 'www.gptfit.com');
+    const { href, protocol, hostname } = location;
+    if (protocol === 'http:' && (hostname === Domain.uat || hostname === Domain.newProd)) {
+      // 以由後端(google domain設定http轉導)，待穩定後移除此段
+      location.href = href.replace('http://', 'https://');
+    } else if (protocol === 'http:' && hostname === Domain.oldProd) {
+      location.href = href.replace(`http://${Domain.oldProd}`, `https://${Domain.newProd}`);
+    } else if (hostname === Domain.oldProd) {
+      location.href = href.replace(Domain.oldProd, Domain.newProd);
     }
+
+  }
+
+  /**
+   * 訂閱轉導事件，並只取前面幾個事件，讓載入angular及call api 1003和1010不會只有白畫面
+   */
+  subscribeNavigation() {
+    this.router.events.subscribe(e => {
+      if (
+        e instanceof NavigationEnd
+        || e instanceof NavigationCancel
+        || e instanceof NavigationError
+      ) {
+        this.appLoaded = true;
+      }
+
+    });
 
   }
   

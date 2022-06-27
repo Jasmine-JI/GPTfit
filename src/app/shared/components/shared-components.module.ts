@@ -69,6 +69,13 @@ import { TreeMapChartComponent } from './chart/tree-map-chart/tree-map-chart.com
 import { SmallHrzoneChartComponent } from './chart/small-hrzone-chart/small-hrzone-chart.component';
 import { DistributionCanvasChartComponent } from './chart/distribution-canvas-chart/distribution-canvas-chart.component';
 import { SportsTargetTipComponent } from './tooltips/sports-target-tip/sports-target-tip.component';
+import { TargetAchieveChartComponent } from './chart/target-achieve-chart/target-achieve-chart.component';
+import { CompareOverlayColumnChartComponent } from './chart/compare-overlay-column-chart/compare-overlay-column-chart.component';
+import { CompareBodyWeightChartComponent } from './chart/compare-body-weight-chart/compare-body-weight-chart.component';
+import { ComparePaceChartComponent } from './chart/compare-pace-chart/compare-pace-chart.component';
+import { CompareExtremeGforceChartComponent } from './chart/compare-extreme-gforce-chart/compare-extreme-gforce-chart.component';
+import { WeightTrainLevelSelectorComponent } from './weight-train-level-selector/weight-train-level-selector.component';
+import { AnalysisOptionComponent } from './analysis-option/analysis-option.component';
 
 @NgModule({
   imports: [
@@ -143,7 +150,14 @@ import { SportsTargetTipComponent } from './tooltips/sports-target-tip/sports-ta
     TreeMapChartComponent,
     SmallHrzoneChartComponent,
     DistributionCanvasChartComponent,
-    SportsTargetTipComponent
+    SportsTargetTipComponent,
+    TargetAchieveChartComponent,
+    CompareOverlayColumnChartComponent,
+    CompareBodyWeightChartComponent,
+    ComparePaceChartComponent,
+    CompareExtremeGforceChartComponent,
+    WeightTrainLevelSelectorComponent,
+    AnalysisOptionComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -200,7 +214,14 @@ import { SportsTargetTipComponent } from './tooltips/sports-target-tip/sports-ta
     TreeMapChartComponent,
     SmallHrzoneChartComponent,
     DistributionCanvasChartComponent,
-    SportsTargetTipComponent
+    SportsTargetTipComponent,
+    TargetAchieveChartComponent,
+    CompareOverlayColumnChartComponent,
+    CompareBodyWeightChartComponent,
+    ComparePaceChartComponent,
+    CompareExtremeGforceChartComponent,
+    WeightTrainLevelSelectorComponent,
+    AnalysisOptionComponent
   ]
 })
 export class SharedComponentsModule {}

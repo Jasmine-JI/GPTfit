@@ -1,9 +1,10 @@
-import { HashIdService } from './../../../../shared/services/hash-id.service';
-import { UtilsService } from './../../../../shared/services/utils.service';
-import { Component, OnInit, Inject, Output, HostListener } from '@angular/core';
+import { HashIdService } from '../../../../shared/services/hash-id.service';
+import { Component, OnInit, Inject, HostListener } from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { GroupService } from './../../../../shared/services/group.service';
 import { HttpParams } from '@angular/common/http';
+import { deepCopy } from '../../../../shared/utils/index';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-people-selector-win',
@@ -72,8 +73,8 @@ export class PeopleSelectorWinComponent implements OnInit {
   constructor(
     private dialog: MatDialog,
     private groupService: GroupService,
-    private utlis: UtilsService,
     private hashids: HashIdService,
+    private authService: AuthService,
     @Inject(MAT_DIALOG_DATA) private data: any
   ) {}
 
@@ -105,8 +106,8 @@ export class PeopleSelectorWinComponent implements OnInit {
           this.uiFlag.titleIdx = this.titleIdx;
 
           // 複製資料避免污染原資料使得取消鍵無法發揮作用
-          this.tmpNotAssignCondition = this.utlis.deepCopy(this.notAssignCondition);
-          this.tmpPushSetting = this.utlis.deepCopy(this.pushSetting);
+          this.tmpNotAssignCondition = deepCopy(this.notAssignCondition);
+          this.tmpPushSetting = deepCopy(this.pushSetting);
           this.changeTitle(null, this.uiFlag.titleIdx);
         }
 
@@ -304,7 +305,7 @@ export class PeopleSelectorWinComponent implements OnInit {
     if (this.type === 3 && this.uiFlag.titleIdx === 3) {
       const groupId = this.hashids.handleGroupIdDecode(this.keyword),
             body = {
-              token: this.utlis.getToken(),
+              token: this.authService.token,
               groupId: groupId,
               findRoot: 1,
               avatarType: 2

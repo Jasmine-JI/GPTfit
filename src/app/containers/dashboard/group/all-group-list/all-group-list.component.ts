@@ -4,8 +4,10 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { UtilsService } from '../../../../shared/services/utils.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { HashIdService } from '../../../../shared/services/hash-id.service';
+import { getUrlQueryStrings } from '../../../../shared/utils/index';
+import { UtilsService } from '../../../../shared/services/utils.service';
 
 @Component({
   selector: 'app-all-group-list',
@@ -28,17 +30,19 @@ export class AllGroupListComponent implements OnInit {
   @ViewChild('paginator', {static: true}) paginator: MatPaginator;
   @ViewChild('sortTable', {static: false}) sortTable: MatSort;
   @ViewChild('filter', {static: false}) filter: ElementRef;
+
   constructor(
     private groupService: GroupService,
     private router: Router,
-    private utils: UtilsService,
-    private hashIdService: HashIdService
+    private hashIdService: HashIdService,
+    private authService: AuthService,
+    private utils: UtilsService
   ) {}
 
   ngOnInit() {
-    const queryStrings = this.utils.getUrlQueryStrings(location.search);
+    const queryStrings = getUrlQueryStrings(location.search);
     const { pageNumber } = queryStrings;
-    this.token = this.utils.getToken();
+    this.token = this.authService.token;
     this.currentPage = {
       pageIndex: +pageNumber - 1 || 0,
       pageSize: 10,
@@ -84,7 +88,18 @@ export class AllGroupListComponent implements OnInit {
       this.isLoading = false;
     });
   }
+
+
   goDetail(groupId) {
     this.router.navigateByUrl(`dashboard/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}`);
   }
+
+  /**
+   * 顯示群組編碼
+   * @param groupId {string}-群組id
+   */
+  displayGroupId(groupId: string) {
+    return this.utils.displayGroupId(groupId);
+  }
+
 }

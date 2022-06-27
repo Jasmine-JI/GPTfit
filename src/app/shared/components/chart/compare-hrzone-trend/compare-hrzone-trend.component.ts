@@ -2,22 +2,25 @@ import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
 import { of, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
-import { TranslateService } from '@ngx-translate/core';
 import { yAxisTimeFormat, tooltipHrZoneFormat } from '../../../utils/chart-formatter';
 import dayjs from 'dayjs';
 import { GlobalEventsService } from '../../../../core/services/global-events.service';
+import { deepCopy } from '../../../utils/index';
+import { compareChartDefault } from '../../../models/chart-data';
 
 
 @Component({
   selector: 'app-compare-hrzone-trend',
   templateUrl: './compare-hrzone-trend.component.html',
-  styleUrls: ['./compare-hrzone-trend.component.scss']
+  styleUrls: ['./compare-hrzone-trend.component.scss', '../chart-share-style.scss']
 })
 export class CompareHrzoneTrendComponent implements OnInit {
 
   private ngUnsubscribe = new Subject();
 
   @Input('data') data: Array<any>;
+
+  @Input('xAxisTitle') xAxisTitle: string;
 
   @ViewChild('container', {static: false})
   container: ElementRef;
@@ -29,7 +32,6 @@ export class CompareHrzoneTrendComponent implements OnInit {
   noData = true;
 
   constructor(
-    private translate: TranslateService,
     private globalEventsService: GlobalEventsService
   ) { }
 
@@ -74,7 +76,7 @@ export class CompareHrzoneTrendComponent implements OnInit {
    * @author kidin-1110413
    */
   initChart(data: Array<number>) {
-    const chartOption = new ChartOption(data);
+    const chartOption = new ChartOption(data, this.xAxisTitle);
     return chartOption.option;
   }
 
@@ -103,74 +105,36 @@ export class CompareHrzoneTrendComponent implements OnInit {
  */
 class ChartOption {
 
-  private _option = {
-    chart: {
-      type: 'column',
-      height: 200,
-      backgroundColor: 'transparent',
-      marginLeft: 85
-    },
-    title: {
-      text: ''
-    },
-    credits: {
-      enabled: false
-    },
-    xAxis: <any>{
-      title: {
-        enabled: false
-      },
-      labels: {
-        style: {
-          fontSize: '10px'
-        }
-      }
-    },
-    yAxis: {
-      min: 0,
-      title: {
-        text: ''
-      },
-      labels: {
-        formatter: yAxisTimeFormat
-      },
-      startOnTick: false,
-      minPadding: 0.01,
-      maxPadding: 0.01,
-      tickAmount: 5
-    },
-    tooltip: {
-      formatter: tooltipHrZoneFormat
-    },
-    plotOptions: {
-      column: <any>{
-        stacking: 'normal'
-      },
-      series: {
-        pointWidth: null,
-        maxPointWidth: 30
-      }
-    },
-    series: []
-  };
+  private _option = deepCopy(compareChartDefault);
 
-  constructor(data: Array<any>) {
-    this.initChart(data);
+  constructor(data: Array<any>, xAxisTitle: string) {
+    this.initChart(data, xAxisTitle);
   }
 
   /**
    * 確認是否為比較模式，並初始化圖表
    * @param data {Array<any>}-圖表數據
-   * @author kidin-1110413
+   * @param xAxisTitle {string}-x軸標題
    */
-  initChart(data: Array<any>) {
+  initChart(data: Array<any>, xAxisTitle: string) {
+    this.setOtherOption();
     const isCompareMode = (data.length / 2) >= 5;
     if (isCompareMode) {
-      this.handleCompareOption(data);
+      this.handleCompareOption(data, xAxisTitle);
     } else {
       this.handleNormalOption(data);
     }
 
+  }
+
+  /**
+   * 增加此圖表專用設定值
+   */
+  setOtherOption() {
+    this._option.chart.type = 'column';
+    this._option.yAxis.labels.formatter = yAxisTimeFormat;
+    this._option.tooltip.formatter = tooltipHrZoneFormat;
+    this._option.plotOptions.column.stacking = 'normal';
   }
 
   /**
@@ -207,8 +171,9 @@ class ChartOption {
   /**
    * 處理比較圖表的設定
    * @param chartData {Array<any>}-圖表數據
+   * @param xAxisTitle {string}-x軸標題
    */
-  handleCompareOption(chartData: Array<any>) {
+  handleCompareOption(chartData: Array<any>, xAxisTitle: string) {
     const dataLength = chartData[0].data.length;
     const categories = new Array(dataLength).fill(0).map((_arr, _index) => _index + 1);
     const { xAxis } = this._option;
@@ -216,6 +181,10 @@ class ChartOption {
       ...this._option,
       xAxis: {
         ...xAxis,
+        title: {
+          ...xAxis.title,
+          text: `( ${xAxisTitle} )`,
+        },
         categories,
         crosshair: true,
       },

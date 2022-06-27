@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { QrcodeService } from '../../containers/portal/services/qrcode.service';
-import { UtilsService } from './utils.service';
+import { AuthService } from '../../core/services/auth.service';
 import { Observable, BehaviorSubject, forkJoin } from 'rxjs';
 import { GroupService } from './group.service';
-import { UserProfileService } from './user-profile.service';
+import { Api10xxService } from '../../core/services/api-10xx.service';
 
 @Injectable()
 export class ActivityOtherDetailsService {
@@ -11,9 +11,9 @@ export class ActivityOtherDetailsService {
   otherInfo$ = new BehaviorSubject<any>(null);
   constructor(
     private qrCodeService: QrcodeService,
-    private utilsService: UtilsService,
+    private authService: AuthService,
     private groupService: GroupService,
-    private userProfileService: UserProfileService
+    private api10xxService: Api10xxService
   ) {}
   getOtherInfo(): Observable<any> {
     return this.otherInfo$;
@@ -22,8 +22,8 @@ export class ActivityOtherDetailsService {
     return this.otherInfo$.next(null);
   }
   fetchOtherDetail(sn, coachId, groupId) {
-    const token = this.utilsService.getToken() || '',
-          forkJoinArray = [];
+    const token = this.authService.token;
+    const forkJoinArray = [];
     if (sn && sn.length > 0) {
       // 改接7015-kidin-1090113
       const deviceBody = {
@@ -47,7 +47,7 @@ export class ActivityOtherDetailsService {
         targetUserId: coachId
       };
       const getGroupDetail = this.groupService.fetchGroupListDetail(body);
-      const getUserInfo = this.userProfileService.getUserProfile(body2);
+      const getUserInfo = this.api10xxService.fetchGetUserProfile(body2);
       forkJoinArray.push(getGroupDetail);
       forkJoinArray.push(getUserInfo);
     }

@@ -11,7 +11,7 @@
       <span
         class="push__list__btn"
         [routerLink]="['/dashboard/system/create-push']"
-        *ngIf="userProfile?.systemAccessRight && (userProfile?.systemAccessRight[0] === 10 || userProfile?.systemAccessRight[0] === 28)"
+        *ngIf="[AccessRight.god, AccessRight.pusher].includes(systemAccessright)"
       >建立推播</span>
     </div>
   </section>

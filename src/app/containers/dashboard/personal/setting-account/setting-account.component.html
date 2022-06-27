@@ -23,17 +23,17 @@
     </button>
   </div>
   <div class="flexCol settingContent" *ngIf="uiFlag.expand">
-    <div class="flexRow rowContent" *ngIf="userInfo?.accountStatus === 1">
+    <div class="flexRow rowContent" *ngIf="signInfo.accountStatus === AccountStatusEnum.unenabled">
       <span class="contentTitle">
         {{ 'universal_deviceSetting_switch' | translate }}
         {{ 'universal_userAccount_account' | translate }}
       </span>
       <div class="contentInput">
         <span class="account__content mainText">
-          <ng-container *ngIf="userInfo?.accountType === accountType.email">
+          <ng-container *ngIf="signInfo.accountType === AccountTypeEnum.email">
             {{ userInfo.email }}
           </ng-container>
-          <ng-container *ngIf="userInfo?.accountType === accountType.phone">
+          <ng-container *ngIf="signInfo.accountType === AccountTypeEnum.phone">
             +{{ userInfo.countryCode }} {{ userInfo.mobileNumber }}
           </ng-container>
         </span>
@@ -65,10 +65,10 @@
       </span>
       <div class="contentInput">
         <span class="account__content mainText">
-          <ng-container *ngIf="userInfo?.accountType === accountType.email">
+          <ng-container *ngIf="signInfo.accountType === AccountTypeEnum.email">
             {{ userInfo.email }}
           </ng-container>
-          <ng-container *ngIf="userInfo?.accountType === accountType.phone">
+          <ng-container *ngIf="signInfo.accountType === AccountTypeEnum.phone">
             +{{ userInfo.countryCode }} {{ userInfo.mobileNumber }}
           </ng-container>
         </span>
@@ -88,7 +88,7 @@
         <span class="mainText">Strava</span>
         <div
           class="rod__bar"
-          [class.rod__bar--active]="userInfo?.thirdPartyAgency.strava"
+          [class.rod__bar--active]="getThirdPartyStatus(ThirdParty.strava)"
           (click)="handleStravaStatus()"
         ></div>
       </div>

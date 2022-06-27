@@ -2,9 +2,11 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { EditMode } from '../../models/personal';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { UtilsService } from '../../../../shared/services/utils.service';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
+import { UserService } from '../../../../core/services/user.service';
 import { DashboardService } from '../../services/dashboard.service';
+import { checkResponse } from '../../../../shared/utils/index';
+import { HashIdService } from '../../../../shared/services/hash-id.service';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-info',
@@ -18,31 +20,41 @@ export class InfoComponent implements OnInit, OnDestroy {
    * ui 會用到的flag
    */
   uiFlag = {
-    editMode: <EditMode>'close'
+    editMode: <EditMode>'close',
+    isPageOwner: false
   }
 
-  userInfo: any;
   inputDescription: string;
 
+  /**
+   * 頁面持有者 userProfile
+   */
+  pageOwnerUserProfile: any;
+
   constructor(
-    private utils: UtilsService,
-    private userProfileService: UserProfileService,
-    private dashboardService: DashboardService
+    private userService: UserService,
+    private dashboardService: DashboardService,
+    private hashIdService: HashIdService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
-    this.getRxUserProfile();
+    this.getPageOwnerProfile();
   }
 
   /**
-   * 從rxjs取得userProfile
-   * @author kidin-1100813
+   * 取得頁面擁有者之個人資訊
    */
-  getRxUserProfile() {
-    this.userProfileService.getRxTargetUserInfo().pipe(
+  getPageOwnerProfile() {
+    const [empty, firstPath, secondPath, ...rest] = location.pathname.split('/');
+    const pageOwnerId = firstPath === 'user-profile' ?
+        +this.hashIdService.handleUserIdDecode(secondPath) : this.userService.getUser().userId;
+
+    this.userService.getTargetUserInfo(pageOwnerId).pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
-      this.userInfo = res;
+      this.pageOwnerUserProfile = res;
+      this.uiFlag.isPageOwner = this.authService.isLogin.value && pageOwnerId === res.userId;
     });
 
   }
@@ -53,7 +65,7 @@ export class InfoComponent implements OnInit, OnDestroy {
    */
   openEditMode() {
     this.uiFlag.editMode = 'edit';
-    this.inputDescription = this.userInfo.description;
+    this.inputDescription = this.userService.getUser().userProfile.description as string;
     this.dashboardService.setRxEditMode('edit');
   }
 
@@ -83,27 +95,11 @@ export class InfoComponent implements OnInit, OnDestroy {
    * @author kidin-1100816
    */
   updateUserProfile() {
-    const token = this.utils.getToken(),
-          body = {
-            token,
-            userProfile: {
-              description: this.inputDescription
-            }
-          };
-
-    this.userProfileService.updateUserProfile(body).subscribe(res => {
-      const { processResult, apiCode, resultCode, resultMessage } = res;
-      if (!processResult) {
-        this.utils.handleError(resultCode, apiCode, resultMessage);
-      } else {
-        const { apiCode, resultCode, resultMessage } = processResult;
-        if (resultCode !== 200) {
-          this.utils.handleError(resultCode, apiCode, resultMessage);
-        } else {
-          this.inputDescription = undefined;
-          this.dashboardService.setRxEditMode('complete');
-        }
-
+    const updateContent = { description: this.inputDescription };
+    this.userService.updateUserProfile(updateContent).subscribe(res => {
+      if (checkResponse(res)) {
+        this.inputDescription = undefined;
+        this.dashboardService.setRxEditMode('complete');
       }
 
     });

@@ -40,7 +40,7 @@
 >
   <ng-container matColumnDef="id">
     <mat-header-cell *matHeaderCellDef>{{'universal_group_groupId' | translate}}</mat-header-cell>
-    <mat-cell *matCellDef="let row">{{ utils.displayGroupId(row.groupId) }}</mat-cell>
+    <mat-cell *matCellDef="let row">{{ displayGroupId(row.groupId) }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="info">
     <mat-header-cell *matHeaderCellDef>{{'universal_activityData_name' | translate}}</mat-header-cell>

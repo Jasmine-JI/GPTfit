@@ -17,14 +17,12 @@ import { SharedComponentsModule } from '../../shared/components/shared-component
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { QrcodeService } from './services/qrcode.service';
 import { NgProgressModule } from '@ngx-progressbar/core';
-import { AuthService } from '../../shared/services/auth.service';
 import { UtilsService } from '../../shared/services/utils.service';
 import { SharedModule } from '../../shared/shared.module';
 import { MessageBoxComponent } from '../../shared/components/message-box/message-box.component';
 import { RandomCodeService } from './services/random-code.service';
 import { SignupService } from '../../shared/services/signup.service';
 import { ForgetService } from './services/forget.service';
-import { UserProfileService } from '../../shared/services/user-profile.service';
 import { CustomMaterialModule } from '../../shared/custom-material.module';
 import { ActivityService } from '../../shared/services/activity.service';
 import { ReportService } from '../../shared/services/report.service';
@@ -65,14 +63,12 @@ import { CoachService } from '../../shared/services/coach.service';
         RankFormService,
         MapService,
         QrcodeService,
-        AuthService,
         GlobalEventsManager,
         ResetPasswordService,
         UtilsService,
         RandomCodeService,
         SignupService,
         ForgetService,
-        UserProfileService,
         ActivityService,
         ReportService,
         ActivityOtherDetailsService,
