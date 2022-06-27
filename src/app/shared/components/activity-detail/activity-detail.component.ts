@@ -296,7 +296,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * 取得userProfile
    */
   checkUrlPath() {
-    this.uiFlag.isPortal = location.pathname.indexOf('dashboard') > -1;
+    this.uiFlag.isPortal = location.pathname.indexOf('dashboard') < 0;
   }
 
   /**
@@ -543,7 +543,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.handleFileCreateDate(this.fileInfo.creationDate);
     const targetUserId = this.fileInfo.author ? +getFileInfoParam(this.fileInfo.author).userId : undefined;
     if (!this.uiFlag.isPortal) {
-      
+
       if (this.userProfile.userId === targetUserId) {
         this.uiFlag.isFileOwner = true;
       }

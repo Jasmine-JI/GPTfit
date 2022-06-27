@@ -40,7 +40,7 @@ export class WeightTrainLevelSelectorComponent implements OnInit, OnDestroy {
    */
   changeLevel(level: WeightTrainingLevel) {
     this.weightTrainLevel = level;
-    this.userService.updateUserProfile({ weightTrainingStrengthLevel: level });
+    this.userService.updateUserProfile({ weightTrainingStrengthLevel: level }).subscribe();
     this.unSubscribeClickEvent();
   }
 

@@ -26,13 +26,13 @@ import { deepCopy } from '../../utils/index';
         y1: 0,
         y2: 1
       },
-      stops: []
+      stops: <Array<any>>[]
     },
     showInLegend: false,
     custom: {
-      dateRange: []
+      dateRange: <Array<any>>[]
     },
-    data: []
+    data: <Array<any>>[]
   }];
 
   constructor(isCompareMode: boolean, colorOption: any) {

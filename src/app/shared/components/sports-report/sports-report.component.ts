@@ -38,7 +38,9 @@ import {
   getMaxCadenceI18nKey,
   getPaceUnit,
   transformDistance,
-  getWeightTrainingLevelText
+  getWeightTrainingLevelText,
+  speedToPaceSecond,
+  paceSecondTimeFormat
 } from '../../utils/sports';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -56,6 +58,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   @Output() showPrivacyUi = new EventEmitter();
   private ngUnsubscribe = new Subject();
   private pluralEvent = new Subscription();
+  private subscribeUserProfile = new Subscription();
   resizeEvent = new Subscription();
 
   /**
@@ -86,7 +89,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       sevenDay.startTime,
       sevenDay.endTime
     ),
-    compareTime: null,
+    compareTime: null!,
     dateUnit: new ReportDateUnit(DateUnit.day),
     sportType: SportType.all,
     needRefreshData: false
@@ -116,9 +119,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 運動概要數據
    */
   sportInfoData = {
-    base: <SportsReport>null,
-    compare: <SportsReport>null,
-    diff: null
+    base: <SportsReport>null!,
+    compare: <SportsReport>null!,
+    diff: <any>null
   };
 
   /**
@@ -240,7 +243,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 確認頁面擁有者是否為登入者
    */
   checkPageOwner() {
-    const hashUserId = this.route.snapshot.parent.paramMap.get('userId');
+    const hashUserId = this.route.snapshot.parent!.paramMap.get('userId');
     const { userId, systemAccessright } = this.userService.getUser();
     if (systemAccessright <= AccessRight.marketing) this.uiFlag.isSystemAdmin = true;
     if (hashUserId) {
@@ -286,7 +289,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           this.initReportCondition.compareTime.endTimestamp = +value;
           break;
         case QueryString.dateRangeUnit:
-          this.initReportCondition.dateUnit.unit = +value;
+          this.initReportCondition.dateUnit!.unit = +value;
           break;
         case QueryString.sportType:
           this.initReportCondition.sportType = +value;
@@ -307,6 +310,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   getReportCondition(condition: ReportCondition) {
     if (this.uiFlag.progress === 100) {
+      this.subscribeUserProfile.unsubscribe();  // 先解除先前訂閱避免memory leak
       this.uiFlag.progress = 30;
       const { isPageOwner } = this.uiFlag;
       const getUserInfo = () => isPageOwner ? 
@@ -316,7 +320,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       this.uiFlag.isCompareMode = compareTime ? true : false;
       const { isCompareMode } = this.uiFlag;
       // 取得使用者資訊與運動數據，並根據該頁面是否為使用者擁有決定是否顯示體重與體脂
-      getUserInfo().pipe(
+      this.subscribeUserProfile = getUserInfo().pipe(
         switchMap(res => {
           let resultObj: any = { userInfo: res };
           // 若僅變更運動類別，則取已儲存之數據
@@ -340,7 +344,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
             return of(resultObj);
           } else {
-            const body = this.getSummaryRequestBody(baseTime, dateUnit);
+            const body = this.getSummaryRequestBody(baseTime, dateUnit!);
             return this.api21xxService.fetchSportSummaryArray(body).pipe(
               map(baseActivitiesData => { return { ...resultObj, baseActivitiesData }})
             )
@@ -350,7 +354,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         }),
         switchMap((resultObj: Object) => {
           if (needRefreshData && isCompareMode) {
-            const body = this.getSummaryRequestBody(compareTime, dateUnit);
+            const body = this.getSummaryRequestBody(compareTime!, dateUnit!);
             return this.api21xxService.fetchSportSummaryArray(body).pipe(
               map(compareActivitiesData => { return { ...resultObj, compareActivitiesData } })
             )
@@ -360,7 +364,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         }),
         switchMap((resultObj: Object) => {
           if (needRefreshData && isPageOwner) {
-            const body = this.getSummaryRequestBody(baseTime, dateUnit);
+            const body = this.getSummaryRequestBody(baseTime, dateUnit!);
             return this.api21xxService.fetchTrackingSummaryArray(body).pipe(
               map(baseLifeTracking => { return { ...resultObj, baseLifeTracking } })
             )
@@ -370,7 +374,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         }),
         switchMap((resultObj: Object) => {
           if (needRefreshData && isCompareMode && isPageOwner) {
-            const body = this.getSummaryRequestBody(compareTime, dateUnit);
+            const body = this.getSummaryRequestBody(compareTime!, dateUnit!);
             return this.api21xxService.fetchTrackingSummaryArray(body).pipe(
               map(compareLifeTracking => { return { ...resultObj, compareLifeTracking } })
             )
@@ -398,7 +402,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         }),
         switchMap((resultObj: Object) => {
           if (isPageOwner && this.reportCondition.sportType === SportType.weightTrain && isCompareMode) {
-            const body = this.getMultiActivityRequestBody(compareTime);
+            const body = this.getMultiActivityRequestBody(compareTime!);
             return this.api21xxService.fetchMultiActivityData(body).pipe(
               map(compareWeightTrainingLap => { return { ...resultObj, compareWeightTrainingLap } })
             )
@@ -520,14 +524,14 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   ) {
     const getParameter = (timeType: ReportDateType, data: Array<any>) => {
       const openPrivacy = !data || data[0].resultCode !== 403;
-      const activities = data[0][condition.dateUnit.getReportKey('sportsReport')];
+      const activities = data[0][condition.dateUnit!.getReportKey('sportsReport')];
       return { openPrivacy, target: this.sportsTarget, condition, data: activities, timeType };
     };
 
     const baseParameter = getParameter('base', baseSportSummary);
     this.sportInfoData.base = new SportsReport(baseParameter);
     this.sportInfoData.compare =
-      this.uiFlag.isCompareMode ? new SportsReport(getParameter('compare', compareSportSummary)) : null;
+      this.uiFlag.isCompareMode ? new SportsReport(getParameter('compare', compareSportSummary)) : null!;
     if (this.uiFlag.isCompareMode) this.sportInfoData.diff = this.getSportInfoDiff();
   }
 
@@ -539,7 +543,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   handleChartData(condition: ReportCondition, dataObj: any, sportsTarget: SportsTarget) {
     const { dateUnit, sportType } = condition;
-    this.transformCondition = sportsTarget.getTransformCondition(dateUnit.unit, 1);
+    this.transformCondition = sportsTarget.getTransformCondition(dateUnit!.unit, 1);
     this.chartData = new PersonalSportsChartData(condition, dataObj, this.transformCondition);
     if (sportType === SportType.weightTrain) {
       this.muscleGroupTrendData = deepCopy(this.chartData.weightTrainingTrend.groupTrainingData);
@@ -608,7 +612,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       const element = document.querySelector('.report-headTitleSection') as HTMLElement;
       const top = element.offsetTop - 70;
       const scrollElement = document.querySelector('.main-body');
-      scrollElement.scrollTo({ top, behavior: 'smooth' });
+      scrollElement!.scrollTo({ top, behavior: 'smooth' });
     }, 200);
     
   }
@@ -665,11 +669,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           break;
         case 'avgSpeed':
           const paceList = [SportType.run, SportType.swim, SportType.row];
-          if (paceList.includes(sportType) && !this.uiFlag.typeRunShowPace) {
-            const { value: pace, unit: paceUnit } = speedToPace(value, sportType, this.getUserUnit());
+          if (paceList.includes(sportType!) && this.showPace()) {
+            const { value: pace, unit: paceUnit } = speedToPace(value, sportType!, this.getUserUnit()!);
             result.update(pace, paceUnit);
           } else {
-            isMetric ? result.update(Math.round(value), 'km/hr') : result.update(mathRounding(value / mi, 2), 'mi/hr');
+            isMetric ? result.update(mathRounding(value, 1), 'km/hr') : result.update(mathRounding(value / mi, 2), 'mi/hr');
           }
           
           break;
@@ -687,6 +691,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         case 'cycleAvgWatt':
         case 'rowingAvgWatt':
           result.update(Math.round(value), 'watt');
+          break;
+        case 'paceSecond':
+          result.update(Math.round(value), getPaceUnit(sportType!, this.getUserUnit()!));
           break;
         default:
           result.update(Math.round(value));
@@ -746,6 +753,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   transformDistance = transformDistance;
 
   /**
+   * 將配速秒轉換為 分':秒"
+   */
+  paceSecondTimeFormat = paceSecondTimeFormat;
+
+  /**
    * 根據運動類別與數據類型回傳對應的頻率概要數據
    * @param sportType {SportType}-運動類別
    * @param rangeType {ReportDateType}-數據範圍類型
@@ -787,7 +799,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         dataKey = isMaxData ? 'avgCycleMaxWatt' : 'cycleAvgWatt';
         break;
       case SportType.row:
-        dataKey = isMaxData ? 'avgRowingMaxCadence' : 'rowingAvgCadence';
+        dataKey = isMaxData ? 'rowingMaxWatt' : 'rowingAvgWatt';
         break;
       default:
         return '';
@@ -841,7 +853,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   subscribePluralEvent() {
     const targetElement = document.querySelector('.main__container');
-    const scrollEvent = fromEvent(targetElement, 'scroll');
+    const scrollEvent = fromEvent(targetElement!, 'scroll');
     const clickEvent = fromEvent(document, 'click');
     this.pluralEvent = merge(scrollEvent, clickEvent).pipe(
       takeUntil(this.ngUnsubscribe)
@@ -899,7 +911,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 變更動作列表排序
    * @param columnType {string}-欄位類別
    */
-  changeSort(columnType: string = undefined) {
+  changeSort(columnType?: string) {
     if (!columnType) return false;
     this.weightTrainingSort.sortType !== columnType ?
       this.weightTrainingSort.changeSortType(columnType) : this.weightTrainingSort.changeOrder();
@@ -937,6 +949,18 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           [key]: (baseValue ?? 0) - (compareValue ?? 0)
         };
 
+        // 另外追加配速差值，針對配速先轉配速秒再相減
+        if (key === 'avgSpeed') {
+          const { sportType } = this.reportCondition;
+          const unit = this.getUserUnit();
+          const basePaceSecond = speedToPaceSecond(baseValue ?? 0, sportType!, unit!);
+          const comparePaceSecond = speedToPaceSecond(compareValue ?? 0, sportType!, unit!);
+          result = {
+            ...result,
+            ['paceSecond']: basePaceSecond - comparePaceSecond
+          };
+        }
+
       }
 
     }
@@ -948,7 +972,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 確認概要資訊的類別
    * @param type {string}-概要資訊類別
    */
-  checkInfoType(type: string, checkKey: 'time' | 'pace' = undefined) {
+  checkInfoType(type: string, checkKey?: 'time' | 'pace') {
     const isTimeType = type.toLowerCase().includes('time');
     const isPaceType = type.toLowerCase().includes('pace');
     if (isTimeType && checkKey === 'time') return true;
@@ -958,10 +982,28 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 根據運動類別與目前顯示切換之顯示類別，顯示速度或配速
+   */
+  showPace() {
+    const { sportType } = this.reportCondition;
+    switch (sportType) {
+      case SportType.swim:
+      case SportType.row:
+        return true;
+      case SportType.run:
+        return this.uiFlag.typeRunShowPace;
+      default:
+        return false;
+    }
+
+  }
+
+  /**
    * 解除rxjs訂閱
    * @author kidin-1091211
    */
   ngOnDestroy() {
+    this.subscribeUserProfile.unsubscribe();
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }

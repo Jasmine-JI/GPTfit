@@ -42,19 +42,19 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     subListTop: 0,
     currentFocusList: 0,
     mapLanguageIndex: 0,
-    filterGroup: null,
+    filterGroup: <string | null>null,
     screenSize: window.innerWidth
   };
 
   token = this.authService.token;
-  subList = [];
-  eventList = [];
-  backupList = [];
-  rankList = [];
-  mapInfo = [];
-  routine = [];
-  groupList = [];
-  queryEventId = null;
+  subList: Array<any> = [];
+  eventList: Array<any> = [];
+  backupList: Array<any> = [];
+  rankList: Array<any> = [];
+  mapInfo: Array<any> = [];
+  routine: Array<any> = [];
+  groupList: Array<any> = [];
+  queryEventId: number | null = null;
   readonly RankType = RankType;
   readonly rankListLength = Object.keys(RankType).length / 2;
   readonly shiftLength = 35;
@@ -605,7 +605,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
    * @author kidin-1101130
    */
   getRacerList(rankList: Array<any>) {
-    const racer = [];
+    const racer: Array<number> = [];
     rankList.forEach(_list => {
       racer.push(_list.userId);
     });
@@ -618,7 +618,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
    * @param groupName {string}-群組名稱
    * @author kidin-1101202
    */
-  filterGroup(groupName: string = null) {
+  filterGroup(groupName: string | null = null) {
     this.uiFlag.filterGroup = groupName;
     if (groupName) {
       const filterList = deepCopy(this.backupList.filter(_list => _list.groupName === groupName));
