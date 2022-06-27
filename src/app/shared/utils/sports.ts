@@ -16,6 +16,7 @@ import { HrZoneRange } from '../models/chart-data';
  */
  export function speedToPaceSecond(value: number, sportType: SportType, unit: Unit) {
   const isMetric = unit === Unit.metric;
+  const isMinus = value < 0;
   let result = 0;
   switch (sportType) {
     case SportType.run:  // 跑步配速
@@ -30,7 +31,7 @@ import { HrZoneRange } from '../models/chart-data';
       break;
   }
 
-  return result > 3600 ? 3600 : result;
+  return Math.abs(result) > 3600 ? (isMinus ? -3600 : 3600) : result;
 }
 
 /**
@@ -38,11 +39,13 @@ import { HrZoneRange } from '../models/chart-data';
  * @param second {number}-配速（秒）
  */
 export function paceSecondTimeFormat(second: number) {
-  const costminperkm = Math.floor(second / 60);
-  const costsecondperkm = Math.round(second - costminperkm * 60);
+  const valuePrefix = second < 0 ? '-' : '';
+  const absoluteSecond = Math.abs(second);
+  const costminperkm = Math.floor(absoluteSecond / 60);
+  const costsecondperkm = Math.round(absoluteSecond - costminperkm * 60);
 
   // 配速超過60一律以60計。
-  if (costminperkm > 60) return `60'00"`;
+  if (costminperkm > 60) return `${valuePrefix}60'00"`;
 
   let timeMin = `${costminperkm}`.padStart(2, '0');
   let timeSecond = `${costsecondperkm}`.padStart(2, '0');
@@ -52,7 +55,7 @@ export function paceSecondTimeFormat(second: number) {
     timeMin = +timeMin === 60 ? '60' : `${+timeMin + 1}`
   }
 
-  return `${timeMin}'${timeSecond}"`;
+  return `${valuePrefix}${timeMin}'${timeSecond}"`;
 }
 
 /**
@@ -64,8 +67,7 @@ export function paceSecondTimeFormat(second: number) {
 export function speedToPace(data: number | string, sportType: SportType, unit: Unit) {
   const value = +data;
   const converseType = [SportType.run, SportType.swim, SportType.row];
-  const isMetric = unit === Unit.metric;
-  let result = { value: <number | string> value, unit: '' };
+  let result = { value: <number | string>value, unit: '' };
 
   // 其他運動類別則直接返回速度值
   if (!converseType.includes(sportType)) return result;
@@ -93,6 +95,8 @@ export function getPaceUnit(sportType: SportType, unit: Unit) {
       return 'min/100m';
     case SportType.row:
       return 'min/500m';
+    default:
+        return '';
   }
 
 }
@@ -204,7 +208,7 @@ export function transformDistance(distance: number, unit: Unit) {
  * 取得該肌肉部位所屬肌群代碼
  * @param muscleCode {MuscleCode}-肌肉部位代碼
  */
-export function getCorrespondingMuscleGroup(muscleCode: MuscleCode): MuscleGroup {
+export function getCorrespondingMuscleGroup(muscleCode: MuscleCode) {
   switch (+muscleCode) {
     case MuscleCode.bicepsInside:
     case MuscleCode.triceps:
@@ -241,6 +245,8 @@ export function getCorrespondingMuscleGroup(muscleCode: MuscleCode): MuscleGroup
     case MuscleCode.ankleFlexor:
     case MuscleCode.gastrocnemius:
       return MuscleGroup.legMuscle;
+    default:
+      return 
   }
 
 }

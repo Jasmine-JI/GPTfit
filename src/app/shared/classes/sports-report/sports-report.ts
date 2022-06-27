@@ -49,12 +49,12 @@ export class SportsReport {
     let avgDataIntermediary = {};
     let maxDataIntermediary = {};
     if (openPrivacy) {
-      const { sportType } = condition;
-      const dataKey = this.getDataKey(sportType);
+      const { sportType } = condition!;
+      const dataKey = this.getDataKey(sportType!);
       let preferSports = new PreferSportType();
       let preferWeightTrainGroup = new WeightTrainStatistics();
 
-      data.forEach(_data => {
+      data!.forEach(_data => {
         const { activities: _activities } = _data;
         _activities.forEach(_activity => {
           const  _sportType = +_activity.type as SportType;
@@ -74,7 +74,7 @@ export class SportsReport {
             }
 
             // 根據運動類別將所需數據進行加總
-            dataKey.forEach(_key => {
+            dataKey!.forEach(_key => {
               const isMaxData = _key.toLowerCase().includes('max');
               const _value = +_activity[_key];
               if (isMaxData) {
@@ -84,10 +84,10 @@ export class SportsReport {
                 // 平均數據需再乘該期間筆數，之後再除有效總筆數
                 const dataIntermediary = avgDataIntermediary[_key];
                 const currentWeightedValue = _value * _totalActivities;
-                let [ total, effectActivities ] = dataIntermediary ?? [0, 0];
-                total += currentWeightedValue;
+                let [ effectTotal, effectActivities ] = dataIntermediary ?? [0, 0];
+                effectTotal += currentWeightedValue;
                 effectActivities += _value ? _totalActivities : 0;
-                avgDataIntermediary[_key] = [ total, effectActivities ];
+                avgDataIntermediary[_key] = [ effectTotal, effectActivities ];
               } else {
                 dataObj[_key] = (dataObj[_key] ?? 0) + _value;
               }
@@ -161,8 +161,11 @@ export class SportsReport {
   getAvgData(intermediary: any) {
     let result = {};
     for (let _key in intermediary) {
-      const [ total, effectActivities ] = intermediary[_key];
-      result = { ...result, [_key]: mathRounding(total / (effectActivities ? effectActivities : Infinity), 3) };
+      const [ effectTotal, effectActivities ] = intermediary[_key];
+      result = {
+        ...result,
+        [_key]: mathRounding(effectTotal / (effectActivities ? effectActivities : Infinity), 3)
+      };
     }
 
     return result;
