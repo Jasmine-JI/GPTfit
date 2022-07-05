@@ -68,8 +68,8 @@ import { SportsReport } from './sports-report';
     this._paiTrend = new CompareTrendData(isCompareMode, trendChartColor.pai);
     this._caloriesTrend = new CompareTrendData(isCompareMode, trendChartColor.calories);
     this._totalActivitiesTrend = new CompareTrendData(isCompareMode, trendChartColor.totalActivities);
-    this._targertAchieveTrend = new TargetAchieveTrendData(baseTime, compareTime);
-    this._complexHrTrend = new ComplexTrend(sportType, 'hr', isCompareMode);
+    this._targertAchieveTrend = new TargetAchieveTrendData(baseTime, compareTime!);
+    this._complexHrTrend = new ComplexTrend(sportType!, 'hr', isCompareMode);
     this._bodyWeightTrend = new BodyWeightTrend(isCompareMode);
 
     switch (sportType) {
@@ -108,13 +108,13 @@ import { SportsReport } from './sports-report';
         break;
     }
 
-    const allDateList = this.createCompleteDate(dateUnit, baseTime, compareTime);
+    const allDateList = this.createCompleteDate(dateUnit!, baseTime, compareTime!);
     of([baseActivitiesData, compareActivitiesData]).pipe(
-      map(data => this.filterPersonalData(data, dateUnit, sportType)),
+      map(data => this.filterPersonalData(data, dateUnit!, sportType!)),
       map(filterData => this.postProcessingPerosnalData(filterData, perTransformTarget)),
-      map(completeData => this.mergeSameDateData(completeData, dateUnit)),
+      map(completeData => this.mergeSameDateData(completeData, dateUnit!)),
       map(mergeData => this.fillUpDate(condition, mergeData, allDateList, baseLifeTracking, compareLifeTracking)),
-      map(fillUpData => this.handleChartData(fillUpData, sportType))
+      map(fillUpData => this.handleChartData(fillUpData, sportType!))
     ).subscribe();
 
   }
@@ -220,9 +220,9 @@ import { SportsReport } from './sports-report';
    */
   filterData = (data: Array<any>, sportType: SportType, key: string, isCompareData: boolean) => {
     const checkDataOpen = (resultCode: number) => resultCode === 200;
-    let filterResult = [];
+    let filterResult: Array<any> = [];
     data.forEach(_data => {
-      let result = [];
+      let result: Array<any> = [];
       const { resultCode: _resultCode } = _data;
       if (checkDataOpen(_resultCode)) {
         _data[key].forEach(_dataRow => {
@@ -354,7 +354,7 @@ import { SportsReport } from './sports-report';
     data: Array<any>,
     dateUnit: ReportDateUnit
   ) {
-    const result = [];
+    const result: Array<any> = [];
     const temporaryCount = new TemporaryCount();
     const flatData = data[0] || [];
     flatData.forEach((_data, _index) => {
@@ -399,14 +399,14 @@ import { SportsReport } from './sports-report';
     condition: ReportCondition,
     allData: Array<any>,
     allDateList: Array<any>,
-    baseLifeTracking: Array<any> = undefined,
-    compareLifeTracking: Array<any> = undefined
+    baseLifeTracking?: Array<any>,
+    compareLifeTracking?: Array<any>
   ) {
     const [baseDateList, compareDateList] = allDateList;
     const [baseActivitiesData, compareActivitiesData] = allData;
     const baseDataResult = [];
     const compareDataResult = [];
-    const lifeTrackingKey = condition.dateUnit.getReportKey('lifeTracking');
+    const lifeTrackingKey = condition.dateUnit!.getReportKey('lifeTracking');
     let baseActivitiesIndex = 0;
     let compareActivitiesIndex = 0;
     let baseLifeTrackingIndex = 0;
@@ -552,7 +552,7 @@ import { SportsReport } from './sports-report';
           this._totalDistanceMetersTrend.addBaseData(_totalDistanceMeters, dateRange);
           this._speedPaceTrend.addBaseData(_avgMaxSpeed, _avgSpeed, dateRange);
           this._cadenceTrend.addBaseData(_avgCycleMaxCadence, _cycleAvgCadence, dateRange);
-          this._powerTrend.addBaseData(_avgCycleMaxWatt, _avgCycleMaxWatt, dateRange);
+          this._powerTrend.addBaseData(_avgCycleMaxWatt, _cycleAvgWatt, dateRange);
           break;
         case SportType.weightTrain:
           this._weightTrainingTrend.addTrainData('base', _weightTrainingInfo ?? [], dateRange);

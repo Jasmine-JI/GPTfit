@@ -13,7 +13,7 @@ export class SportPaceSibsPipe implements PipeTransform {
   transform(value: number, args: number[]): string | number {
     const [sportType, unit, showUnit] = args;
     const { value: pace, unit: paceUnit } = speedToPace(value, sportType, unit);
-    return showUnit ? `${pace} ${paceUnit}` : pace ;
+    return showUnit ? `${pace} ${paceUnit}` : pace;
   }
 
 }

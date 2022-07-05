@@ -90,10 +90,17 @@
       }">
       </div>
     </ng-container>
-    <ng-container *ngIf="[RankType.routine, RankType.mapBest].includes(uiFlag.rankType)">
+    <ng-container *ngIf="uiFlag.rankType === RankType.mapBest">
       <div *ngTemplateOutlet="leaderboardHeader; context: {
         title: mapInfo[uiFlag.currentFocusList].info[uiFlag.mapLanguageIndex].mapName,
         iconPath: mapIconPath + mapInfo[uiFlag.currentFocusList].mapImg
+      }">
+      </div>
+    </ng-container>
+    <ng-container *ngIf="uiFlag.rankType === RankType.routine">
+      <div *ngTemplateOutlet="leaderboardHeader; context: {
+        title: mapInfo[+subList[uiFlag.currentFocusList].mapId - 1].info[uiFlag.mapLanguageIndex].mapName,
+        iconPath: mapIconPath + mapInfo[+subList[uiFlag.currentFocusList].mapId - 1].mapImg
       }">
       </div>
     </ng-container>

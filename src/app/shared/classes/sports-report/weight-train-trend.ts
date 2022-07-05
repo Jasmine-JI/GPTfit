@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { WeightTrainingInfo } from '../../models/weight-train';
-import { MuscleGroup, MuscleCode, Proficiency, WeightTrainingLevel } from '../../enum/weight-train';
+import { MuscleCode, Proficiency, WeightTrainingLevel } from '../../enum/weight-train';
 import { mathRounding } from '../../utils/index';
 import { WEIGHT_TRAIN_COLOR } from '../../models/chart-data';
 import { deepCopy } from '../../utils/index';

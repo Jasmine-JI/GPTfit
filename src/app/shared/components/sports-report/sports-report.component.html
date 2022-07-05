@@ -158,7 +158,7 @@
   <section class="report-section" *ngIf="reportCondition.sportType === SportType.weightTrain">
     <div class="flexRow cardTitle">
       <h6 class="cardSubtitle">
-        {{ 'universal_activityData_weightTrainingEffectiveness' | translate }}
+       {{ 'universal_adjective_accumulation' | translate }} {{ 'universal_activityData_weightTrainingEffectiveness' | translate }}
       </h6>
       <div class="report-optionSection">
         <button (click)="showWeightTrainSettingMenu($event)">
@@ -679,7 +679,7 @@
               subTitleKey: 'universal_activityData_avgHr',
               valueUnit: {
                 value: sportInfoData.base.infoData.avgHeartRateBpm || 0 | number: '1.0-0',
-                unit: 'bpm'
+                unit: 'bpm/times'
               },
               color: trendChartColor.complexHrTrend.base.avg
             }"></span>
@@ -699,7 +699,7 @@
                 titleKey: 'universal_activityData_avgHr',
                 valueUnit: {
                   value: sportInfoData.base.infoData.avgHeartRateBpm || 0 | number: '1.0-0',
-                  unit: 'bpm'
+                  unit: 'bpm/times'
                 },
                 color: trendChartColor.complexHrTrend.base.avg
               }
@@ -718,7 +718,7 @@
                 titleKey: 'universal_activityData_avgHr',
                 valueUnit: {
                   value: sportInfoData.compare?.infoData.avgHeartRateBpm || 0 | number: '1.0-0',
-                  unit: 'bpm'
+                  unit: 'bpm/times'
                 },
                 color: trendChartColor.complexHrTrend.compare.avg
               }
@@ -800,7 +800,7 @@
         SportType.run,
         SportType.cycle,
         SportType.ball
-      ].includes(reportCondition.sportType) && !uiFlag.typeRunShowPace"
+      ].includes(reportCondition.sportType) && !showPace()"
     >
       <h6 class="report-trendChartTitle">
         {{ 'universal_activityData_speed' | translate }}
@@ -885,8 +885,8 @@
       *ngIf="[
         SportType.run,
         SportType.swim,
-        SportType.rowing
-      ].includes(reportCondition.sportType) && uiFlag.typeRunShowPace"
+        SportType.row
+      ].includes(reportCondition.sportType) && showPace()"
     >
       <h6 class="report-trendChartTitle">
         {{ 'universal_activityData_pace' | translate }}
@@ -1724,18 +1724,29 @@
           type: 'climb',
           infoType
         }"></div>
-        <div *ngTemplateOutlet="oneInfoData; context: {
-          data: getInfoData(infoData, 'avgSpeed'),
-          type: getUserUnit() === Unit.metric ? 'kmPace' : 'miPace',
-          infoType
-        }"></div>
+        <ng-container *ngIf="infoType !== 'diff' && showPace()">
+          <div *ngTemplateOutlet="oneInfoData; context: {
+            data: getInfoData(infoData, 'avgSpeed'),
+            type: getUserUnit() === Unit.metric ? 'kmPace' : 'miPace',
+            infoType
+          }"></div>
+        </ng-container>
+        <ng-container *ngIf="infoType === 'diff' && showPace()">
+          <div *ngTemplateOutlet="oneInfoData; context: {
+            data: getInfoData(infoData, 'paceSecond'),
+            type: getUserUnit() === Unit.metric ? 'kmPace' : 'miPace',
+            infoType,
+            compareReverse: true
+          }"></div>
+        </ng-container>
         <div *ngTemplateOutlet="oneInfoData; context: {
           data: getInfoData(infoData, 'runAvgCadence'),
           type: 'runCadence',
           infoType
         }"></div>
       </ng-container>
-      <ng-container *ngIf="[SportType.cycle, SportType.ball].includes(reportCondition.sportType)">
+      <ng-container
+        *ngIf="[SportType.run, SportType.cycle, SportType.ball].includes(reportCondition.sportType) && !showPace()">
         <div *ngTemplateOutlet="oneInfoData; context: {
           data: getInfoData(infoData, 'avgSpeed'),
           type: 'speed',
@@ -1762,11 +1773,21 @@
         }"></div>
       </ng-container>
       <ng-container *ngIf="reportCondition.sportType === SportType.swim">
-        <div *ngTemplateOutlet="oneInfoData; context: {
-          data: getInfoData(infoData, 'avgSpeed'),
-          type: 'oneHundredPace',
-          infoType
-        }"></div>
+        <ng-container *ngIf="infoType !== 'diff'">
+          <div *ngTemplateOutlet="oneInfoData; context: {
+            data: getInfoData(infoData, 'avgSpeed'),
+            type: 'oneHundredPace',
+            infoType
+          }"></div>
+        </ng-container>
+        <ng-container *ngIf="infoType === 'diff'">
+          <div *ngTemplateOutlet="oneInfoData; context: {
+            data: getInfoData(infoData, 'paceSecond'),
+            type: 'oneHundredPace',
+            infoType,
+            compareReverse: true
+          }"></div>
+        </ng-container>
         <div *ngTemplateOutlet="oneInfoData; context: {
           data: getInfoData(infoData, 'swimAvgCadence'),
           type: 'swimCadence',
@@ -1774,11 +1795,21 @@
         }"></div>
       </ng-container>
       <ng-container *ngIf="reportCondition.sportType === SportType.row">
-        <div *ngTemplateOutlet="oneInfoData; context: {
-          data: getInfoData(infoData, 'avgSpeed'),
-          type: 'fiveHundredPace',
-          infoType
-        }"></div>
+        <ng-container *ngIf="infoType !== 'diff'">
+          <div *ngTemplateOutlet="oneInfoData; context: {
+            data: getInfoData(infoData, 'avgSpeed'),
+            type: 'fiveHundredPace',
+            infoType
+          }"></div>
+        </ng-container>
+        <ng-container *ngIf="infoType === 'diff'">
+          <div *ngTemplateOutlet="oneInfoData; context: {
+            data: getInfoData(infoData, 'paceSecond'),
+            type: 'fiveHundredPace',
+            infoType,
+            compareReverse: true
+          }"></div>
+        </ng-container>
         <div *ngTemplateOutlet="oneInfoData; context: {
           data: getInfoData(infoData, 'rowingAvgCadence'),
           type: 'rowCadence',
@@ -1799,6 +1830,7 @@
   let-data="data"
   let-type="type"
   let-infoType="infoType"
+  let-compareReverse="compareReverse"
 >
   <div
     class="flexCol report-infoItem"
@@ -1810,13 +1842,18 @@
       <span
         class="report-infoDataValue"
         [class.report-plusValue]="infoType === 'diff' && data.value > 0"
-        [class.report-minusValue]="infoType === 'diff' && data.value < 0"
+        [class.report-progression]="
+          infoType === 'diff' && (compareReverse ? (data.value < 0) : (data.value > 0))
+        "
+        [class.report-regression]="
+          infoType === 'diff' && (compareReverse ? (data.value > 0) : (data.value < 0))
+        "
       >
         <ng-container *ngIf="checkInfoType(type, 'time')">
           {{ data.value | sportTime }}
         </ng-container>
         <ng-container *ngIf="checkInfoType(type, 'pace')">
-          {{ data.value | sportPaceSibs: [reportCondition.sportType, getUserUnit(), false] }}
+          {{ infoType === 'diff' ? paceSecondTimeFormat(data.value) : data.value }}
         </ng-container>
         <ng-container *ngIf="checkInfoType(type)">
           {{ data.value }}
@@ -2048,9 +2085,10 @@
     </span>
     <span
       [class.report-plusValue]="originValue > 0"
-      [class.report-minusValue]="originValue < 0"
+      [class.report-progression]="originValue > 0"
+      [class.report-regression]="originValue < 0"
     >
-      <ng-container *ngIf="originValue > 0">+</ng-container>{{ value }}
+      {{ value }}
       <span class="report-diffDataUnit" *ngIf="unit">{{ unit }}</span>
     </span>
   </div>
@@ -2065,11 +2103,11 @@
   >
     <i
       class="icon-svg_web-icon_p3_086-switch_spd"
-      *ngIf="uiFlag.typeRunShowPace"
+      *ngIf="showPace()"
     ></i>
     <i
       class="icon-svg_web-icon_p3_087-switch_pace"
-      *ngIf="!uiFlag.typeRunShowPace"
+      *ngIf="!showPace()"
     ></i>
   </button>
 </ng-template>

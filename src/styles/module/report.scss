@@ -571,7 +571,7 @@ $color-dot-hint-size: 20px;
 }
 
 .report-infoDataUnit {
-  font-size: 14px;
+  font-size: 12px;
   color: var(--scale-150-180);
   font-weight: bold;
 }
@@ -826,8 +826,6 @@ $color-dot-hint-size: 20px;
 }
 
 .report-plusValue {
-  color: rgba(255, 43, 43, 1);
-
   &:before {
     content: '+';
     position: relative;
@@ -836,7 +834,11 @@ $color-dot-hint-size: 20px;
 
 }
 
-.report-minusValue {
+.report-progression {
+  color: rgba(255, 43, 43, 1);
+}
+
+.report-regression {
   color: rgba(32, 181, 73, 1);
 }
 
