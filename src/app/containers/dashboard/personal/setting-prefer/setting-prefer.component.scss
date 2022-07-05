@@ -152,7 +152,7 @@ $dot-diameter: 8px;
 .date__cycle__list, .filed__name__list {
   $shadow: 4px rgba(0, 0, 0, 0.3);
   position: fixed;
-  z-index: 1;
+  z-index: 2;
   background-color: white;
   cursor: pointer;
   list-style: none;
@@ -177,11 +177,12 @@ $dot-diameter: 8px;
   background-color: rgb(250 107 107);
   border-radius: 50%;
   width: $size;
-  min-width: $size;
+  max-width: $size;
   height: $size;
-  $height: $size;
+  min-height: $size;
   color: white;
-  margin: 0 5px;
+  margin-right: 5px;
+  padding: 0 5px;
 }
 
 .filed__name {

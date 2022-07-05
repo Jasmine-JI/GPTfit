@@ -107,11 +107,11 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
    * 初始化圖表
    * @param data {Array<number>}-圖表所需數據
    * @param type {TargetField}-數據類別
-   * @param targetLineValue {number}-運動目標線數值
+   * @param targetLineValue {number | null}-運動目標線數值
    * @author kidin-1110413
    */
-  initChart(data: Array<number>, type: TargetField, targetLineValue: number) {
-    const userUnit = this.userService.getUser().userProfile.unit;
+  initChart(data: Array<number>, type: TargetField, targetLineValue: number | null) {
+    const userUnit = this.userService.getUser().userProfile.unit as Unit;
     const chartOption = new ChartOption(data, type, targetLineValue, userUnit, this.xAxisTitle);
     return chartOption.option;
   }
@@ -164,7 +164,7 @@ class ChartOption {
   constructor(
     data: Array<any>,
     type: TargetField,
-    targetLineValue: number,
+    targetLineValue: number | null,
     unit: Unit,
     xAxisTitle: string
   ) {

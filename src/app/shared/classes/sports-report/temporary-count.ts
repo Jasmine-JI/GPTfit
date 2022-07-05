@@ -19,6 +19,23 @@ import { isAvgData } from '../../utils/sports';
   private _endTime: number = 0;
 
   /**
+   * 紀錄有效活動數，用來計算有效平均數據
+   */
+  private _effectActivities: any = {
+    addValue: function (key: string, value: number) {
+      this.checkKey(key);
+      this[key] += value;
+    },
+    checkKey: function(key: string) {
+      if (!this[key]) this[key] = 0;
+    },
+    getValue: function (key: string) {
+      return this[key] === 0 ? Infinity : this[key];  // 避免因除數為0造成infinity的結果
+    }
+
+  };
+
+  /**
    * 將變數初始化
    */
   init() {
@@ -52,6 +69,7 @@ import { isAvgData } from '../../utils/sports';
           if ((this._countObj[_key] ?? Infinity) > checkValue) this._countObj[_key] = checkValue;
         } else {
           // 平均數據需依運動數目加權回來再進行加總
+          if (checkValue) this._effectActivities.addValue(_key, totalActivities);
           const totalValue = isAvgData(_key) ? checkValue * totalActivities : checkValue;
           this._countObj[_key] = this._countObj[_key] ? this._countObj[_key] + totalValue : totalValue;
         }
@@ -73,8 +91,19 @@ import { isAvgData } from '../../utils/sports';
     let result = {};
     for (let _key in obj) {
       const totalValue = obj[_key];
-      result[_key] = _key === 'weightTrainingInfo' ?
-        totalValue : mathRounding(isAvgData(_key) ? totalValue / this._totalActivities : totalValue, 1);
+      if (_key === 'weightTrainingInfo') {
+        result[_key] = totalValue;
+      } else {
+
+        if (isAvgData(_key)) {
+          const effectActivities = this._effectActivities.getValue(_key);
+          result[_key] = mathRounding(totalValue / effectActivities, 1);
+        } else {
+          result[_key] = mathRounding(totalValue, 1);
+        }
+
+      }
+
     }
 
     return result;
