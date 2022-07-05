@@ -206,7 +206,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       debounceTime(500),
       takeUntil(this.ngUnsubscribe)
     ).subscribe(e => {
-      const element = document.querySelector('.main-body') as HTMLElement;
+      const element = document.querySelector('.main__container') as HTMLElement;
       const containerWidth = element.getBoundingClientRect().width;
       this.weightTrainingAnalysisOption.checkOverLimit(containerWidth);
       this.weightTrainingAnalysisOption.fillItem();
@@ -611,7 +611,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       const element = document.querySelector('.report-headTitleSection') as HTMLElement;
       const top = element.offsetTop - 70;
-      const scrollElement = document.querySelector('.main-body');
+      const scrollElement = document.querySelector('.main__container');
       scrollElement!.scrollTo({ top, behavior: 'smooth' });
     }, 200);
     
@@ -860,7 +860,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     ).subscribe(() => {
       this.unSubscribePluralEvent();
     });
-
+      
   }
 
   /**

@@ -253,7 +253,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    */
   subscribePluralEvent() {
     const clickEvent = fromEvent(document, 'click');
-    const scrollElement = document.querySelector('.main-body');
+    const scrollElement = document.querySelector('.main__container');
     const scrollEvent = fromEvent(scrollElement!, 'scroll');
     this.pluralEvent = merge(clickEvent, scrollEvent).pipe(
       takeUntil(this.ngUnsubscribe)

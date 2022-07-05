@@ -17,6 +17,7 @@ $btn-padding: 5px 10px;
   background-color: var(--scale-255-60);
   z-index: 12;
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2), -5px 5px 10px rgba(0, 0, 0, 0.2);
+  transform: translate3d(0, 0, 0);
 }
 
 .dialog-title {

@@ -223,12 +223,8 @@ export class PersonalComponent implements OnInit, OnDestroy {
         }
 
         if (this.uiFlag.isPortalMode) {
-          const cardSection = document.querySelectorAll('.cardSection')[0];
-          if (cardSection) {
-            const { left } = cardSection.getBoundingClientRect();
-            pageListBar.style.left = `${left}px`;
-          }
-
+          pageListBar.style.left = 0;
+          pageListBar.style.right = 0;
         }
 
       }
