@@ -146,9 +146,8 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
    */
   toggleMenu() {
     if (this.isSubGroupInfo && !this.isHadMenu) {
-      this.router.navigateByUrl(
-        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/group-introduction`
-      );
+      const targetUrl = `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/group-introduction`;
+      this.router.navigateByUrl(targetUrl);
     } else {
       this.active = !this.active;
     }
@@ -361,7 +360,8 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
 
 
   goToUserProfileInEditGroupInfo() {
-    this.router.navigateByUrl(`/user-profile/${this.hashIdService.handleUserIdEncode(this.userId)}`);
+    const targetUrl = `/user-profile/${this.hashIdService.handleUserIdEncode(this.userId)}`;
+    window.open(targetUrl, '_blank', 'noopener=yes,noreferrer=yes');
   }
 
   /**

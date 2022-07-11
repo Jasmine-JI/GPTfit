@@ -31,7 +31,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     progress: 100,
     expand: true,
     editMode: 'close',
-    nicknameAlert: <'repeat' | 'format'>null,
+    nicknameAlert: <'repeat' | 'format' | null>null,
     heightAlert: false
   }
 
@@ -97,7 +97,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     this.setting = {
       nickname,
       bodyHeight: this.utils.bodyHeightTransfer(bodyHeight, !isMetric, true),
-      bodyWeight: valueConvert(bodyWeight, !isMetric, true, lb, 0),
+      bodyWeight: valueConvert(bodyWeight, !isMetric, true, lb, 1),
       birthday: dayjs(birthday, 'YYYYMMDD').valueOf(),
       gender,
     };
@@ -369,16 +369,16 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
           inputValue = +(e as any).target.value,
           testFormat = formTest.decimalValue.test(`${inputValue}`),
           isMetric = this.userInfo.unit === Unit.metric,
-          newValue = valueConvert(inputValue, !isMetric, false, lb, 0),
+          newValue = valueConvert(inputValue, !isMetric, false, lb, 1),
           valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       this.editFlag.bodyWeight = true;
       const min = 40,
             max = 255;
       if (newValue < min) {
-        this.setting.bodyWeight = valueConvert(min, !isMetric, true, lb, 0);
+        this.setting.bodyWeight = valueConvert(min, !isMetric, true, lb, 1);
       } else if (newValue > max) {
-        this.setting.bodyWeight = valueConvert(max, !isMetric, true, lb, 0);
+        this.setting.bodyWeight = valueConvert(max, !isMetric, true, lb, 1);
       } else {
         this.setting.bodyWeight = +inputValue;
       }
@@ -388,7 +388,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     } else {
       this.editFlag.bodyWeight = false;
       const { bodyWeight } = this.userInfo;
-      (e as any).target.value = valueConvert(bodyWeight, !isMetric, true, lb, 0);
+      (e as any).target.value = valueConvert(bodyWeight, !isMetric, true, lb, 1);
     }
 
   }

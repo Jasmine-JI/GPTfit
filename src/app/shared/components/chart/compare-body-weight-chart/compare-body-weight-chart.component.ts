@@ -184,6 +184,8 @@ class ChartOption {
   setOtherOption(isMetric: boolean) {
     const { yAxis: yAxisDefault } = compareChartDefault;
     this._option.chart.type = 'line';
+    this._option.chart.zoomType = 'y';
+    this._option.xAxis.zoomEnabled = true;
     this._option.plotOptions.series.lineWidth = 3;
     this._option.tooltip.shared = true;
     this._option.tooltip.formatter = bodyWeightTooltip(isMetric);

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { ActivityService } from '../../../../shared/services/activity.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { SportType } from '../../../../shared/enum/sports';
@@ -24,7 +24,7 @@ const defaultStart = dayjs(defaultEnd).subtract(3, 'year').startOf('day');
   templateUrl: './activity-list.component.html',
   styleUrls: ['./activity-list.component.scss']
 })
-export class ActivityListComponent implements OnInit, OnDestroy {
+export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();
   private scrollEvent = new Subscription();
   private resizeEvent = new Subscription();
@@ -83,9 +83,12 @@ export class ActivityListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getNeedInfo();
-    this.subscribeScroll();
     this.setListWidth();
     this.subscribeScreenSize();
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {this.subscribeScroll()});  // 使用setTimeout避免抓到先前命名相同之元素
   }
 
   /**
@@ -157,7 +160,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
         this.utils.handleError(resultCode, apiCode, resultMessage);
       } else {
         this.uiFlag.progress = 80;
-        this.activityList = this.activityList.concat(this.handleScenery(info));
+        this.activityList = this.activityList.concat(this.handleScenery(info) as never);
         this.totalCounts = totalCounts;
         this.uiFlag.progress = 100;
       }
@@ -209,16 +212,16 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1100816
    */
   subscribeScroll() {
-    const targetEle = document.querySelector('.main__container');
+    const targetEle = document.querySelector('.main__container') as Element;
     const scrollEvent = fromEvent(targetEle, 'scroll');
     this.scrollEvent = scrollEvent.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(e => {
       const listLen = this.activityList.length;
       if (this.uiFlag.progress === 100 && listLen >= 12) {
-        const lastEle = document.getElementById(`card__${listLen - 1}`),
-              { y } = lastEle.getBoundingClientRect(),
-              { offsetHeight } = (e as any).target;
+        const lastEle = document.getElementById(`card__${listLen - 1}`) as Element;
+        const { y } = lastEle.getBoundingClientRect();
+        const { offsetHeight } = (e as any).target;
         if (y < offsetHeight && listLen < this.totalCounts) {
           this.listReq.page++;
           this.getActivityList('scroll');
