@@ -22,15 +22,19 @@ import { isAvgData } from '../../utils/sports';
    * 紀錄有效活動數，用來計算有效平均數據
    */
   private _effectActivities: any = {
+    storage: {},
     addValue: function (key: string, value: number) {
       this.checkKey(key);
-      this[key] += value;
+      this.storage[key] += value;
     },
     checkKey: function(key: string) {
-      if (!this[key]) this[key] = 0;
+      if (!this.storage[key]) this.storage[key] = 0;
     },
     getValue: function (key: string) {
-      return this[key] === 0 ? Infinity : this[key];  // 避免因除數為0造成infinity的結果
+      return this.storage[key] === 0 ? Infinity : this.storage[key];  // 避免因除數為0造成infinity的結果
+    },
+    initStorage: function() {
+      this.storage = {};
     }
 
   };
@@ -43,6 +47,7 @@ import { isAvgData } from '../../utils/sports';
     this._totalActivities = 0;
     this._startTime = 0;
     this._endTime = 0;
+    this._effectActivities.initStorage();
   }
 
   /**

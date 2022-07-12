@@ -450,10 +450,11 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     const weekOverRanage = 52 * WEEK;
     const datetTypeKey = type === 'base' ? 'baseTime' : 'compareTime';
     if (this.reportCondition[datetTypeKey]) {
+      const { unit } = this.reportCondition.dateUnit!;
       const { startTimestamp, endTimestamp } = this.reportCondition[datetTypeKey]!;
       const diffTime = endTimestamp - startTimestamp;
-      if (diffTime > weekOverRanage) return this.selectDateUnit(DateUnit.month, true);
-      if (diffTime > dayOverRange) return this.selectDateUnit(DateUnit.week, true);
+      if (diffTime > weekOverRanage && unit < DateUnit.month) return this.selectDateUnit(DateUnit.month, true);
+      if (diffTime > dayOverRange && unit < DateUnit.week) return this.selectDateUnit(DateUnit.week, true);
     }
 
   }
@@ -464,17 +465,46 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    * @param checkChange {boolean}-是否為檢查日期範圍變更而非由使用者變更
    */
   selectDateUnit(unit: DateUnit, checkChange = false) {
-    if (unit > this.reportCondition.dateUnit!.unit) {
+    const { unit: beforeUnit } = this.reportCondition.dateUnit!;
+    if (unit !== beforeUnit) {
+
+      if (!checkChange && !this.checkUnitFitDateRange(unit)) this.resetCondition();
       this.reportCondition.dateUnit!.unit = unit;
       this.reportCondition.needRefreshData = true;
-
-      if (!checkChange) {
-        this.resetCondition();
-        this.reportCondition.dateUnit!.unit = unit;
-      }
-      
     }
 
+  }
+
+  /**
+   * 確認目前所選單位是否適用於基準與比較日期範圍
+   * @param unit {DateUnit}-日期範圍單位
+   */
+  checkUnitFitDateRange(unit: DateUnit) {
+    if (unit >= DateUnit.month) return true;  // 月 以上單位適用任呵時間範圍
+
+    // 確認目前時間範圍是否適用日期單位
+    const isOverUnitRange = (unit: DateUnit, diffTime: number) => {
+      const dayOverRange = 52 * DAY;
+      const weekOverRanage = 52 * WEEK;
+      if (unit === DateUnit.day && diffTime > dayOverRange) return true;
+      if (unit === DateUnit.week && diffTime > weekOverRanage) return true;
+      return false;
+    };
+
+    const { startTimestamp, endTimestamp } = this.reportCondition.baseTime;
+    const baseDiffTime = endTimestamp - startTimestamp;
+    if (isOverUnitRange(unit, baseDiffTime)) return false;
+
+    if (this.reportCondition.compareTime) {
+      const {
+        startTimestamp: compareStartTime,
+        endTimestamp: compareEndTime
+      } = this.reportCondition.compareTime;
+      const compareDiffTime = compareEndTime - compareStartTime;
+      if (isOverUnitRange(unit, compareDiffTime)) return false;
+    }
+
+    return true;
   }
 
   /**
