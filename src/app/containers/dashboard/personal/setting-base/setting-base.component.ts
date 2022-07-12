@@ -105,7 +105,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     this.editFlag = {
       bodyHeight: false,
       bodyWeight: false
-    }
+    };
 
   }
 

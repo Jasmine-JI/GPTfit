@@ -313,9 +313,10 @@ export function valueConvert(
   convert: boolean,
   forward: boolean,
   coefficient: number,
-  digit: number = null
+  digit: number | null = null
 ) {
   if (convert) value = forward ? value / coefficient : value * coefficient;
+  if (convert && forward) digit = 0; // 設定英制不含小數點
   return digit !== null ? mathRounding(value, digit) : value;
 }
 
