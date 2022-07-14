@@ -5,8 +5,7 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { debounce } from '../../../../shared/utils/index';
-import { UtilsService } from '../../../../shared/services/utils.service';
+import { debounce, getUrlQueryStrings } from '../../../../shared/utils/index';
 
 @Component({
   selector: 'app-device-log',
@@ -29,14 +28,13 @@ export class DeviceLogComponent implements OnInit {
 
   constructor(
     private deviceLogservice: DeviceLogService,
-    private router: Router,
-    private utils: UtilsService
+    private router: Router
   ) {
     this.searchInfo = debounce(this.searchInfo, 1000);
   }
 
   ngOnInit() {
-    const queryStrings = this.utils.getUrlQueryStrings(location.search);
+    const queryStrings = getUrlQueryStrings(location.search);
     const { pageNumber } = queryStrings;
     this.currentPage = {
       pageIndex: (+pageNumber - 1) || 0,

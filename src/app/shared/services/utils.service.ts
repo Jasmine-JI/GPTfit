@@ -6,17 +6,13 @@ import { MessageBoxComponent } from '../components/message-box/message-box.compo
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { HrZoneRange } from '../models/chart-data';
 import dayjs from 'dayjs';
-import isoWeek from 'dayjs/plugin/isoWeek';
-import { Unit, mi, ft, inch } from '../models/bs-constant';
-import { SportType } from '../enum/sports';
+import { ft, inch } from '../models/bs-constant';
 import { GroupLevel } from '../../containers/dashboard/models/group-detail';
-import { HrBase } from '../models/user-profile-info';
-import { version } from '../../shared/version';
+import { version } from '../version';
 import { v5 as uuidv5 } from 'uuid';
-import { SelectDate } from '../models/utils-type';
-import { TOKEN } from '../models/utils-constant';
+import { setLocalStorageObject, getLocalStorageObject } from '../utils/index';
+
 
 type Point = {
   x: number;
@@ -37,106 +33,6 @@ export class UtilsService {
     private snackbar: MatSnackBar,
     private translate: TranslateService
   ) {}
-
-  setLocalStorageObject(key: string, value: any) {
-    localStorage.setItem(key, JSON.stringify(value));
-  }
-
-  getLocalStorageObject(key: string) {
-    const value = localStorage.getItem(key);
-    return value && JSON.parse(value);
-  }
-
-  setSessionStorageObject(key: string, value) {
-    sessionStorage.setItem(key, JSON.stringify(value));
-  }
-
-  getSessionStorageObject(key: string) {
-    const value = sessionStorage.getItem(key);
-    return value && JSON.parse(value);
-  }
-
-  removeLocalStorageObject(key: string) {
-    if (this.getLocalStorageObject(key)) {
-      localStorage.removeItem(key);
-    }
-  }
-
-  removeSessionStorageObject(key: string) {
-    if (this.getSessionStorageObject(key)) {
-      sessionStorage.removeItem(key);
-    }
-  }
-
-  writeToken(value: string, token: string = TOKEN) {
-    localStorage.setItem(token, value);
-  }
-
-  getToken(token: string = TOKEN) {
-    return localStorage.getItem(token) || '';
-  }
-
-  removeToken(token: string = TOKEN) {
-    if (this.getToken(token)) {
-      localStorage.removeItem(token);
-    }
-  }
-
-  buildBase64ImgString(value: string) {
-    if (!value) {
-      return '';
-    } else if (value.indexOf('data:image') > -1) {
-      return value;
-    } else if (value.indexOf('https://') > -1) {
-      return value;
-    } else {
-      return `data:image/jpg; base64, ${value}`.replace(/\s+/g, '');
-    }
-  }
-
-  /**
-   * 將query string轉為物件，以方便取值
-   * @param _search {string}-query string
-   * @returns {any}-物件 {queryKey: queryValue }
-   * @author kidin-1100707
-   */
-  getUrlQueryStrings(_search: string) {
-    const search = _search || window.location.search,
-          queryObj = {} as any;
-    let queryArr: Array<string>;
-    if (!search) {
-      return queryObj;
-    } else {
-
-      if (search.includes('?')) {
-        queryArr = search.split('?')[1].split('&');
-      } else {
-        queryArr = search.split('&');
-      }
-
-      queryArr.forEach(_query => {
-        const [_key, _value] = _query.split('=');
-        Object.assign(queryObj, {[_key]: _value});
-      });
-
-      return queryObj;
-    }
-
-  }
-
-  /**
-   * 將參數物件轉為url query string
-   * @param query {any}-參數物件
-   * @author kidin-1110113
-   */
-  setUrlQueryString(query: any) {
-    let queryString = '';
-    Object.entries(query).forEach(([key, value]) => {
-      queryString += `${key}=${value}`;
-    });
-
-    return queryString ? `?${queryString}` : queryString;
-  }
 
   str_cut(str, max_length) {
     let m = 0,
@@ -360,47 +256,6 @@ export class UtilsService {
   }
 
   /**
-   * 物件深拷貝
-   * @param obj
-   * @param cache
-   * @author kidin-1090902
-   */
-  deepCopy(obj: any, cache = new WeakMap()) {
-    // 基本型別 & function
-    if (obj === null || typeof obj !== 'object') {
-      return obj;
-    }
-
-    // Date 及 RegExp
-    if (obj instanceof Date || obj instanceof RegExp) {
-      return obj.constructor(obj);
-    }
-
-    // Set
-    if (obj instanceof Set) {
-      return new Set(obj);
-    }
-
-    // 檢查快取
-    if (cache.has(obj)) {
-      return cache.get(obj);
-    }
-
-    // 使用原物件的 constructor
-    const copy = new obj.constructor();
-
-    // 先放入 cache 中
-    cache.set(obj, copy);
-
-    // 取出所有一般屬性 & 所有 key 為 symbol 的屬性
-    [...Object.getOwnPropertyNames(obj), ...Object.getOwnPropertySymbols(obj)].forEach(key => {
-      copy[key] = this.deepCopy(obj[key], cache);
-    });
-
-    return copy;
-  }
-
-  /**
    * 跳出提示視窗
    * @param msg {string}-欲顯示的訊息
    * @author kidin-1090811
@@ -479,7 +334,7 @@ export class UtilsService {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (overWidth || overHeight) {
-      
+
       if (imgHeight > imgWidth) {
         canvas.height = limitDimensional;
         canvas.width = imgWidth * (limitDimensional / imgHeight);
@@ -504,7 +359,6 @@ export class UtilsService {
    * @author kidin-1101103
    */
   checkImgSize([base64, width, height, canvas, ctx]) {
-
     // 計算base64 size的公式（正確公式要判斷base64的'='數量，這邊直接當作'='數量為1）
     const imageSize = (base64.length * (3 / 4)) - 1;
     const limitSize = 500000;
@@ -519,78 +373,6 @@ export class UtilsService {
       return base64;
     }
 
-  }
-
-  /**
-   * 取得各心率區間
-   * @param userHRBase {HrBase}-使用者心率法, 0.最大心率法 1.儲備心率法
-   * @param userAge {number}
-   * @param userMaxHR {number}
-   * @param userRestHR {number}
-   */
-  getUserHrRange(userHRBase: HrBase, userAge: number, userMaxHR: number, userRestHR: number) {
-    let userHrInfo = <HrZoneRange>{
-      hrBase: userHRBase,
-      z0: 0,
-      z1: 0,
-      z2: 0,
-      z3: 0,
-      z4: 0,
-      z5: 0
-    };
-
-    if (userAge !== null) {
-
-      if (userMaxHR && userRestHR) {
-
-        if (userHRBase === HrBase.max) {
-          // 區間數值採無條件捨去法
-          userHrInfo['z0'] = Math.floor((220 - userAge) * 0.5 - 1);
-          userHrInfo['z1'] = Math.floor((220 - userAge) * 0.6 - 1);
-          userHrInfo['z2'] = Math.floor((220 - userAge) * 0.7 - 1);
-          userHrInfo['z3'] = Math.floor((220 - userAge) * 0.8 - 1);
-          userHrInfo['z4'] = Math.floor((220 - userAge) * 0.9 - 1);
-          userHrInfo['z5'] = Math.floor((220 - userAge) * 1);
-        } else {
-          userHrInfo['z0'] = Math.floor((userMaxHR - userRestHR) * (0.55)) + userRestHR;
-          userHrInfo['z1'] = Math.floor((userMaxHR - userRestHR) * (0.6)) + userRestHR;
-          userHrInfo['z2'] = Math.floor((userMaxHR - userRestHR) * (0.65)) + userRestHR;
-          userHrInfo['z3'] = Math.floor((userMaxHR - userRestHR) * (0.75)) + userRestHR;
-          userHrInfo['z4'] = Math.floor((userMaxHR - userRestHR) * (0.85)) + userRestHR;
-          userHrInfo['z5'] = Math.floor((userMaxHR - userRestHR) * (1)) + userRestHR;
-        }
-        
-      } else {
-
-        if (userHRBase === HrBase.max) {
-          // 區間數值採無條件捨去法
-          userHrInfo['z0'] = Math.floor((220 - userAge) * 0.5 - 1);
-          userHrInfo['z1'] = Math.floor((220 - userAge) * 0.6 - 1);
-          userHrInfo['z2'] = Math.floor((220 - userAge) * 0.7 - 1);
-          userHrInfo['z3'] = Math.floor((220 - userAge) * 0.8 - 1);
-          userHrInfo['z4'] = Math.floor((220 - userAge) * 0.9 - 1);
-          userHrInfo['z5'] = Math.floor((220 - userAge) * 1);
-        } else {
-          userHrInfo['z0'] = Math.floor(((220 - userAge) - userRestHR) * (0.55)) + userRestHR;
-          userHrInfo['z1'] = Math.floor(((220 - userAge) - userRestHR) * (0.6)) + userRestHR;
-          userHrInfo['z2'] = Math.floor(((220 - userAge) - userRestHR) * (0.65)) + userRestHR;
-          userHrInfo['z3'] = Math.floor(((220 - userAge) - userRestHR) * (0.75)) + userRestHR;
-          userHrInfo['z4'] = Math.floor(((220 - userAge) - userRestHR) * (0.85)) + userRestHR;
-          userHrInfo['z5'] = Math.floor(((220 - userAge) - userRestHR) * (1)) + userRestHR;
-        }
-
-      }
-
-    } else {
-      userHrInfo['z0'] = 'Z0';
-      userHrInfo['z1'] = 'Z1';
-      userHrInfo['z2'] = 'Z2';
-      userHrInfo['z3'] = 'Z3';
-      userHrInfo['z4'] = 'Z4';
-      userHrInfo['z5'] = 'Z5';
-    }
-
-    return userHrInfo;
   }
 
   /********** 以下直接引用源碼 http://mourner.github.io/simplify-js/ ***********/
@@ -698,77 +480,6 @@ export class UtilsService {
   /************************************************************************/
 
   /**
-   * 將相同的x軸的數據合併，並均化相對應的y軸數據
-   * @param xData {Array<number>}-x軸數據
-   * @param yData {Array<Array<number>>}-y軸數據
-   * @author kidin-1100205
-   */
-  handleRepeatXAxis(
-    xData: Array<number>, yData: Array<Array<number>>, handleList: Array<string>
-  ): {xAxis: Array<number>, yAxis: object} {
-
-    const finalData = {
-            xAxis: [],
-            yAxis: {}
-          };
-    let repeatTotal = {},
-        repeatLen = 0;
-
-    for (let i = 0, xAxisLen = xData.length; i < xAxisLen; i++) {
-
-      // 當前x軸數據與前一項x軸數據相同時，將y軸數據相加
-      if ((i === 0 || xData[i] === xData[i -1]) && i !== xAxisLen - 1) {
-
-        if (i === 0) {
-          handleList.forEach(_list => {
-            if (yData[_list]) {
-              Object.assign(finalData.yAxis, {[_list]: []});
-              Object.assign(repeatTotal, {[_list]: yData[_list][0]});
-            }
-            
-          });
-        } else {
-          handleList.forEach(_list => {
-            if (yData[_list]) repeatTotal[_list] += yData[_list][i];
-          });
-
-        }
-
-        repeatLen++;
-
-      // 當前x軸數據與前一項x軸數據不同
-      } else {
-
-        if (repeatLen) {
-          finalData.xAxis.push(xData[i - 1]);
-          handleList.forEach(_list => {
-            if (finalData.yAxis[_list]) finalData.yAxis[_list].push(+(repeatTotal[_list] / repeatLen).toFixed(1));
-          });
-
-        }
-        
-        if (i !== xAxisLen - 1) {
-          handleList.forEach(_list => {
-            if (yData[_list]) repeatTotal[_list] = yData[_list][i];
-          });
-
-          repeatLen = 1;
-        } else {
-          finalData.xAxis.push(xData[i]);
-          handleList.forEach(_list => {
-            if (finalData.yAxis[_list]) finalData.yAxis[_list].push(yData[_list][i]);
-          });
-
-        }
-
-      }
-
-    }
-
-    return finalData;
-  }
-
-  /**
    * 處理api回覆錯誤的情況
    * @param resultCode {number}-api 的resultCode
    * @param apiCode {number}-apiCode
@@ -782,146 +493,6 @@ export class UtilsService {
   }
 
   /**
-   * 計算兩點gpx之間的距離（大圓距離）
-   * @param gpxA {Array<number>}
-   * @param gpxB {Array<number>}
-   * @author kidin-1100324
-   */
-  countDistance(gpxA: Array<number>, gpxB: Array<number>) {
-    const earthR = 6371,  // km
-          radConst = Math.PI / 180,
-          [φA, λA] = [...gpxA],
-          [φB, λB] = [...gpxB];
-    if (φA !== φB || λA !== λB) {
-      const [φRA, λRA] = [...[φA * radConst, λA * radConst]],
-            [φRB, λRB] = [...[φB * radConst, λB * radConst]],
-      σ = Math.acos(Math.sin(φRA) * Math.sin(φRB) + Math.cos(φRA) * Math.cos(φRB) * Math.cos(Math.abs(λRB - λRA)));
-      return +(earthR * σ * 1000).toFixed(0);
-    } else {
-      return 0;
-    }
-    
-  }
-
-  /**
-   * 取得日期區間（日/週）
-   * @param date {SelectDate}-使用者所選日期範圍
-   * @author kidin-1100401
-   * @returns {'day' | 'week'}
-   */
-  getDateInterval(date: SelectDate) {
-    const { startDate, endDate } = date;
-    if ((dayjs(endDate).diff(dayjs(startDate), 'day') + 1) <= 52) {
-      return 'day';
-    } else {
-      return 'week';
-    }
-
-  }
-
-  /**
-   * 建立報告期間的timeStamp讓圖表使用
-   * @param date {SelectDate}-報告起始日期和結束日期
-   * @author kidin-1100401
-   */
-  createTimeStampArr(date: SelectDate) {
-  const timeStampArr = [],
-        { startDate, endDate } = date,
-        range = dayjs(endDate).diff(dayjs(startDate), 'day') + 1,
-        startTimestamp = dayjs(startDate).startOf('day').valueOf(),
-        endTimestamp = dayjs(endDate).startOf('day').valueOf();
-
-    if (this.getDateInterval(date) === 'day') {
-
-      for (let i = 0; i < range; i++) {
-        timeStampArr.push(startTimestamp + 86400000 * i);
-      }
-
-    } else {
-      const weekCoefficient = this.findDate(startTimestamp, endTimestamp);
-      for (let i = 0; i < weekCoefficient.weekNum; i++) {
-        timeStampArr.push(weekCoefficient.startDate + 86400000 * i * 7);
-      }
-
-    }
-
-    return timeStampArr;
-  }
-
-  /**
-   * 根據搜索時間取得周報告第一周的開始日期和週數
-   * @param startTimestamp {number}-開始時間
-   * @param endTimestamp {number}-結束時間
-   * @author kidin-1100401
-   */
-  findDate(startTimestamp: number, endTimestamp: number) {
-    const week = {
-      startDate: 0,
-      weekNum: 0
-    };
-
-    let weekEndDate: number;
-    // 周報告開頭是星期日-kidin-1090312
-    if (dayjs(startTimestamp).isoWeekday() !== 7) {
-      week.startDate = startTimestamp - 86400 * 1000 * dayjs(startTimestamp).isoWeekday();
-    } else {
-      week.startDate = startTimestamp;
-    }
-
-    if (dayjs(startTimestamp).isoWeekday() !== 7) {
-      weekEndDate = endTimestamp - 86400 * 1000 * dayjs(endTimestamp).isoWeekday();
-    } else {
-      weekEndDate = endTimestamp;
-    }
-
-    week.weekNum = ((weekEndDate - week.startDate) / (86400 * 1000 * 7)) + 1;
-    return week;
-  }
-
-  /**
-   * 依運動類別將速度轉換成所需的配速格式
-   * @param value {number}-速度
-   * @param sportType {SportType}-運動類別
-   * @param unit {Unit}-使用者所選的單位
-   * @param type {'second' | 'minute'}-轉成純秒數或mm':ss"
-   * @returns pace {number | string}
-   * @author kidin-1100407
-   */
-  convertSpeed(
-    value: number,
-    sportType: SportType,
-    unit: Unit,
-    convertType: 'second' | 'minute'
-  ): number | string {
-    let convertSpeed: number;
-    switch (sportType) {
-      case SportType.swim:
-        convertSpeed = value * 10;
-        break;
-      case SportType.row:
-        convertSpeed = value * 2;
-        break;
-      default:
-        convertSpeed = unit === 0 ? value : value / mi;
-        break;
-    }
-
-    const speed = convertSpeed <= 1 ? 1 : convertSpeed,  // 配速最小60'00"
-          ttlSecond = this.rounding((3600 / speed), 1);
-    switch (convertType) {
-      case 'second':
-        return ttlSecond;
-      case 'minute':
-        const minute = Math.floor(ttlSecond / 60),
-              second = (ttlSecond - (minute * 60)).toFixed(0),
-              minuteStr = `${minute}`.padStart(2, '0'),
-              secondStr = second.padStart(2, '0');
-        return `${minuteStr}'${secondStr}"`;
-    }
-
-  }
-
-  /**
    * 將base64的圖片轉為檔案格式
    * @param base64 {string}-base64圖片
    * @param fileName {檔案名稱}
@@ -930,69 +501,6 @@ export class UtilsService {
   base64ToFile(base64: string, fileName: string) {
     const blob = this.dataUriToBlob(base64);
     return new File([blob], `${fileName}.jpg`, {type: 'image/jpeg'});
-  }
-
-  /**
-   * 將數值依係數轉換為另一值
-   * @param value {number}-待轉換的值
-   * @param convert {boolean}-是否轉換
-   * @param forward {boolean}-是否為公制轉英制
-   * @param coefficient {number}-轉換係數
-   * @param digit {number}-四捨五入的位數
-   * @author kidin-1100820
-   */
-  valueConvert(
-    value: number,
-    convert: boolean,
-    forward: boolean,
-    coefficient: number,
-    digit: number = null
-  ) {
-
-    if (convert) {
-
-      if (forward) {
-        const convertedVal = value / coefficient;
-        return digit !== null ? this.rounding(convertedVal, digit) : convertedVal;
-      } else {
-        const convertedVal = value * coefficient;
-        return digit !== null ? this.rounding(convertedVal, digit) : convertedVal;
-      }
-
-    } else {
-      return digit !== null ? this.rounding(value, digit) : value;
-    }
-
-  }
-
-  /**
-   * 四捨五入至指定位數
-   * @param value {number}-欲四捨五入的值
-   * @param digit {number}-四捨五入的位數
-   * @author kidin-1100820
-   */
-  rounding(value: number, digit: number) {
-    return parseFloat(value.toFixed(digit));
-  }
-
-  /**
-   * 取得功能性閾值功率區間
-   * @param ftp {number}-功能性閾值功率
-   * @author kidin-1100824
-   */
-  getUserFtpZone(ftp: number) {
-    let ref = ftp ? ftp : 100;
-    const userFtpZone = {
-      z0: this.rounding(ref * 0.55, 0),
-      z1: this.rounding(ref * 0.75, 0),
-      z2: this.rounding(ref * 0.90, 0),
-      z3: this.rounding(ref * 1.05, 0),
-      z4: this.rounding(ref * 1.20, 0),
-      z5: this.rounding(ref * 1.50, 0),
-      z6: ''  // 最上層不顯示數值
-    };
-
-    return userFtpZone;
   }
 
   /**
@@ -1053,8 +561,8 @@ export class UtilsService {
       if (forward) {
         // 公分轉吋
         height = height as number;
-        const feet = Math.floor((height / 100) / ft),
-              mantissa = parseFloat(((height - (feet * 0.3) * 100) / inch).toFixed(0));
+        const feet = Math.floor((height / 100) / ft);
+        const mantissa = parseFloat(((height - (feet * 0.3) * 100) / inch).toFixed(0));
         return `${feet}"${mantissa}`;
       } else {
         // 吋轉公分
@@ -1095,11 +603,11 @@ export class UtilsService {
    * @author kidin
    */
   checkBrowserLang() {
-    let browserLang = this.getLocalStorageObject('locale');
+    let browserLang = getLocalStorageObject('locale');
     if (!browserLang) {
       browserLang = this.translate.getBrowserCultureLang().toLowerCase();
       this.translate.use(browserLang);
-      this.setLocalStorageObject('locale', browserLang);
+      setLocalStorageObject('locale', browserLang);
     } else {
       this.translate.use(browserLang);
     }
@@ -1113,8 +621,8 @@ export class UtilsService {
    * @author kidin-1101102
    */
   createImgFileName(index: number, id: string | number) {
-    const nameSpace = uuidv5('https://www.gptfit.com', uuidv5.URL),
-          keyword = `${dayjs().valueOf().toString()}${index}${id}`;
+    const nameSpace = uuidv5('https://www.gptfit.com', uuidv5.URL);
+    const keyword = `${dayjs().valueOf().toString()}${index}${id}`;
     return uuidv5(keyword, nameSpace);
   }
 
@@ -1129,53 +637,6 @@ export class UtilsService {
     const base64OnLoad = fromEvent(reader, 'load');
     const base64OnError = fromEvent(reader, 'error');
     return merge(base64OnLoad, base64OnError);
-  }
-
-  /**
-   * 取得現在時間
-   * @param timeUnit {'s' | 'ms'}-時間單位
-   * @author kidin-1101216
-   */
-  getCurrentTimestamp(timeUnit: 's' | 'ms' = 's') {
-    const currentTimeStamp = (new Date()).getTime();
-    switch (timeUnit) {
-      case 's':
-        return Math.round(currentTimeStamp / 1000);
-      case 'ms':
-        return currentTimeStamp;
-    }
-
-  }
-
-  /**
-   * 將query string物件內有效的參數轉為定義之header名稱
-   * @param query {any}-url query string物件
-   * @author kidin-1110114
-   */
-  headerKeyTranslate(query: any) {
-    let option = {};
-    Object.entries(query).forEach(([_key, _value]) => {
-      switch (_key) {
-        case 'dn':
-          option = { deviceName: _value, ...option };
-          break;
-        case 'an':
-          option = { appName: _value, ...option };
-          break;
-        case 'avc':
-          option = { appVersionCode: _value, ...option };
-          break;
-        case 'avn':
-          option = { appVersionName: _value, ...option };
-          break;
-        case 'sn':
-          option = { equipmentSN: _value, ...option };
-          break;
-      }
-
-    });
-
-    return option;
   }
 
 }

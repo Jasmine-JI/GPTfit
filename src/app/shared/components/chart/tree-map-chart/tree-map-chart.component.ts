@@ -6,7 +6,7 @@ import Highcharts from 'highcharts';
 import { chart } from 'highcharts';
 import Treemap from 'highcharts/modules/treemap';
 import { TranslateService } from '@ngx-translate/core';
-import { getHrZoneTranslation, getFtpZoneTranslation } from '../../../utils/index';
+import { getHrZoneTranslation, getFtpZoneTranslation, getMuscleGroupTranslation } from '../../../utils/index';
 import { mathRounding } from '../../../utils/index';
 
 // highchart 引入 tree map
@@ -20,7 +20,7 @@ Treemap(Highcharts);
 export class TreeMapChartComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input('zoneInfo') zoneInfo: {
-    type: 'hrZone' | 'ftpZone';
+    type: string;
     data: Array<number>;
   };
 
@@ -58,22 +58,25 @@ export class TreeMapChartComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * 取得該區間對應的多國語系翻譯
-   * @param type {'hrZone' | 'ftpZone'}-心率區間或閾值區間
+   * @param type {string}-心率區間或閾值區間
    * @author kidin-1110413
    */
-  getZoneTranslate(type: 'hrZone' | 'ftpZone') {
-    if (type === 'hrZone') {
-      return getHrZoneTranslation(this.translate);
+  getZoneTranslate(type: string) {
+    switch (type) {
+      case 'hrZone':
+        return getHrZoneTranslation(this.translate);
+      case 'ftpZone':
+        return getFtpZoneTranslation(this.translate);
+      case 'muscleGroup':
+        return getMuscleGroupTranslation(this.translate);
     }
 
-    return getFtpZoneTranslation(this.translate);
   }
 
   /**
    * 初始化圖表
-   * @param data {Array<number>}-各區間數據
+   * @param data {Array<number>}-圖表所需數據
    * @param translation Array<string>-各區間翻譯詞彙
-   * @author kidin-1110413
    */
   initChart(data: Array<number>, translation: Array<string>) {
     const chartOption = new ChartOption(data, translation);
@@ -177,7 +180,7 @@ class ChartOption {
 
   /**
    * 將數據與翻譯寫進圖表設定內
-   * @param data {Array<number>}-各區間數據
+   * @param data {Array<number>}-圖表所需數據
    * @param translation Array<string>-各區間翻譯詞彙
    */
   insertData(data: Array<number>, translation: Array<string>) {

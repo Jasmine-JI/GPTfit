@@ -10,17 +10,20 @@ import dayjs from 'dayjs';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { GroupService } from '../../../../shared/services/group.service';
 import { HashIdService } from '../../../../shared/services/hash-id.service';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
+import { UserService } from '../../../../core/services/user.service';
 import { v5 as uuidv5 } from 'uuid';
 import { ImageUploadService } from '../../services/image-upload.service';
 import { AlbumType } from '../../../../shared/models/image';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { PrivacySettingDialogComponent } from '../../../../shared/components/privacy-setting-dialog/privacy-setting-dialog.component';
-import { Unit } from '../../../../shared/models/bs-constant';
+import { Unit } from '../../../../shared/enum/value-conversion';
 import { GlobalEventsService } from '../../../../core/services/global-events.service';
 import { DateUnit } from '../../../../shared/enum/report';
 import { GroupLevel } from '../../models/group-detail';
 import { deepCopy } from '../../../../shared/utils/index';
+import { AuthService } from '../../../../core/services/auth.service';
+import { ProfessionalService } from '../../../professional/services/professional.service';
+import { AccessRight } from '../../../../shared/enum/accessright';
 
 const errMsg = `Error.<br />Please try again later.`;
 const replaceResult = {
@@ -79,8 +82,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     nickname: '',
     userId: null,
     unit: Unit.metric,
-    token: '',
-    accessRight: [],
+    token: this.authService.token,
+    accessRight: this.userService.getUser().systemAccessright,
     joinStatus: 2,
     isGroupAdmin: false,
     privacy: {
@@ -163,10 +166,12 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private utils: UtilsService,
-    private userProfileService: UserProfileService,
+    private userService: UserService,
     private dialog: MatDialog,
     private imageUploadService: ImageUploadService,
-    private globalEventsService: GlobalEventsService
+    private globalEventsService: GlobalEventsService,
+    private authService: AuthService,
+    private professionalService: ProfessionalService
   ) {}
 
   /**
@@ -175,7 +180,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-20200710
    */
   ngOnInit(): void {
-    this.getToken();
+    this.checkPage();
     this.checkQueryString(location.search);
     this.detectParamChange();
     this.detectGroupIdChange();
@@ -206,9 +211,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1100908
    */
   handleScroll() {
-    const targetClass = this.uiFlag.portalMode ? '.main' : '.main-body',
-          targetElement = document.querySelectorAll(targetClass)[0],
-          targetScrollEvent = fromEvent(targetElement, 'scroll');
+    const targetElement = document.querySelector('.main__container');
+    const targetScrollEvent = fromEvent(targetElement, 'scroll');
     this.scrollEvent = targetScrollEvent.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(e => {
@@ -291,7 +295,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     if (editMode === 'complete' && this.editImage.edited) {
       let imgArr = [];
       const formData = new FormData();
-      formData.set('token', this.utils.getToken());
+      formData.set('token', this.authService.token);
       formData.set('targetType', '2');
 
       if (this.uiFlag.editMode === 'edit') {
@@ -372,7 +376,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     } else if (this.uiFlag.editMode === 'create' && editMode === 'complete') {
       this.closeCreateMode();
-      this.userProfileService.refreshUserProfile({token: this.user.token});
       this.groupIdSubscription = this.groupService.getNewGroupId().pipe(
         takeUntil(this.ngUnsubscribe)
       ).subscribe(res => {
@@ -401,10 +404,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.initImgSetting();
-
         if (this.uiFlag.editMode === 'create') {
           this.closeCreateMode();
-          this.userProfileService.refreshUserProfile({token: this.user.token});
           this.handleNavigation(groupId);
         } else {
           this.getGroupNeedInfo();
@@ -531,30 +532,25 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091106
    */
   openCreateMode(type: string) {
-    if (this.user.accessRight[0]) {
+    const { accessRight } = this.user;
+    if (accessRight) {
 
       switch (type) {
         case 'brand':
-          if (this.user.accessRight[0] <= 29) {
+          if (accessRight <= AccessRight.marketing) {
             this.uiFlag.createLevel = 30;
           }
 
           break;
         case 'branch':
-          if (this.user.accessRight[0] <= 30) {
+          if (accessRight <= AccessRight.brandAdmin) {
             this.uiFlag.createLevel = 40;
           }
 
           break;
         case 'coach':
         case 'department':
-          if (this.user.accessRight[0] <= 40) {
-            this.uiFlag.createLevel = 60;
-          }
-
-          break;
-        case 'teacher':
-          if (this.user.accessRight[0] <= 40) {
+          if (accessRight <= AccessRight.branchAdmin) {
             this.uiFlag.createLevel = 60;
           }
 
@@ -635,9 +631,9 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * 取得token
    * @author kidin-1090716
    */
-  getToken() {
-    this.user.token = this.utils.getToken();
-    if (location.pathname.indexOf('dashboard') < 0 && this.user.token !== '') {
+  checkPage() {
+    const { token } = this.user;
+    if (location.pathname.indexOf('dashboard') < 0 && token !== '') {
       this.router.navigateByUrl(`/dashboard${location.pathname}${location.search}`);
     } else if (location.pathname.indexOf('dashboard') < 0) {
       this.uiFlag.portalMode = true;
@@ -667,12 +663,11 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1090716
    */
   getCurrentGroupInfo() {
-    this.currentGroupInfo.hashGroupId = this.route.snapshot.paramMap.get('groupId');
-    this.currentGroupInfo.groupId = this.hashIdService.handleGroupIdDecode(
-      this.currentGroupInfo.hashGroupId
-    );
-
+    const groupId = this.route.snapshot.paramMap.get('groupId');
+    this.currentGroupInfo.hashGroupId = groupId;
+    this.currentGroupInfo.groupId = this.hashIdService.handleGroupIdDecode(groupId);
     this.currentGroupInfo.groupLevel = this.utils.displayGroupLevel(this.currentGroupInfo.groupId);
+    this.professionalService.checkGroupAccessright(this.currentGroupInfo.groupId);
   }
 
   /**
@@ -1051,37 +1046,34 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   checkUserAccessRight() {
     if (this.user.token.length !== 0) {
-      this.groupService.checkAccessRight(this.currentGroupInfo.groupId).pipe(
-        switchMap(res => this.userProfileService.getRxUserProfile().pipe(
+      this.userService.getUser().rxUserProfile.pipe(
+        switchMap(res => this.professionalService.groupAccessright.pipe(
           map(resp => {
-            const { nickname, userId, privacy, unit } = (resp as any),
-                  userObj = {
-                    accessRight: res,
-                    nickname,
-                    userId,
-                    privacy,
-                    unit
-                  };
+            const { nickname, userId, privacy, unit } = (res as any);
+            const userObj = {
+              accessRight: resp,
+              nickname,
+              userId,
+              privacy,
+              unit
+            };
 
             return userObj;
           })
         )),
         takeUntil(this.ngUnsubscribe)
-      ).subscribe(res => {
-        const { accessRight, nickname, userId, privacy, unit } = (res as any);
-        this.user.accessRight = accessRight;
-        this.user.nickname = nickname;
-        this.user.userId = userId;
-        this.user.privacy = privacy;
-        this.user.unit = unit;
-        this.user.isGroupAdmin = this.user.accessRight.some(_accessRight => {
-          if (this.currentGroupInfo.groupLevel === 60) {
-            return _accessRight === 50 || _accessRight === 60;
-          } else  {
-            return _accessRight === this.currentGroupInfo.groupLevel;
-          }
-
-        });
+      ).subscribe(result => {
+        const { systemAccessright } = this.userService.getUser();
+        const { accessRight, nickname, userId, privacy, unit } = (result as any);
+        this.user = {
+          ...this.user,
+          accessRight: systemAccessright <= AccessRight.marketing ? systemAccessright : accessRight,
+          nickname: nickname,
+          userId: userId,
+          privacy: privacy,
+          unit: unit,
+          isGroupAdmin: this.professionalService.isAdmin
+        };
 
         this.groupService.saveUserSimpleInfo(this.user);
       })
@@ -1095,15 +1087,16 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091104
    */
   initChildPageList(): Array<string> {
-    const groupDetail = this.currentGroupInfo.groupDetail,
-          commerceInfo = this.currentGroupInfo.commerceInfo,
-          isEnterpriseType = groupDetail.brandType === 2,
-          inClassLevel = this.currentGroupInfo.groupLevel === 60,
-          inBrandLevel = this.currentGroupInfo.groupLevel === 30,
-          inOperation = !commerceInfo.expired && +commerceInfo.commerceStatus === 1,
-          notLock = this.currentGroupInfo.groupDetail.groupStatus !== 6,
-          upperClassAdmin = this.user.accessRight[0] <= 50,
-          upperMarktingManage = this.user.accessRight[0] <= 29;
+    const { accessRight } = this.user;
+    const groupDetail = this.currentGroupInfo.groupDetail;
+    const commerceInfo = this.currentGroupInfo.commerceInfo;
+    const isEnterpriseType = groupDetail.brandType === 2;
+    const inClassLevel = this.currentGroupInfo.groupLevel === 60;
+    const inBrandLevel = this.currentGroupInfo.groupLevel === 30;
+    const inOperation = !commerceInfo.expired && +commerceInfo.commerceStatus === 1;
+    const notLock = this.currentGroupInfo.groupDetail.groupStatus !== 6;
+    const upperClassAdmin = accessRight <= AccessRight.coachAdmin;
+    const upperMarktingManage = accessRight <= AccessRight.marketing;
     let childPageList = ['group-introduction'];
     if (!this.uiFlag.portalMode) {
 
@@ -1279,13 +1272,9 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1090811
    */
   handleJoinGroup(actionType: number) {
-    const body = {
-      token: this.user.token,
-      groupId: this.currentGroupInfo.groupId,
-      brandType: this.currentGroupInfo.groupDetail.brandType,
-      actionType
-    };
-
+    const { token, joinStatus } = this.user;
+    const { groupId, groupDetail: { brandType, groupStatus } } = this.currentGroupInfo;
+    const body = { token, groupId, brandType, actionType };
     this.uiFlag.isJoinLoading = true;
     this.groupService.actionGroup(body).subscribe(res => {
       if (res.resultCode !== 200) {
@@ -1293,13 +1282,13 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
 
-        if (this.currentGroupInfo.groupDetail.groupStatus === 1 || this.user.joinStatus === 2) {
-          this.userProfileService.refreshUserProfile({token: this.user.token});
+        if (groupStatus === 1 || joinStatus === 2) {
+          this.professionalService.refreshAllGroupAccessright();
           this.getGroupNeedInfo();
-        } else if (actionType === 1 && this.currentGroupInfo.groupDetail.groupStatus === 2) {
+        } else if (actionType === 1 && groupStatus === 2) {
           this.user.joinStatus = 1;
           this.refreshMemberList();
-        } else if (actionType === 2 && this.currentGroupInfo.groupDetail.groupStatus === 2) {
+        } else if (actionType === 2 && groupStatus === 2) {
           this.user.joinStatus = 5;
           this.refreshMemberList();
         }
@@ -1424,33 +1413,24 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091102
    */
   openShareGroupInfoDialog() {
+    const { groupId, groupLevel, groupDetail: { groupName, groupRootInfo } } = this.currentGroupInfo;
     let shareName:string;
-    switch (this.currentGroupInfo.groupLevel) {
+    switch (groupLevel) {
       case 30:
-        shareName = this.currentGroupInfo.groupDetail.groupName;
+        shareName = groupName;
         break;
       case 40:
-        shareName = `${
-          this.currentGroupInfo.groupDetail.groupRootInfo[2].brandName
-        }-${
-          this.currentGroupInfo.groupDetail.groupName
-        }`;
+        shareName = `${groupRootInfo[2].brandName}-${groupName}`;
         break;
       case 60:
-        shareName = `${
-          this.currentGroupInfo.groupDetail.groupRootInfo[2].brandName
-        }-${
-          this.currentGroupInfo.groupDetail.groupRootInfo[3].branchName
-        }-${
-          this.currentGroupInfo.groupDetail.groupName
-        }`;
+        shareName = `${groupRootInfo[2].brandName}-${groupRootInfo[3].branchName}-${groupName}`;
         break;
     }
 
     this.dialog.open(ShareGroupInfoDialogComponent, {
       hasBackdrop: true,
       data: {
-        url: `${location.origin}/group-info/${this.hashIdService.handleGroupIdEncode(this.currentGroupInfo.groupId)}`,
+        url: `${location.origin}/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}`,
         title: this.translate.instant('universal_operating_share'),
         shareName: shareName || '',
         cancelText: this.translate.instant('universal_operating_confirm')

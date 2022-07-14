@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
-import { UtilsService } from '@shared/services/utils.service';
+import { UserService } from '../../../../core/services/user.service';
+import { UtilsService } from '../../../../shared/services/utils.service';
 import { ActivityService } from '../../../../shared/services/activity.service';
 import { A3FormatPipe } from '../../../../shared/pipes/a3-format.pipe';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AuthService } from '../../../../shared/services/auth.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -43,19 +43,20 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private userProfileService: UserProfileService,
+    private userService: UserService,
     private utils: UtilsService,
     private activityService: ActivityService,
     private auth: AuthService,
     private snackbar: MatSnackBar,
     private translate: TranslateService,
     private a3Format: A3FormatPipe,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
     // 未登入則導至登入頁，接著導至dashboard以取得user infomation-kidin-1090525
-    const token = this.utils.getToken();
+    const token = this.authService.token;
     if (token.length === 0) {
       this.auth.backUrl = location.href;
       this.router.navigateByUrl('/signIn-web');
@@ -86,7 +87,7 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
 
   // 取得個人資訊-kidin-1090420
   getUserInfo () {
-    this.userProfileService.getRxUserProfile().pipe(
+    this.userService.getUser().rxUserProfile.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.userInfo = res;
@@ -199,15 +200,15 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
    */
   createMd5File () {
     this.uploading = true;
-    const { pluginAntSensorName } = this.translatedInfo.activityInfoLayer,
-          { userId, nickname } = this.userInfo;
+    const { pluginAntSensorName } = this.translatedInfo.activityInfoLayer;
+    const { userId, nickname } = this.userInfo;
     this.translatedInfo.fileInfo.author = `${nickname}?userId=${userId}`;
     if (pluginAntSensorName && !Array.isArray(pluginAntSensorName)) {
       this.translatedInfo.activityInfoLayer.pluginAntSensorName = [pluginAntSensorName];
     }
 
-    const data = this.translatedInfo,
-          token = this.utils.getToken();
+    const data = this.translatedInfo;
+    const token = this.authService.token;
     const body = {
       token: token,
       userId: this.userInfo.userId,

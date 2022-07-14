@@ -93,18 +93,6 @@
         </div>
       </div>
       <div class="flexRow date__selector__section">
-        <div *ngTemplateOutlet="dateRangeTemplate; context: {
-          startTime: reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD'),
-          endTime: reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD'),
-          dateUnit,
-          type: 'base'
-        }"></div>
-        <div *ngTemplateOutlet="dateRangeTemplate; context: {
-          startTime: reportCondition.compareTime ? reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD') : null,
-          endTime: reportCondition.compareTime ? reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD') : null,
-          dateUnit,
-          type: 'compare'
-        }"></div>
         <div class="flexCol date__setting__section gray__background__section">
           <h6 class="date__unit__title">
             <i class="icon-svg_web-icon_p3_085-period date__unit__icon"></i>
@@ -136,7 +124,6 @@
               <li
                 class="date__unit__list"
                 (click)="selectDateUnit(DateUnit.day)"
-                *ngIf="!uiFlag.hideDayUnit"
               >
                 {{ 'universal_time_day' | translate }}
               </li>
@@ -167,6 +154,18 @@
             </ul>
           </div>
         </div>
+        <div *ngTemplateOutlet="dateRangeTemplate; context: {
+          startTime: reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD'),
+          endTime: reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD'),
+          dateUnit,
+          type: 'base'
+        }"></div>
+        <div *ngTemplateOutlet="dateRangeTemplate; context: {
+          startTime: reportCondition.compareTime ? reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD') : null,
+          endTime: reportCondition.compareTime ? reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD') : null,
+          dateUnit,
+          type: 'compare'
+        }"></div>
       </div>
       <div class="flexRow sport__type__selector" *ngIf="reportCondition.sportType">
         <button

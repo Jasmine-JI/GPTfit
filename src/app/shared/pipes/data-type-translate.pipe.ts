@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Unit } from '../models/bs-constant';
+import { Unit } from '../enum/value-conversion';
 import { SportType } from '../enum/sports';
 
 @Pipe({name: 'dataTypeTranslate'})

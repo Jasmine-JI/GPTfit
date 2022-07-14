@@ -1,13 +1,10 @@
 import { Injectable } from '@angular/core';
-import { AuthService } from '../../shared/services/auth.service';
-import { UserService } from './user.service';
-import { TOKEN } from '../../shared/models/utils-constant';
+import { AuthService } from '../../core/services/auth.service';
 
 @Injectable()
 export class StartupService {
   constructor(
-    private authService: AuthService,
-    private userService: UserService
+    private authService: AuthService
   ) {}
 
   /**
@@ -23,12 +20,11 @@ export class StartupService {
    * @author kidin-1090721
    */
   checkStatus(): boolean {
-    if (!this.authService.isLogin()) {
+    if (!this.authService.isLogin.value) {
       this.authService.logout();
-      this.userService.logout();
       return false;
     } else {
-      this.userService.tokenLogin();
+      this.authService.tokenLogin();
     }
 
   }

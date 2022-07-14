@@ -1,29 +1,24 @@
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  ViewChild,
-  Input
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatInput } from '@angular/material/input';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ActivityService } from '@shared/services/activity.service';
-import { UtilsService } from '@shared/services/utils.service';
+import { ActivityService } from '../../services/activity.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
-import { HashIdService } from '@shared/services/hash-id.service';
+import { HashIdService } from '../../services/hash-id.service';
 import dayjs, { Dayjs } from 'dayjs';
 import { MatDialog } from '@angular/material/dialog';
-import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { MessageBoxComponent } from '../../components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { UserProfileService } from '../../services/user-profile.service';
+import { UserService } from '../../../core/services/user.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Unit } from '../../models/bs-constant';
+import { Unit } from '../../enum/value-conversion';
+import { getUrlQueryStrings } from '../../utils/index';
 
 @Component({
   selector: 'app-my-activity',
@@ -55,14 +50,14 @@ export class MyActivityComponent implements OnInit, OnDestroy {
   paginator: MatPaginator;
   constructor(
     private activityService: ActivityService,
-    private utils: UtilsService,
+    private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
     private hashIdService: HashIdService,
     public dialog: MatDialog,
     private translate: TranslateService,
     private breakpointObserver: BreakpointObserver,
-    private userProfileService: UserProfileService
+    private userService: UserService
   ) {}
   // Check if device is phone or tablet
   get isMobile() {
@@ -71,7 +66,7 @@ export class MyActivityComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getUserUnit();
-    const queryStrings = this.utils.getUrlQueryStrings(location.search);
+    const queryStrings = getUrlQueryStrings(location.search);
     const { pageNumber, startTime, endTime, type, searchWords, debug } = queryStrings;
     this.filterStartTime = startTime
       ? dayjs(startTime).format('YYYY-MM-DDTHH:mm:00.000Z')
@@ -94,7 +89,7 @@ export class MyActivityComponent implements OnInit, OnDestroy {
       active: '',
       direction: ''
     };
-    this.token = this.utils.getToken();
+    this.token = this.authService.token;
     this.getLists();
 
     // 分頁切換時，重新取得資料
@@ -133,12 +128,7 @@ export class MyActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1100601
    */
   getUserUnit() {
-    this.userProfileService.getRxUserProfile().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.unit = res.unit;
-    });
-
+    this.unit = this.userService.getUser().userProfile.unit;
   }
 
   changeSort(sortInfo: Sort) {

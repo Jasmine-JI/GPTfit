@@ -134,11 +134,12 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   background-color: rgb(250 107 107);
   border-radius: 50%;
   width: $size;
-  min-width: $size;
+  max-width: $size;
   height: $size;
-  $height: $size;
+  min-height: $size;
   color: white;
-  margin: 0 5px;
+  margin-right: 5px;
+  padding: 0 5px;
 }
 
 .filed__name {

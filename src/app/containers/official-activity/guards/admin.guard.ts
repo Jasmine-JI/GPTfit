@@ -1,16 +1,12 @@
 import { Injectable } from '@angular/core';
-import {
-  CanActivate,
-  ActivatedRouteSnapshot,
-  RouterStateSnapshot,
-  Router
-} from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { UtilsService } from '../../../shared/services/utils.service';
-import { UserProfileService } from '../../../shared/services/user-profile.service';
 import { pageNoAccessright } from '../models/official-activity-const';
-import { AccessRight } from '../../../shared/models/accessright';
+import { AccessRight } from '../../../shared/enum/accessright';
+import { AuthService } from '../../../core/services/auth.service';
+import { UserService } from '../../../core/services/user.service';
 
 
 @Injectable({
@@ -19,31 +15,20 @@ import { AccessRight } from '../../../shared/models/accessright';
 export class AdminGuard implements CanActivate {
   constructor(
     private utils: UtilsService,
-    private userProfileService: UserProfileService,
-    private router: Router
+    private userService: UserService,
+    private router: Router,
+    private authService: AuthService
   ) {}
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
 
-    const token = this.utils.getToken();
+    const token = this.authService.token;
     if (token) {
-
-      return this.userProfileService.getMemberAccessRight({ token }).pipe(
-        map(res => {
-          if (this.utils.checkRes(res)) {
-            const { info: { groupAccessRight } } = res;
-            const maxAccessRight = +groupAccessRight[0].accessRight;
-            const passAdmin = [AccessRight.auditor, AccessRight.pusher];
-            if (passAdmin.includes(maxAccessRight)) return true;
-          }
-
-          return this.checkAccessRightFailed();
-        })
-
-      );
-
+      const { systemAccessright } = this.userService.getUser();
+      const passAdmin = [AccessRight.auditor, AccessRight.pusher];
+      if (passAdmin.includes(systemAccessright)) return true;
     } else {
       return this.checkAccessRightFailed();
     }

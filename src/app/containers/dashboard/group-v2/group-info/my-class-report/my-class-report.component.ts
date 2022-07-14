@@ -9,14 +9,16 @@ import { ActivityService } from '../../../../../shared/services/activity.service
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { getOptions } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
-import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+import { UserService } from '../../../../../core/services/user.service';
 import { Router } from '@angular/router';
 import { HashIdService } from '../../../../../shared/services/hash-id.service';
 import { chart, charts, color, each } from 'highcharts';
 import { ReportService } from '../../../../../shared/services/report.service';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
 import { HrZoneRange } from '../../../../../shared/models/chart-data';
-import { HrBase } from '../../../../../shared/models/user-profile-info';
+import { HrBase } from '../../../../../shared/enum/personal';
+import { AuthService } from '../../../../../core/services/auth.service';
+import { Api10xxService } from '../../../../../core/services/api-10xx.service';
 
 
 // 建立圖表用-kidin-1081212
@@ -265,14 +267,15 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     private groupService: GroupService,
     private utils: UtilsService,
     private activityService: ActivityService,
-    private translate: TranslateService,
-    private userProfileService: UserProfileService,
+    private userService: UserService,
     private hashIdService: HashIdService,
     private router: Router,
     private qrcodeService: QrcodeService,
     private renderer: Renderer2,
     private translateService: TranslateService,
-    private reportService: ReportService
+    private reportService: ReportService,
+    private authService: AuthService,
+    private api10xxService: Api10xxService
   ) {}
 
   ngOnInit(): void {
@@ -378,7 +381,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
 
   // 使用者送出表單後顯示相關資料-kidin-1081209
   handleSubmitSearch () {
-    this.token = this.utils.getToken();
+    this.token = this.authService.token;
     this.reportCompleted = false;
     this.initVariable();
     this.getUserInfo();
@@ -482,7 +485,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
 
   // 取得登入者資訊-kidin-1090326
   getUserInfo () {
-    this.userProfileService.getRxUserProfile().pipe(
+    this.userService.getUser().rxUserProfile.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       if (+this.userId !== res.userId) {
@@ -1066,7 +1069,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       avatarType: '2'
     };
 
-    this.userProfileService.getUserProfile(bodyForCoach).subscribe(res => {
+    this.api10xxService.fetchGetUserProfile(bodyForCoach).subscribe(res => {
       if (res.processResult.resultCode === 200) {
         this.coachInfo = res.userProfile;
       } else {

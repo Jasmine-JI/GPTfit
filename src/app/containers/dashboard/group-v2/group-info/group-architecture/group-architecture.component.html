@@ -4,10 +4,10 @@
     style="justify-content: flex-end;"
     *ngIf="
       userSimpleInfo
-      && userSimpleInfo.accessRight[0] <= groupInfo.groupLevel
+      && userSimpleInfo.accessRight <= groupInfo.groupLevel
       && groupInfo.groupStatus !== 4
       && groupInfo.groupStatus !== 5
-      && (groupInfo.groupStatus !== 6 || (userSimpleInfo.accessRight[0] < groupInfo.groupLevel && userSimpleInfo.accessRight[0] < 50))
+      && (groupInfo.groupStatus !== 6 || (userSimpleInfo.accessRight < groupInfo.groupLevel && userSimpleInfo.accessRight < 50))
       && !groupInfo.expired
       && +groupInfo.commerceStatus === 1
     "  
@@ -15,7 +15,7 @@
     <button
       class="childPageBtn"
       (click)="addGroup('branch')"
-      *ngIf="groupInfo.groupLevel === 30 && userSimpleInfo.accessRight[0] <= 30 && !uiFlag.branchFull"
+      *ngIf="groupInfo.groupLevel === 30 && userSimpleInfo.accessRight <= 30 && !uiFlag.branchFull"
     >
       <span *ngIf="groupInfo.brandType === 1">{{ 'universal_group_addBranch' | translate}}</span>
       <span *ngIf="groupInfo.brandType === 2">{{ 'universal_group_addBranchOffice' | translate}}</span>
@@ -23,7 +23,7 @@
     <button
       class="childPageBtn"
       (click)="addGroup('class')"
-      *ngIf="groupInfo.groupLevel === 40 && userSimpleInfo.accessRight[0] <= 40 && !uiFlag.classFull"
+      *ngIf="groupInfo.groupLevel === 40 && userSimpleInfo.accessRight <= 40 && !uiFlag.classFull"
     >
       <span *ngIf="groupInfo.brandType === 1">{{ 'universal_group_addCoachingClass' | translate}}</span>
       <span *ngIf="groupInfo.brandType === 2">{{ 'universal_group_addDepartment' | translate}}</span>
@@ -52,8 +52,8 @@
         [groupId]="groupArchitecture.brands[0].groupId"
         [groupLevel]="groupInfo.groupLevel"
         [brandType]="groupInfo.brandType"
-        [isHadMenu]="uiFlag.editMode === 'edit' && userSimpleInfo.accessRight[0] <= 29"
-        [canDisband]="userSimpleInfo.accessRight[0] <= 29"
+        [isHadMenu]="uiFlag.editMode === 'edit' && userSimpleInfo.accessRight <= 29"
+        [canDisband]="userSimpleInfo.accessRight <= 29"
         [isLocked]="groupArchitecture.brands[0].groupStatus === 6"
         *ngIf="groupArchitecture.brands && groupInfo.brandType"
       >
@@ -78,8 +78,8 @@
           [groupId]="_branch.groupId"
           [groupLevel]="groupInfo.groupLevel"
           [brandType]="groupInfo.brandType"
-          [isHadMenu]="uiFlag.editMode === 'edit' && userSimpleInfo.accessRight[0] <= 30"
-          [canDisband]="userSimpleInfo.accessRight[0] <= 30"
+          [isHadMenu]="uiFlag.editMode === 'edit' && userSimpleInfo.accessRight <= 30"
+          [canDisband]="userSimpleInfo.accessRight <= 30"
           [isLocked]="_branch.groupStatus === 6"
           (onRemoveGroup)="disbandGroup($event)"
           *ngIf="groupArchitecture.brands && groupInfo.brandType"
@@ -106,8 +106,8 @@
           [groupId]="_coach.groupId"
           [groupLevel]="groupInfo.groupLevel"
           [brandType]="groupInfo.brandType"
-          [isHadMenu]="uiFlag.editMode === 'edit' && userSimpleInfo.accessRight[0] <= 40"
-          [canDisband]="userSimpleInfo.accessRight[0] <= 40"
+          [isHadMenu]="uiFlag.editMode === 'edit' && userSimpleInfo.accessRight <= 40"
+          [canDisband]="userSimpleInfo.accessRight <= 40"
           [parentsName]="_coach.branchName"
           [isLocked]="_coach.groupStatus === 6"
           (onRemoveGroup)="disbandGroup($event)"

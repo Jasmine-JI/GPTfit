@@ -6,6 +6,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { ZoneTrendData, DisplayPage, zoneColor, sleepColor } from '../../../models/chart-data';
 import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
 
+dayjs.extend(isoWeek);
+
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {

@@ -4,12 +4,14 @@ import { Subject, combineLatest, of, fromEvent, Subscription } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { CloudrunService } from '../../../../shared/services/cloudrun.service';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { TranslateService } from '@ngx-translate/core';
 import { MapLanguageEnum } from '../../../../shared/models/i18n';
 import { DEVELOP_DOMAIN, UAT_DOMAIN, PROD_DOMAIN } from '../../../../shared/models/utils-constant';
 import { formTest } from '../../../../shared/models/form-test';
 import { EventStatus } from '../../models/activity-content';
+import { NodejsApiService } from '../../../../core/services/nodejs-api.service';
+import { getCurrentTimestamp, deepCopy, getUrlQueryStrings } from '../../../../shared/utils/index';
+import { AuthService } from '../../../../core/services/auth.service';
 
 type SwitchType = 'main' | 'sub';
 type SwitchAction = 'up' | 'down';
@@ -40,19 +42,19 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     subListTop: 0,
     currentFocusList: 0,
     mapLanguageIndex: 0,
-    filterGroup: null,
+    filterGroup: <string | null>null,
     screenSize: window.innerWidth
   };
 
-  token = this.utils.getToken();
-  subList = [];
-  eventList = [];
-  backupList = [];
-  rankList = [];
-  mapInfo = [];
-  routine = [];
-  groupList = [];
-  queryEventId = null;
+  token = this.authService.token;
+  subList: Array<any> = [];
+  eventList: Array<any> = [];
+  backupList: Array<any> = [];
+  rankList: Array<any> = [];
+  mapInfo: Array<any> = [];
+  routine: Array<any> = [];
+  groupList: Array<any> = [];
+  queryEventId: number | null = null;
   readonly RankType = RankType;
   readonly rankListLength = Object.keys(RankType).length / 2;
   readonly shiftLength = 35;
@@ -62,8 +64,9 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     private officialActivityService: OfficialActivityService,
     private utils: UtilsService,
     private cloudrunService: CloudrunService,
-    private userProfileService: UserProfileService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private nodejsApiService: NodejsApiService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -79,7 +82,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
    * @author kidin-1101214
    */
   getQueryString() {
-    const { eventId } = this.utils.getUrlQueryStrings(location.search);
+    const { eventId } = getUrlQueryStrings(location.search);
     if (eventId) {
       const valid = formTest.number.test(eventId);
       if (valid) {
@@ -222,7 +225,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     const { eventList, mapInfo, routine } = this;
     switch (type) {
       case RankType.event:
-        this.subList = this.utils.deepCopy(eventList);
+        this.subList = deepCopy(eventList);
         if (eventList.length > 0) {
           this.getEventRank(0);
         } else {
@@ -230,7 +233,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         };
         break;
       case RankType.mapBest:
-        this.subList = this.utils.deepCopy(mapInfo);
+        this.subList = deepCopy(mapInfo);
         this.getMapBestRank(1);
         break;
       case RankType.cumulativeClimb:
@@ -297,7 +300,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     const { progress } = this.uiFlag;
     if (progress === 100) {
       this.uiFlag.progress = 30;
-      const currentTimestamp = this.utils.getCurrentTimestamp();
+      const currentTimestamp = getCurrentTimestamp();
       const baseDate = '2021-11-01T00:00:00';
       const startTimestamp = (new Date(baseDate)).getTime() / 1000;
       const body = {
@@ -483,7 +486,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
           };
 
           // 透過api取得所有參賽者的暱稱與頭像
-          return this.userProfileService.getAssignInfo(body).pipe(
+          return this.nodejsApiService.getAssignInfo(body).pipe(
             map(userList => {
               if (this.utils.checkRes(userList)) {
                 const { result } = userList;
@@ -515,8 +518,8 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       })
     ).subscribe(res => {
       if (Array.isArray(res)) {
-        this.backupList = this.utils.deepCopy(res);
-        this.rankList = this.utils.deepCopy(res);
+        this.backupList = deepCopy(res);
+        this.rankList = deepCopy(res);
       }
 
       this.uiFlag.progress = 100;
@@ -560,7 +563,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
             };
 
             // 透過api取得所有參賽者的頭像，並將物件參數重新命名
-            return this.userProfileService.getAssignInfo(alaqlBody).pipe(
+            return this.nodejsApiService.getAssignInfo(alaqlBody).pipe(
               map(alaqlResult => {
                 if (this.utils.checkRes(alaqlResult)) {
                   return list.map((_list, index) => {
@@ -602,7 +605,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
    * @author kidin-1101130
    */
   getRacerList(rankList: Array<any>) {
-    const racer = [];
+    const racer: Array<number> = [];
     rankList.forEach(_list => {
       racer.push(_list.userId);
     });
@@ -615,10 +618,10 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
    * @param groupName {string}-群組名稱
    * @author kidin-1101202
    */
-  filterGroup(groupName: string = null) {
+  filterGroup(groupName: string | null = null) {
     this.uiFlag.filterGroup = groupName;
     if (groupName) {
-      const filterList = this.utils.deepCopy(this.backupList.filter(_list => _list.groupName === groupName));
+      const filterList = deepCopy(this.backupList.filter(_list => _list.groupName === groupName));
       this.rankList = filterList.map((_filterList, index) => {
         let rank: number;
         if (index === 0) {
@@ -632,7 +635,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         return _filterList;
       });
     } else {
-      this.rankList = this.utils.deepCopy(this.backupList);
+      this.rankList = deepCopy(this.backupList);
     }
 
   }

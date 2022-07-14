@@ -63,8 +63,7 @@ export class SportsTargetTipComponent implements OnInit, OnDestroy {
    * @author kidin-20201104
    */
   listenPluralEvent() {
-    const className = location.pathname.includes('/dashboard') ? '.main-body' : '.main';
-    const element = document.querySelector(className);
+    const element = document.querySelector('.main__container');
     const clickEvent = fromEvent(document, 'click');
     const scrollEvent = fromEvent(element, 'scroll');
     this.pluralEvent = merge(clickEvent, scrollEvent).pipe(

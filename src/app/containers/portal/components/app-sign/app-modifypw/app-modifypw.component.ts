@@ -1,20 +1,22 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { AuthService } from '../../../../../shared/services/auth.service';
+import { AuthService } from '../../../../../core/services/auth.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { SignupService } from '../../../../../shared/services/signup.service';
-import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+import { Api10xxService } from '../../../../../core/services/api-10xx.service';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { formTest } from '../../../../../shared/models/form-test';
-import { AccountTypeEnum } from '../../../../../shared/models/user-profile-info';
-import { SignTypeEnum } from '../../../../../shared/models/utils-type';
+import { AccountTypeEnum } from '../../../../../shared/enum/account';
+import { SignTypeEnum } from '../../../../../shared/enum/account';
 import { TFTViewMinWidth } from '../../../models/app-webview';
 import { Subject, Subscription, fromEvent, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
+import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../shared/utils/index';
+
 
 type InputType = 'oldPassword' | 'newPassword';
 
@@ -72,7 +74,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     private utils: UtilsService,
     private authService: AuthService,
     private signupService: SignupService,
-    private userProfileService: UserProfileService,
+    private api10xxService: Api10xxService,
     private router: Router,
     private snackbar: MatSnackBar,
     private getClientIp: GetClientIpService,
@@ -93,8 +95,8 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)
-    this.authService.getLoginStatus().subscribe(res => {
-      if (res === false && this.pcView === true) {
+    this.authService.isLogin.subscribe(res => {
+      if (!res && this.pcView) {
         return this.router.navigateByUrl('/signIn-web');
       }
     });
@@ -155,17 +157,17 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 取得url query string和token-kidin-1090514
   getUrlString (urlStr) {
-    const query = this.utils.getUrlQueryStrings(urlStr);
+    const query = getUrlQueryStrings(urlStr);
     this.requestHeader = {
       ...this.requestHeader,
-      ...this.utils.headerKeyTranslate(query)
+      ...headerKeyTranslate(query)
     };
 
     const { tk } = query;
     if (tk) this.editBody.token = tk;
 
     if (this.editBody.token === '') {
-      this.editBody.token = this.utils.getToken();
+      this.editBody.token = this.authService.token;
     }
 
   }
@@ -196,7 +198,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
       token:  this.editBody.token
     };
 
-    this.userProfileService.getUserProfile(body).subscribe(res => {
+    this.api10xxService.fetchGetUserProfile(body).subscribe(res => {
       if (this.utils.checkRes(res)) {
         const { userProfile, signIn: { accountType } } = res as any;
         if (accountType === AccountTypeEnum.email) {
@@ -345,9 +347,8 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
       } else {
         this.newToken = res.editAccount.newToken;
-        this.utils.writeToken(this.newToken);  // 直接在瀏覽器幫使用者登入
-        this.userProfileService.refreshUserProfile({token: this.newToken});
-        this.authService.setLoginStatus(true);
+        this.authService.setToken(this.newToken);  // 直接在瀏覽器幫使用者登入
+        this.authService.tokenLogin();
         this.finishEdit(this.newToken);
         const modifyI18n = this.translate.instant('universal_operating_modify');
         const successI18n = this.translate.instant('universal_status_success');

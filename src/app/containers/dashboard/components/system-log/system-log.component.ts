@@ -7,9 +7,11 @@ import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import { MatDialog } from '@angular/material/dialog';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
+import { Api10xxService } from '../../../../core/services/api-10xx.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { SelectDate } from '../../../../shared/models/utils-type';
+import { AuthService } from '../../../../core/services/auth.service';
+
 
 type Serverity = 'INFO' | 'WARN' | 'ERROR' | 'DEBUG';
 type TargetType = 'user' | 'equipment';
@@ -42,7 +44,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
    * 搜尋條件
    */
   searchCondition = {
-    token: this.utils.getToken(),
+    token: this.authService.token,
     targetUserId: <number>null,
     targetEquipmentSN: <string>null,
     serverity: <Serverity>null,
@@ -83,7 +85,8 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private innerSystemService: InnerSystemService,
     private dialog: MatDialog,
-    private userProfileService: UserProfileService
+    private api10xxService: Api10xxService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -141,11 +144,11 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     this.targetUser.id = (e as any).target.value;
     if (this.targetUser.id.trim().length !== 0) {
       const body = {
-              token: this.utils.getToken(),
-              targetUserId: this.targetUser.id
-            };
+        token: this.authService.token,
+        targetUserId: this.targetUser.id
+      };
 
-      this.userProfileService.getUserProfile(body).subscribe(res => {
+      this.api10xxService.fetchGetUserProfile(body).subscribe(res => {
         if (res.processResult && res.processResult.resultCode === 200) {
           this.targetUser.name = res.userProfile.nickname;
           this.targetUser.account = null;
@@ -350,7 +353,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
    */
   initCondition() {
     this.searchCondition = {
-      token: this.utils.getToken(),
+      token: this.authService.token,
       targetUserId: <number>null,
       targetEquipmentSN: <string>null,
       serverity: <Serverity>null,

@@ -1,13 +1,14 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
-import { UtilsService } from '../../../../shared/services/utils.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PrivacyObj, allPrivacyItem, PrivacyEditObj } from '../../../../shared/models/user-privacy';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { SelectDate } from '../../../../shared/models/utils-type';
 import { ActivityService } from '../../../../shared/services/activity.service';
+import { UserService } from '../../../../core/services/user.service';
+import { checkResponse, deepCopy } from '../../../../shared/utils/index';
+import { AuthService } from '../../../../core/services/auth.service';
 
 enum RangeType {
   date = 1,
@@ -56,11 +57,11 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
   readonly RangeType = RangeType;
 
   constructor(
-    private utils: UtilsService,
     private snackBar: MatSnackBar,
     private translate: TranslateService,
-    private userProfileService: UserProfileService,
-    private activityService: ActivityService
+    private userService: UserService,
+    private activityService: ActivityService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -82,7 +83,7 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
 
     };
 
-    this.userProfileService.getRxTargetUserInfo().pipe(
+    this.userService.getUser().rxUserProfile.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.userInfo = res;
@@ -102,44 +103,27 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
    * @author kidin-1100831
    */
   saveSetting() {
-    this.uiFlag.progress = 30;
-    const token = this.utils.getToken();
-    const body = {
-      token,
-      userProfile: {
-        privacy: {
-          ...this.setting
-        }
-
-      }
-
-    };
-
-    this.userProfileService.updateUserProfile(body).subscribe(res => {
-      const {processResult} = res as any;
-      if (!processResult) {
-        const { apiCode, resultMessage, resultCode } = res as any;
-        this.utils.handleError(resultCode, apiCode, resultMessage);
-      } else {
-        const { apiCode, resultMessage, resultCode } = processResult;
-        if (resultCode !== 200) {
-          this.utils.handleError(resultCode, apiCode, resultMessage);
+    if (this.uiFlag.progress === 100) {
+      this.uiFlag.progress = 30;
+      const updateContent = { privacy: { ...this.setting } };
+      this.userService.updateUserProfile(updateContent).subscribe(res => {
+        if (!checkResponse(res)) {
+          this.uiFlag.progress = 100;
         } else {
           this.translate.get('hellow world').pipe(
             takeUntil(this.ngUnsubscribe)
           ).subscribe(() => {
             const successMsg = this.translate.instant('universal_status_updateCompleted');
             this.snackBar.open(successMsg, 'OK', { duration: 2000 });
+            this.uiFlag.progress = 100;
+            this.closeEditDialog();
           });
           
-          this.uiFlag.showEditDialog = null;
         }
 
-      }
+      });
 
-      this.userProfileService.refreshUserProfile({ token });
-      this.uiFlag.progress = 100;
-    });
+    }
 
   }
 
@@ -164,13 +148,13 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
       const { activityTracking, activityTrackingReport, lifeTrackingReport } = this.setting;
       switch (type) {
         case PrivacyEditObj.file:
-          this.openObj = this.utils.deepCopy(activityTracking);
+          this.openObj = deepCopy(activityTracking);
           break;
         case PrivacyEditObj.sportsReport:
-          this.openObj = this.utils.deepCopy(activityTrackingReport);
+          this.openObj = deepCopy(activityTrackingReport);
           break;
         case PrivacyEditObj.lifeTracking:
-          this.openObj = this.utils.deepCopy(lifeTrackingReport);
+          this.openObj = deepCopy(lifeTrackingReport);
           break;
       }
       
@@ -184,11 +168,21 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 關閉編輯彈跳窗
+   */
+  closeEditDialog() {
+    if (this.uiFlag.progress === 100) {
+      this.uiFlag.showEditDialog = null;
+    }
+
+  }
+
+  /**
    * 取消設定隱私權
    * @author kidin-1100923
    */
   cancelEdit() {
-    this.uiFlag.showEditDialog = null;
+    this.closeEditDialog();
     this.patchEditPrivacy.emit(false);
   }
 
@@ -202,13 +196,13 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
       
       switch (showEditDialog) {
         case PrivacyEditObj.file:
-          this.setting.activityTracking = this.utils.deepCopy(this.openObj);
+          this.setting.activityTracking = deepCopy(this.openObj);
           break;
         case PrivacyEditObj.sportsReport:
-          this.setting.activityTrackingReport = this.utils.deepCopy(this.openObj);
+          this.setting.activityTrackingReport = deepCopy(this.openObj);
           break;
         case PrivacyEditObj.lifeTracking:
-          this.setting.lifeTrackingReport = this.utils.deepCopy(this.openObj);
+          this.setting.lifeTrackingReport = deepCopy(this.openObj);
           break;
       }
 
@@ -299,52 +293,43 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
    * @author kidin-1100924
    */
   modifyPrivacy () {
-    let body: any;
-    if (this.dateRange === RangeType.all) {
-      body = {
-        token: this.utils.getToken() || '',
-        editFileType: this.uiFlag.showEditDialog,
-        rangeType: this.dateRange,
-        privacy: this.openObj
-      };
-    } else {
-      body = {
-        token: this.utils.getToken() || '',
-        editFileType: this.uiFlag.showEditDialog,
-        rangeType: this.dateRange,
-        startTime: this.selectDate.startDate,
-        endTime: this.selectDate.endDate,
-        privacy: this.openObj
-      };
-    }
-
-    this.activityService.editPrivacy(body).subscribe(res => {
-      if (res.resultCode === 200) {
-        const refreshBody = {
-          token: this.utils.getToken() || ''
+    if (this.uiFlag.progress === 100) {
+      this.uiFlag.progress = 30;
+      let body: any;
+      if (this.dateRange === RangeType.all) {
+        body = {
+          token: this.authService.token,
+          editFileType: this.uiFlag.showEditDialog,
+          rangeType: this.dateRange,
+          privacy: this.openObj
         };
-
-        this.userProfileService.refreshUserProfile(refreshBody);
-        this.snackBar.open(
-          this.translate.instant(
-            'universal_operating_finishEdit'
-          ),
-          'OK',
-          { duration: 5000 }
-        );
-
-        this.uiFlag.showEditDialog = null;
-        this.patchEditPrivacy.emit(false);
       } else {
-        this.snackBar.open(
-          this.translate.instant('universal_popUpMessage_updateFailed'),
-          'OK',
-          { duration: 5000 }
-        );
-
+        body = {
+          token: this.authService.token,
+          editFileType: this.uiFlag.showEditDialog,
+          rangeType: this.dateRange,
+          startTime: this.selectDate.startDate,
+          endTime: this.selectDate.endDate,
+          privacy: this.openObj
+        };
       }
 
-    });
+      this.activityService.editPrivacy(body).subscribe(res => {
+        let msg: string;
+        if (res.resultCode === 200) {
+          msg = this.translate.instant('universal_operating_finishEdit');
+          this.uiFlag.progress = 100;
+          this.closeEditDialog();
+          this.patchEditPrivacy.emit(false);
+        } else {
+          msg = this.translate.instant('universal_popUpMessage_updateFailed');
+          this.uiFlag.progress = 100;
+        }
+
+        this.snackBar.open(msg, 'OK', { duration: 5000 });
+      });
+
+    }
     
   }
 

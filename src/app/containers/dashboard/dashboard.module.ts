@@ -32,7 +32,6 @@ import { ReportService } from '../../shared/services/report.service';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from '../../shared/interceptors/token.interceptor';
-import { UserProfileService } from '../../shared/services/user-profile.service';
 import { InnerTestComponent } from './components/inner-test/inner-test.component';
 import { HashIdService } from '../../shared/services/hash-id.service';
 import { CloudRunGpxComponent } from './components/cloud-run-gpx/cloud-run-gpx.component';
@@ -44,7 +43,6 @@ import { InnerDevicePairComponent } from './components/inner-device-pair/inner-d
 import { ShareGroupInfoDialogComponent } from '../../shared/components/share-group-info-dialog/share-group-info-dialog.component';
 import { LifeTrackingComponent } from './components/life-tracking/life-tracking.component';
 import { LifeTrackingService } from './services/life-tracking.service';
-import { ModifyBoxComponent } from './components/modify-box/modify-box.component';
 import { QrcodeUploadComponent } from './components/qrcode-upload/qrcode-upload.component';
 import { OfficialActivityService } from '../../shared/services/official-activity.service';
 import { GroupSearchComponent } from './group/group-search/group-search.component';
@@ -109,7 +107,6 @@ import { SharedComponentsModule as ProfessionalSharedModule } from '../professio
         DashboardGuard,
         ActivityService,
         ReportService,
-        UserProfileService,
         HashIdService,
         InnerAdminService,
         ActivityOtherDetailsService,
@@ -145,7 +142,6 @@ import { SharedComponentsModule as ProfessionalSharedModule } from '../professio
         MyGroupListComponent,
         CreateGroupComponent,
         CommercePlanTableComponent,
-        ModifyBoxComponent,
         QrcodeUploadComponent,
         GroupInfoV2Component,
         SearchGroupComponent,

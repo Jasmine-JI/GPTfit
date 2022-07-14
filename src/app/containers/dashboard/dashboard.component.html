@@ -12,7 +12,7 @@
         </div>
       </div>
       <div style="display: flex; position: fixed; right: 20px; align-items: center;">
-        <div class="flexCenter" *ngIf="userProfile.systemAccessRight[0] <= 20 && false">
+        <div class="flexCenter" *ngIf="systemAccessright <= AccessRight.maintainer && false">
           <button style="border: none; background-color: transparent;" (click)="changeTheme()">
             <span style="font-size: 22px;" [style.color]="theme === 'light' ? 'black' : 'yellow'">
               ☀
@@ -38,7 +38,7 @@
             <i
               class="icon-svg_web-icon_p1_069-about"
               style="color: #ff3838; font-size: 30px; position: absolute; right: -15px; bottom: 0px;"
-              *ngIf="userProfile.accountStatus === 1"
+              *ngIf="!accountStatus || accountStatus === 1"
             ></i>
           </div>
           <div class="dropdown-menu dropdown-user-menu" [class.show]="isUserMenuShow"
@@ -49,7 +49,7 @@
                 <li
                   style="color: #ff3838; font-weight: bold;"
                   (click)="toEnableAccount()"
-                  *ngIf="userProfile.accountStatus === 1"
+                  *ngIf="!accountStatus || accountStatus === 1"
                 >
                   {{ "universal_deviceSetting_switch" | translate}} {{ "universal_userAccount_account" | translate}}
                 </li>
@@ -284,7 +284,7 @@
             <div
               class="nav__color"
               [style.background-color]="uiFlag.currentDrop === 'systemManagement' ? 'rgba(54, 60, 60, 1)' : 'initial'"
-              *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30 && uiFlag.sidebarMode !== 'hide'"
+              *ngIf="systemAccessright < AccessRight.brandAdmin && uiFlag.sidebarMode !== 'hide'"
             >
               <div class="flexRow drop__down" (click)="dropDown('systemManagement')">
                 <i
@@ -318,7 +318,7 @@
                   (click)="chooseItem(sideBarList.innerAdmin)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.innerAdmin"
                   [routerLink]="['/dashboard/system/setting-member']"
-                  *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30"
+                  *ngIf="systemAccessright < AccessRight.brandAdmin"
                 >
                   {{"universal_system_internalAdministrator" | translate }}
                 </li>
@@ -326,7 +326,7 @@
                   (click)="chooseItem(sideBarList.innerSearch)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.innerSearch"
                   [routerLink]="['/dashboard/system/inner-test']"
-                  *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 29"
+                  *ngIf="systemAccessright < AccessRight.brandAdmin"
                 >
                   {{"universal_group_rserGroupQuery" | translate }}
                 </li>
@@ -334,7 +334,7 @@
                   (click)="chooseItem(sideBarList.coordinateTranslate)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.coordinateTranslate"
                   [routerLink]="['/dashboard/system/inner-gpx']"
-                  *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 20"
+                  *ngIf="systemAccessright <= AccessRight.maintainer"
                 >
                   {{"universal_system_coordinateSystemConversion" | translate }}
                 </li>
@@ -342,7 +342,7 @@
                   (click)="chooseItem(sideBarList.lifeTrackingLog)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.lifeTrackingLog"
                   [routerLink]="['/dashboard/system/life-tracking']"
-                  *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 20"
+                  *ngIf="systemAccessright <= AccessRight.maintainer"
                 >
                   {{"universal_system_lifetrackingLog" | translate }}
                 </li>
@@ -350,7 +350,7 @@
                   (click)="chooseItem(sideBarList.systemLog)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.systemLog"
                   [routerLink]="['/dashboard/system/system-log']"
-                  *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 20"
+                  *ngIf="systemAccessright <= AccessRight.maintainer"
                 >
                   系統日誌
                 </li>
@@ -358,7 +358,7 @@
                   (click)="chooseItem(sideBarList.systemFolder)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.systemFolder"
                   [routerLink]="['/dashboard/system/folder-permission']"
-                  *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 10"
+                  *ngIf="systemAccessright <= AccessRight.god"
                 >
                   系統使用者存取權限設定
                 </li>
@@ -367,7 +367,7 @@
             <div
               class="nav__color"
               [style.background-color]="uiFlag.currentDrop === 'groupManagement' ? 'rgba(54, 60, 60, 1)' : 'initial'"
-              *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30 && uiFlag.sidebarMode !== 'hide'"
+              *ngIf="systemAccessright < AccessRight.brandAdmin && uiFlag.sidebarMode !== 'hide'"
             >
               <div class="flexRow drop__down" (click)="dropDown('groupManagement')">
                 <i
@@ -389,12 +389,12 @@
               <div
                 class="navbar__list__content"
                 [class.expand__content]="uiFlag.currentDrop === 'groupManagement' && uiFlag.sidebarMode === 'expand'"
-                *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30 && uiFlag.sidebarMode !== 'hide'"
+                *ngIf="systemAccessright < AccessRight.brandAdmin && uiFlag.sidebarMode !== 'hide'"
               >
                 <li class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.allGroupList)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.allGroupList"
-                  *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30"
+                  *ngIf="systemAccessright < AccessRight.brandAdmin"
                   [routerLink]="['/dashboard/system/all-group-list']"
                 >
                   {{"universal_group_listAllGroups" | translate }}
@@ -402,7 +402,7 @@
                 <li class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.createBrandGroup)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.createBrandGroup"
-                  *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30"
+                  *ngIf="systemAccessright < AccessRight.brandAdmin"
                   [routerLink]="['/dashboard/system/create-brand-group']"
                 >
                   {{"universal_activityData_create" | translate }} {{"universal_group_gym" | translate }} {{"universal_group_group" | translate }}
@@ -410,7 +410,7 @@
                 <li class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.createEnterpriseGroup)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.createEnterpriseGroup"
-                  *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30"
+                  *ngIf="systemAccessright < AccessRight.brandAdmin"
                   [routerLink]="['/dashboard/system/create-com-group']"
                 >
                   {{"universal_activityData_create" | translate }} {{"universal_group_company" | translate }} {{"universal_group_group" | translate }}
@@ -420,7 +420,7 @@
             <div
               class="nav__color"
               [style.background-color]="uiFlag.currentDrop === 'push' ? 'rgba(54, 60, 60, 1)' : 'initial'"
-              *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30 && uiFlag.sidebarMode !== 'hide'"
+              *ngIf="systemAccessright < AccessRight.brandAdmin && uiFlag.sidebarMode !== 'hide'"
             >
               <div class="flexRow drop__down" (click)="dropDown('push')">
                 <i
@@ -446,7 +446,7 @@
                   (click)="chooseItem(sideBarList.createPush)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.createPush"
                   [routerLink]="['/dashboard/system/create-push']"
-                  *ngIf="userProfile.systemAccessRight && (userProfile.systemAccessRight[0] === 10 || userProfile.systemAccessRight[0] === 28)"
+                  *ngIf="[AccessRight.god, AccessRight.pusher].includes(systemAccessright)"
                 >
                   建立推播
                 </li>
@@ -454,7 +454,7 @@
                   (click)="chooseItem(sideBarList.pushList)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.pushList"
                   [routerLink]="['/dashboard/system/push-list']"
-                  *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 29"
+                  *ngIf="systemAccessright < AccessRight.brandAdmin"
                 >
                   推播清單
                 </li>
@@ -463,7 +463,7 @@
             <div
               class="nav__color"
               [style.background-color]="uiFlag.currentDrop === 'deviceManagement' ? 'rgba(54, 60, 60, 1)' : 'initial'"
-              *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30 && uiFlag.sidebarMode !== 'hide'"
+              *ngIf="systemAccessright < AccessRight.brandAdmin && uiFlag.sidebarMode !== 'hide'"
             >
               <div class="flexRow drop__down" (click)="dropDown('deviceManagement')">
                 <i
@@ -489,7 +489,7 @@
                   (click)="chooseItem(sideBarList.deviceSearch)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.deviceSearch"
                   [routerLink]="['/dashboard/system/device-pair-management']"
-                  *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30"
+                  *ngIf="systemAccessright < AccessRight.brandAdmin"
                 >
                   {{"universal_deviceSetting_deviceInquiry" | translate }}
                 </li>
@@ -497,7 +497,7 @@
                   (click)="chooseItem(sideBarList.deviceLog)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.deviceLog"
                   [routerLink]="['/dashboard/system/device_log']"
-                  *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 20"
+                  *ngIf="systemAccessright <= AccessRight.maintainer"
                 >
                   應用日誌
                 </li>
@@ -505,14 +505,14 @@
             </div>
             <div
               class="nav__color"
-              *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 29 && uiFlag.sidebarMode !== 'hide'"
+              *ngIf="systemAccessright < AccessRight.brandAdmin && uiFlag.sidebarMode !== 'hide'"
             >
               <li
                 class="ala-sidenav-item drop__down"
                 (click)="chooseItem(sideBarList.appFlowAnalysis)"
                 [class.ala-sidenav-menu-item__active]="target === sideBarList.appFlowAnalysis"
                 [routerLink]="['/dashboard/system/ala-app-analysis']"
-                *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 29"
+                *ngIf="systemAccessright < AccessRight.brandAdmin"
               >
                 <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon" *ngIf="uiFlag.sidebarMode !== 'hide'"></i>
                 <span class="navbar__list__title" [style.display]="uiFlag.sidebarMode !== 'expand' && !uiFlag.navFixed ? 'none' : flex">
@@ -537,7 +537,7 @@
   </ng-container>
   <div
     #mainBody
-    class="main-body"
+    class="main-body main__container"
     [class.preview]="isPreviewMode"
   >
     <div
@@ -548,13 +548,10 @@
     <div
       [class.dashboard__container]="isHadContainer"
       [class.containerPrint]="isPreviewMode"
-      [hidden]="isLoading"
+      *ngIf="!isLoading"
     >
       <router-outlet></router-outlet>
     </div>
     <div class="mobileFiller"></div>
   </div>
-</div>
-<div [hidden]="!isLoading">
-  <app-loading></app-loading>
 </div>

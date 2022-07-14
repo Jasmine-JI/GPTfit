@@ -20,7 +20,7 @@ import { GroupLevel, BrandType } from '../../enum/professional';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
 import { DefaultDateRange } from '../../classes/default-date-range';
-import { DAY } from '../../models/utils-constant';
+import { DAY, WEEK } from '../../models/utils-constant';
 import { GroupInfo } from '../../classes/group-info';
 
 @Component({
@@ -58,7 +58,6 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     showBaseDateRangeList: false,
     showCompareDateRangeList: false,
     showDateUnitList: false,
-    hideDayUnit: false,
     unfold: true,
     isMobile: false
   };
@@ -202,10 +201,10 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    * @author kidin-111315
    */
   selectGroup(id: string, name: string) {
-    const { id: oldId } = this.reportCondition.group.focusGroup;
+    const { id: oldId } = this.reportCondition.group!.focusGroup;
     if (id !== oldId) {
       const level = GroupInfo.getGroupLevel(id);
-      this.reportCondition.group.focusGroup = { id, level, name };
+      this.reportCondition.group!.focusGroup = { id, level, name };
       this.reportCondition.needRefreshData = true;
     }
 
@@ -228,7 +227,8 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    */
   resetCondition() {
     this.reportCondition = deepCopy(this.initialCondition);
-    this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
+    this.selectBaseDateRange('sevenDay');
+    this.selectCompareDateRange('none');
     this.reportCondition.needRefreshData = true;
     this.changeDetectorRef.markForCheck();
   }
@@ -253,8 +253,8 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    */
   subscribePluralEvent() {
     const clickEvent = fromEvent(document, 'click');
-    const scrollElement = document.querySelector('.main-body');
-    const scrollEvent = fromEvent(scrollElement, 'scroll');
+    const scrollElement = document.querySelector('.main__container');
+    const scrollEvent = fromEvent(scrollElement!, 'scroll');
     this.pluralEvent = merge(clickEvent, scrollEvent).pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
@@ -298,6 +298,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     }
 
     this.checkDateRange('base', 'endTimestamp');
+    this.checkDateOverRange('base');
     if (this.dateRange.compare === 'sameRangeLastYear') this.selectCompareDateRange('sameRangeLastYear');
     this.afterChangeDate();
   }
@@ -319,6 +320,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     }
 
     this.checkDateRange('base', 'startTimestamp');
+    this.checkDateOverRange('base');
     if (this.dateRange.compare === 'sameRangeLastYear') this.selectCompareDateRange('sameRangeLastYear');
     this.afterChangeDate();
   }
@@ -337,8 +339,9 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
       this.reportCondition.compareTime.startTimestamp = timestamp;
       this.dateRange.compare = 'custom';
       this.checkDateRange('compare', 'endTimestamp');
+      this.checkDateOverRange('compare');
     } else {
-      this.reportCondition.compareTime = null;
+      this.reportCondition.compareTime = null!;
       this.dateRange.compare = 'none';
     }
 
@@ -359,8 +362,9 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
       this.reportCondition.compareTime.endTimestamp = timestamp;
       this.dateRange.compare = 'custom';
       this.checkDateRange('compare', 'startTimestamp');
+      this.checkDateOverRange('compare');
     } else {
-      this.reportCondition.compareTime = null;
+      this.reportCondition.compareTime = null!;
       this.dateRange.compare = 'none';
     }
 
@@ -372,7 +376,6 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    * @author kidin-1110325
    */
   afterChangeDate() {
-    this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
     this.reportCondition.needRefreshData = true;
     this.changeDetectorRef.markForCheck();
   }
@@ -385,11 +388,11 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    */
   checkDateRange(type: ReportDateType, checkKey: 'startTimestamp' | 'endTimestamp') {
     const datetTypeKey = type === 'base' ? 'baseTime' : 'compareTime';
-    const { startTimestamp, endTimestamp } = this.reportCondition[datetTypeKey];
+    const { startTimestamp, endTimestamp } = this.reportCondition[datetTypeKey]!;
     if (endTimestamp < startTimestamp) {
       const changeKey = checkKey === 'startTimestamp' ? 'endTimestamp' : 'startTimestamp'
-      const changeValue = this.reportCondition[datetTypeKey][changeKey];
-      this.reportCondition[datetTypeKey][checkKey] = changeValue;
+      const changeValue = this.reportCondition[datetTypeKey]![changeKey];
+      this.reportCondition[datetTypeKey]![checkKey] = changeValue;
     }
 
   }
@@ -400,11 +403,11 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    */
   selectBaseDateRange(range: DateRangeType) {
     this.dateRange.base = range;
-    const { startTime, endTime } = DefaultDateRange.getAssignRangeDate(range);
+    const { startTime, endTime } = DefaultDateRange.getAssignRangeDate(range)!;
     this.reportCondition.baseTime.startTimestamp = startTime;
     this.reportCondition.baseTime.endTimestamp = endTime;
     if (this.dateRange.compare === 'sameRangeLastYear') this.selectCompareDateRange('sameRangeLastYear');
-    this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
+    this.checkDateOverRange('base');
     this.reportCondition.needRefreshData = true;
     this.changeDetectorRef.markForCheck();
   }
@@ -418,7 +421,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     if (!this.reportCondition.compareTime) this.reportCondition.compareTime = new DateRange;
     switch (range) {
       case 'none':
-        this.reportCondition.compareTime = null;
+        this.reportCondition.compareTime! = null!;
         break;
       case 'sameRangeLastYear':
         const { startTimestamp, endTimestamp } = this.reportCondition.baseTime;
@@ -427,53 +430,81 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
         this.reportCondition.compareTime.endTimestamp = endTime;
         break;
       default:
-        const { startTime: start, endTime: end } = DefaultDateRange.getAssignRangeDate(range);
+        const { startTime: start, endTime: end } = DefaultDateRange.getAssignRangeDate(range)!;
         this.reportCondition.compareTime.startTimestamp = start;
         this.reportCondition.compareTime.endTimestamp = end;
         break;
     }
 
-    this.uiFlag.hideDayUnit = this.checkDayOptionsHide();
+    this.checkDateOverRange('compare');
     this.reportCondition.needRefreshData = true;
     this.changeDetectorRef.markForCheck();
   }
 
   /**
-   * 若選擇範圍過大（> 52天），則日期單位清單隱藏"日"的選項
-   * @author kidin-1110316
+   * 若選擇範圍過大，則日期單位調整為合理單位
+   * @param type {ReportDateType}-報告日期類型
    */
-  checkDayOptionsHide() {
-    const overRange = 52 * DAY;
-    const { baseTime, compareTime, dateUnit: { unit } } = this.reportCondition;
-    const { startTimestamp, endTimestamp } = baseTime;
-    if (endTimestamp - startTimestamp > overRange) return this.resolveDateUnitConflict(unit);
-
-    if (compareTime) {
-      const { startTimestamp: startTime, endTimestamp: endTime } = compareTime;
-      if (endTime - startTime > overRange)  return this.resolveDateUnitConflict(unit);
+  checkDateOverRange(type: ReportDateType) {
+    const dayOverRange = 52 * DAY;
+    const weekOverRanage = 52 * WEEK;
+    const datetTypeKey = type === 'base' ? 'baseTime' : 'compareTime';
+    if (this.reportCondition[datetTypeKey]) {
+      const { unit } = this.reportCondition.dateUnit!;
+      const { startTimestamp, endTimestamp } = this.reportCondition[datetTypeKey]!;
+      const diffTime = endTimestamp - startTimestamp;
+      if (diffTime > weekOverRanage && unit < DateUnit.month) return this.selectDateUnit(DateUnit.month, true);
+      if (diffTime > dayOverRange && unit < DateUnit.week) return this.selectDateUnit(DateUnit.week, true);
     }
 
-    return false;
-  }
-
-  /**
-   * 若時間範圍超出52天，且日期範圍單位選擇日，則變更為週
-   * @param unit {DateUnit}-時間範圍單位
-   * @author kidin-1110316
-   */
-  resolveDateUnitConflict(unit: DateUnit) {
-    if (unit === DateUnit.day) this.selectDateUnit(DateUnit.week);
-    return true;
   }
 
   /**
    * 變更日期範圍單位
    * @param unit {DateUnit}-日期範圍單位
-   * @author kidin-1110316
+   * @param checkChange {boolean}-是否為檢查日期範圍變更而非由使用者變更
    */
-  selectDateUnit(unit: DateUnit) {
-    this.reportCondition.dateUnit.unit = unit;
-    this.reportCondition.needRefreshData = true;
+  selectDateUnit(unit: DateUnit, checkChange = false) {
+    const { unit: beforeUnit } = this.reportCondition.dateUnit!;
+    if (unit !== beforeUnit) {
+
+      if (!checkChange && !this.checkUnitFitDateRange(unit)) this.resetCondition();
+      this.reportCondition.dateUnit!.unit = unit;
+      this.reportCondition.needRefreshData = true;
+    }
+
+  }
+
+  /**
+   * 確認目前所選單位是否適用於基準與比較日期範圍
+   * @param unit {DateUnit}-日期範圍單位
+   */
+  checkUnitFitDateRange(unit: DateUnit) {
+    if (unit >= DateUnit.month) return true;  // 月 以上單位適用任呵時間範圍
+
+    // 確認目前時間範圍是否適用日期單位
+    const isOverUnitRange = (unit: DateUnit, diffTime: number) => {
+      const dayOverRange = 52 * DAY;
+      const weekOverRanage = 52 * WEEK;
+      if (unit === DateUnit.day && diffTime > dayOverRange) return true;
+      if (unit === DateUnit.week && diffTime > weekOverRanage) return true;
+      return false;
+    };
+
+    const { startTimestamp, endTimestamp } = this.reportCondition.baseTime;
+    const baseDiffTime = endTimestamp - startTimestamp;
+    if (isOverUnitRange(unit, baseDiffTime)) return false;
+
+    if (this.reportCondition.compareTime) {
+      const {
+        startTimestamp: compareStartTime,
+        endTimestamp: compareEndTime
+      } = this.reportCondition.compareTime;
+      const compareDiffTime = compareEndTime - compareStartTime;
+      if (isOverUnitRange(unit, compareDiffTime)) return false;
+    }
+
+    return true;
   }
 
   /**

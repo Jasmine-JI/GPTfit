@@ -266,7 +266,14 @@
         {{ 'universal_operating_cancel' | translate }}
       </button>
       <button class="dialog-confirmBtn" (click)="editComplete()">
-        {{ 'universal_operating_confirm' | translate }}
+        <span [class.dialog-confirmButton--disabled]="uiFlag.progress !== 100" >
+          {{ 'universal_operating_confirm' | translate }}
+        </span>
+        <mat-spinner
+          class="dialog-loadingSpinner"
+          [diameter]="20"
+          *ngIf="uiFlag.progress !== 100"
+        ></mat-spinner>
       </button>
     </div>
   </div>

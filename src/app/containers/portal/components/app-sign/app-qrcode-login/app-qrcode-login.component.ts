@@ -1,8 +1,8 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
-import { AuthService } from '../../../../../shared/services/auth.service';
+import { AuthService } from '../../../../../core/services/auth.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { SignupService } from '../../../../../shared/services/signup.service';
-import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+import { Api10xxService } from '../../../../../core/services/api-10xx.service';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 import { Subject, Subscription, fromEvent, of } from 'rxjs';
@@ -13,6 +13,13 @@ import { Router } from '@angular/router';
 import dayjs from 'dayjs';
 import { TFTViewMinWidth } from '../../../models/app-webview';
 import { AlaApp } from '../../../../../shared/models/app-id';
+import {
+  headerKeyTranslate,
+  getUrlQueryStrings,
+  setLocalStorageObject,
+  getLocalStorageObject
+} from '../../../../../shared/utils/index';
+
 
 enum QrSignInFlow {
   submitGuid = 1,
@@ -61,7 +68,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
     private translate: TranslateService,
     private utils: UtilsService,
     private signupService: SignupService,
-    private userProfileService: UserProfileService,
+    private api10xxService: Api10xxService,
     private auth: AuthService,
     private dialog: MatDialog,
     private router: Router,
@@ -69,7 +76,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
   ) { }
 
   ngOnInit() {
-    this.loginBody.token = this.utils.getToken();
+    this.loginBody.token = this.auth.token;
     this.getQueryString();
     this.checkPage(location.pathname);
     this.subscribeResizeEvent();
@@ -87,11 +94,11 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1110114
    */
   getQueryString() {
-    const query = this.utils.getUrlQueryStrings(location.search);
+    const query = getUrlQueryStrings(location.search);
     this.tftView = query.p == AlaApp.tft;
     this.requestHeader = {
       ...this.requestHeader,
-      ...this.utils.headerKeyTranslate(query)
+      ...headerKeyTranslate(query)
     };
 
   }
@@ -239,22 +246,22 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
 
   // 確認是否開啟過多次qrcode頁面-kidin-1090528
   checkFrequency () {
-    const timeStampCount = this.utils.getLocalStorageObject('count');
+    const timeStampCount = getLocalStorageObject('count');
     if (!timeStampCount) {
-      this.utils.setLocalStorageObject('count', `${this.currentTimeStamp}1`);
+      setLocalStorageObject('count', `${this.currentTimeStamp}1`);
       return true;
     } else {
       const timeStamp = +timeStampCount.slice(0, timeStampCount.length - 1),
             count = +timeStampCount.slice(timeStampCount.length - 1, timeStampCount.length);
 
       if (this.currentTimeStamp - timeStamp >= 3 * 60 * 1000) {  // 超過三分鐘前端解瑣
-        this.utils.setLocalStorageObject('count', `${this.currentTimeStamp}1`);
+        setLocalStorageObject('count', `${this.currentTimeStamp}1`);
         return true;
       } else if (count > 4) {  // 操作超過五次前端上鎖
         this.cue = 'universal_userAccount_improperOperation';
         return false;
       } else {
-        this.utils.setLocalStorageObject('count', `${timeStamp} ${count + 1}`);
+        setLocalStorageObject('count', `${timeStamp} ${count + 1}`);
         return true;
       }
 
@@ -331,32 +338,25 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
       (window as any).android.returnToken(token);
       (window as any).android.closeWebView('Close');
     } else {
-      this.utils.writeToken(token);
-      this.userProfileService.refreshUserProfile({token});
-      this.auth.setLoginStatus(true);
-      if (this.auth.backUrl.length > 0) {
-        location.href = this.auth.backUrl;
-      } else {
-        location.href = '/dashboard';
-      }
+      this.auth.setToken(token);
+      this.auth.tokenLogin();
 
+      const { backUrl } = this.auth;
+      location.href = backUrl ? backUrl : '/dashboard';
     }
 
   }
 
   // 取得url query string-kidin-1090514
   getUrlString (urlStr: string) {
-    const { g } = this.utils.getUrlQueryStrings(urlStr);
+    const { g } = getUrlQueryStrings(urlStr);
     if (g) this.loginBody.guid = g;
   }
 
   // 使用token取得使用者帳號資訊-kidin-1090514
   getUserInfo () {
-    const body = {
-      token: this.utils.getToken() || ''
-    };
-
-    this.userProfileService.getUserProfile(body).subscribe(res => {
+    const body = { token: this.auth.token };
+    this.api10xxService.fetchGetUserProfile(body).subscribe(res => {
       const profile = res.userProfile;
       this.userInfo.name = profile.nickname;
       this.userInfo.icon = `${profile.avatarUrl}`;

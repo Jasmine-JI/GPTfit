@@ -6,17 +6,20 @@ import { CoachService } from '../../../../shared/services/coach.service';
 import { combineLatest, Subject, fromEvent, Subscription } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import dayjs, { Dayjs } from 'dayjs';
-import { UserProfileService } from '../../../../shared/services/user-profile.service';
+import { UserService } from '../../../../core/services/user.service';
 import { TranslateService } from '@ngx-translate/core';
 import { langList } from '../../../../shared/models/i18n';
 import { GlobalEventsService } from '../../../../core/services/global-events.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
-import { AuthService } from '../../../../shared/services/auth.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { UserProfileInfo } from '../../../../shared/models/user-profile-info';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { PaginationSetting } from '../../../../shared/models/pagination';
+import { setLocalStorageObject, getLocalStorageObject, removeLocalStorageObject } from '../../../../shared/utils/index';
+import { AccessRight } from '../../../../shared/enum/accessright';
+
 
 type DisplayPage = 'fitPair' | 'system' | 'myDevice';
 type MainContent = 'info' | 'management' | 'odometer' | 'log' | 'register';
@@ -135,20 +138,21 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     onePageSize: 10
   };
 
-  readonly onePageSizeOpt = [10, 30, 50];
   currentLang: string;
   userId: number = null;
-  systemAccessRight = [99];
+  systemAccessRight = AccessRight.guest;
   readonly imgStoragePath = 
     `http://${location.hostname.includes('192.168.1.235') ? 'app.alatech.com.tw' : location.hostname}/app/public_html/products`;
   readonly appDlImgDomain = 'https://app.alatech.com.tw/app/public_html/products/img/';
+  readonly onePageSizeOpt = [10, 30, 50];
+  readonly AccessRight = AccessRight;
 
   constructor(
     private route: ActivatedRoute,
     private qrcodeService: QrcodeService,
     private utils: UtilsService,
     private coachService: CoachService,
-    private userProfileService: UserProfileService,
+    private userService: UserService,
     private translateService: TranslateService,
     private snackbar: MatSnackBar,
     private dialog: MatDialog,
@@ -246,9 +250,8 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1100908
    */
   handleScroll() {
-    const targetClass = this.uiFlag.isPortalMode ? '.main' : '.main-body',
-          targetElement = document.querySelectorAll(targetClass)[0],
-          targetScrollEvent = fromEvent(targetElement, 'scroll');
+    const targetElement = document.querySelector('.main__container');
+    const targetScrollEvent = fromEvent(targetElement, 'scroll');
     this.scrollEvent = targetScrollEvent.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(e => {
@@ -423,8 +426,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     this.getBtnPosition(tagIdx);
     switch (page) {
       case 'info':
-        const scrollEleClass = this.uiFlag.isPortalMode ? '.main' : '.main-body',
-              mainBodyEle = document.querySelector(scrollEleClass);
+        const mainBodyEle = document.querySelector('.main__container');
         mainBodyEle.scrollTo({top: 0, behavior: 'smooth'});
         break;
       case 'log':
@@ -483,16 +485,16 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1100702
    */
   getNeedInfo(displayPage: DisplayPage) {
-    const token = this.utils.getToken() || '',
-          { sn, cs } = this.deviceInfo,
-          productInfoBody = {
-            queryArray: [sn],
-            queryType: 1,
-            token
-          };
+    const token = this.auth.token;
+    const { sn, cs } = this.deviceInfo;
+    const productInfoBody = {
+      queryArray: [sn],
+      queryType: 1,
+      token
+    };
     let apiList = [
       this.qrcodeService.getProductInfo(productInfoBody),
-      this.userProfileService.getRxUserProfile()
+      this.userService.getUser().rxUserProfile
     ];
     switch (displayPage) {
       case 'fitPair':
@@ -560,12 +562,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
         ).subscribe(resArr => {
           const checkResult = this.checkResponse(resArr);
           if (checkResult) {
-            const [
-              productInfo,
-              userProfile,
-              ...rest
-            ] = resArr;
-
+            const [productInfo, userProfile, ...rest] = resArr;
             this.handleUserProfile(userProfile);
             this.handleProductInfo(productInfo);
             this.handleDeviceInfo(rest);
@@ -589,8 +586,8 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1100706
    */
   checkUpload(sn: string): boolean {
-    const currentTimestamp = dayjs().valueOf(),
-          manufactureTimestamp = this.getManufactureTimestamp(sn);
+    const currentTimestamp = dayjs().valueOf();
+    const manufactureTimestamp = this.getManufactureTimestamp(sn);
     if (currentTimestamp < manufactureTimestamp) {
       return false;
     } else {
@@ -668,8 +665,9 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    */
   handleUserProfile(userProfile: UserProfileInfo) {
     if (userProfile) {
-      this.userId = userProfile.userId;
-      this.systemAccessRight = userProfile.systemAccessRight;
+      const { userId, systemAccessright } = this.userService.getUser();
+      this.userId = userId;
+      this.systemAccessRight = systemAccessright;
     }
     
   }
@@ -769,7 +767,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
 
     };
 
-    const action = this.utils.getLocalStorageObject('actionAfterLogin');
+    const action = getLocalStorageObject('actionAfterLogin');
     if (
       fitPairStatus == 3
       && isFitPaired
@@ -861,8 +859,8 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1100707
    */
   handleChildPageBtn() {
-    const overMaintantner = this.systemAccessRight[0] <= 20,
-          overMarketing = this.systemAccessRight[0] <= 29;
+    const overMaintantner = this.systemAccessRight <= AccessRight.maintainer;
+    const overMarketing = this.systemAccessRight <= AccessRight.marketing;
     if (this.fitPairInfo.deviceBond.id == this.userId || overMarketing) {
 
       if (this.deviceInfo['odometer']) {
@@ -901,7 +899,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
       deviceSettingJson: '',
       fitPairStatus,
       myEquipmentSN: this.deviceInfo.sn,
-      token: this.utils.getToken() || ''
+      token: this.auth.token
     };
 
     this.qrcodeService.editDeviceInfo(body).pipe(
@@ -950,8 +948,8 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1100706
    */
   handleBonding(bondStatus: 1 | 2) {
-    const token = this.utils.getToken() || '',
-          { sn } = this.deviceInfo;
+    const token = this.auth.token;
+    const { sn } = this.deviceInfo;
     if (!token) {
       this.handleGoLoginPage('bonding');
     } else {
@@ -1017,10 +1015,10 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1100702
    */
   handleFitPair(fitPairType: 1 | 2, coverFitPair: boolean = false) {
-    const token = this.utils.getToken() || '',
-          { sn, cs } = this.deviceInfo;
+    const token = this.auth.token;
+    const { sn, cs } = this.deviceInfo;
     if (!token) {
-      
+
       if (coverFitPair) {
         this.handleGoLoginPage('coverPair');
       } else {
@@ -1122,7 +1120,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    */
   handleGoLoginPage(action: 'fitPair' | 'unFitPair' | 'coverPair' | 'bonding') {
     this.auth.backUrl = location.href;
-    this.utils.setLocalStorageObject('actionAfterLogin', action);
+    setLocalStorageObject('actionAfterLogin', action);
     this.router.navigateByUrl(`signIn-web`);
   }
 
@@ -1206,7 +1204,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1100709
    */
   checkActionAfterLogin() {
-    const action = this.utils.getLocalStorageObject('actionAfterLogin');
+    const action = getLocalStorageObject('actionAfterLogin');
     switch (action) {
       case 'fitPair':
         this.handleFitPair(1);
@@ -1222,7 +1220,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
         break;
     }
 
-    this.utils.removeLocalStorageObject('actionAfterLogin');
+   removeLocalStorageObject('actionAfterLogin');
   }
 
   /**
@@ -1230,17 +1228,17 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1100712
    */
   getProductLog() {
-    const token = this.utils.getToken() || '',
-          { sn } = this.deviceInfo,
-          { filterStartTime, filterEndTime } = this.logDate,
-          body = {
-            token,
-            queryEquipmentSN: sn,
-            filterStartTime,
-            filterEndTime,
-            page: this.pageSetting.pageIndex,
-            pageCounts: this.pageSetting.onePageSize
-          };
+    const token = this.auth.token;
+    const { sn } = this.deviceInfo;
+    const { filterStartTime, filterEndTime } = this.logDate;
+    const body = {
+      token,
+      queryEquipmentSN: sn,
+      filterStartTime,
+      filterEndTime,
+      page: this.pageSetting.pageIndex,
+      pageCounts: this.pageSetting.onePageSize
+    };
 
     this.qrcodeService.getEquipmentLog(body).subscribe(res => {
       const { apiCode, resultCode, resultMessage, info } = res;

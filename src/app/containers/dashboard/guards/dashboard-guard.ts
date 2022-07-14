@@ -8,30 +8,32 @@ import {
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { UtilsService } from '../../../shared/services/utils.service';
-import { UserProfileService } from '../../../shared/services/user-profile.service';
+import { Api11xxService } from '../../../core/services/api-11xx.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { AccessRight } from '../../../shared/enum/accessright';
 
 @Injectable()
 export class DashboardGuard implements CanActivate {
 
   constructor(
     private utils: UtilsService,
-    private userProfileService: UserProfileService,
-    private router: Router
+    private api11xxService: Api11xxService,
+    private router: Router,
+    private authService: AuthService
   ) {}
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
 
-    const token = this.utils.getToken();
+    const token = this.authService.token;
     if (token) {
-
-      return this.userProfileService.getMemberAccessRight({token}).pipe(
-        map(res => {
+      return this.api11xxService.fetchMemberAccessRight({ token }).pipe(
+        map((res: any) => {
           if (this.utils.checkRes(res)) {
-            const { info: { groupAccessRight } } = res,
-                  maxAccessRight = +groupAccessRight[0].accessRight;
-            if (maxAccessRight < 30) {
+            const { info: { groupAccessRight } } = res;
+            const maxAccessRight = +groupAccessRight[0].accessRight;
+            if (maxAccessRight < AccessRight.brandAdmin) {
               return true;
             } else {
               return this.checkAccessRightFailed('403');

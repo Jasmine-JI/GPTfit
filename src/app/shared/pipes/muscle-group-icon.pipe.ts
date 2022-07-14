@@ -11,7 +11,7 @@ export class MuscleGroupIconPipe implements PipeTransform {
    * @author kidin-1100528
    */
   transform(value: number): string {
-    switch (value) {
+    switch (+value) {
       case MuscleGroup.armMuscle:
         return 'icon-svg_web-icon_p3_028-hand_muscle';
       case MuscleGroup.legMuscle:

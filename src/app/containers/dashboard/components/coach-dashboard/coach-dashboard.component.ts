@@ -21,8 +21,9 @@ import { setOptions } from 'highcharts';
 import { webSocket } from 'rxjs/webSocket';
 import dayjs from 'dayjs';
 import { stockChart } from 'highcharts/highstock';
-import { UtilsService } from '../../../../shared/services/utils.service';
 import { cloneDeep, keyBy } from 'lodash';
+import { getUrlQueryStrings } from '../../../../shared/utils/index';
+import { AuthService } from '../../../../core/services/auth.service'
 
 export class Message {
   constructor(
@@ -223,7 +224,7 @@ export class CoachDashboardComponent
     private coachService: CoachService,
     private route: ActivatedRoute,
     elementRef: ElementRef,
-    private utils: UtilsService
+    private authService: AuthService
   ) {
     setOptions({ time: { useUTC: false } });
     this.elementRef = elementRef;
@@ -243,10 +244,10 @@ export class CoachDashboardComponent
   }
 
   ngOnInit() {
-    const queryStrings = this.utils.getUrlQueryStrings(location.search);
+    const queryStrings = getUrlQueryStrings(location.search);
     this.classType = queryStrings.type;
     this.classId = this.route.snapshot.paramMap.get('classId');
-    this.token = this.utils.getToken();
+    this.token = this.authService.token;
     const body = {
       token: this.token,
       classId: this.classId,

@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { UserProfileService } from '../../../shared/services/user-profile.service';
 import { UserProfileInfo } from '../../../shared/models/user-profile-info';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
@@ -16,6 +15,9 @@ import { ImageUploadService } from '../services/image-upload.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ShareGroupInfoDialogComponent } from '../../../shared/components/share-group-info-dialog/share-group-info-dialog.component';
 import { TranslateService } from '@ngx-translate/core';
+import { UserService } from '../../../core/services/user.service';
+import { getUrlQueryStrings } from '../../../shared/utils/index';
+import { AuthService } from '../../../core/services/auth.service';
 
 type ImgType = 'icon' | 'scenery';
 
@@ -83,12 +85,11 @@ export class PersonalComponent implements OnInit, OnDestroy {
 
   userProfile: UserProfileInfo;
   hashUserId: string;
-  token = this.utils.getToken();
+  token = this.authService.token;
   readonly AlbumType = AlbumType;
   childPageList = [];
 
   constructor(
-    private userProfileService: UserProfileService,
     private utils: UtilsService,
     private route: ActivatedRoute,
     private router: Router,
@@ -97,11 +98,14 @@ export class PersonalComponent implements OnInit, OnDestroy {
     private dashboardService: DashboardService,
     private imageUploadService: ImageUploadService,
     private dialog: MatDialog,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private usreService: UserService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
     this.checkPage();
+    this.checkQueryString();
     this.handlePageResize();
     if (!this.uiFlag.isPreviewMode) this.handleScroll();
     this.getNeedInfo();
@@ -115,18 +119,51 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1100812
    */
    checkPage() {
-    const { pathname, search } = location,
-          pathnameArr = pathname.split('/'),
-          query = this.utils.getUrlQueryStrings(search);
-    this.uiFlag.isPortalMode = pathnameArr[1] !== 'dashboard';
-    this.uiFlag.isSettingPage = 
-      !this.uiFlag.isPortalMode
-      && (
-        pathnameArr[2] === 'user-settings'
-        || `${pathnameArr[2]}/${pathnameArr[3]}` === 'settings/account-info'  // strava轉導回GPTfit
-      );
+    const { pathname, search } = location;
+    const [origin, mainPath, secondPath, thirdPath] = pathname.split('/');
+    switch (mainPath) {
+      case 'dashboard':
+        const isSettingPath = secondPath === 'user-settings';
+        const isStravaRedirectPath = `${secondPath}/${thirdPath}` === 'settings/account-info'; // strava轉導回GPTfit
+        this.uiFlag.isSettingPage = isSettingPath || isStravaRedirectPath;
+        this.uiFlag.isPortalMode = false;
+        break;
+      case 'user-profile':
+        const redirectPath = `/dashboard/${thirdPath}${search}`;
+        this.handleNotDashBoardPage();
+        this.checkPageOwner(redirectPath);
+        break;
+      default:
+        this.handleNotDashBoardPage();
+        break;
+    }
 
+  }
+
+  /**
+   * 確認目前頁面擁有者是否為自己
+   */
+  checkPageOwner(redirectPath: string) {
+    const userId = this.usreService.getUser().userId;
+    this.hashUserId = this.route.snapshot.paramMap.get('userId');
+    const targetUserId = +this.hashIdService.handleUserIdDecode(this.hashUserId);
+    if (targetUserId === userId) this.router.navigateByUrl(redirectPath);
+  }
+
+  /**
+   * 確認網址參數
+   */
+  checkQueryString() {
+    const query = getUrlQueryStrings(location.search);
     if (query.ipm) this.uiFlag.isPreviewMode = true;
+  }
+
+  /**
+   * 處理非dashboard頁面之狀態
+   */
+  handleNotDashBoardPage() {
+    this.uiFlag.isSettingPage = false;
+    this.uiFlag.isPortalMode = true;
   }
 
   /**
@@ -151,9 +188,8 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1100908
    */
   handleScroll() {
-    const targetClass = this.uiFlag.isPortalMode ? '.main' : '.main-body',
-          targetElement = document.querySelectorAll(targetClass)[0],
-          targetScrollEvent = fromEvent(targetElement, 'scroll');
+    const targetElement = document.querySelectorAll('.main__container');
+    const targetScrollEvent = fromEvent(targetElement, 'scroll');
     this.scrollEvent = targetScrollEvent.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(e => {
@@ -168,14 +204,14 @@ export class PersonalComponent implements OnInit, OnDestroy {
    */
   checkPageListBarPosition() {
     if (!this.uiFlag.isSettingPage) {
-      const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as any,
-            headerDescriptionBlock = document.querySelectorAll('.info-headerDescriptionBlock')[0],
-            headerDescription = document.querySelectorAll('.info-headerDescription')[0],
-            scenerySection = document.querySelectorAll('.info-scenerySection')[0];
+      const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as any;
+      const headerDescriptionBlock = document.querySelectorAll('.info-headerDescriptionBlock')[0];
+      const headerDescription = document.querySelectorAll('.info-headerDescription')[0];
+      const scenerySection = document.querySelectorAll('.info-scenerySection')[0];
       if (pageListBar && headerDescription && scenerySection) {
-        const { top: barTop } = pageListBar.getBoundingClientRect(),
-            { bottom: descBottom } = headerDescription.getBoundingClientRect(),
-            { width } = scenerySection.getBoundingClientRect();
+        const { top: barTop } = pageListBar.getBoundingClientRect();
+        const { bottom: descBottom } = headerDescription.getBoundingClientRect();
+        const { width } = scenerySection.getBoundingClientRect();
         if (barTop <= 51 && descBottom < 50) {
           pageListBar.classList.add('info-pageListBar-fixed');
           headerDescriptionBlock.classList.add('info-pageListBar-replace');  // 填充原本功能列的高度
@@ -187,9 +223,8 @@ export class PersonalComponent implements OnInit, OnDestroy {
         }
 
         if (this.uiFlag.isPortalMode) {
-          const cardSection = document.querySelectorAll('.cardSection')[0],
-                { left } = cardSection.getBoundingClientRect();
-          pageListBar.style.left = `${left}px`;
+          pageListBar.style.left = 0;
+          pageListBar.style.right = 0;
         }
 
       }
@@ -313,29 +348,11 @@ export class PersonalComponent implements OnInit, OnDestroy {
    */
   getAssignUserProfile() {
     this.hashUserId = this.route.snapshot.paramMap.get('userId');
-    const userId = +this.hashIdService.handleUserIdDecode(this.hashUserId),
-          body = {
-            token: this.token,
-            targetUserId: userId
-          };
-    
-    this.userProfileService.getUserProfile(body).subscribe(res => {
-      const { processResult, userProfile } = res as any;
-      if (!processResult) {
-        const { apiCode, resultMessage, resultCode } = res as any;
-        this.utils.handleError(resultCode, apiCode, resultMessage);
-      } else {
-        const { apiCode, resultMessage, resultCode } = processResult;
-        if (resultCode !== 200) {
-          this.utils.handleError(resultCode, apiCode, resultMessage);
-        } else {
-          this.uiFlag.isPageOwner = userId === userProfile.userId;
-          this.userProfile = userProfile;
-          this.userProfileService.setRxTargetUserInfo(userProfile);
-          this.checkDescLen();
-        }
-
-      }
+    const userId = +this.hashIdService.handleUserIdDecode(this.hashUserId);
+    this.usreService.getTargetUserInfo(userId).subscribe(res => {
+      this.uiFlag.isPageOwner = userId === res.userId;
+      this.userProfile = res;
+      this.checkDescLen();
 
       this.childPageList = this.initChildPageList();
       this.getCurrentContentPage();
@@ -350,12 +367,11 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1100811
    */
   getRxUserProfile() {
-    this.userProfileService.getRxUserProfile().pipe(
+    this.usreService.getUser().rxUserProfile.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.uiFlag.hideScenery = false;
       this.userProfile = res;
-      this.userProfileService.setRxTargetUserInfo(res);
       this.hashUserId = this.hashIdService.handleUserIdEncode(res.userId);
       this.childPageList = this.initChildPageList();
       this.getCurrentContentPage();
@@ -498,10 +514,10 @@ export class PersonalComponent implements OnInit, OnDestroy {
   checkDescLen() {
     if (!this.uiFlag.isSettingPage) {
       setTimeout(() => {
-        const descSection = this.headerDescription.nativeElement,
-              descStyle = window.getComputedStyle(descSection, null),
-              descLineHeight = +descStyle.lineHeight.split('px')[0],
-              descHeight = +descStyle.height.split('px')[0];
+        const descSection = this.headerDescription.nativeElement;
+        const descStyle = window.getComputedStyle(descSection, null);
+        const descLineHeight = +descStyle.lineHeight.split('px')[0];
+        const descHeight = +descStyle.height.split('px')[0];
         if (descHeight / descLineHeight > 2) {
           this.uiFlag.descOverflow = true;
         } else {
@@ -556,44 +572,28 @@ export class PersonalComponent implements OnInit, OnDestroy {
     const { edited, icon, scenery } = this.editImage;
     if (editMode === 'complete' && edited) {
       let imgArr = [];
-      const formData = new FormData(),
-            { userId } = this.userProfile;
-      formData.set('token', this.utils.getToken());
+      const formData = new FormData();
+      const { userId } = this.userProfile;
+      formData.set('token', this.authService.token);
       formData.set('targetType', '1');
       // 個人icon
       if (icon.base64 !== null) {
         const fileName = this.createFileName(imgArr.length, `${userId}`);
-        imgArr.unshift({
-          albumType: AlbumType.personalIcon,
-          fileNameFull: `${fileName}.jpg`
-        })
-
-        formData.append(
-          'file',
-          this.utils.base64ToFile(icon.base64, fileName)
-        );
-
+        imgArr.unshift({ albumType: AlbumType.personalIcon, fileNameFull: `${fileName}.jpg` });
+        formData.append( 'file', this.utils.base64ToFile(icon.base64, fileName));
       }
 
       // 個人佈景
       if (scenery.base64 !== null) {
         const fileName = this.createFileName(imgArr.length, `${userId}`);
-        imgArr.unshift({
-          albumType: AlbumType.personalScenery,
-          fileNameFull: `${fileName}.jpg`
-        })
-
-        formData.append(
-          'file',
-          this.utils.base64ToFile(scenery.base64, fileName)
-        );
-
+        imgArr.unshift({ albumType: AlbumType.personalScenery, fileNameFull: `${fileName}.jpg` });
+        formData.append( 'file',this.utils.base64ToFile(scenery.base64, fileName));
       }
 
       formData.set('img', JSON.stringify(imgArr));
       this.sendImgUploadReq(formData);
     } else if (editMode === 'complete') {
-      this.userProfileService.refreshUserProfile({ token: this.token });
+      this.usreService.refreshUserProfile();
       // this.dashboardService.setRxEditMode('close');
     } else {
       this.uiFlag.editMode = editMode;
@@ -609,12 +609,14 @@ export class PersonalComponent implements OnInit, OnDestroy {
    */
   sendImgUploadReq(formData: FormData) {
     this.imageUploadService.addImg(formData).subscribe(res => {
-      if (res.processResult.resultCode !== 200) {
-        this.utils.openAlert('Image upload error.');
-        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+      const { resultCode } = res.processResult ?? { resultCode: 400 };
+      if (resultCode !== 200) {
+        this.editImage.icon.base64 = null;
+        this.editImage.scenery.base64 = null;
+        this.utils.openAlert('Image upload error.<br>Please change image.');
       } else {
         this.initImgSetting();
-        this.userProfileService.refreshUserProfile({ token: this.token });
+        this.usreService.refreshUserProfile();
         // this.dashboardService.setRxEditMode('close');
       }
 
@@ -727,8 +729,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1100812
    */
   scrollPage(page: string) {
-    const scrollEleClass = this.uiFlag.isPortalMode ? '.main' : '.main-body',
-          mainBodyEle = document.querySelector(scrollEleClass);
+    const mainBodyEle = document.querySelector('.main__container');
     if (page === 'group-introduction') {
       mainBodyEle.scrollTo({top: 0, behavior: 'smooth'});
     } else {

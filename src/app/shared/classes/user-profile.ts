@@ -1,14 +1,14 @@
-import { UserProfileDetail, SignInfo } from '../models/user-profile-info';
+import { UserProfileInfo, SignInfo } from '../models/user-profile-info';
 import dayjs from 'dayjs';
-import { Unit } from '../models/bs-constant';
-import { HrBase } from '../models/user-profile-info';
-import { deepCopy, checkResponse } from '../utils/index';
-import { Api10xxService } from '../../core/services/api-10xx.service';
-import { combineLatest } from 'rxjs';
-import { SignTypeEnum } from '../models/utils-type';
-import { AccessRight } from '../models/accessright';
+import { Unit } from '../enum/value-conversion';
+import { HrBase } from '../enum/personal';
+import { deepCopy } from '../utils/index';
+import { AccessRight } from '../enum/accessright';
+import { WeightTrainingLevel } from '../enum/weight-train';
+import { BehaviorSubject } from 'rxjs';
+import { ThirdParty } from '../enum/thirdParty';
 
-const guestProfile: UserProfileDetail = {
+const guestProfile: UserProfileInfo = {
   avatarUrl: '/assets/images/user2.png',
   birthday: dayjs().subtract(30, 'year').format('YYYYMMDD'),  // 訪客預設30歲
   bodyHeight: 175,
@@ -32,7 +32,12 @@ export class User {
   /**
    * api 1010 內的 userProfile 物件(未登入則給予訪客預設值)
    */
-  private _userProfile: UserProfileDetail = deepCopy(guestProfile);
+  private _userProfile: UserProfileInfo = deepCopy(guestProfile);
+
+  /**
+   * userProfile observable 物件(未登入則給予訪客預設值)
+   */
+  private _rxUserProfile$ = new BehaviorSubject(deepCopy(guestProfile));
 
   /**
    * api 1003 或 1010 內的 signIn 物件
@@ -42,42 +47,10 @@ export class User {
   /**
    * api 1010 內的 thirdPartyAgency 物件
    */
-  private _thirdPartyAgency: Array<any>;
+  private _thirdPartyAgency = new Map();
 
-  constructor(
-    private api10xxService: Api10xxService
-  ) {}
 
-  /**
-   * 透過 api 1003 登入後， 再透過 api 1010 取得 user profile
-   * @param token {string}
-   * @author kidin-1110314
-   */
-  tokenLogin(token: string = '') {
-    if (token) {
-      const loginBody = { token, signInType: SignTypeEnum.token };
-      const userProfileBody = { token };
-      combineLatest([
-        this.api10xxService.fetchSignIn(loginBody),
-        this.api10xxService.fetchGetUserProfile(userProfileBody)
-      ]).subscribe(resultArray => {
-        const [loginResult, userProfileResult] = resultArray;
-        if (checkResponse(loginResult, false)) {
-          const { thirdPartyAgency } = loginResult as any;
-          this._thirdPartyAgency = thirdPartyAgency;
-        }
-
-        if (checkResponse(userProfileResult, true)) {
-          const { signIn, userProfile } = userProfileResult as any;
-          this._signInfo = signIn;
-          this._userProfile = userProfile;
-        }
-
-      });
-
-    }
-
-  }
+  constructor() {}
 
   /**
    * 使用者登出
@@ -91,8 +64,9 @@ export class User {
    * 更新 userProfile
    * @author kidin-1110311
    */
-  set userProfile(userProfile: UserProfileDetail) {
+  set userProfile(userProfile: UserProfileInfo) {
     this._userProfile = userProfile;
+    this.updateRxUserProfile();
   }
 
   /**
@@ -104,21 +78,30 @@ export class User {
   }
 
   /**
+   * 取得 rxjs userProfile 訂閱物件
+   */
+  get rxUserProfile() {
+    return this._rxUserProfile$;
+  }
+
+  /**
    * 將 userProfile 切為訪客，並清空登入資訊
    * @author kidin-1110314
    */
   initUser() {
-    this._userProfile = deepCopy(guestProfile);
-    this._signInfo = undefined;
-    this._thirdPartyAgency = undefined;
+    const defaultUserProfile = deepCopy(guestProfile);
+    this.userProfile = defaultUserProfile;
+    this.signInfo = undefined;
+    this._thirdPartyAgency.clear();
+    this.updateRxUserProfile();
   }
 
   /**
    * 更新登入資訊
    * @author kidin-1110314
    */
-  set signInfo(signInfo: SignInfo) {
-    this._signInfo = signInfo;
+  set signInfo(info: SignInfo) {
+    this._signInfo = info;
   }
 
   /**
@@ -134,15 +117,26 @@ export class User {
    * @author kidin-1110314
    */
   set thirdPartyAgency(thirdPartyAgency: Array<any>) {
-    this._thirdPartyAgency = thirdPartyAgency;
+    thirdPartyAgency.forEach(_thirdPart => {
+      const { interface: thirdPartyInterface, status } = _thirdPart;
+      this._thirdPartyAgency.set(thirdPartyInterface, status);
+    });
+
   }
 
   /**
-   * 取得第三方資訊
-   * @author kidin-1110314
+   * 取得指定的第三方狀態
+   * @param thirdPartyInterface {ThirdParty}
    */
-  get thirdPartyAgency() {
-    return this._thirdPartyAgency;
+  getThirdPartyStatus(thirdPartyInterface: ThirdParty) {
+    return this._thirdPartyAgency.get(thirdPartyInterface);
+  }
+
+  /**
+   * 更新第三方狀態
+   */
+  updateThirdPartyStatus(thirdPartyInterface: ThirdParty, status: boolean) {
+    this._thirdPartyAgency.set(thirdPartyInterface, status);
   }
 
   /**
@@ -150,7 +144,7 @@ export class User {
    * @author kidin-1110314
    */
   get systemAccessright(): AccessRight {
-    return this._signInfo ? this._signInfo.developerValue : 99;
+    return this.signInfo ? this.signInfo.developerValue : 99;
   }
 
   /**
@@ -158,6 +152,64 @@ export class User {
    */
   get userId() {
     return this._userProfile.userId;
+  }
+
+  /**
+   * 取得使用者重訓程度
+   */
+  get weightTrainingStrengthLevel(): WeightTrainingLevel {
+    return this._userProfile.weightTrainingStrengthLevel;
+  }
+
+  /**
+   * 取得使用者暱稱
+   */
+  get nickname() {
+    return this._userProfile.nickname;
+  }
+
+  /**
+   * 取得使用者頭像
+   */
+  get icon() {
+    return this._userProfile.avatarUrl;
+  }
+
+  /**
+   * 取得使用者使用單位（公英制）
+   */
+  get unit() {
+    return this._userProfile.unit;
+  }
+
+  /**
+   * 更新userProfile資訊
+   * @param content {any}-更新內容
+   */
+  updatePartUserProfile(content: any) {
+    Object.entries(content).forEach(_content => {
+      const [key, value] = _content;
+      const originContent = this._userProfile[key];
+      if (typeof(originContent) !== 'object' || Array.isArray(originContent)) {
+        this._userProfile[key] = value;
+      } else {
+        this.userProfile[key] = {
+          ...originContent,
+          ...(value as object)
+        };
+
+      }
+      
+    });
+
+    this.updateRxUserProfile();
+  }
+
+  /**
+   * 更新 rxUserProfile
+   */
+  updateRxUserProfile() {
+    this._rxUserProfile$.next(this._userProfile);
   }
 
 }

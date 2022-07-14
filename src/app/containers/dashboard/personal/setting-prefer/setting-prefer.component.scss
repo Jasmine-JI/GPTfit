@@ -137,3 +137,79 @@ $dot-diameter: 8px;
   margin-left: 10px;
   flex-wrap: wrap;
 }
+
+.drop__list {
+  border-bottom: 1px solid black;
+  cursor: pointer;
+  margin-bottom: 5px;
+}
+
+.date__cycle, .filed__name {
+  position: relative;
+  margin: 5px 0;
+}
+
+.date__cycle__list, .filed__name__list {
+  $shadow: 4px rgba(0, 0, 0, 0.3);
+  position: fixed;
+  z-index: 2;
+  background-color: white;
+  cursor: pointer;
+  list-style: none;
+  padding: 5px;
+  margin: 0;
+  box-shadow: 2px 2px $shadow, -2px 2px $shadow, 2px -2px $shadow, -2px -2px $shadow;
+  min-width: 100px;
+}
+
+.condition__list {
+  padding: 0;
+}
+
+.condition__list__item {
+  align-items: center;
+  margin: 5px 0;
+}
+
+.delete__condition__button {
+  $size: 14px;
+  cursor: pointer;
+  background-color: rgb(250 107 107);
+  border-radius: 50%;
+  width: $size;
+  max-width: $size;
+  height: $size;
+  min-height: $size;
+  color: white;
+  margin-right: 5px;
+  padding: 0 5px;
+}
+
+.filed__name {
+  margin: 0 0 20px 20px;
+}
+
+.list__item {
+  padding: 0 5px;
+
+  &:hover {
+    color: white;
+    background-color: $primary-blue;
+  }
+
+}
+
+.condition__symbol {
+  display: inline-block;
+  margin: 0 20px;
+}
+
+.target__input {
+  $width: 60px;
+  border: none;
+  border-bottom: 1px solid black;
+  width: $width;
+  min-width: $width;
+  outline: none;
+  text-align: center;
+}

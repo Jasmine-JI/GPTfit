@@ -1,11 +1,10 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { AuthService } from '../../../../../shared/services/auth.service';
+import { AuthService } from '../../../../../core/services/auth.service';
 import { SignupService } from '../../../../../shared/services/signup.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
-import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { fromEvent, Subscription, Subject, merge, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -13,8 +12,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { formTest } from '../../../../../shared/models/form-test';
 import { Lang } from '../../../../../shared/models/i18n';
 import { codes } from '../../../../../shared/models/countryCode';
-import { SignTypeEnum } from '../../../../../shared/models/utils-type';
+import { SignTypeEnum } from '../../../../../shared/enum/account';
 import { TFTViewMinWidth } from '../../../models/app-webview';
+import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../shared/utils/index';
+
 
 interface RegCheck {
   email: RegExp;
@@ -112,7 +113,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     public getClientIp: GetClientIpService,
     private authService: AuthService,
-    private userProfileService: UserProfileService
   ) {}
 
   ngOnInit(): void {
@@ -156,10 +156,10 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1110114
    */
   getQueryString() {
-    const query = this.utils.getUrlQueryStrings(location.search);
+    const query = getUrlQueryStrings(location.search);
     this.requestHeader = {
       ...this.requestHeader,
-      ...this.utils.headerKeyTranslate(query)
+      ...headerKeyTranslate(query)
     };
 
     const { fi } = query;
@@ -673,10 +673,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       } else {
         this.newToken = res.register.token;
         this.saveToken(this.newToken);
-        this.authService.setLoginStatus(true);
-        this.userProfileService.refreshUserProfile({
-          token: this.newToken
-        });
+        this.authService.tokenLogin();
 
         // 若有目標導向網址，則跳過詢問啟用步驟
         if (this.authService.backUrl.length > 0) {
@@ -728,7 +725,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090717
    */
   saveToken(token: string): void {
-    this.utils.writeToken(token);  // 直接在瀏覽器幫使用者登入
+    this.authService.setToken(token);  // 直接在瀏覽器幫使用者登入
     if (this.appSys === 1) {
       (window as any).webkit.messageHandlers.returnToken.postMessage(token);
     } else if (this.appSys === 2) {

@@ -16,6 +16,7 @@ import { ConditionSymbols } from '../../../../../shared/enum/sport-target';
 import { DateUnit } from '../../../../../shared/enum/report';
 import { formTest } from '../../../../../shared/models/form-test';
 import { deepCopy } from '../../../../../shared/utils/index';
+import { AuthService } from '../../../../../core/services/auth.service';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -182,7 +183,8 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     private hashIdService: HashIdService,
     private translate: TranslateService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -208,7 +210,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     ).subscribe(res => {
       this.groupDetail = deepCopy(res);
       this.editBody = {
-        token: this.utils.getToken() || '',
+        token: this.authService.token,
         groupName: this.groupDetail.groupName,
         groupId: this.groupDetail.groupId,
         groupLevel: this.utils.displayGroupLevel(this.groupDetail.groupId),
@@ -269,14 +271,14 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   checkCreateMode(type: string) {
     switch (type) {
       case 'brand':
-        if (this.userSimpleInfo.accessRight[0] <= 29) {
+        if (this.userSimpleInfo.accessRight <= 29) {
           this.openCreateMode(30);
           this.createBody.levelType = 3;
         }
 
         break;
       case 'branch':
-        if (this.userSimpleInfo.accessRight[0] <= 30) {
+        if (this.userSimpleInfo.accessRight <= 30) {
           this.assignAdmin();
           this.openCreateMode(40);
           this.createBody.levelType = 4;
@@ -285,7 +287,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         break;
       case 'coach':
       case 'department':
-        if (this.userSimpleInfo.accessRight[0] <= 40) {
+        if (this.userSimpleInfo.accessRight <= 40) {
           this.assignAdmin();
           this.openCreateMode(60);
           this.createBody.levelType = 5;
@@ -296,7 +298,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
         break;
       case 'teacher':
-        if (this.userSimpleInfo.accessRight[0] <= 40) {
+        if (this.userSimpleInfo.accessRight <= 40) {
           this.assignAdmin();
           this.openCreateMode(60);
           this.createBody.levelType = 5;
@@ -479,8 +481,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-20201104
    */
   listenPluralEvent() {
-    const className = location.pathname.includes('/dashboard') ? '.main-body' : '.main';
-    const element = document.querySelector(className);
+    const element = document.querySelector('.main__container');
     const clickEvent = fromEvent(document, 'click');
     const scrollEvent = fromEvent(element, 'scroll');
     this.pluralEvent = merge(clickEvent, scrollEvent).pipe(
@@ -577,7 +578,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         adminLists,
         type: 1,
         onConfirm: this.handleConfirm.bind(this),
-        isInnerAdmin: this.uiFlag.createLevel === 30 && this.userSimpleInfo.accessRight[0] < 30
+        isInnerAdmin: this.uiFlag.createLevel === 30 && this.userSimpleInfo.accessRight < 30
       }
 
     });

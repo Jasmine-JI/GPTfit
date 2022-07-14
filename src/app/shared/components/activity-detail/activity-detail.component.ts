@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Subject, fromEvent, Subscription, of, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { UserProfileService } from '../../services/user-profile.service';
-import { UserProfileInfo, HrBase } from '../../models/user-profile-info';
+import { UserService } from '../../../core/services/user.service';
+import { UserProfileInfo } from '../../models/user-profile-info';
+import { HrBase } from '../../enum/personal';
 import { UtilsService } from '../../services/utils.service';
 import { ActivityService } from '../../services/activity.service';
 import { Router } from '@angular/router';
@@ -23,12 +24,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShareGroupInfoDialogComponent } from '../share-group-info-dialog/share-group-info-dialog.component';
 import { PrivacyObj } from '../../models/user-privacy';
 import { EditIndividualPrivacyComponent } from '../edit-individual-privacy/edit-individual-privacy.component';
-import { Proficiency } from '../../enum/weight-train';
 import { AlbumType } from '../../models/image';
 import { v5 as uuidv5 } from 'uuid';
 import { ImageUploadService } from '../../../containers/dashboard/services/image-upload.service';
-import { getPaceUnit } from '../../utils/sports';
+import { getPaceUnit, getUserHrRange } from '../../utils/sports';
 import { getFileInfoParam } from '../../utils/index';
+import { AuthService } from '../../../core/services/auth.service';
+import { AccessRight } from '../../enum/accessright';
+import { Api10xxService } from '../../../core/services/api-10xx.service';
 
 dayjs.extend(weekday);
 
@@ -234,7 +237,10 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   compareChartQueryString = '';
   filePrivacy: Array<PrivacyObj> = [1];
   cloudrunMapId: number;
+  systemAccessright = AccessRight.guest;
+  
   readonly AlbumType = AlbumType;
+  readonly AccessRight = AccessRight;
 
   // 頁面所需資訊
   readonly needKey = [
@@ -257,7 +263,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   ];
 
   constructor(
-    private userProfileService: UserProfileService,
+    private userService: UserService,
     private utils: UtilsService,
     private activityService: ActivityService,
     private router: Router,
@@ -268,10 +274,13 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private changeDetectorRef: ChangeDetectorRef,
-    private imageUploadService: ImageUploadService
+    private imageUploadService: ImageUploadService,
+    private authService: AuthService,
+    private api10xxService: Api10xxService
   ) { }
 
   ngOnInit(): void {
+    this.checkUrlPath();
     this.checkQueryString(location.search);
     this.checkScreenSize();
     this.handlePageResize();
@@ -285,18 +294,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 取得userProfile
-   * @param path {string}-url pathname
-   * @author kidin-1100104
    */
-  getUserProfile(path: string) {
-    if (path.indexOf('dashboard') > -1) {
-      this.uiFlag.isPortal = false;
-      return this.getRxUserProfile();
-    } else {
-      this.uiFlag.isPortal = true;
-      return this.createUserProfile();
-    }
-
+  checkUrlPath() {
+    this.uiFlag.isPortal = location.pathname.indexOf('dashboard') < 0;
   }
 
   /**
@@ -375,13 +375,11 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100220
    */
   createUserProfile() {
-    const token = this.utils.getToken();
+    const token = this.authService.token;
     if (token) {
-      this.userProfileService.refreshUserProfile({ token });
-      return this.getRxUserProfile();
+      return this.userService.getUser().rxUserProfile;
     } else {
       const fakeUserProfile = {
-        systemAccessRight: [99],
         autoTargetStep: 5000,
         avatarUrl: null,
         basalMetabolic: null,
@@ -424,7 +422,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100104
    */
   getRxUserProfile() {
-    return this.userProfileService.getRxUserProfile().pipe(
+    return this.userService.getUser().rxUserProfile.pipe(
       takeUntil(this.ngUnsubscribe)
     );
 
@@ -441,7 +439,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     const fileId = pathArr[pathArr.length - 1];
     this.fileInfo.fileId = fileId;
     let body: any = {
-      token: this.utils.getToken() || '',
+      token: this.authService.token,
       fileId: fileId,
       // displayDetailField: 3  // 新api回傳格式
     };
@@ -451,7 +449,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     combineLatest([
-      this.getUserProfile(pathname),
+      this.getRxUserProfile(),
       this.activityService.fetchSportListDetail(body)
     ]).subscribe(resArr => {
       const [userProfile, activityDetail] = resArr;
@@ -545,7 +543,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.handleFileCreateDate(this.fileInfo.creationDate);
     const targetUserId = this.fileInfo.author ? +getFileInfoParam(this.fileInfo.author).userId : undefined;
     if (!this.uiFlag.isPortal) {
-      
+
       if (this.userProfile.userId === targetUserId) {
         this.uiFlag.isFileOwner = true;
       }
@@ -555,11 +553,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     if (!this.uiFlag.isFileOwner) {
 
       if (targetUserId) {
-        const body = {
-          targetUserId: targetUserId
-        };
-
-        this.userProfileService.getUserProfile(body).subscribe(res => {
+        const body = { targetUserId: targetUserId };
+        this.api10xxService.fetchGetUserProfile(body).subscribe(res => {
           const { processResult } = res;
           if (processResult) {
             const { resultCode, apiCode, resultMessage } = processResult;
@@ -655,8 +650,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           userHRBase = this.userProfile.heartRateBase,
           userMaxHR = this.userProfile.heartRateMax,
           userRestHR = this.userProfile.heartRateResting;
-    this.chartData.hrInfo = this.utils.getUserHrRange(userHRBase, userAge, userMaxHR, userRestHR);
-    this.chartData.defaultHrInfo = this.utils.getUserHrRange(0, 30, 190, 60); // 預設的心率區間
+    this.chartData.hrInfo = getUserHrRange(userHRBase, userAge, userMaxHR, userRestHR);
+    this.chartData.defaultHrInfo = getUserHrRange(0, 30, 190, 60); // 預設的心率區間
   }
 
   /**
@@ -751,7 +746,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   getClassInfo(groupId: string) {
     const body = {
-      token: this.utils.getToken() || '',
+      token: this.authService.token,
       groupId,
       avatarType: 3,
       findRoot: 1
@@ -784,11 +779,11 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   getTeacherInfo(userId: number) {
     const body = {
-      token: this.utils.getToken() || '',
+      token: this.authService.token,
       targetUserId: [userId]
     };
 
-    this.userProfileService.getUserProfile(body).subscribe(res => {
+    this.api10xxService.fetchGetUserProfile(body).subscribe(res => {
       const { processResult } = res;
       if (processResult) {
         const { resultCode, apiCode, resultMessage } = processResult;
@@ -821,7 +816,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   getProductInfo(equipmentList: Array<string>) {
     const body = {
-      token: this.utils.getToken() || '',
+      token: this.authService.token,
       queryType: 1,
       queryArray: equipmentList
     };
@@ -1061,19 +1056,11 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.uiFlag.weightTrainLevel = level;
     const strengthLevel = this.getStrengthLevel(level);
     if (!this.uiFlag.isPortal || this.uiFlag.isFileOwner) {
-      const body = {
-        token: this.utils.getToken() || '',
-        userProfile: {
-          weightTrainingStrengthLevel: strengthLevel
-        }
-
-      };
-
-      this.userProfileService.updateUserProfile(body).subscribe(res => {
+      const updateContent = { weightTrainingStrengthLevel: strengthLevel };
+      this.userService.updateUserProfile(updateContent).subscribe(res => {
         const { processResult } = res;
         if (processResult && processResult.resultCode === 200) {
           this.userProfile.weightTrainingStrengthLevel = strengthLevel;
-          this.userProfileService.editRxUserProfile(this.userProfile);
         }
 
       });
@@ -1169,7 +1156,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     const countList = this.getCountList(+this.activityInfoLayer.type as SportType);
     if (type === 'distanceMeters' && !this.trendChartData) {
       const apiKeyList = countList.map(_list => _list[1]);
-      this.trendChartData = this.utils.handleRepeatXAxis(
+      this.trendChartData = this.handleRepeatXAxis(
         this.activityPointLayer['distanceMeters'],
         this.activityPointLayer,
         apiKeyList
@@ -1532,10 +1519,10 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100302
    */
   showPrivacyAlert() {
-    if (this.userProfile.systemAccessRight[0] <= 29 && !this.uiFlag.isFileOwner) {
+    const { systemAccessright } = this.userService.getUser();
+    if (systemAccessright <= AccessRight.marketing && !this.uiFlag.isFileOwner) {
       this.showShareBox();
     } else {
-      
       this.dialog.open(MessageBoxComponent, {
         hasBackdrop: true,
         data: {
@@ -1575,7 +1562,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   editFilePrivacy(willShare: boolean = false) {
     const body = {
-      token: this.utils.getToken() || '',
+      token: this.authService.token,
       fileId: this.fileInfo.fileId,
       fileInfo: {
         privacy: this.filePrivacy
@@ -1615,8 +1602,10 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100220
    */
   showShareBox() {
-    const url = this.uiFlag.isPortal ? location.href : `${location.origin}${location.pathname.split('/dashboard')[1]}`,
-          debugUrl = this.uiFlag.isPortal ? `${location.origin}/dashboard${location.pathname}?debug=` : `${location.href.split('?')[0]}?debug=`;
+    const { systemAccessright } = this.userService.getUser();
+    const url = this.uiFlag.isPortal ? location.href : `${location.origin}${location.pathname.split('/dashboard')[1]}`;
+    const debugUrl = this.uiFlag.isPortal ?
+      `${location.origin}/dashboard${location.pathname}?debug=` : `${location.href.split('?')[0]}?debug=`;
 
     this.dialog.open(ShareGroupInfoDialogComponent, {
       hasBackdrop: true,
@@ -1625,7 +1614,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         title: this.translate.instant('universal_operating_share'),
         shareName: this.fileInfo.dispName,
         cancelText: this.translate.instant('universal_operating_confirm'),
-        debugUrl: this.userProfile.systemAccessRight[0] <= 29 ? debugUrl : ''
+        debugUrl: systemAccessright <= AccessRight.marketing ? debugUrl : ''
       }
 
     });
@@ -1638,13 +1627,13 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100220
    */
   downloadRawData() {
-    const CSVName = `${this.rawData.fileInfo.dispName}${this.rawData.fileInfo.creationDate}.csv`,
-          data = this.switchCSVFile(this.rawData),
-          blob = new Blob(['\ufeff' + data], {  // 加上bom（\ufeff）讓excel辨識編碼
-            type: 'text/csv;charset=utf8'
-          }),
-          href = URL.createObjectURL(blob),  // 建立csv檔url
-          link = document.createElement('a');  // 建立連結供csv下載使用
+    const CSVName = `${this.rawData.fileInfo.dispName}${this.rawData.fileInfo.creationDate}.csv`;
+    const data = this.switchCSVFile(this.rawData);
+    const blob = new Blob(['\ufeff' + data], {  // 加上bom（\ufeff）讓excel辨識編碼
+      type: 'text/csv;charset=utf8'
+    });
+    const href = URL.createObjectURL(blob);  // 建立csv檔url
+    const link = document.createElement('a');  // 建立連結供csv下載使用
 
     document.body.appendChild(link);
     link.href = href;
@@ -1846,7 +1835,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   deleteFile () {
     const body = {
-      token: this.utils.getToken() || '',
+      token: this.authService.token,
       fileId: [this.fileInfo.fileId]
     };
 
@@ -1952,7 +1941,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   handleNewProfileName() {
     const body = {
-      token: this.utils.getToken() || '',
+      token: this.authService.token,
       fileId: this.fileInfo.fileId,
       fileInfo: {
         dispName: this.newFileName,
@@ -2166,7 +2155,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       let imgArr = [];
       const formData = new FormData(),
             { userId } = this.userProfile;
-      formData.set('token', this.utils.getToken());
+      formData.set('token', this.authService.token);
       formData.set('targetType', '1');
       // 個人icon
       if (base64 !== null) {
@@ -2200,7 +2189,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     const { photo } = this.fileInfo;
     if (photo) {
       const delBody = {
-        token: this.utils.getToken(),
+        token: this.authService.token,
         targetType: 1,
         img: [{
           albumType: AlbumType.personalSportFile,
@@ -2357,6 +2346,77 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       this.uiFlag.deviceIndex = index;
     }
 
+  }
+
+  /**
+   * 將相同的x軸的數據合併，並均化相對應的y軸數據
+   * @param xData {Array<number>}-x軸數據
+   * @param yData {Array<Array<number>>}-y軸數據
+   * @author kidin-1100205
+   */
+  handleRepeatXAxis(
+    xData: Array<number>, yData: Array<Array<number>>, handleList: Array<string>
+  ): {xAxis: Array<number>, yAxis: object} {
+
+    const finalData = {
+            xAxis: [],
+            yAxis: {}
+          };
+    let repeatTotal = {},
+        repeatLen = 0;
+
+    for (let i = 0, xAxisLen = xData.length; i < xAxisLen; i++) {
+
+      // 當前x軸數據與前一項x軸數據相同時，將y軸數據相加
+      if ((i === 0 || xData[i] === xData[i -1]) && i !== xAxisLen - 1) {
+
+        if (i === 0) {
+          handleList.forEach(_list => {
+            if (yData[_list]) {
+              Object.assign(finalData.yAxis, {[_list]: []});
+              Object.assign(repeatTotal, {[_list]: yData[_list][0]});
+            }
+            
+          });
+        } else {
+          handleList.forEach(_list => {
+            if (yData[_list]) repeatTotal[_list] += yData[_list][i];
+          });
+
+        }
+
+        repeatLen++;
+
+      // 當前x軸數據與前一項x軸數據不同
+      } else {
+
+        if (repeatLen) {
+          finalData.xAxis.push(xData[i - 1]);
+          handleList.forEach(_list => {
+            if (finalData.yAxis[_list]) finalData.yAxis[_list].push(+(repeatTotal[_list] / repeatLen).toFixed(1));
+          });
+
+        }
+        
+        if (i !== xAxisLen - 1) {
+          handleList.forEach(_list => {
+            if (yData[_list]) repeatTotal[_list] = yData[_list][i];
+          });
+
+          repeatLen = 1;
+        } else {
+          finalData.xAxis.push(xData[i]);
+          handleList.forEach(_list => {
+            if (finalData.yAxis[_list]) finalData.yAxis[_list].push(yData[_list][i]);
+          });
+
+        }
+
+      }
+
+    }
+
+    return finalData;
   }
 
   /**

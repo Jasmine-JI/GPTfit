@@ -2,15 +2,18 @@ import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { SignupService } from '../../../../../shared/services/signup.service';
-import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+import { Api10xxService } from '../../../../../core/services/api-10xx.service';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 import { Subject, fromEvent, Subscription, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { AccountTypeEnum } from '../../../../../shared/models/user-profile-info';
+import { AccountTypeEnum } from '../../../../../shared/enum/account';
 import { TFTViewMinWidth } from '../../../models/app-webview';
+import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../shared/utils/index';
+import { AuthService } from '../../../../../core/services/auth.service';
+import { UserService } from '../../../../../core/services/user.service';
 
 const errorMsg = 'Error!<br /> Please try again later.';
 type RedirectPage = 'sign' | 'setting' | 'event';
@@ -81,10 +84,12 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
     private translate: TranslateService,
     private utils: UtilsService,
     private signupService: SignupService,
-    private userProfileService: UserProfileService,
+    private api10xxService: Api10xxService,
     private dialog: MatDialog,
     private router: Router,
-    public getClientIp: GetClientIpService
+    public getClientIp: GetClientIpService,
+    private authService: AuthService,
+    private userService: UserService
   ) {
     translate.onLangChange.pipe(
       takeUntil(this.ngUnsubscribe)
@@ -173,10 +178,10 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 取得url query string和token-kidin-1090514
   getUrlString (urlStr) {
-    const query = this.utils.getUrlQueryStrings(urlStr);
+    const query = getUrlQueryStrings(urlStr);
     this.requestHeader = {
       ...this.requestHeader,
-      ...this.utils.headerKeyTranslate(query)
+      ...headerKeyTranslate(query)
     };
 
     Object.entries(query).forEach(([_key, _value]) => {
@@ -209,7 +214,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     if (this.appInfo.token === '') {
-      this.appInfo.token = this.utils.getToken();
+      this.appInfo.token = this.authService.token;
     }
 
     if (this.emailLinkString.enableAccountFlow !== 0) {
@@ -225,7 +230,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
         token: this.appInfo.token || ''
       };
 
-      this.userProfileService.getUserProfile(body).subscribe(res => {
+      this.api10xxService.fetchGetUserProfile(body).subscribe(res => {
         if (this.utils.checkRes(res)) {
           const { userProfile, signIn: { accountType } } = res as any;
           if (accountType === AccountTypeEnum.email) {
@@ -489,6 +494,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
               this.debounceBack(msgBody, this.turnFirstLoginOrBack);
             }
 
+            this.userService.refreshUserProfile();
           }
 
         }
@@ -581,6 +587,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
           msgBody = `${this.logMessage.enable} ${this.logMessage.success}`;
           this.showMsgBox(msgBody, 'enableSuccess');
+          this.userService.refreshUserProfile();
         }
 
         this.progress = 100;

@@ -9,12 +9,15 @@ import { UtilsService } from '../services/utils.service';
 import { Observable } from 'rxjs';
 import { version } from '../version';
 import dayjs from 'dayjs';
+import { AuthService } from '../../core/services/auth.service';
+import { getLocalStorageObject } from '../utils/index';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
 
   constructor(
-    public utils: UtilsService
+    public utils: UtilsService,
+    private authService: AuthService
   ) {}
 
   /**
@@ -34,12 +37,12 @@ export class TokenInterceptor implements HttpInterceptor {
       Authorization: 'required',
       deviceOSVersion: this.utils.detectBrowser(),
       // deviceID: '0', // browser沒有唯一碼
-      language: this.utils.getLocalStorageObject('locale') || 'en-us',
+      language: getLocalStorageObject('locale') || 'en-us',
       regionCode,
       utcZone: dayjs().format('Z')
     };
 
-    const token = this.utils.getToken();
+    const token = this.authService.token;
     if (token) {
       setHeaders = {
         ...setHeaders,

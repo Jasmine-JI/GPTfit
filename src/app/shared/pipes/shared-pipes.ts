@@ -45,6 +45,8 @@ import { AgePipe } from './age.pipe';
 import { RankSuffixPipe } from './rank-suffix.pipe';
 import { TargetFieldNamePipe } from './target-field-name.pipe';
 import { TargetFieldUnitPipe } from './target-field-unit.pipe';
+import { MuscleGroupNamePipe } from './muscle-group-name.pipe';
+import { MusclePartIconPipe } from './muscle-part-icon.pipe';
 
 @NgModule({
   imports: [
@@ -96,7 +98,9 @@ import { TargetFieldUnitPipe } from './target-field-unit.pipe';
     AgePipe,
     RankSuffixPipe,
     TargetFieldNamePipe,
-    TargetFieldUnitPipe
+    TargetFieldUnitPipe,
+    MuscleGroupNamePipe,
+    MusclePartIconPipe
   ],
   exports: [
     SexPipe,
@@ -144,7 +148,9 @@ import { TargetFieldUnitPipe } from './target-field-unit.pipe';
     AgePipe,
     RankSuffixPipe,
     TargetFieldNamePipe,
-    TargetFieldUnitPipe
+    TargetFieldUnitPipe,
+    MuscleGroupNamePipe,
+    MusclePartIconPipe
   ],
   providers: [
     AgePipe

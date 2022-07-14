@@ -2,7 +2,7 @@
   <div class="cardContent">
     <div class="flexRow" style="justify-content: space-between;">
       <h5 class="settingTitle">{{ 'universal_deviceSetting_adout' | translate }}</h5>
-      <div class="flexRow" *ngIf="userInfo.systemAccessRight">
+      <div class="flexRow" *ngIf="uiFlag.isPageOwner">
         <button 
           class="childPageBtn"
           (click)="openEditMode()"
@@ -32,7 +32,7 @@
         <p
           style="white-space: pre-wrap; color: var(--scale-75-230);"
           *ngIf="uiFlag.editMode === 'close'"
-        >{{ userInfo.description }}</p>
+        >{{ pageOwnerUserProfile?.description }}</p>
         <textarea
           id="description__input"
           [(ngModel)]="inputDescription"

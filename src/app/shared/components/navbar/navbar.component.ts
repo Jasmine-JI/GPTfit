@@ -1,13 +1,13 @@
 import { Component, OnInit, HostListener, Inject, Input, Output, EventEmitter } from '@angular/core';
 import { GlobalEventsManager } from '../../global-events-manager';
 import { Router } from '@angular/router';
-import { WINDOW } from '../../services/window.service';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Observable } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../services/utils.service';
 import { langData } from '../../models/i18n';
 import { GetClientIpService } from '../../services/get-client-ip.service';
+import { setLocalStorageObject, getLocalStorageObject } from '../../utils/index';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -38,17 +38,14 @@ export class NavbarComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private utilsService: UtilsService,
-    @Inject(WINDOW) private window,
     private getClientIp: GetClientIpService,
     private translateService: TranslateService
   ) {}
 
   ngOnInit() {
     this.getIpAddress();
-    this.langName = langData[
-      this.utilsService.getLocalStorageObject('locale')
-    ];
-    this.login$ = this.authService.getLoginStatus();
+    this.langName = langData[getLocalStorageObject('locale')];
+    this.login$ = this.authService.isLogin;
     this.deviceWidth = window.innerWidth;
     this.href = this.router.url;
     this.handleActivePage();
@@ -194,7 +191,7 @@ export class NavbarComponent implements OnInit {
   switchLang(lang: string) {
     this.langName = langData[lang];
     this.translateService.use(lang);
-    this.utilsService.setLocalStorageObject('locale', lang);
+    setLocalStorageObject('locale', lang);
     this.toggleMask();
   }
 

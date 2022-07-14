@@ -13,7 +13,7 @@ export class GroupLevelNamePipe implements PipeTransform {
   transform(value: number, args: string | number): string {
     if (args == 1) {
 
-      switch (value) {
+      switch (+value) {
         case 30:
           return 'universal_group_brand';
         case 40:
@@ -25,7 +25,7 @@ export class GroupLevelNamePipe implements PipeTransform {
       }
 
     } else {
-      switch (value) {
+      switch (+value) {
         case 30:
           return 'universal_group_enterprise';
         case 40:
