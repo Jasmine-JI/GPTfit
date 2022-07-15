@@ -24,6 +24,8 @@ import { deepCopy } from '../../../../shared/utils/index';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ProfessionalService } from '../../../professional/services/professional.service';
 import { AccessRight } from '../../../../shared/enum/accessright';
+import { appPath } from '../../../../app-path.const';
+import { QueryString } from '../../../../shared/enum/query-string';
 
 const errMsg = `Error.<br />Please try again later.`;
 const replaceResult = {
@@ -158,6 +160,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   };
 
   newGroupId: string;
+
+  readonly AccessRight = AccessRight;
 
   constructor(
     private translate: TranslateService,
@@ -1484,6 +1488,16 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   sceneryError() {
     console.error("Can't get group scenery.");
     this.uiFlag.hideScenery = true;
+  }
+
+  /**
+   * 轉導至建立新訊息頁面
+   */
+  navigateNewMailPage() {
+    const groupId = this.route.snapshot.paramMap.get('groupId');
+    const { stationMail: { home, newMail } } = appPath;
+    const { messageReceiverId, messageReceiverType } = QueryString;
+    this.router.navigateByUrl(`/dashboard/${home}/${newMail}?${messageReceiverId}=${groupId}&${messageReceiverType}=g`);
   }
 
   /**

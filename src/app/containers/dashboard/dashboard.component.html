@@ -19,6 +19,36 @@
             </span>
           </button>
         </div>
+        <div class="flexCenter mail__button__section">
+          <button
+            class="mail__button"
+            (click)="showStationMailList($event)"
+          >
+            <i class="icon-svg_web-icon_p1_028-email"></i>
+          </button>
+          <i
+            class="icon-svg_web-icon_p1_069-about alert__icon__mail"
+            *ngIf="uiFlag.haveNewMail"
+          ></i>
+          <div
+            class="brief__mail__list"
+            *ngIf="uiFlag.showStationMailList"
+          >
+            <h5 class="mail__list__title">
+              {{ '訊息通知' | translate }}
+            </h5>
+            <app-inbox
+              [isBriefList]="true"
+            ></app-inbox>
+            <a
+              href="#"
+              class="inbox__link"
+              (click)="navigateInbox($event)"
+            >
+              {{ 'universal_operating_more' | translate }}
+            </a>
+          </div>
+        </div>
         <div class="dropdown">
           <div 
             class="header-nav-item"
@@ -36,8 +66,7 @@
               (error)="this.userProfile.avatarUrl='/assets/images/user2.png'"
             >
             <i
-              class="icon-svg_web-icon_p1_069-about"
-              style="color: #ff3838; font-size: 30px; position: absolute; right: -15px; bottom: 0px;"
+              class="icon-svg_web-icon_p1_069-about alert__icon__enable"
               *ngIf="!accountStatus || accountStatus === 1"
             ></i>
           </div>

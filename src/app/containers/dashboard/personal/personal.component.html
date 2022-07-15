@@ -52,16 +52,21 @@
           </div>
         </div>
         <div class="flexRow info-headerBtnBar">
-          <ng-container>
-            <button>
-              <i
-                class="icon-svg_web-icon_p1_013-share info-pageBtn info-primaryBtn"
-                style="color: white; font-size: 24px; padding: 2px; cursor: pointer;"
-                *ngIf="uiFlag.isPageOwner && !uiFlag.isSettingPage"
-                (click)="openSharePersonalPage()"
-              ></i>
-            </button>
-          </ng-container>
+          <button
+            [title]="'傳送訊息' | translate"
+            (click)="navigateNewMailPage()"
+          >
+            <i
+              class="icon-svg_web-icon_p1_028-email info-pageBtn info-primaryBtn info-primaryBtnIcon"
+            ></i>
+          </button>
+          <button>
+            <i
+              class="icon-svg_web-icon_p1_013-share info-pageBtn info-primaryBtn info-primaryBtnIcon"
+              *ngIf="uiFlag.isPageOwner && !uiFlag.isSettingPage"
+              (click)="openSharePersonalPage()"
+            ></i>
+          </button>
         </div>
       </div>
     </section>

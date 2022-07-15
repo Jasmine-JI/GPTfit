@@ -30,7 +30,7 @@ exports.searchNickname = function (keyword) {
 
   return new Promise((resolve, reject) => {
     db.query(
-      `SELECT login_acc, user_id FROM ?? WHERE login_acc like ? '%'`, ['user_profile', keyword],
+      `SELECT login_acc as nickname, user_id as userId FROM ?? WHERE login_acc like ? '%'`, ['user_profile', keyword],
       function (err, rows) {
         if (err) {
           return reject(false);

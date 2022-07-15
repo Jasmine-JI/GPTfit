@@ -1,0 +1,127 @@
+@import 'color.scss';
+@import 'flex-center.scss';
+
+$contact-list-width: 250px;
+$shadow-color: rgba(0, 0, 0, 0.1);
+
+.contact__list__tab {
+  position: relative;
+}
+
+.list__tag__area {
+  margin-bottom: 5px;
+  border-radius: 5px;
+  overflow: hidden;
+  max-width: $contact-list-width;
+  width: $contact-list-width;
+  box-shadow:
+    2px 2px 2px $shadow-color,
+    -2px 2px 2px $shadow-color,
+    2px -2px 2px $shadow-color,
+    -2px -2px 2px $shadow-color;
+}
+
+.half__tag {
+  $width: calc(#{$contact-list-width} / 2);
+  max-width: $width;
+  width: $width;
+}
+
+.list__tag {
+  @include center();
+  width: 50%;
+  align-items: center;
+  padding: 2px 5px;
+  background-color: rgba(235, 235, 235, 1);
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(245, 245, 245, 1);
+  }
+
+}
+
+.list__tag--active {
+  background-color: white;
+}
+
+.list__tag__full {
+  width: 100%;
+}
+
+.favorite__icon {
+  font-size: 24px;
+}
+
+.black__icon {
+  font-size: 22px;
+}
+
+.contact__list__menu {
+  position: absolute;
+  z-index: 2;
+  top: 24px;
+  background-color: white;
+  box-shadow: 2px 2px 2px $shadow-color, -2px 2px 2px $shadow-color, 1px -1px 2px $shadow-color;
+  max-width: $contact-list-width;
+  width: $contact-list-width;
+  padding: 10px 5px;
+}
+
+.contact__list {
+  list-style: none;
+  margin: 0;
+  padding: 2px 0;
+}
+
+.contact__list__item {
+  flex-wrap: nowrap;
+  padding: 5px 2px;
+  justify-content: space-between;
+
+  &:hover {
+    color: white;
+    background: $primary-blue;
+    cursor: pointer;
+  }
+
+}
+
+.contact__search__area {
+  border: 1px solid black;
+}
+
+.search__icon {
+  font-size: 24px;
+}
+
+.contact__keyword__input {
+  border: none;
+  outline: none;
+}
+
+.contact__info {
+  align-items: center;
+}
+
+.contact__icon {
+  $size: 24px;
+  min-width: $size;
+  width: $size;
+  min-height: $size;
+  height: $size;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.list__nickname {
+  white-space: pre-line;
+}
+
+.remove__button {
+
+}
+
+.remove__icon {
+  font-size: 20px;
+}
