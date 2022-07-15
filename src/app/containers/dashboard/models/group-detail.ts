@@ -42,7 +42,7 @@ export interface GroupArchitecture {
  */
 export interface UserSimpleInfo {
   nickname: string;
-  userId: number;
+  userId: number | null;
   token: string;
   accessRight: AccessRight;
   joinStatus: number;

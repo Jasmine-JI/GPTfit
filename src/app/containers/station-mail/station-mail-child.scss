@@ -1,0 +1,84 @@
+@import 'transform.scss';
+@import 'transition.scss';
+@import 'font.scss';
+
+.child-sender__menu {
+  $shadow-color: rgba(0, 0, 0, 0.2);
+  position: absolute;
+  top: 24px;
+  left: 0;
+  max-height: 150px;
+  max-width: 200px;
+  min-width: 150px;
+  overflow-y: scroll;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  z-index: 5;
+  background-color: white;
+  padding: 2px;
+  box-shadow: 2px 2px 2px $shadow-color, -2px 2px 2px $shadow-color;
+  cursor: pointer;
+}
+
+.child-sender__menu__item {
+  width: 100%;
+  padding: 5px;
+
+  &:hover {
+    background-color: rgba(240, 240, 240, 1);
+  }
+}
+
+.child-functional__icon {
+  font-size: 24px;
+}
+
+.child-reply__mail {
+  border: 1px solid rgba(223, 58, 58, 1);
+  border-radius: 10px;
+  padding: 10px 5px;
+  margin: 5px 0;
+}
+
+.child-reply__mail__info {
+  margin-bottom: 5px;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.child-reply__mail__sender {
+  align-items: center;  
+}
+
+.child-reply__sender__icon {
+  $size: 24px;
+  height: $size;
+  min-height: $size;
+  width: $size;
+  min-width: $size;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.child-divide__symbol {
+  margin: 0 5px;
+}
+
+.child-reply__mail__title {
+  margin: 0;
+}
+
+.child-reply__mail__unfold {
+  @include transition(transform);
+}
+
+.child-reply__mail__fold {
+  @include el-rotate(180deg);
+  @include transition(transform);
+}
+
+.child-turn__back {
+  @include bold-font(18px);
+}

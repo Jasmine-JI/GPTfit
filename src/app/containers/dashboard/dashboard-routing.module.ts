@@ -47,6 +47,13 @@ import { DeviceListComponent } from './group-v2/group-info/device-list/device-li
 import { PersonalComponent } from './personal/personal.component';
 import { InfoComponent } from './personal/info/info.component';
 import { ActivityListComponent } from './personal/activity-list/activity-list.component';
+import { StationMailComponent } from '../station-mail/station-mail.component';
+import { CreateMailComponent } from '../station-mail/create-mail/create-mail.component';
+import { InboxComponent } from '../station-mail/inbox/inbox.component';
+import { MailDetailComponent } from '../station-mail/mail-detail/mail-detail.component';
+import { ReceiverListComponent } from '../station-mail/receiver-list/receiver-list.component';
+import { appPath } from '../../app-path.const';
+
 
 const routes: Routes = [
   {
@@ -267,14 +274,36 @@ const routes: Routes = [
         ]
       },
       {
+        path: appPath.stationMail.home,
+        component: StationMailComponent,
+        children: [
+          {
+            path: appPath.stationMail.newMail,
+            component: CreateMailComponent 
+          },
+          {
+            path: appPath.stationMail.inbox,
+            component: InboxComponent 
+          },
+          {
+            path: appPath.stationMail.mailDetail,
+            component: MailDetailComponent 
+          },
+          {
+            path: appPath.stationMail.receiverList,
+            component: ReceiverListComponent
+          }
+        ]
+      },
+      {
         path: '**',
-        redirectTo: '404'
+        redirectTo: appPath.pageNotFound
       }
     ]
   },
   {
     path: '**',
-    redirectTo: '404'
+    redirectTo: appPath.pageNotFound
   }
 ];
 

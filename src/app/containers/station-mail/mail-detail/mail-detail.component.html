@@ -1,0 +1,147 @@
+<div class="flexCol">
+  <div *ngIf="uiFlag.isMobile">
+    <button (click)="turnBack()">
+      <i class="icon-svg_web-icon_p1_016-back child-functional__icon"></i>
+      <span class="child-turn__back">
+        {{ '訊息列表' | translate }}
+      </span>
+    </button>
+  </div>
+  <div class="flexRow functional__button__section">
+    <button
+      class="functional__button"
+      (click)="replyMail()"
+      *ngIf="mailDetail?.type === MessageType.normal"
+    >
+      <i class="icon-svg_web-icon_p1_073-level_fold child-functional__icon"></i>
+      <span>{{ '回覆' | translate }}</span>
+    </button>
+    <button class="functional__button" (click)="deleteMail()">
+      <i class="icon-svg_web-icon_p1_009-delete child-functional__icon"></i>
+      <span>{{ 'universal_operating_delete' | translate }}</span>
+    </button>
+  </div>
+  <article>
+    <h5 class="mail__title">
+      {{ mailDetail ? mailDetail.title : ('universal_system_none' | translate) }}
+    </h5>
+    <div
+      class="flexRow sender__row"
+      *ngIf="mailDetail?.type === MessageType.normal"
+    >
+      <img
+        class="sender__icon"
+        [src]="mailDetail?.senderAvatarUrl"
+        (error)="mailDetail.senderAvatarUrl='/assets/images/user2.png'"
+      >
+      <span
+        class="sender__name"
+        (click)="showSenderMenu($event)"
+      >
+        {{ mailDetail ? mailDetail.senderName : ('universal_status_noData' | translate) }}
+      </span>
+      <i
+        class="icon-svg_web-icon_p1_089-favorite favorite__icon"
+        *ngIf="uiFlag.senderIsFavorite"
+      ></i>
+      <i
+        class="icon-svg_web-icon_p1_090-unfavorite unfavorite__icon"
+        *ngIf="!uiFlag.senderIsFavorite"
+      ></i>
+      <ul
+        class="child-sender__menu"
+        *ngIf="uiFlag.showSenderMenu"
+      >
+        <li
+          class="child-sender__menu__item"
+          (click)="navigateSenderPage()"
+        >
+          {{ 'universal_deviceSetting_adout' | translate }}
+        </li>
+        <li
+          class="child-sender__menu__item"
+          (click)="addFavoriteList()"
+          *ngIf="!uiFlag.senderIsFavorite"
+        >
+          {{ '設為常用名單' | translate }}
+        </li>
+        <li
+          class="child-sender__menu__item"
+          (click)="removeFavoriteList()"
+          *ngIf="uiFlag.senderIsFavorite"
+        >
+          {{ '取消常用名單' | translate }}
+        </li>
+        <li
+          class="child-sender__menu__item"
+          (click)="addBlackList()"
+          *ngIf="!uiFlag.senderIsBlack"
+        >
+          {{ '設為黑名單' | translate }}
+        </li>
+        <li
+          class="child-sender__menu__item"
+          (click)="removeBlackList()"
+          *ngIf="uiFlag.senderIsBlack"
+        >
+          {{ '取消黑名單' | translate }}
+        </li>
+      </ul>
+    </div>
+    <p
+      class="system__mail__mark"
+      *ngIf="mailDetail?.type === MessageType.system || mailDetail?.type === MessageType.admin"
+    >
+      {{ '系統訊息' | translate }}
+    </p>
+    <p class="mail__send__date">
+      {{ mailDetail ? (mailDetail.sendTimestamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm') : '---------------' }}
+    </p>
+    <app-receiver-list
+      [showBlackList]="true"
+    ></app-receiver-list>
+    <div class="mail__content__section">
+      <div
+        class="main__mail__content"
+        [innerHTML]="mailDetail ? mailDetail.content : ('universal_status_noData' | translate)"
+      ></div>
+      <button
+        class="show__reply__button"
+        (click)="showAllReplyMail()"
+        *ngIf="mailDetail?.replyMessageId?.length > 0 && !uiFlag.showReplyMail"
+      >
+        {{ '顯示先前訊息' | translate }}
+      </button>
+      <div
+        class="flexCol child-reply__mail"
+        *ngFor="let _replyMail of replyMailList; let index = index;"
+        (click)="unfoldReplyMail(index)"
+      >
+        <div class="flexRow child-reply__mail__info">
+          <div class="flexRow child-reply__mail__sender">
+            <img
+              class="child-reply__sender__icon"
+              [src]="_replyMail.senderAvatarUrl"
+              [alt]="_replyMail.senderName"
+              (error)="_replyMail.senderAvatarUrl = '/assets/images/user2.png'"
+            >
+            <span>{{ _replyMail.senderName }}</span>
+            <span class="child-divide__symbol">|</span>
+            <h5 class="child-reply__mail__title">
+              {{ _replyMail.title }}
+            </h5>
+          </div>
+          <i
+            class="icon-svg_web-icon_p1_006-unfold child-reply__mail__unfold"
+            [class.child-reply__mail__fold]="_replyMail.unfold"
+          ></i>
+        </div>
+        <div
+          class="reply__mail__detail"
+          [innerHTML]="_replyMail.content"
+          *ngIf="_replyMail.unfold"
+        ></div>
+      </div>
+    </div>
+  </article>
+</div>

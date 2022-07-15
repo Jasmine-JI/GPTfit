@@ -1,0 +1,116 @@
+@import 'color.scss';
+
+$search-input-height: 35px;
+$box-shadow-color: rgba(0, 0, 0, 0.2);
+
+
+.functional__button__row {
+  justify-content: flex-end;
+}
+
+.mail__content {
+  border: 1px solid black;
+  min-width: 300px;
+  min-height: 65vh;
+  padding: 5px;
+  width: 100%;
+}
+
+.mail__input__content {
+  outline: none;
+  min-height: 300px;
+}
+
+.autocomplete__list {
+  position: relative;
+  width: 100%;
+}
+
+.input__text__section {
+  border-bottom: 1px solid black;
+  margin: 5px 0;
+}
+
+.input__label {
+  display: flex;
+  align-items: center;
+  margin: 0 5px 0 0;
+  white-space: noWrap;
+  font-weight: bold;
+}
+
+#receiver__input, #mail__title {
+  height: $search-input-height;
+  outline: none;
+  border: none;
+  padding: 0 2px;
+}
+
+#receiver__input {
+  width: 100%;
+}
+
+#mail__title {
+  width: 100%;
+}
+
+.receiver__search__list {
+  list-style: none;
+  position: absolute;
+  max-width: 200px;
+  max-height: 200px;
+  margin: 0;
+  padding: 2px 5px;
+  overflow-y: scroll;
+  background-color: white;
+  z-index: 5;
+  top: calc(#{$search-input-height} + 1px);
+  box-shadow: 2px 2px 2px $box-shadow-color, -2px 2px 2px $box-shadow-color;
+}
+
+.receiver__search__option {
+
+  &:hover {
+    cursor: pointer;
+    background-color: $primary-blue;
+    color: white;
+  }
+
+}
+
+.receiver__row {
+  flex-wrap: wrap;
+}
+
+.receiver__sticker {
+  $height: 30px;
+  position: relative;
+  background-color: rgba(225, 225, 225, 1);
+  height: $height;
+  border-radius: $height;
+  margin: 2px;
+  padding: 2px 0 2px 10px;
+  cursor: pointer;
+}
+
+.sticker__no__button {
+  padding: 2px 10px;
+}
+
+.receiver__name {
+  text-decoration: underline;
+  white-space: noWrap;
+}
+
+.content__length__hint {
+  text-align: right;
+}
+
+.mail__option {
+  align-items: center;
+  margin: 2px 0;
+}
+
+.mail__option__label {
+  margin: 0 5px;
+}

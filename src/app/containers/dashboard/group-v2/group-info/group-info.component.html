@@ -123,10 +123,18 @@
               </span>
               <app-loading-icon style="font-size: 8px; pointer-events: none;" *ngIf="uiFlag.isJoinLoading"></app-loading-icon>
             </button>
+            <button
+              [title]="'傳送群組訊息' | translate"
+              (click)="navigateNewMailPage()"
+              *ngIf="user.accessRight <= AccessRight.marketing || user.isGroupAdmin"
+            >
+              <i
+                class="icon-svg_web-icon_p1_028-email info-pageBtn info-primaryBtn info-primaryBtnIcon"
+              ></i>
+            </button>
             <button>
               <i
-                class="icon-svg_web-icon_p1_013-share info-pageBtn info-primaryBtn"
-                style="color: white; font-size: 24px; padding: 2px; cursor: pointer;"
+                class="icon-svg_web-icon_p1_013-share info-pageBtn info-primaryBtn info-primaryBtnIcon"
                 *ngIf="!uiFlag.portalMode"
                 (click)="openShareGroupInfoDialog()"
               ></i>
