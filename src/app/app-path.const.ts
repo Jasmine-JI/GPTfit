@@ -29,6 +29,15 @@ export const appPath = {
 
   },
 
+  // 站內信
+  stationMail: {
+    home: 'station-mail',
+    newMail: 'new-mail',
+    mailDetail: 'mail-detail',
+    inbox: 'inbox',
+    receiverList: 'receiver-list'
+  },
+
   // 無權限訪問
   pageNoPermission: '403',
 

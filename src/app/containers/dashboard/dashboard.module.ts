@@ -40,7 +40,6 @@ import { ActivityOtherDetailsService } from '../../shared/services/activity-othe
 import { DetectInappService } from '../../shared/services/detect-inapp.service';
 import { QRCodeModule } from 'angularx-qrcode';
 import { InnerDevicePairComponent } from './components/inner-device-pair/inner-device-pair.component';
-import { ShareGroupInfoDialogComponent } from '../../shared/components/share-group-info-dialog/share-group-info-dialog.component';
 import { LifeTrackingComponent } from './components/life-tracking/life-tracking.component';
 import { LifeTrackingService } from './services/life-tracking.service';
 import { QrcodeUploadComponent } from './components/qrcode-upload/qrcode-upload.component';
@@ -79,6 +78,7 @@ import { SettingAccountComponent } from './personal/setting-account/setting-acco
 import { ActivityListComponent } from './personal/activity-list/activity-list.component';
 import { GroupService } from '../../shared/services/group.service';
 import { SharedComponentsModule as ProfessionalSharedModule } from '../professional/shared/shared-components.module';
+import { StationMailModule } from '../station-mail/station-mail.module';
 
 
 @NgModule({
@@ -94,7 +94,8 @@ import { SharedComponentsModule as ProfessionalSharedModule } from '../professio
         SharedModule,
         NgProgressModule,
         QRCodeModule,
-        ProfessionalSharedModule
+        ProfessionalSharedModule,
+        StationMailModule
     ],
     providers: [
         MapService,

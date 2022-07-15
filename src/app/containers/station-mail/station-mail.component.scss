@@ -1,0 +1,21 @@
+@import 'font.scss';
+
+$inbox-width: 300px;
+$create-button-width: 50px;
+
+.create__mail__button {
+  width: $create-button-width;
+}
+
+.create__mail__icon {
+  @include bold-font(36px);
+}
+
+.inbox__section {
+  width: $inbox-width;
+}
+
+.create__mail__section, .mail__detail__section {
+  width: calc(100% - #{$inbox-width} - #{$create-button-width});
+  margin: 0 2vw;
+}

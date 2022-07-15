@@ -1,6 +1,7 @@
 @import 'transition.scss';
 @import 'overflow-scroll';
 
+$alert-icon-color: rgba(255, 56, 56, 1);
 
 .version {
   color: #fff;
@@ -403,6 +404,55 @@
 
 .dashboard__container {
   padding: 1vh 7vw;
+}
+
+.mail__button__section {
+  position: relative;
+}
+
+.mail__button {
+  color: white;
+  font-size: 28px;
+}
+
+.alert__icon__mail {
+  position: absolute;
+  color: $alert-icon-color;
+  font-size: 24px;
+  right: -5px;
+  bottom: -5px;
+  cursor: pointer;
+}
+
+.alert__icon__enable {
+  color: $alert-icon-color;
+  font-size: 30px;
+  position: absolute;
+  right: -15px;
+  bottom: 0px;
+}
+
+.brief__mail__list {
+  $shodow-color: rgba(200, 200, 200, 1);
+  position: absolute;
+  top: 30px;
+  background-color: white;
+  color: black;
+  z-index: 10;
+  padding: 5px;
+  max-width: 250px;
+  min-width: 150px;
+  box-shadow: 2px 2px 2px $shodow-color, -2px 2px 2px $shodow-color;
+}
+
+.mail__list__title {
+  font-weight: bold;
+}
+
+.inbox__link {
+  width: 100%;
+  text-align: center;
+  display: block;
 }
 
 /*********************************** media ********************************************/

@@ -18,6 +18,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { UserService } from '../../../core/services/user.service';
 import { getUrlQueryStrings } from '../../../shared/utils/index';
 import { AuthService } from '../../../core/services/auth.service';
+import { appPath } from '../../../app-path.const';
+import { QueryString } from '../../../shared/enum/query-string';
 
 type ImgType = 'icon' | 'scenery';
 
@@ -49,12 +51,12 @@ export class PersonalComponent implements OnInit, OnDestroy {
     descOverflow: false,
     showMorePageOpt: false,
     isPreviewMode: false,
-    openImgSelector: <ImgType>null,
-    divideIndex: 99,
+    openImgSelector: <ImgType | null>null,
+    divideIndex: <number | null>99,
     currentTagIndex: 0,
     barPosition: 0,
     barWidth: 0,
-    windowInnerWidth: null,
+    windowInnerWidth: <number | null>null,
     hideScenery: false,
     isSettingPage: false,
     patchEditPrivacy: false
@@ -66,12 +68,12 @@ export class PersonalComponent implements OnInit, OnDestroy {
   editImage = {
     edited: false,
     icon: {
-      origin: null,
-      base64: null
+      origin: <string | null>null,
+      base64: <string | null>null
     },
     scenery: {
-      origin: null,
-      base64: null
+      origin: <string | null>null,
+      base64: <string | null>null
     }
   }
 
@@ -80,14 +82,14 @@ export class PersonalComponent implements OnInit, OnDestroy {
    */
   perPageOptSize = {
     total: 0,
-    perSize: []
+    perSize: <Array<number>>[]
   };
 
   userProfile: UserProfileInfo;
   hashUserId: string;
   token = this.authService.token;
   readonly AlbumType = AlbumType;
-  childPageList = [];
+  childPageList: Array<string> = [];
 
   constructor(
     private utils: UtilsService,
@@ -145,9 +147,16 @@ export class PersonalComponent implements OnInit, OnDestroy {
    */
   checkPageOwner(redirectPath: string) {
     const userId = this.usreService.getUser().userId;
-    this.hashUserId = this.route.snapshot.paramMap.get('userId');
-    const targetUserId = +this.hashIdService.handleUserIdDecode(this.hashUserId);
+    const targetUserId = this.getPageOwnerId();
     if (targetUserId === userId) this.router.navigateByUrl(redirectPath);
+  }
+
+  /**
+   * 取得頁面持有人編號
+   */
+  getPageOwnerId() {
+    this.hashUserId = this.route.snapshot.paramMap.get('userId') as string;
+    return +this.hashIdService.handleUserIdDecode(this.hashUserId);
   }
 
   /**
@@ -347,8 +356,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1100811
    */
   getAssignUserProfile() {
-    this.hashUserId = this.route.snapshot.paramMap.get('userId');
-    const userId = +this.hashIdService.handleUserIdDecode(this.hashUserId);
+    const userId = this.getPageOwnerId();
     this.usreService.getTargetUserInfo(userId).subscribe(res => {
       this.uiFlag.isPageOwner = userId === res.userId;
       this.userProfile = res;
@@ -485,7 +493,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @param event {NavigationStart}-變更url產生的事件
    * @author kidin-1100812
    */
-  getCurrentContentPage(event = null): void {
+  getCurrentContentPage(event: any = null): void {
     if (!this.uiFlag.isSettingPage) {
       let urlArr: Array<string>;
       const { isPortalMode } = this.uiFlag;
@@ -571,7 +579,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
   upLoadImg(editMode: EditMode) {
     const { edited, icon, scenery } = this.editImage;
     if (editMode === 'complete' && edited) {
-      let imgArr = [];
+      let imgArr: any = [];
       const formData = new FormData();
       const { userId } = this.userProfile;
       formData.set('token', this.authService.token);
@@ -679,7 +687,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @param tagIdx {number}-tag的顯示序
    * @author kidin-1100812
    */
-  handleShowContent(e: MouseEvent, page: string, tagIdx: number) {
+  handleShowContent(e: MouseEvent | null, page: string, tagIdx: number) {
     const { isPortalMode } = this.uiFlag;
     if (e) e.stopPropagation();
     if (isPortalMode) {
@@ -729,7 +737,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1100812
    */
   scrollPage(page: string) {
-    const mainBodyEle = document.querySelector('.main__container');
+    const mainBodyEle = document.querySelector('.main__container') as Element;
     if (page === 'group-introduction') {
       mainBodyEle.scrollTo({top: 0, behavior: 'smooth'});
     } else {
@@ -792,6 +800,16 @@ export class PersonalComponent implements OnInit, OnDestroy {
    */
   passPatchEditPrivacyStatus(e: boolean) {
     this.uiFlag.patchEditPrivacy = e;
+  }
+
+  /**
+   * 轉導至建立新訊息頁面
+   */
+  navigateNewMailPage() {
+    const userId = this.getPageOwnerId();
+    const { stationMail: { home, newMail } } = appPath;
+    const { messageReceiverId, messageReceiverType } = QueryString;
+    this.router.navigateByUrl(`/dashboard/${home}/${newMail}?${messageReceiverId}=${userId}&${messageReceiverType}=p`);
   }
 
   /**

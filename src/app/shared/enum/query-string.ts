@@ -16,5 +16,8 @@ export enum QueryString {
   sportType = 'st', // 運動類別
   seeMore = 'sm', // 看更多（展開）
   printMode = 'ipm',  // 列印模式
-  debug = 'debug'  // debug模式，需連同系統權限一起判斷
+  debug = 'debug',  // debug模式，需連同系統權限一起判斷
+  messageId = 'msi',  // 站內信id
+  messageReceiverId = 'mri',  // 信件收件人
+  messageReceiverType = 'mrt'  // 站內信類別(個人/群組)
 }

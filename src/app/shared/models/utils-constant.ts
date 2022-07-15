@@ -13,4 +13,4 @@ export const PROD_DOMAIN = 'www.gptfit.com';
 /**
  * 群組 id 正則表達式
  */
-export const REGEX_GROUP_ID = /0-0-(?<brandId>\w*)-(?<branchId>\w*)-(?<classId>\w*)-0/;
+export const REGEX_GROUP_ID = /0-0-(?<brandId>\w*)-(?<branchId>\w*)-(?<classId>\w*)-(?<subClassId>\w*)/;

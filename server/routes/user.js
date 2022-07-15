@@ -219,7 +219,7 @@ router.post('/search_nickname', function (req, res, next) {
       return res.json({
         resultCode: 200,
         resultMessage: "Get result success.",
-        nickname: result
+        list: result
       });
 
     } else {
