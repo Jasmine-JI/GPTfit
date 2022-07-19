@@ -2663,4 +2663,26 @@
  "universal_training_exercisesList": "动作列表",
  "universal_activityData_muscleGroup": "肌群",
  "universal_training_difference": "差异",
- "universal_training_targetTimes": "目标次数"}
+ "universal_training_targetTimes": "目标次数",
+ "universal_app_sensitive": "增加灵敏度",
+ "universal_app_insensitive": "降低灵敏度",
+ "universal_app_outboundThreshold": "去程阀值",
+ "universal_app_inboundThreshold": "回程阀值",
+ "universal_app_hysteresis": "回差值",
+ "universal_app_calibrateTitle": "动作感应校正",
+ "universal_app_calibrateIntro": "选择动作后执行，观察次数变化是否吻合实际次数 若次数少于实际动作次数请增加灵敏度，反之增加灵敏度",
+ "universal_message_title": "标题",
+ "universal_message_addressee": "收件人",
+ "universal_message_sentComplete": "寄件成功",
+ "universal_message_sentFail": "寄件失败",
+ "universal_message_systemMessage": "系统讯息",
+ "universal_training_concluWT": "累积重训成效",
+ "universal_message_favContacts": "常用名单",
+ "universal_message_blackList": "黑名单",
+ "universal_message_showPrevious": "显示先前讯息",
+ "universal_message_messageList": "讯息列表",
+ "universal_message_sendMessage": "传送讯息",
+ "universal_message_sendGroupMessage": "传送群组讯息",
+ "universal_message_draftDiag": "发现暂存草稿，是否引入?",
+ "universal_message_reply": "回复"
+}

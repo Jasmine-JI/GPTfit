@@ -24,7 +24,7 @@
             class="mail__button"
             (click)="showStationMailList($event)"
           >
-            <i class="icon-svg_web-icon_p1_028-email"></i>
+            <i class="icon-svg_web-icon_p4_012-message"></i>
           </button>
           <i
             class="icon-svg_web-icon_p1_069-about alert__icon__mail"
@@ -34,9 +34,17 @@
             class="brief__mail__list"
             *ngIf="uiFlag.showStationMailList"
           >
-            <h5 class="mail__list__title">
-              {{ '訊息通知' | translate }}
-            </h5>
+            <div class="flexRow message__title__section">
+              <h5 class="mail__list__title">
+                {{ 'universal_deviceSetting_message' | translate }}
+              </h5>
+              <button
+                class="create__message__button"
+                (click)="navigateNewMailPage()"
+              >
+                <i class="icon-svg_web-icon_p1_029-add"></i>
+              </button>
+            </div>
             <app-inbox
               [isBriefList]="true"
             ></app-inbox>

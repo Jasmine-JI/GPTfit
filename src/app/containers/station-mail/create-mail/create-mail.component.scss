@@ -19,11 +19,18 @@ $box-shadow-color: rgba(0, 0, 0, 0.2);
 .mail__input__content {
   outline: none;
   min-height: 300px;
+  width: 100%;
+  outline: none;
+  border: none;
+  resize: none;
+}
+
+.textArea__full__height {
+  height: 60vh;
 }
 
 .autocomplete__list {
   position: relative;
-  width: 100%;
 }
 
 .input__text__section {
@@ -47,7 +54,7 @@ $box-shadow-color: rgba(0, 0, 0, 0.2);
 }
 
 #receiver__input {
-  width: 100%;
+  min-width: 250px;
 }
 
 #mail__title {
@@ -78,7 +85,7 @@ $box-shadow-color: rgba(0, 0, 0, 0.2);
 
 }
 
-.receiver__row {
+.receiver__section {
   flex-wrap: wrap;
 }
 

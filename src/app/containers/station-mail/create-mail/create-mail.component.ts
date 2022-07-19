@@ -1,5 +1,11 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { getUrlQueryStrings, checkResponse, setLocalStorageObject, getLocalStorageObject } from '../../../shared/utils/index';
+import {
+  getUrlQueryStrings,
+  checkResponse,
+  setLocalStorageObject,
+  getLocalStorageObject,
+  removeLocalStorageObject
+} from '../../../shared/utils/index';
 import { StationMailService } from '../services/station-mail.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Api10xxService } from '../../../core/services/api-10xx.service';
@@ -20,6 +26,9 @@ import { KeyCode } from '../../../shared/models/key-code';
 import { UserService } from '../../../core/services/user.service';
 import { AccessRight } from '../../../shared/enum/accessright';
 import { REGEX_GROUP_ID } from '../../../shared/models/utils-constant';
+import { LocalStorageKey } from '../../../shared/enum/local-storage-key';
+import { MessageBoxComponent } from '../../../shared/components/message-box/message-box.component';
+import { MatDialog } from '@angular/material/dialog';
 
 
 @Component({
@@ -46,7 +55,8 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
     isReplyMode: false,
     isMobile: false,
     showReceiverMenu: <Receiver | null>null,
-    isFavorite: false
+    isFavorite: false,
+    needSaveDraft: false
   };
 
   /**
@@ -61,6 +71,11 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
     receiver: <Array<number | string>>[],
     messageType: MessageType.normal
   };
+
+  /**
+   * 信件正文
+   */
+  textAreaContent = '';
 
   /**
    * 信件內文總字數
@@ -92,9 +107,14 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   replyMailList: Array<any> = [];
 
+  /**
+   * 草稿內容
+   */
+  draft: any = this.getDraft();
 
-  readonly contentLimit = 450;  // 字數限制
-  readonly newlineLimit = 15;  // 換行限制
+
+  readonly contentLimit = 400;  // 字數限制
+  readonly newlineLimit = 50;  // 換行限制
   readonly AccessRight = AccessRight;
   readonly ReceiverType = ReceiverType;
   readonly MessageType = MessageType;
@@ -110,7 +130,8 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
     private utilsService: UtilsService,
     private translateService: TranslateService,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -148,20 +169,41 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * 確認url query string
+   * 確認url query string，並判斷是否提示引入草稿
    */
   checkQueryString() {
-    const { messageReceiverId, messageReceiverType, messageId } = QueryString;
+    const { receiver, replyMessageId } = this.draft ?? { receiver: [], replyMessageId: [] };
+    const { messageReceiverId, messageId } = QueryString;
     const queryObj = getUrlQueryStrings();
     const receiverId = queryObj[messageReceiverId];
     if (receiverId) {
-      const receiverType = queryObj[messageReceiverType];
-      const isGroupMail = receiverType && receiverType === 'g';
-      this.handleReplyReceiver(isGroupMail, receiverId as string);
-      const msgId = queryObj[messageId] ? +queryObj[messageId] : null;
-      this.getReplyContent(msgId);
+      const replyMsgId = queryObj[messageId];
+      const isSameReceiver = receiverId == receiver[0]?.id;
+      const isSameReplyMail = replyMsgId ? replyMsgId == replyMessageId[0] : true;
+      if (isSameReceiver && isSameReplyMail) {
+        this.askImportDraft(this.handleQueryString.bind(this));
+      } else {
+        this.handleQueryString();
+      }
+
+    } else {
+      if (this.draft) this.askImportDraft();
     }
 
+  }
+
+  /**
+   * 根據url query string取得收件者與回覆信件資訊
+   */
+  handleQueryString() {
+    const { messageReceiverId, messageReceiverType, messageId } = QueryString;
+    const queryObj = getUrlQueryStrings();
+    const receiverId = queryObj[messageReceiverId];
+    const receiverType = queryObj[messageReceiverType];
+    const isGroupMail = receiverType && receiverType === 'g';
+    this.handleReplyReceiver(isGroupMail, receiverId as string);
+    const msgId = queryObj[messageId] ? +queryObj[messageId] : null;
+    this.getReplyContent(msgId);
   }
 
   /**
@@ -186,6 +228,7 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   saveTitle(e: FocusEvent) {
     this.sendMail.title = (e as any).target.value.trim();
+    this.uiFlag.needSaveDraft = true;
   }
 
   /**
@@ -193,9 +236,21 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param e {KeyboardEvent}
    */
   handleMainContentKeyUp(e: KeyboardEvent) {
-    const { textContent } = (e as any).target;
-    const mainContent = textContent.trim();
-    this.contentLength = mainContent.length;
+    const { value } = (e as any).target;
+    const mainContent = this.getOnlyTextLength(value);
+    this.contentLength = mainContent;
+  }
+
+  /**
+   * 取得換行符以外的文字長度
+   * @param str {string}-字串
+   */
+  getOnlyTextLength(str: string) {
+    return str
+      .trim()
+      .split('\n')
+      .join('')
+      .length;
   }
 
   /**
@@ -203,20 +258,9 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param e {FocusEvent}
    */
   saveMainContent(e: FocusEvent) {
-    const content = (e as any).target.innerHTML.trim();
-    this.sendMail.content = this.changeNewlineTag(content);
-  }
-
-  /**
-   * 將<div>轉為<br>
-   * @param content {string}-字串
-   */
-  changeNewlineTag(content: string) {
-    return content
-      .trim()
-      .replace(/<div><br><\/div>/g, '<br>')
-      .replace(/<\/div>/g, '')
-      .replace(/<div>/g, '<br>');
+    const content = (e as any).target.value.trim();
+    this.sendMail.content = content;
+    this.uiFlag.needSaveDraft = true;
   }
 
   /**
@@ -224,15 +268,11 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param e {ClipboardEvent}
    */
   checkPaste(e: ClipboardEvent) {
-    const contentLength = this.mainContentInput.nativeElement.textContent.trim().length;
+    const contentLength = this.getOnlyTextLength(this.mainContentInput.nativeElement.value);
     const { clipboardData } = (e as any) ?? window;
-    e.clipboardData?.setData('text', '123');
     const pasteValueLength = clipboardData.getData('text').length;
     const totalLength = pasteValueLength + contentLength;
-    if (totalLength > this.contentLimit) {
-      e.preventDefault();
-    }
-
+    if (totalLength > this.contentLimit) e.preventDefault();
   }
 
   /**
@@ -240,16 +280,17 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param e {KeyboardEvent}
    */
   checkTextLimit(e: KeyboardEvent) {
-    const { keyCode, target: { textContent, innerHTML } } = e as any;
-    const textLength = textContent.trim().length;
-    const newlineLength = this.changeNewlineTag(innerHTML)
-      .split('<br>')
-      .filter(str => str.length === 0)
+    const { keyCode, target: { value } } = e as any;
+    const textLength = this.getOnlyTextLength(value);
+    const newlineLength = value
+      .split('\n')
       .length;
+
     const textIsOverLimit = textLength >= this.contentLimit;
     const newlineIsOverLimit = newlineLength >= this.newlineLimit;
     const notBackspace = keyCode !== KeyCode.backspace;
-    if ((textIsOverLimit || newlineIsOverLimit) && notBackspace) e.preventDefault();
+    const isEnter = keyCode === KeyCode.enter;
+    if ((textIsOverLimit || (newlineIsOverLimit && isEnter)) && notBackspace) e.preventDefault();
   }
 
   /**
@@ -501,10 +542,11 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
         this.api50xxService.fetchSendMessage(this.sendMail).subscribe(res => {
           this.uiFlag.progress = 100;
           if (checkResponse(res)) {
-            this.showResultMessage('寄件成功');
+            this.uiFlag.needSaveDraft = false;
+            this.showResultMessage('universal_message_sentComplete');
             this.returnInbox();
           } else {
-            this.showResultMessage('寄件失敗');
+            this.showResultMessage('universal_message_sentFail');
           }
 
         });
@@ -535,8 +577,21 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param msgKey {string}-結果訊息多國語系鍵名
    */
   showResultMessage(msgKey: string) {
-    const message = this.translateService.instant(msgKey);
-    this.utilsService.showSnackBar(message);
+    this.translateService.get('hello world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      const message = this.translateService.instant(msgKey);
+      this.utilsService.showSnackBar(message);
+    });
+
+  }
+
+  /**
+   * 放棄訊息編輯
+   */
+  discardMail() {
+    this.uiFlag.needSaveDraft = false;
+    this.returnInbox();
   }
 
   /**
@@ -754,9 +809,124 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * 將欲回覆或轉寄的信件內容清空
+   * 儲存草稿
+   */
+  saveDraft() {
+    const { sendMail: { title, content, replyMessageId }, receiverList } = this;
+    const checkReceiver = receiverList[0];
+    const hashReceiverList = this.hashReceiverId(this.receiverList);
+    const draftObj = {
+      title,
+      receiver: hashReceiverList,
+      content,
+      replyMessageId,
+      isGroupMail: checkReceiver ? `${checkReceiver.id}`.includes('-') : false
+    };
+
+    const draftString = JSON.stringify(draftObj);
+    setLocalStorageObject(LocalStorageKey.stationMailDraft, draftString);
+  }
+
+  /**
+   * 取得草稿
+   */
+  getDraft() {
+    const draftString = getLocalStorageObject(LocalStorageKey.stationMailDraft);
+    return draftString ? JSON.parse(draftString) : null;
+  }
+
+  /**
+   * 移除草稿
+   */
+  removeDraft() {
+    removeLocalStorageObject(LocalStorageKey.stationMailDraft);
+  }
+
+  /**
+   * 詢問是否引入草稿
+   * @param callBack {Function}-取消引入草稿後之動作
+   */
+  askImportDraft(callBack: Function | null = null) {
+    this.translateService.get('hello world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      const askContent = this.translateService.instant('universal_message_draftDiag');
+      const confirmText = this.translateService.instant('universal_operating_confirm');
+      const cancelText = this.translateService.instant('universal_operating_cancel');
+      this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: 'Message',
+          body: askContent,
+          confirmText: confirmText,
+          onConfirm: () => this.importDraft(),
+          cancelText: cancelText,
+          onCancel: () => this.cancelImportDraft(callBack)
+        }
+
+      });
+
+    });
+
+  }
+
+  /**
+   * 引入草稿
+   */
+  importDraft() {
+    const { title, receiver, content, replyMessageId, isGroupMail } = this.draft;
+    this.sendMail.title = title;
+    this.receiverList = this.decodeReceiverId(receiver, isGroupMail);
+    this.sendMail.content = content;
+    this.textAreaContent = content;
+    this.sendMail.replyMessageId = replyMessageId;
+    this.getReplyContent(replyMessageId[0]);
+    this.uiFlag.needSaveDraft = true;
+  }
+
+  /**
+   * 取消引入草稿
+   */
+  cancelImportDraft(callBack: Function | null = null) {
+    this.removeDraft();
+    if (callBack) callBack();
+  }
+
+  /**
+   * 將收件者id進行hash
+   * @param receiverList {Array<any>}-收件人清單
+   */
+  hashReceiverId(receiverList: Array<any>) {
+    return receiverList.map(_list => {
+      const { id } = _list;
+      const isGroupId = `${id}`.includes('-');
+      _list.id = isGroupId ?
+        this.hashIdService.handleGroupIdEncode(id) : this.hashIdService.handleUserIdEncode(id);
+      return _list;
+    });
+
+  }
+
+  /**
+   * 將收件人id 解 hash
+   * @param receiverList {Array<any>}-收件人清單
+   * @param isGroupMail {boolean}-是否為群組信
+   */
+  decodeReceiverId(receiverList: Array<any>, isGroupMail: boolean) {
+    return receiverList.map(_list => {
+      const { id } = _list;
+      _list.id = isGroupMail ?
+        this.hashIdService.handleGroupIdDecode(id) : this.hashIdService.handleUserIdDecode(id);
+      return _list;
+    });
+
+  }
+
+  /**
+   * 取消訂閱rxjs
    */
   ngOnDestroy(): void {
+    if (this.uiFlag.needSaveDraft) this.saveDraft();
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }

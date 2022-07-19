@@ -6,10 +6,11 @@
 }
 
 .mail__search__block {
-  $height: 24px;
+  $height: 32px;
   max-height: $height;
   height: $height;
   max-width: 180px;
+  align-items: center;
   border: 1px solid black;
 }
 
@@ -33,7 +34,6 @@
   margin: 0;
   padding: 0;
   max-height: 70vh;
-  max-width: 300px;
   overflow-y: scroll;
 }
 
@@ -119,6 +119,9 @@
 .sender__name {
   font-size: 14px;
   margin: 0;
+  max-width: 135px;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .system__mail__label {

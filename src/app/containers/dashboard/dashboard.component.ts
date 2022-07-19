@@ -23,6 +23,7 @@ import { AccessRight } from '../../shared/enum/accessright';
 import { setLocalStorageObject, getLocalStorageObject, checkResponse } from '../../shared/utils/index';
 import { Api50xxService } from '../../core/services/api-50xx.service';
 import { appPath } from '../../app-path.const';
+import { StationMailService } from '../station-mail/services/station-mail.service';
 
 enum Dashboard {
   trainLive,
@@ -91,6 +92,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   isLoading = true;
   accountStatus = this.userService.getUser().signInfo?.accountStatus;
   mailNotify: NodeJS.Timeout;
+  notifyUpdateTime: number | null = null;
 
   readonly AccessRight = AccessRight;
 
@@ -105,7 +107,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     private detectInappService: DetectInappService,
     private userService: UserService,
     private globalEventsService: GlobalEventsService,
-    private api50xxService: Api50xxService
+    private api50xxService: Api50xxService,
+    private stationMailService: StationMailService
   ) {}
 
   ngOnInit() {
@@ -547,6 +550,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.unsubscribePluralEvent();
     } else {
       this.uiFlag.showStationMailList = true;
+      this.uiFlag.haveNewMail = false;
       this.subscribePluralEvent();
     }
 
@@ -592,7 +596,13 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     const body = { token: this.authService.token };
     this.api50xxService.fetchMessageNotifyFlagStatus(body).subscribe(res => {
       if (checkResponse(res, false)) {
-        this.uiFlag.haveNewMail = res.flag.status === 2;
+        const { status, updateTime } = res.flag;
+        const haveNewMail = status === 2;
+        if (haveNewMail && updateTime !== this.notifyUpdateTime) {
+          this.uiFlag.haveNewMail = true;
+          this.stationMailService.setNewMailNotify(true);
+        }
+
       } else {
         this.uiFlag.haveNewMail = false;
       }
@@ -609,6 +619,14 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     e.preventDefault();
     const { stationMail: { home, inbox } } = appPath;
     this.router.navigateByUrl(`/dashboard/${home}/${inbox}`);
+  }
+
+  /**
+   * 轉導至建立新訊息頁面
+   */
+  navigateNewMailPage() {
+    const { stationMail: { home, newMail } } = appPath;
+    this.router.navigateByUrl(`/dashboard/${home}/${newMail}`);
   }
 
   /**
