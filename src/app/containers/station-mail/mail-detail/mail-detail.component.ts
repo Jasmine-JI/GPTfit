@@ -137,10 +137,15 @@ export class MailDetailComponent implements OnInit, OnDestroy {
           this.mailDetail = undefined;
         } else {
           const { message } = res;
-          if (Object.keys(message).length === 0) this.turnBack();
-          this.mailDetail = message;
-          this.mailDetail.unfold = false;
-          this.checkSenderStatus();
+          if (Object.keys(message).length === 0) {
+            this.mailDetail = undefined;
+          } else {
+            this.mailDetail = message;
+            this.mailDetail.unfold = false;
+            this.checkSenderStatus();
+            this.handleReadStatus();
+          }
+
         }
 
       });
@@ -197,9 +202,6 @@ export class MailDetailComponent implements OnInit, OnDestroy {
    * 回覆信件
    */
   replyMail() {
-    const replyMailList = deepCopy(this.replyMailList);
-    replyMailList.unshift(this.mailDetail);
-    this.stationMailService.replyMail = replyMailList;
     const { senderId, id } = this.mailDetail;
     const hashId = this.hashIdService.handleUserIdEncode(senderId);
     const { messageReceiverId, messageId } = QueryString;
@@ -273,6 +275,14 @@ export class MailDetailComponent implements OnInit, OnDestroy {
       this.uiFlag.senderIsBlack = blackList.findIndex(_blackList => _blackList.id == senderId) > -1;
     });
 
+  }
+
+  /**
+   * 更新信件列表已讀狀態
+   */
+  handleReadStatus() {
+    const { id } = this.mailDetail;
+    this.stationMailService.editReadStatus(id);
   }
 
   /**

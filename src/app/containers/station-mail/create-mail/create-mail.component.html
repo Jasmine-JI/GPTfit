@@ -4,7 +4,7 @@
   <div class="loadingMaskAnimation"></div>
 </div>
 <div class="flexCol">
-  <div *ngIf="uiFlag.isMobile">
+  <div class="child-back__button__row" *ngIf="uiFlag.isMobile">
     <button (click)="turnBack()">
       <i class="icon-svg_web-icon_p1_016-back child-functional__icon"></i>
       <span class="child-turn__back">
@@ -13,19 +13,19 @@
     </button>
   </div>
   <div class="flexRow functional__button__row">
-    <button (click)="returnInbox()">
+    <button (click)="discardMail()">
       <i class="icon-svg_web-icon_p1_009-delete child-functional__icon"></i>
       <span>{{ 'universal_operating_giveUp' | translate }}</span>
     </button>
     <button (click)="mailSubmit()">
-      <i class="icon-svg_web-icon_p1_074-level_unfold child-functional__icon"></i>
+      <i class="icon-svg_web-icon_p4_013-send child-functional__icon"></i>
       <span>{{ 'universal_operating_send' | translate }}</span>
     </button>
   </div>
   <form class="flexCol">
     <div class="flexRow input__text__section">
       <label class="input__label" for="mail__title">
-        {{ '標題' | translate }}
+        {{ 'universal_message_title' | translate }}
       </label>
       <input
         type="text"
@@ -41,62 +41,64 @@
       *ngIf="sendMail.receiverType === ReceiverType.assign"
     >
       <label class="input__label" for="receiver__input">
-        {{ '收件人' | translate }}
+        {{ 'universal_message_addressee' | translate }}
       </label>
-      <ng-container *ngFor="let _list of receiverList;">
+      <div class="flexRow receiver__section">
+        <ng-container *ngFor="let _list of receiverList;">
+          <div
+            class="flexRow receiver__sticker"
+            [class.sticker__no__button]="uiFlag.isReplyMode"
+            (click)="showReceiverMenu($event, _list)"
+          >
+            <span class="receiver__name">{{ _list.name }}</span>
+            <button
+              (click)="delReceiver(_list.id)"
+              *ngIf="!uiFlag.isReplyMode"
+            >
+              <i class="icon-svg_web-icon_p1_012-close"></i>
+            </button>
+            <ul
+              class="child-sender__menu"
+              *ngIf="uiFlag.showReceiverMenu && uiFlag.showReceiverMenu.id == _list.id"
+            >
+              <li
+                class="child-sender__menu__item"
+                (click)="navigateSenderPage(_list.id, _list.isGroup)"
+              >
+                {{ 'universal_deviceSetting_adout' | translate }}
+              </li>
+              <li
+                class="child-sender__menu__item"
+                (click)="addFavoriteList(_list)"
+                *ngIf="!uiFlag.isFavorite && !_list.isGroup"
+              >
+                {{ '設為常用名單' | translate }}
+              </li>
+              <li
+                class="child-sender__menu__item"
+                (click)="removeFavoriteList(_list)"
+                *ngIf="uiFlag.isFavorite && !_list.isGroup"
+              >
+                {{ '取消常用名單' | translate }}
+              </li>
+            </ul>
+          </div>
+        </ng-container>
         <div
-          class="flexRow receiver__sticker"
-          [class.sticker__no__button]="uiFlag.isReplyMode"
-          (click)="showReceiverMenu($event, _list)"
+          class="flexCol autocomplete__list"
+          *ngIf="!uiFlag.isReplyMode"
         >
-          <span class="receiver__name">{{ _list.name }}</span>
-          <button
-            (click)="delReceiver(_list.id)"
-            *ngIf="!uiFlag.isReplyMode"
-          >
-            <i class="icon-svg_web-icon_p1_012-close"></i>
-          </button>
-          <ul
-            class="child-sender__menu"
-            *ngIf="uiFlag.showReceiverMenu && uiFlag.showReceiverMenu.id == _list.id"
-          >
+          <input id="receiver__input" type="text" autocomplete="off" #receiverInput>
+          <ul class="receiver__search__list" *ngIf="searchList.length > 0">
             <li
-              class="child-sender__menu__item"
-              (click)="navigateSenderPage(_list.id, _list.isGroup)"
+              class="receiver__search__option"
+              *ngFor="let _user of searchList; let index = index;"
+              (click)="checkReceiverRepeat(index)"
             >
-              {{ 'universal_deviceSetting_adout' | translate }}
-            </li>
-            <li
-              class="child-sender__menu__item"
-              (click)="addFavoriteList(_list)"
-              *ngIf="!uiFlag.isFavorite && !_list.isGroup"
-            >
-              {{ '設為常用名單' | translate }}
-            </li>
-            <li
-              class="child-sender__menu__item"
-              (click)="removeFavoriteList(_list)"
-              *ngIf="uiFlag.isFavorite && !_list.isGroup"
-            >
-              {{ '取消常用名單' | translate }}
+              {{ _user.nickname }}
             </li>
           </ul>
         </div>
-      </ng-container>
-      <div
-        class="flexCol autocomplete__list"
-        *ngIf="!uiFlag.isReplyMode"
-      >
-        <input id="receiver__input" type="text" autocomplete="off" #receiverInput>
-        <ul class="receiver__search__list" *ngIf="searchList.length > 0">
-          <li
-            class="receiver__search__option"
-            *ngFor="let _user of searchList; let index = index;"
-            (click)="checkReceiverRepeat(index)"
-          >
-            {{ _user.nickname }}
-          </li>
-        </ul>
       </div>
     </div>
     <app-receiver-list
@@ -166,6 +168,7 @@
       </div>
     </div>
     <div class="mail__content">
+      <!--
       <div
         #mainContentInput
         class="mail__input__content"
@@ -176,6 +179,17 @@
         (focusout)="saveMainContent($event)"
         [innerHTML]="sendMail.content"
       ></div>
+      -->
+      <textarea
+        #mainContentInput
+        class="mail__input__content"
+        [class.textArea__full__height]="replyMailList.length === 0"
+        (paste)="checkPaste($event)"
+        (keydown)="checkTextLimit($event)"
+        (keyup)="handleMainContentKeyUp($event)"
+        (focusout)="saveMainContent($event)"
+        [(value)]="textAreaContent"
+      ></textarea>
       <div
         class="flexCol child-reply__mail"
         *ngFor="let _replyMail of replyMailList; let index = index;"

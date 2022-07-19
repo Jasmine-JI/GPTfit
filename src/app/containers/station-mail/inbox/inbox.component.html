@@ -14,7 +14,7 @@
         <i class="icon-svg_web-icon_p3_002-right_turn child-functional__icon"></i>
       </button>
       <button (click)="handleDeleteMode()">
-        <i class="icon-svg_web-icon_p1_044-uncheck child-functional__icon"></i>
+        <i class="icon-svg_web-icon_p4_010-select_mode child-functional__icon"></i>
       </button>
       <button (click)="deleteMail()" *ngIf="uiFlag.openSelectMode">
         <i class="icon-svg_web-icon_p1_009-delete child-functional__icon"></i>
@@ -109,7 +109,7 @@
             class="system__mail__label"
             *ngIf="info.type === MessageType.system || info.type === MessageType.admin"
           >
-            {{ '系統訊息' | translate }}
+            {{ 'universal_message_systemMessage' | translate }}
           </span>
           <span class="send__time">
             {{ info.sendTimestamp * 1000 | timeFormat: 'HH:mm' }}

@@ -4,18 +4,13 @@ import { AuthService } from '../../../core/services/auth.service';
 import { of, Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
 import { switchMap, map, tap } from 'rxjs/operators';
 import { checkResponse } from '../../../shared/utils/index';
-import { ReplyMailInfo } from '../models/station-mail';
 import { TranslateService } from '@ngx-translate/core';
+import { ReadStatus } from '../enum/station-mail';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StationMailService {
-
-  /**
-   * 欲轉寄或回覆之信件內容
-   */
-  private _replyMail: Array<any> = [];
 
   /**
    * 站內信列表
@@ -37,6 +32,11 @@ export class StationMailService {
    */
   private _blackList$ = new BehaviorSubject(<Array<any> | null>null);
 
+  /**
+   * 新訊息通知
+   */
+  private _newMailNotify = new BehaviorSubject(false);
+
   constructor(
     private api50xxService: Api50xxService,
     private authService: AuthService,
@@ -44,18 +44,10 @@ export class StationMailService {
   ) { }
 
   /**
-   * 儲存欲轉寄或回覆之信件資訊
-   * @param mail {string}-信件資訊
+   * 取得新訊息狀態通知
    */
-  set replyMail(mail: Array<any>) {
-    this._replyMail = mail;
-  }
-
-  /**
-   * 取得欲轉寄或回覆之信件資訊
-   */
-  get replyMail() {
-    return this._replyMail;
+  get rxNewMailNotify() {
+    return this._newMailNotify;
   }
 
   /**
@@ -70,6 +62,14 @@ export class StationMailService {
    */
   get rxDeleteList() {
     return this._deleteList$;
+  }
+
+  /**
+   * 儲存新訊息狀態
+   * @param status {boolean}-新訊息通知狀態
+   */
+  setNewMailNotify(status: boolean) {
+    this._newMailNotify.next(status);
   }
 
   /**
@@ -110,7 +110,7 @@ export class StationMailService {
         return processingList;
       })
 
-    )
+    );
 
   }
 
@@ -183,6 +183,20 @@ export class StationMailService {
    */
   saveBlackList(list: Array<number>) {
     this._blackList$.next(list);
+  }
+
+  /**
+   * 將信件狀態變更為已讀狀態
+   * @param id {number}-訊息編號
+   */
+  editReadStatus(id: number) {
+    const newList = this._mailList$.value.map(_list => {
+      const { id: _id } = _list;
+      if (id == _id) _list.readStatus = ReadStatus.read;
+      return _list;
+    });
+
+    this._mailList$.next(newList);
   }
 
 }
