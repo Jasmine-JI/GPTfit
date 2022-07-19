@@ -1,7 +1,7 @@
 @import 'color.scss';
 @import 'flex-center.scss';
 
-$contact-list-width: 250px;
+$contact-list-width: 310px;
 $shadow-color: rgba(0, 0, 0, 0.1);
 
 .contact__list__tab {
@@ -14,6 +14,7 @@ $shadow-color: rgba(0, 0, 0, 0.1);
   overflow: hidden;
   max-width: $contact-list-width;
   width: $contact-list-width;
+  white-space: noWrap;
   box-shadow:
     2px 2px 2px $shadow-color,
     -2px 2px 2px $shadow-color,

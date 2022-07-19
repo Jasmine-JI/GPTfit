@@ -1,9 +1,9 @@
 <div class="flexCol">
-  <div *ngIf="uiFlag.isMobile">
+  <div class="child-back__button__row" *ngIf="uiFlag.isMobile">
     <button (click)="turnBack()">
       <i class="icon-svg_web-icon_p1_016-back child-functional__icon"></i>
       <span class="child-turn__back">
-        {{ '訊息列表' | translate }}
+        {{ 'universal_message_messageList' | translate }}
       </span>
     </button>
   </div>
@@ -13,8 +13,8 @@
       (click)="replyMail()"
       *ngIf="mailDetail?.type === MessageType.normal"
     >
-      <i class="icon-svg_web-icon_p1_073-level_fold child-functional__icon"></i>
-      <span>{{ '回覆' | translate }}</span>
+      <i class="icon-svg_web-icon_p4_014-reply child-functional__icon"></i>
+      <span>{{ 'universal_message_reply' | translate }}</span>
     </button>
     <button class="functional__button" (click)="deleteMail()">
       <i class="icon-svg_web-icon_p1_009-delete child-functional__icon"></i>
@@ -92,7 +92,7 @@
       class="system__mail__mark"
       *ngIf="mailDetail?.type === MessageType.system || mailDetail?.type === MessageType.admin"
     >
-      {{ '系統訊息' | translate }}
+      {{ 'universal_message_sentFail' | translate }}
     </p>
     <p class="mail__send__date">
       {{ mailDetail ? (mailDetail.sendTimestamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm') : '---------------' }}
@@ -110,7 +110,7 @@
         (click)="showAllReplyMail()"
         *ngIf="mailDetail?.replyMessageId?.length > 0 && !uiFlag.showReplyMail"
       >
-        {{ '顯示先前訊息' | translate }}
+        {{ 'universal_message_showPrevious' | translate }}
       </button>
       <div
         class="flexCol child-reply__mail"

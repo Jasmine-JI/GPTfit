@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { TOKEN } from '../../shared/models/utils-constant';
+import { LocalStorageKey } from '../../shared/enum/local-storage-key';
 import { Api10xxService } from './api-10xx.service';
 import { setLocalStorageObject, getLocalStorageObject } from '../../shared/utils/index';
 import { combineLatest, Observable, BehaviorSubject } from 'rxjs';
@@ -16,7 +16,7 @@ export class AuthService {
   /**
    * GPTfit登入權杖
    */
-  private _token = localStorage.getItem(TOKEN) || '';
+  private _token = localStorage.getItem(LocalStorageKey.token) || '';
 
   /**
    * 登入後，欲轉導之頁面網址
@@ -26,7 +26,7 @@ export class AuthService {
   /**
    * 登入狀態
    */
-  private _isLogin$ = new BehaviorSubject<boolean>(this._token && this._token !== '');
+  private _isLogin$ = new BehaviorSubject<boolean>((this._token && this._token !== '') as boolean);
 
   constructor(
     private api10xxService: Api10xxService,
@@ -83,7 +83,7 @@ export class AuthService {
    */
   setToken(newToken: string): void {
     this._token = newToken;
-    localStorage.setItem(TOKEN, newToken);
+    localStorage.setItem(LocalStorageKey.token, newToken);
     this._isLogin$.next(true);
   }
 
@@ -93,7 +93,7 @@ export class AuthService {
    */
   removeToken(): void {
     this._token = '';
-    localStorage.removeItem(TOKEN);
+    localStorage.removeItem(LocalStorageKey.token);
     this._isLogin$.next(false);
   }
 

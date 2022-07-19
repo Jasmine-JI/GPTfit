@@ -66,6 +66,7 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
     this.checkScreenWidth();
     this.subscribeResizeEvent();
     this.refreshMailList(true);
+    this.subscribeNewMailNotify();
     this.subscribeLanguageChange();
     this.subscribeRouteChange();
   }
@@ -127,6 +128,18 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
       });
 
     }
+
+  }
+
+  /**
+   * 訂閱新訊息狀態，以自動更新信件列表
+   */
+  subscribeNewMailNotify() {
+    this.stationMailService.rxNewMailNotify.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(status => {
+      if (status) this.refreshMailList();
+    });
 
   }
 

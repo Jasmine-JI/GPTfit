@@ -2663,4 +2663,26 @@
  "universal_training_exercisesList": "動作列表",
  "universal_activityData_muscleGroup": "肌群",
  "universal_training_difference": "差異",
- "universal_training_targetTimes": "目標次數"}
+ "universal_training_targetTimes": "目標次數",
+ "universal_app_sensitive": "增加靈敏度",
+ "universal_app_insensitive": "降低靈敏度",
+ "universal_app_outboundThreshold": "去程閥值",
+ "universal_app_inboundThreshold": "回程閥值",
+ "universal_app_hysteresis": "回差值",
+ "universal_app_calibrateTitle": "動作感應校正",
+ "universal_app_calibrateIntro": "選擇動作後執行，觀察次數變化是否吻合實際次數 若次數少於實際動作次數請增加靈敏度，反之增加靈敏度",
+ "universal_message_title": "標題",
+ "universal_message_addressee": "收件人",
+ "universal_message_sentComplete": "寄件成功",
+ "universal_message_sentFail": "寄件失敗",
+ "universal_message_systemMessage": "系統訊息",
+ "universal_training_concluWT": "累積重訓成效",
+ "universal_message_favContacts": "常用名單",
+ "universal_message_blackList": "黑名單",
+ "universal_message_showPrevious": "顯示先前訊息",
+ "universal_message_messageList": "訊息列表",
+ "universal_message_sendMessage": "傳送訊息",
+ "universal_message_sendGroupMessage": "傳送群組訊息",
+ "universal_message_draftDiag": "發現暫存草稿，是否引入?",
+ "universal_message_reply": "回覆"
+}

@@ -434,25 +434,37 @@ $alert-icon-color: rgba(255, 56, 56, 1);
 
 .brief__mail__list {
   $shodow-color: rgba(200, 200, 200, 1);
+  $width: 250px;
   position: absolute;
   top: 30px;
   background-color: white;
   color: black;
   z-index: 10;
   padding: 5px;
-  max-width: 250px;
-  min-width: 150px;
+  width: $width;
+  min-width: $width;
   box-shadow: 2px 2px 2px $shodow-color, -2px 2px 2px $shodow-color;
-}
-
-.mail__list__title {
-  font-weight: bold;
 }
 
 .inbox__link {
   width: 100%;
   text-align: center;
   display: block;
+  padding: 5px 0;
+}
+
+.message__title__section {
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.mail__list__title {
+  font-weight: bold;
+  margin: 0;
+}
+
+.create__message__button {
+  font-size: 24px;
 }
 
 /*********************************** media ********************************************/

@@ -31,7 +31,7 @@
 }
 
 .child-functional__icon {
-  font-size: 24px;
+  font-size: 32px;
 }
 
 .child-reply__mail {
@@ -77,6 +77,10 @@
 .child-reply__mail__fold {
   @include el-rotate(180deg);
   @include transition(transform);
+}
+
+.child-back__button__row {
+  margin: 5px 0;
 }
 
 .child-turn__back {

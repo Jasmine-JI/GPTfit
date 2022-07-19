@@ -4,7 +4,7 @@ import { Api10xxService } from './api-10xx.service';
 import { checkResponse } from '../../shared/utils/index';
 import { of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { TOKEN } from '../../shared/models/utils-constant';
+import { LocalStorageKey } from '../../shared/enum/local-storage-key';
 
 
 @Injectable({
@@ -120,7 +120,7 @@ export class UserService {
    * 不套用authService.token，避免circular inject
    */
   getToken() {
-    return localStorage.getItem(TOKEN) || '';
+    return localStorage.getItem(LocalStorageKey.token) || '';
   }
 
 }
