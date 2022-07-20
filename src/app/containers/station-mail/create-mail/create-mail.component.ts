@@ -536,7 +536,7 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
         this.uiFlag.progress = 30;
         const { receiverType } = this.sendMail;
         if (receiverType !== ReceiverType.all) {
-          this.sendMail.receiver = this.receiverList.map(_list => +_list.id !== NaN ? +_list.id : _list.id);
+          this.sendMail.receiver = this.receiverList.map(_list => +_list.id ? +_list.id : _list.id);
         }
 
         this.api50xxService.fetchSendMessage(this.sendMail).subscribe(res => {
@@ -819,8 +819,7 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
       title,
       receiver: hashReceiverList,
       content,
-      replyMessageId,
-      isGroupMail: checkReceiver ? `${checkReceiver.id}`.includes('-') : false
+      replyMessageId
     };
 
     const draftString = JSON.stringify(draftObj);
@@ -874,9 +873,9 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
    * 引入草稿
    */
   importDraft() {
-    const { title, receiver, content, replyMessageId, isGroupMail } = this.draft;
+    const { title, receiver, content, replyMessageId } = this.draft;
     this.sendMail.title = title;
-    this.receiverList = this.decodeReceiverId(receiver, isGroupMail);
+    this.receiverList = this.decodeReceiverId(receiver);
     this.sendMail.content = content;
     this.textAreaContent = content;
     this.sendMail.replyMessageId = replyMessageId;
@@ -910,12 +909,11 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * 將收件人id 解 hash
    * @param receiverList {Array<any>}-收件人清單
-   * @param isGroupMail {boolean}-是否為群組信
    */
-  decodeReceiverId(receiverList: Array<any>, isGroupMail: boolean) {
+  decodeReceiverId(receiverList: Array<any>) {
     return receiverList.map(_list => {
-      const { id } = _list;
-      _list.id = isGroupMail ?
+      const { id, isGroup } = _list;
+      _list.id = isGroup ?
         this.hashIdService.handleGroupIdDecode(id) : this.hashIdService.handleUserIdDecode(id);
       return _list;
     });

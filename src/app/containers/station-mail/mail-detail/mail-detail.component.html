@@ -92,7 +92,7 @@
       class="system__mail__mark"
       *ngIf="mailDetail?.type === MessageType.system || mailDetail?.type === MessageType.admin"
     >
-      {{ 'universal_message_sentFail' | translate }}
+      {{ 'universal_message_systemMessage' | translate }}
     </p>
     <p class="mail__send__date">
       {{ mailDetail ? (mailDetail.sendTimestamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm') : '---------------' }}
