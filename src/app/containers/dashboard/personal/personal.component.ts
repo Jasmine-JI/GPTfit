@@ -806,10 +806,11 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * 轉導至建立新訊息頁面
    */
   navigateNewMailPage() {
-    const userId = this.getPageOwnerId();
+    const userId = this.getPageOwnerId().toString();
+    const hashId = this.hashIdService.handleUserIdEncode(userId);
     const { stationMail: { home, newMail } } = appPath;
     const { messageReceiverId, messageReceiverType } = QueryString;
-    this.router.navigateByUrl(`/dashboard/${home}/${newMail}?${messageReceiverId}=${userId}&${messageReceiverType}=p`);
+    this.router.navigateByUrl(`/dashboard/${home}/${newMail}?${messageReceiverId}=${hashId}&${messageReceiverType}=p`);
   }
 
   /**
