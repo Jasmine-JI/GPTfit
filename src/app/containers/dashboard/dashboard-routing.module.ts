@@ -53,6 +53,7 @@ import { InboxComponent } from '../station-mail/inbox/inbox.component';
 import { MailDetailComponent } from '../station-mail/mail-detail/mail-detail.component';
 import { ReceiverListComponent } from '../station-mail/receiver-list/receiver-list.component';
 import { appPath } from '../../app-path.const';
+import { GsensorComponent } from './components/gsensor/gsensor.component';
 
 
 const routes: Routes = [
@@ -294,6 +295,10 @@ const routes: Routes = [
             component: ReceiverListComponent
           }
         ]
+      },
+      {
+        path: 'gsensor',
+        component: GsensorComponent
       },
       {
         path: '**',
