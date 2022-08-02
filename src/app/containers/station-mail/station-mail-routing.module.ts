@@ -34,7 +34,8 @@ const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: appPath.stationMail.inbox
+        redirectTo: appPath.stationMail.inbox,
+        pathMatch: 'full'
       }
     ]
   },

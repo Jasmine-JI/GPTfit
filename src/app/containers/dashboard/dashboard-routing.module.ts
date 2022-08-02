@@ -54,6 +54,7 @@ import { MailDetailComponent } from '../station-mail/mail-detail/mail-detail.com
 import { ReceiverListComponent } from '../station-mail/receiver-list/receiver-list.component';
 import { appPath } from '../../app-path.const';
 import { GsensorComponent } from './components/gsensor/gsensor.component';
+import { Page404Component } from '../../shared/components/page404/page404.component';
 
 
 const routes: Routes = [
@@ -270,7 +271,8 @@ const routes: Routes = [
           },
           {
             path: '',
-            redirectTo: 'activity-list'
+            redirectTo: 'activity-list',
+            pathMatch: 'full'
           }
         ]
       },
@@ -299,6 +301,10 @@ const routes: Routes = [
       {
         path: 'gsensor',
         component: GsensorComponent
+      },
+      {
+        path: '404',
+        component: Page404Component
       },
       {
         path: '**',
