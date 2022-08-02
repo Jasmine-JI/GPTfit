@@ -21,7 +21,7 @@ import {
   BreakpointObserver,
   Breakpoints
 } from '@angular/cdk/layout';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Location, DOCUMENT } from '@angular/common';
 import { WINDOW } from '../../../../shared/services/window.service';
 import { getUrlQueryStrings } from '../../../../shared/utils/index';
@@ -42,7 +42,7 @@ export class DeviceLogDetailComponent implements OnInit {
   currentSort: Sort;
   userInfo: string;
   isHandset$: Observable<boolean>;
-  complexForm: FormGroup;
+  complexForm: UntypedFormGroup;
   startDate: any;
   endDate: any;
   isDateSearch = false;
@@ -60,7 +60,7 @@ export class DeviceLogDetailComponent implements OnInit {
     private deviceLogservice: DeviceLogService,
     private router: Router,
     private breakpointObserver: BreakpointObserver,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     @Inject(DOCUMENT) private document: Document,
     @Inject(WINDOW) private window,
     public _location: Location // 調用location.back()，來回到上一頁

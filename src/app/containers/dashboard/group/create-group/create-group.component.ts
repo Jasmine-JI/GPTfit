@@ -10,8 +10,8 @@ import { GroupService } from '../../../../shared/services/group.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { Router } from '@angular/router';
 import {
-  FormBuilder,
-  FormGroup,
+  UntypedFormBuilder,
+  UntypedFormGroup,
   Validators
 } from '@angular/forms';
 import { UserService } from '../../../../core/services/user.service';
@@ -82,7 +82,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
   textareaMaxLength = 500;
   commercePlan: number;
   isShowCreateForm = false;
-  form: FormGroup;
+  form: UntypedFormGroup;
   formTextName = 'groupName';
   formTextareaName = 'groupDesc';
   planName: string;
@@ -145,7 +145,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     private groupService: GroupService,
     private utils: UtilsService,
     private router: Router,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private userService: UserService,
     public dialog: MatDialog,
     private translate: TranslateService,
