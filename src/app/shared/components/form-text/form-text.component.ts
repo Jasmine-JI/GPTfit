@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { DEFAULT_MAXLENGTH } from '../../utils/index';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-form-text',
@@ -15,7 +15,7 @@ export class FormTextComponent implements OnInit {
   @Input() content: string;
   @Input() invalidRemindText: string;
   @Input() remindText: string;
-  @Input() control: FormGroup;
+  @Input() control: UntypedFormGroup;
   @Input() controlName: string;
   @Input() disabled = false;
   @Input() placeholder = '';

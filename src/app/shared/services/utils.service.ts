@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { Observable, BehaviorSubject, ReplaySubject, fromEvent, merge } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MessageBoxComponent } from '../components/message-box/message-box.component';
@@ -106,7 +106,7 @@ export class UtilsService {
     return string.replace(/(\r\n|\r|\n)/gm, format);
   }
 
-  markFormGroupTouched(formGroup: FormGroup) {
+  markFormGroupTouched(formGroup: UntypedFormGroup) {
     (<any>Object).values(formGroup.controls).forEach(control => {
       control.markAsTouched();
 
