@@ -79,6 +79,7 @@ import { ActivityListComponent } from './personal/activity-list/activity-list.co
 import { GroupService } from '../../shared/services/group.service';
 import { SharedComponentsModule as ProfessionalSharedModule } from '../professional/shared/shared-components.module';
 import { StationMailModule } from '../station-mail/station-mail.module';
+import { GsensorComponent } from './components/gsensor/gsensor.component';
 
 
 @NgModule({
@@ -170,7 +171,8 @@ import { StationMailModule } from '../station-mail/station-mail.module';
         SettingPreferComponent,
         SettingPrivacyComponent,
         SettingAccountComponent,
-        ActivityListComponent
+        ActivityListComponent,
+        GsensorComponent
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

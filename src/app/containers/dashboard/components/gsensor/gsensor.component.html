@@ -1,0 +1,56 @@
+<div class="flexCenter">
+  <div class="flexCol">
+    <p class="support__alert" *ngIf="notSupportDeviceMotion">
+      此瀏覽器不支援手機內建感應器
+    </p>
+    <div class="flexCol">
+      <div class="flexRow" style="margin-bottom: 10px;">
+        <label for="reps__set" style="margin: 0;">
+          重訓目標次數：
+        </label>
+        <input
+          id="reps__set"
+          type="text"
+          style="padding: 0 5px; width: 50px"
+          [(value)]="repsTarget"
+        >
+      </div>
+      <div class="flexCol" style="margin: 10px 0;">
+        <p style="font-size: 36px;">重訓次數：{{ getCount() }}</p>
+        <p>花費時間：{{ trainingTime / 1000 }}s</p>
+        <p>Point數：{{ totalPoint }}</p>
+        <button
+          class="button"
+          style="margin-bottom: 10px;"
+          (click)="reset()"
+        >
+          歸零
+        </button>
+        <p style="color: blue">x軸判定次數：{{ allRecord.x.length }}</p>
+        <p>橫跨範圍：{{ waveRange.x.range }}</p>
+        <p>中心點：{{ waveRange.x.waveCenter }}</p>
+        <p>最大振幅：{{ waveRange.x.effectAmplitude }}</p>
+        <p style="color: green">y軸判定次數：{{ allRecord.y.length }}</p>
+        <p>橫跨範圍：{{ waveRange.y.range }}</p>
+        <p>中心點：{{ waveRange.y.waveCenter }}</p>
+        <p>最大振幅：{{ waveRange.y.effectAmplitude }}</p>
+        <p style="color: brown">z軸判定次數：{{ allRecord.z.length }}</p>
+        <p>橫跨範圍：{{ waveRange.z.range }}</p>
+        <p>中心點：{{ waveRange.z.waveCenter }}</p>
+        <p>最大振幅：{{ waveRange.z.effectAmplitude }}</p>
+      </div>
+      <div class="flexCol">
+        <p style="color: blue">x軸波形紀錄：</p>
+        <p>{{ stringify('x') }}</p>
+      </div>
+      <div class="flexCol">
+        <p style="color: green">y軸波形紀錄：</p>
+        <p>{{ stringify('y') }}</p>
+      </div>
+      <div class="flexCol">
+        <p style="color: brown">z軸波形紀錄：</p>
+        <p>{{ stringify('z') }}</p>
+      </div>
+    </div>
+  </div>
+</div>
