@@ -37,7 +37,8 @@ const routes: Routes = [
           },
           {
             path: '',
-            redirectTo: '/official-activity/404'
+            redirectTo: '/official-activity/404',
+            pathMatch: 'full'
           }
         ]
       },
@@ -50,7 +51,8 @@ const routes: Routes = [
           },
           {
             path: '',
-            redirectTo: '/official-activity/404'
+            redirectTo: '/official-activity/404',
+            pathMatch: 'full'
           }
         ]
       },
@@ -68,7 +70,8 @@ const routes: Routes = [
           },
           {
             path: '',
-            redirectTo: '/official-activity/404'
+            redirectTo: '/official-activity/404',
+            pathMatch: 'full'
           }
         ]
       },
@@ -83,7 +86,8 @@ const routes: Routes = [
           },
           {
             path: '',
-            redirectTo: '/official-activity/404'
+            redirectTo: '/official-activity/404',
+            pathMatch: 'full'
           }
         ]
       },
@@ -110,7 +114,8 @@ const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: 'activity-list'
+        redirectTo: 'activity-list',
+        pathMatch: 'full'
       },
       {
         path: '**',
