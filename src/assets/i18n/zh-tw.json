@@ -2684,5 +2684,6 @@
  "universal_message_sendMessage": "傳送訊息",
  "universal_message_sendGroupMessage": "傳送群組訊息",
  "universal_message_draftDiag": "發現暫存草稿，是否引入?",
- "universal_message_reply": "回覆"
+ "universal_message_reply": "回覆",
+ "universal_group_targetChartInfo": "若報告顯示之時間單位與群組設定運動目標之時間單位不同，系統會將運動目標設定進行換算，並顯示每個單位時間群組內達標人數與總人數的比例"
 }

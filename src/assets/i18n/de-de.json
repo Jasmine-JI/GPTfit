@@ -2684,5 +2684,6 @@
  "universal_message_sendMessage": "Send",
  "universal_message_sendGroupMessage": "Send group message",
  "universal_message_draftDiag": "Import draft?",
- "universal_message_reply": "Reply"
+ "universal_message_reply": "Reply",
+ "universal_group_targetChartInfo": "If the time unit displayed in the report is different from the time unit in which the group sets the sports goal, the system will convert the sports goal setting and display the ratio of the number of people in each unit time group to the total number of people"
 }

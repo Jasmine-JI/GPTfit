@@ -200,14 +200,14 @@ export class SportsReport {
     const hrZone = [zone0, zone1, zone2, zone3, zone4, zone5];
     const { pai, totalWeightedValue } = SportsReport.countPai(hrZone, reportPeriodDay);
     const benefitTime = (zone2 ?? 0) + (zone3 ?? 0) + (zone4 ?? 0) + (zone5 ?? 0);
-    const transfromCondition = target.getTransformCondition(dateUnit.unit);
     const unitKey = dateUnit.getUnitString();
     const crossRange = baseTime.getCrossRange(unitKey);
+    const transfromCondition = target.getTransformCondition(dateUnit.unit);
     let targetAchieved = totalActivities ? true : false;
 
     transfromCondition.forEach(_condition => {
       const { filedName, filedValue } = _condition;
-      const targetValue = crossRange * filedValue;
+      const targetValue = crossRange * +filedValue;
       switch (filedName) {
         case 'pai':
           if (totalWeightedValue < targetValue) targetAchieved = false;

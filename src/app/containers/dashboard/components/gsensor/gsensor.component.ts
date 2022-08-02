@@ -33,7 +33,7 @@ interface WaveInfo {
 const defaultOption = {
   /**
    * 波形有效最低2倍振幅
-   * 即一個有效重訓動作，最高與最低加速度之差其最低值
+   * 即一個有效重訓動作，最高與最低加速度差之最低值
    */
   minAmplitude: 5,
 
@@ -246,7 +246,7 @@ export class GsensorComponent implements OnInit, OnDestroy {
     const { totalPoint } = this;
     const { peakTop, peakBottom } = this.waveRange[axis];
 
-    if (totalPoint === 1) {
+    if (totalPoint === 0) {
       this.waveRange[axis].peakTop = value;
       this.waveRange[axis].peakBottom = value;
       this.tempWave[axis].waveStartTime = time;
@@ -304,7 +304,7 @@ export class GsensorComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 判斷數值進入哪個區域，同時校正區域範圍
+   * 判斷數值進入哪個區域
    * @param axis {Axis}-軸線類別
    * @param value {number}-g值
    * @param time {time}-目前訓練總計時

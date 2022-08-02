@@ -99,13 +99,15 @@ export class SportsTarget {
    * 取得依報告所選時間單位進行換算的目標數值
    * @param reportUnit {DateUnit}-報告所選的時間單位
    * @param peopleNumber {number}-人數（用於團體運動報告，計算所有人加總所需的目標值）
+   * @param corssRange {number}-報告橫跨日期數目
    */
   getTransformCondition(reportUnit: DateUnit, peopleNumber: number = 1) {
     const _condition = deepCopy(this._condition);
     const { _cycle } = this;
     const sameUnit = _cycle === reportUnit;
     const conditionNotSet = _condition.length === 0;
-    if (conditionNotSet || (peopleNumber === 1 && sameUnit)) return _condition;
+    const isPersonalData = peopleNumber === 1;
+    if (conditionNotSet || (isPersonalData && sameUnit)) return _condition;
 
     const coefficient = this.getDateTransformCoefficient(reportUnit);
     return _condition.map(_con => {
@@ -125,7 +127,7 @@ export class SportsTarget {
     const { _cycle } = this;
     const denominator = SportsTarget.getUnitDays(_cycle);
     const molecular = SportsTarget.getUnitDays(reportUnit);
-    return mathRounding(molecular / denominator, 2);
+    return mathRounding(molecular / denominator, 5);
   }
 
   /**

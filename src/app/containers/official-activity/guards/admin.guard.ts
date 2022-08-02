@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { UtilsService } from '../../../shared/services/utils.service';
 import { pageNoAccessright } from '../models/official-activity-const';
 import { AccessRight } from '../../../shared/enum/accessright';
@@ -28,7 +27,7 @@ export class AdminGuard implements CanActivate {
     if (token) {
       const { systemAccessright } = this.userService.getUser();
       const passAdmin = [AccessRight.auditor, AccessRight.pusher];
-      if (passAdmin.includes(systemAccessright)) return true;
+      return passAdmin.includes(systemAccessright) ? true : this.checkAccessRightFailed();
     } else {
       return this.checkAccessRightFailed();
     }
