@@ -44,11 +44,11 @@
     <div class="flexRow">
       <div class="report-targetCycle">
         {{ 'universal_activityData_everyUnit' | translate: {
-          number: '', unit: ((sportsTarget.personalSportTarget.cycle === DateUnit.week ? 'universal_time_week' : 'universal_time_day') | translate)
+          number: '', unit: ((sportsTarget.groupSportTarget.cycle === DateUnit.week ? 'universal_time_week' : 'universal_time_day') | translate)
         } }}
       </div>
       <div class="flexRowWrap">
-        <span class="report-targetCondition" *ngFor="let _condition of sportsTarget.personalSportTarget.condition">
+        <span class="report-targetCondition" *ngFor="let _condition of sportsTarget.groupSportTarget.condition">
           {{ _condition.filedName | targetFieldName | translate }}
           &ge;
           {{ _condition.filedName.toLocaleLowerCase().includes('time') ? _condition.filedValue / 60 : _condition.filedValue }}
@@ -333,37 +333,16 @@
       </div>
     </div>
 
-    <div class="flexCol">
+    <div
+      class="flexCol"
+      *ngIf="!(sportsTarget.groupSportTarget.cycle === DateUnit.week && reportCondition.dateUnit.unit === DateUnit.day)"
+    >
       <h6 class="report-trendChartTitle">{{ 'universal_vocabulary_targetAchievementRate' | translate }}</h6>
       <div class="flexRow report-trendChart">
         <div class="flexCol report-chartHint">
-          <ng-container *ngIf="!uiFlag.isCompareMode">
-            <span *ngTemplateOutlet="chartInfoTemplate; context: {
-              key: 'universal_vocabulary_targetAchievementRate',
-              value: getAchievedNumber(
-                groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'totalPeople'),
-                groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').targetAchievedPeople
-              ).value
-            }"></span>
-          </ng-container>
-          <ng-container *ngIf="uiFlag.isCompareMode">
-            <div *ngTemplateOutlet="chartCompareModeInfo; context: {
-              timeRange: reportCondition.baseTime,
-              value: getAchievedNumber(
-                groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'totalPeople'),
-                groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base').targetAchievedPeople
-              ).value,
-              color: trendChartColor.achieveRate.base
-            }"></div>
-            <div *ngTemplateOutlet="chartCompareModeInfo; context: {
-              timeRange: reportCondition.compareTime,
-              value: getAchievedNumber(
-                groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'totalPeople'),
-                groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'compare').targetAchievedPeople
-              ).value,
-              color: trendChartColor.achieveRate.compare
-            }"></div>
-          </ng-container>
+          <p class="report-chartDescription">
+            {{ 'universal_group_targetChartInfo' | translate }}
+          </p>
         </div>
         <div class="report-chartFigure">
           <app-compare-column-trend

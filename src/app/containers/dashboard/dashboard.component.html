@@ -25,11 +25,11 @@
             (click)="showStationMailList($event)"
           >
             <i class="icon-svg_web-icon_p4_012-message"></i>
+            <i
+              class="icon-svg_web-icon_p1_069-about alert__icon__mail"
+              *ngIf="uiFlag.haveNewMail"
+            ></i>
           </button>
-          <i
-            class="icon-svg_web-icon_p1_069-about alert__icon__mail"
-            *ngIf="uiFlag.haveNewMail"
-          ></i>
           <div
             class="brief__mail__list"
             *ngIf="uiFlag.showStationMailList"

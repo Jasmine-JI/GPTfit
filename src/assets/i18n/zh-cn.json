@@ -2684,5 +2684,6 @@
  "universal_message_sendMessage": "传送讯息",
  "universal_message_sendGroupMessage": "传送群组讯息",
  "universal_message_draftDiag": "发现暂存草稿，是否引入?",
- "universal_message_reply": "回复"
+ "universal_message_reply": "回复",
+ "universal_group_targetChartInfo": "若报告显示之时间单位与群组设定运动目标之时间单位不同，系统会将运动目标设定进行换算，并显示每个单位时间群组内达标人数与总人数的比例"
 }
