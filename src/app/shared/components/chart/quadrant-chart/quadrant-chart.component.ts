@@ -42,12 +42,12 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
 
   private ngUnsubscribe = new Subject;
 
-  @Input('userPoint') userPoint: Array<any>;
-  @Input('userInfo') userInfo: Array<any>;
-  @Input('sportType') sportType: SportType;
-  @Input('sysAccessRight') sysAccessRight: number;
-  @Input('unit') unit: Unit;
-  @Input('hrRange') hrRange: HrZoneRange;
+  @Input() userPoint: Array<any>;
+  @Input() userInfo: Array<any>;
+  @Input() sportType: SportType;
+  @Input() sysAccessRight: number;
+  @Input() unit: Unit;
+  @Input() hrRange: HrZoneRange;
 
   /**
    * ui會用到的各種flag

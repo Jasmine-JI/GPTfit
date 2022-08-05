@@ -93,7 +93,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() chartHeight = <number>110;
   @Input() page: DisplayPage;
   @Input() unit = <Unit>Unit.metric;
-  @Input() isPreviewMode: boolean = false;
+  @Input() isPreviewMode = false;
   @ViewChild('container', {static: false})
   container: ElementRef;
 

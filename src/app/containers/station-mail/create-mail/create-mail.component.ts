@@ -607,7 +607,7 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param id {number}-收件者編號
    * @param isGroup {boolean}-是否為群組
    */
-  navigateSenderPage(id: number, isGroup: boolean = false) {
+  navigateSenderPage(id: number, isGroup = false) {
     if (!isGroup) {
       const hashId = this.hashIdService.handleUserIdEncode(`${id}`);
       window.open(`/user-profile/${hashId}/info`, '_blank');

@@ -579,7 +579,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
   upLoadImg(editMode: EditMode) {
     const { edited, icon, scenery } = this.editImage;
     if (editMode === 'complete' && edited) {
-      let imgArr: any = [];
+      const imgArr: any = [];
       const formData = new FormData();
       const { userId } = this.userProfile;
       formData.set('token', this.authService.token);

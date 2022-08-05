@@ -41,19 +41,19 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
 
   @ViewChild('gMap') gMap: ElementRef;
   @ViewChild('bMap') bMap: ElementRef;
-  @Input('mapGpx') mapGpx: Array<Array<number>>;
-  @Input('mapDistance') mapDistance: number;
-  @Input('altitude') altitude: Array<number>;
-  @Input('userList') userList: Array<any>;
-  @Input('userId') userId: number;
-  @Input('unit') unit: Unit;
-  @Input('selectDate') selectDate: SelectDate;
-  @Input('groupId') groupId: string;
-  @Input('mapId') mapId: number;
-  @Input('mapSource') mapSource: MapSource;
-  @Input('compareList') compareList: Array<number>;
-  @Input('isPreviewMode') isPreviewMode: boolean;
-  @Input('page') page: 'group' | 'person';
+  @Input() mapGpx: Array<Array<number>>;
+  @Input() mapDistance: number;
+  @Input() altitude: Array<number>;
+  @Input() userList: Array<any>;
+  @Input() userId: number;
+  @Input() unit: Unit;
+  @Input() selectDate: SelectDate;
+  @Input() groupId: string;
+  @Input() mapId: number;
+  @Input() mapSource: MapSource;
+  @Input() compareList: Array<number>;
+  @Input() isPreviewMode: boolean;
+  @Input() page: 'group' | 'person';
   @Output() mapSourceChange: EventEmitter<MapSource> = new EventEmitter();
   @Output() comparePlayer: EventEmitter<number> = new EventEmitter();
 
@@ -683,7 +683,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100329
    */
   removeAllPlayerMark() {
-    for (let _playerId in this.mapPlay.playerMark) {
+    for (const _playerId in this.mapPlay.playerMark) {
 
       if (this.mapPlay.playerMark.hasOwnProperty(_playerId)) {
         this.mapPlay.playerMark[_playerId].onRemove();
@@ -752,7 +752,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    */
   adjustMapIconSize() {
     const iconSize = this.getMapIconSize();
-    for (let _playerId in this.mapPlay.playerMark) {
+    for (const _playerId in this.mapPlay.playerMark) {
 
       if (this.mapPlay.playerMark.hasOwnProperty(_playerId)) {
         this.mapPlay.playerMark[_playerId].adjustIconSize(iconSize);
@@ -936,7 +936,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
     this.mapPlay.pause = false;
     this.mapPlay.truthSecond = 0;
     // 將所有參賽者回歸原點
-    for (let _playerId in this.loadedList) {
+    for (const _playerId in this.loadedList) {
 
       if (this.loadedList.hasOwnProperty(_playerId)) {
         
@@ -975,7 +975,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
       if (!this.mapPlay.pause) {
         this.mapPlay.truthSecond++;
         let raceCompleted = true;
-        for (let _playerId in this.loadedList) {
+        for (const _playerId in this.loadedList) {
 
           if (this.loadedList.hasOwnProperty(_playerId)) {
 
@@ -1050,7 +1050,7 @@ class CustomGMapIcon extends google.maps.OverlayView {
   position: any;  // 該mark gpx位置
   containerDiv: HTMLDivElement;
   icon: HTMLDivElement;
-  offset: number = 15;
+  offset = 15;
   img: any;
 
   constructor(
@@ -1158,7 +1158,7 @@ class CustomBMapIcon extends BMap.Overlay {
   position: any;  // 該mark gpx位置
   containerDiv: HTMLDivElement;
   icon: HTMLDivElement;
-  offset: number = 15;
+  offset = 15;
   img: any;
   map: any;
 

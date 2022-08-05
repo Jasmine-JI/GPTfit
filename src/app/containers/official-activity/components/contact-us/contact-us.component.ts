@@ -252,7 +252,7 @@ export class ContactUsComponent implements OnInit, OnDestroy {
    * @author kidin-1101214
    */
   checkForm() {
-    for (let _key in this.contentInfo) {
+    for (const _key in this.contentInfo) {
       const value = this.contentInfo[_key];
       if (!value) {
         this.formAlert[_key] = 'empty';

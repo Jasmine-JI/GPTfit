@@ -307,7 +307,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   checkQueryString() {
     const query = getUrlQueryStrings(location.search);
-    for (let _key in query) {
+    for (const _key in query) {
       const value = query[_key];
       switch (_key) {
         case QueryString.target:
@@ -514,7 +514,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     if (level === GroupLevel.brand) return allGroupInfo;
 
     const { groups: { branchId, classId } } = REGEX_GROUP_ID.exec(id);
-    for (let _id in allGroupInfo) {
+    for (const _id in allGroupInfo) {
       const { groups: { brandId: _brandId, branchId: _branchId, classId: _classId } } = REGEX_GROUP_ID.exec(_id);
       if (_branchId !== branchId) {
         delete allGroupInfo[_id];
@@ -568,7 +568,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     const result = {
       value: 0,
       unit: '',
-      update(value: string | number, unit: string = '') {
+      update(value: string | number, unit = '') {
         this.value = value;
         this.unit = unit;
       },

@@ -11,7 +11,7 @@ import { langList } from '../../shared/models/i18n';
 import { setLocalStorageObject, getLocalStorageObject } from '../../shared/utils/index';
 
 @Component({
-  // tslint:disable-next-line:component-selector
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'portal',
   templateUrl: './portal.component.html',
   styleUrls: ['./portal.component.scss']
@@ -262,7 +262,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
   slideImg(scrollTop: number) {
 
     setTimeout(() => {
-      let targetImg = [
+      const targetImg = [
         `${this.uiFlag.page}T1`,
         `${this.uiFlag.page}T2`,
         `${this.uiFlag.page}T3`,
@@ -338,7 +338,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    * @author kidin-1091008
    */
   switchPage(e: string) {
-    let url = `/introduction/${e}`;
+    const url = `/introduction/${e}`;
     this.router.navigateByUrl(url);
     this.uiFlag.page = e;
     window.scrollTo({top: 0, behavior: 'auto'});

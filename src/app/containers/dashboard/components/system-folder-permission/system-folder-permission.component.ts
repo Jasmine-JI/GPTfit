@@ -77,7 +77,7 @@ export class SystemFolderPermissionComponent implements OnInit {
   token = this.authService.token;
   userList: Array<string>;
   folderList: Array<string>;
-  tempAddFolderName: string = '';
+  tempAddFolderName = '';
   selectTempAddList: Array<string> = [];
   inputTempAddList: Array<string> = [];
   candidateFolderList: Array<string>;
@@ -365,7 +365,7 @@ export class SystemFolderPermissionComponent implements OnInit {
    * @author kidin-1100730
    */
   toggleDisplayPW(element: 'pwd' | 'check__pwd') {
-    let flag = element === 'pwd' ? 'showNewPwd' : 'showCheckPwd';
+    const flag = element === 'pwd' ? 'showNewPwd' : 'showCheckPwd';
     const pwInputType = (<HTMLInputElement>document.getElementById(element));
     if (this.uiFlag[flag]) {
       this.uiFlag[flag] = false;

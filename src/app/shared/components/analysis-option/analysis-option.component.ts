@@ -13,8 +13,8 @@ import { MuscleAnalysisColumn } from '../../enum/weight-train';
 })
 export class AnalysisOptionComponent implements OnInit, OnDestroy {
 
-  @Input('analysisOption') analysisOption: any;
-  @Output('optionChange') optionChange = new EventEmitter();
+  @Input() analysisOption: any;
+  @Output() optionChange = new EventEmitter();
 
   readonly SportType = SportType;
   readonly GroupLevel = GroupLevel;

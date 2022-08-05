@@ -19,7 +19,7 @@ Treemap(Highcharts);
 })
 export class TreeMapChartComponent implements OnInit, OnChanges, OnDestroy {
 
-  @Input('zoneInfo') zoneInfo: {
+  @Input() zoneInfo: {
     type: string;
     data: Array<number>;
   };

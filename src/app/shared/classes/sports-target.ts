@@ -101,7 +101,7 @@ export class SportsTarget {
    * @param peopleNumber {number}-人數（用於團體運動報告，計算所有人加總所需的目標值）
    * @param corssRange {number}-報告橫跨日期數目
    */
-  getTransformCondition(reportUnit: DateUnit, peopleNumber: number = 1) {
+  getTransformCondition(reportUnit: DateUnit, peopleNumber = 1) {
     const _condition = deepCopy(this._condition);
     const { _cycle } = this;
     const sameUnit = _cycle === reportUnit;

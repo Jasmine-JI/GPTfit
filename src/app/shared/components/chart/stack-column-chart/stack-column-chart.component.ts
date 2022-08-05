@@ -78,7 +78,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() analysisData: any;  // 流量分析頁面用變數-kidin-1100810
   @Input() searchDate: Array<number>;
   @Input() page: DisplayPage;
-  @Input() isPreviewMode: boolean = false;
+  @Input() isPreviewMode = false;
   @ViewChild('container', {static: false})
   container: ElementRef;
 

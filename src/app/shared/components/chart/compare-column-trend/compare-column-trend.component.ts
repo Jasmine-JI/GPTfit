@@ -31,13 +31,13 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
 
   private ngUnsubscribe = new Subject();
 
-  @Input('data') data: Array<any>;
+  @Input() data: Array<any>;
 
-  @Input('type') type: TargetField;
+  @Input() type: TargetField;
 
-  @Input('condition') condition: Array<TargetCondition>;
+  @Input() condition: Array<TargetCondition>;
 
-  @Input('xAxisTitle') xAxisTitle: string;
+  @Input() xAxisTitle: string;
 
   @ViewChild('container', {static: false})
   container: ElementRef;

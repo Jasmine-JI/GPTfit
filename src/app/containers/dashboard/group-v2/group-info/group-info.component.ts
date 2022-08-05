@@ -297,7 +297,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   upLoadImg(editMode: EditMode) {
     if (editMode === 'complete' && this.editImage.edited) {
-      let imgArr = [];
+      const imgArr = [];
       const formData = new FormData();
       formData.set('token', this.authService.token);
       formData.set('targetType', '2');
@@ -1226,7 +1226,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   checkoutUserPrivacy() {
     let openPrivacy = true;
-    for (let privacyType in this.user.privacy) {
+    for (const privacyType in this.user.privacy) {
 
       if (this.user.privacy.hasOwnProperty(privacyType)) {
 

@@ -91,7 +91,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
   @Input() page: DisplayPage;
   @Input() unit = <Unit>Unit.metric;
   @Input() sportType: SportType = SportType.all;
-  @Input() isPreviewMode: boolean = false;
+  @Input() isPreviewMode = false;
   @ViewChild('container', {static: false})
   container: ElementRef;
 

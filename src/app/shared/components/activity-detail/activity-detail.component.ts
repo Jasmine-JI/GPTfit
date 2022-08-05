@@ -903,7 +903,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       const repeatPoint = point.splice(pointLen - 1, pointLen)[0],
             newPointLen = point.length,
             lastPoint = point[newPointLen - 1];
-      for (let key in lastPoint) {
+      for (const key in lastPoint) {
 
         if (lastPoint.hasOwnProperty(key) && repeatPoint.hasOwnProperty(key)) {
 
@@ -1560,7 +1560,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @param willShare {boolean}-是否顯示分享框
    * @author kidin-1100302
    */
-  editFilePrivacy(willShare: boolean = false) {
+  editFilePrivacy(willShare = false) {
     const body = {
       token: this.authService.token,
       fileId: this.fileInfo.fileId,
@@ -1652,7 +1652,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     csvData += '\n';
     for (let i = -1; i < finalLength; i++) {
 
-      for (let key in finalObj) {
+      for (const key in finalObj) {
         
         if (i === -1) {
           // 欄位標題
@@ -1687,7 +1687,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     ];
     const finalObj = {};
     let maxLength = 0;
-    for (let key in rawData) {
+    for (const key in rawData) {
 
       if (!excludeData.includes(key)) {
         const value = rawData[key];
@@ -1710,7 +1710,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           value.forEach(_rawData => {
             const [childObj, childMaxLength] = this.flattenObj(_rawData);
             maxLength = childMaxLength > maxLength ? childMaxLength : maxLength;
-            for (let childKey in childObj) {
+            for (const childKey in childObj) {
               const mergeKey = `${key}.${childKey}`;
               const childValue = childObj[childKey];
               const childIsArray = Array.isArray(childValue);
@@ -1734,7 +1734,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         } else if (isObj) {
           const [childObj, childMaxLength] = this.flattenObj(value);
           maxLength = childMaxLength > maxLength ? childMaxLength : maxLength;
-          for (let childKey in childObj) {
+          for (const childKey in childObj) {
             // 同key則將數據整合至一個array中
             const mergeKey = `${key}.${childKey}`;
             const childValue = childObj[childKey];
@@ -1778,7 +1778,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100225
    */
   getPreviewUrl() {
-    let queryStringArr = ['ipm=s'];
+    const queryStringArr = ['ipm=s'];
     if (this.activityInfoLayer.type == 3) queryStringArr.push(`weightTrainLevel=${this.uiFlag.weightTrainLevel}`);
     if ([1, 2, 4, 6, 7].includes(+this.activityInfoLayer.type)) queryStringArr.push(this.compareChartQueryString);
 
@@ -2099,7 +2099,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
     });
 
-    let gpxData = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+    const gpxData = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
     <gpx xmlns="${
         "http://www.topografix.com/GPX/1/1"
       }" xmlns:gpxtpx="${
@@ -2152,7 +2152,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   upLoadImg() {
     const { edited, base64 } = this.editImage;
     if (edited) {
-      let imgArr = [];
+      const imgArr = [];
       const formData = new FormData(),
             { userId } = this.userProfile;
       formData.set('token', this.authService.token);

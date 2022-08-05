@@ -22,13 +22,13 @@ export class ComparePaceChartComponent implements OnInit, OnChanges, OnDestroy {
 
   private ngUnsubscribe = new Subject();
 
-  @Input('data') data: Array<any>;
+  @Input() data: Array<any>;
 
-  @Input('xAxisTitle') xAxisTitle: string;
+  @Input() xAxisTitle: string;
 
-  @Input('sportType') sportType: SportType;
+  @Input() sportType: SportType;
 
-  @Input('unit') unit: Unit;
+  @Input() unit: Unit;
 
   @ViewChild('container', {static: false})
   container: ElementRef;

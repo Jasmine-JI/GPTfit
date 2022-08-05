@@ -18,9 +18,9 @@ export class CompareHrzoneTrendComponent implements OnInit {
 
   private ngUnsubscribe = new Subject();
 
-  @Input('data') data: Array<any>;
+  @Input() data: Array<any>;
 
-  @Input('xAxisTitle') xAxisTitle: string;
+  @Input() xAxisTitle: string;
 
   @ViewChild('container', {static: false})
   container: ElementRef;

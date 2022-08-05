@@ -23,7 +23,7 @@ import { getUrlQueryStrings } from '../../../../shared/utils/index';
 export class GroupSearchComponent implements OnInit {
 
   groupLevel = '130';
-  searchWords: String | string[];
+  searchWords: string | string[];
   token: string;
   logSource = new MatTableDataSource<any>();
   totalCount: number;

@@ -8,7 +8,7 @@ import { getUserFtpZone } from '../../../utils/sports';
 })
 export class ThresholdInfoComponent implements OnInit, OnChanges {
 
-  @Input('cycleFtp') cycleFtp: number = 200;
+  @Input() cycleFtp = 200;
 
   ftpZoneRange = {
     z0: 109,

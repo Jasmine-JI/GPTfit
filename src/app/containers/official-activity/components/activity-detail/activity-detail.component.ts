@@ -320,7 +320,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
   getRaceCountdown(currentTimestamp: number, endTimestamp: number) {
     const diffTimestamp = endTimestamp - currentTimestamp;
     const numberTranslate = (value: number, coefficient: Array<number>) => {
-      let result = [];
+      const result = [];
       coefficient.reduce((previousValue, _coefficient) => {
         const quotient = Math.floor(previousValue / _coefficient);
         const remainder = previousValue - quotient * _coefficient;

@@ -88,9 +88,9 @@ export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestro
   @Input() dateRange: string;
   @Input() sportType: string;
   @Input() chartName: string;
-  @Input() unit: number = 0;
-  @Input() page: string = 'sportReport';
-  @Input() isPreviewMode: boolean = false;
+  @Input() unit = 0;
+  @Input() page = 'sportReport';
+  @Input() isPreviewMode = false;
   @ViewChild('container', {static: false})
   container: ElementRef;
 
@@ -196,7 +196,7 @@ export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestro
     const top = this.data.maxGForce ?? this.data.maxForehandCount,
           bottom = this.data.minGForce ?? this.data.maxBackhandCount;
     // 設定圖表上下限軸線位置，以顯示數值為0的軸線
-    let absPositive = Math.abs(parseFloat(top.toFixed(0))),
+    const absPositive = Math.abs(parseFloat(top.toFixed(0))),
         absNegative = Math.abs(parseFloat(bottom.toFixed(0)));
     if (absPositive > absNegative) {
       chartOptions['yAxis']['tickPositions'] = [-absPositive, 0, absPositive];

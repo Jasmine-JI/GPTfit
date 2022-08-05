@@ -96,7 +96,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
   @Input() page: DisplayPage;
   @Input() sportType = <SportType>SportType.run;
   @Input() unit: Unit;
-  @Input() isPreviewMode: boolean = false;
+  @Input() isPreviewMode = false;
   @ViewChild('container', {static: true})
   container: ElementRef;
 

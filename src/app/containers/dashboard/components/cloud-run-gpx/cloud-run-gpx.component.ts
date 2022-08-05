@@ -34,8 +34,8 @@ const ELEMENT_DATA: PeriodicElement[] = [
     desc: 'BD-09坐标系，百度地图采用的经纬度坐标'
   }
 ];
-declare var google: any;
-declare var BMap: any;
+declare let google: any;
+declare let BMap: any;
 
 @Component({
   selector: 'app-cloud-run-gpx',

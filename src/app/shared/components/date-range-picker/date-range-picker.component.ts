@@ -25,8 +25,8 @@ export class DateRangePickerComponent implements OnInit, OnChanges, OnDestroy {
   @Input() limitMin: number;
   @Input() limitMax: number;
   @Input() limitMaxCurrent: boolean;
-  @Input() selectBirthday: boolean = false;
-  @Input() serialId: string = '';
+  @Input() selectBirthday = false;
+  @Input() serialId = '';
 
   // 預設上週-kidin-1090330
   defaultDate = {

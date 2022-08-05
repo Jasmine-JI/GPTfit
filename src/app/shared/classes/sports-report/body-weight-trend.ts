@@ -77,7 +77,7 @@ import { deepCopy } from '../../utils/index';
    * @param dateRange {Array<number>}-該數據日期範圍
    */
   addBaseData(weight: number, fatRate: number, dateRange: Array<number>) {
-    let [fatRateInfo, weightInfo] = this._trendData;
+    const [fatRateInfo, weightInfo] = this._trendData;
     const { baseFatRate, baseWeight } = this._filler;
     if (weight) {
       // 將之前為0之體重以目前數值進行替代

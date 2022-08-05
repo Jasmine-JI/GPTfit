@@ -800,7 +800,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1100722
    */
   selectDevice(type: string) {
-    let { deviceType } = this.reportConditionOpt;
+    const { deviceType } = this.reportConditionOpt;
     if (deviceType.includes(type)) {
       this.reportConditionOpt.deviceType = deviceType.filter(_type => _type !== type);
     } else {

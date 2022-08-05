@@ -43,12 +43,12 @@ export class MailDetailComponent implements OnInit, OnDestroy {
   /**
    * 引言
    */
-  foreword: string = '';
+  foreword = '';
 
   /**
    * 正文
    */
-  mainContent: string = '';
+  mainContent = '';
 
   /**
    * 常用名單

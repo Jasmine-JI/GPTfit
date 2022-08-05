@@ -973,7 +973,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
 
       needKey.forEach(_key => {
         const value = +_data[_key];
-        let currentUser = this.personAnalysis[userId];
+        const currentUser = this.personAnalysis[userId];
         if (value !== undefined) {
 
           if (!this.getLatestKey().includes(_key)) {
@@ -1056,7 +1056,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       regressionObj = this.handleRegression(regressionObj, 'FFMI', FFMI, userId, startTimestamp);
     });
 
-    for (let _key in regressionObj) {
+    for (const _key in regressionObj) {
       if (regressionObj.hasOwnProperty(_key) && _key !== 'timestampArr') {
         const slope = new SimpleLinearRegression(regressionObj['timestampArr'], regressionObj[_key]).slope || 0;
         let trend: 'up' | 'down' = null;
@@ -1226,7 +1226,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    */
   handleGroupAnalysis(personData: any) {
     this.groupAnalysis = deepCopy(this.groupList.analysisObj);
-    for (let gid in (this.groupAnalysis as any)) {
+    for (const gid in (this.groupAnalysis as any)) {
       if (this.groupAnalysis.hasOwnProperty(gid)) {
         const { memberSet, memberList } = this.groupAnalysis[gid],
               idList = Array.from(memberSet);
@@ -1252,7 +1252,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
 
               }
 
-              for (let key in personData[_id]) {
+              for (const key in personData[_id]) {
                 const isEffectCountKey = key.toLowerCase().includes('effectcount'),
                       excludeKey = [
                         'name',
@@ -1346,7 +1346,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    */
   createGroupRegression(groupId: string) {
     const regressionData = this.groupList.regression[groupId];
-    for (let _dataType in regressionData) {
+    for (const _dataType in regressionData) {
       if (regressionData.hasOwnProperty(_dataType)) {
         const { data, date } = regressionData[_dataType],
               slope = new SimpleLinearRegression(date, data).slope || 0;
@@ -1438,10 +1438,10 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    */
    mergeGroupData(key: string, value: number, userId: number, timestamp: number) {
     const { analysisObj } = this.groupList;
-    for (let _groupId in analysisObj) {
+    for (const _groupId in analysisObj) {
 
       if (analysisObj[_groupId].memberSet.has(userId)) {
-        let _group = this.groupList.regression[_groupId];
+        const _group = this.groupList.regression[_groupId];
         if (_group) {
           const _regressionEle = _group[key];
           if (_regressionEle) {
@@ -1707,7 +1707,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    * @author kidin-1100622
    */
   createbodyDiagram(personData: any) {
-    for (let key in personData) {
+    for (const key in personData) {
 
       if (personData.hasOwnProperty(key)) {
         const userData = personData[key],
@@ -2070,7 +2070,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     for (let i = 0, len = sortData.length; i < len && swaped; i++) {
       swaped = false;
       for (let j = 0; j < len - 1 - i; j++) {
-        let _dataA = this.getSortData(type, sortData[j], sortCategory),
+        const _dataA = this.getSortData(type, sortData[j], sortCategory),
             _dataB = this.getSortData(type, sortData[j + 1], sortCategory);
         // 排序時一併找出最大值
         if (_dataA > sortDenominator) {

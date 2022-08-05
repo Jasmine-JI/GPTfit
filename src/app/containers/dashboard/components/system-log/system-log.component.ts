@@ -153,7 +153,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
           this.targetUser.name = res.userProfile.nickname;
           this.targetUser.account = null;
         } else {
-          let result = res.processResult ?? res;
+          const result = res.processResult ?? res;
           this.utils.handleError(result.resultCode, result.apiCode, result.resultMessage);
         }
         
@@ -295,7 +295,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
    * 送出搜尋
    * @author kidin-1100303
    */
-  submit(initPage: boolean = true) {
+  submit(initPage = true) {
     if (initPage) {
       this.searchCondition.page = 0;
       if (this.currentPage) {
@@ -314,8 +314,8 @@ export class SystemLogComponent implements OnInit, OnDestroy {
       this.searchCondition.targetUserId = targetType === 'user' ? +this.targetUser.id : null;
       this.searchCondition.startTime = dayjs(this.selectedDate.startDate).format(apiDateFormat);
       this.searchCondition.endTime = dayjs(this.selectedDate.endDate).format(apiDateFormat);
-      let body = {};
-      for (let key in this.searchCondition) {
+      const body = {};
+      for (const key in this.searchCondition) {
 
         if (this.searchCondition.hasOwnProperty(key)) {
           const value = this.searchCondition[key];

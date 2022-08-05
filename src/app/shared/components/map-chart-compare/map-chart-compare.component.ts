@@ -31,14 +31,14 @@ type CompareDataOpt = 'hr' | 'speed' | 'pace' | 'cadence' | 'power' | 'temperatu
 })
 export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
 
-  @Input('userPoint') userPoint: Array<any>;
-  @Input('userInfo') userInfo: Array<any>;
-  @Input('sportType') sportType: SportType;
-  @Input('isNormalCoordinate') isNormalCoordinate: any;
-  @Input('sysAccessRight') sysAccessRight: number;
-  @Input('unit') unit: number;
-  @Input('hideChart') hideChart: boolean;
-  @Input('cloudrunMapId') cloudrunMapId: number;
+  @Input() userPoint: Array<any>;
+  @Input() userInfo: Array<any>;
+  @Input() sportType: SportType;
+  @Input() isNormalCoordinate: any;
+  @Input() sysAccessRight: number;
+  @Input() unit: number;
+  @Input() hideChart: boolean;
+  @Input() cloudrunMapId: number;
   @Output() chartSetting: EventEmitter<string> = new EventEmitter();
   @ViewChild('gMap') gMap: ElementRef;
   @ViewChild('bMap') bMap: ElementRef;

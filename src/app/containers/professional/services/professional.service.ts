@@ -79,7 +79,7 @@ export class ProfessionalService {
    * @param groupId {string}-群組編號
    * @param init {GroupLevel}-是否為取得api 1113後初始化之步驟
    */
-  checkGroupAccessright(groupId: string, init: boolean = false) {
+  checkGroupAccessright(groupId: string, init = false) {
     if (init || groupId !== this._currentGroupId) {
       const accessright = this.filterGroupAccessright(groupId);
       this._currentGroupId = groupId;

@@ -149,7 +149,7 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
       queryType: 1,
       queryArray: snList
     };
-    let querry = [this.qrcodeService.getProductInfo(productInfoBody)];
+    const querry = [this.qrcodeService.getProductInfo(productInfoBody)];
     if (idSet.size > 0) {
       const idList = Array.from(idSet),
       body = {

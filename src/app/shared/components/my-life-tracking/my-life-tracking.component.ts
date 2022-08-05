@@ -525,7 +525,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
           this.info['stroke'] = 1;
         }
 
-        let sameDateData = {};
+        const sameDateData = {};
         const trackingLen = tracking.length;
         for (let j = 0; j < trackingLen; j++) {
           const _tracking = tracking[j];
@@ -646,7 +646,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
     commentType: CommentType,
     value: number,
     gender: Sex,
-    overThirty: boolean = false
+    overThirty = false
   ) {
     let boundary: Array<number>,
         i18KeyArr: Array<string>,

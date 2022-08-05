@@ -12,8 +12,8 @@ export class LoadingBarComponent implements OnInit, OnChanges, OnDestroy {
 
   private ngUnsubscribe = new Subject();
 
-  @Input('progress') progress: number;
-  @Input('isPreviewMode') isPreviewMode: boolean = false;
+  @Input() progress: number;
+  @Input() isPreviewMode = false;
 
   /**
    * UI用到的各個flag
