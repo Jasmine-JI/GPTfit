@@ -508,7 +508,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @param theme {Theme}-主題顏色
    * @author kidin-1100602
    */
-  changeTheme(theme: Theme | undefined = undefined, save: boolean = true) {
+  changeTheme(theme: Theme | undefined = undefined, save = true) {
     let nextTheme: Theme;
     if (theme) {
       nextTheme = theme;

@@ -267,7 +267,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   checkQueryString() {
     const query = getUrlQueryStrings(location.search);
-    for (let _key in query) {
+    for (const _key in query) {
       const value = query[_key];
       switch (_key) {
         case QueryString.debug:
@@ -629,7 +629,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     const result = {
       value: 0,
       unit: '',
-      update(value: string | number, unit: string = '') {
+      update(value: string | number, unit = '') {
         this.value = value;
         this.unit = unit;
       },
@@ -939,7 +939,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     const compareKeyLength = Object.keys(compareInfo).length;
     const reference = baseKeyLength >= compareKeyLength ? baseInfo : compareInfo;
     let result = {};
-    for (let key in reference) {
+    for (const key in reference) {
       const baseValue = baseInfo[key];
       const compareValue = compareInfo[key];
       const referenceValue = reference[key];

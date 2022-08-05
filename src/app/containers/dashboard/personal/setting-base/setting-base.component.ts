@@ -147,7 +147,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
   checkEdit(oldSet: any, newSet: any): any {
     let updateObj = {},
         isUpdate = false;
-    for (let _key in newSet) {
+    for (const _key in newSet) {
 
       if (newSet.hasOwnProperty(_key)) {
         const oldValue = oldSet[_key],

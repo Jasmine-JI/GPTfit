@@ -557,7 +557,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           avgSeconds: 0,
           sameDateLen: 0,
           init() {
-            for (let key in this) {
+            for (const key in this) {
 
               if (this.hasOwnProperty(key)) {
                 if (key !== 'init') this[key] = 0;

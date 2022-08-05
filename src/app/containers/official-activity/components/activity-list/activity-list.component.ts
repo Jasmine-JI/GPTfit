@@ -543,7 +543,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @param top {number}-指定位置
    * @author kidin-1110104
    */
-  scrollPage(top: number = 0) {
+  scrollPage(top = 0) {
     const mainBodyElement = document.querySelector('.main__page');
     mainBodyElement.scrollTo({top, behavior: top === 0 ? 'smooth' : 'auto'});
   }
@@ -584,7 +584,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
 
     this.officialActivityService.createProductOrder(body).subscribe(res => {
       if (this.utils.checkRes(res)) {
-        let { responseHtml } = res;
+        const { responseHtml } = res;
         const newElement = document.createElement('div');
         const target = document.querySelector('.main__page');
         newElement.innerHTML = responseHtml as any;
@@ -1022,7 +1022,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @param checkShipped {boolean}-是否
    * @author kidin-1110216
    */
-  checkCanEdit(index: number, checkShipped: boolean = true) {
+  checkCanEdit(index: number, checkShipped = true) {
     const { raceDate: { endDate }, applyStatus, eventStatus, productShipped } = this.effectEventList[index];
     const allowStatus = [ApplyStatus.notYet, ApplyStatus.applied];
     const normalHeldEvent = eventStatus === EventStatus.audit;

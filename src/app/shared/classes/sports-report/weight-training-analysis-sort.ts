@@ -18,7 +18,7 @@ export class WeightTrainingAnalysisSort {
    */
   private _type: string;
 
-  constructor(data: Array<any>, sortType: string = 'trainingName') {
+  constructor(data: Array<any>, sortType = 'trainingName') {
     this._data = data;
     this._type = sortType;
     this.sortData();

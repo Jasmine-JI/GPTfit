@@ -46,13 +46,13 @@ export class SportsReport {
     const { openPrivacy, target, condition, data, timeType } = parameter;
     // 將統計數據另存至物件中
     let dataObj = { openPrivacy } as any;
-    let avgDataIntermediary = {};
-    let maxDataIntermediary = {};
+    const avgDataIntermediary = {};
+    const maxDataIntermediary = {};
     if (openPrivacy) {
       const { sportType } = condition!;
       const dataKey = this.getDataKey(sportType!);
-      let preferSports = new PreferSportType();
-      let preferWeightTrainGroup = new WeightTrainStatistics();
+      const preferSports = new PreferSportType();
+      const preferWeightTrainGroup = new WeightTrainStatistics();
 
       data!.forEach(_data => {
         const { activities: _activities } = _data;
@@ -160,7 +160,7 @@ export class SportsReport {
    */
   getAvgData(intermediary: any) {
     let result = {};
-    for (let _key in intermediary) {
+    for (const _key in intermediary) {
       const [ effectTotal, effectActivities ] = intermediary[_key];
       result = {
         ...result,

@@ -19,11 +19,11 @@ export class CompareOverlayColumnChartComponent implements OnInit, OnDestroy, On
 
   private ngUnsubscribe = new Subject();
 
-  @Input('data') data: Array<any>;
+  @Input() data: Array<any>;
 
-  @Input('xAxisTitle') xAxisTitle: string;
+  @Input() xAxisTitle: string;
 
-  @Input('chartUnit') chartUnit: string = '';
+  @Input() chartUnit = '';
 
   @ViewChild('container', {static: false})
   container: ElementRef;

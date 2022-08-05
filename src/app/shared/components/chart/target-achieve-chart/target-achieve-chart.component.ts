@@ -22,13 +22,13 @@ heatmap(Highcharts);
 })
 export class TargetAchieveChartComponent implements OnInit, OnChanges, OnDestroy {
 
-  @Input('data') data: Array<any>;
+  @Input() data: Array<any>;
 
-  @Input('isCompareMode') isCompareMode = false;
+  @Input() isCompareMode = false;
 
-  @Input('condition') condition: ReportCondition;
+  @Input() condition: ReportCondition;
 
-  @Input('xAxisTitle') xAxisTitle: string;
+  @Input() xAxisTitle: string;
 
 
   private ngUnsubscribe = new Subject();

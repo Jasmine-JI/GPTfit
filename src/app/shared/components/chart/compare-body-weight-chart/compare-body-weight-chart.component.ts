@@ -20,11 +20,11 @@ export class CompareBodyWeightChartComponent implements OnInit, OnDestroy, OnCha
 
   private ngUnsubscribe = new Subject();
 
-  @Input('data') data: Array<any>;
+  @Input() data: Array<any>;
 
-  @Input('xAxisTitle') xAxisTitle: string;
+  @Input() xAxisTitle: string;
 
-  @Input('isMetric') isMetric: boolean;
+  @Input() isMetric: boolean;
 
   @ViewChild('container', {static: false})
   container: ElementRef;

@@ -404,7 +404,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
    * @param msg {string}-欲顯示之訊息
    * @author kidin-1110113
    */
-  showMsg(msg: string, leavePage: boolean = false) {
+  showMsg(msg: string, leavePage = false) {
     if (this.pcView) {
       const data = {
         title: 'Message',

@@ -76,7 +76,7 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() data: Array<number>; // 各心率區間總秒數，ex.[992, 123, 1534, 1234, 1231, 321]
   @Input() type: 'mixHrZone' | 'personalAnalysis';
-  @Input() isPreviewMode: boolean = false;
+  @Input() isPreviewMode = false;
   @ViewChild('container', {static: false})
   container: ElementRef;
 

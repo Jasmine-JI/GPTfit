@@ -84,7 +84,7 @@ export class WeightTrainingTrend {
 
   constructor(
     level: WeightTrainingLevel = WeightTrainingLevel.metacarpus,
-    bodyWeight: number = 60
+    bodyWeight = 60
   ) {
     this._proficiency = this.getProficiency(level);
     this._bodyWeight = bodyWeight;
@@ -201,7 +201,7 @@ export class WeightTrainingTrend {
    * 根據使用者設定訓練程度設定呈現顏色
    * @param max1RM {number}-最大1RM
    */
-  setColor(max1RM: number, useInMuscleMap: boolean = true) {
+  setColor(max1RM: number, useInMuscleMap = true) {
     const { saturation, brightnessFor1RM, brightnessForAvgWeight, transparency } = WEIGHT_TRAIN_COLOR;
     const { _bodyWeight, _proficiency } = this;
     const transparencyPercentage = useInMuscleMap ? transparency : 1;
@@ -289,8 +289,8 @@ export class WeightTrainingTrend {
    * 取得期間同部位訓練趨勢數據
    */
   get partTrainingData() {
-    let result = {};
-    for (let _muscleCode in this._partTrainingData as any) {
+    const result = {};
+    for (const _muscleCode in this._partTrainingData as any) {
       const muscleCode = +_muscleCode as MuscleCode;
       const muscleGroup = getCorrespondingMuscleGroup(muscleCode);
       const _data = this._partTrainingData[_muscleCode];

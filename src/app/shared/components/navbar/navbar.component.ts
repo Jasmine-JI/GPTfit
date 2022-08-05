@@ -10,7 +10,7 @@ import { GetClientIpService } from '../../services/get-client-ip.service';
 import { setLocalStorageObject, getLocalStorageObject } from '../../utils/index';
 
 @Component({
-  // tslint:disable-next-line:component-selector
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']

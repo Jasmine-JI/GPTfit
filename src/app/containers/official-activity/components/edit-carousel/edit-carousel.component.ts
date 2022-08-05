@@ -155,7 +155,7 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
     formData.set('token', this.token);
     formData.set('targetType', '3');
     formData.set('targetEventId', '0');
-    for (let _advertiseId in this.imgUpload) {
+    for (const _advertiseId in this.imgUpload) {
       const { crop: newAdvertiseImg } = this.imgUpload[_advertiseId];
       [imgArray, formData] =
         this.appendNewImg(

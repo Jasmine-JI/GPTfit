@@ -91,13 +91,13 @@ export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
 
   private ngUnsubscribe = new Subject;
 
-  @Input('unit') unit: Unit;
-  @Input('loadedList') loadedList: any;
-  @Input('altitude') altitude: number[];
-  @Input('gpx') gpx: Array<Array<number>>;
-  @Input('mapDistance') mapDistance: number;
-  @Input('page') page: 'group' | 'person' = 'person';
-  @Input() isPreviewMode: boolean = false;
+  @Input() unit: Unit;
+  @Input() loadedList: any;
+  @Input() altitude: number[];
+  @Input() gpx: Array<Array<number>>;
+  @Input() mapDistance: number;
+  @Input() page: 'group' | 'person' = 'person';
+  @Input() isPreviewMode = false;
   @ViewChild('container') container: ElementRef;
   @Output() onHover: EventEmitter<any> = new EventEmitter();
 
@@ -159,8 +159,8 @@ export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
     this.translate.get('hellow world').pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
-      let dataSet = [];
-      for (let key in data) {
+      const dataSet = [];
+      for (const key in data) {
 
         if (data.hasOwnProperty(key)) {
           const { name, distanceBase, color } = data[key];

@@ -268,7 +268,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
       queryType: 1,
       queryArray: snList
     };
-    let querry = [this.qrcodeService.getProductInfo(productInfoBody)];
+    const querry = [this.qrcodeService.getProductInfo(productInfoBody)];
     if (idSet.size > 0) {
       const idList = Array.from(idSet),
       body = {
@@ -285,7 +285,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
       if (resultCode !== 200) {
         console.error(`${resultCode}: Api ${apiCode} ${resultMessage}`);
       } else {
-        let finalList = deviceList.map((_list, _idx) => {
+        const finalList = deviceList.map((_list, _idx) => {
           // 顯示fitpair qrcode
           const checkSum = this.qrcodeService.createDeviceChecksum(_list.myEquipmentSN),
                 qrURL = `${

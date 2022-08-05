@@ -46,7 +46,7 @@ import { deepCopy } from '../../utils/index';
       cadenceTrend,
       gForceTrend
     } = trendChartColor;
-    let [maxInfo, avgOrMinInfo] = this._trendData;
+    const [maxInfo, avgOrMinInfo] = this._trendData;
     switch (chartType) {
       case 'hr':
         Object.assign(maxInfo, { name: 'universal_userProfile_maxHr', color: complexHrTrend.base.max });

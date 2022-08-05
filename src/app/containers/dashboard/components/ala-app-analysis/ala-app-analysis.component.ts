@@ -688,7 +688,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
       filterCondition: {}
     };
 
-    for (let _condition in condition) {
+    for (const _condition in condition) {
 
       if (condition.hasOwnProperty(_condition)) {
         const content = condition[_condition];

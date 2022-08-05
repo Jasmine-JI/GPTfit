@@ -24,7 +24,7 @@ export class AnalysisOneOption {
   private _canCancel = true;
 
 
-  constructor(info: any, selected: boolean = false) {
+  constructor(info: any, selected = false) {
     this._info = info;
     this._selected = selected;
   }

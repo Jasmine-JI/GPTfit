@@ -29,7 +29,7 @@ export class LengthSibsPipe implements PipeTransform {
    * @author kidin-1100824
    */
   transform(value: number, args: Option): string {
-    let {
+    const {
       userUnit,
       showUnit,
       valueUnit,

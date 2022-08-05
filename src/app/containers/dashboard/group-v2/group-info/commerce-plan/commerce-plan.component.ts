@@ -103,7 +103,7 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
   countTotalAdminNum(commerce: any) {
     const admin = commerce.groupManagerStatus;
     this.totalAdmin = 0;
-    for(let _admin in admin) {
+    for(const _admin in admin) {
 
       if (admin.hasOwnProperty(_admin)) {
 

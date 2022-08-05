@@ -531,7 +531,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
 
     }
 
-    for (let _contentId in content) {
+    for (const _contentId in content) {
       const newContentImg = content[_contentId];
       [imgArray, formData] =
         this.appendNewImg(
@@ -545,7 +545,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
 
     }
 
-    for (let _applyFeeId in applyFee) {
+    for (const _applyFeeId in applyFee) {
       const { crop: newFeeImg } = applyFee[_applyFeeId];
       [imgArray, formData] =
         this.appendNewImg(
@@ -689,7 +689,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   getEditContent(compareObj: any, newObj: any) {
     let editPart = {};
-    for (let _key in compareObj) {
+    for (const _key in compareObj) {
       const compareValue = compareObj[_key];
       const newValue = newObj[_key];
       switch (_key) {
@@ -773,7 +773,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       return true;
     } else {
       let isDifferent = false;
-      for (let _key in oldObj) {
+      for (const _key in oldObj) {
         const _oldValue = oldObj[_key];
         const _newValue = newObj[_key];
         if (_newValue !== _oldValue) isDifferent = true;
@@ -800,7 +800,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       for (let i = 0; i < oldArray.length; i++) {
         const _compareObj = oldArray[i];
         const _newObj = newArray[i];
-        for (let _compareObjKey in _compareObj) {
+        for (const _compareObjKey in _compareObj) {
           
           if (_newObj[_compareObjKey] !== undefined) {
             const _newValue = _newObj[_compareObjKey];
@@ -869,7 +869,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101224
    */
   getDeleleteIdList(base: number, length: number) {
-    let list = [];
+    const list = [];
     for (let i = 0; i < length; i++) {
       const deleteId = base + 1 + i;
       list.push(deleteId);

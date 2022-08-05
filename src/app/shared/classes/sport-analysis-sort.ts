@@ -24,7 +24,7 @@ export class SportAnalysisSort {
   /**
    * 排序依據
    */
-  private _type: string = 'name';
+  private _type = 'name';
 
   constructor(data: Array<any>, sortType: 'targetAchievedPeople' | 'memberName') {
     this._data = data;

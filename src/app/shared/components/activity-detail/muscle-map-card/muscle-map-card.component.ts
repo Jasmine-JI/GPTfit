@@ -10,7 +10,7 @@ import { MuscleCode, Proficiency } from '../../../enum/weight-train';
 })
 export class MuscleMapCardComponent implements OnInit, OnChanges, OnDestroy {
 
-  @Input('mainPartData')
+  @Input()
   mainPartData: Array<{
     max1RmWeightKg: number;
     muscle: string | number;
@@ -19,9 +19,9 @@ export class MuscleMapCardComponent implements OnInit, OnChanges, OnDestroy {
     totalWeightKg: number;
     color?: string;
   }>;
-  @Input('vicePartList') vicePartList: Array<number | string>;
-  @Input('level') level: UserLevel;
-  @Input('userWeight') userWeight: number = 70; // 預設體重70kg;
+  @Input() vicePartList: Array<number | string>;
+  @Input() level: UserLevel;
+  @Input() userWeight = 70; // 預設體重70kg;
 
   /**
    * ui 用到的各個flag

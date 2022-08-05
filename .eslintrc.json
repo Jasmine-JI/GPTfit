@@ -1,0 +1,47 @@
+{
+  "root": true,
+  "ignorePatterns": [
+    "projects/**/*"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "env": {
+        "browser": true,
+        "node": true,
+        "jest": true,
+        "es6": true
+      },
+      "parserOptions": {
+        "project": [
+          "tsconfig.json"
+        ],
+        "createDefaultProgram": true
+      },
+      "extends": [
+        "eslint:recommended",
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "prettier"
+      ],
+      "rules": {
+        "@angular-eslint/no-empty-lifecycle-method": ["off"]
+      }
+    },
+    {
+      "files": [
+        "*.html"
+      ],
+      "extends": [
+        "eslint:recommended",
+        "plugin:@angular-eslint/template/recommended",
+        "prettier"
+      ],
+      "rules": {}
+    }
+  ]
+}

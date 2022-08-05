@@ -13,11 +13,11 @@ export function isObjectEmpty(object) {
 }
 
 export function debounce(func, wait) {
-  var timeout, args, context, timestamp, result;
+  let timeout, args, context, timestamp, result;
   if (null == wait) wait = 100;
 
   function later() {
-    var last = Date.now() - timestamp;
+    const last = Date.now() - timestamp;
 
     if (last < wait && last >= 0) {
       timeout = setTimeout(later, wait - last);
@@ -29,7 +29,7 @@ export function debounce(func, wait) {
 
   };
 
-  var debounced = function () {
+  const debounced = function () {
     context = this;
     args = arguments;
     timestamp = Date.now();
@@ -80,7 +80,7 @@ export function removeLocalStorageObject(key: string) {
  * @returns {boolean} resultCode是否回傳200
  * @author kidin-1100902
  */
-export function checkResponse(res: any, showErrorMessage: boolean = true): boolean {
+export function checkResponse(res: any, showErrorMessage = true): boolean {
   const { processResult, resultCode: resCode, apiCode: resApiCode, resultMessage: resMsg } = res;
   if (!processResult) {
 
@@ -271,7 +271,7 @@ export function getMuscleGroupTranslation(translate: TranslateService) {
  * @param denominator {number}-分母
  * @param decimal {number}-四捨五入位數
  */
-export function countPercentage(molecular: number, denominator: number, decimal: number = 0) {
+export function countPercentage(molecular: number, denominator: number, decimal = 0) {
   return mathRounding((molecular ?? 0) / (denominator || Infinity) * 100, decimal);
 }
 

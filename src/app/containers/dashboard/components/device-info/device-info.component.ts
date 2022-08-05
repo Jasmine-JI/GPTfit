@@ -1014,7 +1014,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * 進行FitPair
    * @author kidin-1100702
    */
-  handleFitPair(fitPairType: 1 | 2, coverFitPair: boolean = false) {
+  handleFitPair(fitPairType: 1 | 2, coverFitPair = false) {
     const token = this.auth.token;
     const { sn, cs } = this.deviceInfo;
     if (!token) {

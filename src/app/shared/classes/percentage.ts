@@ -10,7 +10,7 @@ export class Percentage {
    */
   _stroke: Array<number>;
 
-  constructor(dataLength: number = 9) {
+  constructor(dataLength = 9) {
     this._stroke = new Array(dataLength).fill(0);
   }
 

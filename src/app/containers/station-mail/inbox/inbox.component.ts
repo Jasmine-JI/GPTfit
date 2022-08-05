@@ -19,7 +19,7 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @Input('isBriefList') isBriefList = false;
+  @Input() isBriefList = false;
   @ViewChild('keywordInput') keywordInput: ElementRef;
 
   private ngUnsubscribe = new Subject();
@@ -113,7 +113,7 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
    * 更新信件列表
    * @param init {boolean}-是否正在初始化
    */
-  refreshMailList(init: boolean = false) {
+  refreshMailList(init = false) {
     if (!this.uiFlag.isLoading) {
       this.uiFlag.isLoading = true;
       this.stationMailService.refreshMailList().subscribe(res => {
@@ -265,7 +265,7 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param lists {Array<any>}-信件清單
    */
   divideSendDate(lists: Array<any>) {
-    let result: any = {};
+    const result: any = {};
     lists.forEach(_list => {
       const sendDate = dayjs(_list.sendTimestamp * 1000).format('YYYY-MM-DD');
       if (!result[sendDate]) result[sendDate] = [];

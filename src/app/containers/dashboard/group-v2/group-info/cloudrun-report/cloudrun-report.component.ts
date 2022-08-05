@@ -839,7 +839,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   mergeData(middleData: any) {
     const finalData = {};
-    for (let _user in middleData) {
+    for (const _user in middleData) {
 
       if (middleData.hasOwnProperty(_user)) {
         const { privacy, record, belongGroup, level } = middleData[_user],
@@ -1255,7 +1255,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100310
    */
   addUpData(groupData: any, userData: any) {
-    let {
+    const {
       hrZone: {
         z0,
         z1,
@@ -1272,7 +1272,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       totalCadence
     } = groupData;
 
-    let {
+    const {
       time,
       avgHr,
       avgSpeed,
@@ -1314,7 +1314,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   handleGroupTableData(groupData: any) {
     const tableArr = [];
-    for (let key in groupData) {
+    for (const key in groupData) {
 
       if (groupData.hasOwnProperty(key)) {
         const {
@@ -1371,7 +1371,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   handleMemTableData(memData: any) {
     const tableArr = [];
-    for (let key in memData) {
+    for (const key in memData) {
       const { record, info } = memData[key];
       if (memData.hasOwnProperty(key) && record && info) {
         const {
@@ -1799,7 +1799,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     for (let i = 0, len = sortData.length; i < len && swaped; i++) {
       swaped = false;
       for (let j = 0; j < len - 1 - i; j++) {
-        let _dataA = sortData[j][sortCategory],
+        const _dataA = sortData[j][sortCategory],
             _dataB = sortData[j + 1][sortCategory];
         // 排序時一併找出最大值
         const _valA = sortCategory === 'avgSpeed' ? 3600 / (_dataA || 3600) : _dataA,

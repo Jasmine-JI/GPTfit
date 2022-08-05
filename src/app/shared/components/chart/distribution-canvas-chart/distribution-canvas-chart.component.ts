@@ -154,7 +154,7 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
    * @param hrRange {Array<number | string>}-心率區間上下限
    */
   getSportBoundary(hrRange: Array<any>) {
-    let [hrZone0, hrZone5] = hrRange;
+    const [hrZone0, hrZone5] = hrRange;
     const range = Math.floor((hrZone5 - +hrZone0) / 3);
     return [+hrZone0, +hrZone0 + range, +hrZone0 + range * 2, hrZone5];
   }
@@ -426,7 +426,7 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
       rightX
      } = this.chartBaseOption;
 
-    let set = {
+    const set = {
       x: 0,
       y: 0,
       background: '',

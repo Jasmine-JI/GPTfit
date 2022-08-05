@@ -4,8 +4,8 @@ import { HttpClient } from '@angular/common/http';
 const { API_SERVER } = environment.url;
 
 const apiToken = environment.MAPBOX_API_KEY;
-declare var omnivore: any;
-declare var L: any;
+declare let omnivore: any;
+declare let L: any;
 
 const defaultCoords: number[] = [40, -80];
 const defaultZoom = 8;

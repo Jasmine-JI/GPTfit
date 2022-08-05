@@ -86,7 +86,7 @@ export class AllGroupMember {
    */
   getGroupList(groupId: string) {
     const groupLevel = GroupInfo.getGroupLevel(groupId);
-    let groupListObj = { [groupId]: [] };
+    const groupListObj = { [groupId]: [] };
   }
 
   /**

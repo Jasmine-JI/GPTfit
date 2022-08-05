@@ -104,9 +104,9 @@ import { TemporaryCount } from '../sports-report/temporary-count';
    */
   filterData = (data: Array<any>, sportType: SportType, key: string, isCompareData: boolean) => {
     const checkDataOpen = (resultCode: number) => resultCode === 200;
-    let filterResult = [];
+    const filterResult = [];
     data.forEach(_data => {
-      let result = [];
+      const result = [];
       const { resultCode: _resultCode } = _data;
       if (checkDataOpen(_resultCode)) {
         _data[key].forEach(_dataRow => {

@@ -12,7 +12,7 @@ export class RankSuffixPipe implements PipeTransform {
    * @param args {number}-是否只回傳字尾
    * @returns {string}}-加上後綴之排名
    */
-  transform(value: number, args: boolean = false): string {
+  transform(value: number, args = false): string {
     if (value) {
       switch (value) {
         case 1:

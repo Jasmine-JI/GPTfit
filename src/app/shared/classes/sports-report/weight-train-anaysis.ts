@@ -30,7 +30,7 @@ export class WeightTrainingAnalysis {
 
   private _bodyWeight: number;
 
-  constructor(menuConfig: Array<any>, bodyWeight: number = 60) {
+  constructor(menuConfig: Array<any>, bodyWeight = 60) {
     this._bodyWeight = bodyWeight;
     this.handleMenuDispName(menuConfig);
   }
@@ -93,7 +93,7 @@ export class WeightTrainingAnalysis {
         Object.assign(this._menuObj, { [menuIndex]: { base: countModel, compare: countModel } });
       }
 
-      let currentLapData = this._menuObj[menuIndex][dateType];
+      const currentLapData = this._menuObj[menuIndex][dateType];
       const { totalSets, totalReps, totalWeightKg, oneRepMax, totalOneRepMax } = currentLapData;
       this._menuObj[menuIndex][dateType] = {
         totalSets: totalSets + 1,

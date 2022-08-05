@@ -232,7 +232,7 @@ export class GroupInfo {
       if (targetReference === groupLevel) return target;
 
       // 透過繼承目標的階層取得目標
-      let referenceIndex: number = -1;
+      let referenceIndex = -1;
       switch (targetReference) {
         case GroupLevel.brand:
           referenceIndex = 2;

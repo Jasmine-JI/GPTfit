@@ -1173,7 +1173,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
       const { userId } = participantList[i];
       if (targetUserId === userId) {
         
-        for (let _key in replace) {
+        for (const _key in replace) {
           const value = replace[_key];
           if (value !== undefined) this.participantList[i][_key] = replace[_key];
         }

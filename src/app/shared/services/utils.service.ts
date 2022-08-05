@@ -87,7 +87,7 @@ export class UtilsService {
    * @returns {number}-群組階層
    * @author kidin-1100512
    */
-  displayGroupLevel(_id: string): number {
+  displayGroupLevel(_id: string): number | undefined {
     if (_id) {
       const arr = _id.split('-').splice(2, 4);
       if (+arr[3] > 0) {
@@ -100,6 +100,8 @@ export class UtilsService {
         return GroupLevel.brand;
       }
     }
+
+    return;
   }
 
   replaceCarriageReturn(string = '', format = '') {
@@ -182,8 +184,8 @@ export class UtilsService {
 
   imageToDataUri(img, width, height) {
     // create an off-screen canvas
-    const canvas = document.createElement('canvas'),
-      ctx = canvas.getContext('2d');
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
     // set its dimension to target size
     canvas.width = width;
@@ -332,7 +334,7 @@ export class UtilsService {
     const overWidth = imgWidth > limitDimensional;
     const overHeight = imgHeight > limitDimensional;
     const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
     if (overWidth || overHeight) {
 
       if (imgHeight > imgWidth) {
@@ -416,8 +418,8 @@ export class UtilsService {
    * @param simplified {Array<Point>}-降噪結果
    */
   simplifyDPStep(points: Array<Point>, first: number, last: number, sqTolerance: number, simplified: Array<Point>) {
-    let maxSqDist = sqTolerance,
-        index: number;
+    let maxSqDist = sqTolerance;
+    let index = 0;
 
     // 先找出離線最遠的點
     for (let i = first + 1; i < last; i++) {
@@ -510,7 +512,7 @@ export class UtilsService {
    * @returns {boolean} resultCode是否回傳200
    * @author kidin-1100902
    */
-  checkRes(res: any, showAlert: boolean = true): boolean {
+  checkRes(res: any, showAlert = true): boolean {
     const {
       processResult,
       resultCode: resCode,

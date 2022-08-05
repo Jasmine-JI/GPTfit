@@ -26,8 +26,8 @@ type ContactListType = 'favorite' | 'black' | null;
 })
 export class ReceiverListComponent implements OnInit, OnChanges, OnDestroy {
 
-  @Input('showBlackList') showBlackList: boolean = false;
-  @Output('addReceiver') addReceiver = new EventEmitter();
+  @Input() showBlackList = false;
+  @Output() addReceiver = new EventEmitter();
 
 
   private ngUnsubscribe = new Subject();

@@ -753,7 +753,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param action {boolean}-同意/不同意
    * @author kidin-1091208
    */
-  handleAgreeTerms(action: boolean, turnBack: boolean = true) {
+  handleAgreeTerms(action: boolean, turnBack = true) {
     this.agreeTerms = action;
     if (!action && turnBack) {
       this.turnBack();

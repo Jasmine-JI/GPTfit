@@ -36,7 +36,7 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
 
   baseUrl = window.location.href;
   levelText: any = metacarpus;
-  bodyWeight: number = 60;
+  bodyWeight = 60;
   dataIndex = 0;
 
 

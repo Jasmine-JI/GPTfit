@@ -92,15 +92,15 @@ class ChartOptions {
 export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject;
 
-  @Input('yAxisData') yAxisData: Array<number> | Array<Array<number>>;
-  @Input('xAxisData') xAxisData: Array<number>;
-  @Input('xAxisType') xAxisType: 'distanceMeters' | 'pointSecond';
-  @Input('sportType') sportType: SportType;
-  @Input('unit') unit: 0 | 1;
-  @Input('chartType') chartType: ChartType;
-  @Input('hrRange') hrRange: HrZoneRange;
-  @Input('showInfo') showInfo: boolean;
-  @Input('page') page: 'detail' | 'report';
+  @Input() yAxisData: Array<number> | Array<Array<number>>;
+  @Input() xAxisData: Array<number>;
+  @Input() xAxisType: 'distanceMeters' | 'pointSecond';
+  @Input() sportType: SportType;
+  @Input() unit: 0 | 1;
+  @Input() chartType: ChartType;
+  @Input() hrRange: HrZoneRange;
+  @Input() showInfo: boolean;
+  @Input() page: 'detail' | 'report';
 
   @ViewChild('container') container: ElementRef;
 

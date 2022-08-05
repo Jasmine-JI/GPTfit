@@ -228,7 +228,7 @@ export function complexTrendTooltip(unit: string) {
  * 用於個人最大與平均心率圖表浮動框轉換成指定格式
  * @param isMetric {boolean}-是否為公制單位
  */
- export function bodyWeightTooltip(isMetric: boolean = true) {
+ export function bodyWeightTooltip(isMetric = true) {
   const unit = isMetric ? 'kg' : 'lb';
   const formatter = function() {
     const [baseFatRateInfo, baseWeightInfo, compareFatRateInfo, compareWeightInfo] = this.points;

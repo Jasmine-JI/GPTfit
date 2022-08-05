@@ -13,10 +13,10 @@ import { isAvgData } from '../../utils/sports';
   private _totalActivities = 0;
 
 
-  private _startTime: number = 0;
+  private _startTime = 0;
 
 
-  private _endTime: number = 0;
+  private _endTime = 0;
 
   /**
    * 紀錄有效活動數，用來計算有效平均數據
@@ -59,7 +59,7 @@ import { isAvgData } from '../../utils/sports';
     const excludeKey = ['type', 'weightTrainingInfo'];
     const { totalActivities } = data;
     this._totalActivities += totalActivities;
-    for (let _key in data) {
+    for (const _key in data) {
       
       if (!excludeKey.includes(_key)) {
         const value = Math.abs(+data[_key] ?? 0);
@@ -93,8 +93,8 @@ import { isAvgData } from '../../utils/sports';
    * 將加總的平均數據依運動數目進行均化
    */
   handleDataAverage(obj: any) {
-    let result = {};
-    for (let _key in obj) {
+    const result = {};
+    for (const _key in obj) {
       const totalValue = obj[_key];
       if (_key === 'weightTrainingInfo') {
         result[_key] = totalValue;

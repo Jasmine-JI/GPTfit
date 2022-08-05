@@ -7,7 +7,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class PrivacyPolicyComponent implements OnInit {
 
-  @Input('language') language = 'zh-tw';
+  @Input() language = 'zh-tw';
 
   constructor() { }
 

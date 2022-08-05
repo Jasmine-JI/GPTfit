@@ -276,7 +276,7 @@ export function getWeightTrainingLevelText(
  * @param userRestHR {number}-使用者休息心率
  */
 export function getUserHrRange(userHRBase: HrBase, userAge: number, userMaxHR: number, userRestHR: number) {
-  let userHrInfo = <HrZoneRange>{
+  const userHrInfo = <HrZoneRange>{
     hrBase: userHRBase,
     z0: 0,
     z1: 0,
@@ -345,7 +345,7 @@ export function getUserHrRange(userHRBase: HrBase, userAge: number, userMaxHR: n
  * @param ftp {number}-功能性閾值功率
  */
 export function getUserFtpZone(ftp: number) {
-  let ref = ftp ? ftp : 100;
+  const ref = ftp ? ftp : 100;
   const userFtpZone = {
     z0: mathRounding(ref * 0.55, 0),
     z1: mathRounding(ref * 0.75, 0),

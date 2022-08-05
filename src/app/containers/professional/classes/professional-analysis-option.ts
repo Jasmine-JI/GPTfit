@@ -419,7 +419,7 @@ export class ProfessionalAnalysisOption {
   saveOption() {
     const { _storageKey, _optionInfo: { object } } = this;
     const selectedList = this.getSelectedList();
-    let storage = getLocalStorageObject(_storageKey);
+    const storage = getLocalStorageObject(_storageKey);
     const { ver } = storage ?? '';
     const newOption = this.checkStorageVersion(ver) ? 
       { ...storage, [object]: selectedList } : { [object]: selectedList, ver: storageVersion };

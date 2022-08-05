@@ -13,12 +13,12 @@ export class AnalysisInfoMenuComponent implements OnInit {
   /**
    * 指定的群組/個人資訊
    */
-  @Input('assignInfo') assignInfo: any;
+  @Input() assignInfo: any;
 
   /**
    * 報告條件
    */
-  @Input('reportCondition') reportCondition: ReportCondition;
+  @Input() reportCondition: ReportCondition;
 
 
   constructor(

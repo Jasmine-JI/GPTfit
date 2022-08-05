@@ -220,9 +220,9 @@ import { SportsReport } from './sports-report';
    */
   filterData = (data: Array<any>, sportType: SportType, key: string, isCompareData: boolean) => {
     const checkDataOpen = (resultCode: number) => resultCode === 200;
-    let filterResult: Array<any> = [];
+    const filterResult: Array<any> = [];
     data.forEach(_data => {
-      let result: Array<any> = [];
+      const result: Array<any> = [];
       const { resultCode: _resultCode } = _data;
       if (checkDataOpen(_resultCode)) {
         _data[key].forEach(_dataRow => {

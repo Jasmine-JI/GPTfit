@@ -320,7 +320,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101116
    */
   handleEventUserProfile(eventUserProfile: any) {
-    for (let _key in this.applyInfo.userProfile) {
+    for (const _key in this.applyInfo.userProfile) {
       const value = eventUserProfile[_key];
       if (value !== null && value !== undefined) {
         this.applyInfo.userProfile[_key] = value;
@@ -1133,7 +1133,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @param token {string}-權杖
    * @author kidin-1101116
    */
-  tokenLogin(token: string, newAccount: boolean = false) {
+  tokenLogin(token: string, newAccount = false) {
     const body = {
       signInType: SignTypeEnum.token,
       token
@@ -1166,7 +1166,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     args: any,
     target: Array<string>,
     token: string = null,
-    tableName: string = 'userInfo'
+    tableName = 'userInfo'
   ) {
     const body = {
       search: {
