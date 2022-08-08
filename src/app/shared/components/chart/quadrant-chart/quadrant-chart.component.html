@@ -1,19 +1,30 @@
-<section class="flexCol" style="position: relative;">
+<section class="flexCol" style="position: relative">
   <div class="flexRow cardTitle">
     <span class="cardSubtitle">
       {{ 'universal_activityData_quadrantAnalysis' | translate }}
     </span>
     <i class="icon-svg_web-icon_p1_001-setting settingIcon" (click)="handleShowOptMenu($event)"></i>
-    <div class="flexCol" id="opt__setting__menu" *ngIf="uiFlag.showChartOpt" (click)="$event.stopPropagation();">
+    <div
+      class="flexCol"
+      id="opt__setting__menu"
+      *ngIf="uiFlag.showChartOpt"
+      (click)="$event.stopPropagation()"
+    >
       <div class="flexCol">
         <div class="flexRow axis__definition__section">
-          <div class="flexCol" style="position: relative;">
-            <span class="bold__font">X {{ 'universal_vocabulary_data' | translate}}</span>
+          <div class="flexCol" style="position: relative">
+            <span class="bold__font">X {{ 'universal_vocabulary_data' | translate }}</span>
             <div class="axis__type__selector" (click)="showAxisType('xAxis')">
-              {{ (uiFlag.optTempChange ? tempOpt.xAxis.type : chartOpt.xAxis.type) | dataTypeTranslate: [sportType, unit] | translate }}
+              {{
+                (uiFlag.optTempChange ? tempOpt.xAxis.type : chartOpt.xAxis.type)
+                  | dataTypeTranslate: [sportType, unit]
+                  | translate
+              }}
             </div>
-            <ng-container *ngIf="uiFlag.showDataSelector;">
-              <ng-container *ngIf="uiFlag.showDataSelector === 'yAxis'; else axisSelector;"></ng-container>
+            <ng-container *ngIf="uiFlag.showDataSelector">
+              <ng-container
+                *ngIf="uiFlag.showDataSelector === 'yAxis'; else axisSelector"
+              ></ng-container>
             </ng-container>
           </div>
           <div class="flexCol">
@@ -25,17 +36,23 @@
               (focus)="handleFocus($event)"
               (focusout)="handleFocusout($event)"
               (change)="editAxisOrigin('xAxis', $event)"
-            >
+            />
           </div>
         </div>
         <div class="flexRow axis__definition__section">
-          <div class="flexCol" style="position: relative;">
-            <span class="bold__font">Y {{ 'universal_vocabulary_data' | translate}}</span>
+          <div class="flexCol" style="position: relative">
+            <span class="bold__font">Y {{ 'universal_vocabulary_data' | translate }}</span>
             <div class="axis__type__selector" (click)="showAxisType('yAxis')">
-              {{ (uiFlag.optTempChange ? tempOpt.yAxis.type : chartOpt.yAxis.type) | dataTypeTranslate: [sportType, unit] | translate }}
+              {{
+                (uiFlag.optTempChange ? tempOpt.yAxis.type : chartOpt.yAxis.type)
+                  | dataTypeTranslate: [sportType, unit]
+                  | translate
+              }}
             </div>
-            <ng-container *ngIf="uiFlag.showDataSelector;">
-              <ng-container *ngIf="uiFlag.showDataSelector === 'xAxis'; else axisSelector;"></ng-container>
+            <ng-container *ngIf="uiFlag.showDataSelector">
+              <ng-container
+                *ngIf="uiFlag.showDataSelector === 'xAxis'; else axisSelector"
+              ></ng-container>
             </ng-container>
           </div>
           <div class="flexCol">
@@ -47,59 +64,77 @@
               (focus)="handleFocus($event)"
               (focusout)="handleFocusout($event)"
               (change)="editAxisOrigin('yAxis', $event)"
-            >
+            />
           </div>
         </div>
       </div>
       <div class="flexCol">
         <div class="flexCol">
-          <span class="bold__font" [style.color]="color.quadrantI">{{ 'universal_vocabulary_quadrant' | translate }} I</span>
+          <span class="bold__font" [style.color]="color.quadrantI"
+            >{{ 'universal_vocabulary_quadrant' | translate }} I</span
+          >
           <input
             type="text"
             [value]="uiFlag.optTempChange ? tempOpt.meaning.quadrantI : chartOpt.meaning.quadrantI"
-            [placeholder]="('universal_activityData_enterBodyFit' | translate)"
+            [placeholder]="'universal_activityData_enterBodyFit' | translate"
             (focus)="handleFocus($event)"
             (focusout)="handleFocusout($event)"
             (change)="editQuadrantMeaning('quadrantI', $event)"
-          >
+          />
         </div>
         <div class="flexCol">
-          <span class="bold__font" [style.color]="color.quadrantII">{{ 'universal_vocabulary_quadrant' | translate }} II</span>
+          <span class="bold__font" [style.color]="color.quadrantII"
+            >{{ 'universal_vocabulary_quadrant' | translate }} II</span
+          >
           <input
             type="text"
-            [value]="uiFlag.optTempChange ? tempOpt.meaning.quadrantII : chartOpt.meaning.quadrantII"
-            [placeholder]="('universal_activityData_enterBodyFit' | translate)"
+            [value]="
+              uiFlag.optTempChange ? tempOpt.meaning.quadrantII : chartOpt.meaning.quadrantII
+            "
+            [placeholder]="'universal_activityData_enterBodyFit' | translate"
             (focus)="handleFocus($event)"
             (focusout)="handleFocusout($event)"
             (change)="editQuadrantMeaning('quadrantII', $event)"
-          >
+          />
         </div>
         <div class="flexCol">
-          <span class="bold__font" [style.color]="color.quadrantIII">{{ 'universal_vocabulary_quadrant' | translate }} III</span>
+          <span class="bold__font" [style.color]="color.quadrantIII"
+            >{{ 'universal_vocabulary_quadrant' | translate }} III</span
+          >
           <input
             type="text"
-            [value]="uiFlag.optTempChange ? tempOpt.meaning.quadrantIII : chartOpt.meaning.quadrantIII"
-            [placeholder]="('universal_activityData_enterBodyFit' | translate)"
+            [value]="
+              uiFlag.optTempChange ? tempOpt.meaning.quadrantIII : chartOpt.meaning.quadrantIII
+            "
+            [placeholder]="'universal_activityData_enterBodyFit' | translate"
             (focus)="handleFocus($event)"
             (focusout)="handleFocusout($event)"
             (change)="editQuadrantMeaning('quadrantIII', $event)"
-          >
+          />
         </div>
         <div class="flexCol">
-          <span class="bold__font" [style.color]="color.quadrantIV">{{ 'universal_vocabulary_quadrant' | translate }} IV</span>
+          <span class="bold__font" [style.color]="color.quadrantIV"
+            >{{ 'universal_vocabulary_quadrant' | translate }} IV</span
+          >
           <input
             type="text"
-            [value]="uiFlag.optTempChange ? tempOpt.meaning.quadrantIV : chartOpt.meaning.quadrantIV"
-            [placeholder]="('universal_activityData_enterBodyFit' | translate)"
+            [value]="
+              uiFlag.optTempChange ? tempOpt.meaning.quadrantIV : chartOpt.meaning.quadrantIV
+            "
+            [placeholder]="'universal_activityData_enterBodyFit' | translate"
             (focus)="handleFocus($event)"
             (focusout)="handleFocusout($event)"
             (change)="editQuadrantMeaning('quadrantIV', $event)"
-          >
+          />
         </div>
       </div>
-      <div class="flexRow" style="justify-content: space-between;">
-        <button id="default__btn" (click)="restoreDefaultOpt()">{{ 'universal_operating_restoreDefaults' | translate }}</button>
-        <button id="confirm__btn" (click)="saveChartOpt()">{{ 'universal_operating_confirm' | translate }}</button>
+      <div class="flexRow" style="justify-content: space-between">
+        <button id="default__btn" (click)="restoreDefaultOpt()">
+          {{ 'universal_operating_restoreDefaults' | translate }}
+        </button>
+        <button id="confirm__btn" (click)="saveChartOpt()">
+          {{ 'universal_operating_confirm' | translate }}
+        </button>
       </div>
       <ng-template #axisSelector>
         <div class="flexCol axis__selector__list">
@@ -146,7 +181,9 @@
               </ng-container>
             </span>
           </span>
-          <span class="data__content">{{ ((chart.pointNum.quadrantII / chart.pointNum.total) * 100) | number: '1.0-1' }}%</span>
+          <span class="data__content"
+            >{{ (chart.pointNum.quadrantII / chart.pointNum.total) * 100 | number: '1.0-1' }}%</span
+          >
         </div>
         <div class="flexCol data__item">
           <span>
@@ -160,7 +197,9 @@
               </ng-container>
             </span>
           </span>
-          <span class="data__content">{{ ((chart.pointNum.quadrantI / chart.pointNum.total) * 100) | number: '1.0-1' }}%</span>
+          <span class="data__content"
+            >{{ (chart.pointNum.quadrantI / chart.pointNum.total) * 100 | number: '1.0-1' }}%</span
+          >
         </div>
       </div>
       <div class="flexRow">
@@ -176,7 +215,11 @@
               </ng-container>
             </span>
           </span>
-          <span class="data__content">{{ ((chart.pointNum.quadrantIII / chart.pointNum.total) * 100) | number: '1.0-1' }}%</span>
+          <span class="data__content"
+            >{{
+              (chart.pointNum.quadrantIII / chart.pointNum.total) * 100 | number: '1.0-1'
+            }}%</span
+          >
         </div>
         <div class="flexCol data__item">
           <span>
@@ -190,7 +233,9 @@
               </ng-container>
             </span>
           </span>
-          <span class="data__content">{{ ((chart.pointNum.quadrantIV / chart.pointNum.total) * 100) | number: '1.0-1' }}%</span>
+          <span class="data__content"
+            >{{ (chart.pointNum.quadrantIV / chart.pointNum.total) * 100 | number: '1.0-1' }}%</span
+          >
         </div>
       </div>
       <div class="flexRow">
@@ -199,7 +244,9 @@
             <span class="item__spot transparent__spot">●</span>
             <span class="data__title">
               {{ 'universal_vocabulary_xOrigin' | translate }}-
-              <span class="origin__type">{{ chartOpt.xAxis.type | dataTypeTranslate: [sportType, unit] | translate }}</span>
+              <span class="origin__type">{{
+                chartOpt.xAxis.type | dataTypeTranslate: [sportType, unit] | translate
+              }}</span>
             </span>
           </span>
           <span class="data__content">
@@ -210,7 +257,7 @@
               {{ chartOpt.xAxis.origin | speedSibs: unit }}
             </ng-container>
             <ng-container *ngIf="!['pace', 'speed'].includes(chartOpt.xAxis.type)">
-              {{ chartOpt.xAxis.origin }}{{ chartOpt.xAxis.type | dataTypeUnit: [sportType, unit]}}
+              {{ chartOpt.xAxis.origin }}{{ chartOpt.xAxis.type | dataTypeUnit: [sportType, unit] }}
             </ng-container>
           </span>
         </div>
@@ -219,7 +266,9 @@
             <span class="item__spot transparent__spot">●</span>
             <span class="data__title">
               {{ 'universal_vocabulary_yOrigin' | translate }}-
-              <span class="origin__type">{{ chartOpt.yAxis.type | dataTypeTranslate: [sportType, unit] | translate }}</span>
+              <span class="origin__type">{{
+                chartOpt.yAxis.type | dataTypeTranslate: [sportType, unit] | translate
+              }}</span>
             </span>
           </span>
           <span class="data__content">
@@ -227,7 +276,7 @@
               {{ chartOpt.yAxis.origin | sportPaceSibs: [sportType, unit, 1] }}
             </ng-container>
             <ng-container *ngIf="chartOpt.yAxis.type !== 'pace'">
-              {{ chartOpt.yAxis.origin }}{{ chartOpt.yAxis.type | dataTypeUnit: [sportType, unit]}}
+              {{ chartOpt.yAxis.origin }}{{ chartOpt.yAxis.type | dataTypeUnit: [sportType, unit] }}
             </ng-container>
           </span>
         </div>
@@ -242,16 +291,15 @@
         width="100%"
       >
         <g>
-          <ng-container *ngFor="let _point of chart.displayPoint;">
+          <ng-container *ngFor="let _point of chart.displayPoint">
             <circle
               [attr.cx]="_point.x"
               [attr.cy]="_point.y"
               [attr.stroke]="_point.color"
               [attr.fill]="_point.color"
-              style="opacity: 0.8;"
+              style="opacity: 0.8"
               r="3"
-            >
-            </circle>
+            ></circle>
           </ng-container>
         </g>
         <line
@@ -341,10 +389,10 @@
             [attr.font-size]="chart.label.size"
           >
             <ng-container *ngIf="chartOpt.xAxis.type === 'pace'">
-              {{ ((chart.x.min + chart.x.max) / 2) | sportPaceSibs: [sportType, unit, 1] }}
+              {{ (chart.x.min + chart.x.max) / 2 | sportPaceSibs: [sportType, unit, 1] }}
             </ng-container>
             <ng-container *ngIf="chartOpt.xAxis.type !== 'pace'">
-              {{ ((chart.x.min + chart.x.max) / 2) | number: '1.0-0' }}
+              {{ (chart.x.min + chart.x.max) / 2 | number: '1.0-0' }}
             </ng-container>
           </text>
           <text
@@ -386,10 +434,10 @@
             [attr.font-size]="chart.label.size"
           >
             <ng-container *ngIf="chartOpt.yAxis.type === 'pace'">
-              {{ ((chart.y.min + chart.y.max) / 2) | sportPaceSibs: [sportType, unit, 1] }}
+              {{ (chart.y.min + chart.y.max) / 2 | sportPaceSibs: [sportType, unit, 1] }}
             </ng-container>
             <ng-container *ngIf="chartOpt.yAxis.type !== 'pace'">
-              {{ ((chart.y.min + chart.y.max) / 2) | number: '1.0-0' }}
+              {{ (chart.y.min + chart.y.max) / 2 | number: '1.0-0' }}
             </ng-container>
           </text>
           <text

@@ -3,12 +3,7 @@
     <div class="flexRow functional__section">
       <div class="flexRow mail__search__block">
         <i class="icon-svg_web-icon_p1_014-search child-functional__icon"></i>
-        <input
-          #keywordInput
-          class="mail__search"
-          type="text"
-          autocomplete="off"
-        >
+        <input #keywordInput class="mail__search" type="text" autocomplete="off" />
       </div>
       <button (click)="refreshMailList()">
         <i class="icon-svg_web-icon_p3_002-right_turn child-functional__icon"></i>
@@ -32,10 +27,7 @@
               class="icon-svg_web-icon_p1_044-uncheck checkbox__icon"
               *ngIf="!uiFlag.selectAll"
             ></i>
-            <i
-              class="icon-svg_web-icon_p1_043-check checkbox__icon"
-              *ngIf="uiFlag.selectAll"
-            ></i>
+            <i class="icon-svg_web-icon_p1_043-check checkbox__icon" *ngIf="uiFlag.selectAll"></i>
           </button>
         </div>
         <h5 class="inbox__title">
@@ -49,28 +41,27 @@
     {{ 'universal_status_noData' | translate }}
   </p>
   <ul class="mail__list" *ngIf="backupList.length > 0">
-    <li *ngFor="let _list of mailList; let _index = index;">
+    <li *ngFor="let _list of mailList; let _index = index">
       <p class="mail__date" *ngIf="_list[0] !== todayDate">
         {{ _list[0] === yesterdayDate ? ('universal_time_yesterday' | translate) : _list[0] }}
       </p>
-      <ul class="mail__list__child" *ngFor="let _mail of _list[1]; let _subIndex = index;">
-        <li *ngTemplateOutlet="oneRowMailInfo; context: {
-          info: _mail,
-          index: _index,
-          subIndex: _subIndex
-        }"></li>
+      <ul class="mail__list__child" *ngFor="let _mail of _list[1]; let _subIndex = index">
+        <li
+          *ngTemplateOutlet="
+            oneRowMailInfo;
+            context: {
+              info: _mail,
+              index: _index,
+              subIndex: _subIndex
+            }
+          "
+        ></li>
       </ul>
     </li>
   </ul>
-  
 </section>
 
-<ng-template
-  #oneRowMailInfo
-  let-info="info"
-  let-index="index"
-  let-subIndex="subIndex"
->
+<ng-template #oneRowMailInfo let-info="info" let-index="index" let-subIndex="subIndex">
   <li class="flexRow">
     <div class="checkbox__column" *ngIf="!isBriefList">
       <button
@@ -78,14 +69,8 @@
         (click)="handleMailSelected(index, subIndex)"
         *ngIf="uiFlag.openSelectMode"
       >
-        <i
-          class="icon-svg_web-icon_p1_044-uncheck checkbox__icon"
-          *ngIf="!info.selected"
-        ></i>
-        <i
-          class="icon-svg_web-icon_p1_043-check checkbox__icon"
-          *ngIf="info.selected"
-        ></i>
+        <i class="icon-svg_web-icon_p1_044-uncheck checkbox__icon" *ngIf="!info.selected"></i>
+        <i class="icon-svg_web-icon_p1_043-check checkbox__icon" *ngIf="info.selected"></i>
       </button>
     </div>
     <div
@@ -98,7 +83,7 @@
         class="sender__icon"
         [src]="info.type === MessageType.admin ? '/assets/images/user2.png' : info.senderAvatarUrl"
         (error)="info.senderAvatarUrl = '/assets/images/user2.png'"
-      >
+      />
       <div class="flexCol mail__info">
         <h6 class="mail__title">{{ info.title }}</h6>
         <div class="flexRow mail__sub__info">

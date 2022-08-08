@@ -1,0 +1,11 @@
+# IDE/Editor
+.vscode
+.idea
+
+# Package Manager
+package.json
+package-lock.json
+
+# Angular-related
+/dist
+/src/assets

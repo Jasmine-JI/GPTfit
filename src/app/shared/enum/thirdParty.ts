@@ -4,5 +4,5 @@
 export enum ThirdParty {
   strava = 1,
   runKeeper,
-  line
-};
+  line,
+}

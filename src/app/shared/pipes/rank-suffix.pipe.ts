@@ -1,9 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-
-@Pipe({name: 'rankSuffix'})
+@Pipe({ name: 'rankSuffix' })
 export class RankSuffixPipe implements PipeTransform {
-
   constructor() {}
 
   /**
@@ -24,12 +22,8 @@ export class RankSuffixPipe implements PipeTransform {
         default:
           return args ? 'th' : `${value}th`;
       }
-
     } else {
       return '--';
     }
-    
   }
-
 }
-

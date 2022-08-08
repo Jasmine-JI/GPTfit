@@ -1,6 +1,6 @@
 <div>
   <h5 class="pageTitle">系統使用者存取權限設定</h5>
-  <div class="flexRow" style="margin: 10px 0; justify-content: flex-end;">
+  <div class="flexRow" style="margin: 10px 0; justify-content: flex-end">
     <button class="create__btn" (click)="openCreation('user')">
       <i class="icon-svg_web-icon_p1_029-add"></i>
       建立新帳號
@@ -10,7 +10,7 @@
       建立新專案資料夾
     </button>
   </div>
-  <main style="padding: 10px; background-color: var(--scale-200-100);">
+  <main style="padding: 10px; background-color: var(--scale-200-100)">
     <div class="flexRow">
       <div
         class="flexCol list__section"
@@ -27,47 +27,38 @@
             <i class="icon-svg_web-icon_p1_009-delete"></i>
           </button>
           <ng-container *ngIf="uiFlag.listMode === 'delUser'">
-            <button
-              class="list__btn edit__confirm__btn"
-              (click)="cancelEditList()"
-            >
-              取消
-            </button>
+            <button class="list__btn edit__confirm__btn" (click)="cancelEditList()">取消</button>
           </ng-container>
         </div>
         <div class="flexCol user__list">
-          <ng-container *ngFor="let _user of userList;">
+          <ng-container *ngFor="let _user of userList">
             <span
-              style="white-space: nowrap;"
+              style="white-space: nowrap"
               [class.user__name--focus]="uiFlag.focusName === _user"
               (click)="handleClickUser(_user)"
             >
-              <span style="display: inline-block; width: 20px;">
+              <span style="display: inline-block; width: 20px">
                 <ng-container *ngIf="uiFlag.focusName === _user">
                   <i class="icon-svg_web-icon_p1_074-level_unfold"></i>
                 </ng-container>
                 <ng-container *ngIf="uiFlag.listMode === 'delUser'">
-                  <i class="icon-svg_web-icon_p1_012-close" style="color: red;"></i>
+                  <i class="icon-svg_web-icon_p1_012-close" style="color: red"></i>
                 </ng-container>
               </span>
-              <span style="white-space: pre-wrap; word-break: break-all;">{{ _user }}</span>
+              <span style="white-space: pre-wrap; word-break: break-all">{{ _user }}</span>
             </span>
           </ng-container>
         </div>
       </div>
       <div
         class="flexCol list__section"
-        style="width: 65%; margin-left: 7px; background-color: var(--scale-255-200);"
+        style="width: 65%; margin-left: 7px; background-color: var(--scale-255-200)"
       >
         <div class="flexRow table__header">
           <h6>資料夾權限列表</h6>
           <div class="flexRow" *ngIf="uiFlag.focusName">
             <ng-container *ngIf="!uiFlag.listMode">
-              <button
-                title="新增權限"
-                class="list__btn"
-                (click)="openEditMode('addFolder')"
-              >
+              <button title="新增權限" class="list__btn" (click)="openEditMode('addFolder')">
                 <i class="icon-svg_web-icon_p1_029-add"></i>
               </button>
               <button
@@ -80,9 +71,7 @@
               </button>
             </ng-container>
             <ng-container *ngIf="['addFolder', 'delFolder'].includes(uiFlag.listMode)">
-              <button class="list__btn edit__confirm__btn" (click)="cancelEditList()">
-                取消
-              </button>
+              <button class="list__btn edit__confirm__btn" (click)="cancelEditList()">取消</button>
               <button class="list__btn edit__confirm__btn" (click)="editFolderConfirm()">
                 確定
               </button>
@@ -90,66 +79,65 @@
           </div>
         </div>
         <div class="flexCol folder__list">
-          <ng-container *ngIf="folderList?.length > 0; else noData;">
-            <ng-container *ngFor="let _folder of folderList;">
+          <ng-container *ngIf="folderList?.length > 0; else noData">
+            <ng-container *ngFor="let _folder of folderList">
               <div
                 class="flexRow"
-                style="align-items: center; cursor: pointer;"
+                style="align-items: center; cursor: pointer"
                 (click)="selectDelFolder(_folder)"
               >
                 <div
-                  style="border: 1px solid black; width: 20px; height: 20px;"
+                  style="border: 1px solid black; width: 20px; height: 20px"
                   *ngIf="uiFlag.listMode === 'delFolder'"
                 >
-                  <span
-                    class="flexCenter"
-                    style="height: 19px;"
-                  >
+                  <span class="flexCenter" style="height: 19px">
                     <i
                       class="icon-svg_web-icon_p1_012-close"
-                      [style.color]="listEditBody.folder.includes(_folder) ? 'red' : 'rgba(100, 100, 100, 0.3)'"
+                      [style.color]="
+                        listEditBody.folder.includes(_folder) ? 'red' : 'rgba(100, 100, 100, 0.3)'
+                      "
                     ></i>
                   </span>
                 </div>
-                <span style="margin-left: 5px;">
+                <span style="margin-left: 5px">
                   {{ _folder }}
                 </span>
               </div>
             </ng-container>
           </ng-container>
           <div
-            style="margin-top: 10px; padding: 10px 0; border-top: 2px solid var(--scale-200-100);"
+            style="margin-top: 10px; padding: 10px 0; border-top: 2px solid var(--scale-200-100)"
             *ngIf="uiFlag.listMode === 'addFolder'"
           >
             <h6>可新增的資料夾權限</h6>
-            <ng-container *ngIf="candidateFolderList?.length > 0; else noData;">
-              <ng-container *ngFor="let _candidate of candidateFolderList;">
+            <ng-container *ngIf="candidateFolderList?.length > 0; else noData">
+              <ng-container *ngFor="let _candidate of candidateFolderList">
                 <div
                   class="flexRow"
-                  style="align-items: center; cursor: pointer; margin: 10px 0;"
+                  style="align-items: center; cursor: pointer; margin: 10px 0"
                   (click)="selectCandidate(_candidate)"
                 >
-                  <div style="border: 1px solid black; width: 20px; height: 20px;">
+                  <div style="border: 1px solid black; width: 20px; height: 20px">
                     <ng-container *ngIf="this.listEditBody.folder.includes(_candidate)">
-                      <span class="flexCenter" style="height: 19px;">✔</span>
+                      <span class="flexCenter" style="height: 19px">✔</span>
                     </ng-container>
                   </div>
-                  <span style="margin-left: 5px;">
+                  <span style="margin-left: 5px">
                     {{ _candidate }}
                   </span>
                 </div>
               </ng-container>
             </ng-container>
-            <ng-container *ngIf="inputTempAddList?.length > 0;">
-              <ng-container *ngFor="let _tempAdd of inputTempAddList;">
+            <ng-container *ngIf="inputTempAddList?.length > 0">
+              <ng-container *ngFor="let _tempAdd of inputTempAddList">
                 <div class="flexRow">
-                  <button style="padding: 0;" (click)="handleDelTempFolder(_tempAdd)">
+                  <button style="padding: 0" (click)="handleDelTempFolder(_tempAdd)">
                     <i
                       class="icon-svg_web-icon_p1_012-close"
-                      style="font-size: 22px; font-weight: bold; color: red;"
+                      style="font-size: 22px; font-weight: bold; color: red"
                     ></i>
                   </button>
-                  <span style="word-break: break-word;">{{ _tempAdd }}</span>
+                  <span style="word-break: break-word">{{ _tempAdd }}</span>
                 </div>
               </ng-container>
             </ng-container>
@@ -160,49 +148,45 @@
   </main>
 </div>
 <ng-template #noData>
-  <span style="color: var(--scale-200-100);">無資料顯示</span>
+  <span style="color: var(--scale-200-100)">無資料顯示</span>
 </ng-template>
 <div id="create__mode" class="flexCenter info-editMask" *ngIf="uiFlag.createType">
   <div id="create__window" class="flexCol">
-    <div class="flexCenter" style="background-color: rgba(62, 172, 251, 1); height: 35px;">
-      <h6 style="font-weight: bold; color: white; margin-bottom: 0;">
-        <ng-container *ngIf="uiFlag.createType === 'user'">
-          建立新帳號
-        </ng-container>
-        <ng-container *ngIf="uiFlag.createType === 'folder'">
-          建立新專案資料夾
-        </ng-container>
+    <div class="flexCenter" style="background-color: rgba(62, 172, 251, 1); height: 35px">
+      <h6 style="font-weight: bold; color: white; margin-bottom: 0">
+        <ng-container *ngIf="uiFlag.createType === 'user'"> 建立新帳號 </ng-container>
+        <ng-container *ngIf="uiFlag.createType === 'folder'"> 建立新專案資料夾 </ng-container>
       </h6>
     </div>
-    <div class="flexCol" style="padding: 10px;">
+    <div class="flexCol" style="padding: 10px">
       <ng-container *ngIf="uiFlag.createType === 'user'">
         <div class="input__section">
-          <label for="account">
-            帳號：
-          </label>
+          <label for="account"> 帳號： </label>
           <input
             type="text"
             id="account"
             name="account"
             placeholder="請輸入帳號"
-            [style.border-bottom]="uiFlag.newAccountEmpty ? '1px solid red' : '1px solid var(--scale-100-205)'"
+            [style.border-bottom]="
+              uiFlag.newAccountEmpty ? '1px solid red' : '1px solid var(--scale-100-205)'
+            "
             (focusout)="handleAccount($event)"
-          >
+          />
           <span class="alert__text" *ngIf="uiFlag.newAccountRepeat">使用者重複</span>
         </div>
         <div class="input__section">
-          <label for="pwd">
-            密碼：
-          </label>
+          <label for="pwd"> 密碼： </label>
           <div class="pwd__input">
-            <input 
+            <input
               type="password"
               id="pwd"
               name="pwd"
               placeholder="請輸入密碼"
-              [style.border-bottom]="uiFlag.newPasswordEmpty ? '1px solid red' : '1px solid var(--scale-100-205)'"
+              [style.border-bottom]="
+                uiFlag.newPasswordEmpty ? '1px solid red' : '1px solid var(--scale-100-205)'
+              "
               (focusout)="handlePwd($event)"
-            >
+            />
             <i
               class="icon-svg_web-icon_p1_081-watch"
               [style.color]="uiFlag.showNewPwd ? 'black' : '#aaaaaa'"
@@ -211,44 +195,44 @@
           </div>
         </div>
         <div class="input__section">
-          <label for="check__pwd">
-            再次確認密碼：
-          </label>
+          <label for="check__pwd"> 再次確認密碼： </label>
           <div class="pwd__input">
-            <input 
+            <input
               type="password"
               id="check__pwd"
               name="check__pwd"
               placeholder="請輸入相同密碼"
               [style.border-bottom]="
-                uiFlag.checkPwdEmpty || uiFlag.pwdCheckError ? '1px solid red' : '1px solid var(--scale-100-205)'
+                uiFlag.checkPwdEmpty || uiFlag.pwdCheckError
+                  ? '1px solid red'
+                  : '1px solid var(--scale-100-205)'
               "
               (focusout)="handleCheckPwd($event)"
-            >
+            />
             <i
               class="icon-svg_web-icon_p1_081-watch"
               [style.color]="uiFlag.showCheckPwd ? 'black' : '#aaaaaa'"
               (click)="toggleDisplayPW('check__pwd')"
             ></i>
           </div>
-          <span *ngIf="uiFlag.pwdCheckError" style="font-size: 12px; color: red; text-align: right;">
+          <span *ngIf="uiFlag.pwdCheckError" style="font-size: 12px; color: red; text-align: right">
             密碼錯誤
           </span>
         </div>
       </ng-container>
       <ng-container *ngIf="uiFlag.createType === 'folder'">
         <div class="input__section">
-          <label for="folder">
-            資料夾名稱：
-          </label>
-          <input 
+          <label for="folder"> 資料夾名稱： </label>
+          <input
             type="text"
             id="folder"
             name="folder"
             placeholder="請輸入資料夾名稱"
-            [style.border-bottom]="uiFlag.newProjectNameEmpty ? '1px solid red' : '1px solid var(--scale-100-205)'"
+            [style.border-bottom]="
+              uiFlag.newProjectNameEmpty ? '1px solid red' : '1px solid var(--scale-100-205)'
+            "
             (focusout)="handleFolderName($event)"
-          >
+          />
           <span class="alert__text" *ngIf="uiFlag.newProjectNameRepeat">資料夾重複</span>
         </div>
         <div class="flexCol radio__section">
@@ -301,7 +285,7 @@
           </div>
         </div>
       </div>
-      <div class="flexRow" style="justify-content: space-around; margin: 10px 0;">
+      <div class="flexRow" style="justify-content: space-around; margin: 10px 0">
         <button id="cancel__btn" (click)="cancelCreate()">取消</button>
         <button id="confirm__btn" (click)="handleCreate()">確定</button>
       </div>

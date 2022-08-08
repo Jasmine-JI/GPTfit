@@ -25,15 +25,12 @@
     background-color: $rod-color;
     @include multiple-transition((left $move-effect, background-color $move-effect));
   }
-
 }
 
 @mixin rodBar-active($rod-active-color: $primary-blue) {
-
   &:before {
     left: 22px;
     background-color: $rod-active-color;
     @include multiple-transition((left $move-effect, background-color $move-effect));
   }
-
 }

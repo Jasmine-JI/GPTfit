@@ -18,7 +18,7 @@ import {
   FilletTrendChart,
   zoneColor,
   costTimeColor,
-  HrZoneRange
+  HrZoneRange,
 } from '../../../../shared/models/chart-data';
 import { HrBase } from '../../../../shared/enum/personal';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -26,15 +26,12 @@ import { getLocalStorageObject, mathRounding } from '../../../../shared/utils/in
 import { getUserHrRange, speedToPaceSecond, speedToPace } from '../../../../shared/utils/sports';
 import { SportType } from '../../../../shared/enum/sports';
 
-
-
 @Component({
   selector: 'app-cloudrun-report',
   templateUrl: './cloudrun-report.component.html',
-  styleUrls: ['./cloudrun-report.component.scss']
+  styleUrls: ['./cloudrun-report.component.scss'],
 })
 export class CloudrunReportComponent implements OnInit, OnDestroy {
-
   private ngUnsubscribe = new Subject();
   scrollEvent = new Subscription();
   clickEvent = new Subscription();
@@ -48,8 +45,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     haveUrlCondition: false,
     reportCompleted: false,
     noData: true,
-    defaultOpt: true
-  }
+    defaultOpt: true,
+  };
 
   /**
    * 報告頁面可讓使用者篩選的條件
@@ -59,23 +56,23 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     date: {
       startTimestamp: dayjs().startOf('month').valueOf(),
       endTimestamp: dayjs().endOf('month').valueOf(),
-      type: 'thisMonth'
+      type: 'thisMonth',
     },
     sportType: SportType.run,
     cloudRun: {
       mapId: 1,
       month: dayjs().format('YYYYMM'),
-      checkCompletion: true
+      checkCompletion: true,
     },
-    hideConfirmBtn: false
-  }
+    hideConfirmBtn: false,
+  };
 
   /**
    * 使用者所選時間
    */
   selectDate = {
     startDate: dayjs().startOf('month').format('YYYY-MM-DDT00:00:00.000Z'),
-    endDate: dayjs().endOf('month').format('YYYY-MM-DDT23:59:59.999Z')
+    endDate: dayjs().endOf('month').format('YYYY-MM-DDT23:59:59.999Z'),
   };
 
   /**
@@ -85,8 +82,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     id: null,
     unit: <Unit>0,
     name: null,
-    icon: null
-  }
+    icon: null,
+  };
 
   /**
    * 概要數據
@@ -96,8 +93,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     totalSeconds: 0,
     totalSpeed: 0,
     totalCadence: 0,
-    totalCalories: 0
-  }
+    totalCalories: 0,
+  };
 
   /**
    * 圖表用數據
@@ -109,7 +106,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       zoneTwo: [],
       zoneThree: [],
       zoneFour: [],
-      zoneFive: []
+      zoneFive: [],
     },
     paceTrend: <DiscolorTrendData>{
       avgPace: null,
@@ -117,23 +114,23 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       oneRangeBestPace: null,
       minSpeed: null,
       maxSpeed: null,
-      colorSet: paceTrendColor
+      colorSet: paceTrendColor,
     },
     hrCompareLine: <CompareLineTrendChart>{
       maxHrArr: [],
       hrArr: [],
       avgHR: null,
       oneRangeBestHR: null,
-      colorSet: zoneColor
+      colorSet: zoneColor,
     },
     costTime: <FilletTrendChart>{
       avgCostTime: null,
       bestCostTime: null,
       costTime: [],
       colorSet: costTimeColor,
-      date: []
-    }
-  }
+      date: [],
+    },
+  };
 
   /**
    * 使用者心率法與各心率區間
@@ -145,8 +142,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     z2: 'Z2',
     z3: 'Z3',
     z4: 'Z4',
-    z5: 'Z5'
-  }
+    z5: 'Z5',
+  };
 
   allData = [];
   allMapList: any;
@@ -154,15 +151,15 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   reportEndDate: string;
   reportTimeRange: string;
   createTime: string;
-  windowWidth = 320;  // 視窗寬度
-  currentMapId = 1;  // 另外設定map id 變數，避免污染子組件ngOnChanges event
+  windowWidth = 320; // 視窗寬度
+  currentMapId = 1; // 另外設定map id 變數，避免污染子組件ngOnChanges event
   progress = 0;
   previewUrl = '';
   mapSource = 'google';
   compare = {
     urlList: [],
-    clickList: []
-  }
+    clickList: [],
+  };
 
   constructor(
     private reportService: ReportService,
@@ -172,7 +169,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private translate: TranslateService,
     private userService: UserService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.windowWidth = window.innerWidth;
@@ -187,12 +184,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   checkWindowSize() {
     const resize = fromEvent(window, 'resize');
-    this.resizeEvent = resize.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.resizeEvent = resize.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.windowWidth = (e as any).target.innerWidth;
     });
-
   }
 
   /**
@@ -204,19 +198,25 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     const query = queryString.split('?')[1];
     if (query) {
       const queryArr = query.split('&');
-      queryArr.forEach(_query => {
+      queryArr.forEach((_query) => {
         const _queryArr = _query.split('='),
-              [_key, _value] = [..._queryArr];
+          [_key, _value] = [..._queryArr];
         switch (_key) {
           case 'ipm':
             this.uiFlag.isPreviewMode = true;
             break;
           case 'startdate':
-            this.selectDate.startDate = dayjs(_value, 'YYYY-MM-DD').startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
-            this.reportConditionOpt.date.startTimestamp = dayjs(this.selectDate.startDate).valueOf();
+            this.selectDate.startDate = dayjs(_value, 'YYYY-MM-DD')
+              .startOf('day')
+              .format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+            this.reportConditionOpt.date.startTimestamp = dayjs(
+              this.selectDate.startDate
+            ).valueOf();
             break;
           case 'enddate':
-            this.selectDate.endDate = dayjs(_value, 'YYYY-MM-DD').endOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+            this.selectDate.endDate = dayjs(_value, 'YYYY-MM-DD')
+              .endOf('day')
+              .format('YYYY-MM-DDTHH:mm:ss.SSSZ');
             this.reportConditionOpt.date.endTimestamp = dayjs(this.selectDate.endDate).valueOf();
             break;
           case 'mapid':
@@ -228,54 +228,47 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
             this.mapSource = _value;
             break;
           case 'compare':
-            this.compare.urlList = _value.split('p').map(_value => _value);
+            this.compare.urlList = _value.split('p').map((_value) => _value);
             break;
           case 'check':
             this.reportConditionOpt.cloudRun.checkCompletion = _value === 'true';
             break;
         }
-
       });
-
     }
-
   }
 
   /**
    * 取得使用者個人資訊與群組所有階層資訊，並確認多國語系載入
    * @author kidin-11100308
-   */   
+   */
   getNeedInfo() {
-    combineLatest([
-      this.userService.getUser().rxUserProfile,
-      this.cloudrunService.getAllMapInfo()
-    ]).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(resArr => {
-      const [userProfile, allMapList] = resArr;
-      const {
-        unit,
-        userId: id,
-        nickname: name,
-        avatarUrl: icon,
-        heartRateBase,
-        heartRateMax,
-        heartRateResting,
-        birthday
-      } = userProfile;
-      const age = this.reportService.countAge(birthday);
-      this.userInfo = { unit, name, id, icon };
-      this.hrZoneRange = getUserHrRange(heartRateBase, age, heartRateMax, heartRateResting);
-      this.allMapList = allMapList;
-      const { isPreviewMode, haveUrlCondition } = this.uiFlag;
-      if (!isPreviewMode && !haveUrlCondition) {
-        this.reportConditionOpt.cloudRun.mapId = this.allMapList.leaderboard[0].mapId;  // 預設顯示本月例行賽報告
-      }
+    combineLatest([this.userService.getUser().rxUserProfile, this.cloudrunService.getAllMapInfo()])
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((resArr) => {
+        const [userProfile, allMapList] = resArr;
+        const {
+          unit,
+          userId: id,
+          nickname: name,
+          avatarUrl: icon,
+          heartRateBase,
+          heartRateMax,
+          heartRateResting,
+          birthday,
+        } = userProfile;
+        const age = this.reportService.countAge(birthday);
+        this.userInfo = { unit, name, id, icon };
+        this.hrZoneRange = getUserHrRange(heartRateBase, age, heartRateMax, heartRateResting);
+        this.allMapList = allMapList;
+        const { isPreviewMode, haveUrlCondition } = this.uiFlag;
+        if (!isPreviewMode && !haveUrlCondition) {
+          this.reportConditionOpt.cloudRun.mapId = this.allMapList.leaderboard[0].mapId; // 預設顯示本月例行賽報告
+        }
 
-      this.reportService.setReportCondition(this.reportConditionOpt);
-      this.getReportSelectedCondition();
-    });
-
+        this.reportService.setReportCondition(this.reportConditionOpt);
+        this.getReportSelectedCondition();
+      });
   }
 
   /**
@@ -283,20 +276,19 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100308
    */
   getReportSelectedCondition() {
-    this.reportService.getReportCondition().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      if (res.date) {
-        this.selectDate = {
-          startDate: dayjs(res.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-          endDate: dayjs(res.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ')
-        };
-  
-        this.handleSubmitSearch('click');
-      }
+    this.reportService
+      .getReportCondition()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        if (res.date) {
+          this.selectDate = {
+            startDate: dayjs(res.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+            endDate: dayjs(res.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          };
 
-    });
-
+          this.handleSubmitSearch('click');
+        }
+      });
   }
 
   /**
@@ -304,17 +296,16 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @param act {string}-觸發此函式的動作
    * @author kidin-1100308
    */
-  handleSubmitSearch (act: string) {
-    if ([0, 100].includes(this.progress)) { // 避免重複call運動報告
+  handleSubmitSearch(act: string) {
+    if ([0, 100].includes(this.progress)) {
+      // 避免重複call運動報告
       this.uiFlag.reportCompleted = false;
       this.createReport();
 
       if (act === 'click') {
         this.updateUrl();
       }
-
     }
-
   }
 
   /**
@@ -323,11 +314,10 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   updateUrl() {
     const { startDate, endDate } = this.selectDate,
-          { checkCompletion: check } = this.reportConditionOpt.cloudRun,
-          startDateString = startDate.split('T')[0],
-          endDateString = endDate.split('T')[0];
-    let searchString =
-      `?ipm=s&startdate=${startDateString}&enddate=${endDateString}&mapid=${this.currentMapId}&source=${this.mapSource}&check=${check}`;
+      { checkCompletion: check } = this.reportConditionOpt.cloudRun,
+      startDateString = startDate.split('T')[0],
+      endDateString = endDate.split('T')[0];
+    let searchString = `?ipm=s&startdate=${startDateString}&enddate=${endDateString}&mapid=${this.currentMapId}&source=${this.mapSource}&check=${check}`;
 
     let compare: string;
     const { clickList } = this.compare;
@@ -357,7 +347,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           type: 1,
           fuzzyTime: [],
           filterStartTime: startDate,
-          filterEndTime: endDate
+          filterEndTime: endDate,
         },
         searchRule: {
           activity: 1,
@@ -371,65 +361,64 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
             class: '',
             teacher: '',
             tag: '',
-            cloudRunMapId: this.currentMapId
-          }
+            cloudRunMapId: this.currentMapId,
+          },
         },
         display: {
           activityLapLayerDisplay: 3,
           activityLapLayerDataField: [],
           activityPointLayerDisplay: 3,
-          activityPointLayerDataField: []
+          activityPointLayerDataField: [],
         },
         page: 0,
-        pageCounts: 10000
+        pageCounts: 10000,
       };
 
-      this.cloudrunService.getMapGpx({gpxPath}).pipe(
-        switchMap(gpx => {
-          return this.activityService.fetchMultiActivityData(body).pipe(  // 取得使用者數據
-            map(data => {
-              if (data.resultCode !== 200) {
-                this.uiFlag.noData = true;
-                const {resultCode, apiCode, resultMessage} = data;
-                this.utils.handleError(resultCode, apiCode, resultMessage);
-                return [gpx, []];
-              } else {
-                this.uiFlag.noData = false;
-                return [gpx, data.info.activities];
-              }
-
-            })
-
-          )
-
-        })
-      ).subscribe(response => {
-        const { point, altitude } = response[0],
-              { city, country, introduce, mapName } = info[this.checkLanguage()];
-        this.mapInfo = {
-          city,
-          country,
-          introduce,
-          mapName,
-          distance,
-          incline,
-          mapImg,
-          point,
-          altitude
-        };
-        this.handleReportTime();
-        this.allData = this
-          .sortOriginData(response[1])
-          .sort((a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf());
-        this.handleChartData(this.allData);
-        this.progress = 100;
-      });
-
+      this.cloudrunService
+        .getMapGpx({ gpxPath })
+        .pipe(
+          switchMap((gpx) => {
+            return this.activityService.fetchMultiActivityData(body).pipe(
+              // 取得使用者數據
+              map((data) => {
+                if (data.resultCode !== 200) {
+                  this.uiFlag.noData = true;
+                  const { resultCode, apiCode, resultMessage } = data;
+                  this.utils.handleError(resultCode, apiCode, resultMessage);
+                  return [gpx, []];
+                } else {
+                  this.uiFlag.noData = false;
+                  return [gpx, data.info.activities];
+                }
+              })
+            );
+          })
+        )
+        .subscribe((response) => {
+          const { point, altitude } = response[0],
+            { city, country, introduce, mapName } = info[this.checkLanguage()];
+          this.mapInfo = {
+            city,
+            country,
+            introduce,
+            mapName,
+            distance,
+            incline,
+            mapImg,
+            point,
+            altitude,
+          };
+          this.handleReportTime();
+          this.allData = this.sortOriginData(response[1]).sort(
+            (a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf()
+          );
+          this.handleChartData(this.allData);
+          this.progress = 100;
+        });
     } else {
       const msg = 'Can not get cloud run gpx file.<br>Please try again later.';
       this.utils.openAlert(msg);
     }
-
   }
 
   /**
@@ -444,7 +433,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         zoneTwo: [],
         zoneThree: [],
         zoneFour: [],
-        zoneFive: []
+        zoneFive: [],
       },
       paceTrend: {
         avgPace: null,
@@ -452,25 +441,23 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         oneRangeBestPace: null,
         minSpeed: null,
         maxSpeed: null,
-        colorSet: paceTrendColor
+        colorSet: paceTrendColor,
       },
       hrCompareLine: {
         maxHrArr: [],
         hrArr: [],
         avgHR: null,
         oneRangeBestHR: null,
-        colorSet: zoneColor
+        colorSet: zoneColor,
       },
       costTime: {
         avgCostTime: null,
         bestCostTime: null,
         costTime: [],
         colorSet: costTimeColor,
-        date: []
-      }
-
-    }
-
+        date: [],
+      },
+    };
   }
 
   /**
@@ -478,16 +465,16 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100311
    */
   handleReportTime() {
-    this.translate.get('hellow world').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.createTime = dayjs().format('YYYY-MM-DD HH:mm');
-      const { startDate, endDate } = this.selectDate,
-            range = dayjs(endDate).diff(startDate, 'day') + 1;
-      this.reportEndDate = endDate.split('T')[0];
-      this.reportTimeRange = `${range} ${this.translate.instant('universal_time_day')}`;
-    });
-    
+    this.translate
+      .get('hellow world')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.createTime = dayjs().format('YYYY-MM-DD HH:mm');
+        const { startDate, endDate } = this.selectDate,
+          range = dayjs(endDate).diff(startDate, 'day') + 1;
+        this.reportEndDate = endDate.split('T')[0];
+        this.reportTimeRange = `${range} ${this.translate.instant('universal_time_day')}`;
+      });
   }
 
   /**
@@ -497,14 +484,14 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   sortOriginData(data: any) {
     let stroke = 0,
-        totalSeconds = 0,
-        totalSpeed = 0,
-        totalCadence = 0,
-        totalCalories = 0;
+      totalSeconds = 0,
+      totalSpeed = 0,
+      totalCadence = 0,
+      totalCalories = 0;
     const middleData = [];
-    data.forEach(_data => {
+    data.forEach((_data) => {
       const { activityInfoLayer, fileInfo } = _data,
-            record = this.getUserRecord(activityInfoLayer);
+        record = this.getUserRecord(activityInfoLayer);
       if (record) {
         const { totalSecond, avgSpeed, calories, runAvgCadence } = record;
         stroke++;
@@ -512,10 +499,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         totalSpeed += avgSpeed;
         totalCadence += runAvgCadence;
         totalCalories += calories;
-        Object.assign(record, {fileId: fileInfo.fileId});
+        Object.assign(record, { fileId: fileInfo.fileId });
         middleData.push(record);
       }
-
     });
 
     this.infoData = {
@@ -523,7 +509,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       totalSeconds,
       totalSpeed,
       totalCadence,
-      totalCalories
+      totalCalories,
     };
     return middleData;
   }
@@ -535,38 +521,35 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   handleChartData(data: Array<any>) {
     let oneRangeMaxSpeed = 0,
-        oneRangeMinSpeed = null,
-        totalSpeed = 0,
-        oneRangeMaxHr = 0,
-        totalHr = 0,
-        oneRangeMinCostTime = null,
-        totalCostTime = 0,
-        date = [],
-        sameDateData = {
-          z0: 0,
-          z1: 0,
-          z2: 0,
-          z3: 0,
-          z4: 0,
-          z5: 0,
-          hr: 0,
-          maxHr: 0,
-          avgHr: 0,
-          avgSpeed: 0,
-          maxSpeed: 0,
-          avgSeconds: 0,
-          sameDateLen: 0,
-          init() {
-            for (const key in this) {
-
-              if (this.hasOwnProperty(key)) {
-                if (key !== 'init') this[key] = 0;
-              }
-
+      oneRangeMinSpeed = null,
+      totalSpeed = 0,
+      oneRangeMaxHr = 0,
+      totalHr = 0,
+      oneRangeMinCostTime = null,
+      totalCostTime = 0,
+      date = [],
+      sameDateData = {
+        z0: 0,
+        z1: 0,
+        z2: 0,
+        z3: 0,
+        z4: 0,
+        z5: 0,
+        hr: 0,
+        maxHr: 0,
+        avgHr: 0,
+        avgSpeed: 0,
+        maxSpeed: 0,
+        avgSeconds: 0,
+        sameDateLen: 0,
+        init() {
+          for (const key in this) {
+            if (this.hasOwnProperty(key)) {
+              if (key !== 'init') this[key] = 0;
             }
-
           }
-        };
+        },
+      };
 
     for (let i = 0, len = data.length; i < len; i++) {
       const {
@@ -581,9 +564,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         totalHrZone4Second,
         totalHrZone5Second,
         totalSecond,
-        startTime
+        startTime,
       } = data[i];
-      const { startTime: nextStartTime } = data[i + 1] || {startTime: undefined};
+      const { startTime: nextStartTime } = data[i + 1] || { startTime: undefined };
       const startTimestamp = dayjs(startTime).startOf('day').valueOf();
       const paceSecond = speedToPaceSecond(avgSpeed, SportType.run, this.userInfo.unit);
       const bestPaceSecond = speedToPaceSecond(maxSpeed, SportType.run, this.userInfo.unit);
@@ -602,14 +585,15 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           this.chartData.paceTrend.dataArr.push({
             x: startTimestamp,
             y: bestPaceSecond,
-            low: paceSecond
+            low: paceSecond,
           });
           this.chartData.hrCompareLine.hrArr.push([startTimestamp, avgHeartRateBpm]);
           this.chartData.hrCompareLine.maxHrArr.push([startTimestamp, maxHeartRateBpm]);
           this.chartData.costTime.costTime.push(totalSecond);
 
           // 取得最佳時間
-          if (oneRangeMinCostTime === null || totalSecond < oneRangeMinCostTime) oneRangeMinCostTime = totalSecond;
+          if (oneRangeMinCostTime === null || totalSecond < oneRangeMinCostTime)
+            oneRangeMinCostTime = totalSecond;
 
           // 加總數據以取得該日期範圍平均值
           totalSpeed += avgSpeed;
@@ -617,15 +601,15 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           totalCostTime += totalSecond;
           length++;
         } else {
-          sameDateData.z0 += totalHrZone0Second,
-          sameDateData.z1 += totalHrZone1Second,
-          sameDateData.z2 += totalHrZone2Second,
-          sameDateData.z3 += totalHrZone3Second,
-          sameDateData.z4 += totalHrZone4Second,
-          sameDateData.z5 += totalHrZone5Second,
-          sameDateData.avgSpeed += avgSpeed,
-          sameDateData.avgHr += avgHeartRateBpm,
-          sameDateData.avgSeconds += totalSecond;
+          (sameDateData.z0 += totalHrZone0Second),
+            (sameDateData.z1 += totalHrZone1Second),
+            (sameDateData.z2 += totalHrZone2Second),
+            (sameDateData.z3 += totalHrZone3Second),
+            (sameDateData.z4 += totalHrZone4Second),
+            (sameDateData.z5 += totalHrZone5Second),
+            (sameDateData.avgSpeed += avgSpeed),
+            (sameDateData.avgHr += avgHeartRateBpm),
+            (sameDateData.avgSeconds += totalSecond);
           sameDateLen++;
 
           if (maxSpeed > sameDateData.maxSpeed) sameDateData.maxSpeed = maxSpeed;
@@ -634,27 +618,53 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           const oneDayAvgSpeed = mathRounding(sameDateData.avgSpeed / sameDateLen, 1);
           const oneDayAvgHr = Math.round(sameDateData.avgHr / sameDateLen);
           const oneDayAvgSeconds = Math.round(sameDateData.avgSeconds / sameDateLen);
-          const oneDayAvgPace = speedToPaceSecond(oneDayAvgSpeed, SportType.run, this.userInfo.unit);
-          const sameDateMaxPace = speedToPaceSecond(sameDateData.maxSpeed, SportType.run, this.userInfo.unit);
-          // 圖表用數據                
-          this.chartData.hrTrend.zoneZero.push([startTimestamp, Math.round(sameDateData.z0 / sameDateLen)]);
-          this.chartData.hrTrend.zoneOne.push([startTimestamp, Math.round(sameDateData.z1 / sameDateLen)]);
-          this.chartData.hrTrend.zoneTwo.push([startTimestamp, Math.round(sameDateData.z2 / sameDateLen)]);
-          this.chartData.hrTrend.zoneThree.push([startTimestamp, Math.round(sameDateData.z3 / sameDateLen)]);
-          this.chartData.hrTrend.zoneFour.push([startTimestamp, Math.round(sameDateData.z4 / sameDateLen)]);
-          this.chartData.hrTrend.zoneFive.push([startTimestamp, Math.round(sameDateData.z5 / sameDateLen)]);
+          const oneDayAvgPace = speedToPaceSecond(
+            oneDayAvgSpeed,
+            SportType.run,
+            this.userInfo.unit
+          );
+          const sameDateMaxPace = speedToPaceSecond(
+            sameDateData.maxSpeed,
+            SportType.run,
+            this.userInfo.unit
+          );
+          // 圖表用數據
+          this.chartData.hrTrend.zoneZero.push([
+            startTimestamp,
+            Math.round(sameDateData.z0 / sameDateLen),
+          ]);
+          this.chartData.hrTrend.zoneOne.push([
+            startTimestamp,
+            Math.round(sameDateData.z1 / sameDateLen),
+          ]);
+          this.chartData.hrTrend.zoneTwo.push([
+            startTimestamp,
+            Math.round(sameDateData.z2 / sameDateLen),
+          ]);
+          this.chartData.hrTrend.zoneThree.push([
+            startTimestamp,
+            Math.round(sameDateData.z3 / sameDateLen),
+          ]);
+          this.chartData.hrTrend.zoneFour.push([
+            startTimestamp,
+            Math.round(sameDateData.z4 / sameDateLen),
+          ]);
+          this.chartData.hrTrend.zoneFive.push([
+            startTimestamp,
+            Math.round(sameDateData.z5 / sameDateLen),
+          ]);
           this.chartData.paceTrend.dataArr.push({
             x: startTimestamp,
             y: sameDateMaxPace,
-            low: oneDayAvgPace
+            low: oneDayAvgPace,
           });
           this.chartData.hrCompareLine.hrArr.push([startTimestamp, oneDayAvgHr]);
           this.chartData.hrCompareLine.maxHrArr.push([startTimestamp, sameDateData.maxHr]);
           this.chartData.costTime.costTime.push(oneDayAvgSeconds);
-          
 
           // 取得最佳時間
-          if (oneRangeMinCostTime === null || oneDayAvgSeconds < oneRangeMinCostTime) oneRangeMinCostTime = oneDayAvgSeconds;
+          if (oneRangeMinCostTime === null || oneDayAvgSeconds < oneRangeMinCostTime)
+            oneRangeMinCostTime = oneDayAvgSeconds;
 
           // 加總數據以取得該日期範圍平均值
           totalSpeed += oneDayAvgSpeed;
@@ -668,15 +678,15 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         date.push(startTimestamp);
       } else {
         // 加總相同日期的數據以求得當天平均數據
-        sameDateData.z0 += totalHrZone0Second || 0,
-        sameDateData.z1 += totalHrZone1Second || 0,
-        sameDateData.z2 += totalHrZone2Second || 0,
-        sameDateData.z3 += totalHrZone3Second || 0,
-        sameDateData.z4 += totalHrZone4Second || 0,
-        sameDateData.z5 += totalHrZone5Second || 0,
-        sameDateData.avgSpeed += avgSpeed,
-        sameDateData.avgHr += avgHeartRateBpm,
-        sameDateData.avgSeconds += totalSecond;
+        (sameDateData.z0 += totalHrZone0Second || 0),
+          (sameDateData.z1 += totalHrZone1Second || 0),
+          (sameDateData.z2 += totalHrZone2Second || 0),
+          (sameDateData.z3 += totalHrZone3Second || 0),
+          (sameDateData.z4 += totalHrZone4Second || 0),
+          (sameDateData.z5 += totalHrZone5Second || 0),
+          (sameDateData.avgSpeed += avgSpeed),
+          (sameDateData.avgHr += avgHeartRateBpm),
+          (sameDateData.avgSeconds += totalSecond);
         sameDateData.sameDateLen++;
 
         if (maxSpeed > sameDateData.maxSpeed) sameDateData.maxSpeed = maxSpeed;
@@ -692,11 +702,13 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     const dataLen = date.length;
     this.chartData.paceTrend.maxSpeed = oneRangeMaxSpeed;
     this.chartData.paceTrend.minSpeed = oneRangeMinSpeed;
-    this.chartData.paceTrend.oneRangeBestPace = speedToPace(oneRangeMaxSpeed, 1, this.userInfo.unit).value as string;
-    this.chartData.paceTrend.avgPace = speedToPace(((totalSpeed / dataLen) || 0), 1, this.userInfo.unit).value as string;
-    this.chartData.hrCompareLine.avgHR = Math.round((totalHr / dataLen) || 0);
+    this.chartData.paceTrend.oneRangeBestPace = speedToPace(oneRangeMaxSpeed, 1, this.userInfo.unit)
+      .value as string;
+    this.chartData.paceTrend.avgPace = speedToPace(totalSpeed / dataLen || 0, 1, this.userInfo.unit)
+      .value as string;
+    this.chartData.hrCompareLine.avgHR = Math.round(totalHr / dataLen || 0);
     this.chartData.hrCompareLine.oneRangeBestHR = oneRangeMaxHr;
-    this.chartData.costTime.avgCostTime = Math.round((totalCostTime / dataLen) || 0);
+    this.chartData.costTime.avgCostTime = Math.round(totalCostTime / dataLen || 0);
     this.chartData.costTime.bestCostTime = oneRangeMinCostTime;
     this.chartData.costTime.date = date;
   }
@@ -723,11 +735,14 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       totalHrZone5Second,
       totalSecond,
       totalStep,
-      startTime
+      startTime,
     } = record;
-  const { name, icon } = this.userInfo;
+    const { name, icon } = this.userInfo;
 
-    if (!this.reportConditionOpt.cloudRun.checkCompletion || this.checkRaceComplete(+distance, +totalStep)) {
+    if (
+      !this.reportConditionOpt.cloudRun.checkCompletion ||
+      this.checkRaceComplete(+distance, +totalStep)
+    ) {
       return {
         avgHeartRateBpm,
         maxHeartRateBpm,
@@ -744,12 +759,11 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         totalSecond,
         startTime,
         name,
-        icon
+        icon,
       };
     } else {
       return null;
     }
-
   }
 
   /**
@@ -765,7 +779,6 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     } else {
       return false;
     }
-
   }
 
   /**
@@ -784,7 +797,6 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       default:
         return 2;
     }
-
   }
 
   /**
@@ -793,13 +805,10 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   handleScrollEvent() {
     const mainSection = document.querySelector('.main-body'),
-          scroll = fromEvent(mainSection, 'scroll');
-    this.scrollEvent = scroll.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+      scroll = fromEvent(mainSection, 'scroll');
+    this.scrollEvent = scroll.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.scrollEvent.unsubscribe();
     });
-
   }
 
   /**
@@ -817,12 +826,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   handleClickEvent() {
     const click = fromEvent(document, 'click');
-    this.clickEvent = click.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.clickEvent = click.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.clickEvent.unsubscribe();
     });
-
   }
 
   /**
@@ -845,7 +851,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     if (e < 0) {
       this.compare.clickList = [];
     } else if (clickList.includes(e)) {
-      this.compare.clickList = this.compare.clickList.filter(_list => _list !== e);
+      this.compare.clickList = this.compare.clickList.filter((_list) => _list !== e);
     } else {
       this.compare.clickList.push(e);
     }
@@ -869,5 +875,4 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, ReplaySubject, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { UtilsService } from './utils.service';
-import { UserService } from '../../core/services/user.service'
+import { UserService } from '../../core/services/user.service';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { GroupDetailInfo, UserSimpleInfo } from '../../containers/dashboard/models/group-detail';
@@ -25,16 +25,17 @@ export class GroupService {
   editMode$ = new ReplaySubject<'edit' | 'create' | 'complete' | 'close'>(1); // 是否進入編輯模式或建立模式
   userSimpleInfo$ = new ReplaySubject<UserSimpleInfo>(1); // 儲存使用者在該群組的簡易資訊（權限）-kidin-1091103
   groupInfo$ = new BehaviorSubject<any>({}); // 儲存group資訊-kidin-1081210
-  groupDetail$ = new ReplaySubject<any>(1);  // 儲存群組基本概要方便各子頁面使用-kidin-1091020
+  groupDetail$ = new ReplaySubject<any>(1); // 儲存群組基本概要方便各子頁面使用-kidin-1091020
   allLevelGroupData$ = new ReplaySubject<any>(1); // 儲存 同"品牌/企業" group 資訊-kidin-1090716
   groupCommerceInfo$ = new ReplaySubject<any>(1); // 儲存群組經營權限資訊-kidin-1091104
   classMemberList$ = new BehaviorSubject<any>([]); // 儲存課程成員清單-kidin-1091116
   adminList$ = new ReplaySubject<any>(1);
   normalMemberList$ = new ReplaySubject<any>(1);
 
-  memList$ = new BehaviorSubject<any>({  // 成員清單
+  memList$ = new BehaviorSubject<any>({
+    // 成員清單
     groupId: '',
-    groupList: []
+    groupList: [],
   });
 
   newGroupId$ = new ReplaySubject<any>(1); // 創建群組的group id，以上傳圖床。
@@ -171,7 +172,7 @@ export class GroupService {
    * @method post
    * @author kidin-1090715
    */
-   searchGroup(body: any) {
+  searchGroup(body: any) {
     return this.http.post<any>(API_SERVER + 'group/searchGroup', body);
   }
 
@@ -238,7 +239,7 @@ export class GroupService {
    * @method post
    * @author kidin-1090715
    */
-  editGroupManage (body: object) {
+  editGroupManage(body: object) {
     return this.http.post<any>('/api/v1/center/editCommerceInfo', body);
   }
 
@@ -256,7 +257,7 @@ export class GroupService {
    * 取得訂閱的成員列表
    * @author kidin-1090715
    */
-  getMemList (): Observable<any> {
+  getMemList(): Observable<any> {
     return this.memList$;
   }
 
@@ -265,7 +266,7 @@ export class GroupService {
    * @param status {any}
    * @author kidin-1090715
    */
-  setMemList (status: any) {
+  setMemList(status: any) {
     this.memList$.next(status);
   }
 
@@ -324,7 +325,7 @@ export class GroupService {
    * 取得訂閱的group資訊
    * @author kidin-1081210
    */
-  getGroupInfo () {
+  getGroupInfo() {
     return this.groupInfo$;
   }
 
@@ -333,10 +334,10 @@ export class GroupService {
    * @param status {object}
    * @author kidin-1081210
    */
-  saveGroupInfo (status: object) {
+  saveGroupInfo(status: object) {
     this.groupInfo$.next(status);
   }
-  
+
   /**
    * 儲存群組概要資訊
    * @param Detail {GroupDetailInfo}-api 1102回傳內容
@@ -425,7 +426,7 @@ export class GroupService {
    * 取得群組是否進入編輯或建立群組的狀態
    * @author kidin-1091123
    */
-  getRxEditMode()  {
+  getRxEditMode() {
     return this.editMode$;
   }
 
@@ -451,17 +452,16 @@ export class GroupService {
         return userGroupId === `${this.getPartGroupId(currentGroupId, length)}-0-0-0`;
       case 4: // 分店/分公司
         return (
-          userGroupId === `${this.getPartGroupId(currentGroupId, length)}-0-0`
-          || userGroupId === `${this.getPartGroupId(currentGroupId, 3)}-0-0-0`
+          userGroupId === `${this.getPartGroupId(currentGroupId, length)}-0-0` ||
+          userGroupId === `${this.getPartGroupId(currentGroupId, 3)}-0-0-0`
         );
       case 5: // 課程/部門
         return (
-          userGroupId === `${this.getPartGroupId(currentGroupId, length)}-0`
-          || userGroupId === `${this.getPartGroupId(currentGroupId, 3)}-0-0-0`
-          || userGroupId === `${this.getPartGroupId(currentGroupId, 4)}-0-0`
+          userGroupId === `${this.getPartGroupId(currentGroupId, length)}-0` ||
+          userGroupId === `${this.getPartGroupId(currentGroupId, 3)}-0-0-0` ||
+          userGroupId === `${this.getPartGroupId(currentGroupId, 4)}-0-0`
         );
     }
-
   }
 
   /**
@@ -481,7 +481,7 @@ export class GroupService {
    * @param idArr {Array<string>}
    * @author kidin-1100525
    */
-   getCompleteGroupId(idArr: Array<string>) {
+  getCompleteGroupId(idArr: Array<string>) {
     const fillStart = idArr.length;
     idArr.length = 6;
     return idArr.fill('0', fillStart, 6).join('-');
@@ -499,9 +499,8 @@ export class GroupService {
       } else {
         return '*';
       }
-
     });
-    
+
     return idArr.join('-');
   }
 
@@ -526,11 +525,11 @@ export class GroupService {
         groupId,
         groupLevel: GroupInfo.getGroupLevel(groupId),
         infoType: 5,
-        token: this.authService.token
+        token: this.authService.token,
       };
 
       return this.fetchGroupMemberList(body).pipe(
-        map(res => {
+        map((res) => {
           if (!checkResponse(res)) {
             this.allGroupMemberList.clearMemberList();
           } else {
@@ -540,12 +539,9 @@ export class GroupService {
 
           return this.allGroupMemberList;
         })
-
-      )
+      );
     } else {
       return of(this.allGroupMemberList);
     }
-
   }
-
 }

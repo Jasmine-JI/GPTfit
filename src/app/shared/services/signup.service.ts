@@ -5,19 +5,19 @@ import { catchError } from 'rxjs/operators';
 
 @Injectable()
 export class SignupService {
-  constructor(
-    private http: HttpClient
-  ) {}
+  constructor(private http: HttpClient) {}
 
   /**
    * api-v2 1001
    * @param body {any}-api 所需參數
    * @param ip {string}-使用者ip位置
    */
-  fetchRegister (body: any, newHeader: any) {
+  fetchRegister(body: any, newHeader: any) {
     const httpOptions = this.setNewHeader(newHeader);
-    return <any> this.http.post('/api/v2/user/register', body, httpOptions).pipe(
-      catchError(err => throwError(err))
+    return <any>(
+      this.http
+        .post('/api/v2/user/register', body, httpOptions)
+        .pipe(catchError((err) => throwError(err)))
     );
   }
 
@@ -26,17 +26,19 @@ export class SignupService {
    * @param body {any}-api 所需參數
    * @param ip {string}-使用者ip位置
    */
-  fetchEnableAccount (body: any, newHeader: any) {
+  fetchEnableAccount(body: any, newHeader: any) {
     const httpOptions = this.setNewHeader(newHeader);
-    return <any> this.http.post('/api/v2/user/enableAccount', body, httpOptions).pipe(
-      catchError(err => throwError(err))
+    return <any>(
+      this.http
+        .post('/api/v2/user/enableAccount', body, httpOptions)
+        .pipe(catchError((err) => throwError(err)))
     );
   }
 
   /**
    * Api-v2 1004-忘記密碼
    */
-  fetchForgetpwd (body, newHeader: any) {
+  fetchForgetpwd(body, newHeader: any) {
     const httpOptions = this.setNewHeader(newHeader);
     return this.http.post<any>('/api/v2/user/resetPassword', body, httpOptions);
   }
@@ -44,7 +46,7 @@ export class SignupService {
   /**
    * Api-v2 1005-編輯帳密
    */
-  fetchEditAccountInfo (body, newHeader: any) {
+  fetchEditAccountInfo(body, newHeader: any) {
     const httpOptions = this.setNewHeader(newHeader);
     return this.http.post<any>('/api/v2/user/editAccount', body, httpOptions);
   }
@@ -54,10 +56,12 @@ export class SignupService {
    * @param body {any}-api 所需參數
    * @param ip {string}-使用者ip位置
    */
-  fetchCaptcha (body: any, newHeader: any) {
+  fetchCaptcha(body: any, newHeader: any) {
     const httpOptions = this.setNewHeader(newHeader);
-    return <any> this.http.post('/api/v2/user/captcha', body, httpOptions).pipe(
-      catchError(err => throwError(err))
+    return <any>(
+      this.http
+        .post('/api/v2/user/captcha', body, httpOptions)
+        .pipe(catchError((err) => throwError(err)))
     );
   }
 
@@ -66,23 +70,26 @@ export class SignupService {
    * @param body {any}-api 所需參數
    * @param ip {string}-使用者ip位置
    */
-  fetchQrcodeLogin (body: any, newHeader: any) {
+  fetchQrcodeLogin(body: any, newHeader: any) {
     const httpOptions = this.setNewHeader(newHeader);
-    return <any> this.http.post('/api/v2/user/qrSignIn', body, httpOptions).pipe(
-      catchError(err => throwError(err))
+    return <any>(
+      this.http
+        .post('/api/v2/user/qrSignIn', body, httpOptions)
+        .pipe(catchError((err) => throwError(err)))
     );
   }
-
 
   /**
    * api-v2 1012
    * @param body {any}-api 所需參數
    * @author kidin-1091217
    */
-  fetchCompressData (body: any, newHeader: any) {
+  fetchCompressData(body: any, newHeader: any) {
     const httpOptions = this.setNewHeader(newHeader);
-    return <any> this.http.post('/api/v2/archive/startCompressData', body, httpOptions).pipe(
-      catchError(err => throwError(err))
+    return <any>(
+      this.http
+        .post('/api/v2/archive/startCompressData', body, httpOptions)
+        .pipe(catchError((err) => throwError(err)))
     );
   }
 
@@ -91,10 +98,12 @@ export class SignupService {
    * @param body {any}-api 所需參數
    * @author kidin-1091217
    */
-  fetchDestroyAccount (body: any, newHeader: any) {
+  fetchDestroyAccount(body: any, newHeader: any) {
     const httpOptions = this.setNewHeader(newHeader);
-    return <any> this.http.post('/api/v2/archive/destroyMe', body, httpOptions).pipe(
-      catchError(err => throwError(err))
+    return <any>(
+      this.http
+        .post('/api/v2/archive/destroyMe', body, httpOptions)
+        .pipe(catchError((err) => throwError(err)))
     );
   }
 
@@ -104,7 +113,6 @@ export class SignupService {
    * @author kidin-1110114
    */
   setNewHeader(options: any) {
-    return options ? { headers: new HttpHeaders(options)} : undefined;
+    return options ? { headers: new HttpHeaders(options) } : undefined;
   }
-
 }

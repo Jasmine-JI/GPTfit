@@ -17,7 +17,6 @@ const storageVersion = '2';
  * 報告內分析項目可設定的選項
  */
 export class ProfessionalAnalysisOption {
-
   private _optionInfo: AnalysisOptionInfo;
 
   /**
@@ -67,25 +66,25 @@ export class ProfessionalAnalysisOption {
    */
   createOptionList(info: AnalysisOptionInfo) {
     const { reportType, currentGroupLevel, object } = info;
-    of(currentGroupLevel).pipe(
-      tap(level => this.handleGroupOption(level)),
-      tap(() => {
-        switch (reportType) {
-          case 'sports':
-            if (object === 'group') return this.createGroupSportOption()
-            return this.createPersonalSportOption();
-          case 'lifeTracking':
-          case 'cloudrun':
-            // 待該群組報告重構
-            return '';
-        }
-
-      }),
-      tap(() => this.checkStorage()),
-      tap(() => this.checkOverLimit()),
-      tap(() => this.fillItem())
-    ).subscribe();
-
+    of(currentGroupLevel)
+      .pipe(
+        tap((level) => this.handleGroupOption(level)),
+        tap(() => {
+          switch (reportType) {
+            case 'sports':
+              if (object === 'group') return this.createGroupSportOption();
+              return this.createPersonalSportOption();
+            case 'lifeTracking':
+            case 'cloudrun':
+              // 待該群組報告重構
+              return '';
+          }
+        }),
+        tap(() => this.checkStorage()),
+        tap(() => this.checkOverLimit()),
+        tap(() => this.fillItem())
+      )
+      .subscribe();
   }
 
   /**
@@ -125,22 +124,19 @@ export class ProfessionalAnalysisOption {
       AnalysisSportsColumn.totalSecond,
       AnalysisSportsColumn.calories,
       AnalysisSportsColumn.averageHeartRate,
-      AnalysisSportsColumn.hrChart
+      AnalysisSportsColumn.hrChart,
     ];
 
     switch (sportType) {
       case SportType.all:
-        list = list.concat([
-          AnalysisSportsColumn.benefitTime,
-          AnalysisSportsColumn.pai
-        ]);
+        list = list.concat([AnalysisSportsColumn.benefitTime, AnalysisSportsColumn.pai]);
         break;
       case SportType.run:
       case SportType.swim:
         list = list.concat([
           AnalysisSportsColumn.distance,
           AnalysisSportsColumn.speedOrPace,
-          AnalysisSportsColumn.cadence
+          AnalysisSportsColumn.cadence,
         ]);
         break;
       case SportType.cycle:
@@ -149,24 +145,21 @@ export class ProfessionalAnalysisOption {
           AnalysisSportsColumn.distance,
           AnalysisSportsColumn.speedOrPace,
           AnalysisSportsColumn.cadence,
-          AnalysisSportsColumn.power
+          AnalysisSportsColumn.power,
         ]);
         break;
       case SportType.weightTrain:
-        list = list.concat([
-          AnalysisSportsColumn.totalActivitySecond
-        ]);
+        list = list.concat([AnalysisSportsColumn.totalActivitySecond]);
         break;
       case SportType.ball:
-        list = list.concat([
-          AnalysisSportsColumn.distance
-        ]);
+        list = list.concat([AnalysisSportsColumn.distance]);
         break;
     }
 
-    this._itemList = list.sort((a, b) => a - b)
-      .map(_item => new AnalysisOneOption({ item: _item }));
-    
+    this._itemList = list
+      .sort((a, b) => a - b)
+      .map((_item) => new AnalysisOneOption({ item: _item }));
+
     this._storageKey = `groupReport-${sportType}`;
     return;
   }
@@ -181,7 +174,7 @@ export class ProfessionalAnalysisOption {
       AnalysisSportsColumn.totalSecond,
       AnalysisSportsColumn.calories,
       AnalysisSportsColumn.averageHeartRate,
-      AnalysisSportsColumn.hrChart
+      AnalysisSportsColumn.hrChart,
     ];
 
     switch (sportType) {
@@ -189,7 +182,7 @@ export class ProfessionalAnalysisOption {
         list = list.concat([
           AnalysisSportsColumn.benefitTime,
           AnalysisSportsColumn.pai,
-          AnalysisSportsColumn.preferSports
+          AnalysisSportsColumn.preferSports,
         ]);
         break;
       case SportType.run:
@@ -197,7 +190,7 @@ export class ProfessionalAnalysisOption {
         list = list.concat([
           AnalysisSportsColumn.distance,
           AnalysisSportsColumn.speedOrPace,
-          AnalysisSportsColumn.cadence
+          AnalysisSportsColumn.cadence,
         ]);
         break;
       case SportType.cycle:
@@ -206,7 +199,7 @@ export class ProfessionalAnalysisOption {
           AnalysisSportsColumn.distance,
           AnalysisSportsColumn.speedOrPace,
           AnalysisSportsColumn.cadence,
-          AnalysisSportsColumn.power
+          AnalysisSportsColumn.power,
         ]);
         break;
       case SportType.weightTrain:
@@ -218,19 +211,18 @@ export class ProfessionalAnalysisOption {
           AnalysisSportsColumn.shoulderMuscle,
           AnalysisSportsColumn.backMuscle,
           AnalysisSportsColumn.abdominalMuscle,
-          AnalysisSportsColumn.legMuscle
+          AnalysisSportsColumn.legMuscle,
         ]);
         break;
       case SportType.ball:
-        list = list.concat([
-          AnalysisSportsColumn.distance
-        ]);
+        list = list.concat([AnalysisSportsColumn.distance]);
         break;
     }
 
-    this._itemList = list.sort((a, b) => a - b)
-      .map(_item => new AnalysisOneOption({ item: _item }));
-    
+    this._itemList = list
+      .sort((a, b) => a - b)
+      .map((_item) => new AnalysisOneOption({ item: _item }));
+
     this._storageKey = `groupReport-${sportType}`;
     return;
   }
@@ -245,7 +237,7 @@ export class ProfessionalAnalysisOption {
     if (this.checkStorageVersion(ver)) {
       return this.loadStorageOption(storage);
     }
-    
+
     return this.setDefaultOption();
   }
 
@@ -265,9 +257,9 @@ export class ProfessionalAnalysisOption {
     const { object } = this._optionInfo;
     const storage = StorageOption[object];
     if (storage) {
-      storage.forEach(_item => {
+      storage.forEach((_item) => {
         const _itemValue = +_item;
-        const index = this._itemList.findIndex(_list => _list.info.item === _itemValue);
+        const index = this._itemList.findIndex((_list) => _list.info.item === _itemValue);
         if (index > -1) this._itemList[index].toggleSelected();
       });
 
@@ -290,7 +282,7 @@ export class ProfessionalAnalysisOption {
           AnalysisSportsColumn.activityPeople,
           AnalysisSportsColumn.activities,
           AnalysisSportsColumn.totalSecond,
-          AnalysisSportsColumn.hrChart
+          AnalysisSportsColumn.hrChart,
         ];
 
         const personColumn = [
@@ -298,7 +290,7 @@ export class ProfessionalAnalysisOption {
           AnalysisSportsColumn.totalSecond,
           AnalysisSportsColumn.calories,
           AnalysisSportsColumn.averageHeartRate,
-          AnalysisSportsColumn.hrChart
+          AnalysisSportsColumn.hrChart,
         ];
 
         list = object === 'group' ? groupColumn : personColumn;
@@ -308,9 +300,9 @@ export class ProfessionalAnalysisOption {
         break;
     }
 
-    list.forEach(_list => {
+    list.forEach((_list) => {
       const _itemValue = _list;
-      const index = this._itemList.findIndex(_list => _list.info.item === _itemValue);
+      const index = this._itemList.findIndex((_list) => _list.info.item === _itemValue);
       this._itemList[index].toggleSelected();
     });
 
@@ -325,7 +317,7 @@ export class ProfessionalAnalysisOption {
     this.checkSelectNumberLimit(width);
     const { _maxSelected, _minSelected } = this;
     let selectedNumber = 0;
-    this._itemList = this._itemList.map(_list => {
+    this._itemList = this._itemList.map((_list) => {
       const { selected } = _list;
       if (selected) selectedNumber++;
 
@@ -347,7 +339,7 @@ export class ProfessionalAnalysisOption {
     let selectedNumber = this.getSelectedList().length;
     const { _maxSelected } = this;
     if (selectedNumber < _maxSelected) {
-      this._itemList = this._itemList.map(_list => {
+      this._itemList = this._itemList.map((_list) => {
         if (selectedNumber < _maxSelected && !_list.selected) {
           _list.selected = true;
           selectedNumber++;
@@ -355,7 +347,6 @@ export class ProfessionalAnalysisOption {
 
         return _list;
       });
-
     }
 
     this.setCanSelectStatus(false);
@@ -386,7 +377,6 @@ export class ProfessionalAnalysisOption {
       this._maxSelected = 6;
       this._minSelected = 2;
     }
-
   }
 
   /**
@@ -394,11 +384,10 @@ export class ProfessionalAnalysisOption {
    * @param status {boolean}-是否可點擊的狀態
    */
   setCanSelectStatus(status: boolean) {
-    this._itemList = this._itemList.map(_list => {
+    this._itemList = this._itemList.map((_list) => {
       _list.canSelect = status;
       return _list;
     });
-
   }
 
   /**
@@ -406,23 +395,26 @@ export class ProfessionalAnalysisOption {
    * @param status {boolean}-是否可點擊的狀態
    */
   setCanCancelStatus(status: boolean) {
-    this._itemList = this._itemList.map(_list => {
+    this._itemList = this._itemList.map((_list) => {
       _list.canCancel = status;
       return _list;
     });
-
   }
 
   /**
    * 依分析類別將分析欄位設定儲存於localStorage中
    */
   saveOption() {
-    const { _storageKey, _optionInfo: { object } } = this;
+    const {
+      _storageKey,
+      _optionInfo: { object },
+    } = this;
     const selectedList = this.getSelectedList();
     const storage = getLocalStorageObject(_storageKey);
     const { ver } = storage ?? '';
-    const newOption = this.checkStorageVersion(ver) ? 
-      { ...storage, [object]: selectedList } : { [object]: selectedList, ver: storageVersion };
+    const newOption = this.checkStorageVersion(ver)
+      ? { ...storage, [object]: selectedList }
+      : { [object]: selectedList, ver: storageVersion };
 
     setLocalStorageObject(_storageKey, newOption);
     return;
@@ -432,8 +424,7 @@ export class ProfessionalAnalysisOption {
    * 取得已選擇的項目
    */
   getSelectedList() {
-    return this._itemList.filter(_item => _item.selected)
-      .map(_item => _item.info.item);
+    return this._itemList.filter((_item) => _item.selected).map((_item) => _item.info.item);
   }
 
   /**
@@ -457,7 +448,7 @@ export class ProfessionalAnalysisOption {
   getLayerSelectStatus(level: GroupLevel) {
     // 若沒有階層清單代表為課程階，必為選擇狀態
     if (this.layerList.length === 0) return true;
-    const index = this._layerList.findIndex(_layer => _layer.info.level === level);
+    const index = this._layerList.findIndex((_layer) => _layer.info.level === level);
     return this._layerList[index].selected;
   }
 
@@ -465,7 +456,7 @@ export class ProfessionalAnalysisOption {
    * 取得特定欄位項目的選擇狀態
    */
   getItemSelectStatus(item: AnalysisSportsColumn) {
-    const index = this._itemList.findIndex(_item => _item.info.item === item);
+    const index = this._itemList.findIndex((_item) => _item.info.item === item);
     const assignItem = this._itemList[index];
     return assignItem ? assignItem.selected : false;
   }
@@ -490,5 +481,4 @@ export class ProfessionalAnalysisOption {
   get optionInfo() {
     return this._optionInfo;
   }
-
 }

@@ -1,6 +1,6 @@
 <section class="flexCol pageBreakAvoid">
   <ng-container *ngIf="['cloudrun', 'sportReport'].includes(page)">
-    <div class="flexRow" style="align-items: center; justify-content: space-between;">
+    <div class="flexRow" style="align-items: center; justify-content: space-between">
       <h6 id="chartTitle">
         <ng-container *ngIf="sportType === undefined">
           {{ chartType | dataTypeTranslate: [1, unit] | translate }}
@@ -11,12 +11,9 @@
       </h6>
     </div>
   </ng-container>
-  <main
-    id="mainSeciton"
-    [style.margin-left]="chartName === 'Step' ? '0' : '20px'"
-  >
+  <main id="mainSeciton" [style.margin-left]="chartName === 'Step' ? '0' : '20px'">
     <ng-container *ngIf="['cloudrun'].includes(page)">
-      <div class="flexRow infoBlock" style="justify-content: space-between;">
+      <div class="flexRow infoBlock" style="justify-content: space-between">
         <div class="flexCol infoSection">
           <span class="dataNumber">
             <ng-container *ngIf="chartType === 'pace'">
@@ -84,8 +81,6 @@
         </div>
       </div>
     </ng-container>
-    <div #container id="chartBlock" [class.printChartFix]="isPreviewMode">
-      chart
-    </div>
+    <div #container id="chartBlock" [class.printChartFix]="isPreviewMode">chart</div>
   </main>
 </section>

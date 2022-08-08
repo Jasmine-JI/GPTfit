@@ -8,9 +8,8 @@ describe('SettingPreferComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SettingPreferComponent ]
-    })
-    .compileComponents();
+      declarations: [SettingPreferComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

@@ -12,11 +12,12 @@
   </div>
   <ul
     class="dropdown-menu ala-intl-tel"
-    style="top: 35px; height: 25vh; left: -40px;"
-    *ngIf="countryOptions && countryOptions.length > 0" [class.show]="active && countryOptions.length > 0"
+    style="top: 35px; height: 25vh; left: -40px"
+    *ngIf="countryOptions && countryOptions.length > 0"
+    [class.show]="active && countryOptions.length > 0"
   >
     <li *ngFor="let o of countryOptions; let i = index" (click)="chooseCountry(i)">
-       {{ o.name }}<span class="dial-code">{{ o.code }}</span>
+      {{ o.name }}<span class="dial-code">{{ o.code }}</span>
     </li>
   </ul>
 </div>

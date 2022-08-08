@@ -2,7 +2,6 @@
 @import 'transition.scss';
 @import 'transform.scss';
 
-
 .map__style {
   height: 500px;
 }
@@ -40,16 +39,13 @@
     border-top: 10px solid black;
     @include transition(transform);
   }
-
 }
 
 .drop__menu--active {
-
   &:after {
     @include transition(transform);
     @include el-rotate(180deg);
   }
-
 }
 
 .selector__section {
@@ -75,9 +71,7 @@
       color: white;
       @include transition(background-color);
     }
-
   }
-
 }
 
 /************************ media ************************************/
@@ -86,5 +80,4 @@
   .map__style {
     height: 420px;
   }
-
 }

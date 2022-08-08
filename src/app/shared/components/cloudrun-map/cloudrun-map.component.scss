@@ -43,7 +43,8 @@ $loaded-color: rgba(255, 252, 174, 0.5);
   height: 350px;
 }
 
-thead, tbody tr {
+thead,
+tbody tr {
   display: table;
   width: 100%;
   table-layout: fixed;
@@ -73,7 +74,6 @@ thead, tbody tr {
     background-color: $loaded-color !important;
     @include transition(background-color);
   }
-
 }
 
 .mark__col {
@@ -95,7 +95,6 @@ thead, tbody tr {
   &:hover {
     font-weight: bold;
   }
-
 }
 
 .pace__col {
@@ -141,14 +140,14 @@ thead, tbody tr {
     border: 3px solid;
     border-radius: 50%;
   }
-
 }
 
 #map__list__section {
   margin-bottom: 10px;
 }
 
-#play__btn__section, .play__btn {
+#play__btn__section,
+.play__btn {
   height: 30px;
   background-color: $play-bar-color;
 }
@@ -196,7 +195,6 @@ thead, tbody tr {
     background-color: rgba(17, 166, 235, 1);
     @include transition(background-color);
   }
-
 }
 
 .click--forbidden {
@@ -211,7 +209,6 @@ thead, tbody tr {
   .name__col {
     width: 40%;
   }
-
 }
 
 @media (max-width: 767px) {
@@ -219,24 +216,24 @@ thead, tbody tr {
     flex-direction: column;
   }
 
-  #map__section, #record__table {
+  #map__section,
+  #record__table {
     width: 100%;
     margin-bottom: 10px;
   }
-
 }
 
 @media (max-width: 767px) {
-
-  #rank__col, #name__col, #pace__col, #time__col {
+  #rank__col,
+  #name__col,
+  #pace__col,
+  #time__col {
     font-size: 12px;
   }
-
 }
 
 @media print {
   .map__style {
     height: 420px;
   }
-
 }

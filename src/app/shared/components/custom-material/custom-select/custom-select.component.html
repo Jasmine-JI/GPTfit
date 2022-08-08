@@ -8,12 +8,13 @@
   >
     {{ currentSelect?.i18n }}
     <span
-      style="margin-left: 10px; font-size: 16px;"
+      style="margin-left: 10px; font-size: 16px"
       [style.color]="triangleColor ? triangleColor : 'black'"
-    >▼</span>
+      >▼</span
+    >
   </span>
   <div
-    style="z-index: 101; position: relative;"
+    style="z-index: 101; position: relative"
     [style.bottom]="position && position.bottom ? position.bottom : '20px'"
   >
     <div
@@ -24,10 +25,10 @@
       *ngIf="showOptions"
     >
       <div
-        style="padding: 5px 10px;"
-        *ngFor="let list of selectLists; let idx = index;"
+        style="padding: 5px 10px"
+        *ngFor="let list of selectLists; let idx = index"
         id="{{ idx }}"
-        [style.background-color]="currentSelect.id === idx ? '#e0e0e0': 'none'"
+        [style.background-color]="currentSelect.id === idx ? '#e0e0e0' : 'none'"
         (click)="selectOpt($event)"
       >
         <span>{{ list.i18n }}</span>

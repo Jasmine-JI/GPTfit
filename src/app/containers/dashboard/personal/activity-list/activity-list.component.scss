@@ -1,7 +1,6 @@
 @import 'transition.scss';
 @import 'font.scss';
 
-
 @mixin img-hover($opacity: 0.05) {
   position: absolute;
   z-index: 2;
@@ -27,16 +26,16 @@
   }
 
   &:after {
-    content: "."; 
-    visibility: hidden; 
-    display: block; 
-    height: 0; 
+    content: '.';
+    visibility: hidden;
+    display: block;
+    height: 0;
     clear: both;
   }
-
 }
 
-.list__card, .list__img__block {
+.list__card,
+.list__img__block {
   width: 250px;
 }
 
@@ -54,7 +53,6 @@
     left: -1px;
     top: -1px;
   }
-
 }
 
 .list__img__block {
@@ -63,16 +61,15 @@
   overflow: hidden;
   border-bottom: 1px solid var(--scale-200-100);
 
-  >.img__mask {
+  > .img__mask {
     @include img-hover();
   }
 
-  >i {
+  > i {
     position: absolute;
     font-size: 160px;
     color: var(--scale-200-100);
   }
-
 }
 
 .list__img {
@@ -92,23 +89,20 @@
   color: var(--scale-75-230);
 }
 
-
 /**************************************** media ***********************************/
 
-@media(max-width: 767px) {
-
-  .list__card, .list__img__block {
+@media (max-width: 767px) {
+  .list__card,
+  .list__img__block {
     width: 200px;
   }
 
   .list__img__block {
     height: 140px;
   }
-
 }
 
-@media(max-width: 485px) {
-
+@media (max-width: 485px) {
   .list__card {
     width: 100%;
     margin: 5px 0;
@@ -126,5 +120,4 @@
     width: 100%;
     height: initial;
   }
-
 }

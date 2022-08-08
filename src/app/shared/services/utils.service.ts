@@ -13,12 +13,11 @@ import { version } from '../version';
 import { v5 as uuidv5 } from 'uuid';
 import { setLocalStorageObject, getLocalStorageObject } from '../utils/index';
 
-
 type Point = {
   x: number;
   y: number;
   color?: string;
-}
+};
 
 @Injectable()
 export class UtilsService {
@@ -69,7 +68,7 @@ export class UtilsService {
   displayGroupId(_id: string) {
     if (_id) {
       const arr = _id.split('-').splice(2, 3);
-      const isNormalGroup = !arr.some(_num => +_num > 0);
+      const isNormalGroup = !arr.some((_num) => +_num > 0);
       if (isNormalGroup) {
         const _arr = _id.split('-').splice(2, 4);
         const id = _arr.join('-');
@@ -109,7 +108,7 @@ export class UtilsService {
   }
 
   markFormGroupTouched(formGroup: UntypedFormGroup) {
-    (<any>Object).values(formGroup.controls).forEach(control => {
+    (<any>Object).values(formGroup.controls).forEach((control) => {
       control.markAsTouched();
 
       if (control.controls) {
@@ -122,7 +121,7 @@ export class UtilsService {
     const { queryParams, url } = next;
     let finalUrl = '';
     if (url.length > 1) {
-      url.forEach(_url => {
+      url.forEach((_url) => {
         finalUrl += '/' + _url.path;
       });
     } else {
@@ -169,7 +168,8 @@ export class UtilsService {
 
   isNumber(val: any) {
     const regPos = /^\d+(\.\d+)?$/; // 非負浮點數
-    const regNeg = /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/; // 負浮點數
+    const regNeg =
+      /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/; // 負浮點數
     if (regPos.test(val) || regNeg.test(val)) {
       return true;
     } else {
@@ -177,7 +177,8 @@ export class UtilsService {
     }
   }
 
-  formatFloat(num: number, pos: number) { // 小數點第N位四捨五入
+  formatFloat(num: number, pos: number) {
+    // 小數點第N位四捨五入
     const size = Math.pow(10, pos);
     return Math.round(num * size) / size;
   }
@@ -269,14 +270,10 @@ export class UtilsService {
         data: {
           title: 'Message',
           body: msg,
-          confirmText: this.translate.instant(
-            'universal_operating_confirm'
-          )
-        }
+          confirmText: this.translate.instant('universal_operating_confirm'),
+        },
       });
-
-    })
-
+    });
   }
 
   /**
@@ -285,7 +282,7 @@ export class UtilsService {
    * @author kidin-1101203
    */
   showSnackBar(msg: string) {
-    this.snackbar.open(msg, 'OK', { duration: 3000 } );
+    this.snackbar.open(msg, 'OK', { duration: 3000 });
   }
 
   /**
@@ -294,7 +291,7 @@ export class UtilsService {
    * @author kidin-1091125
    */
   dataUriToBlob(base64: string) {
-    const byteString = window.atob(base64.split(',')[1]);  // 去除base64前綴
+    const byteString = window.atob(base64.split(',')[1]); // 去除base64前綴
     const arrayBuffer = new ArrayBuffer(byteString.length);
     const int8Array = new Uint8Array(arrayBuffer);
     for (let i = 0; i < byteString.length; i++) {
@@ -315,10 +312,9 @@ export class UtilsService {
     const image = new Image();
     image.src = base64;
     return fromEvent(image, 'load').pipe(
-      map(e => this.checkDimensionalSize(base64, image)),
-      map(checkResult => this.checkImgSize(checkResult as any))
+      map((e) => this.checkDimensionalSize(base64, image)),
+      map((checkResult) => this.checkImgSize(checkResult as any))
     );
-
   }
 
   /**
@@ -336,7 +332,6 @@ export class UtilsService {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
     if (overWidth || overHeight) {
-
       if (imgHeight > imgWidth) {
         canvas.height = limitDimensional;
         canvas.width = imgWidth * (limitDimensional / imgHeight);
@@ -352,7 +347,6 @@ export class UtilsService {
       const { width, height } = img;
       return [base64, width, height, canvas, ctx];
     }
-  
   }
 
   /**
@@ -362,7 +356,7 @@ export class UtilsService {
    */
   checkImgSize([base64, width, height, canvas, ctx]) {
     // 計算base64 size的公式（正確公式要判斷base64的'='數量，這邊直接當作'='數量為1）
-    const imageSize = (base64.length * (3 / 4)) - 1;
+    const imageSize = base64.length * (3 / 4) - 1;
     const limitSize = 500000;
     const overSize = imageSize > limitSize;
     if (overSize) {
@@ -374,7 +368,6 @@ export class UtilsService {
     } else {
       return base64;
     }
-
   }
 
   /********** 以下直接引用源碼 http://mourner.github.io/simplify-js/ ***********/
@@ -386,21 +379,19 @@ export class UtilsService {
    */
   getSqSegDist(p: Point, p1: Point, p2: Point) {
     let x = p1.x,
-        y = p1.y,
-        dx = p2.x - x,
-        dy = p2.y - y;
+      y = p1.y,
+      dx = p2.x - x,
+      dy = p2.y - y;
 
     if (dx !== 0 || dy !== 0) {
       const t = ((p.x - x) * dx + (p.y - y) * dy) / (dx * dx + dy * dy);
       if (t > 1) {
-          x = p2.x;
-          y = p2.y;
-
+        x = p2.x;
+        y = p2.y;
       } else if (t > 0) {
-          x += dx * t;
-          y += dy * t;
+        x += dx * t;
+        y += dy * t;
       }
-
     }
 
     dx = p.x - x;
@@ -417,7 +408,13 @@ export class UtilsService {
    * @param sqTolerance {number}-公差平方
    * @param simplified {Array<Point>}-降噪結果
    */
-  simplifyDPStep(points: Array<Point>, first: number, last: number, sqTolerance: number, simplified: Array<Point>) {
+  simplifyDPStep(
+    points: Array<Point>,
+    first: number,
+    last: number,
+    sqTolerance: number,
+    simplified: Array<Point>
+  ) {
     let maxSqDist = sqTolerance;
     let index = 0;
 
@@ -425,24 +422,22 @@ export class UtilsService {
     for (let i = first + 1; i < last; i++) {
       const sqDist = this.getSqSegDist(points[i], points[first], points[last]);
       if (sqDist > maxSqDist) {
-          index = i;
-          maxSqDist = sqDist;
+        index = i;
+        maxSqDist = sqDist;
       }
     }
 
     // 如果最遠點大於所設定之公差平方才進行降噪
     if (maxSqDist > sqTolerance) {
-
       if (index > first + 1) {
-        simplified = this.simplifyDPStep(points, first, index, sqTolerance, simplified)
-      };
+        simplified = this.simplifyDPStep(points, first, index, sqTolerance, simplified);
+      }
 
       simplified.push(points[index]);
 
       if (last > index + 1) {
-        simplified = this.simplifyDPStep(points, index, last, sqTolerance, simplified)
-      };
-
+        simplified = this.simplifyDPStep(points, index, last, sqTolerance, simplified);
+      }
     }
 
     return simplified;
@@ -470,9 +465,9 @@ export class UtilsService {
    */
   simplify(points: Array<Point>, tolerance: number) {
     if (points.length <= 2) {
-      return points
-    };
-    
+      return points;
+    }
+
     const sqTolerance = tolerance !== undefined ? tolerance * tolerance : 1;
     points = this.simplifyDouglasPeucker(points, sqTolerance);
 
@@ -502,7 +497,7 @@ export class UtilsService {
    */
   base64ToFile(base64: string, fileName: string) {
     const blob = this.dataUriToBlob(base64);
-    return new File([blob], `${fileName}.jpg`, {type: 'image/jpeg'});
+    return new File([blob], `${fileName}.jpg`, { type: 'image/jpeg' });
   }
 
   /**
@@ -513,36 +508,25 @@ export class UtilsService {
    * @author kidin-1100902
    */
   checkRes(res: any, showAlert = true): boolean {
-    const {
-      processResult,
-      resultCode: resCode,
-      apiCode: resApiCode,
-      resultMessage: resMsg
-    } = res;
+    const { processResult, resultCode: resCode, apiCode: resApiCode, resultMessage: resMsg } = res;
     if (!processResult) {
-
       if (resCode !== 200) {
-
         if (showAlert) this.handleError(resCode, resApiCode, resMsg);
 
         return false;
       } else {
         return true;
       }
-      
     } else {
       const { resultCode, apiCode, resultMessage } = processResult;
       if (resultCode !== 200) {
-
         if (showAlert) this.handleError(resultCode, apiCode, resultMessage);
 
         return false;
       } else {
         return true;
       }
-
     }
-
   }
 
   /**
@@ -552,30 +536,22 @@ export class UtilsService {
    * @param forward {boolean}-是否為公制轉英制
    * @author kidin-1100921
    */
-  bodyHeightTransfer(
-    height: number | string,
-    convert: boolean,
-    forward: boolean
-  ): number | string {
-
+  bodyHeightTransfer(height: number | string, convert: boolean, forward: boolean): number | string {
     if (convert) {
-      
       if (forward) {
         // 公分轉吋
         height = height as number;
-        const feet = Math.floor((height / 100) / ft);
-        const mantissa = parseFloat(((height - (feet * 0.3) * 100) / inch).toFixed(0));
+        const feet = Math.floor(height / 100 / ft);
+        const mantissa = parseFloat(((height - feet * 0.3 * 100) / inch).toFixed(0));
         return `${feet}"${mantissa}`;
       } else {
         // 吋轉公分
         const [feet, mantissa] = (height as string).split('"');
-        return parseFloat((((+feet * 0.3) * 100) + +mantissa * inch).toFixed(1));
+        return parseFloat((+feet * 0.3 * 100 + +mantissa * inch).toFixed(1));
       }
-
     } else {
-      return forward ? height: `${height}`;
+      return forward ? height : `${height}`;
     }
-
   }
 
   /**
@@ -585,9 +561,10 @@ export class UtilsService {
    */
   checkWebVersion(): [boolean, string] {
     let isAlphaVersion = true,
-        appVersion = version.develop;
-    if (location.hostname.indexOf('cloud.alatech.com.tw') > -1
-      || location.hostname.indexOf('www.gptfit.com') > -1
+      appVersion = version.develop;
+    if (
+      location.hostname.indexOf('cloud.alatech.com.tw') > -1 ||
+      location.hostname.indexOf('www.gptfit.com') > -1
     ) {
       isAlphaVersion = false;
       appVersion = version.master;
@@ -613,7 +590,6 @@ export class UtilsService {
     } else {
       this.translate.use(browserLang);
     }
-
   }
 
   /**
@@ -635,10 +611,9 @@ export class UtilsService {
    */
   getBase64(file: Blob) {
     const reader = new FileReader();
-    reader.readAsDataURL(file)
+    reader.readAsDataURL(file);
     const base64OnLoad = fromEvent(reader, 'load');
     const base64OnError = fromEvent(reader, 'error');
     return merge(base64OnLoad, base64OnError);
   }
-
 }

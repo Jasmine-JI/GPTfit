@@ -1,7 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-
-@Pipe({name: 'sex'})
+@Pipe({ name: 'sex' })
 export class SexPipe implements PipeTransform {
   /**
    * 根據性別代碼回傳對應的性別
@@ -17,7 +16,5 @@ export class SexPipe implements PipeTransform {
       default:
         return arg === 'en' ? 'private' : 'universal_uiFitpair_private';
     }
-
   }
-
 }

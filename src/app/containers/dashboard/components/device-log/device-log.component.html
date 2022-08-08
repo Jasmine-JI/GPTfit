@@ -1,22 +1,32 @@
-<div class="pageTitle">
-  Device_log Lists
-</div>
+<div class="pageTitle">Device_log Lists</div>
 <mat-form-field>
-  <input matInput placeholder="info搜尋" (keyup)="searchInfo($event)" [matAutocomplete]="auto">
+  <input matInput placeholder="info搜尋" (keyup)="searchInfo($event)" [matAutocomplete]="auto" />
 </mat-form-field>
 <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
   <mat-option *ngFor="let option of infoOptions" [value]="option" (click)="selectTarget(option)">
     {{ option }}
   </mat-option>
 </mat-autocomplete>
-<button mat-raised-button mat-icon-button style="background-color: #26abe3;color: #fff"
+<button
+  mat-raised-button
+  mat-icon-button
+  style="background-color: #26abe3; color: #fff"
   (click)="search($event)"
 >
   <mat-icon>search</mat-icon>
 </button>
-<mat-paginator #paginatorA [length]="totalCount" [pageIndex]="currentPage?.pageIndex" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]"></mat-paginator>
+<mat-paginator
+  #paginatorA
+  [length]="totalCount"
+  [pageIndex]="currentPage?.pageIndex"
+  [pageSize]="10"
+  [pageSizeOptions]="[5, 10, 15]"
+></mat-paginator>
 
-<mat-table [dataSource]="logSource" matSort #sortTable="matSort"
+<mat-table
+  [dataSource]="logSource"
+  matSort
+  #sortTable="matSort"
   (matSortChange)="changeSort($event)"
 >
   <ng-container matColumnDef="info">
@@ -24,10 +34,7 @@
     <mat-cell *matCellDef="let row">{{ row.info }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="time">
-    <mat-header-cell *matHeaderCellDef mat-sort-header
-      disableClear="true"
-      start="asc"
-    >
+    <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" start="asc">
       最終紀錄時間
     </mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.time }}</mat-cell>
@@ -37,7 +44,8 @@
     <mat-cell *matCellDef="let row">{{ row.number }}</mat-cell>
   </ng-container>
   <mat-header-row *matHeaderRowDef="['info', 'time', 'counts']"></mat-header-row>
-  <mat-row *matRowDef="let logRow; columns: ['info', 'time', 'counts']"
+  <mat-row
+    *matRowDef="let logRow; columns: ['info', 'time', 'counts']"
     (click)="goDetail(logRow.user_id)"
   >
   </mat-row>
@@ -45,5 +53,11 @@
 <div class="ala-loading-shade" *ngIf="isLoading">
   <mat-spinner></mat-spinner>
 </div>
-<mat-paginator #paginatorB [length]="totalCount" [pageIndex]="currentPage?.pageIndex" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]">
+<mat-paginator
+  #paginatorB
+  [length]="totalCount"
+  [pageIndex]="currentPage?.pageIndex"
+  [pageSize]="10"
+  [pageSizeOptions]="[5, 10, 15]"
+>
 </mat-paginator>

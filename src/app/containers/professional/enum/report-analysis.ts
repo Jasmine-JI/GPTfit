@@ -25,5 +25,5 @@ export enum AnalysisSportsColumn {
   totalWeight,
   power,
   preferSports,
-  hrChart
+  hrChart,
 }

@@ -10,7 +10,6 @@ import { SharedModule } from '../../shared/shared.module';
 import { SharedPipes } from '../../shared/pipes/shared-pipes';
 import { CustomMaterialModule } from '../../shared/custom-material.module';
 
-
 @NgModule({
   imports: [
     StationMailRoutingModule,
@@ -24,11 +23,9 @@ import { CustomMaterialModule } from '../../shared/custom-material.module';
     CreateMailComponent,
     InboxComponent,
     ReceiverListComponent,
-    MailDetailComponent
+    MailDetailComponent,
   ],
-  exports: [
-    InboxComponent
-  ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  exports: [InboxComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class StationMailModule { }
+export class StationMailModule {}

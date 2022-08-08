@@ -1,9 +1,4 @@
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  ElementRef
-} from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { GroupService } from '../../../../shared/services/group.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
@@ -16,7 +11,7 @@ import { getUrlQueryStrings } from '../../../../shared/utils/index';
 @Component({
   selector: 'app-my-group-list',
   templateUrl: './my-group-list.component.html',
-  styleUrls: ['./my-group-list.component.scss', '../group-style.scss']
+  styleUrls: ['./my-group-list.component.scss', '../group-style.scss'],
 })
 export class MyGroupListComponent implements OnInit {
   logSource = new MatTableDataSource<any>();
@@ -30,17 +25,16 @@ export class MyGroupListComponent implements OnInit {
   isLoading = false;
   brandType = 3;
   currentBrandType = 3;
-  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
-  @ViewChild('sortTable', {static: false}) sortTable: MatSort;
-  @ViewChild('filter', {static: false}) filter: ElementRef;
+  @ViewChild('paginator', { static: true }) paginator: MatPaginator;
+  @ViewChild('sortTable', { static: false }) sortTable: MatSort;
+  @ViewChild('filter', { static: false }) filter: ElementRef;
 
   constructor(
     private groupService: GroupService,
     private router: Router,
     private hashIdService: HashIdService,
     private authService: AuthService
-  ) {
-  }
+  ) {}
 
   ngOnInit() {
     const queryStrings = getUrlQueryStrings(location.search);
@@ -49,12 +43,12 @@ export class MyGroupListComponent implements OnInit {
     this.currentPage = {
       pageIndex: +pageNumber - 1 || 0,
       pageSize: 10,
-      length: null
+      length: null,
     };
 
     this.currentSort = {
       active: '',
-      direction: ''
+      direction: '',
     };
     this.token = this.authService.token;
     this.getLists();
@@ -85,13 +79,12 @@ export class MyGroupListComponent implements OnInit {
       groupLevel: '90', // 撈全部列表，後端不會檢查groupLevel欄位，所以值可以亂帶
       searchWords: '',
       page: (this.currentPage && this.currentPage.pageIndex.toString()) || '0',
-      pageCounts:
-        (this.currentPage && this.currentPage.pageSize.toString()) || '10'
+      pageCounts: (this.currentPage && this.currentPage.pageSize.toString()) || '10',
     };
-    this.groupService.fetchGroupList(body).subscribe(res => {
+    this.groupService.fetchGroupList(body).subscribe((res) => {
       this.isLoading = false;
       this.logSource.data = res.info.groupList.filter(
-        _group => _group.groupStatus !== 4 && _group.joinStatus === 2
+        (_group) => _group.groupStatus !== 4 && _group.joinStatus === 2
       );
       this.totalCount = res.info.totalCounts;
       if (this.logSource.data.length === 0) {
@@ -103,7 +96,9 @@ export class MyGroupListComponent implements OnInit {
   }
 
   goDetail(groupId) {
-    this.router.navigateByUrl(`dashboard/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}`);
+    this.router.navigateByUrl(
+      `dashboard/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}`
+    );
   }
   selectTarget(_value) {
     this.selectedValue = encodeURIComponent(_value).trim();

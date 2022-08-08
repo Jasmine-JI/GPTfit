@@ -15,7 +15,6 @@ $creator-width: 120px;
   width: $width;
 }
 
-
 .push__list__btn {
   position: relative;
   display: inline-block;
@@ -27,11 +26,9 @@ $creator-width: 120px;
   border-radius: 2px;
   box-shadow: 1px 1px 1px $light-gray;
   cursor: pointer;
-  @include multiple-transition((
-    left $move-effect,
-    top $move-effect,
-    background-color $move-effect
-  ));
+  @include multiple-transition(
+    (left $move-effect, top $move-effect, background-color $move-effect)
+  );
 
   &:hover {
     background-color: $lightest-gray;
@@ -44,7 +41,6 @@ $creator-width: 120px;
     left: 1px;
     @include multiple-transition((left $move-effect, top $move-effect));
   }
-
 }
 
 .table__row {
@@ -63,7 +59,6 @@ $creator-width: 120px;
     background-color: $lightest-gray;
     @include transition(background-color);
   }
-
 }
 
 #table__time__title {

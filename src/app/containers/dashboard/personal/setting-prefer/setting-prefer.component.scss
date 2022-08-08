@@ -21,9 +21,7 @@ $dot-diameter: 8px;
       margin-right: 5px;
       background-color: $bg-color;
     }
-
   }
-
 }
 
 .num__input {
@@ -37,9 +35,7 @@ $dot-diameter: 8px;
 #hr__zone__info {
   list-style: none;
   @for $i from 1 through 6 {
-
-    >:nth-last-child(#{$i}) {
-
+    > :nth-last-child(#{$i}) {
       div {
         align-items: center;
         width: fit-content;
@@ -53,23 +49,17 @@ $dot-diameter: 8px;
           margin-right: 5px;
           background-color: nth($zone-color, $i);
         }
-
       }
-
     }
-
   }
-
 }
 
 #ftp__zone__info {
   list-style: none;
   @for $i from 1 through 7 {
-
-    >:nth-last-child(#{$i}) {
+    > :nth-last-child(#{$i}) {
       @include list-content(nth($zone-color, $i));
     }
-
   }
 }
 
@@ -94,7 +84,8 @@ $dot-diameter: 8px;
   overflow: hidden;
 }
 
-#hour__selector, #min__selector {
+#hour__selector,
+#min__selector {
   position: absolute;
   width: 50%;
   align-items: center;
@@ -110,16 +101,16 @@ $dot-diameter: 8px;
       background-color: rgb(185, 236, 255, 0.5);
       @include transition(background-color);
     }
-
   }
-
 }
 
-#hour__selector, #hour__selector__temp {
+#hour__selector,
+#hour__selector__temp {
   left: $turn-gap;
 }
 
-#min__selector, #min__selector__temp {
+#min__selector,
+#min__selector__temp {
   right: $turn-gap;
 }
 
@@ -144,12 +135,14 @@ $dot-diameter: 8px;
   margin-bottom: 5px;
 }
 
-.date__cycle, .filed__name {
+.date__cycle,
+.filed__name {
   position: relative;
   margin: 5px 0;
 }
 
-.date__cycle__list, .filed__name__list {
+.date__cycle__list,
+.filed__name__list {
   $shadow: 4px rgba(0, 0, 0, 0.3);
   position: fixed;
   z-index: 2;
@@ -196,7 +189,6 @@ $dot-diameter: 8px;
     color: white;
     background-color: $primary-blue;
   }
-
 }
 
 .condition__symbol {

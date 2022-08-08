@@ -1,59 +1,62 @@
 <app-loading-bar [progress]="progress"></app-loading-bar>
 <div class="flexCol">
-  <h4 style="margin-bottom: 20px;">系統日誌</h4>
-  <header class="flexCol" style="position: relative;">
+  <h4 style="margin-bottom: 20px">系統日誌</h4>
+  <header class="flexCol" style="position: relative">
     <h5>篩選條件</h5>
-    <div class="flexRow" style="flex-wrap: wrap; min-height: 140px;">
+    <div class="flexRow" style="flex-wrap: wrap; min-height: 140px">
       <section
         class="flexCol"
         [class.alert__empty]="uiFlag.notChoiceTarget"
-        style="min-width: 230px;"
+        style="min-width: 230px"
       >
-        <h6 style="cursor: pointer; align-items: center;" (click)="changeTargetType()">
-          <i class="icon-svg_web-icon_p1_031-sync" style="font-size: 20px; color: rgba(38, 171, 227, 1)"></i>
+        <h6 style="cursor: pointer; align-items: center" (click)="changeTargetType()">
+          <i
+            class="icon-svg_web-icon_p1_031-sync"
+            style="font-size: 20px; color: rgba(38, 171, 227, 1)"
+          ></i>
           <ng-container *ngIf="uiFlag.targetType === 'user'">選擇使用者</ng-container>
-          <ng-container *ngIf="uiFlag.targetType === 'equipment'">裝置序號</ng-container> 
-          <span style="color: red;">*</span>
+          <ng-container *ngIf="uiFlag.targetType === 'equipment'">裝置序號</ng-container>
+          <span style="color: red">*</span>
         </h6>
-        <div class="flexCol" style="margin-left: 10px;">
+        <div class="flexCol" style="margin-left: 10px">
           <ng-container *ngIf="uiFlag.targetType === 'user'">
-            <div class="flexRow" style="align-items: center;">
-              <button class="user__selector__btn" (click)="openSelectorWin(1, $event)">
-                暱稱
-              </button>
+            <div class="flexRow" style="align-items: center">
+              <button class="user__selector__btn" (click)="openSelectorWin(1, $event)">暱稱</button>
               <span class="user__info">：{{ targetUser.name || '---' }}</span>
             </div>
-            <div class="flexRow" style="align-items: center;">
-              <button class="user__selector__btn" (click)="openSelectorWin(2, $event)">
-                帳號
-              </button>
+            <div class="flexRow" style="align-items: center">
+              <button class="user__selector__btn" (click)="openSelectorWin(2, $event)">帳號</button>
               <span class="user__info">：{{ targetUser.account || '---' }}</span>
             </div>
-            <div class="flexRow" style="align-items: center;">
+            <div class="flexRow" style="align-items: center">
               <span>User id：</span>
               <input
                 type="text"
                 placeholder="User id"
-                style="width: 70px; border: none; border-bottom: 1px solid gray; outline: none;"
+                style="width: 70px; border: none; border-bottom: 1px solid gray; outline: none"
                 [value]="targetUser.id"
                 (change)="changeUserId($event)"
-              >
+              />
             </div>
           </ng-container>
           <ng-container *ngIf="uiFlag.targetType === 'equipment'">
             <input
               type="text"
-              style="width: 160px; margin-left: 10px;"
+              style="width: 160px; margin-left: 10px"
               [(ngModel)]="searchCondition.targetEquipmentSN"
               placeholder="請輸入序號"
-            >
+            />
           </ng-container>
         </div>
       </section>
       <section class="flexCol">
         <h6>日誌類別</h6>
         <div class="flexRow">
-          <span class="drop__menu" [class.drop__menu--active]="uiFlag.showServeritySelector" (click)="showServeritySelector($event)">
+          <span
+            class="drop__menu"
+            [class.drop__menu--active]="uiFlag.showServeritySelector"
+            (click)="showServeritySelector($event)"
+          >
             <span
               [class.info__color]="searchCondition.serverity === 'INFO'"
               [class.warn__color]="searchCondition.serverity === 'WARN'"
@@ -75,7 +78,11 @@
       <section class="flexCol">
         <h6>應用類別</h6>
         <div class="flexRow">
-          <span class="drop__menu" [class.drop__menu--active]="uiFlag.showAppSelector" (click)="showAppSelector($event)">
+          <span
+            class="drop__menu"
+            [class.drop__menu--active]="uiFlag.showAppSelector"
+            (click)="showAppSelector($event)"
+          >
             {{ (searchCondition.appId | appId) || '全部' }}
             <div class="flexCol" *ngIf="uiFlag.showAppSelector">
               <span (click)="saveAppId($event, null)">全部</span>
@@ -95,15 +102,15 @@
           <input
             type="text"
             placeholder="Ex. 1010"
-            style="width: 100px;"
+            style="width: 100px"
             [(ngModel)]="searchCondition.apiCode"
-          >
+          />
         </div>
       </section>
       <section class="flexCol">
         <h6>日期範圍</h6>
         <app-date-range-picker
-          style="margin: 5px 0 5px 10px;"
+          style="margin: 5px 0 5px 10px"
           [pickerType]="'rangePick'"
           [startTimeStamp]="selectedDate.startTimeStamp"
           [endTimeStamp]="selectedDate.endTimeStamp"
@@ -113,14 +120,10 @@
     </div>
     <div
       class="flexRow"
-      style="position: relative; bottom: 0; right: 0; justify-content: flex-end; width: 100%;"
+      style="position: relative; bottom: 0; right: 0; justify-content: flex-end; width: 100%"
     >
-      <button id="clear__btn" (click)="initCondition()">
-        重置
-      </button>
-      <button id="submit__btn" (click)="submit()">
-        送出
-      </button>
+      <button id="clear__btn" (click)="initCondition()">重置</button>
+      <button id="submit__btn" (click)="submit()">送出</button>
     </div>
   </header>
   <main class="flexCol">
@@ -136,7 +139,7 @@
       <div class="flexCol">
         <table>
           <thead>
-            <tr style="border-bottom: 2px solid rgba(175, 175, 175, 1);">
+            <tr style="border-bottom: 2px solid rgba(175, 175, 175, 1)">
               <th class="date__column">Date Time</th>
               <th class="serverity__column">Serverity</th>
               <th class="app__column">App</th>
@@ -147,8 +150,11 @@
             </tr>
           </thead>
           <tbody>
-            <tr style="border-bottom: 1px solid rgba(200, 200, 200, 1);" *ngFor="let _content of sysLog;">
-              <td class="date__column" style="font-size: 15px;">{{ _content.dateTime }}</td>
+            <tr
+              style="border-bottom: 1px solid rgba(200, 200, 200, 1)"
+              *ngFor="let _content of sysLog"
+            >
+              <td class="date__column" style="font-size: 15px">{{ _content.dateTime }}</td>
               <td
                 class="serverity__column"
                 [class.info__color]="_content.serverity === 'INFO'"
@@ -160,16 +166,18 @@
               </td>
               <td class="app__column">{{ _content.appId | appId }}</td>
               <td class="code__column">{{ _content.apiCode }}</td>
-              <td class="name__column" style="font-size: 14px;">{{ _content.apiName }}</td>
-              <td class="id__column" *ngIf="uiFlag.currentTargetType === 'equipment'">{{ _content?.userId }}</td>
-              <td class="message__column" style="font-size: 14px;">{{ _content.message }}</td>
+              <td class="name__column" style="font-size: 14px">{{ _content.apiName }}</td>
+              <td class="id__column" *ngIf="uiFlag.currentTargetType === 'equipment'">
+                {{ _content?.userId }}
+              </td>
+              <td class="message__column" style="font-size: 14px">{{ _content.message }}</td>
             </tr>
           </tbody>
         </table>
       </div>
       <mat-paginator
         #paginatorB
-        style="margin-top: 10px;"
+        style="margin-top: 10px"
         [length]="totalCounts"
         [pageIndex]="currentPage?.pageIndex"
         [pageSize]="currentPage?.pageSize || 30"

@@ -5,14 +5,13 @@ import { DateRangeType } from '../models/report-condition';
  * 提供特定時間範圍之值(timestamp)
  */
 export class DefaultDateRange {
-
   /**
    * 取得今日時間範圍
    */
   static getToday() {
     const dateRange = {
       startTime: dayjs().startOf('day').valueOf(),
-      endTime: dayjs().endOf('day').valueOf()
+      endTime: dayjs().endOf('day').valueOf(),
     };
 
     return dateRange;
@@ -24,7 +23,7 @@ export class DefaultDateRange {
   static getSevenDay() {
     const dateRange = {
       startTime: dayjs().subtract(7, 'day').startOf('day').valueOf(),
-      endTime: dayjs().subtract(1, 'day').endOf('day').valueOf()
+      endTime: dayjs().subtract(1, 'day').endOf('day').valueOf(),
     };
 
     return dateRange;
@@ -36,7 +35,7 @@ export class DefaultDateRange {
   static getThirtyDay() {
     const dateRange = {
       startTime: dayjs().subtract(30, 'day').startOf('day').valueOf(),
-      endTime: dayjs().subtract(1, 'day').endOf('day').valueOf()
+      endTime: dayjs().subtract(1, 'day').endOf('day').valueOf(),
     };
 
     return dateRange;
@@ -48,7 +47,7 @@ export class DefaultDateRange {
   static getSixMonth() {
     const dateRange = {
       startTime: dayjs().subtract(6, 'month').startOf('month').valueOf(),
-      endTime: dayjs().subtract(1, 'month').endOf('month').valueOf()
+      endTime: dayjs().subtract(1, 'month').endOf('month').valueOf(),
     };
 
     return dateRange;
@@ -60,7 +59,7 @@ export class DefaultDateRange {
   static getThisWeek() {
     const dateRange = {
       startTime: dayjs().startOf('week').valueOf(),
-      endTime: dayjs().endOf('week').valueOf()
+      endTime: dayjs().endOf('week').valueOf(),
     };
 
     return dateRange;
@@ -72,7 +71,7 @@ export class DefaultDateRange {
   static getThisMonth() {
     const dateRange = {
       startTime: dayjs().startOf('month').valueOf(),
-      endTime: dayjs().endOf('month').valueOf()
+      endTime: dayjs().endOf('month').valueOf(),
     };
 
     return dateRange;
@@ -84,7 +83,7 @@ export class DefaultDateRange {
   static getThisYear() {
     const dateRange = {
       startTime: dayjs().startOf('year').valueOf(),
-      endTime: dayjs().endOf('year').valueOf()
+      endTime: dayjs().endOf('year').valueOf(),
     };
 
     return dateRange;
@@ -97,7 +96,7 @@ export class DefaultDateRange {
     const lastSevenDay = dayjs().subtract(7, 'day');
     const dateRange = {
       startTime: lastSevenDay.startOf('week').valueOf(),
-      endTime: lastSevenDay.endOf('week').valueOf()
+      endTime: lastSevenDay.endOf('week').valueOf(),
     };
 
     return dateRange;
@@ -110,7 +109,7 @@ export class DefaultDateRange {
     const lastMonth = dayjs().subtract(1, 'month');
     const dateRange = {
       startTime: lastMonth.startOf('month').valueOf(),
-      endTime: lastMonth.endOf('month').valueOf()
+      endTime: lastMonth.endOf('month').valueOf(),
     };
 
     return dateRange;
@@ -122,7 +121,7 @@ export class DefaultDateRange {
   static getSameRangeLastYear(startTime: number, endTime: number) {
     const dateRange = {
       startTime: dayjs(startTime).subtract(1, 'year').startOf('day').valueOf(),
-      endTime: dayjs(endTime).subtract(1, 'year').endOf('day').valueOf()
+      endTime: dayjs(endTime).subtract(1, 'year').endOf('day').valueOf(),
     };
 
     return dateRange;
@@ -155,7 +154,5 @@ export class DefaultDateRange {
       case 'none':
         return null;
     }
-
   }
-
 }

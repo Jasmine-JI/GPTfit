@@ -99,7 +99,7 @@ export enum KeyCode {
   open_bracket = 219,
   back_slash = 220,
   close_braket = 221,
-  single_quote = 222
+  single_quote = 222,
 }
 
 /**
@@ -115,5 +115,5 @@ export const editPassKeyCode = [
   KeyCode.home,
   KeyCode.page_down,
   KeyCode.page_up,
-  KeyCode.end
-]
+  KeyCode.end,
+];

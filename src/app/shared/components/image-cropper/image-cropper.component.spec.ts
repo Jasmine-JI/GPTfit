@@ -8,9 +8,8 @@ describe('ImageCropperComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ImageCropperComponent ]
-    })
-    .compileComponents();
+      declarations: [ImageCropperComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

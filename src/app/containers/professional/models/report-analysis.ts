@@ -39,9 +39,9 @@ export type ReportType = 'sports' | 'lifeTracking' | 'cloudrun';
 export type AnalysisObject = 'group' | 'person';
 
 /**
- * 
+ *
  */
 export interface ColumnInfo {
-  columnType: AnalysisSportsColumn;  // 欄位類別
+  columnType: AnalysisSportsColumn; // 欄位類別
   selected: boolean;
 }

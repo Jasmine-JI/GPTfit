@@ -6,7 +6,6 @@ import { DateUnit } from '../enum/report';
 import { deepCopy } from '../utils/index';
 
 export class GroupInfo {
-
   /**
    * api 1102 回傳之info內的資訊
    */
@@ -36,7 +35,6 @@ export class GroupInfo {
    * api 1103 所有成員清單（infoType: 5）
    */
   private _allMemberList;
-
 
   constructor() {}
 
@@ -105,44 +103,58 @@ export class GroupInfo {
    */
   get immediateGroupObj(): any {
     let result = {};
-    const { groupLevel, immediateGroupList: { brands, branches, coaches } } = this;
+    const {
+      groupLevel,
+      immediateGroupList: { brands, branches, coaches },
+    } = this;
 
     // 用來紀錄其他所需資訊
     const otherTemplate = { base: {}, compare: {}, member: [] };
 
-    coaches.forEach(_coach => {
+    coaches.forEach((_coach) => {
       const { groupId: _groupId } = _coach;
       const _groupLevel = GroupInfo.getGroupLevel(_groupId);
       result = {
         ...result,
-        [_groupId]: { groupId: _groupId, ..._coach, ...deepCopy(otherTemplate), groupLevel: _groupLevel }
+        [_groupId]: {
+          groupId: _groupId,
+          ..._coach,
+          ...deepCopy(otherTemplate),
+          groupLevel: _groupLevel,
+        },
       };
-
     });
 
     if (groupLevel <= GroupLevel.branch) {
-      branches.forEach(_branch => {
+      branches.forEach((_branch) => {
         const { groupId: _groupId } = _branch;
         const _groupLevel = GroupInfo.getGroupLevel(_groupId);
         result = {
-          ...result, [_groupId]: { groupId: _groupId, ..._branch, ...deepCopy(otherTemplate), groupLevel: _groupLevel }
+          ...result,
+          [_groupId]: {
+            groupId: _groupId,
+            ..._branch,
+            ...deepCopy(otherTemplate),
+            groupLevel: _groupLevel,
+          },
         };
-
       });
-
     }
 
     if (groupLevel <= GroupLevel.brand) {
-      brands.forEach(_brand => {
+      brands.forEach((_brand) => {
         const { groupId: _groupId } = _brand;
         const _groupLevel = GroupInfo.getGroupLevel(_groupId);
         result = {
           ...result,
-          [_groupId]: { groupId: _groupId, ..._brand, ...deepCopy(otherTemplate), groupLevel: _groupLevel }
+          [_groupId]: {
+            groupId: _groupId,
+            ..._brand,
+            ...deepCopy(otherTemplate),
+            groupLevel: _groupLevel,
+          },
         };
-        
       });
-
     }
 
     return result;
@@ -195,7 +207,9 @@ export class GroupInfo {
    * @param groupId {string}-群組id
    */
   static getGroupLevel(groupId: string): GroupLevel {
-    const { groups: { branchId, classId } } = REGEX_GROUP_ID.exec(groupId);
+    const {
+      groups: { branchId, classId },
+    } = REGEX_GROUP_ID.exec(groupId);
     if (classId !== '0') return GroupLevel.class;
     if (branchId !== '0') return GroupLevel.branch;
     return GroupLevel.brand;
@@ -208,7 +222,9 @@ export class GroupInfo {
   static getBelongGroup(groupIdList: Array<string>): Array<string> {
     const belongGroupList = new Set();
     groupIdList.forEach((_id: string) => {
-      const { groups: { brandId, branchId, classId } } = REGEX_GROUP_ID.exec(_id);
+      const {
+        groups: { brandId, branchId, classId },
+      } = REGEX_GROUP_ID.exec(_id);
       const brandGroupId = `0-0-${brandId}-0-0-0`;
       const branchGroupId = `0-0-${brandId}-${branchId}-0-0`;
       const classGroupId = `0-0-${brandId}-${branchId}-${classId}-0`;
@@ -224,7 +240,10 @@ export class GroupInfo {
    * 取得群組目標
    */
   get sportTarget() {
-    const { groupDetail: { target, groupRootInfo }, groupLevel } = this;
+    const {
+      groupDetail: { target, groupRootInfo },
+      groupLevel,
+    } = this;
     const referenceLevel = target.name;
     if (referenceLevel) {
       const targetReference = +referenceLevel as GroupLevel;
@@ -250,9 +269,7 @@ export class GroupInfo {
     return {
       name: referenceLevel ?? groupLevel,
       cycle: DateUnit.week,
-      condition: []
+      condition: [],
     };
-
   }
-
 }

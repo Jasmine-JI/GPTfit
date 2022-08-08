@@ -1,13 +1,12 @@
 import { Lang } from '../../models/i18n';
 import { ReportDateType } from '../../models/report-condition';
 import { getCorrespondingMuscleGroup } from '../../utils/sports';
-import { MuscleCode } from '../../enum/weight-train'
+import { MuscleCode } from '../../enum/weight-train';
 
 /**
  * 處理重訓運動檔案訓練菜單分析
  */
 export class WeightTrainingAnalysis {
-
   /**
    * 個別重訓動作名稱
    */
@@ -40,20 +39,18 @@ export class WeightTrainingAnalysis {
    * @param menuConfig {Array<any>}-重訓安裝檔動作菜單資訊
    */
   handleMenuDispName(menuConfig: Array<any>) {
-    menuConfig.forEach(_menu => {
+    menuConfig.forEach((_menu) => {
       const { dispName, sortIndex, setWorkOutMuscleMain } = _menu;
       this._menuDispName[sortIndex] = {
         dispName,
-        belongMuscleGroup: this.getBelongMuscleGroupList(setWorkOutMuscleMain)
+        belongMuscleGroup: this.getBelongMuscleGroupList(setWorkOutMuscleMain),
       };
 
-      dispName.forEach(_dispName => {
+      dispName.forEach((_dispName) => {
         const { disp } = _dispName;
         this._dispNameComparison.set(disp, sortIndex);
       });
-
     });
-
   }
 
   /**
@@ -62,7 +59,7 @@ export class WeightTrainingAnalysis {
    */
   getBelongMuscleGroupList(partList: Array<string>) {
     const groupSet = new Set();
-    partList.forEach(_part => {
+    partList.forEach((_part) => {
       groupSet.add(getCorrespondingMuscleGroup(+_part as MuscleCode));
     });
 
@@ -87,7 +84,7 @@ export class WeightTrainingAnalysis {
           totalReps: 0,
           totalWeightKg: 0,
           oneRepMax: 0,
-          totalOneRepMax: 0
+          totalOneRepMax: 0,
         };
 
         Object.assign(this._menuObj, { [menuIndex]: { base: countModel, compare: countModel } });
@@ -100,11 +97,9 @@ export class WeightTrainingAnalysis {
         totalReps: totalReps + setTotalReps,
         totalWeightKg: totalWeightKg + setTotalWeightKg,
         oneRepMax: oneRepMax < setOneRepMax ? setOneRepMax : oneRepMax,
-        totalOneRepMax: totalOneRepMax + setOneRepMax
-      }
-
+        totalOneRepMax: totalOneRepMax + setOneRepMax,
+      };
     }
-
   }
 
   /**
@@ -113,20 +108,27 @@ export class WeightTrainingAnalysis {
   combineList() {
     const getTrainingLevel = (totalSets, totalOneRepMax) => {
       if (!totalSets) return 0;
-      return Math.round(((totalOneRepMax / totalSets) / this._bodyWeight) * 100);
+      return Math.round((totalOneRepMax / totalSets / this._bodyWeight) * 100);
     };
 
-    this._menuList = Object.keys(this._menuObj).map(_key => {
+    this._menuList = Object.keys(this._menuObj).map((_key) => {
       const { base, compare } = this._menuObj[_key];
-      const { totalSets: baseTotalSets, totalOneRepMax: baseTotalOneRepMax, totalWeightKg: baseTotalWeightKg } = base;
-      const { totalSets: compareTotalSets, totalOneRepMax: compareTotalOneRepMax, totalWeightKg: compareTotalWeightKg } = compare;
+      const {
+        totalSets: baseTotalSets,
+        totalOneRepMax: baseTotalOneRepMax,
+        totalWeightKg: baseTotalWeightKg,
+      } = base;
+      const {
+        totalSets: compareTotalSets,
+        totalOneRepMax: compareTotalOneRepMax,
+        totalWeightKg: compareTotalWeightKg,
+      } = compare;
       base.avgWeightKg = Math.round(baseTotalWeightKg / (baseTotalSets ?? Infinity));
       base.trainingLevel = getTrainingLevel(baseTotalSets, baseTotalOneRepMax);
       compare.avgWeightKg = Math.round(compareTotalWeightKg / (compareTotalSets ?? Infinity));
       compare.trainingLevel = getTrainingLevel(compareTotalSets, compareTotalOneRepMax);
       return [_key, { base, compare }];
     });
-
   }
 
   /**
@@ -146,7 +148,7 @@ export class WeightTrainingAnalysis {
       default:
         i18nIndex = 2;
         break;
-    };
+    }
 
     return this._menuDispName[sortIndex].dispName[i18nIndex].disp;
   }
@@ -165,5 +167,4 @@ export class WeightTrainingAnalysis {
   get menuList() {
     return this._menuList;
   }
-
 }

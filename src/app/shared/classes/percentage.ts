@@ -4,7 +4,6 @@ import { countPercentage } from '../utils/index';
  * 用來計算百分比
  */
 export class Percentage {
-
   /**
    * 記數陣列
    */
@@ -43,7 +42,6 @@ export class Percentage {
    */
   getAllPercentage() {
     const totalValue = this._stroke.reduce((prev, current) => prev + current);
-    return this._stroke.map(_value => countPercentage(_value, totalValue))
+    return this._stroke.map((_value) => countPercentage(_value, totalValue));
   }
-
 }

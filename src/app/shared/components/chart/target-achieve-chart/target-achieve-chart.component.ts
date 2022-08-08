@@ -1,4 +1,12 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, OnDestroy, OnChanges } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnChanges,
+} from '@angular/core';
 import { of, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import dayjs from 'dayjs';
@@ -11,17 +19,15 @@ import { compareChartDefault } from '../../../models/chart-data';
 import { deepCopy } from '../../../utils/index';
 import { GlobalEventsService } from '../../../../core/services/global-events.service';
 
-
 // highchart 引入 heatmap
 heatmap(Highcharts);
 
 @Component({
   selector: 'app-target-achieve-chart',
   templateUrl: './target-achieve-chart.component.html',
-  styleUrls: ['./target-achieve-chart.component.scss', '../chart-share-style.scss']
+  styleUrls: ['./target-achieve-chart.component.scss', '../chart-share-style.scss'],
 })
 export class TargetAchieveChartComponent implements OnInit, OnChanges, OnDestroy {
-
   @Input() data: Array<any>;
 
   @Input() isCompareMode = false;
@@ -30,10 +36,9 @@ export class TargetAchieveChartComponent implements OnInit, OnChanges, OnDestroy
 
   @Input() xAxisTitle: string;
 
-
   private ngUnsubscribe = new Subject();
-  
-  @ViewChild('container', {static: false})
+
+  @ViewChild('container', { static: false })
   container: ElementRef;
 
   /**
@@ -41,9 +46,7 @@ export class TargetAchieveChartComponent implements OnInit, OnChanges, OnDestroy
    */
   noData = true;
 
-  constructor(
-    private globalEventsService: GlobalEventsService
-  ) { }
+  constructor(private globalEventsService: GlobalEventsService) {}
 
   ngOnInit(): void {
     this.subscribeGlobalEvents();
@@ -57,11 +60,12 @@ export class TargetAchieveChartComponent implements OnInit, OnChanges, OnDestroy
    * 訂閱全域自定義事件
    */
   subscribeGlobalEvents() {
-    this.globalEventsService.getRxSideBarMode().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.handleChart();
-    });
+    this.globalEventsService
+      .getRxSideBarMode()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.handleChart();
+      });
   }
 
   /**
@@ -71,14 +75,15 @@ export class TargetAchieveChartComponent implements OnInit, OnChanges, OnDestroy
     if (!this.data) {
       this.noData = true;
     } else {
-      of(this.data).pipe(
-        map(data => this.initChart(data)),
-        map(final => this.createChart(final))
-      ).subscribe();
+      of(this.data)
+        .pipe(
+          map((data) => this.initChart(data)),
+          map((final) => this.createChart(final))
+        )
+        .subscribe();
 
       this.noData = false;
     }
-
   }
 
   /**
@@ -96,7 +101,7 @@ export class TargetAchieveChartComponent implements OnInit, OnChanges, OnDestroy
    * @author kidin-1110517
    */
   createChart(option: any) {
-    setTimeout (() => {
+    setTimeout(() => {
       if (!this.container) {
         this.createChart(option);
       } else {
@@ -106,19 +111,14 @@ export class TargetAchieveChartComponent implements OnInit, OnChanges, OnDestroy
     }, 200);
   }
 
-
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }
 
-
 class ChartOption {
-
   private _option = deepCopy(compareChartDefault);
-
 
   constructor(
     isCompareMode: boolean,
@@ -136,12 +136,7 @@ class ChartOption {
    * @param condition {ReportCondition}-報告篩選條件
    * @param xAxisTitle {Array<any>}-x軸標題
    */
-  init(
-    isCompareMode: boolean,
-    data: Array<any>,
-    condition: ReportCondition,
-    xAxisTitle: string
-  ) {
+  init(isCompareMode: boolean, data: Array<any>, condition: ReportCondition, xAxisTitle: string) {
     this.setOtherOption();
     const { baseTime, compareTime } = condition;
     const dateFormat = 'YYYY-MM-DD';
@@ -149,7 +144,7 @@ class ChartOption {
     const baseEndDate = baseTime.getEndTimeFormat(dateFormat);
     if (!isCompareMode) {
       this._option.yAxis.categories = [`${baseStartDate}-${baseEndDate}`];
-      this.handleNormalOption(data)
+      this.handleNormalOption(data);
     } else {
       const compareStartDate = compareTime.getStartTimeFormat(dateFormat);
       const compareEndDate = compareTime.getEndTimeFormat(dateFormat);
@@ -158,9 +153,8 @@ class ChartOption {
         `${compareStartDate}-${compareEndDate}`,
       ];
 
-      this.handleCompareOption(data, xAxisTitle)
+      this.handleCompareOption(data, xAxisTitle);
     }
-
   }
 
   /**
@@ -172,8 +166,8 @@ class ChartOption {
     this._option.yAxis.reversed = true;
     this._option.yAxis.labels = {
       style: {
-        fontSize: '9px'
-      }
+        fontSize: '9px',
+      },
     };
 
     this._option.tooltip.formatter = targetAchieveTooltip;
@@ -193,15 +187,14 @@ class ChartOption {
         type: 'datetime',
         labels: {
           ...labels,
-          formatter: function() {
+          formatter: function () {
             const { baseDateRange } = this.chart.series[0].options.custom;
             return dayjs(baseDateRange[this.value][0]).format('MM/DD');
-          }
-        }
+          },
+        },
       },
-      series: data
+      series: data,
     };
-
   }
 
   /**
@@ -219,13 +212,12 @@ class ChartOption {
         ...xAxis,
         title: {
           ...xAxis.title,
-          text: `( ${xAxisTitle} )`
+          text: `( ${xAxisTitle} )`,
         },
-        categories
+        categories,
       },
-      series: chartData
+      series: chartData,
     };
-
   }
 
   /**
@@ -234,5 +226,4 @@ class ChartOption {
   get option() {
     return this._option;
   }
-
 }

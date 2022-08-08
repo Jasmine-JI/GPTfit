@@ -14,7 +14,7 @@
               maxlength="24"
               (change)="handleNameInput($event)"
               (focusout)="handleNameInput($event)"
-            >
+            />
           </div>
           <p class="hint__text" [class.form__alert]="formAlert.name">
             <ng-container *ngIf="formAlert.name === 'empty'">
@@ -32,7 +32,7 @@
               maxlength="50"
               (change)="handleEmailInput($event)"
               (focusout)="handleEmailInput($event)"
-            >
+            />
           </div>
           <p class="hint__text" [class.form__alert]="formAlert.email">
             <ng-container *ngIf="formAlert.email === 'empty'">
@@ -53,7 +53,7 @@
               maxlength="20"
               (change)="handlePhoneInput($event)"
               (focusout)="handlePhoneInput($event)"
-            >
+            />
           </div>
           <p class="hint__text" [class.form__alert]="formAlert.phone">
             <ng-container *ngIf="formAlert.phone === 'empty'">
@@ -66,7 +66,7 @@
         </div>
       </div>
       <div>
-        <textarea 
+        <textarea
           id="contact__content__input"
           [class.form__alert]="formAlert.content === 'empty'"
           [placeholder]="('universal_vocabulary_contents' | translate) + '*'"
@@ -117,16 +117,10 @@
       </div>
     </div>
     <div class="flexRow form__operate__button">
-      <button
-        class="official-subButton"
-        (click)="back()"
-      >
+      <button class="official-subButton" (click)="back()">
         {{ 'universal_operating_back' | translate }}
       </button>
-      <button
-        class="official-submitButton"
-        (click)="sendContent()"
-      >
+      <button class="official-submitButton" (click)="sendContent()">
         {{ 'universal_operating_send' | translate }}
       </button>
     </div>

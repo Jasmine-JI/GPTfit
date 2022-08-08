@@ -1,4 +1,4 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA  } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './navbar/navbar.component';
 import { Page404Component } from './page404/page404.component';
@@ -88,7 +88,7 @@ import { AnalysisOptionComponent } from './analysis-option/analysis-option.compo
     CustomMaterialModule,
     SharedPipes,
     NgProgressModule,
-    QRCodeModule
+    QRCodeModule,
   ],
   declarations: [
     NavbarComponent,
@@ -157,7 +157,7 @@ import { AnalysisOptionComponent } from './analysis-option/analysis-option.compo
     ComparePaceChartComponent,
     CompareExtremeGforceChartComponent,
     WeightTrainLevelSelectorComponent,
-    AnalysisOptionComponent
+    AnalysisOptionComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -221,7 +221,7 @@ import { AnalysisOptionComponent } from './analysis-option/analysis-option.compo
     ComparePaceChartComponent,
     CompareExtremeGforceChartComponent,
     WeightTrainLevelSelectorComponent,
-    AnalysisOptionComponent
-  ]
+    AnalysisOptionComponent,
+  ],
 })
 export class SharedComponentsModule {}

@@ -8,32 +8,27 @@ import { GlobalEventsService } from '../../../../core/services/global-events.ser
 import { deepCopy } from '../../../utils/index';
 import { compareChartDefault } from '../../../models/chart-data';
 
-
 @Component({
   selector: 'app-compare-hrzone-trend',
   templateUrl: './compare-hrzone-trend.component.html',
-  styleUrls: ['./compare-hrzone-trend.component.scss', '../chart-share-style.scss']
+  styleUrls: ['./compare-hrzone-trend.component.scss', '../chart-share-style.scss'],
 })
 export class CompareHrzoneTrendComponent implements OnInit {
-
   private ngUnsubscribe = new Subject();
 
   @Input() data: Array<any>;
 
   @Input() xAxisTitle: string;
 
-  @ViewChild('container', {static: false})
+  @ViewChild('container', { static: false })
   container: ElementRef;
-
 
   /**
    * 是否沒有心率區間數據
    */
   noData = true;
 
-  constructor(
-    private globalEventsService: GlobalEventsService
-  ) { }
+  constructor(private globalEventsService: GlobalEventsService) {}
 
   ngOnInit(): void {
     this.subscribeGlobalEvents();
@@ -50,10 +45,12 @@ export class CompareHrzoneTrendComponent implements OnInit {
     if (!this.data) {
       this.noData = true;
     } else {
-      of(this.data).pipe(
-        map((data) => this.initChart(data)),
-        map(chartData => this.createChart(chartData))
-      ).subscribe();
+      of(this.data)
+        .pipe(
+          map((data) => this.initChart(data)),
+          map((chartData) => this.createChart(chartData))
+        )
+        .subscribe();
 
       this.noData = false;
     }
@@ -63,11 +60,12 @@ export class CompareHrzoneTrendComponent implements OnInit {
    * 訂閱全域自定義事件
    */
   subscribeGlobalEvents() {
-    this.globalEventsService.getRxSideBarMode().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.handleChart();
-    });
+    this.globalEventsService
+      .getRxSideBarMode()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.handleChart();
+      });
   }
 
   /**
@@ -86,7 +84,7 @@ export class CompareHrzoneTrendComponent implements OnInit {
    * @author kidin-1110413
    */
   createChart(option: any) {
-    setTimeout (() => {
+    setTimeout(() => {
       if (!this.container) {
         this.createChart(option);
       } else {
@@ -96,7 +94,6 @@ export class CompareHrzoneTrendComponent implements OnInit {
     }, 200);
   }
 
-
   ngOnDestroy(): void {}
 }
 
@@ -104,7 +101,6 @@ export class CompareHrzoneTrendComponent implements OnInit {
  * 無比較時使用的圖表設定
  */
 class ChartOption {
-
   private _option = deepCopy(compareChartDefault);
 
   constructor(data: Array<any>, xAxisTitle: string) {
@@ -118,13 +114,12 @@ class ChartOption {
    */
   initChart(data: Array<any>, xAxisTitle: string) {
     this.setOtherOption();
-    const isCompareMode = (data.length / 2) >= 5;
+    const isCompareMode = data.length / 2 >= 5;
     if (isCompareMode) {
       this.handleCompareOption(data, xAxisTitle);
     } else {
       this.handleNormalOption(data);
     }
-
   }
 
   /**
@@ -149,23 +144,22 @@ class ChartOption {
       xAxis: {
         ...xAxis,
         type: 'datetime',
-        tickPositions: data[0].custom.dateRange.map(_range => _range[0]),
+        tickPositions: data[0].custom.dateRange.map((_range) => _range[0]),
         labels: {
           ...labels,
-          formatter: function() {
+          formatter: function () {
             return dayjs(this.value).format('MM/DD');
-          }
-        }
+          },
+        },
       },
       plotOptions: {
         ...plotOptions,
         column: {
-          ...plotOptions.column
-        }
+          ...plotOptions.column,
+        },
       },
-      series: data
+      series: data,
     };
-
   }
 
   /**
@@ -188,9 +182,8 @@ class ChartOption {
         categories,
         crosshair: true,
       },
-      series: chartData
+      series: chartData,
     };
-
   }
 
   /**
@@ -199,5 +192,4 @@ class ChartOption {
   get option() {
     return this._option;
   }
-
 }

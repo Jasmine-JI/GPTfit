@@ -1,52 +1,51 @@
 <app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
 <div id="edit__carousel__page">
   <div class="flexRow button__row">
-    <button
-      class="official-subButton"
-      (click)="cancelEdit()"
-    >
+    <button class="official-subButton" (click)="cancelEdit()">
       {{ 'universal_operating_cancel' | translate }}
     </button>
-    <button
-      class="official-submitButton"
-      (click)="saveEdit()"
-    >
+    <button class="official-submitButton" (click)="saveEdit()">
       {{ 'universal_operating_save' | translate }}
     </button>
   </div>
   <ul>
-    <ng-container *ngFor="let _list of carouselList; let index = index;">
-      <li *ngTemplateOutlet="carouselRow; context: {
-        list: _list,
-        listId: _list.advertiseId
-      }"></li>
+    <ng-container *ngFor="let _list of carouselList; let index = index">
+      <li
+        *ngTemplateOutlet="
+          carouselRow;
+          context: {
+            list: _list,
+            listId: _list.advertiseId
+          }
+        "
+      ></li>
     </ng-container>
     <ng-container *ngIf="uiFlag.showNewBlock">
-      <li *ngTemplateOutlet="carouselRow; context: {
-        listId: carouselList.length + 1
-      }"></li>
+      <li
+        *ngTemplateOutlet="
+          carouselRow;
+          context: {
+            listId: carouselList.length + 1
+          }
+        "
+      ></li>
     </ng-container>
   </ul>
 </div>
 
-<section
-  class="flexCenter info-editMask"
-  *ngIf="uiFlag.showImageCropperId"
->
+<section class="flexCenter info-editMask" *ngIf="uiFlag.showImageCropperId">
   <div class="imgSelector">
     <app-image-cropper
-      [imgInputEvent]="imgUpload[uiFlag.showImageCropperId] ? imgUpload[uiFlag.showImageCropperId].origin : null"
+      [imgInputEvent]="
+        imgUpload[uiFlag.showImageCropperId] ? imgUpload[uiFlag.showImageCropperId].origin : null
+      "
       [albumType]="AlbumType.advertise"
       (closeSelector)="closeImageCropper($event)"
     ></app-image-cropper>
   </div>
 </section>
 
-<ng-template
-  #carouselRow
-  let-list="list"
-  let-listId="listId"
->
+<ng-template #carouselRow let-list="list" let-listId="listId">
   <li class="flexRow carousel__list">
     <div class="flexRow official-dashBorder edit__content">
       <div
@@ -57,21 +56,18 @@
           <span class="img__placeholder__text">Banner{{ listId }}</span>
           <span class="img__hint">(Ratio: 840 * 230)</span>
         </div>
-        <img
-          [src]="imgUpload[listId] ? imgUpload[listId].crop : list.img"
-          *ngIf="list"
-        >
+        <img [src]="imgUpload[listId] ? imgUpload[listId].crop : list.img" *ngIf="list" />
       </div>
       <div class="flexCol carousel__option">
         <div class="flexRow">
           <input
             type="text"
-            [id]="'link__'+listId"
+            [id]="'link__' + listId"
             class="link__input"
             [placeholder]="'連結（選填）'"
             [value]="list && list.link && list.link !== 'None' ? list.link : ''"
             (focusout)="handleLinkInput($event, listId)"
-          >
+          />
           <div class="flexCol">
             <button
               class="flexCenter shift__button"
@@ -97,27 +93,23 @@
             type="datetime-local"
             id="time"
             [min]="currentTimestamp | timeFormat: 'YYYY-MM-DDTHH:mm'"
-            [value]="(list ? list.effectDate * 1000 : defaultEffectTimestamp) | timeFormat: 'YYYY-MM-DDTHH:mm'"
+            [value]="
+              (list ? list.effectDate * 1000 : defaultEffectTimestamp)
+                | timeFormat: 'YYYY-MM-DDTHH:mm'
+            "
             (focusout)="getSelectTime($event, listId)"
-          >
+          />
         </div>
       </div>
     </div>
     <div class="flexCol list__control__button">
-      <button 
-        class="edit__image__button"
-        (click)="showImageCropperId(listId)"
-      >
+      <button class="edit__image__button" (click)="showImageCropperId(listId)">
         <img
           src="/assets/icons/add_image.svg"
           [alt]="'universal_operating_selectImg' | translate"
-        >
+        />
       </button>
-      <button
-        class="official-deleteButton"
-        (click)="deleteCarousel(listId)"
-        *ngIf="list"
-      >
+      <button class="official-deleteButton" (click)="deleteCarousel(listId)" *ngIf="list">
         <i class="icon-svg_web-icon_p1_012-close"></i>
       </button>
     </div>

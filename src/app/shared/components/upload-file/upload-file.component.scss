@@ -5,7 +5,7 @@
   cursor: pointer;
 }
 
-.fileupload>button {
+.fileupload > button {
   cursor: pointer;
   outline: none;
 }
@@ -93,7 +93,7 @@
   display: inline-block;
   position: relative;
 }
-.ala-upload  .ala-upload--descrption {
+.ala-upload .ala-upload--descrption {
   margin-top: 10px;
   text-align: center;
   max-width: 250px;
@@ -111,7 +111,7 @@
   position: absolute;
   z-index: 2;
   background-color: #333;
-  opacity: .6;
+  opacity: 0.6;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -173,7 +173,7 @@
   display: inline-block;
   position: relative;
 }
-.ala-upload  .ala-upload--descrption {
+.ala-upload .ala-upload--descrption {
   margin-top: 10px;
   text-align: center;
   max-width: 250px;
@@ -207,14 +207,11 @@
   height: 130px;
 }
 
-
-
-@media(max-width: 767px) {
+@media (max-width: 767px) {
   .ala-upload-image.ala-user-avastar-mode {
     min-width: initial;
   }
   .profile-picture__Ok-icon {
     font-size: 30px;
   }
-
 }

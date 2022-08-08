@@ -4,7 +4,7 @@ import {
   ViewChild,
   HostListener,
   Inject,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DeviceLogService } from '../../services/device-log.service';
@@ -17,21 +17,17 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import dayjs, { Dayjs } from 'dayjs';
-import {
-  BreakpointObserver,
-  Breakpoints
-} from '@angular/cdk/layout';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Location, DOCUMENT } from '@angular/common';
 import { WINDOW } from '../../../../shared/services/window.service';
 import { getUrlQueryStrings } from '../../../../shared/utils/index';
 
-
 @Component({
   selector: 'app-device-log-detail',
   templateUrl: './device-log-detail.component.html',
   styleUrls: ['./device-log-detail.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class DeviceLogDetailComponent implements OnInit {
   userId: string;
@@ -51,10 +47,10 @@ export class DeviceLogDetailComponent implements OnInit {
   isLoadingResults = false;
   isRateLimitReached = false;
 
-  @ViewChild('paginatorA', {static: true}) paginatorA: MatPaginator;
-  @ViewChild('paginatorB', {static: true}) paginatorB: MatPaginator;
-  @ViewChild('sortTable', {static: false}) sortTable: MatSort;
-  @ViewChild('f', {static: false}) form: any;
+  @ViewChild('paginatorA', { static: true }) paginatorA: MatPaginator;
+  @ViewChild('paginatorB', { static: true }) paginatorB: MatPaginator;
+  @ViewChild('sortTable', { static: false }) sortTable: MatSort;
+  @ViewChild('f', { static: false }) form: any;
   constructor(
     private route: ActivatedRoute,
     private deviceLogservice: DeviceLogService,
@@ -68,7 +64,7 @@ export class DeviceLogDetailComponent implements OnInit {
     this.complexForm = this.fb.group({
       // 定義表格的預設值
       startDate: [this.startDate, Validators.required],
-      endDate: [this.endDate, Validators.required]
+      endDate: [this.endDate, Validators.required],
     });
   }
 
@@ -77,9 +73,7 @@ export class DeviceLogDetailComponent implements OnInit {
     const { pageNumber } = queryStrings;
     this.isHandset$ = this.breakpointObserver
       .observe(Breakpoints.Handset)
-      .pipe(
-        map(match => match.matches)
-      );
+      .pipe(map((match) => match.matches));
 
     this.userId = this.route.snapshot.paramMap.get('userId');
 
@@ -103,28 +97,32 @@ export class DeviceLogDetailComponent implements OnInit {
     //   return `第 ${startIndex + 1} - ${endIndex} 筆、共 ${length} 筆`;
     // };
     this.currentPage = {
-      pageIndex: (+pageNumber - 1) || 0,
+      pageIndex: +pageNumber - 1 || 0,
       pageSize: 10,
-      length: null
+      length: null,
     };
 
     this.currentSort = {
       active: '',
-      direction: ''
+      direction: '',
     };
     this.getLists();
     // 分頁切換時，重新取得資料
     this.paginatorA.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
       this.pageSize = this.currentPage.pageSize;
-      this.router.navigateByUrl(`${location.pathname}?pageNumber=${this.currentPage.pageIndex + 1}`);
+      this.router.navigateByUrl(
+        `${location.pathname}?pageNumber=${this.currentPage.pageIndex + 1}`
+      );
       this.getLists();
     });
 
     this.paginatorB.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
       this.pageSize = this.currentPage.pageSize;
-      this.router.navigateByUrl(`${location.pathname}?pageNumber=${this.currentPage.pageIndex + 1}`);
+      this.router.navigateByUrl(
+        `${location.pathname}?pageNumber=${this.currentPage.pageIndex + 1}`
+      );
       this.getLists();
     });
   }
@@ -160,7 +158,7 @@ export class DeviceLogDetailComponent implements OnInit {
     params = params.set('sort', sort);
     this.isLoadingResults = true;
     this.deviceLogservice.fetchLists(params).subscribe(
-      res => {
+      (res) => {
         this.isLoadingResults = false;
         this.isRateLimitReached = false;
         this.logSource.data = res.datas;
@@ -170,7 +168,7 @@ export class DeviceLogDetailComponent implements OnInit {
         this.totalCount = res.meta.pageCount;
         this.getDataTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
       },
-      err => {
+      (err) => {
         this.isLoadingResults = false;
         // Catch if the API has reached its rate limit. Return empty data.
         this.isRateLimitReached = true;

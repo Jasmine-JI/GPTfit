@@ -7,9 +7,8 @@ import { AccessRight } from '../../../shared/enum/accessright';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserService } from '../../../core/services/user.service';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AdminGuard implements CanActivate {
   constructor(
@@ -22,7 +21,6 @@ export class AdminGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-
     const token = this.authService.token;
     if (token) {
       const { systemAccessright } = this.userService.getUser();
@@ -31,7 +29,6 @@ export class AdminGuard implements CanActivate {
     } else {
       return this.checkAccessRightFailed();
     }
-
   }
 
   /**
@@ -42,5 +39,4 @@ export class AdminGuard implements CanActivate {
     this.router.navigateByUrl(pageNoAccessright);
     return false;
   }
-  
 }

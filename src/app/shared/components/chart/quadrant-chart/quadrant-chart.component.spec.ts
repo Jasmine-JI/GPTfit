@@ -8,9 +8,8 @@ describe('QuadrantChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ QuadrantChartComponent ]
-    })
-    .compileComponents();
+      declarations: [QuadrantChartComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

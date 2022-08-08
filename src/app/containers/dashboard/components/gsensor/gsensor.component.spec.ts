@@ -8,9 +8,8 @@ describe('GsensorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ GsensorComponent ]
-    })
-    .compileComponents();
+      declarations: [GsensorComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

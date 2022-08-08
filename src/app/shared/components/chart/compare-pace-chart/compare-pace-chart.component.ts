@@ -1,4 +1,12 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, OnDestroy, OnChanges } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnChanges,
+} from '@angular/core';
 import { of, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
@@ -12,14 +20,12 @@ import { SportType } from '../../../enum/sports';
 import { Unit } from '../../../enum/value-conversion';
 import { paceTooltipFormatter, paceYAxisFormatter } from '../../../utils/chart-formatter';
 
-
 @Component({
   selector: 'app-compare-pace-chart',
   templateUrl: './compare-pace-chart.component.html',
-  styleUrls: ['./compare-pace-chart.component.scss']
+  styleUrls: ['./compare-pace-chart.component.scss'],
 })
 export class ComparePaceChartComponent implements OnInit, OnChanges, OnDestroy {
-
   private ngUnsubscribe = new Subject();
 
   @Input() data: Array<any>;
@@ -30,7 +36,7 @@ export class ComparePaceChartComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() unit: Unit;
 
-  @ViewChild('container', {static: false})
+  @ViewChild('container', { static: false })
   container: ElementRef;
 
   /**
@@ -55,11 +61,12 @@ export class ComparePaceChartComponent implements OnInit, OnChanges, OnDestroy {
    * 訂閱全域自定義事件
    */
   subscribeGlobalEvents() {
-    this.globalEventsService.getRxSideBarMode().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.handleChart();
-    });
+    this.globalEventsService
+      .getRxSideBarMode()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.handleChart();
+      });
   }
 
   /**
@@ -70,16 +77,17 @@ export class ComparePaceChartComponent implements OnInit, OnChanges, OnDestroy {
       this.noData = true;
     } else {
       const { data } = this;
-      of(data).pipe(
-        map(data => this.transformSpeedToPace(data)),
-        map(paceData => this.initChart(paceData)),
-        map(option => this.handleSeriesName(option)),
-        map(final => this.createChart(final))
-      ).subscribe();
+      of(data)
+        .pipe(
+          map((data) => this.transformSpeedToPace(data)),
+          map((paceData) => this.initChart(paceData)),
+          map((option) => this.handleSeriesName(option)),
+          map((final) => this.createChart(final))
+        )
+        .subscribe();
 
       this.noData = false;
     }
-
   }
 
   /**
@@ -91,15 +99,16 @@ export class ComparePaceChartComponent implements OnInit, OnChanges, OnDestroy {
     const low = 3600; // 圖表最低點（最低配速3600秒）
     const { sportType, unit } = this;
     const transform = (speedData: any, isMaxData: boolean) => {
-      speedData.name = isMaxData ? 'universal_activityData_liveBestPace' : 'universal_activityData_avgPace';
-      speedData.data = speedData.data.map(_point => {
+      speedData.name = isMaxData
+        ? 'universal_activityData_liveBestPace'
+        : 'universal_activityData_avgPace';
+      speedData.data = speedData.data.map((_point) => {
         const _speed = _point.y;
         return {
           ..._point,
           y: speedToPaceSecond(_speed, sportType, unit),
-          low
+          low,
         };
-
       });
 
       return speedData;
@@ -112,7 +121,9 @@ export class ComparePaceChartComponent implements OnInit, OnChanges, OnDestroy {
       compareAvgData = transform(compareAvgData, false);
     }
 
-    return [baseMaxData, baseAvgData].concat(compareAvgData ? [compareMaxData, compareAvgData] : []);
+    return [baseMaxData, baseAvgData].concat(
+      compareAvgData ? [compareMaxData, compareAvgData] : []
+    );
   }
 
   /**
@@ -145,32 +156,24 @@ export class ComparePaceChartComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1110413
    */
   createChart(option: any) {
-
-    setTimeout (() => {
+    setTimeout(() => {
       if (!this.container) {
         this.createChart(option);
       } else {
         const chartDiv = this.container.nativeElement;
         chart(chartDiv, option);
       }
-
     }, 200);
-
   }
 
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }
 
-
-
 class ChartOption {
-
   private _option = deepCopy(compareChartDefault);
-
 
   constructor(data: Array<any>, xAxisTitle: string, sportType: SportType, unit: Unit) {
     this.initChart(data, xAxisTitle, sportType, unit);
@@ -191,7 +194,6 @@ class ChartOption {
     } else {
       this.handleNormalOption(data);
     }
-
   }
 
   /**
@@ -204,12 +206,11 @@ class ChartOption {
     this._option.yAxis = {
       ...yAxis,
       reversed: true,
-      max: 1800,  // 速度過慢不顯示
-      tickAmount: 7,  // 為了讓柱狀圖底部可與x軸接觸
+      max: 1800, // 速度過慢不顯示
+      tickAmount: 7, // 為了讓柱狀圖底部可與x軸接觸
       labels: {
-        formatter: paceYAxisFormatter
-      }
-
+        formatter: paceYAxisFormatter,
+      },
     };
 
     this._option.chart.type = 'column';
@@ -231,17 +232,16 @@ class ChartOption {
       xAxis: {
         ...xAxis,
         type: 'datetime',
-        tickPositions: avgData.data.map(_data => _data.additionalInfo[0]),
+        tickPositions: avgData.data.map((_data) => _data.additionalInfo[0]),
         labels: {
           ...labels,
-          formatter: function() {
+          formatter: function () {
             return dayjs(this.value).format('MM/DD');
-          }
-        }
+          },
+        },
       },
-      series: data
+      series: data,
     };
-
   }
 
   /**
@@ -259,14 +259,13 @@ class ChartOption {
         ...xAxis,
         title: {
           ...xAxis.title,
-          text: `( ${xAxisTitle} )`
+          text: `( ${xAxisTitle} )`,
         },
         categories,
         crosshair: true,
       },
-      series: chartData
+      series: chartData,
     };
-
   }
 
   /**
@@ -275,5 +274,4 @@ class ChartOption {
   get option() {
     return this._option;
   }
-
 }

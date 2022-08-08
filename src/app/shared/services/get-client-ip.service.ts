@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient  } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { throwError, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GetClientIpService {
-
   ipInfo: any = null;
 
   constructor(private http: HttpClient) {}
@@ -22,9 +20,7 @@ export class GetClientIpService {
    */
   requestJsonp(url, params, callback = 'callback') {
     // options.params is an HttpParams object
-    return this.http.jsonp(`${url}?${params}`, callback).pipe(
-      catchError(err => throwError(err))
-    );
+    return this.http.jsonp(`${url}?${params}`, callback).pipe(catchError((err) => throwError(err)));
   }
 
   /**
@@ -38,24 +34,20 @@ export class GetClientIpService {
     } else {
       const getIpApiUrl = 'https://get.geojs.io/v1/ip/country.js';
       return this.http.jsonp(`${getIpApiUrl}?format=jsonp`, 'callback').pipe(
-        tap(ipResult => this.ipInfo = ipResult),
-        catchError(err => {
+        tap((ipResult) => (this.ipInfo = ipResult)),
+        catchError((err) => {
           console.error(err);
           // 避免無法連上外部網站api造成頁面無法使用
           const replaceResult = {
             country: null,
             country_3: null,
             ip: '',
-            name: null
+            name: null,
           };
 
           return of(replaceResult);
         })
-
       );
-
     }
-
   }
-
 }

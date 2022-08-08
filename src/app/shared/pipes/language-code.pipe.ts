@@ -1,9 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-
-@Pipe({name: 'languageCode'})
+@Pipe({ name: 'languageCode' })
 export class LanguageCodePipe implements PipeTransform {
-
   /**
    * 根據區域語系碼回傳相對應語系中文名稱
    * @param value {string}-區域語系碼
@@ -29,7 +27,5 @@ export class LanguageCodePipe implements PipeTransform {
       case 'pt-pt':
         return '葡萄牙語';
     }
-
   }
-
 }

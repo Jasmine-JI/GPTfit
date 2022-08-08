@@ -1,11 +1,10 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-
 /**
  * 裝置日誌log轉譯
  * @version 20210428
  */
-@Pipe({name: 'productErrorLog'})
+@Pipe({ name: 'productErrorLog' })
 export class ProductErrorLogPipe implements PipeTransform {
   transform(value: string, args: string[]): any {
     switch (value) {
@@ -108,7 +107,5 @@ export class ProductErrorLogPipe implements PipeTransform {
       default:
         return `Can't find this key.`;
     }
-
   }
-
 }

@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({name: 'mathAbs'})
+@Pipe({ name: 'mathAbs' })
 export class MathAbsPipe implements PipeTransform {
   /**
    * 回傳絕對正值或絕對負值
@@ -12,6 +12,4 @@ export class MathAbsPipe implements PipeTransform {
   transform(value: number, args: 'plus' | 'minus' = 'plus'): number {
     return args === 'plus' ? Math.abs(value) : -Math.abs(value);
   }
-
 }
-

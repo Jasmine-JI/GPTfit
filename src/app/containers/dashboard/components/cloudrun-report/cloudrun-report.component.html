@@ -5,106 +5,114 @@
   </div>
   <div class="cardSection">
     <main class="cardContent" *ngIf="!uiFlag.noData">
-      <div class="functionBtnBar" style="align-items: center;">
+      <div class="functionBtnBar" style="align-items: center">
         <a
-          style="align-items: center; margin: 5px 0;"
+          style="align-items: center; margin: 5px 0"
           target="_blank"
           title="Cloud run"
           href="/introduction/application/#cloudrun"
           *ngIf="!uiFlag.isPreviewMode"
         >
-          <img
-            class="report-cloudrunIcon"
-            src="/assets/cloud_run/cloudrun-app-icon.png"
-          >
+          <img class="report-cloudrunIcon" src="/assets/cloud_run/cloudrun-app-icon.png" />
         </a>
         <button
           class="alatech-btn alatech-btn--default"
-          title="{{'universal_operating_print' | translate}}"
+          title="{{ 'universal_operating_print' | translate }}"
           (click)="print()"
           *ngIf="uiFlag.isPreviewMode"
         >
-          {{'universal_operating_print' | translate}}
+          {{ 'universal_operating_print' | translate }}
         </button>
-        <a 
-          target="_blank"
-          [href]="previewUrl"
-          class="functionBtn"
-          *ngIf="!uiFlag.isPreviewMode"
-        >
+        <a target="_blank" [href]="previewUrl" class="functionBtn" *ngIf="!uiFlag.isPreviewMode">
           <i class="icon-svg_web-icon_p2_087-print"></i>
         </a>
       </div>
       <section class="report-headerSection">
         <div class="flexRow">
-          <i class="flexCenter report-headerIcon" [class]="1 | sportTypeIcon" ></i>
-          <div class="flexCol  report-titleText">
+          <i class="flexCenter report-headerIcon" [class]="1 | sportTypeIcon"></i>
+          <div class="flexCol report-titleText">
             <span class="report-dateAnnotation">
-              {{ 'universal_group_buildFromTime' | translate: {date: reportEndDate, range: reportTimeRange} }}
+              {{
+                'universal_group_buildFromTime'
+                  | translate: { date: reportEndDate, range: reportTimeRange }
+              }}
             </span>
-            <div class="flexRow" style="align-items: center;">
+            <div class="flexRow" style="align-items: center">
               <span class="report-headerTitle" *ngIf="mapInfo">{{ mapInfo.mapName }}</span>
             </div>
           </div>
         </div>
         <div id="file__owner" class="flexRow report-fileOwner">
-          <span class="report-headerTitle" style="margin-right: 10px;">{{ userInfo.name }}</span>
-          <img 
+          <span class="report-headerTitle" style="margin-right: 10px">{{ userInfo.name }}</span>
+          <img
             class="report-imgIcon"
             [src]="userInfo.icon"
-            (error)="this.userInfo.icon='/assets/images/group-default.svg'"
-          >
+            (error)="this.userInfo.icon = '/assets/images/group-default.svg'"
+          />
         </div>
       </section>
       <section class="report-displaySection">
         <div class="flexRow cardTitle">
           <h6 class="cardSubtitle">{{ 'universal_activityData_summary' | translate }}</h6>
-          <span style="display: flex; align-items: center;" class="report-dateAnnotation">
+          <span style="display: flex; align-items: center" class="report-dateAnnotation">
             {{ 'universal_activityData_creatTime' | translate }} {{ createTime }}
           </span>
         </div>
         <div class="report-summaryArea">
           <div>
             <span class="report-summaryData">{{ infoData.stroke || 0 }}</span>
-            <p class="report-summaryDescription">{{ 'universal_activityData_totalActivity' | translate }}</p>
+            <p class="report-summaryDescription">
+              {{ 'universal_activityData_totalActivity' | translate }}
+            </p>
           </div>
           <div>
-            <span class="report-summaryData">{{ infoData.totalSeconds || 0 | sportTime: [false, false] }}</span>
+            <span class="report-summaryData">{{
+              infoData.totalSeconds || 0 | sportTime: [false, false]
+            }}</span>
             <p class="report-summaryDescription">
               {{ 'universal_activityData_totalTime' | translate }}
             </p>
           </div>
           <div>
             <span class="report-summaryData">
-              {{ (infoData.totalSeconds / infoData.stroke) || 0 | sportTime: [false, false] }}
+              {{ infoData.totalSeconds / infoData.stroke || 0 | sportTime: [false, false] }}
             </span>
             <p class="report-summaryDescription">
-              {{ 'universal_adjective_avg' | translate }} {{ 'universal_activityData_timing' | translate }}
+              {{ 'universal_adjective_avg' | translate }}
+              {{ 'universal_activityData_timing' | translate }}
             </p>
           </div>
           <div>
             <span class="report-summaryData">
-              {{ (infoData.totalSpeed / infoData.stroke) || 0 | sportPaceSibs: [1, userInfo.unit, 1] }}
+              {{
+                infoData.totalSpeed / infoData.stroke || 0 | sportPaceSibs: [1, userInfo.unit, 1]
+              }}
             </span>
             <p class="report-summaryDescription">
-              <ng-container *ngIf="userInfo.unit === 0">{{ 'universal_activityData_avgKilometerPace' | translate }}</ng-container>
-              <ng-container *ngIf="userInfo.unit === 1">{{ 'universal_activityData_avgMilePace' | translate }}</ng-container>
+              <ng-container *ngIf="userInfo.unit === 0">{{
+                'universal_activityData_avgKilometerPace' | translate
+              }}</ng-container>
+              <ng-container *ngIf="userInfo.unit === 1">{{
+                'universal_activityData_avgMilePace' | translate
+              }}</ng-container>
             </p>
           </div>
           <div>
             <span class="report-summaryData">
-              {{ (infoData.totalCadence / infoData.stroke) || 0 | number: '1.0-1' }}
+              {{ infoData.totalCadence / infoData.stroke || 0 | number: '1.0-1' }}
             </span>
             <p class="report-summaryDescription">
-              {{ 'universal_adjective_avg' | translate }} {{ 'universal_activityData_stepCadence' | translate }}
+              {{ 'universal_adjective_avg' | translate }}
+              {{ 'universal_activityData_stepCadence' | translate }}
             </p>
           </div>
           <div>
             <span class="report-summaryData">
-              {{ (infoData.totalCalories / infoData.stroke) || 0 | number: '1.0-1' }}
+              {{ infoData.totalCalories / infoData.stroke || 0 | number: '1.0-1' }}
             </span>
             <p class="report-summaryDescription">
-              {{ 'universal_adjective_avg' | translate }} {{ 'universal_userProfile_calories' | translate }}
+              {{ 'universal_adjective_avg' | translate }}
+              {{ 'universal_userProfile_calories' | translate }}
             </p>
           </div>
         </div>
@@ -175,16 +183,12 @@
         </app-fillet-column-chart>
       </section>
     </main>
-    <footer
-      class="flexRow pageBreakAvoid report-footer"
-      style="padding: 5px 10px;"
-      *ngIf="mapInfo"
-    >
+    <footer class="flexRow pageBreakAvoid report-footer" style="padding: 5px 10px" *ngIf="mapInfo">
       <img
         class="report-mapImg"
         [src]="'app/public_html/cloudrun/update/' + mapInfo.mapImg"
         [alt]="mapInfo.mapName"
-      >
+      />
       <div class="flexCol">
         <h4 class="report-footerTitle">{{ mapInfo.mapName }}</h4>
         <p class="report-mapIntroduction">{{ mapInfo.introduce }}</p>
@@ -202,8 +206,6 @@
         </p>
       </div>
     </footer>
-    <div *ngIf="uiFlag.isPreviewMode" class="printMark">
-      GPTfit
-    </div>
+    <div *ngIf="uiFlag.isPreviewMode" class="printMark">GPTfit</div>
   </div>
 </div>

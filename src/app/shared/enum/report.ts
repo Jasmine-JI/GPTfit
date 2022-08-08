@@ -1,4 +1,3 @@
-
 /**
  * 報告之基準日期單位
  */
@@ -7,5 +6,5 @@ export enum DateUnit {
   week,
   month,
   season,
-  year
+  year,
 }

@@ -24,7 +24,6 @@ $password-hint-size: 12px;
 $progress-line-color: rgba(233, 39, 109, 1);
 $aslide-bottom-color: rgba(190, 23, 40, 1);
 
-
 @mixin section-layout($align-items) {
   align-items: $align-items;
   margin: 5vh 0;
@@ -36,7 +35,6 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
   @if $border {
     border: 2px solid rgba(246, 83, 46, 1);
   }
-
 }
 
 @mixin progress-bar($width, $stage-width) {
@@ -62,7 +60,7 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
   max-height: 200px;
   @include overflow-y-scroll();
 
-  >li {
+  > li {
     padding: 5px;
     font-size: 14px;
 
@@ -70,9 +68,7 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
       background-color: $primary-blue;
       color: white;
     }
-
   }
-
 }
 
 @mixin selector-list($width) {
@@ -102,11 +98,7 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
   width: $aside-width;
   height: 100vh;
   padding: 10px;
-  background-image: linear-gradient(
-    rgba(25, 25, 25, 1),
-    $aslide-bottom-color
-  );
-
+  background-image: linear-gradient(rgba(25, 25, 25, 1), $aslide-bottom-color);
 }
 
 #main__content {
@@ -130,11 +122,10 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
 .app__icon {
   padding: 5px;
 
-  >img {
+  > img {
     height: $app-icon-size;
     width: $app-icon-size;
   }
-  
 }
 
 .aside__slogan {
@@ -157,20 +148,15 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
   @include center();
   @include transition(top);
 
-  >span {
+  > span {
     white-space: inherit;
   }
-
 }
 
 .apply__progress {
   position: absolute;
   background-color: $progress-line-color;
-  @include multiple-transition((
-    top $move-effect,
-    height $move-effect
-  ));
-
+  @include multiple-transition((top $move-effect, height $move-effect));
 }
 
 .progress__bar__thick {
@@ -190,11 +176,9 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
 }
 
 #first__step {
-
   :first-child {
     @include step-index-mark(rgba(245, 72, 33, 1));
   }
-  
 }
 
 #second__step {
@@ -203,7 +187,6 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
   :first-child {
     @include step-index-mark(black, $border: true);
   }
-  
 }
 
 #third__step {
@@ -212,7 +195,6 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
   :first-child {
     @include step-index-mark(rgba(255, 190, 190, 1), $border: true);
   }
-  
 }
 
 .form__title {
@@ -226,20 +208,17 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
 }
 
 #form__content {
-
-  >:nth-child(n) {
+  > :nth-child(n) {
     margin: 30px 0;
   }
-
 }
 
 .login__form {
   padding: 0 4vw;
 
-  >div {
+  > div {
     margin: 30px 0;
   }
-  
 }
 
 .input__label {
@@ -251,7 +230,9 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
   margin-right: 10px;
 }
 
-#phone, #email, #password {
+#phone,
+#email,
+#password {
   @include input-no-border();
   margin-left: 10px;
   width: 100%;
@@ -307,7 +288,7 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
   border-bottom: $input-border-bottom;
 }
 
-.radio__input[type=radio] {
+.radio__input[type='radio'] {
   visibility: hidden;
   position: absolute;
 
@@ -320,7 +301,7 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
     display: inline-block;
     width: $radio-size;
     height: $radio-size;
-    box-shadow: 1px 1px  white,;
+    box-shadow: 1px 1px white;
     box-shadow: 1px 1px #e54444, -1px -1px #e54444, 1px -1px #e54444, -1px 1px #e54444;
     border: 3px solid white;
     border-radius: 50%;
@@ -329,16 +310,14 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
   }
 
   &:checked {
-
     + label:before {
       background-color: $official-theme-color-light;
     }
-
   }
-
 }
 
-label, legend {
+label,
+legend {
   margin-bottom: 0;
 }
 
@@ -356,7 +335,6 @@ label, legend {
     border-radius: $login-button-height;
     pointer-events: none;
   }
-  
 }
 
 .login__button--active {
@@ -388,11 +366,9 @@ label, legend {
 }
 
 .drop__hint--hide {
-
   &:after {
     border-color: transparent;
   }
-
 }
 
 #emergency__contact__name {
@@ -404,10 +380,9 @@ label, legend {
   overflow: hidden;
   @include transition(height);
 
-  >div {
+  > div {
     margin: 10px 0;
   }
-
 }
 
 .emergency__contact__unfold {
@@ -424,38 +399,30 @@ label, legend {
   cursor: pointer;
   @include drop-hint(8px, 5px, black);
 
-  >span {
+  > span {
     max-width: 170px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-
 }
 
 .group__selector--active {
-
   &:after {
     @include drop-active();
   }
-  
 }
 
 .group__menu {
   @include drop-menu(27px, 180px);
 
-  >li {
-
+  > li {
     &:hover {
-
-      >.group__limit {
+      > .group__limit {
         color: rgba(225, 225, 225, 1);
       }
-
     }
-
   }
-
 }
 
 .group__limit {
@@ -467,7 +434,7 @@ label, legend {
 .fee__plan__menu {
   list-style: none;
 
-  >li {
+  > li {
     min-width: $apply-fee-width;
     border: 2px solid rgba(200, 200, 200, 1);
     border-radius: 10px;
@@ -475,7 +442,6 @@ label, legend {
     cursor: pointer;
     margin-bottom: 20px;
   }
-
 }
 
 .apply__fee__title {
@@ -498,14 +464,12 @@ label, legend {
 .apply__fee--active {
   border-color: $official-theme-color-light !important;
 
-  >div {
-
-    >h6, >span {
+  > div {
+    > h6,
+    > span {
       color: black;
     }
-
   }
-  
 }
 
 #apply__accomplish {
@@ -517,10 +481,9 @@ label, legend {
 #apply__accomplish__content {
   align-items: center;
 
-  >h5 {
+  > h5 {
     color: rgba(60, 60, 60, 1);
   }
-
 }
 
 #apply__hint {
@@ -534,7 +497,6 @@ label, legend {
   :nth-child(2) {
     @include bold-font(15px);
   }
-
 }
 
 .apply__accomplish__text {
@@ -581,27 +543,26 @@ label, legend {
 .apply__fee__content {
   margin-top: 5vh;
 
-  >h6 {
+  > h6 {
     border-bottom: 1px solid rgba(150, 150, 150, 1);
     width: 300px;
     min-width: 300px;
     text-align: center;
     padding: 20px;
   }
-
 }
 
 .apply__fee__detail {
   width: 100%;
 
-  th, td {
+  th,
+  td {
     text-align: center;
   }
 
   td {
     color: rgba(175, 175, 175, 1);
   }
-
 }
 
 .success__hint__icon {
@@ -612,18 +573,20 @@ label, legend {
 .input__placeholder {
   $font-size: 14px;
 
-  &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-    font-size: $font-size;
-  }
-  
-  &:-ms-input-placeholder { /* Internet Explorer 10-11 */
-    font-size: $font-size;
-  }
-  
-  &::-ms-input-placeholder { /* Microsoft Edge */
+  &::placeholder {
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
     font-size: $font-size;
   }
 
+  &:-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    font-size: $font-size;
+  }
+
+  &::-ms-input-placeholder {
+    /* Microsoft Edge */
+    font-size: $font-size;
+  }
 }
 
 .captcha__input {
@@ -657,7 +620,8 @@ label, legend {
 /***************************************************** media ***********************************************/
 
 @media (max-width: 767px) {
-  #main__content, #apply__form {
+  #main__content,
+  #apply__form {
     width: 100%;
   }
 
@@ -667,11 +631,10 @@ label, legend {
 
   .login__form {
     padding: unset;
-    
-    >div {
+
+    > div {
       flex-direction: column;
     }
-
   }
 
   .password__input {
@@ -693,5 +656,4 @@ label, legend {
   .radio__item {
     margin: 5px 0;
   }
-
 }

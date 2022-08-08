@@ -1,2 +1,1 @@
-export enum DeviceManage {
-}
+export enum DeviceManage {}

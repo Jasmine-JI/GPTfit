@@ -15,10 +15,7 @@ $shadow-color: rgba(0, 0, 0, 0.1);
   max-width: $contact-list-width;
   width: $contact-list-width;
   white-space: noWrap;
-  box-shadow:
-    2px 2px 2px $shadow-color,
-    -2px 2px 2px $shadow-color,
-    2px -2px 2px $shadow-color,
+  box-shadow: 2px 2px 2px $shadow-color, -2px 2px 2px $shadow-color, 2px -2px 2px $shadow-color,
     -2px -2px 2px $shadow-color;
 }
 
@@ -39,7 +36,6 @@ $shadow-color: rgba(0, 0, 0, 0.1);
   &:hover {
     background-color: rgba(245, 245, 245, 1);
   }
-
 }
 
 .list__tag--active {
@@ -85,7 +81,6 @@ $shadow-color: rgba(0, 0, 0, 0.1);
     background: $primary-blue;
     cursor: pointer;
   }
-
 }
 
 .contact__search__area {
@@ -120,7 +115,6 @@ $shadow-color: rgba(0, 0, 0, 0.1);
 }
 
 .remove__button {
-
 }
 
 .remove__icon {

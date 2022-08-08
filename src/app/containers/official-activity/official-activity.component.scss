@@ -12,7 +12,6 @@ $carousel-dot-size: 10px;
 $input-height: 24px;
 $declaration-color: rgba(100, 100, 100, 1);
 
-
 @mixin drop-list() {
   position: absolute;
   z-index: 5;
@@ -20,10 +19,9 @@ $declaration-color: rgba(100, 100, 100, 1);
   list-style: none;
   box-shadow: 1px 1px 5px rgba(150, 150, 150, 1), -1px -1px 5px rgba(150, 150, 150, 1);
 
-  >li {
+  > li {
     padding: 5px 15px;
   }
-
 }
 
 @mixin hint-text($color) {
@@ -60,16 +58,14 @@ $declaration-color: rgba(100, 100, 100, 1);
   font-size: 24px;
   margin: 0;
 
-  >button {
+  > button {
     color: white;
     padding: 0;
 
-    >i {
+    > i {
       font-size: 32px;
     }
-    
   }
-
 }
 
 .sub__logo {
@@ -79,11 +75,9 @@ $declaration-color: rgba(100, 100, 100, 1);
 }
 
 .child__page__entry {
-
-  >a {
+  > a {
     padding: 0 10px;
   }
-
 }
 
 #link__active__bar {
@@ -109,24 +103,21 @@ $declaration-color: rgba(100, 100, 100, 1);
   &:hover {
     text-decoration: none;
   }
-
 }
 
 #search__btn {
   margin-right: 10px;
 
-  >label {
+  > label {
     @include center();
     font-size: 24px;
     cursor: pointer;
     margin: 0;
 
-    >button {
+    > button {
       color: white;
     }
-
   }
-
 }
 
 .search__section {
@@ -138,19 +129,17 @@ $declaration-color: rgba(100, 100, 100, 1);
   z-index: 4;
   @include transition(top);
 
-  >div {
+  > div {
     padding: 5px 10px;
     background-color: white;
     width: fit-content;
     border-radius: 30px;
     box-shadow: 1px 1px 2px rgba(150, 150, 150, 1), -1px -1px 2px rgba(150, 150, 150, 1);
 
-    >button {
+    > button {
       font-size: 24px;
     }
-
   }
-
 }
 
 #search__input {
@@ -180,7 +169,7 @@ $declaration-color: rgba(100, 100, 100, 1);
   top: 55px;
   right: 20px;
 
-  >li {
+  > li {
     cursor: pointer;
 
     &:first-child {
@@ -191,9 +180,7 @@ $declaration-color: rgba(100, 100, 100, 1);
       color: white;
       background-color: $primary-blue;
     }
-
   }
-
 }
 
 #avatar {
@@ -232,7 +219,6 @@ $declaration-color: rgba(100, 100, 100, 1);
   ul {
     list-style: none;
   }
-
 }
 
 .switch__btn {
@@ -264,12 +250,11 @@ $declaration-color: rgba(100, 100, 100, 1);
 #carousel__dot__block {
   margin: 10px 0;
 
-  >ul {
+  > ul {
     justify-content: center;
     padding: 0;
     margin: 0;
   }
-
 }
 
 .carousel__dot {
@@ -310,7 +295,7 @@ $declaration-color: rgba(100, 100, 100, 1);
   width: 230px;
   border-bottom: 1px solid black;
 
-  >input {
+  > input {
     outline: none;
     border: none;
     padding-left: 10px;
@@ -321,9 +306,7 @@ $declaration-color: rgba(100, 100, 100, 1);
       font-size: 14px;
       opacity: 1;
     }
-
   }
-
 }
 
 .hint__text {
@@ -370,14 +353,13 @@ $declaration-color: rgba(100, 100, 100, 1);
 .captcha__area {
   height: 30px;
 
-  >img {
+  > img {
     width: 80px;
   }
 
-  >input {
+  > input {
     width: 150px;
   }
-
 }
 
 .declaration {
@@ -385,16 +367,15 @@ $declaration-color: rgba(100, 100, 100, 1);
   color: rgba(100, 100, 100, 1);
   margin-top: 5px;
 
-  >input {
+  > input {
     position: relative;
     top: 3px;
     margin-right: 5px;
   }
 
-  >label {
+  > label {
     margin: 0;
   }
-
 }
 
 #forget__password__link {
@@ -420,8 +401,8 @@ $declaration-color: rgba(100, 100, 100, 1);
 .footer__link {
   min-width: 350px;
   justify-content: space-between;
-  
-  >a {
+
+  > a {
     color: black;
     white-space: nowrap;
 
@@ -430,18 +411,14 @@ $declaration-color: rgba(100, 100, 100, 1);
       border-left: 3px solid $official-theme-color-light;
       margin-right: 10px;
     }
-
   }
-
 }
 
 #contact__us__button {
-  
-  >a {
+  > a {
     color: white;
     text-decoration: none;
   }
-
 }
 
 #footer__copyright {
@@ -487,7 +464,6 @@ $declaration-color: rgba(100, 100, 100, 1);
 /************************************************* media ****************************************/
 
 @media (max-width: 767px) {
-
   #carousel {
     width: 100%;
   }
@@ -496,29 +472,23 @@ $declaration-color: rgba(100, 100, 100, 1);
     font-size: 36px;
   }
 
-
   .footer__link__area {
     flex-direction: column;
 
-    >:nth-child(n) {
+    > :nth-child(n) {
       margin: 5px 0;
     }
-
   }
-
 }
 
 @media (max-width: 450px) {
-
   .footer__link {
     flex-direction: column;
     min-width: unset;
     margin: 0 auto;
 
-    >:nth-child(n) {
+    > :nth-child(n) {
       margin: 5px 0;
     }
-
   }
-
 }

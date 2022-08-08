@@ -4,19 +4,10 @@
     "outDir": "../out-tsc/spec",
     "baseUrl": "./",
     "target": "es2020",
-    "types": [
-      "jasmine",
-      "node"
-    ],
+    "types": ["jasmine", "node"],
     "resolveJsonModule": true,
     "esModuleInterop": true
   },
-  "files": [
-    "test.ts",
-    "polyfills.ts"
-  ],
-  "include": [
-    "**/*.spec.ts",
-    "**/*.d.ts"
-  ]
+  "files": ["test.ts", "polyfills.ts"],
+  "include": ["**/*.spec.ts", "**/*.d.ts"]
 }

@@ -34,7 +34,7 @@ interface UserInfo {
 @Component({
   selector: 'app-inner-test',
   templateUrl: './inner-test.component.html',
-  styleUrls: ['./inner-test.component.scss']
+  styleUrls: ['./inner-test.component.scss'],
 })
 export class InnerTestComponent implements OnInit {
   userInfo: UserInfo = {
@@ -51,7 +51,7 @@ export class InnerTestComponent implements OnInit {
     phone: '',
     enableStatus: '',
     lastLogin: '',
-    lastResetPwd: ''
+    lastResetPwd: '',
   };
 
   nickname: string;
@@ -101,10 +101,10 @@ export class InnerTestComponent implements OnInit {
   getUserAvartar(userId: number): void {
     const body = {
       token: this.authService.token,
-      userId: userId
+      userId: userId,
     };
 
-    this.groupService.fetchUserAvartar(body).subscribe(res => {
+    this.groupService.fetchUserAvartar(body).subscribe((res) => {
       const {
         resultCode,
         lastResetPwd,
@@ -117,10 +117,9 @@ export class InnerTestComponent implements OnInit {
         lastLogin,
         smallIcon,
         middleIcon,
-        largeIcon
+        largeIcon,
       } = res as any;
       if (resultCode === 200) {
-
         let lastResetPasswordd: string;
         if (lastResetPwd !== null && lastResetPwd !== '') {
           lastResetPasswordd = dayjs.unix(+lastResetPwd).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
@@ -132,7 +131,9 @@ export class InnerTestComponent implements OnInit {
           userName,
           accountType,
           userId: userId,
-          userPageLink: `https://${location.hostname}/user-profile/${this.hashIdService.handleUserIdEncode(userId.toString())}`,
+          userPageLink: `https://${
+            location.hostname
+          }/user-profile/${this.hashIdService.handleUserIdEncode(userId.toString())}`,
           userDeviceLog: `https://${location.hostname}/dashboard/system/device_log/detail/${userId}`,
           smallIcon: buildBase64ImgString(smallIcon),
           middleIcon: buildBase64ImgString(middleIcon),
@@ -142,7 +143,7 @@ export class InnerTestComponent implements OnInit {
           phone,
           enableStatus,
           lastLogin: dayjs.unix(+lastLogin).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-          lastResetPwd: lastResetPasswordd
+          lastResetPwd: lastResetPasswordd,
         };
 
         this.handleAvartarInfo(this.userInfo.smallIcon, 1);
@@ -195,11 +196,9 @@ export class InnerTestComponent implements OnInit {
         type,
         adminLists,
         onConfirm: this.handleConfirm.bind(this),
-        isInnerAdmin: true
-      }
-
+        isInnerAdmin: true,
+      },
     });
-
   }
 
   /**
@@ -210,9 +209,9 @@ export class InnerTestComponent implements OnInit {
   handleConfirm(type: number, _lists: Array<any>): void {
     let userIds: Array<number>;
     if (type === 1) {
-      userIds = _lists.map(_list => _list.userId);
+      userIds = _lists.map((_list) => _list.userId);
     } else {
-      userIds = _lists.map(_list => _list.user_id);
+      userIds = _lists.map((_list) => _list.user_id);
     }
 
     this.getUserAvartar(userIds[0]);
@@ -220,51 +219,45 @@ export class InnerTestComponent implements OnInit {
 
   fetchGroupInfo() {
     if (
-      this.groupId ===
-        this.hashIdService.handleGroupIdDecode(this.hashGroupId) &&
+      this.groupId === this.hashIdService.handleGroupIdDecode(this.hashGroupId) &&
       this.hashGroupId === this.hashIdService.handleGroupIdEncode(this.groupId)
     ) {
       const body = {
         groupId: this.groupId,
         token: this.authService.token,
-        avatarType: 2
+        avatarType: 2,
       };
-      this.groupService.fetchGroupListDetail(body).subscribe(res => {
+      this.groupService.fetchGroupListDetail(body).subscribe((res) => {
         this.groupInfo = res.info;
         const { groupIcon, groupId } = this.groupInfo;
         this.groupLevel = this.utils.displayGroupLevel(groupId);
         this.groupImg =
-          groupIcon && groupIcon.length > 0
-            ? groupIcon
-            : '/assets/images/group-default.svg';
+          groupIcon && groupIcon.length > 0 ? groupIcon : '/assets/images/group-default.svg';
       });
     }
   }
 
   fetchUserProfile() {
     if (this.userId || this.hashUserId) {
-
       const body = {
-        targetUserId: this.userId || this.hashIdService.handleUserIdDecode(this.hashUserId)
+        targetUserId: this.userId || this.hashIdService.handleUserIdDecode(this.hashUserId),
       };
 
-      this.api10xxService.fetchGetUserProfile(body).pipe(
-        last()
-      ).subscribe(res => {
-        if (res.processResult.resultCode !== 200) {
-          console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
-        } else {
-          const response: any = res.userProfile;
-          const { nickname, avatarUrl, description } = response;
-          this.description = description;
-          this.nickname = nickname;
-          this.userImg = avatarUrl ? avatarUrl : '/assets/images/user2.png';
-        }
-
-      });
-
+      this.api10xxService
+        .fetchGetUserProfile(body)
+        .pipe(last())
+        .subscribe((res) => {
+          if (res.processResult.resultCode !== 200) {
+            console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+          } else {
+            const response: any = res.userProfile;
+            const { nickname, avatarUrl, description } = response;
+            this.description = description;
+            this.nickname = nickname;
+            this.userImg = avatarUrl ? avatarUrl : '/assets/images/user2.png';
+          }
+        });
     }
-
   }
   onGroupEncode(e) {
     this.hashGroupId = this.hashIdService.handleGroupIdEncode(e.target.value);
@@ -284,39 +277,28 @@ export class InnerTestComponent implements OnInit {
   }
 
   // 顯示彈跳視窗訊息-kidin-1090518
-  showMsgBox (msg: string, navigate: boolean) {
-
+  showMsgBox(msg: string, navigate: boolean) {
     if (navigate) {
-
       this.dialog.open(MessageBoxComponent, {
         hasBackdrop: true,
         disableClose: true,
         data: {
           title: 'Message',
           body: msg,
-          confirmText: this.translate.instant(
-            'universal_operating_confirm'
-          ),
-          onConfirm: this.router.navigateByUrl('/signIn-web')
-        }
+          confirmText: this.translate.instant('universal_operating_confirm'),
+          onConfirm: this.router.navigateByUrl('/signIn-web'),
+        },
       });
-
     } else {
-
       this.dialog.open(MessageBoxComponent, {
         hasBackdrop: true,
         disableClose: true,
         data: {
           title: 'Message',
           body: msg,
-          confirmText: this.translate.instant(
-            'universal_operating_confirm'
-          )
-        }
+          confirmText: this.translate.instant('universal_operating_confirm'),
+        },
       });
-
     }
-
   }
-
 }

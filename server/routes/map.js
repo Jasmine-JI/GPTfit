@@ -1,33 +1,33 @@
 var express = require('express');
-var request = require("request");
+var request = require('request');
 var async = require('async');
 const { getMapList } = require('../models/map_model');
 
 var router = express.Router(),
-    routerProtected = express.Router();
+  routerProtected = express.Router();
 
 function httpGet(url, callback) {
   const options = {
     url: url,
-    json: true
+    json: true,
   };
-  request(options, function(err, res, body) {
+  request(options, function (err, res, body) {
     callback(err, body);
   });
 }
-router.get('/mapUrl', function(req, res, next) {
+router.get('/mapUrl', function (req, res, next) {
   const { con } = req;
   const sql = 'select img_url from ??';
-  con.query(sql, 'race_map_info', function(err, rows) {
-    rows = rows.map(_row => _row.img_url);
+  con.query(sql, 'race_map_info', function (err, rows) {
+    rows = rows.map((_row) => _row.img_url);
     res.json(rows);
   });
 });
 
-router.get('/gpxUrl', function(req, res, next) {
+router.get('/gpxUrl', function (req, res, next) {
   const { con } = req;
   const sql = 'select map_index as id , gpx_url as gpxData from ??';
-  con.query(sql, 'race_map_info', function(err, rows) {
+  con.query(sql, 'race_map_info', function (err, rows) {
     res.json(rows);
   });
 });
@@ -35,11 +35,11 @@ router.get('/gpxUrl', function(req, res, next) {
 routerProtected.get('/', function (req, res, next) {
   const { con } = req;
   const sql = 'truncate table ??';
-  con.query(sql, 'race_map_info', function(err, rows) {
+  con.query(sql, 'race_map_info', function (err, rows) {
     if (err) {
       throw err;
     }
-    getMapList().then(mapLists => {
+    getMapList().then((mapLists) => {
       const sql2 = `insert into ?? (
           map_index,
           race_total_distance,
@@ -54,15 +54,15 @@ routerProtected.get('/', function (req, res, next) {
       ) values ?
         `;
       const { datas, urls } = mapLists;
-      async.map(urls, httpGet, function(err, response) {
+      async.map(urls, httpGet, function (err, response) {
         if (err) return console.log(err);
         const maps = response.map((_res, idx) => {
           const {
             map: {
               buildMap: { info },
               raceRoom,
-              basic
-            }
+              basic,
+            },
           } = _res;
           datas[idx].img_url = datas[idx].img_url.replace('127.0.0.1', 'cloud.alatech.com.tw');
           datas[idx].gpx_url = datas[idx].gpx_url.replace('127.0.0.1', 'cloud.alatech.com.tw');
@@ -76,8 +76,8 @@ routerProtected.get('/', function (req, res, next) {
           datas[idx].map_name = basic.info[0].mapName;
           return info[0].FileName1080p;
         });
-        const results = datas.map(_data => Object.values(_data));
-        con.query(sql2, ['race_map_info', results], function(err, rows) {
+        const results = datas.map((_data) => Object.values(_data));
+        con.query(sql2, ['race_map_info', results], function (err, rows) {
           if (err) {
             throw err;
           }
@@ -87,11 +87,9 @@ routerProtected.get('/', function (req, res, next) {
       });
     });
   });
-
-
 });
 
 module.exports = {
   protected: routerProtected,
-  unprotected: router
+  unprotected: router,
 };

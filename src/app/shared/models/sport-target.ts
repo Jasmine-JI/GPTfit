@@ -4,8 +4,8 @@ import { DateUnit } from '../enum/report';
 /**
  * 可設定之目標類別或運動報告趨勢圖使用
  */
-export type TargetField = 
-    'totalActivities'
+export type TargetField =
+  | 'totalActivities'
   | 'totalTime'
   | 'benefitTime'
   | 'pai'
@@ -17,14 +17,13 @@ export type TargetField =
   | 'swimDistance'
   | 'rowDistance'
   | 'achievementRate'
-  | 'distance'
-;
+  | 'distance';
 
 export interface TargetCondition {
   filedName: string;
   symbols: ConditionSymbols;
   filedValue: number;
-};
+}
 
 export interface GroupSportTarget {
   name: string;

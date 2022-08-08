@@ -11,46 +11,25 @@
       </button>
     </div>
     <div class="flexRow">
-      <button
-        class="edit__tool__button"
-        title="新增影片區塊"
-        (click)="addContentVideo()"
-      >
-        <img src="/assets/icons/slow_motion_video.svg" alt="新增影片區塊">
+      <button class="edit__tool__button" title="新增影片區塊" (click)="addContentVideo()">
+        <img src="/assets/icons/slow_motion_video.svg" alt="新增影片區塊" />
       </button>
-      <button
-        class="edit__tool__button"
-        title="新增圖片區塊"
-        (click)="addContentImg()"
-      >
-        <img src="/assets/icons/add_image.svg" alt="新增圖片區塊">
+      <button class="edit__tool__button" title="新增圖片區塊" (click)="addContentImg()">
+        <img src="/assets/icons/add_image.svg" alt="新增圖片區塊" />
       </button>
-      <button
-        class="edit__tool__button"
-        title="新增文字區塊"
-        (click)="addContentText()"
-      >
-        <img src="/assets/icons/add_text.svg" alt="新增圖片區塊">
+      <button class="edit__tool__button" title="新增文字區塊" (click)="addContentText()">
+        <img src="/assets/icons/add_text.svg" alt="新增圖片區塊" />
       </button>
     </div>
     <div>
-      <button
-        class="edit__tool__button"
-        title="取消建立/編輯"
-        (click)="cancelEdit()"
-      >
+      <button class="edit__tool__button" title="取消建立/編輯" (click)="cancelEdit()">
         <i class="icon-svg_web-icon_p1_012-close"></i>
       </button>
     </div>
   </nav>
-  <main
-    id="main__edit__content"
-    *ngIf="eventInfo && eventDetail"
-  >
+  <main id="main__edit__content" *ngIf="eventInfo && eventDetail">
     <section class="flexCol">
-      <div
-        *ngIf="uiFlag.editMode === 'edit' && currentTimestamp < eventInfo.raceDate.endDate"
-      >
+      <div *ngIf="uiFlag.editMode === 'edit' && currentTimestamp < eventInfo.raceDate.endDate">
         <div id="event__status" class="flexRow">
           <ng-container *ngIf="originEventStatus === EventStatus.notAudit">
             <input
@@ -62,10 +41,8 @@
               [value]="EventStatus.audit"
               [disabled]="systemAccessright !== AccessRight.auditor ? true : null"
               (click)="releaseEventAlert()"
-            >
-            <label for="event__status__audit">
-              發佈活動
-            </label>
+            />
+            <label for="event__status__audit"> 發佈活動 </label>
           </ng-container>
           <ng-container *ngIf="originEventStatus === EventStatus.audit">
             <input
@@ -77,7 +54,7 @@
               [value]="EventStatus.cancel"
               [disabled]="systemAccessright !== AccessRight.auditor ? true : null"
               (click)="cancelEventAlert()"
-            >
+            />
             <label for="event__status__cancel">
               {{ 'universal_vocabulary_raceCancel' | translate }}
             </label>
@@ -90,27 +67,19 @@
           class="flexCenter official-dashBorder"
           [class.empty__warn]="!eventInfo.themeImg && !imgUpload.theme.crop"
         >
-          <img
-            class="placeholder__img"
-            src="/assets/icons/image.svg"
-            alt="圖片"
-          >
+          <img class="placeholder__img" src="/assets/icons/image.svg" alt="圖片" />
           <img
             class="loaded__img"
             [src]="imgUpload.theme.crop ? imgUpload.theme.crop : eventInfo.themeImg"
             [alt]="eventInfo.eventName"
-          >
+          />
         </div>
         <div class="flexCol">
-          <button
-            class="edit__photo__button"
-            title="編輯佈景圖片"
-            (click)="selectorThemeImg()"
-          >
+          <button class="edit__photo__button" title="編輯佈景圖片" (click)="selectorThemeImg()">
             <img
               src="/assets/icons/add_image.svg"
               [alt]="'universal_operating_selectImg' | translate"
-            >
+            />
           </button>
           <button
             class="photo__recovery__button"
@@ -129,32 +98,42 @@
           [class.empty__warn]="eventInfo?.eventName?.length === 0"
           [value]="eventInfo.eventName"
           (focusout)="handleTitleInput($event)"
-        >
+        />
         <table>
           <tr>
             <th class="date__info__title">報名開始</th>
             <td>
               <time
                 class="info__cannot__edit"
-                *ngIf="currentTimestamp >= eventInfo.applyDate.startDate && uiFlag.editMode !== 'create'"
+                *ngIf="
+                  currentTimestamp >= eventInfo.applyDate.startDate && uiFlag.editMode !== 'create'
+                "
               >
                 {{ eventInfo.applyDate.startDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
               </time>
               <app-date-range-picker
                 (selectDateRange)="getSelectDate($event, 'applyStartDate')"
                 [pickerType]="'singlePicker'"
-                [refStartDate]="eventInfo.applyDate.startDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
-                [default]="eventInfo.applyDate.startDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
+                [refStartDate]="
+                  eventInfo.applyDate.startDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'
+                "
+                [default]="
+                  eventInfo.applyDate.startDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'
+                "
                 [serialId]="'1'"
                 [limitMin]="startDateMin"
-                [editStyle]="'
+                [editStyle]="
+                  '
                   border: none;
                   border-bottom: 1px solid black;
                   margin-left: 10px;
                   color: rgba(150, 150, 150, 1);
                   font-weight: bold;
-                '"
-                *ngIf="currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create'"
+                '
+                "
+                *ngIf="
+                  currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create'
+                "
               ></app-date-range-picker>
             </td>
           </tr>
@@ -163,29 +142,40 @@
             <td>
               <time
                 class="info__cannot__edit"
-                *ngIf="currentTimestamp >= eventInfo.applyDate.endDate && uiFlag.editMode !== 'create'"
+                *ngIf="
+                  currentTimestamp >= eventInfo.applyDate.endDate && uiFlag.editMode !== 'create'
+                "
               >
                 {{ eventInfo.applyDate.endDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
               </time>
               <app-date-range-picker
                 (selectDateRange)="getSelectDate($event, 'applyEndDate')"
                 [pickerType]="'singlePicker'"
-                [refStartDate]="eventInfo.applyDate.endDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
-                [default]="eventInfo.applyDate.endDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
+                [refStartDate]="
+                  eventInfo.applyDate.endDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'
+                "
+                [default]="
+                  eventInfo.applyDate.endDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'
+                "
                 [serialId]="'2'"
                 [limitMin]="startDateMin"
                 [limitMax]="
-                  currentTimestamp >= eventInfo.raceDate.startDate && uiFlag.editMode !== 'create' ?
-                    eventInfo.raceDate.endDate * 1000 : undefined
+                  currentTimestamp >= eventInfo.raceDate.startDate && uiFlag.editMode !== 'create'
+                    ? eventInfo.raceDate.endDate * 1000
+                    : undefined
                 "
-                [editStyle]="'
+                [editStyle]="
+                  '
                   border: none;
                   border-bottom: 1px solid black;
                   margin-left: 10px;
                   color: rgba(150, 150, 150, 1);
                   font-weight: bold;
-                '"
-                *ngIf="currentTimestamp < eventInfo.applyDate.endDate || uiFlag.editMode === 'create'"
+                '
+                "
+                *ngIf="
+                  currentTimestamp < eventInfo.applyDate.endDate || uiFlag.editMode === 'create'
+                "
               ></app-date-range-picker>
             </td>
           </tr>
@@ -197,25 +187,35 @@
               <td>
                 <time
                   class="info__cannot__edit"
-                  *ngIf="currentTimestamp >= eventInfo.raceDate.startDate && uiFlag.editMode !== 'create'"
+                  *ngIf="
+                    currentTimestamp >= eventInfo.raceDate.startDate && uiFlag.editMode !== 'create'
+                  "
                 >
                   {{ eventInfo.raceDate.startDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
                 </time>
                 <app-date-range-picker
                   (selectDateRange)="getSelectDate($event, 'raceStartDate')"
                   [pickerType]="'singlePicker'"
-                  [refStartDate]="eventInfo.raceDate.startDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
-                  [default]="eventInfo.raceDate.startDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
+                  [refStartDate]="
+                    eventInfo.raceDate.startDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'
+                  "
+                  [default]="
+                    eventInfo.raceDate.startDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'
+                  "
                   [serialId]="'3'"
                   [limitMin]="eventInfo.applyDate.startDate * 1000"
-                  [editStyle]="'
+                  [editStyle]="
+                    '
                     border: none;
                     border-bottom: 1px solid black;
                     margin-left: 10px;
                     color: rgba(150, 150, 150, 1);
                     font-weight: bold;
-                  '"
-                  *ngIf="currentTimestamp < eventInfo.raceDate.startDate || uiFlag.editMode === 'create'"
+                  '
+                  "
+                  *ngIf="
+                    currentTimestamp < eventInfo.raceDate.startDate || uiFlag.editMode === 'create'
+                  "
                 ></app-date-range-picker>
               </td>
             </tr>
@@ -224,25 +224,35 @@
               <td>
                 <time
                   class="info__cannot__edit"
-                  *ngIf="currentTimestamp >= eventInfo.raceDate.startDate && uiFlag.editMode !== 'create'"
+                  *ngIf="
+                    currentTimestamp >= eventInfo.raceDate.startDate && uiFlag.editMode !== 'create'
+                  "
                 >
                   {{ eventInfo.raceDate.endDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
                 </time>
                 <app-date-range-picker
                   (selectDateRange)="getSelectDate($event, 'raceEndDate')"
                   [pickerType]="'singlePicker'"
-                  [refStartDate]="eventInfo.raceDate.endDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
-                  [default]="eventInfo.raceDate.endDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
+                  [refStartDate]="
+                    eventInfo.raceDate.endDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'
+                  "
+                  [default]="
+                    eventInfo.raceDate.endDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'
+                  "
                   [serialId]="'4'"
                   [limitMin]="eventInfo.applyDate.endDate * 1000"
-                  [editStyle]="'
+                  [editStyle]="
+                    '
                     border: none;
                     border-bottom: 1px solid black;
                     margin-left: 10px;
                     color: rgba(150, 150, 150, 1);
                     font-weight: bold;
-                  '"
-                  *ngIf="currentTimestamp < eventInfo.raceDate.startDate || uiFlag.editMode === 'create'"
+                  '
+                  "
+                  *ngIf="
+                    currentTimestamp < eventInfo.raceDate.startDate || uiFlag.editMode === 'create'
+                  "
                 ></app-date-range-picker>
               </td>
             </tr>
@@ -262,7 +272,7 @@
             [checked]="uiFlag.numberLimit === HaveNumberLimit.no"
             [value]="HaveNumberLimit.no"
             (click)="selectPeopleLimit($event)"
-          >
+          />
           <label for="peopel__limit__none">
             {{ '無限制' }}
           </label>
@@ -276,20 +286,28 @@
             [checked]="uiFlag.numberLimit === HaveNumberLimit.yes"
             [value]="HaveNumberLimit.yes"
             (click)="selectPeopleLimit($event)"
-          >
+          />
           <input
             type="number"
             class="people__limit__input"
-            [class.empty__warn]="uiFlag.numberLimit === HaveNumberLimit.yes && !eventInfo.numberLimit"
-            [value]="eventInfo.numberLimit && eventInfo.numberLimit > 0 ? eventInfo.numberLimit : defaultNumberLimit"
+            [class.empty__warn]="
+              uiFlag.numberLimit === HaveNumberLimit.yes && !eventInfo.numberLimit
+            "
+            [value]="
+              eventInfo.numberLimit && eventInfo.numberLimit > 0
+                ? eventInfo.numberLimit
+                : defaultNumberLimit
+            "
             (focusout)="handlePeopleLimitInput($event)"
-          >
+          />
           <span>{{ 'universal_unit_members' | translate }}</span>
         </div>
       </div>
       <div
         class="flexRow cloudrun__map"
-        [class.map__selector]="currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create'"
+        [class.map__selector]="
+          currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create'
+        "
         [class.empty__warn]="eventInfo.cloudrunMapId < 0"
         (click)="showMapList($event)"
         *ngIf="mapList"
@@ -297,19 +315,14 @@
         <span>
           {{ selectedMap ?? '地圖選擇' }}
         </span>
-        <ul
-          id="map__list"
-          *ngIf="uiFlag.showMapList"
-        >
+        <ul id="map__list" *ngIf="uiFlag.showMapList">
           <li
             (click)="selectMap($event, _list.mapId)"
-            *ngFor="let _list of mapList; let index = index;"
+            *ngFor="let _list of mapList; let index = index"
           >
             <span class="map__distance">
               {{ _list.distance }}
-              <span>
-                km
-              </span>
+              <span> km </span>
             </span>
             <span>
               {{ _list.info[language].mapName }}
@@ -332,10 +345,10 @@
     </section>
     <article class="flexCol">
       <h5 class="edit__section__title">活動詳細內容</h5>
-      <ng-container *ngFor="let _content of eventDetail.content; let _contentIndex = index;">
+      <ng-container *ngFor="let _content of eventDetail.content; let _contentIndex = index">
         <section class="flexRow">
           <div class="flexCol content__section official-dashBorder">
-            <div class="flexRow" style="justify-content: space-between;">
+            <div class="flexRow" style="justify-content: space-between">
               <input
                 type="text"
                 class="content__section__title"
@@ -343,7 +356,7 @@
                 placeholder="索引標題（選填）"
                 maxlength="10"
                 (focusout)="handleContentTitleInput($event, _content.contentId)"
-              >
+              />
               <div class="flexCol">
                 <button
                   class="flexCenter shift__button"
@@ -375,21 +388,23 @@
             </ng-container>
             <ng-container *ngIf="_content.cardType === CardTypeEnum.img">
               <div class="flexCenter content__appendix">
-                <div 
+                <div
                   class="flexCol placeholder__icon"
                   *ngIf="!imgUpload.content[_content.contentId] && !_content.img"
                 >
-                  <img src="/assets/icons/image.svg" alt="圖片">
+                  <img src="/assets/icons/image.svg" alt="圖片" />
                   <span>圖片限制1080 * 1080、500kb</span>
                 </div>
                 <img
-                  [src]="imgUpload.content[_content.contentId] ? 
-                    imgUpload.content[_content.contentId] : _content.img
+                  [src]="
+                    imgUpload.content[_content.contentId]
+                      ? imgUpload.content[_content.contentId]
+                      : _content.img
                   "
                   [alt]="_content.title"
                   class="content__img"
                   *ngIf="imgUpload.content[_content.contentId] || _content.img"
-                >
+                />
               </div>
             </ng-container>
             <ng-container *ngIf="_content.cardType === CardTypeEnum.video">
@@ -401,13 +416,10 @@
                 placeholder="請輸入影片嵌入網址（iframe）"
                 [value]="_content.videoLink"
                 (focusout)="handleVideoUrlInput($event, _content.contentId)"
-              >
+              />
               <div class="flexCenter content__appendix">
-                <div
-                  class="placeholder__icon"
-                  *ngIf="!_content.videoLink"
-                >
-                  <img src="/assets/icons/slow_motion_video.svg" alt="影片">
+                <div class="placeholder__icon" *ngIf="!_content.videoLink">
+                  <img src="/assets/icons/slow_motion_video.svg" alt="影片" />
                 </div>
                 <app-ala-iframe
                   [src]="_content.videoLink"
@@ -439,7 +451,7 @@
                 <img
                   src="/assets/icons/add_image.svg"
                   [alt]="'universal_operating_selectImg' | translate"
-                >
+                />
               </button>
               <button
                 class="photo__recovery__button"
@@ -457,7 +469,7 @@
     <section class="flexCol group__section">
       <h5 class="edit__section__title">分組</h5>
       <div class="flexRow">
-        <ng-container *ngFor="let _group of eventDetail.group; let _groupIndex = index;">
+        <ng-container *ngFor="let _group of eventDetail.group; let _groupIndex = index">
           <div class="flexRow">
             <div class="flexCol group__section__card">
               <input
@@ -467,28 +479,43 @@
                 [class.empty__warn]="_group?.name?.length === 0"
                 [value]="_group.name"
                 (focusout)="handleGroupTitleInput($event, _group.id)"
-              >
-              <div style="justify-content: space-between;">
+              />
+              <div style="justify-content: space-between">
                 <p class="selector__label">{{ '年齡限制' }}</p>
-                <div class="flexRow" style="justify-content: space-between;">
-                  <div *ngTemplateOutlet="ageSelector; context: {
-                    group: _group,
-                    type: 'min'
-                  }"></div>
+                <div class="flexRow" style="justify-content: space-between">
+                  <div
+                    *ngTemplateOutlet="
+                      ageSelector;
+                      context: {
+                        group: _group,
+                        type: 'min'
+                      }
+                    "
+                  ></div>
                   ~
-                  <div *ngTemplateOutlet="ageSelector; context: {
-                    group: _group,
-                    type: 'max'
-                  }"></div>
+                  <div
+                    *ngTemplateOutlet="
+                      ageSelector;
+                      context: {
+                        group: _group,
+                        type: 'max'
+                      }
+                    "
+                  ></div>
                 </div>
               </div>
               <div>
                 <p class="selector__label">{{ '性別限制' }}</p>
                 <div class="flexRow">
-                  <div *ngTemplateOutlet="genderSelector; context: {
-                    selectGender: _group.gender,
-                    groupId: _group.id
-                  }"></div>
+                  <div
+                    *ngTemplateOutlet="
+                      genderSelector;
+                      context: {
+                        selectGender: _group.gender,
+                        groupId: _group.id
+                      }
+                    "
+                  ></div>
                 </div>
               </div>
             </div>
@@ -497,25 +524,32 @@
               title="刪除此分組區塊"
               (click)="showDeleteAlert('group', _group.id)"
               *ngIf="
-                eventDetail.group.length > 1
-                && (currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create')
+                eventDetail.group.length > 1 &&
+                (currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create')
               "
             >
               <i class="icon-svg_web-icon_p1_012-close"></i>
             </button>
           </div>
         </ng-container>
-        <ng-container *ngIf="currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create'">
-          <div *ngTemplateOutlet="addNew; context: {
-            type: 'group'
-          }"></div>
+        <ng-container
+          *ngIf="currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create'"
+        >
+          <div
+            *ngTemplateOutlet="
+              addNew;
+              context: {
+                type: 'group'
+              }
+            "
+          ></div>
         </ng-container>
       </div>
     </section>
     <section class="flexCol fee__section">
       <h5 class="edit__section__title">報名組合</h5>
       <div class="flexRow">
-        <ng-container *ngFor="let _applyFee of eventDetail.applyFee; let _applyFeeIndex = index;">
+        <ng-container *ngFor="let _applyFee of eventDetail.applyFee; let _applyFeeIndex = index">
           <div class="flexRow">
             <div class="flexCol fee__section__card">
               <input
@@ -525,21 +559,19 @@
                 [class.empty__warn]="_applyFee?.title?.length === 0"
                 [value]="_applyFee.title"
                 (focusout)="handleFeeTitleInput($event, _applyFee.feeId)"
-              >
+              />
               <div class="fee__section__img">
+                <img src="/assets/icons/image.svg" alt="圖片" class="fee__placeholder__img" />
                 <img
-                  src="/assets/icons/image.svg"
-                  alt="圖片"
-                  class="fee__placeholder__img"
-                >
-                <img
-                  [src]="imgUpload.applyFee[_applyFee.feeId]?.crop ? 
-                    imgUpload.applyFee[_applyFee.feeId].crop : _applyFee.img
+                  [src]="
+                    imgUpload.applyFee[_applyFee.feeId]?.crop
+                      ? imgUpload.applyFee[_applyFee.feeId].crop
+                      : _applyFee.img
                   "
                   [alt]="_applyFee.title"
                   class="fee__img"
                   *ngIf="imgUpload.applyFee[_applyFee.feeId] || _applyFee.img"
-                >
+                />
               </div>
               <div class="flexRow">
                 <span class="money__symbol">＄</span>
@@ -549,9 +581,14 @@
                   class="fee__input"
                   [class.empty__warn]="_applyFee?.fee?.length === 0"
                   [value]="_applyFee.fee"
-                  [attr.disabled]="uiFlag.editMode !== 'create' && currentTimestamp >= eventInfo.applyDate.startDate ? true : null"
+                  [attr.disabled]="
+                    uiFlag.editMode !== 'create' &&
+                    currentTimestamp >= eventInfo.applyDate.startDate
+                      ? true
+                      : null
+                  "
                   (focusout)="handleFeeInput($event, _applyFee.feeId)"
-                >
+                />
               </div>
               <div class="flexRow have__product">
                 <button
@@ -572,8 +609,8 @@
                 title="刪除此費用區塊"
                 (click)="showDeleteAlert('applyFee', _applyFee.feeId)"
                 *ngIf="
-                  eventDetail.applyFee.length > 1
-                  && (currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create')
+                  eventDetail.applyFee.length > 1 &&
+                  (currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create')
                 "
               >
                 <i class="icon-svg_web-icon_p1_012-close"></i>
@@ -586,7 +623,7 @@
                 <img
                   src="/assets/icons/add_image.svg"
                   [alt]="'universal_operating_selectImg' | translate"
-                >
+                />
               </button>
               <button
                 class="photo__recovery__button"
@@ -599,25 +636,31 @@
             </div>
           </div>
         </ng-container>
-        <ng-container *ngIf="currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create'">
-          <div *ngTemplateOutlet="addNew; context: {
-            type: 'applyFee'
-          }"></div>
+        <ng-container
+          *ngIf="currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create'"
+        >
+          <div
+            *ngTemplateOutlet="
+              addNew;
+              context: {
+                type: 'applyFee'
+              }
+            "
+          ></div>
         </ng-container>
       </div>
     </section>
     <div class="mobileFiller"></div>
   </main>
-  <section
-    class="flexCenter info-editMask"
-    *ngIf="uiFlag.openImgSelector"
-  >
+  <section class="flexCenter info-editMask" *ngIf="uiFlag.openImgSelector">
     <div class="imgSelector">
       <app-image-cropper
-        [imgInputEvent]="uiFlag.openImgSelector === AlbumType.eventTheme ? 
-          imgUpload.theme.origin : (
-            imgUpload.applyFee[uiFlag.imgCurrentEditId] ? imgUpload.applyFee[uiFlag.imgCurrentEditId].origin : null
-          )
+        [imgInputEvent]="
+          uiFlag.openImgSelector === AlbumType.eventTheme
+            ? imgUpload.theme.origin
+            : imgUpload.applyFee[uiFlag.imgCurrentEditId]
+            ? imgUpload.applyFee[uiFlag.imgCurrentEditId].origin
+            : null
         "
         [albumType]="uiFlag.openImgSelector"
         (closeSelector)="closeSelector($event)"
@@ -630,18 +673,11 @@
     accept=".jpg,.jpeg,.gif,.png"
     (change)="handleContentImgSelected($event)"
     hidden
-  >
+  />
 </div>
 
-<ng-template
-  #ageSelector
-  let-group="group"
-  let-type="type"
->
-  <div
-    class="flexRow condition__selector"
-    (click)="openAgeSelector($event, type, group.id)"
-  >
+<ng-template #ageSelector let-group="group" let-type="type">
+  <div class="flexRow condition__selector" (click)="openAgeSelector($event, type, group.id)">
     <span>
       <ng-container *ngIf="group.age">
         {{ group.age[type] }}
@@ -650,11 +686,8 @@
         {{ type === 'min' ? 0 : 100 }}
       </ng-container>
     </span>
-    <ul
-      class="selector__list"
-      *ngIf="uiFlag.showAgeSelector === (type + '-' + group.id)"
-    >
-      <ng-container *ngFor="let _age of ageList;">
+    <ul class="selector__list" *ngIf="uiFlag.showAgeSelector === type + '-' + group.id">
+      <ng-container *ngFor="let _age of ageList">
         <ng-container *ngIf="type === 'min'">
           <li
             (click)="selectLimitAge($event, _age)"
@@ -673,51 +706,29 @@
         </ng-container>
       </ng-container>
     </ul>
-    <i 
+    <i
       class="icon-svg_web-icon_p1_006-unfold icon--unfold"
-      [class.icon--fold]="uiFlag.showAgeSelector === (type + '-' + group.id)"
+      [class.icon--fold]="uiFlag.showAgeSelector === type + '-' + group.id"
       *ngIf="currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create'"
     ></i>
   </div>
 </ng-template>
 
-<ng-template
-  #genderSelector
-  let-selectGender="selectGender"
-  let-groupId="groupId"
->
-  <div
-    class="flexRow condition__selector"
-    (click)="openGenderSelector($event, groupId)"
-  >
+<ng-template #genderSelector let-selectGender="selectGender" let-groupId="groupId">
+  <div class="flexRow condition__selector" (click)="openGenderSelector($event, groupId)">
     <span>
-      <ng-container *ngIf="selectGender === Sex.male">
-        男性
-      </ng-container>
-      <ng-container *ngIf="selectGender === Sex.female">
-        女性
-      </ng-container>
-      <ng-container
-        *ngIf="selectGender === Sex.unlimit || selectGender === undefined"
-      >
+      <ng-container *ngIf="selectGender === Sex.male"> 男性 </ng-container>
+      <ng-container *ngIf="selectGender === Sex.female"> 女性 </ng-container>
+      <ng-container *ngIf="selectGender === Sex.unlimit || selectGender === undefined">
         不限
       </ng-container>
     </span>
-    <ul
-      class="selector__list"
-      *ngIf="uiFlag.showGenderSelector === groupId"
-    >
-      <li (click)="selectLimitGender($event, Sex.unlimit)">
-        不限
-      </li>
-      <li (click)="selectLimitGender($event, Sex.male)">
-        男性
-      </li>
-      <li (click)="selectLimitGender($event, Sex.female)">
-        女性
-      </li>
+    <ul class="selector__list" *ngIf="uiFlag.showGenderSelector === groupId">
+      <li (click)="selectLimitGender($event, Sex.unlimit)">不限</li>
+      <li (click)="selectLimitGender($event, Sex.male)">男性</li>
+      <li (click)="selectLimitGender($event, Sex.female)">女性</li>
     </ul>
-    <i 
+    <i
       class="icon-svg_web-icon_p1_006-unfold icon--unfold"
       [class.icon--fold]="uiFlag.showGenderSelector === groupId"
       *ngIf="currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create'"
@@ -725,14 +736,8 @@
   </div>
 </ng-template>
 
-<ng-template
-  #addNew
-  let-type="type"
->
-  <div
-    class="add__new__item official-dashBorder"
-    (click)="addNewItem(type)"
-  >
+<ng-template #addNew let-type="type">
+  <div class="add__new__item official-dashBorder" (click)="addNewItem(type)">
     <i class="icon-svg_web-icon_p1_029-add"></i>
   </div>
 </ng-template>

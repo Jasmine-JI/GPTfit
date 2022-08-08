@@ -1,4 +1,12 @@
-import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnChanges,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  Input,
+} from '@angular/core';
 import { chart } from 'highcharts';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
@@ -8,21 +16,20 @@ import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
 
 dayjs.extend(isoWeek);
 
-
 // 建立圖表用-kidin-1081212
 class ChartOptions {
-  constructor (dataset) {
+  constructor(dataset) {
     return {
       chart: {
         type: 'column',
         height: 150,
-        backgroundColor: 'transparent'
+        backgroundColor: 'transparent',
       },
       title: {
-        text: ''
+        text: '',
       },
       credits: {
-        enabled: false
+        enabled: false,
       },
       xAxis: {
         type: 'datetime',
@@ -34,31 +41,31 @@ class ChartOptions {
           day: '%m/%d',
           week: '%m/%d',
           month: '%Y/%m',
-          year: '%Y'
-        }
+          year: '%Y',
+        },
       },
       yAxis: {
         min: 0,
         title: {
-            text: ''
+          text: '',
         },
         startOnTick: false,
         minPadding: 0.01,
         maxPadding: 0.01,
-        tickAmount: 1
+        tickAmount: 1,
       },
       tooltip: {},
       plotOptions: {
         column: {
-            stacking: 'normal',
-            pointPlacement: 0.33,
+          stacking: 'normal',
+          pointPlacement: 0.33,
         },
         series: {
           pointWidth: null,
-          maxPointWidth: 30
-        }
+          maxPointWidth: 30,
+        },
       },
-      series: dataset
+      series: dataset,
     };
   }
 }
@@ -66,29 +73,27 @@ class ChartOptions {
 @Component({
   selector: 'app-stack-column-chart',
   templateUrl: './stack-column-chart.component.html',
-  styleUrls: ['./stack-column-chart.component.scss', '../chart-share-style.scss']
+  styleUrls: ['./stack-column-chart.component.scss', '../chart-share-style.scss'],
 })
 export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   noData = true;
   dateList = [];
 
-  @Input() perZoneData: ZoneTrendData;  // 心率或閾值區間用變數
+  @Input() perZoneData: ZoneTrendData; // 心率或閾值區間用變數
   @Input() dateRange: string;
-  @Input() data: any;  // 生活追蹤用變數-kidin-1090218
-  @Input() analysisData: any;  // 流量分析頁面用變數-kidin-1100810
+  @Input() data: any; // 生活追蹤用變數-kidin-1090218
+  @Input() analysisData: any; // 流量分析頁面用變數-kidin-1100810
   @Input() searchDate: Array<number>;
   @Input() page: DisplayPage;
   @Input() isPreviewMode = false;
-  @ViewChild('container', {static: false})
+  @ViewChild('container', { static: false })
   container: ElementRef;
 
-  constructor(
-    private translate: TranslateService,
-  ) { }
+  constructor(private translate: TranslateService) {}
 
-  ngOnInit () {}
+  ngOnInit() {}
 
-  ngOnChanges (e) {
+  ngOnChanges(e) {
     if (this.perZoneData) {
       if (this.perZoneData.zoneZero.length === 0) {
         this.noData = true;
@@ -103,51 +108,50 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
       this.noData = false;
       this.initAnalysisTrendChart();
     }
-
   }
 
   /**
    * 心率趨勢圖表（運動報告）
    * @author kidin-1090218
    */
-  initZoneTrendChart () {
+  initZoneTrendChart() {
     const ZoneTrendDataset = [
       {
         name: 'Zone5',
         data: this.perZoneData.zoneFive,
         showInLegend: false,
-        color: zoneColor[5]
+        color: zoneColor[5],
       },
       {
         name: 'Zone4',
         data: this.perZoneData.zoneFour,
         showInLegend: false,
-        color: zoneColor[4]
+        color: zoneColor[4],
       },
       {
         name: 'Zone3',
         data: this.perZoneData.zoneThree,
         showInLegend: false,
-        color: zoneColor[3]
+        color: zoneColor[3],
       },
       {
         name: 'Zone2',
         data: this.perZoneData.zoneTwo,
         showInLegend: false,
-        color: zoneColor[2]
+        color: zoneColor[2],
       },
       {
         name: 'Zone1',
         data: this.perZoneData.zoneOne,
         showInLegend: false,
-        color: zoneColor[1]
+        color: zoneColor[1],
       },
       {
         name: 'Zone0',
         data: this.perZoneData.zoneZero,
         showInLegend: false,
-        color: zoneColor[0]
-      }
+        color: zoneColor[0],
+      },
     ];
 
     // 表示此圖表為閾值區間
@@ -156,16 +160,14 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         name: 'Zone6',
         data: this.perZoneData.zoneSix,
         showInLegend: false,
-        color: zoneColor[6]
-      })
-
+        color: zoneColor[6],
+      });
     }
 
     const HRTrendChartOptions = new ChartOptions(ZoneTrendDataset);
 
     // 設定圖表x軸時間間距-kidin-1090204
     if (this.page !== 'cloudrun') {
-
       if (this.dateRange === 'day' && this.perZoneData.zoneZero.length <= 7) {
         HRTrendChartOptions['xAxis'].tickInterval = DAY;
       } else if (this.dateRange === 'day' && this.perZoneData.zoneZero.length > 7) {
@@ -173,18 +175,17 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
       } else {
         HRTrendChartOptions['xAxis'].tickInterval = MONTH;
       }
-
     }
 
     // 設定圖表y軸單位格式-kidin-1090204
     HRTrendChartOptions['yAxis'].labels = {
       formatter: function () {
         const yVal = this.value,
-              costhr = Math.floor(yVal / 3600),
-              costmin = Math.floor((yVal - costhr * 60 * 60) / 60),
-              costsecond = Math.round(yVal - costmin * 60),
-              timeMin = ('0' + costmin).slice(-2),
-              timeSecond = ('0' + costsecond).slice(-2);
+          costhr = Math.floor(yVal / 3600),
+          costmin = Math.floor((yVal - costhr * 60 * 60) / 60),
+          costsecond = Math.round(yVal - costmin * 60),
+          timeMin = ('0' + costmin).slice(-2),
+          timeSecond = ('0' + costsecond).slice(-2);
 
         if (costhr === 0 && timeMin === '00') {
           return `0:${timeSecond}`;
@@ -193,18 +194,18 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         } else {
           return `${costhr}:${timeMin}:${timeSecond}`;
         }
-      }
+      },
     };
 
     // 設定浮動提示框顯示格式-kidin-1090204
     HRTrendChartOptions['tooltip'] = {
       formatter: function () {
         const yVal = this.y,
-              costhr = Math.floor(yVal / 3600),
-              costmin = Math.floor((yVal - costhr * 60 * 60) / 60),
-              costsecond = Math.round(yVal - costmin * 60),
-              timeMin = ('0' + costmin).slice(-2),
-              timeSecond = ('0' + costsecond).slice(-2);
+          costhr = Math.floor(yVal / 3600),
+          costmin = Math.floor((yVal - costhr * 60 * 60) / 60),
+          costsecond = Math.round(yVal - costmin * 60),
+          timeMin = ('0' + costmin).slice(-2),
+          timeSecond = ('0' + costsecond).slice(-2);
 
         let zoneTime = '';
 
@@ -217,11 +218,11 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         const yTotal = this.total,
-              totalHr = Math.floor(yTotal / 3600),
-              totalmin = Math.floor(Math.round(yTotal - totalHr * 60 * 60) / 60),
-              totalsecond = Math.round(yTotal - totalmin * 60),
-              timeTotalMin = ('0' + totalmin).slice(-2),
-              timeTotalSecond = ('0' + totalsecond).slice(-2);
+          totalHr = Math.floor(yTotal / 3600),
+          totalmin = Math.floor(Math.round(yTotal - totalHr * 60 * 60) / 60),
+          totalsecond = Math.round(yTotal - totalmin * 60),
+          timeTotalMin = ('0' + totalmin).slice(-2),
+          timeTotalSecond = ('0' + totalsecond).slice(-2);
 
         let totalZoneTime = '';
 
@@ -234,7 +235,9 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (this.series.xAxis.tickInterval === MONTH) {
-          return `${dayjs(this.x).format('YYYY-MM-DD')}~${dayjs(this.x + 6 * DAY).format('YYYY-MM-DD')}
+          return `${dayjs(this.x).format('YYYY-MM-DD')}~${dayjs(this.x + 6 * DAY).format(
+            'YYYY-MM-DD'
+          )}
             <br/>${this.series.name}: ${zoneTime}
             <br/>Total: ${totalZoneTime}`;
         } else {
@@ -242,9 +245,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
             <br/>${this.series.name}: ${zoneTime}
             <br/>Total: ${totalZoneTime}`;
         }
-
-      }
-
+      },
     };
 
     this.createChart(HRTrendChartOptions);
@@ -254,9 +255,8 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
    * 睡眠趨勢圖表（生活追蹤報告）
    * @author kidin-1090218
    */
-  initSleepChart () {
-    let dataSet: Array<any>,
-        dataLength: number;
+  initSleepChart() {
+    let dataSet: Array<any>, dataLength: number;
     const { deep, light, standUp } = this.data;
     this.noData = false;
     dataLength = deep.length;
@@ -265,20 +265,20 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         name: this.translate.instant('universal_lifeTracking_lightSleep'),
         data: light,
         showInLegend: false,
-        color: sleepColor.light
+        color: sleepColor.light,
       },
       {
         name: this.translate.instant('universal_lifeTracking_deepSleep'),
         data: deep,
         showInLegend: false,
-        color: sleepColor.deep
+        color: sleepColor.deep,
       },
       {
         name: this.translate.instant('universal_lifeTracking_wideAwake'),
         data: standUp,
         showInLegend: false,
-        color: sleepColor.standup
-      }
+        color: sleepColor.standup,
+      },
     ];
 
     const chartOptions = new ChartOptions(dataSet);
@@ -288,13 +288,13 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
 
     // 設定圖表x軸時間間距-kidin-1090204
     const isDayReport = this.dateRange === 'day',
-          overSevenDay = this.dateList.length > 7 || dataLength > 7;
+      overSevenDay = this.dateList.length > 7 || dataLength > 7;
     if (isDayReport && !overSevenDay) {
-      chartOptions['xAxis'].tickInterval = DAY;  // 間距一天
+      chartOptions['xAxis'].tickInterval = DAY; // 間距一天
     } else if (isDayReport && overSevenDay) {
-      chartOptions['xAxis'].tickInterval = WEEK;  // 間距一週
+      chartOptions['xAxis'].tickInterval = WEEK; // 間距一週
     } else {
-      chartOptions['xAxis'].tickInterval = MONTH;  // 間距一個月
+      chartOptions['xAxis'].tickInterval = MONTH; // 間距一個月
     }
 
     // 設定圖表y軸單位格式-kidin-1090204
@@ -302,7 +302,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
       formatter: function () {
         const yVal = this.value;
         let costhr = Math.floor(yVal / 3600),
-            costmin = Math.floor((yVal - costhr * 60 * 60) / 60);
+          costmin = Math.floor((yVal - costhr * 60 * 60) / 60);
         const costsecond = Math.round(yVal - costmin * 60);
 
         if (costsecond !== 0) {
@@ -321,18 +321,16 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         } else {
           return `${costhr}:${timeMin}`;
         }
-
-      }
-
+      },
     };
 
     // 設定浮動提示框顯示格式-kidin-1090204
     chartOptions['tooltip'] = {
       formatter: function () {
         const yVal = this.y,
-              costhr = Math.floor(yVal / 3600),
-              costmin = Math.floor((yVal - costhr * 60 * 60) / 60),
-              timeMin = ('0' + costmin).slice(-2);
+          costhr = Math.floor(yVal / 3600),
+          costmin = Math.floor((yVal - costhr * 60 * 60) / 60),
+          timeMin = ('0' + costmin).slice(-2);
         let zoneTime = '';
         if (costhr === 0 && timeMin === '00') {
           zoneTime = `0:00`;
@@ -344,9 +342,9 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
 
         const yTotal = this.total;
         let totalHr = Math.floor(yTotal / 3600),
-            totalmin = Math.round((yTotal - totalHr * 60 * 60) / 60);
+          totalmin = Math.round((yTotal - totalHr * 60 * 60) / 60);
         const totalsecond = Math.round(yTotal - totalmin * 60),
-              timeTotalMin = ('0' + totalmin).slice(-2);
+          timeTotalMin = ('0' + totalmin).slice(-2);
 
         if (totalsecond !== 0) {
           totalmin++;
@@ -366,7 +364,9 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (this.series.xAxis.tickInterval === MONTH) {
-          return `${dayjs(this.x).format('YYYY-MM-DD')}~${dayjs(this.x + 6 * DAY).format('YYYY-MM-DD')}
+          return `${dayjs(this.x).format('YYYY-MM-DD')}~${dayjs(this.x + 6 * DAY).format(
+            'YYYY-MM-DD'
+          )}
             <br/>${this.series.name}: ${zoneTime}
             <br/>Total: ${totalZoneTime}`;
         } else {
@@ -374,28 +374,22 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
             <br/>${this.series.name}: ${zoneTime}
             <br/>Total: ${totalZoneTime}`;
         }
-
-      }
-
+      },
     };
 
     this.createChart(chartOptions);
   }
 
   // 根據搜尋期間，列出日期清單供圖表使用-kidin-1090220
-  createDateList () {
-    let diff,
-        weekStartDay,
-        weekEndDay;
+  createDateList() {
+    let diff, weekStartDay, weekEndDay;
     if (this.dateRange === 'day') {
-      diff = (this.searchDate[1] - this.searchDate[0]) / (DAY);
+      diff = (this.searchDate[1] - this.searchDate[0]) / DAY;
 
       for (let i = 0; i < diff + 1; i++) {
         this.dateList.push(this.searchDate[0] + DAY * i);
       }
-
     } else if (this.dateRange === 'week') {
-
       // 周報告開頭是星期日-kidin-1090220
       if (dayjs(this.searchDate[0]).isoWeekday() !== 7) {
         weekStartDay = this.searchDate[0] - DAY * dayjs(this.searchDate[0]).isoWeekday();
@@ -409,13 +403,12 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         weekEndDay = this.searchDate[1];
       }
 
-      diff = ((weekEndDay - weekStartDay) / (WEEK)) + 1;
+      diff = (weekEndDay - weekStartDay) / WEEK + 1;
 
       for (let i = 0; i < diff + 1; i++) {
         this.dateList.push(weekStartDay + WEEK * i);
       }
     }
-
   }
 
   /**
@@ -428,32 +421,32 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         name: 'Fitness',
         data: this.analysisData.fitness,
         showInLegend: true,
-        color: zoneColor[4]
+        color: zoneColor[4],
       },
       {
         name: 'Trainlive',
         data: this.analysisData.trainlive,
         showInLegend: true,
-        color: zoneColor[3]
+        color: zoneColor[3],
       },
       {
         name: 'Cloud Run',
         data: this.analysisData.cloudrun,
         showInLegend: true,
-        color: zoneColor[2]
+        color: zoneColor[2],
       },
       {
         name: 'Connect',
         data: this.analysisData.connect,
         showInLegend: true,
-        color: zoneColor[1]
+        color: zoneColor[1],
       },
       {
         name: 'GPTfit',
         data: this.analysisData.gptfit,
         showInLegend: true,
-        color: zoneColor[0]
-      }
+        color: zoneColor[0],
+      },
     ];
 
     const trendChartOptions = new ChartOptions(ZoneTrendDataset);
@@ -463,9 +456,8 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
     trendChartOptions['yAxis'].labels = {
       formatter: function () {
         const mb = 1024 * 1024;
-        return `${parseFloat((this.value / mb).toFixed(2))} MB`
-      }
-
+        return `${parseFloat((this.value / mb).toFixed(2))} MB`;
+      },
     };
 
     // 設定浮動提示框顯示格式-kidin-1090204
@@ -473,8 +465,8 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
       formatter: function () {
         const getFinalText = (val) => {
           const kb = 1024,
-                mb = 1024 * kb,
-                gb = 1024 * mb;
+            mb = 1024 * kb,
+            gb = 1024 * mb;
           if (val > gb) {
             return `${parseFloat((val / gb).toFixed(2))} GB`;
           } else if (val > mb) {
@@ -482,25 +474,22 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
           } else if (val > kb) {
             return `${parseFloat((val / kb).toFixed(2))} KB`;
           } else {
-            return `${val} Byte`
+            return `${val} Byte`;
           }
-
         };
 
         return `${dayjs(this.x).format('YYYY-MM-DD')}
           <br/>${this.series.name}: ${getFinalText(this.y)}
           <br/>Total: ${getFinalText(this.total)}`;
-      }
-
+      },
     };
 
     this.createChart(trendChartOptions);
   }
 
   // 確認取得元素才建立圖表-kidin-1090706
-  createChart (option: ChartOptions) {
-
-    setTimeout (() => {
+  createChart(option: ChartOptions) {
+    setTimeout(() => {
       if (!this.container) {
         this.createChart(option);
       } else {
@@ -508,9 +497,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         chart(chartDiv, option);
       }
     }, 200);
-
   }
 
-  ngOnDestroy () {}
-
+  ngOnDestroy() {}
 }

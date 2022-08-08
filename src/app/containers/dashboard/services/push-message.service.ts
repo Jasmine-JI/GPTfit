@@ -3,11 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PushMessageService {
-
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   /**
    * api 9002-建立推播訊息
@@ -44,5 +43,4 @@ export class PushMessageService {
   cancelPushMessage(body: any): Observable<any> {
     return this.http.post<any>('/api/v1/notification/cancelNotification', body);
   }
-
 }

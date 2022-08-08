@@ -1,16 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { fromEvent, Subject, Subscription, of } from 'rxjs';
-import { takeUntil, switchMap } from 'rxjs/operators';
+import { fromEvent, Subject, Subscription } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { deepCopy } from '../../../../shared/utils/index';
 import { Router } from '@angular/router';
 import { appPath } from '../../../../app-path.const';
 
-type Axis = 'x' | 'y' | 'z'
+type Axis = 'x' | 'y' | 'z';
 
 enum WavePosition {
   top,
   center,
-  bottom
+  bottom,
 }
 
 interface WaveInfo {
@@ -19,13 +19,12 @@ interface WaveInfo {
   top: {
     value: number;
     time: number;
-  },
+  };
   bottom: {
     value: number;
     time: number;
-  }
-};
-
+  };
+}
 
 /**
  * 預設設定參數
@@ -52,17 +51,15 @@ const defaultOption = {
   /**
    * 最大取樣振幅
    */
-  maxAmplitude: 40
-}
-
+  maxAmplitude: 40,
+};
 
 @Component({
   selector: 'app-gsensor',
   templateUrl: './gsensor.component.html',
-  styleUrls: ['./gsensor.component.scss']
+  styleUrls: ['./gsensor.component.scss'],
 })
 export class GsensorComponent implements OnInit, OnDestroy {
-
   ngUnsubscribe = new Subject();
   deviceMotionSubscription = new Subscription();
 
@@ -87,8 +84,8 @@ export class GsensorComponent implements OnInit, OnDestroy {
   waveRange = {
     x: new WaveRange(),
     y: new WaveRange(),
-    z: new WaveRange()
-  }
+    z: new WaveRange(),
+  };
 
   /**
    * 將最新的波形先暫存
@@ -96,8 +93,8 @@ export class GsensorComponent implements OnInit, OnDestroy {
   tempWave = {
     x: new OneWave(),
     y: new OneWave(),
-    z: new OneWave()
-  }
+    z: new OneWave(),
+  };
 
   /**
    * 所有有效的波形紀錄
@@ -105,8 +102,8 @@ export class GsensorComponent implements OnInit, OnDestroy {
   allRecord = {
     x: <Array<WaveInfo>>[],
     y: <Array<WaveInfo>>[],
-    z: <Array<WaveInfo>>[]
-  }
+    z: <Array<WaveInfo>>[],
+  };
 
   /**
    * 螢幕喚醒鎖
@@ -135,12 +132,10 @@ export class GsensorComponent implements OnInit, OnDestroy {
   startMotionIsForward = {
     x: <boolean | null>null,
     y: <boolean | null>null,
-    z: <boolean | null>null
+    z: <boolean | null>null,
   };
 
-  constructor(
-    private router: Router
-  ) { }
+  constructor(private router: Router) {}
 
   /**
    * 元件初始化
@@ -160,7 +155,6 @@ export class GsensorComponent implements OnInit, OnDestroy {
     if (location.host === 'www.gptfit.com') {
       this.router.navigateByUrl(appPath.pageNotFound);
     }
-
   }
 
   /**
@@ -178,7 +172,6 @@ export class GsensorComponent implements OnInit, OnDestroy {
     this.timer = setInterval(() => {
       if (!this.setFinished) this.trainingTime += resolutionTime;
     }, resolutionTime);
-
   }
 
   /**
@@ -187,12 +180,10 @@ export class GsensorComponent implements OnInit, OnDestroy {
   screenWake() {
     // 1. 首先看是否支援，有存在這個 API 就代表支援
     if ('wakeLock' in navigator) {
-      (navigator as any).wakeLock.request('screen').then(wakeLock => {
+      (navigator as any).wakeLock.request('screen').then((wakeLock) => {
         this.wakeLock = wakeLock;
       });
-
     }
-
   }
 
   /**
@@ -200,21 +191,21 @@ export class GsensorComponent implements OnInit, OnDestroy {
    */
   subscribeDeviceMotionEvent() {
     const deviceMotionEvent = fromEvent(window, 'devicemotion');
-    this.deviceMotionSubscription = deviceMotionEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
-      // 確認是否已完成這組重訓動作
-      if (!this.setFinished) {
-        const { trainingTime } = this;
-        const { accelerationIncludingGravity: { x, y, z } } = e as any;
-        this.handleValue('x', x, trainingTime);
-        this.handleValue('y', y, trainingTime);
-        this.handleValue('z', z, trainingTime);
-        this.totalPoint++;
-      }
-
-    });
-
+    this.deviceMotionSubscription = deviceMotionEvent
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((e) => {
+        // 確認是否已完成這組重訓動作
+        if (!this.setFinished) {
+          const { trainingTime } = this;
+          const {
+            accelerationIncludingGravity: { x, y, z },
+          } = e as any;
+          this.handleValue('x', x, trainingTime);
+          this.handleValue('y', y, trainingTime);
+          this.handleValue('z', z, trainingTime);
+          this.totalPoint++;
+        }
+      });
   }
 
   /**
@@ -273,13 +264,11 @@ export class GsensorComponent implements OnInit, OnDestroy {
 
         // 如果是反向動作且尚未紀錄到波谷資訊，代表為重訓回程動作
         if (waveToBe) {
-
           if (startMotionIsForward === false && !waveBottomTime) {
             this.tempWave[axis].loadPreviousRecord();
           } else {
             this.saveWave(axis);
           }
-          
         }
         break;
       case WavePosition.bottom:
@@ -287,20 +276,17 @@ export class GsensorComponent implements OnInit, OnDestroy {
 
         // 如果是正向動作且尚未紀錄到波峰資訊，代表為重訓回程動作
         if (waveToBe) {
-
           if (startMotionIsForward === true && !waveTopTime) {
             this.tempWave[axis].loadPreviousRecord();
           } else {
             this.saveWave(axis);
           }
-          
         }
 
         break;
       default:
         break;
     }
-        
   }
 
   /**
@@ -310,13 +296,8 @@ export class GsensorComponent implements OnInit, OnDestroy {
    * @param time {time}-目前訓練總計時
    */
   recordInfo(axis: Axis, value: number, time: number) {
-    const {
-      waveTopValue,
-      waveBottomValue,
-      waveTopTime,
-      waveBottomTime,
-      waveStartTime
-    } = this.tempWave[axis];
+    const { waveTopValue, waveBottomValue, waveTopTime, waveBottomTime, waveStartTime } =
+      this.tempWave[axis];
 
     // 第一個point先視為中心點，以及第一個波形起始點
     if (this.totalPoint === 0 && !waveStartTime) {
@@ -342,7 +323,8 @@ export class GsensorComponent implements OnInit, OnDestroy {
         break;
       case WavePosition.center:
         // 僅以波回到中心位置做為波形開始與結束
-        if (!waveStartTime || (!waveTopTime && !waveBottomTime)) this.tempWave[axis].waveStartTime = time;
+        if (!waveStartTime || (!waveTopTime && !waveBottomTime))
+          this.tempWave[axis].waveStartTime = time;
         if (waveStartTime && waveTopTime && waveBottomTime) this.tempWave[axis].waveEndTime = time;
         break;
     }
@@ -355,10 +337,10 @@ export class GsensorComponent implements OnInit, OnDestroy {
    * @param axis {Axis}-軸線類別
    */
   saveWaveToBe(axis: Axis) {
-     const { minWaveTime, minAmplitude } = defaultOption;
-     const { waveTime, doubleAmplitude } = this.tempWave[axis];
-     const timeTooShort = waveTime < minWaveTime;
-     const amplitudeTooSmall = doubleAmplitude < minAmplitude;
+    const { minWaveTime, minAmplitude } = defaultOption;
+    const { waveTime, doubleAmplitude } = this.tempWave[axis];
+    const timeTooShort = waveTime < minWaveTime;
+    const amplitudeTooSmall = doubleAmplitude < minAmplitude;
 
     // 波長過短或振幅過小視為無效波
     if (timeTooShort || amplitudeTooSmall) {
@@ -380,7 +362,10 @@ export class GsensorComponent implements OnInit, OnDestroy {
    */
   saveWave(axis: Axis) {
     const { waveToBe } = this.tempWave[axis];
-    const { top: { value: topValue }, bottom: { value: bottomValue } } = waveToBe;
+    const {
+      top: { value: topValue },
+      bottom: { value: bottomValue },
+    } = waveToBe;
     const doubleAmplitude = topValue - bottomValue;
     this.allRecord[axis].push(waveToBe);
     this.tempWave[axis].clearWaveToBe();
@@ -398,7 +383,6 @@ export class GsensorComponent implements OnInit, OnDestroy {
       this.waveRange[axis].effectAmplitude = doubleAmplitude;
       this.traceBackWave(axis);
     }
-
   }
 
   /**
@@ -408,11 +392,13 @@ export class GsensorComponent implements OnInit, OnDestroy {
   traceBackWave(axis: Axis) {
     const { waveAmplitudeThreshold } = defaultOption;
     const { effectAmplitude } = this.waveRange[axis];
-    this.allRecord[axis] = this.allRecord[axis].filter(_record => {
-      const { top: { value: topValue }, bottom: { value: bottomValue } } = _record;
-      return (topValue - bottomValue) > (effectAmplitude * waveAmplitudeThreshold);
+    this.allRecord[axis] = this.allRecord[axis].filter((_record) => {
+      const {
+        top: { value: topValue },
+        bottom: { value: bottomValue },
+      } = _record;
+      return topValue - bottomValue > effectAmplitude * waveAmplitudeThreshold;
     });
-
   }
 
   /**
@@ -422,8 +408,12 @@ export class GsensorComponent implements OnInit, OnDestroy {
     const effectAmplitudeX = this.waveRange.x.effectAmplitude;
     const effectAmplitudeY = this.waveRange.y.effectAmplitude;
     const effectAmplitudeZ = this.waveRange.z.effectAmplitude;
-    const amplitudeArray = [['x', effectAmplitudeX], ['y', effectAmplitudeY], ['z', effectAmplitudeZ]];
-    const [axis, value] = amplitudeArray.sort((a: Array<any>, b: Array<any>) => b[1] - a[1])[0];
+    const amplitudeArray = [
+      ['x', effectAmplitudeX],
+      ['y', effectAmplitudeY],
+      ['z', effectAmplitudeZ],
+    ];
+    const [axis, ] = amplitudeArray.sort((a: Array<any>, b: Array<any>) => b[1] - a[1])[0];
     const referenceLength = this.allRecord[axis].length;
     if (referenceLength >= this.repsTarget) this.setFinished = true;
     return this.allRecord[axis].length;
@@ -440,14 +430,14 @@ export class GsensorComponent implements OnInit, OnDestroy {
     this.allRecord = {
       x: [],
       y: [],
-      z: []
+      z: [],
     };
 
     this.startMotionIsForward = {
       x: null,
       y: null,
-      z: null
-    }
+      z: null,
+    };
 
     this.waveRange.x.init();
     this.waveRange.y.init();
@@ -473,15 +463,12 @@ export class GsensorComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }
-
 
 /**
  * 單一波形資訊
  */
 class OneWave {
-
   private _waveTopValue: number | null = null;
   private _waveBottomValue: number | null = null;
   private _waveStartTime: number | null = null;
@@ -495,8 +482,6 @@ class OneWave {
    * 再計入次數中
    */
   private _waveToBe: WaveInfo | null = null;
-
-  constructor() {}
 
   /**
    * 初始化變數
@@ -514,10 +499,10 @@ class OneWave {
    * 將之前暫存的波形寫回，以便更新該筆紀錄
    */
   loadPreviousRecord() {
-    const { 
+    const {
       startTime,
       top: { value: topValue, time: topTime },
-      bottom: { value: bottomValue, time: bottomTime }
+      bottom: { value: bottomValue, time: bottomTime },
     } = this._waveToBe as WaveInfo;
 
     this._waveTopValue = topValue;
@@ -525,7 +510,7 @@ class OneWave {
     this._waveStartTime = startTime;
     this._waveTopTime = topTime;
     this._waveBottomTime = bottomTime;
-    this._waveEndTime = null;  // 重load代表該動作尚未結束
+    this._waveEndTime = null; // 重load代表該動作尚未結束
     this.clearWaveToBe();
   }
 
@@ -645,7 +630,7 @@ class OneWave {
       _waveStartTime,
       _waveTopTime,
       _waveBottomTime,
-      _waveEndTime
+      _waveEndTime,
     } = this;
 
     return {
@@ -653,15 +638,13 @@ class OneWave {
       endTime: _waveEndTime as number,
       top: {
         value: _waveTopValue as number,
-        time: _waveTopTime as number
+        time: _waveTopTime as number,
       },
       bottom: {
         value: _waveBottomValue as number,
-        time: _waveBottomTime as number
-      }
-
+        time: _waveBottomTime as number,
+      },
     };
-
   }
 
   /**
@@ -685,20 +668,15 @@ class OneWave {
   get waveToBe() {
     return this._waveToBe ? deepCopy(this._waveToBe) : this._waveToBe;
   }
-
 }
-
 
 /**
  * 用來判斷是否為採樣波形
  */
 class WaveRange {
-
   private _peakTop: number | null = null;
   private _peakBottm: number | null = null;
   private _effectAmplitude = defaultOption.minAmplitude;
-
-  constructor() {}
 
   /**
    * 初始化範圍
@@ -718,18 +696,18 @@ class WaveRange {
   }
 
   /**
+   * 取得最高波峰值
+   */
+  get peakTop() {
+    return this._peakTop || 0;
+  }
+
+  /**
    * 儲存最低波峰值
    * @param accelerationValue {number}-目前加速度
    */
   set peakBottom(accelerationValue: number) {
     this._peakBottm = accelerationValue;
-  }
-
-  /**
-   * 取得最高波峰值
-   */
-  get peakTop() {
-    return this._peakTop || 0;
   }
 
   /**
@@ -778,12 +756,11 @@ class WaveRange {
   getWavePosition(accelerationValue: number) {
     const { waveCenter, _effectAmplitude } = this;
     const { waveAmplitudeThreshold } = defaultOption;
-    const threshold = _effectAmplitude * waveAmplitudeThreshold * 0.5;  // 上下波形原點區間門檻值
+    const threshold = _effectAmplitude * waveAmplitudeThreshold * 0.5; // 上下波形原點區間門檻值
     const centerTop = waveCenter + threshold;
     const centerBottom = waveCenter - threshold;
     if (accelerationValue > centerTop) return WavePosition.top;
     if (accelerationValue < centerBottom) return WavePosition.bottom;
     return WavePosition.center;
   }
-
 }

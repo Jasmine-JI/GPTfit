@@ -8,5 +8,5 @@ export enum AlaApp {
   trainlive,
   fitness,
   tft,
-  all = 99
+  all = 99,
 }

@@ -2,7 +2,6 @@
  * 處理單一選項選擇行為
  */
 export class AnalysisOneOption {
-
   /**
    * 該選項資訊
    */
@@ -22,7 +21,6 @@ export class AnalysisOneOption {
    * 是否可以取消選擇
    */
   private _canCancel = true;
-
 
   constructor(info: any, selected = false) {
     this._info = info;
@@ -70,7 +68,6 @@ export class AnalysisOneOption {
     } else if (selectApproved) {
       this._selected = true;
     }
-
   }
 
   /**
@@ -93,5 +90,4 @@ export class AnalysisOneOption {
   get info() {
     return this._info;
   }
-
 }

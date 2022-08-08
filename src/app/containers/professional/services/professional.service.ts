@@ -12,10 +12,9 @@ import { REGEX_GROUP_ID } from '../../../shared/models/utils-constant';
 import { GroupInfo } from '../../../shared/classes/group-info';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProfessionalService {
-
   /**
    * 使用者所有群組權限
    */
@@ -31,11 +30,7 @@ export class ProfessionalService {
    */
   private _groupAccessright$ = new BehaviorSubject(AccessRight.guest);
 
-
-  constructor(
-    private authService: AuthService,
-    private api11xxService: Api11xxService
-  ) {
+  constructor(private authService: AuthService, private api11xxService: Api11xxService) {
     this.refreshAllGroupAccessright();
   }
 
@@ -51,8 +46,10 @@ export class ProfessionalService {
    */
   get isAdmin() {
     if (!this._allAccessright) return false;
-    
-    const currentAccessRight = this._allAccessright.filter(_list => _list.groupId === this._currentGroupId);
+
+    const currentAccessRight = this._allAccessright.filter(
+      (_list) => _list.groupId === this._currentGroupId
+    );
     if (!currentAccessRight[0]) return false;
 
     return +currentAccessRight[0].accessRight <= AccessRight.coachAdmin;
@@ -63,17 +60,21 @@ export class ProfessionalService {
    */
   refreshAllGroupAccessright() {
     const body = { token: this.authService.token };
-    this.api11xxService.fetchMemberAccessRight(body).pipe(
-      map((res: any) => {
-        const result = checkResponse(res, false) ? res.info.groupAccessRight : [];
-        this._allAccessright = result.filter(_accessright => _accessright.joinStatus === GroupJoinStatus.allow);
-        return result;
-      }),
-      tap(result => this.checkGroupAccessright(this._currentGroupId, true)),
-    ).subscribe();
-
+    this.api11xxService
+      .fetchMemberAccessRight(body)
+      .pipe(
+        map((res: any) => {
+          const result = checkResponse(res, false) ? res.info.groupAccessRight : [];
+          this._allAccessright = result.filter(
+            (_accessright) => _accessright.joinStatus === GroupJoinStatus.allow
+          );
+          return result;
+        }),
+        tap((result) => this.checkGroupAccessright(this._currentGroupId, true))
+      )
+      .subscribe();
   }
- 
+
   /**
    * 取得使用者在該群組之權限
    * @param groupId {string}-群組編號
@@ -85,9 +86,8 @@ export class ProfessionalService {
       this._currentGroupId = groupId;
       this._groupAccessright$.next(accessright);
     }
- 
   }
- 
+
   /**
    * 篩選使用者在該群組之權限
    * @param groupId {string}-群組編號
@@ -96,29 +96,32 @@ export class ProfessionalService {
    */
   filterGroupAccessright(groupId: string): AccessRight {
     if (this._allAccessright) {
-      const { groups: { brandId, branchId, classId } } = REGEX_GROUP_ID.exec(groupId);
+      const {
+        groups: { brandId, branchId, classId },
+      } = REGEX_GROUP_ID.exec(groupId);
       const groupLevel = GroupInfo.getGroupLevel(groupId);
-      const relateAccessright = this._allAccessright.filter(_accessright => {
-        const { groups: { brandId: _brandId, branchId: _branchId, classId: _classId } } = REGEX_GROUP_ID.exec(_accessright.groupId);
-        const sameBrand = brandId === _brandId;
-        const sameBranch = sameBrand && branchId === _branchId;
-        const sameClass = sameBranch && classId === _classId;
-        const brandLevel = sameBrand && _branchId === '0';
-        const branchLevel = sameBranch && _classId === '0';
-        switch (groupLevel) {
-          case GroupLevel.brand:
-            return brandLevel;
-          case GroupLevel.branch:
-            return brandLevel || branchLevel;
-          case GroupLevel.class:
-            return brandLevel || branchLevel || sameClass;
-        }
-
-      }).sort((a, b) => +a.accessRight - +b.accessRight);
+      const relateAccessright = this._allAccessright
+        .filter((_accessright) => {
+          const {
+            groups: { brandId: _brandId, branchId: _branchId, classId: _classId },
+          } = REGEX_GROUP_ID.exec(_accessright.groupId);
+          const sameBrand = brandId === _brandId;
+          const sameBranch = sameBrand && branchId === _branchId;
+          const sameClass = sameBranch && classId === _classId;
+          const brandLevel = sameBrand && _branchId === '0';
+          const branchLevel = sameBranch && _classId === '0';
+          switch (groupLevel) {
+            case GroupLevel.brand:
+              return brandLevel;
+            case GroupLevel.branch:
+              return brandLevel || branchLevel;
+            case GroupLevel.class:
+              return brandLevel || branchLevel || sameClass;
+          }
+        })
+        .sort((a, b) => +a.accessRight - +b.accessRight);
 
       return relateAccessright[0] ? +relateAccessright[0].accessRight : AccessRight.guest;
     }
-
   }
-
 }

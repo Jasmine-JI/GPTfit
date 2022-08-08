@@ -8,9 +8,8 @@ describe('ThresholdChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ThresholdChartComponent ]
-    })
-    .compileComponents();
+      declarations: [ThresholdChartComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

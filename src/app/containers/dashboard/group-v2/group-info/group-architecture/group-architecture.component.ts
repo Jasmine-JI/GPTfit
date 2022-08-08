@@ -16,10 +16,9 @@ const errMsg = `Error.<br />Please try again later.`;
 @Component({
   selector: 'app-group-architecture',
   templateUrl: './group-architecture.component.html',
-  styleUrls: ['./group-architecture.component.scss', '../group-child-page.scss']
+  styleUrls: ['./group-architecture.component.scss', '../group-child-page.scss'],
 })
 export class GroupArchitectureComponent implements OnInit, OnDestroy {
-
   private ngUnsubscribe = new Subject();
 
   /**
@@ -28,7 +27,7 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
   uiFlag = {
     editMode: <'complete' | 'edit'>'complete',
     branchFull: false,
-    classFull: false
+    classFull: false,
   };
 
   /**
@@ -54,7 +53,7 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
     private groupIdSlicePipe: GroupIdSlicePipe,
     private dialog: MatDialog,
     private translateService: TranslateService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.initPage();
@@ -69,19 +68,18 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
       this.groupService.getRxGroupDetail(),
       this.groupService.getRxCommerceInfo(),
       this.groupService.getAllLevelGroupData(),
-      this.groupService.getUserSimpleInfo()
-    ]).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(resArr => {
-      Object.assign(resArr[0], {groupLevel: this.utils.displayGroupLevel(resArr[0].groupId)});
-      Object.assign(resArr[0], {expired: resArr[1].expired});
-      Object.assign(resArr[0], {commerceStatus: resArr[1].commerceStatus});
-      this.groupInfo = resArr[0];
-      this.groupArchitecture = this.checkParentsGroup(resArr[2]);
-      this.userSimpleInfo = resArr[3];
-      this.checkGroupNum(resArr[1].groupStatus);
-    })
-
+      this.groupService.getUserSimpleInfo(),
+    ])
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((resArr) => {
+        Object.assign(resArr[0], { groupLevel: this.utils.displayGroupLevel(resArr[0].groupId) });
+        Object.assign(resArr[0], { expired: resArr[1].expired });
+        Object.assign(resArr[0], { commerceStatus: resArr[1].commerceStatus });
+        this.groupInfo = resArr[0];
+        this.groupArchitecture = this.checkParentsGroup(resArr[2]);
+        this.userSimpleInfo = resArr[3];
+        this.checkGroupNum(resArr[1].groupStatus);
+      });
   }
 
   /**
@@ -90,14 +88,14 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
    * @author kidin-1091201
    */
   checkParentsGroup(groupArchitecture: GroupArchitecture) {
-    groupArchitecture.coaches.map(_coach => {
-
-      groupArchitecture.branches.forEach(_branch => {
-        
-        if (this.groupIdSlicePipe.transform(_coach.groupId, 4) === this.groupIdSlicePipe.transform(_branch.groupId, 4)) {
-          Object.assign(_coach, {branchName: _branch.groupName});
+    groupArchitecture.coaches.map((_coach) => {
+      groupArchitecture.branches.forEach((_branch) => {
+        if (
+          this.groupIdSlicePipe.transform(_coach.groupId, 4) ===
+          this.groupIdSlicePipe.transform(_branch.groupId, 4)
+        ) {
+          Object.assign(_coach, { branchName: _branch.groupName });
         }
-
       });
 
       return _coach;
@@ -123,7 +121,6 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
     } else {
       this.uiFlag.classFull = false;
     }
-
   }
 
   /**
@@ -135,7 +132,7 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
       this.uiFlag.editMode = 'edit';
       this.groupService.setEditMode('edit');
     } else {
-      this.uiFlag.editMode = 'complete'
+      this.uiFlag.editMode = 'complete';
       this.groupService.setEditMode('complete');
     }
   }
@@ -152,7 +149,6 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
       this.refreshGroupDetail();
       this.refreshAllLevelGroupData();
     }
-    
   }
 
   /**
@@ -164,44 +160,45 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
     const { groupId, brandType } = this.groupInfo;
     if (type === 'branch') {
       this.router.navigateByUrl(
-        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}/group-introduction?createType=branch&brandType=${brandType}`
+        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+          groupId
+        )}/group-introduction?createType=branch&brandType=${brandType}`
       );
     } else if (type === 'class' && brandType === 2) {
       this.router.navigateByUrl(
-        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}/group-introduction?createType=department&brandType=${brandType}`
+        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+          groupId
+        )}/group-introduction?createType=department&brandType=${brandType}`
       );
     } else {
-      this.translateService.get('hellow world').pipe(
-        takeUntil(this.ngUnsubscribe)
-      ).subscribe(() => {
-        this.dialog.open(MessageBoxComponent, {
-          hasBackdrop: true,
-          data: {
-            title: this.translateService.instant('universal_group_disclaimer'),
-            body: this.translateService.instant('universal_group_createClassStatement'),
-            confirmText: this.translateService.instant('universal_operating_agree'),
-            cancelText: this.translateService.instant('universal_operating_disagree'),
-            onConfirm: () => {
-              this.router.navigateByUrl(
-                `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}/group-introduction?createType=coach`
-              );
-  
-            }
-  
-          }
-  
+      this.translateService
+        .get('hellow world')
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe(() => {
+          this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            data: {
+              title: this.translateService.instant('universal_group_disclaimer'),
+              body: this.translateService.instant('universal_group_createClassStatement'),
+              confirmText: this.translateService.instant('universal_operating_agree'),
+              cancelText: this.translateService.instant('universal_operating_disagree'),
+              onConfirm: () => {
+                this.router.navigateByUrl(
+                  `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+                    groupId
+                  )}/group-introduction?createType=coach`
+                );
+              },
+            },
+          });
         });
-
-      });
 
       /* 1100714移除建立"專業老師"階層群組
         this.bottomSheet.open(BottomSheetComponent, {
           data: { groupId: this.groupInfo.groupId }
         });
       */
-      
     }
-
   }
 
   /**
@@ -213,19 +210,17 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
       token: this.userSimpleInfo.token,
       groupId: this.groupInfo.groupId,
       findRoot: 1,
-      avatarType: 3
+      avatarType: 3,
     };
 
-    this.groupService.fetchGroupListDetail(body).subscribe(res => {
+    this.groupService.fetchGroupListDetail(body).subscribe((res) => {
       if (res.resultCode !== 200) {
         this.utils.openAlert(errMsg);
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.groupService.saveGroupDetail(res.info);
       }
-
     });
-
   }
 
   /**
@@ -238,19 +233,17 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
       avatarType: 3,
       groupId: this.groupInfo.groupId,
       groupLevel: this.groupInfo.groupLevel,
-      infoType: 1
-    }
+      infoType: 1,
+    };
 
-    this.groupService.fetchGroupMemberList(body).subscribe(res => {
+    this.groupService.fetchGroupMemberList(body).subscribe((res) => {
       if (res.resultCode !== 200) {
         this.utils.openAlert(errMsg);
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.groupService.setAllLevelGroupData(res.info.subGroupInfo);
       }
-
     });
-
   }
 
   /**
@@ -260,5 +253,4 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

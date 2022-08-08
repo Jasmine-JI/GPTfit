@@ -4,7 +4,6 @@
  * radio樣式
  */
 @mixin radio($size: 20px) {
-
   @include center();
   border: 1px solid var(--scale-0-255);
   border-radius: 50%;
@@ -12,11 +11,9 @@
   height: $size;
   margin-right: 5px;
   padding: 1px;
-
 }
 
 @mixin radio-active($size: 14px, $bg-color: rgba(17, 166, 235, 1)) {
-
   &:before {
     content: '';
     width: $size;
@@ -24,5 +21,4 @@
     border-radius: 50%;
     background-color: $bg-color;
   }
-
 }

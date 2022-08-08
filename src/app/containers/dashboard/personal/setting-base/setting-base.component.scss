@@ -5,7 +5,8 @@
   max-width: 200px;
 }
 
-#height__input, #weight__input {
+#height__input,
+#weight__input {
   width: 70px;
 }
 
@@ -16,9 +17,7 @@
 /***************************************************** media *****************************************************/
 
 @media (max-width: 950px) {
-
   #nickname__input {
     max-width: 150px;
   }
-
 }

@@ -1,11 +1,4 @@
-import {
-  Component,
-  OnInit,
-  OnChanges,
-  Input,
-  Output,
-  EventEmitter
-} from '@angular/core';
+import { Component, OnInit, OnChanges, Input, Output, EventEmitter } from '@angular/core';
 import { codes } from '../../models/countryCode';
 import { TranslateService } from '@ngx-translate/core';
 import { getLocalStorageObject } from '../../utils/index';
@@ -13,7 +6,7 @@ import { getLocalStorageObject } from '../../utils/index';
 @Component({
   selector: 'app-intl-phone-input',
   templateUrl: './intl-phone-input.component.html',
-  styleUrls: ['./intl-phone-input.component.scss']
+  styleUrls: ['./intl-phone-input.component.scss'],
 })
 export class IntlPhoneInputComponent implements OnInit, OnChanges {
   active = false; // select options的開關
@@ -29,13 +22,10 @@ export class IntlPhoneInputComponent implements OnInit, OnChanges {
 
   @Output() onChange = new EventEmitter();
 
-  constructor(
-    public translate: TranslateService
-  ) {
+  constructor(public translate: TranslateService) {
     translate.onLangChange.subscribe(() => {
       this.getTranslate();
     });
-
   }
 
   ngOnInit() {
@@ -43,23 +33,21 @@ export class IntlPhoneInputComponent implements OnInit, OnChanges {
     this.countryOptions = codes;
   }
 
-  ngOnChanges () {
-
+  ngOnChanges() {
     if (this.currentCountryCode) {
       this.countryCode = `+${this.currentCountryCode}`;
       this.onChange.emit(this.countryCode);
     } else if (getLocalStorageObject('countryCode')) {
-      setTimeout(() => { // 處理develop mode的angular檢查機制
+      setTimeout(() => {
+        // 處理develop mode的angular檢查機制
         this.countryCode = `+${getLocalStorageObject('countryCode')}`;
         this.onChange.emit(this.countryCode);
       });
-
     }
-
   }
 
   // 取得多國語系翻譯-kidin-1090629
-  getTranslate () {
+  getTranslate() {
     this.translate.get('hollo world').subscribe(() => {
       this.phoneI18n = this.translate.instant('universal_userAccount_phone');
     });
@@ -76,5 +64,4 @@ export class IntlPhoneInputComponent implements OnInit, OnChanges {
     this.active = false;
     this.onChange.emit(this.countryCode);
   }
-
 }

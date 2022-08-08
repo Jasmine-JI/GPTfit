@@ -29,20 +29,15 @@ $colors-light: (
   --scale-100-255: rgba(100, 100, 100, 1),
   --scale-75-230: rgba(75, 75, 75, 1),
   --scale-0-255: rgba(0, 0, 0, 1),
-  --003c67-0096ff: #003c67
+  --003c67-0096ff: #003c67,
 );
 
 .theme__light {
   @each $name, $color in $colors-light {
     #{$name}: $color;
   }
-
 }
 
 .theme--change {
-  @include multiple-transition((
-    color $move-effect,
-    background-color $move-effect
-  ));
-
+  @include multiple-transition((color $move-effect, background-color $move-effect));
 }

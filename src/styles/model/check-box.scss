@@ -13,26 +13,21 @@
     width: $size;
     height: $size;
     padding: 0;
-  
-    >span {
+
+    > span {
       @include center();
       height: 19px;
       font-size: $font-size;
     }
-  
   }
 
-  >label {
+  > label {
     margin: 0;
     margin-left: 5px;
   }
-
 }
 
-@mixin checkBox-active(
-  $bg-color: rgba(17, 166, 235, 1),
-  $color: white
-) {
+@mixin checkBox-active($bg-color: rgba(17, 166, 235, 1), $color: white) {
   background-color: $bg-color;
   color: $color;
 }
@@ -44,8 +39,7 @@
   $border: 1px solid rgba(196, 196, 196, 1),
   $active-bg-color: rgba(196, 196, 196, 1)
 ) {
-
-  &[role="checkbox"] {
+  &[role='checkbox'] {
     display: flex;
     flex-direction: row;
     position: relative;
@@ -65,26 +59,21 @@
       border: $border;
     }
 
-    &[aria-checked="true"] {
-
+    &[aria-checked='true'] {
       &:before {
         content: '✔';
         color: $font-color;
         background-color: $active-bg-color;
         @include center();
       }
-
     }
 
-    &[aria-disabled="true"] {
+    &[aria-disabled='true'] {
       cursor: initial;
       pointer-events: none;
       @if $bg-color == white {
         color: rgba(150, 150, 150, 1);
       }
-
     }
-
   }
-
 }

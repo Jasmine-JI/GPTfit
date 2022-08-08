@@ -34,7 +34,7 @@
     }
 
     .active-right:before {
-      content: "\00a0";
+      content: '\00a0';
       position: absolute;
       border-right: 5px solid #00c6ff;
       top: -40px;
@@ -47,7 +47,7 @@
     }
 
     .active-left:before {
-      content: "\00a0";
+      content: '\00a0';
       position: absolute;
       border-left: 5px solid #00c6ff;
       top: 0px;
@@ -93,7 +93,7 @@
       }
 
       .active-left:before {
-        content: "\00a0";
+        content: '\00a0';
         position: absolute;
         border-left: 5px solid #00c6ff;
         top: -40px;
@@ -106,7 +106,7 @@
       }
 
       .active-right:before {
-        content: "\00a0";
+        content: '\00a0';
         position: absolute;
         border-right: 5px solid #00c6ff;
         top: -40px;
@@ -137,7 +137,7 @@
       }
 
       .active-left:before {
-        content:"\00a0";
+        content: '\00a0';
         position: absolute;
         border-left: 5px solid #00c6ff;
         top: -14px;
@@ -150,7 +150,7 @@
       }
 
       .active-right:before {
-        content: "\00a0";
+        content: '\00a0';
         position: absolute;
         border-right: 5px solid #00c6ff;
         top: -40px;
@@ -161,7 +161,7 @@
     tr.custom {
       border-top: 40px #fff solid;
       .active-left:before {
-        content: "\00a0";
+        content: '\00a0';
         position: absolute;
         border-left: 5px solid #00c6ff;
         top: -40px;
@@ -180,7 +180,6 @@
     tr:nth-child(odd) {
       .plan {
         background-color: #c0f3ff;
-
       }
       td {
         background-color: #d7d7d7;

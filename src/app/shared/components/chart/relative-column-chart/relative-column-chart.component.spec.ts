@@ -8,9 +8,8 @@ describe('RelativeColumnChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RelativeColumnChartComponent ]
-    })
-    .compileComponents();
+      declarations: [RelativeColumnChartComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

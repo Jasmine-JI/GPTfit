@@ -8,9 +8,8 @@ describe('DistributionCanvasChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DistributionCanvasChartComponent ]
-    })
-    .compileComponents();
+      declarations: [DistributionCanvasChartComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

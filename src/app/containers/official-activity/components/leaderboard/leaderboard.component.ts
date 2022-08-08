@@ -20,17 +20,17 @@ enum RankType {
   cumulativeClimb,
   cumulativeDistance,
   routine,
-  mapBest
-};
+  mapBest,
+}
 
 @Component({
   selector: 'app-leaderboard',
   templateUrl: './leaderboard.component.html',
-  styleUrls: ['./leaderboard.component.scss']
+  styleUrls: ['./leaderboard.component.scss'],
 })
 export class LeaderboardComponent implements OnInit, OnDestroy {
-  private ngUnsubscribe = new Subject;
-  private resizeSubscription = new Subscription; 
+  private ngUnsubscribe = new Subject();
+  private resizeSubscription = new Subscription();
 
   /**
    * ui 會用到的flag
@@ -43,7 +43,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     currentFocusList: 0,
     mapLanguageIndex: 0,
     filterGroup: <string | null>null,
-    screenSize: window.innerWidth
+    screenSize: window.innerWidth,
   };
 
   token = this.authService.token;
@@ -88,9 +88,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       if (valid) {
         this.queryEventId = +eventId;
       }
-
     }
-
   }
 
   /**
@@ -119,7 +117,6 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       default:
         return MapLanguageEnum.EN;
     }
-
   }
 
   /**
@@ -128,12 +125,9 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
    */
   handlePageResize() {
     const resizeEvent = fromEvent(window, 'resize');
-    this.resizeSubscription = resizeEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.resizeSubscription = resizeEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.uiFlag.screenSize = window.innerWidth;
     });
-
   }
 
   /**
@@ -148,7 +142,6 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     } else {
       this.shiftSubList(action);
     }
-
   }
 
   /**
@@ -164,7 +157,6 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       this.uiFlag.currentFocusList = 0;
       this.getSubList(type);
     }
-
   }
 
   /**
@@ -194,7 +186,6 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         this.getRankData(1, index);
         break;
     }
-
   }
 
   /**
@@ -203,7 +194,10 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
    * @author kidin-1101130
    */
   shiftMainList(action: SwitchAction) {
-    const { uiFlag: { mainListTop }, rankListLength } = this;
+    const {
+      uiFlag: { mainListTop },
+      rankListLength,
+    } = this;
     let nextTop: number;
     if (action === 'down') {
       const maxShiftTop = rankListLength - 3;
@@ -230,7 +224,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
           this.getEventRank(0);
         } else {
           this.uiFlag.progress = 30;
-        };
+        }
         break;
       case RankType.mapBest:
         this.subList = deepCopy(mapInfo);
@@ -249,7 +243,6 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         this.getRankData(1, 0);
         break;
     }
-
   }
 
   /**
@@ -258,7 +251,10 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
    * @author kidin-1101130
    */
   shiftSubList(action: SwitchAction) {
-    const { uiFlag: { subListTop }, subList } = this;
+    const {
+      uiFlag: { subListTop },
+      subList,
+    } = this;
     const subListLength = subList.length;
     if (subListLength > 3) {
       let nextTop: number;
@@ -271,7 +267,6 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
 
       this.uiFlag.subListTop = nextTop;
     }
-
   }
 
   /**
@@ -281,15 +276,14 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   getAllMapInfo() {
     combineLatest([
       this.officialActivityService.getRxAllMapInfo(),
-      this.officialActivityService.getRxRoutine()
-    ]).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(resultArray => {
-      const [list, leaderboard] = resultArray as any;
-      this.mapInfo = list;
-      this.routine = leaderboard;
-    });
-
+      this.officialActivityService.getRxRoutine(),
+    ])
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((resultArray) => {
+        const [list, leaderboard] = resultArray as any;
+        this.mapInfo = list;
+        this.routine = leaderboard;
+      });
   }
 
   /**
@@ -302,32 +296,29 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       this.uiFlag.progress = 30;
       const currentTimestamp = getCurrentTimestamp();
       const baseDate = '2021-11-01T00:00:00';
-      const startTimestamp = (new Date(baseDate)).getTime() / 1000;
+      const startTimestamp = new Date(baseDate).getTime() / 1000;
       const body = {
         token: this.token,
         filterRaceStartTime: startTimestamp,
         filterRaceEndTime: currentTimestamp,
         page: {
           index: 0,
-          counts: 100
-        }
+          counts: 100,
+        },
       };
 
-      this.officialActivityService.getEventList(body).subscribe(res => {
+      this.officialActivityService.getEventList(body).subscribe((res) => {
         if (this.utils.checkRes(res)) {
-          const eventList = res.eventList.filter(list => list.eventStatus === EventStatus.audit);
+          const eventList = res.eventList.filter((list) => list.eventStatus === EventStatus.audit);
           this.eventList = eventList;
           this.subList = eventList;
           if (eventList.length > 0) {
             const index = this.getAssignLeaderboardIndex(eventList);
             this.uiFlag.currentFocusList = index;
-            const { 
+            const {
               eventId,
               cloudrunMapId: mapId,
-              raceDate: {
-                startDate: raceStartDate,
-                endDate: raceEndDate
-              }
+              raceDate: { startDate: raceStartDate, endDate: raceEndDate },
             } = eventList[index];
 
             const reqBody = {
@@ -338,7 +329,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
               raceStartDate,
               raceEndDate,
               page: 0,
-              pageCounts: 10000
+              pageCounts: 10000,
             };
 
             this.getEventGroup(eventId);
@@ -346,13 +337,9 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
           } else {
             this.uiFlag.progress = 100;
           }
-
         }
-
       });
-
     }
-
   }
 
   /**
@@ -363,12 +350,11 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
    */
   getAssignLeaderboardIndex(list: Array<any>) {
     if (this.queryEventId) {
-      const index = list.findIndex(_list => _list.eventId === this.queryEventId);
+      const index = list.findIndex((_list) => _list.eventId === this.queryEventId);
       return index >= 0 ? index : 0;
     } else {
       return 0;
     }
-
   }
 
   /**
@@ -381,10 +367,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     const {
       eventId,
       cloudrunMapId: mapId,
-      raceDate: {
-        startDate: raceStartDate,
-        endDate: raceEndDate
-      }
+      raceDate: { startDate: raceStartDate, endDate: raceEndDate },
     } = subList[index];
 
     this.getEventGroup(eventId);
@@ -397,7 +380,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       raceStartDate,
       raceEndDate,
       page: 0,
-      pageCounts: 10000
+      pageCounts: 10000,
     };
 
     this.getLeaderboardStatistics(body);
@@ -414,7 +397,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       rankType: 3,
       mapId,
       page: 0,
-      pageCounts: 10000
+      pageCounts: 10000,
     };
 
     this.getLeaderboardStatistics(body);
@@ -426,14 +409,12 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
    * @author kidin-1101201
    */
   getEventGroup(eventId: number) {
-    this.officialActivityService.getEventDetail({ eventId }).subscribe(res => {
+    this.officialActivityService.getEventDetail({ eventId }).subscribe((res) => {
       if (this.utils.checkRes(res)) {
         const { group } = res.eventDetail;
         this.groupList = this.assignGroupColor(group);
       }
-
     });
-
   }
 
   /**
@@ -470,61 +451,60 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
    */
   getLeaderboardStatistics(body: any) {
     this.initFlag();
-    this.cloudrunService.getLeaderboardStatistics(body).pipe(
-      switchMap(leaderboard => {
-        this.uiFlag.progress += 15;
-        const requestSuccess = this.utils.checkRes(leaderboard);
-        const rankList = leaderboard.info ? leaderboard.info.rankList : [];
-        if (requestSuccess && rankList.length > 0) {
-          const body = {
-            search: {
-              userInfo:{
-                args: { userId: this.getRacerList(rankList) },
-                target:['nickname', 'icon']
-              }
-            }
-          };
+    this.cloudrunService
+      .getLeaderboardStatistics(body)
+      .pipe(
+        switchMap((leaderboard) => {
+          this.uiFlag.progress += 15;
+          const requestSuccess = this.utils.checkRes(leaderboard);
+          const rankList = leaderboard.info ? leaderboard.info.rankList : [];
+          if (requestSuccess && rankList.length > 0) {
+            const body = {
+              search: {
+                userInfo: {
+                  args: { userId: this.getRacerList(rankList) },
+                  target: ['nickname', 'icon'],
+                },
+              },
+            };
 
-          // 透過api取得所有參賽者的暱稱與頭像
-          return this.nodejsApiService.getAssignInfo(body).pipe(
-            map(userList => {
-              if (this.utils.checkRes(userList)) {
-                const { result } = userList;
-                return rankList.map((_rankList, index) => {
-                  const plugin = result[index];
-                  Object.assign(_rankList, plugin);
-                  if (this.uiFlag.rankType === RankType.event) {
-                    const { groupList } = this;
-                    const idx = groupList.findIndex(_groupList => _groupList.name === _rankList.groupName);
-                    const color = groupList[idx].color;
-                    Object.assign(_rankList, { color });
-                  }
+            // 透過api取得所有參賽者的暱稱與頭像
+            return this.nodejsApiService.getAssignInfo(body).pipe(
+              map((userList) => {
+                if (this.utils.checkRes(userList)) {
+                  const { result } = userList;
+                  return rankList.map((_rankList, index) => {
+                    const plugin = result[index];
+                    Object.assign(_rankList, plugin);
+                    if (this.uiFlag.rankType === RankType.event) {
+                      const { groupList } = this;
+                      const idx = groupList.findIndex(
+                        (_groupList) => _groupList.name === _rankList.groupName
+                      );
+                      const color = groupList[idx].color;
+                      Object.assign(_rankList, { color });
+                    }
 
-                  return _rankList;
-                })
-
-              } else {
-                return of(leaderboard);
-              }
-
-            })
-
-          )
-
-        } else {
-          return of(leaderboard);
+                    return _rankList;
+                  });
+                } else {
+                  return of(leaderboard);
+                }
+              })
+            );
+          } else {
+            return of(leaderboard);
+          }
+        })
+      )
+      .subscribe((res) => {
+        if (Array.isArray(res)) {
+          this.backupList = deepCopy(res);
+          this.rankList = deepCopy(res);
         }
-        
-      })
-    ).subscribe(res => {
-      if (Array.isArray(res)) {
-        this.backupList = deepCopy(res);
-        this.rankList = deepCopy(res);
-      }
 
-      this.uiFlag.progress = 100;
-    });
-
+        this.uiFlag.progress = 100;
+      });
   }
 
   /**
@@ -541,62 +521,55 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       month,
       queryType: 2,
       page: 0,
-      pageCounts: 100
+      pageCounts: 100,
     };
 
     if (rankType === 1) Object.assign(body, { mapId });
-    this.cloudrunService.getRankData(body).pipe(
-      switchMap(rankResult => {
-        if (this.utils.checkRes(rankResult)) {
-          this.uiFlag.progress += 15;
-          const { accRankList, rankList } = rankResult.info;
-          const list = accRankList ? accRankList : rankList;
-          if (list.length > 0) {
-            const nameList = list.map(_list => _list.raceManName);
-            const alaqlBody = {
-              search: {
-                userInfo:{
-                  args: { nickname: nameList },
-                  target:['icon']
-                }
-              }
-            };
+    this.cloudrunService
+      .getRankData(body)
+      .pipe(
+        switchMap((rankResult) => {
+          if (this.utils.checkRes(rankResult)) {
+            this.uiFlag.progress += 15;
+            const { accRankList, rankList } = rankResult.info;
+            const list = accRankList ? accRankList : rankList;
+            if (list.length > 0) {
+              const nameList = list.map((_list) => _list.raceManName);
+              const alaqlBody = {
+                search: {
+                  userInfo: {
+                    args: { nickname: nameList },
+                    target: ['icon'],
+                  },
+                },
+              };
 
-            // 透過api取得所有參賽者的頭像，並將物件參數重新命名
-            return this.nodejsApiService.getAssignInfo(alaqlBody).pipe(
-              map(alaqlResult => {
-                if (this.utils.checkRes(alaqlResult)) {
-                  return list.map((_list, index) => {
-                    const {
-                      rankNum: rank,
-                      raceManName: nickname,
-                      rankItemValue: result
-                    } = _list;
-                    const { icon } = alaqlResult.result[index];
-                    return { rank, nickname, result, icon };
-                  });
-
-                } else {
-                  return of(rankResult);
-                }
-
-              })
-
-            )
-
+              // 透過api取得所有參賽者的頭像，並將物件參數重新命名
+              return this.nodejsApiService.getAssignInfo(alaqlBody).pipe(
+                map((alaqlResult) => {
+                  if (this.utils.checkRes(alaqlResult)) {
+                    return list.map((_list, index) => {
+                      const { rankNum: rank, raceManName: nickname, rankItemValue: result } = _list;
+                      const { icon } = alaqlResult.result[index];
+                      return { rank, nickname, result, icon };
+                    });
+                  } else {
+                    return of(rankResult);
+                  }
+                })
+              );
+            } else {
+              return of(rankResult);
+            }
           } else {
             return of(rankResult);
           }
-        } else {
-          return of(rankResult);
-        }
-
-      })
-    ).subscribe(res => {
-      if (Array.isArray(res)) this.rankList = res;
-      this.uiFlag.progress = 100;
-    });
-
+        })
+      )
+      .subscribe((res) => {
+        if (Array.isArray(res)) this.rankList = res;
+        this.uiFlag.progress = 100;
+      });
   }
 
   /**
@@ -606,7 +579,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
    */
   getRacerList(rankList: Array<any>) {
     const racer: Array<number> = [];
-    rankList.forEach(_list => {
+    rankList.forEach((_list) => {
       racer.push(_list.userId);
     });
 
@@ -621,7 +594,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   filterGroup(groupName: string | null = null) {
     this.uiFlag.filterGroup = groupName;
     if (groupName) {
-      const filterList = deepCopy(this.backupList.filter(_list => _list.groupName === groupName));
+      const filterList = deepCopy(this.backupList.filter((_list) => _list.groupName === groupName));
       this.rankList = filterList.map((_filterList, index) => {
         let rank: number;
         if (index === 0) {
@@ -637,7 +610,6 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     } else {
       this.rankList = deepCopy(this.backupList);
     }
-
   }
 
   /**
@@ -647,5 +619,4 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

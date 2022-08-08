@@ -2,11 +2,14 @@
   {{ title }}
 </h2>
 <mat-dialog-content>
-  <div innerHtml="{{ body }}">
-  </div>
+  <div innerHtml="{{ body }}"></div>
 </mat-dialog-content>
 
 <mat-dialog-actions class="justify-content-end">
-  <button mat-button color="primary" (click)="confirm()">{{'universal_operating_confirm' | translate}}</button>
-  <button mat-button mat-dialog-close color="warn">{{'universal_operating_cancel' | translate}}</button>
+  <button mat-button color="primary" (click)="confirm()">
+    {{ 'universal_operating_confirm' | translate }}
+  </button>
+  <button mat-button mat-dialog-close color="warn">
+    {{ 'universal_operating_cancel' | translate }}
+  </button>
 </mat-dialog-actions>

@@ -5,10 +5,9 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-hover-hint',
   templateUrl: './hover-hint.component.html',
-  styleUrls: ['./hover-hint.component.scss']
+  styleUrls: ['./hover-hint.component.scss'],
 })
 export class HoverHintComponent implements OnInit, OnChanges {
-
   @Input() type: string;
   @Input() leftPosition: boolean;
   @Output() showBox = new EventEmitter();
@@ -16,13 +15,11 @@ export class HoverHintComponent implements OnInit, OnChanges {
   isDisplayBox = false;
   hint: string;
 
-  constructor(
-    private translate: TranslateService
-  ) { }
+  constructor(private translate: TranslateService) {}
 
-  ngOnInit () {}
+  ngOnInit() {}
 
-  ngOnChanges () {
+  ngOnChanges() {
     // 根據不同區塊顯示不同提示框-kidin-1090326
     switch (this.type) {
       case 'sportsFile':
@@ -48,5 +45,4 @@ export class HoverHintComponent implements OnInit, OnChanges {
     this.isDisplayBox = false;
     this.showBox.emit(false);
   }
-
 }

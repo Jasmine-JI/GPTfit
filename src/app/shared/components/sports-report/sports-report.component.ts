@@ -1,4 +1,12 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { UtilsService } from '../../services/utils.service';
 import { Subject, Subscription, of, merge, fromEvent, combineLatest } from 'rxjs';
 import { takeUntil, tap, map, switchMap, debounceTime } from 'rxjs/operators';
@@ -40,19 +48,20 @@ import {
   transformDistance,
   getWeightTrainingLevelText,
   speedToPaceSecond,
-  paceSecondTimeFormat
+  paceSecondTimeFormat,
 } from '../../utils/sports';
 import { AuthService } from '../../../core/services/auth.service';
 
-
 const sevenDay = DefaultDateRange.getSevenDay();
-const muscleAnalysisColumnList = Object.values(MuscleAnalysisColumn).filter(value => typeof(value) === 'number');
+const muscleAnalysisColumnList = Object.values(MuscleAnalysisColumn).filter(
+  (value) => typeof value === 'number'
+);
 
 @Component({
   selector: 'app-sports-reports',
   templateUrl: './sports-report.component.html',
   styleUrls: ['./sports-report.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SportsReportComponent implements OnInit, OnDestroy {
   @Output() showPrivacyUi = new EventEmitter();
@@ -64,20 +73,20 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   /**
    * UI控制相關flag
    */
-   uiFlag = {
+  uiFlag = {
     progress: 100,
     isCompareMode: false,
-    selectedType: SportType.all,  // 活動分析圖表用，與條件選擇器運動類別作用不同
+    selectedType: SportType.all, // 活動分析圖表用，與條件選擇器運動類別作用不同
     printMode: false,
     isOutSidePage: !location.pathname.split('/').includes('dashboard'),
     isPageOwner: false,
     isDebugMode: false,
     isSystemAdmin: false,
-    typeRunShowPace: true,  // 跑步類別之配速圖表是否切換成速度圖表
+    typeRunShowPace: true, // 跑步類別之配速圖表是否切換成速度圖表
     showWeightTrainSetting: false,
     showAnalysisMenu: false,
-    analysisSeeMore: false
-   };
+    analysisSeeMore: false,
+  };
 
   /**
    * 產生報告之篩選條件
@@ -85,15 +94,12 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   initReportCondition: ReportCondition = {
     moduleType: 'personal',
     pageType: 'sportsReport',
-    baseTime: new DateRange(
-      sevenDay.startTime,
-      sevenDay.endTime
-    ),
+    baseTime: new DateRange(sevenDay.startTime, sevenDay.endTime),
     compareTime: null!,
     dateUnit: new ReportDateUnit(DateUnit.day),
     sportType: SportType.all,
-    needRefreshData: false
-  }
+    needRefreshData: false,
+  };
 
   /**
    * 儲存變更過後的報告條件
@@ -121,7 +127,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   sportInfoData = {
     base: <SportsReport>null!,
     compare: <SportsReport>null!,
-    diff: <any>null
+    diff: <any>null,
   };
 
   /**
@@ -142,7 +148,10 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   /**
    * 重訓動作分析列表欄位篩選設定（因欄位數不多，故預設欄位同欄位清單）
    */
-   weightTrainingAnalysisOption = new AnalysisOption(muscleAnalysisColumnList, muscleAnalysisColumnList);
+  weightTrainingAnalysisOption = new AnalysisOption(
+    muscleAnalysisColumnList,
+    muscleAnalysisColumnList
+  );
 
   /**
    * 重訓動作分析
@@ -172,7 +181,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   readonly MuscleGroup = MuscleGroup;
   readonly MuscleAnalysisColumn = MuscleAnalysisColumn;
 
-
   constructor(
     private utils: UtilsService,
     private changeDetectorRef: ChangeDetectorRef,
@@ -185,7 +193,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     private translateService: TranslateService,
     private globalEventsService: GlobalEventsService,
     private authService: AuthService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.subscribeLangChange();
@@ -197,34 +205,26 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 訂閱視窗寬度
    * @author kidin-1100316
    */
-   subscribeWindowSize() {
+  subscribeWindowSize() {
     const resize = fromEvent(window, 'resize');
-    this.resizeEvent = merge(
-      resize,
-      this.globalEventsService.getRxSideBarMode()
-    ).pipe(
-      debounceTime(500),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
-      const element = document.querySelector('.main__container') as HTMLElement;
-      const containerWidth = element.getBoundingClientRect().width;
-      this.weightTrainingAnalysisOption.checkOverLimit(containerWidth);
-      this.weightTrainingAnalysisOption.fillItem();
-      this.changeDetectorRef.markForCheck();
-    });
-
+    this.resizeEvent = merge(resize, this.globalEventsService.getRxSideBarMode())
+      .pipe(debounceTime(500), takeUntil(this.ngUnsubscribe))
+      .subscribe((e) => {
+        const element = document.querySelector('.main__container') as HTMLElement;
+        const containerWidth = element.getBoundingClientRect().width;
+        this.weightTrainingAnalysisOption.checkOverLimit(containerWidth);
+        this.weightTrainingAnalysisOption.fillItem();
+        this.changeDetectorRef.markForCheck();
+      });
   }
 
   /**
    * 訂閱語系改變事件
    */
   subscribeLangChange() {
-    this.translateService.onLangChange.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
+    this.translateService.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe((res) => {
       this.currentLang = res.lang;
     });
-
   }
 
   /**
@@ -232,11 +232,12 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * @author kidin-1110315
    */
   initialReportCondition() {
-    of([]).pipe(
-      tap(() => this.checkPageOwner()),
-      tap(() => this.checkQueryString())
-    ).subscribe();
-
+    of([])
+      .pipe(
+        tap(() => this.checkPageOwner()),
+        tap(() => this.checkQueryString())
+      )
+      .subscribe();
   }
 
   /**
@@ -253,7 +254,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         this.targetUserId = targetUserId;
         return;
       }
-
     }
 
     this.uiFlag.isPageOwner = true;
@@ -281,11 +281,13 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           this.initReportCondition.baseTime.endTimestamp = +value;
           break;
         case QueryString.compareStartTime:
-          if (!this.initReportCondition.compareTime) this.initReportCondition.compareTime = new DateRange();
+          if (!this.initReportCondition.compareTime)
+            this.initReportCondition.compareTime = new DateRange();
           this.initReportCondition.compareTime.startTimestamp = +value;
           break;
         case QueryString.compareEndTime:
-          if (!this.initReportCondition.compareTime) this.initReportCondition.compareTime = new DateRange();
+          if (!this.initReportCondition.compareTime)
+            this.initReportCondition.compareTime = new DateRange();
           this.initReportCondition.compareTime.endTimestamp = +value;
           break;
         case QueryString.dateRangeUnit:
@@ -298,9 +300,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           this.uiFlag.printMode = false;
           break;
       }
-
     }
-
   }
 
   /**
@@ -310,118 +310,129 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   getReportCondition(condition: ReportCondition) {
     if (this.uiFlag.progress === 100) {
-      this.subscribeUserProfile.unsubscribe();  // 先解除先前訂閱避免memory leak
+      this.subscribeUserProfile.unsubscribe(); // 先解除先前訂閱避免memory leak
       this.uiFlag.progress = 30;
       const { isPageOwner } = this.uiFlag;
-      const getUserInfo = () => isPageOwner ? 
-        this.userService.getUser().rxUserProfile : this.userService.getTargetUserInfo(this.targetUserId);
+      const getUserInfo = () =>
+        isPageOwner
+          ? this.userService.getUser().rxUserProfile
+          : this.userService.getTargetUserInfo(this.targetUserId);
       const { baseTime, compareTime, dateUnit, needRefreshData } = condition;
       this.reportCondition = deepCopy(condition);
       this.uiFlag.isCompareMode = compareTime ? true : false;
       const { isCompareMode } = this.uiFlag;
       // 取得使用者資訊與運動數據，並根據該頁面是否為使用者擁有決定是否顯示體重與體脂
-      this.subscribeUserProfile = getUserInfo().pipe(
-        switchMap(res => {
-          let resultObj: any = { userInfo: res };
-          // 若僅變更運動類別，則取已儲存之數據
-          if (!needRefreshData) {
-            const baseActivitiesData = this.reportService.getBaseActivitiesData();
-            resultObj = { ...resultObj, baseActivitiesData };
-            if (isPageOwner) {
-              const baseLifeTracking = this.reportService.getBaseLifeTracking();
-              resultObj = { ...resultObj, baseLifeTracking };
-            }
+      this.subscribeUserProfile = getUserInfo()
+        .pipe(
+          switchMap((res) => {
+            let resultObj: any = { userInfo: res };
+            // 若僅變更運動類別，則取已儲存之數據
+            if (!needRefreshData) {
+              const baseActivitiesData = this.reportService.getBaseActivitiesData();
+              resultObj = { ...resultObj, baseActivitiesData };
+              if (isPageOwner) {
+                const baseLifeTracking = this.reportService.getBaseLifeTracking();
+                resultObj = { ...resultObj, baseLifeTracking };
+              }
 
-            if (isCompareMode) {
-              const compareActivitiesData = this.reportService.getCompareActivitiesData();
-              resultObj = { ...resultObj, compareActivitiesData };
-            }
+              if (isCompareMode) {
+                const compareActivitiesData = this.reportService.getCompareActivitiesData();
+                resultObj = { ...resultObj, compareActivitiesData };
+              }
 
-            if (isCompareMode && isPageOwner) {
-              const compareLifeTracking = this.reportService.getCompareLifeTracking();
-              resultObj = { ...resultObj, compareLifeTracking };
+              if (isCompareMode && isPageOwner) {
+                const compareLifeTracking = this.reportService.getCompareLifeTracking();
+                resultObj = { ...resultObj, compareLifeTracking };
+              }
+
+              return of(resultObj);
+            } else {
+              const body = this.getSummaryRequestBody(baseTime, dateUnit!);
+              return this.api21xxService.fetchSportSummaryArray(body).pipe(
+                map((baseActivitiesData) => {
+                  return { ...resultObj, baseActivitiesData };
+                })
+              );
+            }
+          }),
+          switchMap((resultObj: Object) => {
+            if (needRefreshData && isCompareMode) {
+              const body = this.getSummaryRequestBody(compareTime!, dateUnit!);
+              return this.api21xxService.fetchSportSummaryArray(body).pipe(
+                map((compareActivitiesData) => {
+                  return { ...resultObj, compareActivitiesData };
+                })
+              );
             }
 
             return of(resultObj);
-          } else {
-            const body = this.getSummaryRequestBody(baseTime, dateUnit!);
-            return this.api21xxService.fetchSportSummaryArray(body).pipe(
-              map(baseActivitiesData => { return { ...resultObj, baseActivitiesData }})
-            )
+          }),
+          switchMap((resultObj: Object) => {
+            if (needRefreshData && isPageOwner) {
+              const body = this.getSummaryRequestBody(baseTime, dateUnit!);
+              return this.api21xxService.fetchTrackingSummaryArray(body).pipe(
+                map((baseLifeTracking) => {
+                  return { ...resultObj, baseLifeTracking };
+                })
+              );
+            }
 
-          }
+            return of(resultObj);
+          }),
+          switchMap((resultObj: Object) => {
+            if (needRefreshData && isCompareMode && isPageOwner) {
+              const body = this.getSummaryRequestBody(compareTime!, dateUnit!);
+              return this.api21xxService.fetchTrackingSummaryArray(body).pipe(
+                map((compareLifeTracking) => {
+                  return { ...resultObj, compareLifeTracking };
+                })
+              );
+            }
 
-        }),
-        switchMap((resultObj: Object) => {
-          if (needRefreshData && isCompareMode) {
-            const body = this.getSummaryRequestBody(compareTime!, dateUnit!);
-            return this.api21xxService.fetchSportSummaryArray(body).pipe(
-              map(compareActivitiesData => { return { ...resultObj, compareActivitiesData } })
-            )
-          }
+            return of(resultObj);
+          }),
+          switchMap((resultObj: Object) => {
+            if (isPageOwner && this.reportCondition.sportType === SportType.weightTrain) {
+              const body = this.getMultiActivityRequestBody(baseTime);
+              return combineLatest([
+                this.configJsonService.getWeightTrainingConfig(),
+                this.api21xxService.fetchMultiActivityData(body),
+              ]).pipe(
+                map((resArray) => {
+                  const [weightTrainingConfig, baseWeigtTrainingLap] = resArray;
+                  return { ...resultObj, weightTrainingConfig, baseWeigtTrainingLap };
+                })
+              );
+            }
 
-          return of(resultObj);
-        }),
-        switchMap((resultObj: Object) => {
-          if (needRefreshData && isPageOwner) {
-            const body = this.getSummaryRequestBody(baseTime, dateUnit!);
-            return this.api21xxService.fetchTrackingSummaryArray(body).pipe(
-              map(baseLifeTracking => { return { ...resultObj, baseLifeTracking } })
-            )
-          }
+            return of(resultObj);
+          }),
+          switchMap((resultObj: Object) => {
+            if (
+              isPageOwner &&
+              this.reportCondition.sportType === SportType.weightTrain &&
+              isCompareMode
+            ) {
+              const body = this.getMultiActivityRequestBody(compareTime!);
+              return this.api21xxService.fetchMultiActivityData(body).pipe(
+                map((compareWeightTrainingLap) => {
+                  return { ...resultObj, compareWeightTrainingLap };
+                })
+              );
+            }
 
-          return of(resultObj);
-        }),
-        switchMap((resultObj: Object) => {
-          if (needRefreshData && isCompareMode && isPageOwner) {
-            const body = this.getSummaryRequestBody(compareTime!, dateUnit!);
-            return this.api21xxService.fetchTrackingSummaryArray(body).pipe(
-              map(compareLifeTracking => { return { ...resultObj, compareLifeTracking } })
-            )
-          }
-
-          return of(resultObj);
-        }),
-        switchMap((resultObj: Object) => {
-          if (isPageOwner && this.reportCondition.sportType === SportType.weightTrain) {
-            const body = this.getMultiActivityRequestBody(baseTime);
-            return combineLatest([
-              this.configJsonService.getWeightTrainingConfig(),
-              this.api21xxService.fetchMultiActivityData(body)
-            ]).pipe(
-              map(resArray => {
-                const [weightTrainingConfig, baseWeigtTrainingLap] = resArray;
-                return { ...resultObj, weightTrainingConfig, baseWeigtTrainingLap };
-              })
-
-            )
-
-          }
-
-          return of(resultObj);
-        }),
-        switchMap((resultObj: Object) => {
-          if (isPageOwner && this.reportCondition.sportType === SportType.weightTrain && isCompareMode) {
-            const body = this.getMultiActivityRequestBody(compareTime!);
-            return this.api21xxService.fetchMultiActivityData(body).pipe(
-              map(compareWeightTrainingLap => { return { ...resultObj, compareWeightTrainingLap } })
-            )
-
-          }
-
-          return of(resultObj);
-        }),
-        takeUntil(this.ngUnsubscribe)
-      ).subscribe(resultObj => {
-        this.saveData(resultObj);
-        this.createReport(condition, resultObj);
-        this.scrollToReport();
-        this.uiFlag.progress = 100;
-        this.changeDetectorRef.markForCheck();
-      });
-
+            return of(resultObj);
+          }),
+          takeUntil(this.ngUnsubscribe)
+        )
+        .subscribe((resultObj) => {
+          this.saveData(resultObj);
+          this.createReport(condition, resultObj);
+          this.scrollToReport();
+          this.uiFlag.progress = 100;
+          this.changeDetectorRef.markForCheck();
+        });
     }
-
   }
 
   /**
@@ -430,11 +441,13 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   saveData(dataObj: any) {
     const { isCompareMode, isPageOwner } = this.uiFlag;
-    const { baseActivitiesData, compareActivitiesData, baseLifeTracking, compareLifeTracking } = dataObj;
+    const { baseActivitiesData, compareActivitiesData, baseLifeTracking, compareLifeTracking } =
+      dataObj;
     this.reportService.saveBaseActivitiesData(baseActivitiesData);
     if (isCompareMode) this.reportService.saveCompareActivitiesData(compareActivitiesData);
     if (isPageOwner) this.reportService.saveBaseLifeTracking(baseLifeTracking);
-    if (isPageOwner && isCompareMode) this.reportService.saveCompareLifeTracking(compareLifeTracking);
+    if (isPageOwner && isCompareMode)
+      this.reportService.saveCompareLifeTracking(compareLifeTracking);
   }
 
   /**
@@ -449,9 +462,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       targetUserId: [this.targetUserId],
       filterStartTime: utcStartTime,
       filterEndTime: utcEndTime,
-      type: dateUnit.reportDateType
+      type: dateUnit.reportDateType,
     };
-
   }
 
   /**
@@ -466,14 +478,14 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         type: 1,
         fuzzyTime: [],
         filterStartTime: utcStartTime,
-        filterEndTime: utcEndTime
+        filterEndTime: utcEndTime,
       },
       searchRule: {
         activity: SportType.weightTrain,
         targetUser: 1,
         fileInfo: {
-          author: this.userService.getUser().userId
-        }
+          author: this.userService.getUser().userId,
+        },
       },
       display: {
         activityLapLayerDisplay: 2,
@@ -487,12 +499,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           // 'sortIndex'
         ],
         activityPointLayerDisplay: 3,
-        activityPointLayerDataField: []
+        activityPointLayerDataField: [],
       },
       page: 0,
-      pageCounts: 10000
+      pageCounts: 10000,
     };
-
   }
 
   /**
@@ -504,7 +515,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   createReport(condition: ReportCondition, dataObj: any) {
     const { userInfo, baseActivitiesData, compareActivitiesData } = dataObj;
     let { workoutTarget } = userInfo;
-    if (!workoutTarget || Object.keys(workoutTarget).length === 0) workoutTarget = deepCopy(SportsTargetDefault);
+    if (!workoutTarget || Object.keys(workoutTarget).length === 0)
+      workoutTarget = deepCopy(SportsTargetDefault);
     this.sportsTarget = new SportsTarget(workoutTarget);
     this.handleInfoData(condition, baseActivitiesData, compareActivitiesData);
     this.handleChartData(condition, dataObj, this.sportsTarget);
@@ -530,8 +542,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
     const baseParameter = getParameter('base', baseSportSummary);
     this.sportInfoData.base = new SportsReport(baseParameter);
-    this.sportInfoData.compare =
-      this.uiFlag.isCompareMode ? new SportsReport(getParameter('compare', compareSportSummary)) : null!;
+    this.sportInfoData.compare = this.uiFlag.isCompareMode
+      ? new SportsReport(getParameter('compare', compareSportSummary))
+      : null!;
     if (this.uiFlag.isCompareMode) this.sportInfoData.diff = this.getSportInfoDiff();
   }
 
@@ -549,7 +562,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       this.muscleGroupTrendData = deepCopy(this.chartData.weightTrainingTrend.groupTrainingData);
       this.musclePartTrendData = deepCopy(this.chartData.weightTrainingTrend.partTrainingData);
     }
-
   }
 
   /**
@@ -563,16 +575,17 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     if (isWeightTrainType && isPageOwner) {
       const {
         userInfo: { bodyWeight, weightTrainingStrengthLevel },
-        weightTrainingConfig: { exchangeSetupApplication: { lapOrSetTrainingSelect } },
+        weightTrainingConfig: {
+          exchangeSetupApplication: { lapOrSetTrainingSelect },
+        },
         baseWeigtTrainingLap,
-        compareWeightTrainingLap
+        compareWeightTrainingLap,
       } = dataObj;
 
       this.levelText = getWeightTrainingLevelText(weightTrainingStrengthLevel);
       this.weightTrainingAnalysis = new WeightTrainingAnalysis(lapOrSetTrainingSelect, bodyWeight);
-      this.countLapData(baseWeigtTrainingLap, compareWeightTrainingLap)
+      this.countLapData(baseWeigtTrainingLap, compareWeightTrainingLap);
     }
-
   }
 
   /**
@@ -584,16 +597,13 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     const countData = (dateType: ReportDateType, data: Array<any>) => {
       if (checkResponse(data)) {
         const { activities } = (data as any).info;
-        activities.forEach(_activities => {
+        activities.forEach((_activities) => {
           const { activityLapLayer } = _activities;
-          activityLapLayer.forEach(_activityLapLayer => {
+          activityLapLayer.forEach((_activityLapLayer) => {
             this.weightTrainingAnalysis.countLapTrainingData(dateType, _activityLapLayer);
           });
-
         });
-
       }
-
     };
 
     countData('base', baseData);
@@ -607,21 +617,19 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * @author kidin-1110427
    */
   scrollToReport() {
-
     setTimeout(() => {
       const element = document.querySelector('.report-headTitleSection') as HTMLElement;
       const top = element.offsetTop - 70;
       const scrollElement = document.querySelector('.main__container');
       scrollElement!.scrollTo({ top, behavior: 'smooth' });
     }, 200);
-    
   }
 
   /**
    * 取得加總數據或平均單筆數據
    * @param infoData {any}-運動概要數據
    * @param key {string}-指定數據的鍵名
-   * @author kidin-1110324 
+   * @author kidin-1110324
    */
   getInfoData(infoData: any, key: string) {
     const { sportType } = this.reportCondition;
@@ -634,8 +642,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         this.unit = unit;
       },
       get() {
-        return { value: this.value, unit: this.unit }
-      }
+        return { value: this.value, unit: this.unit };
+      },
     };
 
     if (infoData[key]) {
@@ -662,20 +670,31 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
           // 不足0.1公里或0.1英哩，則以 '< 0.1' 表示
           const prefix = distanceConverse >= 0 ? '' : '-';
-          result.update(Math.abs(distanceConverse) >= 0.1 ? distanceConverse : `< ${prefix}0.1`, unit);
+          result.update(
+            Math.abs(distanceConverse) >= 0.1 ? distanceConverse : `< ${prefix}0.1`,
+            unit
+          );
           break;
         case 'elevGain':
-          isMetric ? result.update(mathRounding(value, 1), 'm') : result.update(mathRounding(value / ft, 1), 'ft');
+          isMetric
+            ? result.update(mathRounding(value, 1), 'm')
+            : result.update(mathRounding(value / ft, 1), 'ft');
           break;
         case 'avgSpeed':
           const paceList = [SportType.run, SportType.swim, SportType.row];
           if (paceList.includes(sportType!) && this.showPace()) {
-            const { value: pace, unit: paceUnit } = speedToPace(value, sportType!, this.getUserUnit()!);
+            const { value: pace, unit: paceUnit } = speedToPace(
+              value,
+              sportType!,
+              this.getUserUnit()!
+            );
             result.update(pace, paceUnit);
           } else {
-            isMetric ? result.update(mathRounding(value, 1), 'km/hr') : result.update(mathRounding(value / mi, 2), 'mi/hr');
+            isMetric
+              ? result.update(mathRounding(value, 1), 'km/hr')
+              : result.update(mathRounding(value / mi, 2), 'mi/hr');
           }
-          
+
           break;
         case 'runAvgCadence':
           result.update(Math.round(value), 'spm');
@@ -699,9 +718,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           result.update(Math.round(value));
           break;
       }
-
     }
-    
+
     return result.get();
   }
 
@@ -721,7 +739,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * @author kidin-1110418
    */
   getAssignCondition(type: TargetField) {
-    const relatedIndex = this.transformCondition.findIndex(_condition => _condition.filedName === type);
+    const relatedIndex = this.transformCondition.findIndex(
+      (_condition) => _condition.filedName === type
+    );
     return relatedIndex > -1 ? +this.transformCondition[relatedIndex].filedValue : null;
   }
 
@@ -829,7 +849,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       this.uiFlag.showWeightTrainSetting = true;
       this.subscribePluralEvent();
     }
-
   }
 
   /**
@@ -845,7 +864,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       this.uiFlag.showAnalysisMenu = true;
       this.subscribePluralEvent();
     }
-
   }
 
   /**
@@ -855,12 +873,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     const targetElement = document.querySelector('.main__container');
     const scrollEvent = fromEvent(targetElement!, 'scroll');
     const clickEvent = fromEvent(document, 'click');
-    this.pluralEvent = merge(scrollEvent, clickEvent).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.unSubscribePluralEvent();
-    });
-      
+    this.pluralEvent = merge(scrollEvent, clickEvent)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.unSubscribePluralEvent();
+      });
   }
 
   /**
@@ -913,8 +930,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   changeSort(columnType?: string) {
     if (!columnType) return false;
-    this.weightTrainingSort.sortType !== columnType ?
-      this.weightTrainingSort.changeSortType(columnType) : this.weightTrainingSort.changeOrder();
+    this.weightTrainingSort.sortType !== columnType
+      ? this.weightTrainingSort.changeSortType(columnType)
+      : this.weightTrainingSort.changeOrder();
   }
 
   /**
@@ -932,7 +950,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   getSportInfoDiff() {
     const {
       base: { infoData: baseInfo },
-      compare: { infoData: compareInfo }
+      compare: { infoData: compareInfo },
     } = this.sportInfoData;
 
     const baseKeyLength = Object.keys(baseInfo).length;
@@ -946,7 +964,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       if (typeof referenceValue === 'number') {
         result = {
           ...result,
-          [key]: (baseValue ?? 0) - (compareValue ?? 0)
+          [key]: (baseValue ?? 0) - (compareValue ?? 0),
         };
 
         // 另外追加配速差值，針對配速先轉配速秒再相減
@@ -957,12 +975,10 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           const comparePaceSecond = speedToPaceSecond(compareValue ?? 0, sportType!, unit!);
           result = {
             ...result,
-            ['paceSecond']: basePaceSecond - comparePaceSecond
+            ['paceSecond']: basePaceSecond - comparePaceSecond,
           };
         }
-
       }
-
     }
 
     return result;
@@ -995,7 +1011,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       default:
         return false;
     }
-
   }
 
   /**
@@ -1007,5 +1022,4 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

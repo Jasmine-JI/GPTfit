@@ -2,71 +2,71 @@
 <section class="cardSection">
   <app-report-filter></app-report-filter>
 </section>
-<section class="cardSection" style="min-height: 200px;">
+<section class="cardSection" style="min-height: 200px">
   <ul class="activity__list">
-    <ng-container *ngIf="activityList.length > 0; else noData;">
-      <ng-container *ngFor="let _list of activityList; let _idx = index;">
-        <li
-          [id]="'card__' + _idx"
-          class="flexCol list__card"
-          (click)="handleNavigation(_idx)"
-        >
+    <ng-container *ngIf="activityList.length > 0; else noData">
+      <ng-container *ngFor="let _list of activityList; let _idx = index">
+        <li [id]="'card__' + _idx" class="flexCol list__card" (click)="handleNavigation(_idx)">
           <div class="flexCenter list__img__block">
             <div class="img__mask"></div>
             <img
               [src]="_list.fileInfo.scenery ? _list.fileInfo.scenery : _list.fileInfo.photo"
               class="list__img"
-            >
+            />
             <i class="icon-svg_web-icon_p2_096-camera"></i>
           </div>
           <div class="flexCol list__card__info">
             <span class="list__title">{{ _list.fileInfo.dispName }}</span>
-            <div class="flexRow" style="justify-content: space-between; align-items: center;">
+            <div class="flexRow" style="justify-content: space-between; align-items: center">
               <i
                 [class]="_list.activityInfoLayer.type | sportTypeIcon"
-                style="font-size: 24px; color: var(--scale-100-205);"
+                style="font-size: 24px; color: var(--scale-100-205)"
               ></i>
-              <div class="flexCol" style="align-items: flex-end;">
-                <div class="flexRow" style="align-items: center;">
+              <div class="flexCol" style="align-items: flex-end">
+                <div class="flexRow" style="align-items: center">
                   <ng-container
                     *ngIf="
-                      _list.activityInfoLayer.avgHeartRateBpm
-                      && [sportCode.all, sportCode.aerobic, sportCode.ball].includes(reportConditionOpt.sportType)
+                      _list.activityInfoLayer.avgHeartRateBpm &&
+                      [sportCode.all, sportCode.aerobic, sportCode.ball].includes(
+                        reportConditionOpt.sportType
+                      )
                     "
                   >
                     <i class="icon-svg_web-icon_p2_006-avg_heart_rate"></i>
-                    <span style="font-size: 14px; margin-right: 5px;">
+                    <span style="font-size: 14px; margin-right: 5px">
                       {{ _list.activityInfoLayer.avgHeartRateBpm }}
                     </span>
                   </ng-container>
                   <ng-container
                     *ngIf="
-                      _list.activityInfoLayer.totalDistanceMeters
-                      && [sportCode.run, sportCode.cycle, sportCode.swim, sportCode.row].includes(reportConditionOpt.sportType)
+                      _list.activityInfoLayer.totalDistanceMeters &&
+                      [sportCode.run, sportCode.cycle, sportCode.swim, sportCode.row].includes(
+                        reportConditionOpt.sportType
+                      )
                     "
                   >
                     <i class="icon-svg_web-icon_p2_018-distance"></i>
-                    <span style="font-size: 14px; margin-right: 5px;">
+                    <span style="font-size: 14px; margin-right: 5px">
                       {{ _list.activityInfoLayer.totalDistanceMeters | distanceSibs: [unit, true] }}
                     </span>
                   </ng-container>
                   <ng-container
                     *ngIf="
-                      _list.activityInfoLayer.totalWeightKg
-                      && reportConditionOpt.sportType === sportCode.weightTrain
+                      _list.activityInfoLayer.totalWeightKg &&
+                      reportConditionOpt.sportType === sportCode.weightTrain
                     "
                   >
                     <i class="icon-svg_web-icon_p2_033-weight"></i>
-                    <span style="font-size: 14px; margin-right: 5px;">
+                    <span style="font-size: 14px; margin-right: 5px">
                       {{ _list.activityInfoLayer.totalWeightKg | weightSibs: [unit, 0] }}
                     </span>
                   </ng-container>
                   <i class="icon-svg_web-icon_p1_026-time"></i>
-                  <span style="font-size: 14px;">
+                  <span style="font-size: 14px">
                     {{ _list.activityInfoLayer.totalSecond | sportTime }}
                   </span>
                 </div>
-                <span style="font-size: 12px; color: var(--scale-150-180);">
+                <span style="font-size: 12px; color: var(--scale-150-180)">
                   {{ _list.activityInfoLayer.startTime | timeFormat: 'YYYY-MM-DD ddd HH:mm' }}
                 </span>
               </div>
@@ -78,10 +78,10 @@
   </ul>
 </section>
 <ng-template #noData>
-  <div style="color: var(--scale-100-205);">
+  <div style="color: var(--scale-100-205)">
     <i
       class="icon-svg_web-icon_p2_039-rest"
-      style="font-size: 24px; color: var(--scale-100-205);"
+      style="font-size: 24px; color: var(--scale-100-205)"
     ></i>
     {{ 'universal_status_noData' | translate }}
   </div>

@@ -49,9 +49,7 @@
         {{ 'universal_userProfile_ftp' | translate }}
       </span>
       <div class="contentInput">
-        <span class="mainText">
-          {{ userInfo.cycleFtp }}w
-        </span>
+        <span class="mainText"> {{ userInfo.cycleFtp }}w </span>
       </div>
       <span class="contentDescription">
         {{ 'universal_system_ftpEdit' | translate }}
@@ -111,11 +109,7 @@
     </div>
   </div>
 </section>
-<section
-  class="flexCenter info-editMask"
-  (click)="closeDialog()"
-  *ngIf="uiFlag.showEditDialog"
->
+<section class="flexCenter info-editMask" (click)="closeDialog()" *ngIf="uiFlag.showEditDialog">
   <div class="dialog-box" (click)="handleClickDialog($event)">
     <div class="dialog-title">
       <h5>
@@ -165,9 +159,7 @@
           </div>
           <ng-container *ngIf="setting.heartRateBase === HrBase.reserve">
             <div class="childPageContent">
-              <label for="max_hr">
-                {{ 'universal_userProfile_maxHr' | translate }}：
-              </label>
+              <label for="max_hr"> {{ 'universal_userProfile_maxHr' | translate }}： </label>
               <input
                 id="max_hr"
                 type="text"
@@ -177,13 +169,11 @@
                 [value]="setting.heartRateMax"
                 (keydown)="checkFormat($event)"
                 (focusout)="handleMaxHrInput($event)"
-              >
+              />
               <span class="valueUnit">bpm</span>
             </div>
             <div class="childPageContent">
-              <label for="rest__hr">
-                {{ 'universal_userProfile_restHr' | translate }}：
-              </label>
+              <label for="rest__hr"> {{ 'universal_userProfile_restHr' | translate }}： </label>
               <input
                 id="rest__hr"
                 type="text"
@@ -193,7 +183,7 @@
                 [value]="setting.heartRateResting"
                 (keydown)="checkFormat($event)"
                 (focusout)="handleRestHrInput($event)"
-              >
+              />
               <span class="valueUnit">bpm</span>
             </div>
           </ng-container>
@@ -282,9 +272,7 @@
       <ng-container *ngIf="uiFlag.showEditDialog === 'ftp'">
         <div class="flexCol">
           <div class="flexRowWrap childPageContent">
-            <span class="itemTitle">
-              {{ 'universal_userProfile_ftp' | translate }}：
-            </span>
+            <span class="itemTitle"> {{ 'universal_userProfile_ftp' | translate }}： </span>
             <input
               type="text"
               class="num__input userSettingInput"
@@ -293,10 +281,8 @@
               [value]="setting.cycleFtp"
               (keydown)="checkFormat($event)"
               (focusout)="handleCycleFtpInput($event)"
-            >
-            <span class="valueUnit">
-              w
-            </span>
+            />
+            <span class="valueUnit"> w </span>
           </div>
           <ul id="ftp__zone__info">
             <li class="flexCol">
@@ -378,10 +364,7 @@
             <li>
               <div class="flexRow">
                 <span class="itemTitle">Z0：</span>
-                <span 
-                  style="min-width: 44px; text-align: right;"
-                  class="info__content"
-                >～</span>
+                <span style="min-width: 44px; text-align: right" class="info__content">～</span>
                 <span class="rangeValue">{{ userFtpZone.z0 }}</span>
                 <span class="valueUnit">w</span>
               </div>
@@ -396,9 +379,7 @@
       <ng-container *ngIf="uiFlag.showEditDialog === 'activity'">
         <div class="flexCol">
           <div class="flexRowWrap childPageContent">
-            <span class="itemTitle">
-              {{ 'universal_deviceSetting_unit' | translate }}：
-            </span>
+            <span class="itemTitle"> {{ 'universal_deviceSetting_unit' | translate }}： </span>
             <div class="flexRow radio__section">
               <span class="flexRow radioSelector" (click)="changeUnit(Unit.metric)">
                 <span
@@ -417,44 +398,44 @@
             </div>
           </div>
           <div class="flexRowWrap childPageContent">
-            <span class="itemTitle">
-              {{ 'universal_activityData_swing' | translate }}：
-            </span>
-              <div class="flexRow radio__section">
-                <span class="flexRow radioSelector" (click)="changeDominantHand(DominantHand.left)">
-                  <span
-                    class="radioBtn"
-                    [class.radioBtn--active]="setting.handedness == DominantHand.left"
-                  ></span>
-                  <span>{{ 'universal_vocabulary_leftHand' | translate }}</span>
-                </span>
-                <span class="flexRow radioSelector" (click)="changeDominantHand(DominantHand.right)">
-                  <span
-                    class="radioBtn"
-                    [class.radioBtn--active]="setting.handedness == DominantHand.right"
-                  ></span>
-                  <span>{{ 'universal_vocabulary_rightHand' | translate }}</span>
-                </span>
-              </div>
+            <span class="itemTitle"> {{ 'universal_activityData_swing' | translate }}： </span>
+            <div class="flexRow radio__section">
+              <span class="flexRow radioSelector" (click)="changeDominantHand(DominantHand.left)">
+                <span
+                  class="radioBtn"
+                  [class.radioBtn--active]="setting.handedness == DominantHand.left"
+                ></span>
+                <span>{{ 'universal_vocabulary_leftHand' | translate }}</span>
+              </span>
+              <span class="flexRow radioSelector" (click)="changeDominantHand(DominantHand.right)">
+                <span
+                  class="radioBtn"
+                  [class.radioBtn--active]="setting.handedness == DominantHand.right"
+                ></span>
+                <span>{{ 'universal_vocabulary_rightHand' | translate }}</span>
+              </span>
+            </div>
           </div>
           <div class="childPageContent">
-            <span class="itemTitle">
-              {{ 'universal_userProfile_stepLength' | translate }}：
-            </span>
+            <span class="itemTitle"> {{ 'universal_userProfile_stepLength' | translate }}： </span>
             <input
               type="text"
               class="num__input userSettingInput"
               maxlength="5"
-              [placeholder]="90 | lengthSibs: {
-                userUnit: setting.unit,
-                valueUnit: 'cm',
-                transformUnit: 'inch',
-                digit: 1
-              }"
+              [placeholder]="
+                90
+                  | lengthSibs
+                    : {
+                        userUnit: setting.unit,
+                        valueUnit: 'cm',
+                        transformUnit: 'inch',
+                        digit: 1
+                      }
+              "
               [value]="setting.strideLengthCentimeter"
               (keydown)="checkFormat($event, true)"
               (focusout)="handleStepLenInput($event)"
-            >
+            />
             <span class="valueUnit">
               {{ 'stepLength' | dataTypeUnit: [null, setting.unit] }}
             </span>
@@ -467,16 +448,20 @@
               type="text"
               class="num__input userSettingInput"
               maxlength="5"
-              [placeholder]="2000 | lengthSibs: {
-                userUnit: setting.unit,
-                valueUnit: 'mm',
-                transformUnit: 'inch',
-                digit: 1
-              }"
+              [placeholder]="
+                2000
+                  | lengthSibs
+                    : {
+                        userUnit: setting.unit,
+                        valueUnit: 'mm',
+                        transformUnit: 'inch',
+                        digit: 1
+                      }
+              "
               [value]="setting.wheelSize"
               (keydown)="checkFormat($event, true)"
               (focusout)="handleWheelSizeInput($event)"
-            >
+            />
             <span class="valueUnit">
               {{ 'wheelSize' | dataTypeUnit: [null, setting.unit] }}
             </span>
@@ -486,16 +471,14 @@
       <ng-container *ngIf="uiFlag.showEditDialog === 'sleep'">
         <div class="flexCol">
           <div class="flexRowWrap childPageContent">
-            <span class="itemTitle">
-              {{ 'universal_lifeTracking_sleepTime' | translate }}：
-            </span>
+            <span class="itemTitle"> {{ 'universal_lifeTracking_sleepTime' | translate }}： </span>
             <div class="time__selector__section">
               <ng-container *ngIf="!uiFlag.isMobile">
                 <span
                   class="userSettingInput time__set"
                   (click)="openTimeSelector($event, 'normalBedTime')"
                 >
-                  {{ setting.normalBedTime | slice: 0 :5 }}
+                  {{ setting.normalBedTime | slice: 0:5 }}
                 </span>
                 <ng-container *ngIf="uiFlag.showTimeSelector === 'normalBedTime'">
                   <div *ngTemplateOutlet="timeSelect"></div>
@@ -503,25 +486,23 @@
               </ng-container>
               <ng-container *ngIf="uiFlag.isMobile">
                 <input
-                  [value]="setting.normalBedTime | slice: 0 :5"
+                  [value]="setting.normalBedTime | slice: 0:5"
                   type="time"
                   class="info__content"
                   (change)="changeTime($event, 'normalBedTime')"
-                >
+                />
               </ng-container>
             </div>
           </div>
           <div class="flexRowWrap childPageContent">
-            <span class="itemTitle">
-              {{ 'universal_lifeTracking_wakeUpTime' | translate }}：
-            </span>
+            <span class="itemTitle"> {{ 'universal_lifeTracking_wakeUpTime' | translate }}： </span>
             <div class="time__selector__section">
               <ng-container *ngIf="!uiFlag.isMobile">
                 <span
                   class="userSettingInput time__set"
                   (click)="openTimeSelector($event, 'normalWakeTime')"
                 >
-                  {{ setting.normalWakeTime | slice: 0 :5 }}
+                  {{ setting.normalWakeTime | slice: 0:5 }}
                 </span>
                 <ng-container *ngIf="uiFlag.showTimeSelector === 'normalWakeTime'">
                   <div *ngTemplateOutlet="timeSelect"></div>
@@ -529,11 +510,11 @@
               </ng-container>
               <ng-container *ngIf="uiFlag.isMobile">
                 <input
-                  [value]="setting.normalWakeTime | slice: 0 :5"
+                  [value]="setting.normalWakeTime | slice: 0:5"
                   type="time"
                   class="info__content"
                   (change)="changeTime($event, 'normalWakeTime')"
-                >
+                />
               </ng-container>
             </div>
           </div>
@@ -545,17 +526,21 @@
             <span class="itemTitle">
               {{ 'universal_userProfile_AutoStepTarget' | translate }}：
             </span>
-            <div
-              class="flexRow radio__section"
-            >
-              <span class="flexRow radioSelector" (click)="changeAutoTargetStep(AutoStepTarget.close)">
+            <div class="flexRow radio__section">
+              <span
+                class="flexRow radioSelector"
+                (click)="changeAutoTargetStep(AutoStepTarget.close)"
+              >
                 <span
                   class="radioBtn"
                   [class.radioBtn--active]="setting.autoTargetStep === AutoStepTarget.close"
                 ></span>
                 <span class="itemTitle">{{ 'universal_operating_close' | translate }}</span>
               </span>
-              <span class="flexRow radioSelector" (click)="changeAutoTargetStep(AutoStepTarget.open)">
+              <span
+                class="flexRow radioSelector"
+                (click)="changeAutoTargetStep(AutoStepTarget.open)"
+              >
                 <span
                   class="radioBtn"
                   [class.radioBtn--active]="setting.autoTargetStep === AutoStepTarget.open"
@@ -565,9 +550,7 @@
             </div>
           </div>
           <div class="flexRowWrap childPageContent">
-            <span class="itemTitle">
-              {{ 'universal_lifeTracking_targetStep' | translate }}：
-            </span>
+            <span class="itemTitle"> {{ 'universal_lifeTracking_targetStep' | translate }}： </span>
             <input
               type="text"
               class="num__input userSettingInput"
@@ -576,7 +559,7 @@
               [value]="setting.target.step"
               (keydown)="checkFormat($event)"
               (focusout)="handleTargetStepInput($event)"
-            >
+            />
             <span class="valueUnit">
               {{ 'universal_lifeTracking_step' | translate }}
             </span>
@@ -589,16 +572,20 @@
               type="text"
               class="num__input userSettingInput"
               maxlength="5"
-              [placeholder]="1000 | lengthSibs: {
-                userUnit: userInfo.unit,
-                valueUnit: 'm',
-                transformUnit: 'ft',
-                digit: 2
-              }"
+              [placeholder]="
+                1000
+                  | lengthSibs
+                    : {
+                        userUnit: userInfo.unit,
+                        valueUnit: 'm',
+                        transformUnit: 'ft',
+                        digit: 2
+                      }
+              "
               [value]="setting.target.distance"
               (keydown)="checkFormat($event, true)"
               (focusout)="handleTargetDistanceInput($event)"
-            >
+            />
             <span class="valueUnit">
               {{ 'targetDistance' | dataTypeUnit: [null, setting.unit] }}
             </span>
@@ -615,7 +602,7 @@
               [value]="setting.target.elevGain"
               (keydown)="checkFormat($event)"
               (focusout)="handleTargetElevGainInput($event)"
-            >
+            />
             <span class="valueUnit">
               {{ 'universal_group_layer' | translate }}
             </span>
@@ -632,10 +619,8 @@
               [value]="setting.target.calorie"
               (keydown)="checkFormat($event)"
               (focusout)="handleTargetCalorieInput($event)"
-            >
-            <span class="valueUnit">
-              cal
-            </span>
+            />
+            <span class="valueUnit"> cal </span>
           </div>
           <div class="flexRowWrap childPageContent">
             <span class="itemTitle">
@@ -649,7 +634,7 @@
               [value]="setting.target.fitTime"
               (keydown)="checkFormat($event)"
               (focusout)="handleTargetFitTimeInput($event)"
-            >
+            />
             <span class="valueUnit">
               {{ 'universal_unit_minute' | translate }}
             </span>
@@ -666,7 +651,7 @@
               [value]="setting.target.sleep"
               (keydown)="checkFormat($event, true)"
               (focusout)="handleTargetSleepInput($event)"
-            >
+            />
             <span class="valueUnit">
               {{ 'universal_time_hour' | translate }}
             </span>
@@ -684,7 +669,7 @@
               [value]="setting.target.bodyWeight"
               (keydown)="checkFormat($event, true)"
               (focusout)="handleTargetWeightInput($event)"
-            >
+            />
             <span class="valueUnit">
               {{ 'bodyWeight' | dataTypeUnit: [null, setting.unit] }}
             </span>
@@ -702,10 +687,8 @@
               [value]="setting.target.muscleRate"
               (keydown)="checkFormat($event, true)"
               (focusout)="handleTargetMuscleRateInput($event)"
-            >
-            <span class="valueUnit">
-              %
-            </span>
+            />
+            <span class="valueUnit"> % </span>
           </div>
           <div class="flexRowWrap childPageContent">
             <span class="itemTitle">
@@ -720,10 +703,8 @@
               [value]="setting.target.fatRate"
               (keydown)="checkFormat($event, true)"
               (focusout)="handleTargetFatRateInput($event)"
-            >
-            <span class="valueUnit">
-              %
-            </span>
+            />
+            <span class="valueUnit"> % </span>
           </div>
         </div>
       </ng-container>
@@ -732,23 +713,22 @@
           <div class="flexCol info-contentText">
             <div class="date__cycle">
               <span class="drop__list" (click)="toggleCycleList($event)">
-                {{ (sportsTarget.cycle === DateUnit.week ? 'universal_time_week' : 'universal_time_day') | translate }}
+                {{
+                  (sportsTarget.cycle === DateUnit.week
+                    ? 'universal_time_week'
+                    : 'universal_time_day'
+                  ) | translate
+                }}
                 <i
                   class="icon-svg_web-icon_p1_006-unfold unfold__icon"
                   [class.fold__icon]="uiFlag.showCycleList"
                 ></i>
               </span>
               <ul class="date__cycle__list" *ngIf="uiFlag.showCycleList">
-                <li
-                  class="list__item"
-                  (click)="selectDateCycle(DateUnit.day)"
-                >
+                <li class="list__item" (click)="selectDateCycle(DateUnit.day)">
                   {{ 'universal_time_day' | translate }}
                 </li>
-                <li
-                  class="list__item"
-                  (click)="selectDateCycle(DateUnit.week)"
-                >
+                <li class="list__item" (click)="selectDateCycle(DateUnit.week)">
                   {{ 'universal_time_week' | translate }}
                 </li>
               </ul>
@@ -756,19 +736,26 @@
             <ul class="condition__list">
               <li
                 class="flexRow condition__list__item"
-                *ngFor="let condition of sportsTarget.condition; let index = index;"
+                *ngFor="let condition of sportsTarget.condition; let index = index"
               >
-                <button
-                  class="delete__condition__button"
-                  (click)="deleteCondition(index)"
-                >
+                <button class="delete__condition__button" (click)="deleteCondition(index)">
                   <i class="icon-svg_web-icon_p1_012-close"></i>
                 </button>
                 {{ condition.filedName | targetFieldName | translate }}
                 &ge;
-                {{ condition.filedName.toLocaleLowerCase().includes('time') ? condition.filedValue / 60 : condition.filedValue }}
+                {{
+                  condition.filedName.toLocaleLowerCase().includes('time')
+                    ? condition.filedValue / 60
+                    : condition.filedValue
+                }}
                 {{ condition.filedName | targetFieldUnit | translate }}
-                / {{ (sportsTarget.cycle === DateUnit.week ? 'universal_time_week' : 'universal_time_day') | translate }}
+                /
+                {{
+                  (sportsTarget.cycle === DateUnit.week
+                    ? 'universal_time_week'
+                    : 'universal_time_day'
+                  ) | translate
+                }}
               </li>
             </ul>
             <p *ngIf="!sportsTarget.condition || sportsTarget.condition.length === 0">
@@ -789,34 +776,19 @@
                   ></i>
                 </span>
                 <ul class="filed__name__list" *ngIf="uiFlag.showFiledNameList">
-                  <li
-                    class="list__item"
-                    (click)="selectNewConditionFiled('totalActivities')"
-                  >
+                  <li class="list__item" (click)="selectNewConditionFiled('totalActivities')">
                     {{ 'universal_activityData_reps' | translate }}
                   </li>
-                  <li
-                    class="list__item"
-                    (click)="selectNewConditionFiled('totalTime')"
-                  >
+                  <li class="list__item" (click)="selectNewConditionFiled('totalTime')">
                     {{ 'universal_activityData_totalTime' | translate }}
                   </li>
-                  <li
-                    class="list__item"
-                    (click)="selectNewConditionFiled('benefitTime')"
-                  >
+                  <li class="list__item" (click)="selectNewConditionFiled('benefitTime')">
                     {{ 'universal_activityData_benefitime' | translate }}
                   </li>
-                  <li
-                    class="list__item"
-                    (click)="selectNewConditionFiled('pai')"
-                  >
+                  <li class="list__item" (click)="selectNewConditionFiled('pai')">
                     {{ 'universal_activityData_pai' | translate }} PAI
                   </li>
-                  <li
-                    class="list__item"
-                    (click)="selectNewConditionFiled('calories')"
-                  >
+                  <li class="list__item" (click)="selectNewConditionFiled('calories')">
                     {{ 'universal_userProfile_calories' | translate }}
                   </li>
                 </ul>
@@ -828,7 +800,7 @@
                 [placeHolder]="'整數' | translate"
                 [value]="newCondition.filedValue ? newCondition.filedValue : ''"
                 (focusout)="setNewConditionValue($event)"
-              >
+              />
               <ng-container *ngIf="newCondition.filedName">
                 {{ newCondition.filedName | targetFieldUnit | translate }}
               </ng-container>
@@ -842,7 +814,7 @@
         {{ 'universal_operating_cancel' | translate }}
       </button>
       <button class="dialog-confirmBtn" (click)="editComplete()">
-        <span [class.dialog-confirmButton--disabled]="uiFlag.progress !== 100" >
+        <span [class.dialog-confirmButton--disabled]="uiFlag.progress !== 100">
           {{ 'universal_operating_confirm' | translate }}
         </span>
         <mat-spinner
@@ -856,28 +828,22 @@
 </section>
 <ng-template #timeSelect>
   <div id="time__Selector" class="flexRow">
-    <div
-      id="hour__selector"
-      class="flexCol scroll__time"
-      style="top: -25px;"
-    >
+    <div id="hour__selector" class="flexCol scroll__time" style="top: -25px">
       <ng-container *ngFor="let _hour of timeSelector.hourList">
         <span
           [class.current__selector]="timeSelector.hour === _hour"
           (click)="selectTime($event, 'hour', _hour)"
-        >{{ _hour }}</span>
+          >{{ _hour }}</span
+        >
       </ng-container>
     </div>
-    <div
-      id="min__selector"
-      class="flexCol scroll__time"
-      style="top: -25px;"
-    >
+    <div id="min__selector" class="flexCol scroll__time" style="top: -25px">
       <ng-container *ngFor="let _min of timeSelector.minList">
         <span
           [class.current__selector]="timeSelector.min === _min"
           (click)="selectTime($event, 'min', _min)"
-        >{{ _min }}</span>
+          >{{ _min }}</span
+        >
       </ng-container>
     </div>
   </div>

@@ -4,7 +4,7 @@
 export enum Sex {
   male,
   female,
-  unlimit
+  unlimit,
 }
 
 /**
@@ -12,5 +12,5 @@ export enum Sex {
  */
 export enum HrBase {
   max,
-  reserve
+  reserve,
 }

@@ -18,20 +18,19 @@ enum DestroyFlow {
   search = 1,
   apply,
   verify,
-  cancel
+  cancel,
 }
 
 enum DestroyStatus {
   notApplied,
   verifying,
-  destroying
+  destroying,
 }
-
 
 @Component({
   selector: 'app-app-destroy-account',
   templateUrl: './app-destroy-account.component.html',
-  styleUrls: ['./app-destroy-account.component.scss']
+  styleUrls: ['./app-destroy-account.component.scss'],
 })
 export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();
@@ -45,7 +44,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
     cancelDestroy: false,
     sendPhoneCaptcha: false,
     Countdown: false,
-    verifyCodeError: false
+    verifyCodeError: false,
   };
 
   appSys: AppCode = 0;
@@ -62,12 +61,12 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
    */
   destroyResp = {
     status: DestroyStatus.notApplied,
-    destroyTimestamp: null
+    destroyTimestamp: null,
   };
 
   checkBox = {
     compressed: false,
-    adminGiveUp: false
+    adminGiveUp: false,
   };
 
   readonly AccountTypeEnum = AccountTypeEnum;
@@ -92,7 +91,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
    * 因應ios嵌入webkit物件時間點較後面，故在此生命週期才判斷裝置平台
    * @author kidin-1090710
    */
-  ngAfterViewInit () {
+  ngAfterViewInit() {
     this.getDeviceSys();
     this.getUserToken();
   }
@@ -105,9 +104,8 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
     const query = getUrlQueryStrings(location.search);
     this.requestHeader = {
       ...this.requestHeader,
-      ...headerKeyTranslate(query)
+      ...headerKeyTranslate(query),
     };
-
   }
 
   /**
@@ -116,19 +114,16 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
    */
   subscribeResizeEvent() {
     const resizeEvent = fromEvent(window, 'resize');
-    this.resizeSubscription = resizeEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.resizeSubscription = resizeEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.mobileSize = window.innerWidth < TFTViewMinWidth;
     });
-
   }
 
   /**
    * 取得裝置平台
    * @author kidin-1091216
    */
-  getDeviceSys () {
+  getDeviceSys() {
     this.setPageStyle(true);
     if ((window as any).webkit) {
       this.appSys = 1;
@@ -140,9 +135,8 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
 
     this.requestHeader = {
       deviceType: this.appSys,
-      ...this.requestHeader
+      ...this.requestHeader,
     };
-
   }
 
   /**
@@ -175,7 +169,6 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
       this.getUserProfile();
       this.checkQueryString();
     }
-
   }
 
   /**
@@ -190,7 +183,6 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
     } else {
       this.checkDestroyStatus();
     }
-
   }
 
   /**
@@ -199,23 +191,18 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
    */
   getUserProfile() {
     this.uiFlag.progress = 30;
-    this.api10xxService.fetchGetUserProfile({token: this.token}).subscribe(res => {
-      const {
-        signIn,
-        userProfile,
-      } = res as any;
+    this.api10xxService.fetchGetUserProfile({ token: this.token }).subscribe((res) => {
+      const { signIn, userProfile } = res as any;
       if (this.utils.checkRes(res)) {
         const { accountType } = signIn;
         this.user = {
           accountType,
-          ...userProfile
+          ...userProfile,
         };
-
       }
 
       this.uiFlag.progress = 100;
     });
-
   }
 
   /**
@@ -228,15 +215,12 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
     } else {
       const body = {
         token: this.token,
-        flow: 1
+        flow: 1,
       };
 
       this.uiFlag.progress = 30;
-      this.signupService.fetchDestroyAccount(body, this.requestHeader).subscribe(res => {
-        const {
-          status,
-          destroyTimestamp
-        } = res as any;
+      this.signupService.fetchDestroyAccount(body, this.requestHeader).subscribe((res) => {
+        const { status, destroyTimestamp } = res as any;
         if (this.utils.checkRes(res)) {
           this.destroyResp.status = status;
           if (status === DestroyStatus.notApplied) {
@@ -244,17 +228,14 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
           } else if (status === DestroyStatus.destroying) {
             this.destroyResp.destroyTimestamp = destroyTimestamp;
             const destroyDate = dayjs(destroyTimestamp * 1000).format('YYYY-MM-DD'),
-                  destroyTime = dayjs(destroyTimestamp * 1000).format('HH:mm');
+              destroyTime = dayjs(destroyTimestamp * 1000).format('HH:mm');
             this.getTranslate(destroyDate, destroyTime);
           }
-
         }
 
         this.uiFlag.progress = 100;
       });
-
     }
-
   }
 
   /**
@@ -262,25 +243,23 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
    * @author kidin-1091223
    */
   checkoutIsGroupAdmin() {
-    this.uiFlag.progress = 30
-    this.api11xxService.fetchMemberAccessRight({token: this.token}).pipe(
-      switchMap(response => this.translate.get('hellow world').pipe(
-        map(resp => response)
-      )),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      const { info } = res as any;
-      if (this.utils.checkRes(res)) {
-
-        if (info.groupAccessRight.some(_list => +_list.accessRight < 90)) {
-          this.uiFlag.isAnyGroupAdmin = true;
+    this.uiFlag.progress = 30;
+    this.api11xxService
+      .fetchMemberAccessRight({ token: this.token })
+      .pipe(
+        switchMap((response) => this.translate.get('hellow world').pipe(map((resp) => response))),
+        takeUntil(this.ngUnsubscribe)
+      )
+      .subscribe((res) => {
+        const { info } = res as any;
+        if (this.utils.checkRes(res)) {
+          if (info.groupAccessRight.some((_list) => +_list.accessRight < 90)) {
+            this.uiFlag.isAnyGroupAdmin = true;
+          }
         }
 
-      }
-
-      this.uiFlag.progress = 100;
-    });
-    
+        this.uiFlag.progress = 100;
+      });
   }
 
   /**
@@ -290,35 +269,32 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
   applyDestroy() {
     const body = {
       token: this.token,
-      flow: DestroyFlow.apply
+      flow: DestroyFlow.apply,
     };
 
     this.uiFlag.progress = 30;
-    this.signupService.fetchDestroyAccount(body, this.requestHeader).pipe(
-      switchMap(response => this.translate.get('hellow world').pipe(
-        map(resp => response)
-      )),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      const {
-        status,
-      } = res as any;
-      if (this.utils.checkRes(res)) {
-        this.destroyResp.status = status;
-        if (this.user.accountType === AccountTypeEnum.phone) {
-          const msg = this.translate.instant('universal_userAccount_sendSmsSuccess');
-          this.utils.showSnackBar(msg);
-          this.countDown();
-        } else {
-          const msg = this.translate.instant('universal_userAccount_sendCaptchaChackEmail');
-          this.utils.showSnackBar(msg);
+    this.signupService
+      .fetchDestroyAccount(body, this.requestHeader)
+      .pipe(
+        switchMap((response) => this.translate.get('hellow world').pipe(map((resp) => response))),
+        takeUntil(this.ngUnsubscribe)
+      )
+      .subscribe((res) => {
+        const { status } = res as any;
+        if (this.utils.checkRes(res)) {
+          this.destroyResp.status = status;
+          if (this.user.accountType === AccountTypeEnum.phone) {
+            const msg = this.translate.instant('universal_userAccount_sendSmsSuccess');
+            this.utils.showSnackBar(msg);
+            this.countDown();
+          } else {
+            const msg = this.translate.instant('universal_userAccount_sendCaptchaChackEmail');
+            this.utils.showSnackBar(msg);
+          }
         }
 
-      }
-
-      this.uiFlag.progress = 100;
-    });
-
+        this.uiFlag.progress = 100;
+      });
   }
 
   /**
@@ -335,30 +311,28 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
    * @author kidin-1091223
    */
   verifyIdentidy(code: string) {
-      const body = {
-        token: this.token,
-        flow: DestroyFlow.verify,
-        verificationCode: code
-      };
+    const body = {
+      token: this.token,
+      flow: DestroyFlow.verify,
+      verificationCode: code,
+    };
 
-      this.uiFlag.progress = 30;
-      this.signupService.fetchDestroyAccount(body, this.requestHeader).pipe(
-        switchMap(response => this.translate.get('hellow world').pipe(
-          map(resp => response)
-        )),
+    this.uiFlag.progress = 30;
+    this.signupService
+      .fetchDestroyAccount(body, this.requestHeader)
+      .pipe(
+        switchMap((response) => this.translate.get('hellow world').pipe(map((resp) => response))),
         takeUntil(this.ngUnsubscribe)
-      ).subscribe(res => {
-        const {
-          processResult,
-          info,
-          resultCode: resCode,
-          status,
-          destroyTimestamp
-        } = res as any;
-        if (!processResult && info.rtnMsg.indexOf('Exception: invalid literal for int() with base 10:') > -1) {
+      )
+      .subscribe((res) => {
+        const { processResult, info, resultCode: resCode, status, destroyTimestamp } = res as any;
+        if (
+          !processResult &&
+          info.rtnMsg.indexOf('Exception: invalid literal for int() with base 10:') > -1
+        ) {
           this.uiFlag.verifyCodeError = true;
         } else if (!processResult && resCode === 400) {
-          const msg = 'Error! Please try again later.'
+          const msg = 'Error! Please try again later.';
           this.utils.showSnackBar(msg);
         } else if (processResult.resultCode !== 200) {
           this.checkoutIsGroupAdmin();
@@ -374,7 +348,6 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
           } else {
             this.checkDestroyStatus();
           }
-          
         } else {
           this.uiFlag.verifyCodeError = false;
           this.destroyResp = {
@@ -383,13 +356,12 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
           };
 
           const destroyDate = dayjs(destroyTimestamp * 1000).format('YYYY-MM-DD'),
-                destroyTime = dayjs(destroyTimestamp * 1000).format('HH:mm');
+            destroyTime = dayjs(destroyTimestamp * 1000).format('HH:mm');
           this.getTranslate(destroyDate, destroyTime);
         }
 
         this.uiFlag.progress = 100;
       });
-
   }
 
   /**
@@ -399,35 +371,32 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
   cancelDestroy() {
     const body = {
       token: this.token,
-      flow: DestroyFlow.cancel
+      flow: DestroyFlow.cancel,
     };
 
     this.uiFlag.progress = 30;
-    this.signupService.fetchDestroyAccount(body, this.requestHeader).subscribe(res => {
+    this.signupService.fetchDestroyAccount(body, this.requestHeader).subscribe((res) => {
       this.uiFlag.progress = 100;
       if (this.utils.checkRes(res)) {
         this.destroyResp.status = DestroyStatus.notApplied;
         this.uiFlag.cancelDestroy = true;
       }
-
     });
-
   }
 
   /**
    * 回上一頁或返回app
    * @author kidin-1091216
    */
-  turnBack () {
+  turnBack() {
     if (this.appSys === 1) {
       (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
     } else if (this.appSys === 2) {
       (window as any).android.closeWebView('Close');
     } else {
       window.close();
-      this.router.navigateByUrl('/dashboard/user-settings');  // 避免頁面無法關閉
+      this.router.navigateByUrl('/dashboard/user-settings'); // 避免頁面無法關閉
     }
-
   }
 
   /**
@@ -466,9 +435,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
         // 設any處理typescript報錯：Argument of type 'Timer' is not assignable to parameter of type 'number'-kidin-1090515
         window.clearInterval(btnInterval as any);
       }
-
     }, 1000);
-
   }
 
   /**
@@ -478,16 +445,18 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
    * @author kidin-1091228
    */
   getTranslate(date: string, time: string) {
-    this.translate.get('hellow world').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.deleteApplySuccessText = `${this.translate.instant('universal_userAccount_successfullyRequestedToDeleteAccount', {
-        'yyyy-mm-dd': `<span class="date__time__warn">${date}</span>`,
-        'HH:MM': `<span class="date__time__warn">${time}</span>`
-      })}`;
-
-    })
-
+    this.translate
+      .get('hellow world')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.deleteApplySuccessText = `${this.translate.instant(
+          'universal_userAccount_successfullyRequestedToDeleteAccount',
+          {
+            'yyyy-mm-dd': `<span class="date__time__warn">${date}</span>`,
+            'HH:MM': `<span class="date__time__warn">${time}</span>`,
+          }
+        )}`;
+      });
   }
 
   /**
@@ -499,5 +468,4 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

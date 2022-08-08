@@ -18,7 +18,6 @@ import { Router } from '@angular/router';
 import { HashIdService } from '../../../../../shared/services/hash-id.service';
 import { AuthService } from '../../../../../core/services/auth.service';
 
-
 dayjs.extend(weekday);
 
 const errMsg = `Error.<br />Please try again later.`;
@@ -28,7 +27,7 @@ const errMsg = `Error.<br />Please try again later.`;
  * @author kidin-1091116
  */
 class ChartOptions {
-  constructor (dataset) {
+  constructor(dataset) {
     return {
       chart: {
         height: 300,
@@ -40,10 +39,10 @@ class ChartOptions {
         align: 'left',
         margin: 0,
         x: 30,
-        style: ''
+        style: '',
       },
       credits: {
-        enabled: false
+        enabled: false,
       },
       xAxis: {
         crosshair: true,
@@ -56,28 +55,28 @@ class ChartOptions {
           min: null,
           max: null,
           tickInterval: null,
-          labels: null
-        }
+          labels: null,
+        },
       },
       plotOptions: {
         column: {
-            pointPlacement: 0,
+          pointPlacement: 0,
         },
         series: {
           pointPadding: 0,
-          groupPadding: 0
-        }
+          groupPadding: 0,
+        },
       },
       tooltip: {
         pointFormat: '{point.y}',
         xDateFormat: '%H:%M:%S',
         shadow: false,
         style: {
-          fontSize: '14px'
+          fontSize: '14px',
         },
         valueDecimals: dataset.valueDecimals,
         split: true,
-        share: true
+        share: true,
       },
       series: [
         {
@@ -87,25 +86,23 @@ class ChartOptions {
           innerSize: '',
           fillOpacity: 0.3,
           tooltip: {
-            valueSuffix: ' ' + dataset.unit
+            valueSuffix: ' ' + dataset.unit,
           },
           dataLabels: {
-            enabled: false
-          }
-        }
-      ]
+            enabled: false,
+          },
+        },
+      ],
     };
   }
 }
 
-
 @Component({
   selector: 'app-class-analysis-v2',
   templateUrl: './class-analysis.component.html',
-  styleUrls: ['./class-analysis.component.scss', '../group-child-page.scss']
+  styleUrls: ['./class-analysis.component.scss', '../group-child-page.scss'],
 })
 export class ClassAnalysisComponent implements OnInit, OnDestroy {
-
   private ngUnsubscribe = new Subject();
 
   /**
@@ -120,7 +117,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     isLoading: false,
     noData: true,
     queryStringShowDate: false,
-    queryIndex: null
+    queryIndex: null,
   };
 
   /**
@@ -147,8 +144,8 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     endTimestamp: dayjs().endOf('week').valueOf(),
     weekOne: <Array<CalenderDay>>[],
     weekTwo: <Array<CalenderDay>>[],
-    queryClassTime: null
-  }
+    queryClassTime: null,
+  };
 
   /**
    * 連續切換行事曆的debounce時間
@@ -170,16 +167,15 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    */
   activityDetail: any;
 
-
   /************** report內容可能大改，故以下沿用舊code暫不重構 ****************/
 
-  @ViewChild('container', {static: false})
+  @ViewChild('container', { static: false })
   container: ElementRef;
-  @ViewChild('classHRZoneChartTarget', {static: false})
+  @ViewChild('classHRZoneChartTarget', { static: false })
   classHRZoneChartTarget: ElementRef;
-  @ViewChild('classCaloriesChartTarget', {static: false})
+  @ViewChild('classCaloriesChartTarget', { static: false })
   classCaloriesChartTarget: ElementRef;
-  @ViewChild('sortTable', {static: false})
+  @ViewChild('sortTable', { static: false })
   sortTable: MatSort;
 
   activityLength: any;
@@ -197,7 +193,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     { y: 0, z: '', color: '#abf784' },
     { y: 0, z: '', color: '#f7f25b' },
     { y: 0, z: '', color: '#f3b353' },
-    { y: 0, z: '', color: '#f36953' }
+    { y: 0, z: '', color: '#f36953' },
   ];
   reportCreatedTime = dayjs().format('YYYY-MM-DD HH:mm');
   HRZoneThree: any = 0;
@@ -222,7 +218,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   coachInfo = {
     nickname: '',
     avatarUrl: '',
-    description: ''
+    description: '',
   };
   lessonTotalInfo: any;
   lessonPartInfo: any;
@@ -247,7 +243,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initPage();
-    charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
+    charts.length = 0; // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
     this.tableData.sort = this.sortTable;
   }
 
@@ -259,20 +255,19 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     combineLatest([
       this.groupService.getRxGroupDetail(),
       this.groupService.getRxCommerceInfo(),
-      this.groupService.getUserSimpleInfo()
-    ]).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(resArr => {
-      this.groupInfo = resArr[0];
-      Object.assign(resArr[0], {groupLevel: this.utils.displayGroupLevel(resArr[0].groupId)});
-      Object.assign(resArr[0], {expired: resArr[1].expired});
-      Object.assign(resArr[0], {commerceStatus: resArr[1].commerceStatus});
-      this.userSimpleInfo = resArr[2];
-      this.checkQueryString(location.search);
-      this.getMemberList();
-      this.handleInfo(this.groupInfo.groupDesc, 'lessonInfo');
-    })
-
+      this.groupService.getUserSimpleInfo(),
+    ])
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((resArr) => {
+        this.groupInfo = resArr[0];
+        Object.assign(resArr[0], { groupLevel: this.utils.displayGroupLevel(resArr[0].groupId) });
+        Object.assign(resArr[0], { expired: resArr[1].expired });
+        Object.assign(resArr[0], { commerceStatus: resArr[1].commerceStatus });
+        this.userSimpleInfo = resArr[2];
+        this.checkQueryString(location.search);
+        this.getMemberList();
+        this.handleInfo(this.groupInfo.groupDesc, 'lessonInfo');
+      });
   }
 
   /**
@@ -283,7 +278,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   checkQueryString(query: string) {
     if (query.indexOf('?') > -1) {
       const queryArr = query.split('?')[1].split('&');
-      queryArr.forEach(_query => {
+      queryArr.forEach((_query) => {
         switch (_query.split('=')[0]) {
           case 'debug':
             this.uiFlag.isDebugMode = true;
@@ -295,15 +290,17 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
             this.uiFlag.queryStringShowDate = true;
             this.calender.queryClassTime = +_query.split('=')[1];
             this.uiFlag.queryIndex = dayjs(this.calender.queryClassTime).weekday();
-            this.calender.startTimestamp = dayjs(this.calender.queryClassTime).subtract(1, 'week').startOf('week').valueOf();
-            this.calender.endTimestamp = dayjs(this.calender.queryClassTime).endOf('week').valueOf();
+            this.calender.startTimestamp = dayjs(this.calender.queryClassTime)
+              .subtract(1, 'week')
+              .startOf('week')
+              .valueOf();
+            this.calender.endTimestamp = dayjs(this.calender.queryClassTime)
+              .endOf('week')
+              .valueOf();
             break;
         }
-
       });
-      
     }
-
   }
 
   /**
@@ -314,12 +311,10 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   showFocusActivity(classTime: number) {
     let idx: number;
     for (let i = 0, activitiesLength = this.focusDayActivities.length; i < activitiesLength; i++) {
-
       if (dayjs(this.focusDayActivities[i].activityInfoLayer.startTime).valueOf() === classTime) {
         idx = i;
         break;
       }
-
     }
 
     if (idx === undefined) {
@@ -328,7 +323,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     } else {
       this.selectActivity(idx);
     }
-
   }
 
   /**
@@ -336,44 +330,42 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    * @author kidin-1091111
    */
   getMemberList() {
-    this.groupService.getRXClassMemberList().pipe(
-      first(),
-      switchMap(res => {
-        if (res.length === 0) {
-          const body = {
-            token: this.userSimpleInfo.token,
-            groupId: this.groupInfo.groupId,
-            groupLevel: this.utils.displayGroupLevel(this.groupInfo.groupId),
-            infoType: 3,
-            avatarType: 3
+    this.groupService
+      .getRXClassMemberList()
+      .pipe(
+        first(),
+        switchMap((res) => {
+          if (res.length === 0) {
+            const body = {
+              token: this.userSimpleInfo.token,
+              groupId: this.groupInfo.groupId,
+              groupLevel: this.utils.displayGroupLevel(this.groupInfo.groupId),
+              infoType: 3,
+              avatarType: 3,
+            };
+
+            return this.groupService.fetchGroupMemberList(body).pipe(
+              map((resp) => {
+                if (resp.resultCode !== 200) {
+                  console.error(`${resp.resultCode}: Api ${resp.apiCode} ${resp.resultMessage}`);
+                  return [];
+                } else {
+                  const list = this.sortMember(resp.info.groupMemberInfo);
+                  this.groupService.setClassMemberList(list);
+                  return list;
+                }
+              })
+            );
+          } else {
+            return of(res);
           }
-
-          return this.groupService.fetchGroupMemberList(body).pipe(
-            map(resp => {
-              if (resp.resultCode !== 200) {
-                console.error(`${resp.resultCode}: Api ${resp.apiCode} ${resp.resultMessage}`);
-                return [];
-              } else {
-                const list = this.sortMember(resp.info.groupMemberInfo);
-                this.groupService.setClassMemberList(list);
-                return list;
-              }
-
-            })
-
-          )
-
-        } else {
-          return of(res);
-        }
-
-      }),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(response => {
-      this.memberList = (response as Array<any>).map(_res => _res.memberId);
-      this.createCalender();
-    });
-
+        }),
+        takeUntil(this.ngUnsubscribe)
+      )
+      .subscribe((response) => {
+        this.memberList = (response as Array<any>).map((_res) => _res.memberId);
+        this.createCalender();
+      });
   }
 
   /**
@@ -383,11 +375,10 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    */
   sortMember(memArr: Array<MemberInfo>) {
     const list = [];
-    memArr.forEach(_mem => {
+    memArr.forEach((_mem) => {
       if (_mem.joinStatus === 2) {
         list.push(_mem);
       }
-
     });
 
     return list;
@@ -401,22 +392,19 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.calender.weekOne.length = 0;
     this.calender.weekTwo.length = 0;
     for (let i = 0; i < 14; i++) {
-      
       if (i < 7) {
         this.calender.weekOne.push({
           day: +dayjs(this.calender.startTimestamp).add(i, 'day').format('DD'),
           timestamp: dayjs(this.calender.startTimestamp).add(i, 'day').endOf('day').valueOf(),
-          haveDate: false
-        })
+          haveDate: false,
+        });
       } else {
         this.calender.weekTwo.push({
           day: +dayjs(this.calender.startTimestamp).add(i, 'day').format('DD'),
           timestamp: dayjs(this.calender.startTimestamp).add(i, 'day').endOf('day').valueOf(),
-          haveDate: false
-        })
-
+          haveDate: false,
+        });
       }
-
     }
 
     this.getClassList();
@@ -433,7 +421,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         fuzzyTime: '',
         filterStartTime: dayjs(this.calender.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
         filterEndTime: dayjs(this.calender.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-        filterSameTime: this.uiFlag.isDebugMode ? '1' : '2'
+        filterSameTime: this.uiFlag.isDebugMode ? '1' : '2',
       },
       searchRule: {
         activity: '99',
@@ -444,20 +432,20 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           equipmentSN: '',
           class: this.groupInfo.groupId,
           teacher: '',
-          tag: ''
-        }
+          tag: '',
+        },
       },
       display: {
         activityLapLayerDisplay: '3',
         activityLapLayerDataField: [],
         activityPointLayerDisplay: '3',
-        activityPointLayerDataField: []
+        activityPointLayerDataField: [],
       },
       page: '0',
-      pageCounts: '1000'
+      pageCounts: '1000',
     };
 
-    this.activityService.fetchMultiActivityData(body).subscribe(res => {
+    this.activityService.fetchMultiActivityData(body).subscribe((res) => {
       if (res.resultCode !== 200) {
         this.utils.openAlert(errMsg);
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
@@ -465,9 +453,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         this.calenderActivities = res.info.activities;
         this.handleCalenderActivity(this.calenderActivities);
       }
-
     });
-
   }
 
   /**
@@ -477,29 +463,29 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    */
   handleCalenderActivity(activities: Array<any>) {
     this.initCalender();
-    activities.forEach(_activity => {
+    activities.forEach((_activity) => {
       const weekOne = this.calender.weekOne,
-            weekTwo = this.calender.weekTwo;
+        weekTwo = this.calender.weekTwo;
       for (let i = 0; i < 7; i++) {
-
-        if (weekOne[i].timestamp === dayjs(_activity.fileInfo.creationDate).endOf('day').valueOf()) {
+        if (
+          weekOne[i].timestamp === dayjs(_activity.fileInfo.creationDate).endOf('day').valueOf()
+        ) {
           weekOne[i].haveDate = true;
         }
 
-        if (weekTwo[i].timestamp === dayjs(_activity.fileInfo.creationDate).endOf('day').valueOf()) {
+        if (
+          weekTwo[i].timestamp === dayjs(_activity.fileInfo.creationDate).endOf('day').valueOf()
+        ) {
           weekTwo[i].haveDate = true;
         }
-
       }
-
-    })
+    });
 
     if (this.uiFlag.queryStringShowDate) {
       this.focusOneDay('weekTwo', this.uiFlag.queryIndex);
       this.showFocusActivity(this.calender.queryClassTime);
       this.uiFlag.queryStringShowDate = false;
     }
-
   }
 
   /**
@@ -507,16 +493,15 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    * @author kidin-1091116
    */
   initCalender() {
-    this.calender.weekOne = this.calender.weekOne.map(_day => {
+    this.calender.weekOne = this.calender.weekOne.map((_day) => {
       _day.haveDate = false;
       return _day;
     });
 
-    this.calender.weekTwo = this.calender.weekTwo.map(_day => {
+    this.calender.weekTwo = this.calender.weekTwo.map((_day) => {
       _day.haveDate = false;
       return _day;
     });
-
   }
 
   /**
@@ -527,7 +512,9 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   switchCalender(action: 'pre' | 'next') {
     this.uiFlag.focusActivity = null;
     if (action === 'pre') {
-      this.calender.startTimestamp = dayjs(this.calender.startTimestamp).subtract( 14, 'day').valueOf();
+      this.calender.startTimestamp = dayjs(this.calender.startTimestamp)
+        .subtract(14, 'day')
+        .valueOf();
       this.calender.endTimestamp = dayjs(this.calender.endTimestamp).subtract(14, 'day').valueOf();
     } else {
       this.calender.startTimestamp = dayjs(this.calender.startTimestamp).add(14, 'day').valueOf();
@@ -546,10 +533,9 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       clearTimeout(this.debounce);
     }
 
-    this. debounce = setTimeout(() => {
+    this.debounce = setTimeout(() => {
       this.createCalender();
     }, 300);
-
   }
 
   /**
@@ -573,13 +559,14 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    */
   showSelectDayActivities(week: 'weekOne' | 'weekTwo', dayIdx: number) {
     this.focusDayActivities.length = 0;
-    this.calenderActivities.forEach(_activity => {
-      if (dayjs(_activity.fileInfo.creationDate).endOf('day').valueOf() === this.calender[week][dayIdx].timestamp) {
+    this.calenderActivities.forEach((_activity) => {
+      if (
+        dayjs(_activity.fileInfo.creationDate).endOf('day').valueOf() ===
+        this.calender[week][dayIdx].timestamp
+      ) {
         this.focusDayActivities.unshift(_activity);
       }
-
     });
-
   }
 
   /**
@@ -597,7 +584,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         fuzzyTime: [this.focusDayActivities[index].fileInfo.creationDate],
         filterStartTime: '',
         filterEndTime: '',
-        filterSameTime: '1'
+        filterSameTime: '1',
       },
       searchRule: {
         activity: this.focusDayActivities[index].activityInfoLayer.type,
@@ -608,29 +595,28 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           equipmentSN: '',
           class: this.groupInfo.groupId,
           teacher: '',
-          tag: ''
-        }
+          tag: '',
+        },
       },
       display: {
         activityLapLayerDisplay: '3',
         activityLapLayerDataField: [],
         activityPointLayerDisplay: '3',
-        activityPointLayerDataField: []
+        activityPointLayerDataField: [],
       },
       page: '0',
-      pageCounts: '1000'
+      pageCounts: '1000',
     };
- 
+
     this.sendRequest(body);
   }
-
 
   /**************************** report內容可能大改，故以下沿用舊code暫不重構 *************************************/
 
   // 取得多筆活動資料並處理-kidin-1081211
   sendRequest(body) {
     this.uiFlag.isLoading = true;
-    this.activityService.fetchMultiActivityData(body).subscribe(res => {
+    this.activityService.fetchMultiActivityData(body).subscribe((res) => {
       this.uiFlag.isLoading = false;
       this.activityDetail = res.info.activities;
       if (res.resultCode !== 200) {
@@ -651,16 +637,16 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           this.fileInfo = infoData.fileInfo;
 
           let timeCount = 0,
-              HRCount = 0,
-              caloriesCount = 0,
-              distanceCount = 0,
-              avgSpeedCount = 0,
-              HRZoneZero = 0,
-              HRZoneOne = 0,
-              HRZoneTwo = 0,
-              HRZoneThree = 0,
-              HRZoneFour = 0,
-              HRZoneFive = 0;
+            HRCount = 0,
+            caloriesCount = 0,
+            distanceCount = 0,
+            avgSpeedCount = 0,
+            HRZoneZero = 0,
+            HRZoneOne = 0,
+            HRZoneTwo = 0,
+            HRZoneThree = 0,
+            HRZoneFour = 0,
+            HRZoneFive = 0;
 
           for (let i = 0; i < this.activityLength; i++) {
             const activityItem = this.activityDetail[i].activityInfoLayer;
@@ -668,30 +654,47 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
             HRCount += activityItem.avgHeartRateBpm;
             caloriesCount += activityItem.calories;
             let memberHRZoneZero = 0,
-                memberHRZoneOne = 0,
-                memberHRZoneTwo = 0,
-                memberHRZoneThree = 0,
-                memberHRZoneFour = 0,
-                memberHRZoneFive = 0;
+              memberHRZoneOne = 0,
+              memberHRZoneTwo = 0,
+              memberHRZoneThree = 0,
+              memberHRZoneFour = 0,
+              memberHRZoneFive = 0;
 
             // 取得心率區間-kidin-1081213
             if (activityItem.totalHrZone0Second !== null) {
-              HRZoneZero += activityItem.totalHrZone0Second > 0 ? activityItem.totalHrZone0Second : 0;
-              HRZoneOne += activityItem.totalHrZone1Second > 0 ? activityItem.totalHrZone1Second : 0;
-              HRZoneTwo += activityItem.totalHrZone2Second > 0 ? activityItem.totalHrZone2Second : 0;
-              HRZoneThree += activityItem.totalHrZone3Second > 0 ? activityItem.totalHrZone3Second : 0;
-              HRZoneFour += activityItem.totalHrZone4Second > 0 ? activityItem.totalHrZone4Second : 0;
-              HRZoneFive += activityItem.totalHrZone5Second > 0 ? activityItem.totalHrZone5Second : 0;
+              HRZoneZero +=
+                activityItem.totalHrZone0Second > 0 ? activityItem.totalHrZone0Second : 0;
+              HRZoneOne +=
+                activityItem.totalHrZone1Second > 0 ? activityItem.totalHrZone1Second : 0;
+              HRZoneTwo +=
+                activityItem.totalHrZone2Second > 0 ? activityItem.totalHrZone2Second : 0;
+              HRZoneThree +=
+                activityItem.totalHrZone3Second > 0 ? activityItem.totalHrZone3Second : 0;
+              HRZoneFour +=
+                activityItem.totalHrZone4Second > 0 ? activityItem.totalHrZone4Second : 0;
+              HRZoneFive +=
+                activityItem.totalHrZone5Second > 0 ? activityItem.totalHrZone5Second : 0;
 
-              memberHRZoneZero = activityItem.totalHrZone0Second > 0 ? activityItem.totalHrZone0Second : 0;
-              memberHRZoneOne = activityItem.totalHrZone1Second > 0 ? activityItem.totalHrZone1Second : 0;
-              memberHRZoneTwo = activityItem.totalHrZone2Second > 0 ? activityItem.totalHrZone2Second : 0;
-              memberHRZoneThree = activityItem.totalHrZone3Second > 0 ? activityItem.totalHrZone3Second : 0;
-              memberHRZoneFour = activityItem.totalHrZone4Second > 0 ? activityItem.totalHrZone4Second : 0;
-              memberHRZoneFive = activityItem.totalHrZone5Second > 0 ? activityItem.totalHrZone5Second : 0;
+              memberHRZoneZero =
+                activityItem.totalHrZone0Second > 0 ? activityItem.totalHrZone0Second : 0;
+              memberHRZoneOne =
+                activityItem.totalHrZone1Second > 0 ? activityItem.totalHrZone1Second : 0;
+              memberHRZoneTwo =
+                activityItem.totalHrZone2Second > 0 ? activityItem.totalHrZone2Second : 0;
+              memberHRZoneThree =
+                activityItem.totalHrZone3Second > 0 ? activityItem.totalHrZone3Second : 0;
+              memberHRZoneFour =
+                activityItem.totalHrZone4Second > 0 ? activityItem.totalHrZone4Second : 0;
+              memberHRZoneFive =
+                activityItem.totalHrZone5Second > 0 ? activityItem.totalHrZone5Second : 0;
 
               const memberTotalHRSecond =
-              memberHRZoneZero +  memberHRZoneOne + memberHRZoneTwo + memberHRZoneThree + memberHRZoneFour + memberHRZoneFive;
+                memberHRZoneZero +
+                memberHRZoneOne +
+                memberHRZoneTwo +
+                memberHRZoneThree +
+                memberHRZoneFour +
+                memberHRZoneFive;
 
               const memberHRZoneSet = [
                 { y: 0, z: '', color: '#70b1f3' },
@@ -699,7 +702,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
                 { y: 0, z: '', color: '#abf784' },
                 { y: 0, z: '', color: '#f7f25b' },
                 { y: 0, z: '', color: '#f3b353' },
-                { y: 0, z: '', color: '#f36953' }
+                { y: 0, z: '', color: '#f36953' },
               ];
 
               memberHRZoneSet[0].y = Math.round((memberHRZoneZero / memberTotalHRSecond) * 100);
@@ -719,7 +722,9 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
             }
 
             // 計算卡路里區間-kidin-1081223
-            const caloriesCategory = Math.floor(this.activityDetail[i].activityInfoLayer.calories / 100);
+            const caloriesCategory = Math.floor(
+              this.activityDetail[i].activityInfoLayer.calories / 100
+            );
             this.divideCaloriesInterval(caloriesCategory);
 
             // 計算距離和速度-kidin-1081223
@@ -739,7 +744,8 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           this.totalCalories = caloriesCount;
           this.avgCalories = this.totalCalories / this.activityLength;
 
-          const totalHRSecond = HRZoneZero + HRZoneOne + HRZoneTwo + HRZoneThree + HRZoneFour + HRZoneFive;
+          const totalHRSecond =
+            HRZoneZero + HRZoneOne + HRZoneTwo + HRZoneThree + HRZoneFour + HRZoneFive;
           if (totalHRSecond !== 0) {
             this.HRZoneColorSet[0].y = this.handleMathRound((HRZoneZero / totalHRSecond) * 100);
             this.HRZoneColorSet[1].y = this.handleMathRound((HRZoneOne / totalHRSecond) * 100);
@@ -747,12 +753,30 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
             this.HRZoneColorSet[3].y = this.handleMathRound((HRZoneThree / totalHRSecond) * 100);
             this.HRZoneColorSet[4].y = this.handleMathRound((HRZoneFour / totalHRSecond) * 100);
             this.HRZoneColorSet[5].y = this.handleMathRound((HRZoneFive / totalHRSecond) * 100);
-            this.HRZoneColorSet[0].z = this.formatTime(Math.round(HRZoneZero / this.activityLength), '2');
-            this.HRZoneColorSet[1].z = this.formatTime(Math.round(HRZoneOne / this.activityLength), '2');
-            this.HRZoneColorSet[2].z = this.formatTime(Math.round(HRZoneTwo / this.activityLength), '2');
-            this.HRZoneColorSet[3].z = this.formatTime(Math.round(HRZoneThree / this.activityLength), '2');
-            this.HRZoneColorSet[4].z = this.formatTime(Math.round(HRZoneFour / this.activityLength), '2');
-            this.HRZoneColorSet[5].z = this.formatTime(Math.round(HRZoneFive / this.activityLength), '2');
+            this.HRZoneColorSet[0].z = this.formatTime(
+              Math.round(HRZoneZero / this.activityLength),
+              '2'
+            );
+            this.HRZoneColorSet[1].z = this.formatTime(
+              Math.round(HRZoneOne / this.activityLength),
+              '2'
+            );
+            this.HRZoneColorSet[2].z = this.formatTime(
+              Math.round(HRZoneTwo / this.activityLength),
+              '2'
+            );
+            this.HRZoneColorSet[3].z = this.formatTime(
+              Math.round(HRZoneThree / this.activityLength),
+              '2'
+            );
+            this.HRZoneColorSet[4].z = this.formatTime(
+              Math.round(HRZoneFour / this.activityLength),
+              '2'
+            );
+            this.HRZoneColorSet[5].z = this.formatTime(
+              Math.round(HRZoneFive / this.activityLength),
+              '2'
+            );
 
             this.HRZoneThree = this.HRZoneColorSet[3].y;
           }
@@ -765,24 +789,20 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           setTimeout(() => {
             this.getReportInfo();
           });
-
         }
-
       }
-
     });
-
   }
 
   // 取得變數內容並將部分變數替換成html element-kidin-1090623
-  getReportInfo () {
+  getReportInfo() {
     this.translate.get('hellow world').subscribe(() => {
       const targetDiv = document.getElementById('reportInfo');
 
       targetDiv.innerHTML = this.translate.instant('universal_group_sportsRecordReportClass', {
-        'class': `<span id="classLink">${this.fileInfo.dispName}</span>`,
-        'dateTime': this.getClassRealDateTime(),
-        'number': `<span id="studentsNum">${this.activityLength}</span>`
+        class: `<span id="classLink">${this.fileInfo.dispName}</span>`,
+        dateTime: this.getClassRealDateTime(),
+        number: `<span id="studentsNum">${this.activityLength}</span>`,
       });
 
       const studentsNum = document.getElementById('studentsNum');
@@ -792,15 +812,16 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       this.classLink.setAttribute('class', 'activity-Link');
       this.classLink.addEventListener('click', this.visitLink.bind(this));
     });
-
   }
 
   // 將搜尋的類別和範圍處理過後加入query string並更新現在的url和預覽列印的url-kidin-1081226
-  updateUrl (action: boolean) {
+  updateUrl(action: boolean) {
     let newUrl;
 
     if (action) {
-      const searchString = `classTime=${dayjs(this.activityDetail[0].activityInfoLayer.startTime).valueOf()}`;
+      const searchString = `classTime=${dayjs(
+        this.activityDetail[0].activityInfoLayer.startTime
+      ).valueOf()}`;
 
       if (location.search.indexOf('?') > -1) {
         if (location.search.indexOf('classTime=') > -1) {
@@ -822,12 +843,11 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       }
 
       if (history.pushState) {
-        window.history.pushState({path: newUrl}, '', newUrl);
+        window.history.pushState({ path: newUrl }, '', newUrl);
       }
 
       this.previewUrl = newUrl + '&ipm=s';
     } else {
-
       if (this.uiFlag.isDebugMode) {
         newUrl = `${location.pathname}?debug=`;
       } else {
@@ -835,14 +855,13 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       }
 
       if (history.pushState) {
-        window.history.pushState({path: newUrl}, '', newUrl);
+        window.history.pushState({ path: newUrl }, '', newUrl);
       }
-
     }
   }
 
   // 處理個人分析列表的顯示多寡-kidin-1081226
-  handleTableData (act) {
+  handleTableData(act) {
     this.tableData.data.length = 0;
     const middleData = [];
 
@@ -862,7 +881,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         avgHr: this.activityDetail[i].activityInfoLayer.avgHeartRateBpm,
         maxHr: this.activityDetail[i].activityInfoLayer.maxHeartRateBpm,
         calories: this.activityDetail[i].activityInfoLayer.calories,
-        avgWatt: this.activityDetail[i].activityInfoLayer.cycleAvgWatt
+        avgWatt: this.activityDetail[i].activityInfoLayer.cycleAvgWatt,
       };
 
       middleData.push(sourceObj);
@@ -877,24 +896,16 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   }
 
   // 取得真實的上課時間（取資料第一位的時間）-kidin-1081223
-  getClassRealDateTime () {
-    const date = (
-      this.fileInfo.creationDate
-        .split('T')[0]
-        .replace(/-/g, '/')
-    );
+  getClassRealDateTime() {
+    const date = this.fileInfo.creationDate.split('T')[0].replace(/-/g, '/');
 
-    const time = (
-      this.fileInfo.creationDate
-        .split('T')[1]
-        .substr(0, 5)
-    );
+    const time = this.fileInfo.creationDate.split('T')[1].substr(0, 5);
 
     return `${date} ${time}`;
   }
 
   // 使時間符合格式(format = 1:有時間符號，= 2:沒有時間符號，可再新增format)-kidin-1081211
-  formatTime (time, format) {
+  formatTime(time, format) {
     if (time < 60) {
       switch (format) {
         case '1':
@@ -902,8 +913,8 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         case '2':
           return `00:${this.fillTwoDigits(time)}`;
       }
-    } else if ( time < 3600) {
-      const minute = Math.floor((time) / 60);
+    } else if (time < 3600) {
+      const minute = Math.floor(time / 60);
       const second = time % 60;
 
       switch (format) {
@@ -913,13 +924,15 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           return `${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
       }
     } else {
-      const hour = Math.floor((time) / 3600);
+      const hour = Math.floor(time / 3600);
       const minute = Math.floor((time % 3600) / 60);
-      const second = time - (hour * 3600) - (minute * 60);
+      const second = time - hour * 3600 - minute * 60;
 
       switch (format) {
         case '1':
-          return `${this.fillTwoDigits(hour)}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
+          return `${this.fillTwoDigits(hour)}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(
+            second
+          )}`;
         case '2':
           return `${hour}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
       }
@@ -927,20 +940,20 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   }
 
   // 時間補零-kidin-1081211
-  fillTwoDigits (num) {
+  fillTwoDigits(num) {
     const timeStr = '0' + Math.floor(num);
     return timeStr.substr(-2);
   }
 
   // 使檔案創建日期符合格式-kidin-1081211
-  formatDate (date) {
+  formatDate(date) {
     const month = date.slice(5, 7);
     const day = date.slice(8, 10);
     return `${month}/${day}`;
   }
 
   // 將每個使用者的卡路里消耗，每100cal做分類-kidin-1081223
-  divideCaloriesInterval (key) {
+  divideCaloriesInterval(key) {
     if (this.caloriesSet.length === 0) {
       if (key > 0) {
         this.caloriesSet.push([`${key}00~${key}99cal`, 1]);
@@ -963,7 +976,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         } else {
           this.caloriesSet.push([`${key}00~${key}99cal`, 1]);
         }
-
       } else {
         for (let i = 0; i < this.caloriesSet.length; i++) {
           if (this.caloriesSet[i].indexOf(`${key}~99cal`) > -1) {
@@ -978,13 +990,12 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         } else {
           this.caloriesSet.push([`${key}~99cal`, 1]);
         }
-
       }
     }
   }
 
   // 將數字取四捨五入至第一位-kidin-1081227
-  handleMathRound (num) {
+  handleMathRound(num) {
     if (num % 1 === 0) {
       return num;
     } else {
@@ -993,15 +1004,15 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   }
 
   // 初始化highChart-kidin-1081211
-  initInfoHighChart () {
-    charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
+  initInfoHighChart() {
+    charts.length = 0; // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
     this.chartDatas.length = 0;
     this.chartTargetList.length = 0;
     this.HRZoneChartDatas.length = 0;
     this.HRZoneChartTargetList.length = 0;
 
     // 全體心率區間落點圖表-kidin-1081212
-      // 顯示聚焦成員的心率區間時，全體區間顏色變淺-kidin-1090102
+    // 顯示聚焦成員的心率區間時，全體區間顏色變淺-kidin-1090102
     if (this.memberSection !== null && this.memberHRZoneList[this.focusMember] !== undefined) {
       this.HRZoneColorSet[0].color = '#a6cef7';
       this.HRZoneColorSet[1].color = '#9af1f9';
@@ -1023,7 +1034,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       data: this.HRZoneColorSet,
       unit: '%',
       type: 'column',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
     const classHRZoneChartOptions = new ChartOptions(HRZoneDataset);
     classHRZoneChartOptions['plotOptions'].column['pointPlacement'] = 0;
@@ -1034,69 +1045,72 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       this.translate.instant('universal_activityData_aerobicZone'),
       this.translate.instant('universal_activityData_enduranceZone'),
       this.translate.instant('universal_activityData_marathonZone'),
-      this.translate.instant('universal_activityData_anaerobicZone')
+      this.translate.instant('universal_activityData_anaerobicZone'),
     ];
     classHRZoneChartOptions['yAxis'].labels = {
       formatter: function () {
         return this.value + '%';
-      }
+      },
     };
     classHRZoneChartOptions['series'][0].name = 'Avg';
     classHRZoneChartOptions['series'][0].dataLabels = {
       enabled: true,
       formatter: function () {
         return this.point.z;
-      }
+      },
     };
     classHRZoneChartOptions['series'][0].showInLegend = false;
 
     // 顯示聚焦成員的心率區間-kidin-1090102
     if (this.memberSection !== null && this.memberHRZoneList[this.focusMember] !== undefined) {
       const memberNickName = this.activityDetail[this.focusMember].fileInfo.author.split('?')[0],
-            focusMemberData = this.memberHRZoneList[this.focusMember],
-            compareMemberHRZone = [
-              { y: focusMemberData[0].y, z: focusMemberData[0].z, color: '#278bf1' },
-              { y: focusMemberData[1].y, z: focusMemberData[1].z, color: '#2de9fb' },
-              { y: focusMemberData[2].y, z: focusMemberData[2].z, color: '#6ff32b' },
-              { y: focusMemberData[3].y, z: focusMemberData[3].z, color: '#e0da1c' },
-              { y: focusMemberData[4].y, z: focusMemberData[4].z, color: '#f9a426' },
-              { y: focusMemberData[5].y, z: focusMemberData[5].z, color: '#fd492d' }
-            ],
-            compareMemberSet = {
-              data: compareMemberHRZone,
-              name: memberNickName,
-              type: 'column',
-              innerSize: '',
-              fillOpacity: 0.3,
-              tooltip: {
-                valueSuffix: ' ' + '%'
-              },
-              dataLabels: {
-                enabled: true,
-                formatter: function () {
-                  return this.point.z;
-                }
-              }
-            };
+        focusMemberData = this.memberHRZoneList[this.focusMember],
+        compareMemberHRZone = [
+          { y: focusMemberData[0].y, z: focusMemberData[0].z, color: '#278bf1' },
+          { y: focusMemberData[1].y, z: focusMemberData[1].z, color: '#2de9fb' },
+          { y: focusMemberData[2].y, z: focusMemberData[2].z, color: '#6ff32b' },
+          { y: focusMemberData[3].y, z: focusMemberData[3].z, color: '#e0da1c' },
+          { y: focusMemberData[4].y, z: focusMemberData[4].z, color: '#f9a426' },
+          { y: focusMemberData[5].y, z: focusMemberData[5].z, color: '#fd492d' },
+        ],
+        compareMemberSet = {
+          data: compareMemberHRZone,
+          name: memberNickName,
+          type: 'column',
+          innerSize: '',
+          fillOpacity: 0.3,
+          tooltip: {
+            valueSuffix: ' ' + '%',
+          },
+          dataLabels: {
+            enabled: true,
+            formatter: function () {
+              return this.point.z;
+            },
+          },
+        };
       classHRZoneChartOptions['tooltip'].pointFormat = `{series.name}：{point.y}`;
       classHRZoneChartOptions['plotOptions'].series['groupPadding'] = 0.1;
 
       classHRZoneChartOptions['series'].push(compareMemberSet);
     }
 
-    this.chartDatas.push({ classHRZoneChartTarget: classHRZoneChartOptions, isSyncExtremes: false });
+    this.chartDatas.push({
+      classHRZoneChartTarget: classHRZoneChartOptions,
+      isSyncExtremes: false,
+    });
     this.chartTargetList.push('classHRZoneChartTarget');
-
 
     // 卡路里圓餅圖表-kidin-1081213
     const finalCaloriesSet = [...this.caloriesSet];
 
-      // 突顯聚焦成員的卡路里區間-kidin-1090102
-    let categoryPosition,
-        caloriesRange;
+    // 突顯聚焦成員的卡路里區間-kidin-1090102
+    let categoryPosition, caloriesRange;
 
     if (this.memberSection !== null) {
-      const caloriesCategory = Math.floor(this.activityDetail[this.focusMember].activityInfoLayer.calories / 100);
+      const caloriesCategory = Math.floor(
+        this.activityDetail[this.focusMember].activityInfoLayer.calories / 100
+      );
       if (caloriesCategory > 0) {
         caloriesRange = `${caloriesCategory}00~${caloriesCategory}99cal`;
       } else {
@@ -1116,7 +1130,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         sliced: true,
         selected: true,
         borderColor: '#f5bfbf',
-        borderWidth: 3
+        borderWidth: 3,
       };
     }
 
@@ -1125,28 +1139,28 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       data: finalCaloriesSet,
       unit: '',
       type: 'pie',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
     const classCaloriesOptions = new ChartOptions(classCaloriesDataset);
     classCaloriesOptions['tooltip'] = {
-      pointFormat: `${this.translate.instant('universal_activityData_people')} {point.y}`
+      pointFormat: `${this.translate.instant('universal_activityData_people')} {point.y}`,
     };
     classCaloriesOptions['title'].align = 'center';
     classCaloriesOptions['title'].x = 0;
     classCaloriesOptions['title'].y = 320;
     classCaloriesOptions['title'].style = {
       color: 'gray',
-      fontSize: 12
+      fontSize: 12,
     };
     classCaloriesOptions['plotOptions'] = {
       pie: {
         center: ['50%', '30%'],
-        size: '60%'
-      }
+        size: '60%',
+      },
     };
     classCaloriesOptions['series'][0].dataLabels = {
       enabled: true,
-      color: 'gray'
+      color: 'gray',
     };
     classCaloriesOptions['plotOptions'].series = {
       dataLabels: {
@@ -1156,8 +1170,8 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
             percent = '' + (this.point.y / this.point.total) * 100;
           }
           return `${this.key}<br> ${percent}%`;
-        }
-      }
+        },
+      },
     };
 
     this.chartDatas.push({ classCaloriesChartTarget: classCaloriesOptions, isSyncExtremes: false });
@@ -1173,64 +1187,66 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           _option[chartTargetList[idx]]
         );
       });
-
     }, 0);
   }
 
   // 顯示各個學員心率區間圖表-kidin-1090106
-  initMemberHRZoneChart () {
+  initMemberHRZoneChart() {
     for (let i = 0; i < this.memberHRZoneList.length; i++) {
       const memberHRZoneDataset = {
         name: '',
         data: this.memberHRZoneList[i],
         unit: '',
         type: 'column',
-        valueDecimals: 1
+        valueDecimals: 1,
       };
       this.memberHRZoneOptions[i] = new ChartOptions(memberHRZoneDataset);
       this.memberHRZoneOptions[i]['chart'] = {
         margin: [2, 0, 2, 0],
         height: 40,
         style: {
-            overflow: 'visible'
+          overflow: 'visible',
         },
-        backgroundColor: 'transparent'
+        backgroundColor: 'transparent',
       };
       this.memberHRZoneOptions[i]['xAxis'] = {
         labels: {
-            enabled: false
+          enabled: false,
         },
         title: {
-            text: null
+          text: null,
         },
         startOnTick: false,
         endOnTick: false,
-        tickPositions: []
+        tickPositions: [],
       };
       this.memberHRZoneOptions[i]['yAxis'] = {
         endOnTick: false,
         startOnTick: false,
         labels: {
-            enabled: false
+          enabled: false,
         },
         title: {
-            text: null
+          text: null,
         },
-        tickPositions: [0]
+        tickPositions: [0],
       };
       this.memberHRZoneOptions[i]['tooltip'] = {
         hideDelay: 0,
         outside: true,
         headerFormat: null,
-        pointFormat: '{point.y}%'
+        pointFormat: '{point.y}%',
       };
       this.memberHRZoneOptions[i]['plotOptions'].column['pointPlacement'] = 0;
       this.memberHRZoneOptions[i]['legend'] = {
-        enabled: false
+        enabled: false,
       };
       this.memberHRZoneOptions[i]['chart'].zoomType = '';
 
-      this.HRZoneChartDatas.push({ memberHRZoneChartTarget: this.memberHRZoneOptions[i], isSyncExtremes: false });
+      this.HRZoneChartDatas.push({
+        memberHRZoneChartTarget: this.memberHRZoneOptions[i],
+        isSyncExtremes: false,
+      });
       this.HRZoneChartTargetList.push('memberHRZoneChartTarget');
     }
 
@@ -1242,27 +1258,24 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   }
 
   // 將成員心率圖表依序顯示出來-kidin-1090106
-  showMemberHRZone (datas, list) {
+  showMemberHRZone(datas, list) {
     const HRZoneChartTargetList = list,
-          nextIdx = this.chartTargetList.length,
-          memberDiv = document.querySelectorAll('.memberHRZoneChart') as NodeListOf<HTMLElement>;
+      nextIdx = this.chartTargetList.length,
+      memberDiv = document.querySelectorAll('.memberHRZoneChart') as NodeListOf<HTMLElement>;
 
     datas.forEach((_option, idx) => {
-      this.charts[idx + nextIdx] = chart(
-        memberDiv[idx],
-        _option[HRZoneChartTargetList[idx]]
-      );
+      this.charts[idx + nextIdx] = chart(memberDiv[idx], _option[HRZoneChartTargetList[idx]]);
     });
   }
 
-  getClassDetails (SN, coachId) {
+  getClassDetails(SN, coachId) {
     // 取得裝置資訊-kidin-1081218
     const deviceDody = {
-      'token': '',
-      'queryType': '1',
-      'queryArray': SN
+      token: '',
+      queryType: '1',
+      queryArray: SN,
     };
-    this.qrcodeService.getProductInfo(deviceDody).subscribe(res => {
+    this.qrcodeService.getProductInfo(deviceDody).subscribe((res) => {
       if (res) {
         this.deviceInfo = res.info.productInfo[0];
         if (location.hostname === '192.168.1.235') {
@@ -1275,36 +1288,35 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
     // 取得教練資訊-kidin-1081218
     const bodyForCoach = { targetUserId: coachId };
-    this.api10xxService.fetchGetUserProfile(bodyForCoach).subscribe(res => {
+    this.api10xxService.fetchGetUserProfile(bodyForCoach).subscribe((res) => {
       if (res.processResult.resultCode === 200) {
         this.coachInfo = res.userProfile;
       } else {
         this.coachInfo = {
           avatarUrl: '/assets/images/user2.png',
           description: '',
-          nickname: 'No data'
+          nickname: 'No data',
         };
-
       }
 
       this.handleInfo(this.coachInfo.description, 'coachInfo');
     });
-
   }
 
   // 根據使用者點選的連結導引至該頁面-kidin-1081223
   visitLink() {
     this.router.navigateByUrl(
-      `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId)}/group-introduction`
+      `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+        this.groupInfo.groupId
+      )}/group-introduction`
     );
-
   }
 
   // 依據點選的項目進行排序-kidin-1090102
-  sortData () {
+  sortData() {
     const sortCategory = this.sortTable.active,
-          sortDirection = this.sortTable.direction,
-          sortResult = [...this.tableData.data];
+      sortDirection = this.sortTable.direction,
+      sortResult = [...this.tableData.data];
 
     let swapped = true;
     for (let i = 0; i < this.showLength && swapped; i++) {
@@ -1326,11 +1338,11 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   }
 
   // 將圖表依據該成員列表位置進行對應-kidin-1090106
-  sortHRZoneChart () {
+  sortHRZoneChart() {
     const sortDatas = this.tableData.data;
     if (this.HRZoneChartDatas[0]) {
       const sortHRZoneChartDatas = [],
-            sortHRZoneChartList = [];
+        sortHRZoneChartList = [];
       for (let i = 0; i < this.showLength; i++) {
         sortHRZoneChartDatas.push(this.HRZoneChartDatas[sortDatas[i]['id']]);
         sortHRZoneChartList.push(this.HRZoneChartTargetList[sortDatas[i]['id']]);
@@ -1343,7 +1355,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   }
 
   // 依據點選的成員顯示資料-kidin-1090102
-  handleClickMember (e) {
+  handleClickMember(e) {
     if (e.currentTarget !== this.memberSection) {
       if (this.memberSection !== null) {
         this.memberSection.style = 'font-weight: none;';
@@ -1440,5 +1452,4 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

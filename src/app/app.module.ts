@@ -25,7 +25,9 @@ import { GroupIdSlicePipe } from './shared/pipes/group-id-slice.pipe';
 import { LongTextPipe } from './shared/pipes/long-text.pipe';
 import { CoreModule } from './core/core.module';
 
-export function startupServiceFactory(startupService: StartupService): Function { return () => startupService.load(); }
+export function startupServiceFactory(startupService: StartupService): Function {
+  return () => startupService.load();
+}
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json?v=' + Date.now());
 }
@@ -43,11 +45,11 @@ export function createTranslateLoader(http: HttpClient) {
       loader: {
         provide: TranslateLoader,
         useFactory: createTranslateLoader,
-        deps: [HttpClient]
-      }
+        deps: [HttpClient],
+      },
     }),
     NgProgressModule,
-    HttpClientModule
+    HttpClientModule,
     // ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [
@@ -61,24 +63,24 @@ export function createTranslateLoader(http: HttpClient) {
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
-      multi: true
+      multi: true,
     },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HttpStatusInterceptor,
-      multi: true
+      multi: true,
     },
     {
-      provide: APP_INITIALIZER,  // 在頁面載入前就先從localstorage取token狀態判斷是否登入
+      provide: APP_INITIALIZER, // 在頁面載入前就先從localstorage取token狀態判斷是否登入
       useFactory: startupServiceFactory,
       deps: [StartupService, Injector],
-      multi: true
+      multi: true,
     },
     {
       provide: MatPaginatorIntl,
-      useClass: CustomMatPaginatorIntl
-    }
+      useClass: CustomMatPaginatorIntl,
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

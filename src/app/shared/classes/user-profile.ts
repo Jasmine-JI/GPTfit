@@ -10,7 +10,7 @@ import { ThirdParty } from '../enum/thirdParty';
 
 const guestProfile: UserProfileInfo = {
   avatarUrl: '/assets/images/user2.png',
-  birthday: dayjs().subtract(30, 'year').format('YYYYMMDD'),  // 訪客預設30歲
+  birthday: dayjs().subtract(30, 'year').format('YYYYMMDD'), // 訪客預設30歲
   bodyHeight: 175,
   bodyWeight: 75,
   description: '',
@@ -19,16 +19,15 @@ const guestProfile: UserProfileInfo = {
   heartRateResting: 60,
   nickname: 'Guest',
   unit: Unit.metric,
-  userId: -1,  // 複數表示未登入
+  userId: -1, // 複數表示未登入
   themeImgUrl: null,
-  weightTrainingStrengthLevel: 100
+  weightTrainingStrengthLevel: 100,
 };
 
 /**
  * 處理登入者從 api 1010 取得的資訊
  */
 export class User {
-
   /**
    * api 1010 內的 userProfile 物件(未登入則給予訪客預設值)
    */
@@ -48,7 +47,6 @@ export class User {
    * api 1010 內的 thirdPartyAgency 物件
    */
   private _thirdPartyAgency = new Map();
-
 
   constructor() {}
 
@@ -117,11 +115,10 @@ export class User {
    * @author kidin-1110314
    */
   set thirdPartyAgency(thirdPartyAgency: Array<any>) {
-    thirdPartyAgency.forEach(_thirdPart => {
+    thirdPartyAgency.forEach((_thirdPart) => {
       const { interface: thirdPartyInterface, status } = _thirdPart;
       this._thirdPartyAgency.set(thirdPartyInterface, status);
     });
-
   }
 
   /**
@@ -187,19 +184,17 @@ export class User {
    * @param content {any}-更新內容
    */
   updatePartUserProfile(content: any) {
-    Object.entries(content).forEach(_content => {
+    Object.entries(content).forEach((_content) => {
       const [key, value] = _content;
       const originContent = this._userProfile[key];
-      if (typeof(originContent) !== 'object' || Array.isArray(originContent)) {
+      if (typeof originContent !== 'object' || Array.isArray(originContent)) {
         this._userProfile[key] = value;
       } else {
         this.userProfile[key] = {
           ...originContent,
-          ...(value as object)
+          ...(value as object),
         };
-
       }
-      
     });
 
     this.updateRxUserProfile();
@@ -211,5 +206,4 @@ export class User {
   updateRxUserProfile() {
     this._rxUserProfile$.next(this._userProfile);
   }
-
 }

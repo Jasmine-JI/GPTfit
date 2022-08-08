@@ -1,4 +1,3 @@
-
 import { TargetCondition } from '../../models/sport-target';
 import { DateUnit } from '../../enum/report';
 import { mathRounding, countPercentage } from '../../utils/index';
@@ -17,32 +16,23 @@ import { HrZoneChartData } from '../sports-report/hrzone-chart-data';
 import { TypeAllChart } from '../sports-report/type-all-chart';
 import { TemporaryCount } from '../sports-report/temporary-count';
 
-
 /**
  * 處理群組運動報告圖表數據
  */
- export class GroupSportsChartData {
-
+export class GroupSportsChartData {
   private _baseTypeAllChart = new TypeAllChart();
-
 
   private _compareTypeAllChart = new TypeAllChart();
 
-
   private _baseHrZone = new HrZoneChartData();
-
 
   private _compareHrZone = new HrZoneChartData();
 
-
   private _hrZoneTrend: HrZoneTrendChartData;
-
 
   private _totalSecondTrend: CompareTrendData;
 
-
   private _caloriesTrend: CompareTrendData;
-
 
   private _achievementRate: CompareTrendData;
 
@@ -68,17 +58,18 @@ import { TemporaryCount } from '../sports-report/temporary-count';
 
     const { sportType, dateUnit, baseTime, compareTime } = condition;
     const allDateList = this.createCompleteDate(dateUnit, baseTime, compareTime);
-    of([baseData, compareData]).pipe(
-      map(data => this.filterPersonalData(data, dateUnit, sportType)),
-      map(filterData => this.mergePersonalData(filterData, dateUnit)),
-      map(personalData => this.postProcessingPerosnalData(personalData, perTransformTarget)),
-      map(completeData => this.concatPersonalData(completeData)),
-      map(concatData => this.sortData(concatData)),
-      map(sortData => this.mergeGroupData(sortData, dateUnit)),
-      map(mergeData => this.fillUpDate(mergeData, allDateList)),
-      map(fillUpData => this.handleChartData(fillUpData, totalPeople))
-    ).subscribe()
-
+    of([baseData, compareData])
+      .pipe(
+        map((data) => this.filterPersonalData(data, dateUnit, sportType)),
+        map((filterData) => this.mergePersonalData(filterData, dateUnit)),
+        map((personalData) => this.postProcessingPerosnalData(personalData, perTransformTarget)),
+        map((completeData) => this.concatPersonalData(completeData)),
+        map((concatData) => this.sortData(concatData)),
+        map((sortData) => this.mergeGroupData(sortData, dateUnit)),
+        map((mergeData) => this.fillUpDate(mergeData, allDateList)),
+        map((fillUpData) => this.handleChartData(fillUpData, totalPeople))
+      )
+      .subscribe();
   }
 
   /**
@@ -91,7 +82,9 @@ import { TemporaryCount } from '../sports-report/temporary-count';
     const dataKey = dateUnit.getReportKey('sportsReport');
     const [baseData, compareData] = data;
     const baseFilterResult = this.filterData(baseData, sportType, dataKey, false);
-    const compareFilterResult = compareData ? this.filterData(compareData, sportType, dataKey, true) : undefined;
+    const compareFilterResult = compareData
+      ? this.filterData(compareData, sportType, dataKey, true)
+      : undefined;
     return [baseFilterResult, compareFilterResult];
   }
 
@@ -105,13 +98,13 @@ import { TemporaryCount } from '../sports-report/temporary-count';
   filterData = (data: Array<any>, sportType: SportType, key: string, isCompareData: boolean) => {
     const checkDataOpen = (resultCode: number) => resultCode === 200;
     const filterResult = [];
-    data.forEach(_data => {
+    data.forEach((_data) => {
       const result = [];
       const { resultCode: _resultCode } = _data;
       if (checkDataOpen(_resultCode)) {
-        _data[key].forEach(_dataRow => {
+        _data[key].forEach((_dataRow) => {
           const { activities, startTime, endTime } = _dataRow;
-          activities.forEach(_activity => {
+          activities.forEach((_activity) => {
             const { type } = _activity;
             const isAllType = sportType === SportType.all;
             if (isAllType || sportType === +type) {
@@ -119,7 +112,7 @@ import { TemporaryCount } from '../sports-report/temporary-count';
               result.unshift({
                 activities: _activity,
                 startTime: this.alignTimeZone(startTime, 'start'),
-                endTime: this.alignTimeZone(endTime, 'end')
+                endTime: this.alignTimeZone(endTime, 'end'),
               });
 
               this.handleGroupHrZoneData(_activity, isCompareData);
@@ -127,16 +120,14 @@ import { TemporaryCount } from '../sports-report/temporary-count';
 
             if (isAllType) this.handleDistributionChartData(_activity, isCompareData);
           });
-
         });
-        
       }
 
       if (result.length > 0) filterResult.push(result);
     });
 
     return filterResult;
-  }
+  };
 
   /**
    * 將個人數據依報告時間單位進行數據合併，以產生目標達成率圖表
@@ -146,7 +137,7 @@ import { TemporaryCount } from '../sports-report/temporary-count';
   mergePersonalData(allData: Array<any>, dateUnit: ReportDateUnit) {
     const [baseData, compareData] = allData;
     const mergeData = (data: Array<any>, dateUnit: ReportDateUnit) => {
-      const result = data.map(_data => {
+      const result = data.map((_data) => {
         const personalData = [];
         const temporaryCount = new TemporaryCount();
         _data.forEach((_activity, _index) => {
@@ -159,11 +150,9 @@ import { TemporaryCount } from '../sports-report/temporary-count';
             temporaryCount.saveDate(start, end);
             temporaryCount.countData(_activities);
             if (isLastData) personalData.push(temporaryCount.result);
-    
           } else if (start === startTime) {
             temporaryCount.countData(_activities);
             if (isLastData) personalData.push(temporaryCount.result);
-    
           } else {
             personalData.push(temporaryCount.result);
             temporaryCount.init();
@@ -171,9 +160,8 @@ import { TemporaryCount } from '../sports-report/temporary-count';
             temporaryCount.countData(_activities);
             if (isLastData) personalData.push(temporaryCount.result);
           }
-
         });
-  
+
         return personalData;
       });
 
@@ -193,9 +181,8 @@ import { TemporaryCount } from '../sports-report/temporary-count';
   postProcessingPerosnalData(allData: Array<any>, perTransformTarget: Array<TargetCondition>) {
     const [baseData, compareData] = allData;
     const achievementData = (data: Array<any>) => {
-      return data.map(_data => {
-
-        return _data.map(_dataRow => {
+      return data.map((_data) => {
+        return _data.map((_dataRow) => {
           const {
             totalHrZone0Second: zone0,
             totalHrZone1Second: zone1,
@@ -205,10 +192,10 @@ import { TemporaryCount } from '../sports-report/temporary-count';
             totalHrZone5Second: zone5,
             totalSecond,
             calories,
-            totalActivities
+            totalActivities,
           } = _dataRow.activities;
           let achieve = 1;
-          perTransformTarget.forEach(_condition => {
+          perTransformTarget.forEach((_condition) => {
             const { filedName, filedValue } = _condition;
             switch (filedName) {
               case 'totalActivities':
@@ -224,23 +211,21 @@ import { TemporaryCount } from '../sports-report/temporary-count';
                 break;
               case 'pai':
                 const { z0, z1, z2, z3, z4, z5 } = PAI_COFFICIENT;
-                const pai = zone0 * z0 + zone1 * z1 + zone2 * z2 + zone3 * z3 + zone4 * z4 + zone5 * z5;
+                const pai =
+                  zone0 * z0 + zone1 * z1 + zone2 * z2 + zone3 * z3 + zone4 * z4 + zone5 * z5;
                 if (pai < filedValue) achieve = 0;
                 break;
               case 'calories':
                 if (calories < filedValue) achieve = 0;
                 break;
             }
-
           });
 
           // 將目標達成數寫回activities，以便之後產生達成率圖表
           _dataRow.activities.achieve = achieve;
           return _dataRow;
         });
-
       });
-
     };
 
     const baseDataResult = achievementData(baseData);
@@ -258,7 +243,6 @@ import { TemporaryCount } from '../sports-report/temporary-count';
       return data.reduce((prev, current) => {
         return prev.concat(current);
       }, []);
-
     };
 
     const baseDataResult = concat(baseData);
@@ -277,7 +261,6 @@ import { TemporaryCount } from '../sports-report/temporary-count';
         const _bStartTimestamp = dayjs(_b.startTime).valueOf();
         return _aStartTimestamp - _bStartTimestamp;
       });
-      
     };
 
     const [baseData, compareData] = allData;
@@ -298,9 +281,8 @@ import { TemporaryCount } from '../sports-report/temporary-count';
     const [baseData, compareData] = allData;
     return [
       this.mergeData(baseData, dateUnit),
-      compareData ? this.mergeData(compareData, dateUnit) : undefined
+      compareData ? this.mergeData(compareData, dateUnit) : undefined,
     ];
-
   }
 
   /**
@@ -329,16 +311,20 @@ import { TemporaryCount } from '../sports-report/temporary-count';
 
       if (compareData) {
         const { start: _compareStart, end: _compareEnd } = compareDateList[_index];
-        const compareDataStart = compareData[compareDataIndex] ? compareData[compareDataIndex].startTime : null;
+        const compareDataStart = compareData[compareDataIndex]
+          ? compareData[compareDataIndex].startTime
+          : null;
         if (_compareStart !== compareDataStart) {
-          compareDataResult.push({ activities: {}, startTime: _compareStart, endTime: _compareEnd });
+          compareDataResult.push({
+            activities: {},
+            startTime: _compareStart,
+            endTime: _compareEnd,
+          });
         } else {
           compareDataResult.push(compareData[compareDataIndex]);
           compareDataIndex++;
         }
-
       }
-
     });
 
     return [baseDataResult, compareData ? compareDataResult : undefined];
@@ -360,8 +346,8 @@ import { TemporaryCount } from '../sports-report/temporary-count';
    * @param data {Array<any>}-基準運動概要陣列數據
    * @param totalPeople {number}-群組總人數
    */
-  handleChart(data: Array<any>, totalPeople: number) {    
-    data.forEach(_data => {
+  handleChart(data: Array<any>, totalPeople: number) {
+    data.forEach((_data) => {
       const { activities: _activities, startTime: _startTime, endTime: _endTime } = _data;
       const {
         totalHrZone0Second: _z0,
@@ -373,11 +359,11 @@ import { TemporaryCount } from '../sports-report/temporary-count';
         calories: _calories,
         totalSecond: _totalSecond,
         totalActivitySecond: _totalActivitySecond,
-        achieve: _achieve
+        achieve: _achieve,
       } = _activities;
 
       const dateRange = [_startTime, _endTime];
-      const hrZone = [_z0, _z1, _z2, _z3, _z4, _z5].map(_zone => _zone ? _zone : 0);
+      const hrZone = [_z0, _z1, _z2, _z3, _z4, _z5].map((_zone) => (_zone ? _zone : 0));
       this._hrZoneTrend.addBaseData(hrZone, dateRange);
       this._totalSecondTrend.addBaseData(_totalSecond, dateRange);
       this._caloriesTrend.addBaseData(_calories, dateRange);
@@ -385,7 +371,6 @@ import { TemporaryCount } from '../sports-report/temporary-count';
       const _achieveRate = mathRounding(countPercentage(_achieve, totalPeople), 1);
       this._achievementRate.addBaseData(_achieveRate, dateRange);
     });
-
   }
 
   /**
@@ -396,7 +381,11 @@ import { TemporaryCount } from '../sports-report/temporary-count';
   handleChartWithCompare(allData: Array<any>, totalPeople: number) {
     const [baseData, compareData] = allData;
     baseData.forEach((_baseData, _index) => {
-      const { activities: _baseActivities, startTime: _baseStartTime, endTime: _baseEndTime } = _baseData;
+      const {
+        activities: _baseActivities,
+        startTime: _baseStartTime,
+        endTime: _baseEndTime,
+      } = _baseData;
       const {
         totalHrZone0Second: _baseZ0,
         totalHrZone1Second: _baseZ1,
@@ -407,10 +396,14 @@ import { TemporaryCount } from '../sports-report/temporary-count';
         calories: _baseCalories,
         totalSecond: _baseTotalSecond,
         totalActivitySecond: _baseTotalActivitySecond,
-        achieve: _baseAchieve
+        achieve: _baseAchieve,
       } = _baseActivities;
 
-      const { activities: _compareActivities, startTime: _compareStartTime, endTime: _compareEndTime } = compareData[_index];
+      const {
+        activities: _compareActivities,
+        startTime: _compareStartTime,
+        endTime: _compareEndTime,
+      } = compareData[_index];
       const {
         totalHrZone0Second: _compareZ0,
         totalHrZone1Second: _compareZ1,
@@ -421,22 +414,45 @@ import { TemporaryCount } from '../sports-report/temporary-count';
         calories: _compareCalories,
         totalSecond: _compareTotalSecond,
         totalActivitySecond: _compareTotalActivitySecond,
-        achieve: _compareAchieve
+        achieve: _compareAchieve,
       } = _compareActivities;
 
-      const _baseHrZone = [_baseZ0, _baseZ1, _baseZ2, _baseZ3, _baseZ4, _baseZ5].map(_zone => _zone ? _zone : 0);
+      const _baseHrZone = [_baseZ0, _baseZ1, _baseZ2, _baseZ3, _baseZ4, _baseZ5].map((_zone) =>
+        _zone ? _zone : 0
+      );
       const _baseDateRange = [_baseStartTime, _baseEndTime];
-      const _compareHrZone = [_compareZ0, _compareZ1, _compareZ2, _compareZ3, _compareZ4, _compareZ5].map(_zone => _zone ? _zone : 0);
+      const _compareHrZone = [
+        _compareZ0,
+        _compareZ1,
+        _compareZ2,
+        _compareZ3,
+        _compareZ4,
+        _compareZ5,
+      ].map((_zone) => (_zone ? _zone : 0));
       const _compareDateRange = [_compareStartTime, _compareEndTime];
       this._hrZoneTrend.addMixData(_baseHrZone, _baseDateRange, _compareHrZone, _compareDateRange);
-      this._totalSecondTrend.addMixData(_baseTotalSecond, _baseDateRange, _compareTotalSecond, _compareDateRange);
-      this._caloriesTrend.addMixData(_baseCalories, _baseDateRange, _compareCalories, _compareDateRange);
+      this._totalSecondTrend.addMixData(
+        _baseTotalSecond,
+        _baseDateRange,
+        _compareTotalSecond,
+        _compareDateRange
+      );
+      this._caloriesTrend.addMixData(
+        _baseCalories,
+        _baseDateRange,
+        _compareCalories,
+        _compareDateRange
+      );
 
       const _baseAchieveRate = mathRounding(countPercentage(_baseAchieve, totalPeople), 1);
       const _compareAchieveRate = mathRounding(countPercentage(_compareAchieve, totalPeople), 1);
-      this._achievementRate.addMixData(_baseAchieveRate, _baseDateRange, _compareAchieveRate, _compareDateRange);
+      this._achievementRate.addMixData(
+        _baseAchieveRate,
+        _baseDateRange,
+        _compareAchieveRate,
+        _compareDateRange
+      );
     });
-
   }
 
   /**
@@ -460,18 +476,14 @@ import { TemporaryCount } from '../sports-report/temporary-count';
       default:
         return { start: startTimestamp, end: endTimestamp };
     }
-
-  };
+  }
 
   /**
    * 合併數據
    * @param data {Array<any>}-運動數據
    * @param dateUnit {ReportDateUnit}-報告所選擇的時間單位
    */
-  mergeData(
-    data: Array<any>,
-    dateUnit: ReportDateUnit
-  ) {
+  mergeData(data: Array<any>, dateUnit: ReportDateUnit) {
     const result = [];
     const temporaryCount = new TemporaryCount();
     data.forEach((_data, _index) => {
@@ -484,11 +496,9 @@ import { TemporaryCount } from '../sports-report/temporary-count';
         temporaryCount.saveDate(start, end);
         temporaryCount.countData(_activities);
         if (isLastData) result.push(temporaryCount.result);
-
       } else if (start === startTime) {
         temporaryCount.countData(_activities);
         if (isLastData) result.push(temporaryCount.result);
-
       } else {
         result.push(temporaryCount.result);
         temporaryCount.init();
@@ -496,7 +506,6 @@ import { TemporaryCount } from '../sports-report/temporary-count';
         temporaryCount.countData(_activities);
         if (isLastData) result.push(temporaryCount.result);
       }
-
     });
 
     return result;
@@ -522,7 +531,6 @@ import { TemporaryCount } from '../sports-report/temporary-count';
     } else {
       this._baseHrZone.add(hrZone);
     }
-
   }
 
   /**
@@ -531,17 +539,12 @@ import { TemporaryCount } from '../sports-report/temporary-count';
    * @param isCompareData {boolean}-是否為比較數據
    */
   handleDistributionChartData(activity: any, isCompareData: boolean) {
-    const {
-      totalSecond,
-      totalActivities,
-      avgHeartRateBpm,
-      type
-    } = activity;
+    const { totalSecond, totalActivities, avgHeartRateBpm, type } = activity;
     const onePoint = {
       type: +type as SportType,
       totalSecond,
       totalActivities,
-      avgHeartRateBpm
+      avgHeartRateBpm,
     };
 
     if (isCompareData) {
@@ -549,9 +552,7 @@ import { TemporaryCount } from '../sports-report/temporary-count';
     } else {
       this._baseTypeAllChart.count(onePoint);
     }
-
   }
-
 
   /**
    * 根據報告時間單位、基準日期範圍與比較日期範圍產生完整的日期序列
@@ -576,22 +577,21 @@ import { TemporaryCount } from '../sports-report/temporary-count';
           .add(baseDiffTime - 1, unitString as any)
           .endOf(unitString)
           .valueOf();
-        
+
         compareDateList = this.createDateList([], unitString, compareStart, extentCompareEnd);
       }
-
     } else {
       const extentBaseEnd = dayjs(baseStart)
         .add(compareDiffTime - 1, unitString as any)
         .endOf(unitString)
         .valueOf();
-      
+
       baseDateList = this.createDateList([], unitString, baseStart, extentBaseEnd);
 
       const { startTimestamp: compareStart, endTimestamp: compareEnd } = compareTime;
       compareDateList = this.createDateList([], unitString, compareStart, compareEnd);
     }
-    
+
     return [baseDateList, compareTime ? compareDateList : undefined];
   }
 
@@ -608,7 +608,6 @@ import { TemporaryCount } from '../sports-report/temporary-count';
     dateStart: number,
     dateEnd: number
   ) {
-
     if (list.length > 0) {
       const { start: prevStart } = list[list.length - 1];
       const start = dayjs(prevStart).add(1, unitString).valueOf();
@@ -621,14 +620,12 @@ import { TemporaryCount } from '../sports-report/temporary-count';
       } else {
         return list;
       }
-
     } else {
       const start = dayjs(dateStart).startOf(unitString).valueOf();
       const end = dayjs(start).endOf(unitString).valueOf();
       list.push({ start, end });
       return this.createDateList(list, unitString, dateStart, dateEnd);
     }
-
   }
 
   /**
@@ -696,5 +693,4 @@ import { TemporaryCount } from '../sports-report/temporary-count';
   get achievementRate() {
     return this._achievementRate;
   }
-
 }

@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  CanActivate,
-  ActivatedRouteSnapshot,
-  RouterStateSnapshot,
-  Router
-} from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { UtilsService } from '../../../shared/services/utils.service';
@@ -15,7 +10,6 @@ import { UserService } from '../../../core/services/user.service';
 
 @Injectable()
 export class EditGroupGuard implements CanActivate {
-
   visittingId = '';
 
   constructor(
@@ -30,7 +24,6 @@ export class EditGroupGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-
     this.visittingId = this.hashIdService.handleGroupIdDecode(next.params.groupId);
     if (this.visittingId.length === 0) {
       this.router.navigateByUrl(`/404`);
@@ -39,7 +32,7 @@ export class EditGroupGuard implements CanActivate {
 
     const groupLevel = +this.utils.displayGroupLevel(this.visittingId);
     return this.professoinalService.groupAccessright.pipe(
-      map(groupAccessright => {
+      map((groupAccessright) => {
         const { systemAccessright } = this.userService.getUser();
         if (systemAccessright <= AccessRight.marketing) return true;
         if (groupAccessright <= groupLevel) return true;
@@ -48,9 +41,6 @@ export class EditGroupGuard implements CanActivate {
         this.router.navigateByUrl(`/dashboard/group-info/${hashGroupId}`);
         return false;
       })
-
     );
-
   }
-
 }

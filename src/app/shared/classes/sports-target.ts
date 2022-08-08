@@ -3,16 +3,14 @@ import { GroupLevel } from '../enum/professional';
 import { deepCopy, mathRounding } from '../utils/index';
 import { DateUnit } from '../enum/report';
 
-
 /**
  * 處理運動目標
  */
 export class SportsTarget {
-
   /**
    * 繼承目標的群組階層，若階層等於自身，則代表為自訂目標
    */
-  private _reference: string;  // 其值為groupLevel字串
+  private _reference: string; // 其值為groupLevel字串
 
   /**
    * 目標的時間計算單位
@@ -23,7 +21,6 @@ export class SportsTarget {
    * 目標設定清單
    */
   private _condition: Array<TargetCondition>;
-
 
   constructor(target: PersonalTarget | GroupSportTarget) {
     const { name, cycle, condition } = target as GroupSportTarget;
@@ -110,13 +107,12 @@ export class SportsTarget {
     if (conditionNotSet || (isPersonalData && sameUnit)) return _condition;
 
     const coefficient = this.getDateTransformCoefficient(reportUnit);
-    return _condition.map(_con => {
+    return _condition.map((_con) => {
       const { filedName } = _con;
-      const coefficientNum = filedName === 'pai' ? 1 : coefficient;  // pai已包含時間概念，故不需轉換
+      const coefficientNum = filedName === 'pai' ? 1 : coefficient; // pai已包含時間概念，故不需轉換
       _con.filedValue = mathRounding(+_con.filedValue * coefficientNum * peopleNumber, 1);
       return _con;
     });
-
   }
 
   /**
@@ -148,5 +144,4 @@ export class SportsTarget {
         return 365;
     }
   }
-
 }

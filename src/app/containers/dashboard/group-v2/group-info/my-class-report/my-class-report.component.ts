@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Renderer2, } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Renderer2 } from '@angular/core';
 import { GroupDetailInfo, UserSimpleInfo } from '../../../models/group-detail';
 import { GroupService } from '../../../../../shared/services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
@@ -20,26 +20,25 @@ import { HrBase } from '../../../../../shared/enum/personal';
 import { AuthService } from '../../../../../core/services/auth.service';
 import { Api10xxService } from '../../../../../core/services/api-10xx.service';
 
-
 // 建立圖表用-kidin-1081212
 class ChartOptions {
-  constructor (dataset, colorIdx) {
+  constructor(dataset, colorIdx) {
     return {
       chart: {
         height: 400,
         spacingTop: 20,
         spacingBottom: 20,
-        zoomType: 'x'
+        zoomType: 'x',
       },
       title: {
         text: dataset.name,
         align: 'left',
         margin: 0,
         x: 30,
-        style: ''
+        style: '',
       },
       credits: {
-        enabled: false
+        enabled: false,
       },
       xAxis: {
         crosshair: true,
@@ -52,31 +51,31 @@ class ChartOptions {
           min: null,
           max: null,
           tickInterval: null,
-          labels: null
+          labels: null,
         },
         minPadding: 0.01,
         maxPadding: 0.01,
-        tickAmount: 1
+        tickAmount: 1,
       },
       plotOptions: {
         column: {
-            pointPlacement: 0,
+          pointPlacement: 0,
         },
         series: {
           pointPadding: 0,
-          groupPadding: 0
-        }
+          groupPadding: 0,
+        },
       },
       tooltip: {
         pointFormat: '{point.y}',
         xDateFormat: '%H:%M:%S',
         shadow: false,
         style: {
-          fontSize: '14px'
+          fontSize: '14px',
         },
         valueDecimals: dataset.valueDecimals,
         split: true,
-        share: true
+        share: true,
       },
       series: [
         {
@@ -87,13 +86,13 @@ class ChartOptions {
           color: getOptions().colors[colorIdx],
           fillOpacity: 0.3,
           tooltip: {
-            valueSuffix: ' ' + dataset.unit
+            valueSuffix: ' ' + dataset.unit,
           },
           dataLabels: {
-            enabled: false
-          }
-        }
-      ]
+            enabled: false,
+          },
+        },
+      ],
     };
   }
 }
@@ -103,10 +102,9 @@ const errMsg = `Error.<br />Please try again later.`;
 @Component({
   selector: 'app-my-class-report',
   templateUrl: './my-class-report.component.html',
-  styleUrls: ['./my-class-report.component.scss', '../group-child-page.scss']
+  styleUrls: ['./my-class-report.component.scss', '../group-child-page.scss'],
 })
 export class MyClassReportComponent implements OnInit, OnDestroy {
-
   private ngUnsubscribe = new Subject();
 
   /**
@@ -116,7 +114,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     isDebugMode: false,
     isPreviewMode: false,
     isLoading: false,
-    noData: true
+    noData: true,
   };
 
   /**
@@ -137,18 +135,18 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     sportType: 1,
     dateRange: {
       startTimestamp: null,
-      endTimestamp: null
+      endTimestamp: null,
     },
     image: null,
     nameInfo: {
-      name: null
+      name: null,
     },
     sportsInfo: {
-      numOfData: null
-    }
+      numOfData: null,
+    },
   };
 
-/***************************************** 以下舊code ***********************************************/
+  /***************************************** 以下舊code ***********************************************/
 
   // UI操控相關變數-kidin-1081210
   reportCompleted = true;
@@ -172,7 +170,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   branchName: string;
   selectDate = {
     startDate: dayjs().subtract(6, 'day').format('YYYY-MM-DDT00:00:00.000Z'),
-    endDate: dayjs().format('YYYY-MM-DDT23:59:59.999Z')
+    endDate: dayjs().format('YYYY-MM-DDT23:59:59.999Z'),
   };
   startDate: string;
   reportCreatedTime = dayjs().format('YYYY-MM-DD HH:mm');
@@ -197,7 +195,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   coachInfo = {
     nickname: '',
     avatarUrl: '',
-    description: ''
+    description: '',
   };
   deviceImgUrl: string;
   lessonTotalInfo: string;
@@ -221,7 +219,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     { y: 0, color: '#abf784' },
     { y: 0, color: '#f7f25b' },
     { y: 0, color: '#f3b353' },
-    { y: 0, color: '#f36953' }
+    { y: 0, color: '#f36953' },
   ];
   colorIdx = 0;
   hrZoneRange = <HrZoneRange>{
@@ -234,7 +232,6 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     z5: 'Z5',
   };
 
-
   /**
    * 報告頁面可讓使用者篩選的條件
    */
@@ -244,23 +241,23 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     date: {
       startTimestamp: dayjs().startOf('day').subtract(6, 'day').valueOf(),
       endTimestamp: dayjs().endOf('day').valueOf(),
-      type: 'sevenDay'
+      type: 'sevenDay',
     },
     sportType: 99,
-    hideConfirmBtn: true
-  }
+    hideConfirmBtn: true,
+  };
 
-  @ViewChild('container', {static: false})
+  @ViewChild('container', { static: false })
   container: ElementRef;
-  @ViewChild('HRZoneChartTarget', {static: false})
+  @ViewChild('HRZoneChartTarget', { static: false })
   HRZoneChartTarget: ElementRef;
-  @ViewChild('caloriesBurnedChartTarget', {static: false})
+  @ViewChild('caloriesBurnedChartTarget', { static: false })
   caloriesBurnedChartTarget: ElementRef;
-  @ViewChild('avgSpeedChartTarget', {static: false})
+  @ViewChild('avgSpeedChartTarget', { static: false })
   avgSpeedChartTarget: ElementRef;
-  @ViewChild('avgHRChartTarget', {static: false})
+  @ViewChild('avgHRChartTarget', { static: false })
   avgHRChartTarget: ElementRef;
-  @ViewChild('caloriesChartTarget', {static: false})
+  @ViewChild('caloriesChartTarget', { static: false })
   caloriesChartTarget: ElementRef;
 
   constructor(
@@ -302,7 +299,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       this.getReportSelectedCondition();
     }
 
-    charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
+    charts.length = 0; // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
   }
 
   /**
@@ -313,28 +310,31 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     combineLatest([
       this.groupService.getRxGroupDetail(),
       this.groupService.getRxCommerceInfo(),
-      this.groupService.getUserSimpleInfo()
-    ]).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(resArr => {
-      this.groupInfo = resArr[0];
-      Object.assign(resArr[0], {groupLevel: this.utils.displayGroupLevel(resArr[0].groupId)});
-      Object.assign(resArr[0], {expired: resArr[1].expired});
-      Object.assign(resArr[0], {commerceStatus: resArr[1].commerceStatus});
-      this.userSimpleInfo = resArr[2];
-    })
-
+      this.groupService.getUserSimpleInfo(),
+    ])
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((resArr) => {
+        this.groupInfo = resArr[0];
+        Object.assign(resArr[0], { groupLevel: this.utils.displayGroupLevel(resArr[0].groupId) });
+        Object.assign(resArr[0], { expired: resArr[1].expired });
+        Object.assign(resArr[0], { commerceStatus: resArr[1].commerceStatus });
+        this.userSimpleInfo = resArr[2];
+      });
   }
 
   // 依query string顯示資料-kidin-20191226
-  queryStringShowData () {
+  queryStringShowData() {
     const queryString = location.search.replace('?', '').split('&');
     for (let i = 0; i < queryString.length; i++) {
       if (queryString[i].indexOf('startdate=') > -1) {
         this.startDate = queryString[i].replace('startdate=', '');
-        this.reportConditionOpt.date.startTimestamp = dayjs(queryString[i].replace('startdate=', '')).valueOf();
+        this.reportConditionOpt.date.startTimestamp = dayjs(
+          queryString[i].replace('startdate=', '')
+        ).valueOf();
       } else if (queryString[i].indexOf('enddate=') > -1) {
-        this.reportConditionOpt.date.endTimestamp = dayjs(queryString[i].replace('endDate=', '')).valueOf();
+        this.reportConditionOpt.date.endTimestamp = dayjs(
+          queryString[i].replace('endDate=', '')
+        ).valueOf();
       } else if (queryString[i].indexOf('sportType=') > -1) {
         this.sportType = +queryString[i].replace('sportType=', '');
       } else if (queryString[i].indexOf('id=') > -1) {
@@ -348,13 +348,16 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       this.getReportSelectedCondition();
     } else {
       this.selectDate = {
-        startDate: dayjs(this.reportConditionOpt.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-        endDate: dayjs(this.reportConditionOpt.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ')
-      }
+        startDate: dayjs(this.reportConditionOpt.date.startTimestamp).format(
+          'YYYY-MM-DDTHH:mm:ss.SSSZ'
+        ),
+        endDate: dayjs(this.reportConditionOpt.date.endTimestamp).format(
+          'YYYY-MM-DDTHH:mm:ss.SSSZ'
+        ),
+      };
 
       this.handleSubmitSearch();
     }
-
   }
 
   /**
@@ -362,25 +365,24 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
    * @author kidin-1091029
    */
   getReportSelectedCondition() {
-    this.reportService.getReportCondition().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      if (res.date) {
-        this.selectDate = {
-          startDate: dayjs(res.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-          endDate: dayjs(res.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ')
-        };
-  
-        this.sportType = res.sportType;
-        this.handleSubmitSearch();
-      }
+    this.reportService
+      .getReportCondition()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        if (res.date) {
+          this.selectDate = {
+            startDate: dayjs(res.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+            endDate: dayjs(res.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          };
 
-    });
-
+          this.sportType = res.sportType;
+          this.handleSubmitSearch();
+        }
+      });
   }
 
   // 使用者送出表單後顯示相關資料-kidin-1081209
-  handleSubmitSearch () {
+  handleSubmitSearch() {
     this.token = this.authService.token;
     this.reportCompleted = false;
     this.initVariable();
@@ -388,8 +390,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     this.getGroupInfo();
 
     // 根據條件取得多筆運動檔案資料-kidin-1081211
-    let targetUser,
-        author;
+    let targetUser, author;
     if (this.isDebug) {
       targetUser = '99';
       author = this.userId;
@@ -406,7 +407,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
         fuzzyTime: [],
         filterStartTime: this.selectDate.startDate,
         filterEndTime: this.selectDate.endDate,
-        filterSameTime: '1'
+        filterSameTime: '1',
       },
       searchRule: {
         activity: this.sportType,
@@ -417,52 +418,53 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
           equipmentSN: '',
           class: this.hashIdService.handleGroupIdDecode(urlArr[urlArr.length - 2]),
           teacher: '',
-          tag: ''
-        }
+          tag: '',
+        },
       },
       display: {
         activityLapLayerDisplay: '3',
         activityLapLayerDataField: [],
-        activityPointLayerDisplay: '2',  // 心率區間用，待2020/4月取消串接point資料-kidin-1081213
-        activityPointLayerDataField: ['heartRateBpm'] // 心率區間用，待2020/4月取消串接point資料-kidin-1081213
+        activityPointLayerDisplay: '2', // 心率區間用，待2020/4月取消串接point資料-kidin-1081213
+        activityPointLayerDataField: ['heartRateBpm'], // 心率區間用，待2020/4月取消串接point資料-kidin-1081213
       },
       page: '0',
-      pageCounts: '1000'
+      pageCounts: '1000',
     };
     this.sendRequest(body);
   }
 
   // 取得群組資訊-kidin-1090326
-  getGroupInfo () {
+  getGroupInfo() {
     // 先從service取得群組資訊，若取不到再call api-kidin-1081210
-    this.groupService.getGroupInfo().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.groupData = res;
-      if (this.groupData.hasOwnProperty('groupId') && this.groupData.groupId === this.groupId) {
-        this.groupId = this.groupData.groupId;
-        this.showGroupInfo();
-      } else {
-        const urlArr = location.pathname.split('/');
-        this.groupId = this.hashIdService.handleGroupIdDecode(urlArr[urlArr.length - 2]);
-        const groupBody = {
-          token: this.token,
-          groupId: this.groupId,
-          findRoot: '1',
-          avatarType: '2'
-        };
-
-        this.groupService.fetchGroupListDetail(groupBody).subscribe(result => {
-          this.groupData = result.info;
-          this.groupService.saveGroupInfo(this.groupData);
+    this.groupService
+      .getGroupInfo()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.groupData = res;
+        if (this.groupData.hasOwnProperty('groupId') && this.groupData.groupId === this.groupId) {
+          this.groupId = this.groupData.groupId;
           this.showGroupInfo();
-        });
-      }
-    });
+        } else {
+          const urlArr = location.pathname.split('/');
+          this.groupId = this.hashIdService.handleGroupIdDecode(urlArr[urlArr.length - 2]);
+          const groupBody = {
+            token: this.token,
+            groupId: this.groupId,
+            findRoot: '1',
+            avatarType: '2',
+          };
+
+          this.groupService.fetchGroupListDetail(groupBody).subscribe((result) => {
+            this.groupData = result.info;
+            this.groupService.saveGroupInfo(this.groupData);
+            this.showGroupInfo();
+          });
+        }
+      });
   }
 
   // 初始化變數-kidin-1081211
-  initVariable () {
+  initVariable() {
     this.initialChartComplated = false;
     this.showHRZoneChartTarget = false;
     this.showcaloriesBurnedChartTarget = false;
@@ -478,39 +480,38 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       { y: 0, color: '#abf784' },
       { y: 0, color: '#f7f25b' },
       { y: 0, color: '#f3b353' },
-      { y: 0, color: '#f36953' }
+      { y: 0, color: '#f36953' },
     ];
     this.colorIdx = 0;
   }
 
   // 取得登入者資訊-kidin-1090326
-  getUserInfo () {
-    this.userService.getUser().rxUserProfile.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      if (+this.userId !== res.userId) {
-        this.hrZoneRange['hrBase'] = HrBase.max;
-        this.hrZoneRange['z0'] = 'Z0';
-        this.hrZoneRange['z1'] = 'Z1';
-        this.hrZoneRange['z2'] = 'Z2';
-        this.hrZoneRange['z3'] = 'Z3';
-        this.hrZoneRange['z4'] = 'Z4';
-        this.hrZoneRange['z5'] = 'Z5';
-      } else {
-        const userAge = dayjs().diff(res.birthday, 'year'),
-              userHRBase = res.heartRateBase,
-              userMaxHR = res.heartRateMax,
-              userRestHR = res.heartRateResting;
+  getUserInfo() {
+    this.userService
+      .getUser()
+      .rxUserProfile.pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        if (+this.userId !== res.userId) {
+          this.hrZoneRange['hrBase'] = HrBase.max;
+          this.hrZoneRange['z0'] = 'Z0';
+          this.hrZoneRange['z1'] = 'Z1';
+          this.hrZoneRange['z2'] = 'Z2';
+          this.hrZoneRange['z3'] = 'Z3';
+          this.hrZoneRange['z4'] = 'Z4';
+          this.hrZoneRange['z5'] = 'Z5';
+        } else {
+          const userAge = dayjs().diff(res.birthday, 'year'),
+            userHRBase = res.heartRateBase,
+            userMaxHR = res.heartRateMax,
+            userRestHR = res.heartRateResting;
 
-        this.getUserBodyInfo(userHRBase, userAge, userMaxHR, userRestHR);
-      }
-
-    });
-
+          this.getUserBodyInfo(userHRBase, userAge, userMaxHR, userRestHR);
+        }
+      });
   }
 
   // 取得使用者資訊並計算心率區間範圍()-kidin-1090203
-  getUserBodyInfo (userHRBase, userAge, userMaxHR, userRestHR) {
+  getUserBodyInfo(userHRBase, userAge, userMaxHR, userRestHR) {
     if (userAge !== null) {
       if (userMaxHR && userRestHR) {
         if (userHRBase === HrBase.max) {
@@ -524,12 +525,12 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
           this.hrZoneRange['z5'] = Math.floor((220 - userAge) * 1);
         } else {
           this.hrZoneRange['hrBase'] = userHRBase;
-          this.hrZoneRange['z0'] = Math.floor((userMaxHR - userRestHR) * (0.55)) + userRestHR;
-          this.hrZoneRange['z1'] = Math.floor((userMaxHR - userRestHR) * (0.6)) + userRestHR;
-          this.hrZoneRange['z2'] = Math.floor((userMaxHR - userRestHR) * (0.65)) + userRestHR;
-          this.hrZoneRange['z3'] = Math.floor((userMaxHR - userRestHR) * (0.75)) + userRestHR;
-          this.hrZoneRange['z4'] = Math.floor((userMaxHR - userRestHR) * (0.85)) + userRestHR;
-          this.hrZoneRange['z5'] = Math.floor((userMaxHR - userRestHR) * (1)) + userRestHR;
+          this.hrZoneRange['z0'] = Math.floor((userMaxHR - userRestHR) * 0.55) + userRestHR;
+          this.hrZoneRange['z1'] = Math.floor((userMaxHR - userRestHR) * 0.6) + userRestHR;
+          this.hrZoneRange['z2'] = Math.floor((userMaxHR - userRestHR) * 0.65) + userRestHR;
+          this.hrZoneRange['z3'] = Math.floor((userMaxHR - userRestHR) * 0.75) + userRestHR;
+          this.hrZoneRange['z4'] = Math.floor((userMaxHR - userRestHR) * 0.85) + userRestHR;
+          this.hrZoneRange['z5'] = Math.floor((userMaxHR - userRestHR) * 1) + userRestHR;
         }
       } else {
         if (userHRBase === HrBase.max) {
@@ -543,12 +544,12 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
           this.hrZoneRange['z5'] = Math.floor((220 - userAge) * 1);
         } else {
           this.hrZoneRange['hrBase'] = userHRBase;
-          this.hrZoneRange['z0'] = Math.floor(((220 - userAge) - userRestHR) * (0.55)) + userRestHR;
-          this.hrZoneRange['z1'] = Math.floor(((220 - userAge) - userRestHR) * (0.6)) + userRestHR;
-          this.hrZoneRange['z2'] = Math.floor(((220 - userAge) - userRestHR) * (0.65)) + userRestHR;
-          this.hrZoneRange['z3'] = Math.floor(((220 - userAge) - userRestHR) * (0.75)) + userRestHR;
-          this.hrZoneRange['z4'] = Math.floor(((220 - userAge) - userRestHR) * (0.85)) + userRestHR;
-          this.hrZoneRange['z5'] = Math.floor(((220 - userAge) - userRestHR) * (1)) + userRestHR;
+          this.hrZoneRange['z0'] = Math.floor((220 - userAge - userRestHR) * 0.55) + userRestHR;
+          this.hrZoneRange['z1'] = Math.floor((220 - userAge - userRestHR) * 0.6) + userRestHR;
+          this.hrZoneRange['z2'] = Math.floor((220 - userAge - userRestHR) * 0.65) + userRestHR;
+          this.hrZoneRange['z3'] = Math.floor((220 - userAge - userRestHR) * 0.75) + userRestHR;
+          this.hrZoneRange['z4'] = Math.floor((220 - userAge - userRestHR) * 0.85) + userRestHR;
+          this.hrZoneRange['z5'] = Math.floor((220 - userAge - userRestHR) * 1) + userRestHR;
         }
       }
     } else {
@@ -563,31 +564,23 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   }
 
   // 顯示群組資料-kidin-1081227
-  showGroupInfo () {
+  showGroupInfo() {
     const groupIcon = this.groupData.groupIcon;
-      const brandIcon = this.groupData.groupRootInfo[2].brandIcon;
-      this.groupImg =
-        (
-          groupIcon && groupIcon.length > 0
-              ? groupIcon
-              : '/assets/images/group-default.svg'
-        );
-      this.brandImg =
-        (
-          brandIcon && brandIcon.length > 0
-              ? brandIcon
-              : '/assets/images/group-default.svg'
-        );
-      this.brandName = this.groupData.groupRootInfo[2].brandName;
-      this.branchName = this.groupData.groupRootInfo[3].branchName;
+    const brandIcon = this.groupData.groupRootInfo[2].brandIcon;
+    this.groupImg =
+      groupIcon && groupIcon.length > 0 ? groupIcon : '/assets/images/group-default.svg';
+    this.brandImg =
+      brandIcon && brandIcon.length > 0 ? brandIcon : '/assets/images/group-default.svg';
+    this.brandName = this.groupData.groupRootInfo[2].brandName;
+    this.branchName = this.groupData.groupRootInfo[3].branchName;
 
-      this.handleInfo(this.groupData.groupDesc, 'lessonInfo');
+    this.handleInfo(this.groupData.groupDesc, 'lessonInfo');
   }
 
   // 取得多筆活動資料並處理-kidin-1081211
-  sendRequest (body) {
+  sendRequest(body) {
     this.changeLoadingStatus(true);
-    this.activityService.fetchMultiActivityData(body).subscribe(res => {
+    this.activityService.fetchMultiActivityData(body).subscribe((res) => {
       const activity = res.info.activities;
       if (res.resultCode !== 200) {
         this.hasResData = false;
@@ -610,14 +603,14 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
           this.fileInfo = infoData.fileInfo;
 
           let timeCount = 0,
-              HRCount = 0,
-              caloriesCount = 0,
-              HRZoneZero = 0,
-              HRZoneOne = 0,
-              HRZoneTwo = 0,
-              HRZoneThree = 0,
-              HRZoneFour = 0,
-              HRZoneFive = 0;
+            HRCount = 0,
+            caloriesCount = 0,
+            HRZoneZero = 0,
+            HRZoneOne = 0,
+            HRZoneTwo = 0,
+            HRZoneThree = 0,
+            HRZoneFour = 0,
+            HRZoneFive = 0;
 
           for (let i = 0; i < this.activityLength; i++) {
             const activityItem = activity[i].activityInfoLayer;
@@ -627,25 +620,43 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
 
             // 取得心率區間-kidin-1081213
             if (activityItem.totalHrZone0Second !== null) {
-              HRZoneZero += activityItem.totalHrZone0Second > 0 ? activityItem.totalHrZone0Second : 0;
-              HRZoneOne += activityItem.totalHrZone1Second > 0 ? activityItem.totalHrZone1Second : 0;
-              HRZoneTwo += activityItem.totalHrZone2Second > 0 ? activityItem.totalHrZone2Second : 0;
-              HRZoneThree += activityItem.totalHrZone3Second > 0 ? activityItem.totalHrZone3Second : 0;
-              HRZoneFour += activityItem.totalHrZone4Second > 0 ? activityItem.totalHrZone4Second : 0;
-              HRZoneFive += activityItem.totalHrZone5Second > 0 ? activityItem.totalHrZone5Second : 0;
+              HRZoneZero +=
+                activityItem.totalHrZone0Second > 0 ? activityItem.totalHrZone0Second : 0;
+              HRZoneOne +=
+                activityItem.totalHrZone1Second > 0 ? activityItem.totalHrZone1Second : 0;
+              HRZoneTwo +=
+                activityItem.totalHrZone2Second > 0 ? activityItem.totalHrZone2Second : 0;
+              HRZoneThree +=
+                activityItem.totalHrZone3Second > 0 ? activityItem.totalHrZone3Second : 0;
+              HRZoneFour +=
+                activityItem.totalHrZone4Second > 0 ? activityItem.totalHrZone4Second : 0;
+              HRZoneFive +=
+                activityItem.totalHrZone5Second > 0 ? activityItem.totalHrZone5Second : 0;
             } else {
               // 計算心率區間-kidin-1081213
               const hrBpm = activity[i].activityPointLayer,
-              resolutionSeconds = 3;
+                resolutionSeconds = 3;
               for (let j = 0; j < hrBpm.length; j++) {
                 if (hrBpm[j].heartRateBpm !== 0) {
-                  if (hrBpm[j].heartRateBpm.heartRateBpm >= this.hrZoneRange.z0 && hrBpm[j].heartRateBpm < this.hrZoneRange.z1) {
+                  if (
+                    hrBpm[j].heartRateBpm.heartRateBpm >= this.hrZoneRange.z0 &&
+                    hrBpm[j].heartRateBpm < this.hrZoneRange.z1
+                  ) {
                     HRZoneOne += resolutionSeconds;
-                  } else if (hrBpm[j].heartRateBpm >= (this.hrZoneRange.z1 as any) + 1 && hrBpm[j].heartRateBpm < this.hrZoneRange.z2) {
+                  } else if (
+                    hrBpm[j].heartRateBpm >= (this.hrZoneRange.z1 as any) + 1 &&
+                    hrBpm[j].heartRateBpm < this.hrZoneRange.z2
+                  ) {
                     HRZoneTwo += resolutionSeconds;
-                  } else if (hrBpm[j].heartRateBpm >= (this.hrZoneRange.z2 as any) + 1 && hrBpm[j].heartRateBpm < this.hrZoneRange.z3) {
+                  } else if (
+                    hrBpm[j].heartRateBpm >= (this.hrZoneRange.z2 as any) + 1 &&
+                    hrBpm[j].heartRateBpm < this.hrZoneRange.z3
+                  ) {
                     HRZoneThree += resolutionSeconds;
-                  } else if (hrBpm[j].heartRateBpm >= (this.hrZoneRange.z3 as any) + 1 && hrBpm[j].heartRateBpm < this.hrZoneRange.z4) {
+                  } else if (
+                    hrBpm[j].heartRateBpm >= (this.hrZoneRange.z3 as any) + 1 &&
+                    hrBpm[j].heartRateBpm < this.hrZoneRange.z4
+                  ) {
                     HRZoneFour += resolutionSeconds;
                   } else if (hrBpm[j].heartRateBpm >= (this.hrZoneRange.z4 as any) + 1) {
                     HRZoneFive += resolutionSeconds;
@@ -666,7 +677,8 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
           this.totalCalories = caloriesCount;
           this.burnedCalories = this.totalCalories / 7700;
 
-          const totalHRSecond = HRZoneZero + HRZoneOne + HRZoneTwo + HRZoneThree + HRZoneFour + HRZoneFive;
+          const totalHRSecond =
+            HRZoneZero + HRZoneOne + HRZoneTwo + HRZoneThree + HRZoneFour + HRZoneFive;
           if (totalHRSecond !== 0) {
             this.HRZoneColorSet[0].y = this.handleMathRound((HRZoneZero / totalHRSecond) * 100);
             this.HRZoneColorSet[1].y = this.handleMathRound((HRZoneOne / totalHRSecond) * 100);
@@ -688,25 +700,22 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
 
           this.changeLoadingStatus(false);
         }
-
       }
-
     });
 
     this.reportCompleted = true;
   }
 
   // 取得變數內容並將部分變數替換成html element-kidin-1090623
-  getReportInfo () {
+  getReportInfo() {
     const targetDiv = document.getElementById('reportInfo');
     this.translateService.get('hellow world').subscribe(() => {
       targetDiv.innerHTML = this.translateService.instant('universal_group_myReportOnPeriod', {
-        'class': `[<span id="classLink" class="activity-Link">${this.fileInfo.dispName}</span>]`,
-        'startDate': dayjs(this.selectDate.startDate).format('YYYY-MM-DD'),
-        'endDate': dayjs(this.selectDate.endDate).format('YYYY-MM-DD'),
-        'number': `<span class="fileAmount">${this.activityLength}</span>`
+        class: `[<span id="classLink" class="activity-Link">${this.fileInfo.dispName}</span>]`,
+        startDate: dayjs(this.selectDate.startDate).format('YYYY-MM-DD'),
+        endDate: dayjs(this.selectDate.endDate).format('YYYY-MM-DD'),
+        number: `<span class="fileAmount">${this.activityLength}</span>`,
       });
-
     });
 
     this.classLink = document.getElementById('classLink');
@@ -714,9 +723,9 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   }
 
   // 取得平均心率座落的區間-kidin-1090326
-  findAvgHRZone (hrZone) {
+  findAvgHRZone(hrZone) {
     let mostHRZone = 0,
-        idx = 0;
+      idx = 0;
 
     for (let i = 0; i < hrZone.length; i++) {
       if (hrZone[i].y > mostHRZone) {
@@ -727,46 +736,53 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
 
     switch (idx) {
       case 0:
-        this.avgHRZone = `${this.translateService.instant('universal_activityData_limit_generalZone')} ${mostHRZone}%`;
+        this.avgHRZone = `${this.translateService.instant(
+          'universal_activityData_limit_generalZone'
+        )} ${mostHRZone}%`;
         break;
       case 1:
-        this.avgHRZone = `${this.translateService.instant('universal_activityData_warmUpZone')} ${mostHRZone}%`;
+        this.avgHRZone = `${this.translateService.instant(
+          'universal_activityData_warmUpZone'
+        )} ${mostHRZone}%`;
         break;
       case 2:
-        this.avgHRZone = `${this.translateService.instant('universal_activityData_aerobicZone')} ${mostHRZone}%`;
+        this.avgHRZone = `${this.translateService.instant(
+          'universal_activityData_aerobicZone'
+        )} ${mostHRZone}%`;
         break;
       case 3:
-        this.avgHRZone = `${this.translateService.instant('universal_activityData_enduranceZone')} ${mostHRZone}%`;
+        this.avgHRZone = `${this.translateService.instant(
+          'universal_activityData_enduranceZone'
+        )} ${mostHRZone}%`;
         break;
       case 4:
-        this.avgHRZone = `${this.translateService.instant('universal_activityData_marathonZone')} ${mostHRZone}%`;
+        this.avgHRZone = `${this.translateService.instant(
+          'universal_activityData_marathonZone'
+        )} ${mostHRZone}%`;
         break;
       case 5:
-        this.avgHRZone = `${this.translateService.instant('universal_activityData_anaerobicZone')} ${mostHRZone}%`;
+        this.avgHRZone = `${this.translateService.instant(
+          'universal_activityData_anaerobicZone'
+        )} ${mostHRZone}%`;
         break;
     }
   }
 
   // 將搜尋的類別和範圍處理過後加入query string並更新現在的url和預覽列印的url-kidin-1081226
-  updateUrl (str) {
+  updateUrl(str) {
     let newUrl;
     if (str === 'true') {
       const startDateString = this.selectDate.startDate.split('T')[0],
-            endDateString = this.selectDate.endDate.split('T')[0];
+        endDateString = this.selectDate.endDate.split('T')[0];
       let searchString;
 
       let userId: string;
       if (this.fileInfo.author.indexOf('?') > 0) {
         userId = this.hashIdService.handleUserIdEncode(
-          this.fileInfo.author
-            .split('?')[1]
-            .split('=')[1]
-            .replace(')', '')
+          this.fileInfo.author.split('?')[1].split('=')[1].replace(')', '')
         );
       } else {
-        userId = this.hashIdService.handleUserIdEncode(
-          this.fileInfo.author.replace(')', '')
-        );
+        userId = this.hashIdService.handleUserIdEncode(this.fileInfo.author.replace(')', ''));
       }
 
       searchString = `startdate=${startDateString}&enddate=${endDateString}&sportType=${this.sportType}&id=${userId}`;
@@ -806,41 +822,41 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     }
 
     if (history.pushState) {
-      window.history.pushState({path: newUrl}, '', newUrl);
+      window.history.pushState({ path: newUrl }, '', newUrl);
     }
   }
 
   // 計算多筆資料合計的總運動時間-kidin-1081211
-  calculateTotalTime (timeCount) {
+  calculateTotalTime(timeCount) {
     if (timeCount < 60) {
       this.totalTime = `00:${this.fillTwoDigits(timeCount)}`;
-    } else if ( timeCount < 3600) {
-      const minute = Math.floor((timeCount) / 60);
+    } else if (timeCount < 3600) {
+      const minute = Math.floor(timeCount / 60);
       const second = timeCount % 60;
       this.totalTime = `${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
     } else {
-      const hour = Math.floor((timeCount) / 3600);
+      const hour = Math.floor(timeCount / 3600);
       const minute = Math.floor((timeCount % 3600) / 60);
-      const second = timeCount - (hour * 3600) - (minute * 60);
+      const second = timeCount - hour * 3600 - minute * 60;
       this.totalTime = `${hour}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
     }
   }
 
   // 時間補零-kidin-1081211
-  fillTwoDigits (num: number) {
+  fillTwoDigits(num: number) {
     const timeStr = '0' + Math.floor(num);
     return timeStr.substr(-2);
   }
 
   // 使檔案創建日期符合格式-kidin-1081211
-  formatDate (date: string) {
+  formatDate(date: string) {
     const month = date.slice(5, 7);
     const day = date.slice(8, 10);
     return `${month}/${day}`;
   }
 
   // 將數字取四捨五入至第一位-kidin-1081227
-  handleMathRound (num) {
+  handleMathRound(num) {
     if (num % 1 === 0) {
       return num;
     } else {
@@ -849,14 +865,14 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   }
 
   // 初始化highChart-kidin-1081211
-  initHighChart () {
+  initHighChart() {
     // 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
     charts.forEach((_highChart, idx) => {
       if (_highChart !== undefined) {
         _highChart.destroy();
       }
     });
-    charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
+    charts.length = 0; // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
     this.chartDatas.length = 0;
     this.chartTargetList.length = 0;
 
@@ -866,7 +882,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       data: this.HRZoneColorSet,
       unit: '%',
       type: 'column',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
     const HRZoneChartOptions = new ChartOptions(HRZoneDataset, this.colorIdx);
     HRZoneChartOptions['plotOptions'].column['pointPlacement'] = 0;
@@ -874,7 +890,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       enabled: true,
       formatter: function () {
         return this.y + '%';
-      }
+      },
     };
     HRZoneChartOptions['series'][0].showInLegend = false;
     HRZoneChartOptions['chart'].zoomType = '';
@@ -884,18 +900,18 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       this.translateService.instant('universal_activityData_aerobicZone'),
       this.translateService.instant('universal_activityData_enduranceZone'),
       this.translateService.instant('universal_activityData_marathonZone'),
-      this.translateService.instant('universal_activityData_anaerobicZone')
+      this.translateService.instant('universal_activityData_anaerobicZone'),
     ];
     HRZoneChartOptions['yAxis'].labels = {
       formatter: function () {
         return this.value + '%';
-      }
+      },
     };
 
     this.chartDatas.push({ HRZoneChartTarget: HRZoneChartOptions, isSyncExtremes: false });
     this.chartTargetList.push('HRZoneChartTarget');
 
-    const chartHeight = 260;  // 折線圖高度設定-kidin-1081227
+    const chartHeight = 260; // 折線圖高度設定-kidin-1081227
 
     // 平均心率圖表-kidin-1081216
     const avgHRDataset = {
@@ -903,7 +919,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       data: this.avgHRList,
       unit: 'bmp',
       type: 'area',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
     this.colorIdx = 5;
     const avgHRChartOptions = new ChartOptions(avgHRDataset, this.colorIdx);
@@ -912,27 +928,27 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     avgHRChartOptions['plotOptions'] = {
       area: {
         fillColor: {
-            linearGradient: {
-                x1: 0,
-                y1: 0,
-                x2: 0,
-                y2: 1
-            },
-            stops: [
-                [0, getOptions().colors[this.colorIdx]],
-                [1, color(getOptions().colors[this.colorIdx]).setOpacity(0).get('rgba')]
-            ]
+          linearGradient: {
+            x1: 0,
+            y1: 0,
+            x2: 0,
+            y2: 1,
+          },
+          stops: [
+            [0, getOptions().colors[this.colorIdx]],
+            [1, color(getOptions().colors[this.colorIdx]).setOpacity(0).get('rgba')],
+          ],
         },
         marker: {
-            radius: 2
+          radius: 2,
         },
         lineWidth: 1,
         states: {
-            hover: {
-                lineWidth: 1
-            }
-        }
-      }
+          hover: {
+            lineWidth: 1,
+          },
+        },
+      },
     };
 
     this.chartDatas.push({ avgHRChartTarget: avgHRChartOptions, isSyncExtremes: true });
@@ -944,7 +960,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       data: this.caloriesList,
       unit: 'cal',
       type: 'area',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
     this.colorIdx = 3;
     const caloriesChartOptions = new ChartOptions(caloriesDataset, this.colorIdx);
@@ -955,27 +971,27 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     caloriesChartOptions['plotOptions'] = {
       area: {
         fillColor: {
-            linearGradient: {
-                x1: 0,
-                y1: 0,
-                x2: 0,
-                y2: 1
-            },
-            stops: [
-                [0, getOptions().colors[this.colorIdx]],
-                [1, color(getOptions().colors[this.colorIdx]).setOpacity(0).get('rgba')]
-            ]
+          linearGradient: {
+            x1: 0,
+            y1: 0,
+            x2: 0,
+            y2: 1,
+          },
+          stops: [
+            [0, getOptions().colors[this.colorIdx]],
+            [1, color(getOptions().colors[this.colorIdx]).setOpacity(0).get('rgba')],
+          ],
         },
         marker: {
-            radius: 2
+          radius: 2,
         },
         lineWidth: 1,
         states: {
-            hover: {
-                lineWidth: 1
-            }
-        }
-      }
+          hover: {
+            lineWidth: 1,
+          },
+        },
+      },
     };
 
     this.chartDatas.push({ caloriesChartTarget: caloriesChartOptions, isSyncExtremes: true });
@@ -986,9 +1002,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.chartDatas.forEach((_option, idx) => {
         this[`show${chartTargetList[idx]}`] = true;
-        _option[
-          chartTargetList[idx]
-        ].xAxis.events.setExtremes = this.syncExtremes.bind(
+        _option[chartTargetList[idx]].xAxis.events.setExtremes = this.syncExtremes.bind(
           this,
           idx,
           this.chartDatas
@@ -1000,13 +1014,13 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       });
       this.initialChartComplated = true;
 
-      this.renderer.listen(this.container.nativeElement, 'mousemove', e =>
+      this.renderer.listen(this.container.nativeElement, 'mousemove', (e) =>
         this.handleSynchronizedPoint(e, this.chartDatas)
       );
-      this.renderer.listen(this.container.nativeElement, 'touchmove', e =>
+      this.renderer.listen(this.container.nativeElement, 'touchmove', (e) =>
         this.handleSynchronizedPoint(e, this.chartDatas)
       );
-      this.renderer.listen(this.container.nativeElement, 'touchstart', e =>
+      this.renderer.listen(this.container.nativeElement, 'touchstart', (e) =>
         this.handleSynchronizedPoint(e, this.chartDatas)
       );
     }, 3000);
@@ -1016,11 +1030,11 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   syncExtremes(num, finalDatas, e) {
     const thisChart = this.charts[num];
     if (e.trigger !== 'syncExtremes') {
-      each(charts, function(_chart, idx) {
+      each(charts, function (_chart, idx) {
         if (_chart !== thisChart && _chart && finalDatas[idx].isSyncExtremes) {
           if (_chart.xAxis[0].setExtremes) {
             _chart.xAxis[0].setExtremes(e.min, e.max, undefined, false, {
-              trigger: 'syncExtremes'
+              trigger: 'syncExtremes',
             });
           }
         }
@@ -1044,14 +1058,14 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     }
   }
 
-  getClassDetails (SN, coachId) {
+  getClassDetails(SN, coachId) {
     // 取得裝置資訊-kidin-1081218
     const deviceDody = {
-      'token': '',
-      'queryType': '1',
-      'queryArray': SN
+      token: '',
+      queryType: '1',
+      queryArray: SN,
     };
-    this.qrcodeService.getProductInfo(deviceDody).subscribe(res => {
+    this.qrcodeService.getProductInfo(deviceDody).subscribe((res) => {
       if (res) {
         this.deviceInfo = res.info.productInfo[0];
         if (location.hostname === '192.168.1.235') {
@@ -1066,43 +1080,39 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     const bodyForCoach = {
       token: this.token,
       targetUserId: coachId,
-      avatarType: '2'
+      avatarType: '2',
     };
 
-    this.api10xxService.fetchGetUserProfile(bodyForCoach).subscribe(res => {
+    this.api10xxService.fetchGetUserProfile(bodyForCoach).subscribe((res) => {
       if (res.processResult.resultCode === 200) {
         this.coachInfo = res.userProfile;
       } else {
         this.coachInfo = {
           avatarUrl: '/assets/images/user2.png',
           description: '',
-          nickname: 'No data'
+          nickname: 'No data',
         };
-
       }
 
       this.handleInfo(this.coachInfo.description, 'coachInfo');
     });
-
   }
 
   // 連結至個人頁面-kidin-1081223
   visitAuthor() {
     this.router.navigateByUrl(
       `/user-profile/${this.hashIdService.handleUserIdEncode(
-        this.fileInfo.author
-          .split('?')[1]
-          .split('=')[1]
-          .replace(')', '')
+        this.fileInfo.author.split('?')[1].split('=')[1].replace(')', '')
       )}`
     );
-
   }
 
   // 連結至課程頁面-kidin-1090624
-  visitClass () {
+  visitClass() {
     this.router.navigateByUrl(
-      `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId)}/group-introduction`
+      `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+        this.groupInfo.groupId
+      )}/group-introduction`
     );
   }
 
@@ -1173,7 +1183,6 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       if (_highChart !== undefined) {
         _highChart.destroy();
       }
-
     });
 
     if (this.classLink) {
@@ -1183,5 +1192,4 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

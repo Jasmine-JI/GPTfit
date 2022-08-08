@@ -13,11 +13,10 @@ import { checkResponse, valueConvert } from '../../../../shared/utils/index';
 import { NodejsApiService } from '../../../../core/services/nodejs-api.service';
 import { AuthService } from '../../../../core/services/auth.service';
 
-
 @Component({
   selector: 'app-setting-base',
   templateUrl: './setting-base.component.html',
-  styleUrls: ['./setting-base.component.scss', '../personal-child-page.scss']
+  styleUrls: ['./setting-base.component.scss', '../personal-child-page.scss'],
 })
 export class SettingBaseComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
@@ -32,8 +31,8 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     expand: true,
     editMode: 'close',
     nicknameAlert: <'repeat' | 'format' | null>null,
-    heightAlert: false
-  }
+    heightAlert: false,
+  };
 
   /**
    * 使用者設定
@@ -42,9 +41,9 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     nickname: '',
     bodyHeight: <string | number>175,
     bodyWeight: 70,
-    birthday: dayjs().subtract(30, 'year').startOf('year').valueOf(),  // 預設30歲
-    gender: 0
-  }
+    birthday: dayjs().subtract(30, 'year').startOf('year').valueOf(), // 預設30歲
+    gender: 0,
+  };
 
   /**
    * 紀錄需公英制轉換的數據，其數值是否更新，
@@ -52,8 +51,8 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    */
   editFlag = {
     bodyHeight: false,
-    bodyWeight: false
-  }
+    bodyWeight: false,
+  };
 
   userInfo: any;
   readonly Sex = Sex;
@@ -65,7 +64,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     private dashboardService: DashboardService,
     private nodejsApiService: NodejsApiService,
     private authService: AuthService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.getRxUserProfile();
@@ -76,13 +75,13 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * @author kidin-1100818
    */
   getRxUserProfile() {
-    this.userService.getUser().rxUserProfile.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.userInfo = res;
-      this.openEditMode();
-    });
-
+    this.userService
+      .getUser()
+      .rxUserProfile.pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.userInfo = res;
+        this.openEditMode();
+      });
   }
 
   /**
@@ -104,9 +103,8 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
 
     this.editFlag = {
       bodyHeight: false,
-      bodyWeight: false
+      bodyWeight: false,
     };
-
   }
 
   /**
@@ -128,14 +126,11 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     if (newSet) {
       const { nicknameAlert, heightAlert } = this.uiFlag;
       if (!nicknameAlert && !heightAlert) {
-        this.userService.updateUserProfile(newSet).subscribe(res => {
+        this.userService.updateUserProfile(newSet).subscribe((res) => {
           if (checkResponse(res)) this.dashboardService.setRxEditMode('complete');
         });
-
       }
-      
     }
-    
   }
 
   /**
@@ -146,37 +141,31 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    */
   checkEdit(oldSet: any, newSet: any): any {
     let updateObj = {},
-        isUpdate = false;
+      isUpdate = false;
     for (const _key in newSet) {
-
       if (newSet.hasOwnProperty(_key)) {
         const oldValue = oldSet[_key],
-              newValue = newSet[_key];
+          newValue = newSet[_key];
         if (typeof newSet[_key] === 'object') {
           const updateChild = this.checkEdit(oldValue, newValue);
           if (updateChild) {
             isUpdate = true;
             updateObj = {
               [_key]: updateChild,
-              ...updateObj
+              ...updateObj,
             };
           }
-
         } else {
           const revertNewValue = this.valueRevert(_key, newValue);
           if (revertNewValue != oldValue) {
             isUpdate = true;
             updateObj = {
               [_key]: revertNewValue,
-              ...updateObj
+              ...updateObj,
             };
-
           }
-
         }
-
       }
-
     }
 
     return isUpdate ? updateObj : isUpdate;
@@ -190,7 +179,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    */
   valueRevert(key: string, value: string | number) {
     const isMetric = this.userInfo.unit === Unit.metric,
-          edited = this.editFlag[key];
+      edited = this.editFlag[key];
     switch (key) {
       case 'bodyHeight':
         if (edited) {
@@ -200,7 +189,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
         }
       case 'bodyWeight':
         if (edited) {
-          return isMetric ? value : valueConvert((value as number), true, false, lb, 1);
+          return isMetric ? value : valueConvert(value as number, true, false, lb, 1);
         } else {
           return this.userInfo[key];
         }
@@ -208,10 +197,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
         return dayjs(value).format('YYYYMMDD');
       default:
         return value;
-        
     }
-
-
   }
 
   /**
@@ -224,19 +210,17 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     if (name.length < 4) {
       this.uiFlag.nicknameAlert = 'format';
     } else {
-
       if (name !== this.userInfo.nickname) {
         const body = {
           token: this.authService.token,
-          nickname: name
+          nickname: name,
         };
 
-        this.nodejsApiService.checkNickname(body).subscribe(res => {
+        this.nodejsApiService.checkNickname(body).subscribe((res) => {
           const { resultCode, resultMessage, apiCode, repeat } = res;
           if (resultCode !== 200) {
             this.utils.handleError(resultCode, apiCode, resultMessage);
           } else {
-
             if (repeat) {
               this.uiFlag.nicknameAlert = 'repeat';
             } else {
@@ -244,17 +228,12 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
               this.setting.nickname = name;
               this.editComplete();
             }
-
           }
-
         });
-
       } else {
         this.uiFlag.nicknameAlert = null;
       }
-
     }
-
   }
 
   /**
@@ -263,14 +242,16 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * @author kidin-1100823
    */
   checkFormat(e: KeyboardEvent) {
-    const { key, target: { value } } = e as any,
-          numTest = formTest.number.test(`${key}`),
-          notFnKey = key.length <= 1,
-          checkDot = !value.includes('.') && key === '.';
+    const {
+        key,
+        target: { value },
+      } = e as any,
+      numTest = formTest.number.test(`${key}`),
+      notFnKey = key.length <= 1,
+      checkDot = !value.includes('.') && key === '.';
     if (!numTest && notFnKey && !checkDot) {
       e.preventDefault();
     }
-
   }
 
   /**
@@ -282,17 +263,18 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     if (this.userInfo.unit === Unit.metric) {
       this.checkFormat(e);
     } else {
-      const { key, target: { value } } = e as any,
-            testReg = /\d|"/,
-            numTest = testReg.test(`${key}`),
-            notFnKey = key.length <= 1,
-            checkQuotation = !value.includes('"') && key === '"';
+      const {
+          key,
+          target: { value },
+        } = e as any,
+        testReg = /\d|"/,
+        numTest = testReg.test(`${key}`),
+        notFnKey = key.length <= 1,
+        checkQuotation = !value.includes('"') && key === '"';
       if (!numTest && notFnKey && !checkQuotation) {
         e.preventDefault();
       }
-
     }
-
   }
 
   /**
@@ -305,12 +287,11 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
       this.checkFormat(e);
     } else {
       const { key } = e as any,
-            numTest = formTest.number.test(`${key}`),
-            notFnKey = key.length <= 1;
+        numTest = formTest.number.test(`${key}`),
+        notFnKey = key.length <= 1;
       if (!numTest && notFnKey) {
         e.preventDefault();
       }
-
     }
   }
 
@@ -321,18 +302,18 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    */
   handleHeightInput(e: Event | MouseEvent) {
     const isMetric = this.userInfo.unit === Unit.metric,
-          { decimalValue, imperialHeight } = formTest,
-          oldValue = this.userInfo.bodyHeight,
-          { value } = (e as any).target,
-          inputValue = isMetric ? +value : value,
-          testReg = isMetric ? decimalValue : imperialHeight,
-          testFormat = testReg.test(`${inputValue}`),
-          newValue = this.utils.bodyHeightTransfer(inputValue, !isMetric, false),
-          valueChanged = newValue !== oldValue;
+      { decimalValue, imperialHeight } = formTest,
+      oldValue = this.userInfo.bodyHeight,
+      { value } = (e as any).target,
+      inputValue = isMetric ? +value : value,
+      testReg = isMetric ? decimalValue : imperialHeight,
+      testFormat = testReg.test(`${inputValue}`),
+      newValue = this.utils.bodyHeightTransfer(inputValue, !isMetric, false),
+      valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       this.editFlag.bodyHeight = true;
       const min = 100,
-            max = 255;
+        max = 255;
       if (newValue < min) {
         this.setting.bodyHeight = this.utils.bodyHeightTransfer(min, !isMetric, true);
       } else if (newValue > max) {
@@ -345,7 +326,6 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
       this.uiFlag.heightAlert = false;
       this.editComplete();
     } else {
-
       if (!testFormat) {
         this.uiFlag.heightAlert = true;
       } else {
@@ -356,7 +336,6 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
 
       this.editFlag.bodyHeight = false;
     }
-
   }
 
   /**
@@ -366,15 +345,15 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    */
   handleWeightInput(e: Event | MouseEvent) {
     const oldValue = this.userInfo.bodyWeight,
-          inputValue = +(e as any).target.value,
-          testFormat = formTest.decimalValue.test(`${inputValue}`),
-          isMetric = this.userInfo.unit === Unit.metric,
-          newValue = valueConvert(inputValue, !isMetric, false, lb, 1),
-          valueChanged = newValue !== oldValue;
+      inputValue = +(e as any).target.value,
+      testFormat = formTest.decimalValue.test(`${inputValue}`),
+      isMetric = this.userInfo.unit === Unit.metric,
+      newValue = valueConvert(inputValue, !isMetric, false, lb, 1),
+      valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       this.editFlag.bodyWeight = true;
       const min = 40,
-            max = 255;
+        max = 255;
       if (newValue < min) {
         this.setting.bodyWeight = valueConvert(min, !isMetric, true, lb, 1);
       } else if (newValue > max) {
@@ -390,7 +369,6 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
       const { bodyWeight } = this.userInfo;
       (e as any).target.value = valueConvert(bodyWeight, !isMetric, true, lb, 1);
     }
-
   }
 
   /**
@@ -429,5 +407,4 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

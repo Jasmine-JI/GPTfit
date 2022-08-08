@@ -3,14 +3,12 @@ import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { DateUnit } from '../enum/report';
 dayjs.extend(quarterOfYear);
 
-
 const UTC_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 
 /**
  * 處理選擇日期範圍
  */
 export class DateRange {
-
   private _startTime: number;
   private _endTime: number;
 
@@ -109,7 +107,7 @@ export class DateRange {
       default:
         realStartTime = dayjs(_startTime).startOf('month').valueOf();
         realEndTime = dayjs(_endTime).endOf('month').valueOf();
-        break ;
+        break;
     }
 
     return { realStartTime, realEndTime };
@@ -129,8 +127,11 @@ export class DateRange {
    */
   getCrossRange(unit: any) {
     const diff = Math.ceil(this.getDiffRange(unit, true));
-    const cross = dayjs(this._startTime).add(diff - 1, unit).endOf(unit).valueOf() !== dayjs(this._endTime).endOf(unit).valueOf();
+    const cross =
+      dayjs(this._startTime)
+        .add(diff - 1, unit)
+        .endOf(unit)
+        .valueOf() !== dayjs(this._endTime).endOf(unit).valueOf();
     return cross ? diff + 1 : diff;
   }
-  
 }

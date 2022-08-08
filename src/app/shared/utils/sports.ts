@@ -7,27 +7,26 @@ import { asept, metacarpus, novice } from '../models/weight-train';
 import { HrBase } from '../enum/personal';
 import { HrZoneRange } from '../models/chart-data';
 
-
 /**
  * 根據運動類型將速度轉成配速(若為bs英制則公里配速轉英哩配速)
  * @param value {number}-速度
  * @param sportType {SportType}-運動類別
  * @param unit {Unit}-使用者所使用的單位
  */
- export function speedToPaceSecond(value: number, sportType: SportType, unit: Unit) {
+export function speedToPaceSecond(value: number, sportType: SportType, unit: Unit) {
   const isMetric = unit === Unit.metric;
   const isMinus = value < 0;
   let result = 0;
   switch (sportType) {
-    case SportType.run:  // 跑步配速
+    case SportType.run: // 跑步配速
       const valueConversion = isMetric ? value : value / mi;
       result = (60 / valueConversion) * 60;
       break;
-    case SportType.swim:  // 游泳配速
-      result = (60 / value) * 60 / 10;
+    case SportType.swim: // 游泳配速
+      result = ((60 / value) * 60) / 10;
       break;
-    case SportType.row:  // 划船配速
-      result = (60 / value) * 60 / 2;
+    case SportType.row: // 划船配速
+      result = ((60 / value) * 60) / 2;
       break;
   }
 
@@ -52,7 +51,7 @@ export function paceSecondTimeFormat(second: number) {
   // 因應四捨五入
   if (timeSecond === '60') {
     timeSecond = '00';
-    timeMin = +timeMin === 60 ? '60' : `${+timeMin + 1}`
+    timeMin = +timeMin === 60 ? '60' : `${+timeMin + 1}`;
   }
 
   return `${valuePrefix}${timeMin}'${timeSecond}"`;
@@ -87,7 +86,6 @@ export function speedToPace(data: number | string, sportType: SportType, unit: U
  * @param unit {Unit}-使用者所使用的單位
  */
 export function getPaceUnit(sportType: SportType, unit: Unit) {
-
   switch (sportType) {
     case SportType.run:
       return unit === Unit.metric ? 'min/km' : 'min/mi';
@@ -96,9 +94,8 @@ export function getPaceUnit(sportType: SportType, unit: Unit) {
     case SportType.row:
       return 'min/500m';
     default:
-        return '';
+      return '';
   }
-
 }
 
 /**
@@ -130,7 +127,6 @@ export function getCadenceI18nKey(sportType: SportType) {
     default:
       return 'universal_activityData_trend';
   }
-
 }
 
 /**
@@ -150,7 +146,6 @@ export function getAvgCadenceI18nKey(sportType: SportType) {
     default:
       return 'universal_adjective_avg';
   }
-
 }
 
 /**
@@ -170,7 +165,6 @@ export function getMaxCadenceI18nKey(sportType: SportType) {
     default:
       return 'universal_adjective_maxBest';
   }
-
 }
 
 /**
@@ -184,23 +178,25 @@ export function transformDistance(distance: number, unit: Unit) {
     value: null,
     unit: null,
     update(val: number, dataUnit: string) {
-      this.value = mathRounding(val, 2),
-      this.unit = dataUnit;
+      (this.value = mathRounding(val, 2)), (this.unit = dataUnit);
     },
     get result() {
       const { value, unit } = this;
       return { value, unit };
-    }
-
+    },
   };
 
   if (unit === Unit.metric) {
-    Math.abs(distance) >= 1000 ? transfrom.update(checkDistance / 1000, 'km') : transfrom.update(checkDistance, 'm');
+    Math.abs(distance) >= 1000
+      ? transfrom.update(checkDistance / 1000, 'km')
+      : transfrom.update(checkDistance, 'm');
   } else {
     const bsValue = checkDistance / ft;
-    Math.abs(bsValue) >= 1000 ? transfrom.update((checkDistance / mi) / 1000, 'mi') : transfrom.update(bsValue, 'ft');
+    Math.abs(bsValue) >= 1000
+      ? transfrom.update(checkDistance / mi / 1000, 'mi')
+      : transfrom.update(bsValue, 'ft');
   }
-  
+
   return transfrom.result;
 }
 
@@ -246,9 +242,8 @@ export function getCorrespondingMuscleGroup(muscleCode: MuscleCode) {
     case MuscleCode.gastrocnemius:
       return MuscleGroup.legMuscle;
     default:
-      return 
+      return;
   }
-
 }
 
 /**
@@ -265,7 +260,6 @@ export function getWeightTrainingLevelText(
     case WeightTrainingLevel.novice:
       return novice;
   }
-
 }
 
 /**
@@ -275,7 +269,12 @@ export function getWeightTrainingLevelText(
  * @param userMaxHR {number}-使用者最大心率
  * @param userRestHR {number}-使用者休息心率
  */
-export function getUserHrRange(userHRBase: HrBase, userAge: number, userMaxHR: number, userRestHR: number) {
+export function getUserHrRange(
+  userHRBase: HrBase,
+  userAge: number,
+  userMaxHR: number,
+  userRestHR: number
+) {
   const userHrInfo = <HrZoneRange>{
     hrBase: userHRBase,
     z0: 0,
@@ -283,13 +282,11 @@ export function getUserHrRange(userHRBase: HrBase, userAge: number, userMaxHR: n
     z2: 0,
     z3: 0,
     z4: 0,
-    z5: 0
+    z5: 0,
   };
 
   if (userAge !== null) {
-
     if (userMaxHR && userRestHR) {
-
       if (userHRBase === HrBase.max) {
         // 區間數值採無條件捨去法
         userHrInfo['z0'] = Math.floor((220 - userAge) * 0.5 - 1);
@@ -299,16 +296,14 @@ export function getUserHrRange(userHRBase: HrBase, userAge: number, userMaxHR: n
         userHrInfo['z4'] = Math.floor((220 - userAge) * 0.9 - 1);
         userHrInfo['z5'] = Math.floor((220 - userAge) * 1);
       } else {
-        userHrInfo['z0'] = Math.floor((userMaxHR - userRestHR) * (0.55)) + userRestHR;
-        userHrInfo['z1'] = Math.floor((userMaxHR - userRestHR) * (0.6)) + userRestHR;
-        userHrInfo['z2'] = Math.floor((userMaxHR - userRestHR) * (0.65)) + userRestHR;
-        userHrInfo['z3'] = Math.floor((userMaxHR - userRestHR) * (0.75)) + userRestHR;
-        userHrInfo['z4'] = Math.floor((userMaxHR - userRestHR) * (0.85)) + userRestHR;
-        userHrInfo['z5'] = Math.floor((userMaxHR - userRestHR) * (1)) + userRestHR;
+        userHrInfo['z0'] = Math.floor((userMaxHR - userRestHR) * 0.55) + userRestHR;
+        userHrInfo['z1'] = Math.floor((userMaxHR - userRestHR) * 0.6) + userRestHR;
+        userHrInfo['z2'] = Math.floor((userMaxHR - userRestHR) * 0.65) + userRestHR;
+        userHrInfo['z3'] = Math.floor((userMaxHR - userRestHR) * 0.75) + userRestHR;
+        userHrInfo['z4'] = Math.floor((userMaxHR - userRestHR) * 0.85) + userRestHR;
+        userHrInfo['z5'] = Math.floor((userMaxHR - userRestHR) * 1) + userRestHR;
       }
-      
     } else {
-
       if (userHRBase === HrBase.max) {
         // 區間數值採無條件捨去法
         userHrInfo['z0'] = Math.floor((220 - userAge) * 0.5 - 1);
@@ -318,16 +313,14 @@ export function getUserHrRange(userHRBase: HrBase, userAge: number, userMaxHR: n
         userHrInfo['z4'] = Math.floor((220 - userAge) * 0.9 - 1);
         userHrInfo['z5'] = Math.floor((220 - userAge) * 1);
       } else {
-        userHrInfo['z0'] = Math.floor(((220 - userAge) - userRestHR) * (0.55)) + userRestHR;
-        userHrInfo['z1'] = Math.floor(((220 - userAge) - userRestHR) * (0.6)) + userRestHR;
-        userHrInfo['z2'] = Math.floor(((220 - userAge) - userRestHR) * (0.65)) + userRestHR;
-        userHrInfo['z3'] = Math.floor(((220 - userAge) - userRestHR) * (0.75)) + userRestHR;
-        userHrInfo['z4'] = Math.floor(((220 - userAge) - userRestHR) * (0.85)) + userRestHR;
-        userHrInfo['z5'] = Math.floor(((220 - userAge) - userRestHR) * (1)) + userRestHR;
+        userHrInfo['z0'] = Math.floor((220 - userAge - userRestHR) * 0.55) + userRestHR;
+        userHrInfo['z1'] = Math.floor((220 - userAge - userRestHR) * 0.6) + userRestHR;
+        userHrInfo['z2'] = Math.floor((220 - userAge - userRestHR) * 0.65) + userRestHR;
+        userHrInfo['z3'] = Math.floor((220 - userAge - userRestHR) * 0.75) + userRestHR;
+        userHrInfo['z4'] = Math.floor((220 - userAge - userRestHR) * 0.85) + userRestHR;
+        userHrInfo['z5'] = Math.floor((220 - userAge - userRestHR) * 1) + userRestHR;
       }
-
     }
-
   } else {
     userHrInfo['z0'] = 'Z0';
     userHrInfo['z1'] = 'Z1';
@@ -349,13 +342,12 @@ export function getUserFtpZone(ftp: number) {
   const userFtpZone = {
     z0: mathRounding(ref * 0.55, 0),
     z1: mathRounding(ref * 0.75, 0),
-    z2: mathRounding(ref * 0.90, 0),
+    z2: mathRounding(ref * 0.9, 0),
     z3: mathRounding(ref * 1.05, 0),
-    z4: mathRounding(ref * 1.20, 0),
-    z5: mathRounding(ref * 1.50, 0),
-    z6: ''  // 最上層不顯示數值
+    z4: mathRounding(ref * 1.2, 0),
+    z5: mathRounding(ref * 1.5, 0),
+    z6: '', // 最上層不顯示數值
   };
 
   return userFtpZone;
 }
-

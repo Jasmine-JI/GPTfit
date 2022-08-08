@@ -3,8 +3,7 @@ import { deepCopy } from '../../utils/index';
 /**
  * 比較趨勢圖
  */
- export class CompareTrendData {
-
+export class CompareTrendData {
   /**
    * 用來標註目標線(yAxis.plotLines)
    */
@@ -18,22 +17,24 @@ import { deepCopy } from '../../utils/index';
   /**
    * 圖表所需數據與設定
    */
-  private _trendData = [{
-    color: {
-      linearGradient: {
-        x1: 0,
-        x2: 0,
-        y1: 0,
-        y2: 1
+  private _trendData = [
+    {
+      color: {
+        linearGradient: {
+          x1: 0,
+          x2: 0,
+          y1: 0,
+          y2: 1,
+        },
+        stops: <Array<any>>[],
       },
-      stops: <Array<any>>[]
+      showInLegend: false,
+      custom: {
+        dateRange: <Array<any>>[],
+      },
+      data: <Array<any>>[],
     },
-    showInLegend: false,
-    custom: {
-      dateRange: <Array<any>>[]
-    },
-    data: <Array<any>>[]
-  }];
+  ];
 
   constructor(isCompareMode: boolean, colorOption: any) {
     this._colorOption = colorOption;
@@ -48,9 +49,8 @@ import { deepCopy } from '../../utils/index';
     const { top, bottom } = colorOption.base;
     this._trendData[0].color.stops = [
       [0, top],
-      [1, bottom]
+      [1, bottom],
     ];
-
   }
 
   /**
@@ -61,8 +61,14 @@ import { deepCopy } from '../../utils/index';
     const { base, compare } = colorOption;
     const optionModel = deepCopy(this._trendData[0]);
     this._trendData.push(optionModel);
-    this._trendData[0].color.stops = [[0, base.top], [1, base.bottom]];
-    this._trendData[1].color.stops = [[0, compare.top], [1, compare.bottom]];
+    this._trendData[0].color.stops = [
+      [0, base.top],
+      [1, base.bottom],
+    ];
+    this._trendData[1].color.stops = [
+      [0, compare.top],
+      [1, compare.bottom],
+    ];
   }
 
   /**
@@ -136,6 +142,4 @@ import { deepCopy } from '../../utils/index';
   get compareDataLength() {
     return this._trendData[1]?.data?.length;
   }
-
 }
-

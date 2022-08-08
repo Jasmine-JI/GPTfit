@@ -1,8 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { SportType } from '../enum/sports';
 
-
-@Pipe({name: 'sportType'})
+@Pipe({ name: 'sportType' })
 export class SportTypePipe implements PipeTransform {
   /**
    * 根據運動類別回傳對應多國語系的鍵
@@ -31,7 +30,5 @@ export class SportTypePipe implements PipeTransform {
       default:
         return 'universal_userAccount_otherTypes';
     }
-
   }
-  
 }

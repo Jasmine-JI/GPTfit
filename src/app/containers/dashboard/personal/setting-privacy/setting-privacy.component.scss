@@ -9,10 +9,10 @@
     margin-right: 5px;
   }
 
-  label, i {
+  label,
+  i {
     color: var(--scale-0-255);
   }
-
 }
 
 .privacy__type {
@@ -30,7 +30,6 @@
   i {
     font-size: 20px;
   }
-
 }
 
 .setting__desc {
@@ -54,9 +53,7 @@
   align-items: center;
   margin: 10px 5px;
 
-  >span {
+  > span {
     color: var(--scale-0-255);
   }
-
 }
-

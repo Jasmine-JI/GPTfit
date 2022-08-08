@@ -16,20 +16,20 @@ import { AuthService } from '../../../../core/services/auth.service';
  */
 enum StravaClientId {
   uat = 30689,
-  prod = 52136
-};
+  prod = 52136,
+}
 
 @Component({
   selector: 'app-setting-account',
   templateUrl: './setting-account.component.html',
-  styleUrls: ['./setting-account.component.scss', '../personal-child-page.scss']
+  styleUrls: ['./setting-account.component.scss', '../personal-child-page.scss'],
 })
 export class SettingAccountComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
 
   uiFlag = {
-    expand: false
-  }
+    expand: false,
+  };
 
   userInfo: any;
   signInfo: any;
@@ -46,7 +46,7 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private api10xxService: Api10xxService,
     private authService: AuthService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     const { hostname, pathname, search } = location;
@@ -93,9 +93,7 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
       } else if (hostname === Domain.newProd) {
         this.stravaApiDomain = `https://${Domain.newProd}:${WebPort.prod}`;
       }
-
     }
-
   }
 
   /**
@@ -105,10 +103,9 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
   checkPathname(pathname: string, search: string): void {
     if (pathname.includes('settings/account-info')) {
       const newUrl = `/dashboard/user-settings${search}`;
-      window.history.pushState({path: newUrl}, '', newUrl);
+      window.history.pushState({ path: newUrl }, '', newUrl);
       this.uiFlag.expand = true;
-    };
-
+    }
   }
 
   /**
@@ -124,12 +121,11 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
         switch: true,
         thirdPartyAgency: 1,
         thirdPartyAgencyCode: code,
-        clientId: this.clientId
+        clientId: this.clientId,
       };
 
       this.handleStravaAccess(body);
     }
-
   }
 
   /**
@@ -138,24 +134,24 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
    * @author kidin-1100819
    */
   handleStravaAccess(body: any): void {
-    this.api10xxService.fetchThirdPartyAccess(body).subscribe(res => {
+    this.api10xxService.fetchThirdPartyAccess(body).subscribe((res) => {
       if (!checkResponse(res, false)) {
         this.userService.getUser().updateThirdPartyStatus(ThirdParty.strava, false);
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
           data: {
             title: 'message',
-            body: this.translate.instant('universal_userProfile_updateThirdPpartyFailed', {'thirdPartyUsage': 'strava'}),
-            confirmText: this.translate.instant('universal_operating_confirm')
-          }
+            body: this.translate.instant('universal_userProfile_updateThirdPpartyFailed', {
+              thirdPartyUsage: 'strava',
+            }),
+            confirmText: this.translate.instant('universal_operating_confirm'),
+          },
         });
       } else {
         const openStrava = body.thirdPartyAgencyCode.length !== 0;
         this.userService.getUser().updateThirdPartyStatus(ThirdParty.strava, openStrava);
       }
-
     });
-
   }
 
   /**
@@ -168,9 +164,7 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
         'https://www.strava.com/oauth/authorize?' +
         `client_id=${this.clientId}&response_type=code&` +
         `redirect_uri=${this.stravaApiDomain}/api/v1/strava/redirect_uri` +
-        '/1/AlaCenter&state=mystate&approval_prompt=force&scope=activity:write,read'
-      );
-
+        '/1/AlaCenter&state=mystate&approval_prompt=force&scope=activity:write,read');
     }
 
     const body = {
@@ -178,7 +172,7 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
       switch: !linkStrava,
       thirdPartyAgency: 1,
       thirdPartyAgencyCode: '',
-      clientId: this.clientId
+      clientId: this.clientId,
     };
 
     this.handleStravaAccess(body);
@@ -199,5 +193,4 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

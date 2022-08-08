@@ -15,10 +15,9 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-mail-detail',
   templateUrl: './mail-detail.component.html',
-  styleUrls: ['./mail-detail.component.scss', '../station-mail-child.scss']
+  styleUrls: ['./mail-detail.component.scss', '../station-mail-child.scss'],
 })
 export class MailDetailComponent implements OnInit, OnDestroy {
-
   private ngUnsubscribe = new Subject();
   private pluralEventSubscription = new Subscription();
   private resizeEventSubscription = new Subscription();
@@ -32,7 +31,7 @@ export class MailDetailComponent implements OnInit, OnDestroy {
     showSenderMenu: false,
     senderIsBlack: false,
     senderIsFavorite: false,
-    showReplyMail: false
+    showReplyMail: false,
   };
 
   /**
@@ -74,7 +73,7 @@ export class MailDetailComponent implements OnInit, OnDestroy {
     private router: Router,
     private hashIdService: HashIdService,
     private translateService: TranslateService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.checkScreenWidth();
@@ -89,24 +88,18 @@ export class MailDetailComponent implements OnInit, OnDestroy {
    * 訂閱語言改變事件
    */
   subscribeLanguageChange() {
-    this.translateService.onLangChange.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.translateService.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.getMailDetail();
     });
-
   }
 
   /**
    * 訂閱路徑變更事件
    */
   subscribeRouteChange() {
-    this.router.events.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.router.events.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       if (e instanceof NavigationEnd) this.getMailDetail();
     });
-
   }
 
   /**
@@ -129,10 +122,10 @@ export class MailDetailComponent implements OnInit, OnDestroy {
       const body = {
         token: this.authService.token,
         countryRegion,
-        messageId
+        messageId,
       };
 
-      this.api50xxService.fetchMessageContent(body).subscribe(res => {
+      this.api50xxService.fetchMessageContent(body).subscribe((res) => {
         if (!checkResponse(res)) {
           this.mailDetail = undefined;
         } else {
@@ -145,22 +138,16 @@ export class MailDetailComponent implements OnInit, OnDestroy {
             this.checkSenderStatus();
             this.handleReadStatus();
           }
-
         }
-
       });
-
     }
-
   }
 
   /**
    * 取得國別
    */
   getCountryRegion() {
-    return this.translateService.currentLang
-      .split('-')[1]
-      .toUpperCase();
+    return this.translateService.currentLang.split('-')[1].toUpperCase();
   }
 
   /**
@@ -176,26 +163,23 @@ export class MailDetailComponent implements OnInit, OnDestroy {
    */
   subscribeResizeEvent() {
     const resizeEvent = fromEvent(window, 'resize');
-    this.resizeEventSubscription = resizeEvent.pipe(
-      debounceTime(1000),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
-      this.checkScreenWidth();
-    });
-
+    this.resizeEventSubscription = resizeEvent
+      .pipe(debounceTime(1000), takeUntil(this.ngUnsubscribe))
+      .subscribe((e) => {
+        this.checkScreenWidth();
+      });
   }
 
   /**
    * 訂閱收件匣刪除事件
    */
   subscribeDeleteInboxMailEvent() {
-    this.stationMailService.rxDeleteList.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(deleteList => {
-      const { id } = this.mailDetail;
-      if (deleteList.includes(id)) this.turnBack();
-    });
-
+    this.stationMailService.rxDeleteList
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((deleteList) => {
+        const { id } = this.mailDetail;
+        if (deleteList.includes(id)) this.turnBack();
+      });
   }
 
   /**
@@ -205,30 +189,35 @@ export class MailDetailComponent implements OnInit, OnDestroy {
     const { senderId, id } = this.mailDetail;
     const hashId = this.hashIdService.handleUserIdEncode(senderId);
     const { messageReceiverId, messageId } = QueryString;
-    this.router.navigateByUrl(`${this.getCreateMailUrl()}?${messageReceiverId}=${hashId}&${messageId}=${id}`);
+    this.router.navigateByUrl(
+      `${this.getCreateMailUrl()}?${messageReceiverId}=${hashId}&${messageId}=${id}`
+    );
   }
 
   /**
    * 刪除信件
    */
   deleteMail() {
-    const { authService: { token }, mailDetail: { id: messageId } } = this;
+    const {
+      authService: { token },
+      mailDetail: { id: messageId },
+    } = this;
     const body = { token, messageId: [messageId] };
-    this.api50xxService.fetchDeleteMessage(body).subscribe(res => {
+    this.api50xxService.fetchDeleteMessage(body).subscribe((res) => {
       if (checkResponse(res)) {
         this.stationMailService.refreshMailList().subscribe();
         this.turnBack();
       }
-
     });
-
   }
 
   /**
    * 取得建立站內信
    */
   getCreateMailUrl() {
-    const { stationMail: { home, newMail } } = appPath;
+    const {
+      stationMail: { home, newMail },
+    } = appPath;
     return `/dashboard/${home}/${newMail}`;
   }
 
@@ -236,7 +225,9 @@ export class MailDetailComponent implements OnInit, OnDestroy {
    * 返回收件匣頁面
    */
   turnBack() {
-    const { stationMail: { home, inbox } } = appPath;
+    const {
+      stationMail: { home, inbox },
+    } = appPath;
     this.router.navigateByUrl(`/dashboard/${home}/${inbox}`);
   }
 
@@ -249,12 +240,11 @@ export class MailDetailComponent implements OnInit, OnDestroy {
     const { showSenderMenu } = this.uiFlag;
     if (showSenderMenu) {
       this.uiFlag.showSenderMenu = false;
-      this.unsubScribePluralEvent()
+      this.unsubScribePluralEvent();
     } else {
       this.uiFlag.showSenderMenu = true;
       this.subscribePluralEvent();
     }
-
   }
 
   /**
@@ -264,17 +254,18 @@ export class MailDetailComponent implements OnInit, OnDestroy {
     if (this.senderListSubscription) this.senderListSubscription.unsubscribe();
     this.senderListSubscription = combineLatest([
       this.stationMailService.getFavoriteList(),
-      this.stationMailService.getBlackList()
-    ]).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(([favoriteList, blackList]) => {
-      const { senderId } = this.mailDetail;
-      this.favoriteList = favoriteList;
-      this.blackList = blackList;
-      this.uiFlag.senderIsFavorite = favoriteList.findIndex(_favoriteList => _favoriteList.id == senderId) > -1;
-      this.uiFlag.senderIsBlack = blackList.findIndex(_blackList => _blackList.id == senderId) > -1;
-    });
-
+      this.stationMailService.getBlackList(),
+    ])
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(([favoriteList, blackList]) => {
+        const { senderId } = this.mailDetail;
+        this.favoriteList = favoriteList;
+        this.blackList = blackList;
+        this.uiFlag.senderIsFavorite =
+          favoriteList.findIndex((_favoriteList) => _favoriteList.id == senderId) > -1;
+        this.uiFlag.senderIsBlack =
+          blackList.findIndex((_blackList) => _blackList.id == senderId) > -1;
+      });
   }
 
   /**
@@ -302,9 +293,8 @@ export class MailDetailComponent implements OnInit, OnDestroy {
     return {
       id: senderId,
       name: senderName,
-      avatarUrl: senderAvatarUrl
+      avatarUrl: senderAvatarUrl,
     };
-
   }
 
   /**
@@ -317,18 +307,16 @@ export class MailDetailComponent implements OnInit, OnDestroy {
       token: this.authService.token,
       type: 2,
       action: 1,
-      contactList: [senderId]
+      contactList: [senderId],
     };
 
-    this.api50xxService.fetchEditContactList(body).subscribe(res => {
+    this.api50xxService.fetchEditContactList(body).subscribe((res) => {
       if (checkResponse(res)) {
         this.blackList?.push(this.getSenderSimpleInfo());
         this.stationMailService.saveBlackList(this.blackList as Array<any>);
         this.uiFlag.senderIsBlack = true;
       }
-
     });
-
   }
 
   /**
@@ -340,18 +328,16 @@ export class MailDetailComponent implements OnInit, OnDestroy {
       token: this.authService.token,
       type: 2,
       action: 2,
-      contactList: [senderId]
+      contactList: [senderId],
     };
 
-    this.api50xxService.fetchEditContactList(body).subscribe(res => {
+    this.api50xxService.fetchEditContactList(body).subscribe((res) => {
       if (checkResponse(res)) {
-        this.blackList = (this.blackList as Array<any>).filter(_list => _list.id != senderId);
+        this.blackList = (this.blackList as Array<any>).filter((_list) => _list.id != senderId);
         this.stationMailService.saveBlackList(this.blackList as Array<any>);
         this.uiFlag.senderIsBlack = false;
       }
-
     });
-
   }
 
   /**
@@ -364,19 +350,16 @@ export class MailDetailComponent implements OnInit, OnDestroy {
       token: this.authService.token,
       type: 1,
       action: 1,
-      contactList: [senderId]
+      contactList: [senderId],
     };
 
-    this.api50xxService.fetchEditContactList(body).subscribe(res => {
+    this.api50xxService.fetchEditContactList(body).subscribe((res) => {
       if (checkResponse(res)) {
         this.favoriteList?.push(this.getSenderSimpleInfo());
         this.stationMailService.saveFavoriteList(this.favoriteList as Array<any>);
         this.uiFlag.senderIsFavorite = true;
       }
-
     });
-
-    
   }
 
   /**
@@ -388,18 +371,18 @@ export class MailDetailComponent implements OnInit, OnDestroy {
       token: this.authService.token,
       type: 1,
       action: 2,
-      contactList: [senderId]
+      contactList: [senderId],
     };
 
-    this.api50xxService.fetchEditContactList(body).subscribe(res => {
+    this.api50xxService.fetchEditContactList(body).subscribe((res) => {
       if (checkResponse(res)) {
-        this.favoriteList = (this.favoriteList as Array<any>).filter(_list => _list.id != senderId);
+        this.favoriteList = (this.favoriteList as Array<any>).filter(
+          (_list) => _list.id != senderId
+        );
         this.stationMailService.saveFavoriteList(this.favoriteList as Array<any>);
         this.uiFlag.senderIsFavorite = false;
       }
-
     });
-
   }
 
   /**
@@ -409,9 +392,9 @@ export class MailDetailComponent implements OnInit, OnDestroy {
     const targetElement = document.querySelector('.main__container') as Element;
     const clickEvent = fromEvent(document, 'click');
     const scrollEvent = fromEvent(targetElement, 'scroll');
-    this.pluralEventSubscription = merge(clickEvent, scrollEvent).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => this.unsubScribePluralEvent());
+    this.pluralEventSubscription = merge(clickEvent, scrollEvent)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => this.unsubScribePluralEvent());
   }
 
   /**
@@ -431,21 +414,19 @@ export class MailDetailComponent implements OnInit, OnDestroy {
     const { token } = this.authService;
     const countryRegion = this.getCountryRegion();
     const requestList: Array<Observable<any>> = [];
-    replyMessageId.forEach(_id => {
+    replyMessageId.forEach((_id) => {
       const body = { token, countryRegion, messageId: _id };
       requestList.push(this.api50xxService.fetchMessageContent(body));
     });
 
-    combineLatest(requestList).subscribe(res => {
+    combineLatest(requestList).subscribe((res) => {
       this.replyMailList = res
-        .filter(_res => checkResponse(_res, false))
-        .map(_filterRes => {
+        .filter((_res) => checkResponse(_res, false))
+        .map((_filterRes) => {
           _filterRes.message.unfold = false;
           return _filterRes.message;
         });
-
     });
-
   }
 
   /**
@@ -462,5 +443,4 @@ export class MailDetailComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

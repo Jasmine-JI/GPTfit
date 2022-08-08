@@ -8,9 +8,8 @@ describe('MapChartCompareComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MapChartCompareComponent ]
-    })
-    .compileComponents();
+      declarations: [MapChartCompareComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

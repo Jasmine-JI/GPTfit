@@ -1,64 +1,77 @@
 <div class="d-flex justify-content-between" style="margin-bottom: 15px">
   <span class="pageTitle">
-    {{'universal_group_listAllGroups' | translate}}
+    {{ 'universal_group_listAllGroups' | translate }}
   </span>
 </div>
 <mat-form-field>
   <mat-select [(value)]="groupLevel">
-    <mat-option value="300">{{ "universal_group_allClasses" | translate}}</mat-option>
-    <mat-option value="130">{{ "universal_group_gym" | translate}}</mat-option>
-    <mat-option value="140">{{ "universal_group_branch" | translate}}</mat-option>
-    <mat-option value="160">{{ "universal_group_classOrCoach" | translate}}</mat-option>
-    <mat-option value="190">{{ "universal_group_generalGroup" | translate}}</mat-option>
-    <mat-option value="230">{{ "universal_group_enterprise" | translate}}</mat-option>
-    <mat-option value="240">{{ "universal_group_companyBranch" | translate}}</mat-option>
-    <mat-option value="260">{{ "universal_group_department" | translate}}</mat-option>
-    <mat-option value="290">{{ "universal_group_generalGroup" | translate}}</mat-option>
+    <mat-option value="300">{{ 'universal_group_allClasses' | translate }}</mat-option>
+    <mat-option value="130">{{ 'universal_group_gym' | translate }}</mat-option>
+    <mat-option value="140">{{ 'universal_group_branch' | translate }}</mat-option>
+    <mat-option value="160">{{ 'universal_group_classOrCoach' | translate }}</mat-option>
+    <mat-option value="190">{{ 'universal_group_generalGroup' | translate }}</mat-option>
+    <mat-option value="230">{{ 'universal_group_enterprise' | translate }}</mat-option>
+    <mat-option value="240">{{ 'universal_group_companyBranch' | translate }}</mat-option>
+    <mat-option value="260">{{ 'universal_group_department' | translate }}</mat-option>
+    <mat-option value="290">{{ 'universal_group_generalGroup' | translate }}</mat-option>
   </mat-select>
 </mat-form-field>
 <mat-form-field>
-  <input matInput placeholder="{{ 'universal_group_enterGroupIdName' | translate}}"
+  <input
+    matInput
+    placeholder="{{ 'universal_group_enterGroupIdName' | translate }}"
     [matAutocomplete]="auto"
     [(ngModel)]="searchWords"
     name="searchWords"
-  >
+  />
 </mat-form-field>
 <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-<mat-option *ngFor="let option of infoOptions" [value]="option" (click)="selectTarget(option)">
-  {{ option }}
-</mat-option>
+  <mat-option *ngFor="let option of infoOptions" [value]="option" (click)="selectTarget(option)">
+    {{ option }}
+  </mat-option>
 </mat-autocomplete>
-<button mat-raised-button mat-icon-button
+<button
+  mat-raised-button
+  mat-icon-button
   class="mat-icon__rwd"
-  style="background-color: #26abe3;color: #fff"
+  style="background-color: #26abe3; color: #fff"
   (click)="getLists('submit')"
 >
   <mat-icon>search</mat-icon>
 </button>
-<mat-table [dataSource]="logSource" matSort #sortTable="matSort"
-  class="all-group-list"
->
+<mat-table [dataSource]="logSource" matSort #sortTable="matSort" class="all-group-list">
   <ng-container matColumnDef="id">
-    <mat-header-cell *matHeaderCellDef>{{'universal_group_groupId' | translate}}</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef>{{ 'universal_group_groupId' | translate }}</mat-header-cell>
     <mat-cell *matCellDef="let row">{{ displayGroupId(row.groupId) }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="info">
-    <mat-header-cell *matHeaderCellDef>{{'universal_activityData_name' | translate}}</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef>{{
+      'universal_activityData_name' | translate
+    }}</mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.groupName }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="time">
     <mat-header-cell *matHeaderCellDef disableClear="true">
-      {{'universal_group_status' | translate}}
+      {{ 'universal_group_status' | translate }}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.groupStatus | groupStatus | translate }}</mat-cell>
   </ng-container>
   <mat-header-row *matHeaderRowDef="['id', 'info', 'time']"></mat-header-row>
-  <mat-row *matRowDef="let logRow; columns: ['id', 'info', 'time']" (click)="goDetail(logRow.groupId)">
+  <mat-row
+    *matRowDef="let logRow; columns: ['id', 'info', 'time']"
+    (click)="goDetail(logRow.groupId)"
+  >
   </mat-row>
 </mat-table>
 <div class="ala-loading-shade" *ngIf="isLoading">
   <mat-spinner></mat-spinner>
 </div>
 
-<mat-paginator #paginator [length]="totalCount" [pageIndex]="currentPage?.pageIndex" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]">
+<mat-paginator
+  #paginator
+  [length]="totalCount"
+  [pageIndex]="currentPage?.pageIndex"
+  [pageSize]="10"
+  [pageSizeOptions]="[5, 10, 15]"
+>
 </mat-paginator>

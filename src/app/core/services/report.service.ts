@@ -2,12 +2,10 @@ import { Injectable } from '@angular/core';
 import { Api21xxService } from './api-21xx.service';
 import { deepCopy } from '../../shared/utils/index';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ReportService {
-
   /**
    * 儲存api 2104回傳之基準運動數據，
    * 供僅切換報告運動類別時直接存取不call api
@@ -101,5 +99,4 @@ export class ReportService {
   getCompareLifeTracking() {
     return this.compareLifeTracking;
   }
-
 }

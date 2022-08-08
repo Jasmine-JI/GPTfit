@@ -8,9 +8,8 @@ describe('CloudrunMapComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CloudrunMapComponent ]
-    })
-    .compileComponents();
+      declarations: [CloudrunMapComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

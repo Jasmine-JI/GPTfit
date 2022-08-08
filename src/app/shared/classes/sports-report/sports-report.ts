@@ -9,7 +9,7 @@ import {
   BALL_DATA,
   PERSON_BALL_DATA,
   PAI_COFFICIENT,
-  DAY_PAI_TARGET
+  DAY_PAI_TARGET,
 } from '../../models/sports-report';
 import { SportType } from '../../enum/sports';
 import { SportsParameter } from '../../models/sports-report';
@@ -20,14 +20,12 @@ import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { isAvgData } from '../../utils/sports';
 
-
 dayjs.extend(quarterOfYear);
 
 /**
  * 處理 api 2104 response
  */
 export class SportsReport {
-
   private _infoData: any;
 
   /**
@@ -54,10 +52,10 @@ export class SportsReport {
       const preferSports = new PreferSportType();
       const preferWeightTrainGroup = new WeightTrainStatistics();
 
-      data!.forEach(_data => {
+      data!.forEach((_data) => {
         const { activities: _activities } = _data;
-        _activities.forEach(_activity => {
-          const  _sportType = +_activity.type as SportType;
+        _activities.forEach((_activity) => {
+          const _sportType = +_activity.type as SportType;
           if (sportType === SportType.all || _sportType === sportType) {
             // 計算偏好運動類別
             const _totalActivities = _activity['totalActivities'];
@@ -66,15 +64,14 @@ export class SportsReport {
             // 計算偏好重訓肌群與各肌群訓練數據
             if (sportType === SportType.weightTrain) {
               const { weightTrainingInfo: _weightTrainingInfo } = _activity;
-              _weightTrainingInfo.forEach(_info => {
+              _weightTrainingInfo.forEach((_info) => {
                 preferWeightTrainGroup.countMuscleGroup(_info.muscle, _totalActivities);
                 preferWeightTrainGroup.countMuscleGroupData(_info);
               });
-              
             }
 
             // 根據運動類別將所需數據進行加總
-            dataKey!.forEach(_key => {
+            dataKey!.forEach((_key) => {
               const isMaxData = _key.toLowerCase().includes('max');
               const _value = +_activity[_key];
               if (isMaxData) {
@@ -84,20 +81,16 @@ export class SportsReport {
                 // 平均數據需再乘該期間筆數，之後再除有效總筆數
                 const dataIntermediary = avgDataIntermediary[_key];
                 const currentWeightedValue = _value * _totalActivities;
-                let [ effectTotal, effectActivities ] = dataIntermediary ?? [0, 0];
+                let [effectTotal, effectActivities] = dataIntermediary ?? [0, 0];
                 effectTotal += currentWeightedValue;
                 effectActivities += _value ? _totalActivities : 0;
-                avgDataIntermediary[_key] = [ effectTotal, effectActivities ];
+                avgDataIntermediary[_key] = [effectTotal, effectActivities];
               } else {
                 dataObj[_key] = (dataObj[_key] ?? 0) + _value;
               }
-
             });
-
           }
-
         });
-
       });
 
       // 最後處理其他數據
@@ -107,16 +100,15 @@ export class SportsReport {
           ...maxDataIntermediary,
           ...this.getAvgData(avgDataIntermediary),
           ...this.postProcessingData({ target, condition, dataObj, timeType }),
-          preferSports: preferSports.preferSport
+          preferSports: preferSports.preferSport,
         };
 
         if (sportType === SportType.weightTrain) {
-          const { preferMuscleGroup, muscleGroupData, muscleGroupTotalReps } = preferWeightTrainGroup;
+          const { preferMuscleGroup, muscleGroupData, muscleGroupTotalReps } =
+            preferWeightTrainGroup;
           dataObj = { ...dataObj, preferMuscleGroup, muscleGroupData, muscleGroupTotalReps };
         }
-
       }
-
     }
 
     this._infoData = dataObj;
@@ -151,7 +143,6 @@ export class SportsReport {
       case SportType.ball:
         return COMMON_DATA.concat(PERSON_BALL_DATA);
     }
-
   }
 
   /**
@@ -161,10 +152,10 @@ export class SportsReport {
   getAvgData(intermediary: any) {
     let result = {};
     for (const _key in intermediary) {
-      const [ effectTotal, effectActivities ] = intermediary[_key];
+      const [effectTotal, effectActivities] = intermediary[_key];
       result = {
         ...result,
-        [_key]: mathRounding(effectTotal / (effectActivities ? effectActivities : Infinity), 3)
+        [_key]: mathRounding(effectTotal / (effectActivities ? effectActivities : Infinity), 3),
       };
     }
 
@@ -176,12 +167,7 @@ export class SportsReport {
    * @param parameter {any}-統計運動數據所需參數與數據
    */
   postProcessingData(parameter: any) {
-    const {
-      target,
-      condition,
-      dataObj,
-      timeType
-    } = parameter;
+    const { target, condition, dataObj, timeType } = parameter;
     const { dateUnit, baseTime, compareTime } = condition;
     const {
       totalActivities,
@@ -191,11 +177,13 @@ export class SportsReport {
       totalHrZone3Second: zone3,
       totalHrZone4Second: zone4,
       totalHrZone5Second: zone5,
-      totalSecond
+      totalSecond,
     } = dataObj;
 
-    const { realStartTime, realEndTime } = 
-      timeType === 'base' ? baseTime.getReportRealTimeRange(dateUnit.unit) : compareTime.getReportRealTimeRange(dateUnit.unit);
+    const { realStartTime, realEndTime } =
+      timeType === 'base'
+        ? baseTime.getReportRealTimeRange(dateUnit.unit)
+        : compareTime.getReportRealTimeRange(dateUnit.unit);
     const reportPeriodDay = Math.round((realEndTime - realStartTime) / DAY);
     const hrZone = [zone0, zone1, zone2, zone3, zone4, zone5];
     const { pai, totalWeightedValue } = SportsReport.countPai(hrZone, reportPeriodDay);
@@ -205,7 +193,7 @@ export class SportsReport {
     const transfromCondition = target.getTransformCondition(dateUnit.unit);
     let targetAchieved = totalActivities ? true : false;
 
-    transfromCondition.forEach(_condition => {
+    transfromCondition.forEach((_condition) => {
       const { filedName, filedValue } = _condition;
       const targetValue = crossRange * +filedValue;
       switch (filedName) {
@@ -222,13 +210,12 @@ export class SportsReport {
           if (dataObj[filedName] < targetValue) targetAchieved = false;
           break;
       }
-
     });
 
     const result = {
       benefitTime,
       pai,
-      targetAchieved
+      targetAchieved,
     };
 
     return result;
@@ -247,28 +234,27 @@ export class SportsReport {
       totalHrZone2Second,
       totalHrZone3Second,
       totalHrZone4Second,
-      totalHrZone5Second
+      totalHrZone5Second,
     ] = hrZone;
-    const totalWeightedValue = ((
-        (totalHrZone0Second ?? 0) * z0
-      + (totalHrZone1Second ?? 0) * z1
-      + (totalHrZone2Second ?? 0) * z2
-      + (totalHrZone3Second ?? 0) * z3
-      + (totalHrZone4Second ?? 0) * z4
-      + (totalHrZone5Second ?? 0) * z5
-    ) / DAY_PAI_TARGET) * 100;
+    const totalWeightedValue =
+      (((totalHrZone0Second ?? 0) * z0 +
+        (totalHrZone1Second ?? 0) * z1 +
+        (totalHrZone2Second ?? 0) * z2 +
+        (totalHrZone3Second ?? 0) * z3 +
+        (totalHrZone4Second ?? 0) * z4 +
+        (totalHrZone5Second ?? 0) * z5) /
+        DAY_PAI_TARGET) *
+      100;
 
     const pai = mathRounding(totalWeightedValue / periodDay, 1);
     return { totalWeightedValue, pai };
   }
-
 }
 
 /**
  * 群組運動報告（處理多人的 api 2104 response）
  */
 export class GroupSportsReport extends SportsReport {
-
   constructor(parameter: SportsParameter) {
     super(parameter);
   }
@@ -296,7 +282,5 @@ export class GroupSportsReport extends SportsReport {
       case SportType.ball:
         return COMMON_DATA.concat(BALL_DATA);
     }
-
   }
-
 }

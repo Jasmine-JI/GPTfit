@@ -9,7 +9,6 @@ $slider-over-color: rgba(240, 166, 168, 1);
 $slider-yet-color: rgba(230, 230, 230, 1);
 $rod-color: rgba(209, 66, 122, 1);
 
-
 .muscle__map__figure {
   align-items: center;
   margin-bottom: 20px;
@@ -25,7 +24,8 @@ $rod-color: rgba(209, 66, 122, 1);
   justify-content: center;
 }
 
-.slider__row, .date__type__switcher {
+.slider__row,
+.date__type__switcher {
   margin: 10px 0;
 }
 
@@ -113,42 +113,35 @@ $rod-color: rgba(209, 66, 122, 1);
   cursor: grab;
 }
 
-
 /************************************************ media ********************************************/
 
-@media(max-width: 940px) {
-
+@media (max-width: 940px) {
   .muscle__map__distribution {
     width: 60%;
     margin: 0 auto;
   }
-
 }
 
-@media(max-width: 840px) {
+@media (max-width: 840px) {
   .muscle__map__distribution {
     width: 70%;
   }
-
 }
 
-@media(max-width: 740px) {
+@media (max-width: 740px) {
   .muscle__map__distribution {
     width: 80%;
   }
-
 }
 
-@media(max-width: 640px) {
+@media (max-width: 640px) {
   .muscle__map__distribution {
     width: 90%;
   }
-
 }
 
-@media(max-width: 540px) {
+@media (max-width: 540px) {
   .muscle__map__distribution {
     width: 100%;
   }
-
 }

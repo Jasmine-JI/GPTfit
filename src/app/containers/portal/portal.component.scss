@@ -5,8 +5,7 @@
 @import 'keyframes.scss';
 @import 'overflow-scroll';
 
-
-@mixin home-image ($image) {
+@mixin home-image($image) {
   background-image: $image;
   background-position: center;
   background-repeat: no-repeat;
@@ -17,18 +16,17 @@
   position: relative;
 }
 
-@mixin header-title ($min-width: 257px) {
+@mixin header-title($min-width: 257px) {
   padding: 9px 35px;
   min-width: $min-width;
   color: #fff;
-  background-color: rgba(0, 0, 0, .35);
+  background-color: rgba(0, 0, 0, 0.35);
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  @content
+  @content;
 }
-
 
 .main {
   height: 100vh;
@@ -87,11 +85,11 @@
   word-break: break-all;
 }
 
-.dropdown-menu.show>li {
+.dropdown-menu.show > li {
   padding: 3px 5px;
 }
 
-.dropdown-menu.show>li:hover {
+.dropdown-menu.show > li:hover {
   background-color: #008bcd;
   color: #fff;
   cursor: pointer;
@@ -102,7 +100,6 @@
   display: inline-block;
 }
 
-
 /* home */
 .home-header {
   @include home-image(url('/app/public_html/img/introduction/application/T1.jpg'));
@@ -112,8 +109,7 @@
   @include center();
   @include header-title(calc(60px + 45vw)) {
     min-height: calc(20px + 13vw);
-  };
-
+  }
 }
 
 .system__title--size {
@@ -122,8 +118,8 @@
 }
 
 .application__title--size {
-    font-size: calc(10px + 2vw);
-    text-align: center;
+  font-size: calc(10px + 2vw);
+  text-align: center;
 }
 
 .home-header-title {
@@ -248,7 +244,6 @@
     background-color: $ligntest-gray;
     @include transition(background-color);
   }
-
 }
 
 .system__introduction__text {
@@ -267,9 +262,7 @@
     100% {
       opacity: 1;
     }
-
   }
-
 }
 
 .hide__slide__img {
@@ -284,16 +277,14 @@
   @include keyframes(left-slide-in) {
     0% {
       opacity: 0;
-      left: -50px
+      left: -50px;
     }
 
     100% {
       opacity: 1;
       left: 0;
     }
-
   }
-
 }
 
 .right__slide__in {
@@ -304,16 +295,14 @@
   @include keyframes(right-slide-in) {
     0% {
       opacity: 0;
-      left: 50px
+      left: 50px;
     }
 
     100% {
       opacity: 1;
       left: 0;
     }
-
   }
-
 }
 
 .bottom__slide__in {
@@ -324,16 +313,14 @@
   @include keyframes(bottom-slide-in) {
     0% {
       opacity: 0;
-      top: 50px
+      top: 50px;
     }
 
     100% {
       opacity: 1;
       top: 0;
     }
-
   }
-
 }
 
 .darkMode {
@@ -388,17 +375,15 @@
   .home-fitness-description {
     height: 887px;
   }
-
 }
 
-@media(max-width: 767px) {
+@media (max-width: 767px) {
   .rwd__hide {
     display: none;
   }
-
 }
 
-@media(min-width: 1440px) {
+@media (min-width: 1440px) {
   .app-link + .app-link {
     margin-top: 0px;
     margin-left: 35px;
@@ -430,7 +415,6 @@
     font-size: 35px;
     line-height: 70px;
   }
-
 }
 
 @media print {
@@ -438,5 +422,4 @@
     overflow: visible;
     height: fit-content;
   }
-
 }

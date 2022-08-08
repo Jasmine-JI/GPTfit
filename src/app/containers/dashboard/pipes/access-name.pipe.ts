@@ -1,10 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-
 /**
  * 群組管理員對應群組階層的多國語系的鍵
  */
-@Pipe({name: 'accessName'})
+@Pipe({ name: 'accessName' })
 export class AccessNamePipe implements PipeTransform {
   transform(value: string | number, args: 1 | 2): any {
     if (args === 1) {
@@ -30,9 +29,7 @@ export class AccessNamePipe implements PipeTransform {
         default:
           return 'universal_group_generalMember';
       }
-
     } else {
-
       switch (+value) {
         case 0:
           return 'universal_group_highestAuthority';
@@ -55,9 +52,6 @@ export class AccessNamePipe implements PipeTransform {
         default:
           return 'universal_group_generalMember';
       }
-
     }
-
   }
-
 }

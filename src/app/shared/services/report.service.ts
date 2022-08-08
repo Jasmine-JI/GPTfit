@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ReportConditionOpt } from '../models/report-condition'
+import { ReportConditionOpt } from '../models/report-condition';
 import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
 import { PAI_COFFICIENT, DAY_PAI_TARGET } from '../models/sports-report';
 import { MuscleCode, MuscleGroup } from '../enum/weight-train';
@@ -34,21 +34,21 @@ export class ReportService {
     return this.http.post<any>('/api/v2/sport/getTrackingSummaryArray', body);
   }
 
-  setPeriod (status: string) {
+  setPeriod(status: string) {
     this.period$.next(status);
   }
 
-  setReportTime (startTime: string, endTime: string) {
+  setReportTime(startTime: string, endTime: string) {
     this.reportStartTime$.next(startTime);
     this.reportEndTime$.next(endTime);
     this.setReportAddition();
   }
 
-  setReportAddition () {
+  setReportAddition() {
     this.addition$.next([this.reportStartTime$, this.reportEndTime$, this.period$]);
   }
 
-  getReportAddition (): Observable<Array<BehaviorSubject<string>>> {
+  getReportAddition(): Observable<Array<BehaviorSubject<string>>> {
     return this.addition$;
   }
 
@@ -95,8 +95,8 @@ export class ReportService {
    */
   countPai(hrZone: Array<number>, weekNum: number) {
     const { z0, z1, z2, z3, z4, z5 } = PAI_COFFICIENT,
-          [zone0, zone1, zone2, zone3, zone4, zone5] = [...hrZone],
-          weightedValue = z0 * zone0 + z1 * zone1 + z2 * zone2 + z3 * zone3 + z4 * zone4 + z5 * zone5;
+      [zone0, zone1, zone2, zone3, zone4, zone5] = [...hrZone],
+      weightedValue = z0 * zone0 + z1 * zone1 + z2 * zone2 + z3 * zone3 + z4 * zone4 + z5 * zone5;
     return parseFloat((((weightedValue / (DAY_PAI_TARGET * 7)) * 100) / weekNum).toFixed(1));
   }
 
@@ -107,8 +107,8 @@ export class ReportService {
    */
   pythagorean(valueArr: Array<number>) {
     const countPowTotal = (preVal: number, currentVal: number) => {
-      return preVal + (Math.abs(currentVal) ** 2);
-    }
+      return preVal + Math.abs(currentVal) ** 2;
+    };
 
     return parseFloat(Math.sqrt(valueArr.reduce(countPowTotal, 0)).toFixed(1));
   }
@@ -132,7 +132,7 @@ export class ReportService {
    * @author kidin-1100618
    */
   countBMI(height: number, weight: number): number {
-    const bmi = weight / ((height / 100)**2);
+    const bmi = weight / (height / 100) ** 2;
     return parseFloat(bmi.toFixed(1));
   }
 
@@ -143,7 +143,7 @@ export class ReportService {
    */
   countAge(birthday: string) {
     const todayMoment = dayjs(),
-          birthMoment = dayjs(birthday, 'YYYYMMDD');
+      birthMoment = dayjs(birthday, 'YYYYMMDD');
     return todayMoment.diff(birthMoment, 'year');
   }
 
@@ -157,17 +157,14 @@ export class ReportService {
   countFFMI(height: number, weight: number, fatRate: number) {
     // 體脂率為0亦當作null
     if (fatRate) {
-      const FFMI = weight * (1 - (fatRate / 100)) / ((height / 100) ** 2);
+      const FFMI = (weight * (1 - fatRate / 100)) / (height / 100) ** 2;
       if (height > 180) {
-        return parseFloat((FFMI + (6 * (height - 180) / 100)).toFixed(1));
+        return parseFloat((FFMI + (6 * (height - 180)) / 100).toFixed(1));
       } else {
         return parseFloat(FFMI.toFixed(1));
       }
-
     } else {
       return null;
     }
-
   }
-  
 }

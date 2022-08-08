@@ -26,10 +26,9 @@
   min-height: 460px;
 }
 
-
 .group-handle-name {
   color: #26abe3;
-  font-weight:700;
+  font-weight: 700;
 }
 .group-handle-name.group-handle-name__rwd {
   display: none;
@@ -41,7 +40,7 @@
   margin-bottom: 30px;
   position: relative;
   top: 0;
-  left:-40px;
+  left: -40px;
 }
 .ala-form__col {
   width: calc(100% - 50px);
@@ -66,7 +65,7 @@
   margin-bottom: 20px;
 }
 
-@media(max-width: 767px) {
+@media (max-width: 767px) {
   .mat-paginator-page-size-label {
     text-align: right;
   }
@@ -131,5 +130,4 @@
     width: 100%;
     border-radius: 4px;
   }
-
 }

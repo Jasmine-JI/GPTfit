@@ -1,33 +1,21 @@
 export const appPath = {
-
   // 首頁
   home: '',
 
   // 群組
-  professional: {
-    
-  },
+  professional: {},
 
   // 個人
-  personal: {
-
-  },
+  personal: {},
 
   // 裝置管理
-  deviceManage: {
-
-  },
+  deviceManage: {},
 
   // 後台管理
-  adminManage: {
-
-  },
-
+  adminManage: {},
 
   // 官方活動
-  officialActivity: {
-
-  },
+  officialActivity: {},
 
   // 站內信
   stationMail: {
@@ -35,7 +23,7 @@ export const appPath = {
     newMail: 'new-mail',
     mailDetail: 'mail-detail',
     inbox: 'inbox',
-    receiverList: 'receiver-list'
+    receiverList: 'receiver-list',
   },
 
   // 無權限訪問
@@ -43,5 +31,4 @@ export const appPath = {
 
   // 頁面不存在
   pageNotFound: '404',
-
 };

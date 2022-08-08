@@ -4,13 +4,10 @@ import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SystemFolderPermissionService {
-
-  constructor(
-    private http: HttpClient
-  ) {}
+  constructor(private http: HttpClient) {}
 
   /**
    * api 0001-建立系統帳號
@@ -18,9 +15,9 @@ export class SystemFolderPermissionService {
    * @author kidin-1100302
    */
   createSysAccount(body: any) {
-    return this.http.post<any>('/privilege/addRdUser', body).pipe(
-      catchError(err => throwError(err))
-    );
+    return this.http
+      .post<any>('/privilege/addRdUser', body)
+      .pipe(catchError((err) => throwError(err)));
   }
 
   /**
@@ -29,9 +26,9 @@ export class SystemFolderPermissionService {
    * @author kidin-1100302
    */
   createSysFolder(body: any) {
-    return this.http.post<any>('/privilege/createProject', body).pipe(
-      catchError(err => throwError(err))
-    );
+    return this.http
+      .post<any>('/privilege/createProject', body)
+      .pipe(catchError((err) => throwError(err)));
   }
 
   /**
@@ -40,9 +37,9 @@ export class SystemFolderPermissionService {
    * @author kidin-1100302
    */
   getSysList(body: any) {
-    return this.http.post<any>('/privilege/getUserDataList', body).pipe(
-      catchError(err => throwError(err))
-    );
+    return this.http
+      .post<any>('/privilege/getUserDataList', body)
+      .pipe(catchError((err) => throwError(err)));
   }
 
   /**
@@ -51,9 +48,9 @@ export class SystemFolderPermissionService {
    * @author kidin-1100302
    */
   setUserAccessRight(body: any) {
-    return this.http.post<any>('/privilege/setFolderAccessRight', body).pipe(
-      catchError(err => throwError(err))
-    );
+    return this.http
+      .post<any>('/privilege/setFolderAccessRight', body)
+      .pipe(catchError((err) => throwError(err)));
   }
 
   /**
@@ -62,9 +59,8 @@ export class SystemFolderPermissionService {
    * @author kidin-1100302
    */
   delSysAccount(body: any) {
-    return this.http.post<any>('/privilege/deleteRdUser', body).pipe(
-      catchError(err => throwError(err))
-    );
+    return this.http
+      .post<any>('/privilege/deleteRdUser', body)
+      .pipe(catchError((err) => throwError(err)));
   }
-
 }

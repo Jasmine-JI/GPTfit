@@ -1,9 +1,6 @@
 <app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
 <nav>
-  <button
-    class="flexRow appview-backButton"
-    (click)="turnBack()"
-  >
+  <button class="flexRow appview-backButton" (click)="turnBack()">
     <i class="icon-svg_web-icon_p1_016-back"></i>
     <span>{{ 'universal_operating_back' | translate }}</span>
   </button>
@@ -20,7 +17,7 @@
     </h4>
     <div class="flexCol">
       <div class="flexCol appview-contentDetail">
-        <p style="margin: 0;">
+        <p style="margin: 0">
           {{ 'universal_userAccount_dataArchivingInstructions' | translate }}
         </p>
       </div>
@@ -35,10 +32,14 @@
       >
         <ng-contaiiner *ngIf="compressResp.status === CompressStatus.complete">
           <p>
-            {{ 'universal_userAccount_downloadPeriod' | translate: {
-              'yyyy-mm-dd': compressResp.archiveLinkDate,
-              'HH:MM': compressResp.archiveLinkTime
-            } }}
+            {{
+              'universal_userAccount_downloadPeriod'
+                | translate
+                  : {
+                      'yyyy-mm-dd': compressResp.archiveLinkDate,
+                      'HH:MM': compressResp.archiveLinkTime
+                    }
+            }}
           </p>
           <textarea
             #dataLink
@@ -48,19 +49,23 @@
           ></textarea>
         </ng-contaiiner>
         <p
-          style="color: rgba(255, 150, 150, 1); margin: 0;"
+          style="color: rgba(255, 150, 150, 1); margin: 0"
           *ngIf="compressResp.status === CompressStatus.prohibited"
         >
-          {{ 'universal_userAccount_duplicateArchive' | translate: {
-            'yyyy-mm-dd': compressResp.cooldownDate,
-            'HH:MM': compressResp.cooldownTime
-          } }}
+          {{
+            'universal_userAccount_duplicateArchive'
+              | translate
+                : {
+                    'yyyy-mm-dd': compressResp.cooldownDate,
+                    'HH:MM': compressResp.cooldownTime
+                  }
+          }}
         </p>
       </div>
-      <ng-container 
+      <ng-container
         *ngIf="
-          (compressResp.status === CompressStatus.complete && !uiFlag.tftDevice)
-          || compressResp.status === CompressStatus.prohibited
+          (compressResp.status === CompressStatus.complete && !uiFlag.tftDevice) ||
+          compressResp.status === CompressStatus.prohibited
         "
       >
         <div *ngTemplateOutlet="mainButton"></div>
@@ -87,8 +92,7 @@
     <button
       class="appview-submitButton appview-center"
       [class.appview-unclickable]="
-        uiFlag.progress !== 100
-        || compressResp.status === CompressStatus.prohibited
+        uiFlag.progress !== 100 || compressResp.status === CompressStatus.prohibited
       "
       (click)="handleClickBtn()"
       *ngSwitchDefault

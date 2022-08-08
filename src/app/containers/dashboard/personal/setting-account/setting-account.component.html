@@ -40,7 +40,10 @@
       </div>
       <span class="contentDescription">
         {{ 'universal_deviceSetting_switch' | translate }}
-        {{ 'universal_privacy_your' | translate: { object: ('universal_userAccount_account' | translate) } }}
+        {{
+          'universal_privacy_your'
+            | translate: { object: ('universal_userAccount_account' | translate) }
+        }}
       </span>
       <button class="editBtn" (click)="navigateToAssignPage('/enableAccount')">
         <i class="icon-svg_web-icon_p3_079-new-window openDialogIcon"></i>
@@ -84,7 +87,7 @@
       <span class="contentTitle">
         {{ 'universal_userProfile_thirdPartyUsage' | translate }}
       </span>
-      <div class="flexRow contentInput" style="align-items: center;">
+      <div class="flexRow contentInput" style="align-items: center">
         <span class="mainText">Strava</span>
         <div
           class="rod__bar"

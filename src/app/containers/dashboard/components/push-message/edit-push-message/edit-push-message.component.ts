@@ -14,10 +14,9 @@ import { AuthService } from '../../../../../core/services/auth.service';
 @Component({
   selector: 'app-edit-push-message',
   templateUrl: './edit-push-message.component.html',
-  styleUrls: ['./edit-push-message.component.scss']
+  styleUrls: ['./edit-push-message.component.scss'],
 })
 export class EditPushMessageComponent implements OnInit {
-
   uiFlag = {
     readonly: true,
     timeError: false,
@@ -26,7 +25,7 @@ export class EditPushMessageComponent implements OnInit {
     minTime: null,
     showLinkSelector: null,
     deepLinkType: 0,
-    pushStatus: 1
+    pushStatus: 1,
   };
 
   condition = ['countryRegion', 'system', 'app', 'groupId', 'userId', 'language'];
@@ -34,7 +33,7 @@ export class EditPushMessageComponent implements OnInit {
   pushNotifyId = null;
   creator = {
     createUser: '',
-    createTimeStamp: null
+    createTimeStamp: null,
   };
 
   // 儲存未被選擇的條件
@@ -44,7 +43,7 @@ export class EditPushMessageComponent implements OnInit {
     app: [1, 2, 3, 4],
     groupId: [],
     userId: [],
-    language: ['es-ES', 'de-DE', 'fr-FR', 'it-IT', 'pt-PT']
+    language: ['es-ES', 'de-DE', 'fr-FR', 'it-IT', 'pt-PT'],
   };
 
   // api 9002所需request
@@ -58,7 +57,7 @@ export class EditPushMessageComponent implements OnInit {
       system: [],
       app: [],
       groupId: [],
-      userId: []
+      userId: [],
     },
     message: [
       {
@@ -66,29 +65,29 @@ export class EditPushMessageComponent implements OnInit {
         countryRegion: 'TW',
         title: '',
         content: '',
-        deepLink: ''
+        deepLink: '',
       },
       {
         language: 'zh',
         countryRegion: 'CN',
         title: '',
         content: '',
-        deepLink: ''
+        deepLink: '',
       },
       {
         language: 'en',
         countryRegion: 'US',
         title: '',
         content: '',
-        deepLink: ''
-      }
-    ]
+        deepLink: '',
+      },
+    ],
   };
 
   reservation = {
     date: null,
     time: null,
-    timeFormat: dayjs().format('HH:mm')
+    timeFormat: dayjs().format('HH:mm'),
   };
 
   constructor(
@@ -98,7 +97,7 @@ export class EditPushMessageComponent implements OnInit {
     private router: Router,
     private nodejsApiService: NodejsApiService,
     private authService: AuthService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.uiFlag.readonly = this.checkPage(location.pathname);
@@ -119,7 +118,6 @@ export class EditPushMessageComponent implements OnInit {
       this.reservation.time = this.getTimeUnix(dayjs().format('HH:mm'));
       return false;
     }
-
   }
 
   /**
@@ -128,60 +126,55 @@ export class EditPushMessageComponent implements OnInit {
    */
   getPushMessageDetail() {
     const body = {
-            token: this.authService.token,
-            pushNotifyId: this.pushNotifyId
-          };
+      token: this.authService.token,
+      pushNotifyId: this.pushNotifyId,
+    };
 
-    this.pushMessageService.getPushMessageDetail(body).pipe(
-      switchMap(res => {
-        if (res.processResult.resultCode !== 200) {
-          console.error(`${res.processResult.apiCode}：${res.processResult.apiReturnMessage}`);
-        } else {
-
-          if (res.pushMode.userId && res.pushMode.userId.length !== 0) {
-
-            // 取得發送者暱稱
-            const userIdArr = [];
-            res.pushMode.userId.forEach(_list => {
-              userIdArr.push(+_list);
-            });
-
-            const ubody = {
-              userIdList: userIdArr
-            };
-
-            return this.nodejsApiService.getUserList(ubody).pipe(
-              map(resp => {
-                if (resp.resultCode !== 200) {
-                  console.error(`${resp.apiCode}：${resp.resultMessage}`);
-                } else {
-                  res.pushMode.userId = resp.nickname;
-                }
-
-                return res;
-              })
-
-            );
-
+    this.pushMessageService
+      .getPushMessageDetail(body)
+      .pipe(
+        switchMap((res) => {
+          if (res.processResult.resultCode !== 200) {
+            console.error(`${res.processResult.apiCode}：${res.processResult.apiReturnMessage}`);
           } else {
-            return of(res);
+            if (res.pushMode.userId && res.pushMode.userId.length !== 0) {
+              // 取得發送者暱稱
+              const userIdArr = [];
+              res.pushMode.userId.forEach((_list) => {
+                userIdArr.push(+_list);
+              });
+
+              const ubody = {
+                userIdList: userIdArr,
+              };
+
+              return this.nodejsApiService.getUserList(ubody).pipe(
+                map((resp) => {
+                  if (resp.resultCode !== 200) {
+                    console.error(`${resp.apiCode}：${resp.resultMessage}`);
+                  } else {
+                    res.pushMode.userId = resp.nickname;
+                  }
+
+                  return res;
+                })
+              );
+            } else {
+              return of(res);
+            }
           }
+        })
+      )
+      .subscribe((response) => {
+        this.creator = {
+          createUser: response.createUser,
+          createTimeStamp: response.createTimeStamp,
+        };
 
-        }
-
-      })
-    )
-    .subscribe(response => {
-      this.creator = {
-        createUser: response.createUser,
-        createTimeStamp: response.createTimeStamp
-      };
-
-      this.req.pushMode = response.pushMode;
-      this.req.message = response.message;
-      this.uiFlag.pushStatus = response.pushStatus;
-    });
-
+        this.req.pushMode = response.pushMode;
+        this.req.message = response.message;
+        this.uiFlag.pushStatus = response.pushStatus;
+      });
   }
 
   /**
@@ -204,7 +197,6 @@ export class EditPushMessageComponent implements OnInit {
     if (type !== null) {
       this.req.pushMode.objectType.push(type);
     }
-
   }
 
   /**
@@ -221,7 +213,6 @@ export class EditPushMessageComponent implements OnInit {
     } else {
       this.uiFlag.minTime = null;
     }
-
   }
 
   /**
@@ -240,7 +231,7 @@ export class EditPushMessageComponent implements OnInit {
    * @author kidin-1090917
    */
   getTimeUnix(timeStr: string) {
-    return +(timeStr.split(':')[0]) * 3600 + +(timeStr.split(':')[1]) * 60;
+    return +timeStr.split(':')[0] * 3600 + +timeStr.split(':')[1] * 60;
   }
 
   /**
@@ -254,7 +245,6 @@ export class EditPushMessageComponent implements OnInit {
     if (type !== 'groupId' && type !== 'userId') {
       this.notAssignCondition[type].push(delCondition);
     }
-
   }
 
   /**
@@ -264,7 +254,7 @@ export class EditPushMessageComponent implements OnInit {
    */
   openSelector(type: number) {
     const pushSetting = this.req,
-          notAssignCondition = this.notAssignCondition;
+      notAssignCondition = this.notAssignCondition;
     this.dialog.open(PeopleSelectorWinComponent, {
       hasBackdrop: true,
       data: {
@@ -274,11 +264,9 @@ export class EditPushMessageComponent implements OnInit {
         pushSetting,
         notAssignCondition,
         onConfirm: this.saveCondition.bind(this),
-        isInnerAdmin: true
-      }
-
+        isInnerAdmin: true,
+      },
     });
-
   }
 
   /**
@@ -316,7 +304,6 @@ export class EditPushMessageComponent implements OnInit {
     } else {
       this.uiFlag.showLinkSelector = null;
     }
-
   }
 
   /**
@@ -334,7 +321,6 @@ export class EditPushMessageComponent implements OnInit {
    */
   sendPush() {
     if (this.checkMessage()) {
-
       if (this.req.pushMode.type === 2) {
         this.checkTimeStamp();
       }
@@ -354,13 +340,10 @@ export class EditPushMessageComponent implements OnInit {
           jusCon: 'space-between',
           confirmText: '送出推播',
           cancelText: '返回檢查內容',
-          onConfirm: this.sendReq.bind(this)
-        }
-
+          onConfirm: this.sendReq.bind(this),
+        },
       });
-
     }
-
   }
 
   /**
@@ -368,23 +351,21 @@ export class EditPushMessageComponent implements OnInit {
    * @author kidin-1090921
    */
   remedyReq() {
-
     for (let i = 0; i < this.condition.length - 1; i++) {
-
       // 確認使用者增加哪些條件
       if (this.req.pushMode[this.condition[i]].length !== 0) {
         this.req.pushMode.objectType.push(i + 2);
 
         // 去除groupId或userId以外的資訊
         if (this.condition[i] === 'groupId' || this.condition[i] === 'userId') {
-          this.req.pushMode[this.condition[i]] = this.req.pushMode[this.condition[i]].map(_condition => _condition[this.condition[i]]);
+          this.req.pushMode[this.condition[i]] = this.req.pushMode[this.condition[i]].map(
+            (_condition) => _condition[this.condition[i]]
+          );
         }
-
       } else {
         // 刪除使用者未設定的條件物件
         delete this.req.pushMode[this.condition[i]];
       }
-
     }
 
     // 使用者選擇條件式但沒新增任何條件，則視為推播所有人
@@ -393,9 +374,8 @@ export class EditPushMessageComponent implements OnInit {
     }
 
     // 將連結依據類型修改為app深度連結
-    this.req.message = this.req.message.map(_message => {
+    this.req.message = this.req.message.map((_message) => {
       if (_message.deepLink.trim() !== '') {
-
         switch (this.uiFlag.deepLinkType) {
           case 0:
             _message.deepLink = `alatechApp://webBrowser?url=${_message.deepLink}`;
@@ -407,14 +387,12 @@ export class EditPushMessageComponent implements OnInit {
             _message.deepLink = `alatechApp://webBrowser?url=${_message.deepLink}`;
             break;
         }
-
       } else {
         _message.deepLink = '';
       }
 
       return _message;
     });
-
   }
 
   /**
@@ -423,10 +401,12 @@ export class EditPushMessageComponent implements OnInit {
    */
   getRelativeTime() {
     const relativeTimeStamp = this.req.pushMode.timeStamp - dayjs().unix(),
-          day = 60 * 60 * 24,
-          hour = 60 * 60;
+      day = 60 * 60 * 24,
+      hour = 60 * 60;
 
-    return `${Math.floor(relativeTimeStamp / day)}天${Math.floor((relativeTimeStamp % day) / hour)}小時內`;
+    return `${Math.floor(relativeTimeStamp / day)}天${Math.floor(
+      (relativeTimeStamp % day) / hour
+    )}小時內`;
   }
 
   /**
@@ -434,24 +414,19 @@ export class EditPushMessageComponent implements OnInit {
    * @author kidin-1090922
    */
   sendReq() {
-      this.remedyReq();
-      this.pushMessageService.createPushMessage(this.req).subscribe(res => {
-
-        if (res.processResult.resultCode === 200) {
-          this.snackbar.open('推播成功', 'OK', { duration: 5000 });
-          setTimeout(() => {
-            this.router.navigateByUrl(`/dashboard/system/push-list`);
-            this.checkPage(location.pathname);
-          }, 2000);
-
-        } else {
-          this.snackbar.open('推播失敗', 'OK', { duration: 5000 });
-          console.error(`${res.precessResult.apiCode}：${res.precessResult.apiReturnMessage}`);
-        }
-
-
-      });
-
+    this.remedyReq();
+    this.pushMessageService.createPushMessage(this.req).subscribe((res) => {
+      if (res.processResult.resultCode === 200) {
+        this.snackbar.open('推播成功', 'OK', { duration: 5000 });
+        setTimeout(() => {
+          this.router.navigateByUrl(`/dashboard/system/push-list`);
+          this.checkPage(location.pathname);
+        }, 2000);
+      } else {
+        this.snackbar.open('推播失敗', 'OK', { duration: 5000 });
+        console.error(`${res.precessResult.apiCode}：${res.precessResult.apiReturnMessage}`);
+      }
+    });
   }
 
   /**
@@ -461,24 +436,20 @@ export class EditPushMessageComponent implements OnInit {
    */
   checkMessage() {
     for (let i = 0; i < this.req.message.length; i++) {
-
       if (this.req.message[i].title.trim() === '') {
         this.uiFlag.titleEmpty = i;
         const element = document.querySelectorAll('.lan__input__title')[i];
         element.scrollIntoView();
         return false;
-
       } else if (this.req.message[i].content.trim() === '') {
         this.uiFlag.contentEmpty = i;
         const element = document.querySelectorAll('.lan__input__content')[i];
         element.scrollIntoView();
         return false;
-
       } else {
         this.uiFlag.titleEmpty = null;
         this.uiFlag.contentEmpty = null;
       }
-
     }
 
     return true;
@@ -497,7 +468,6 @@ export class EditPushMessageComponent implements OnInit {
       this.req.pushMode.timeStamp = setTimeStamp;
       this.uiFlag.timeError = false;
     }
-
   }
 
   /**
@@ -507,10 +477,10 @@ export class EditPushMessageComponent implements OnInit {
   cancelPush() {
     const body = {
       token: this.authService.token,
-      pushNotifyId: this.pushNotifyId
+      pushNotifyId: this.pushNotifyId,
     };
 
-    this.pushMessageService.cancelPushMessage(body).subscribe(res => {
+    this.pushMessageService.cancelPushMessage(body).subscribe((res) => {
       if (res.processResult.resultCode !== 200) {
         console.error(`${res.processResult.apiCode}：${res.processResult.apiReturnMessage}`);
       } else {
@@ -518,11 +488,7 @@ export class EditPushMessageComponent implements OnInit {
         setTimeout(() => {
           this.getPushMessageDetail();
         }, 2000);
-
       }
-
     });
-
   }
-
 }

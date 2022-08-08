@@ -1,14 +1,14 @@
-<section class="flexCol" style="align-items: center;">
+<section class="flexCol" style="align-items: center">
   <text
     x="180"
     y="15"
     text-anchor="middle"
     font-size="16"
     font-weight="bold"
-    style="color: var(--scale-75-230);"
+    style="color: var(--scale-75-230)"
     *ngIf="!hrZoneRange || hrZoneRange.hrBase === HrBase.max"
   >
-    {{"universal_userProfile_maximalHeartRate" | translate}}
+    {{ 'universal_userProfile_maximalHeartRate' | translate }}
   </text>
   <text
     x="180"
@@ -18,16 +18,18 @@
     font-weight="bold"
     *ngIf="hrZoneRange && hrZoneRange.hrBase === HrBase.reserve"
   >
-    {{"universal_userProfile_heartRateReserve" | translate}}
+    {{ 'universal_userProfile_heartRateReserve' | translate }}
   </text>
   <table width="100%" border="0" cellpadding="0">
-    <tr style="color: #ff9292;">
-      <td >&nbsp;</td>
+    <tr style="color: #ff9292">
+      <td>&nbsp;</td>
       <td class="zone__range">{{ hrZoneRange ? hrZoneRange.z5 : 'Z5' }}</td>
       <td>
         <table cellspacing="0" cellpadding="0">
           <tr>
-            <td class="zone__title">{{"universal_activityData_anaerobicZone" | translate}} 90%~</td>
+            <td class="zone__title">
+              {{ 'universal_activityData_anaerobicZone' | translate }} 90%~
+            </td>
           </tr>
         </table>
       </td>
@@ -35,65 +37,71 @@
     <tr>
       <td>&nbsp;</td>
       <td>
-        <span class="zone__bar" style="background-color: #ff9292;"></span>
+        <span class="zone__bar" style="background-color: #ff9292"></span>
       </td>
       <td class="text__top" rowspan="3">
         <table cellspacing="0" cellpadding="0">
           <tr>
-            <td class="zone__content">{{"universal_sportsTerm_zone5" | translate}}</td>
+            <td class="zone__content">{{ 'universal_sportsTerm_zone5' | translate }}</td>
           </tr>
         </table>
       </td>
     </tr>
-    <tr style="color: #ff9a22;">
+    <tr style="color: #ff9a22">
       <td>
         <table class="right__text" cellspacing="0" cellpadding="0">
           <tr>
-            <td class="zone__title">80~90% {{"universal_activityData_marathonZone" | translate}}</td>
+            <td class="zone__title">
+              80~90% {{ 'universal_activityData_marathonZone' | translate }}
+            </td>
           </tr>
         </table>
       </td>
       <td class="zone__range">{{ hrZoneRange ? hrZoneRange.z4 : 'Z4' }}</td>
     </tr>
     <tr>
-      <td class="text__top" rowspan="3"  >
+      <td class="text__top" rowspan="3">
         <table class="right__text" cellspacing="0" cellpadding="0">
           <tr>
-            <td class="zone__content">{{"universal_sportsTerm_zone4" | translate}}</td>
+            <td class="zone__content">{{ 'universal_sportsTerm_zone4' | translate }}</td>
           </tr>
         </table>
       </td>
       <td>
-        <span class="zone__bar" style="background-color: #ff9a22;"></span>
+        <span class="zone__bar" style="background-color: #ff9a22"></span>
       </td>
     </tr>
-    <tr style="color: #ffdc00;">
+    <tr style="color: #ffdc00">
       <td class="zone__range">{{ hrZoneRange ? hrZoneRange.z3 : 'Z3' }}</td>
       <td>
         <table cellspacing="0" cellpadding="0">
           <tr>
-            <td class="zone__title">{{"universal_activityData_enduranceZone" | translate}} 70~80%</td>
+            <td class="zone__title">
+              {{ 'universal_activityData_enduranceZone' | translate }} 70~80%
+            </td>
           </tr>
         </table>
       </td>
     </tr>
     <tr>
       <td>
-        <span class="zone__bar" style="background-color: #ffdc00;"></span>
+        <span class="zone__bar" style="background-color: #ffdc00"></span>
       </td>
-      <td class="text__top" rowspan="3"  >
+      <td class="text__top" rowspan="3">
         <table cellspacing="0" cellpadding="0">
           <tr>
-            <td class="zone__content">{{"universal_sportsTerm_zone3" | translate}}</td>
+            <td class="zone__content">{{ 'universal_sportsTerm_zone3' | translate }}</td>
           </tr>
         </table>
       </td>
     </tr>
-    <tr style="color: #75f25f;">
-      <td >
+    <tr style="color: #75f25f">
+      <td>
         <table class="right__text" cellspacing="0" cellpadding="0">
           <tr>
-            <td class="zone__title">60~70% {{"universal_activityData_aerobicZone" | translate}}</td>
+            <td class="zone__title">
+              60~70% {{ 'universal_activityData_aerobicZone' | translate }}
+            </td>
           </tr>
         </table>
       </td>
@@ -103,60 +111,64 @@
       <td class="text__top" rowspan="3">
         <table class="right__text" cellspacing="0" cellpadding="0">
           <tr>
-            <td class="zone__content" >{{"universal_sportsTerm_zone2" | translate}}</td>
+            <td class="zone__content">{{ 'universal_sportsTerm_zone2' | translate }}</td>
           </tr>
         </table>
       </td>
-        <td>
-          <span class="zone__bar" style="background-color: #75f25f;"></span>
-        </td>
+      <td>
+        <span class="zone__bar" style="background-color: #75f25f"></span>
+      </td>
     </tr>
-    <tr style="color: #6bebf9;">
+    <tr style="color: #6bebf9">
       <td class="zone__range">{{ hrZoneRange ? hrZoneRange.z1 : 'Z1' }}</td>
       <td>
         <table cellspacing="0" cellpadding="0">
           <tr>
-            <td class="zone__title">{{"universal_activityData_warmUpZone" | translate}} 50~60%</td>
+            <td class="zone__title">
+              {{ 'universal_activityData_warmUpZone' | translate }} 50~60%
+            </td>
           </tr>
         </table>
       </td>
     </tr>
     <tr>
       <td>
-        <span class="zone__bar" style="background-color: #6bebf9;"></span>
+        <span class="zone__bar" style="background-color: #6bebf9"></span>
       </td>
-      <td class="text__top" rowspan="3" >
+      <td class="text__top" rowspan="3">
         <table cellspacing="0" cellpadding="0">
           <tr>
-            <td class="zone__content">{{"universal_sportsTerm_zone1" | translate}}</td>
+            <td class="zone__content">{{ 'universal_sportsTerm_zone1' | translate }}</td>
           </tr>
         </table>
       </td>
     </tr>
-    <tr style="color: #6e9bff;">
-      <td >
+    <tr style="color: #6e9bff">
+      <td>
         <table class="right__text" cellspacing="0" cellpadding="0">
           <tr>
-            <td class="zone__title">~50% {{"universal_activityData_limit_generalZone" | translate}}</td>
+            <td class="zone__title">
+              ~50% {{ 'universal_activityData_limit_generalZone' | translate }}
+            </td>
           </tr>
         </table>
       </td>
       <td class="zone__range">{{ hrZoneRange ? hrZoneRange.z0 : 'Z0' }}</td>
     </tr>
     <tr>
-      <td class="text__top" rowspan="3" >
+      <td class="text__top" rowspan="3">
         <table class="right__text" cellspacing="0" cellpadding="0">
           <tr>
-            <td class="zone__content">{{"universal_sportsTerm_zone0" | translate}}</td>
+            <td class="zone__content">{{ 'universal_sportsTerm_zone0' | translate }}</td>
           </tr>
         </table>
       </td>
       <td>
-        <span class="zone__bar" style="background-color: #6e9bff;"></span>
+        <span class="zone__bar" style="background-color: #6e9bff"></span>
       </td>
     </tr>
-    <tr style="color: #6e9bff;">
-      <td class="zone__range" style="min-height: 40px;"></td>
+    <tr style="color: #6e9bff">
+      <td class="zone__range" style="min-height: 40px"></td>
       <td>
         <table cellspacing="0" cellpadding="0">
           <tr>

@@ -9,8 +9,12 @@ const { API_SERVER } = environment.url;
 export class GpxService {
   constructor(private http: HttpClient) {}
   downloadFile() {
-      return this.http.post(API_SERVER + 'gpx/download', {}, {
-          responseType: 'blob' // 注意這邊要選 `blob`
-      });
+    return this.http.post(
+      API_SERVER + 'gpx/download',
+      {},
+      {
+        responseType: 'blob', // 注意這邊要選 `blob`
+      }
+    );
   }
 }

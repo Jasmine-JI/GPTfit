@@ -1,18 +1,12 @@
 <h2 class="ala-dialog" mat-dialog-title>
   {{ title }}
 </h2>
-<mat-dialog-content
-  style="color: var(--scale-0-255);"
-  innerHtml="{{body}}"
->
-</mat-dialog-content>
+<mat-dialog-content style="color: var(--scale-0-255)" innerHtml="{{ body }}"> </mat-dialog-content>
 
 <mat-dialog-actions class="justify-content-end" [class.space__between]="jusCon">
-  <button
-    mat-button color="warn"
-    *ngIf="cancelText"
-    (click)="handleCancel()"
-  >{{cancelText}}</button>
+  <button mat-button color="warn" *ngIf="cancelText" (click)="handleCancel()">
+    {{ cancelText }}
+  </button>
   <button
     mat-button
     color="primary"
@@ -20,6 +14,6 @@
     *ngIf="confirmText"
     (click)="handleConfirm()"
   >
-    {{confirmText}}
+    {{ confirmText }}
   </button>
 </mat-dialog-actions>

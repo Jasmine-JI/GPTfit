@@ -11,21 +11,19 @@ import { TFTViewMinWidth } from '../../../models/app-webview';
 import { AlaApp } from '../../../../../shared/models/app-id';
 import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../shared/utils/index';
 
-
 enum CompressStatus {
   request,
   processing,
   complete,
-  prohibited
+  prohibited,
 }
 
 @Component({
   selector: 'app-app-compress-data',
   templateUrl: './app-compress-data.component.html',
-  styleUrls: ['./app-compress-data.component.scss']
+  styleUrls: ['./app-compress-data.component.scss'],
 })
 export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestroy {
-
   @ViewChild('dataLink') dataLink: ElementRef;
 
   private ngUnsubscribe = new Subject();
@@ -37,7 +35,7 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
   uiFlag = {
     progress: 100,
     copied: false,
-    tftDevice: false
+    tftDevice: false,
   };
 
   appSys: AppCode = 0;
@@ -53,7 +51,7 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
     archiveLinkTime: null,
     cooldownTimestamp: null,
     cooldownDate: null,
-    cooldownTime: null
+    cooldownTime: null,
   }; // api 1012 response
 
   constructor(
@@ -61,7 +59,7 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
     private utils: UtilsService,
     private signupService: SignupService,
     private auth: AuthService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.subscribeResizeEvent();
@@ -71,7 +69,7 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
    * 因應ios嵌入webkit物件時間點較後面，故在此生命週期才判斷裝置平台
    * @author kidin-1090710
    */
-  ngAfterViewInit () {
+  ngAfterViewInit() {
     this.checkQueryString(location.search);
     this.getDeviceSys();
     this.getUserToken();
@@ -83,12 +81,9 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
    */
   subscribeResizeEvent() {
     const resizeEvent = fromEvent(window, 'resize');
-    this.resizeSubscription = resizeEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.resizeSubscription = resizeEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.mobileSize = window.innerWidth < TFTViewMinWidth;
     });
-
   }
 
   /**
@@ -99,24 +94,23 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
     const query = getUrlQueryStrings(queryString);
     this.requestHeader = {
       ...this.requestHeader,
-      ...headerKeyTranslate(query)
+      ...headerKeyTranslate(query),
     };
 
     const { p: appId, code } = query;
     this.uiFlag.tftDevice = appId && appId == AlaApp.tft;
     if (code) {
       const downloadPort = location.hostname === 'www.gptfit.com' ? '6443' : '5443',
-            downloadUrl = `https://${location.hostname}:${downloadPort}/archive/click?code=${code}`;
+        downloadUrl = `https://${location.hostname}:${downloadPort}/archive/click?code=${code}`;
       location.href = downloadUrl;
     }
-
   }
 
   /**
    * 取得裝置平台
    * @author kidin-1091216
    */
-  getDeviceSys () {
+  getDeviceSys() {
     this.setPageStyle(true);
     if ((window as any).webkit) {
       this.appSys = 1;
@@ -128,9 +122,8 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
 
     this.requestHeader = {
       deviceType: this.appSys,
-      ...this.requestHeader
+      ...this.requestHeader,
     };
-
   }
 
   /**
@@ -162,7 +155,6 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
     } else {
       this.checkCompressStatus();
     }
-
   }
 
   /**
@@ -175,7 +167,6 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
     } else if (this.compressResp.status === CompressStatus.complete) {
       window.open(`${this.compressResp.archiveLink}`, '_self', 'noopener=yes,noreferrer=yes');
     }
-
   }
 
   /**
@@ -206,35 +197,44 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
     } else {
       const body = {
         token: this.token,
-        flow: 1
+        flow: 1,
       };
 
       this.uiFlag.progress = 30;
-      this.signupService.fetchCompressData(body, this.requestHeader).subscribe(res => {
+      this.signupService.fetchCompressData(body, this.requestHeader).subscribe((res) => {
         this.uiFlag.progress = 100;
         const processResult = res.processResult;
         if (processResult.resultCode !== 200) {
-          console.error(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
+          console.error(
+            `${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`
+          );
         } else {
           this.compressResp.status = res.status;
 
           if (res.status === CompressStatus.complete) {
-            this.compressResp.archiveLink = location.hostname === 'www.gptfit.com' ? res.archiveLink.replace('5443', '6443') : res.archiveLink;
-            this.compressResp.archiveFakeLink = `https://${location.hostname}/compressData?${res.archiveLink.split('?')[1]}`;
-            this.compressResp.archiveLinkDate = dayjs(res.archiveLinkTimestamp * 1000).format('YYYY-MM-DD');
-            this.compressResp.archiveLinkTime = dayjs(res.archiveLinkTimestamp * 1000).format('HH:mm');
+            this.compressResp.archiveLink =
+              location.hostname === 'www.gptfit.com'
+                ? res.archiveLink.replace('5443', '6443')
+                : res.archiveLink;
+            this.compressResp.archiveFakeLink = `https://${location.hostname}/compressData?${
+              res.archiveLink.split('?')[1]
+            }`;
+            this.compressResp.archiveLinkDate = dayjs(res.archiveLinkTimestamp * 1000).format(
+              'YYYY-MM-DD'
+            );
+            this.compressResp.archiveLinkTime = dayjs(res.archiveLinkTimestamp * 1000).format(
+              'HH:mm'
+            );
           } else if (res.status === CompressStatus.prohibited) {
             this.compressResp.cooldownTimestamp = res.cooldownTimestamp;
-            this.compressResp.cooldownDate = dayjs(res.cooldownTimestamp * 1000).format('YYYY-MM-DD');
+            this.compressResp.cooldownDate = dayjs(res.cooldownTimestamp * 1000).format(
+              'YYYY-MM-DD'
+            );
             this.compressResp.cooldownTime = dayjs(res.cooldownTimestamp * 1000).format('HH:mm');
           }
-
         }
-
       });
-
     }
-
   }
 
   /**
@@ -244,28 +244,28 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
   applyCompress() {
     const body = {
       token: this.token,
-      flow: 2
+      flow: 2,
     };
 
     this.uiFlag.progress = 30;
-    this.signupService.fetchCompressData(body, this.requestHeader).subscribe(res => {
+    this.signupService.fetchCompressData(body, this.requestHeader).subscribe((res) => {
       this.uiFlag.progress = 100;
       const processResult = res.processResult;
       if (processResult.resultCode !== 200) {
-        console.error(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
+        console.error(
+          `${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`
+        );
       } else {
         this.compressResp.status = res.status;
       }
-
     });
-
   }
 
   /**
    * 回上一頁或返回app
    * @author kidin-1091216
    */
-  turnBack () {
+  turnBack() {
     if (this.appSys === 1) {
       (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
     } else if (this.appSys === 2) {
@@ -273,17 +273,15 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
     } else {
       window.close();
     }
-
   }
 
   /**
    * 取消rxjs訂閱
    * @author kidin-1100309
    */
-   ngOnDestroy() {
-     this.setPageStyle(false);
+  ngOnDestroy() {
+    this.setPageStyle(false);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }
