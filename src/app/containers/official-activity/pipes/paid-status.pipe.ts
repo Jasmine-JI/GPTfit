@@ -5,7 +5,7 @@ import { PaidStatusEnum } from '../models/activity-content';
  * 將繳費狀態代碼轉為多國語系翻譯的key
  * @author kidin-1101125
  */
-@Pipe({name: 'paidStatus'})
+@Pipe({ name: 'paidStatus' })
 export class PaidStatusPipe implements PipeTransform {
   transform(value: PaidStatusEnum): any {
     switch (value) {
@@ -18,7 +18,5 @@ export class PaidStatusPipe implements PipeTransform {
       case PaidStatusEnum.refund:
         return 'universal_vocabulary_refunded';
     }
-
   }
-
 }

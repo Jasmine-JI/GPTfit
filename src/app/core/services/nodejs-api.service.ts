@@ -5,15 +5,11 @@ import { Observable } from 'rxjs';
 
 const { API_SERVER } = environment.url;
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NodejsApiService {
-
-  constructor(
-    private http: HttpClient
-  ) { }
+  constructor(private http: HttpClient) {}
 
   /**
    * 使用nodejs取得指定資訊
@@ -46,6 +42,4 @@ export class NodejsApiService {
   getUserList(body: any): Observable<any> {
     return this.http.post<any>(API_SERVER + 'user/getUserList', body);
   }
-
-
 }

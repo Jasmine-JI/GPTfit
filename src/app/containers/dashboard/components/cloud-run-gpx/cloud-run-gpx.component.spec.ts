@@ -8,9 +8,8 @@ describe('CloudRunGpxComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CloudRunGpxComponent ]
-    })
-    .compileComponents();
+      declarations: [CloudRunGpxComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

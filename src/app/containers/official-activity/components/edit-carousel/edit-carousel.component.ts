@@ -13,10 +13,10 @@ import { AuthService } from '../../../../core/services/auth.service';
 @Component({
   selector: 'app-edit-carousel',
   templateUrl: './edit-carousel.component.html',
-  styleUrls: ['./edit-carousel.component.scss']
+  styleUrls: ['./edit-carousel.component.scss'],
 })
 export class EditCarouselComponent implements OnInit, OnDestroy {
-  private ngUnsubscribe = new Subject;
+  private ngUnsubscribe = new Subject();
 
   /**
    * ui會用到的flag
@@ -26,7 +26,7 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
     showImageCropperId: null,
     dragId: null,
     showNewBlock: true,
-    passCheck: true
+    passCheck: true,
   };
 
   /**
@@ -38,7 +38,7 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
   carouselList = [];
   token = this.authService.token;
   currentTimestamp = getCurrentTimestamp('ms');
-  defaultEffectTimestamp = this.currentTimestamp + 7 * 86400 * 1000;  // 預設7天後到期
+  defaultEffectTimestamp = this.currentTimestamp + 7 * 86400 * 1000; // 預設7天後到期
   readonly AlbumType = AlbumType;
 
   constructor(
@@ -48,7 +48,7 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
     private router: Router,
     private imageUploadService: ImageUploadService,
     private authService: AuthService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.getCarousel();
@@ -59,22 +59,22 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
    * @author kidin-1101209
    */
   getCarousel() {
-    const { token, officialActivityService: { filterInvalidCarousel } } = this;
-    this.officialActivityService.getEventAdvertise({ token }).subscribe(res => {
+    const {
+      token,
+      officialActivityService: { filterInvalidCarousel },
+    } = this;
+    this.officialActivityService.getEventAdvertise({ token }).subscribe((res) => {
       if (this.utils.checkRes(res)) {
         this.originCarouselList = res.advertise;
         // 移除時間過期之輪播內容
         this.carouselList = res.advertise
-          .filter(_advertise => filterInvalidCarousel(_advertise))
+          .filter((_advertise) => filterInvalidCarousel(_advertise))
           .map((_advertise, index) => {
             _advertise.advertiseId = index + 1;
             return _advertise;
           });
-
       }
-
     });
-
   }
 
   /**
@@ -84,11 +84,7 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
    * @param value {string | number}-欲更新輪播設定之值
    * @author kidin-1101209
    */
-  addCarouselList(
-    id: number,
-    key: string = null,
-    value: string | number = null
-  ) {
+  addCarouselList(id: number, key: string = null, value: string | number = null) {
     this.uiFlag.showNewBlock = false;
     setTimeout(() => {
       const carouselLength = this.carouselList.length;
@@ -97,9 +93,8 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
         this.carouselList.push({
           advertiseId: id,
           link: key === 'link' ? value : null,
-          effectDate: key === 'effectDate' ? value : defaultDate
+          effectDate: key === 'effectDate' ? value : defaultDate,
         });
-
       } else {
         if (key) this.carouselList[id - 1][key] = value;
       }
@@ -107,11 +102,7 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
       // 透過setTimeout讓view先刷新透過ngIf清空input值
       this.uiFlag.showNewBlock = true;
     });
-    
   }
-
-
-
 
   /**
    * 顯示圖片裁切器
@@ -134,9 +125,8 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
       Object.assign(this.imgUpload, {
         [showImageCropperId]: {
           origin,
-          crop: base64
-        }
-
+          crop: base64,
+        },
       });
 
       this.addCarouselList(showImageCropperId);
@@ -157,21 +147,19 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
     formData.set('targetEventId', '0');
     for (const _advertiseId in this.imgUpload) {
       const { crop: newAdvertiseImg } = this.imgUpload[_advertiseId];
-      [imgArray, formData] =
-        this.appendNewImg(
-          imgArray,
-          formData,
-          AlbumType.advertise,
-          newAdvertiseImg,
-          +_advertiseId
-        );
-
+      [imgArray, formData] = this.appendNewImg(
+        imgArray,
+        formData,
+        AlbumType.advertise,
+        newAdvertiseImg,
+        +_advertiseId
+      );
     }
 
     formData.set('img', JSON.stringify(imgArray));
     return this.imageUploadService.addImg(formData);
   }
-  
+
   /**
    * 將新圖片加至新增清單(imgArray)與formData中
    * @param imgArray {Array<{ albumType: AlbumType; fileNameFull: string; }>}-新增清單
@@ -182,7 +170,7 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
    * @author kidin-1101209
    */
   appendNewImg(
-    imgArray: Array<{ albumType: AlbumType; fileNameFull: string; id?: number;}>,
+    imgArray: Array<{ albumType: AlbumType; fileNameFull: string; id?: number }>,
     formData: any,
     type: AlbumType,
     newImg: string | Blob,
@@ -195,7 +183,7 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
     imgArray.push({
       albumType: type,
       fileNameFull: fileNameFull,
-      id
+      id,
     });
 
     formData.append('file', newFile);
@@ -210,7 +198,7 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
    */
   handleLinkInput(e: MouseEvent, id: number) {
     const { value } = (e as any).target;
-    if (value) this.addCarouselList(id, 'link',  value);
+    if (value) this.addCarouselList(id, 'link', value);
   }
 
   /**
@@ -221,8 +209,8 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
    */
   getSelectTime(e: Event, id: number) {
     const selectTime = (e as any).target.value;
-    const selectTimestamp = Math.round((new Date(selectTime)).getTime() / 1000);
-    this.addCarouselList(id, 'effectDate',  selectTimestamp);
+    const selectTimestamp = Math.round(new Date(selectTime).getTime() / 1000);
+    this.addCarouselList(id, 'effectDate', selectTimestamp);
   }
 
   /**
@@ -259,40 +247,38 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
       const body = { token, advertise };
       combineLatest([
         this.officialActivityService.updateEventAdvertise(body),
-        this.translateService.get('hellow world')  // 確保多國語系載入完成
-      ]).pipe(
-        switchMap(result => {
-          const updateResult = result[0];
-          const imgChange = Object.keys(this.imgUpload).length > 0;
-          if (imgChange) {
-            if (this.utils.checkRes(updateResult)) {
-              return this.uploadImg();
+        this.translateService.get('hellow world'), // 確保多國語系載入完成
+      ])
+        .pipe(
+          switchMap((result) => {
+            const updateResult = result[0];
+            const imgChange = Object.keys(this.imgUpload).length > 0;
+            if (imgChange) {
+              if (this.utils.checkRes(updateResult)) {
+                return this.uploadImg();
+              } else {
+                return of(updateResult);
+              }
             } else {
               return of(updateResult);
             }
-
+          })
+        )
+        .subscribe((res) => {
+          if (this.utils.checkRes(res)) {
+            const currentTimeStamp = getCurrentTimestamp('ms');
+            this.officialActivityService.setCarouselTime(currentTimeStamp);
+            const msg = this.translateService.instant('universal_status_updateCompleted');
+            this.utils.showSnackBar(msg);
+            this.navigateHomePage();
           } else {
-            return of(updateResult);
+            const msg = this.translateService.instant('universal_popUpMessage_updateFailed');
+            this.utils.showSnackBar(msg);
           }
-          
-        })
-      ).subscribe(res => {
-        if (this.utils.checkRes(res)) {
-          const currentTimeStamp = getCurrentTimestamp('ms');
-          this.officialActivityService.setCarouselTime(currentTimeStamp);
-          const msg = this.translateService.instant('universal_status_updateCompleted');
-          this.utils.showSnackBar(msg);
-          this.navigateHomePage();
-        } else {
-          const msg = this.translateService.instant('universal_popUpMessage_updateFailed');
-          this.utils.showSnackBar(msg);
-        }
 
-        this.uiFlag.progress = 100;
-      });
-
+          this.uiFlag.progress = 100;
+        });
     }
-
   }
 
   /**
@@ -306,7 +292,6 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
       if (!img && !this.imgUpload[advertiseId]) {
         return false;
       }
-
     }
 
     return true;
@@ -327,17 +312,16 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
             advertiseId: currentLength + index + 1,
             img: null,
             link: null,
-            effectDate: Math.round(this.currentTimestamp / 1000)
+            effectDate: Math.round(this.currentTimestamp / 1000),
           };
 
           return _delList;
         });
-      
+
       return delList;
     } else {
       return [];
     }
-
   }
 
   /**
@@ -357,7 +341,10 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
   shiftCarousel(id: number, direction: 'up' | 'down') {
     const idx = id - 1;
     const switchIndex = idx + (direction === 'up' ? -1 : 1);
-    [this.carouselList[idx], this.carouselList[switchIndex]] = [this.carouselList[switchIndex], this.carouselList[idx]];
+    [this.carouselList[idx], this.carouselList[switchIndex]] = [
+      this.carouselList[switchIndex],
+      this.carouselList[idx],
+    ];
     this.reArrangeList();
   }
 
@@ -395,5 +382,4 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete;
   }
-
 }

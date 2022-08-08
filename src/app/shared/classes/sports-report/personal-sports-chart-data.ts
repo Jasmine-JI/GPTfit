@@ -1,4 +1,3 @@
-
 import { TargetCondition } from '../../models/sport-target';
 import { DateUnit } from '../../enum/report';
 import { ReportCondition } from '../../models/report-condition';
@@ -21,12 +20,10 @@ import { TypeAllChart } from '../sports-report/type-all-chart';
 import { TemporaryCount } from '../sports-report/temporary-count';
 import { SportsReport } from './sports-report';
 
-
 /**
  * 處理個人運動報告圖表數據
  */
- export class PersonalSportsChartData {
-
+export class PersonalSportsChartData {
   private _baseTypeAllChart = new TypeAllChart();
   private _compareTypeAllChart = new TypeAllChart();
   private _baseHrZone = new HrZoneChartData();
@@ -59,7 +56,13 @@ import { SportsReport } from './sports-report';
     dataObj: any,
     perTransformTarget: Array<TargetCondition>
   ) {
-    const { userInfo, baseActivitiesData, compareActivitiesData, baseLifeTracking, compareLifeTracking } = dataObj;
+    const {
+      userInfo,
+      baseActivitiesData,
+      compareActivitiesData,
+      baseLifeTracking,
+      compareLifeTracking,
+    } = dataObj;
     const { sportType, dateUnit, baseTime, compareTime } = condition;
     const isCompareMode = compareActivitiesData !== undefined;
     this._hrZoneTrend = new HrZoneTrendChartData(isCompareMode);
@@ -67,40 +70,61 @@ import { SportsReport } from './sports-report';
     this._benefitTimeTrend = new CompareTrendData(isCompareMode, trendChartColor.benefitTime);
     this._paiTrend = new CompareTrendData(isCompareMode, trendChartColor.pai);
     this._caloriesTrend = new CompareTrendData(isCompareMode, trendChartColor.calories);
-    this._totalActivitiesTrend = new CompareTrendData(isCompareMode, trendChartColor.totalActivities);
+    this._totalActivitiesTrend = new CompareTrendData(
+      isCompareMode,
+      trendChartColor.totalActivities
+    );
     this._targertAchieveTrend = new TargetAchieveTrendData(baseTime, compareTime!);
     this._complexHrTrend = new ComplexTrend(sportType!, 'hr', isCompareMode);
     this._bodyWeightTrend = new BodyWeightTrend(isCompareMode);
 
     switch (sportType) {
       case SportType.run:
-        this._totalDistanceMetersTrend = new CompareTrendData(isCompareMode, trendChartColor.distance);
+        this._totalDistanceMetersTrend = new CompareTrendData(
+          isCompareMode,
+          trendChartColor.distance
+        );
         this._speedPaceTrend = new ComplexTrend(sportType, 'speedPace', isCompareMode);
         this._cadenceTrend = new ComplexTrend(sportType, 'cadence', isCompareMode);
         break;
       case SportType.cycle:
-        this._totalDistanceMetersTrend = new CompareTrendData(isCompareMode, trendChartColor.distance);
+        this._totalDistanceMetersTrend = new CompareTrendData(
+          isCompareMode,
+          trendChartColor.distance
+        );
         this._speedPaceTrend = new ComplexTrend(sportType, 'speedPace', isCompareMode);
         this._cadenceTrend = new ComplexTrend(sportType, 'cadence', isCompareMode);
         this._powerTrend = new ComplexTrend(sportType, 'power', isCompareMode);
         break;
       case SportType.weightTrain:
         const { weightTrainingStrengthLevel, bodyWeight } = userInfo;
-        this._weightTrainingTrend = new WeightTrainingTrend(weightTrainingStrengthLevel, bodyWeight);
+        this._weightTrainingTrend = new WeightTrainingTrend(
+          weightTrainingStrengthLevel,
+          bodyWeight
+        );
         break;
       case SportType.swim:
-        this._totalDistanceMetersTrend = new CompareTrendData(isCompareMode, trendChartColor.distance);
+        this._totalDistanceMetersTrend = new CompareTrendData(
+          isCompareMode,
+          trendChartColor.distance
+        );
         this._speedPaceTrend = new ComplexTrend(sportType, 'speedPace', isCompareMode);
         this._cadenceTrend = new ComplexTrend(sportType, 'cadence', isCompareMode);
         break;
       case SportType.row:
-        this._totalDistanceMetersTrend = new CompareTrendData(isCompareMode, trendChartColor.distance);
+        this._totalDistanceMetersTrend = new CompareTrendData(
+          isCompareMode,
+          trendChartColor.distance
+        );
         this._speedPaceTrend = new ComplexTrend(sportType, 'speedPace', isCompareMode);
         this._cadenceTrend = new ComplexTrend(sportType, 'cadence', isCompareMode);
         this._powerTrend = new ComplexTrend(sportType, 'power', isCompareMode);
         break;
       case SportType.ball:
-        this._totalDistanceMetersTrend = new CompareTrendData(isCompareMode, trendChartColor.distance);
+        this._totalDistanceMetersTrend = new CompareTrendData(
+          isCompareMode,
+          trendChartColor.distance
+        );
         this._speedPaceTrend = new ComplexTrend(sportType, 'speedPace', isCompareMode);
         this._xGForceTrend = new ComplexTrend(sportType, 'maxXGForce', isCompareMode);
         this._yGForceTrend = new ComplexTrend(sportType, 'maxYGForce', isCompareMode);
@@ -109,14 +133,17 @@ import { SportsReport } from './sports-report';
     }
 
     const allDateList = this.createCompleteDate(dateUnit!, baseTime, compareTime!);
-    of([baseActivitiesData, compareActivitiesData]).pipe(
-      map(data => this.filterPersonalData(data, dateUnit!, sportType!)),
-      map(filterData => this.postProcessingPerosnalData(filterData, perTransformTarget)),
-      map(completeData => this.mergeSameDateData(completeData, dateUnit!)),
-      map(mergeData => this.fillUpDate(condition, mergeData, allDateList, baseLifeTracking, compareLifeTracking)),
-      map(fillUpData => this.handleChartData(fillUpData, sportType!))
-    ).subscribe();
-
+    of([baseActivitiesData, compareActivitiesData])
+      .pipe(
+        map((data) => this.filterPersonalData(data, dateUnit!, sportType!)),
+        map((filterData) => this.postProcessingPerosnalData(filterData, perTransformTarget)),
+        map((completeData) => this.mergeSameDateData(completeData, dateUnit!)),
+        map((mergeData) =>
+          this.fillUpDate(condition, mergeData, allDateList, baseLifeTracking, compareLifeTracking)
+        ),
+        map((fillUpData) => this.handleChartData(fillUpData, sportType!))
+      )
+      .subscribe();
   }
 
   /**
@@ -142,22 +169,21 @@ import { SportsReport } from './sports-report';
           .add(baseDiffTime - 1, unitString as any)
           .endOf(unitString)
           .valueOf();
-        
+
         compareDateList = this.createDateList([], unitString, compareStart, extentCompareEnd);
       }
-
     } else {
       const extentBaseEnd = dayjs(baseStart)
         .add(compareDiffTime - 1, unitString as any)
         .endOf(unitString)
         .valueOf();
-      
+
       baseDateList = this.createDateList([], unitString, baseStart, extentBaseEnd);
 
       const { startTimestamp: compareStart, endTimestamp: compareEnd } = compareTime;
       compareDateList = this.createDateList([], unitString, compareStart, compareEnd);
     }
-    
+
     return [baseDateList, compareTime ? compareDateList : undefined];
   }
 
@@ -174,7 +200,6 @@ import { SportsReport } from './sports-report';
     dateStart: number,
     dateEnd: number
   ) {
-
     if (list.length > 0) {
       const { start: prevStart } = list[list.length - 1];
       const start = dayjs(prevStart).add(1, unitString).valueOf();
@@ -187,14 +212,12 @@ import { SportsReport } from './sports-report';
       } else {
         return list;
       }
-
     } else {
       const start = dayjs(dateStart).startOf(unitString).valueOf();
       const end = dayjs(start).endOf(unitString).valueOf();
       list.push({ start, end });
       return this.createDateList(list, unitString, dateStart, dateEnd);
     }
-
   }
 
   /**
@@ -207,7 +230,9 @@ import { SportsReport } from './sports-report';
     const dataKey = dateUnit.getReportKey('sportsReport');
     const [baseData, compareData] = data;
     const baseFilterResult = this.filterData(baseData, sportType, dataKey, false);
-    const compareFilterResult = compareData ? this.filterData(compareData, sportType, dataKey, true) : undefined;
+    const compareFilterResult = compareData
+      ? this.filterData(compareData, sportType, dataKey, true)
+      : undefined;
     return [baseFilterResult, compareFilterResult];
   }
 
@@ -221,13 +246,13 @@ import { SportsReport } from './sports-report';
   filterData = (data: Array<any>, sportType: SportType, key: string, isCompareData: boolean) => {
     const checkDataOpen = (resultCode: number) => resultCode === 200;
     const filterResult: Array<any> = [];
-    data.forEach(_data => {
+    data.forEach((_data) => {
       const result: Array<any> = [];
       const { resultCode: _resultCode } = _data;
       if (checkDataOpen(_resultCode)) {
-        _data[key].forEach(_dataRow => {
+        _data[key].forEach((_dataRow) => {
           const { activities, startTime, endTime } = _dataRow;
-          activities.forEach(_activity => {
+          activities.forEach((_activity) => {
             const { type } = _activity;
             const isAllType = sportType === SportType.all;
             if (isAllType || sportType === +type) {
@@ -235,7 +260,7 @@ import { SportsReport } from './sports-report';
               result.unshift({
                 activities: _activity,
                 startTime: this.alignTimeZone(startTime, 'start'),
-                endTime: this.alignTimeZone(endTime, 'end')
+                endTime: this.alignTimeZone(endTime, 'end'),
               });
 
               this.handleHrZoneData(_activity, isCompareData);
@@ -243,16 +268,14 @@ import { SportsReport } from './sports-report';
 
             if (isAllType) this.handleDistributionChartData(_activity, isCompareData);
           });
-
         });
-        
       }
 
       if (result.length > 0) filterResult.push(result);
     });
 
     return filterResult;
-  }
+  };
 
   /**
    * 計算各日期範圍之效益時間、pai、目標達成與否，同時將數據合併唯一陣列，以便計算圖表數據
@@ -262,9 +285,8 @@ import { SportsReport } from './sports-report';
   postProcessingPerosnalData(allData: Array<any>, perTransformTarget: Array<TargetCondition>) {
     const [baseData, compareData] = allData;
     const achievementData = (data: Array<any>) => {
-      return data.map(_data => {
-
-        return _data.map(_dataRow => {
+      return data.map((_data) => {
+        return _data.map((_dataRow) => {
           const {
             activities: {
               totalHrZone0Second: zone0,
@@ -275,10 +297,10 @@ import { SportsReport } from './sports-report';
               totalHrZone5Second: zone5,
               totalSecond,
               calories,
-              totalActivities
+              totalActivities,
             },
             startTime,
-            endTime
+            endTime,
           } = _dataRow;
 
           // 計算效益時間並寫回activities
@@ -293,7 +315,7 @@ import { SportsReport } from './sports-report';
 
           // 確認達成運動目標與否
           let achieve = 1;
-          perTransformTarget.forEach(_condition => {
+          perTransformTarget.forEach((_condition) => {
             const { filedName, filedValue } = _condition;
             switch (filedName) {
               case 'totalActivities':
@@ -313,16 +335,13 @@ import { SportsReport } from './sports-report';
                 if (calories < filedValue) achieve = 0;
                 break;
             }
-
           });
 
           // 將目標達成數寫回activities，以便之後產生達成率圖表
           _dataRow.activities.achieve = achieve;
           return _dataRow;
         });
-
       });
-
     };
 
     const baseDataResult = achievementData(baseData);
@@ -340,9 +359,8 @@ import { SportsReport } from './sports-report';
     const [baseData, compareData] = allData;
     return [
       this.mergeData(baseData, dateUnit),
-      compareData ? this.mergeData(compareData, dateUnit) : undefined
+      compareData ? this.mergeData(compareData, dateUnit) : undefined,
     ];
-
   }
 
   /**
@@ -350,10 +368,7 @@ import { SportsReport } from './sports-report';
    * @param data {Array<any>}-運動數據
    * @param dateUnit {ReportDateUnit}-報告所選擇的時間單位
    */
-  mergeData(
-    data: Array<any>,
-    dateUnit: ReportDateUnit
-  ) {
+  mergeData(data: Array<any>, dateUnit: ReportDateUnit) {
     const result: Array<any> = [];
     const temporaryCount = new TemporaryCount();
     const flatData = data[0] || [];
@@ -367,11 +382,9 @@ import { SportsReport } from './sports-report';
         temporaryCount.saveDate(start, end);
         temporaryCount.countData(_activities);
         if (isLastData) result.push(temporaryCount.result);
-
       } else if (start === startTime) {
         temporaryCount.countData(_activities);
         if (isLastData) result.push(temporaryCount.result);
-
       } else {
         result.push(temporaryCount.result);
         temporaryCount.init();
@@ -379,7 +392,6 @@ import { SportsReport } from './sports-report';
         temporaryCount.countData(_activities);
         if (isLastData) result.push(temporaryCount.result);
       }
-
     });
 
     return result;
@@ -413,7 +425,13 @@ import { SportsReport } from './sports-report';
     let compareLifeTrackingIndex = 0;
 
     // 將完整日期列表與運動數據合併
-    const mergeActivities = (startTime: number, endTime: number, data: any, index: number, result: Array<any>) => {
+    const mergeActivities = (
+      startTime: number,
+      endTime: number,
+      data: any,
+      index: number,
+      result: Array<any>
+    ) => {
       const oneData = data && data.length > 0 ? data[index] : null;
       const activityStart = oneData ? oneData.startTime : null;
       if (startTime !== activityStart) {
@@ -430,19 +448,20 @@ import { SportsReport } from './sports-report';
     const mergeLifeTracking = (startTime: number, data: any, index: number, result: Array<any>) => {
       const lifeTrackingLength = data ? data[0][lifeTrackingKey].length : -1;
       if (lifeTrackingLength > 0) {
-        const reverseIndex = lifeTrackingLength - 1 - index;  // 生活追蹤數據排序為由新->舊
+        const reverseIndex = lifeTrackingLength - 1 - index; // 生活追蹤數據排序為由新->舊
         const lifeTrackingData = data[0][lifeTrackingKey][reverseIndex];
-        const lifeTrackingStart = lifeTrackingData ? this.alignTimeZone(lifeTrackingData.startTime, 'start') : null;
+        const lifeTrackingStart = lifeTrackingData
+          ? this.alignTimeZone(lifeTrackingData.startTime, 'start')
+          : null;
         if (startTime === lifeTrackingStart) {
           const { bodyWeight, fatRate } = lifeTrackingData;
           if (bodyWeight || fatRate) {
             const resultCurrentIndex = result.length - 1;
             Object.assign(result[resultCurrentIndex].activities, { fatRate, bodyWeight });
           }
-          
+
           index++;
         }
-
       }
 
       return index;
@@ -450,14 +469,35 @@ import { SportsReport } from './sports-report';
 
     baseDateList.forEach((_date, _index) => {
       const { start: _baseStart, end: _baseEnd } = _date;
-      baseActivitiesIndex = mergeActivities(_baseStart, _baseEnd, baseActivitiesData, baseActivitiesIndex, baseDataResult);
-      baseLifeTrackingIndex = mergeLifeTracking(_baseStart, baseLifeTracking, baseLifeTrackingIndex, baseDataResult);
+      baseActivitiesIndex = mergeActivities(
+        _baseStart,
+        _baseEnd,
+        baseActivitiesData,
+        baseActivitiesIndex,
+        baseDataResult
+      );
+      baseLifeTrackingIndex = mergeLifeTracking(
+        _baseStart,
+        baseLifeTracking,
+        baseLifeTrackingIndex,
+        baseDataResult
+      );
       if (compareActivitiesData) {
         const { start: _compareStart, end: _compareEnd } = compareDateList[_index];
-        compareActivitiesIndex = mergeActivities(_compareStart, _compareEnd, compareActivitiesData, compareActivitiesIndex, compareDataResult);
-        compareLifeTrackingIndex = mergeLifeTracking(_compareStart, compareLifeTracking, compareLifeTrackingIndex, compareDataResult);
+        compareActivitiesIndex = mergeActivities(
+          _compareStart,
+          _compareEnd,
+          compareActivitiesData,
+          compareActivitiesIndex,
+          compareDataResult
+        );
+        compareLifeTrackingIndex = mergeLifeTracking(
+          _compareStart,
+          compareLifeTracking,
+          compareLifeTrackingIndex,
+          compareDataResult
+        );
       }
-
     });
 
     return [baseDataResult, compareActivitiesData ? compareDataResult : undefined];
@@ -480,7 +520,7 @@ import { SportsReport } from './sports-report';
    * @param sportType {SportType}-報告運動類別
    */
   handleChart(data: Array<any>, sportType: SportType) {
-    data.forEach(_data => {
+    data.forEach((_data) => {
       const { activities: _activities, startTime: _startTime, endTime: _endTime } = _data;
       const {
         totalHrZone0Second: _z0,
@@ -527,11 +567,11 @@ import { SportsReport } from './sports-report';
         miniGforceX: _miniGforceX,
         miniGforceY: _miniGforceY,
         miniGforceZ: _miniGforceZ,
-        weightTrainingInfo: _weightTrainingInfo
+        weightTrainingInfo: _weightTrainingInfo,
       } = _activities;
 
       const dateRange = [_startTime, _endTime];
-      const hrZone = [_z0, _z1, _z2, _z3, _z4, _z5].map(_zone => _zone ? _zone : 0);
+      const hrZone = [_z0, _z1, _z2, _z3, _z4, _z5].map((_zone) => (_zone ? _zone : 0));
       this._hrZoneTrend.addBaseData(hrZone, dateRange);
       this._totalSecondTrend.addBaseData(+_totalSecond, dateRange);
       this._benefitTimeTrend.addBaseData(_benefitTime, dateRange);
@@ -576,9 +616,7 @@ import { SportsReport } from './sports-report';
           this._zGForceTrend.addBaseData(_maxGforceZ, _miniGforceZ, dateRange);
           break;
       }
-
     });
-
   }
 
   /**
@@ -589,7 +627,11 @@ import { SportsReport } from './sports-report';
   handleChartWithCompare(allData: Array<any>, sportType: SportType) {
     const [baseData, compareData] = allData;
     baseData.forEach((_baseData, _index) => {
-      const { activities: _baseActivities, startTime: _baseStartTime, endTime: _baseEndTime } = _baseData;
+      const {
+        activities: _baseActivities,
+        startTime: _baseStartTime,
+        endTime: _baseEndTime,
+      } = _baseData;
       const {
         totalHrZone0Second: _baseZ0,
         totalHrZone1Second: _baseZ1,
@@ -629,10 +671,14 @@ import { SportsReport } from './sports-report';
         miniGforceX: _baseMiniGforceX,
         miniGforceY: _baseMiniGforceY,
         miniGforceZ: _baseMiniGforceZ,
-        weightTrainingInfo: _baseWeightTrainingInfo
+        weightTrainingInfo: _baseWeightTrainingInfo,
       } = _baseActivities;
 
-      const { activities: _compareActivities, startTime: _compareStartTime, endTime: _compareEndTime } = compareData[_index];
+      const {
+        activities: _compareActivities,
+        startTime: _compareStartTime,
+        endTime: _compareEndTime,
+      } = compareData[_index];
       const {
         totalHrZone0Second: _compareZ0,
         totalHrZone1Second: _compareZ1,
@@ -672,116 +718,308 @@ import { SportsReport } from './sports-report';
         miniGforceX: _compareMiniGforceX,
         miniGforceY: _compareMiniGforceY,
         miniGforceZ: _compareMiniGforceZ,
-        weightTrainingInfo: _compareWeightTrainingInfo
+        weightTrainingInfo: _compareWeightTrainingInfo,
       } = _compareActivities;
 
-      const _baseHrZone = [_baseZ0, _baseZ1, _baseZ2, _baseZ3, _baseZ4, _baseZ5].map(_zone => _zone ? _zone : 0);
+      const _baseHrZone = [_baseZ0, _baseZ1, _baseZ2, _baseZ3, _baseZ4, _baseZ5].map((_zone) =>
+        _zone ? _zone : 0
+      );
       const _baseDateRange = [_baseStartTime, _baseEndTime];
-      const _compareHrZone = [_compareZ0, _compareZ1, _compareZ2, _compareZ3, _compareZ4, _compareZ5].map(_zone => _zone ? _zone : 0);
+      const _compareHrZone = [
+        _compareZ0,
+        _compareZ1,
+        _compareZ2,
+        _compareZ3,
+        _compareZ4,
+        _compareZ5,
+      ].map((_zone) => (_zone ? _zone : 0));
       const _compareDateRange = [_compareStartTime, _compareEndTime];
       this._hrZoneTrend.addMixData(_baseHrZone, _baseDateRange, _compareHrZone, _compareDateRange);
-      this._totalSecondTrend.addMixData(+_baseTotalSecond, _baseDateRange, +_compareTotalSecond, _compareDateRange);
-      this._benefitTimeTrend.addMixData(_baseBenefitTime, _baseDateRange, _compareBenefitTime, _compareDateRange);
-      this._caloriesTrend.addMixData(_baseCalories, _baseDateRange, _compareCalories, _compareDateRange);
-      this._totalActivitiesTrend.addMixData(_baseTotalActivities, _baseDateRange, _compareTotalActivities, _compareDateRange);
+      this._totalSecondTrend.addMixData(
+        +_baseTotalSecond,
+        _baseDateRange,
+        +_compareTotalSecond,
+        _compareDateRange
+      );
+      this._benefitTimeTrend.addMixData(
+        _baseBenefitTime,
+        _baseDateRange,
+        _compareBenefitTime,
+        _compareDateRange
+      );
+      this._caloriesTrend.addMixData(
+        _baseCalories,
+        _baseDateRange,
+        _compareCalories,
+        _compareDateRange
+      );
+      this._totalActivitiesTrend.addMixData(
+        _baseTotalActivities,
+        _baseDateRange,
+        _compareTotalActivities,
+        _compareDateRange
+      );
       this._paiTrend.addMixData(_basePai, _baseDateRange, _comparePai, _compareDateRange);
-      this._targertAchieveTrend.addMixData(_baseAchieve, _baseDateRange, _compareAchieve, _compareDateRange);
+      this._targertAchieveTrend.addMixData(
+        _baseAchieve,
+        _baseDateRange,
+        _compareAchieve,
+        _compareDateRange
+      );
 
-      const baseHrData = { max: _baseAvgMaxHeartRateBpm, avgOrMin: _baseAvgHeartRateBpm, dateRange: _baseDateRange };
-      const compareHrData = { max: _compareAvgMaxHeartRateBpm, avgOrMin: _compareAvgHeartRateBpm, dateRange: _compareDateRange};
+      const baseHrData = {
+        max: _baseAvgMaxHeartRateBpm,
+        avgOrMin: _baseAvgHeartRateBpm,
+        dateRange: _baseDateRange,
+      };
+      const compareHrData = {
+        max: _compareAvgMaxHeartRateBpm,
+        avgOrMin: _compareAvgHeartRateBpm,
+        dateRange: _compareDateRange,
+      };
       this._complexHrTrend.addMixData(baseHrData, compareHrData);
 
-      const baseBodyData = { weight: _baseBodyWeight, fatRate: _baseFatRate, dateRange: _baseDateRange };
-      const compareBodyData = { weight: _compareBodyWeight, fatRate: _compareFatRate, dateRange: _compareDateRange };
+      const baseBodyData = {
+        weight: _baseBodyWeight,
+        fatRate: _baseFatRate,
+        dateRange: _baseDateRange,
+      };
+      const compareBodyData = {
+        weight: _compareBodyWeight,
+        fatRate: _compareFatRate,
+        dateRange: _compareDateRange,
+      };
       this._bodyWeightTrend.addMixData(baseBodyData, compareBodyData);
 
       switch (sportType) {
         case SportType.run: {
-          this._totalDistanceMetersTrend.addMixData(_baseTotalDistanceMeters, _baseDateRange, _compareTotalDistanceMeters, _compareDateRange);
+          this._totalDistanceMetersTrend.addMixData(
+            _baseTotalDistanceMeters,
+            _baseDateRange,
+            _compareTotalDistanceMeters,
+            _compareDateRange
+          );
 
-          const baseSpeedData = { max: _baseAvgMaxSpeed, avgOrMin: _baseAvgSpeed, dateRange: _baseDateRange };
-          const compareSpeedData = { max: _compareAvgMaxSpeed, avgOrMin: _compareAvgSpeed, dateRange: _compareDateRange};
+          const baseSpeedData = {
+            max: _baseAvgMaxSpeed,
+            avgOrMin: _baseAvgSpeed,
+            dateRange: _baseDateRange,
+          };
+          const compareSpeedData = {
+            max: _compareAvgMaxSpeed,
+            avgOrMin: _compareAvgSpeed,
+            dateRange: _compareDateRange,
+          };
           this._speedPaceTrend.addMixData(baseSpeedData, compareSpeedData);
 
-          const baseCadenceData = { max: _baseAvgRunMaxCadence, avgOrMin: _baseRunAvgCadence, dateRange: _baseDateRange };
-          const compareCadenceData = { max: _compareAvgRunMaxCadence, avgOrMin: _compareRunAvgCadence, dateRange: _compareDateRange};
+          const baseCadenceData = {
+            max: _baseAvgRunMaxCadence,
+            avgOrMin: _baseRunAvgCadence,
+            dateRange: _baseDateRange,
+          };
+          const compareCadenceData = {
+            max: _compareAvgRunMaxCadence,
+            avgOrMin: _compareRunAvgCadence,
+            dateRange: _compareDateRange,
+          };
           this._cadenceTrend.addMixData(baseCadenceData, compareCadenceData);
           break;
         }
         case SportType.cycle: {
-          this._totalDistanceMetersTrend.addMixData(_baseTotalDistanceMeters, _baseDateRange, _compareTotalDistanceMeters, _compareDateRange);
+          this._totalDistanceMetersTrend.addMixData(
+            _baseTotalDistanceMeters,
+            _baseDateRange,
+            _compareTotalDistanceMeters,
+            _compareDateRange
+          );
 
-          const baseSpeedData = { max: _baseAvgMaxSpeed, avgOrMin: _baseAvgSpeed, dateRange: _baseDateRange };
-          const compareSpeedData = { max: _compareAvgMaxSpeed, avgOrMin: _compareAvgSpeed, dateRange: _compareDateRange};
+          const baseSpeedData = {
+            max: _baseAvgMaxSpeed,
+            avgOrMin: _baseAvgSpeed,
+            dateRange: _baseDateRange,
+          };
+          const compareSpeedData = {
+            max: _compareAvgMaxSpeed,
+            avgOrMin: _compareAvgSpeed,
+            dateRange: _compareDateRange,
+          };
           this._speedPaceTrend.addMixData(baseSpeedData, compareSpeedData);
 
-          const baseCadenceData = { max: _baseAvgCycleMaxCadence, avgOrMin: _baseCycleAvgCadence, dateRange: _baseDateRange };
-          const compareCadenceData = { max: _compareAvgCycleMaxCadence, avgOrMin: _compareCycleAvgCadence, dateRange: _compareDateRange};
+          const baseCadenceData = {
+            max: _baseAvgCycleMaxCadence,
+            avgOrMin: _baseCycleAvgCadence,
+            dateRange: _baseDateRange,
+          };
+          const compareCadenceData = {
+            max: _compareAvgCycleMaxCadence,
+            avgOrMin: _compareCycleAvgCadence,
+            dateRange: _compareDateRange,
+          };
           this._cadenceTrend.addMixData(baseCadenceData, compareCadenceData);
 
-          const basePowerData = { max: _baseAvgCycleMaxWatt, avgOrMin: _baseCycleAvgWatt, dateRange: _baseDateRange };
-          const comparePowerData = { max: _compareAvgCycleMaxWatt, avgOrMin: _compareCycleAvgWatt, dateRange: _compareDateRange};
+          const basePowerData = {
+            max: _baseAvgCycleMaxWatt,
+            avgOrMin: _baseCycleAvgWatt,
+            dateRange: _baseDateRange,
+          };
+          const comparePowerData = {
+            max: _compareAvgCycleMaxWatt,
+            avgOrMin: _compareCycleAvgWatt,
+            dateRange: _compareDateRange,
+          };
           this._powerTrend.addMixData(basePowerData, comparePowerData);
           break;
         }
         case SportType.weightTrain:
-          this._weightTrainingTrend.addTrainData('base', _baseWeightTrainingInfo ?? [], _baseDateRange);
-          this._weightTrainingTrend.addTrainData('compare', _compareWeightTrainingInfo ?? [], _compareDateRange);
+          this._weightTrainingTrend.addTrainData(
+            'base',
+            _baseWeightTrainingInfo ?? [],
+            _baseDateRange
+          );
+          this._weightTrainingTrend.addTrainData(
+            'compare',
+            _compareWeightTrainingInfo ?? [],
+            _compareDateRange
+          );
           break;
         case SportType.swim: {
-          this._totalDistanceMetersTrend.addMixData(_baseTotalDistanceMeters, _baseDateRange, _compareTotalDistanceMeters, _compareDateRange);
+          this._totalDistanceMetersTrend.addMixData(
+            _baseTotalDistanceMeters,
+            _baseDateRange,
+            _compareTotalDistanceMeters,
+            _compareDateRange
+          );
 
-          const baseSpeedData = { max: _baseAvgMaxSpeed, avgOrMin: _baseAvgSpeed, dateRange: _baseDateRange };
-          const compareSpeedData = { max: _compareAvgMaxSpeed, avgOrMin: _compareAvgSpeed, dateRange: _compareDateRange};
+          const baseSpeedData = {
+            max: _baseAvgMaxSpeed,
+            avgOrMin: _baseAvgSpeed,
+            dateRange: _baseDateRange,
+          };
+          const compareSpeedData = {
+            max: _compareAvgMaxSpeed,
+            avgOrMin: _compareAvgSpeed,
+            dateRange: _compareDateRange,
+          };
           this._speedPaceTrend.addMixData(baseSpeedData, compareSpeedData);
 
-          const baseCadenceData = { max: _baseAvgSwimMaxCadence, avgOrMin: _baseSwimAvgCadence, dateRange: _baseDateRange };
-          const compareCadenceData = { max: _compareAvgSwimMaxCadence, avgOrMin: _compareSwimAvgCadence, dateRange: _compareDateRange};
+          const baseCadenceData = {
+            max: _baseAvgSwimMaxCadence,
+            avgOrMin: _baseSwimAvgCadence,
+            dateRange: _baseDateRange,
+          };
+          const compareCadenceData = {
+            max: _compareAvgSwimMaxCadence,
+            avgOrMin: _compareSwimAvgCadence,
+            dateRange: _compareDateRange,
+          };
           this._cadenceTrend.addMixData(baseCadenceData, compareCadenceData);
           break;
         }
         case SportType.row: {
-          this._totalDistanceMetersTrend.addMixData(_baseTotalDistanceMeters, _baseDateRange, _compareTotalDistanceMeters, _compareDateRange);
+          this._totalDistanceMetersTrend.addMixData(
+            _baseTotalDistanceMeters,
+            _baseDateRange,
+            _compareTotalDistanceMeters,
+            _compareDateRange
+          );
 
-          const baseSpeedData = { max: _baseAvgMaxSpeed, avgOrMin: _baseAvgSpeed, dateRange: _baseDateRange };
-          const compareSpeedData = { max: _compareAvgMaxSpeed, avgOrMin: _compareAvgSpeed, dateRange: _compareDateRange};
+          const baseSpeedData = {
+            max: _baseAvgMaxSpeed,
+            avgOrMin: _baseAvgSpeed,
+            dateRange: _baseDateRange,
+          };
+          const compareSpeedData = {
+            max: _compareAvgMaxSpeed,
+            avgOrMin: _compareAvgSpeed,
+            dateRange: _compareDateRange,
+          };
           this._speedPaceTrend.addMixData(baseSpeedData, compareSpeedData);
 
-          const baseCadenceData = { max: _baseAvgRowingMaxCadence, avgOrMin: _baseRowingAvgCadence, dateRange: _baseDateRange };
-          const compareCadenceData = { max: _compareAvgRowingMaxCadence, avgOrMin: _compareRowingAvgCadence, dateRange: _compareDateRange};
+          const baseCadenceData = {
+            max: _baseAvgRowingMaxCadence,
+            avgOrMin: _baseRowingAvgCadence,
+            dateRange: _baseDateRange,
+          };
+          const compareCadenceData = {
+            max: _compareAvgRowingMaxCadence,
+            avgOrMin: _compareRowingAvgCadence,
+            dateRange: _compareDateRange,
+          };
           this._cadenceTrend.addMixData(baseCadenceData, compareCadenceData);
-          
-          const basePowerData = { max: _baseRowingMaxWatt, avgOrMin: _baseRowingAvgWatt, dateRange: _baseDateRange };
-          const comparePowerData = { max: _compareRowingMaxWatt, avgOrMin: _compareRowingAvgWatt, dateRange: _compareDateRange};
+
+          const basePowerData = {
+            max: _baseRowingMaxWatt,
+            avgOrMin: _baseRowingAvgWatt,
+            dateRange: _baseDateRange,
+          };
+          const comparePowerData = {
+            max: _compareRowingMaxWatt,
+            avgOrMin: _compareRowingAvgWatt,
+            dateRange: _compareDateRange,
+          };
           this._powerTrend.addMixData(basePowerData, comparePowerData);
           break;
         }
         case SportType.ball: {
-          this._totalDistanceMetersTrend.addMixData(_baseTotalDistanceMeters, _baseDateRange, _compareTotalDistanceMeters, _compareDateRange);
+          this._totalDistanceMetersTrend.addMixData(
+            _baseTotalDistanceMeters,
+            _baseDateRange,
+            _compareTotalDistanceMeters,
+            _compareDateRange
+          );
 
-          const baseSpeedData = { max: _baseAvgMaxSpeed, avgOrMin: _baseAvgSpeed, dateRange: _baseDateRange };
-          const compareSpeedData = { max: _compareAvgMaxSpeed, avgOrMin: _compareAvgSpeed, dateRange: _compareDateRange};
+          const baseSpeedData = {
+            max: _baseAvgMaxSpeed,
+            avgOrMin: _baseAvgSpeed,
+            dateRange: _baseDateRange,
+          };
+          const compareSpeedData = {
+            max: _compareAvgMaxSpeed,
+            avgOrMin: _compareAvgSpeed,
+            dateRange: _compareDateRange,
+          };
           this._speedPaceTrend.addMixData(baseSpeedData, compareSpeedData);
 
-          const baseXGForceData = { max: _baseMaxGforceX, avgOrMin: _baseMiniGforceX, dateRange: _baseDateRange };
-          const compareXGForceData = { max: _compareMaxGforceX, avgOrMin: _compareMiniGforceX, dateRange: _compareDateRange};
+          const baseXGForceData = {
+            max: _baseMaxGforceX,
+            avgOrMin: _baseMiniGforceX,
+            dateRange: _baseDateRange,
+          };
+          const compareXGForceData = {
+            max: _compareMaxGforceX,
+            avgOrMin: _compareMiniGforceX,
+            dateRange: _compareDateRange,
+          };
           this._xGForceTrend.addMixData(baseXGForceData, compareXGForceData);
 
-          const baseYGForceData = { max: _baseMaxGforceY, avgOrMin: _baseMiniGforceY, dateRange: _baseDateRange };
-          const compareYGForceData = { max: _compareMaxGforceY, avgOrMin: _compareMiniGforceY, dateRange: _compareDateRange};
+          const baseYGForceData = {
+            max: _baseMaxGforceY,
+            avgOrMin: _baseMiniGforceY,
+            dateRange: _baseDateRange,
+          };
+          const compareYGForceData = {
+            max: _compareMaxGforceY,
+            avgOrMin: _compareMiniGforceY,
+            dateRange: _compareDateRange,
+          };
           this._yGForceTrend.addMixData(baseYGForceData, compareYGForceData);
 
-          const baseZGForceData = { max: _baseMaxGforceZ, avgOrMin: _baseMiniGforceZ, dateRange: _baseDateRange };
-          const compareZGForceData = { max: _compareMaxGforceZ, avgOrMin: _compareMiniGforceZ, dateRange: _compareDateRange};
+          const baseZGForceData = {
+            max: _baseMaxGforceZ,
+            avgOrMin: _baseMiniGforceZ,
+            dateRange: _baseDateRange,
+          };
+          const compareZGForceData = {
+            max: _compareMaxGforceZ,
+            avgOrMin: _compareMiniGforceZ,
+            dateRange: _compareDateRange,
+          };
           this._zGForceTrend.addMixData(baseZGForceData, compareZGForceData);
           break;
         }
-
-      };
-
+      }
     });
-
-  };
+  }
 
   /**
    * 統一時區，以utc字串之日期部份進行對齊
@@ -813,7 +1051,6 @@ import { SportsReport } from './sports-report';
     } else {
       this._baseHrZone.add(hrZone);
     }
-
   }
 
   /**
@@ -822,17 +1059,12 @@ import { SportsReport } from './sports-report';
    * @param isCompareData {boolean}-是否為比較數據
    */
   handleDistributionChartData(activity: any, isCompareData: boolean) {
-    const {
-      totalSecond,
-      totalActivities,
-      avgHeartRateBpm,
-      type
-    } = activity;
+    const { totalSecond, totalActivities, avgHeartRateBpm, type } = activity;
     const onePoint = {
       type: +type as SportType,
       totalSecond,
       totalActivities,
-      avgHeartRateBpm
+      avgHeartRateBpm,
     };
 
     if (isCompareData) {
@@ -840,7 +1072,6 @@ import { SportsReport } from './sports-report';
     } else {
       this._baseTypeAllChart.count(onePoint);
     }
-
   }
 
   /**
@@ -864,8 +1095,7 @@ import { SportsReport } from './sports-report';
       default:
         return { start: startTimestamp, end: endTimestamp };
     }
-
-  };
+  }
 
   /**
    * 取得基準日期範圍活動分析用數據（圓環圖/成效分佈圖）
@@ -1013,5 +1243,4 @@ import { SportsReport } from './sports-report';
   get weightTrainingTrend() {
     return this._weightTrainingTrend;
   }
-
 }

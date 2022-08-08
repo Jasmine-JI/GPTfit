@@ -13,8 +13,7 @@ $animation-setting: 0.5s $transition-effect;
   width: $width;
 }
 
-@mixin app-button ($bg-color, $font-color) {
-
+@mixin app-button($bg-color, $font-color) {
   @include button(16px, none, $bg-color) {
     color: $font-color;
     border-radius: 5px;
@@ -22,12 +21,10 @@ $animation-setting: 0.5s $transition-effect;
     min-width: 120px;
     padding: 5px 10px;
     margin: 10px 0;
-  };
-
+  }
 }
 
 @mixin drop-hint($border-top, $border-aside, $border-color) {
-
   &:after {
     content: '';
     border-style: solid;
@@ -35,7 +32,6 @@ $animation-setting: 0.5s $transition-effect;
     border-color: $border-color transparent transparent transparent;
     @include transition(transform);
   }
-
 }
 
 @mixin drop-menu($top, $width, $height: 200px) {
@@ -51,7 +47,7 @@ $animation-setting: 0.5s $transition-effect;
   cursor: pointer;
   @include overflow-y-scroll();
 
-  >li {
+  > li {
     padding: 5px;
     font-size: 14px;
 
@@ -59,9 +55,7 @@ $animation-setting: 0.5s $transition-effect;
       background-color: rgba(100, 100, 100, 1);
       color: white;
     }
-
   }
-
 }
 
 @mixin selector-list($width) {
@@ -74,10 +68,9 @@ $animation-setting: 0.5s $transition-effect;
   align-items: center;
   margin: 3vh 2vw;
 
-  >i {
+  > i {
     font-size: 24px;
   }
-
 }
 
 @mixin tft-page-title($color) {
@@ -135,24 +128,20 @@ $animation-setting: 0.5s $transition-effect;
   padding: 3vh 20px;
   margin-bottom: 10px;
 
-  >p {
-
+  > p {
     &:last-of-type {
       margin: 0;
     }
-
   }
-
 }
 
 .appview-agreeCheckbox {
   width: fit-content;
   margin: 20px 0 20px 20px;
 
-  >div {
+  > div {
     @include aria-checkBox(20px);
   }
-
 }
 
 .appview-buttonArea {
@@ -205,7 +194,6 @@ $animation-setting: 0.5s $transition-effect;
     opacity: 1;
     padding: 2px 0;
   }
-  
 }
 
 .appview-inputBorder {
@@ -257,11 +245,9 @@ $animation-setting: 0.5s $transition-effect;
 }
 
 .appview-showPassword {
-
-  >i {
+  > i {
     font-size: 26px;
   }
-
 }
 
 .appview-breakAccount {
@@ -283,9 +269,7 @@ $animation-setting: 0.5s $transition-effect;
       opacity: 1;
       top: 0;
     }
-
   }
-
 }
 
 .appview-rightSlideIn {
@@ -302,7 +286,5 @@ $animation-setting: 0.5s $transition-effect;
       opacity: 1;
       left: 0;
     }
-
   }
-
 }

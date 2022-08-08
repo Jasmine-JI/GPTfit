@@ -5,7 +5,7 @@ import { ListStatus } from '../models/activity-content';
  * 將活動列表篩選狀態轉為多國語系翻譯的key
  * @author kidin-1101125
  */
-@Pipe({name: 'listStatus'})
+@Pipe({ name: 'listStatus' })
 export class ListStatusPipe implements PipeTransform {
   transform(value: ListStatus): any {
     switch (value) {
@@ -24,7 +24,5 @@ export class ListStatusPipe implements PipeTransform {
       case ListStatus.notAudit:
         return '未審核';
     }
-
   }
-
 }

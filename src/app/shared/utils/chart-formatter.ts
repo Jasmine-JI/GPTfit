@@ -18,16 +18,15 @@ export function getDateTimeLabelFormats() {
     day: '%m/%d',
     week: '%m/%d',
     month: '%Y/%m',
-    year: '%Y'
+    year: '%Y',
   };
-
 }
 
 /**
  * 將時間轉為所需格式(HH:mm:ss)(highchart用)
  * @author kidin=1110418
  */
- export function timeFormatter(value: number = undefined) {
+export function timeFormatter(value: number = undefined) {
   const yVal = value !== undefined ? value : this.y;
   if (yVal === 0) return 0;
 
@@ -53,7 +52,7 @@ export function getDateTimeLabelFormats() {
  * 用於圖表y軸時間轉換成指定格式(HH:mm:ss)
  * @author kidin-1110418
  */
- export function yAxisTimeFormat() {
+export function yAxisTimeFormat() {
   return timeFormatter.bind(this)(this.value);
 }
 
@@ -61,7 +60,7 @@ export function getDateTimeLabelFormats() {
  * 用於圖表y軸時間轉換成指定格式(HH:mm:ss)
  * @author kidin-1110418
  */
- export function yAxisPercentageFormat() {
+export function yAxisPercentageFormat() {
   return `${this.value}%`;
 }
 
@@ -69,7 +68,7 @@ export function getDateTimeLabelFormats() {
  * 用於非心率區間相關圖表浮動框時間轉換成指定格式
  * @author kidin-1110418
  */
- export function tooltipFormat() {
+export function tooltipFormat() {
   const dateRangeIndex = this.point.index;
   const [startTime, endTime] = this.series.options.custom.dateRange[dateRangeIndex];
   return `${dayjs(startTime).format('YYYY-MM-DD')}~${dayjs(endTime).format('YYYY-MM-DD')}
@@ -136,19 +135,17 @@ export function distanceAxisFormat(unit: Unit) {
   const isMetric = unit === Unit.metric;
   let formatter: Function;
   if (isMetric) {
-    formatter = function() {
+    formatter = function () {
       const [yVal, userUnit] = this.value >= 1000 ? [this.value / 1000, 'km'] : [this.value, 'm'];
       return `${mathRounding(yVal, 1)} ${userUnit}`;
     };
-
   } else {
-    formatter = function() {
+    formatter = function () {
       // 大於1英哩才顯示英哩，否則以呎表示
       const miValue = this.value / mi;
       const [yVal, userUnit] = miValue >= 1000 ? [miValue, 'mi'] : [this.value / ft, 'ft'];
-      return `${mathRounding(yVal, 1)} ${userUnit}`;      
-    }
-
+      return `${mathRounding(yVal, 1)} ${userUnit}`;
+    };
   }
 
   return formatter;
@@ -162,18 +159,16 @@ export function distanceTooltipFormat(unit: Unit) {
   const isMetric = unit === Unit.metric;
   let formatter: Function;
   if (isMetric) {
-    formatter = function() {
+    formatter = function () {
       const dateRangeIndex = this.point.index;
       const [startTime, endTime] = this.series.options.custom.dateRange[dateRangeIndex];
-      const [value, suffix] = this.y >= 1000 ? [(this.y / 1000), 'km'] : [this.y, 'm'];
+      const [value, suffix] = this.y >= 1000 ? [this.y / 1000, 'km'] : [this.y, 'm'];
       return `${dayjs(startTime).format('YYYY-MM-DD')}~${dayjs(endTime).format('YYYY-MM-DD')}
         <br/>${this.series.name}: ${mathRounding(value, 1)} ${suffix}
       `;
-
     };
-
   } else {
-    formatter = function() {
+    formatter = function () {
       const dateRangeIndex = this.point.index;
       const [startTime, endTime] = this.series.options.custom.dateRange[dateRangeIndex];
       const miValue = this.y / mi;
@@ -181,9 +176,7 @@ export function distanceTooltipFormat(unit: Unit) {
       return `${dayjs(startTime).format('YYYY-MM-DD')}~${dayjs(endTime).format('YYYY-MM-DD')}
         <br/>${this.series.name}: ${mathRounding(value, 1)} ${suffix}
       `;
-
     };
-
   }
 
   return formatter;
@@ -196,7 +189,8 @@ export function targetAchieveTooltip() {
   const { baseDateRange, compareDateRange } = this.series.options.custom;
   const { index } = this.point;
   const dateRangeIndex = compareDateRange ? Math.floor(index / 2) : index;
-  const [startTime, endTime] = this.y === 1 ? compareDateRange[dateRangeIndex] : baseDateRange[dateRangeIndex];
+  const [startTime, endTime] =
+    this.y === 1 ? compareDateRange[dateRangeIndex] : baseDateRange[dateRangeIndex];
   return `${dayjs(startTime).format('YYYY-MM-DD')}~${dayjs(endTime).format('YYYY-MM-DD')}`;
 }
 
@@ -205,7 +199,7 @@ export function targetAchieveTooltip() {
  * @param unit {string}-圖表數據單位
  */
 export function complexTrendTooltip(unit: string) {
-  const formatter = function() {
+  const formatter = function () {
     const [baseMaxHrInfo, baseAvgHrInfo, compareMaxHrInfo, compareAvgHrInfo] = this.points;
     const getText = (maxInfo: any, avgInfo: any) => {
       const [startDate, endDate] = avgInfo.point.additionalInfo;
@@ -213,13 +207,13 @@ export function complexTrendTooltip(unit: string) {
         <br/>${maxInfo.series.name}: ${mathRounding(maxInfo.y, 1)} ${unit}
         <br/>${avgInfo.series.name}: ${mathRounding(avgInfo.y, 1)} ${unit}
       `;
-    }
+    };
 
     let result = getText(baseMaxHrInfo, baseAvgHrInfo);
     if (compareAvgHrInfo) result += `<br/><br/>${getText(compareMaxHrInfo, compareAvgHrInfo)}`;
 
     return result;
-  }
+  };
 
   return formatter;
 }
@@ -228,9 +222,9 @@ export function complexTrendTooltip(unit: string) {
  * 用於個人最大與平均心率圖表浮動框轉換成指定格式
  * @param isMetric {boolean}-是否為公制單位
  */
- export function bodyWeightTooltip(isMetric = true) {
+export function bodyWeightTooltip(isMetric = true) {
   const unit = isMetric ? 'kg' : 'lb';
-  const formatter = function() {
+  const formatter = function () {
     const [baseFatRateInfo, baseWeightInfo, compareFatRateInfo, compareWeightInfo] = this.points;
     const getText = (fatRateInfo: any, weightInfo: any) => {
       const [startDate, endDate] = weightInfo.point.additionalInfo;
@@ -244,7 +238,7 @@ export function complexTrendTooltip(unit: string) {
     if (compareWeightInfo) result += `<br/><br/>${getText(compareFatRateInfo, compareWeightInfo)}`;
 
     return result;
-  }
+  };
 
   return formatter;
 }
@@ -254,7 +248,7 @@ export function complexTrendTooltip(unit: string) {
  */
 export function paceTooltipFormatter(sportType: SportType, userUnit: Unit) {
   const unit = getPaceUnit(sportType, userUnit);
-  const formatter = function() {
+  const formatter = function () {
     const [baseMaxPaceInfo, baseAvgPaceInfo, compareMaxPaceInfo, compareAvgPaceInfo] = this.points;
     const getText = (maxPaceInfo: any, avgPaceInfo: any) => {
       const [startDate, endDate] = avgPaceInfo.point.additionalInfo;
@@ -265,10 +259,11 @@ export function paceTooltipFormatter(sportType: SportType, userUnit: Unit) {
     };
 
     let result = getText(baseMaxPaceInfo, baseAvgPaceInfo);
-    if (compareAvgPaceInfo) result += `<br/><br/>${getText(compareMaxPaceInfo, compareAvgPaceInfo)}`;
+    if (compareAvgPaceInfo)
+      result += `<br/><br/>${getText(compareMaxPaceInfo, compareAvgPaceInfo)}`;
 
     return result;
-  }
+  };
 
   return formatter;
 }

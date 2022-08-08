@@ -1,10 +1,65 @@
 function checkID(type, id) {
   const tab = 'ABCDEFGHJKLMNPQRSTUVXYWZIO';
   const tabByForegin = 'ABCD';
-  const A1 = new Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3);
-  const A2 = new Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5);
+  const A1 = new Array(
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3
+  );
+  const A2 = new Array(
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  );
   const Mx = new Array(9, 8, 7, 6, 5, 4, 3, 2, 1, 1);
-  if (type === '1') { // 驗證身分證
+  if (type === '1') {
+    // 驗證身分證
     if (id.length !== 10) return false;
     const i = tab.indexOf(id.charAt(0).toUpperCase());
     if (i === -1) return false;
@@ -19,7 +74,8 @@ function checkID(type, id) {
     return true;
   }
 
-  if (type === '3') { // 驗證居留證
+  if (type === '3') {
+    // 驗證居留證
     if (!/^[A-Za-z][A-Da-d][\d]{8}$/.test(id)) return false;
     const firstLetter = tab.indexOf(id.charAt(0).toUpperCase());
     if (firstLetter === -1) return false;
@@ -46,5 +102,5 @@ function getNowTime() {
 }
 module.exports = {
   checkID,
-  getNowTime
+  getNowTime,
 };

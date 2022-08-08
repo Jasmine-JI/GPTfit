@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { GlobalEventsManager } from '../../shared/global-events-manager';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
@@ -14,10 +14,9 @@ import { setLocalStorageObject, getLocalStorageObject } from '../../shared/utils
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'portal',
   templateUrl: './portal.component.html',
-  styleUrls: ['./portal.component.scss']
+  styleUrls: ['./portal.component.scss'],
 })
 export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
-
   private ngUnsubscribe = new Subject();
 
   @ViewChild('system_T1') systemT1: ElementRef;
@@ -41,9 +40,9 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     isMaskShow: false,
     isCollapseOpen: false,
     darkMode: false,
-    showActivityEntry: false
+    showActivityEntry: false,
   };
-  
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -55,7 +54,6 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     if (location.search.indexOf('ipm=s') > -1) {
       this.uiFlag.isPreviewMode = true;
     }
-
   }
 
   ngOnInit() {
@@ -70,8 +68,8 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     // 使用setTimeout處理ExpressionChangedAfterItHasBeenCheckedError報錯
     setTimeout(() => this.checkUiSetting());
-    window.scrollTo({top: 0, behavior: 'auto'});
-    this.checkLanguage();  // 因應手機平台，故在此生命週期再判斷一次語系
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    this.checkLanguage(); // 因應手機平台，故在此生命週期再判斷一次語系
   }
 
   /**
@@ -79,38 +77,30 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    * @author Kidin-1081023
    */
   checkBrowser() {
-    this.translateService.onLangChange.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    this.translateService.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.detectInappService.checkBrowser();
     });
-
   }
 
   /**
    * 確認ui設定（隱藏導行列、暗黑模式等）
    * @author kidin-1101229
    */
-  checkUiSetting () {
-    combineLatest([
-      this.utilsService.getHideNavbarStatus(),
-      this.utilsService.getDarkModeStatus()
-    ]).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(result => {
-      const [rxHideNavbar, rxDarkMode] = result;
-      const hideNavbarQuery = this.route.snapshot.queryParamMap.get('navbar') === '0';
-      this.uiFlag.hideNavbar = hideNavbarQuery || rxHideNavbar;
-      this.uiFlag.darkMode = rxDarkMode;
-      const target = document.querySelector('body');
-      if (rxDarkMode) {
-        target.style.backgroundColor = 'black';
-      } else {
-        target.style.backgroundColor = 'white';
-      }
-
-    });
-
+  checkUiSetting() {
+    combineLatest([this.utilsService.getHideNavbarStatus(), this.utilsService.getDarkModeStatus()])
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((result) => {
+        const [rxHideNavbar, rxDarkMode] = result;
+        const hideNavbarQuery = this.route.snapshot.queryParamMap.get('navbar') === '0';
+        this.uiFlag.hideNavbar = hideNavbarQuery || rxHideNavbar;
+        this.uiFlag.darkMode = rxDarkMode;
+        const target = document.querySelector('body');
+        if (rxDarkMode) {
+          target.style.backgroundColor = 'black';
+        } else {
+          target.style.backgroundColor = 'white';
+        }
+      });
   }
 
   /**
@@ -152,7 +142,6 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
         this.uiFlag.page = 'other';
         break;
     }
-
   }
 
   /**
@@ -181,7 +170,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (browserLang === 'pt-br') {
       browserLang = 'pt-pt'; // 巴西語預設顯示葡萄牙語-kidin-1091203
-    } else if (langList.findIndex(_locale => _locale === browserLang) === -1) {
+    } else if (langList.findIndex((_locale) => _locale === browserLang) === -1) {
       browserLang = 'en-us'; // default en-us
     }
 
@@ -220,11 +209,9 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
         default:
           return 'en-us';
       }
-
     } else {
       return 'en-us';
     }
-
   }
 
   /**
@@ -232,10 +219,9 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    * @author kidin-1091008
    */
   handleShowNavBar() {
-    this.globalEventsManager.showNavBarEmitter.subscribe(mode => {
+    this.globalEventsManager.showNavBarEmitter.subscribe((mode) => {
       this.uiFlag.isMaskShow = mode;
     });
-
   }
 
   /**
@@ -244,14 +230,11 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   listenTargetImg() {
     const mainSection = document.querySelector('.main'),
-          scrollEvent = fromEvent(mainSection, 'scroll');
+      scrollEvent = fromEvent(mainSection, 'scroll');
 
-    scrollEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    scrollEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.slideImg((e as any).target.scrollTop);
-    })
-    
+    });
   }
 
   /**
@@ -260,21 +243,18 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    * @author kidin-1091014
    */
   slideImg(scrollTop: number) {
-
     setTimeout(() => {
       const targetImg = [
         `${this.uiFlag.page}T1`,
         `${this.uiFlag.page}T2`,
         `${this.uiFlag.page}T3`,
-        `${this.uiFlag.page}T4`
+        `${this.uiFlag.page}T4`,
       ];
 
-      targetImg.forEach(_img => {
+      targetImg.forEach((_img) => {
         const imgElement = document.getElementById(_img);
         if (imgElement) {
-          
-          if (scrollTop + (window.innerHeight * 2 / 3) >= imgElement.offsetTop) {
-
+          if (scrollTop + (window.innerHeight * 2) / 3 >= imgElement.offsetTop) {
             switch (_img) {
               case 'systemT1':
               case 'applicationT4':
@@ -290,15 +270,10 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.addClass(imgElement, 'bottom__slide__in');
                 break;
             }
-            
           }
-
         }
-
-      })
-
-    })
-
+      });
+    });
   }
 
   /**
@@ -311,16 +286,15 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     let classList = el.className.split(' ');
 
     if (classList.indexOf('hide__slide__img') > -1) {
-      classList = classList.filter(_class => _class !== 'hide__slide__img');
+      classList = classList.filter((_class) => _class !== 'hide__slide__img');
     }
 
     if (classList.indexOf(name) < 0) {
-      classList.push(name); 
+      classList.push(name);
       el.className = classList.join(' ');
     }
-
   }
-  
+
   /**
    * 遮罩顯示與否
    * @author kidin-1091008
@@ -341,12 +315,11 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     const url = `/introduction/${e}`;
     this.router.navigateByUrl(url);
     this.uiFlag.page = e;
-    window.scrollTo({top: 0, behavior: 'auto'});
+    window.scrollTo({ top: 0, behavior: 'auto' });
 
     setTimeout(() => {
       this.listenTargetImg();
-    })
-    
+    });
   }
 
   /**
@@ -371,19 +344,30 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
 
     switch (code) {
       case 1:
-        window.open(`https://www.attacusfitness.com/gpt/lang/${lang}/id/38`, '_blank', 'noopener=yes,noreferrer=yes');
+        window.open(
+          `https://www.attacusfitness.com/gpt/lang/${lang}/id/38`,
+          '_blank',
+          'noopener=yes,noreferrer=yes'
+        );
         break;
       case 2:
-        window.open(`https://www.attacusfitness.com/products/${lang}/id/3`, '_blank', 'noopener=yes,noreferrer=yes');
+        window.open(
+          `https://www.attacusfitness.com/products/${lang}/id/3`,
+          '_blank',
+          'noopener=yes,noreferrer=yes'
+        );
         break;
       case 3:
         this.switchPage('application');
         break;
       case 4:
-        window.open(`https://www.attacusfitness.com/contact/lang/${lang}`, '_blank', 'noopener=yes,noreferrer=yes');
+        window.open(
+          `https://www.attacusfitness.com/contact/lang/${lang}`,
+          '_blank',
+          'noopener=yes,noreferrer=yes'
+        );
         break;
     }
-
   }
 
   /**
@@ -394,5 +378,4 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

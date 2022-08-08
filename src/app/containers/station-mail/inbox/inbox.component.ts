@@ -1,4 +1,12 @@
-import { Component, OnInit, OnDestroy, Input, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  Input,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+} from '@angular/core';
 import { StationMailService } from '../services/station-mail.service';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
@@ -15,10 +23,9 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-inbox',
   templateUrl: './inbox.component.html',
-  styleUrls: ['./inbox.component.scss', '../station-mail-child.scss']
+  styleUrls: ['./inbox.component.scss', '../station-mail-child.scss'],
 })
 export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
-
   @Input() isBriefList = false;
   @ViewChild('keywordInput') keywordInput: ElementRef;
 
@@ -34,8 +41,8 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
     isLoading: false,
     currentFoucusId: null,
     openSelectMode: false,
-    selectAll: false
-  }
+    selectAll: false,
+  };
 
   /**
    * 站內信清單
@@ -46,7 +53,6 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
    * 備份清單
    */
   backupList: Array<any> = [];
-
 
   todayDate = dayjs().format('YYYY-MM-DD');
   yesterdayDate = dayjs().subtract(1, 'day').format('YYYY-MM-DD');
@@ -60,7 +66,7 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
     private api50xxService: Api50xxService,
     private authService: AuthService,
     private translateService: TranslateService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.checkScreenWidth();
@@ -88,25 +94,20 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   subscribeResizeEvent() {
     const resizeEvent = fromEvent(window, 'resize');
-    this.resizeEventSubscription = resizeEvent.pipe(
-      debounceTime(1000),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
-      this.checkScreenWidth();
-    });
-
+    this.resizeEventSubscription = resizeEvent
+      .pipe(debounceTime(1000), takeUntil(this.ngUnsubscribe))
+      .subscribe((e) => {
+        this.checkScreenWidth();
+      });
   }
 
   /**
    * 訂閱語言改變事件
    */
   subscribeLanguageChange() {
-    this.translateService.onLangChange.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.translateService.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.refreshMailList();
     });
-
   }
 
   /**
@@ -116,7 +117,7 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
   refreshMailList(init = false) {
     if (!this.uiFlag.isLoading) {
       this.uiFlag.isLoading = true;
-      this.stationMailService.refreshMailList().subscribe(res => {
+      this.stationMailService.refreshMailList().subscribe((res) => {
         this.handleMailList(res);
         this.uiFlag.isLoading = false;
 
@@ -124,51 +125,41 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
           this.subscribeMailList();
           this.checkPathName();
         }
-
       });
-
     }
-
   }
 
   /**
    * 訂閱新訊息狀態，以自動更新信件列表
    */
   subscribeNewMailNotify() {
-    this.stationMailService.rxNewMailNotify.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(status => {
-      if (status) this.refreshMailList();
-    });
-
+    this.stationMailService.rxNewMailNotify
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((status) => {
+        if (status) this.refreshMailList();
+      });
   }
 
   /**
    * 訂閱網址變更事件
    */
   subscribeRouteChange() {
-    this.router.events.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.router.events.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       if (e instanceof NavigationEnd) this.checkPathName();
     });
-
   }
 
   /**
    * 訂閱信件列表更新，方便其他組件直接對收件匣更新信件列表
    */
   subscribeMailList() {
-    this.stationMailService.rxMailList.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
+    this.stationMailService.rxMailList.pipe(takeUntil(this.ngUnsubscribe)).subscribe((res) => {
       this.handleMailList(res);
     });
-
   }
 
   /**
-   * 
+   *
    * @param list {Array<any>}-信件清單
    */
   handleMailList(list: Array<any>) {
@@ -188,17 +179,19 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
         const { id } = mailList[0];
         this.seeDetail(id);
       }
-
     }
-
   }
 
   /**
    * 前往信件詳細頁面
    */
   seeDetail(messageId: number) {
-    const { stationMail: { home, mailDetail } } = appPath;
-    this.router.navigateByUrl(`/dashboard/${home}/${mailDetail}?${QueryString.messageId}=${messageId}`);
+    const {
+      stationMail: { home, mailDetail },
+    } = appPath;
+    this.router.navigateByUrl(
+      `/dashboard/${home}/${mailDetail}?${QueryString.messageId}=${messageId}`
+    );
   }
 
   /**
@@ -224,7 +217,7 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   handleMailAllSelected() {
     this.uiFlag.selectAll = !this.uiFlag.selectAll;
-    this.backupList = this.backupList.map(_list => {
+    this.backupList = this.backupList.map((_list) => {
       _list.selected = this.uiFlag.selectAll;
       return _list;
     });
@@ -237,27 +230,24 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   deleteMail() {
     const deleteList = this.mailList
-      .map(_list => _list[1])
+      .map((_list) => _list[1])
       .reduce((prev, current) => prev.concat(current))
-      .filter(_list => _list.selected)
-      .map(_list => _list.id);
+      .filter((_list) => _list.selected)
+      .map((_list) => _list.id);
 
     if (deleteList.length > 0) {
       const body = {
         token: this.authService.token,
-        messageId: deleteList
+        messageId: deleteList,
       };
 
-      this.api50xxService.fetchDeleteMessage(body).subscribe(res => {
+      this.api50xxService.fetchDeleteMessage(body).subscribe((res) => {
         if (checkResponse(res)) {
           this.refreshMailList();
           this.stationMailService.saveDeleteList(deleteList);
         }
-
       });
-
     }
-
   }
 
   /**
@@ -266,7 +256,7 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   divideSendDate(lists: Array<any>) {
     const result: any = {};
-    lists.forEach(_list => {
+    lists.forEach((_list) => {
       const sendDate = dayjs(_list.sendTimestamp * 1000).format('YYYY-MM-DD');
       if (!result[sendDate]) result[sendDate] = [];
       result[sendDate].push(_list);
@@ -281,13 +271,11 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
   subscribeKeywordInput() {
     const element = this.keywordInput.nativeElement;
     const keyupEvent = fromEvent(element, 'keyup');
-    this.inputSubscription = keyupEvent.pipe(
-      debounceTime(300),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
-      this.searchMail(e as KeyboardEvent);
-    });
-
+    this.inputSubscription = keyupEvent
+      .pipe(debounceTime(300), takeUntil(this.ngUnsubscribe))
+      .subscribe((e) => {
+        this.searchMail(e as KeyboardEvent);
+      });
   }
 
   /**
@@ -297,7 +285,7 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
   searchMail(e: KeyboardEvent) {
     const keyword = (e as any).target.value.trim();
     if (keyword.length > 0) {
-      const filterList = this.backupList.filter(_list => {
+      const filterList = this.backupList.filter((_list) => {
         const { title, senderName } = _list;
         return title.includes(keyword) || senderName?.includes(keyword);
       });
@@ -306,7 +294,6 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.mailList = this.divideSendDate(this.backupList);
     }
-
   }
 
   /**
@@ -317,5 +304,4 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

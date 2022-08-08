@@ -1,11 +1,9 @@
 import { MuscleGroup } from '../enum/weight-train';
 
-
 /**
  * 處理Array<Object>數據排序相關
  */
 export class SportAnalysisSort {
-
   /**
    * 是否為群組分析資料
    */
@@ -35,8 +33,8 @@ export class SportAnalysisSort {
   }
 
   /**
-  * 設定排序方向
-  */
+   * 設定排序方向
+   */
   changeOrder() {
     this._isAscending = !this._isAscending;
     this.sortData();
@@ -60,7 +58,7 @@ export class SportAnalysisSort {
   /**
    * 取得排序依據
    */
-   get sortType() {
+  get sortType() {
     return this._type;
   }
 
@@ -115,7 +113,6 @@ export class SportAnalysisSort {
         _isGroupAnalysis ? this.sortPersonAvgData() : this.sortNormalData();
         break;
     }
-
   }
 
   /**
@@ -170,9 +167,12 @@ export class SportAnalysisSort {
       const bFirstPrefer = bPrefer && bPrefer.length > 0 ? bPrefer[0] : 0;
 
       // 無運動資料者必排最後
-      return aFirstPrefer > 0 ? (_isAscending ? aFirstPrefer - bFirstPrefer : bFirstPrefer - aFirstPrefer) : 1;
+      return aFirstPrefer > 0
+        ? _isAscending
+          ? aFirstPrefer - bFirstPrefer
+          : bFirstPrefer - aFirstPrefer
+        : 1;
     });
-
   }
 
   /**
@@ -187,9 +187,12 @@ export class SportAnalysisSort {
       const bFirstPrefer = bPrefer && bPrefer.length > 0 ? bPrefer[0] : 0;
 
       // 無重訓資料者必排最後
-      return aFirstPrefer > 0 ? (_isAscending ? aFirstPrefer - bFirstPrefer : bFirstPrefer - aFirstPrefer) : 1;
+      return aFirstPrefer > 0
+        ? _isAscending
+          ? aFirstPrefer - bFirstPrefer
+          : bFirstPrefer - aFirstPrefer
+        : 1;
     });
-
   }
 
   /**
@@ -206,7 +209,6 @@ export class SportAnalysisSort {
       const bWeight = countWeight(bBaseData ? bBaseData[muscle] : [0, 0, 0]);
       return _isAscending ? aWeight - bWeight : bWeight - aWeight;
     });
-
   }
 
   /**
@@ -219,7 +221,6 @@ export class SportAnalysisSort {
       const bValue = b.base[_type] || 0;
       return _isAscending ? aValue - bValue : bValue - aValue;
     });
-
   }
 
   /**
@@ -228,5 +229,4 @@ export class SportAnalysisSort {
   get data() {
     return this._data;
   }
-
 }

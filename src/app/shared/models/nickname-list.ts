@@ -256,5 +256,5 @@ export const nicknameDefaultList = [
   'Worm',
   'Wren',
   'Yak',
-  'Zebra'
-]
+  'Zebra',
+];

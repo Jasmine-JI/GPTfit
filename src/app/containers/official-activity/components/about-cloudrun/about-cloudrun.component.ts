@@ -3,22 +3,21 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-about-cloudrun',
   templateUrl: './about-cloudrun.component.html',
-  styleUrls: ['./about-cloudrun.component.scss']
+  styleUrls: ['./about-cloudrun.component.scss'],
 })
 export class AboutCloudrunComponent implements OnInit {
-
   /**
    * ui會用到的flag
    */
   uiFlag = {
-    progress: 0
+    progress: 0,
   };
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
     const scrollTarget = document.querySelector('.main__page');
-    scrollTarget.scrollTo({top: 0, behavior: 'smooth'});
+    scrollTarget.scrollTo({ top: 0, behavior: 'smooth' });
     this.handleImgLoadingTimeOut();
   }
 
@@ -41,7 +40,5 @@ export class AboutCloudrunComponent implements OnInit {
     setTimeout(() => {
       this.uiFlag.progress = 100;
     }, 10000);
-
   }
-
 }

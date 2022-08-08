@@ -1,32 +1,39 @@
 <div class="flexCol childPageCard">
   <section
     class="flexRow"
-    style="justify-content: flex-end;"
+    style="justify-content: flex-end"
     *ngIf="
-      userSimpleInfo
-      && userSimpleInfo.accessRight <= groupInfo.groupLevel
-      && groupInfo.groupStatus !== 4
-      && groupInfo.groupStatus !== 5
-      && (groupInfo.groupStatus !== 6 || (userSimpleInfo.accessRight < groupInfo.groupLevel && userSimpleInfo.accessRight < 50))
-      && !groupInfo.expired
-      && +groupInfo.commerceStatus === 1
-    "  
+      userSimpleInfo &&
+      userSimpleInfo.accessRight <= groupInfo.groupLevel &&
+      groupInfo.groupStatus !== 4 &&
+      groupInfo.groupStatus !== 5 &&
+      (groupInfo.groupStatus !== 6 ||
+        (userSimpleInfo.accessRight < groupInfo.groupLevel && userSimpleInfo.accessRight < 50)) &&
+      !groupInfo.expired &&
+      +groupInfo.commerceStatus === 1
+    "
   >
     <button
       class="childPageBtn"
       (click)="addGroup('branch')"
       *ngIf="groupInfo.groupLevel === 30 && userSimpleInfo.accessRight <= 30 && !uiFlag.branchFull"
     >
-      <span *ngIf="groupInfo.brandType === 1">{{ 'universal_group_addBranch' | translate}}</span>
-      <span *ngIf="groupInfo.brandType === 2">{{ 'universal_group_addBranchOffice' | translate}}</span>
+      <span *ngIf="groupInfo.brandType === 1">{{ 'universal_group_addBranch' | translate }}</span>
+      <span *ngIf="groupInfo.brandType === 2">{{
+        'universal_group_addBranchOffice' | translate
+      }}</span>
     </button>
     <button
       class="childPageBtn"
       (click)="addGroup('class')"
       *ngIf="groupInfo.groupLevel === 40 && userSimpleInfo.accessRight <= 40 && !uiFlag.classFull"
     >
-      <span *ngIf="groupInfo.brandType === 1">{{ 'universal_group_addCoachingClass' | translate}}</span>
-      <span *ngIf="groupInfo.brandType === 2">{{ 'universal_group_addDepartment' | translate}}</span>
+      <span *ngIf="groupInfo.brandType === 1">{{
+        'universal_group_addCoachingClass' | translate
+      }}</span>
+      <span *ngIf="groupInfo.brandType === 2">{{
+        'universal_group_addDepartment' | translate
+      }}</span>
     </button>
     <button
       class="childPageBtn"
@@ -34,13 +41,21 @@
       [class.btnLoadingStatus]="uiFlag.isLoading"
       (click)="handleEdit()"
     >
-      <span *ngIf="uiFlag.editMode === 'complete'">{{ 'universal_operating_edit' | translate}}</span>
-      <span *ngIf="uiFlag.editMode === 'edit'">{{ 'universal_operating_finishEdit' | translate}}</span>
+      <span *ngIf="uiFlag.editMode === 'complete'">{{
+        'universal_operating_edit' | translate
+      }}</span>
+      <span *ngIf="uiFlag.editMode === 'edit'">{{
+        'universal_operating_finishEdit' | translate
+      }}</span>
     </button>
   </section>
   <section class="architectureSection">
-    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{ 'universal_group_gym' | translate }}</span>
-    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{ 'universal_group_company' | translate }}</span>
+    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{
+      'universal_group_gym' | translate
+    }}</span>
+    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{
+      'universal_group_company' | translate
+    }}</span>
     <div>
       <app-member-capsule
         class="groupListContent"
@@ -61,14 +76,21 @@
     </div>
   </section>
   <section class="architectureSection">
-    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{ 'universal_group_branch' | translate }}</span>
-    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{ 'universal_group_companyBranch' | translate }}</span>
+    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{
+      'universal_group_branch' | translate
+    }}</span>
+    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{
+      'universal_group_companyBranch' | translate
+    }}</span>
     <div
       class="flexRow"
-      style="flex-wrap: wrap;"
-      *ngIf="groupArchitecture.branches && groupArchitecture.branches.length > 0 && groupInfo.brandType; else noData;"
+      style="flex-wrap: wrap"
+      *ngIf="
+        groupArchitecture.branches && groupArchitecture.branches.length > 0 && groupInfo.brandType;
+        else noData
+      "
     >
-      <div class="groupListContent" *ngFor="let _branch of groupArchitecture.branches;">
+      <div class="groupListContent" *ngFor="let _branch of groupArchitecture.branches">
         <app-member-capsule
           [isSubGroupInfo]="true"
           [title]="_branch.groupName"
@@ -89,14 +111,21 @@
     </div>
   </section>
   <section class="architectureSection">
-    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{ 'universal_group_class' | translate }}</span>
-    <span span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{ 'universal_group_department' | translate }}</span>
+    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{
+      'universal_group_class' | translate
+    }}</span>
+    <span span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{
+      'universal_group_department' | translate
+    }}</span>
     <div
       class="flexRow"
-      style="flex-wrap: wrap;"
-      *ngIf="groupArchitecture.coaches && groupArchitecture.coaches.length > 0 && groupInfo.brandType; else noData;"
+      style="flex-wrap: wrap"
+      *ngIf="
+        groupArchitecture.coaches && groupArchitecture.coaches.length > 0 && groupInfo.brandType;
+        else noData
+      "
     >
-      <div class="groupListContent" *ngFor="let _coach of groupArchitecture.coaches;">
+      <div class="groupListContent" *ngFor="let _coach of groupArchitecture.coaches">
         <app-member-capsule
           [isSubGroupInfo]="true"
           [title]="_coach.groupName"
@@ -118,6 +147,6 @@
     </div>
   </section>
   <ng-template #noData>
-    <div style="margin: 5px 5px 5px 10px;">{{'universal_status_noData' | translate}}</div>
+    <div style="margin: 5px 5px 5px 10px">{{ 'universal_status_noData' | translate }}</div>
   </ng-template>
 </div>

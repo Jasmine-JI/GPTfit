@@ -1,9 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { TargetField } from '../models/sport-target';
 
-@Pipe({name: 'targetFieldName'})
+@Pipe({ name: 'targetFieldName' })
 export class TargetFieldNamePipe implements PipeTransform {
-
   constructor() {}
 
   /**
@@ -29,7 +28,5 @@ export class TargetFieldNamePipe implements PipeTransform {
       case 'distance':
         return 'universal_activityData_totalDistance';
     }
-
   }
-
 }

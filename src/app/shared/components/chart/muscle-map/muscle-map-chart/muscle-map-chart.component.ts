@@ -1,4 +1,14 @@
-import { Component, OnInit, OnChanges, OnDestroy, Input, ChangeDetectorRef, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnChanges,
+  OnDestroy,
+  Input,
+  ChangeDetectorRef,
+  SimpleChanges,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -9,14 +19,12 @@ import { ReportDateType, ReportCondition } from '../../../../models/report-condi
 import { mathRounding } from '../../../../utils/index';
 import { getWeightTrainingLevelText } from '../../../../utils/sports';
 
-
 @Component({
   selector: 'app-muscle-map-chart',
   templateUrl: './muscle-map-chart.component.html',
-  styleUrls: ['./muscle-map-chart.component.scss']
+  styleUrls: ['./muscle-map-chart.component.scss'],
 })
 export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
-
   private ngUnsubscribe = new Subject();
   private mouseoverSubscription = new Subscription();
 
@@ -31,14 +39,13 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
    * ui 用到的flag
    */
   uiFlag = {
-    dateType: <ReportDateType>'base'
+    dateType: <ReportDateType>'base',
   };
 
   baseUrl = window.location.href;
   levelText: any = metacarpus;
   bodyWeight = 60;
   dataIndex = 0;
-
 
   constructor(
     private translate: TranslateService,
@@ -66,8 +73,10 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
    */
   clearColor() {
     // 先將顏色清除後再重新上色-kidin-1081128
-    const allBodyPath = Array.from(document.querySelectorAll('.resetColor') as NodeListOf<HTMLElement>);
-    allBodyPath.forEach(body => {
+    const allBodyPath = Array.from(
+      document.querySelectorAll('.resetColor') as NodeListOf<HTMLElement>
+    );
+    allBodyPath.forEach((body) => {
       body.style.fill = 'none';
     });
   }
@@ -77,37 +86,38 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
    */
   initMuscleMap() {
     this.clearColor();
-    const { uiFlag: { dateType }, dataIndex, data } = this;
+    const {
+      uiFlag: { dateType },
+      dataIndex,
+      data,
+    } = this;
     const rangeData = data ? data[dateType] : [];
     if (rangeData.length > 0) {
       const assignData = rangeData[dataIndex].max1RM;
-      Object.entries(assignData).forEach(_data => {
+      Object.entries(assignData).forEach((_data) => {
         this.assignMuscleMapColor(_data);
       });
-
     }
-
   }
 
   /**
    * 確認訓練程度顏色標示
    */
   checkColorHintBar() {
-    this.userService.getUser().rxUserProfile.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(userProfile => {
-      const { weightTrainingStrengthLevel, bodyWeight } = userProfile;
-      this.bodyWeight = bodyWeight;
-      this.levelText = getWeightTrainingLevelText(weightTrainingStrengthLevel);
-    });
-
+    this.userService
+      .getUser()
+      .rxUserProfile.pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((userProfile) => {
+        const { weightTrainingStrengthLevel, bodyWeight } = userProfile;
+        this.bodyWeight = bodyWeight;
+        this.levelText = getWeightTrainingLevelText(weightTrainingStrengthLevel);
+      });
   }
 
   /**
    * 初始化滑條
    */
   initSlide() {
-
     setTimeout(() => {
       const sliderBarElement = this.sliderBar.nativeElement;
       const sliderOverYetElement = this.sliderOverYet.nativeElement;
@@ -122,8 +132,7 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
       `;
       sliderRodElement.style.transform = `translateX(${width}px)`;
       this.initMuscleMap();
-    })
-
+    });
   }
 
   /**
@@ -142,14 +151,11 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
     const touchMoveEvent = fromEvent(targetElement, 'touchmove');
     const mouseUpEvent = fromEvent(document, 'mouseup');
     const touchCancelEvent = fromEvent(document, 'touchcancel');
-    this.mouseoverSubscription = merge(mouseMoveEvent, touchMoveEvent).pipe(
-      takeUntil(mouseUpEvent),
-      takeUntil(touchCancelEvent),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe((e: any) => {
-      this.dateSlide(e);
-    });
-
+    this.mouseoverSubscription = merge(mouseMoveEvent, touchMoveEvent)
+      .pipe(takeUntil(mouseUpEvent), takeUntil(touchCancelEvent), takeUntil(this.ngUnsubscribe))
+      .subscribe((e: any) => {
+        this.dateSlide(e);
+      });
   }
 
   /**
@@ -197,10 +203,9 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
     const [muscleCode, color] = colorSetting;
     const targetClassName = this.getTargetClassName(muscleCode);
     const targetElement = document.querySelectorAll(targetClassName) as NodeListOf<HTMLElement>;
-    targetElement.forEach(_element => {
+    targetElement.forEach((_element) => {
       _element.style.fill = color;
     });
-
   }
 
   /**
@@ -265,10 +270,9 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
         return '.ankleFlexor';
       case MuscleCode.gastrocnemius:
         return '.gastrocnemius';
-      case MuscleCode.wristFlexor:;
+      case MuscleCode.wristFlexor:
         return '.wristFlexor';
     }
-
   }
 
   /**
@@ -284,14 +288,13 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
    * 解決safari在使用linearGradient時，無法正常顯示的問題
    * @author kidin-1090428
    */
-  fixSvgUrls () {
+  fixSvgUrls() {
     const svgArr = document.querySelectorAll('#linearGradientBar');
     for (let i = 0, len = svgArr.length; i < len; i++) {
       const element = svgArr[i],
-            maskId = element.getAttribute('fill').replace('url(', '').replace(')', '');
+        maskId = element.getAttribute('fill').replace('url(', '').replace(')', '');
       element.setAttribute('fill', `url(${this.baseUrl + maskId})`);
     }
-
   }
 
   /**
@@ -303,5 +306,4 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

@@ -69,13 +69,11 @@
   cursor: pointer;
 
   &:hover {
-    background-color: rgba(235, 235, 235, 1);;
+    background-color: rgba(235, 235, 235, 1);
   }
-
 }
 
 .list__item__unread {
-
   &:before {
     $width: 4px;
     content: '';
@@ -86,7 +84,6 @@
     height: 100%;
     border-radius: $width;
   }
-
 }
 
 .sender__icon {
@@ -99,7 +96,6 @@
 
 .mail__info {
   width: 100%;
-
 }
 
 .mail__title {

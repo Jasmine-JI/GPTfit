@@ -1,16 +1,17 @@
 <div class="flexCol childPageCard">
   <section
     class="flexRow"
-    style="justify-content: flex-end;"
+    style="justify-content: flex-end"
     *ngIf="
-      userSimpleInfo
-      && userSimpleInfo.accessRight <= groupInfo.groupLevel
-      && groupInfo.groupStatus !== 4
-      && groupInfo.groupStatus !== 5
-      && (groupInfo.groupStatus !== 6 || (userSimpleInfo.accessRight < groupInfo.groupLevel && userSimpleInfo.accessRight < 50))
-      && !groupInfo.expired
-      && +groupInfo.commerceStatus === 1
-    "  
+      userSimpleInfo &&
+      userSimpleInfo.accessRight <= groupInfo.groupLevel &&
+      groupInfo.groupStatus !== 4 &&
+      groupInfo.groupStatus !== 5 &&
+      (groupInfo.groupStatus !== 6 ||
+        (userSimpleInfo.accessRight < groupInfo.groupLevel && userSimpleInfo.accessRight < 50)) &&
+      !groupInfo.expired &&
+      +groupInfo.commerceStatus === 1
+    "
   >
     <button
       class="childPageBtn"
@@ -18,19 +19,27 @@
       [class.btnLoadingStatus]="uiFlag.isLoading"
       (click)="handleEdit()"
     >
-      <span *ngIf="uiFlag.editMode === 'complete'">{{ 'universal_operating_edit' | translate}}</span>
-      <span *ngIf="uiFlag.editMode === 'edit'">{{ 'universal_operating_finishEdit' | translate}}</span>
+      <span *ngIf="uiFlag.editMode === 'complete'">{{
+        'universal_operating_edit' | translate
+      }}</span>
+      <span *ngIf="uiFlag.editMode === 'edit'">{{
+        'universal_operating_finishEdit' | translate
+      }}</span>
     </button>
   </section>
   <section class="architectureSection">
-    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{ 'universal_group_brandAdministrator' | translate }}</span>
-    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{ 'universal_group_companyAdmin' | translate }}</span>
+    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{
+      'universal_group_brandAdministrator' | translate
+    }}</span>
+    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{
+      'universal_group_companyAdmin' | translate
+    }}</span>
     <div
       class="flexRow"
-      style="flex-wrap: wrap;"
-      *ngIf="adminList.brand.length > 0 && groupInfo.brandType; else noData;"
+      style="flex-wrap: wrap"
+      *ngIf="adminList.brand.length > 0 && groupInfo.brandType; else noData"
     >
-      <div class="groupListContent" *ngFor="let _brandAdmin of adminList.brand;">
+      <div class="groupListContent" *ngFor="let _brandAdmin of adminList.brand">
         <app-member-capsule
           [isAdminInfo]="true"
           [title]="_brandAdmin.memberName"
@@ -40,9 +49,9 @@
           [userId]="_brandAdmin.memberId"
           [brandType]="this.brandType"
           [isHadMenu]="
-            adminList.brand.length > 1
-            && uiFlag.editMode === 'edit'
-            && userSimpleInfo.accessRight <= 30
+            adminList.brand.length > 1 &&
+            uiFlag.editMode === 'edit' &&
+            userSimpleInfo.accessRight <= 30
           "
           [groupId]="_brandAdmin.groupId"
           [groupLevel]="groupInfo.groupLevel"
@@ -56,14 +65,18 @@
     </div>
   </section>
   <section class="architectureSection">
-    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{ 'universal_group_branchAdministrator' | translate }}</span>
-    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{ 'universal_group_branchAdmin' | translate }}</span>
+    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{
+      'universal_group_branchAdministrator' | translate
+    }}</span>
+    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{
+      'universal_group_branchAdmin' | translate
+    }}</span>
     <div
       class="flexRow"
-      style="flex-wrap: wrap;"
-      *ngIf="adminList.branch.length > 0 && groupInfo.brandType; else noData;"
+      style="flex-wrap: wrap"
+      *ngIf="adminList.branch.length > 0 && groupInfo.brandType; else noData"
     >
-      <div class="groupListContent" *ngFor="let _branchAdmin of adminList.branch;">
+      <div class="groupListContent" *ngFor="let _branchAdmin of adminList.branch">
         <app-member-capsule
           [isAdminInfo]="true"
           [title]="_branchAdmin.memberName"
@@ -73,9 +86,9 @@
           [userId]="_branchAdmin.memberId"
           [brandType]="this.brandType"
           [isHadMenu]="
-            adminList.branch.length > 1
-            && uiFlag.editMode === 'edit'
-            && userSimpleInfo.accessRight <= 40
+            adminList.branch.length > 1 &&
+            uiFlag.editMode === 'edit' &&
+            userSimpleInfo.accessRight <= 40
           "
           [groupId]="_branchAdmin.groupId"
           [groupLevel]="groupInfo.groupLevel"
@@ -89,14 +102,18 @@
     </div>
   </section>
   <section class="architectureSection">
-    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{ 'universal_group_coach' | translate }}</span>
-    <span span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{ 'universal_group_departmentAdmin' | translate }}</span>
+    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{
+      'universal_group_coach' | translate
+    }}</span>
+    <span span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{
+      'universal_group_departmentAdmin' | translate
+    }}</span>
     <div
       class="flexRow"
-      style="flex-wrap: wrap;"
-      *ngIf="adminList.class.length > 0 && groupInfo.brandType; else noData;"
+      style="flex-wrap: wrap"
+      *ngIf="adminList.class.length > 0 && groupInfo.brandType; else noData"
     >
-      <div class="groupListContent" *ngFor="let _coach of adminList.class;">
+      <div class="groupListContent" *ngFor="let _coach of adminList.class">
         <app-member-capsule
           [isAdminInfo]="true"
           [title]="_coach.memberName"
@@ -106,9 +123,9 @@
           [userId]="_coach.memberId"
           [brandType]="this.brandType"
           [isHadMenu]="
-            adminList.class.length > 1
-            && uiFlag.editMode === 'edit'
-            && userSimpleInfo.accessRight <= 50
+            adminList.class.length > 1 &&
+            uiFlag.editMode === 'edit' &&
+            userSimpleInfo.accessRight <= 50
           "
           [groupId]="_coach.groupId"
           [groupLevel]="groupInfo.groupLevel"
@@ -125,10 +142,10 @@
     <span class="contentSubtitle">{{ 'universal_group_teacher' | translate }}</span>
     <div
       class="flexRow"
-      style="flex-wrap: wrap;"
-      *ngIf="adminList.teacher.length > 0 && groupInfo.brandType; else noData;"
+      style="flex-wrap: wrap"
+      *ngIf="adminList.teacher.length > 0 && groupInfo.brandType; else noData"
     >
-      <div class="groupListContent" *ngFor="let _teacher of adminList.teacher;">
+      <div class="groupListContent" *ngFor="let _teacher of adminList.teacher">
         <app-member-capsule
           [isAdminInfo]="true"
           [title]="_teacher.memberName"
@@ -138,9 +155,9 @@
           [userId]="_teacher.memberId"
           [brandType]="this.brandType"
           [isHadMenu]="
-            adminList.teacher.length > 1
-            && uiFlag.editMode === 'edit'
-            && (userSimpleInfo.accessRight <= 60 && userSimpleInfo.accessRight !== 50)
+            adminList.teacher.length > 1 &&
+            uiFlag.editMode === 'edit' &&
+            userSimpleInfo.accessRight <= 60 && userSimpleInfo.accessRight !== 50
           "
           [groupId]="_teacher.groupId"
           [groupLevel]="groupInfo.groupLevel"
@@ -154,6 +171,6 @@
     </div>
   </section>
   <ng-template #noData>
-    <div style="margin: 5px 5px 5px 10px;">{{'universal_status_noData' | translate}}</div>
+    <div style="margin: 5px 5px 5px 10px">{{ 'universal_status_noData' | translate }}</div>
   </ng-template>
 </div>

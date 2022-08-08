@@ -14,19 +14,13 @@
  * 概要資訊各欄位顏色
  */
 @mixin info-color() {
-
   @for $i from 1 through 10 {
-
     &:nth-of-type(#{$i}) {
-
       &:before {
         background-color: hsla(math.div(360 * $i, 10), 100%, 40%, 0.3);
       }
-
     }
-
   }
-
 }
 
 @mixin hrzone-trend-hint($color) {
@@ -41,15 +35,13 @@
     border: 1px solid $color;
     margin-right: 2px;
   }
-
 }
-
 
 $sport-chart-width: 80%;
 $target-list-color: rgba(120, 120, 120, 1);
 $color-dot-hint-size: 20px;
 
-.report-headerIcon{
+.report-headerIcon {
   font-size: 30px;
   color: var(--scale-100-230);
   border: 2px solid var(--scale-100-230);
@@ -98,10 +90,9 @@ $color-dot-hint-size: 20px;
   justify-content: space-between;
   flex-wrap: wrap;
 
-  >div {
+  > div {
     padding: 0px 15px;
   }
-
 }
 
 .report-summaryData {
@@ -149,8 +140,8 @@ $color-dot-hint-size: 20px;
 
 .report-noChartData {
   font-weight: bold;
-  color:grey;
-  margin: 10px 0px 10px 10px
+  color: grey;
+  margin: 10px 0px 10px 10px;
 }
 
 .report-ringChart {
@@ -180,8 +171,8 @@ $color-dot-hint-size: 20px;
   margin-left: 15px;
   min-width: 150px;
 
-  &:hover{
-    cursor: pointer;;
+  &:hover {
+    cursor: pointer;
   }
 }
 
@@ -236,9 +227,7 @@ $color-dot-hint-size: 20px;
     i {
       color: var(--scale-100-230);
     }
-
   }
-
 }
 
 .report-menuSubtitle {
@@ -274,16 +263,13 @@ $color-dot-hint-size: 20px;
     border-top: 10px solid black;
     @include transition(transform);
   }
-
 }
 
 .report-dropMenu--active {
-
   &:after {
     @include transition(transform);
     @include el-rotate(180deg);
   }
-
 }
 
 .report-dropMenuList {
@@ -305,14 +291,12 @@ $color-dot-hint-size: 20px;
       color: white;
       @include transition(background-color);
     }
-
   }
 
   .report-levelOpt {
     text-align: right;
     padding-right: 20px;
   }
-
 }
 
 .report-weightTrainMenu {
@@ -321,7 +305,6 @@ $color-dot-hint-size: 20px;
   &:after {
     margin-left: 10px;
   }
-
 }
 
 .report-cloudrunIcon {
@@ -356,7 +339,6 @@ $color-dot-hint-size: 20px;
   span {
     color: var(--scale-100-205);
   }
-
 }
 
 .report-analysisHeaderRow {
@@ -372,7 +354,6 @@ $color-dot-hint-size: 20px;
     cursor: pointer;
     background-color: rgba(245, 245, 245, 1);
   }
-
 }
 
 .report-analysisRowTitle {
@@ -421,24 +402,21 @@ $color-dot-hint-size: 20px;
   &:hover {
     text-decoration: underline;
   }
-
 }
 
 .report-analysisIcon {
   font-size: 24px;
 }
 
-
 /***************************** media ******************************/
 
-@media (max-width: 991px){
+@media (max-width: 991px) {
   .report-bodyQuality {
     flex-direction: column;
   }
-
 }
 
-@media(max-width: 767px) {
+@media (max-width: 767px) {
   .report-headerSection {
     flex-direction: column;
     justify-content: center;
@@ -461,24 +439,23 @@ $color-dot-hint-size: 20px;
     display: flex;
     flex-direction: column;
 
-    >div {
+    > div {
       width: 100%;
     }
-
   }
 
   .report-headerTitle {
     font-size: 24px;
   }
 
-  .report-ringChart, .report-distributionChartWidth {
+  .report-ringChart,
+  .report-distributionChartWidth {
     width: 100%;
   }
 
   .report-footer {
     flex-direction: column;
   }
-
 }
 
 /**
@@ -502,9 +479,7 @@ $color-dot-hint-size: 20px;
     width: initial;
     flex-shrink: 0;
   }
-
 }
-
 
 /************************************************* 新 report 的樣式 ***********************************/
 
@@ -551,7 +526,6 @@ $color-dot-hint-size: 20px;
     height: 3px;
     width: 100%;
   }
-
 }
 
 .report-baseInfo {
@@ -744,7 +718,6 @@ $color-dot-hint-size: 20px;
     background-color: rgba(255, 48, 110, 1);
     margin-right: 5px;
   }
-
 }
 
 .report-trendChartInfo {
@@ -831,7 +804,6 @@ $color-dot-hint-size: 20px;
     position: relative;
     right: -5px;
   }
-
 }
 
 .report-progression {
@@ -859,21 +831,20 @@ $color-dot-hint-size: 20px;
 /*********************************************************** media *****************************************/
 
 @media (max-width: 950px) {
-
   .report-anlysisChartRow {
     flex-direction: column;
     justify-content: unset;
   }
 
-  .report-ringChartBlock, .report-distributionChartBlock {
+  .report-ringChartBlock,
+  .report-distributionChartBlock {
     width: 100%;
   }
-
 }
 
 @media (max-width: 767px) {
-
-  .report-trendChart, .report-zoneChartInfo {
+  .report-trendChart,
+  .report-zoneChartInfo {
     flex-direction: column;
   }
 
@@ -893,11 +864,9 @@ $color-dot-hint-size: 20px;
   .report-trendInfoColumn {
     align-items: center;
   }
-
 }
 
 @media (max-width: 575px) {
-
   .report-chartHint {
     flex-direction: column;
     align-items: center;
@@ -910,12 +879,12 @@ $color-dot-hint-size: 20px;
     margin: 0 auto;
   }
 
-  .report-baseHint, .report-compareHint {
+  .report-baseHint,
+  .report-compareHint {
     margin: 5px 10px 5px 0;
   }
 
   .report-analysisHintRow {
     justify-content: center;
   }
-
 }

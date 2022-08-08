@@ -1,20 +1,12 @@
 import { Injectable } from '@angular/core';
-import {
-  CanActivate,
-  ActivatedRouteSnapshot,
-  RouterStateSnapshot,
-  Router
-} from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { take, map } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(
-    private authService: AuthService,
-    private router: Router
-    ) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   canActivate(
     next: ActivatedRouteSnapshot,
@@ -29,16 +21,13 @@ export class AuthGuard implements CanActivate {
     this.authService.backUrl = url;
     return this.authService.isLogin.pipe(
       take(1),
-      map(res => {
-        if (res)  return true;
-        
+      map((res) => {
+        if (res) return true;
+
         // 導回登入頁面
         this.router.navigate(['/signIn-web']);
         return false;
       })
-
     );
-
   }
-
 }

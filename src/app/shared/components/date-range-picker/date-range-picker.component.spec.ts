@@ -8,9 +8,8 @@ describe('DateRangePickerComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DateRangePickerComponent ]
-    })
-    .compileComponents();
+      declarations: [DateRangePickerComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

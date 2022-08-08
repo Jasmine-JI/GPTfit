@@ -1,9 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-
-@Pipe({name: 'groupStatus'})
+@Pipe({ name: 'groupStatus' })
 export class GroupStatusPipe implements PipeTransform {
-
   /**
    * 將群組狀態代號轉成多國語系的鍵
    * @param value {number}-群組狀態代號
@@ -27,7 +25,5 @@ export class GroupStatusPipe implements PipeTransform {
       default:
         return 'universal_status_loading';
     }
-
   }
-  
 }

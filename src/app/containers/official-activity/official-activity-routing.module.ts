@@ -22,43 +22,43 @@ const routes: Routes = [
     children: [
       {
         path: 'activity-list',
-        component: ActivityListComponent
+        component: ActivityListComponent,
       },
       {
         path: 'my-activity',
-        component: ActivityListComponent
+        component: ActivityListComponent,
       },
       {
         path: 'activity-detail',
         children: [
           {
             path: ':eventId',
-            component: ActivityDetailComponent
+            component: ActivityDetailComponent,
           },
           {
             path: '',
             redirectTo: '/official-activity/404',
-            pathMatch: 'full'
-          }
-        ]
+            pathMatch: 'full',
+          },
+        ],
       },
       {
         path: 'apply-activity',
         children: [
           {
             path: ':eventId',
-            component: ApplyActivityComponent
+            component: ApplyActivityComponent,
           },
           {
             path: '',
             redirectTo: '/official-activity/404',
-            pathMatch: 'full'
-          }
-        ]
+            pathMatch: 'full',
+          },
+        ],
       },
       {
         path: 'leaderboard',
-        component: LeaderboardComponent
+        component: LeaderboardComponent,
       },
       {
         path: 'contestant-list',
@@ -66,14 +66,14 @@ const routes: Routes = [
           {
             path: ':eventId',
             component: ContestantListComponent,
-            canActivate: [AdminGuard]
+            canActivate: [AdminGuard],
           },
           {
             path: '',
             redirectTo: '/official-activity/404',
-            pathMatch: 'full'
-          }
-        ]
+            pathMatch: 'full',
+          },
+        ],
       },
       {
         path: 'edit-activity',
@@ -82,52 +82,51 @@ const routes: Routes = [
             path: ':eventId',
             component: EditActivityComponent,
             canActivate: [AdminGuard],
-            canDeactivate: [EditGuard]
+            canDeactivate: [EditGuard],
           },
           {
             path: '',
             redirectTo: '/official-activity/404',
-            pathMatch: 'full'
-          }
-        ]
+            pathMatch: 'full',
+          },
+        ],
       },
       {
         path: 'about-cloudrun',
-        component: AboutCloudrunComponent
+        component: AboutCloudrunComponent,
       },
       {
         path: 'contact-us',
-        component: ContactUsComponent
+        component: ContactUsComponent,
       },
       {
         path: 'edit-carousel',
         component: EditCarouselComponent,
-        canActivate: [AdminGuard]
+        canActivate: [AdminGuard],
       },
       {
         path: '403',
-        component: Page403Component
+        component: Page403Component,
       },
       {
         path: '404',
-        component: Page404Component
+        component: Page404Component,
       },
       {
         path: '',
         redirectTo: 'activity-list',
-        pathMatch: 'full'
+        pathMatch: 'full',
       },
       {
         path: '**',
-        redirectTo: '/official-activity/404'
-      }
-    ]
-
-  }
+        redirectTo: '/official-activity/404',
+      },
+    ],
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class OfficialActivityRoutingModule {}

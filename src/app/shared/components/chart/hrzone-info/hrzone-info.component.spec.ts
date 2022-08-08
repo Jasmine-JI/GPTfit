@@ -8,9 +8,8 @@ describe('HrzoneInfoComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ HrzoneInfoComponent ]
-    })
-    .compileComponents();
+      declarations: [HrzoneInfoComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

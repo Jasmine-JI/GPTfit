@@ -8,9 +8,8 @@ describe('AppChangeAccountComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AppChangeAccountComponent ]
-    })
-    .compileComponents();
+      declarations: [AppChangeAccountComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

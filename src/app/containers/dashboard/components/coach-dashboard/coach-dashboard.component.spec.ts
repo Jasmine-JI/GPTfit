@@ -8,9 +8,8 @@ describe('CoachRexComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CoachRexComponent ]
-    })
-    .compileComponents();
+      declarations: [CoachRexComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

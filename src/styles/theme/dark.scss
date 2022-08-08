@@ -27,12 +27,11 @@ $colors-dark: (
   --scale-100-255: rgba(255, 255, 255, 1),
   --scale-75-230: rgba(230, 230, 230, 1),
   --scale-0-255: rgba(255, 255, 255, 1),
-  --003c67-0096ff: #0096ff
+  --003c67-0096ff: #0096ff,
 );
 
 .theme__dark {
   @each $name, $color in $colors-dark {
     #{$name}: $color;
   }
-
 }

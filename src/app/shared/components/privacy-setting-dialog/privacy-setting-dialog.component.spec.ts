@@ -8,9 +8,8 @@ describe('PrivacySettingDialogComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ PrivacySettingDialogComponent ]
-    })
-    .compileComponents();
+      declarations: [PrivacySettingDialogComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

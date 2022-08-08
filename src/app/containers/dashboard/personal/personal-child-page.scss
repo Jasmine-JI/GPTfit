@@ -7,7 +7,6 @@ $warn-color: rgba(255, 75, 75, 1);
 $group-btn-blue: rgba(0, 183, 238, 1);
 $setting-border: 1px solid var(--scale-200-100);
 
-
 .childPageBtn {
   border: 1px solid gray;
   border-radius: 5px;
@@ -21,7 +20,6 @@ $setting-border: 1px solid var(--scale-200-100);
     background-color: rgba(245, 245, 245, 1);
     @include transition(background-color);
   }
-
 }
 
 .editModeBtn {
@@ -87,10 +85,10 @@ $setting-border: 1px solid var(--scale-200-100);
   label {
     margin: 0;
   }
-
 }
 
-.radioText, .mainText {
+.radioText,
+.mainText {
   font-weight: bold;
   color: var(--scale-0-255);
 }
@@ -107,10 +105,9 @@ $setting-border: 1px solid var(--scale-200-100);
 .contentInput {
   width: 30%;
 
-  >input {
+  > input {
     font-weight: bold;
   }
-
 }
 
 .contentDescription {
@@ -154,7 +151,6 @@ $setting-border: 1px solid var(--scale-200-100);
   &:focus {
     border-bottom: 1px solid $primary-blue;
   }
-
 }
 
 .folderIcon {
@@ -168,22 +164,22 @@ $setting-border: 1px solid var(--scale-200-100);
   @include transition(transform);
 }
 
-
 /***************************************************** media *****************************************************/
 
 @media (max-width: 767px) {
-
   .rowContent {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .contentTitle, .contentInput, .contentDescription {
+  .contentTitle,
+  .contentInput,
+  .contentDescription {
     width: 100%;
   }
 
-  .contentTitle, .contentDescription {
+  .contentTitle,
+  .contentDescription {
     font-size: 10pt;
   }
-
 }

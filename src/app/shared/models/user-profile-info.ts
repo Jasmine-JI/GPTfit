@@ -32,9 +32,9 @@ export interface UserProfileInfo {
   normalBedTime?: string;
   normalWakeTime?: string;
   privacy?: {
-    activityTracking: Array<number | string>
-    activityTrackingReport: Array<number | string>
-    lifeTrackingReport: Array<number | string>
+    activityTracking: Array<number | string>;
+    activityTrackingReport: Array<number | string>;
+    lifeTrackingReport: Array<number | string>;
   };
   proteinRate?: number;
   skeletonRate?: number;
@@ -59,7 +59,6 @@ export interface UserProfileInfo {
   themeImgUrl?: string;
   workoutTarget?: PersonalTarget;
 }
-
 
 /**
  * api 1003 或 api 1010內的 signIn物件

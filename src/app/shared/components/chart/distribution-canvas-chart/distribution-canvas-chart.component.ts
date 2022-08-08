@@ -1,4 +1,14 @@
-import { Component, OnInit, Input, OnChanges, OnDestroy, ViewChild, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  OnChanges,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { SportType } from '../../../enum/sports';
 import { changeOpacity, mathRounding } from '../../../utils/index';
@@ -13,10 +23,9 @@ import { GlobalEventsService } from '../../../../core/services/global-events.ser
   selector: 'app-distribution-canvas-chart',
   templateUrl: './distribution-canvas-chart.component.html',
   styleUrls: ['./distribution-canvas-chart.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDestroy {
-
   private ngUnsubscribe = new Subject();
   private pluralEventSubscription = new Subscription();
 
@@ -35,7 +44,7 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
    */
   @Input() selectType: number;
 
-  @ViewChild('container', {static: false})
+  @ViewChild('container', { static: false })
   container: ElementRef;
 
   /**
@@ -83,7 +92,7 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
     save: function (ctx: any, action: string) {
       this.step.push(action);
       ctx.save();
-    }
+    },
   };
 
   /**
@@ -100,34 +109,36 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
       return this.topY + this.blockHeight + this.blockMargin;
     },
     get bottomY() {
-      return this.topY + (this.blockHeight + this.blockMargin) * 2
+      return this.topY + (this.blockHeight + this.blockMargin) * 2;
     },
     get middleX() {
-      return this.leftX + this.blockWidth + this.blockMargin
+      return this.leftX + this.blockWidth + this.blockMargin;
     },
     get rightX() {
-      return this.leftX + (this.blockWidth + this.blockMargin) * 2
-    }
+      return this.leftX + (this.blockWidth + this.blockMargin) * 2;
+    },
   };
 
   constructor(
     private translate: TranslateService,
     private changeDetectorRef: ChangeDetectorRef,
     private globalEventsService: GlobalEventsService
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.handleScale();
     this.subscribePluralEvent();
   }
 
-  ngOnChanges () {
+  ngOnChanges() {
     const { hrRange, data, selectType } = this;
-    of('').pipe(
-      map(() => this.getSportBoundary(hrRange)),
-      map(boundary => this.handlePoint(boundary, data, hrRange, selectType)),
-      map(points => this.drawChart(points))
-    ).subscribe();
+    of('')
+      .pipe(
+        map(() => this.getSportBoundary(hrRange)),
+        map((boundary) => this.handlePoint(boundary, data, hrRange, selectType)),
+        map((points) => this.drawChart(points))
+      )
+      .subscribe();
   }
 
   /**
@@ -139,14 +150,15 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
       resizeEvent,
       this.translate.onLangChange,
       this.globalEventsService.getRxSideBarMode()
-    ).pipe(
-      debounceTime(200),
-      tap(() => this.handleScale()),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      if (this.data) this.drawChart(this.points);
-    });
-
+    )
+      .pipe(
+        debounceTime(200),
+        tap(() => this.handleScale()),
+        takeUntil(this.ngUnsubscribe)
+      )
+      .subscribe(() => {
+        if (this.data) this.drawChart(this.points);
+      });
   }
 
   /**
@@ -166,14 +178,19 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
    * @param hrRange {Array<any>}-心率區間上下限
    * @param selectedType {SportType}-活動分析所選運動類別
    */
-  handlePoint(boundary: Array<number>, data: Array<any>, hrRange: Array<any>, selectedType: SportType) {
+  handlePoint(
+    boundary: Array<number>,
+    data: Array<any>,
+    hrRange: Array<any>,
+    selectedType: SportType
+  ) {
     this.percentage.init();
     this.points = [];
     const { bottomY, middleY, topY, leftX, middleX, rightX } = this.chartBaseOption;
     const [rangeMin, rangeTwo, rangeThree, rangeMax] = boundary;
     const [hrMin, hrMax] = hrRange;
     const [yBottomValue, yMiddleValue, yTopValue] = [0, 1200, 2400];
-    data.forEach(_data => {
+    data.forEach((_data) => {
       const { sportType, avgSecond, avgHeartRateBpm } = _data;
       if ([SportType.all, sportType].includes(selectedType)) {
         let y: number;
@@ -191,9 +208,8 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
 
           this.points.push({
             x: this.getXPoint(avgHeartRateBpm, rangeMin, rangeTwo, leftX, hrMax),
-            y: y
+            y: y,
           });
-
         } else if (avgHeartRateBpm > rangeTwo && avgHeartRateBpm <= rangeThree) {
           if (+avgSecond <= yMiddleValue) {
             y = this.getYPoint(avgSecond, yBottomValue, bottomY);
@@ -208,11 +224,9 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
 
           this.points.push({
             x: this.getXPoint(avgHeartRateBpm, rangeTwo, rangeThree, middleX, hrMax),
-            y: y
+            y: y,
           });
-
         } else if (avgHeartRateBpm > rangeThree) {
-
           if (+avgSecond <= yMiddleValue) {
             y = this.getYPoint(avgSecond, yBottomValue, bottomY);
             this.percentage.count(ChartBlock.rightBottom);
@@ -226,13 +240,10 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
 
           this.points.push({
             x: this.getXPoint(avgHeartRateBpm, rangeThree, rangeMax, rightX, hrMax),
-            y: y
+            y: y,
           });
-
         }
-  
       }
-
     });
 
     return this.points;
@@ -246,7 +257,10 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
     const canvasInitWidth = 480;
     const targetElement = document.querySelector('.report-distributionChartBlock');
     const elementWidth = targetElement.getBoundingClientRect().width;
-    this.canvasScale = mathRounding((elementWidth > maxWidth ? maxWidth : elementWidth) / canvasInitWidth, 2);
+    this.canvasScale = mathRounding(
+      (elementWidth > maxWidth ? maxWidth : elementWidth) / canvasInitWidth,
+      2
+    );
     this.canvasWidth = Math.ceil(canvasInitWidth * this.canvasScale);
     this.canvasHeight = Math.ceil((canvasInitWidth / 1.9) * this.canvasScale);
     this.changeDetectorRef.markForCheck();
@@ -276,7 +290,7 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
           width: 16,
           length: 195,
           barWidth: 6,
-          barLength: 185
+          barLength: 185,
         };
 
         ctx.beginPath();
@@ -297,7 +311,7 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
           width: 16,
           length: 425,
           barWidth: 6,
-          barLength: 415
+          barLength: 415,
         };
 
         ctx.beginPath();
@@ -314,18 +328,18 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
         // 軸文字顏色與文字對齊位置
         this.ctxStatus.save(ctx, 'axisText');
         ctx.fillStyle = DISTRIBUTION_CHART_COLOR.axisText;
-        ctx.textAlign = "center";
+        ctx.textAlign = 'center';
 
         // y軸文字
         ctx.font = 'bold 14px Microsoft JhengHei';
         this.ctxStatus.save(ctx, 'position_1');
-        ctx.translate(20, 110);  // 指定文字位置
-        ctx.rotate((Math.PI / 180) * 270);  // canvas旋轉使用單位為弧度
+        ctx.translate(20, 110); // 指定文字位置
+        ctx.rotate((Math.PI / 180) * 270); // canvas旋轉使用單位為弧度
         ctx.fillText(this.translate.instant('universal_deviceSetting_timer'), 0, 0);
 
         // x軸文字
         this.ctxStatus.restore(ctx, 'position_1');
-        ctx.translate(250, 240);  // 指定文字位置
+        ctx.translate(250, 240); // 指定文字位置
         ctx.fillText(this.translate.instant('universal_activityData_hrZone'), 0, 0);
 
         // 九宮格
@@ -349,14 +363,16 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
         ctx.font = '100 6px Microsoft JhengHei';
         ctx.strokeStyle = this.floatText ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 1)';
         const symbol = '✛';
-        points.forEach(_point => {
+        points.forEach((_point) => {
           const { x, y } = _point;
           ctx.strokeText(symbol, x, y);
         });
 
         // 九宮格文字（最後再畫避免被落點覆蓋）
         allPercentage.forEach((_percentage, _index) => {
-          const { text: { content, shadow, x: textX, y: textY } } = this.getBlockSet(_index);
+          const {
+            text: { content, shadow, x: textX, y: textY },
+          } = this.getBlockSet(_index);
           ctx.font = '700 10px Microsoft JhengHei';
           const completeContent = `${this.translate.instant(content)}${_percentage}%`;
           const outlineColor = this.floatText ? shadow : changeOpacity(shadow, 0.5);
@@ -369,7 +385,6 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
 
       this.changeDetectorRef.markForCheck();
     });
-
   }
 
   /**
@@ -380,16 +395,15 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
    * @returns {number}-y軸落點
    * @author kidin-1090131
    */
-  getYPoint (y: number, min: number, yStart: number) {
+  getYPoint(y: number, min: number, yStart: number) {
     const yRange = 1200;
     const yMax = 3600;
     const { topY, blockPadding, blockHeight } = this.chartBaseOption;
     if (y / yMax >= 1) {
       return topY + blockPadding * 2;
     } else {
-      return yStart + blockHeight - (((y - min) / yRange) * (blockHeight - blockPadding * 2));
+      return yStart + blockHeight - ((y - min) / yRange) * (blockHeight - blockPadding * 2);
     }
-
   }
 
   /**
@@ -402,14 +416,13 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
    * @returns {number}-x軸落點
    * @author kidin-1090131
    */
-  getXPoint (x: number, min: number, max: number, xStart: number, xMax: number) {
+  getXPoint(x: number, min: number, max: number, xStart: number, xMax: number) {
     const { blockPadding, blockWidth } = this.chartBaseOption;
     if (x > xMax) {
       return xStart + blockWidth - blockPadding;
     } else {
-      return ((x - min) / (max - min) * (blockWidth - blockPadding * 2)) + xStart;
+      return ((x - min) / (max - min)) * (blockWidth - blockPadding * 2) + xStart;
     }
-
   }
 
   /**
@@ -417,14 +430,7 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
    * @param index {number}-該區塊序列
    */
   getBlockSet(index: number) {
-    const { 
-      leftX,
-      topY,
-      middleY,
-      bottomY,
-      middleX,
-      rightX
-     } = this.chartBaseOption;
+    const { leftX, topY, middleY, bottomY, middleX, rightX } = this.chartBaseOption;
 
     const set = {
       x: 0,
@@ -435,7 +441,7 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
         content: '',
         shadow: '',
         x: 0,
-        y: 0
+        y: 0,
       },
       update: function (x: number, y: number, colorSet: any, content: string) {
         const { background, fill, textShadow } = colorSet;
@@ -449,9 +455,7 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
           x: this.x + 10,
           y: this.y + 15,
         };
-
-      }
-
+      },
     };
 
     let content: string;
@@ -492,7 +496,7 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
         content = 'universal_activityData_shortBurstTraining';
         set.update(rightX, bottomY, DISTRIBUTION_CHART_COLOR.rightBottom, content);
         break;
-    };
+    }
 
     return set;
   }
@@ -523,7 +527,7 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
     };
 
     const { blockWidth, blockPadding } = this.chartBaseOption;
-    const maxLineWidth = blockWidth - blockPadding * 6;  // 避免文字太貼邊
+    const maxLineWidth = blockWidth - blockPadding * 6; // 避免文字太貼邊
     let line = '';
     const words = text.split(' ');
     words.forEach((_word, _index) => {
@@ -532,11 +536,10 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
       if (testLineWidth > maxLineWidth && _index > 0) {
         overlapText(line, x, y);
         line = `${_word} `;
-        y += 12;  // 根據字高偏移下行文字y軸位置
+        y += 12; // 根據字高偏移下行文字y軸位置
       } else {
         line = testLine;
       }
-
     });
 
     overlapText(line, x, y);
@@ -546,7 +549,7 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
    * 圖表文字上浮與否
    * @author kidin-1110421
    */
-  floatChartText () {
+  floatChartText() {
     this.floatText = !this.floatText;
     this.drawChart(this.points);
   }
@@ -558,5 +561,4 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

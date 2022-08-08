@@ -1,13 +1,13 @@
 import {
-    Component,
-    OnInit,
-    Output,
-    EventEmitter,
-    Input,
-    ViewChild,
-    OnChanges,
-    ElementRef,
-    OnDestroy
+  Component,
+  OnInit,
+  Output,
+  EventEmitter,
+  Input,
+  ViewChild,
+  OnChanges,
+  ElementRef,
+  OnDestroy,
 } from '@angular/core';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
 import { ImageCropperComponent } from 'ngx-image-cropper';
@@ -20,15 +20,14 @@ import { advertiseRatio } from '../../../containers/official-activity/models/off
 @Component({
   selector: 'app-image-cropper',
   templateUrl: './image-cropper.component.html',
-  styleUrls: ['./image-cropper.component.scss']
+  styleUrls: ['./image-cropper.component.scss'],
 })
 export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
-
   @Input() imgInputEvent: any;
-  @Input() albumType: AlbumType = 1;  // 參考api 8001的albumType
+  @Input() albumType: AlbumType = 1; // 參考api 8001的albumType
   @Output() closeSelector = new EventEmitter();
-  @ViewChild('imgUpload', {static: false}) imgUpload: ElementRef;
-  @ViewChild(ImageCropperComponent, {static: false}) imageCropper: ImageCropperComponent;
+  @ViewChild('imgUpload', { static: false }) imgUpload: ElementRef;
+  @ViewChild(ImageCropperComponent, { static: false }) imageCropper: ImageCropperComponent;
 
   private ngUnsubscribe = new Subject();
 
@@ -38,17 +37,17 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
   uiFlag = {
     isImgUpLoading: false,
     imgCropping: false,
-    selectedImg: false
+    selectedImg: false,
   };
 
   /**
    * imagecropping要用到的各種設定
    */
   imageCropSetting = {
-    imageChangedEvent: <any>null,  // 設null可初始化變更事件
-    aspectRatio: <number>1,  // 圖片比例
+    imageChangedEvent: <any>null, // 設null可初始化變更事件
+    aspectRatio: <number>1, // 圖片比例
     roundCropper: false,
-    maintainAspectRatio: true
+    maintainAspectRatio: true,
   };
 
   /**
@@ -59,17 +58,13 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
     img: {
       albumType: this.albumType,
       base64: null,
-      origin: null
-    }
+      origin: null,
+    },
   };
-  
 
-  constructor(
-    private utils: UtilsService
-  ) { }
+  constructor(private utils: UtilsService) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   /**
    * 根據圖片類型設定圖片裁切形狀和比例
@@ -110,7 +105,6 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
     if (this.imgInputEvent !== null) {
       this.handleImgSelected(this.imgInputEvent);
     }
-
   }
 
   /**
@@ -138,7 +132,7 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
   handleImgSelected(e: any) {
     this.uiFlag.isImgUpLoading = true;
     this.uiFlag.selectedImg = true;
-    this.result.img.origin = e;  // 將事件儲存起來讓使用者可再次編輯
+    this.result.img.origin = e; // 將事件儲存起來讓使用者可再次編輯
     this.imageCropSetting.imageChangedEvent = e;
   }
 
@@ -160,11 +154,11 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
   cropperReady() {
     this.uiFlag.isImgUpLoading = false;
   }
-  
+
   /**
    * 圖片載入失敗
    */
-  loadImageFailed () {
+  loadImageFailed() {
     this.utils.openAlert('Image format error! Please try again');
   }
 
@@ -217,5 +211,4 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

@@ -7,11 +7,8 @@
   >
     help_outline
   </mat-icon>
-  <div
-    class="flexCol target__hint__box"
-    *ngIf="uiFlag.showTargetHint"
-  >
-    <img src="/assets/images/target_example.PNG" alt="Target hint">
+  <div class="flexCol target__hint__box" *ngIf="uiFlag.showTargetHint">
+    <img src="/assets/images/target_example.PNG" alt="Target hint" />
     <span class="chart__label">{{ 'universal_lifeTracking_target' | translate }}</span>
     <p class="hint__description">
       {{ '設定運動目標，會在運動報告頁面顯示目標，並計算達成率' | translate }}

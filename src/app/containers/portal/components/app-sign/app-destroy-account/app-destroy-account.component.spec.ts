@@ -8,9 +8,8 @@ describe('AppDestroyAccountComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AppDestroyAccountComponent ]
-    })
-    .compileComponents();
+      declarations: [AppDestroyAccountComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

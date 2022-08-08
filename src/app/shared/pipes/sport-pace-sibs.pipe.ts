@@ -1,9 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { speedToPace } from '../utils/sports';
 
-@Pipe({name: 'sportPaceSibs'})
+@Pipe({ name: 'sportPaceSibs' })
 export class SportPaceSibsPipe implements PipeTransform {
-
   /**
    * 根據運動類型將速度轉成配速(若為bs英制則公里配速轉英哩配速)
    * @param value {number}-速度
@@ -15,5 +14,4 @@ export class SportPaceSibsPipe implements PipeTransform {
     const { value: pace, unit: paceUnit } = speedToPace(value, sportType, unit);
     return showUnit ? `${pace} ${paceUnit}` : pace;
   }
-
 }

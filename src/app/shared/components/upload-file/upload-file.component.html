@@ -1,5 +1,10 @@
-<div class="flexCol ala-upload" style="align-items: center;" [class.avastarLayout]="isUserAvastarMode">
-  <div *ngIf="isImageFileMode"
+<div
+  class="flexCol ala-upload"
+  style="align-items: center"
+  [class.avastarLayout]="isUserAvastarMode"
+>
+  <div
+    *ngIf="isImageFileMode"
     class="ala-upload-image"
     [class.ala-upload-image--vertical]="isImgVertical$ | async"
     [class.avastarMode]="isUserAvastarMode"
@@ -10,16 +15,27 @@
       (click)="closeImgCropping()"
       style="right: -35px; top: -20px"
     >
-      <i class="icon-svg_web-icon_p2_097-ok profile-picture__Ok-icon" style="font-size: 30px; border: 2px solid;"></i>
+      <i
+        class="icon-svg_web-icon_p2_097-ok profile-picture__Ok-icon"
+        style="font-size: 30px; border: 2px solid"
+      ></i>
     </button>
     <img
       *ngIf="!(isUploadNewImg$ | async) && imageURL?.length > 0"
       [src]="imageURL | safeHtml"
       [class.avastarMode]="isUserAvastarMode"
-      (error)="this.imageURL='/assets/images/user2.png'"
-    >
-    <p *ngIf="!(isUploadNewImg$ | async) && !(fileInformation?.link || imageURL)"
-      style="position:absolute;top:50%;left:50%;width:100%;text-align:center;transform:translate(-50%, -50%)"
+      (error)="this.imageURL = '/assets/images/user2.png'"
+    />
+    <p
+      *ngIf="!(isUploadNewImg$ | async) && !(fileInformation?.link || imageURL)"
+      style="
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        text-align: center;
+        transform: translate(-50%, -50%);
+      "
     >
       Choose a file or drag it here
     </p>
@@ -32,17 +48,19 @@
     />
   </div>
   <div [class.ala-upload--descrption]="isImageFileMode">
-    <div style="display: flex; flex-direction: row; justify-content: center;">
+    <div style="display: flex; flex-direction: row; justify-content: center">
       <label class="fileupload">
-        <button class="alatech-btn alatech-btn--default"
+        <button
+          class="alatech-btn alatech-btn--default"
           (click)="handleBtnEvent()"
           *ngIf="!imgCropping"
-          style="line-height: 1;"
+          style="line-height: 1"
           [class.avastarBtn]="isUserAvastarMode"
         >
           {{ 'universal_operating_selectImg' | translate }}
         </button>
-        <input type="file"
+        <input
+          type="file"
           class="fileupload__input"
           [style.height]="isUserAvastarMode ? '130px' : '296px'"
           [style.width]="isUserAvastarMode ? '130px' : '250px'"
@@ -52,9 +70,10 @@
           id="inputFile"
         />
       </label>
-      <button *ngIf="imgSelected && !imgCropping"
+      <button
+        *ngIf="imgSelected && !imgCropping"
         class="alatech-btn alatech-btn--default"
-        style="position: relative; z-index: 2; margin-left: 10px;"
+        style="position: relative; z-index: 2; margin-left: 10px"
         (click)="reEditImg()"
       >
         {{ 'universal_operating_edit' | translate }}
@@ -62,7 +81,7 @@
     </div>
     <div
       *ngIf="isImageFileMode && !imgCropping && !isUserAvastarMode"
-      style="margin-top:15px;font-size:12px;font-weight:400;color:#999;text-align:left"
+      style="margin-top: 15px; font-size: 12px; font-weight: 400; color: #999; text-align: left"
     >
       <!-- *照片格式限{{ accept }} -->
       *{{ accept }}
@@ -71,7 +90,7 @@
 </div>
 
 <div class="imgCropped" *ngIf="imgSelected && imgCropping">
-  <div style="margin-left: 10px; font-size: 30px;">
+  <div style="margin-left: 10px; font-size: 30px">
     <button class="alatech-btn alatech-btn--default imgEditBtn" (click)="rotateLeft()">
       <i class="icon-svg_web-icon_p3_003-left_turn"></i>
     </button>
@@ -97,5 +116,3 @@
     (loadImageFailed)="loadImageFailed()"
   ></image-cropper>
 </div>
-
-

@@ -1,4 +1,12 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, OnDestroy, OnChanges } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnChanges,
+} from '@angular/core';
 import { of, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
@@ -12,7 +20,7 @@ import {
   tooltipPercentageFormat,
   tooltipFormat,
   distanceAxisFormat,
-  distanceTooltipFormat
+  distanceTooltipFormat,
 } from '../../../utils/chart-formatter';
 import { TargetFieldNamePipe } from '../../../pipes/target-field-name.pipe';
 import dayjs from 'dayjs';
@@ -21,14 +29,12 @@ import { UserService } from '../../../../core/services/user.service';
 import { Unit } from '../../../enum/value-conversion';
 import { deepCopy } from '../../../utils/index';
 
-
 @Component({
   selector: 'app-compare-column-trend',
   templateUrl: './compare-column-trend.component.html',
-  styleUrls: ['./compare-column-trend.component.scss', '../chart-share-style.scss']
+  styleUrls: ['./compare-column-trend.component.scss', '../chart-share-style.scss'],
 })
 export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy {
-
   private ngUnsubscribe = new Subject();
 
   @Input() data: Array<any>;
@@ -39,7 +45,7 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
 
   @Input() xAxisTitle: string;
 
-  @ViewChild('container', {static: false})
+  @ViewChild('container', { static: false })
   container: ElementRef;
 
   /**
@@ -52,7 +58,7 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
     private targetFieldNamePipe: TargetFieldNamePipe,
     private globalEventsService: GlobalEventsService,
     private userService: UserService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.subscribeGlobalEvents();
@@ -70,12 +76,14 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
       this.noData = true;
     } else {
       const { data, condition, type } = this;
-      of('').pipe(
-        map(() => this.getRelatedCondition(type, condition)),
-        map(targetLineValue => this.initChart(data, type, targetLineValue)),
-        map(option => this.handleSeriesName(option, type)),
-        map(final => this.createChart(final))
-      ).subscribe();
+      of('')
+        .pipe(
+          map(() => this.getRelatedCondition(type, condition)),
+          map((targetLineValue) => this.initChart(data, type, targetLineValue)),
+          map((option) => this.handleSeriesName(option, type)),
+          map((final) => this.createChart(final))
+        )
+        .subscribe();
 
       this.noData = false;
     }
@@ -85,11 +93,12 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
    * 訂閱全域自定義事件
    */
   subscribeGlobalEvents() {
-    this.globalEventsService.getRxSideBarMode().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.handleChart();
-    });
+    this.globalEventsService
+      .getRxSideBarMode()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.handleChart();
+      });
   }
 
   /**
@@ -99,7 +108,7 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
    * @author kidin-1110418
    */
   getRelatedCondition(type: TargetField, condition: Array<TargetCondition>) {
-    const relatedIndex = condition.findIndex(_condition => _condition.filedName === type);
+    const relatedIndex = condition.findIndex((_condition) => _condition.filedName === type);
     return relatedIndex > -1 ? condition[relatedIndex].filedValue : null;
   }
 
@@ -123,7 +132,7 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
    * @author kidin-1110318
    */
   handleSeriesName(option: any, type: TargetField) {
-    option.series = option.series.map(_series => {
+    option.series = option.series.map((_series) => {
       _series['name'] = this.translate.instant(this.targetFieldNamePipe.transform(type));
       return _series;
     });
@@ -137,7 +146,7 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
    * @author kidin-1110413
    */
   createChart(option: any) {
-    setTimeout (() => {
+    setTimeout(() => {
       if (!this.container) {
         this.createChart(option);
       } else {
@@ -147,19 +156,14 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
     }, 200);
   }
 
-
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }
 
-
 class ChartOption {
-
   private _option = deepCopy(compareChartDefault);
-
 
   constructor(
     data: Array<any>,
@@ -186,7 +190,6 @@ class ChartOption {
     } else {
       this.handleNormalOption(data);
     }
-
   }
 
   /**
@@ -207,42 +210,41 @@ class ChartOption {
       case 'totalTime':
       case 'benefitTime':
         this._option.yAxis['labels'] = {
-          formatter: yAxisTimeFormat
+          formatter: yAxisTimeFormat,
         };
 
         this._option['tooltip'] = {
-          formatter: tooltipTimeFormat
+          formatter: tooltipTimeFormat,
         };
-        
+
         break;
       case 'achievementRate':
         this._option.yAxis['labels'] = {
-          formatter: yAxisPercentageFormat
+          formatter: yAxisPercentageFormat,
         };
 
         this._option['tooltip'] = {
-          formatter: tooltipPercentageFormat
+          formatter: tooltipPercentageFormat,
         };
 
         break;
       case 'distance':
         this._option.yAxis['labels'] = {
-          formatter: distanceAxisFormat(unit)
+          formatter: distanceAxisFormat(unit),
         };
 
         this._option['tooltip'] = {
-          formatter: distanceTooltipFormat(unit)
+          formatter: distanceTooltipFormat(unit),
         };
 
         break;
       default:
         this._option['tooltip'] = {
-          formatter: tooltipFormat
+          formatter: tooltipFormat,
         };
 
         break;
     }
-
   }
 
   /**
@@ -257,23 +259,22 @@ class ChartOption {
       xAxis: {
         ...xAxis,
         type: 'datetime',
-        tickPositions: data[0].custom.dateRange.map(_range => _range[0]),
+        tickPositions: data[0].custom.dateRange.map((_range) => _range[0]),
         labels: {
           ...labels,
-          formatter: function() {
+          formatter: function () {
             return dayjs(this.value).format('MM/DD');
-          }
-        }
+          },
+        },
       },
       plotOptions: {
         ...plotOptions,
         column: {
-          ...plotOptions.column
-        }
+          ...plotOptions.column,
+        },
       },
-      series: data
+      series: data,
     };
-
   }
 
   /**
@@ -290,14 +291,13 @@ class ChartOption {
         ...xAxis,
         title: {
           ...xAxis.title,
-          text: `( ${xAxisTitle} )`
+          text: `( ${xAxisTitle} )`,
         },
         categories,
         crosshair: true,
       },
-      series: chartData
+      series: chartData,
     };
-
   }
 
   /**
@@ -305,12 +305,13 @@ class ChartOption {
    * @param value {number}-目標線數值
    */
   handleTargetLine(value: number) {
-    this._option.yAxis['plotLines'] = [{
-      color: TARGET_LINE_COLOR,
-      width: 2,
-      value
-    }];
-
+    this._option.yAxis['plotLines'] = [
+      {
+        color: TARGET_LINE_COLOR,
+        width: 2,
+        value,
+      },
+    ];
   }
 
   /**
@@ -319,5 +320,4 @@ class ChartOption {
   get option() {
     return this._option;
   }
-
 }

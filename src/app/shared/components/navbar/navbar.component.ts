@@ -1,4 +1,12 @@
-import { Component, OnInit, HostListener, Inject, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  HostListener,
+  Inject,
+  Input,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { GlobalEventsManager } from '../../global-events-manager';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
@@ -13,7 +21,7 @@ import { setLocalStorageObject, getLocalStorageObject } from '../../utils/index'
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.scss']
+  styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent implements OnInit {
   isShowMask = false;
@@ -57,7 +65,7 @@ export class NavbarComponent implements OnInit {
     }
 
     // 確認修改密碼是否完成-kidin-1090109（bug1043）
-    this.utilsService.getResetPasswordStatus().subscribe(res => {
+    this.utilsService.getResetPasswordStatus().subscribe((res) => {
       this.isShowResetPwd = res;
     });
 
@@ -69,17 +77,16 @@ export class NavbarComponent implements OnInit {
         this.validate();
       }
     }
-    this.globalEventsManager.closeCollapseEmitter.subscribe(mode => {
+    this.globalEventsManager.closeCollapseEmitter.subscribe((mode) => {
       this.isCollapseShow = mode;
       if (!this.isCollapseShow) {
         this.isShowMask = false;
         this.globalEventsManager.showMask(this.isShowMask);
       }
     });
-    this.globalEventsManager.showCollapseEmitter.subscribe(mode => {
+    this.globalEventsManager.showCollapseEmitter.subscribe((mode) => {
       this.isCollapseSearchShow = mode;
     });
-
   }
 
   /**
@@ -115,7 +122,6 @@ export class NavbarComponent implements OnInit {
         this.navItemNum = 0;
         break;
     }
-
   }
 
   @HostListener('window:resize', [])
@@ -159,7 +165,7 @@ export class NavbarComponent implements OnInit {
   reloadPage() {
     location.reload();
   }
-  
+
   logout() {
     this.authService.logout();
   }
@@ -167,7 +173,7 @@ export class NavbarComponent implements OnInit {
   chooseNavItem(num: number) {
     this.navItemNum = num;
     this.toggleMask();
-    switch(num) {
+    switch (num) {
       case 1:
         this.selectPage.emit('system');
         break;
@@ -185,7 +191,6 @@ export class NavbarComponent implements OnInit {
         this.router.navigateByUrl('/signIn-web');
         break;
     }
-
   }
 
   switchLang(lang: string) {
@@ -200,16 +205,12 @@ export class NavbarComponent implements OnInit {
    * @author kidin-1110207
    */
   getIpAddress() {
-    this.getClientIp.requestIpAddress().subscribe(res => {
-      const { country: countryCode } = (res as any);
+    this.getClientIp.requestIpAddress().subscribe((res) => {
+      const { country: countryCode } = res as any;
       const openCountry = ['TW'];
       if (openCountry.includes(countryCode)) {
         this.showActivityEntry = true;
       }
-
     });
-
   }
-  
-
 }

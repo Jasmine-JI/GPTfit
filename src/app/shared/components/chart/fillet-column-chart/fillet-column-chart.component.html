@@ -1,6 +1,6 @@
 <section class="flexCol pageBreakAvoid">
   <ng-container *ngIf="['cloudrun', 'sportReport'].includes(page) || chartType === 'fitTime'">
-    <div class="flexRow" style="align-items: center; justify-content: space-between;">
+    <div class="flexRow" style="align-items: center; justify-content: space-between">
       <h6 id="chartTitle">
         <ng-container *ngIf="chartType === 'planeGForce'">
           {{ 'universal_adjective_accumulation' | translate }}
@@ -9,7 +9,10 @@
           {{ 'universal_adjective_maxBig' | translate }}
         </ng-container>
         <ng-container
-          *ngIf="(chartType === 'totalTime' && sportType === sportCode.weightTrain) || chartType === 'fitTime'"
+          *ngIf="
+            (chartType === 'totalTime' && sportType === sportCode.weightTrain) ||
+            chartType === 'fitTime'
+          "
         >
           {{ 'universal_adjective_singleTotal' | translate }}
         </ng-container>
@@ -19,7 +22,7 @@
   </ng-container>
   <main id="mainSeciton">
     <ng-container *ngIf="['cloudrun'].includes(page) || chartType === 'fitTime'">
-      <div class="flexRow infoBlock" style="justify-content: space-between;">
+      <div class="flexRow infoBlock" style="justify-content: space-between">
         <div class="flexCol infoSection">
           <span class="dataNumber">
             <ng-container *ngIf="page === 'cloudrun'">
@@ -53,13 +56,13 @@
             </ng-container>
             <ng-container
               *ngIf="
-                data.maxStrokeNum !== undefined
-                || data.maxTotalTime !== undefined
-                || data.maxCalories !== undefined
-                || data.maxDistance !== undefined
-                || data.maxPlaneGForce !== undefined
-                || data.maxPlaneMaxGForce !== undefined
-                || data.maxMin !== undefined
+                data.maxStrokeNum !== undefined ||
+                data.maxTotalTime !== undefined ||
+                data.maxCalories !== undefined ||
+                data.maxDistance !== undefined ||
+                data.maxPlaneGForce !== undefined ||
+                data.maxPlaneMaxGForce !== undefined ||
+                data.maxMin !== undefined
               "
             >
               {{ 'universal_adjective_maxHight' | translate }}
@@ -101,8 +104,6 @@
         </div>
       </div>
     </ng-container>
-    <div #container id="chartBlock" [class.printChartFix]="isPreviewMode">
-      chart
-    </div>
+    <div #container id="chartBlock" [class.printChartFix]="isPreviewMode">chart</div>
   </main>
 </section>

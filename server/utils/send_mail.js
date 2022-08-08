@@ -24,9 +24,8 @@ function sendMail(mailOptions) {
       console.log('Email sent: ' + info.response);
     }
   });
-
 }
 
 module.exports = {
-  sendMail
+  sendMail,
 };

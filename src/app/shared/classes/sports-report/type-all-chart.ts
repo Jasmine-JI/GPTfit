@@ -4,8 +4,7 @@ import { mathRounding } from '../../utils/index';
 /**
  * 不分運動類別時處理佔比圖表數據與成效分佈圖
  */
- export class TypeAllChart {
-
+export class TypeAllChart {
   /**
    * 成效分佈圖用數據
    */
@@ -35,7 +34,11 @@ import { mathRounding } from '../../utils/index';
     const index = +type - 1;
     this._activitiesStatistics[index] += +totalActivities;
     this._totalSecondStatistics[index] += +totalSecond;
-    this._dotList.push({ sportType: +type, avgSecond: mathRounding(+totalSecond / +totalActivities, 0), avgHeartRateBpm });
+    this._dotList.push({
+      sportType: +type,
+      avgSecond: mathRounding(+totalSecond / +totalActivities, 0),
+      avgHeartRateBpm,
+    });
   }
 
   /**
@@ -58,5 +61,4 @@ import { mathRounding } from '../../utils/index';
   get dotList() {
     return this._dotList;
   }
-
 }

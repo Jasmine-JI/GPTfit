@@ -1,9 +1,9 @@
 var express = require('express');
 var moment = require('moment');
 var router = express.Router(),
-    routerProtected = express.Router();
+  routerProtected = express.Router();
 
-var currentDate = function() {
+var currentDate = function () {
   var today = new Date();
   var dd = today.getDate();
   var mm = today.getMonth() + 1; //January is 0!
@@ -22,11 +22,11 @@ var currentDate = function() {
 
 routerProtected.get(
   '/manualUpdate',
-  function(req, res, next) {
+  function (req, res, next) {
     const { con } = req;
     const sql = 'TRUNCATE TABLE ??';
 
-    con.query(sql, 'run_rank', function(err, rows) {
+    con.query(sql, 'run_rank', function (err, rows) {
       if (err) {
         throw err;
       }
@@ -116,7 +116,7 @@ b.map_id = m.map_index
   b.activity_distance >= m.race_total_distance * 1000
   ;
   `;
-    con.query(sql2, 'run_rank', function(err, rows) {
+    con.query(sql2, 'run_rank', function (err, rows) {
       if (err) {
         throw err;
       }
@@ -125,7 +125,7 @@ b.map_id = m.map_index
   }
 );
 
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
   const {
     con,
     query: {
@@ -141,8 +141,8 @@ router.get('/', function(req, res, next) {
       startDate,
       endDate,
       event_id,
-      isGetUpdateTime
-    }
+      isGetUpdateTime,
+    },
   } = req;
   let sql = '';
   if (isGetUpdateTime) {
@@ -153,8 +153,7 @@ router.get('/', function(req, res, next) {
     const currDate = currentDate();
     const genderQuery = gender ? `and a.gender = ${gender}` : '';
     const eventQuery = event_id
-      ?
-      `and
+      ? `and
       (
         (c.phone is not NULL and c.phone != '' and c.phone like concat('%', b.phone, '%'))
         or
@@ -210,18 +209,18 @@ router.get('/', function(req, res, next) {
       )a;
     `;
   }
-  con.query(sql, 'run_rank', function(err, rows) {
+  con.query(sql, 'run_rank', function (err, rows) {
     if (err) {
       throw err;
     }
     const meta = {
       pageSize: pageSize || 10,
       pageCount: rows.length,
-      pageNumber: Number(pageNumber) || 1
+      pageNumber: Number(pageNumber) || 1,
     };
     if (isGetUpdateTime) return res.json(rows[0].update_time);
     if (userName) {
-      let idx = rows.findIndex(_row => _row.login_acc === userName);
+      let idx = rows.findIndex((_row) => _row.login_acc === userName);
       const halfRange = 5;
       let start = 0;
       if (idx === -1) {
@@ -238,9 +237,7 @@ router.get('/', function(req, res, next) {
       return res.json({ datas });
     }
     if (email) {
-      let idx = rows.findIndex(
-        _row => encodeURIComponent(_row.e_mail) === email
-      );
+      let idx = rows.findIndex((_row) => encodeURIComponent(_row.e_mail) === email);
       const halfRange = 5;
       let start = 0;
       if (idx === -1) {
@@ -256,7 +253,7 @@ router.get('/', function(req, res, next) {
       let datas = rows.splice(start, end);
       return res.json({ datas });
     } else if (phone) {
-      let idx = rows.findIndex(_row => _row.phone === phone);
+      let idx = rows.findIndex((_row) => _row.phone === phone);
       const halfRange = 5;
       let start = 0;
       if (idx === -1) {
@@ -278,7 +275,7 @@ router.get('/', function(req, res, next) {
   });
 });
 
-router.get('/rankInfo/map', function(req, res, next) {
+router.get('/rankInfo/map', function (req, res, next) {
   const { con } = req;
   const sql = `
     select
@@ -287,7 +284,7 @@ router.get('/rankInfo/map', function(req, res, next) {
     map_id
     from ?? ;
   `;
-  con.query(sql, 'run_rank', function(err, rows) {
+  con.query(sql, 'run_rank', function (err, rows) {
     if (err) {
       console.log(err);
     }
@@ -295,10 +292,10 @@ router.get('/rankInfo/map', function(req, res, next) {
   });
 });
 
-router.get('/rankInfo/month', function(req, res, next) {
+router.get('/rankInfo/month', function (req, res, next) {
   const { con } = req;
   const sql = `SELECT month FROM ?? GROUP BY month;`;
-  con.query(sql, 'run_rank', function(err, rows) {
+  con.query(sql, 'run_rank', function (err, rows) {
     if (err) {
       console.log(err);
     }
@@ -306,7 +303,7 @@ router.get('/rankInfo/month', function(req, res, next) {
   });
 });
 
-router.get('/rankInfo/email', function(req, res, next) {
+router.get('/rankInfo/email', function (req, res, next) {
   const {
     con,
     query: {
@@ -319,8 +316,8 @@ router.get('/rankInfo/email', function(req, res, next) {
       keyword,
       gender,
       event_id,
-      isRealTime
-    }
+      isRealTime,
+    },
   } = req;
   const genderQuery = gender ? `and gender = ${gender}` : '';
   let sql = '';
@@ -350,39 +347,33 @@ router.get('/rankInfo/email', function(req, res, next) {
     ${genderQuery};
     `;
   }
-  con.query(sql, 'run_rank', function(err, rows) {
+  con.query(sql, 'run_rank', function (err, rows) {
     if (err) {
       console.log(err);
     }
     if (keyword.length === 0) {
       return res.send([]);
     }
-    let results = rows.map(_row => _row.e_mail);
+    let results = rows.map((_row) => _row.e_mail);
 
-    results = results.filter(_res => _res.indexOf(keyword) > -1);
+    results = results.filter((_res) => _res.indexOf(keyword) > -1);
     res.json(results);
   });
 });
 
-router.get('/rankInfo/userName', function(req, res, next) {
+router.get('/rankInfo/userName', function (req, res, next) {
   const {
     con,
-    query: {
-      keyword,
-      startDate,
-      endDate,
-      mapId,
-      gender,
-      event_id
-    }
+    query: { keyword, startDate, endDate, mapId, gender, event_id },
   } = req;
   const genderQuery = gender ? `and r.gender = ${gender}` : '';
-  const eventQuery = event_id ? `
+  const eventQuery = event_id
+    ? `
     and e.event_id = ${event_id}
     and u.event_id = e.event_id
     and (u.e_mail = r.e_mail or u.phone = r.e_mail)
-  ` :
-  '';
+  `
+    : '';
   const sql = `
     select distinct r.login_acc from ?? as r,
     ?? as e,
@@ -398,20 +389,24 @@ router.get('/rankInfo/userName', function(req, res, next) {
     ${genderQuery};
     ;
   `;
-  con.query(sql, ['run_rank', 'race_event_info', 'user_race_enroll', startDate, endDate, mapId] , function(err, rows) {
-    if (err) {
-      console.log(err);
-    }
-    if (keyword.length === 0) {
-      return res.send([]);
-    }
-    let results = rows.map(_row => _row.login_acc);
+  con.query(
+    sql,
+    ['run_rank', 'race_event_info', 'user_race_enroll', startDate, endDate, mapId],
+    function (err, rows) {
+      if (err) {
+        console.log(err);
+      }
+      if (keyword.length === 0) {
+        return res.send([]);
+      }
+      let results = rows.map((_row) => _row.login_acc);
 
-    results = results.filter(_res => _res.toLowerCase().indexOf(keyword.toLowerCase()) > -1);
-    res.json(results);
-  });
+      results = results.filter((_res) => _res.toLowerCase().indexOf(keyword.toLowerCase()) > -1);
+      res.json(results);
+    }
+  );
 });
-router.get('/rankInfo/phone', function(req, res, next) {
+router.get('/rankInfo/phone', function (req, res, next) {
   const {
     con,
     query: {
@@ -423,8 +418,8 @@ router.get('/rankInfo/phone', function(req, res, next) {
       keyword,
       gender,
       event_id,
-      isRealTime
-    }
+      isRealTime,
+    },
   } = req;
   const genderQuery = gender ? `and gender = ${gender}` : '';
   let sql = '';
@@ -458,29 +453,29 @@ router.get('/rankInfo/phone', function(req, res, next) {
     ${genderQuery};
     `;
   }
-  con.query(sql, 'run_rank', function(err, rows) {
+  con.query(sql, 'run_rank', function (err, rows) {
     if (err) {
       console.log(err);
     }
     if (keyword.length === 0) {
       return res.send([]);
     }
-    let results = rows.map(_row => {
+    let results = rows.map((_row) => {
       return {
         searchPhone: _row.phone,
-        displayPhone: '+' + _row.country_code + ' ' + _row.phone
+        displayPhone: '+' + _row.country_code + ' ' + _row.phone,
       };
     });
-    results = results.filter(_res => _res.searchPhone.indexOf(keyword) > -1);
+    results = results.filter((_res) => _res.searchPhone.indexOf(keyword) > -1);
     res.json(results);
   });
 });
 
-router.get('/mapInfo', function(req, res, next) {
+router.get('/mapInfo', function (req, res, next) {
   // 分成兩個fetch是因為有些是測試程式所產生資料，無對應的fileName
   const {
     con,
-    query: { userId, mapId, month, isRealTime, start_time, end_time }
+    query: { userId, mapId, month, isRealTime, start_time, end_time },
   } = req;
   const userQuery = userId ? `and t.user_id = ${userId}` : '';
   const mapQuery = mapId ? `and t.map_id = ${mapId}` : '';
@@ -550,7 +545,7 @@ router.get('/mapInfo', function(req, res, next) {
     `;
     sql = `${sql1}${sql2}`;
   }
-  con.query(`${sql}`, function(err, results) {
+  con.query(`${sql}`, function (err, results) {
     if (err) {
       console.log(err);
     }
@@ -584,9 +579,9 @@ router.post('/fakeData', async (req, res) => {
       phone,
       country_code,
       race_total_distance,
-      race_category
+      race_category,
     },
-    con
+    con,
   } = req;
 
   try {
@@ -626,7 +621,7 @@ router.post('/fakeData', async (req, res) => {
       if (err) {
         console.log('!!!!!', err);
         return res.status(500).send({
-          errorMessage: err.sqlMessage
+          errorMessage: err.sqlMessage,
         });
       }
       res.send({
@@ -638,12 +633,12 @@ router.post('/fakeData', async (req, res) => {
         email,
         map_name,
         race_category,
-        race_total_distance
+        race_total_distance,
       });
     });
   } catch (err) {
     res.status(500).send({
-      errorMessage: '請檢查假資料欄位格式是否正確'
+      errorMessage: '請檢查假資料欄位格式是否正確',
     });
   }
 });
@@ -651,7 +646,7 @@ router.post('/fakeData', async (req, res) => {
 router.post('/fakeData/race_data', async (req, res) => {
   const {
     body: { activity_duration, map_id, user_id, email, userName },
-    con
+    con,
   } = req;
   try {
     const trimEmail = email.trim();
@@ -683,7 +678,7 @@ router.post('/fakeData/race_data', async (req, res) => {
       if (err) {
         console.log('!!!!!', err);
         return res.status(500).send({
-          errorMessage: err.sqlMessage
+          errorMessage: err.sqlMessage,
         });
       }
       res.send({
@@ -692,17 +687,20 @@ router.post('/fakeData/race_data', async (req, res) => {
         user_id,
         time_stamp,
         email,
-        login_acc
+        login_acc,
       });
     });
   } catch (err) {
     res.status(500).send({
-      errorMessage: '請檢查假資料欄位格式是否正確'
+      errorMessage: '請檢查假資料欄位格式是否正確',
     });
   }
 });
-routerProtected.get('/todayRank', function(req, res, next) {
-  const { con, query: { start_date, end_date, map_id } } = req;
+routerProtected.get('/todayRank', function (req, res, next) {
+  const {
+    con,
+    query: { start_date, end_date, map_id },
+  } = req;
   const sql = `
 SELECT distinct a.rank AS rank
      , a.map_id
@@ -743,7 +741,7 @@ SELECT distinct a.rank AS rank
           r.map_id = ${map_id}
           ) a;
 ;`;
-  con.query(sql, 'race_event_info', function(err, rows) {
+  con.query(sql, 'race_event_info', function (err, rows) {
     if (err) {
       return res.status(500).send(err);
     }
@@ -751,19 +749,10 @@ SELECT distinct a.rank AS rank
   });
 });
 
-router.get('/eventRank', function(req, res, next) {
+router.get('/eventRank', function (req, res, next) {
   const {
     con,
-    query: {
-      start_date_time,
-      end_date_time,
-      event_id,
-      email,
-      pageSize,
-      pageNumber,
-      mapId,
-      gender
-    }
+    query: { start_date_time, end_date_time, event_id, email, pageSize, pageNumber, mapId, gender },
   } = req;
   const genderQuery = gender ? `and p.gender = ${gender}` : '';
   const sql = `
@@ -830,19 +819,17 @@ router.get('/eventRank', function(req, res, next) {
   order by b.offical_time
   ;
 `;
-  con.query(sql, 'race_event_info', function(err, rows) {
+  con.query(sql, 'race_event_info', function (err, rows) {
     if (err) {
       return res.status(500).send(err);
     }
     const meta = {
       pageSize: pageSize || 10,
       pageCount: rows.length,
-      pageNumber: Number(pageNumber) || 1
+      pageNumber: Number(pageNumber) || 1,
     };
     if (email) {
-      let idx = rows.findIndex(
-        _row => encodeURIComponent(_row.e_mail) === email
-      );
+      let idx = rows.findIndex((_row) => encodeURIComponent(_row.e_mail) === email);
       const halfRange = 5;
       let start = 0;
       if (idx === -1) {
@@ -866,6 +853,5 @@ router.get('/eventRank', function(req, res, next) {
 // Exports
 module.exports = {
   protected: routerProtected,
-  unprotected: router
+  unprotected: router,
 };
-

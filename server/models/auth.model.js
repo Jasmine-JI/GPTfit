@@ -38,22 +38,15 @@ exports.checkAccessRight = function (token, accessRight) {
         }
 
         if (rows.length > 0) {
-
           if (+rows[0].access_right <= accessRight) {
             resolve(true);
           } else {
             resolve(false);
           }
-
         } else {
           resolve(false);
         }
-
       }
-
     );
-
   });
-
 };
-

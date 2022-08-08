@@ -16,7 +16,6 @@ $add-color: var(--scale-255-0);
     opacity: 0.8;
     @include transition(opacity);
   }
-
 }
 
 #sn__input {
@@ -30,7 +29,7 @@ $add-color: var(--scale-255-0);
   z-index: 1;
   color: white;
 
-  >div {
+  > div {
     border-radius: 15px;
     background-color: rgba(68, 115, 128, 1);
 
@@ -49,31 +48,30 @@ $add-color: var(--scale-255-0);
       &:last-child {
         cursor: pointer;
       }
-
     }
 
-    >input {
+    > input {
       outline: none;
       border: none;
       color: white;
 
-      &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+      &::placeholder {
+        /* Chrome, Firefox, Opera, Safari 10.1+ */
         color: white;
         opacity: 1; /* Firefox */
       }
-      
-      &:-ms-input-placeholder { /* Internet Explorer 10-11 */
-        color: white;
-      }
-      
-      &::-ms-input-placeholder { /* Microsoft Edge */
+
+      &:-ms-input-placeholder {
+        /* Internet Explorer 10-11 */
         color: white;
       }
 
+      &::-ms-input-placeholder {
+        /* Microsoft Edge */
+        color: white;
+      }
     }
-
   }
-
 }
 
 .device__list__row {
@@ -82,19 +80,18 @@ $add-color: var(--scale-255-0);
   cursor: pointer;
   @include transition(background-color);
 
-    td {
-      padding: 10px 0;
-    }
+  td {
+    padding: 10px 0;
+  }
 
-    &:not(:last-child) {
-      border-bottom: 2px solid rgba(145, 240, 145, 1);
-    }
+  &:not(:last-child) {
+    border-bottom: 2px solid rgba(145, 240, 145, 1);
+  }
 
-    &:hover {
-      background-color: rgba(200, 200, 200, 0.2);
-      @include transition(background-color);
-    }
-
+  &:hover {
+    background-color: rgba(200, 200, 200, 0.2);
+    @include transition(background-color);
+  }
 }
 
 #table__header {
@@ -103,11 +100,9 @@ $add-color: var(--scale-255-0);
 }
 
 #list__header {
-
   th {
     color: var(--scale-0-255);
   }
-
 }
 
 .device__img {
@@ -135,7 +130,8 @@ $add-color: var(--scale-255-0);
   height: fit-content;
 }
 
-#delete__btn, #add__btn {
+#delete__btn,
+#add__btn {
   border-radius: 10px;
   margin: 10px 0;
   width: 100px;
@@ -144,21 +140,23 @@ $add-color: var(--scale-255-0);
   @include transition(opacity);
   @include editBtnBg();
 
-  i, span {
+  i,
+  span {
     opacity: 1;
   }
 
   i {
     font-size: 22px;
   }
-
 }
 
-#delete__btn, #delete__finish {
+#delete__btn,
+#delete__finish {
   color: $delete-color;
 }
 
-#add__btn, #add__finish {
+#add__btn,
+#add__finish {
   color: $add-color;
 }
 
@@ -169,7 +167,7 @@ $add-color: var(--scale-255-0);
   width: 100vw;
   display: flex;
   justify-content: center;
-  
+
   button {
     width: 100%;
     max-width: 600px;
@@ -179,7 +177,6 @@ $add-color: var(--scale-255-0);
     @include bold-font(20px);
     @include editBtnBg();
   }
-
 }
 
 .check__box {
@@ -193,7 +190,6 @@ $add-color: var(--scale-255-0);
     color: white;
     height: 19px;
   }
-
 }
 
 .check__box--selected {
@@ -213,17 +209,13 @@ $add-color: var(--scale-255-0);
 /************************************************ media ***************************************/
 
 @media (max-width: 991px) {
-
   #edit__btn__group {
     right: 10vw;
   }
-  
 }
 
 @media (max-width: 1500px) {
-
   #edit__btn__group {
     right: 15vw;
   }
-  
 }

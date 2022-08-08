@@ -5,7 +5,6 @@
 @import 'transition.scss';
 @import 'transform.scss';
 
-
 @mixin menu-list($padding) {
   cursor: pointer;
   padding: $padding;
@@ -14,7 +13,6 @@
     color: white;
     background-color: $primary-blue;
   }
-
 }
 
 .selector__title__button {
@@ -231,7 +229,8 @@
   justify-content: flex-end;
 }
 
-.reset__button, .submit__button {
+.reset__button,
+.submit__button {
   margin: 0 5px;
   border-radius: 7px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -249,7 +248,6 @@
   &:hover {
     background-color: rgba(240, 240, 240, 1);
   }
-
 }
 
 .submit__button {
@@ -259,20 +257,18 @@
   &:hover {
     background-color: rgba(229, 50, 50, 1);
   }
-
 }
-
 
 /*********************************************** media **********************************/
 
 @media (max-width: 575px) {
-
   .selector__section {
     border-radius: 30px;
     padding: 10px 5px;
   }
 
-  .date__selector__section, .date__range__input {
+  .date__selector__section,
+  .date__range__input {
     flex-direction: column;
   }
 
@@ -280,12 +276,12 @@
     border-radius: 30px;
   }
 
-  .time__title__text, .current__list__selected {
+  .time__title__text,
+  .current__list__selected {
     font-size: 14px;
   }
 
   .selector__content {
     margin-left: 0;
   }
-
 }

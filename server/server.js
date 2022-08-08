@@ -13,25 +13,28 @@ const rateLimit = require('express-rate-limit');
 var address;
 var ifaces = os.networkInterfaces();
 for (var dev in ifaces) {
-  ifaces[dev].filter((details) => details.family === 'IPv4' && details.internal === false ? address = details.address : undefined);
+  ifaces[dev].filter((details) =>
+    details.family === 'IPv4' && details.internal === false
+      ? (address = details.address)
+      : undefined
+  );
 }
 
 const SERVER_CONFIG = {
   key: null,
   ca: null,
-  cert: null
+  cert: null,
 };
 
 if (address === '192.168.1.231' || address === '192.168.1.235' || address === '192.168.1.234') {
-  SERVER_CONFIG.key = fs.readFileSync('/etc/ssl/free.key'),
-  SERVER_CONFIG.ca = fs.readFileSync('/etc/ssl/free_ca.crt'),
-  SERVER_CONFIG.cert = fs.readFileSync('/etc/ssl/free.crt');
+  (SERVER_CONFIG.key = fs.readFileSync('/etc/ssl/free.key')),
+    (SERVER_CONFIG.ca = fs.readFileSync('/etc/ssl/free_ca.crt')),
+    (SERVER_CONFIG.cert = fs.readFileSync('/etc/ssl/free.crt'));
 } else {
-  SERVER_CONFIG.key = fs.readFileSync('/etc/ssl/130/second_certs/offical_130_no_pem.key'),
-  SERVER_CONFIG.ca = fs.readFileSync('/etc/ssl/130/second_certs/offical_public_130.crt'),
-  SERVER_CONFIG.cert = fs.readFileSync('/etc/ssl/130/second_certs/offical_130.crt');
+  (SERVER_CONFIG.key = fs.readFileSync('/etc/ssl/130/second_certs/offical_130_no_pem.key')),
+    (SERVER_CONFIG.ca = fs.readFileSync('/etc/ssl/130/second_certs/offical_public_130.crt')),
+    (SERVER_CONFIG.cert = fs.readFileSync('/etc/ssl/130/second_certs/offical_130.crt'));
 }
-
 
 /**
  * 官方活動排名每天凌晨三點定時更新
@@ -39,28 +42,26 @@ if (address === '192.168.1.231' || address === '192.168.1.235' || address === '1
  */
 const runActivityRankTask = function () {
   schedule.scheduleJob('00 00 03 * * *', function () {
-
     const allFile = fs.readdirSync('/tmp/official-activity');
     let list = [];
 
     allFile.forEach((_file, index) => {
       try {
         let data = fs.readFileSync(`/tmp/official-activity/${_file}`),
-            file = JSON.parse(data.toString('utf8'));
+          file = JSON.parse(data.toString('utf8'));
 
         const oneDay = 1000 * 60 * 60 * 24;
-        if (file.startTimeStamp + oneDay < moment().valueOf() && file.endTimeStamp + oneDay > moment().valueOf()) {
+        if (
+          file.startTimeStamp + oneDay < moment().valueOf() &&
+          file.endTimeStamp + oneDay > moment().valueOf()
+        ) {
           getPerGroupRank(file);
         }
-
       } catch (err) {
         console.log(err);
       }
-
-    })
-
+    });
   });
-
 };
 
 /**
@@ -71,31 +72,33 @@ const runActivityRankTask = function () {
  */
 async function getPerGroupRank(file) {
   const mapId = file.mapId,
-        startTimeStamp = file.startTimeStamp,
-        endTimeStamp = file.endTimeStamp,
-        mapDistance = file.mapDistance;
+    startTimeStamp = file.startTimeStamp,
+    endTimeStamp = file.endTimeStamp,
+    mapDistance = file.mapDistance;
 
   for (let i = 0; i < file.group.length; i++) {
-    file.group[i].rank = [];  // 清空排名
+    file.group[i].rank = []; // 清空排名
     let userIdArr = [];
 
-    file.group[i].member.forEach(_member => {
+    file.group[i].member.forEach((_member) => {
       if (_member.status === 'checked') {
         userIdArr.push(_member.userId);
       }
-
     });
 
     if (userIdArr.length !== 0) {
-      const query = await getUserActivityInfo(mapId.toString(), startTimeStamp, endTimeStamp, mapDistance, userIdArr).then(resp => {
+      const query = await getUserActivityInfo(
+        mapId.toString(),
+        startTimeStamp,
+        endTimeStamp,
+        mapDistance,
+        userIdArr
+      ).then((resp) => {
         if (resp) {
           file.group[i].rank = filterData(resp);
         }
-
-      })
-
+      });
     }
-
   }
 
   file = fillRanking(file);
@@ -110,9 +113,7 @@ async function getPerGroupRank(file) {
     } else {
       console.log(`Update ranking success`);
     }
-
-  })
-
+  });
 }
 
 /**
@@ -123,11 +124,10 @@ async function getPerGroupRank(file) {
 function filterData(data) {
   const rankList = [];
   let rank = 1,
-      preRecord = null;
+    preRecord = null;
 
   data.forEach((_data, index) => {
-    if (!rankList.some(_list => _list.userId === _data.user_id)) {
-
+    if (!rankList.some((_list) => _list.userId === _data.user_id)) {
       // 完賽時間相同則排名相同
       if (preRecord !== null && _data.total_second === preRecord) {
         rankList.push({
@@ -136,9 +136,8 @@ function filterData(data) {
           nickname: _data.login_acc,
           record: _data.total_second,
           finishDate: formatDate(+_data.creation_unix_timestamp),
-          distance: _data.total_distance_meters
+          distance: _data.total_distance_meters,
         });
-
       } else {
         preRecord = _data.total_second;
 
@@ -148,14 +147,12 @@ function filterData(data) {
           nickname: _data.login_acc,
           record: _data.total_second,
           finishDate: formatDate(+_data.creation_unix_timestamp),
-          distance: _data.total_distance_meters
+          distance: _data.total_distance_meters,
         });
-
       }
 
       rank++;
     }
-
   });
 
   return rankList;
@@ -167,34 +164,28 @@ function filterData(data) {
  * @author kidin-1090911
  */
 function fillRanking(file) {
-  file.group.map(_group => {
-    const notFinishUser = _group.member.filter(_member => {
-
+  file.group.map((_group) => {
+    const notFinishUser = _group.member.filter((_member) => {
       if (_member.status !== 'checked') {
         return false;
       } else {
-
         let noRank = true;
         for (let i = 0; i < _group.rank.length; i++) {
-
           if (_group.rank[i].userId === _member.userId) {
-
             // 在排名資訊中添加team資訊以供團體排名使用
             if (file.team.length > 0) {
-              Object.assign(_group.rank[i], {team: _member.team})
+              Object.assign(_group.rank[i], { team: _member.team });
             }
-    
+
             noRank = false;
           }
-
         }
 
         return noRank;
       }
-      
     });
 
-    notFinishUser.forEach(_user => {
+    notFinishUser.forEach((_user) => {
       _group.rank.push({
         ranking: '-',
         userId: _user.userId,
@@ -202,9 +193,8 @@ function fillRanking(file) {
         record: 'N/A',
         finishDate: 'N/A',
         distance: 'N/A',
-        team: _user.team
+        team: _user.team,
       });
-      
     });
 
     return _group;
@@ -219,7 +209,6 @@ function fillRanking(file) {
  * @author kidin-1090902
  */
 function formatDate(timestamp) {
-
   return moment(timestamp).format('YYYY-MM-DD');
 }
 
@@ -233,28 +222,24 @@ function createTeamRanking(file) {
   file = sortMember(file);
 
   file.team.forEach((_team, index) => {
-
     let peopleNum = 0,
-        finishNum = 0,
-        totalSecond = 0;
+      finishNum = 0,
+      totalSecond = 0;
 
     if (_team.member) {
       peopleNum = _team.member.length;
 
-      _team.member.forEach(_member => {
-
+      _team.member.forEach((_member) => {
         if (_member.record !== 'N/A') {
           finishNum++;
           totalSecond += _member.record;
         }
-        
       });
-      
     }
 
-    Object.assign(_team, {totalTime: totalSecond });
-    Object.assign(_team, {record: Math.round(totalSecond / finishNum)});
-    Object.assign(_team, {peopleNum: `${finishNum}/${peopleNum}`});
+    Object.assign(_team, { totalTime: totalSecond });
+    Object.assign(_team, { record: Math.round(totalSecond / finishNum) });
+    Object.assign(_team, { peopleNum: `${finishNum}/${peopleNum}` });
   });
 
   return file;
@@ -266,11 +251,10 @@ function createTeamRanking(file) {
  * @author kidin-1091005
  */
 function initialTeamMember(file) {
-  file.team.forEach(_team => {
+  file.team.forEach((_team) => {
     if (_team.member) {
       _team.member.length = 0;
     }
-
   });
 
   return file;
@@ -282,40 +266,36 @@ function initialTeamMember(file) {
  * @author kidin-1090930
  */
 function sortMember(file) {
-  file.group.forEach(_group => {
-    _group.rank.forEach(_rank => {
-      file.team.forEach(_team => {
+  file.group.forEach((_group) => {
+    _group.rank.forEach((_rank) => {
+      file.team.forEach((_team) => {
         if (_rank.team === _team.teamName) {
-          
           if (!_team.hasOwnProperty('member')) {
-            Object.assign(_team, {member: [{
-              userId: _rank.userId,
-              nickname: _rank.nickname,
-              record: _rank.record
-            }]});
-
+            Object.assign(_team, {
+              member: [
+                {
+                  userId: _rank.userId,
+                  nickname: _rank.nickname,
+                  record: _rank.record,
+                },
+              ],
+            });
           } else {
             _team.member.push({
               userId: _rank.userId,
               nickname: _rank.nickname,
-              record: _rank.record
-            })
-
+              record: _rank.record,
+            });
           }
-
         }
-
       });
-
     });
-
   });
 
   return file;
 }
 
 runActivityRankTask();
-
 
 // Init app
 var app = express();
@@ -324,19 +304,22 @@ var connection = require('./models/connection_db');
 // Body parser middleware
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({
-  extended: true
-}))
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
 // parse application/json
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 // use helmet
-app.use(helmet({
-  dnsPrefetchControl: {
-    allow: true
-  }
-}));
-
+app.use(
+  helmet({
+    dnsPrefetchControl: {
+      allow: true,
+    },
+  })
+);
 
 // Add headers
 app.use(function (req, res, next) {
@@ -345,7 +328,11 @@ app.use(function (req, res, next) {
   var address,
     ifaces = os.networkInterfaces();
   for (var dev in ifaces) {
-    ifaces[dev].filter((details) => details.family === 'IPv4' && details.internal === false ? address = details.address : undefined);
+    ifaces[dev].filter((details) =>
+      details.family === 'IPv4' && details.internal === false
+        ? (address = details.address)
+        : undefined
+    );
   }
 
   var allowedOrigins = [];
@@ -354,14 +341,14 @@ app.use(function (req, res, next) {
       'http://192.168.1.235:8080',
       'https://192.168.1.235:8080',
       'http://192.168.1.235',
-      'https://192.168.1.235'
+      'https://192.168.1.235',
     ];
   } else if (address === '192.168.1.231') {
     allowedOrigins = [
       'http://192.168.1.231:8080',
       'https://192.168.1.231:8080',
       'http://192.168.1.231',
-      'https://192.168.1.231'
+      'https://192.168.1.231',
     ];
   } else if (address === '192.168.1.234') {
     allowedOrigins = [
@@ -376,7 +363,7 @@ app.use(function (req, res, next) {
       'https://192.168.1.235:8080',
       'https://192.168.1.231:8080',
       'http://localhost:8080',
-      'https://app.alatech.com.tw'
+      'https://app.alatech.com.tw',
     ]; // 因為要for在家只做前端時，需要隨意的domain去call
   } else if (address === '192.168.1.232') {
     allowedOrigins = ['http://192.168.1.232:8080'];
@@ -390,7 +377,7 @@ app.use(function (req, res, next) {
       'http://cloud.alatech.com.tw:8080',
       'https://www.gptfit.com',
       'https://www.gptfit.com:8080',
-      'http://www.gptfit.com:8080'
+      'http://www.gptfit.com:8080',
     ];
   }
   var origin = req.headers.origin;
@@ -402,10 +389,24 @@ app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
   // Request headers you wish to allow
-  const allowHeaders = ['X-Requested-With', 'content-type', 'Authorization',
-    'deviceID', 'charset', 'language', 'Accept', 'deviceType', 'deviceName',
-    'deviceOSVersion', 'appVersionCode', 'appVersionName', 'regionCode', 'appName',
-     'equipmentSN', 'Accept-Encoding', 'utcZone'
+  const allowHeaders = [
+    'X-Requested-With',
+    'content-type',
+    'Authorization',
+    'deviceID',
+    'charset',
+    'language',
+    'Accept',
+    'deviceType',
+    'deviceName',
+    'deviceOSVersion',
+    'appVersionCode',
+    'appVersionName',
+    'regionCode',
+    'appName',
+    'equipmentSN',
+    'Accept-Encoding',
+    'utcZone',
   ];
   res.setHeader('Access-Control-Allow-Headers', allowHeaders.join(','));
   // res.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, token, Authorization, X-Auth-Token, X-XSRF-TOKEN, X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Access-Control-Allow-Headers");
@@ -423,26 +424,25 @@ app.use(function (req, res, next) {
 const authMiddleware = function (req, res, next) {
   const token = req.headers['authorization'];
   if (token) {
-    return checkTokenExit(token).then(ans => {
+    return checkTokenExit(token).then((ans) => {
       if (ans) {
         next();
       } else {
         res.status(401).json({
           success: false,
-          message: 'Failed to authenticate token.'
+          message: 'Failed to authenticate token.',
         });
       }
     });
   } else if (req.method !== 'OPTIONS') {
     return res.status(403).json({
       success: false,
-      message: 'No token provided.'
-    })
+      message: 'No token provided.',
+    });
   } else {
     next();
   }
-
-}
+};
 
 /**
  * 使用express-rate-limit套件防止ddos攻擊
@@ -450,8 +450,8 @@ const authMiddleware = function (req, res, next) {
 const limiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 限制時間
   max: 2, // 限制請求數量
-  message: 'Too many requests, please try again later!'
-})
+  message: 'Too many requests, please try again later!',
+});
 
 app.set('trust proxy', 1);
 
@@ -500,13 +500,12 @@ app.use('/nodejs/api/cloudrun', cloudrun);
 app.use('/nodejs/api/email', email, limiter);
 app.use('/nodejs/img', express.static('/tmp/official-activity-img'));
 
-
 // Start the server
 const port = process.env.PORT || 3001;
 
- app.listen(port, function () {
-   console.log('Server running at ' + port);
- });
+app.listen(port, function () {
+  console.log('Server running at ' + port);
+});
 /*
 https.createServer(SERVER_CONFIG, app).listen(port, function() {
   console.log('HTTPS sever started at ' + port);

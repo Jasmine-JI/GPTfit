@@ -1,21 +1,20 @@
-<div class="flexCol" style="align-items: center;">
+<div class="flexCol" style="align-items: center">
   <span
     [style.color]="highestHRZoneColor"
-    style="font-weight: bold; margin: 10px 0px;"
+    style="font-weight: bold; margin: 10px 0px"
     *ngIf="!noHRZoneData && type !== 'personalAnalysis'"
   >
-  {{'universal_activityData_maxProportion' | translate}} {{highestHRZone}} {{highestHRZoneValue | number: '0.1-1'}}%
+    {{ 'universal_activityData_maxProportion' | translate }} {{ highestHRZone }}
+    {{ highestHRZoneValue | number: '0.1-1' }}%
   </span>
-  <span style="font-weight: bold; color:grey;" *ngIf="noHRZoneData && type !== 'personalAnalysis'">
-    {{'universal_status_noData' | translate}}
+  <span style="font-weight: bold; color: grey" *ngIf="noHRZoneData && type !== 'personalAnalysis'">
+    {{ 'universal_status_noData' | translate }}
   </span>
   <main
     id="mainSeciton"
-    style="margin-left: 0;"
+    style="margin-left: 0"
     [style.width]="type !== 'personalAnalysis' && !isPreviewMode ? '90%' : 'unset'"
   >
-    <div #container id="chartBlock">
-      chart
-    </div>
+    <div #container id="chartBlock">chart</div>
   </main>
 </div>

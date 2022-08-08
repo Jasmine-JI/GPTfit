@@ -20,7 +20,7 @@ type EditMode = 'add' | 'del';
 @Component({
   selector: 'app-device-list',
   templateUrl: './device-list.component.html',
-  styleUrls: ['./device-list.component.scss']
+  styleUrls: ['./device-list.component.scss'],
 })
 export class DeviceListComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
@@ -34,7 +34,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
     progress: 0,
     editMode: <EditMode>null,
     isPhoneMode: false,
-    selectAll: null
+    selectAll: null,
   };
 
   /**
@@ -47,17 +47,17 @@ export class DeviceListComponent implements OnInit, OnDestroy {
       brands: null,
       branches: null,
       coaches: [],
-      selectGroup: null
+      selectGroup: null,
     },
     deviceType: ['1', '2', '3', '4', '5'],
     deviceUseStatus: 'all',
-    hideConfirmBtn: false
-  }
+    hideConfirmBtn: false,
+  };
 
   /**
    * 目前群組的詳細資訊
    */
-   groupInfo = <GroupDetailInfo>{};
+  groupInfo = <GroupDetailInfo>{};
 
   /**
    * 使用者個人資訊（含權限）
@@ -65,17 +65,18 @@ export class DeviceListComponent implements OnInit, OnDestroy {
   userSimpleInfo: UserSimpleInfo;
 
   token = this.authService.token;
-  deviceList: Array<any>;  // 目前顯示的清單
-  groupDeviceList: Array<any>;  // 群組裝置清單
-  myDeviceList: Array<any>;  // 個人裝置清單
+  deviceList: Array<any>; // 目前顯示的清單
+  groupDeviceList: Array<any>; // 群組裝置清單
+  myDeviceList: Array<any>; // 個人裝置清單
   filterSn: string = null;
   updateList: Array<string>;
   dragDebounce: any;
   beforeSelectGroup: string;
   mouseHoldTime = 0;
   readonly onePageSizeOpt = [5, 10, 20];
-  readonly imgStoragePath = 
-    `http://${location.hostname.includes('192.168.1.235') ? 'app.alatech.com.tw' : location.hostname}/app/public_html/products`;
+  readonly imgStoragePath = `http://${
+    location.hostname.includes('192.168.1.235') ? 'app.alatech.com.tw' : location.hostname
+  }/app/public_html/products`;
 
   constructor(
     private groupService: GroupService,
@@ -86,7 +87,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
     private api10xxService: Api10xxService,
     private reportService: ReportService,
     private authService: AuthService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.checkWindowSize(window.innerWidth);
@@ -107,15 +108,12 @@ export class DeviceListComponent implements OnInit, OnDestroy {
    * 訂閱視窗寬度
    * @author kidin-1100316
    */
-   subscribeWindowSize() {
+  subscribeWindowSize() {
     const resize = fromEvent(window, 'resize');
-    this.resizeEvent = resize.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
-      const windowWidth = (e as any).target.innerWidth
+    this.resizeEvent = resize.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
+      const windowWidth = (e as any).target.innerWidth;
       this.checkWindowSize(windowWidth);
     });
-
   }
 
   /**
@@ -126,28 +124,27 @@ export class DeviceListComponent implements OnInit, OnDestroy {
     combineLatest([
       this.groupService.getUserSimpleInfo(),
       this.groupService.getAllLevelGroupData(),
-      this.groupService.getRxGroupDetail()
-    ]).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(resArr => {
-      const [userSimpleInfo, allLevelGroupData, groupDetail] = resArr,
-            { groupId, brands, branches } = allLevelGroupData as any,
-            groupLevel = this.utils.displayGroupLevel(groupId),
-            group = this.reportConditionOpt.group;
-      Object.assign(groupDetail, { groupLevel });
-      this.userSimpleInfo = userSimpleInfo;
-      this.groupInfo = groupDetail;
-      this.reportConditionOpt.brandType = groupDetail.brandType;
-      if (groupLevel === GroupLevel.brand) {
-        group.brands = brands[0];
-        group.branches = branches;
-        group.selectGroup = groupId.split('-').slice(0, 3).join('-');
-      }
+      this.groupService.getRxGroupDetail(),
+    ])
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((resArr) => {
+        const [userSimpleInfo, allLevelGroupData, groupDetail] = resArr,
+          { groupId, brands, branches } = allLevelGroupData as any,
+          groupLevel = this.utils.displayGroupLevel(groupId),
+          group = this.reportConditionOpt.group;
+        Object.assign(groupDetail, { groupLevel });
+        this.userSimpleInfo = userSimpleInfo;
+        this.groupInfo = groupDetail;
+        this.reportConditionOpt.brandType = groupDetail.brandType;
+        if (groupLevel === GroupLevel.brand) {
+          group.brands = brands[0];
+          group.branches = branches;
+          group.selectGroup = groupId.split('-').slice(0, 3).join('-');
+        }
 
-      this.reportService.setReportCondition(this.reportConditionOpt);
-      this.getSelectedCondition();
-    })
-
+        this.reportService.setReportCondition(this.reportConditionOpt);
+        this.getSelectedCondition();
+      });
   }
 
   /**
@@ -155,22 +152,22 @@ export class DeviceListComponent implements OnInit, OnDestroy {
    * @author kidin-1100722
    */
   getSelectedCondition() {
-    this.reportService.getReportCondition().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.reportConditionOpt = deepCopy(res);
-      const { selectGroup } = this.reportConditionOpt.group;
-      let targetGroupId: string;
-      if (selectGroup) {
-        targetGroupId = this.groupService.getCompleteGroupId(selectGroup.split('-'));
-      } else {
-        const { groupId } = this.groupInfo;
-        targetGroupId = `${this.groupService.getPartGroupId(groupId, 4)}-0-0`;
-      }
+    this.reportService
+      .getReportCondition()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.reportConditionOpt = deepCopy(res);
+        const { selectGroup } = this.reportConditionOpt.group;
+        let targetGroupId: string;
+        if (selectGroup) {
+          targetGroupId = this.groupService.getCompleteGroupId(selectGroup.split('-'));
+        } else {
+          const { groupId } = this.groupInfo;
+          targetGroupId = `${this.groupService.getPartGroupId(groupId, 4)}-0-0`;
+        }
 
-      if (!this.uiFlag.editMode) this.getDeviceList(targetGroupId);
-    });
-
+        if (!this.uiFlag.editMode) this.getDeviceList(targetGroupId);
+      });
   }
 
   /**
@@ -180,17 +177,17 @@ export class DeviceListComponent implements OnInit, OnDestroy {
    */
   getDeviceList(targetGroupId: string = null) {
     const body = {
-            token: this.token,
-            page: 0,
-            pageCounts: 100000
-          };
+      token: this.token,
+      page: 0,
+      pageCounts: 100000,
+    };
 
     if (targetGroupId) {
       Object.assign(body, { targetGroupId });
     }
 
     this.uiFlag.progress = 20;
-    this.qrcodeService.getDeviceList(body).subscribe(res => {
+    this.qrcodeService.getDeviceList(body).subscribe((res) => {
       this.uiFlag.progress = 40;
       const { apiCode, resultCode, resultMessage, info } = res;
       if (resultCode !== 200) {
@@ -209,27 +206,24 @@ export class DeviceListComponent implements OnInit, OnDestroy {
               targetGroup = selectGroup;
             }
 
-            deviceList = deviceList.filter(_list => {
+            deviceList = deviceList.filter((_list) => {
               const { groupId } = _list;
               let isGroupDevice = false;
-              groupId.forEach(_id => {
+              groupId.forEach((_id) => {
                 if (_id.includes(targetGroup)) isGroupDevice = true;
               });
 
               return isGroupDevice;
             });
-          } 
-            
+          }
+
           this.getOtherInfo(deviceList);
         } else {
           this.deviceList = [];
           this.uiFlag.progress = 100;
         }
-
       }
-
     });
-
   }
 
   /**
@@ -239,16 +233,11 @@ export class DeviceListComponent implements OnInit, OnDestroy {
    */
   getOtherInfo(deviceList: any) {
     const idSet = new Set(),
-          snList = [];
+      snList = [];
 
     // 列出fitpair和bonding的userId清單，以方便call api
-    deviceList.forEach(_list => {
-      const {
-        fitPairUserId,
-        lastFitPairUserId,
-        bondingUserId,
-        myEquipmentSN
-      } = _list;
+    deviceList.forEach((_list) => {
+      const { fitPairUserId, lastFitPairUserId, bondingUserId, myEquipmentSN } = _list;
 
       snList.push(myEquipmentSN);
       if (fitPairUserId) {
@@ -260,39 +249,34 @@ export class DeviceListComponent implements OnInit, OnDestroy {
       if (bondingUserId) {
         idSet.add(bondingUserId);
       }
-
     });
 
     const productInfoBody = {
       token: this.token,
       queryType: 1,
-      queryArray: snList
+      queryArray: snList,
     };
     const querry = [this.qrcodeService.getProductInfo(productInfoBody)];
     if (idSet.size > 0) {
       const idList = Array.from(idSet),
-      body = {
-        token: this.token,
-        targetUserId: idList
-      };
+        body = {
+          token: this.token,
+          targetUserId: idList,
+        };
       querry.push(this.api10xxService.fetchGetUserProfile(body));
     }
 
     this.uiFlag.progress = 70;
-    combineLatest(querry).subscribe(res => {
+    combineLatest(querry).subscribe((res) => {
       const [productInfoRes, userProfileRes] = res,
-            { apiCode, resultCode, resultMessage, info } = productInfoRes;
+        { apiCode, resultCode, resultMessage, info } = productInfoRes;
       if (resultCode !== 200) {
         console.error(`${resultCode}: Api ${apiCode} ${resultMessage}`);
       } else {
         const finalList = deviceList.map((_list, _idx) => {
           // 顯示fitpair qrcode
           const checkSum = this.qrcodeService.createDeviceChecksum(_list.myEquipmentSN),
-                qrURL = `${
-                  location.origin}/pair?device_sn=${
-                  _list.myEquipmentSN}&bt_name=${
-                  _list.myEquipmentSN}&cs=${checkSum
-                }`;
+            qrURL = `${location.origin}/pair?device_sn=${_list.myEquipmentSN}&bt_name=${_list.myEquipmentSN}&cs=${checkSum}`;
           Object.assign(_list, { qrURL });
 
           // 取得裝置圖片
@@ -307,8 +291,8 @@ export class DeviceListComponent implements OnInit, OnDestroy {
             const { processResult, userProfile } = userProfileRes;
             if (processResult && processResult.resultCode === 200) {
               const havecurrentFitpair = fitPairUserId && fitPairUserId.length > 0,
-                    haveLastFitpair = lastFitPairUserId && lastFitPairUserId.length > 0;
-              userProfile.forEach(_user => {
+                haveLastFitpair = lastFitPairUserId && lastFitPairUserId.length > 0;
+              userProfile.forEach((_user) => {
                 const { userId, nickname } = _user;
                 if (havecurrentFitpair && userId == fitPairUserId) {
                   Object.assign(_list, { fitPairUserName: nickname });
@@ -319,11 +303,8 @@ export class DeviceListComponent implements OnInit, OnDestroy {
                 if (bondingUserId == userId) {
                   Object.assign(_list, { bondingUserName: nickname });
                 }
-                
               });
-              
             }
-
           }
 
           // 供刪除紀錄選取用變數
@@ -332,7 +313,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
           // 如果為個人裝置列表，再比對哪些裝置已加入群組
           if (this.uiFlag.editMode === 'add' && this.deviceList) {
             let added = false;
-            this.deviceList.forEach(_deviceList => {
+            this.deviceList.forEach((_deviceList) => {
               if (_list.myEquipmentSN === _deviceList.myEquipmentSN) added = true;
             });
 
@@ -351,7 +332,6 @@ export class DeviceListComponent implements OnInit, OnDestroy {
 
         this.deviceList = finalList;
       }
-
     });
 
     this.uiFlag.progress = 100;
@@ -381,15 +361,15 @@ export class DeviceListComponent implements OnInit, OnDestroy {
    */
   refreshList() {
     const { selectGroup } = this.reportConditionOpt.group;
-      let targetGroupId: string;
-      if (selectGroup) {
-        targetGroupId = this.groupService.getCompleteGroupId(selectGroup.split('-'));
-      } else {
-        const { groupId } = this.groupInfo;
-        targetGroupId = groupId;
-      }
+    let targetGroupId: string;
+    if (selectGroup) {
+      targetGroupId = this.groupService.getCompleteGroupId(selectGroup.split('-'));
+    } else {
+      const { groupId } = this.groupInfo;
+      targetGroupId = groupId;
+    }
 
-      this.getDeviceList(targetGroupId);
+    this.getDeviceList(targetGroupId);
   }
 
   /**
@@ -400,19 +380,17 @@ export class DeviceListComponent implements OnInit, OnDestroy {
   navigateDevicePage(idx: number) {
     if (!this.uiFlag.editMode) {
       const { myEquipmentSN, bondingUserId, qrURL } = this.deviceList[idx],
-            { userId } = this.userSimpleInfo;
+        { userId } = this.userSimpleInfo;
       if (bondingUserId != userId) {
         window.open(qrURL);
       } else {
         window.open(`${location.origin}/dashboard/device/info/${myEquipmentSN}`);
       }
-
     } else {
       const { editMode } = this.uiFlag,
-            { added } = this.deviceList[idx];
+        { added } = this.deviceList[idx];
       if (!added) this.selectOne(null, editMode, idx);
     }
-
   }
 
   /**
@@ -430,22 +408,18 @@ export class DeviceListComponent implements OnInit, OnDestroy {
       if (this.mouseHoldTime > 200) {
         clearInterval(this.dragDebounce);
         const useMouse = trigger === 'mouse',
-              mouseMoveEvent = fromEvent(window, useMouse ? 'mousemove' : 'touchmove');
-        this.dragEvent = mouseMoveEvent.pipe(
-          takeUntil(this.ngUnsubscribe)
-        ).subscribe(event => {
+          mouseMoveEvent = fromEvent(window, useMouse ? 'mousemove' : 'touchmove');
+        this.dragEvent = mouseMoveEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe((event) => {
           const btnGroup = document.getElementById('edit__btn__group');
           if (btnGroup) {
-            const { clientX, clientY } = useMouse ? event as any : (event as any).touches[0],
-                  
-                  { innerHeight, innerWidth } = window,
-                  btnGroupHalfHeight = 110 / 2,
-                  btnHalfWdith = 100 / 2,
-                  navHeight = 60,
-                  btnGroupX = clientX - btnHalfWdith,
-                  btnGroupY = clientY - btnGroupHalfHeight;
-            let top: number,
-                left: number;
+            const { clientX, clientY } = useMouse ? (event as any) : (event as any).touches[0],
+              { innerHeight, innerWidth } = window,
+              btnGroupHalfHeight = 110 / 2,
+              btnHalfWdith = 100 / 2,
+              navHeight = 60,
+              btnGroupX = clientX - btnHalfWdith,
+              btnGroupY = clientY - btnGroupHalfHeight;
+            let top: number, left: number;
             if (btnGroupX < 0) {
               left = 0;
             } else if (clientX + btnHalfWdith > innerWidth) {
@@ -465,13 +439,9 @@ export class DeviceListComponent implements OnInit, OnDestroy {
             btnGroup.style.top = `${top}px`;
             btnGroup.style.left = `${left}px`;
           }
-
         });
-
       }
-
     }, 100);
-
   }
 
   /**
@@ -481,15 +451,12 @@ export class DeviceListComponent implements OnInit, OnDestroy {
    */
   subscribeMouseUpEvent(trigger: 'mouse' | 'touch') {
     const useMouse = trigger === 'mouse',
-          mouseUpEvent = fromEvent(window, useMouse ? 'mouseup' : 'touchend');
-    const dragStop = mouseUpEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(event => {
+      mouseUpEvent = fromEvent(window, useMouse ? 'mouseup' : 'touchend');
+    const dragStop = mouseUpEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe((event) => {
       this.dragEvent.unsubscribe();
       dragStop.unsubscribe();
       if (this.dragDebounce) clearInterval(this.dragDebounce);
     });
- 
   }
 
   /**
@@ -526,7 +493,6 @@ export class DeviceListComponent implements OnInit, OnDestroy {
     } else {
       this.deviceList[idx][key] = true;
     }
-
   }
 
   /**
@@ -536,7 +502,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
    */
   selectAll(type: 'add' | 'del') {
     const { selectAll } = this.uiFlag;
-    this.deviceList = this.deviceList.map(_list => {
+    this.deviceList = this.deviceList.map((_list) => {
       if (type === 'add') {
         const { added } = _list;
         _list.addSelected = !(selectAll === 'add' && !added);
@@ -556,34 +522,31 @@ export class DeviceListComponent implements OnInit, OnDestroy {
    */
   showAddAlert() {
     const equipmentSN = [];
-    this.deviceList.forEach(_list => {
+    this.deviceList.forEach((_list) => {
       const { myEquipmentSN, added, addSelected } = _list;
       if (!added && addSelected) equipmentSN.push(myEquipmentSN);
     });
 
     if (equipmentSN.length > 0) {
-      this.translateService.get('hellow world').pipe(
-        takeUntil(this.ngUnsubscribe)
-      ).subscribe(() => {
-        const msg = this.translateService.instant('universal_system_openFitpair');
-        this.dialog.open(MessageBoxComponent, {
-          hasBackdrop: true,
-          data: {
-            title: 'message',
-            body: msg,
-            confirmText: this.translateService.instant('universal_operating_confirm'),
-            onConfirm: () => this.addDevice(equipmentSN),
-            cancelText: 'cancel'
-          }
-
+      this.translateService
+        .get('hellow world')
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe(() => {
+          const msg = this.translateService.instant('universal_system_openFitpair');
+          this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            data: {
+              title: 'message',
+              body: msg,
+              confirmText: this.translateService.instant('universal_operating_confirm'),
+              onConfirm: () => this.addDevice(equipmentSN),
+              cancelText: 'cancel',
+            },
+          });
         });
-
-      });
-
     } else {
       this.returnNormalMode();
     }
-
   }
 
   /**
@@ -596,31 +559,27 @@ export class DeviceListComponent implements OnInit, OnDestroy {
       token: this.token,
       targetGroupId: this.groupInfo.groupId,
       equipmentSN,
-      action: 1
-    }
+      action: 1,
+    };
 
-    this.qrcodeService.updateGroupDeviceList(body).subscribe(res => {
+    this.qrcodeService.updateGroupDeviceList(body).subscribe((res) => {
       const { resultCode, apiCode, resultMessage } = res;
       if (resultCode !== 200) {
-        
         if (resultMessage === 'Execute access right is not enough.') {
-          this.translateService.get('hellow world').pipe(
-            takeUntil(this.ngUnsubscribe)
-          ).subscribe(() => {
-            const msg = this.translateService.instant('universal_group_notGroupMember');
-            this.utils.openAlert(msg);
-          });
-          
+          this.translateService
+            .get('hellow world')
+            .pipe(takeUntil(this.ngUnsubscribe))
+            .subscribe(() => {
+              const msg = this.translateService.instant('universal_group_notGroupMember');
+              this.utils.openAlert(msg);
+            });
         } else {
           this.utils.handleError(resultCode, apiCode, resultMessage);
         }
-
       } else {
         this.returnNormalMode();
       }
-
     });
-
   }
 
   /**
@@ -629,7 +588,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
    */
   delDevice() {
     const equipmentSN = [];
-    this.deviceList.forEach(_list => {
+    this.deviceList.forEach((_list) => {
       const { myEquipmentSN, delSelected } = _list;
       if (delSelected) equipmentSN.push(myEquipmentSN);
     });
@@ -639,27 +598,24 @@ export class DeviceListComponent implements OnInit, OnDestroy {
         token: this.token,
         targetGroupId: this.groupInfo.groupId,
         equipmentSN,
-        action: 2
-      }
+        action: 2,
+      };
 
-      this.qrcodeService.updateGroupDeviceList(body).subscribe(res => {
+      this.qrcodeService.updateGroupDeviceList(body).subscribe((res) => {
         const { resultCode, apiCode, resultMessage } = res;
         if (resultCode !== 200) {
           this.utils.handleError(resultCode, apiCode, resultMessage);
         } else {
-          this.deviceList = this.deviceList.filter(_list => {
+          this.deviceList = this.deviceList.filter((_list) => {
             return !_list.delSelected;
           });
 
           this.returnNormalMode();
         }
-
       });
-
     } else {
       this.returnNormalMode();
     }
-
   }
 
   /**
@@ -677,5 +633,4 @@ export class DeviceListComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

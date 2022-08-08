@@ -1,8 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { MuscleGroup } from '../enum/weight-train';
 
-
-@Pipe({name: 'muscleGroupIcon'})
+@Pipe({ name: 'muscleGroupIcon' })
 export class MuscleGroupIconPipe implements PipeTransform {
   /**
    * 依據不同肌群代碼回傳該icon的class name
@@ -25,7 +24,5 @@ export class MuscleGroupIconPipe implements PipeTransform {
       case MuscleGroup.pectoralsMuscle:
         return 'icon-svg_web-icon_p3_033-chest_muscles';
     }
-
   }
-  
 }

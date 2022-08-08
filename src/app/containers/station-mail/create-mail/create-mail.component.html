@@ -34,27 +34,21 @@
         [value]="sendMail.title"
         (focusout)="saveTitle($event)"
         maxlength="50"
-      >
+      />
     </div>
-    <div
-      class="flexRow input__text__section"
-      *ngIf="sendMail.receiverType === ReceiverType.assign"
-    >
+    <div class="flexRow input__text__section" *ngIf="sendMail.receiverType === ReceiverType.assign">
       <label class="input__label" for="receiver__input">
         {{ 'universal_message_addressee' | translate }}
       </label>
       <div class="flexRow receiver__section">
-        <ng-container *ngFor="let _list of receiverList;">
+        <ng-container *ngFor="let _list of receiverList">
           <div
             class="flexRow receiver__sticker"
             [class.sticker__no__button]="uiFlag.isReplyMode"
             (click)="showReceiverMenu($event, _list)"
           >
             <span class="receiver__name">{{ _list.name }}</span>
-            <button
-              (click)="delReceiver(_list.id)"
-              *ngIf="!uiFlag.isReplyMode"
-            >
+            <button (click)="delReceiver(_list.id)" *ngIf="!uiFlag.isReplyMode">
               <i class="icon-svg_web-icon_p1_012-close"></i>
             </button>
             <ul
@@ -84,15 +78,12 @@
             </ul>
           </div>
         </ng-container>
-        <div
-          class="flexCol autocomplete__list"
-          *ngIf="!uiFlag.isReplyMode"
-        >
-          <input id="receiver__input" type="text" autocomplete="off" #receiverInput>
+        <div class="flexCol autocomplete__list" *ngIf="!uiFlag.isReplyMode">
+          <input id="receiver__input" type="text" autocomplete="off" #receiverInput />
           <ul class="receiver__search__list" *ngIf="searchList.length > 0">
             <li
               class="receiver__search__option"
-              *ngFor="let _user of searchList; let index = index;"
+              *ngFor="let _user of searchList; let index = index"
               (click)="checkReceiverRepeat(index)"
             >
               {{ _user.nickname }}
@@ -115,13 +106,8 @@
           aria-selected="true"
           value="3"
           (click)="changeMailType($event)"
-        >
-        <label
-          class="mail__option__label"
-          for="system__send"
-        >
-          系統發送
-        </label>
+        />
+        <label class="mail__option__label" for="system__send"> 系統發送 </label>
         <input
           id="normal__send"
           type="radio"
@@ -129,13 +115,8 @@
           value="2"
           checked="true"
           (click)="changeMailType($event)"
-        >
-        <label
-          class="mail__option__label"
-          for="normal__send"
-        >
-          一般發送
-        </label>
+        />
+        <label class="mail__option__label" for="normal__send"> 一般發送 </label>
       </div>
       <div class="flexRow mail__option">
         <input
@@ -144,13 +125,8 @@
           name="receiverRange"
           value="1"
           (click)="changeReceiverRange($event)"
-        >
-        <label
-          class="mail__option__label"
-          for="all__receiver"
-        >
-          所有使用者
-        </label>
+        />
+        <label class="mail__option__label" for="all__receiver"> 所有使用者 </label>
         <input
           id="assign__receiver"
           type="radio"
@@ -158,13 +134,8 @@
           value="2"
           checked="true"
           (click)="changeReceiverRange($event)"
-        >
-        <label
-          class="mail__option__label"
-          for="assign__receiver"
-        >
-          指定收件者
-        </label>
+        />
+        <label class="mail__option__label" for="assign__receiver"> 指定收件者 </label>
       </div>
     </div>
     <div class="mail__content">
@@ -192,7 +163,7 @@
       ></textarea>
       <div
         class="flexCol child-reply__mail"
-        *ngFor="let _replyMail of replyMailList; let index = index;"
+        *ngFor="let _replyMail of replyMailList; let index = index"
         (click)="unfoldReplyMail($event, index)"
       >
         <div class="flexRow child-reply__mail__info">
@@ -202,7 +173,7 @@
               [src]="_replyMail.senderAvatarUrl"
               [alt]="_replyMail.senderName"
               (error)="_replyMail.senderAvatarUrl = '/assets/images/user2.png'"
-            >
+            />
             <span>
               {{ _replyMail.senderName }}
             </span>

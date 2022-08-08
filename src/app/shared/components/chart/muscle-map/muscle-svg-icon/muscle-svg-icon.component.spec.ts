@@ -8,9 +8,8 @@ describe('MuscleSvgIconComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ MuscleSvgIconComponent ]
-    })
-    .compileComponents();
+      declarations: [MuscleSvgIconComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

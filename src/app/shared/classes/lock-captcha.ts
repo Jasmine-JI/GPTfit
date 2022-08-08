@@ -6,14 +6,13 @@ import { checkResponse } from '../utils/index';
 
 enum UnlockFlow {
   requestImg = 1,
-  unlock
+  unlock,
 }
 
 /**
  * 處理鎖定圖碼之請求與解瑣
  */
 export class LockCaptcha {
-
   private randomCodeImg: string;
   private unlockFlow = UnlockFlow.requestImg;
   private unlockKey: string = null;
@@ -35,22 +34,22 @@ export class LockCaptcha {
   requestLockImg() {
     const { unlockFlow, imgLockCode } = this;
     const body = { unlockFlow, imgLockCode };
-    this.getClientIpService.requestIpAddress().pipe(
-      switchMap(ipResult => {
-        this.header = { remoteAddr: (ipResult as any).ip };
-        return this.signupService.fetchCaptcha(body, this.header);
-      })
-
-    ).subscribe((res: any) => {
-      if (!checkResponse(res)) {
-        this.randomCodeImg = '';
-      } else {
-        this.unlockFlow = UnlockFlow.unlock;
-        this.randomCodeImg = res.captcha.randomCodeImg
-      }
-
-    });
-
+    this.getClientIpService
+      .requestIpAddress()
+      .pipe(
+        switchMap((ipResult) => {
+          this.header = { remoteAddr: (ipResult as any).ip };
+          return this.signupService.fetchCaptcha(body, this.header);
+        })
+      )
+      .subscribe((res: any) => {
+        if (!checkResponse(res)) {
+          this.randomCodeImg = '';
+        } else {
+          this.unlockFlow = UnlockFlow.unlock;
+          this.randomCodeImg = res.captcha.randomCodeImg;
+        }
+      });
   }
 
   /**
@@ -99,11 +98,7 @@ export class LockCaptcha {
           this.unlockKeyError = false;
           return of(true);
         }
-
       })
-
     );
-
   }
-
 }

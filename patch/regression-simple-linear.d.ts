@@ -17,5 +17,4 @@ declare module 'ml-regression-simple-linear' {
     computeX(y: number): number;
     toJSON(): SLRModel;
   }
-
 }

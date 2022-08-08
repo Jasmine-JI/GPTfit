@@ -1,12 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { ReportService } from '../services/report.service';
 
-@Pipe({name: 'ffmi'})
+@Pipe({ name: 'ffmi' })
 export class FFMIPipe implements PipeTransform {
-
-  constructor(
-    private reportService: ReportService
-  ) {}
+  constructor(private reportService: ReportService) {}
 
   /**
    * 依身高、體重、脂肪率，計算FFMI。
@@ -15,8 +12,7 @@ export class FFMIPipe implements PipeTransform {
    * @author kidin-1100623
    */
   transform(value: Array<number>): number {
-    const [height, weight, fatRate] = value;    
+    const [height, weight, fatRate] = value;
     return this.reportService.countFFMI(height, weight, fatRate);
   }
-
 }

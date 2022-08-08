@@ -1,28 +1,28 @@
 export interface SignupResponse {
   resultCode: number;
   info: {
-    rtnMsg: string
+    rtnMsg: string;
   };
 }
 
 export enum ResetPasswordFlow {
   request = 1,
   verify,
-  reset
+  reset,
 }
 
 export enum UnlockFlow {
   requestUnlockImage = 1,
-  sendUnlockCode
+  sendUnlockCode,
 }
 
 export enum QrSignInFlow {
   submitGuid = 1,
   longPolling,
-  allowLogin
+  allowLogin,
 }
 
 export enum EnableAccountFlow {
   request = 1,
-  verify
+  verify,
 }

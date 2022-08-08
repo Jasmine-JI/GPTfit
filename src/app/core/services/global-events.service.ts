@@ -2,13 +2,12 @@ import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GlobalEventsService {
-
   sideBarMode$ = new ReplaySubject<any>(1); // sidebar展開與否
 
-  constructor() { }
+  constructor() {}
 
   /**
    * 取得sidebar 模式供子頁面用
@@ -26,5 +25,4 @@ export class GlobalEventsService {
   setSideBarMode(status: 'expand' | 'hide' | 'narrow') {
     this.sideBarMode$.next(status);
   }
-
 }

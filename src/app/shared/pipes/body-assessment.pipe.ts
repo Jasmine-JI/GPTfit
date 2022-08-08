@@ -1,9 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { maleBodyBoundary, femaleBodyBoundary } from '../models/chart-data';
 
-@Pipe({name: 'bodyAssessment'})
+@Pipe({ name: 'bodyAssessment' })
 export class BodyAssessmentPipe implements PipeTransform {
-
   /**
    * 依性別、FFMI、體脂率回覆體態的多國語系key。
    * @param value {Array<number>}-[性別、FFMI、體脂率]
@@ -12,8 +11,7 @@ export class BodyAssessmentPipe implements PipeTransform {
    */
   transform(value: Array<number>): string {
     const [gender, FFMI, fatRate] = value;
-    let FFMIBoundary: Array<number>,
-        fatRateBoundary: Array<number>;
+    let FFMIBoundary: Array<number>, fatRateBoundary: Array<number>;
     if (gender === 0) {
       FFMIBoundary = maleBodyBoundary.FFMI;
       fatRateBoundary = maleBodyBoundary.fatRate;
@@ -23,7 +21,6 @@ export class BodyAssessmentPipe implements PipeTransform {
     }
 
     if (FFMI < FFMIBoundary[0]) {
-
       if (fatRate <= fatRateBoundary[0]) {
         return 'universal_activityData_tooThin';
       } else if (fatRate > fatRateBoundary[0] && fatRate <= fatRateBoundary[1]) {
@@ -31,9 +28,7 @@ export class BodyAssessmentPipe implements PipeTransform {
       } else {
         return 'universal_activityData_recessiveObesity';
       }
-
     } else if (FFMI >= FFMIBoundary[0] && FFMI <= FFMIBoundary[1]) {
-
       if (fatRate <= fatRateBoundary[0]) {
         return 'universal_activityData_generallyThin';
       } else if (fatRate > fatRateBoundary[0] && fatRate <= fatRateBoundary[1]) {
@@ -41,9 +36,7 @@ export class BodyAssessmentPipe implements PipeTransform {
       } else {
         return 'universal_activityData_generallyFat';
       }
-
     } else if (FFMI > FFMIBoundary[1]) {
-
       if (fatRate <= fatRateBoundary[0]) {
         return 'universal_activityData_bodybuilding';
       } else if (fatRate > fatRateBoundary[0] && fatRate <= fatRateBoundary[1]) {
@@ -51,9 +44,6 @@ export class BodyAssessmentPipe implements PipeTransform {
       } else {
         return 'universal_activityData_fatBody';
       }
-
     }
-
   }
-
 }

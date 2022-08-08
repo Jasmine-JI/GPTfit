@@ -3,7 +3,6 @@ const db = require('./connection_db');
 exports.getUserActivityInfo = function (mapId, startTimestamp, endTimestamp, mapDistance, userId) {
   let result = {};
   return new Promise((resolve, reject) => {
-
     db.query(
       `SELECT
         m.user_id,
@@ -24,7 +23,16 @@ exports.getUserActivityInfo = function (mapId, startTimestamp, endTimestamp, map
         and m.user_id in (?)
        ORDER BY a.total_second ASC
       `,
-      ['file_info', 'activity_info', 'user_profile', mapId, startTimestamp / 1000, endTimestamp / 1000, mapDistance, userId],
+      [
+        'file_info',
+        'activity_info',
+        'user_profile',
+        mapId,
+        startTimestamp / 1000,
+        endTimestamp / 1000,
+        mapDistance,
+        userId,
+      ],
       function (err, rows) {
         if (err) {
           console.log(`Error: ${err}`);
@@ -36,11 +44,7 @@ exports.getUserActivityInfo = function (mapId, startTimestamp, endTimestamp, map
         } else {
           return resolve([]);
         }
-
       }
-
     );
-
   });
-
 };

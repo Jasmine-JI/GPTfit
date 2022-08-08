@@ -1,12 +1,11 @@
 .main__section {
   align-items: center;
 
-  >h4 {
+  > h4 {
     width: 75vw;
     font-weight: bold;
     margin: 2vh 0;
   }
-
 }
 
 #form__content {
@@ -49,7 +48,7 @@
   flex-wrap: wrap;
   margin: 10px 0;
 
-  >button {
+  > button {
     padding: 10px 0;
     width: 100px;
     text-align: center;
@@ -57,7 +56,6 @@
     border-radius: 10px;
     margin: 5px 10px 5px 0;
   }
-
 }
 
 .form__operate__button {
@@ -71,7 +69,6 @@
   &:not(textarea) {
     color: red;
   }
-  
 }
 
 .hint__text {
@@ -85,11 +82,9 @@
   color: rgba(100, 100, 100, 1);
 }
 
-
 /******************************************************* media ********************************************/
 
 @media (max-width: 575px) {
-
   .content__input {
     flex-direction: column;
   }
@@ -97,5 +92,4 @@
   #contact__content__input {
     width: 100%;
   }
-
 }

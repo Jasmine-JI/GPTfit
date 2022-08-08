@@ -5,7 +5,7 @@ var router = express.Router();
 router.get('/getEmail', function (req, res, next) {
   const {
     con,
-    query: { code }
+    query: { code },
   } = req;
   const sql = `
   SELECT  e_mail, phone FROM ??
@@ -26,7 +26,6 @@ router.get('/getEmail', function (req, res, next) {
     return res.json('noemail');
   });
 });
-
 
 // Exports
 module.exports = router;

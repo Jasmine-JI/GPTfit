@@ -9,7 +9,6 @@ import { ReportDateType } from '../models/report-condition';
  * 處理api 1103(infoType: 5) response 的 groupMemberInfo
  */
 export class AllGroupMember {
-
   private _belongGroupId: string;
   private _originMemberList: Array<GroupMemberInfo>;
   private _groupListObj: any;
@@ -48,16 +47,20 @@ export class AllGroupMember {
    * @param groupId {groupId}-群組id
    */
   getNoRepeatMemberId(groupId: string): Array<number> {
-    const { groups: { branchId, classId } } = REGEX_GROUP_ID.exec(groupId);
-    const idSet = new Set<number>();  // 不重複之成員id，用來取api 2014
-    let memberListObj = {};  // 成員清單物件，方便後續產出團體與個人分析
-    this._originMemberList.forEach(_list => {
+    const {
+      groups: { branchId, classId },
+    } = REGEX_GROUP_ID.exec(groupId);
+    const idSet = new Set<number>(); // 不重複之成員id，用來取api 2014
+    let memberListObj = {}; // 成員清單物件，方便後續產出團體與個人分析
+    this._originMemberList.forEach((_list) => {
       const { memberId: _memberId, groupId: _groupId } = _list;
-      const { groups: { branchId: _branchId, classId: _classId } } = REGEX_GROUP_ID.exec(_groupId);
+      const {
+        groups: { branchId: _branchId, classId: _classId },
+      } = REGEX_GROUP_ID.exec(_groupId);
       const isSamgeGroup = groupId === _groupId;
       const isBrandLevel = branchId === '0';
       const branchLevelSameBranch = classId === '0' && branchId === _branchId;
-      
+
       // 篩選此群組階層以下（含）不重複的成員id
       if (isSamgeGroup || isBrandLevel || branchLevelSameBranch) {
         idSet.add(_list.memberId);
@@ -65,14 +68,12 @@ export class AllGroupMember {
         if (!memberListObj[_memberId]) {
           memberListObj = {
             ...memberListObj,
-            [_memberId]: { ..._list, groupId: [_groupId] }
+            [_memberId]: { ..._list, groupId: [_groupId] },
           };
         } else {
           memberListObj[_memberId].groupId.push(_groupId);
         }
-
       }
-
     });
 
     this._memberListObj = memberListObj;
@@ -98,9 +99,8 @@ export class AllGroupMember {
   savePersonalData(userId: number, key: string, data: any) {
     this._memberListObj[userId] = {
       ...this._memberListObj[userId],
-      [key]: data
+      [key]: data,
     };
-
   }
 
   /**
@@ -145,11 +145,8 @@ export class AllGroupMember {
             const [weight, reps, sets] = assignGroupData;
             return `${Math.round(weight)}*${Math.round(reps)}*${Math.round(sets)}`;
           }
-          
         }
-        
       }
-
     }
 
     return '--';
@@ -164,14 +161,16 @@ export class AllGroupMember {
     const { base, compare } = this.memberList[userId];
     if (base && compare) {
       const baseMuscleData = base.muscleGroupData;
-      const [baseWeight, baseRep, baseSet] = baseMuscleData ? base.muscleGroupData[muscleGroup] : [0, 0, 0];
+      const [baseWeight, baseRep, baseSet] = baseMuscleData
+        ? base.muscleGroupData[muscleGroup]
+        : [0, 0, 0];
       const baseTotalWeight = baseWeight * baseRep * baseSet;
       const compareMuscleData = compare.muscleGroupData;
-      const [compareWeight, compareRep, compareSet] = compareMuscleData ? compare.muscleGroupData[muscleGroup] : [0, 0, 0];
+      const [compareWeight, compareRep, compareSet] = compareMuscleData
+        ? compare.muscleGroupData[muscleGroup]
+        : [0, 0, 0];
       const compareTotalWeight = compareWeight * compareRep * compareSet;
       return baseTotalWeight - compareTotalWeight;
     }
-
   }
-
 }

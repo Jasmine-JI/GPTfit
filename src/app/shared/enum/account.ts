@@ -4,7 +4,7 @@
 export enum SignTypeEnum {
   email = 1,
   phone,
-  token
+  token,
 }
 
 /**
@@ -12,14 +12,13 @@ export enum SignTypeEnum {
  */
 export enum AccountTypeEnum {
   email = 1,
-  phone
+  phone,
 }
-
 
 /**
  * 帳號狀態
  */
 export enum AccountStatusEnum {
   unenabled = 1,
-  enabled
+  enabled,
 }

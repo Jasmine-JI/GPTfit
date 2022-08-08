@@ -4,15 +4,16 @@ import { trendChartColor } from '../../models/chart-data';
 /**
  * 用於個人目標達成率圖表
  */
- export class TargetAchieveTrendData {
-
-  private _trendData = [{
-    name: '',
-    data: [],
-    custom: <any>{
-      baseDateRange: []
-    }
-  }];
+export class TargetAchieveTrendData {
+  private _trendData = [
+    {
+      name: '',
+      data: [],
+      custom: <any>{
+        baseDateRange: [],
+      },
+    },
+  ];
 
   /**
    * 報告基準日期範圍
@@ -23,7 +24,6 @@ import { trendChartColor } from '../../models/chart-data';
    * 報告比較日期範圍
    */
   private _compareEndTime: number;
-
 
   constructor(baseTime: DateRange, compareTime: DateRange) {
     // 將報告截止時間紀錄下來供後續日期比對用
@@ -41,7 +41,7 @@ import { trendChartColor } from '../../models/chart-data';
     this._trendData[0].data.push({
       x: currentDataIndex,
       y: 0,
-      ...this.getChartValue(data, dateRange[0], this._baseEndTime)
+      ...this.getChartValue(data, dateRange[0], this._baseEndTime),
     });
 
     this._trendData[0].custom.baseDateRange.push(dateRange);
@@ -60,14 +60,13 @@ import { trendChartColor } from '../../models/chart-data';
     compareData: number,
     compareDateRange: Array<number>
   ) {
-
-
-    if (!this._trendData[0].custom.compareDateRange) this._trendData[0].custom.compareDateRange = [];
+    if (!this._trendData[0].custom.compareDateRange)
+      this._trendData[0].custom.compareDateRange = [];
     const currentDataIndex = this._trendData[0].custom.baseDateRange.length;
     const baseValue = {
       x: currentDataIndex,
       y: 0,
-      ...this.getChartValue(baseData, baseDateRange[0], this._baseEndTime)
+      ...this.getChartValue(baseData, baseDateRange[0], this._baseEndTime),
     };
     this._trendData[0].data.push(baseValue);
     this._trendData[0].custom.baseDateRange.push(baseDateRange);
@@ -75,7 +74,7 @@ import { trendChartColor } from '../../models/chart-data';
     const compareValue = {
       x: currentDataIndex,
       y: 1,
-      ...this.getChartValue(compareData, compareDateRange[0], this._compareEndTime)
+      ...this.getChartValue(compareData, compareDateRange[0], this._compareEndTime),
     };
     this._trendData[0].data.push(compareValue);
     this._trendData[0].custom.compareDateRange.push(compareDateRange);
@@ -88,7 +87,7 @@ import { trendChartColor } from '../../models/chart-data';
     let color = data ? achieve : notAchieve;
     if (dataStartDate > reportEndDate) color = nodata;
     return { value, color };
-  };
+  }
 
   /**
    * 取得圖表數據與設定值
@@ -96,5 +95,4 @@ import { trendChartColor } from '../../models/chart-data';
   get chartData() {
     return this._trendData;
   }
-
 }

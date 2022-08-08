@@ -1,9 +1,6 @@
 <ng-container *ngIf="!pcView">
   <nav>
-    <button
-      class="flexRow appview-backButton"
-      (click)="turnBack()"
-    >
+    <button class="flexRow appview-backButton" (click)="turnBack()">
       <i class="icon-svg_web-icon_p1_016-back"></i>
       <span>{{ 'universal_operating_back' | translate }}</span>
     </button>
@@ -24,17 +21,12 @@
             (click)="showCountryCodeList($event)"
             *ngIf="loginBody.signInType === SignTypeEnum.phone"
           >
-            <span>
-              +{{ loginBody.countryCode }}
-            </span>
-            <ul
-              class="appview-countryCodeList"
-              *ngIf="displayCountryCodeList"
-            >
+            <span> +{{ loginBody.countryCode }} </span>
+            <ul class="appview-countryCodeList" *ngIf="displayCountryCodeList">
               <li
                 class="flexRow"
                 (click)="selectCountryCode($event, _list.code)"
-                *ngFor="let _list of countryCodeList;"
+                *ngFor="let _list of countryCodeList"
               >
                 <span class="appview-countryNumber">
                   {{ _list.code }}
@@ -51,14 +43,16 @@
             id="appview__account"
             class="appview-dataInput"
             [placeholder]="
-              'universal_userAccount_enterInfo' | translate: {
-                info: ('universal_userAccount_emailPerPhone' | translate)
-              }
+              'universal_userAccount_enterInfo'
+                | translate
+                  : {
+                      info: ('universal_userAccount_emailPerPhone' | translate)
+                    }
             "
             (keydown)="determineAccountType($event)"
             (change)="saveAccount($event)"
             (focusout)="saveAccount($event)"
-          >
+          />
         </div>
         <p class="appview-alertHint">
           <ng-container *ngIf="cue.account !== ''">
@@ -77,16 +71,18 @@
             id="appview__password"
             class="appview-dataInput"
             [placeholder]="
-              'universal_userAccount_enterInfo' | translate: {
-                info: ('universal_userAccount_password' | translate)
-              }
+              'universal_userAccount_enterInfo'
+                | translate
+                  : {
+                      info: ('universal_userAccount_password' | translate)
+                    }
             "
             maxlength="20"
             [(ngModel)]="loginBody.password"
             (keypress)="handleNext($event, 'password')"
             (focusout)="checkPassword($event)"
             (change)="checkPassword($event)"
-          >
+          />
           <button class="appview-showPassword" (click)="toggleDisplayPW()">
             <i
               class="icon-svg_web-icon_p1_081-watch"
@@ -112,7 +108,6 @@
           </a>
         </button>
       </div>
-
     </div>
     <div class="appview-buttonArea">
       <button
@@ -122,11 +117,7 @@
       >
         {{ 'universal_userAccount_logIn' | translate }}
       </button>
-      <p
-        style="text-align: center;"
-        class="appview-alertHint"
-        *ngIf="cue.signResult !== ''"
-      >
+      <p style="text-align: center" class="appview-alertHint" *ngIf="cue.signResult !== ''">
         {{ 'universal_userAccount_errorAccountPassword' | translate }}
       </p>
     </div>
@@ -135,27 +126,36 @@
 
 <ng-container *ngIf="pcView">
   <div class="access-bg">
-    <div class="container signup" style="padding: 63px 0 70px 0;">
-      <div class="d-flex" style="flex-direction: column;align-items: center;;">
-        <div class="access-description"  innerHtml="{{ 'universal_app_gptSlogan' | translate }}">
-        </div>
+    <div class="container signup" style="padding: 63px 0 70px 0">
+      <div class="d-flex" style="flex-direction: column; align-items: center ;">
+        <div
+          class="access-description"
+          innerHtml="{{ 'universal_app_gptSlogan' | translate }}"
+        ></div>
         <div class="access-panel">
           <header class="access-header">
-            <img src="assets/attacus_logo.png" style="width: 36%">
+            <img src="assets/attacus_logo.png" style="width: 36%" />
           </header>
           <div class="access-panel-body">
             <div>
               <div class="flexCol">
                 <div class="flexRow">
-                  <span class="access-text" style="margin-bottom: 10px;">{{ 'universal_userAccount_account' | translate }}</span>
-                  (&nbsp;<a href="#" (click)="showPrivateMsg($event)">{{'universal_userAccount_signUp' | translate}}</a>&nbsp;)
+                  <span class="access-text" style="margin-bottom: 10px">{{
+                    'universal_userAccount_account' | translate
+                  }}</span>
+                  (&nbsp;<a href="#" (click)="showPrivateMsg($event)">{{
+                    'universal_userAccount_signUp' | translate
+                  }}</a
+                  >&nbsp;)
                 </div>
                 <div class="flexRow">
                   <div class="flexRow member__input">
                     <input
                       #accountInput_web
-                      placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.account } }}"
-                      style="width: 100%;"
+                      placeholder="{{
+                        'universal_userAccount_enterInfo' | translate: { info: i18n.account }
+                      }}"
+                      style="width: 100%"
                       class="form-control"
                       (keydown)="determineAccountType($event)"
                       (change)="saveAccount($event)"
@@ -166,31 +166,28 @@
                       (click)="navigateToQrcodeSign()"
                     ></i>
                   </div>
-                  <div
-                    class="flexRow"
-                    *ngIf="loginBody.signInType === SignTypeEnum.phone"
-                  >
+                  <div class="flexRow" *ngIf="loginBody.signInType === SignTypeEnum.phone">
                     <app-intl-phone-input
                       (onChange)="onCodeChange($event)"
                       [currentCountryCode]="loginBody.countryCode"
                       [webUi]="true"
-                      style="width: 100%;"
+                      style="width: 100%"
                     ></app-intl-phone-input>
                   </div>
                 </div>
-                <span
-                  class="form__message form__message--placeholder"
-                  *ngIf="cue.account !== ''"
-                >
+                <span class="form__message form__message--placeholder" *ngIf="cue.account !== ''">
                   {{ cue.account | translate }}
                 </span>
               </div>
               <div class="flexCol webDiv">
                 <div class="flexRow">
-                  <span class="access-text" style="margin-bottom: 10px;">
+                  <span class="access-text" style="margin-bottom: 10px">
                     {{ 'universal_userAccount_password' | translate }}
                   </span>
-                  (&nbsp;<a href="#" [routerLink]="['/resetPassword-web']">{{'universal_userAccount_forgetPassword' | translate}}</a>&nbsp;)
+                  (&nbsp;<a href="#" [routerLink]="['/resetPassword-web']">{{
+                    'universal_userAccount_forgetPassword' | translate
+                  }}</a
+                  >&nbsp;)
                 </div>
                 <div class="flexRow member__input">
                   <input
@@ -198,7 +195,9 @@
                     [type]="displayPW ? 'text' : 'password'"
                     id="signupPW"
                     class="form-control"
-                    placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.password } }}"
+                    placeholder="{{
+                      'universal_userAccount_enterInfo' | translate: { info: i18n.password }
+                    }}"
                     maxlength="20"
                     [(ngModel)]="loginBody.password"
                     (keypress)="handleNext($event, 'password')"
@@ -215,18 +214,27 @@
                   {{ 'universal_userAccount_passwordFormat' | translate }}
                 </span>
               </div>
-              <span style="color: red; margin: 0 auto;" *ngIf="cue.signResult !== ''">
+              <span style="color: red; margin: 0 auto" *ngIf="cue.signResult !== ''">
                 {{ 'universal_userAccount_errorAccountPassword' | translate }}
               </span>
             </div>
-            <div style="display: flex;justify-content: flex-end; align-items: center; margin-top: 20px;">
+            <div
+              style="
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                margin-top: 20px;
+              "
+            >
               <button
                 class="btn btn-primary access-btn"
                 [class.appview-unclickable]="loginStatus !== 'check'"
                 [style.background]="loginStatus !== 'check' ? '#2b819b54' : ''"
                 (click)="login()"
               >
-                <span *ngIf="loginStatus !== 'success'">{{ 'universal_userAccount_logIn' | translate }}</span>
+                <span *ngIf="loginStatus !== 'success'">{{
+                  'universal_userAccount_logIn' | translate
+                }}</span>
                 <i *ngIf="loginStatus !== 'check'" class="fa fa-spinner fa-pulse"></i>
               </button>
             </div>
@@ -236,4 +244,3 @@
     </div>
   </div>
 </ng-container>
-

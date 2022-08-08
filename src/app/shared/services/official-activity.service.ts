@@ -4,22 +4,18 @@ import { environment } from '../../../environments/environment';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-
 const { API_SERVER } = environment.url;
 
 @Injectable()
 export class OfficialActivityService {
-
-  constructor(
-    private http: HttpClient
-  ) {}
+  constructor(private http: HttpClient) {}
 
   /**
    * 使用nodejs創建活動
    * @param body {any}
    * @author kidin-1090902
    */
-  createOfficialActivity (body: any) {
+  createOfficialActivity(body: any) {
     return this.http.post<any>(API_SERVER + 'officialActivity/create', body);
   }
 
@@ -28,18 +24,18 @@ export class OfficialActivityService {
    * @param body {any}
    * @author kidin-1090902
    */
-  copyOfficialActivity (body: any) {
-    return this.http.post<any>(API_SERVER + 'officialActivity/copy', body).pipe(
-      catchError(err => throwError(err))
-    );
+  copyOfficialActivity(body: any) {
+    return this.http
+      .post<any>(API_SERVER + 'officialActivity/copy', body)
+      .pipe(catchError((err) => throwError(err)));
   }
 
-    /**
+  /**
    * 使用nodejs取得活動
    * @param body {any}
    * @author kidin-1090902
    */
-  getOfficialActivity (body: any) {
+  getOfficialActivity(body: any) {
     return this.http.post<any>(API_SERVER + 'officialActivity/get', body);
   }
 
@@ -48,7 +44,7 @@ export class OfficialActivityService {
    * @param body {any}
    * @author kidin-1090902
    */
-  updateOfficialActivity (body: any) {
+  updateOfficialActivity(body: any) {
     return this.http.post<any>(API_SERVER + 'officialActivity/update', body);
   }
 
@@ -57,7 +53,7 @@ export class OfficialActivityService {
    * @param body {any}
    * @author kidin-1090902
    */
-  editOfficialActivity (body: any) {
+  editOfficialActivity(body: any) {
     return this.http.post<any>(API_SERVER + 'officialActivity/edit', body);
   }
 
@@ -66,7 +62,7 @@ export class OfficialActivityService {
    * @param body {any}
    * @author kidin-1090902
    */
-  applyOfficialActivity (body: any) {
+  applyOfficialActivity(body: any) {
     return this.http.post<any>(API_SERVER + 'officialActivity/apply', body);
   }
 
@@ -75,7 +71,7 @@ export class OfficialActivityService {
    * @param body {any}
    * @author kidin-1090902
    */
-  getAllOfficialActivity (body: any) {
+  getAllOfficialActivity(body: any) {
     return this.http.post<any>(API_SERVER + 'officialActivity/get-all', body);
   }
 
@@ -84,7 +80,7 @@ export class OfficialActivityService {
    * @param body {any}
    * @author kidin-1090902
    */
-  updateRank (body: any) {
+  updateRank(body: any) {
     return this.http.post<any>(API_SERVER + 'officialActivity/update-rank', body);
   }
 
@@ -93,8 +89,7 @@ export class OfficialActivityService {
    * @param body {any}
    * @author kidin-1090902
    */
-  getUserRecord (body: any) {
+  getUserRecord(body: any) {
     return this.http.post<any>(API_SERVER + 'officialActivity/user-record', body);
   }
-
 }

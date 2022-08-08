@@ -10,5 +10,5 @@ export enum SportType {
   aerobic,
   row,
   ball,
-  all = 99
+  all = 99,
 }

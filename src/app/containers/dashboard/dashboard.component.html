@@ -1,7 +1,7 @@
-<div 
+<div
   (window:resize)="onResize($event)"
   [class.minimize-main-nav]="uiFlag.sidebarMode === 'expand'"
-  style="display: flex; align-items: stretch; flex-shrink: 0;"
+  style="display: flex; align-items: stretch; flex-shrink: 0"
   *ngIf="!isLoading"
 >
   <ng-container *ngIf="!isPreviewMode">
@@ -11,54 +11,39 @@
           <i class="icon-svg_web-icon_p1_005-menu main-nav-toggle-icon"></i>
         </div>
       </div>
-      <div style="display: flex; position: fixed; right: 20px; align-items: center;">
+      <div style="display: flex; position: fixed; right: 20px; align-items: center">
         <div class="flexCenter" *ngIf="systemAccessright <= AccessRight.maintainer && false">
-          <button style="border: none; background-color: transparent;" (click)="changeTheme()">
-            <span style="font-size: 22px;" [style.color]="theme === 'light' ? 'black' : 'yellow'">
+          <button style="border: none; background-color: transparent" (click)="changeTheme()">
+            <span style="font-size: 22px" [style.color]="theme === 'light' ? 'black' : 'yellow'">
               ☀
             </span>
           </button>
         </div>
         <div class="flexCenter mail__button__section">
-          <button
-            class="mail__button"
-            (click)="showStationMailList($event)"
-          >
+          <button class="mail__button" (click)="showStationMailList($event)">
             <i class="icon-svg_web-icon_p4_012-message"></i>
             <i
               class="icon-svg_web-icon_p1_069-about alert__icon__mail"
               *ngIf="uiFlag.haveNewMail"
             ></i>
           </button>
-          <div
-            class="brief__mail__list"
-            *ngIf="uiFlag.showStationMailList"
-          >
+          <div class="brief__mail__list" *ngIf="uiFlag.showStationMailList">
             <div class="flexRow message__title__section">
               <h5 class="mail__list__title">
                 {{ 'universal_deviceSetting_message' | translate }}
               </h5>
-              <button
-                class="create__message__button"
-                (click)="navigateNewMailPage()"
-              >
+              <button class="create__message__button" (click)="navigateNewMailPage()">
                 <i class="icon-svg_web-icon_p1_029-add"></i>
               </button>
             </div>
-            <app-inbox
-              [isBriefList]="true"
-            ></app-inbox>
-            <a
-              href="#"
-              class="inbox__link"
-              (click)="navigateInbox($event)"
-            >
+            <app-inbox [isBriefList]="true"></app-inbox>
+            <a href="#" class="inbox__link" (click)="navigateInbox($event)">
               {{ 'universal_operating_more' | translate }}
             </a>
           </div>
         </div>
         <div class="dropdown">
-          <div 
+          <div
             class="header-nav-item"
             id="dropdownMenu3"
             data-toggle="dropdown"
@@ -71,47 +56,75 @@
             <img
               [src]="userProfile.avatarUrl"
               class="header-user-photo"
-              (error)="this.userProfile.avatarUrl='/assets/images/user2.png'"
-            >
+              (error)="this.userProfile.avatarUrl = '/assets/images/user2.png'"
+            />
             <i
               class="icon-svg_web-icon_p1_069-about alert__icon__enable"
               *ngIf="!accountStatus || accountStatus === 1"
             ></i>
           </div>
-          <div class="dropdown-menu dropdown-user-menu" [class.show]="isUserMenuShow"
-             aria-labelledby="dropdownMenu3"
+          <div
+            class="dropdown-menu dropdown-user-menu"
+            [class.show]="isUserMenuShow"
+            aria-labelledby="dropdownMenu3"
           >
             <div class="header-nav-menu-section">
               <ul>
                 <li
-                  style="color: #ff3838; font-weight: bold;"
+                  style="color: #ff3838; font-weight: bold"
                   (click)="toEnableAccount()"
                   *ngIf="!accountStatus || accountStatus === 1"
                 >
-                  {{ "universal_deviceSetting_switch" | translate}} {{ "universal_userAccount_account" | translate}}
+                  {{ 'universal_deviceSetting_switch' | translate }}
+                  {{ 'universal_userAccount_account' | translate }}
                 </li>
                 <li [routerLink]="['/dashboard/user-settings']">
-                  {{ "universal_system_accountManagement" | translate}}
+                  {{ 'universal_system_accountManagement' | translate }}
                 </li>
               </ul>
             </div>
-            <button class="dropdown-item" type="button" (click)="logout()">{{ "universal_userAccount_logOut" | translate}}</button>
+            <button class="dropdown-item" type="button" (click)="logout()">
+              {{ 'universal_userAccount_logOut' | translate }}
+            </button>
           </div>
         </div>
         <div class="dropdown nav-rwd">
-          <button class="btn btn-secondary dropdown-toggle ala-btn__lang" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true"
-            aria-expanded="false" style="background-color: transparent;border-color: transparent">
-            <i class="icon-svg_web-icon_p1_045-earth" style="font-size: 25px;"></i>
+          <button
+            class="btn btn-secondary dropdown-toggle ala-btn__lang"
+            type="button"
+            id="dropdownMenu2"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+            style="background-color: transparent; border-color: transparent"
+          >
+            <i class="icon-svg_web-icon_p1_045-earth" style="font-size: 25px"></i>
           </button>
           <div class="dropdown-menu dropdown-menu-lang" aria-labelledby="dropdownMenu2">
-            <button class="dropdown-item" type="button" (click)="switchLang('zh-tw')">繁體中文</button>
-            <button class="dropdown-item" type="button" (click)="switchLang('zh-cn')">简体中文</button>
-            <button class="dropdown-item" type="button" (click)="switchLang('en-us')">English</button>
-            <button class="dropdown-item" type="button" (click)="switchLang('es-es')">Español</button>
-            <button class="dropdown-item" type="button" (click)="switchLang('de-de')">Deutsche</button>
-            <button class="dropdown-item" type="button" (click)="switchLang('fr-fr')">français</button>
-            <button class="dropdown-item" type="button" (click)="switchLang('it-it')">italiano</button>
-            <button class="dropdown-item" type="button" (click)="switchLang('pt-pt')">Português</button>
+            <button class="dropdown-item" type="button" (click)="switchLang('zh-tw')">
+              繁體中文
+            </button>
+            <button class="dropdown-item" type="button" (click)="switchLang('zh-cn')">
+              简体中文
+            </button>
+            <button class="dropdown-item" type="button" (click)="switchLang('en-us')">
+              English
+            </button>
+            <button class="dropdown-item" type="button" (click)="switchLang('es-es')">
+              Español
+            </button>
+            <button class="dropdown-item" type="button" (click)="switchLang('de-de')">
+              Deutsche
+            </button>
+            <button class="dropdown-item" type="button" (click)="switchLang('fr-fr')">
+              français
+            </button>
+            <button class="dropdown-item" type="button" (click)="switchLang('it-it')">
+              italiano
+            </button>
+            <button class="dropdown-item" type="button" (click)="switchLang('pt-pt')">
+              Português
+            </button>
           </div>
         </div>
       </div>
@@ -127,19 +140,15 @@
     >
       <div
         class="flexRow ala-dashboard-logo nav__color"
-        style="height: 40px; justify-content: space-between;"
+        style="height: 40px; justify-content: space-between"
       >
         <span
-          style="cursor: pointer;"
+          style="cursor: pointer"
           class="webTitle navbar__list__title"
           [style.display]="uiFlag.sidebarMode !== 'expand' && !uiFlag.navFixed ? 'none' : flex"
           (click)="navigateHomePage()"
         >
-          <img 
-            src="/assets/icons/logo.svg"
-            alt="GPTfit"
-            class="webLogo"
-          >
+          <img src="/assets/icons/logo.svg" alt="GPTfit" class="webLogo" />
           <span class="alpha-text" *ngIf="isAlphaVersion">alpha</span>
         </span>
         <div
@@ -150,7 +159,7 @@
         >
           <div
             class="main-nav-toggle"
-            style="position: relative; left: -3px;"
+            style="position: relative; left: -3px"
             *ngIf="uiFlag.sidebarMode === 'expand' || uiFlag.fixed"
           >
             <i class="icon-svg_web-icon_p3_071-pin pin__icon" *ngIf="uiFlag.navFixed === true"></i>
@@ -163,34 +172,41 @@
       </div>
       <div id="aside__menu" class="flexCol">
         <main>
-          <section style="margin-bottom: 30px;">
+          <section style="margin-bottom: 30px">
             <div
               class="nav__color"
-              [style.background-color]="uiFlag.currentDrop === 'timelyActivity' ? 'rgba(54, 60, 60, 1)' : 'initial'"
+              [style.background-color]="
+                uiFlag.currentDrop === 'timelyActivity' ? 'rgba(54, 60, 60, 1)' : 'initial'
+              "
               *ngIf="uiFlag.sidebarMode !== 'hide'"
             >
               <div class="flexRow drop__down" (click)="dropDown('timelyActivity')">
                 <i
                   class="icon-svg_web-icon_p1_003-peoples ala-sidenav-icon"
-                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && target === sideBarList.trainLive"
+                  [class.ala-sidenav-menu-item__active]="
+                    uiFlag.sidebarMode === 'narrow' && target === sideBarList.trainLive
+                  "
                 ></i>
                 <span
                   class="small__side navbar__list__title"
                   [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed"
                 >
-                  <span>{{"universal_activityData_timelyActivity" | translate}}</span>
+                  <span>{{ 'universal_activityData_timelyActivity' | translate }}</span>
                   <i
                     class="icon-svg_web-icon_p1_006-unfold ala-sidenav-icon"
                     [class.expand--rotate]="uiFlag.currentDrop === 'timelyActivity'"
                   ></i>
                 </span>
               </div>
-              
+
               <div
                 class="navbar__list__content"
-                [class.expand__content]="uiFlag.currentDrop === 'timelyActivity' && uiFlag.sidebarMode === 'expand'"
+                [class.expand__content]="
+                  uiFlag.currentDrop === 'timelyActivity' && uiFlag.sidebarMode === 'expand'
+                "
               >
-                <li class="ala-sidenav-menu-item"
+                <li
+                  class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.trainLive)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.trainLive"
                   [routerLink]="['/dashboard/live/train-live']"
@@ -199,114 +215,148 @@
                 </li>
               </div>
             </div>
-            <div 
+            <div
               class="nav__color"
-              [style.background-color]="uiFlag.currentDrop === 'group' ? 'rgba(54, 60, 60, 1)' : 'initial'"
+              [style.background-color]="
+                uiFlag.currentDrop === 'group' ? 'rgba(54, 60, 60, 1)' : 'initial'
+              "
               *ngIf="uiFlag.sidebarMode !== 'hide'"
             >
               <div class="flexRow drop__down" (click)="dropDown('group')">
                 <i
                   class="icon-svg_web-icon_p1_036-friends ala-sidenav-icon"
                   [class.ala-sidenav-menu-item__active]="
-                    uiFlag.sidebarMode === 'narrow' && [sideBarList.myGroup, sideBarList.searchGroup].includes(target)
+                    uiFlag.sidebarMode === 'narrow' &&
+                    [sideBarList.myGroup, sideBarList.searchGroup].includes(target)
                   "
                 ></i>
-                <span class="small__side navbar__list__title" [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed">
-                  <span>{{"universal_group_group" | translate}}</span>
+                <span
+                  class="small__side navbar__list__title"
+                  [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed"
+                >
+                  <span>{{ 'universal_group_group' | translate }}</span>
                   <i
                     class="icon-svg_web-icon_p1_006-unfold ala-sidenav-icon"
                     [class.expand--rotate]="uiFlag.currentDrop === 'group'"
                   ></i>
                 </span>
               </div>
-              
+
               <div
                 class="navbar__list__content"
-                [class.expand__content]="uiFlag.currentDrop === 'group' && uiFlag.sidebarMode === 'expand'"
+                [class.expand__content]="
+                  uiFlag.currentDrop === 'group' && uiFlag.sidebarMode === 'expand'
+                "
               >
-                <li class="ala-sidenav-menu-item"
+                <li
+                  class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.myGroup)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.myGroup"
                   [routerLink]="['/dashboard/my-group-list']"
                 >
-                  {{"universal_group_myGroup" | translate}}
+                  {{ 'universal_group_myGroup' | translate }}
                 </li>
-                <li class="ala-sidenav-menu-item"
+                <li
+                  class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.searchGroup)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.searchGroup"
                   [routerLink]="['/dashboard/group-search']"
                 >
-                  {{"universal_group_searchGroup" | translate}}
+                  {{ 'universal_group_searchGroup' | translate }}
                 </li>
               </div>
             </div>
             <div class="nav__color" *ngIf="uiFlag.sidebarMode !== 'hide'">
-              <li class="ala-sidenav-item drop__down"
+              <li
+                class="ala-sidenav-item drop__down"
                 (click)="chooseItem(sideBarList.myActivity)"
                 [class.ala-sidenav-menu-item__active]="target === sideBarList.myActivity"
                 [routerLink]="['/dashboard/activity-list']"
               >
-                <i
-                  class="icon-svg_web-icon_p1_083-run ala-sidenav-icon"
-                ></i>
-                <span class="navbar__list__title" [style.display]="uiFlag.sidebarMode !== 'expand' && !uiFlag.navFixed ? 'none' : flex">
-                  {{"universal_activityData_myActivities" | translate}}
+                <i class="icon-svg_web-icon_p1_083-run ala-sidenav-icon"></i>
+                <span
+                  class="navbar__list__title"
+                  [style.display]="
+                    uiFlag.sidebarMode !== 'expand' && !uiFlag.navFixed ? 'none' : flex
+                  "
+                >
+                  {{ 'universal_activityData_myActivities' | translate }}
                 </span>
               </li>
             </div>
             <div class="nav__color" *ngIf="uiFlag.sidebarMode !== 'hide'">
-              <li class="ala-sidenav-item drop__down"
+              <li
+                class="ala-sidenav-item drop__down"
                 (click)="chooseItem(sideBarList.myDevice)"
                 [class.ala-sidenav-menu-item__active]="target === sideBarList.myDevice"
                 [routerLink]="['/dashboard/device']"
               >
                 <i class="icon-svg_web-icon_p1_010-treadmill ala-sidenav-icon"></i>
-                <span class="navbar__list__title" [style.display]="uiFlag.sidebarMode !== 'expand' && !uiFlag.navFixed ? 'none' : flex">
-                  {{"universal_deviceSetting_myDevice" | translate }}
+                <span
+                  class="navbar__list__title"
+                  [style.display]="
+                    uiFlag.sidebarMode !== 'expand' && !uiFlag.navFixed ? 'none' : flex
+                  "
+                >
+                  {{ 'universal_deviceSetting_myDevice' | translate }}
                 </span>
               </li>
             </div>
             <div
               class="nav__color"
-              [style.background-color]="uiFlag.currentDrop === 'myReport' ? 'rgba(54, 60, 60, 1)' : 'initial'"
+              [style.background-color]="
+                uiFlag.currentDrop === 'myReport' ? 'rgba(54, 60, 60, 1)' : 'initial'
+              "
               *ngIf="uiFlag.sidebarMode !== 'hide'"
             >
               <div class="flexRow drop__down" (click)="dropDown('myReport')">
                 <i
                   class="icon-svg_web-icon_p1_037-chart ala-sidenav-icon"
                   [class.ala-sidenav-menu-item__active]="
-                    uiFlag.sidebarMode === 'narrow'
-                    && [sideBarList.sportReport, sideBarList.lifeTracking, sideBarList.cloudrun].includes(target)
+                    uiFlag.sidebarMode === 'narrow' &&
+                    [
+                      sideBarList.sportReport,
+                      sideBarList.lifeTracking,
+                      sideBarList.cloudrun
+                    ].includes(target)
                   "
                 ></i>
-                <span class="small__side navbar__list__title" [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed">
-                  <span >{{"universal_group_myReport" | translate}}</span>
+                <span
+                  class="small__side navbar__list__title"
+                  [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed"
+                >
+                  <span>{{ 'universal_group_myReport' | translate }}</span>
                   <i
                     class="icon-svg_web-icon_p1_006-unfold ala-sidenav-icon"
                     [class.expand--rotate]="uiFlag.currentDrop === 'myReport'"
                   ></i>
                 </span>
               </div>
-              
+
               <div
                 class="navbar__list__content"
-                [class.expand__content]="uiFlag.currentDrop === 'myReport' && uiFlag.sidebarMode === 'expand'"
+                [class.expand__content]="
+                  uiFlag.currentDrop === 'myReport' && uiFlag.sidebarMode === 'expand'
+                "
               >
-                <li class="ala-sidenav-menu-item"
+                <li
+                  class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.sportReport)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.sportReport"
                   [routerLink]="['/dashboard/sport-report']"
                 >
-                  {{"universal_activityData_sportReport" | translate }}
+                  {{ 'universal_activityData_sportReport' | translate }}
                 </li>
-                <li class="ala-sidenav-menu-item"
+                <li
+                  class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.lifeTracking)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.lifeTracking"
                   [routerLink]="['/dashboard/life-tracking']"
                 >
-                  {{"universal_lifeTracking_lifeTracking" | translate}}
+                  {{ 'universal_lifeTracking_lifeTracking' | translate }}
                 </li>
-                <li class="ala-sidenav-menu-item"
+                <li
+                  class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.cloudrun)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.cloudrun"
                   [routerLink]="['/dashboard/cloudrun']"
@@ -320,70 +370,82 @@
           <section>
             <div
               class="nav__color"
-              [style.background-color]="uiFlag.currentDrop === 'systemManagement' ? 'rgba(54, 60, 60, 1)' : 'initial'"
+              [style.background-color]="
+                uiFlag.currentDrop === 'systemManagement' ? 'rgba(54, 60, 60, 1)' : 'initial'
+              "
               *ngIf="systemAccessright < AccessRight.brandAdmin && uiFlag.sidebarMode !== 'hide'"
             >
               <div class="flexRow drop__down" (click)="dropDown('systemManagement')">
                 <i
                   class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"
                   [class.ala-sidenav-menu-item__active]="
-                    uiFlag.sidebarMode === 'narrow'
-                    && [
+                    uiFlag.sidebarMode === 'narrow' &&
+                    [
                       sideBarList.innerAdmin,
                       sideBarList.innerSearch,
                       sideBarList.coordinateTranslate,
                       sideBarList.lifeTrackingLog,
                       sideBarList.systemLog,
-                      sideBarList.systemFolder,
+                      sideBarList.systemFolder
                     ].includes(target)
                   "
                 ></i>
-                <span class="small__side navbar__list__title" [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed">
-                  <span >{{"universal_system_systemManagement" | translate }}</span>
+                <span
+                  class="small__side navbar__list__title"
+                  [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed"
+                >
+                  <span>{{ 'universal_system_systemManagement' | translate }}</span>
                   <i
                     class="icon-svg_web-icon_p1_006-unfold ala-sidenav-icon"
                     [class.expand--rotate]="uiFlag.currentDrop === 'systemManagement'"
                   ></i>
                 </span>
               </div>
-              
+
               <div
                 class="navbar__list__content"
-                [class.expand__content]="uiFlag.currentDrop === 'systemManagement' && uiFlag.sidebarMode === 'expand'"
+                [class.expand__content]="
+                  uiFlag.currentDrop === 'systemManagement' && uiFlag.sidebarMode === 'expand'
+                "
               >
-                <li class="ala-sidenav-menu-item"
+                <li
+                  class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.innerAdmin)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.innerAdmin"
                   [routerLink]="['/dashboard/system/setting-member']"
                   *ngIf="systemAccessright < AccessRight.brandAdmin"
                 >
-                  {{"universal_system_internalAdministrator" | translate }}
+                  {{ 'universal_system_internalAdministrator' | translate }}
                 </li>
-                <li class="ala-sidenav-menu-item"
+                <li
+                  class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.innerSearch)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.innerSearch"
                   [routerLink]="['/dashboard/system/inner-test']"
                   *ngIf="systemAccessright < AccessRight.brandAdmin"
                 >
-                  {{"universal_group_rserGroupQuery" | translate }}
+                  {{ 'universal_group_rserGroupQuery' | translate }}
                 </li>
-                <li class="ala-sidenav-menu-item"
+                <li
+                  class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.coordinateTranslate)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.coordinateTranslate"
                   [routerLink]="['/dashboard/system/inner-gpx']"
                   *ngIf="systemAccessright <= AccessRight.maintainer"
                 >
-                  {{"universal_system_coordinateSystemConversion" | translate }}
+                  {{ 'universal_system_coordinateSystemConversion' | translate }}
                 </li>
-                <li class="ala-sidenav-menu-item"
+                <li
+                  class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.lifeTrackingLog)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.lifeTrackingLog"
                   [routerLink]="['/dashboard/system/life-tracking']"
                   *ngIf="systemAccessright <= AccessRight.maintainer"
                 >
-                  {{"universal_system_lifetrackingLog" | translate }}
+                  {{ 'universal_system_lifetrackingLog' | translate }}
                 </li>
-                <li class="ala-sidenav-menu-item"
+                <li
+                  class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.systemLog)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.systemLog"
                   [routerLink]="['/dashboard/system/system-log']"
@@ -391,7 +453,8 @@
                 >
                   系統日誌
                 </li>
-                <li class="ala-sidenav-menu-item"
+                <li
+                  class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.systemFolder)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.systemFolder"
                   [routerLink]="['/dashboard/system/folder-permission']"
@@ -403,71 +466,95 @@
             </div>
             <div
               class="nav__color"
-              [style.background-color]="uiFlag.currentDrop === 'groupManagement' ? 'rgba(54, 60, 60, 1)' : 'initial'"
+              [style.background-color]="
+                uiFlag.currentDrop === 'groupManagement' ? 'rgba(54, 60, 60, 1)' : 'initial'
+              "
               *ngIf="systemAccessright < AccessRight.brandAdmin && uiFlag.sidebarMode !== 'hide'"
             >
               <div class="flexRow drop__down" (click)="dropDown('groupManagement')">
                 <i
                   class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"
                   [class.ala-sidenav-menu-item__active]="
-                    uiFlag.sidebarMode === 'narrow'
-                    && [sideBarList.allGroupList, sideBarList.createBrandGroup, sideBarList.createEnterpriseGroup].includes(target)
+                    uiFlag.sidebarMode === 'narrow' &&
+                    [
+                      sideBarList.allGroupList,
+                      sideBarList.createBrandGroup,
+                      sideBarList.createEnterpriseGroup
+                    ].includes(target)
                   "
                 ></i>
-                <span class="small__side navbar__list__title" [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed">
-                  <span >{{"universal_group_groupManagement" | translate }}</span>
+                <span
+                  class="small__side navbar__list__title"
+                  [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed"
+                >
+                  <span>{{ 'universal_group_groupManagement' | translate }}</span>
                   <i
                     class="icon-svg_web-icon_p1_006-unfold ala-sidenav-icon"
                     [class.expand--rotate]="uiFlag.currentDrop === 'groupManagement'"
                   ></i>
                 </span>
               </div>
-              
+
               <div
                 class="navbar__list__content"
-                [class.expand__content]="uiFlag.currentDrop === 'groupManagement' && uiFlag.sidebarMode === 'expand'"
+                [class.expand__content]="
+                  uiFlag.currentDrop === 'groupManagement' && uiFlag.sidebarMode === 'expand'
+                "
                 *ngIf="systemAccessright < AccessRight.brandAdmin && uiFlag.sidebarMode !== 'hide'"
               >
-                <li class="ala-sidenav-menu-item"
+                <li
+                  class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.allGroupList)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.allGroupList"
                   *ngIf="systemAccessright < AccessRight.brandAdmin"
                   [routerLink]="['/dashboard/system/all-group-list']"
                 >
-                  {{"universal_group_listAllGroups" | translate }}
+                  {{ 'universal_group_listAllGroups' | translate }}
                 </li>
-                <li class="ala-sidenav-menu-item"
+                <li
+                  class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.createBrandGroup)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.createBrandGroup"
                   *ngIf="systemAccessright < AccessRight.brandAdmin"
                   [routerLink]="['/dashboard/system/create-brand-group']"
                 >
-                  {{"universal_activityData_create" | translate }} {{"universal_group_gym" | translate }} {{"universal_group_group" | translate }}
+                  {{ 'universal_activityData_create' | translate }}
+                  {{ 'universal_group_gym' | translate }} {{ 'universal_group_group' | translate }}
                 </li>
-                <li class="ala-sidenav-menu-item"
+                <li
+                  class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.createEnterpriseGroup)"
-                  [class.ala-sidenav-menu-item__active]="target === sideBarList.createEnterpriseGroup"
+                  [class.ala-sidenav-menu-item__active]="
+                    target === sideBarList.createEnterpriseGroup
+                  "
                   *ngIf="systemAccessright < AccessRight.brandAdmin"
                   [routerLink]="['/dashboard/system/create-com-group']"
                 >
-                  {{"universal_activityData_create" | translate }} {{"universal_group_company" | translate }} {{"universal_group_group" | translate }}
+                  {{ 'universal_activityData_create' | translate }}
+                  {{ 'universal_group_company' | translate }}
+                  {{ 'universal_group_group' | translate }}
                 </li>
               </div>
             </div>
             <div
               class="nav__color"
-              [style.background-color]="uiFlag.currentDrop === 'push' ? 'rgba(54, 60, 60, 1)' : 'initial'"
+              [style.background-color]="
+                uiFlag.currentDrop === 'push' ? 'rgba(54, 60, 60, 1)' : 'initial'
+              "
               *ngIf="systemAccessright < AccessRight.brandAdmin && uiFlag.sidebarMode !== 'hide'"
             >
               <div class="flexRow drop__down" (click)="dropDown('push')">
                 <i
                   class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"
                   [class.ala-sidenav-menu-item__active]="
-                    uiFlag.sidebarMode === 'narrow'
-                    && [sideBarList.createPush, sideBarList.pushList].includes(target)
+                    uiFlag.sidebarMode === 'narrow' &&
+                    [sideBarList.createPush, sideBarList.pushList].includes(target)
                   "
                 ></i>
-                <span class="small__side navbar__list__title" [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed">
+                <span
+                  class="small__side navbar__list__title"
+                  [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed"
+                >
                   <span>推播管理</span>
                   <i
                     class="icon-svg_web-icon_p1_006-unfold ala-sidenav-icon"
@@ -477,9 +564,12 @@
               </div>
               <div
                 class="navbar__list__content"
-                [class.expand__content]="uiFlag.currentDrop === 'push' && uiFlag.sidebarMode === 'expand'"
+                [class.expand__content]="
+                  uiFlag.currentDrop === 'push' && uiFlag.sidebarMode === 'expand'
+                "
               >
-                <li class="ala-sidenav-menu-item"
+                <li
+                  class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.createPush)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.createPush"
                   [routerLink]="['/dashboard/system/create-push']"
@@ -487,7 +577,8 @@
                 >
                   建立推播
                 </li>
-                <li class="ala-sidenav-menu-item"
+                <li
+                  class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.pushList)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.pushList"
                   [routerLink]="['/dashboard/system/push-list']"
@@ -499,19 +590,24 @@
             </div>
             <div
               class="nav__color"
-              [style.background-color]="uiFlag.currentDrop === 'deviceManagement' ? 'rgba(54, 60, 60, 1)' : 'initial'"
+              [style.background-color]="
+                uiFlag.currentDrop === 'deviceManagement' ? 'rgba(54, 60, 60, 1)' : 'initial'
+              "
               *ngIf="systemAccessright < AccessRight.brandAdmin && uiFlag.sidebarMode !== 'hide'"
             >
               <div class="flexRow drop__down" (click)="dropDown('deviceManagement')">
                 <i
                   class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"
                   [class.ala-sidenav-menu-item__active]="
-                    uiFlag.sidebarMode === 'narrow'
-                    && [sideBarList.deviceSearch, sideBarList.deviceLog].includes(target)
+                    uiFlag.sidebarMode === 'narrow' &&
+                    [sideBarList.deviceSearch, sideBarList.deviceLog].includes(target)
                   "
                 ></i>
-                <span class="small__side navbar__list__title" [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed">
-                  <span >{{"universal_deviceSetting_deviceManagement" | translate }}</span>
+                <span
+                  class="small__side navbar__list__title"
+                  [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed"
+                >
+                  <span>{{ 'universal_deviceSetting_deviceManagement' | translate }}</span>
                   <i
                     class="icon-svg_web-icon_p1_006-unfold ala-sidenav-icon"
                     [class.expand--rotate]="uiFlag.currentDrop === 'deviceManagement'"
@@ -520,17 +616,21 @@
               </div>
               <div
                 class="navbar__list__content"
-                [class.expand__content]="uiFlag.currentDrop === 'deviceManagement' && uiFlag.sidebarMode === 'expand'"
+                [class.expand__content]="
+                  uiFlag.currentDrop === 'deviceManagement' && uiFlag.sidebarMode === 'expand'
+                "
               >
-                <li class="ala-sidenav-menu-item"
+                <li
+                  class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.deviceSearch)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.deviceSearch"
                   [routerLink]="['/dashboard/system/device-pair-management']"
                   *ngIf="systemAccessright < AccessRight.brandAdmin"
                 >
-                  {{"universal_deviceSetting_deviceInquiry" | translate }}
+                  {{ 'universal_deviceSetting_deviceInquiry' | translate }}
                 </li>
-                <li class="ala-sidenav-menu-item"
+                <li
+                  class="ala-sidenav-menu-item"
                   (click)="chooseItem(sideBarList.deviceLog)"
                   [class.ala-sidenav-menu-item__active]="target === sideBarList.deviceLog"
                   [routerLink]="['/dashboard/system/device_log']"
@@ -551,32 +651,40 @@
                 [routerLink]="['/dashboard/system/ala-app-analysis']"
                 *ngIf="systemAccessright < AccessRight.brandAdmin"
               >
-                <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon" *ngIf="uiFlag.sidebarMode !== 'hide'"></i>
-                <span class="navbar__list__title" [style.display]="uiFlag.sidebarMode !== 'expand' && !uiFlag.navFixed ? 'none' : flex">
+                <i
+                  class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"
+                  *ngIf="uiFlag.sidebarMode !== 'hide'"
+                ></i>
+                <span
+                  class="navbar__list__title"
+                  [style.display]="
+                    uiFlag.sidebarMode !== 'expand' && !uiFlag.navFixed ? 'none' : flex
+                  "
+                >
                   流量統計分析
                 </span>
               </li>
             </div>
           </section>
         </main>
-        <div class="version" style="max-width: 270px;" [style.display]="uiFlag.sidebarMode !== 'expand' && !uiFlag.navFixed ? 'none' : flex">
+        <div
+          class="version"
+          style="max-width: 270px"
+          [style.display]="uiFlag.sidebarMode !== 'expand' && !uiFlag.navFixed ? 'none' : flex"
+        >
           <div
             class="footer footer-details"
             [ngClass]="footerAddClassName"
             [style.display]="isHideFooter ? 'none' : 'block'"
           >
-            {{'universal_vocabulary_footerAnnouncement' | translate: {'appName': 'GPTfit' } }}
-            <div>{{'universal_ota_version' | translate}}: {{version}}</div>
+            {{ 'universal_vocabulary_footerAnnouncement' | translate: { appName: 'GPTfit' } }}
+            <div>{{ 'universal_ota_version' | translate }}: {{ version }}</div>
           </div>
         </div>
       </div>
     </nav>
   </ng-container>
-  <div
-    #mainBody
-    class="main-body main__container"
-    [class.preview]="isPreviewMode"
-  >
+  <div #mainBody class="main-body main__container" [class.preview]="isPreviewMode">
     <div
       class="expand__mask"
       *ngIf="uiFlag.mobileMode && uiFlag.sidebarMode === 'expand'"

@@ -1,12 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { ProductShipped } from '../models/activity-content';
 
-
 /**
  * 將出貨狀態代碼轉為多國語系翻譯的key
  * @author kidin-1101125
  */
-@Pipe({name: 'shippedStatus'})
+@Pipe({ name: 'shippedStatus' })
 export class ShippedStatusPipe implements PipeTransform {
   transform(value: ProductShipped): any {
     switch (value) {
@@ -21,7 +20,5 @@ export class ShippedStatusPipe implements PipeTransform {
       case ProductShipped.closeCase:
         return 'universal_vocabulary_caseClosed';
     }
-
   }
-
 }

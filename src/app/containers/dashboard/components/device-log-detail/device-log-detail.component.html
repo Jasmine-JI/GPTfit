@@ -1,15 +1,15 @@
 <div class="pageTitle">
   App_Log Details
-  <div style="display: inline-block;float: right">
-    <button class="alatech-btn alatech-btn--default"
+  <div style="display: inline-block; float: right">
+    <button
+      class="alatech-btn alatech-btn--default"
       [routerLink]="['/dashboard/system/device_log']"
     >
       返回列表
     </button>
   </div>
-
 </div>
-<div [ngClass]="isTopIconDisplay === true ? 'gotop--show ': 'gotop--hidden' " (click)="goTop()">
+<div [ngClass]="isTopIconDisplay === true ? 'gotop--show ' : 'gotop--hidden'" (click)="goTop()">
   <div style="text-align: 'center">
     <i class="fa fa-angle-up fa-2x" aria-hidden="true"></i>
   </div>
@@ -20,36 +20,54 @@
 </div>
 
 <label>取得列表資料時間: </label>{{ getDataTime }}
-<button (click)="refreshLists($event)" mat-raised-button mat-icon-button style="background-color: #26abe3;color: #fff">
+<button
+  (click)="refreshLists($event)"
+  mat-raised-button
+  mat-icon-button
+  style="background-color: #26abe3; color: #fff"
+>
   <i class="fa fa-refresh" aria-hidden="true" style="font-size: 18px"></i>
 </button>
 
 <form [formGroup]="complexForm" #f="ngForm" novalidate (ngSubmit)="submit(complexForm)">
   <mat-form-field>
-    <input type="text" name="startDate" matInput placeholder="起始日期" [matDatepicker]="startDatePicker"
-    (dateChange)="logStartDateChange($event)"
-       formControlName="startDate"
+    <input
+      type="text"
+      name="startDate"
+      matInput
+      placeholder="起始日期"
+      [matDatepicker]="startDatePicker"
+      (dateChange)="logStartDateChange($event)"
+      formControlName="startDate"
     />
     <mat-datepicker-toggle [for]="startDatePicker" matSuffix></mat-datepicker-toggle>
-    <mat-datepicker #startDatePicker disabled="false" [touchUi]="isHandset$ | async"></mat-datepicker>
+    <mat-datepicker
+      #startDatePicker
+      disabled="false"
+      [touchUi]="isHandset$ | async"
+    ></mat-datepicker>
   </mat-form-field>
   ~
   <mat-form-field>
-    <input type="text" name="endDate" matInput placeholder="最終日期" [matDatepicker]="endDatePicker"
-     (dateChange)="logEndDateChange($event)"
-     formControlName="endDate"
+    <input
+      type="text"
+      name="endDate"
+      matInput
+      placeholder="最終日期"
+      [matDatepicker]="endDatePicker"
+      (dateChange)="logEndDateChange($event)"
+      formControlName="endDate"
     />
     <mat-datepicker-toggle [for]="endDatePicker" matSuffix></mat-datepicker-toggle>
     <mat-datepicker #endDatePicker disabled="false" [touchUi]="isHandset$ | async"></mat-datepicker>
   </mat-form-field>
 
-  <button mat-raised-button mat-icon-button
-    style="background-color: #26abe3;color: #fff"
-  >
+  <button mat-raised-button mat-icon-button style="background-color: #26abe3; color: #fff">
     <mat-icon>search</mat-icon>
   </button>
 </form>
-<mat-paginator #paginatorA
+<mat-paginator
+  #paginatorA
   [length]="totalCount"
   [pageIndex]="currentPage?.pageIndex"
   [pageSize]="pageSize || 10"
@@ -63,29 +81,40 @@
   </div>
 </div>
 
-<mat-table [dataSource]="logSource" matSort #sortTable="matSort" (matSortChange)="changeSort($event)">
+<mat-table
+  [dataSource]="logSource"
+  matSort
+  #sortTable="matSort"
+  (matSortChange)="changeSort($event)"
+>
   <ng-container matColumnDef="equipment_sn">
-    <mat-header-cell *matHeaderCellDef style="text-align:center">EquipmentSN</mat-header-cell>
-    <mat-cell *matCellDef="let row" style="text-align:center">{{ row.equipment_sn || '-' }}</mat-cell>
+    <mat-header-cell *matHeaderCellDef style="text-align: center">EquipmentSN</mat-header-cell>
+    <mat-cell *matCellDef="let row" style="text-align: center">{{
+      row.equipment_sn || '-'
+    }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="time">
-    <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" start="asc" style="text-align:center">
+    <mat-header-cell
+      *matHeaderCellDef
+      mat-sort-header
+      disableClear="true"
+      start="asc"
+      style="text-align: center"
+    >
       Time
     </mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.time }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="message">
-    <mat-header-cell *matHeaderCellDef style="text-align:center">Messages</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef style="text-align: center">Messages</mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.message }}</mat-cell>
   </ng-container>
   <mat-header-row *matHeaderRowDef="['equipment_sn', 'time', 'message']"></mat-header-row>
-  <mat-row *matRowDef="let logRow; columns: ['equipment_sn', 'time', 'message']">
-  </mat-row>
-  <div *ngIf="logSource.data.length === 0">
-    尚無相關資料
-  </div>
+  <mat-row *matRowDef="let logRow; columns: ['equipment_sn', 'time', 'message']"> </mat-row>
+  <div *ngIf="logSource.data.length === 0">尚無相關資料</div>
 </mat-table>
-<mat-paginator #paginatorB
+<mat-paginator
+  #paginatorB
   [length]="totalCount"
   [pageIndex]="currentPage?.pageIndex"
   [pageSize]="pageSize || 10"

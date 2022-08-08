@@ -8,9 +8,8 @@ describe('AppCompressDataComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AppCompressDataComponent ]
-    })
-    .compileComponents();
+      declarations: [AppCompressDataComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

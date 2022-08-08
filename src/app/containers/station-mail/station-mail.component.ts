@@ -7,10 +7,9 @@ import { Router, NavigationEnd } from '@angular/router';
 @Component({
   selector: 'app-station-mail',
   templateUrl: './station-mail.component.html',
-  styleUrls: ['./station-mail.component.scss']
+  styleUrls: ['./station-mail.component.scss'],
 })
 export class StationMailComponent implements OnInit, OnDestroy {
-
   private ngUnsubscribe = new Subject();
   private resizeEventSubscription = new Subscription();
 
@@ -18,17 +17,14 @@ export class StationMailComponent implements OnInit, OnDestroy {
    * ui 用到的flag
    */
   uiFlag = {
-    isMobile: false
+    isMobile: false,
   };
-
 
   currentPage: string;
 
   readonly appPath = appPath;
 
-  constructor(
-    private router: Router
-  ) { }
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
     this.checkPath();
@@ -49,12 +45,9 @@ export class StationMailComponent implements OnInit, OnDestroy {
    * 訂閱路徑變更事件
    */
   subscribeRouteChange() {
-    this.router.events.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.router.events.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       if (e instanceof NavigationEnd) this.checkPath();
     });
-
   }
 
   /**
@@ -70,20 +63,20 @@ export class StationMailComponent implements OnInit, OnDestroy {
    */
   subscribeResizeEvent() {
     const resizeEvent = fromEvent(window, 'resize');
-    this.resizeEventSubscription = resizeEvent.pipe(
-      debounceTime(1000),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
-      this.checkScreenWidth();
-    });
-
+    this.resizeEventSubscription = resizeEvent
+      .pipe(debounceTime(1000), takeUntil(this.ngUnsubscribe))
+      .subscribe((e) => {
+        this.checkScreenWidth();
+      });
   }
 
   /**
    * 建立新郵件
    */
   createMail() {
-    const { stationMail: { home, newMail } } = appPath;
+    const {
+      stationMail: { home, newMail },
+    } = appPath;
     this.router.navigateByUrl(`/dashboard/${home}/${newMail}`);
   }
 
@@ -94,5 +87,4 @@ export class StationMailComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

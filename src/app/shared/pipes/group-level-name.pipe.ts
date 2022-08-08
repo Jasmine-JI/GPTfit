@@ -1,8 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({name: 'groupLevelTranslate'})
+@Pipe({ name: 'groupLevelTranslate' })
 export class GroupLevelNamePipe implements PipeTransform {
-
   /**
    * 根據group level回傳多國語系的鍵
    * @param value {string}-group id
@@ -12,7 +11,6 @@ export class GroupLevelNamePipe implements PipeTransform {
    */
   transform(value: number, args: string | number): string {
     if (args == 1) {
-
       switch (+value) {
         case 30:
           return 'universal_group_brand';
@@ -23,7 +21,6 @@ export class GroupLevelNamePipe implements PipeTransform {
         default:
           return 'universal_group_generalGroup';
       }
-
     } else {
       switch (+value) {
         case 30:
@@ -35,9 +32,6 @@ export class GroupLevelNamePipe implements PipeTransform {
         default:
           return 'universal_group_generalGroup';
       }
-
     }
-
   }
-
 }

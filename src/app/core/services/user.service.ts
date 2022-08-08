@@ -6,12 +6,10 @@ import { of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { LocalStorageKey } from '../../shared/enum/local-storage-key';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
-
   /**
    * 使用者詳細資訊
    */
@@ -22,23 +20,22 @@ export class UserService {
    */
   private _targetUser: any;
 
-  constructor(
-    private api10xxService: Api10xxService
-  ) {}
+  constructor(private api10xxService: Api10xxService) {}
 
   /**
    * 重 call api 1010 取得最新 userProfile 資訊
    */
   refreshUserProfile() {
-    this.api10xxService.fetchGetUserProfile({ token: this.getToken() }).pipe(
-      tap(res => {
-        if (checkResponse(res, false)) {
-          this.saveUserProfile(res);
-        }
-
-      })
-    ).subscribe();
-
+    this.api10xxService
+      .fetchGetUserProfile({ token: this.getToken() })
+      .pipe(
+        tap((res) => {
+          if (checkResponse(res, false)) {
+            this.saveUserProfile(res);
+          }
+        })
+      )
+      .subscribe();
   }
 
   /**
@@ -65,7 +62,9 @@ export class UserService {
    */
   getTargetUserInfo(targetUserId: number) {
     const currentUserId = this._targetUser?.userId;
-    return targetUserId === currentUserId ? of(this._targetUser) : this.fetchTargetUserInfo(targetUserId);
+    return targetUserId === currentUserId
+      ? of(this._targetUser)
+      : this.fetchTargetUserInfo(targetUserId);
   }
 
   /**
@@ -78,12 +77,12 @@ export class UserService {
     } else {
       const body = { targetUserId, token: this.getToken() };
       return this.api10xxService.fetchGetUserProfile(body).pipe(
-        map((res: any) => checkResponse(res) ? res.userProfile : {} ),
-        tap((res: any) => { this._targetUser = res; })
+        map((res: any) => (checkResponse(res) ? res.userProfile : {})),
+        tap((res: any) => {
+          this._targetUser = res;
+        })
       );
-
     }
-
   }
 
   /**
@@ -92,17 +91,15 @@ export class UserService {
   updateUserProfile(content: any) {
     const body = {
       token: this.getToken(),
-      userProfile: { ...content }
+      userProfile: { ...content },
     };
 
     return this.api10xxService.fetchEditUserProfile(body).pipe(
-      tap(res => {
+      tap((res) => {
         // 將更新的內容儲存
         if (checkResponse(res)) this._user.updatePartUserProfile(content);
       })
-
     );
-
   }
 
   /**
@@ -110,10 +107,7 @@ export class UserService {
    * @param ownerId {number}-該頁面資訊持有人之userId
    */
   checkPageOwner(ownerId: number) {
-    return this._user.rxUserProfile.pipe(
-      map(userProfile => ownerId === userProfile.userId)
-    );
-
+    return this._user.rxUserProfile.pipe(map((userProfile) => ownerId === userProfile.userId));
   }
 
   /**
@@ -122,5 +116,4 @@ export class UserService {
   getToken() {
     return localStorage.getItem(LocalStorageKey.token) || '';
   }
-
 }

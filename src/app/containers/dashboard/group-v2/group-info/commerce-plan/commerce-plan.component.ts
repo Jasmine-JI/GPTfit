@@ -11,17 +11,16 @@ const errMsg = `Error.<br />Please try again later.`;
 @Component({
   selector: 'app-commerce-plan',
   templateUrl: './commerce-plan.component.html',
-  styleUrls: ['./commerce-plan.component.scss', '../group-child-page.scss']
+  styleUrls: ['./commerce-plan.component.scss', '../group-child-page.scss'],
 })
 export class CommercePlanComponent implements OnInit, OnDestroy {
-
   private ngUnsubscribe = new Subject();
 
   /**
    * UI會用到的各個flag
    */
   uiFlag = {
-    editMode: false
+    editMode: false,
   };
 
   /**
@@ -43,7 +42,7 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
    * 目前管理員總數
    */
   totalAdmin = 0;
-  
+
   /**
    * 送出api 1116的req body
    */
@@ -53,23 +52,20 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
     commercePlan: 1,
     commercePlanExpired: '',
     commerceStatus: 1,
-    groupSetting:{
+    groupSetting: {
       maxBranches: 1,
       maxClasses: 2,
-      maxGeneralGroups: 0
+      maxGeneralGroups: 0,
     },
-    groupManagerSetting:{
+    groupManagerSetting: {
       maxGroupManagers: 4,
     },
-    groupMemberSetting:{
-      maxGroupMembers: 20
-    }
+    groupMemberSetting: {
+      maxGroupMembers: 20,
+    },
   };
 
-  constructor(
-    private groupService: GroupService,
-    private utils: UtilsService
-  ) {}
+  constructor(private groupService: GroupService, private utils: UtilsService) {}
 
   ngOnInit(): void {
     this.initPage();
@@ -83,16 +79,15 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
     combineLatest([
       this.groupService.getRxGroupDetail(),
       this.groupService.getRxCommerceInfo(),
-      this.groupService.getUserSimpleInfo()
-    ]).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(resArr => {
-      this.groupInfo = resArr[0];
-      this.commerceInfo = resArr[1];
-      this.userSimpleInfo = resArr[2];
-      this.countTotalAdminNum(this.commerceInfo);
-    })
-
+      this.groupService.getUserSimpleInfo(),
+    ])
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((resArr) => {
+        this.groupInfo = resArr[0];
+        this.commerceInfo = resArr[1];
+        this.userSimpleInfo = resArr[2];
+        this.countTotalAdminNum(this.commerceInfo);
+      });
   }
 
   /**
@@ -103,18 +98,13 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
   countTotalAdminNum(commerce: any) {
     const admin = commerce.groupManagerStatus;
     this.totalAdmin = 0;
-    for(const _admin in admin) {
-
+    for (const _admin in admin) {
       if (admin.hasOwnProperty(_admin)) {
-
         if (_admin.indexOf('current') > -1) {
           this.totalAdmin += +admin[_admin];
         }
-
       }
-
     }
-
   }
 
   /**
@@ -137,12 +127,10 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
           this.setReadonly(true);
         }, 0);
       }
-
     }
-
   }
 
-    /**
+  /**
    * 將部份方案狀況複製到editBody
    * @author kidin-1091112
    */
@@ -153,19 +141,18 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
       commercePlan: this.commerceInfo.commercePlan,
       commercePlanExpired: this.commerceInfo.commercePlanExpired,
       commerceStatus: this.commerceInfo.commerceStatus,
-      groupSetting:{
+      groupSetting: {
         maxBranches: this.commerceInfo.groupStatus.maxBranches,
         maxClasses: this.commerceInfo.groupStatus.maxClasses,
-        maxGeneralGroups: 0
+        maxGeneralGroups: 0,
       },
-      groupManagerSetting:{
+      groupManagerSetting: {
         maxGroupManagers: this.commerceInfo.groupManagerStatus.maxGroupManagers,
       },
-      groupMemberSetting:{
-        maxGroupMembers: this.commerceInfo.groupMemberStatus.maxGroupMembers
-      }
-    }
-
+      groupMemberSetting: {
+        maxGroupMembers: this.commerceInfo.groupMemberStatus.maxGroupMembers,
+      },
+    };
   }
 
   /**
@@ -187,7 +174,7 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
   }
 
   // 若為客製方案，則允許編輯其他欄位，其他方案則固定內容-kidin-1090409
-  editManageContent (e) {
+  editManageContent(e) {
     switch (e.value) {
       case '1':
         this.editBody.groupSetting.maxBranches = 1;
@@ -214,26 +201,21 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
         this.setReadonly(false);
         break;
     }
-
   }
 
   // 若非客製方案則不允許方案內容編輯-kidin-1090409
-  setReadonly (action) {
+  setReadonly(action) {
     const planContent = document.querySelectorAll('.editManageInput input');
     if (action) {
-
       for (let i = 0; i < planContent.length; i++) {
         planContent[i].setAttribute('readonly', 'readonly');
         planContent[i].setAttribute('style', 'color: #919191;');
       }
-
     } else {
-
       for (let i = 0; i < planContent.length; i++) {
         planContent[i].removeAttribute('readonly');
         planContent[i].setAttribute('style', 'color: black;');
       }
-
     }
   }
 
@@ -275,7 +257,6 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
         }
         break;
     }
-
   }
 
   /**
@@ -283,7 +264,7 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
    * @author kidin-1091112
    */
   savePlanSetting() {
-    this.groupService.editGroupManage(this.editBody).subscribe(res => {
+    this.groupService.editGroupManage(this.editBody).subscribe((res) => {
       if (res.resultCode !== 200) {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
         this.utils.openAlert(errMsg);
@@ -291,9 +272,7 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
         this.uiFlag.editMode = false;
         this.groupService.setEditMode('complete');
       }
-
     });
-
   }
 
   /**
@@ -304,5 +283,4 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

@@ -4,13 +4,10 @@ import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class InnerSystemService {
-
-  constructor(
-    private http: HttpClient
-  ) { }
+  constructor(private http: HttpClient) {}
 
   /**
    * 取得系統日誌
@@ -18,9 +15,8 @@ export class InnerSystemService {
    * @author kidin-1100303
    */
   getSystemLog(body: any) {
-    return <any>this.http.post('/api/v1/app/getSystemLog', body).pipe(
-      catchError(err => throwError(err))
+    return <any>(
+      this.http.post('/api/v1/app/getSystemLog', body).pipe(catchError((err) => throwError(err)))
     );
   }
-
 }

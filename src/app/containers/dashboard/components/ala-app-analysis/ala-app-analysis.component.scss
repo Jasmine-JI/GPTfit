@@ -23,16 +23,16 @@ $btn-height: 30px;
 .condition__content {
   margin: 5px 0;
 
-  >span, >label {
+  > span,
+  > label {
     margin: 5px 0;
     font-weight: bold;
     color: var(--scale-100-205);
   }
-  
-  >div {
+
+  > div {
     margin-left: 10px;
   }
-
 }
 
 .flexRow.condition__content {
@@ -44,11 +44,9 @@ $btn-height: 30px;
 }
 
 .radioSelector {
-
   label {
     margin: 0;
   }
-
 }
 
 .radio__btn--active {
@@ -60,11 +58,9 @@ $btn-height: 30px;
 }
 
 .checkBoxBlock {
-
   label {
     color: var(--scale-0-255);
   }
-
 }
 
 #advanced__condition {
@@ -77,7 +73,8 @@ $btn-height: 30px;
   @include transition(transform);
 }
 
-#user, #group {
+#user,
+#group {
   height: 28px;
 }
 
@@ -95,7 +92,7 @@ $btn-height: 30px;
   width: 100%;
   @include overflow-y-scroll();
 
-  >span {
+  > span {
     padding: 2px;
     color: var(--scale-0-255);
     cursor: pointer;
@@ -104,9 +101,7 @@ $btn-height: 30px;
       background-color: $deep-blue;
       color: white;
     }
-
   }
-
 }
 
 #condition__list {
@@ -128,7 +123,7 @@ $btn-height: 30px;
 #defalut__btn {
   margin: 10px;
   @include button(16px, 1px solid var(--scale-150-180), rgba(0, 0, 0, 0)) {
-    color: rgba(230, 150, 150 ,1);
+    color: rgba(230, 150, 150, 1);
     height: $btn-height;
     border-radius: $btn-height;
   }
@@ -136,7 +131,6 @@ $btn-height: 30px;
   &:hover {
     color: red;
   }
-
 }
 
 #confirm__btn {
@@ -147,12 +141,11 @@ $btn-height: 30px;
     height: $btn-height;
     border-radius: $btn-height;
     width: 78px;
-  };
+  }
 
   &:hover {
     opacity: 1;
   }
-  
 }
 
 .condition__description {

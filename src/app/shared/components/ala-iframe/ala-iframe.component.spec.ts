@@ -8,9 +8,8 @@ describe('AlaIframeComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AlaIframeComponent ]
-    })
-    .compileComponents();
+      declarations: [AlaIframeComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

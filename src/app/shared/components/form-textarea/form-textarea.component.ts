@@ -5,7 +5,7 @@ import {
   Output,
   EventEmitter,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
 } from '@angular/core';
 import { DEFAULT_MAXLENGTH } from '../../utils/index';
 import { UntypedFormGroup } from '@angular/forms';
@@ -13,7 +13,7 @@ import { UntypedFormGroup } from '@angular/forms';
 @Component({
   selector: 'app-form-textarea',
   templateUrl: './form-textarea.component.html',
-  styleUrls: ['./form-textarea.component.scss']
+  styleUrls: ['./form-textarea.component.scss'],
 })
 export class FormTextareaComponent implements OnInit, OnChanges {
   @Input() class_name = 'form-field';
@@ -31,7 +31,7 @@ export class FormTextareaComponent implements OnInit, OnChanges {
   countText: string;
   preContent: string;
   invalidClassName = `${this.class_name} ${this.class_name}--invalid`;
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {
     this.preContent = this.content;
@@ -45,10 +45,7 @@ export class FormTextareaComponent implements OnInit, OnChanges {
 
   handleAutoHeight(textarea) {
     let adjustedHeight = textarea.currentTarget.clientHeight;
-    adjustedHeight = Math.max(
-      textarea.currentTarget.scrollHeight,
-      adjustedHeight
-    );
+    adjustedHeight = Math.max(textarea.currentTarget.scrollHeight, adjustedHeight);
     if (adjustedHeight > textarea.currentTarget.clientHeight) {
       textarea.currentTarget.style.height = adjustedHeight + 'px';
     }
@@ -60,5 +57,4 @@ export class FormTextareaComponent implements OnInit, OnChanges {
     this.countText = `${value.length}/${this.maxLength}`;
     this.onChange.emit(value);
   }
-  
 }

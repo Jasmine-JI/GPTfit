@@ -23,8 +23,11 @@ export const novice = ['1%', '25%', '50%'] as const;
 /**
  * 手臂肌群
  */
-export const ArmMuscle = 
-  [MuscleCode.bicepsInside, MuscleCode.triceps, MuscleCode.wristFlexor] as const;
+export const ArmMuscle = [
+  MuscleCode.bicepsInside,
+  MuscleCode.triceps,
+  MuscleCode.wristFlexor,
+] as const;
 
 /**
  * 胸部肌群
@@ -35,7 +38,7 @@ export const PectoralsMuscle = [
   MuscleCode.pectoralisLower,
   MuscleCode.pectoralsInside,
   MuscleCode.pectoralsOutside,
-  MuscleCode.frontSerratus
+  MuscleCode.frontSerratus,
 ] as const;
 
 /**
@@ -47,14 +50,17 @@ export const ShoulderMuscle = [
   MuscleCode.deltoidAnterior,
   MuscleCode.deltoidLateral,
   MuscleCode.deltoidPosterior,
-  MuscleCode.trapezius
+  MuscleCode.trapezius,
 ] as const;
 
 /**
  * 背部肌群
  */
-export const BackMuscle = 
-  [MuscleCode.backMuscle, MuscleCode.latissimusDorsi, MuscleCode.erectorSpinae] as const;
+export const BackMuscle = [
+  MuscleCode.backMuscle,
+  MuscleCode.latissimusDorsi,
+  MuscleCode.erectorSpinae,
+] as const;
 
 /**
  * 腹部肌群
@@ -64,7 +70,7 @@ export const AbdominalMuscle = [
   MuscleCode.rectusAbdominis,
   MuscleCode.rectusAbdominisUpper,
   MuscleCode.rectusAbdominisLower,
-  MuscleCode.abdominisOblique
+  MuscleCode.abdominisOblique,
 ] as const;
 
 /**
@@ -85,7 +91,7 @@ export const LegMuscle = [
 export const muscleMapColorSetting = {
   saturation: '100%',
   brightness: '70%',
-  transparency: 0.5
+  transparency: 0.5,
 } as const;
 
 /**

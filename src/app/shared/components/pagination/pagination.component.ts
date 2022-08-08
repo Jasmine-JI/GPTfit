@@ -1,14 +1,21 @@
-import { Component, OnInit, OnDestroy, OnChanges, Output, EventEmitter, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  OnChanges,
+  Output,
+  EventEmitter,
+  Input,
+} from '@angular/core';
 import { fromEvent, Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PaginationSetting } from '../../models/pagination';
 import { deepCopy } from '../../utils/index';
 
-
 @Component({
   selector: 'app-pagination',
   templateUrl: './pagination.component.html',
-  styleUrls: ['./pagination.component.scss']
+  styleUrls: ['./pagination.component.scss'],
 })
 export class PaginationComponent implements OnInit, OnDestroy, OnChanges {
   @Output() pageChange = new EventEmitter();
@@ -16,11 +23,10 @@ export class PaginationComponent implements OnInit, OnDestroy, OnChanges {
   @Input() pageSetting: PaginationSetting = {
     totalCounts: 0,
     pageIndex: 0,
-    onePageSize: 10
+    onePageSize: 10,
   };
-  
-  
-  private ngUnsubscribe = new Subject;
+
+  private ngUnsubscribe = new Subject();
   clickEvent: Subscription;
   showPageSizeMenu = false;
 
@@ -49,7 +55,6 @@ export class PaginationComponent implements OnInit, OnDestroy, OnChanges {
       this.showPageSizeMenu = true;
       this.subscribeClickEvent();
     }
-    
   }
 
   /**
@@ -58,13 +63,10 @@ export class PaginationComponent implements OnInit, OnDestroy, OnChanges {
    */
   subscribeClickEvent() {
     const click = fromEvent(document, 'click');
-    this.clickEvent = click.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.clickEvent = click.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.showPageSizeMenu = false;
       this.clickEvent.unsubscribe();
     });
-
   }
 
   /**
@@ -73,28 +75,24 @@ export class PaginationComponent implements OnInit, OnDestroy, OnChanges {
    */
   switchPage(action: 'pre' | 'next') {
     if (action === 'pre') {
-
       if (this.pageSettingObj.pageIndex > 0) {
         this.pageSettingObj.pageIndex--;
       }
-      
     } else {
       const { totalCounts, onePageSize, pageIndex } = this.pageSettingObj;
       if ((pageIndex + 1) * onePageSize < totalCounts) {
         this.pageSettingObj.pageIndex++;
       }
-      
     }
 
     // 避免快速切換造成太過頻繁call api
     if (this.debounce) {
       clearTimeout(this.debounce);
     }
-    
+
     this.debounce = setTimeout(() => {
       this.emitPageSetting();
     }, 250);
-
   }
 
   /**
@@ -102,7 +100,7 @@ export class PaginationComponent implements OnInit, OnDestroy, OnChanges {
    * @param size {number}-單一頁所顯示項數
    * @author kidin-1100712
    */
-  changeOnePageSize(size: number) {  
+  changeOnePageSize(size: number) {
     this.pageSettingObj.onePageSize = size;
     this.pageSettingObj.pageIndex = 0;
     this.emitPageSetting();
@@ -123,5 +121,4 @@ export class PaginationComponent implements OnInit, OnDestroy, OnChanges {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

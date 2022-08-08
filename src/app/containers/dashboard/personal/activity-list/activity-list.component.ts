@@ -14,7 +14,6 @@ import { HashIdService } from '../../../../shared/services/hash-id.service';
 import { deepCopy } from '../../../../shared/utils/index';
 import { AuthService } from '../../../../core/services/auth.service';
 
-
 const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 const defaultEnd = dayjs().endOf('day');
 const defaultStart = dayjs(defaultEnd).subtract(3, 'year').startOf('day');
@@ -22,7 +21,7 @@ const defaultStart = dayjs(defaultEnd).subtract(3, 'year').startOf('day');
 @Component({
   selector: 'app-activity-list',
   templateUrl: './activity-list.component.html',
-  styleUrls: ['./activity-list.component.scss']
+  styleUrls: ['./activity-list.component.scss'],
 })
 export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();
@@ -34,8 +33,8 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   uiFlag = {
     progress: 100,
-    isPortalMode: !location.pathname.includes('dashboard')
-  }
+    isPortalMode: !location.pathname.includes('dashboard'),
+  };
 
   /**
    * 報告頁面可讓使用者篩選的條件
@@ -45,12 +44,12 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
     date: {
       startTimestamp: defaultStart.valueOf(),
       endTimestamp: defaultEnd.valueOf(),
-      type: 'custom'
+      type: 'custom',
     },
     sportType: SportType.all,
     keyword: '',
-    hideConfirmBtn: false
-  }
+    hideConfirmBtn: false,
+  };
 
   /**
    * api 2102 req body
@@ -62,8 +61,8 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
     page: 0,
     pageCounts: 12,
     filterStartTime: defaultStart.format(dateFormat),
-    filterEndTime: defaultEnd.format(dateFormat)
-  }
+    filterEndTime: defaultEnd.format(dateFormat),
+  };
 
   activityList = [];
   targetUserId: number;
@@ -79,7 +78,7 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
     private globalEventsService: GlobalEventsService,
     private hashIdService: HashIdService,
     private authService: AuthService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.getNeedInfo();
@@ -88,7 +87,9 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    setTimeout(() => {this.subscribeScroll()});  // 使用setTimeout避免抓到先前命名相同之元素
+    setTimeout(() => {
+      this.subscribeScroll();
+    }); // 使用setTimeout避免抓到先前命名相同之元素
   }
 
   /**
@@ -98,47 +99,53 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
   getNeedInfo() {
     const [empty, firstPath, secondPath, ...rest] = location.pathname.split('/');
     const isOtherOwner = firstPath === 'user-profile';
-    const pageOwnerId = isOtherOwner ?
-        +this.hashIdService.handleUserIdDecode(secondPath) : this.userService.getUser().userId;
+    const pageOwnerId = isOtherOwner
+      ? +this.hashIdService.handleUserIdDecode(secondPath)
+      : this.userService.getUser().userId;
 
-    this.userService.getTargetUserInfo(pageOwnerId).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      const { userId, unit: userUnit } = res;
-      this.targetUserId = isOtherOwner ? userId : undefined;
-      this.unit = userUnit !== undefined ? userUnit : Unit.metric;
-      this.reportService.setReportCondition(this.reportConditionOpt);
-      this.getReportSelectedCondition();
-    });
-
+    this.userService
+      .getTargetUserInfo(pageOwnerId)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        const { userId, unit: userUnit } = res;
+        this.targetUserId = isOtherOwner ? userId : undefined;
+        this.unit = userUnit !== undefined ? userUnit : Unit.metric;
+        this.reportService.setReportCondition(this.reportConditionOpt);
+        this.getReportSelectedCondition();
+      });
   }
 
   /**
    * 取得使用者所篩選的條件
    * @author kidin-1091029
    */
-   getReportSelectedCondition() {
-    this.reportService.getReportCondition().pipe(
-      tap(res => {
-        const { progress } = this.uiFlag;
-        this.uiFlag.progress = progress === 100 ? 10 : progress;
-      }),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      // 避免連續送出
-      if (this.uiFlag.progress >= 10 && this.uiFlag.progress < 100) {
-        const condition = res as any,
-              { date: { startTimestamp, endTimestamp }, sportType, keyword } = condition;
-        this.reportConditionOpt = deepCopy(res);
-        this.listReq.type = sportType;
-        this.listReq.filterStartTime = dayjs(startTimestamp).format(dateFormat);
-        this.listReq.filterEndTime = dayjs(endTimestamp).format(dateFormat);
-        this.listReq.searchWords = keyword;
-        this.getActivityList('filter');
-      }
-
-    });
-
+  getReportSelectedCondition() {
+    this.reportService
+      .getReportCondition()
+      .pipe(
+        tap((res) => {
+          const { progress } = this.uiFlag;
+          this.uiFlag.progress = progress === 100 ? 10 : progress;
+        }),
+        takeUntil(this.ngUnsubscribe)
+      )
+      .subscribe((res) => {
+        // 避免連續送出
+        if (this.uiFlag.progress >= 10 && this.uiFlag.progress < 100) {
+          const condition = res as any,
+            {
+              date: { startTimestamp, endTimestamp },
+              sportType,
+              keyword,
+            } = condition;
+          this.reportConditionOpt = deepCopy(res);
+          this.listReq.type = sportType;
+          this.listReq.filterStartTime = dayjs(startTimestamp).format(dateFormat);
+          this.listReq.filterEndTime = dayjs(endTimestamp).format(dateFormat);
+          this.listReq.searchWords = keyword;
+          this.getActivityList('filter');
+        }
+      });
   }
 
   /**
@@ -153,7 +160,7 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
     const filterTrigger = trigger === 'filter';
     if (filterTrigger) this.listReq.page = 0;
     this.uiFlag.progress = 30;
-    this.activityService.fetchSportList(this.listReq).subscribe(res => {
+    this.activityService.fetchSportList(this.listReq).subscribe((res) => {
       if (filterTrigger) this.activityList = [];
       const { apiCode, resultCode, resultMessage, totalCounts, info } = res;
       if (resultCode !== 200) {
@@ -164,9 +171,7 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
         this.totalCounts = totalCounts;
         this.uiFlag.progress = 100;
       }
-
     });
-
   }
 
   /**
@@ -175,8 +180,11 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1100816
    */
   handleScenery(list: Array<any>) {
-    return list.map(_list => {
-      const { activityInfoLayer: { type, subtype }, fileInfo: { photo } } = _list;
+    return list.map((_list) => {
+      const {
+        activityInfoLayer: { type, subtype },
+        fileInfo: { photo },
+      } = _list;
       if (!photo || photo === 'None') {
         const img = this.activityService.handleSceneryImg(+type, +subtype);
         Object.assign(_list.fileInfo, { scenery: img });
@@ -184,7 +192,6 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
 
       return _list;
     });
-
   }
 
   /**
@@ -193,7 +200,9 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1100816
    */
   handleNavigation(idx: number) {
-    const { fileInfo: { fileId } } = this.activityList[idx];
+    const {
+      fileInfo: { fileId },
+    } = this.activityList[idx];
     let debugString = '';
     if (location.search.includes('debug=')) {
       debugString = '?debug=';
@@ -202,9 +211,12 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.uiFlag.isPortalMode) {
       window.open(`/activity/${fileId}${debugString}`, '_blank', 'noopener=yes,noreferrer=yes');
     } else {
-      window.open(`/dashboard/activity/${fileId}${debugString}`, '_blank', 'noopener=yes,noreferrer=yes');
+      window.open(
+        `/dashboard/activity/${fileId}${debugString}`,
+        '_blank',
+        'noopener=yes,noreferrer=yes'
+      );
     }
-
   }
 
   /**
@@ -214,9 +226,7 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
   subscribeScroll() {
     const targetEle = document.querySelector('.main__container') as Element;
     const scrollEvent = fromEvent(targetEle, 'scroll');
-    this.scrollEvent = scrollEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.scrollEvent = scrollEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       const listLen = this.activityList.length;
       if (this.uiFlag.progress === 100 && listLen >= 12) {
         const lastEle = document.getElementById(`card__${listLen - 1}`) as Element;
@@ -226,11 +236,8 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
           this.listReq.page++;
           this.getActivityList('scroll');
         }
-
       }
-
     });
-
   }
 
   /**
@@ -239,16 +246,11 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   subscribeScreenSize() {
     const resize = fromEvent(window, 'resize');
-    this.resizeEvent = merge(
-      resize,
-      this.globalEventsService.getRxSideBarMode()
-    ).pipe(
-      debounceTime(500),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
-      this.setListWidth();
-    });
-
+    this.resizeEvent = merge(resize, this.globalEventsService.getRxSideBarMode())
+      .pipe(debounceTime(500), takeUntil(this.ngUnsubscribe))
+      .subscribe((e) => {
+        this.setListWidth();
+      });
   }
 
   /**
@@ -258,16 +260,16 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
   setListWidth() {
     const container = document.querySelector('.cardSection') as HTMLElement;
     const windowWidth = window.innerWidth;
-    const maxWidth = container.getBoundingClientRect().width - 20;  // 20為padding
+    const maxWidth = container.getBoundingClientRect().width - 20; // 20為padding
     const cardWidth = windowWidth <= 767 ? 210 : 260;
     const oneRowNum = Math.floor(maxWidth / cardWidth);
     const targetElement = document.querySelector('.activity__list') as HTMLElement;
-    targetElement.style.width = oneRowNum === 1 ? `${maxWidth - 10}px` : `${oneRowNum * cardWidth}px`;
+    targetElement.style.width =
+      oneRowNum === 1 ? `${maxWidth - 10}px` : `${oneRowNum * cardWidth}px`;
   }
 
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

@@ -8,10 +8,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { ReadStatus } from '../enum/station-mail';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StationMailService {
-
   /**
    * 站內信列表
    */
@@ -41,7 +40,7 @@ export class StationMailService {
     private api50xxService: Api50xxService,
     private authService: AuthService,
     private translateService: TranslateService
-  ) { }
+  ) {}
 
   /**
    * 取得新訊息狀態通知
@@ -82,36 +81,35 @@ export class StationMailService {
       token: this.authService.token,
       countryRegion,
       page: {
-        index, counts
-      }
+        index,
+        counts,
+      },
     };
 
     return this.api50xxService.fetchMessageList(body).pipe(
-      switchMap(res => {
+      switchMap((res) => {
         if (checkResponse(res)) {
-          const { message, page: { totalCounts } } = res;
+          const {
+            message,
+            page: { totalCounts },
+          } = res;
           const listNotAll = totalCounts > counts * (index + 1);
           if (listNotAll) {
             index++;
-            return this.refreshMailList(index).pipe(
-              map(nextRes => message.concat(nextRes))
-            )
+            return this.refreshMailList(index).pipe(map((nextRes) => message.concat(nextRes)));
           } else {
             return of(message);
           }
         } else {
           return of([]);
         }
-
       }),
-      map(result => {
+      map((result) => {
         const processingList = this.addSelectedOption(result);
         this._mailList$.next(processingList);
         return processingList;
       })
-
     );
-
   }
 
   /**
@@ -119,11 +117,10 @@ export class StationMailService {
    * @param list {Array<any>}-信件列表
    */
   addSelectedOption(list: Array<any>) {
-    return list.map(_list => {
+    return list.map((_list) => {
       _list.selected = false;
       return _list;
     });
-
   }
 
   /**
@@ -139,34 +136,33 @@ export class StationMailService {
    */
   getFavoriteList() {
     return this._favoriteList$.pipe(
-      switchMap(list => {
+      switchMap((list) => {
         const body = { token: this.authService.token };
-        return list ? of(list) : this.api50xxService.fetchAddressBook(body).pipe(
-          map(result => checkResponse(result) ? result.contactList : []),
-          tap(result => this._favoriteList$.next(result))
-        )
-
+        return list
+          ? of(list)
+          : this.api50xxService.fetchAddressBook(body).pipe(
+              map((result) => (checkResponse(result) ? result.contactList : [])),
+              tap((result) => this._favoriteList$.next(result))
+            );
       })
     );
-
   }
-  
+
   /**
    * 取得黑名單
    */
   getBlackList() {
     return this._blackList$.pipe(
-      switchMap(list => {
+      switchMap((list) => {
         const body = { token: this.authService.token };
-        return list ? of(list) : this.api50xxService.fetchBlackList(body).pipe(
-          map(result => checkResponse(result) ? result.blackList : []),
-          tap(result => this._blackList$.next(result))
-        )
-
+        return list
+          ? of(list)
+          : this.api50xxService.fetchBlackList(body).pipe(
+              map((result) => (checkResponse(result) ? result.blackList : [])),
+              tap((result) => this._blackList$.next(result))
+            );
       })
-      
     );
-
   }
 
   /**
@@ -190,7 +186,7 @@ export class StationMailService {
    * @param id {number}-訊息編號
    */
   editReadStatus(id: number) {
-    const newList = this._mailList$.value.map(_list => {
+    const newList = this._mailList$.value.map((_list) => {
       const { id: _id } = _list;
       if (id == _id) _list.readStatus = ReadStatus.read;
       return _list;
@@ -198,5 +194,4 @@ export class StationMailService {
 
     this._mailList$.next(newList);
   }
-
 }

@@ -12,8 +12,7 @@
   max-height: 250px;
   overflow-y: scroll;
   background-color: white;
-  box-shadow:
-    $shadow-offset $shadow-offset $shadow-blur,
+  box-shadow: $shadow-offset $shadow-offset $shadow-blur,
     calc(-#{$shadow-offset}) $shadow-offset $shadow-blur;
   @include min-width(200px);
 }

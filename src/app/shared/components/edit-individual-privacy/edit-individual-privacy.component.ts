@@ -6,15 +6,14 @@ import { PrivacyObj, allPrivacyItem } from '../../models/user-privacy';
 import { ActivityService } from '../../services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
 
-
 @Component({
   selector: 'app-edit-individual-privacy',
   templateUrl: './edit-individual-privacy.component.html',
-  styleUrls: ['./edit-individual-privacy.component.scss']
+  styleUrls: ['./edit-individual-privacy.component.scss'],
 })
 export class EditIndividualPrivacyComponent implements OnInit {
   i18n = {
-    gym: ''
+    gym: '',
   };
 
   openObj = [PrivacyObj.self];
@@ -27,7 +26,7 @@ export class EditIndividualPrivacyComponent implements OnInit {
     private activityService: ActivityService,
     private authService: AuthService,
     @Inject(MAT_DIALOG_DATA) private data: any
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.translate.get('hellow world').subscribe(() => {
@@ -51,10 +50,7 @@ export class EditIndividualPrivacyComponent implements OnInit {
     }
 
     // 避免隱私權有帶3卻沒帶到4的情況
-    if (
-      openObj.includes(PrivacyObj.myGroup)
-      && !openObj.includes(PrivacyObj.onlyGroupAdmin)
-    ) {
+    if (openObj.includes(PrivacyObj.myGroup) && !openObj.includes(PrivacyObj.onlyGroupAdmin)) {
       this.openObj.push(PrivacyObj.onlyGroupAdmin);
     }
 
@@ -65,22 +61,20 @@ export class EditIndividualPrivacyComponent implements OnInit {
    * 確認後即送出更改隱私權
    * @author kidin-1100302
    */
-  handleConfirm () {
+  handleConfirm() {
     this.modifyPrivacy();
     this.dialog.closeAll();
   }
 
-  /** 
+  /**
    * 選擇開放隱私權的對象 1:僅自己 2:我的朋友 3:我的群組 4:我的健身房教練 99:所有人
    * @param privacy {PrivacyObj}
    * @author kidin-1100302
    */
-  selectModifyRange (privacy: PrivacyObj) {
+  selectModifyRange(privacy: PrivacyObj) {
     const privacySetting = this.openObj;
     switch (privacy) {
-
       case PrivacyObj.anyone:
-
         if (privacySetting.includes(PrivacyObj.anyone)) {
           this.openObj = [PrivacyObj.self];
         } else {
@@ -89,9 +83,8 @@ export class EditIndividualPrivacyComponent implements OnInit {
 
         break;
       case PrivacyObj.myGroup:
-
         if (privacySetting.includes(PrivacyObj.myGroup)) {
-          this.openObj = privacySetting.filter(_setting => {
+          this.openObj = privacySetting.filter((_setting) => {
             return _setting !== PrivacyObj.myGroup && _setting !== PrivacyObj.anyone;
           });
         } else {
@@ -100,14 +93,12 @@ export class EditIndividualPrivacyComponent implements OnInit {
           if (!privacySetting.includes(PrivacyObj.onlyGroupAdmin)) {
             this.openObj.push(PrivacyObj.onlyGroupAdmin);
           }
-
         }
 
         break;
       case PrivacyObj.onlyGroupAdmin:
-
         if (privacySetting.includes(PrivacyObj.onlyGroupAdmin)) {
-          this.openObj = privacySetting.filter(_setting => {
+          this.openObj = privacySetting.filter((_setting) => {
             return ![privacy, PrivacyObj.myGroup, PrivacyObj.anyone].includes(_setting);
           });
         } else {
@@ -116,7 +107,6 @@ export class EditIndividualPrivacyComponent implements OnInit {
 
         break;
       case PrivacyObj.self:
-
         if (privacySetting.length > 1) {
           this.openObj = [PrivacyObj.self];
         } else {
@@ -125,14 +115,13 @@ export class EditIndividualPrivacyComponent implements OnInit {
 
         break;
     }
-
   }
 
   /**
    * 根據使用者選擇修改隱私權
    * @author kidin-1100302
    */
-  modifyPrivacy () {
+  modifyPrivacy() {
     let body;
     if (this.data.editType == 1) {
       body = {
@@ -140,7 +129,7 @@ export class EditIndividualPrivacyComponent implements OnInit {
         editFileType: this.data.editType,
         rangeType: '2',
         editFileId: [this.data.fileId],
-        privacy: this.openObj
+        privacy: this.openObj,
       };
     } else {
       body = {
@@ -149,32 +138,21 @@ export class EditIndividualPrivacyComponent implements OnInit {
         rangeType: '1',
         startTime: this.data.startDate,
         endTime: this.data.endDate,
-        privacy: this.openObj
+        privacy: this.openObj,
       };
-
     }
 
-    this.activityService.editPrivacy(body).subscribe(res => {
+    this.activityService.editPrivacy(body).subscribe((res) => {
       if (res.resultCode === 200) {
         this.data.onConfirm(this.openObj);
-        this.snackbar.open(
-          this.translate.instant(
-            'universal_operating_finishEdit'
-          ),
-          'OK',
-          { duration: 2000 }
-        );
+        this.snackbar.open(this.translate.instant('universal_operating_finishEdit'), 'OK', {
+          duration: 2000,
+        });
       } else {
-        this.snackbar.open(
-          this.translate.instant('universal_popUpMessage_updateFailed'),
-          'OK',
-          { duration: 2000 }
-        );
-
+        this.snackbar.open(this.translate.instant('universal_popUpMessage_updateFailed'), 'OK', {
+          duration: 2000,
+        });
       }
-
     });
-
   }
-
 }

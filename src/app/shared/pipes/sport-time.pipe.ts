@@ -1,7 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-
-@Pipe({name: 'sportTime'})
+@Pipe({ name: 'sportTime' })
 export class SportTimePipe implements PipeTransform {
   /**
    * 將總秒數轉為時:分:秒或時:分
@@ -23,28 +22,21 @@ export class SportTimePipe implements PipeTransform {
       let timeMin = `${costmin}`.padStart(2, '0');
 
       if (showZeroHour) {
-
         if (hideSecond) {
           timeMin = +timeSecond >= 30 ? `${costmin + 1}`.padStart(2, '0') : timeMin;
           return `${prefix}${timeHr}:${timeMin}`;
         } else {
           return `${prefix}${timeHr}:${timeMin}:${timeSecond}`;
         }
-        
       } else {
-
         if (costhr === 0) {
           return `${prefix}${timeMin}:${timeSecond}`;
         } else {
-          return `${prefix}${costhr}:${timeMin}:${timeSecond}`
+          return `${prefix}${costhr}:${timeMin}:${timeSecond}`;
         }
-
       }
-
     } else {
       return '--';
     }
-    
   }
-
 }

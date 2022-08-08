@@ -28,7 +28,7 @@ $focusBodyPartColor: #6f6f6f;
   flex-wrap: nowrap;
   min-width: 300px;
   margin: 5px 5px 0px 10px;
-  padding:5px;
+  padding: 5px;
   border: 1px solid;
   border-color: $listBorderColor;
   cursor: pointer;
@@ -54,22 +54,22 @@ $focusBodyPartColor: #6f6f6f;
   text-align: end;
 }
 
-
 /********************************* media *************************/
 
-@media(max-width: 950px) {
+@media (max-width: 950px) {
   .muscle__training__list {
     margin-left: 0px;
   }
 }
 
-@media(max-width: 767px) {
+@media (max-width: 767px) {
   #main__section {
     flex-direction: column;
     align-items: center;
   }
 
-  #svg__block, #list__block {
+  #svg__block,
+  #list__block {
     width: 100%;
   }
 
@@ -80,5 +80,4 @@ $focusBodyPartColor: #6f6f6f;
   #list__block {
     margin-top: 10px;
   }
-
 }

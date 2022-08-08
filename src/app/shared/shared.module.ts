@@ -8,17 +8,14 @@ import { SportPaceSibsPipe } from './pipes/sport-pace-sibs.pipe';
 import { TargetFieldNamePipe } from './pipes/target-field-name.pipe';
 
 @NgModule({
-  exports: [
-    TranslateModule,
-  ],
+  exports: [TranslateModule],
   providers: [
     MuscleNamePipe,
     DataTypeTranslatePipe,
     DataTypeUnitPipe,
     TemperatureSibsPipe,
     SportPaceSibsPipe,
-    TargetFieldNamePipe
-  ]
+    TargetFieldNamePipe,
+  ],
 })
-
-export class SharedModule { }
+export class SharedModule {}

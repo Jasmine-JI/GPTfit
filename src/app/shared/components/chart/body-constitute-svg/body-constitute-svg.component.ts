@@ -4,13 +4,12 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-body-constitute-svg',
   templateUrl: './body-constitute-svg.component.html',
-  styleUrls: ['./body-constitute-svg.component.scss']
+  styleUrls: ['./body-constitute-svg.component.scss'],
 })
 export class BodyConstituteSvgComponent implements OnInit, OnChanges {
-
   maskYPoint = {
     muscleYMax: 632,
-    fatRateYMax: 632
+    fatRateYMax: 632,
   };
 
   info = {
@@ -19,7 +18,7 @@ export class BodyConstituteSvgComponent implements OnInit, OnChanges {
     fatWeight: 0,
     fatInfoY: 250,
     comment: this.translate.instant('universal_status_noData'),
-    commentY: 70
+    commentY: 70,
   };
 
   baseUrl = window.location.href;
@@ -31,32 +30,29 @@ export class BodyConstituteSvgComponent implements OnInit, OnChanges {
   @Input() FFMI: number;
   @Input() gender: number;
 
-  constructor(
-    private translate: TranslateService
-  ) { }
+  constructor(private translate: TranslateService) {}
 
-  ngOnInit () {
+  ngOnInit() {
     this.fixSvgUrls();
   }
 
-  ngOnChanges () {
+  ngOnChanges() {
     this.initVar();
 
     if (this.fatRate && this.bodyWeight && this.muscleRate) {
       this.setMaskRegion();
       this.setComment();
     }
-
   }
 
   /**
    * 初始化變數
    * @author kidin
    */
-  initVar () {
+  initVar() {
     this.maskYPoint = {
       muscleYMax: 632,
-      fatRateYMax: 632
+      fatRateYMax: 632,
     };
 
     this.info = {
@@ -65,27 +61,27 @@ export class BodyConstituteSvgComponent implements OnInit, OnChanges {
       fatWeight: 0,
       fatInfoY: 250,
       comment: this.translate.instant('universal_status_noData'),
-      commentY: 70
+      commentY: 70,
     };
   }
 
   // 依據肌肉率和體脂率設定遮罩範圍(高度)-kidin-1090226
-  setMaskRegion () {
-    this.maskYPoint.muscleYMax = 632 - ((632 * this.muscleRate) / 100);
-    this.maskYPoint.fatRateYMax = this.maskYPoint.muscleYMax - ((632 * this.fatRate) / 100);
+  setMaskRegion() {
+    this.maskYPoint.muscleYMax = 632 - (632 * this.muscleRate) / 100;
+    this.maskYPoint.fatRateYMax = this.maskYPoint.muscleYMax - (632 * this.fatRate) / 100;
 
-    this.info.muscleInfoY = ((632 + this.maskYPoint.muscleYMax) / 2) - 55;
-    this.info.fatInfoY = ((this.maskYPoint.muscleYMax + this.maskYPoint.fatRateYMax) / 2) - 50;
-    this.info.commentY = (this.maskYPoint.fatRateYMax / 2) - 50;
+    this.info.muscleInfoY = (632 + this.maskYPoint.muscleYMax) / 2 - 55;
+    this.info.fatInfoY = (this.maskYPoint.muscleYMax + this.maskYPoint.fatRateYMax) / 2 - 50;
+    this.info.commentY = this.maskYPoint.fatRateYMax / 2 - 50;
   }
 
   // 依據FFMI和體脂率給予身體素質評語-kidin-1090226
-  setComment () {
-    this.info.muscleWeight = this.bodyWeight * this.muscleRate / 100;
-    this.info.fatWeight = this.bodyWeight * this.fatRate / 100;
+  setComment() {
+    this.info.muscleWeight = (this.bodyWeight * this.muscleRate) / 100;
+    this.info.fatWeight = (this.bodyWeight * this.fatRate) / 100;
 
     let FFMIBoundary = [],
-        fatRateBoundary = [];
+      fatRateBoundary = [];
     if (this.gender === 0) {
       FFMIBoundary = [17, 22];
       fatRateBoundary = [17, 22];
@@ -122,15 +118,13 @@ export class BodyConstituteSvgComponent implements OnInit, OnChanges {
   }
 
   // 解決safari在使用mask時，無法正常顯示的問題-kidin-1090428
-  fixSvgUrls () {
+  fixSvgUrls() {
     const svgArr = document.querySelectorAll('#bodyConstituteChart [mask]');
 
     for (let i = 0; i < svgArr.length; i++) {
       const element = svgArr[i],
-            maskId = element.getAttribute('mask').replace('url(', '').replace(')', '');
+        maskId = element.getAttribute('mask').replace('url(', '').replace(')', '');
       element.setAttribute('mask', `url(${this.baseUrl + maskId})`);
     }
-
   }
-
 }

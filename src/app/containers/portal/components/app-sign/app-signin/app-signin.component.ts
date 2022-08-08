@@ -11,11 +11,10 @@ import { formTest } from '../../../../../shared/models/form-test';
 import { SignTypeEnum } from '../../../../../shared/enum/account';
 import { getLocalStorageObject } from '../../../../../shared/utils/index';
 
-
 @Component({
   selector: 'app-app-signin',
   templateUrl: './app-signin.component.html',
-  styleUrls: ['./app-signin.component.scss']
+  styleUrls: ['./app-signin.component.scss'],
 })
 export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();
@@ -28,10 +27,10 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
   i18n = {
     account: '',
     email: '',
-    password: ''
+    password: '',
   };
 
-  loginStatus = 'check';  // check: 等待登入; logging：登入中; success： 成功;
+  loginStatus = 'check'; // check: 等待登入; logging：登入中; success： 成功;
   displayPW = false;
   dataIncomplete = true;
   pcView = false;
@@ -45,7 +44,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
   cue = {
     account: '',
     password: '',
-    signResult: ''
+    signResult: '',
   };
 
   // 驗證用
@@ -53,7 +52,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
     email: this.formReg.email,
     emailPass: false,
     password: this.formReg.password,
-    passwordPass: false
+    passwordPass: false,
   };
 
   readonly SignTypeEnum = SignTypeEnum;
@@ -71,12 +70,9 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router
   ) {
     // 當語系變換就重新取得翻譯-kidin-1090720
-    this.translate.onLangChange.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    this.translate.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.getTranslate();
     });
-
   }
 
   ngOnInit() {
@@ -88,7 +84,6 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
       this.pcView = false;
       this.setPageStyle(true);
     }
-
   }
 
   ngAfterViewInit() {
@@ -97,7 +92,6 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.accountInput.nativeElement.focus();
     }
-
   }
 
   /**
@@ -112,21 +106,20 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 取得多國語系翻譯-kidin-1090620
   getTranslate() {
-      this.translate.get([
-      'universal_userAccount_account',
-      'universal_userAccount_email',
-      'universal_userAccount_password'
-    ]).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.i18n = {
-        account: res['universal_userAccount_account'],
-        email: res['universal_userAccount_email'],
-        password: res['universal_userAccount_password']
-      };
-
-    });
-
+    this.translate
+      .get([
+        'universal_userAccount_account',
+        'universal_userAccount_email',
+        'universal_userAccount_password',
+      ])
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.i18n = {
+          account: res['universal_userAccount_account'],
+          email: res['universal_userAccount_email'],
+          password: res['universal_userAccount_password'],
+        };
+      });
   }
 
   // 返回app-kidin-1090513
@@ -149,9 +142,8 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
     const isNormalKey = key.length === 1;
     // 當使用者按下enter，則聚焦下一個欄位(使用e.key.length === 1 過濾功能鍵)
     if (isNormalKey || isEnterKey || isBackspaceKey) {
-
       if (isEnterKey) {
-        this.handleNext({code: 'Enter'}, 'account');
+        this.handleNext({ code: 'Enter' }, 'account');
       } else if (isBackspaceKey) {
         const value = account.slice(0, account.length - 1);
         if (value.length > 0 && this.formReg.number.test(value)) {
@@ -159,7 +151,6 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
           this.loginBody.signInType = SignTypeEnum.email;
         }
-
       } else if (this.formReg.number.test(account) && this.formReg.number.test(key)) {
         this.loginBody.signInType = SignTypeEnum.phone;
         this.loginBody.mobileNumber = '';
@@ -169,9 +160,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.loginBody.countryCode) delete this.loginBody.countryCode;
         if (this.loginBody.mobileNumber) delete this.loginBody.mobileNumber;
       }
-
     }
-
   }
 
   /**
@@ -208,7 +197,6 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.loginBody.email) {
           delete this.loginBody.email;
         }
-
       } else {
         this.loginBody.signInType = SignTypeEnum.email;
         this.loginBody.email = account;
@@ -217,14 +205,11 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.loginBody.mobileNumber) {
           delete this.loginBody.mobileNumber;
         }
-
       }
-
     } else {
       this.loginBody.signInType = SignTypeEnum.email;
       this.cue.account = 'universal_status_wrongFormat';
     }
-
   }
 
   /**
@@ -232,12 +217,11 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1091006
    */
   trimPhoneNumZero() {
-    const phone =  this.loginBody.mobileNumber;
+    const phone = this.loginBody.mobileNumber;
     const isPhoneLogin = this.loginBody.signInType === SignTypeEnum.phone;
     if (isPhoneLogin && phone[0] === '0') {
       this.loginBody.mobileNumber = +phone.slice(1, phone.length);
     }
-    
   }
 
   // 確認使用者信箱格式-kidin-1090511
@@ -267,12 +251,15 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.displayPW = false;
     }
-
   }
 
   // 確認密碼格式-kidin-1090511
   checkPassword(e) {
-    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout' || e.type === 'change') {
+    if (
+      (e.type === 'keypress' && e.code === 'Enter') ||
+      e.type === 'focusout' ||
+      e.type === 'change'
+    ) {
       this.loginBody.password = e.currentTarget.value;
       if (!this.regCheck.password.test(this.loginBody.password)) {
         this.cue.password = 'universal_userAccount_passwordFormat';
@@ -298,7 +285,6 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
       this.trimPhoneNumZero();
       this.dataIncomplete = false;
     }
-
   }
 
   /**
@@ -329,8 +315,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
     this.checkAll();
     if (this.doulbleCheck() || !this.dataIncomplete) {
       this.loginStatus = 'logging';
-      this.authService.accountLogin(this.loginBody).subscribe(res => {
-
+      this.authService.accountLogin(this.loginBody).subscribe((res) => {
         if (res.processResult.resultCode === 200) {
           this.cue.signResult = '';
           this.loginStatus = 'success';
@@ -343,9 +328,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
           } else {
             location.href = '/dashboard'; // 為了讓登入的api request payload清除掉
           }
-
         } else {
-
           switch (res.processResult.apiReturnMessage) {
             case 'Sign in fail, found error mobile number or country code.':
             case 'Sign in fail, found error email.':
@@ -358,11 +341,9 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
                 data: {
                   title: 'Message',
                   body: `Error.<br />Please try again later.`,
-                  confirmText: this.translate.instant(
-                    'universal_operating_confirm'
-                  ),
-                  onConfirm: this.turnBack.bind(this)
-                }
+                  confirmText: this.translate.instant('universal_operating_confirm'),
+                  onConfirm: this.turnBack.bind(this),
+                },
               });
 
               break;
@@ -370,11 +351,8 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
 
           this.loginStatus = 'check';
         }
-
       });
-
     }
-
   }
 
   // 轉導至qrcode sign頁面-kidin-1090527
@@ -384,7 +362,6 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.router.navigateByUrl('/signInQrcode');
     }
-
   }
 
   /**
@@ -393,18 +370,20 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   navigateAssignPage(queryString: string) {
     const queryArr = queryString.replace('?', '').split('&');
-    if (queryArr.some(_query => _query.indexOf('action') > -1 && _query.indexOf('applyActivity') > -1)) {
+    if (
+      queryArr.some(
+        (_query) => _query.indexOf('action') > -1 && _query.indexOf('applyActivity') > -1
+      )
+    ) {
       let fileName: string;
-      queryArr.forEach(_query => {
+      queryArr.forEach((_query) => {
         if (_query.indexOf('activity') > -1) {
           fileName = _query.split('=')[1];
         }
-
       });
 
       this.router.navigateByUrl(`/official-activity?file=${fileName}&action=applyActivity`);
     }
-
   }
 
   // 顯示註冊條款-kidin-1090529
@@ -412,65 +391,86 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
     e.preventDefault();
     let text = '';
     if (navigator.language.toLowerCase() === 'pt-br') {
-      text = `${this.translate.instant('universal_userAccount_clauseContentPage1')
-        }<a target="_blank" href="${location.origin}/app/public_html/appHelp/pt-BR/termsConditions.html">『${
-          this.translate.instant('universal_userAccount_clause')
-        }』</a>、<a target="_blank" href="${location.origin}/app/public_html/appHelp/pt-BR/privacyPolicy.html">『${
-          this.translate.instant('universal_userAccount_privacyStatement')
-        }』</a>
-        ${this.translate.instant('universal_userAccount_clauseContentPage2')
-      }`.replace(/\n/gm, '');
-
+      text = `${this.translate.instant(
+        'universal_userAccount_clauseContentPage1'
+      )}<a target="_blank" href="${
+        location.origin
+      }/app/public_html/appHelp/pt-BR/termsConditions.html">『${this.translate.instant(
+        'universal_userAccount_clause'
+      )}』</a>、<a target="_blank" href="${
+        location.origin
+      }/app/public_html/appHelp/pt-BR/privacyPolicy.html">『${this.translate.instant(
+        'universal_userAccount_privacyStatement'
+      )}』</a>
+        ${this.translate.instant('universal_userAccount_clauseContentPage2')}`.replace(/\n/gm, '');
     } else {
-
       const lan = getLocalStorageObject('locale');
       switch (lan) {
         case 'zh-tw':
-          text = `${this.translate.instant('universal_userAccount_clauseContentPage1')
-            }<a target="_blank" href="${location.origin}/app/public_html/appHelp/zh-TW/termsConditions.html">『${
-              this.translate.instant('universal_userAccount_clause')
-            }』</a>、<a target="_blank" href="${location.origin}/app/public_html/appHelp/zh-TW/privacyPolicy.html">『${
-              this.translate.instant('universal_userAccount_privacyStatement')}』</a>${
-            this.translate.instant('universal_userAccount_clauseContentPage2')
-          }`.replace(/\n/gm, '');
+          text = `${this.translate.instant(
+            'universal_userAccount_clauseContentPage1'
+          )}<a target="_blank" href="${
+            location.origin
+          }/app/public_html/appHelp/zh-TW/termsConditions.html">『${this.translate.instant(
+            'universal_userAccount_clause'
+          )}』</a>、<a target="_blank" href="${
+            location.origin
+          }/app/public_html/appHelp/zh-TW/privacyPolicy.html">『${this.translate.instant(
+            'universal_userAccount_privacyStatement'
+          )}』</a>${this.translate.instant('universal_userAccount_clauseContentPage2')}`.replace(
+            /\n/gm,
+            ''
+          );
           break;
         case 'zh-cn':
-          text = `${this.translate.instant('universal_userAccount_clauseContentPage1')
-            }<a target="_blank" href="${location.origin}/app/public_html/appHelp/zh-CN/termsConditions.html">『${
-              this.translate.instant('universal_userAccount_clause')
-            }』</a>、<a target="_blank" href="${location.origin}/app/public_html/appHelp/zh-CN/privacyPolicy.html">『${
-              this.translate.instant('universal_userAccount_privacyStatement')}』</a>${
-            this.translate.instant('universal_userAccount_clauseContentPage2')
-          }`.replace(/\n/gm, '');
+          text = `${this.translate.instant(
+            'universal_userAccount_clauseContentPage1'
+          )}<a target="_blank" href="${
+            location.origin
+          }/app/public_html/appHelp/zh-CN/termsConditions.html">『${this.translate.instant(
+            'universal_userAccount_clause'
+          )}』</a>、<a target="_blank" href="${
+            location.origin
+          }/app/public_html/appHelp/zh-CN/privacyPolicy.html">『${this.translate.instant(
+            'universal_userAccount_privacyStatement'
+          )}』</a>${this.translate.instant('universal_userAccount_clauseContentPage2')}`.replace(
+            /\n/gm,
+            ''
+          );
           break;
         default:
-          text = `${this.translate.instant('universal_userAccount_clauseContentPage1')
-            }<a target="_blank" href="${location.origin}/app/public_html/appHelp/en-US/termsConditions.html">『${
-            this.translate.instant('universal_userAccount_clause')
-          }』</a>、<a target="_blank" href="${location.origin}/app/public_html/appHelp/en-US/privacyPolicy.html">『${
-            this.translate.instant('universal_userAccount_privacyStatement')}』</a>${
-            this.translate.instant('universal_userAccount_clauseContentPage2')
-          }`.replace(/\n/gm, '');
+          text = `${this.translate.instant(
+            'universal_userAccount_clauseContentPage1'
+          )}<a target="_blank" href="${
+            location.origin
+          }/app/public_html/appHelp/en-US/termsConditions.html">『${this.translate.instant(
+            'universal_userAccount_clause'
+          )}』</a>、<a target="_blank" href="${
+            location.origin
+          }/app/public_html/appHelp/en-US/privacyPolicy.html">『${this.translate.instant(
+            'universal_userAccount_privacyStatement'
+          )}』</a>${this.translate.instant('universal_userAccount_clauseContentPage2')}`.replace(
+            /\n/gm,
+            ''
+          );
           break;
-      };
-
+      }
     }
 
-    let title: string,
-        confirmText: string,
-        cancelText: string;
+    let title: string, confirmText: string, cancelText: string;
 
-    this.translate.get([
-      'universal_userAccount_clause',
-      'universal_operating_agree',
-      'universal_operating_disagree'
-    ]).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      title = res['universal_userAccount_clause'];
-      confirmText = res['universal_operating_agree'];
-      cancelText = res['universal_operating_disagree'];
-    });
+    this.translate
+      .get([
+        'universal_userAccount_clause',
+        'universal_operating_agree',
+        'universal_operating_disagree',
+      ])
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        title = res['universal_userAccount_clause'];
+        confirmText = res['universal_operating_agree'];
+        cancelText = res['universal_operating_disagree'];
+      });
 
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
@@ -479,10 +479,9 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
         body: text.trim(),
         confirmText: confirmText,
         cancelText: cancelText,
-        onConfirm: this.navigateToSignup
-      }
+        onConfirm: this.navigateToSignup,
+      },
     });
-
   }
 
   // 轉導至註冊頁面-kidin-1090529
@@ -499,20 +498,15 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   handleNext(e: any, column: string) {
     if (e !== null && e.code === 'Enter') {
-
       if (column !== 'password') {
-
         if (!this.pcView) {
           this.passwordInput.nativeElement.focus();
         } else {
           this.passwordInput_web.nativeElement.focus();
         }
-  
       } else {
-
         const password = e.currentTarget.value;
         if (password.length > 0) {
-
           if (!this.pcView) {
             this.passwordInput.nativeElement.blur();
           } else {
@@ -521,11 +515,8 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
 
           this.login();
         }
-
       }
-
     }
-
   }
 
   /**
@@ -535,7 +526,10 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   showCountryCodeList(e: MouseEvent) {
     e.stopPropagation();
-    const { loginBody: { signInType }, displayCountryCodeList } = this;
+    const {
+      loginBody: { signInType },
+      displayCountryCodeList,
+    } = this;
     if (signInType === SignTypeEnum.phone) {
       if (displayCountryCodeList) {
         this.unsubscribeClickScrollEvent();
@@ -543,9 +537,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
         this.displayCountryCodeList = true;
         this.subscribeClickScrollEvent();
       }
-
     }
-    
   }
 
   /**
@@ -556,12 +548,11 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
     const targetElement = document.querySelector('main');
     const clickEvent = fromEvent(document, 'click');
     const scrollEvent = fromEvent(targetElement, 'scroll');
-    this.clickScrollEvent = merge(clickEvent, scrollEvent).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.unsubscribeClickScrollEvent();
-    });
-
+    this.clickScrollEvent = merge(clickEvent, scrollEvent)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.unsubscribeClickScrollEvent();
+      });
   }
 
   /**
@@ -572,7 +563,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
     this.displayCountryCodeList = false;
     if (this.clickScrollEvent) this.clickScrollEvent.unsubscribe();
   }
-  
+
   /**
    * 選擇國碼
    * @param e {MouseEvent}
@@ -581,9 +572,9 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   selectCountryCode(e: MouseEvent, code: string) {
     e.stopPropagation();
-    const countryCode = +code.split('+')[1];;
+    const countryCode = +code.split('+')[1];
     this.loginBody.countryCode = countryCode;
-    this.checkAll();    
+    this.checkAll();
     this.unsubscribeClickScrollEvent();
   }
 
@@ -593,5 +584,4 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

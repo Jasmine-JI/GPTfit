@@ -100,7 +100,7 @@ import { MusclePartIconPipe } from './muscle-part-icon.pipe';
     TargetFieldNamePipe,
     TargetFieldUnitPipe,
     MuscleGroupNamePipe,
-    MusclePartIconPipe
+    MusclePartIconPipe,
   ],
   exports: [
     SexPipe,
@@ -150,10 +150,8 @@ import { MusclePartIconPipe } from './muscle-part-icon.pipe';
     TargetFieldNamePipe,
     TargetFieldUnitPipe,
     MuscleGroupNamePipe,
-    MusclePartIconPipe
+    MusclePartIconPipe,
   ],
-  providers: [
-    AgePipe
-  ]
+  providers: [AgePipe],
 })
 export class SharedPipes {}

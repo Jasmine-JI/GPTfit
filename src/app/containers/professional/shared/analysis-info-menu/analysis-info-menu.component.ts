@@ -6,10 +6,9 @@ import { QueryString } from '../../../../shared/enum/query-string';
 @Component({
   selector: 'app-analysis-info-menu',
   templateUrl: './analysis-info-menu.component.html',
-  styleUrls: ['./analysis-info-menu.component.scss']
+  styleUrls: ['./analysis-info-menu.component.scss'],
 })
 export class AnalysisInfoMenuComponent implements OnInit {
-
   /**
    * 指定的群組/個人資訊
    */
@@ -20,13 +19,9 @@ export class AnalysisInfoMenuComponent implements OnInit {
    */
   @Input() reportCondition: ReportCondition;
 
+  constructor(private hashIdService: HashIdService) {}
 
-  constructor(
-    private hashIdService: HashIdService
-  ) { }
-
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   /**
    * 取得指定對象的基本資訊頁面網址
@@ -35,7 +30,9 @@ export class AnalysisInfoMenuComponent implements OnInit {
    */
   getAssignInfoUrl(id: string | number) {
     const { object } = this.assignInfo;
-    return object === 'group' ? this.getPersonalInfoUrl(id as number) : this.getGroupInfoUrl(id as string);
+    return object === 'group'
+      ? this.getPersonalInfoUrl(id as number)
+      : this.getGroupInfoUrl(id as string);
   }
 
   /**
@@ -45,7 +42,9 @@ export class AnalysisInfoMenuComponent implements OnInit {
    */
   getMainInfoUrl(id: string | number) {
     const { object } = this.assignInfo;
-    return object === 'group' ? this.getGroupInfoUrl(id as string) : this.getPersonalInfoUrl(id as number);
+    return object === 'group'
+      ? this.getGroupInfoUrl(id as string)
+      : this.getPersonalInfoUrl(id as number);
   }
 
   /**
@@ -77,7 +76,9 @@ export class AnalysisInfoMenuComponent implements OnInit {
    */
   getSportsReportUrl(id: string | number) {
     const { object } = this.assignInfo;
-    return object === 'group' ? this.getGroupSportsReportUrl(id as string) : this.getPersonalSportsReportUrl(id as number);
+    return object === 'group'
+      ? this.getGroupSportsReportUrl(id as string)
+      : this.getPersonalSportsReportUrl(id as number);
   }
 
   /**
@@ -108,18 +109,13 @@ export class AnalysisInfoMenuComponent implements OnInit {
   addReportQueryString() {
     const { baseTime, compareTime, sportType, dateUnit } = this.reportCondition;
     const { startTimestamp: baseStartTime, endTimestamp: baseEndTime } = baseTime;
-    let query = `?${
-      QueryString.baseStartTime}=${baseStartTime
-    }&${QueryString.baseEndTime}=${baseEndTime
-    }&${QueryString.dateRangeUnit}=${dateUnit.unit
-    }&${QueryString.sportType}=${sportType
-    }`;
+    let query = `?${QueryString.baseStartTime}=${baseStartTime}&${QueryString.baseEndTime}=${baseEndTime}&${QueryString.dateRangeUnit}=${dateUnit.unit}&${QueryString.sportType}=${sportType}`;
 
     if (compareTime) {
       const { startTimestamp: compareStartTime, endTimestamp: compareEndTime } = compareTime;
       query += `&${QueryString.compareStartTime}=${compareStartTime}&${QueryString.compareEndTime}=${compareEndTime}`;
     }
-    
+
     return query;
   }
 
@@ -142,7 +138,6 @@ export class AnalysisInfoMenuComponent implements OnInit {
       newY = innerHeight - menuSafeHeight;
     }
 
-    return { x: `${newX}px`, y: `${newY}px`};
+    return { x: `${newX}px`, y: `${newY}px` };
   }
-
 }

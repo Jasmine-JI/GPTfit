@@ -1,4 +1,12 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, OnDestroy, OnChanges } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnChanges,
+} from '@angular/core';
 import { of, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
@@ -9,14 +17,12 @@ import { complexTrendTooltip } from '../../../utils/chart-formatter';
 import { deepCopy } from '../../../utils/index';
 import { compareChartDefault } from '../../../models/chart-data';
 
-
 @Component({
   selector: 'app-compare-overlay-column-chart',
   templateUrl: './compare-overlay-column-chart.component.html',
-  styleUrls: ['./compare-overlay-column-chart.component.scss', '../chart-share-style.scss']
+  styleUrls: ['./compare-overlay-column-chart.component.scss', '../chart-share-style.scss'],
 })
 export class CompareOverlayColumnChartComponent implements OnInit, OnDestroy, OnChanges {
-
   private ngUnsubscribe = new Subject();
 
   @Input() data: Array<any>;
@@ -25,7 +31,7 @@ export class CompareOverlayColumnChartComponent implements OnInit, OnDestroy, On
 
   @Input() chartUnit = '';
 
-  @ViewChild('container', {static: false})
+  @ViewChild('container', { static: false })
   container: ElementRef;
 
   /**
@@ -50,11 +56,12 @@ export class CompareOverlayColumnChartComponent implements OnInit, OnDestroy, On
    * 訂閱全域自定義事件
    */
   subscribeGlobalEvents() {
-    this.globalEventsService.getRxSideBarMode().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.handleChart();
-    });
+    this.globalEventsService
+      .getRxSideBarMode()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.handleChart();
+      });
   }
 
   /**
@@ -65,11 +72,13 @@ export class CompareOverlayColumnChartComponent implements OnInit, OnDestroy, On
       this.noData = true;
     } else {
       const { data } = this;
-      of('').pipe(
-        map(() => this.initChart(data)),
-        map(option => this.handleSeriesName(option)),
-        map(final => this.createChart(final))
-      ).subscribe();
+      of('')
+        .pipe(
+          map(() => this.initChart(data)),
+          map((option) => this.handleSeriesName(option)),
+          map((final) => this.createChart(final))
+        )
+        .subscribe();
 
       this.noData = false;
     }
@@ -106,7 +115,7 @@ export class CompareOverlayColumnChartComponent implements OnInit, OnDestroy, On
    * @author kidin-1110413
    */
   createChart(option: any) {
-    setTimeout (() => {
+    setTimeout(() => {
       if (!this.container) {
         this.createChart(option);
       } else {
@@ -120,14 +129,10 @@ export class CompareOverlayColumnChartComponent implements OnInit, OnDestroy, On
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }
 
-
 class ChartOption {
-
   private _option = deepCopy(compareChartDefault);
-
 
   constructor(data: Array<any>, xAxisTitle: string, chartUnit: string) {
     this.initChart(data, xAxisTitle, chartUnit);
@@ -147,7 +152,6 @@ class ChartOption {
     } else {
       this.handleNormalOption(data);
     }
-
   }
 
   /**
@@ -174,17 +178,16 @@ class ChartOption {
       xAxis: {
         ...xAxis,
         type: 'datetime',
-        tickPositions: avgData.data.map(_data => _data.additionalInfo[0]),
+        tickPositions: avgData.data.map((_data) => _data.additionalInfo[0]),
         labels: {
           ...labels,
-          formatter: function() {
+          formatter: function () {
             return dayjs(this.value).format('MM/DD');
-          }
-        }
+          },
+        },
       },
-      series: data
+      series: data,
     };
-
   }
 
   /**
@@ -202,14 +205,13 @@ class ChartOption {
         ...xAxis,
         title: {
           ...xAxis.title,
-          text: `( ${xAxisTitle} )`
+          text: `( ${xAxisTitle} )`,
         },
         categories,
         crosshair: true,
       },
-      series: chartData
+      series: chartData,
     };
-
   }
 
   /**
@@ -218,5 +220,4 @@ class ChartOption {
   get option() {
     return this._option;
   }
-
 }

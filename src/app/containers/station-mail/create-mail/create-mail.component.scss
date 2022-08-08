@@ -3,7 +3,6 @@
 $search-input-height: 35px;
 $box-shadow-color: rgba(0, 0, 0, 0.2);
 
-
 .functional__button__row {
   justify-content: flex-end;
 }
@@ -46,7 +45,8 @@ $box-shadow-color: rgba(0, 0, 0, 0.2);
   font-weight: bold;
 }
 
-#receiver__input, #mail__title {
+#receiver__input,
+#mail__title {
   height: $search-input-height;
   outline: none;
   border: none;
@@ -76,13 +76,11 @@ $box-shadow-color: rgba(0, 0, 0, 0.2);
 }
 
 .receiver__search__option {
-
   &:hover {
     cursor: pointer;
     background-color: $primary-blue;
     color: white;
   }
-
 }
 
 .receiver__section {

@@ -1,12 +1,11 @@
 .see__more__member {
   display: flex;
   justify-content: center;
-  
+
   & span {
     color: rgba(0, 183, 238, 1);
     cursor: pointer;
     margin-top: 10px;
     text-decoration: underline;
   }
-
 }

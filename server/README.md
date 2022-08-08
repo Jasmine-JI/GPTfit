@@ -6,9 +6,11 @@ Nodejs version: 9.2.0
 Npm version 5.5.1
 
 ## Installation
+
 ```
 npm install
 ```
+
 ## 資料夾結構
 
 ```
@@ -20,36 +22,36 @@ server/ // nodejs api server folder(正式port: 3000，開發port: 3001)
   ├─ server.js // api應用程式進入點
   └─ socket-server.js // 模擬測試socket應用程式進入點(開發port: 3002)
 ```
+
 ## Postman collection
+
 This ia an GPT center nodejs api collection
 
-[GPT-center-nodejs-api-collection json連結]()
+[GPT-center-nodejs-api-collection json 連結]()
 
 please set environment => url
 
-若不會設postman環境變數，可以參考這篇[文章](https://dotblogs.com.tw/kinanson/2015/11/07/153838)
+若不會設 postman 環境變數，可以參考這篇[文章](https://dotblogs.com.tw/kinanson/2015/11/07/153838)
 
-*  nodejs-prod:  https://www.gptfit.com:3000/nodejs/api/ (130新址)
+- nodejs-prod: https://www.gptfit.com:3000/nodejs/api/ (130 新址)
 
-*  nodejs-prod:  https://cloud.alatech.com.tw:3000/nodejs/api/ (130舊址)
+- nodejs-prod: https://cloud.alatech.com.tw:3000/nodejs/api/ (130 舊址)
 
-*  nodejs-tst: http://192.168.1.232:3000/nodejs/api/
+- nodejs-tst: http://192.168.1.232:3000/nodejs/api/
 
-*  nodejs-uat: https://app.alatech.com.tw:3000/nodejs/api/
+- nodejs-uat: https://app.alatech.com.tw:3000/nodejs/api/
 
-*  nodejs-web-dev:  https://192.168.1.235:3001/nodejs/api/
+- nodejs-web-dev: https://192.168.1.235:3001/nodejs/api/
 
-*  nodejs-web-prod: http://192.168.1.235:3000/nodejs/api/
+- nodejs-web-prod: http://192.168.1.235:3000/nodejs/api/
 
-然後headers請設置
+然後 headers 請設置
 Authorization:{{自己的token}}
-因為nodejs設置的middleware有一層會檢查
-
+因為 nodejs 設置的 middleware 有一層會檢查
 
 235 server db password: a1atech
 
-
-### 取得Device log列表
+### 取得 Device log 列表
 
 ```
 Host https://xxx.xxx.xx.xx/nodejs/api/deviceLog/lists
@@ -57,14 +59,18 @@ PORT 3000 or 3001
 Method GET
 Description 依權限取得所有Device log列表
 ```
+
 **Query string parameters**
+
 ```
 pageNumber: 1,(非必填，預設為1)
 pageSize: 10(非必填，預設為10)
 sort: 'asc'/'desc'(非必填，預設為desc)
 keyword: ''(非必填)
 ```
+
 **Response JSON**
+
 ```
 {
     "datas": [
@@ -136,7 +142,8 @@ keyword: ''(非必填)
     }
 }
 ```
-### 尋找device log的帳號關鍵字(email or phone)
+
+### 尋找 device log 的帳號關鍵字(email or phone)
 
 ```
 Host https://xxx.xxx.xx.xx/nodejs/api/deviceLog/search
@@ -144,17 +151,22 @@ PORT 3000 or 3001
 Method GET
 Description 依關鍵字取得帳號資訊
 ```
+
 **Query string parameters**
+
 ```
 keyword: 'budd'(必填)
 ```
+
 **Response JSON**
+
 ```
 [
     "buddalee1stlove@gmail.com"
 ]
 ```
-### 取得Device log個人詳細資訊
+
+### 取得 Device log 個人詳細資訊
 
 ```
 Host https://xxx.xxx.xx.xx/nodejs/api/deviceLog/lists
@@ -162,7 +174,9 @@ PORT 3000 or 3001
 Method GET
 Description 依權限取得Device log個人詳細資訊
 ```
+
 **Query string parameters**
+
 ```
 pageNumber: 1,(非必填，預設為1)
 pageSize: 10(非必填，預設為10)
@@ -171,7 +185,9 @@ userId: 46(必填)
 startDate: '2019-03-06 00:00:00.000000'(非必填)
 endDate: '2019-03-06 23:59:59.000000'(非必填)
 ```
+
 **Response JSON**
+
 ```
 {
   "datas": [
@@ -190,7 +206,7 @@ endDate: '2019-03-06 23:59:59.000000'(非必填)
 }
 ```
 
-### 上傳GPX檔案去轉換座標系
+### 上傳 GPX 檔案去轉換座標系
 
 ```
 Host https://xxx.xxx.xx.xx/nodejs/api/gpx/upload
@@ -198,13 +214,17 @@ PORT 3000 or 3001
 Method POST
 Description 上傳GPX檔案去轉換座標系
 ```
+
 **Form Data**
+
 ```
 file: 檔案(binary)
 fromFormat: 'WGS84'
 toFormat: 'BD09'
 ```
+
 **Response JSON**
+
 ```
 {
     "resultCode": 200,
@@ -216,6 +236,7 @@ toFormat: 'BD09'
     }]
 }
 ```
+
 ### 群組總人員列表
 
 ```
@@ -224,13 +245,17 @@ PORT 3000 or 3001
 Method GET
 Description 群組總人員列表
 ```
+
 **Query string parameters**
+
 ```
 type: 0,(必填) // 0: 沒有權限的篩選， 1: 有
 keyword: ''(必填)
 groupId: '0-0-0-0-0-0'(必填，群組的id)
 ```
+
 **Response JSON**
+
 ```
 [
     {
@@ -249,7 +274,9 @@ PORT 3000 or 3001
 Method GET
 Description 此api會拿header的token去判斷該使用者所處的群組
 ```
+
 **Response JSON**
+
 ```
 [
     {
@@ -260,6 +287,7 @@ Description 此api會拿header的token去判斷該使用者所處的群組
     }
 ]
 ```
+
 ### 取得內部管理員列表
 
 ```
@@ -268,7 +296,9 @@ PORT 3000 or 3001
 Method GET
 Description 取得內部管理員列表
 ```
+
 **Response JSON**
+
 ```
 [
     {
@@ -280,6 +310,7 @@ Description 取得內部管理員列表
     }
 ]
 ```
+
 ### 更新內部管理員的權限
 
 ```
@@ -288,19 +319,23 @@ PORT 3000 or 3001
 Method POST
 Description 更新內部管理員的權限
 ```
+
 **POST JSON**
+
 ```
 {
   "targetRight": 29,
   "userIds": [1, 6]
 }
 ```
+
 **Response JSON**
+
 ```
 {"resultCode":200,"rtnMsg":"success"}
 ```
 
-### 取得Device 資訊
+### 取得 Device 資訊
 
 ```
 Host https://xxx.xxx.xx.xx/nodejs/api/center/innerAdmin
@@ -308,11 +343,15 @@ PORT 3000 or 3001
 Method GET
 Description 去解析http://{{domain}}/app/public_html/products/info.json
 ```
+
 **Query string parameters**
+
 ```
 device_sn: A36WB001D0120(必填)
 ```
+
 **Response JSON**
+
 ```
 {
   "date": "2017/09",
@@ -358,7 +397,7 @@ Method GET
 Description 更新地圖資訊，若Rex有更新圖資的話
 ```
 
-### 取得地圖的gpx檔位址
+### 取得地圖的 gpx 檔位址
 
 ```
 Host https://xxx.xxx.xx.xx/nodejs/api/map/gpxUrl
@@ -366,7 +405,9 @@ PORT 3000 or 3001
 Method GET
 Description 取得地圖的gpx檔位址
 ```
+
 **Response JSON**
+
 ```
 [
   {
@@ -375,6 +416,7 @@ Description 取得地圖的gpx檔位址
   }
 ]
 ```
+
 ### 取得地圖的圖檔位址
 
 ```
@@ -383,14 +425,16 @@ PORT 3000 or 3001
 Method GET
 Description 取得地圖的圖檔位址
 ```
+
 **Response JSON**
+
 ```
 [
   "https://192.168.1.235/app/public_html/cloudrun/update/v0/eiffel_tower_road_running/tour_eiffel_web_bg.jpg"
 ]
 ```
 
-### 取得顯示在外部排行榜的賽事tab
+### 取得顯示在外部排行榜的賽事 tab
 
 ```
 Host https://xxx.xxx.xx.xx/nodejs/api/raceEventInfo/rankTab
@@ -398,7 +442,9 @@ PORT 3000 or 3001
 Method GET
 Description 取得顯示在外部排行榜的賽事tab
 ```
+
 **Response JSON**
+
 ```
 [
   {
@@ -427,12 +473,14 @@ Description 取得顯示在外部排行榜的賽事tab
 ### 取得外部排行版資訊
 
 ```
-Host https://xxx.xxx.xx.xx/nodejs/api/rankForm 
+Host https://xxx.xxx.xx.xx/nodejs/api/rankForm
 PORT 3000 or 3001
 Method GET
 Description 取得外部排行版資訊
 ```
+
 **Query string parameters**
+
 ```
 pageNumber: 1
 pageSize: 10
@@ -441,7 +489,9 @@ endDate: '2019-3-12'
 mapId: 1
 event_id: '20182270'(非必填，只有ranTab查特定賽事要必填)
 ```
+
 **Response JSON**
+
 ```
 {
   "datas": [
@@ -573,6 +623,7 @@ event_id: '20182270'(非必填，只有ranTab查特定賽事要必填)
   }
 }
 ```
+
 ### 利用關鍵字搜尋相關跑者名稱
 
 ```
@@ -581,14 +632,18 @@ PORT 3000 or 3001
 Method GET
 Description 利用關鍵字搜尋相關跑者名稱
 ```
+
 **Query string parameters**
+
 ```
 startDate: '2018-1-1'
 endDate: '2019-3-12'
 mapId: 1
 keyword: 'r' // 填入想尋巡的關鍵名稱
 ```
+
 **Response JSON**
+
 ```
 [
   "peter006",
@@ -607,12 +662,16 @@ PORT 3000 or 3001
 Method GET
 Description 取得地圖詳細資訊與跑者該地圖最佳的簡單運動資料
 ```
+
 **Query string parameters**
+
 ```
 mapId: 6
 userId: 101
 ```
+
 **Response JSON**
+
 ```
 {
   "map_id": 6,
@@ -626,6 +685,7 @@ userId: 101
   "race_category": null
 }
 ```
+
 ## 賽事管理
 
 ### 取得賽事總覽列表
@@ -636,10 +696,12 @@ PORT 3000 or 3001
 Method GET
 Description 取得賽事總覽列表
 ```
+
 Define:
 活動(session)是賽事(event)的子集合
 
 **Response JSON**
+
 ```
 [
   {
@@ -665,6 +727,7 @@ Define:
   }
 ]
 ```
+
 ## 運動檔案
 
 ### 上傳運動檔案 N2101
@@ -677,6 +740,7 @@ Description 收到運動數據後下載at檔並包成formdata上傳至api 2101
 ```
 
 **Response JSON**
+
 ```
 [
   {

@@ -1,16 +1,17 @@
 <div class="flexCol childPageCard">
   <section
     class="flexRow"
-    style="justify-content: flex-end;"
+    style="justify-content: flex-end"
     *ngIf="
-      userSimpleInfo
-      && userSimpleInfo.accessRight <= groupInfo.groupLevel
-      && groupInfo.groupStatus !== 4
-      && groupInfo.groupStatus !== 5
-      && (groupInfo.groupStatus !== 6 || (userSimpleInfo.accessRight < groupInfo.groupLevel && userSimpleInfo.accessRight < 50))
-      && !groupInfo.expired
-      && +groupInfo.commerceStatus === 1
-    "  
+      userSimpleInfo &&
+      userSimpleInfo.accessRight <= groupInfo.groupLevel &&
+      groupInfo.groupStatus !== 4 &&
+      groupInfo.groupStatus !== 5 &&
+      (groupInfo.groupStatus !== 6 ||
+        (userSimpleInfo.accessRight < groupInfo.groupLevel && userSimpleInfo.accessRight < 50)) &&
+      !groupInfo.expired &&
+      +groupInfo.commerceStatus === 1
+    "
   >
     <button
       class="childPageBtn"
@@ -18,18 +19,22 @@
       [class.btnLoadingStatus]="uiFlag.isLoading"
       (click)="handleEdit()"
     >
-      <span *ngIf="uiFlag.editMode === 'complete'">{{ 'universal_operating_edit' | translate}}</span>
-      <span *ngIf="uiFlag.editMode === 'edit'">{{ 'universal_operating_finishEdit' | translate}}</span>
+      <span *ngIf="uiFlag.editMode === 'complete'">{{
+        'universal_operating_edit' | translate
+      }}</span>
+      <span *ngIf="uiFlag.editMode === 'edit'">{{
+        'universal_operating_finishEdit' | translate
+      }}</span>
     </button>
   </section>
   <section class="architectureSection">
     <span class="contentSubtitle">{{ 'universal_group_generalMember' | translate }}</span>
     <div
       class="flexRow"
-      style="flex-wrap: wrap;"
-      *ngIf="normalMemberList.length > 0 && groupInfo.brandType; else noData;"
+      style="flex-wrap: wrap"
+      *ngIf="normalMemberList.length > 0 && groupInfo.brandType; else noData"
     >
-      <div class="groupListContent" *ngFor="let _normalMem of normalMemberList; let _index = index;">
+      <div class="groupListContent" *ngFor="let _normalMem of normalMemberList; let _index = index">
         <ng-container *ngIf="_index <= 7 || uiFlag.seeMoreMember">
           <app-member-capsule
             [isNormalMemberInfo]="true"
@@ -39,7 +44,9 @@
             [icon]="_normalMem.memberIcon"
             [userId]="_normalMem.memberId"
             [brandType]="groupInfo.brandType"
-            [isHadMenu]="uiFlag.editMode === 'edit' && userSimpleInfo.accessRight <= groupInfo.groupLevel"
+            [isHadMenu]="
+              uiFlag.editMode === 'edit' && userSimpleInfo.accessRight <= groupInfo.groupLevel
+            "
             [groupId]="groupInfo.groupId"
             [groupLevel]="groupInfo.groupLevel"
             [coachType]="groupInfo.coachType"
@@ -58,10 +65,10 @@
     <span class="contentSubtitle">{{ 'universal_group_pendingMember' | translate }}</span>
     <div
       class="flexRow"
-      style="flex-wrap: wrap;"
-      *ngIf="waitMemberList.length > 0 && groupInfo.brandType; else noData;"
+      style="flex-wrap: wrap"
+      *ngIf="waitMemberList.length > 0 && groupInfo.brandType; else noData"
     >
-      <div class="groupListContent" *ngFor="let _waitMem of waitMemberList; let _idx = index;">
+      <div class="groupListContent" *ngFor="let _waitMem of waitMemberList; let _idx = index">
         <ng-container *ngIf="_idx <= 7 || uiFlag.seeMoreWaitMember">
           <app-member-capsule
             [isWaittingMemberInfo]="true"
@@ -71,7 +78,9 @@
             [icon]="_waitMem.memberIcon"
             [userId]="_waitMem.memberId"
             [brandType]="groupInfo.brandType"
-            [isHadMenu]="uiFlag.editMode === 'edit' && userSimpleInfo.accessRight <= groupInfo.groupLevel"
+            [isHadMenu]="
+              uiFlag.editMode === 'edit' && userSimpleInfo.accessRight <= groupInfo.groupLevel
+            "
             [groupId]="groupInfo.groupId"
             [groupLevel]="groupInfo.groupLevel"
             (onWaittingMemberInfoChange)="handleWaittingMemberInfo($event)"
@@ -85,6 +94,6 @@
     </div>
   </section>
   <ng-template #noData>
-    <div style="margin: 5px 5px 5px 10px;">{{'universal_status_noData' | translate}}</div>
+    <div style="margin: 5px 5px 5px 10px">{{ 'universal_status_noData' | translate }}</div>
   </ng-template>
 </div>

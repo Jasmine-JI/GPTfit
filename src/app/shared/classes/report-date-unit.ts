@@ -6,7 +6,6 @@ import { DAY, MONTH, WEEK, SEASON, YEAR } from '../models/utils-constant';
  * 處理時間範圍單位
  */
 export class ReportDateUnit {
-
   private _dateUnit: DateUnit;
 
   constructor(unit: DateUnit) {
@@ -47,7 +46,6 @@ export class ReportDateUnit {
       case DateUnit.year:
         return 'year';
     }
-
   }
 
   /**
@@ -80,7 +78,6 @@ export class ReportDateUnit {
       default:
         return this._dateUnit;
     }
-
   }
 
   /**
@@ -99,7 +96,6 @@ export class ReportDateUnit {
       case DateUnit.day:
         return DAY;
     }
-
   }
 
   /**
@@ -124,5 +120,4 @@ export class ReportDateUnit {
 
     return type === 'sportsReport' ? `reportActivity${dayRange}` : `reportLifeTracking${dayRange}`;
   }
-
 }

@@ -14,19 +14,22 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { EventStatus } from '../../models/activity-content';
 import { CloudrunService } from '../../../../shared/services/cloudrun.service';
 import { formTest } from '../../../../shared/models/form-test';
-import { 
+import {
   PaidStatusEnum,
   ProductShipped,
   HaveProduct,
   ApplyStatus,
-  ListStatus
+  ListStatus,
 } from '../../models/activity-content';
 import { AccessRight } from '../../../../shared/enum/accessright';
 import { TranslateService } from '@ngx-translate/core';
 import { codes } from '../../../../shared/models/countryCode';
-import { getLocalStorageObject, setUrlQueryString, getUrlQueryStrings } from '../../../../shared/utils/index';
+import {
+  getLocalStorageObject,
+  setUrlQueryString,
+  getUrlQueryStrings,
+} from '../../../../shared/utils/index';
 import { AuthService } from '../../../../core/services/auth.service';
-
 
 type Page = 'activity-list' | 'my-activity';
 
@@ -42,17 +45,17 @@ enum AllStatus {
 
 const defaultRaceDate = {
   start: dayjs().subtract(6, 'month'),
-  end: dayjs().add(6, 'month')
-}
+  end: dayjs().add(6, 'month'),
+};
 
 @Component({
   selector: 'app-activity-list',
   templateUrl: './activity-list.component.html',
-  styleUrls: ['./activity-list.component.scss']
+  styleUrls: ['./activity-list.component.scss'],
 })
 export class ActivityListComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
-  private globelEventSubscription = new Subscription;
+  private globelEventSubscription = new Subscription();
 
   /**
    * ui會用到的各個flag
@@ -66,8 +69,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     openDatePicker: false,
     showCreateScheduleBox: false,
     showListStatusMenu: false,
-    showDetail: null
-  }
+    showDetail: null,
+  };
 
   /**
    * api 6004 request body
@@ -79,14 +82,13 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     filterRaceEndTime: defaultRaceDate.end.unix(),
     page: {
       index: 0,
-      counts: 10
-    }
-
+      counts: 10,
+    },
   };
 
   selectDate = {
     startTimestamp: defaultRaceDate.start.valueOf(),
-    endTimestamp: defaultRaceDate.end.valueOf()
+    endTimestamp: defaultRaceDate.end.valueOf(),
   };
 
   /**
@@ -95,16 +97,16 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   scheduleRace = {
     token: null,
     sportMode: 0, // 競賽模式
-    trainingType: 0,  // Treadmill
+    trainingType: 0, // Treadmill
     mapIndex: null,
-    raceType: 0,  // 競速競賽
+    raceType: 0, // 競速競賽
     raceLap: 1,
-    raceOrientation: 0,  // 正方向競賽
+    raceOrientation: 0, // 正方向競賽
     maxRaceMans: 50,
-    raceManPermission: 0,  // 公開
+    raceManPermission: 0, // 公開
     raceClearCode: null,
     raceName: null,
-    schedTimestamp: null
+    schedTimestamp: null,
   };
 
   /**
@@ -113,8 +115,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   scheduleTime = {
     today: null,
     date: null,
-    time: null
-  }
+    time: null,
+  };
 
   paginationList = [1];
   totalCounts = 0;
@@ -151,7 +153,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     private cloudrunService: CloudrunService,
     private translate: TranslateService,
     private authService: AuthService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.getUserProfile();
@@ -166,14 +168,13 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * 確認query string
    * @author kidin-1110113
    */
-   checkPage() {
+  checkPage() {
     const { p } = getUrlQueryStrings(location.search);
     if (p && formTest.number.test(p)) {
       const idx = +p - 1;
       const index = idx >= 0 ? idx : 0;
       this.eventListCondition.page.index = index;
     }
-
   }
 
   /**
@@ -181,23 +182,21 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1101006
    */
   getUserProfile() {
-    this.userService.getUser().rxUserProfile.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.userProfile = res;
-      this.systemAccessright = this.userService.getUser().systemAccessright;
-      if (res) {
-        this.checkCurrentPage();
-      } else {
-        this.uiFlag.editMode = false;
-        if (this.uiFlag.currentPage === 'my-activity') {
-          this.router.navigateByUrl(`/official-activity/activity-list`);
+    this.userService
+      .getUser()
+      .rxUserProfile.pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.userProfile = res;
+        this.systemAccessright = this.userService.getUser().systemAccessright;
+        if (res) {
+          this.checkCurrentPage();
+        } else {
+          this.uiFlag.editMode = false;
+          if (this.uiFlag.currentPage === 'my-activity') {
+            this.router.navigateByUrl(`/official-activity/activity-list`);
+          }
         }
-
-      }
-      
-    });
-
+      });
   }
 
   /**
@@ -211,7 +210,6 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     } else {
       this.mapImgPath = 'https://app.alatech.com.tw/app/public_html/cloudrun/update/';
     }
-
   }
 
   /**
@@ -220,7 +218,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    */
   checkCurrentPage() {
     const { pathname } = location,
-          [, mainPath, childPath, ...rest] = pathname.split('/');
+      [, mainPath, childPath, ...rest] = pathname.split('/');
     this.uiFlag.currentPage = childPath as Page;
     if (childPath === 'activity-list') {
       this.checkPage();
@@ -228,7 +226,6 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     } else if (childPath === 'my-activity') {
       this.getUserHistory();
     }
-
   }
 
   /**
@@ -236,9 +233,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1101217
    */
   subscribeUrlChange() {
-    this.router.events.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.router.events.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       if (e instanceof NavigationEnd) {
         this.checkPage();
         const { search } = getUrlQueryStrings(location.search);
@@ -251,22 +246,21 @@ export class ActivityListComponent implements OnInit, OnDestroy {
             } else {
               Object.assign(this.eventListCondition, { searchWords });
             }
-            
+
             this.getActivityList();
             break;
           case 'my-activity':
             this.handleEffectEvent();
             if (searchWords) {
-              this.effectEventList = this.effectEventList.filter(_list => _list.eventName.includes(searchWords));
+              this.effectEventList = this.effectEventList.filter((_list) =>
+                _list.eventName.includes(searchWords)
+              );
             }
 
             break;
         }
-        
       }
-
     });
-
   }
 
   /**
@@ -290,7 +284,6 @@ export class ActivityListComponent implements OnInit, OnDestroy {
         this.mapLanguage = MapLanguageEnum.EN;
         break;
     }
-
   }
 
   /**
@@ -298,13 +291,13 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1101012
    */
   checkMobileMode() {
-    this.officialActivityService.getScreenSize().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.screenSize = res as number;
-      this.uiFlag.isMobile = res <= 767;
-    });
-
+    this.officialActivityService
+      .getScreenSize()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.screenSize = res as number;
+        this.uiFlag.isMobile = res <= 767;
+      });
   }
 
   /**
@@ -316,31 +309,34 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     if (progress === 100) {
       this.uiFlag.progress = 30;
       this.eventListCondition.token = this.token;
-      this.officialActivityService.getEventList(this.eventListCondition).pipe(
-        switchMap(eventListRes => this.officialActivityService.getRxAllMapInfo().pipe(
-          map(mapInfoRes => [eventListRes, mapInfoRes])
-        )),
-        takeUntil(this.ngUnsubscribe)
-      ).subscribe(resArr => {
-        const [eventListRes, mapInfoRes] = resArr;
-        this.allMapInfo = mapInfoRes;
-        if (this.utils.checkRes(eventListRes)) {
-          const { eventList, currentTimestamp, totalCounts } = eventListRes;
-          this.eventList = eventList;
-          this.serverTimestamp = currentTimestamp;
-          this.totalCounts = totalCounts;
-          this.lastPage = Math.ceil(this.totalCounts / 10);
-          this.handleEffectEvent();
-          this.scrollPage();
-          this.createPaginationList();
-        }
+      this.officialActivityService
+        .getEventList(this.eventListCondition)
+        .pipe(
+          switchMap((eventListRes) =>
+            this.officialActivityService
+              .getRxAllMapInfo()
+              .pipe(map((mapInfoRes) => [eventListRes, mapInfoRes]))
+          ),
+          takeUntil(this.ngUnsubscribe)
+        )
+        .subscribe((resArr) => {
+          const [eventListRes, mapInfoRes] = resArr;
+          this.allMapInfo = mapInfoRes;
+          if (this.utils.checkRes(eventListRes)) {
+            const { eventList, currentTimestamp, totalCounts } = eventListRes;
+            this.eventList = eventList;
+            this.serverTimestamp = currentTimestamp;
+            this.totalCounts = totalCounts;
+            this.lastPage = Math.ceil(this.totalCounts / 10);
+            this.handleEffectEvent();
+            this.scrollPage();
+            this.createPaginationList();
+          }
 
-        this.setQueryString();
-        this.uiFlag.progress = 100;
-      });
-
+          this.setQueryString();
+          this.uiFlag.progress = 100;
+        });
     }
-
   }
 
   /**
@@ -351,7 +347,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     const { eventList, userProfile, serverTimestamp } = this;
     if (eventList.length > 0) {
       const isAdmin = userProfile && this.systemAccessright <= AccessRight.pusher;
-      const effectEvent = eventList.filter(_list => serverTimestamp >= _list.applyDate.startDate);
+      const effectEvent = eventList.filter((_list) => serverTimestamp >= _list.applyDate.startDate);
       if (isAdmin) {
         this.effectEventList = eventList;
       } else {
@@ -362,7 +358,6 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     } else {
       this.effectEventList = [];
     }
-
   }
 
   /**
@@ -376,27 +371,27 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       const { progress } = this.uiFlag;
       if (progress === 100) {
         this.uiFlag.progress = 30;
-        this.officialActivityService.getParticipantHistory({token}).subscribe(res => {
+        this.officialActivityService.getParticipantHistory({ token }).subscribe((res) => {
           if (this.utils.checkRes(res)) {
-            const { info: { history }, currentTimestamp } = res;
+            const {
+              info: { history },
+              currentTimestamp,
+            } = res;
             if (history) {
               const reverseList = history.reverse();
               this.eventList = reverseList;
               this.effectEventList = reverseList;
             }
-            
+
             this.countCurrentTime(currentTimestamp);
           }
 
           this.uiFlag.progress = 100;
         });
-
       }
-
     } else {
       this.router.navigateByUrl(`/official-activity/activity-list`);
     }
-
   }
 
   /**
@@ -410,9 +405,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       this.timeInterval = setInterval(() => {
         this.serverTimestamp += 1;
       }, 1000);
-
     }
-
   }
 
   /**
@@ -435,7 +428,6 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     } else if (page === 'edit-carousel') {
       this.router.navigateByUrl(`/official-activity/${page}`);
     }
-    
   }
 
   /**
@@ -458,8 +450,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     this.initPageIndex();
     this.selectDate = {
       startTimestamp: dayjs(startDate).valueOf(),
-      endTimestamp: dayjs(endDate).valueOf()
-    }
+      endTimestamp: dayjs(endDate).valueOf(),
+    };
 
     this.unsubscribePluralEvent();
     this.checkCurrentPage();
@@ -478,7 +470,6 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       this.uiFlag.showManageMenu = true;
       this.subscribePluralEvent();
     }
-
   }
 
   /**
@@ -489,12 +480,11 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     const scrollElement = document.querySelector('.main__page');
     const clickEvent = fromEvent(scrollElement, 'click');
     const scrollEvent = fromEvent(scrollElement, 'scroll');
-    this.globelEventSubscription = merge(clickEvent, scrollEvent).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
-      this.unsubscribePluralEvent();
-    });
-
+    this.globelEventSubscription = merge(clickEvent, scrollEvent)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((e) => {
+        this.unsubscribePluralEvent();
+      });
   }
 
   /**
@@ -527,15 +517,12 @@ export class ActivityListComponent implements OnInit, OnDestroy {
         setTimeout(() => {
           this.openDateRangePicker();
         }, 300);
-
       } else {
         this.openDateRangePicker();
       }
-
     } else {
       this.unsubscribePluralEvent();
     }
-
   }
 
   /**
@@ -545,7 +532,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    */
   scrollPage(top = 0) {
     const mainBodyElement = document.querySelector('.main__page');
-    mainBodyElement.scrollTo({top, behavior: top === 0 ? 'smooth' : 'auto'});
+    mainBodyElement.scrollTo({ top, behavior: top === 0 ? 'smooth' : 'auto' });
   }
 
   /**
@@ -579,10 +566,10 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       eventId,
       feeId,
       productName,
-      totalAmount
+      totalAmount,
     };
 
-    this.officialActivityService.createProductOrder(body).subscribe(res => {
+    this.officialActivityService.createProductOrder(body).subscribe((res) => {
       if (this.utils.checkRes(res)) {
         const { responseHtml } = res;
         const newElement = document.createElement('div');
@@ -591,9 +578,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
         target.appendChild(newElement);
         (document.getElementById('data_set') as any).submit();
       }
-      
     });
-
   }
 
   /**
@@ -607,7 +592,9 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     e.preventDefault();
     if (canEdit) {
       const defaultSchedule = dayjs().add(3, 'day').unix();
-      const defaultDate = dayjs(defaultSchedule * 1000).startOf('day').unix();
+      const defaultDate = dayjs(defaultSchedule * 1000)
+        .startOf('day')
+        .unix();
       const defaultTime = defaultSchedule - defaultDate;
       this.uiFlag.showCreateScheduleBox = true;
       this.scheduleRace.token = this.token;
@@ -617,11 +604,9 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       this.scheduleTime = {
         today: dayjs().unix(),
         date: defaultSchedule,
-        time: defaultTime
+        time: defaultTime,
       };
-
     }
-    
   }
 
   /**
@@ -634,9 +619,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     this.scheduleTime = {
       today: null,
       date: null,
-      time: null
-    }
-
+      time: null,
+    };
   }
 
   /**
@@ -656,9 +640,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       raceManPermission: 0,
       raceClearCode: null,
       raceName: null,
-      schedTimestamp: null
+      schedTimestamp: null,
     };
-
   }
 
   /**
@@ -689,23 +672,22 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   checkScheduleTime() {
     const today = dayjs().unix();
     const { date, time } = this.scheduleTime;
-    const compareDate = dayjs(today * 1000).startOf('day').unix();
+    const compareDate = dayjs(today * 1000)
+      .startOf('day')
+      .unix();
     const bufferTime = 20 * 60;
     if (date < compareDate) {
       this.scheduleTime = {
         today,
         date: compareDate,
-        time: today - compareDate + bufferTime  // 排程賽局需設定10分後以上
+        time: today - compareDate + bufferTime, // 排程賽局需設定10分後以上
       };
-
     } else if (date === compareDate) {
       const compareTime = today - compareDate + bufferTime;
       if (time < compareTime) {
         this.scheduleTime.time = compareTime;
       }
-
     }
-
   }
 
   /**
@@ -718,7 +700,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       this.uiFlag.progress = 30;
       const { date, time } = this.scheduleTime;
       this.scheduleRace.schedTimestamp = date + time;
-      this.cloudrunService.createRace(this.scheduleRace).subscribe(res => {
+      this.cloudrunService.createRace(this.scheduleRace).subscribe((res) => {
         let msg: string;
         if (this.utils.checkRes(res, false)) {
           msg = '建立成功';
@@ -730,15 +712,12 @@ export class ActivityListComponent implements OnInit, OnDestroy {
           } else {
             msg = '建立失敗';
           }
-          
         }
 
         this.utils.showSnackBar(msg);
         this.uiFlag.progress = 100;
       });
-
     }
-
   }
 
   /**
@@ -747,14 +726,14 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    */
   switchPrePagination() {
     if (this.uiFlag.progress === 100) {
-      const { page: { index } } = this.eventListCondition;
+      const {
+        page: { index },
+      } = this.eventListCondition;
       if (index !== 0) {
         this.eventListCondition.page.index = index - 1;
         this.getActivityList();
       }
-
     }
-
   }
 
   /**
@@ -763,15 +742,15 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    */
   switchNextPagination() {
     if (this.uiFlag.progress === 100) {
-      const { page: { index } } = this.eventListCondition;
+      const {
+        page: { index },
+      } = this.eventListCondition;
       const nextPage = index + 1;
       if (nextPage < this.lastPage) {
         this.eventListCondition.page.index = nextPage;
         this.getActivityList();
       }
-
     }
-
   }
 
   /**
@@ -789,10 +768,12 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    */
   createPaginationList() {
     if (this.lastPage > 1) {
-      const { innerWidth }  = window;
+      const { innerWidth } = window;
       const PAGE_SHOW_LENGTH = innerWidth < 400 ? 3 : 5;
       const boundary = Math.floor(PAGE_SHOW_LENGTH / 2);
-      const { page: { index } } = this.eventListCondition;
+      const {
+        page: { index },
+      } = this.eventListCondition;
       const currentPage = index + 1;
       this.paginationList = [currentPage];
       let nextPage = currentPage;
@@ -805,7 +786,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
         if (nextPage <= this.lastPage) {
           this.paginationList.push(nextPage);
         } else {
-          preComplement = true
+          preComplement = true;
         }
 
         if (prePage > 0) {
@@ -823,13 +804,10 @@ export class ActivityListComponent implements OnInit, OnDestroy {
           prePage -= 1;
           this.paginationList.unshift(prePage);
         }
-        
       }
-
     } else {
       this.paginationList = [1];
     }
-    
   }
 
   /**
@@ -844,9 +822,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     const newSearch = setUrlQueryString(query);
     if (newSearch !== search && history.pushState) {
       const newUrl = `${origin}${pathname}${newSearch}`;
-      window.history.pushState({path: newUrl}, '', newUrl);
+      window.history.pushState({ path: newUrl }, '', newUrl);
     }
-    
   }
 
   /**
@@ -863,7 +840,6 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       this.uiFlag.showListStatusMenu = true;
       this.subscribePluralEvent();
     }
-
   }
 
   /**
@@ -911,15 +887,18 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   quitEvent(e: MouseEvent, index: number) {
     e.preventDefault();
     e.stopPropagation();
-    const { applyDate: { endDate }, applyStatus } = this.effectEventList[index];
+    const {
+      applyDate: { endDate },
+      applyStatus,
+    } = this.effectEventList[index];
     const eventNotEnd = this.serverTimestamp < endDate;
     const notLeave = applyStatus !== ApplyStatus.cancel;
     if (eventNotEnd && notLeave) {
-      const newStatus = applyStatus === ApplyStatus.applied ? ApplyStatus.applyingQuit : ApplyStatus.applied;
+      const newStatus =
+        applyStatus === ApplyStatus.applied ? ApplyStatus.applyingQuit : ApplyStatus.applied;
       const userProfile = { applyStatus: newStatus };
       this.updateEventUserProfile(index, { userProfile });
     }
-
   }
 
   /**
@@ -932,20 +911,18 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     if (this.checkCanEdit(index)) {
       const mobileNumber = +(e as any).target.value.trim();
       if (!formTest.phone.test(`${mobileNumber}`)) {
-        this.translate.get('hellow world').pipe(
-          takeUntil(this.ngUnsubscribe)
-        ).subscribe(res => {
-          const msg = this.translate.instant('universal_status_wrongFormat');
-          this.utils.showSnackBar(msg);
-        });
-        
+        this.translate
+          .get('hellow world')
+          .pipe(takeUntil(this.ngUnsubscribe))
+          .subscribe((res) => {
+            const msg = this.translate.instant('universal_status_wrongFormat');
+            this.utils.showSnackBar(msg);
+          });
       } else {
         const userProfile = { mobileNumber };
         this.updateEventUserProfile(index, { userProfile });
       }
-
     }
-
   }
 
   /**
@@ -959,20 +936,18 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     if (this.checkCanEdit(index)) {
       const email = (e as any).target.value.trim();
       if (!formTest.email.test(email)) {
-        this.translate.get('hellow world').pipe(
-          takeUntil(this.ngUnsubscribe)
-        ).subscribe(res => {
-          const msg = this.translate.instant('universal_status_wrongFormat');
-          this.utils.showSnackBar(msg);
-        });
-        
+        this.translate
+          .get('hellow world')
+          .pipe(takeUntil(this.ngUnsubscribe))
+          .subscribe((res) => {
+            const msg = this.translate.instant('universal_status_wrongFormat');
+            this.utils.showSnackBar(msg);
+          });
       } else {
         const userProfile = { email };
         this.updateEventUserProfile(index, { userProfile });
       }
-
     }
-
   }
 
   /**
@@ -985,20 +960,18 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     if (this.checkCanEdit(index)) {
       const address = (e as any).target.value.trim();
       if (address.length < 10) {
-        this.translate.get('hellow world').pipe(
-          takeUntil(this.ngUnsubscribe)
-        ).subscribe(res => {
-          const msg = this.translate.instant('universal_status_wrongFormat');
-          this.utils.showSnackBar(msg);
-        });
-        
+        this.translate
+          .get('hellow world')
+          .pipe(takeUntil(this.ngUnsubscribe))
+          .subscribe((res) => {
+            const msg = this.translate.instant('universal_status_wrongFormat');
+            this.utils.showSnackBar(msg);
+          });
       } else {
         const userProfile = { address };
         this.updateEventUserProfile(index, { userProfile });
       }
-
     }
-
   }
 
   /**
@@ -1013,7 +986,6 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       const userProfile = { remark };
       this.updateEventUserProfile(index, { userProfile });
     }
-
   }
 
   /**
@@ -1023,7 +995,12 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1110216
    */
   checkCanEdit(index: number, checkShipped = true) {
-    const { raceDate: { endDate }, applyStatus, eventStatus, productShipped } = this.effectEventList[index];
+    const {
+      raceDate: { endDate },
+      applyStatus,
+      eventStatus,
+      productShipped,
+    } = this.effectEventList[index];
     const allowStatus = [ApplyStatus.notYet, ApplyStatus.applied];
     const normalHeldEvent = eventStatus === EventStatus.audit;
     const eventNotEnd = this.serverTimestamp < endDate;
@@ -1046,13 +1023,13 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       const body = {
         token: this.token,
         targetEventId: eventId,
-        ...update
+        ...update,
       };
 
       combineLatest([
         this.translate.get('hellow world'),
-        this.officialActivityService.updateEventUserProfile(body)
-      ]).subscribe(resArray => {
+        this.officialActivityService.updateEventUserProfile(body),
+      ]).subscribe((resArray) => {
         const [translateResult, updateResult] = resArray;
         let msg: string;
         if (this.utils.checkRes(updateResult)) {
@@ -1066,11 +1043,9 @@ export class ActivityListComponent implements OnInit, OnDestroy {
             const { userProfile: oldUserProfile } = this.effectEventList[index];
             this.effectEventList[index].userProfile = {
               ...oldUserProfile,
-              ...newUserProfle
+              ...newUserProfle,
             };
-
           }
-
         } else {
           msg = this.translate.instant('universal_popUpMessage_updateFailed');
         }
@@ -1078,9 +1053,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
         this.utils.showSnackBar(msg);
         this.uiFlag.progress = 100;
       });
-
     }
-
   }
 
   /**
@@ -1096,7 +1069,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       applyStatus,
       eventId,
       eventName,
-      reason: ''
+      reason: '',
     };
 
     this.officialActivityService.notifyLeavingEvent(body).subscribe();
@@ -1109,7 +1082,13 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    */
   checkAllStatus(index: number) {
     const { serverTimestamp, effectEventList, userProfile } = this;
-    const { fee, paidStatus, applyStatus, eventStatus, applyDate: { endDate } } = effectEventList[index];
+    const {
+      fee,
+      paidStatus,
+      applyStatus,
+      eventStatus,
+      applyDate: { endDate },
+    } = effectEventList[index];
     if (eventStatus === EventStatus.cancel) return AllStatus.eventCancelled;
     if (serverTimestamp > endDate) return AllStatus.eventCutoff;
     if (applyStatus === ApplyStatus.cancel) return AllStatus.personCancelled;
@@ -1138,5 +1117,4 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

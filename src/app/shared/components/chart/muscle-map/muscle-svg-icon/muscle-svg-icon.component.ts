@@ -5,32 +5,29 @@ import {
   ShoulderMuscle,
   BackMuscle,
   AbdominalMuscle,
-  LegMuscle
+  LegMuscle,
 } from '../../../../models/weight-train';
 import { MuscleGroup } from '../../../../enum/weight-train';
 
 @Component({
   selector: 'app-muscle-svg-icon',
   templateUrl: './muscle-svg-icon.component.html',
-  styleUrls: ['./muscle-svg-icon.component.scss']
+  styleUrls: ['./muscle-svg-icon.component.scss'],
 })
 export class MuscleSvgIconComponent implements OnInit, OnChanges {
-
   @Input() muscleCode: any = [];
   @Input() muscleGroupId: string;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
-  ngOnChanges () {
+  ngOnChanges() {
     if (this.muscleGroupId !== undefined) {
       this.getMuscleGroupPart(this.muscleGroupId);
     } else {
-      this.muscleCode = this.muscleCode.map(_code => +_code);
+      this.muscleCode = this.muscleCode.map((_code) => +_code);
     }
-
   }
 
   /**
@@ -38,27 +35,26 @@ export class MuscleSvgIconComponent implements OnInit, OnChanges {
    * @param id {string}-肌群id
    * @author kidin-1090415
    */
-  getMuscleGroupPart (id: string) {
+  getMuscleGroupPart(id: string) {
     switch (+id) {
-      case MuscleGroup.armMuscle:  // 手臂肌群
+      case MuscleGroup.armMuscle: // 手臂肌群
         this.muscleCode = ArmMuscle;
         break;
-      case MuscleGroup.pectoralsMuscle:  // 胸部肌群
+      case MuscleGroup.pectoralsMuscle: // 胸部肌群
         this.muscleCode = PectoralsMuscle;
         break;
-      case MuscleGroup.shoulderMuscle:  // 肩部肌群
+      case MuscleGroup.shoulderMuscle: // 肩部肌群
         this.muscleCode = ShoulderMuscle;
         break;
-      case MuscleGroup.backMuscle:  // 背部肌群
+      case MuscleGroup.backMuscle: // 背部肌群
         this.muscleCode = BackMuscle;
         break;
-      case MuscleGroup.abdominalMuscle:  // 腹部肌群
+      case MuscleGroup.abdominalMuscle: // 腹部肌群
         this.muscleCode = AbdominalMuscle;
         break;
-      case MuscleGroup.legMuscle:  // 腿部肌群
+      case MuscleGroup.legMuscle: // 腿部肌群
         this.muscleCode = LegMuscle;
         break;
     }
   }
-
 }

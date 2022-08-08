@@ -1,8 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { MuscleCode } from '../enum/weight-train';
 
-
-@Pipe({name: 'musclePartIcon'})
+@Pipe({ name: 'musclePartIcon' })
 export class MusclePartIconPipe implements PipeTransform {
   /**
    * 依據不同肌肉部位代碼回傳該icon的class name
@@ -70,7 +69,5 @@ export class MusclePartIconPipe implements PipeTransform {
       case MuscleCode.wristFlexor:
         return 'icon-svg_web-icon_p2_095-muscle_128';
     }
-
   }
-  
 }

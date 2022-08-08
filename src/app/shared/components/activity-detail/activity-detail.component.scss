@@ -1,7 +1,7 @@
 @import 'font.scss';
 @import 'flex-center.scss';
 @import 'transition.scss';
-@import "transform.scss";
+@import 'transform.scss';
 @import 'keyframes.scss';
 @import 'overflow-scroll';
 
@@ -10,7 +10,6 @@ $table-fontsize: 14px;
 $segmentation-color: rgba(100, 100, 100, 1);
 $btn-color: rgba(120, 120, 120, 1);
 $info-height: 340px;
-
 
 #portal__detail__page {
   max-width: 1120px;
@@ -46,7 +45,6 @@ $info-height: 340px;
   &:hover {
     color: $sky-blue;
   }
-
 }
 
 .edit__btn {
@@ -72,9 +70,7 @@ $info-height: 340px;
     100% {
       border-color: rgba(0, 123, 255, 1);
     }
-
   }
-
 }
 
 #print__datetime {
@@ -134,7 +130,6 @@ $info-height: 340px;
     background-color: rgba(240, 240, 240, 1);
     @include transition(background-color);
   }
-
 }
 
 .tag__icon {
@@ -249,13 +244,10 @@ $info-height: 340px;
   color: $segmentation-color;
 
   :nth-child(odd) {
-
     td {
       background-color: rgba(235, 235, 235, 1);
     }
-
   }
-  
 }
 
 .map__card {
@@ -342,13 +334,10 @@ $info-height: 340px;
   word-break: normal;
 
   &:not(last-child) {
-
     &:after {
-      content: ', '
+      content: ', ';
     }
-
   }
-
 }
 
 .hide__overflow {
@@ -361,7 +350,6 @@ $info-height: 340px;
     position: relative;
     z-index: 1;
   }
-
 }
 
 .show__more__btn {
@@ -386,7 +374,7 @@ $info-height: 340px;
   height: 10px;
   margin: 0 5px;
   border-style: solid;
-  border-width: 8px 0px 8px 5px ;
+  border-width: 8px 0px 8px 5px;
   width: 10px;
   border-color: transparent transparent transparent black;
 }
@@ -431,11 +419,9 @@ $info-height: 340px;
   max-width: 300px;
 }
 
-
 /******************************************* media *****************************************/
 
-
-@media(max-width: 993px) {
+@media (max-width: 993px) {
   .lap__info {
     max-height: 253px;
   }
@@ -443,10 +429,9 @@ $info-height: 340px;
   .table__list__subtitle {
     margin-left: 25px;
   }
-
 }
 
-@media(max-width: 767px) {
+@media (max-width: 767px) {
   .row__to__column {
     flex-direction: column;
     justify-content: center;
@@ -477,7 +462,8 @@ $info-height: 340px;
     max-height: none;
   }
 
-  .table__list__subtitle, .segmentation__title {
+  .table__list__subtitle,
+  .segmentation__title {
     font-size: 13px;
   }
 
@@ -489,7 +475,8 @@ $info-height: 340px;
     flex-direction: column;
   }
 
-  .zone__chart, .info__chart {
+  .zone__chart,
+  .info__chart {
     width: 98%;
   }
 
@@ -501,7 +488,6 @@ $info-height: 340px;
     width: 95%;
     max-width: none;
   }
-
 }
 
 // 針對列印頁面進行設定避免跑版
@@ -544,5 +530,4 @@ $info-height: 340px;
     width: 30%;
     max-width: 320px;
   }
-
 }

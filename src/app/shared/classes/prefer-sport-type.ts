@@ -1,11 +1,9 @@
 import { SportType } from '../enum/sports';
 
-
 /**
  * 統計個人運動偏好
  */
 export class PreferSportType {
-
   private _sportTypestatistics = {};
 
   /**
@@ -26,12 +24,11 @@ export class PreferSportType {
         const [_bKey, _bValue] = _b;
         return (_bValue as number) - (_aValue as number);
       })
-      .map(_result => {
+      .map((_result) => {
         const [_key, _value] = _result;
         return +_key;
       });
 
     return sortType.slice(0, 3);
   }
-
 }

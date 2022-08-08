@@ -5,22 +5,18 @@ var router = express.Router();
 router.get('/lists', function (req, res, next) {
   const {
     con,
-    query: {
-      keyword,
-      userId,
-      pageSize,
-      pageNumber,
-      sort,
-      startDate,
-      endDate
-    }
+    query: { keyword, userId, pageSize, pageNumber, sort, startDate, endDate },
   } = req;
   let keywordQuery = '';
   let completeKeyword = decodeURIComponent(keyword);
-  const dateQuery = startDate && endDate ? `and s.time between '${startDate}' and '${endDate}'` : '';
+  const dateQuery =
+    startDate && endDate ? `and s.time between '${startDate}' and '${endDate}'` : '';
   const sortQuery = sort === 'asc' ? 'order by time' : 'order by time desc';
   if (keyword) {
-    keywordQuery = completeKeyword.substring(0, 1) === '+' ? `and u.phone like '%${completeKeyword.slice(5)}%'` : `and u.e_mail = '${completeKeyword}'`;
+    keywordQuery =
+      completeKeyword.substring(0, 1) === '+'
+        ? `and u.phone like '%${completeKeyword.slice(5)}%'`
+        : `and u.e_mail = '${completeKeyword}'`;
   }
 
   let sql = `
@@ -48,27 +44,27 @@ router.get('/lists', function (req, res, next) {
     ;
   `;
   }
-  con.query(sql, ['save_device_log', 'user_profile', userId], function(err, rows) {
+  con.query(sql, ['save_device_log', 'user_profile', userId], function (err, rows) {
     if (err) {
       console.log(err);
       return res.status(500).send({
-        errorMessage: err.sqlMessage
+        errorMessage: err.sqlMessage,
       });
     }
     const meta = {
       pageSize: pageSize || 10,
       pageCount: rows.length,
-      pageNumber: Number(pageNumber) || 1
+      pageNumber: Number(pageNumber) || 1,
     };
     const datas = rows.splice((meta.pageNumber - 1) * meta.pageSize, meta.pageSize);
     res.json({ datas, meta });
   });
 });
 
-router.get('/search', function(req, res, next) {
+router.get('/search', function (req, res, next) {
   const {
     con,
-    query: { keyword }
+    query: { keyword },
   } = req;
   const sql1 = `
     select distinct u.e_mail
@@ -96,19 +92,23 @@ router.get('/search', function(req, res, next) {
   if (keyword.length === 0) {
     return res.send([]);
   }
-  con.query(sql, ['user_profile', 'save_device_log', 'user_profile', 'save_device_log'], function(err, rows) {
-    if (err) {
-      console.log(err);
-      return res.status(500).send({ errorMessage: err.sqlMessage });
-    }
-    let results = rows[0].map(_row => _row.e_mail);
-    rows[1].forEach(_row => {
-      return results.push(_row.phone_number);
-    });
+  con.query(
+    sql,
+    ['user_profile', 'save_device_log', 'user_profile', 'save_device_log'],
+    function (err, rows) {
+      if (err) {
+        console.log(err);
+        return res.status(500).send({ errorMessage: err.sqlMessage });
+      }
+      let results = rows[0].map((_row) => _row.e_mail);
+      rows[1].forEach((_row) => {
+        return results.push(_row.phone_number);
+      });
 
-    results = results.filter(_res => _res.indexOf(keyword) > -1);
-    res.json(results);
-  });
+      results = results.filter((_res) => _res.indexOf(keyword) > -1);
+      res.json(results);
+    }
+  );
 });
 
 // Exports

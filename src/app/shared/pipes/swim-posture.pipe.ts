@@ -1,7 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-
-@Pipe({name: 'swimPosture'})
+@Pipe({ name: 'swimPosture' })
 export class swimPosture implements PipeTransform {
   /**
    * 根據泳姿回傳對應多國語系的鍵。
@@ -22,7 +21,5 @@ export class swimPosture implements PipeTransform {
       case 5:
         return 'universal_activityData_butterflyStroke';
     }
-
   }
-  
 }

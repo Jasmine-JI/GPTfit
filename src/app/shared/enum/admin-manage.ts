@@ -1,2 +1,1 @@
-export enum AdminManage {
-}
+export enum AdminManage {}

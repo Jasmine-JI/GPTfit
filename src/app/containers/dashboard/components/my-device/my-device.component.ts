@@ -1,10 +1,4 @@
-import {
-  Component,
-  OnInit,
-  OnChanges,
-  OnDestroy,
-  Input,
-} from '@angular/core';
+import { Component, OnInit, OnChanges, OnDestroy, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { QrcodeService } from '../../../portal/services/qrcode.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
@@ -17,15 +11,14 @@ import { Subject, fromEvent, Subscription, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { AuthService } from '../../../../core/services/auth.service';
 
-
 @Component({
   selector: 'app-my-device',
   templateUrl: './my-device.component.html',
-  styleUrls: ['./my-device.component.scss']
+  styleUrls: ['./my-device.component.scss'],
 })
 export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
   @Input() targetUserId: number;
-  private ngUnsubscribe = new Subject;
+  private ngUnsubscribe = new Subject();
   clickEvent: Subscription;
 
   /**
@@ -34,8 +27,8 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
   uiFlag = {
     openMenu: null,
     showMoreInfo: [],
-    progress: 0
-  }
+    progress: 0,
+  };
 
   /**
    * 頁碼設定
@@ -43,14 +36,15 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
   pageSetting: PaginationSetting = {
     totalCounts: 0,
     pageIndex: 0,
-    onePageSize: 10
+    onePageSize: 10,
   };
 
   token = this.authService.token;
   deviceList: Array<any>;
   readonly onePageSizeOpt = [5, 10, 20];
-  readonly imgStoragePath = 
-    `http://${location.hostname.includes('192.168.1.235') ? 'app.alatech.com.tw' : location.hostname}/app/public_html/products`;
+  readonly imgStoragePath = `http://${
+    location.hostname.includes('192.168.1.235') ? 'app.alatech.com.tw' : location.hostname
+  }/app/public_html/products`;
 
   constructor(
     private router: Router,
@@ -67,14 +61,12 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.targetUserId && !location.pathname.includes('system')) {
       this.getDeviceList();
     }
-
   }
 
   ngOnChanges() {
     if (this.targetUserId) {
       this.getDeviceList(this.targetUserId);
     }
-
   }
 
   /**
@@ -84,15 +76,15 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
    */
   getDeviceList(targetUserId: number = null) {
     const { pageIndex, onePageSize } = this.pageSetting,
-          body = {
-            token: this.token,
-            page: pageIndex,
-            pageCounts: onePageSize
-          };
+      body = {
+        token: this.token,
+        page: pageIndex,
+        pageCounts: onePageSize,
+      };
 
     this.uiFlag.progress = 20;
     if (targetUserId) Object.assign(body, { targetUserId });
-    this.qrcodeService.getDeviceList(body).subscribe(res => {
+    this.qrcodeService.getDeviceList(body).subscribe((res) => {
       this.uiFlag.progress = 40;
       const { apiCode, resultCode, resultMessage, info } = res;
       if (resultCode !== 200) {
@@ -100,7 +92,7 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
         this.uiFlag.progress = 100;
       } else {
         const { totalCounts, deviceList } = info,
-              { pageIndex, onePageSize } = this.pageSetting;
+          { pageIndex, onePageSize } = this.pageSetting;
         this.deviceList = deviceList;
         this.pageSetting = { totalCounts, pageIndex, onePageSize };
         if (this.deviceList.length > 0) {
@@ -108,11 +100,8 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
         } else {
           this.uiFlag.progress = 100;
         }
-
       }
-
     });
-
   }
 
   /**
@@ -121,59 +110,47 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
    */
   getOtherInfo() {
     const idSet = new Set(),
-          snList = [];
-    this.deviceList.forEach(_list => {
-      const {
-        fitPairStatus,
-        fitPairUserId,
-        lastFitPairUserId,
-        myEquipmentSN
-      } = _list;
+      snList = [];
+    this.deviceList.forEach((_list) => {
+      const { fitPairStatus, fitPairUserId, lastFitPairUserId, myEquipmentSN } = _list;
 
       // 僅開放裝置fitpair才需顯示fitpair對象
       snList.push(myEquipmentSN);
       if (fitPairStatus == 3) {
-
         if (fitPairUserId) {
           idSet.add(fitPairUserId);
         } else if (lastFitPairUserId) {
           idSet.add(lastFitPairUserId);
         }
-
       }
-
     });
 
     const productInfoBody = {
       token: this.token,
       queryType: 1,
-      queryArray: snList
+      queryArray: snList,
     };
     const querry = [this.qrcodeService.getProductInfo(productInfoBody)];
     if (idSet.size > 0) {
       const idList = Array.from(idSet),
-      body = {
-        token: this.token,
-        targetUserId: idList
-      };
+        body = {
+          token: this.token,
+          targetUserId: idList,
+        };
       querry.push(this.api10xxService.fetchGetUserProfile(body));
     }
 
     this.uiFlag.progress = 70;
-    combineLatest(querry).subscribe(res => {
+    combineLatest(querry).subscribe((res) => {
       const [productInfoRes, userProfileRes] = res,
-            { apiCode, resultCode, resultMessage, info } = productInfoRes;
+        { apiCode, resultCode, resultMessage, info } = productInfoRes;
       if (resultCode !== 200) {
         console.error(`${resultCode}: Api ${apiCode} ${resultMessage}`);
       } else {
         this.deviceList = this.deviceList.map((_list, _idx) => {
           // 顯示fitpair qrcode
           const checkSum = this.qrcodeService.createDeviceChecksum(_list.myEquipmentSN),
-                qrURL = `${
-                  location.origin}/pair?device_sn=${
-                  _list.myEquipmentSN}&bt_name=${
-                  _list.myEquipmentSN}&cs=${checkSum
-                }`;
+            qrURL = `${location.origin}/pair?device_sn=${_list.myEquipmentSN}&bt_name=${_list.myEquipmentSN}&cs=${checkSum}`;
           Object.assign(_list, { qrURL });
           // 取得裝置圖片
           const { equipmentSN, modelImg } = info.productInfo[_idx];
@@ -187,26 +164,21 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
             const { processResult, userProfile } = userProfileRes;
             if (processResult && processResult.resultCode === 200) {
               const havecurrentFitpair = fitPairUserId && fitPairUserId.length > 0,
-                    haveLastFitpair = lastFitPairUserId && lastFitPairUserId.length > 0;
-              userProfile.forEach(_user => {
+                haveLastFitpair = lastFitPairUserId && lastFitPairUserId.length > 0;
+              userProfile.forEach((_user) => {
                 const { userId, nickname } = _user;
                 if (havecurrentFitpair && userId == fitPairUserId) {
                   Object.assign(_list, { fitPairUserName: nickname });
                 } else if (haveLastFitpair && userId == lastFitPairUserId) {
                   Object.assign(_list, { lastFitPairUserName: nickname });
                 }
-                
               });
-              
             }
-
           }
 
           return _list;
         });
-
       }
-
     });
 
     this.uiFlag.progress = 100;
@@ -225,7 +197,6 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
       this.pageSetting.onePageSize = onePageSize;
       this.getDeviceList(this.targetUserId ?? null);
     }
-
   }
 
   /**
@@ -240,42 +211,40 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
       deviceSettingJson: '',
       fitPairStatus,
       myEquipmentSN: this.deviceList[this.uiFlag.openMenu].myEquipmentSN,
-      token: this.token
+      token: this.token,
     };
 
-    this.qrcodeService.editDeviceInfo(body).pipe(
-      switchMap(res => this.translateService.get('hellow world').pipe(
-        map(() => res),
-        takeUntil(this.ngUnsubscribe)
-      ))
-    ).subscribe(res => {
-      const translateOfEdit = this.translateService.instant('universal_operating_edit');
-      if (res.resultCode !== 200) {
-        this.closeDropMenu();
-        const failMsg = `${translateOfEdit} ${this.translateService.instant('universal_status_failure')}`
-        this.snackbar.open(
-          failMsg,
-          'OK',
-          { duration: 3000 }
-        );
-      } else {
-        this.deviceList[this.uiFlag.openMenu].fitPairStatus = fitPairStatus;
-        if (fitPairStatus !== 3) {
-          this.deviceList[this.uiFlag.openMenu].fitPairUserId = null;
+    this.qrcodeService
+      .editDeviceInfo(body)
+      .pipe(
+        switchMap((res) =>
+          this.translateService.get('hellow world').pipe(
+            map(() => res),
+            takeUntil(this.ngUnsubscribe)
+          )
+        )
+      )
+      .subscribe((res) => {
+        const translateOfEdit = this.translateService.instant('universal_operating_edit');
+        if (res.resultCode !== 200) {
+          this.closeDropMenu();
+          const failMsg = `${translateOfEdit} ${this.translateService.instant(
+            'universal_status_failure'
+          )}`;
+          this.snackbar.open(failMsg, 'OK', { duration: 3000 });
+        } else {
+          this.deviceList[this.uiFlag.openMenu].fitPairStatus = fitPairStatus;
+          if (fitPairStatus !== 3) {
+            this.deviceList[this.uiFlag.openMenu].fitPairUserId = null;
+          }
+
+          this.closeDropMenu();
+          const successMsg = `${translateOfEdit} ${this.translateService.instant(
+            'universal_status_success'
+          )}`;
+          this.snackbar.open(successMsg, 'OK', { duration: 3000 });
         }
-
-        this.closeDropMenu();
-        const successMsg = `${translateOfEdit} ${this.translateService.instant('universal_status_success')}`
-        this.snackbar.open(
-          successMsg,
-          'OK',
-          { duration: 3000 }
-        );
-
-      }
-
-    });
-
+      });
   }
 
   /**
@@ -292,7 +261,6 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
       this.uiFlag.openMenu = idx;
       this.handleGlobalClick();
     }
-
   }
 
   /**
@@ -305,11 +273,10 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
     e.stopPropagation();
     this.closeDropMenu();
     if (this.uiFlag.showMoreInfo.includes(idx)) {
-      this.uiFlag.showMoreInfo = this.uiFlag.showMoreInfo.filter(_idx => _idx !== idx);
+      this.uiFlag.showMoreInfo = this.uiFlag.showMoreInfo.filter((_idx) => _idx !== idx);
     } else {
       this.uiFlag.showMoreInfo.push(idx);
     }
-
   }
 
   /**
@@ -324,7 +291,6 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       this.router.navigateByUrl(`/dashboard/device/info/${sn}`);
     }
-
   }
 
   /**
@@ -333,12 +299,9 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
    */
   handleGlobalClick() {
     const clickEvent = fromEvent(document, 'click');
-    this.clickEvent = clickEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    this.clickEvent = clickEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.closeDropMenu();
     });
-
   }
 
   /**
@@ -357,5 +320,4 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

@@ -8,9 +8,8 @@ describe('TrinomialChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TrinomialChartComponent ]
-    })
-    .compileComponents();
+      declarations: [TrinomialChartComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

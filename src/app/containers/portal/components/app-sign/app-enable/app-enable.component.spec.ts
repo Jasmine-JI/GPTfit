@@ -8,9 +8,8 @@ describe('AppEnableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AppEnableComponent ]
-    })
-    .compileComponents();
+      declarations: [AppEnableComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

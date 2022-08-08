@@ -1,5 +1,6 @@
 <div class="ala-formtext" [formGroup]="control" *ngIf="controlName">
-  <input [type]="type"
+  <input
+    [type]="type"
     [maxLength]="maxLength"
     [value]="content"
     [formControlName]="controlName"
@@ -21,7 +22,8 @@
 </div>
 
 <div class="ala-formtext" *ngIf="!controlName">
-  <input [type]="type"
+  <input
+    [type]="type"
     [maxLength]="maxLength"
     [value]="content"
     [className]="isInvalid ? invalidClassName : class_name"
@@ -31,7 +33,7 @@
     [max]="max"
   />
   <app-form-remind
-    *ngIf="remindText ||  (invalidRemindText && isInvalid)"
+    *ngIf="remindText || (invalidRemindText && isInvalid)"
     [isInvalid]="isInvalid"
     [remindText]="remindText"
     [invalidRemindText]="invalidRemindText"
