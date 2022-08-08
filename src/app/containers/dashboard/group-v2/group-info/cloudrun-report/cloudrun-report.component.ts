@@ -1672,7 +1672,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         defaultFil.person = [1, 2]; // 預設40~50階
         break;
       default: // 預設50階
-      // 預設50階
+        // 預設50階
         defaultFil.group = [2];
         defaultFil.person = [2];
         break;

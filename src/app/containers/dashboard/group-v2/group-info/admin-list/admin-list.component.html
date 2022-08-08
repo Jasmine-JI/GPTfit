@@ -157,7 +157,8 @@
           [isHadMenu]="
             adminList.teacher.length > 1 &&
             uiFlag.editMode === 'edit' &&
-            userSimpleInfo.accessRight <= 60 && userSimpleInfo.accessRight !== 50
+            userSimpleInfo.accessRight <= 60 &&
+            userSimpleInfo.accessRight !== 50
           "
           [groupId]="_teacher.groupId"
           [groupLevel]="groupInfo.groupLevel"

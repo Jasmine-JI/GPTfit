@@ -84,8 +84,8 @@
                 reportConditionOpt.deviceType.includes(_list.deviceType) &&
                 (uiFlag.editMode ||
                   reportConditionOpt.deviceUseStatus === 'all' ||
-                    (reportConditionOpt.deviceUseStatus === 'fitpairing' && _list.fitPairUserId) ||
-                    (reportConditionOpt.deviceUseStatus === 'idle' && !_list.fitPairUserId))
+                  (reportConditionOpt.deviceUseStatus === 'fitpairing' && _list.fitPairUserId) ||
+                  (reportConditionOpt.deviceUseStatus === 'idle' && !_list.fitPairUserId))
               "
             >
               <ng-container *ngIf="uiFlag.editMode !== null">

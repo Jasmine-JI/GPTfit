@@ -413,7 +413,7 @@ export class GsensorComponent implements OnInit, OnDestroy {
       ['y', effectAmplitudeY],
       ['z', effectAmplitudeZ],
     ];
-    const [axis, ] = amplitudeArray.sort((a: Array<any>, b: Array<any>) => b[1] - a[1])[0];
+    const [axis] = amplitudeArray.sort((a: Array<any>, b: Array<any>) => b[1] - a[1])[0];
     const referenceLength = this.allRecord[axis].length;
     if (referenceLength >= this.repsTarget) this.setFinished = true;
     return this.allRecord[axis].length;
