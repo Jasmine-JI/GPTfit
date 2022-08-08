@@ -437,13 +437,15 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
         return new BMap.Point(_bd09Point[0], _bd09Point[1]);
       });
 
-      const startMark = new BMap.Marker(this.baiduObj.path[0], { // 路線起始點
+      const startMark = new BMap.Marker(this.baiduObj.path[0], {
+          // 路線起始點
           icon: new BMap.Icon('/assets/map_marker_start.svg', new BMap.Size(33, 50), {
             anchor: new BMap.Size(16, 50),
             imageOffset: new BMap.Size(0, 0),
           }),
         }),
-        endMark = new BMap.Marker(this.baiduObj.path[this.baiduObj.path.length - 1], { // 路線終點
+        endMark = new BMap.Marker(this.baiduObj.path[this.baiduObj.path.length - 1], {
+          // 路線終點
           icon: new BMap.Icon('/assets/map_marker_end.svg', new BMap.Size(33, 50), {
             anchor: new BMap.Size(16, 50),
             imageOffset: new BMap.Size(0, 0),
@@ -473,7 +475,8 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
       this.baiduObj.map.addControl(new BMap.MapTypeControl({ anchor: 'BMAP_ANCHOR_TOP_LEFT' })); // 地圖類型按鈕
       // 建立所有使用者的標記
       dataArr.forEach((_data, _index) => {
-        const playerMark = new BMap.Marker(this.baiduObj.path[0], { // 路線起始點
+        const playerMark = new BMap.Marker(this.baiduObj.path[0], {
+          // 路線起始點
           icon: new BMap.Icon('/assets/map_marker_player.svg', new BMap.Size(12, 12), {
             anchor: new BMap.Size(6, 12),
             imageOffset: new BMap.Size(0, 0),
@@ -490,7 +493,8 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
         this.baiduObj.map.addOverlay(heatmapOverlay);
         heatmapOverlay.setDataSet({ data: this.baiduObj.path, max: 100 });
       } else {
-        const polyline = new BMap.Polyline(this.baiduObj.path, { // 路線聚合線
+        const polyline = new BMap.Polyline(this.baiduObj.path, {
+          // 路線聚合線
           strokeColor: 'rgba(232, 62, 140, 1)',
           strokeWeight: 6,
           strokeOpacity: 0.5,

@@ -292,13 +292,15 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
         return new BMap.Point(_bd09Point[0], _bd09Point[1]);
       });
 
-      const startMark = new BMap.Marker(this.baiduObj.path[0], { // 路線起始點
+      const startMark = new BMap.Marker(this.baiduObj.path[0], {
+          // 路線起始點
           icon: new BMap.Icon('/assets/map_marker_start.svg', new BMap.Size(33, 50), {
             anchor: new BMap.Size(16, 50),
             imageOffset: new BMap.Size(0, 0),
           }),
         }),
-        endMark = new BMap.Marker(this.baiduObj.path[this.baiduObj.path.length - 1], { // 路線終點
+        endMark = new BMap.Marker(this.baiduObj.path[this.baiduObj.path.length - 1], {
+          // 路線終點
           icon: new BMap.Icon('/assets/map_marker_end.svg', new BMap.Size(33, 50), {
             anchor: new BMap.Size(16, 50),
             imageOffset: new BMap.Size(0, 0),
@@ -316,7 +318,8 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
       this.baiduObj.map.disableScrollWheelZoom(); // 關閉滑鼠滾輪縮放，避免手機頁面無法滑動頁面
       this.baiduObj.map.addControl(new BMap.NavigationControl({ anchor: 'BMAP_ANCHOR_TOP_RIGHT' })); // 平移縮放按鈕
 
-      const polyline = new BMap.Polyline(this.baiduObj.path, { // 路線聚合線
+      const polyline = new BMap.Polyline(this.baiduObj.path, {
+        // 路線聚合線
         strokeColor: 'rgba(232, 62, 140, 1)',
         strokeWeight: 6,
         strokeOpacity: 0.5,
