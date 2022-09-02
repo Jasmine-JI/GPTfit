@@ -508,7 +508,7 @@ function sortMember(file) {
     _group.rank.forEach((_rank) => {
       file.team.forEach((_team) => {
         if (_rank.team === _team.teamName) {
-          if (!_team.hasOwnProperty('member')) {
+          if (!Object.prototype.hasOwnProperty.call(_team, 'member')) {
             Object.assign(_team, {
               member: [
                 {

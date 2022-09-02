@@ -1,5 +1,8 @@
 import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
 import { DateRangeType } from '../models/report-condition';
+
+dayjs.extend(isoWeek);
 
 /**
  * 提供特定時間範圍之值(timestamp)
@@ -55,11 +58,13 @@ export class DefaultDateRange {
 
   /**
    * 取得本週時間範圍
+   * @param sundayFirst {boolean}-一週開始日是否為週日
    */
-  static getThisWeek() {
+  static getThisWeek(sundayFirst = true) {
+    const referenceWeek = sundayFirst ? 'week' : 'isoWeek';
     const dateRange = {
-      startTime: dayjs().startOf('week').valueOf(),
-      endTime: dayjs().endOf('week').valueOf(),
+      startTime: dayjs().startOf(referenceWeek).valueOf(),
+      endTime: dayjs().endOf(referenceWeek).valueOf(),
     };
 
     return dateRange;
@@ -91,12 +96,14 @@ export class DefaultDateRange {
 
   /**
    * 取得上一週時間範圍
+   * @param sundayFirst {boolean}-一週開始日是否為週日
    */
-  static getLastWeek() {
+  static getLastWeek(sundayFirst = true) {
+    const referenceWeek = sundayFirst ? 'week' : 'isoWeek';
     const lastSevenDay = dayjs().subtract(7, 'day');
     const dateRange = {
-      startTime: lastSevenDay.startOf('week').valueOf(),
-      endTime: lastSevenDay.endOf('week').valueOf(),
+      startTime: lastSevenDay.startOf(referenceWeek).valueOf(),
+      endTime: lastSevenDay.endOf(referenceWeek).valueOf(),
     };
 
     return dateRange;
@@ -130,8 +137,9 @@ export class DefaultDateRange {
   /**
    * 取得指定時間範圍
    * @param type {DateRangeType}-指定之時間範圍
+   * @param sundayFirst {boolean}-一週開始日是否為週日
    */
-  static getAssignRangeDate(type: DateRangeType) {
+  static getAssignRangeDate(type: DateRangeType, sundayFirst = true) {
     switch (type) {
       case 'today':
         return DefaultDateRange.getToday();
@@ -142,13 +150,13 @@ export class DefaultDateRange {
       case 'sixMonth':
         return DefaultDateRange.getSixMonth();
       case 'thisWeek':
-        return DefaultDateRange.getThisWeek();
+        return DefaultDateRange.getThisWeek(sundayFirst);
       case 'thisMonth':
         return DefaultDateRange.getThisMonth();
       case 'thisYear':
         return DefaultDateRange.getThisYear();
       case 'lastWeek':
-        return DefaultDateRange.getLastWeek();
+        return DefaultDateRange.getLastWeek(sundayFirst);
       case 'lastMonth':
         return DefaultDateRange.getLastMonth();
       case 'none':

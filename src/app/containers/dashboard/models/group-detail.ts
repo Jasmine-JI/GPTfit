@@ -1,4 +1,4 @@
-import { GroupSportTarget } from '../../../shared/models/sport-target';
+import { SportTarget } from '../../../core/models/api/api-common/sport-target.model';
 import { AccessRight } from '../../../shared/enum/accessright';
 
 /**
@@ -24,7 +24,7 @@ export interface GroupDetailInfo {
   shareAvatarToMember: object;
   shareReportToMember: object;
   groupLevel?: number;
-  target?: GroupSportTarget;
+  target?: SportTarget;
 }
 
 /**

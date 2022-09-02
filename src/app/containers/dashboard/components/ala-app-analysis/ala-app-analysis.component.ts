@@ -660,7 +660,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
     };
 
     for (const _condition in condition) {
-      if (condition.hasOwnProperty(_condition)) {
+      if (Object.prototype.hasOwnProperty.call(condition, _condition)) {
         const content = condition[_condition];
         if (content.length > 0) {
           switch (_condition) {
@@ -670,7 +670,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
                 ...body.filterCondition,
               };
               break;
-            case 'region':
+            case 'region': {
               const countryRegion = content.map((_content) => {
                 if (_content.code) {
                   return `*${_content.code}*`;
@@ -684,7 +684,8 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
                 ...body.filterCondition,
               };
               break;
-            case 'language':
+            }
+            case 'language': {
               const language = content.map((_content) => {
                 if (_content.code) {
                   return `*${_content.code}*`;
@@ -698,21 +699,24 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
                 ...body.filterCondition,
               };
               break;
-            case 'sn':
+            }
+            case 'sn': {
               const equipmentSN = content.map((_content) => `*${_content}*`);
               body.filterCondition = {
                 equipmentSN,
                 ...body.filterCondition,
               };
               break;
-            case 'user':
+            }
+            case 'user': {
               const author = content.map((_content) => `*?userId=${_content.userId}*`);
               body.filterCondition = {
                 author,
                 ...body.filterCondition,
               };
               break;
-            case 'group':
+            }
+            case 'group': {
               const brand = [],
                 branch = [],
                 coach = [];
@@ -753,6 +757,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
               }
 
               break;
+            }
           }
         }
       }

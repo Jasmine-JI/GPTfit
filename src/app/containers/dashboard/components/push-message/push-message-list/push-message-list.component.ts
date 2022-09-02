@@ -113,7 +113,7 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
     this.uiFlag.isTableLoading = true;
 
     for (const key in this.filterCondition) {
-      if (this.filterCondition.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(this.filterCondition, key)) {
         if (this.filterCondition[key].length !== 0) {
           Object.assign(this.req.filter, { [key]: this.filterCondition[key] / 1000 });
         }

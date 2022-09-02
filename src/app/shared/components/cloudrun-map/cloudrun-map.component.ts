@@ -503,7 +503,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
       } else if (this.playerList[1]) {
         this.addPlayer(1);
       }
-      
+
     }
 
     if (loadArr.length > 0) this.loadPlayerData(loadArr);
@@ -658,7 +658,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    */
   removeAllPlayerMark() {
     for (const _playerId in this.mapPlay.playerMark) {
-      if (this.mapPlay.playerMark.hasOwnProperty(_playerId)) {
+      if (Object.prototype.hasOwnProperty.call(this.mapPlay.playerMark, _playerId)) {
         this.mapPlay.playerMark[_playerId].onRemove();
       }
     }
@@ -724,7 +724,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   adjustMapIconSize() {
     const iconSize = this.getMapIconSize();
     for (const _playerId in this.mapPlay.playerMark) {
-      if (this.mapPlay.playerMark.hasOwnProperty(_playerId)) {
+      if (Object.prototype.hasOwnProperty.call(this.mapPlay.playerMark, _playerId)) {
         this.mapPlay.playerMark[_playerId].adjustIconSize(iconSize);
       }
     }
@@ -894,7 +894,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
     this.mapPlay.truthSecond = 0;
     // 將所有參賽者回歸原點
     for (const _playerId in this.loadedList) {
-      if (this.loadedList.hasOwnProperty(_playerId)) {
+      if (Object.prototype.hasOwnProperty.call(this.loadedList, _playerId)) {
         if (this.mapOpt.mapSource === 'google') {
           this.setGMapMark(+_playerId, 0);
         } else {
@@ -929,7 +929,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
         this.mapPlay.truthSecond++;
         let raceCompleted = true;
         for (const _playerId in this.loadedList) {
-          if (this.loadedList.hasOwnProperty(_playerId)) {
+          if (Object.prototype.hasOwnProperty.call(this.loadedList, _playerId)) {
             if (this.mapOpt.mapSource === 'google') {
               if (!this.setGMapMark(+_playerId, this.mapPlay.truthSecond)) raceCompleted = false;
             } else {

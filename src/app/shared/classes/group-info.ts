@@ -2,7 +2,6 @@ import { GroupDetail } from '../models/group';
 import { REGEX_GROUP_ID } from '../models/utils-constant';
 import { GroupLevel } from '../enum/professional';
 import dayjs from 'dayjs';
-import { DateUnit } from '../enum/report';
 import { deepCopy } from '../utils/index';
 
 export class GroupInfo {
@@ -240,36 +239,6 @@ export class GroupInfo {
    * 取得群組目標
    */
   get sportTarget() {
-    const {
-      groupDetail: { target, groupRootInfo },
-      groupLevel,
-    } = this;
-    const referenceLevel = target.name;
-    if (referenceLevel) {
-      const targetReference = +referenceLevel as GroupLevel;
-      // 若繼承目標之群組階層與目前群組相同，代表為自訂目標
-      if (targetReference === groupLevel) return target;
-
-      // 透過繼承目標的階層取得目標
-      let referenceIndex = -1;
-      switch (targetReference) {
-        case GroupLevel.brand:
-          referenceIndex = 2;
-          break;
-        case GroupLevel.branch:
-          referenceIndex = 3;
-          break;
-      }
-
-      const referenceTarget = groupRootInfo[referenceIndex].target;
-      if (referenceTarget.name) return referenceTarget;
-    }
-
-    // 若target皆為空物件，則回傳預設值
-    return {
-      name: referenceLevel ?? groupLevel,
-      cycle: DateUnit.week,
-      condition: [],
-    };
+    return this.groupDetail.target ?? {};
   }
 }

@@ -5,9 +5,27 @@ import { ReplaySubject } from 'rxjs';
   providedIn: 'root',
 })
 export class GlobalEventsService {
-  sideBarMode$ = new ReplaySubject<any>(1); // sidebar展開與否
+  private _componentUniqueId = 0;
+
+  /**
+   * sidebar展開與否
+   */
+  sideBarMode$ = new ReplaySubject<any>(1);
+
+  /**
+   * 現在的下拉選單id
+   */
+  currentDropList$ = new ReplaySubject<number>(1);
 
   constructor() {}
+
+  /**
+   * 取得唯一碼
+   */
+  getComponentUniqueId() {
+    this._componentUniqueId++;
+    return this._componentUniqueId;
+  }
 
   /**
    * 取得sidebar 模式供子頁面用
@@ -24,5 +42,20 @@ export class GlobalEventsService {
    */
   setSideBarMode(status: 'expand' | 'hide' | 'narrow') {
     this.sideBarMode$.next(status);
+  }
+
+  /**
+   * 取得關閉下拉選單的指令
+   */
+  getRxCloseDropList() {
+    return this.currentDropList$;
+  }
+
+  /**
+   * 透過next發送關閉下拉選單的指令
+   * @param componentId {number}-元件id
+   */
+  setRxCloseDropList(componentId: number) {
+    this.currentDropList$.next(componentId);
   }
 }

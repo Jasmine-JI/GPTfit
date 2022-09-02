@@ -1793,7 +1793,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   cancelEditContentImg(id: number) {
     const targetId = `${id}`;
-    if (this.imgUpload.content.hasOwnProperty(targetId)) {
+    if (Object.prototype.hasOwnProperty.call(this.imgUpload.content, targetId)) {
       delete this.imgUpload.content[targetId];
     }
   }
@@ -1805,7 +1805,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   cancelEditApplyFeeImg(id: number) {
     const targetId = `${id}`;
-    if (this.imgUpload.applyFee.hasOwnProperty(targetId)) {
+    if (Object.prototype.hasOwnProperty.call(this.imgUpload.applyFee, targetId)) {
       delete this.imgUpload.applyFee[targetId];
     }
   }

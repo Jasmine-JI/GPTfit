@@ -23,9 +23,8 @@ import { CommonModule } from '@angular/common';
 import { A3FormatPipe } from './shared/pipes/a3-format.pipe';
 import { GroupIdSlicePipe } from './shared/pipes/group-id-slice.pipe';
 import { LongTextPipe } from './shared/pipes/long-text.pipe';
-import { CoreModule } from './core/core.module';
 
-export function startupServiceFactory(startupService: StartupService): Function {
+export function startupServiceFactory(startupService: StartupService) {
   return () => startupService.load();
 }
 export function createTranslateLoader(http: HttpClient) {
@@ -36,7 +35,6 @@ export function createTranslateLoader(http: HttpClient) {
   imports: [
     BrowserModule,
     AppRoutingModule,
-    CoreModule,
     PortalModule,
     SharedComponentsModule,
     BrowserAnimationsModule,

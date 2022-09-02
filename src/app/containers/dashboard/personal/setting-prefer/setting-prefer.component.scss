@@ -2,6 +2,8 @@
 @import 'transition.scss';
 @import 'flex-center.scss';
 @import 'button.scss';
+@import 'drop-triangle.scss';
+@import 'rod-bar.scss';
 
 $turn-gap: 2px;
 $input-width: 60px;
@@ -141,20 +143,6 @@ $dot-diameter: 8px;
   margin: 5px 0;
 }
 
-.date__cycle__list,
-.filed__name__list {
-  $shadow: 4px rgba(0, 0, 0, 0.3);
-  position: fixed;
-  z-index: 2;
-  background-color: white;
-  cursor: pointer;
-  list-style: none;
-  padding: 5px;
-  margin: 0;
-  box-shadow: 2px 2px $shadow, -2px 2px $shadow, 2px -2px $shadow, -2px -2px $shadow;
-  min-width: 100px;
-}
-
 .condition__list {
   padding: 0;
 }
@@ -204,4 +192,17 @@ $dot-diameter: 8px;
   min-width: $width;
   outline: none;
   text-align: center;
+}
+
+.advanced__target__option {
+  margin: 10px;
+  align-items: center;
+}
+
+.rod__bar {
+  @include target-rod-bar();
+}
+
+.rod__bar--active {
+  @include target-rod-bar-acitve();
 }

@@ -19,12 +19,12 @@ export interface AnalysisOptionInfo {
 export interface AnalysisAssignMenu {
   show: boolean;
   position: {
-    x: number;
-    y: number;
+    x: number | null;
+    y: number | null;
   };
   reportType: ReportType;
-  object: AnalysisObject;
-  id: string | number;
+  object: AnalysisObject | null;
+  id: string | number | null;
   nameList: Array<any>;
 }
 

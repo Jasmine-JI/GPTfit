@@ -11,7 +11,7 @@ import { of, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
-import { TargetCondition, TargetField } from '../../../models/sport-target';
+import { TargetField } from '../../../../core/models/api/api-common/sport-target.model';
 import { TARGET_LINE_COLOR, compareChartDefault } from '../../../models/chart-data';
 import {
   yAxisTimeFormat,
@@ -41,7 +41,7 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
 
   @Input() type: TargetField;
 
-  @Input() condition: Array<TargetCondition>;
+  @Input() conditionValue: number;
 
   @Input() xAxisTitle: string;
 
@@ -75,11 +75,10 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
     if (!this.data) {
       this.noData = true;
     } else {
-      const { data, condition, type } = this;
+      const { data, conditionValue, type } = this;
       of('')
         .pipe(
-          map(() => this.getRelatedCondition(type, condition)),
-          map((targetLineValue) => this.initChart(data, type, targetLineValue)),
+          map(() => this.initChart(data, type, conditionValue)),
           map((option) => this.handleSeriesName(option, type)),
           map((final) => this.createChart(final))
         )
@@ -99,17 +98,6 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
       .subscribe(() => {
         this.handleChart();
       });
-  }
-
-  /**
-   * 取得與此圖表有關的運動目標條件
-   * @param type {TargetField}-此圖表的類別
-   * @param condition {Array<TargetCondition>}-所有運動目標條件
-   * @author kidin-1110418
-   */
-  getRelatedCondition(type: TargetField, condition: Array<TargetCondition>) {
-    const relatedIndex = condition.findIndex((_condition) => _condition.filedName === type);
-    return relatedIndex > -1 ? condition[relatedIndex].filedValue : null;
   }
 
   /**
@@ -167,7 +155,7 @@ class ChartOption {
 
   constructor(
     data: Array<any>,
-    type: TargetField,
+    type: TargetField | string,
     targetLineValue: number | null,
     unit: Unit,
     xAxisTitle: string
@@ -202,10 +190,10 @@ class ChartOption {
 
   /**
    * 根據數據類別設定y軸與浮動框顯示格式
-   * @param type {TargetField}-數據類別
+   * @param type {TargetField | string}-數據類別
    * @param unit {Unit}-使用者使用單位
    */
-  handleDataType(type: TargetField, unit: Unit) {
+  handleDataType(type: TargetField | string, unit: Unit) {
     switch (type) {
       case 'totalTime':
       case 'benefitTime':

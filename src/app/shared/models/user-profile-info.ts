@@ -1,5 +1,5 @@
 import { AccessRight } from '../enum/accessright';
-import { PersonalTarget } from './sport-target';
+import { SportTarget } from '../../core/models/api/api-common/sport-target.model';
 import { AccountStatusEnum, AccountTypeEnum } from '../enum/account';
 import { Sex, HrBase } from '../enum/personal';
 
@@ -57,7 +57,7 @@ export interface UserProfileInfo {
   weightTrainingStrengthLevel?: number;
   wheelSize?: number;
   themeImgUrl?: string;
-  workoutTarget?: PersonalTarget;
+  workoutTarget?: SportTarget;
 }
 
 /**

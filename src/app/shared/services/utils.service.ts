@@ -83,10 +83,10 @@ export class UtilsService {
   /**
    * 根據群組id取得該群組階層
    * @param _id {string}-group id
-   * @returns {number}-群組階層
+   * @returns {GroupLevel}-群組階層
    * @author kidin-1100512
    */
-  displayGroupLevel(_id: string): number | undefined {
+  displayGroupLevel(_id: string): GroupLevel {
     if (_id) {
       const arr = _id.split('-').splice(2, 4);
       if (+arr[3] > 0) {
@@ -100,7 +100,7 @@ export class UtilsService {
       }
     }
 
-    return;
+    return GroupLevel.normal;
   }
 
   replaceCarriageReturn(string = '', format = '') {

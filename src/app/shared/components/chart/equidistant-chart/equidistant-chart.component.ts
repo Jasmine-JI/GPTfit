@@ -169,7 +169,7 @@ export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
       .subscribe(() => {
         const dataSet = [];
         for (const key in data) {
-          if (data.hasOwnProperty(key)) {
+          if (Object.prototype.hasOwnProperty.call(data, key)) {
             const { name, distanceBase, color } = data[key];
             dataSet.push({
               name,

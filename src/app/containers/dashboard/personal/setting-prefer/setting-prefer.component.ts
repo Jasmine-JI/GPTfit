@@ -10,22 +10,13 @@ import { HrZoneRange } from '../../../../shared/models/chart-data';
 import dayjs from 'dayjs';
 import { TranslateService } from '@ngx-translate/core';
 import { DashboardService } from '../../services/dashboard.service';
-import {
-  TargetField,
-  PersonalTarget,
-  TargetCondition,
-} from '../../../../shared/models/sport-target';
-import { ConditionSymbols } from '../../../../shared/enum/sport-target';
+import { TargetConditionMap } from '../../../../core/models/api/api-common/sport-target.model';
 import { DateUnit } from '../../../../shared/enum/report';
-import {
-  deepCopy,
-  checkResponse,
-  mathRounding,
-  valueConvert,
-} from '../../../../shared/utils/index';
-import { SportsTargetDefault } from '../../../../shared/models/variable-init';
+import { checkResponse, mathRounding, valueConvert } from '../../../../shared/utils/index';
 import { UserService } from '../../../../core/services/user.service';
 import { getUserHrRange, getUserFtpZone } from '../../../../shared/utils/sports';
+import { SportsTarget } from '../../../../shared/classes/sports-target';
+import { LocalstorageService } from '../../../../core/services/localstorage.service';
 
 enum DominantHand {
   right,
@@ -58,13 +49,11 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   uiFlag = {
     progress: 100,
-    showTimeSelector: null,
+    showTimeSelector: <string | null>null,
     valueShifting: false,
     isMobile: 'ontouchmove' in window,
     expand: false,
-    showEditDialog: <SetType>null,
-    showCycleList: false,
-    showFiledNameList: false,
+    showEditDialog: <SetType | null>null,
   };
 
   /**
@@ -98,15 +87,17 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   /**
    * 個人運動目標(預設值)
    */
-  sportsTarget: PersonalTarget = deepCopy(SportsTargetDefault);
+  sportsTarget: SportsTarget;
 
   /**
-   * 新的目標條件
+   * 目標條件
    */
-  newCondition: TargetCondition = {
-    filedName: <TargetField>'',
-    symbols: ConditionSymbols.greaterEqual,
-    filedValue: null,
+  cycleCondition = {
+    day: <TargetConditionMap | null>null,
+    week: <TargetConditionMap | null>null,
+    month: <TargetConditionMap | null>null,
+    season: <TargetConditionMap | null>null,
+    year: <TargetConditionMap | null>null,
   };
 
   /**
@@ -130,6 +121,11 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     min: '00',
   };
 
+  /**
+   * 進階模式開關狀態
+   */
+  advancedSportsTarget = this.localstorageService.getAdvancedSportsTarget();
+
   userInfo: any;
   userHrZone: HrZoneRange;
   userFtpZone: any;
@@ -143,7 +139,8 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private translate: TranslateService,
     private dashboardService: DashboardService,
-    private userService: UserService
+    private userService: UserService,
+    private localstorageService: LocalstorageService
   ) {}
 
   ngOnInit(): void {
@@ -182,7 +179,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     this.uiFlag.showEditDialog = type;
     switch (type) {
       case 'sportsTarget':
-        this.handleSportTargetDialog();
+        this.getSportTarget();
         break;
       default:
         this.handleSettingDialog();
@@ -193,11 +190,32 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   /**
    * 處理設定運動目標所需資訊
    */
-  handleSportTargetDialog() {
+  getSportTarget() {
     const { workoutTarget } = this.userInfo;
-    if (workoutTarget && Object.keys(workoutTarget).length > 0) {
-      this.sportsTarget = deepCopy(workoutTarget);
-    }
+    this.sportsTarget = new SportsTarget(workoutTarget ?? {});
+    this.saveAllCondition();
+  }
+
+  /**
+   * 將條件另外儲存
+   */
+  saveAllCondition() {
+    this.cycleCondition = {
+      day: this.sportsTarget.getArrangeCondition(DateUnit.day),
+      week: this.sportsTarget.getArrangeCondition(DateUnit.week),
+      month: this.sportsTarget.getArrangeCondition(DateUnit.month),
+      season: this.sportsTarget.getArrangeCondition(DateUnit.season),
+      year: this.sportsTarget.getArrangeCondition(DateUnit.year),
+    };
+  }
+
+  /**
+   * 變更運動目標進階功能狀態
+   */
+  changeAdvancedTargetStatus() {
+    const currentStatus = this.advancedSportsTarget.personal;
+    this.advancedSportsTarget.personal = !currentStatus;
+    this.localstorageService.setAdvancedSportsTarget(this.advancedSportsTarget);
   }
 
   /**
@@ -269,6 +287,15 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 變更指定日期單位的目標條件
+   * @param contentMap {TargetConditionMap}-條件Map物件
+   * @param cycle {DateUnit}-日期單位
+   */
+  changeCondition(contentMap: TargetConditionMap, cycle: DateUnit) {
+    this.sportsTarget.changeAllCondition(cycle, contentMap);
+  }
+
+  /**
    * 關閉彈跳視窗
    */
   closeDialog() {
@@ -291,7 +318,8 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    * 更新運動目標設定
    */
   updateSportsTarget() {
-    const updateContent = { workoutTarget: this.sportsTarget };
+    const newSportsTarget = this.sportsTarget.getReductionTarget();
+    const updateContent = { workoutTarget: newSportsTarget };
     this.saveSettingChange(updateContent);
   }
 
@@ -313,7 +341,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       this.userService
         .updateUserProfile(updateContent)
         .pipe(
-          switchMap((res) => this.translate.get('hellow world').pipe(map((resp) => res))),
+          switchMap((res) => this.translate.get('hellow world').pipe(map(() => res))),
           takeUntil(this.ngUnsubscribe)
         )
         .subscribe((res) => {
@@ -339,10 +367,10 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    * @author kidin-1100825
    */
   checkEdit(oldSet: any, newSet: any): any {
-    let updateObj = {},
-      isUpdate = false;
+    let updateObj = {};
+    let isUpdate = false;
     for (const _key in newSet) {
-      if (newSet.hasOwnProperty(_key)) {
+      if (Object.prototype.hasOwnProperty.call(newSet, _key)) {
         const oldValue = oldSet[_key],
           newValue = newSet[_key];
         if (typeof newSet[_key] === 'object') {
@@ -918,9 +946,9 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   openTimeSelector(e: KeyboardEvent, type: 'normalBedTime' | 'normalWakeTime') {
     e.stopPropagation();
-    const [hour, min, second] = this.setting[type].split(':'),
-      hourList = [],
-      minList = [];
+    const [hour, min] = this.setting[type].split(':');
+    const hourList: Array<any> = [];
+    const minList: Array<any> = [];
     for (let i = -4; i <= 4; i++) {
       const _hour = +hour + i,
         _min = +min + i;
@@ -937,8 +965,8 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
 
     this.uiFlag.showTimeSelector = type;
     setTimeout(() => {
-      const hourEl = document.getElementById('hour__selector'),
-        minEl = document.getElementById('min__selector');
+      const hourEl = document.getElementById('hour__selector') as Element;
+      const minEl = document.getElementById('min__selector') as Element;
       this.subscribeWheelEvent(hourEl, minEl);
       this.subscribeGlobalClick();
     });
@@ -968,8 +996,8 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    * @author kidin-1100830
    */
   subscribeWheelEvent(hourEl: Element, minEl: Element) {
-    const hourWheelEvent = fromEvent(hourEl, 'wheel'),
-      minWheelEvent = fromEvent(minEl, 'wheel');
+    const hourWheelEvent = fromEvent(hourEl, 'wheel');
+    const minWheelEvent = fromEvent(minEl, 'wheel');
     this.wheelEvent = merge(hourWheelEvent, minWheelEvent)
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((e) => {
@@ -988,8 +1016,8 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
             topVal = +top.split('px')[0],
             timeType = id.split('__')[0], // hour或min
             ref = `${timeType}List`; // hourList或minList
-          let refList = this.timeSelector[ref],
-            start = 0;
+          const refList = this.timeSelector[ref];
+          let start = 0;
           const animation = setInterval(() => {
             start += interval;
             if (start >= animationTime) {
@@ -1071,9 +1099,9 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   selectTime(e: MouseEvent, type: TimeEditType, value: string) {
     e.stopPropagation();
     this.timeSelector[type] = value;
-    const { showTimeSelector } = this.uiFlag,
-      { hour, min } = this.timeSelector;
-    this.setting[showTimeSelector] = `${hour}:${min}:00`;
+    const { showTimeSelector } = this.uiFlag;
+    const { hour, min } = this.timeSelector;
+    this.setting[showTimeSelector as string] = `${hour}:${min}:00`;
   }
 
   /**
@@ -1115,152 +1143,12 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 展開/收合日期計算基準清單
-   * @param e {MouseEvent}
-   */
-  toggleCycleList(e: MouseEvent) {
-    e.stopPropagation();
-    const { showCycleList } = this.uiFlag;
-    showCycleList ? this.foldCycleList() : this.unfoldCycleList();
-  }
-
-  /**
-   * 展開日期計算基準清單
-   */
-  unfoldCycleList() {
-    this.foldAllList();
-    this.uiFlag.showCycleList = true;
-    this.subscribeDialogClickEvent();
-  }
-
-  /**
-   * 收合日期計算基準清單
-   */
-  foldCycleList() {
-    this.uiFlag.showCycleList = false;
-    this.unsubscribeEvent();
-  }
-
-  /**
-   * 選擇目標條件之日期基準
-   * @param cycle {DateUnit}-指定的基準序位
-   */
-  selectDateCycle(cycle: DateUnit) {
-    this.sportsTarget.cycle = cycle;
-    this.foldCycleList();
-  }
-
-  /**
-   * 展開/收合目標條件名稱清單
-   * @param e {MouseEvent}
-   */
-  toggleFiledNameList(e: MouseEvent) {
-    e.stopPropagation();
-    const { showFiledNameList } = this.uiFlag;
-    showFiledNameList ? this.foldFiledNameList() : this.unfoldFiledNameList();
-  }
-
-  /**
-   * 展開目標條件名稱清單
-   */
-  unfoldFiledNameList() {
-    this.foldAllList();
-    this.uiFlag.showFiledNameList = true;
-    this.subscribeDialogClickEvent();
-  }
-
-  /**
-   * 收合目標條件名稱
-   */
-  foldFiledNameList() {
-    this.uiFlag.showFiledNameList = false;
-    this.unsubscribeEvent();
-  }
-
-  /**
-   * 選擇新的條件名稱
-   * @param field {TargetField}
-   */
-  selectNewConditionFiled(field: TargetField) {
-    this.newCondition.filedName = field;
-    const { filedValue } = this.newCondition;
-    if (filedValue) {
-      if (field.toLowerCase().includes('time')) {
-        this.newCondition.filedValue = filedValue * 60;
-      }
-
-      this.addNewCondition();
-    }
-
-    this.foldFiledNameList();
-  }
-
-  /**
-   * 設定目標條件之達成值
-   * @param e {MouseEvent}
-   */
-  setNewConditionValue(e: MouseEvent) {
-    const { value } = (e as any).target;
-    if (formTest.number.test(value)) {
-      this.newCondition.filedValue = +value;
-      const { filedName, filedValue } = this.newCondition;
-      if (filedName) {
-        // 若目標項目跟時間有關，則將數值由分轉為秒
-        if (filedName.toLocaleLowerCase().includes('time')) {
-          this.newCondition.filedValue = filedValue * 60;
-        }
-
-        this.addNewCondition();
-      }
-    }
-
-    (e as any).target.value = '';
-  }
-
-  /**
-   * 將設定好的新條件納入目標中，若條件名稱重複則覆蓋舊條件
-   */
-  addNewCondition() {
-    const { filedName } = this.newCondition;
-    const repeatIndex = this.sportsTarget.condition.findIndex(
-      (_condition) => _condition.filedName === filedName
-    );
-
-    if (repeatIndex >= 0) this.deleteCondition(repeatIndex);
-    const newCondition = deepCopy(this.newCondition);
-    this.sportsTarget.condition.push(newCondition);
-    this.newCondition = {
-      filedName: <TargetField>'',
-      symbols: ConditionSymbols.greaterEqual,
-      filedValue: null,
-    };
-  }
-
-  /**
-   * 移除指定之條件
-   * @param index {number}-條件序列
-   */
-  deleteCondition(index: number) {
-    this.sportsTarget.condition.splice(index, 1);
-  }
-
-  /**
-   * 將所有已顯示清單收合
-   * @author kidin-1110308
-   */
-  foldAllList() {
-    this.uiFlag.showCycleList = false;
-    this.uiFlag.showFiledNameList = false;
-  }
-
-  /**
    * 訂閱彈跳設定視窗點擊事件
    */
   subscribeDialogClickEvent() {
-    const element = document.querySelector('.dialog-box');
+    const element = document.querySelector('.dialog-box') as Element;
     const clickEvent = fromEvent(element, 'click');
     this.dialogClickEvent = clickEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
-      this.foldAllList();
       this.unsubscribeDialogClickEvent();
     });
   }

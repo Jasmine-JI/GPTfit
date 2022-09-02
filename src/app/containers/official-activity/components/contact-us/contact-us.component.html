@@ -2,6 +2,45 @@
 <section class="flexCol main__section">
   <h4>{{ 'universal_vocabulary_contactUs' | translate }}</h4>
   <div id="form__content" class="flexCol">
+    <div class="flexCol">
+      <h5 [class.form__alert]="formAlert.contentType">
+        {{ 'universal_vocabulary_theme' | translate }}
+      </h5>
+      <div class="flexRow content__type__selector">
+        <button
+          [style.background-color]="
+            contentInfo.contentType === ContentType.operation ? 'rgba(253, 246, 124, 1)' : ''
+          "
+          (click)="selectContentType(ContentType.operation)"
+        >
+          {{ 'universal_vocabulary_opProblem' | translate }}
+        </button>
+        <button
+          [style.background-color]="
+            contentInfo.contentType === ContentType.paymentsProblem ? 'rgba(253, 246, 124, 1)' : ''
+          "
+          (click)="selectContentType(ContentType.paymentsProblem)"
+        >
+          {{ 'universal_vocabulary_payProblem' | translate }}
+        </button>
+        <button
+          [style.background-color]="
+            contentInfo.contentType === ContentType.suggestion ? 'rgba(253, 246, 124, 1)' : ''
+          "
+          (click)="selectContentType(ContentType.suggestion)"
+        >
+          {{ 'universal_vocabulary_opinion' | translate }}
+        </button>
+        <button
+          [style.background-color]="
+            contentInfo.contentType === ContentType.other ? 'rgba(253, 246, 124, 1)' : ''
+          "
+          (click)="selectContentType(ContentType.other)"
+        >
+          {{ 'universal_vocabulary_other' | translate }}
+        </button>
+      </div>
+    </div>
     <div class="flexRow content__input">
       <div class="flexCol user__info">
         <div class="flexCol">
@@ -75,45 +114,6 @@
           (change)="handleContentInput($event)"
           (focusout)="handleContentInput($event)"
         ></textarea>
-      </div>
-    </div>
-    <div class="flexCol">
-      <h5 [class.form__alert]="formAlert.contentType">
-        {{ 'universal_vocabulary_theme' | translate }}
-      </h5>
-      <div class="flexRow content__type__selector">
-        <button
-          [style.background-color]="
-            contentInfo.contentType === ContentType.operation ? 'rgba(253, 246, 124, 1)' : ''
-          "
-          (click)="selectContentType(ContentType.operation)"
-        >
-          {{ 'universal_vocabulary_opProblem' | translate }}
-        </button>
-        <button
-          [style.background-color]="
-            contentInfo.contentType === ContentType.paymentsProblem ? 'rgba(253, 246, 124, 1)' : ''
-          "
-          (click)="selectContentType(ContentType.paymentsProblem)"
-        >
-          {{ 'universal_vocabulary_payProblem' | translate }}
-        </button>
-        <button
-          [style.background-color]="
-            contentInfo.contentType === ContentType.suggestion ? 'rgba(253, 246, 124, 1)' : ''
-          "
-          (click)="selectContentType(ContentType.suggestion)"
-        >
-          {{ 'universal_vocabulary_opinion' | translate }}
-        </button>
-        <button
-          [style.background-color]="
-            contentInfo.contentType === ContentType.other ? 'rgba(253, 246, 124, 1)' : ''
-          "
-          (click)="selectContentType(ContentType.other)"
-        >
-          {{ 'universal_vocabulary_other' | translate }}
-        </button>
       </div>
     </div>
     <div class="flexRow form__operate__button">

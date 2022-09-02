@@ -142,10 +142,10 @@ export class AuthService {
    * 登出，清除token與個人資訊
    */
   logout() {
-    this.userService.getUser().logout();
-    this._backUrl = '';
-    this._isLogin$.next(false);
     this.removeToken();
+    this._backUrl = '';
+    this.userService.getUser().logout();
+    this._isLogin$.next(false);
   }
 
   /**

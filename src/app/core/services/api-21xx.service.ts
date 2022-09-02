@@ -2,6 +2,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { throwError, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { Api2104Post, Api2104Response } from '../models/api/api-21xx/api-2104.model';
+import { Api2107Post, Api2107Response } from '../models/api/api-21xx/api-2107.model';
 
 @Injectable({
   providedIn: 'root',
@@ -35,12 +37,10 @@ export class Api21xxService {
    * api-v2 2104 取得運動資料概要陣列資料
    * @param body {any}-api 所需參數
    */
-  fetchSportSummaryArray(body: any): Observable<any> {
-    return <any>(
-      this.http
-        .post('/api/v2/sport/getSportSummaryArray', body)
-        .pipe(catchError((err) => throwError(err)))
-    );
+  fetchSportSummaryArray(body: Api2104Post): Observable<Api2104Response> {
+    return this.http
+      .post('/api/v2/sport/getSportSummaryArray', body)
+      .pipe(catchError((err) => throwError(err))) as Observable<Api2104Response>;
   }
 
   /**

@@ -1075,7 +1075,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     });
 
     for (const _key in regressionObj) {
-      if (regressionObj.hasOwnProperty(_key) && _key !== 'timestampArr') {
+      if (Object.prototype.hasOwnProperty.call(regressionObj, _key) && _key !== 'timestampArr') {
         const slope =
           new SimpleLinearRegression(regressionObj['timestampArr'], regressionObj[_key]).slope || 0;
         let trend: 'up' | 'down' = null;
@@ -1160,7 +1160,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
           for (let k = 0, keyLen = needKey.length; k < keyLen; k++) {
             const key = needKey[k],
               excludeKey = ['birthYear', 'gender'];
-            if (_tracking.hasOwnProperty(key) && !excludeKey.includes(key)) {
+            if (Object.prototype.hasOwnProperty.call(key) && !excludeKey.includes(key)) {
               let value: number;
               value = +_tracking[key];
 
@@ -1237,12 +1237,12 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   handleGroupAnalysis(personData: any) {
     this.groupAnalysis = deepCopy(this.groupList.analysisObj);
     for (const gid in this.groupAnalysis as any) {
-      if (this.groupAnalysis.hasOwnProperty(gid)) {
+      if (Object.prototype.hasOwnProperty.call(this.groupAnalysis, gid)) {
         const { memberSet, memberList } = this.groupAnalysis[gid],
           idList = Array.from(memberSet);
         idList.forEach((_idList) => {
           const _id = _idList as number;
-          if (personData.hasOwnProperty(_id)) {
+          if (Object.prototype.hasOwnProperty.call(personData, _id)) {
             const { name, openPrivacy, birthYear } = personData[_id];
             memberList.push({
               name,
@@ -1294,7 +1294,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
                   }
 
                   // 數據加總
-                  if (this.groupAnalysis[gid].hasOwnProperty(addKey)) {
+                  if (Object.prototype.hasOwnProperty.call(this.groupAnalysis[gid], addKey)) {
                     if (addValue) {
                       this.groupAnalysis[gid][addKey] += addValue;
                       // 有效筆數(不為0的筆數)，計算平均數據用
@@ -1343,7 +1343,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   createGroupRegression(groupId: string) {
     const regressionData = this.groupList.regression[groupId];
     for (const _dataType in regressionData) {
-      if (regressionData.hasOwnProperty(_dataType)) {
+      if (Object.prototype.hasOwnProperty.call(regressionData, _dataType)) {
         const { data, date } = regressionData[_dataType],
           slope = new SimpleLinearRegression(date, data).slope || 0;
         let trend: 'up' | 'down' = null;
@@ -1414,7 +1414,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     timestamp: number
   ) {
     const numValue = +value;
-    if (obj.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
       obj[key].push(numValue);
     } else {
       obj = {
@@ -1681,7 +1681,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    */
   createbodyDiagram(personData: any) {
     for (const key in personData) {
-      if (personData.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(personData, key)) {
         const userData = personData[key],
           { FFMI, gender, fatRate } = userData;
         if (FFMI && fatRate) {

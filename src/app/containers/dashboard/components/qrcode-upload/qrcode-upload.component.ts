@@ -110,7 +110,7 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
   a3Translate(a3Obj) {
     const newObj = new Object();
     for (const a3Key in a3Obj) {
-      if (a3Obj.hasOwnProperty(a3Key)) {
+      if (Object.prototype.hasOwnProperty.call(a3Obj, a3Key)) {
         if (!Array.isArray(a3Obj[a3Key]) && typeof a3Obj[a3Key] === 'object') {
           newObj[this.a3Format.transform(a3Key)] = this.a3Translate(a3Obj[a3Key]);
         } else {

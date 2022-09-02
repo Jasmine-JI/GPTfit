@@ -600,7 +600,7 @@ function sortMember(file) {
     _group.rank.forEach((_rank) => {
       file.team.forEach((_team) => {
         if (_rank.team === _team.teamName) {
-          if (!_team.hasOwnProperty('member')) {
+          if (!Object.prototype.hasOwnProperty.call(_team, 'member')) {
             Object.assign(_team, {
               member: [
                 {
@@ -638,7 +638,7 @@ function saveImg(fileName, imgs) {
   checkDir(imgChildDir);
 
   for (let img in imgs) {
-    if (imgs.hasOwnProperty(img)) {
+    if (Object.prototype.hasOwnProperty.call(imgs, img)) {
       const oldPath = imgs[img].path,
         newPath = `${imgChildDir}/${imgs[img].name}`;
       fs.renameSync(oldPath, newPath);

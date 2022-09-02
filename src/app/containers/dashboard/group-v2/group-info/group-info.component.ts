@@ -1187,7 +1187,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   checkoutUserPrivacy() {
     let openPrivacy = true;
     for (const privacyType in this.user.privacy) {
-      if (this.user.privacy.hasOwnProperty(privacyType)) {
+      if (Object.prototype.hasOwnProperty.call(this.user.privacy, privacyType)) {
         const privacyArr = this.user.privacy[privacyType];
         if (
           !privacyArr.some((_privacy) => +_privacy === 4) &&

@@ -441,7 +441,10 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((res) => {
         this.groupData = res;
-        if (this.groupData.hasOwnProperty('groupId') && this.groupData.groupId === this.groupId) {
+        if (
+          Object.prototype.hasOwnProperty.call(this.groupData, 'groupId') &&
+          this.groupData.groupId === this.groupId
+        ) {
           this.groupId = this.groupData.groupId;
           this.showGroupInfo();
         } else {

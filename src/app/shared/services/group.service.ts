@@ -6,11 +6,14 @@ import { UserService } from '../../core/services/user.service';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { GroupDetailInfo, UserSimpleInfo } from '../../containers/dashboard/models/group-detail';
+import { GroupDetail } from '../../shared/models/group';
 import { GroupInfo } from '../classes/group-info';
 import { AllGroupMember } from '../classes/all-group-member';
 import { checkResponse } from '../utils/index';
 import { AuthService } from '../../core/services/auth.service';
 import { Api11xxService } from '../../core/services/api-11xx.service';
+import { SportsTarget } from '../classes/sports-target';
+import { GroupLevel } from '../../core/enums/professional/group-level.enum';
 
 const { API_SERVER } = environment.url;
 
@@ -340,7 +343,7 @@ export class GroupService {
 
   /**
    * 儲存群組概要資訊
-   * @param Detail {GroupDetailInfo}-api 1102回傳內容
+   * @param detail {GroupDetailInfo}-api 1102回傳內容
    * @author kidin-1091020
    */
   saveGroupDetail(detail: GroupDetailInfo) {
@@ -461,6 +464,8 @@ export class GroupService {
           userGroupId === `${this.getPartGroupId(currentGroupId, 3)}-0-0-0` ||
           userGroupId === `${this.getPartGroupId(currentGroupId, 4)}-0-0`
         );
+      default:
+        return false;
     }
   }
 
@@ -542,6 +547,51 @@ export class GroupService {
       );
     } else {
       return of(this.allGroupMemberList);
+    }
+  }
+
+  /**
+   * 取得運動目標
+   * @param groupDetail {GroupDetail}-群組詳細資訊
+   */
+  getSportsTarget(groupDetail: GroupDetail) {
+    const { target, groupId } = groupDetail;
+    if (target && Object.keys(target).length > 0) {
+      const groupLevel = +this.utils.displayGroupLevel(groupId);
+      const { name } = target;
+      if (!name || +name === groupLevel) {
+        return new SportsTarget(target);
+      } else {
+        return new SportsTarget(this.getReferenceTarget(groupDetail, +name));
+      }
+    } else {
+      return new SportsTarget({});
+    }
+  }
+
+  /**
+   * 取得繼承的運動目標
+   * @param groupDetail {GroupDetail}-群組詳細資訊
+   * @param reference {GroupLevel | string}-繼承目標的群組階層
+   */
+  getReferenceTarget(groupDetail: GroupDetail, reference: GroupLevel) {
+    const referenceLevel = +reference as GroupLevel;
+    const { groupRootInfo, target: currentTarget } = groupDetail;
+    const [, , brandInfo, branchInfo] = groupRootInfo;
+
+    // 若本身為課程群組且繼承分店的運動目標
+    if (referenceLevel === GroupLevel.branch && branchInfo) {
+      const { target } = branchInfo;
+      // 若分店又繼承品牌的運動目標
+      if (+target.name === GroupLevel.brand)
+        return this.getReferenceTarget(groupDetail, GroupLevel.brand);
+      return target;
+
+      // 若本身為品牌以下的群組且繼承品牌的運動目標
+    } else if (referenceLevel === GroupLevel.brand && brandInfo) {
+      return brandInfo.target;
+    } else {
+      return currentTarget;
     }
   }
 }
