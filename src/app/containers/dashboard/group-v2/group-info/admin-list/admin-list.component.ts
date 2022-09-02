@@ -1,5 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { GroupDetailInfo, UserSimpleInfo, MemberInfo, GroupArchitecture } from '../../../models/group-detail';
+import {
+  GroupDetailInfo,
+  UserSimpleInfo,
+  MemberInfo,
+  GroupArchitecture,
+} from '../../../models/group-detail';
 import { GroupService } from '../../../../../shared/services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { Subject, combineLatest, forkJoin } from 'rxjs';
@@ -11,17 +16,16 @@ const errMsg = `Error.<br />Please try again later.`;
 @Component({
   selector: 'app-admin-list',
   templateUrl: './admin-list.component.html',
-  styleUrls: ['./admin-list.component.scss', '../group-child-page.scss']
+  styleUrls: ['./admin-list.component.scss', '../group-child-page.scss'],
 })
 export class AdminListComponent implements OnInit, OnDestroy {
-
   private ngUnsubscribe = new Subject();
 
   /**
    * UI會用到的各個flag
    */
   uiFlag = {
-    editMode: <'complete' | 'edit'>'complete'
+    editMode: <'complete' | 'edit'>'complete',
   };
 
   /**
@@ -46,14 +50,14 @@ export class AdminListComponent implements OnInit, OnDestroy {
     brand: <Array<MemberInfo>>[],
     branch: <Array<MemberInfo>>[],
     class: <Array<MemberInfo>>[],
-    teacher: <Array<MemberInfo>>[]
-  }
+    teacher: <Array<MemberInfo>>[],
+  };
 
   constructor(
     private groupService: GroupService,
     private utils: UtilsService,
     private groupIdSlicePipe: GroupIdSlicePipe
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.initPage();
@@ -69,19 +73,18 @@ export class AdminListComponent implements OnInit, OnDestroy {
       this.groupService.getRxCommerceInfo(),
       this.groupService.getUserSimpleInfo(),
       this.groupService.getAllLevelGroupData(),
-      this.groupService.getRXAdminList()
-    ]).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(resArr => {
-      Object.assign(resArr[0], {groupLevel: this.utils.displayGroupLevel(resArr[0].groupId)});
-      Object.assign(resArr[0], {expired: resArr[1].expired});
-      Object.assign(resArr[0], {commerceStatus: resArr[1].commerceStatus});
-      this.groupInfo = resArr[0];
-      this.userSimpleInfo = resArr[2];
-      this.groupArchitecture = resArr[3];
-      this.sortMember(resArr[4], this.groupArchitecture);
-    })
-
+      this.groupService.getRXAdminList(),
+    ])
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((resArr) => {
+        Object.assign(resArr[0], { groupLevel: this.utils.displayGroupLevel(resArr[0].groupId) });
+        Object.assign(resArr[0], { expired: resArr[1].expired });
+        Object.assign(resArr[0], { commerceStatus: resArr[1].commerceStatus });
+        this.groupInfo = resArr[0];
+        this.userSimpleInfo = resArr[2];
+        this.groupArchitecture = resArr[3];
+        this.sortMember(resArr[4], this.groupArchitecture);
+      });
   }
 
   /**
@@ -95,32 +98,34 @@ export class AdminListComponent implements OnInit, OnDestroy {
       groupId: this.groupInfo.groupId,
       groupLevel: this.utils.displayGroupLevel(this.groupInfo.groupId),
       infoType: 2,
-      avatarType: 3
-    }
+      avatarType: 3,
+    };
 
     const memberBody = {
       token: this.userSimpleInfo.token,
       groupId: this.groupInfo.groupId,
       groupLevel: this.utils.displayGroupLevel(this.groupInfo.groupId),
       infoType: 3,
-      avatarType: 3
-    }
+      avatarType: 3,
+    };
 
     forkJoin([
       this.groupService.fetchGroupMemberList(adminBody),
-      this.groupService.fetchGroupMemberList(memberBody)
-    ]).subscribe(resArr => {
+      this.groupService.fetchGroupMemberList(memberBody),
+    ]).subscribe((resArr) => {
       if (resArr[0].resultCode !== 200 || resArr[1].resultCode !== 200) {
         this.utils.openAlert(errMsg);
-        console.error(`${resArr[0].resultCode}: Api ${resArr[0].apiCode} ${resArr[0].resultMessage}`);
-        console.error(`${resArr[1].resultCode}: Api ${resArr[1].apiCode} ${resArr[1].resultMessage}`);
+        console.error(
+          `${resArr[0].resultCode}: Api ${resArr[0].apiCode} ${resArr[0].resultMessage}`
+        );
+        console.error(
+          `${resArr[1].resultCode}: Api ${resArr[1].apiCode} ${resArr[1].resultMessage}`
+        );
       } else {
         this.groupService.setAdminList(resArr[0].info.groupMemberInfo);
         this.groupService.setNormalMemberList(resArr[1].info.groupMemberInfo);
       }
-
-    })
-
+    });
   }
 
   /**
@@ -131,7 +136,7 @@ export class AdminListComponent implements OnInit, OnDestroy {
    */
   sortMember(memArr: Array<MemberInfo>, groupArchitecture: GroupArchitecture) {
     this.initList();
-    memArr.forEach(_mem => {
+    memArr.forEach((_mem) => {
       switch (+_mem.accessRight) {
         case 30:
           this.adminList.brand.push(_mem);
@@ -141,7 +146,7 @@ export class AdminListComponent implements OnInit, OnDestroy {
           if (_mem !== null) {
             this.adminList.branch.push(_mem);
           }
-          
+
           break;
         case 50:
           _mem = this.getGroupName(_mem, groupArchitecture, 50);
@@ -158,9 +163,7 @@ export class AdminListComponent implements OnInit, OnDestroy {
 
           break;
       }
-
     });
-
   }
 
   /**
@@ -172,9 +175,8 @@ export class AdminListComponent implements OnInit, OnDestroy {
       brand: [],
       branch: [],
       class: [],
-      teacher: []
-    }
-
+      teacher: [],
+    };
   }
 
   /**
@@ -187,51 +189,43 @@ export class AdminListComponent implements OnInit, OnDestroy {
   getGroupName(member: MemberInfo, groupArchitecture: GroupArchitecture, groupLevel: number) {
     let haveGroup = false;
     if (groupLevel === 40) {
-
       const branches = groupArchitecture.branches,
-            branchesLength = branches.length;
+        branchesLength = branches.length;
       for (let i = 0; i < branchesLength; i++) {
-
         if (member.groupId === branches[i].groupId) {
           haveGroup = true;
-          Object.assign(member, {branchName: branches[i].groupName});
+          Object.assign(member, { branchName: branches[i].groupName });
           break;
         }
-
       }
-
     } else {
       const branches = groupArchitecture.branches,
-            branchesLength = branches.length,
-            coaches = groupArchitecture.coaches,
-            coachesLength = coaches.length;
+        branchesLength = branches.length,
+        coaches = groupArchitecture.coaches,
+        coachesLength = coaches.length;
       for (let i = 0; i < coachesLength; i++) {
-
         if (member.groupId === coaches[i].groupId) {
           haveGroup = true;
-          Object.assign(member, {coachName: coaches[i].groupName});
+          Object.assign(member, { coachName: coaches[i].groupName });
 
           for (let j = 0; j < branchesLength; j++) {
-
-            if (this.groupIdSlicePipe.transform(member.groupId, 4) === this.groupIdSlicePipe.transform(branches[j].groupId, 4)) {
-              Object.assign(member, {branchName: branches[j].groupName});
+            if (
+              this.groupIdSlicePipe.transform(member.groupId, 4) ===
+              this.groupIdSlicePipe.transform(branches[j].groupId, 4)
+            ) {
+              Object.assign(member, { branchName: branches[j].groupName });
               break;
             }
-    
           }
-
         }
-
       }
-
     }
-    
+
     if (haveGroup) {
       return member;
     } else {
       return null;
     }
-
   }
 
   /**
@@ -243,10 +237,9 @@ export class AdminListComponent implements OnInit, OnDestroy {
       this.uiFlag.editMode = 'edit';
       this.groupService.setEditMode('edit');
     } else {
-      this.uiFlag.editMode = 'complete'
+      this.uiFlag.editMode = 'complete';
       this.groupService.setEditMode('complete');
     }
-
   }
 
   /**
@@ -266,5 +259,4 @@ export class AdminListComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

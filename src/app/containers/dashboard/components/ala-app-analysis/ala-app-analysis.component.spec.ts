@@ -8,9 +8,8 @@ describe('AlaAppAnalysisComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AlaAppAnalysisComponent ]
-    })
-    .compileComponents();
+      declarations: [AlaAppAnalysisComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

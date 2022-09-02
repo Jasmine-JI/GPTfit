@@ -1,14 +1,11 @@
 import { zoneColor } from '../../models/chart-data';
 import { COLUMN_BORDER_COLOR, COMPARE_COLUMN_BORDER_COLOR } from '../../models/chart-data';
 
-
 /**
  * 處理心率趨勢數據
  */
- export class HrZoneTrendChartData {
-
+export class HrZoneTrendChartData {
   private _hrZoneTrend: Array<any>;
-
 
   constructor(isCompareMode: boolean) {
     isCompareMode ? this.createCompareOption() : this.createNormalOption();
@@ -27,13 +24,10 @@ import { COLUMN_BORDER_COLOR, COMPARE_COLUMN_BORDER_COLOR } from '../../models/c
         color: zoneColor[_reverseIndex],
         borderColor: COLUMN_BORDER_COLOR,
         custom: {
-          dateRange: []
-        }
-
+          dateRange: [],
+        },
       };
-
     });
-
   }
 
   /**
@@ -53,13 +47,10 @@ import { COLUMN_BORDER_COLOR, COMPARE_COLUMN_BORDER_COLOR } from '../../models/c
         color: zoneColor[_reverseIndex],
         showInLegend: false,
         custom: {
-          dateRange: []
-        }
-
+          dateRange: [],
+        },
       };
-
     });
-    
   }
 
   /**
@@ -72,9 +63,8 @@ import { COLUMN_BORDER_COLOR, COMPARE_COLUMN_BORDER_COLOR } from '../../models/c
     baseData.forEach((_hrZone, _index) => {
       const reverseIndex = this.getReverseIndex(_index);
       this._hrZoneTrend[reverseIndex].data.push([dateRange[0], _hrZone || 0]); // [startTimestamp, hrZone]
-      this._hrZoneTrend[reverseIndex].custom.dateRange.push(dateRange);  // [startTimestamp, endTimestamp]
+      this._hrZoneTrend[reverseIndex].custom.dateRange.push(dateRange); // [startTimestamp, endTimestamp]
     });
-
   }
 
   /**
@@ -92,14 +82,13 @@ import { COLUMN_BORDER_COLOR, COMPARE_COLUMN_BORDER_COLOR } from '../../models/c
   ) {
     baseData.forEach((_baseHrZone, _index) => {
       const _compareHrZone = compareData[_index];
-      const _baseReverseIndex = this.getReverseIndex(_index)
+      const _baseReverseIndex = this.getReverseIndex(_index);
       const _compareReverseIndex = _baseReverseIndex + 6;
       this._hrZoneTrend[_baseReverseIndex].data.push(_baseHrZone);
       this._hrZoneTrend[_baseReverseIndex].custom.dateRange.push(baseDateRange);
       this._hrZoneTrend[_compareReverseIndex].data.push(_compareHrZone);
       this._hrZoneTrend[_compareReverseIndex].custom.dateRange.push(compareDateRange);
     });
-
   }
 
   /**
@@ -116,5 +105,4 @@ import { COLUMN_BORDER_COLOR, COMPARE_COLUMN_BORDER_COLOR } from '../../models/c
   get chartData() {
     return this._hrZoneTrend;
   }
-
 }

@@ -5,10 +5,9 @@ import { takeUntil } from 'rxjs/operators';
 @Component({
   selector: 'app-sports-target-tip',
   templateUrl: './sports-target-tip.component.html',
-  styleUrls: ['./sports-target-tip.component.scss']
+  styleUrls: ['./sports-target-tip.component.scss'],
 })
 export class SportsTargetTipComponent implements OnInit, OnDestroy {
-
   private ngUnsubscribe = new Subject();
   private pluralEvent = new Subscription();
 
@@ -16,13 +15,12 @@ export class SportsTargetTipComponent implements OnInit, OnDestroy {
    * ui需要用到的各種flag
    */
   uiFlag = {
-    showTargetHint: false
+    showTargetHint: false,
   };
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   /**
    * 開關運動目標提示
@@ -37,7 +35,6 @@ export class SportsTargetTipComponent implements OnInit, OnDestroy {
     } else {
       this.openTargetHint();
     }
-
   }
 
   /**
@@ -66,12 +63,11 @@ export class SportsTargetTipComponent implements OnInit, OnDestroy {
     const element = document.querySelector('.main__container');
     const clickEvent = fromEvent(document, 'click');
     const scrollEvent = fromEvent(element, 'scroll');
-    this.pluralEvent = merge(clickEvent, scrollEvent).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.cancelListenPluralEvent();
-    });
-
+    this.pluralEvent = merge(clickEvent, scrollEvent)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.cancelListenPluralEvent();
+      });
   }
 
   /**
@@ -82,10 +78,8 @@ export class SportsTargetTipComponent implements OnInit, OnDestroy {
     if (this.pluralEvent) this.pluralEvent.unsubscribe();
   }
 
-
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

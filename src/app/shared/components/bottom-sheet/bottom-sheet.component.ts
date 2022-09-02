@@ -9,10 +9,9 @@ import { MatDialog } from '@angular/material/dialog';
 @Component({
   selector: 'app-bottom-sheet',
   templateUrl: './bottom-sheet.component.html',
-  styleUrls: ['./bottom-sheet.component.scss']
+  styleUrls: ['./bottom-sheet.component.scss'],
 })
 export class BottomSheetComponent implements OnInit {
-
   title: string;
   confirmText: string;
   cancelText: string;
@@ -31,7 +30,7 @@ export class BottomSheetComponent implements OnInit {
     this.translate.onLangChange.subscribe(() => {
       this.getAndInitTranslations();
     });
-    
+
     this.getAndInitTranslations();
   }
 
@@ -49,9 +48,9 @@ export class BottomSheetComponent implements OnInit {
         'universal_group_disclaimer',
         'universal_operating_agree',
         'universal_operating_disagree',
-        'universal_group_createClassStatement'
+        'universal_group_createClassStatement',
       ])
-      .subscribe(translation => {
+      .subscribe((translation) => {
         this.title = translation['universal_group_disclaimer'];
         this.confirmText = translation['universal_operating_agree'];
         this.cancelText = translation['universal_operating_disagree'];
@@ -66,10 +65,8 @@ export class BottomSheetComponent implements OnInit {
    * @author kidin-1091105
    */
   openLink(e: MouseEvent, type: string): void {
-
     this.bottomSheetRef.dismiss();
     if (type !== 'cancel') {
-
       this.dialog.open(MessageBoxComponent, {
         hasBackdrop: true,
         data: {
@@ -79,17 +76,13 @@ export class BottomSheetComponent implements OnInit {
           cancelText: this.cancelText,
           onConfirm: () => {
             this.router.navigateByUrl(
-              `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/group-introduction?createType=${type}`
+              `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+                this.groupId
+              )}/group-introduction?createType=${type}`
             );
-
-          }
-
-        }
-
+          },
+        },
       });
-
     }
-
   }
-
 }

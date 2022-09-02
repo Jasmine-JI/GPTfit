@@ -1,4 +1,4 @@
-import { GroupSportTarget } from '../../../shared/models/sport-target';
+import { SportTarget } from '../../../core/models/api/api-common/sport-target.model';
 import { AccessRight } from '../../../shared/enum/accessright';
 
 /**
@@ -24,7 +24,7 @@ export interface GroupDetailInfo {
   shareAvatarToMember: object;
   shareReportToMember: object;
   groupLevel?: number;
-  target?: GroupSportTarget;
+  target?: SportTarget;
 }
 
 /**
@@ -52,7 +52,7 @@ export interface UserSimpleInfo {
     activityTracking: Array<number | string>;
     activityTrackingReport: Array<number | string>;
     lifeTrackingReport: Array<number | string>;
-  }
+  };
 }
 
 /**
@@ -81,7 +81,7 @@ export enum GroupLevel {
   brand = 30,
   branch = 40,
   class = 60,
-  normal = 80
+  normal = 80,
 }
 
 /**
@@ -89,7 +89,7 @@ export enum GroupLevel {
  */
 export enum BrandType {
   brand = 1,
-  enterprise
+  enterprise,
 }
 
 /**
@@ -101,7 +101,7 @@ export enum GroupStatus {
   hide,
   disband,
   notFound,
-  lock
+  lock,
 }
 
 /**

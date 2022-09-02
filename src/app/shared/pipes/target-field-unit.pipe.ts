@@ -1,9 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { TargetField } from '../models/sport-target';
+import { TargetField } from '../../core/models/api/api-common/sport-target.model';
 
-@Pipe({name: 'targetFieldUnit'})
+@Pipe({ name: 'targetFieldUnit' })
 export class TargetFieldUnitPipe implements PipeTransform {
-
   constructor() {}
 
   /**
@@ -24,7 +23,5 @@ export class TargetFieldUnitPipe implements PipeTransform {
       case 'calories':
         return 'universal_unit_calories';
     }
-
   }
-
 }

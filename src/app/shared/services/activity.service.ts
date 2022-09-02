@@ -9,20 +9,17 @@ const { API_SERVER } = environment.url;
 
 @Injectable()
 export class ActivityService {
-
-  constructor(
-    private http: HttpClient
-  ) {}
+  constructor(private http: HttpClient) {}
 
   /**
    * 使用nodejs先將數據下載成文件再上傳至server
    * @param body {any}
    * @author kidin-1090421
    */
-  uploadSportFile (body: any) {
-    return this.http.post<any>(API_SERVER + 'uploadSportFile', body).pipe(
-      catchError(err => throwError(err))
-    );
+  uploadSportFile(body: any) {
+    return this.http
+      .post<any>(API_SERVER + 'uploadSportFile', body)
+      .pipe(catchError((err) => throwError(err)));
   }
 
   fetchTestData() {
@@ -35,9 +32,9 @@ export class ActivityService {
    * @author kidin-1100308
    */
   fetchSportList(body: any) {
-    return this.http.post<any>('/api/v2/sport/getSportList', body).pipe(
-      catchError(err => throwError(err))
-    );
+    return this.http
+      .post<any>('/api/v2/sport/getSportList', body)
+      .pipe(catchError((err) => throwError(err)));
   }
 
   /**
@@ -46,9 +43,9 @@ export class ActivityService {
    * @author kidin-1100308
    */
   fetchSportListDetail(body: any) {
-    return this.http.post<any>('/api/v2/sport/getSportListDetail', body).pipe(
-      catchError(err => throwError(err))
-    );
+    return this.http
+      .post<any>('/api/v2/sport/getSportListDetail', body)
+      .pipe(catchError((err) => throwError(err)));
   }
 
   /**
@@ -57,9 +54,9 @@ export class ActivityService {
    * @author kidin-1100308
    */
   fetchEditActivityProfile(body: any) {
-    return this.http.post<any>('/api/v2/sport/editActivityProfile', body).pipe(
-      catchError(err => throwError(err))
-    );
+    return this.http
+      .post<any>('/api/v2/sport/editActivityProfile', body)
+      .pipe(catchError((err) => throwError(err)));
   }
 
   /**
@@ -68,9 +65,9 @@ export class ActivityService {
    * @author kidin-1100308
    */
   fetchMultiActivityData(body: any) {
-    return this.http.post<any>('/api/v2/sport/getMultiActivityData', body).pipe(
-      catchError(err => throwError(err))
-    );
+    return this.http
+      .post<any>('/api/v2/sport/getMultiActivityData', body)
+      .pipe(catchError((err) => throwError(err)));
   }
 
   /**
@@ -78,10 +75,10 @@ export class ActivityService {
    * @param body {any}
    * @author kidin-1100308
    */
-  deleteActivityData (body: any) {
-    return this.http.post<any>('/api/v2/sport/deleteActivityData', body).pipe(
-      catchError(err => throwError(err))
-    );
+  deleteActivityData(body: any) {
+    return this.http
+      .post<any>('/api/v2/sport/deleteActivityData', body)
+      .pipe(catchError((err) => throwError(err)));
   }
 
   /**
@@ -89,7 +86,7 @@ export class ActivityService {
    * @param body {object}
    * @author kidin-1090723
    */
-  editPrivacy (body: any): Observable<any> {
+  editPrivacy(body: any): Observable<any> {
     return this.http.post<any>('/api/v2/sport/editPrivacy', body);
   }
 
@@ -129,7 +126,5 @@ export class ActivityService {
     } else {
       return `/app/public_html/img/${sportType}_0.jpg`;
     }
-    
   }
-
 }

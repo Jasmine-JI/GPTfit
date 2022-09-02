@@ -13,18 +13,18 @@
 }
 
 .functional__button {
-
   &:hover {
     background-color: rgba(245, 245, 245, 1);
   }
-
 }
 
 .mail__title {
   font-weight: bold;
 }
 
-.sender__row, .system__mail__mark, .mail__send__date {
+.sender__row,
+.system__mail__mark,
+.mail__send__date {
   margin-bottom: 5px;
 }
 
@@ -50,21 +50,21 @@
     text-decoration: underline;
     cursor: pointer;
   }
-
 }
 
 .system__mail__mark {
   $font-size: 12px;
   $padding-height: 2px;
   font-size: $font-size;
-  display: inline-block;  
+  display: inline-block;
   color: white;
   background-color: $system-mail-color;
   padding: $padding-height 8px;
   border-radius: calc(#{$font-size} + #{$padding-height} * 2);
 }
 
-.favorite__icon, .unfavorite__icon {
+.favorite__icon,
+.unfavorite__icon {
   font-size: 22px;
 }
 

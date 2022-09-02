@@ -2,9 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { Unit } from '../enum/value-conversion';
 import { SportType } from '../enum/sports';
 
-@Pipe({name: 'dataTypeUnit'})
+@Pipe({ name: 'dataTypeUnit' })
 export class DataTypeUnitPipe implements PipeTransform {
-
   /**
    * 根據運動資料數據類別及公英制回傳相對應的單位
    * @param value {string}-運動資料數據類別
@@ -45,7 +44,7 @@ export class DataTypeUnitPipe implements PipeTransform {
       case 'temperature':
         return userUnit === Unit.metric ? '°C' : '°F';
       case 'altitude':
-        return userUnit === Unit.metric ? 'm' : 'ft';;
+        return userUnit === Unit.metric ? 'm' : 'ft';
       case 'gforceX':
       case 'gforceY':
       case 'gforceZ':
@@ -66,7 +65,5 @@ export class DataTypeUnitPipe implements PipeTransform {
       default:
         return '';
     }
-
   }
-
 }

@@ -26,7 +26,7 @@ type ImgType = 'icon' | 'scenery';
 @Component({
   selector: 'app-personal',
   templateUrl: './personal.component.html',
-  styleUrls: ['./personal.component.scss']
+  styleUrls: ['./personal.component.scss'],
 })
 export class PersonalComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
@@ -59,7 +59,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
     windowInnerWidth: <number | null>null,
     hideScenery: false,
     isSettingPage: false,
-    patchEditPrivacy: false
+    patchEditPrivacy: false,
   };
 
   /**
@@ -69,20 +69,20 @@ export class PersonalComponent implements OnInit, OnDestroy {
     edited: false,
     icon: {
       origin: <string | null>null,
-      base64: <string | null>null
+      base64: <string | null>null,
     },
     scenery: {
       origin: <string | null>null,
-      base64: <string | null>null
-    }
-  }
+      base64: <string | null>null,
+    },
+  };
 
   /**
    * 儲存子頁面清單各選項按鈕寬度
    */
   perPageOptSize = {
     total: 0,
-    perSize: <Array<number>>[]
+    perSize: <Array<number>>[],
   };
 
   userProfile: UserProfileInfo;
@@ -103,7 +103,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private usreService: UserService,
     private authService: AuthService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.checkPage();
@@ -120,7 +120,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * 確認是否為預覽列印頁面
    * @author kidin-1100812
    */
-   checkPage() {
+  checkPage() {
     const { pathname, search } = location;
     const [origin, mainPath, secondPath, thirdPath] = pathname.split('/');
     switch (mainPath) {
@@ -139,7 +139,6 @@ export class PersonalComponent implements OnInit, OnDestroy {
         this.handleNotDashBoardPage();
         break;
     }
-
   }
 
   /**
@@ -181,15 +180,14 @@ export class PersonalComponent implements OnInit, OnDestroy {
    */
   handlePageResize() {
     const page = fromEvent(window, 'resize');
-    this.pageResize = page.pipe(
-      switchMap(res => this.globalEventsService.getRxSideBarMode().pipe(
-        map(resp => res)
-      )),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.checkScreenSize();
-    });
-
+    this.pageResize = page
+      .pipe(
+        switchMap((res) => this.globalEventsService.getRxSideBarMode().pipe(map((resp) => res))),
+        takeUntil(this.ngUnsubscribe)
+      )
+      .subscribe(() => {
+        this.checkScreenSize();
+      });
   }
 
   /**
@@ -199,12 +197,9 @@ export class PersonalComponent implements OnInit, OnDestroy {
   handleScroll() {
     const targetElement = document.querySelectorAll('.main__container');
     const targetScrollEvent = fromEvent(targetElement, 'scroll');
-    this.scrollEvent = targetScrollEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.scrollEvent = targetScrollEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.checkPageListBarPosition();
     });
-
   }
 
   /**
@@ -223,7 +218,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
         const { width } = scenerySection.getBoundingClientRect();
         if (barTop <= 51 && descBottom < 50) {
           pageListBar.classList.add('info-pageListBar-fixed');
-          headerDescriptionBlock.classList.add('info-pageListBar-replace');  // 填充原本功能列的高度
+          headerDescriptionBlock.classList.add('info-pageListBar-replace'); // 填充原本功能列的高度
           pageListBar.style.width = `${width}px`;
         } else {
           pageListBar.classList.remove('info-pageListBar-fixed');
@@ -235,11 +230,8 @@ export class PersonalComponent implements OnInit, OnDestroy {
           pageListBar.style.left = 0;
           pageListBar.style.right = 0;
         }
-
       }
-
     }
-
   }
 
   /**
@@ -247,16 +239,14 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1091111
    */
   handleSideBarSwitch() {
-    this.globalEventsService.getRxSideBarMode().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-
-      setTimeout(() => {
-        this.checkScreenSize();
-      }, 250); // 待sidebar動畫結束再計算位置
-      
-    })
-
+    this.globalEventsService
+      .getRxSideBarMode()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        setTimeout(() => {
+          this.checkScreenSize();
+        }, 250); // 待sidebar動畫結束再計算位置
+      });
   }
 
   /**
@@ -264,13 +254,13 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1091123
    */
   checkEditMode() {
-    this.dashboardService.getRxEditMode().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.upLoadImg(res);
-      this.uiFlag.openImgSelector = null;
-    });
-
+    this.dashboardService
+      .getRxEditMode()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.upLoadImg(res);
+        this.uiFlag.openImgSelector = null;
+      });
   }
 
   /**
@@ -279,47 +269,45 @@ export class PersonalComponent implements OnInit, OnDestroy {
    */
   checkScreenSize() {
     // 確認多國語系載入後再計算按鈕位置
-    this.translate.get('hellow world').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      const navSection = this.navSection.nativeElement,
-            navSectionWidth = navSection.clientWidth;
-      let reservedSpace = 0;
-      this.uiFlag.windowInnerWidth = window.innerWidth;
-      const haveExpandSidebar = window.innerWidth >= 1000 && window.innerWidth <= 1390;
-      if (haveExpandSidebar && !this.uiFlag.isPortalMode) {
-        reservedSpace = 270; // sidebar展開所需的空間
-      }
+    this.translate
+      .get('hellow world')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        const navSection = this.navSection.nativeElement,
+          navSectionWidth = navSection.clientWidth;
+        let reservedSpace = 0;
+        this.uiFlag.windowInnerWidth = window.innerWidth;
+        const haveExpandSidebar = window.innerWidth >= 1000 && window.innerWidth <= 1390;
+        if (haveExpandSidebar && !this.uiFlag.isPortalMode) {
+          reservedSpace = 270; // sidebar展開所需的空間
+        }
 
-      const { total, perSize } = this.perPageOptSize;
-      if (navSectionWidth < total + reservedSpace) {
-        const titleSizeList = perSize;
-        let total = 0;
-        for (let i = 0, sizeArrLen = titleSizeList.length; i < sizeArrLen; i++) {
-          total += titleSizeList[i];
-          if (total + reservedSpace + 130 >= navSectionWidth) { // 130為"更多"按鈕的空間
-            this.uiFlag.divideIndex = i;
-            break;
+        const { total, perSize } = this.perPageOptSize;
+        if (navSectionWidth < total + reservedSpace) {
+          const titleSizeList = perSize;
+          let total = 0;
+          for (let i = 0, sizeArrLen = titleSizeList.length; i < sizeArrLen; i++) {
+            total += titleSizeList[i];
+            if (total + reservedSpace + 130 >= navSectionWidth) {
+              // 130為"更多"按鈕的空間
+              this.uiFlag.divideIndex = i;
+              break;
+            }
           }
 
+          this.handleGlobalClick();
+        } else {
+          this.uiFlag.divideIndex = null;
+          if (this.clickEvent) {
+            this.clickEvent.unsubscribe();
+          }
         }
 
-        this.handleGlobalClick();
-      } else {
-        this.uiFlag.divideIndex = null;
-        if (this.clickEvent) {
-          this.clickEvent.unsubscribe();
-        }
-
-      }
-
-      setTimeout(() => {
-        this.getBtnPosition(this.uiFlag.currentTagIndex);
-        this.checkPageListBarPosition();
-      }, 250); // 待sidebar動畫結束再計算位置
-
-    });
-
+        setTimeout(() => {
+          this.getBtnPosition(this.uiFlag.currentTagIndex);
+          this.checkPageListBarPosition();
+        }, 250); // 待sidebar動畫結束再計算位置
+      });
   }
 
   /**
@@ -328,12 +316,9 @@ export class PersonalComponent implements OnInit, OnDestroy {
    */
   handleGlobalClick() {
     const clickEvent = fromEvent(document, 'click');
-    this.clickEvent = clickEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    this.clickEvent = clickEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.uiFlag.showMorePageOpt = false;
     });
-
   }
 
   /**
@@ -348,7 +333,6 @@ export class PersonalComponent implements OnInit, OnDestroy {
       this.uiFlag.isPageOwner = true;
       this.getRxUserProfile();
     }
-
   }
 
   /**
@@ -357,7 +341,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
    */
   getAssignUserProfile() {
     const userId = this.getPageOwnerId();
-    this.usreService.getTargetUserInfo(userId).subscribe(res => {
+    this.usreService.getTargetUserInfo(userId).subscribe((res) => {
       this.uiFlag.isPageOwner = userId === res.userId;
       this.userProfile = res;
       this.checkDescLen();
@@ -367,7 +351,6 @@ export class PersonalComponent implements OnInit, OnDestroy {
       this.getPerPageOptSize();
       this.uiFlag.isLoading = false;
     });
-
   }
 
   /**
@@ -375,19 +358,19 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1100811
    */
   getRxUserProfile() {
-    this.usreService.getUser().rxUserProfile.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.uiFlag.hideScenery = false;
-      this.userProfile = res;
-      this.hashUserId = this.hashIdService.handleUserIdEncode(res.userId);
-      this.childPageList = this.initChildPageList();
-      this.getCurrentContentPage();
-      this.getPerPageOptSize();
-      this.uiFlag.isLoading = false;
-      this.checkDescLen();
-    });
-
+    this.usreService
+      .getUser()
+      .rxUserProfile.pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.uiFlag.hideScenery = false;
+        this.userProfile = res;
+        this.hashUserId = this.hashIdService.handleUserIdEncode(res.userId);
+        this.childPageList = this.initChildPageList();
+        this.getCurrentContentPage();
+        this.getPerPageOptSize();
+        this.uiFlag.isLoading = false;
+        this.checkDescLen();
+      });
   }
 
   /**
@@ -399,32 +382,17 @@ export class PersonalComponent implements OnInit, OnDestroy {
       let childPageList = this.childPageList;
       const { isPortalMode, isSettingPage } = this.uiFlag;
       if (!isPortalMode) {
-
         if (!isSettingPage) {
-          childPageList = [
-            'activity-list',
-            'sport-report',
-            'life-tracking',
-            'cloudrun',
-            'info'
-          ];
-
+          childPageList = ['activity-list', 'sport-report', 'life-tracking', 'cloudrun', 'info'];
         }
-
       } else {
-        childPageList = [
-          'activity-list',
-          'sport-report',
-          'info'
-        ];
-
+        childPageList = ['activity-list', 'sport-report', 'info'];
       }
-      
+
       return childPageList;
     } else {
       return [];
     }
-
   }
 
   /**
@@ -442,16 +410,14 @@ export class PersonalComponent implements OnInit, OnDestroy {
         this.initPageOptSize();
         const menuList = document.querySelectorAll('.main__page__list');
         this.uiFlag.barWidth = menuList[0].clientWidth;
-        menuList.forEach(_menu => {
+        menuList.forEach((_menu) => {
           this.perPageOptSize.perSize.push(_menu.clientWidth);
           this.perPageOptSize.total += _menu.clientWidth;
         });
 
         this.checkScreenSize();
       });
-
     }
-
   }
 
   /**
@@ -466,9 +432,8 @@ export class PersonalComponent implements OnInit, OnDestroy {
 
     this.perPageOptSize = {
       total: 0,
-      perSize: []
+      perSize: [],
     };
-
   }
 
   /**
@@ -476,16 +441,12 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1100812
    */
   detectParamChange() {
-    this.router.events.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(event => {
+    this.router.events.pipe(takeUntil(this.ngUnsubscribe)).subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.getCurrentContentPage(event);
         this.getBtnPosition(this.uiFlag.currentTagIndex);
       }
-
-    })
-
+    });
   }
 
   /**
@@ -510,9 +471,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
         this.uiFlag.currentPage = urlArr[urlArr.length - 1].split('?')[0];
         this.uiFlag.currentTagIndex = this.childPageList.indexOf(this.uiFlag.currentPage);
       }
-
     }
-    
   }
 
   /**
@@ -531,11 +490,8 @@ export class PersonalComponent implements OnInit, OnDestroy {
         } else {
           this.uiFlag.descOverflow = false;
         }
-
       });
-
     }
-
   }
 
   /**
@@ -579,7 +535,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
   upLoadImg(editMode: EditMode) {
     const { edited, icon, scenery } = this.editImage;
     if (editMode === 'complete' && edited) {
-      let imgArr: any = [];
+      const imgArr: any = [];
       const formData = new FormData();
       const { userId } = this.userProfile;
       formData.set('token', this.authService.token);
@@ -588,14 +544,14 @@ export class PersonalComponent implements OnInit, OnDestroy {
       if (icon.base64 !== null) {
         const fileName = this.createFileName(imgArr.length, `${userId}`);
         imgArr.unshift({ albumType: AlbumType.personalIcon, fileNameFull: `${fileName}.jpg` });
-        formData.append( 'file', this.utils.base64ToFile(icon.base64, fileName));
+        formData.append('file', this.utils.base64ToFile(icon.base64, fileName));
       }
 
       // 個人佈景
       if (scenery.base64 !== null) {
         const fileName = this.createFileName(imgArr.length, `${userId}`);
         imgArr.unshift({ albumType: AlbumType.personalScenery, fileNameFull: `${fileName}.jpg` });
-        formData.append( 'file',this.utils.base64ToFile(scenery.base64, fileName));
+        formData.append('file', this.utils.base64ToFile(scenery.base64, fileName));
       }
 
       formData.set('img', JSON.stringify(imgArr));
@@ -606,7 +562,6 @@ export class PersonalComponent implements OnInit, OnDestroy {
     } else {
       this.uiFlag.editMode = editMode;
     }
-
   }
 
   /**
@@ -616,7 +571,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1091130
    */
   sendImgUploadReq(formData: FormData) {
-    this.imageUploadService.addImg(formData).subscribe(res => {
+    this.imageUploadService.addImg(formData).subscribe((res) => {
       const { resultCode } = res.processResult ?? { resultCode: 400 };
       if (resultCode !== 200) {
         this.editImage.icon.base64 = null;
@@ -627,9 +582,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
         this.usreService.refreshUserProfile();
         // this.dashboardService.setRxEditMode('close');
       }
-
     });
-
   }
 
   /**
@@ -640,7 +593,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
    */
   createFileName(length: number, userId: string) {
     const nameSpace = uuidv5('https://www.gptfit.com', uuidv5.URL),
-          keyword = `${dayjs().valueOf().toString()}${length}${userId.split('-').join('')}`;
+      keyword = `${dayjs().valueOf().toString()}${length}${userId.split('-').join('')}`;
     return uuidv5(keyword, nameSpace);
   }
 
@@ -653,12 +606,12 @@ export class PersonalComponent implements OnInit, OnDestroy {
       edited: false,
       icon: {
         origin: null,
-        base64: null
+        base64: null,
       },
       scenery: {
         origin: null,
-        base64: null
-      }
+        base64: null,
+      },
     };
   }
 
@@ -673,11 +626,9 @@ export class PersonalComponent implements OnInit, OnDestroy {
         url: `${location.origin}/user-profile/${this.hashUserId}`,
         title: this.translate.instant('universal_operating_share'),
         shareName: this.userProfile.nickname || '',
-        cancelText: this.translate.instant('universal_operating_confirm')
-      }
-
+        cancelText: this.translate.instant('universal_operating_confirm'),
+      },
     });
-
   }
 
   /**
@@ -708,7 +659,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @param tagIdx {number}-tag的顯示序
    * @author kidin-1100812
    */
-   getBtnPosition(tagIdx: number) {
+  getBtnPosition(tagIdx: number) {
     const { divideIndex } = this.uiFlag;
     if (divideIndex === null || tagIdx < divideIndex) {
       setTimeout(() => {
@@ -722,13 +673,10 @@ export class PersonalComponent implements OnInit, OnDestroy {
 
           this.uiFlag.barPosition = frontSize;
         }
-
       });
-      
     } else {
       this.getSeeMorePosition();
     }
-    
   }
 
   /**
@@ -739,13 +687,12 @@ export class PersonalComponent implements OnInit, OnDestroy {
   scrollPage(page: string) {
     const mainBodyEle = document.querySelector('.main__container') as Element;
     if (page === 'group-introduction') {
-      mainBodyEle.scrollTo({top: 0, behavior: 'smooth'});
+      mainBodyEle.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as HTMLElement,
-            pageListBarTop = pageListBar.offsetTop;
-      mainBodyEle.scrollTo({top: pageListBarTop, behavior: 'smooth'});
+        pageListBarTop = pageListBar.offsetTop;
+      mainBodyEle.scrollTo({ top: pageListBarTop, behavior: 'smooth' });
     }
-    
   }
 
   /**
@@ -753,14 +700,13 @@ export class PersonalComponent implements OnInit, OnDestroy {
    * @author kidin-1100812
    */
   getSeeMorePosition() {
-
     setTimeout(() => {
       const pageListBar = this.pageListBar.nativeElement,
-            seeMoreTag = this.seeMore.nativeElement;
+        seeMoreTag = this.seeMore.nativeElement;
       this.uiFlag.barWidth = seeMoreTag.clientWidth;
-      this.uiFlag.barPosition = seeMoreTag.getBoundingClientRect().left - pageListBar.getBoundingClientRect().left;
+      this.uiFlag.barPosition =
+        seeMoreTag.getBoundingClientRect().left - pageListBar.getBoundingClientRect().left;
     });
-    
   }
 
   /**
@@ -808,9 +754,13 @@ export class PersonalComponent implements OnInit, OnDestroy {
   navigateNewMailPage() {
     const userId = this.getPageOwnerId().toString();
     const hashId = this.hashIdService.handleUserIdEncode(userId);
-    const { stationMail: { home, newMail } } = appPath;
+    const {
+      stationMail: { home, newMail },
+    } = appPath;
     const { messageReceiverId, messageReceiverType } = QueryString;
-    this.router.navigateByUrl(`/dashboard/${home}/${newMail}?${messageReceiverId}=${hashId}&${messageReceiverType}=p`);
+    this.router.navigateByUrl(
+      `/dashboard/${home}/${newMail}?${messageReceiverId}=${hashId}&${messageReceiverType}=p`
+    );
   }
 
   /**
@@ -820,5 +770,4 @@ export class PersonalComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

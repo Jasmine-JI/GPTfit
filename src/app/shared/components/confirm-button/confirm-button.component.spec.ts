@@ -8,9 +8,8 @@ describe('ConfirmButtonComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ConfirmButtonComponent ]
-    })
-    .compileComponents();
+      declarations: [ConfirmButtonComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -8,9 +8,8 @@ describe('HrzoneChartComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ HrzoneChartComponent ]
-    })
-    .compileComponents();
+      declarations: [HrzoneChartComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

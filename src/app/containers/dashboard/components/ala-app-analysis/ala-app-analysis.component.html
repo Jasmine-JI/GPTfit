@@ -1,7 +1,7 @@
 <app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
 <div>
   <h5 class="pageTitle">流量統計分析</h5>
-  <header style="margin: 15px; border-bottom: 1px solid rgba(200, 200, 200, 1);">
+  <header style="margin: 15px; border-bottom: 1px solid rgba(200, 200, 200, 1)">
     <section class="flexCol">
       <h6 class="condition__type">篩選條件</h6>
       <div class="flexCol conditon__content__area">
@@ -23,9 +23,7 @@
                 class="radioBtn"
                 [class.radio__btn--active]="uiFlag.statisticType === StatisticTypeEnum.lifeTracking"
                 (click)="changeStatisticType(StatisticTypeEnum.lifeTracking)"
-              >
-
-              </button>
+              ></button>
               <label for="lifeTracking">生活追蹤</label>
             </span>
             <span class="flexRow radioSelector">
@@ -34,9 +32,7 @@
                 class="radioBtn"
                 [class.radio__btn--active]="uiFlag.statisticType === StatisticTypeEnum.image"
                 (click)="changeStatisticType(StatisticTypeEnum.image)"
-              >
-
-              </button>
+              ></button>
               <label for="image">圖床</label>
             </span>
           </div>
@@ -50,9 +46,7 @@
                 class="radioBtn"
                 [class.radio__btn--active]="uiFlag.statisticMethod === 'pre'"
                 (click)="changeStatisticMethod('pre')"
-              >
-
-              </button>
+              ></button>
               <label for="pre">預先統計</label>
             </span>
             <span class="flexRow radioSelector">
@@ -61,20 +55,21 @@
                 class="radioBtn"
                 [class.radio__btn--active]="uiFlag.statisticMethod === 'realtime'"
                 (click)="changeStatisticMethod('realtime')"
-              >
-                
-              </button>
+              ></button>
               <label for="realtime">即時統計</label>
             </span>
           </div>
         </div>
         <div
           class="flexCol condition__content"
-          *ngIf="uiFlag.statisticType !== StatisticTypeEnum.image || uiFlag.statisticMethod !== 'realtime'"
+          *ngIf="
+            uiFlag.statisticType !== StatisticTypeEnum.image ||
+            uiFlag.statisticMethod !== 'realtime'
+          "
         >
           <span>日期範圍：</span>
           <app-date-range-picker
-            style="margin-left: 10px;"
+            style="margin-left: 10px"
             [pickerType]="'rangePick'"
             [startTimeStamp]="selectTime.startTimestamp"
             [endTimeStamp]="selectTime.endTimestamp"
@@ -84,12 +79,9 @@
       </div>
     </section>
     <section class="flexCol">
-      <span
-        class="flexRow"
-        style="margin: 10px 0;"
-      >
-        <label for="advanced__condition" style="margin: 0;">
-          <h6 style="margin: 0; color: var(--scale-0-255); font-weight: bold;">進階篩選</h6>
+      <span class="flexRow" style="margin: 10px 0">
+        <label for="advanced__condition" style="margin: 0">
+          <h6 style="margin: 0; color: var(--scale-0-255); font-weight: bold">進階篩選</h6>
         </label>
         <button
           id="advanced__condition"
@@ -101,11 +93,12 @@
         </button>
       </span>
       <div class="flexCol conditon__content__area">
-        <div class="flexCol condition__content" *ngIf="uiFlag.statisticType !== StatisticTypeEnum.image">
-          <span [class.empty__warn]="filterCondition.createFromApp.length === 0">
-            App 類別：
-          </span>
-          <div class="flexRow" style="flex-wrap: wrap; margin: 0;">
+        <div
+          class="flexCol condition__content"
+          *ngIf="uiFlag.statisticType !== StatisticTypeEnum.image"
+        >
+          <span [class.empty__warn]="filterCondition.createFromApp.length === 0"> App 類別： </span>
+          <div class="flexRow" style="flex-wrap: wrap; margin: 0">
             <span class="flexRow checkBoxBlock">
               <button
                 id="all__app"
@@ -149,7 +142,9 @@
             <span class="flexRow checkBoxBlock">
               <button
                 id="trainlive"
-                [class.check__box--active]="filterCondition.createFromApp.includes(AlaApp.trainlive)"
+                [class.check__box--active]="
+                  filterCondition.createFromApp.includes(AlaApp.trainlive)
+                "
                 (click)="selectApp(AlaApp.trainlive)"
               >
                 <span *ngIf="filterCondition.createFromApp.includes(AlaApp.trainlive)">✔</span>
@@ -178,9 +173,7 @@
             </span>
           </div>
         </div>
-        <ng-container
-          *ngIf="uiFlag.statisticMethod === 'realtime' && uiFlag.showAdvancedCondition"
-        >
+        <ng-container *ngIf="uiFlag.statisticMethod === 'realtime' && uiFlag.showAdvancedCondition">
           <ng-container *ngIf="uiFlag.statisticType !== StatisticTypeEnum.image">
             <div class="flexRow condition__content">
               <label for="country__region">地區：</label>
@@ -195,9 +188,11 @@
                   (keyup)="handleRegionInput($event)"
                   (focusout)="handleRegionInput($event)"
                   (change)="handleRegionInput($event)"
-                >
+                />
                 <ng-container *ngIf="uiFlag.showAutoCompleted === 'region'">
-                  <div *ngTemplateOutlet="autoCompleted; context: {conditionType: 'region'}"></div>
+                  <div
+                    *ngTemplateOutlet="autoCompleted; context: { conditionType: 'region' }"
+                  ></div>
                 </ng-container>
               </div>
             </div>
@@ -214,9 +209,11 @@
                   (keyup)="handleLanguageInput($event)"
                   (focusout)="handleLanguageInput($event)"
                   (change)="handleLanguageInput($event)"
-                >
+                />
                 <ng-container *ngIf="uiFlag.showAutoCompleted === 'language'">
-                  <div *ngTemplateOutlet="autoCompleted; context: {conditionType: 'language'}"></div>
+                  <div
+                    *ngTemplateOutlet="autoCompleted; context: { conditionType: 'language' }"
+                  ></div>
                 </ng-container>
               </div>
             </div>
@@ -230,7 +227,7 @@
                 (keyup)="handleSnInput($event)"
                 (change)="handleSnInput($event)"
                 (focusout)="handleSnInput($event)"
-              >
+              />
             </span>
             <div *ngTemplateOutlet="group"></div>
             <div *ngTemplateOutlet="user"></div>
@@ -240,7 +237,7 @@
               <span>對象類型：</span>
               <div class="flexRowWrap">
                 <span class="flexRow radioSelector">
-                  <button 
+                  <button
                     id="all__obj"
                     class="radioBtn"
                     [class.radio__btn--active]="imageReqBody.objectType === ObjType.all"
@@ -249,7 +246,7 @@
                   <label for="all__obj">全部</label>
                 </span>
                 <span class="flexRow radioSelector">
-                  <button 
+                  <button
                     id="user__obj"
                     class="radioBtn"
                     [class.radio__btn--active]="imageReqBody.objectType === ObjType.user"
@@ -258,7 +255,7 @@
                   <label for="user__obj">使用者</label>
                 </span>
                 <span class="flexRow radioSelector">
-                  <button 
+                  <button
                     id="group__obj"
                     class="radioBtn"
                     [class.radio__btn--active]="imageReqBody.objectType === ObjType.group"
@@ -272,7 +269,7 @@
               <span>圖床類型：</span>
               <div class="flexRowWrap">
                 <span class="flexRow radioSelector">
-                  <button 
+                  <button
                     id="all__image__type"
                     class="radioBtn"
                     [class.radio__btn--active]="imageReqBody.imgType === AlbumType.all"
@@ -294,7 +291,9 @@
                     <button
                       id="personal__scenery"
                       class="radioBtn"
-                      [class.radio__btn--active]="imageReqBody.imgType === AlbumType.personalScenery"
+                      [class.radio__btn--active]="
+                        imageReqBody.imgType === AlbumType.personalScenery
+                      "
                       (click)="selectImageType(AlbumType.personalScenery)"
                     ></button>
                     <label for="personal__scenery">個人佈景</label>
@@ -303,7 +302,9 @@
                     <button
                       id="personal__sport__file"
                       class="radioBtn"
-                      [class.radio__btn--active]="imageReqBody.imgType === AlbumType.personalSportFile"
+                      [class.radio__btn--active]="
+                        imageReqBody.imgType === AlbumType.personalSportFile
+                      "
                       (click)="selectImageType(AlbumType.personalSportFile)"
                     ></button>
                     <label for="personal__sport__file">個人運動檔案</label>
@@ -346,76 +347,87 @@
                 </button>
                 <label for="check__child__group">包含子群組</label>
               </span>
-            </ng-container>            
+            </ng-container>
           </ng-container>
         </ng-container>
       </div>
     </section>
     <section id="condition__list" class="flexCol">
-      <h6 style="font-weight: bold;">輸入條件一覽</h6>
+      <h6 style="font-weight: bold">輸入條件一覽</h6>
       <div class="flexRow">
         <ng-container *ngIf="filterCondition.region?.length > 0">
-          <div *ngTemplateOutlet="conditionList;
-            context: {
-              conditionType: 'region',
-              conditionTitle: '地區',
-              conditionList: filterCondition.region
-            }"
+          <div
+            *ngTemplateOutlet="
+              conditionList;
+              context: {
+                conditionType: 'region',
+                conditionTitle: '地區',
+                conditionList: filterCondition.region
+              }
+            "
           ></div>
         </ng-container>
         <ng-container *ngIf="filterCondition.language?.length > 0">
-          <div *ngTemplateOutlet="conditionList;
-            context: {
-              conditionType: 'language',
-              conditionTitle: '語言',
-              conditionList: filterCondition.language
-            }"
+          <div
+            *ngTemplateOutlet="
+              conditionList;
+              context: {
+                conditionType: 'language',
+                conditionTitle: '語言',
+                conditionList: filterCondition.language
+              }
+            "
           ></div>
         </ng-container>
         <ng-container *ngIf="filterCondition.user?.length > 0">
-          <div *ngTemplateOutlet="conditionList;
-            context: {
-              conditionType: 'user',
-              conditionTitle: '使用者',
-              conditionList: filterCondition.user
-            }"
+          <div
+            *ngTemplateOutlet="
+              conditionList;
+              context: {
+                conditionType: 'user',
+                conditionTitle: '使用者',
+                conditionList: filterCondition.user
+              }
+            "
           ></div>
         </ng-container>
         <ng-container *ngIf="filterCondition.group?.length > 0">
-          <div *ngTemplateOutlet="conditionList;
-            context: {
-              conditionType: 'group',
-              conditionTitle: '群組',
-              conditionList: filterCondition.group
-            }"
+          <div
+            *ngTemplateOutlet="
+              conditionList;
+              context: {
+                conditionType: 'group',
+                conditionTitle: '群組',
+                conditionList: filterCondition.group
+              }
+            "
           ></div>
         </ng-container>
         <ng-container *ngIf="filterCondition.sn?.length > 0">
-          <div *ngTemplateOutlet="conditionList;
-            context: {
-              conditionType: 'sn',
-              conditionTitle: '裝置序號',
-              conditionList: filterCondition.sn
-            }"
+          <div
+            *ngTemplateOutlet="
+              conditionList;
+              context: {
+                conditionType: 'sn',
+                conditionTitle: '裝置序號',
+                conditionList: filterCondition.sn
+              }
+            "
           ></div>
         </ng-container>
       </div>
     </section>
-    <div style="display: flex; justify-content: flex-end;">
-      <button id="defalut__btn" (click)="allConditionRecovery()">
-        恢復預設
-      </button>
+    <div style="display: flex; justify-content: flex-end">
+      <button id="defalut__btn" (click)="allConditionRecovery()">恢復預設</button>
       <button
         id="confirm__btn"
         [style.pointer-events]="
-          (filterCondition.createFromApp.length === 0
-            || (uiFlag.statisticType === StatisticTypeEnum.image && 
-                (
-                  (imageReqBody.objectType === ObjType.user && !filterCondition.user)
-                  || (imageReqBody.objectType === ObjType.group && !filterCondition.group)
-                )
-              )
-          ) ? 'none' : 'initial'
+          filterCondition.createFromApp.length === 0 ||
+          (uiFlag.statisticType === StatisticTypeEnum.image &&
+            ((imageReqBody.objectType === ObjType.user && !filterCondition.user) ||
+              (imageReqBody.objectType === ObjType.group && !filterCondition.group)))
+            ? 'none'
+            : 'initial'
         "
         (click)="submit()"
       >
@@ -425,7 +437,7 @@
   </header>
   <main>
     <h6 style="font-weight: bold; color: var(--scale-0-255)">統計結果</h6>
-    <div class="flexCol" style="margin-left: 10px; color: var(--scale-100-205);">
+    <div class="flexCol" style="margin-left: 10px; color: var(--scale-100-205)">
       <div>
         <app-stack-column-chart
           [analysisData]="searchRes.trendChart"
@@ -443,10 +455,7 @@
         <span>
           {{ searchRes.totalSpace | dataFlowConversion }} ({{ searchRes.totalSpace }} byte)
         </span>
-        <span
-          class="condition__description"
-          *ngIf="uiFlag.statisticMethod === 'realtime'"
-        >
+        <span class="condition__description" *ngIf="uiFlag.statisticMethod === 'realtime'">
           (*point數 * 32 byte)
         </span>
       </span>
@@ -462,23 +471,17 @@
     <label
       for="user"
       [class.empty__warn]="
-        uiFlag.statisticType === StatisticTypeEnum.image
-        && imageReqBody.objectType === ObjType.user
-        && !filterCondition.user
+        uiFlag.statisticType === StatisticTypeEnum.image &&
+        imageReqBody.objectType === ObjType.user &&
+        !filterCondition.user
       "
     >
       使用者：
     </label>
     <div class="auto__completed__input">
-      <input
-        #userInput
-        type="text"
-        id="user"
-        placeholder="輸入暱稱後點選"
-        autocomplete="off"
-      >
+      <input #userInput type="text" id="user" placeholder="輸入暱稱後點選" autocomplete="off" />
       <ng-container *ngIf="uiFlag.showAutoCompleted === 'user'">
-        <div *ngTemplateOutlet="autoCompleted; context: {conditionType: 'user'}"></div>
+        <div *ngTemplateOutlet="autoCompleted; context: { conditionType: 'user' }"></div>
       </ng-container>
     </div>
   </div>
@@ -488,9 +491,9 @@
     <label
       for="group"
       [class.empty__warn]="
-        uiFlag.statisticType === StatisticTypeEnum.image
-        && imageReqBody.objectType === ObjType.group
-        && !filterCondition.group
+        uiFlag.statisticType === StatisticTypeEnum.image &&
+        imageReqBody.objectType === ObjType.group &&
+        !filterCondition.group
       "
     >
       群組：
@@ -502,15 +505,12 @@
         id="group"
         placeholder="輸入群組名稱後點選"
         autocomplete="off"
-      >
+      />
       <ng-container *ngIf="uiFlag.showAutoCompleted === 'group'">
-        <div *ngTemplateOutlet="autoCompleted; context: {conditionType: 'group'}"></div>
+        <div *ngTemplateOutlet="autoCompleted; context: { conditionType: 'group' }"></div>
       </ng-container>
     </div>
-    <span
-        class="condition__description"
-        *ngIf="uiFlag.statisticType !== StatisticTypeEnum.image"
-    >
+    <span class="condition__description" *ngIf="uiFlag.statisticType !== StatisticTypeEnum.image">
       ※ 計算fileInfo.class為該群組的檔案
     </span>
   </div>
@@ -518,7 +518,7 @@
 <ng-template #autoCompleted let-conditionType="conditionType">
   <div id="auto__completed" class="flexCol">
     <span
-      *ngFor="let _list of autoCompletedList; let _idx = index;"
+      *ngFor="let _list of autoCompletedList; let _idx = index"
       (click)="clickAutoCompleted($event, _idx)"
     >
       <ng-container *ngIf="conditionType === 'user'">
@@ -539,12 +539,12 @@
   let-conditionTitle="conditionTitle"
   let-conditionList="conditionList"
 >
-  <div class="flexCol" style="margin: 0 10px;">
+  <div class="flexCol" style="margin: 0 10px">
     <span>{{ conditionTitle }}：</span>
-    <div class="flexCol" style="margin-left: 10px;">
+    <div class="flexCol" style="margin-left: 10px">
       <div
         class="flexRow final__condition__list"
-        *ngFor="let _list of conditionList; let _idx = index;"
+        *ngFor="let _list of conditionList; let _idx = index"
       >
         <button class="del__condition__btn" (click)="delCondition(conditionType, _idx)">
           <i class="icon-svg_web-icon_p1_030-less"></i>

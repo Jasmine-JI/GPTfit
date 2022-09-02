@@ -1,8 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({name: 'patchUnit'})
+@Pipe({ name: 'patchUnit' })
 export class PatchUnitPipe implements PipeTransform {
-
   constructor() {}
 
   /**
@@ -11,8 +10,7 @@ export class PatchUnitPipe implements PipeTransform {
    * @param arg {string}-單位
    * @author kidin-1101105
    */
-  transform(value: number, arg: string ): string {
+  transform(value: number, arg: string): string {
     return `${value}${arg}`;
   }
-
 }

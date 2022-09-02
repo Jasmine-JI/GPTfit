@@ -13,10 +13,9 @@ import { AccessRight } from '../../../../shared/enum/accessright';
 @Component({
   selector: 'app-inner-settings',
   templateUrl: './inner-settings.component.html',
-  styleUrls: ['./inner-settings.component.scss']
+  styleUrls: ['./inner-settings.component.scss'],
 })
 export class InnerSettingsComponent implements OnInit, OnDestroy {
-
   private ngUnsubscribe = new Subject();
 
   systemDevelopers = [];
@@ -39,47 +38,39 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.fetchInnerAdmin();
-    this.userService.getUser().rxUserProfile.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      const { userId, systemAccessright } = this.userService.getUser();
-      this.userId = userId;
-      this.maxAccessRight = systemAccessright;
-    });
+    this.userService
+      .getUser()
+      .rxUserProfile.pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        const { userId, systemAccessright } = this.userService.getUser();
+        this.userId = userId;
+        this.maxAccessRight = systemAccessright;
+      });
   }
 
   fetchInnerAdmin() {
-    this.groupService.getInnerAdmin().subscribe(_result => {
+    this.groupService.getInnerAdmin().subscribe((_result) => {
       this.isLoading = false;
-      const isCanUse =
-        _result.findIndex(_res => _res.userId === this.userId) > -1;
+      const isCanUse = _result.findIndex((_res) => _res.userId === this.userId) > -1;
       if (isCanUse) {
-        this.systemDevelopers = _result.filter(
-          _res => _res.accessRight == AccessRight.god
-        );
+        this.systemDevelopers = _result.filter((_res) => _res.accessRight == AccessRight.god);
         this.systemMaintainers = _result.filter(
-          _res => _res.accessRight == AccessRight.maintainer
+          (_res) => _res.accessRight == AccessRight.maintainer
         );
-        this.systemAuditor = _result.filter(
-          _res => _res.accessRight == AccessRight.auditor
-        );
-        this.systemPushners = _result.filter(
-          _res => _res.accessRight == AccessRight.pusher
-        );
+        this.systemAuditor = _result.filter((_res) => _res.accessRight == AccessRight.auditor);
+        this.systemPushners = _result.filter((_res) => _res.accessRight == AccessRight.pusher);
         this.marketingDevelopers = _result.filter(
-          _res => _res.accessRight == AccessRight.marketing
+          (_res) => _res.accessRight == AccessRight.marketing
         );
       }
-
     });
-
   }
 
   handleConfirm(type, _lists) {
-    const userIds = _lists.map(_list => _list.userId);
+    const userIds = _lists.map((_list) => _list.userId);
     this.isLoading = true;
     const body = { targetRight: this.chooseType, userIds };
-    this.groupService.updateInnerAdmin(body).subscribe(res => {
+    this.groupService.updateInnerAdmin(body).subscribe((res) => {
       if (res.resultCode === 200) {
         this.fetchInnerAdmin();
         this.dialog.closeAll();
@@ -132,26 +123,22 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
           adminLists,
           type: 1,
           onConfirm: this.handleConfirm.bind(this),
-          isInnerAdmin: this.maxAccessRight < AccessRight.marketing
-        }
+          isInnerAdmin: this.maxAccessRight < AccessRight.marketing,
+        },
       });
     } else {
       this.dialog.open(MsgDialogComponent, {
         hasBackdrop: true,
         data: {
           title: 'message',
-          body: '您的權限不足，請跟系統相關管理者聯繫'
-        }
-
+          body: '您的權限不足，請跟系統相關管理者聯繫',
+        },
       });
-
     }
-
   }
 
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

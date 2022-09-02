@@ -8,9 +8,8 @@ describe('IntlPhoneInputComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ IntlPhoneInputComponent ]
-    })
-    .compileComponents();
+      declarations: [IntlPhoneInputComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

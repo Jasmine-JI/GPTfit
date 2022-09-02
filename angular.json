@@ -219,11 +219,15 @@
               "src/styles/styles.scss",
               "node_modules/bootstrap/dist/css/bootstrap.css",
               "node_modules/font-awesome/css/font-awesome.min.css",
-              "node_modules/dragula/dist/dragula.css",
+              "node_modules/material-design-icons/iconfont/material-icons.css",
+              "node_modules/daterangepicker/daterangepicker.css",
               "src/styles/theme/light.scss",
               "src/styles/theme/dark.scss",
               "src/styles/module/info.scss",
-              "src/styles/module/report.scss"
+              "src/styles/module/report.scss",
+              "src/styles/module/dialog.scss",
+              "src/styles/module/official-activity.scss",
+              "src/styles/module/app-webview.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
@@ -236,6 +240,15 @@
               "src/manifest.json",
               "sitemap.xml",
               "robots.txt"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
             ]
           }
         }
@@ -256,7 +269,6 @@
       }
     }
   },
-  "defaultProject": "web",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
@@ -265,5 +277,12 @@
     "@schematics/angular:directive": {
       "prefix": "app"
     }
+  },
+  "cli": {
+    "analytics": false,
+    "schematicCollections": [
+      "@angular-eslint/schematics",
+      "@angular-eslint/schematics"
+    ]
   }
 }

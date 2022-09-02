@@ -27,9 +27,7 @@ $section-padding: 10px;
       opacity: 1;
       @include el-transform(translateY(0));
     }
-
   }
-
 }
 
 .introduction {
@@ -44,14 +42,15 @@ $section-padding: 10px;
   &:nth-of-type(even) {
     flex-direction: row-reverse;
   }
-
 }
 
-.introduction__text, .introduction__image {
+.introduction__text,
+.introduction__image {
   width: 50%;
 }
 
-.introduction__text, .download__text {
+.introduction__text,
+.download__text {
   padding: 0 5vw;
 }
 
@@ -61,29 +60,30 @@ $section-padding: 10px;
 }
 
 .background__first {
-  background: linear-gradient(90deg, white 0%, #B3D1C6 100%);
+  background: linear-gradient(90deg, white 0%, #b3d1c6 100%);
 }
 
 .background__second {
-  background: linear-gradient(90deg, #DDCBAC 0%, white 100%);
+  background: linear-gradient(90deg, #ddcbac 0%, white 100%);
 }
 
 .background__third {
-  background: linear-gradient(90deg, #B5C4D6 0%, white 100%);
+  background: linear-gradient(90deg, #b5c4d6 0%, white 100%);
 }
 
 .background__fourth {
-  background: linear-gradient(90deg, white 0%, #DC3133 100%);
+  background: linear-gradient(90deg, white 0%, #dc3133 100%);
 }
 
 .download__section {
   display: flex;
   flex-direction: row;
   padding: $section-padding;
-  background: linear-gradient(90deg, #8A8A8A 0%, #FFFFFF 100%);
+  background: linear-gradient(90deg, #8a8a8a 0%, #ffffff 100%);
 }
 
-.cloudrun__introduction, .download__link__area {
+.cloudrun__introduction,
+.download__link__area {
   width: 50%;
 }
 
@@ -108,14 +108,14 @@ $section-padding: 10px;
   width: 40%;
 }
 
-.download__img, .mock__img {
+.download__img,
+.mock__img {
   width: 100%;
 }
 
 /********************************************* media *******************************************/
 
-@media(max-width: 767px) {
-
+@media (max-width: 767px) {
   .introduction {
     flex-direction: column-reverse !important;
   }
@@ -136,24 +136,23 @@ $section-padding: 10px;
   }
 
   .background__first {
-    background: linear-gradient(90deg, #A8CEF7 0%, #B3D1C6 100%);
-  }
-  
-  .background__second {
-    background: linear-gradient(90deg, #DDCBAC 0%, #FADF95 100%);
-  }
-  
-  .background__third {
-    background: linear-gradient(90deg, #B5C4D6 0%, #C3CFDB 100%);
-  }
-  
-  .background__fourth {
-    background: linear-gradient(90deg, #D9D3FC 0%, #DC3133 100%);
+    background: linear-gradient(90deg, #a8cef7 0%, #b3d1c6 100%);
   }
 
-  .introduction__title, .download__title {
+  .background__second {
+    background: linear-gradient(90deg, #ddcbac 0%, #fadf95 100%);
+  }
+
+  .background__third {
+    background: linear-gradient(90deg, #b5c4d6 0%, #c3cfdb 100%);
+  }
+
+  .background__fourth {
+    background: linear-gradient(90deg, #d9d3fc 0%, #dc3133 100%);
+  }
+
+  .introduction__title,
+  .download__title {
     font-size: 28px;
   }
-
 }
-

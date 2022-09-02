@@ -10,13 +10,13 @@ class Option {
         // marginLeft: 60, // Keep all charts left aligned
         spacingTop: 20,
         spacingBottom: 20,
-        zoomType: 'x'
+        zoomType: 'x',
       },
       title: {
         text: dataset.name,
         align: 'left',
         margin: 0,
-        x: 30
+        x: 30,
       },
       xAxis: {
         crosshair: true,
@@ -28,8 +28,8 @@ class Option {
           minute: '%H:%M:%S',
           day: '%H:%M:%S',
           hour: '%H:%M:%S',
-          year: '%H:%M:%S'
-        }
+          year: '%H:%M:%S',
+        },
       },
       yAxis: {
         title: {
@@ -37,19 +37,19 @@ class Option {
           min: null,
           max: null,
           tickInterval: null,
-          labels: null
-        }
+          labels: null,
+        },
       },
       tooltip: {
         pointFormat: '{point.y}',
         xDateFormat: '%H:%M:%S',
         shadow: false,
         style: {
-          fontSize: '14px'
+          fontSize: '14px',
         },
         valueDecimals: dataset.valueDecimals,
         split: true,
-        share: true
+        share: true,
       },
       series: [
         {
@@ -59,10 +59,10 @@ class Option {
           color: getOptions().colors[colorIdx],
           fillOpacity: 0.3,
           tooltip: {
-            valueSuffix: ' ' + dataset.unit
-          }
-        }
-      ]
+            valueSuffix: ' ' + dataset.unit,
+          },
+        },
+      ],
     };
   }
 }
@@ -194,7 +194,6 @@ export class LifeTrackingService {
       } else {
         localPressure.push(+_point.localPressure);
       }
-
     });
 
     const activityDataset = {
@@ -202,7 +201,7 @@ export class LifeTrackingService {
       data: activitys,
       unit: '',
       type: 'line',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
 
     const airPressureDataset = {
@@ -210,7 +209,7 @@ export class LifeTrackingService {
       data: airPressures,
       unit: '',
       type: 'line',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
 
     const elevDataset = {
@@ -218,7 +217,7 @@ export class LifeTrackingService {
       data: elevs,
       unit: '',
       type: 'line',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
 
     const heartRateDataset = {
@@ -226,7 +225,7 @@ export class LifeTrackingService {
       data: heartRates,
       unit: '',
       type: 'line',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
 
     const stressDataset = {
@@ -234,7 +233,7 @@ export class LifeTrackingService {
       data: stresses,
       unit: '',
       type: 'line',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
 
     const tempDataset = {
@@ -242,7 +241,7 @@ export class LifeTrackingService {
       data: temps,
       unit: '',
       type: 'line',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
 
     const totalActivityCaloriesDataset = {
@@ -250,7 +249,7 @@ export class LifeTrackingService {
       data: totalActivityCalories,
       unit: '',
       type: 'line',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
 
     const totalDistanceMetersDataset = {
@@ -258,7 +257,7 @@ export class LifeTrackingService {
       data: totalDistanceMeters,
       unit: '',
       type: 'line',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
 
     const totalElevGainDataset = {
@@ -266,7 +265,7 @@ export class LifeTrackingService {
       data: totalElevGains,
       unit: '',
       type: 'line',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
 
     const totalElevLossDataset = {
@@ -274,7 +273,7 @@ export class LifeTrackingService {
       data: totalElevLoss,
       unit: '',
       type: 'line',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
 
     const totalLifeCaloriesDataset = {
@@ -282,7 +281,7 @@ export class LifeTrackingService {
       data: totalLifeCalories,
       unit: '',
       type: 'line',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
 
     const totalStepDataset = {
@@ -290,7 +289,7 @@ export class LifeTrackingService {
       data: totalStep,
       unit: '',
       type: 'line',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
 
     const wearingStatusDataset = {
@@ -298,7 +297,7 @@ export class LifeTrackingService {
       data: wearingStatus,
       unit: '',
       type: 'line',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
 
     const walkElevGainDataset = {
@@ -306,7 +305,7 @@ export class LifeTrackingService {
       data: walkElevGain,
       unit: '',
       type: 'line',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
 
     const walkElevLossDataset = {
@@ -314,7 +313,7 @@ export class LifeTrackingService {
       data: walkElevLoss,
       unit: '',
       type: 'line',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
 
     const localPressureDataset = {
@@ -322,7 +321,7 @@ export class LifeTrackingService {
       data: localPressure,
       unit: '',
       type: 'line',
-      valueDecimals: 1
+      valueDecimals: 1,
     };
 
     const finalDatas = [];
@@ -345,20 +344,14 @@ export class LifeTrackingService {
       localPressureOptions;
 
     // activity
-    activityDataset.data = activityDataset.data.map((val, j) => [
-      pointSeconds[j],
-      val
-    ]);
+    activityDataset.data = activityDataset.data.map((val, j) => [pointSeconds[j], val]);
     activityOptions = new Option(activityDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ activityChartTarget: activityOptions, isSyncExtremes: true });
     chartTargets.push('activityChartTarget');
 
     // heartRate
-    heartRateDataset.data = heartRateDataset.data.map((val, j) => [
-      pointSeconds[j],
-      val
-    ]);
+    heartRateDataset.data = heartRateDataset.data.map((val, j) => [pointSeconds[j], val]);
     heartRateOptions = new Option(heartRateDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ heartRateChartTarget: heartRateOptions, isSyncExtremes: true });
@@ -367,68 +360,59 @@ export class LifeTrackingService {
     // totalDistanceMeters
     totalDistanceMetersDataset.data = totalDistanceMetersDataset.data.map((val, j) => [
       pointSeconds[j],
-      val
+      val,
     ]);
     totalDistanceMetersOptions = new Option(totalDistanceMetersDataset, colorIdx);
     colorIdx++;
-    finalDatas.push({ totalDistanceMetersChartTarget: totalDistanceMetersOptions, isSyncExtremes: true });
+    finalDatas.push({
+      totalDistanceMetersChartTarget: totalDistanceMetersOptions,
+      isSyncExtremes: true,
+    });
     chartTargets.push('totalDistanceMetersChartTarget');
 
     // totalLifeCalories
     totalLifeCaloriesDataset.data = totalLifeCaloriesDataset.data.map((val, j) => [
       pointSeconds[j],
-      val
+      val,
     ]);
     totalLifeCaloriesOptions = new Option(totalLifeCaloriesDataset, colorIdx);
     colorIdx++;
-    finalDatas.push({ totalLifeCaloriesChartTarget: totalLifeCaloriesOptions, isSyncExtremes: true });
+    finalDatas.push({
+      totalLifeCaloriesChartTarget: totalLifeCaloriesOptions,
+      isSyncExtremes: true,
+    });
     chartTargets.push('totalLifeCaloriesChartTarget');
 
     // totalStep
-    totalStepDataset.data = totalStepDataset.data.map((val, j) => [
-      pointSeconds[j],
-      val
-    ]);
+    totalStepDataset.data = totalStepDataset.data.map((val, j) => [pointSeconds[j], val]);
     totalStepOptions = new Option(totalStepDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ totalStepChartTarget: totalStepOptions, isSyncExtremes: true });
     chartTargets.push('totalStepChartTarget');
 
     // airPressure
-    airPressureDataset.data = airPressureDataset.data.map((val, j) => [
-      pointSeconds[j],
-      val
-    ]);
+    airPressureDataset.data = airPressureDataset.data.map((val, j) => [pointSeconds[j], val]);
     airPressureOptions = new Option(airPressureDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ airPressureChartTarget: airPressureOptions, isSyncExtremes: true });
     chartTargets.push('airPressureChartTarget');
 
     // elev
-    elevDataset.data = elevDataset.data.map((val, j) => [
-      pointSeconds[j],
-      val
-    ]);
+    elevDataset.data = elevDataset.data.map((val, j) => [pointSeconds[j], val]);
     elevOptions = new Option(elevDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ elevChartTarget: elevOptions, isSyncExtremes: true });
     chartTargets.push('elevChartTarget');
 
     // stress
-    stressDataset.data = stressDataset.data.map((val, j) => [
-      pointSeconds[j],
-      val
-    ]);
+    stressDataset.data = stressDataset.data.map((val, j) => [pointSeconds[j], val]);
     stressOptions = new Option(stressDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ stressChartTarget: stressOptions, isSyncExtremes: true });
     chartTargets.push('stressChartTarget');
 
     // temp
-    tempDataset.data = tempDataset.data.map((val, j) => [
-      pointSeconds[j],
-      val
-    ]);
+    tempDataset.data = tempDataset.data.map((val, j) => [pointSeconds[j], val]);
     tempOptions = new Option(tempDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ tempChartTarget: tempOptions, isSyncExtremes: true });
@@ -437,68 +421,53 @@ export class LifeTrackingService {
     // totalActivityCalories
     totalActivityCaloriesDataset.data = totalActivityCaloriesDataset.data.map((val, j) => [
       pointSeconds[j],
-      val
+      val,
     ]);
     totalActivityCaloriesOptions = new Option(totalActivityCaloriesDataset, colorIdx);
     colorIdx++;
-    finalDatas.push({ totalActivityCaloriesChartTarget: totalActivityCaloriesOptions, isSyncExtremes: true });
+    finalDatas.push({
+      totalActivityCaloriesChartTarget: totalActivityCaloriesOptions,
+      isSyncExtremes: true,
+    });
     chartTargets.push('totalActivityCaloriesChartTarget');
 
     // totalElevGain
-    totalElevGainDataset.data = totalElevGainDataset.data.map((val, j) => [
-      pointSeconds[j],
-      val
-    ]);
+    totalElevGainDataset.data = totalElevGainDataset.data.map((val, j) => [pointSeconds[j], val]);
     totalElevGainOptions = new Option(totalElevGainDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ totalElevGainChartTarget: totalElevGainOptions, isSyncExtremes: true });
     chartTargets.push('totalElevGainChartTarget');
 
     // totalElevLoss
-    totalElevLossDataset.data = totalElevLossDataset.data.map((val, j) => [
-      pointSeconds[j],
-      val
-    ]);
+    totalElevLossDataset.data = totalElevLossDataset.data.map((val, j) => [pointSeconds[j], val]);
     totalElevLossOptions = new Option(totalElevLossDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ totalElevLossChartTarget: totalElevLossOptions, isSyncExtremes: true });
     chartTargets.push('totalElevLossChartTarget');
 
     // wearingStatus
-    wearingStatusDataset.data = wearingStatusDataset.data.map((val, j) => [
-      pointSeconds[j],
-      val
-    ]);
+    wearingStatusDataset.data = wearingStatusDataset.data.map((val, j) => [pointSeconds[j], val]);
     wearingStatusOptions = new Option(wearingStatusDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ wearingStatusChartTarget: wearingStatusOptions, isSyncExtremes: true });
     chartTargets.push('wearingStatusChartTarget');
 
     // walkElevGain
-    walkElevGainDataset.data = walkElevGainDataset.data.map((val, j) => [
-      pointSeconds[j],
-      val
-    ]);
+    walkElevGainDataset.data = walkElevGainDataset.data.map((val, j) => [pointSeconds[j], val]);
     walkElevGainOptions = new Option(walkElevGainDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ walkElevGainChartTarget: walkElevGainOptions, isSyncExtremes: true });
     chartTargets.push('walkElevGainChartTarget');
 
     // walkElevLoss
-    walkElevLossDataset.data = walkElevLossDataset.data.map((val, j) => [
-      pointSeconds[j],
-      val
-    ]);
+    walkElevLossDataset.data = walkElevLossDataset.data.map((val, j) => [pointSeconds[j], val]);
     walkElevLossOptions = new Option(walkElevLossDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ walkElevLossChartTarget: walkElevLossOptions, isSyncExtremes: true });
     chartTargets.push('walkElevLossChartTarget');
 
     // localPressure
-    localPressureDataset.data = localPressureDataset.data.map((val, j) => [
-      pointSeconds[j],
-      val
-    ]);
+    localPressureDataset.data = localPressureDataset.data.map((val, j) => [pointSeconds[j], val]);
     localPressureOptions = new Option(localPressureDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ localPressureChartTarget: localPressureOptions, isSyncExtremes: true });
@@ -506,5 +475,4 @@ export class LifeTrackingService {
 
     return { finalDatas, chartTargets };
   }
-
 }

@@ -8,9 +8,8 @@ describe('EditPushMessageComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ EditPushMessageComponent ]
-    })
-    .compileComponents();
+      declarations: [EditPushMessageComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

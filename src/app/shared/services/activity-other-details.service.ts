@@ -27,9 +27,9 @@ export class ActivityOtherDetailsService {
     if (sn && sn.length > 0) {
       // 改接7015-kidin-1090113
       const deviceBody = {
-        'token': '',
-        'queryType': '1',
-        'queryArray': [sn]
+        token: '',
+        queryType: '1',
+        queryArray: [sn],
       };
       const getDeviceDetail = this.qrCodeService.getProductInfo(deviceBody);
       forkJoinArray.push(getDeviceDetail);
@@ -39,12 +39,12 @@ export class ActivityOtherDetailsService {
         token,
         findRoot: '1',
         groupId,
-        avatarType: 2
+        avatarType: 2,
       };
       const body2 = {
         token,
         avatarType: 2,
-        targetUserId: coachId
+        targetUserId: coachId,
       };
       const getGroupDetail = this.groupService.fetchGroupListDetail(body);
       const getUserInfo = this.api10xxService.fetchGetUserProfile(body2);
@@ -53,18 +53,17 @@ export class ActivityOtherDetailsService {
     }
 
     if (forkJoinArray.length > 0) {
-      forkJoin(forkJoinArray).subscribe(res => {
+      forkJoin(forkJoinArray).subscribe((res) => {
         if (groupId && coachId) {
           this.otherInfo$.next({
             deviceInfo: res[0],
             coachInfo: res[2],
-            groupInfo: res[1]
+            groupInfo: res[1],
           });
         } else {
-          this.otherInfo$.next({deviceInfo: res[0]});
+          this.otherInfo$.next({ deviceInfo: res[0] });
         }
       });
     }
-
   }
 }

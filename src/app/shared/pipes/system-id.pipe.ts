@@ -1,7 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-
-@Pipe({name: 'systemId'})
+@Pipe({ name: 'systemId' })
 export class SystemIdPipe implements PipeTransform {
   /**
    * 根據系統類別回傳對應系統名稱
@@ -12,13 +11,11 @@ export class SystemIdPipe implements PipeTransform {
   transform(value: number): string {
     switch (value) {
       case 0:
-        return 'Web'
+        return 'Web';
       case 1:
         return 'iOS';
       case 2:
         return 'Android';
     }
-
   }
-
 }

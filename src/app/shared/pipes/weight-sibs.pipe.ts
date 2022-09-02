@@ -2,9 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { lb } from '../models/bs-constant';
 import { Unit } from '../enum/value-conversion';
 
-@Pipe({name: 'weightSibs'})
+@Pipe({ name: 'weightSibs' })
 export class WeightSibsPipe implements PipeTransform {
-
   /**
    * 依公英制轉換重量單位。
    * @param value {number}-重量
@@ -13,8 +12,7 @@ export class WeightSibsPipe implements PipeTransform {
    */
   transform(value: number, args: number[] = [Unit.metric, 1]): string {
     const [unitType, showUnit] = args;
-    let finalValue: number,
-        unit: string;
+    let finalValue: number, unit: string;
     if (unitType === Unit.metric) {
       finalValue = value || 0;
       unit = 'kg';
@@ -22,9 +20,8 @@ export class WeightSibsPipe implements PipeTransform {
       finalValue = +(value / lb) || 0;
       unit = 'lb';
     }
-    
+
     const fixedValue = parseFloat(finalValue.toFixed(0));
     return !showUnit ? `${fixedValue} ${unit}` : `${fixedValue}`;
   }
-
 }

@@ -1,107 +1,93 @@
-<div style="display:inline-block" (click)="goToUserProfileInGroupInfo()">
+<div style="display: inline-block" (click)="goToUserProfileInGroupInfo()">
   <div class="member-selector" (click)="toggleMenu()">
-    <img class="capsule-img" [src]="icon" (error)="handleImgIconError()">
+    <img class="capsule-img" [src]="icon" (error)="handleImgIconError()" />
     <i class="icon-svg_web-icon_p1_059-lock group__lock" *ngIf="isLocked"></i>
     <div class="flexCol">
       <span [title]="title">{{ name }}</span>
       <span
         [title]="parentsName"
-        style="font-size: 12px; color: rgba(150, 150, 150, 1);"
+        style="font-size: 12px; color: rgba(150, 150, 150, 1)"
         *ngIf="parentsName"
-      >{{ displayParentsName }}
+        >{{ displayParentsName }}
       </span>
     </div>
-    <ng-container
-      *ngIf="isSubGroupInfo && isHadMenu"
-    >
+    <ng-container *ngIf="isSubGroupInfo && isHadMenu">
       <i class="material-icons">arrow_drop_down</i>
-      <ul class="dropdown-menu"
-        [class.show]="active"
-      >
+      <ul class="dropdown-menu" [class.show]="active">
         <li class="warn-manage" (click)="openDeleteGroupWin()" *ngIf="canDisband">
           <a>
-            {{'universal_operating_disband' | translate}} {{'universal_group_group' | translate}}
+            {{ 'universal_operating_disband' | translate }}
+            {{ 'universal_group_group' | translate }}
           </a>
         </li>
       </ul>
     </ng-container>
     <ng-container *ngIf="isAdminInfo && isHadMenu">
       <i class="material-icons">arrow_drop_down</i>
-      <ul class="dropdown-menu"
-        [class.show]="active"
-      >
+      <ul class="dropdown-menu" [class.show]="active">
         <li class="warn-manage" (click)="handleRemoveAdmin()">
           <a>
-            {{ 'universal_group_removeAdmin' | translate}}
+            {{ 'universal_group_removeAdmin' | translate }}
           </a>
         </li>
       </ul>
     </ng-container>
-    <ng-container
-    *ngIf="isNormalMemberInfo && isHadMenu"
-    >
+    <ng-container *ngIf="isNormalMemberInfo && isHadMenu">
       <i class="material-icons">arrow_drop_down</i>
-      <ul class="dropdown-menu"
-        [class.show]="active"
-      >
-        <li class="normal-manage" (click)="handleAssignAdmin(3)"
+      <ul class="dropdown-menu" [class.show]="active">
+        <li
+          class="normal-manage"
+          (click)="handleAssignAdmin(3)"
           *ngIf="coachType !== '2' && coachType !== '1'"
         >
           <a>
             {{ 'universal_group_assignAdmin' | translate }}
           </a>
         </li>
-        <li class="normal-manage" (click)="handleAssignAdmin(1)"
-          *ngIf="coachType === '2'"
-        >
+        <li class="normal-manage" (click)="handleAssignAdmin(1)" *ngIf="coachType === '2'">
           <a *ngIf="brandType == 1">
-            {{'universal_group_addObject' | translate: {'position': i18n.coach} }}
+            {{ 'universal_group_addObject' | translate: { position: i18n.coach } }}
           </a>
           <a *ngIf="brandType == 2">
-            {{'universal_group_addObject' | translate: {'position': i18n.departmentAdministrator} }}
+            {{
+              'universal_group_addObject' | translate: { position: i18n.departmentAdministrator }
+            }}
           </a>
         </li>
-        <li class="normal-manage" (click)="handleAssignAdmin(2)"
-          *ngIf="coachType === '1'"
-        >
+        <li class="normal-manage" (click)="handleAssignAdmin(2)" *ngIf="coachType === '1'">
           <a *ngIf="brandType == 1">
-            {{'universal_group_addObject' | translate: {'position': i18n.teacher} }}
+            {{ 'universal_group_addObject' | translate: { position: i18n.teacher } }}
           </a>
           <a *ngIf="brandType == 2">
-            {{'universal_group_addObject' | translate: {'position': i18n.leagueAdministrator} }}
+            {{ 'universal_group_addObject' | translate: { position: i18n.leagueAdministrator } }}
           </a>
         </li>
         <li class="normal-manage" (click)="goToUserProfileInEditGroupInfo()">
           <a>
-            {{ 'universal_group_viewProfile' | translate}}
+            {{ 'universal_group_viewProfile' | translate }}
           </a>
         </li>
         <li class="warn-manage" (click)="handleDeleteMember()">
           <a>
-            {{ 'universal_group_removeMember' | translate}}
+            {{ 'universal_group_removeMember' | translate }}
           </a>
         </li>
       </ul>
     </ng-container>
-    <ng-container
-    *ngIf="isWaittingMemberInfo && isHadMenu"
-    >
+    <ng-container *ngIf="isWaittingMemberInfo && isHadMenu">
       <i class="material-icons">arrow_drop_down</i>
-      <ul class="dropdown-menu"
-        [class.show]="active"
-      >
+      <ul class="dropdown-menu" [class.show]="active">
         <li class="normal-manage" (click)="handleJoinStatus(2)">
           <a>
-            {{ 'universal_operating_agree' | translate}}
+            {{ 'universal_operating_agree' | translate }}
           </a>
         </li>
         <li class="normal-manage" (click)="handleJoinStatus(3)">
           <a>
-            {{ 'universal_operating_refuse' | translate}}
+            {{ 'universal_operating_refuse' | translate }}
           </a>
         </li>
       </ul>
     </ng-container>
   </div>
 </div>
-

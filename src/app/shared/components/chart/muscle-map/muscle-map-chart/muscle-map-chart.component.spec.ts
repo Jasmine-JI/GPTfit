@@ -8,9 +8,8 @@ describe('MuscleMapComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ MuscleMapComponent ]
-    })
-    .compileComponents();
+      declarations: [MuscleMapComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

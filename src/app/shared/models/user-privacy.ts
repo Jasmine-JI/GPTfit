@@ -1,4 +1,3 @@
-
 /**
  * 隱私權開放對象
  */
@@ -7,7 +6,7 @@ export enum PrivacyObj {
   myFriend,
   myGroup,
   onlyGroupAdmin,
-  anyone = 99
+  anyone = 99,
 }
 
 /**
@@ -16,7 +15,7 @@ export enum PrivacyObj {
 export enum PrivacyEditObj {
   file = 1,
   sportsReport,
-  lifeTracking
+  lifeTracking,
 }
 
 export const allPrivacyItem = [
@@ -24,5 +23,5 @@ export const allPrivacyItem = [
   // PrivacyObj.myFriend
   PrivacyObj.myGroup,
   PrivacyObj.onlyGroupAdmin,
-  PrivacyObj.anyone
+  PrivacyObj.anyone,
 ];

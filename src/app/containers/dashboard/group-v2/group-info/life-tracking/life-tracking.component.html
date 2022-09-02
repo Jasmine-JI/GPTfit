@@ -5,31 +5,30 @@
   </ng-container>
   <ng-container *ngIf="!uiFlag.noData">
     <header>
-      <div class="functionBtnBar" style="align-items: center;">
-        <button class="alatech-btn alatech-btn--default"
-          title="{{'universal_operating_print' | translate}}"
+      <div class="functionBtnBar" style="align-items: center">
+        <button
+          class="alatech-btn alatech-btn--default"
+          title="{{ 'universal_operating_print' | translate }}"
           (click)="print()"
           *ngIf="uiFlag.isPreviewMode"
         >
-          {{'universal_operating_print' | translate}}
+          {{ 'universal_operating_print' | translate }}
         </button>
-        <a 
-          target="_blank"
-          [href]="previewUrl"
-          class="functionBtn"
-          *ngIf="!uiFlag.isPreviewMode"
-        >
+        <a target="_blank" [href]="previewUrl" class="functionBtn" *ngIf="!uiFlag.isPreviewMode">
           <i class="icon-svg_web-icon_p2_087-print"></i>
         </a>
       </div>
       <section class="report-headerSection">
-        <div class="flexRow" style="align-items: center;">
+        <div class="flexRow" style="align-items: center">
           <i class="icon-svg_web-icon_p3_016-life_tracking flexCenter report-headerIcon"></i>
-          <div class="flexCol  report-titleText">
+          <div class="flexCol report-titleText">
             <span class="report-dateAnnotation">
-              {{ 'universal_group_buildFromTime' | translate: {date: reportTime.endDate, range: reportTime.range} }}
+              {{
+                'universal_group_buildFromTime'
+                  | translate: { date: reportTime.endDate, range: reportTime.range }
+              }}
             </span>
-            <div class="flexRow" style="align-items: center;">
+            <div class="flexRow" style="align-items: center">
               <span class="report-headerTitle">
                 {{ 'universal_lifeTracking_lifeTracking' | translate }}
                 {{ 'universal_activityData_report' | translate }}
@@ -38,22 +37,22 @@
           </div>
         </div>
         <div class="flexCenter report-fileOwner">
-          <div class="flexCol" style="margin-right: 10px;">
-            <span class="report-headerTitle" >{{ groupInfo.name }}</span>
+          <div class="flexCol" style="margin-right: 10px">
+            <span class="report-headerTitle">{{ groupInfo.name }}</span>
             <span class="report-dateAnnotation">{{ groupInfo.parents }}</span>
           </div>
-          <img 
+          <img
             class="report-imgIcon"
             [src]="groupInfo.icon"
-            (error)="this.groupInfo.icon='/assets/images/group-default.svg'"
-          >
+            (error)="this.groupInfo.icon = '/assets/images/group-default.svg'"
+          />
         </div>
       </section>
     </header>
     <section class="report-displaySection">
       <div class="flexRow cardTitle">
         <h6 class="cardSubtitle">{{ 'universal_activityData_summary' | translate }}</h6>
-        <span style="display: flex; align-items: center;" class="report-dateAnnotation">
+        <span style="display: flex; align-items: center" class="report-dateAnnotation">
           {{ 'universal_activityData_creatTime' | translate }} {{ reportTime.create }}
         </span>
       </div>
@@ -73,7 +72,7 @@
         </div>
         <div>
           <span class="report-summaryData">
-            {{ (info.age / info.ageEffectCount) || 0 | number: '1.0-0' }}
+            {{ info.age / info.ageEffectCount || 0 | number: '1.0-0' }}
           </span>
           <p class="report-summaryDescription">
             {{ 'universal_activityData_perCapita' | translate }}
@@ -82,7 +81,10 @@
         </div>
         <div>
           <span class="report-summaryData">
-            {{ (info.bodyHeight / info.bodyHeightEffectCount) || 0 | bodyHeightSibs: [userInfo.unit, true] }}
+            {{
+              info.bodyHeight / info.bodyHeightEffectCount || 0
+                | bodyHeightSibs: [userInfo.unit, true]
+            }}
           </span>
           <p class="report-summaryDescription">
             {{ 'universal_activityData_perCapita' | translate }}
@@ -91,10 +93,10 @@
         </div>
         <div>
           <span class="report-summaryData">
-            {{ 
+            {{
               [
-                (info.bodyHeight / info.bodyHeightEffectCount) || 0,
-                (info.bodyWeight / info.bodyWeightEffectCount) || 0
+                info.bodyHeight / info.bodyHeightEffectCount || 0,
+                info.bodyWeight / info.bodyWeightEffectCount || 0
               ] | bmi
             }}
           </span>
@@ -102,7 +104,7 @@
             {{ 'universal_activityData_perCapita' | translate }} BMI
           </p>
         </div>
-      <!-- 先不顯示FFMI、人均步數與人均距離
+        <!-- 先不顯示FFMI、人均步數與人均距離
         <div *ngIf="info?.FFMI">
           <span class="report-summaryData">
             {{ (info.FFMI / info.FFMIEffectCount) || 0 | number: '1.0-1' }}
@@ -129,13 +131,12 @@
             {{ 'universal_userProfile_walkingDistance' | translate }}
           </p>
         </div>
-      -->
-      </div>
+      --></div>
     </section>
     <section class="report-displaySection">
       <div class="flexRow cardTitle">
         <h6 class="cardSubtitle">
-          {{ 'universal_group_dailyLifeRecord' | translate: {range: reportTime.typeTranslate} }}
+          {{ 'universal_group_dailyLifeRecord' | translate: { range: reportTime.typeTranslate } }}
         </h6>
       </div>
       <div class="flexCol">
@@ -154,7 +155,7 @@
                     {{ 'universal_activityData_activityTotalSteps' | translate }}
                   </span>
                 </div>
-                <div class="flexCol" style="margin-left: 10px;">
+                <div class="flexCol" style="margin-left: 10px">
                   <span class="report-summaryData">
                     {{ chart.stepTrend.totalDistance | distanceSibs: [userInfo.unit, true] }}
                   </span>
@@ -179,43 +180,57 @@
                 [chartName]="'Step'"
                 [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
                 [chartHeight]="170"
-                *ngIf="chart.stepTrend.totalStep; else noChartData;"
+                *ngIf="chart.stepTrend.totalStep; else noChartData"
               ></app-discolor-column-chart>
             </div>
           </div>
         </ng-container>
         <ng-container>
-          <div class="flexRow report-durationSection" style="width: 100%;">
+          <div class="flexRow report-durationSection" style="width: 100%">
             <div class="flexCol report-durationInfo">
-              <span class="report-chartTitle">{{'universal_lifeTracking_sleep' | translate}}</span>
+              <span class="report-chartTitle">{{
+                'universal_lifeTracking_sleep' | translate
+              }}</span>
               <div class="flexRow report-infoHeader">
                 <div class="flexCol">
                   <span class="report-summaryData">
-                    {{ (chart.sleepTrend.ttlAvgSleepSecond / chart.sleepTrend.dataLen) || 0 | sportTime: [true, true] }}
+                    {{
+                      chart.sleepTrend.ttlAvgSleepSecond / chart.sleepTrend.dataLen || 0
+                        | sportTime: [true, true]
+                    }}
                   </span>
                   <span class="report-summaryDescription">
-                    {{'universal_adjective_avg' | translate}} {{'universal_lifeTracking_sleep' | translate}}
+                    {{ 'universal_adjective_avg' | translate }}
+                    {{ 'universal_lifeTracking_sleep' | translate }}
                   </span>
                 </div>
-                <div class="flexCol" style="margin-left: 10px;">
+                <div class="flexCol" style="margin-left: 10px">
                   <span class="report-summaryData">
-                    {{ (chart.sleepTrend.ttlAvgDeepSleepSecond / chart.sleepTrend.dataLen) || 0 | sportTime: [true, true] }}
+                    {{
+                      chart.sleepTrend.ttlAvgDeepSleepSecond / chart.sleepTrend.dataLen || 0
+                        | sportTime: [true, true]
+                    }}
                   </span>
                   <span class="report-summaryDescription">
-                    {{'universal_adjective_avg' | translate}} {{'universal_lifeTracking_deepSleep' | translate}}
+                    {{ 'universal_adjective_avg' | translate }}
+                    {{ 'universal_lifeTracking_deepSleep' | translate }}
                   </span>
                 </div>
-                <div class="flexCol" style="margin-left: 10px;">
+                <div class="flexCol" style="margin-left: 10px">
                   <span class="report-summaryData">
-                    {{ (chart.sleepTrend.ttlAvgLightSleepSecond / chart.sleepTrend.dataLen) || 0 | sportTime: [true, true] }}
+                    {{
+                      chart.sleepTrend.ttlAvgLightSleepSecond / chart.sleepTrend.dataLen || 0
+                        | sportTime: [true, true]
+                    }}
                   </span>
                   <span class="report-summaryDescription">
-                    {{'universal_adjective_avg' | translate}} {{'universal_lifeTracking_lightSleep' | translate}}
+                    {{ 'universal_adjective_avg' | translate }}
+                    {{ 'universal_lifeTracking_lightSleep' | translate }}
                   </span>
                 </div>
               </div>
               <span class="report-areaDescription report-dataDiscription">
-                {{'universal_activityData_sleepReportInstructions' | translate}}
+                {{ 'universal_activityData_sleepReportInstructions' | translate }}
               </span>
             </div>
             <div class="report-durationChart">
@@ -227,63 +242,65 @@
               >
               </app-stack-column-chart>
             </div>
-          </div>    
+          </div>
         </ng-container>
       </div>
     </section>
     <section class="report-displaySection" *ngIf="uiFlag.progress === 100">
       <div class="flexCol">
         <div class="cardTitle flexRow">
-          <h6 class="cardSubtitle">{{'universal_activityData_recentFitness' | translate}}</h6>
+          <h6 class="cardSubtitle">{{ 'universal_activityData_recentFitness' | translate }}</h6>
         </div>
       </div>
-      <div class="flexRow report-bodyQuality" style="margin-top: 20px;">
+      <div class="flexRow report-bodyQuality" style="margin-top: 20px">
         <div class="flexCol posture__info">
-          <span class="report-chartTitle">{{'universal_activityData_bodyDistribution' | translate}}</span>
-          <span class="report-areaDescription" style="margin: 10px 0 0 10px;">
-            {{'universal_activityData_bodyDistributionReportDescription' | translate}}
+          <span class="report-chartTitle">{{
+            'universal_activityData_bodyDistribution' | translate
+          }}</span>
+          <span class="report-areaDescription" style="margin: 10px 0 0 10px">
+            {{ 'universal_activityData_bodyDistributionReportDescription' | translate }}
           </span>
           <app-distribution-chart
             [data]="chart.bodyDiagram"
-            style="margin-top: 20px;"
+            style="margin-top: 20px"
           ></app-distribution-chart>
         </div>
         <div class="flexCol posture__trend report-chartPrintWidth">
           <div class="flexCol">
-            <span class="report-chartTitle">
-              {{'universal_adjective_avg' | translate}} BMI
-            </span>
+            <span class="report-chartTitle"> {{ 'universal_adjective_avg' | translate }} BMI </span>
             <app-line-chart
               [data]="chart.BMITrend.data"
               [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
               [chartName]="'BMI'"
               [chartHeight]="120"
-              *ngIf="!chart.BMITrend.noData; else noChartData;"
+              *ngIf="!chart.BMITrend.noData; else noChartData"
             ></app-line-chart>
           </div>
           <div class="flexCol">
             <span class="report-chartTitle">
-              {{'universal_adjective_avg' | translate}} {{'universal_activityData_bodyFatTrend' | translate}}
+              {{ 'universal_adjective_avg' | translate }}
+              {{ 'universal_activityData_bodyFatTrend' | translate }}
             </span>
             <app-line-chart
               [data]="chart.fatRateTrend.data"
               [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
               [chartName]="'FatRate'"
               [chartHeight]="120"
-              *ngIf="!chart.fatRateTrend.noData; else noChartData;"
+              *ngIf="!chart.fatRateTrend.noData; else noChartData"
             >
             </app-line-chart>
           </div>
           <div class="flexCol">
             <span class="report-chartTitle">
-              {{'universal_adjective_avg' | translate}} {{'universal_activityData_muscleRateTrend' | translate}}
+              {{ 'universal_adjective_avg' | translate }}
+              {{ 'universal_activityData_muscleRateTrend' | translate }}
             </span>
             <app-line-chart
               [data]="chart.muscleRateTrend.data"
               [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
               [chartName]="'MuscleRate'"
               [chartHeight]="120"
-              *ngIf="!chart.muscleRateTrend.noData; else noChartData;"
+              *ngIf="!chart.muscleRateTrend.noData; else noChartData"
             >
             </app-line-chart>
           </div>
@@ -294,7 +311,7 @@
     <section class="report-displaySection pageBreak">
       <div class="flexCol">
         <div class="cardTitle flexRow">
-          <h6 class="cardSubtitle">{{'universal_activityData_trend' | translate}}</h6>
+          <h6 class="cardSubtitle">{{ 'universal_activityData_trend' | translate }}</h6>
         </div>
       </div>
       <div>
@@ -311,37 +328,43 @@
     <section class="report-displaySection pageBreak">
       <div class="flexCol">
         <div class="cardTitle flexRow report-haveOptBtn">
-          <h6 class="cardSubtitle">{{'universal_group_groupAnalysis' | translate}}</h6>
+          <h6 class="cardSubtitle">{{ 'universal_group_groupAnalysis' | translate }}</h6>
           <button>
-            <i class="icon-svg_web-icon_p1_001-setting" (click)="handleShowOpt($event, 'group')"></i>
+            <i
+              class="icon-svg_web-icon_p1_001-setting"
+              (click)="handleShowOpt($event, 'group')"
+            ></i>
           </button>
           <div
             class="flexCol tableMenu analysisMenu"
-            (click)="$event.stopPropagation();"
-            (scroll)="$event.stopPropagation();"
+            (click)="$event.stopPropagation()"
+            (scroll)="$event.stopPropagation()"
             *ngIf="groupTable.showOpt"
           >
             <div>
               <div class="flexRow">
-                <span class="tableMenuTitle">{{'universal_activityData_fieldDisplay' | translate}}</span>
+                <span class="tableMenuTitle">{{
+                  'universal_activityData_fieldDisplay' | translate
+                }}</span>
                 <span
-                  style="font-size: 12px; margin-left: 5px;"
+                  style="font-size: 12px; margin-left: 5px"
                   [style.color]="groupTableOpt.length >= tableColumn.max ? 'red' : '#ababab'"
                 >
-                  ({{ 'universal_activityData_most' | translate: {'number': tableColumn.max} }})
+                  ({{ 'universal_activityData_most' | translate: { number: tableColumn.max } }})
                 </span>
               </div>
-              <div class="tableCheckbox" *ngFor="let _opt of groupTable.showDataDef;">
+              <div class="tableCheckbox" *ngFor="let _opt of groupTable.showDataDef">
                 <mat-checkbox
                   color="primary"
                   value="{{ _opt }}"
                   [checked]="groupTableOpt.includes(_opt)"
                   (change)="changeTableOpt($event, 'group')"
                   [class]="
-                    _opt === 'name'
-                      || (groupTableOpt.length >= tableColumn.max && !groupTableOpt.includes(_opt))
-                      || (groupTableOpt.length <= tableColumn.min && groupTableOpt.includes(_opt))
-                    ? 'reportCheckBox--disable' : 'reportCheckBox'
+                    _opt === 'name' ||
+                    (groupTableOpt.length >= tableColumn.max && !groupTableOpt.includes(_opt)) ||
+                    (groupTableOpt.length <= tableColumn.min && groupTableOpt.includes(_opt))
+                      ? 'reportCheckBox--disable'
+                      : 'reportCheckBox'
                   "
                 >
                   <span style="font-size: 14px">
@@ -353,7 +376,7 @@
           </div>
         </div>
         <div class="analysisTable">
-          <div style="margin-top: 10px;">
+          <div style="margin-top: 10px">
             <mat-table
               class="matTable"
               [dataSource]="groupTable.list.data"
@@ -367,26 +390,23 @@
                   mat-sort-header
                   disableClear="true"
                   class="tableArrangement"
-                  style="justify-content: flex-start;"
+                  style="justify-content: flex-start"
                   id="groupName"
                 >
-                  <span
-                    class="tableTitleWord"
-                    style="text-align: start;"
-                  >
+                  <span class="tableTitleWord" style="text-align: start">
                     {{ 'universal_activityData_name' | translate }}
                   </span>
                 </mat-header-cell>
                 <mat-cell
-                  *matCellDef="let row; let i = index;"
+                  *matCellDef="let row; let i = index"
                   class="tableArrangement tableContent flexCol"
-                  style="align-items: flex-start; justify-content: center;"
-                  [style.color]="analysisMenu.focusId == row ? '#157fcc': ''"
+                  style="align-items: flex-start; justify-content: center"
+                  [style.color]="analysisMenu.focusId == row ? '#157fcc' : ''"
                 >
                   <span class="parentsName" *ngIf="groupAnalysis[row]?.parentsName">
                     {{ groupAnalysis[row]?.parentsName }}
                   </span>
-                  <span style="text-align: center;">{{ groupAnalysis[row]?.name }}</span>
+                  <span style="text-align: center">{{ groupAnalysis[row]?.name }}</span>
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="memberNum">
@@ -399,13 +419,14 @@
                 >
                   <div class="tableTitle">
                     <span class="tableTitleWord">
-                      {{ 'universal_activityData_record' | translate }} {{ 'universal_activityData_people' | translate }}
+                      {{ 'universal_activityData_record' | translate }}
+                      {{ 'universal_activityData_people' | translate }}
                     </span>
                     <span class="chartTitleUnit">person</span>
                   </div>
                 </mat-header-cell>
                 <mat-cell
-                  *matCellDef="let row; let i = index;"
+                  *matCellDef="let row; let i = index"
                   class="tableArrangement tableContent"
                   [style.display]="groupTableOpt.includes('memberNum') ? '' : 'none'"
                 >
@@ -415,7 +436,9 @@
                     *ngIf="groupTable.sortType === 'memberNum'"
                   ></div>
                   <span class="setIn tableData">
-                    {{ groupAnalysis[row]?.recordPeople || 0 }}/{{ groupAnalysis[row]?.memberList?.length }}
+                    {{ groupAnalysis[row]?.recordPeople || 0 }}/{{
+                      groupAnalysis[row]?.memberList?.length
+                    }}
                   </span>
                 </mat-cell>
               </ng-container>
@@ -428,12 +451,14 @@
                   [style.display]="groupTableOpt.includes('totalStep') ? '' : 'none'"
                 >
                   <div class="tableTitle">
-                    <span class="tableTitleWord">{{ 'universal_activityData_activityTotalSteps' | translate }}</span>
+                    <span class="tableTitleWord">{{
+                      'universal_activityData_activityTotalSteps' | translate
+                    }}</span>
                     <span class="chartTitleUnit">step/per</span>
                   </div>
                 </mat-header-cell>
                 <mat-cell
-                  *matCellDef="let row; let i = index;"
+                  *matCellDef="let row; let i = index"
                   class="tableArrangement tableContent"
                   [style.display]="groupTableOpt.includes('totalStep') ? '' : 'none'"
                 >
@@ -443,8 +468,11 @@
                     *ngIf="groupTable.sortType === 'totalStep'"
                   ></div>
                   <span class="setIn tableData">
-                    <ng-container *ngIf="groupAnalysis[row]?.totalStep; else noData;">
-                      {{ (groupAnalysis[row]?.totalStep / groupAnalysis[row]?.totalStepEffectCount) | thousandConversion: ' ' }}
+                    <ng-container *ngIf="groupAnalysis[row]?.totalStep; else noData">
+                      {{
+                        groupAnalysis[row]?.totalStep / groupAnalysis[row]?.totalStepEffectCount
+                          | thousandConversion: ' '
+                      }}
                       <i
                         class="icon-svg_web-icon_p3_017-up upArrow"
                         *ngIf="groupAnalysis[row]?.totalStepTrend === 'up'"
@@ -478,7 +506,7 @@
                   </div>
                 </mat-header-cell>
                 <mat-cell
-                  *matCellDef="let row; let i = index;"
+                  *matCellDef="let row; let i = index"
                   class="tableArrangement tableContent"
                   [style.display]="groupTableOpt.includes('totalFitTime') ? '' : 'none'"
                 >
@@ -488,8 +516,12 @@
                     *ngIf="groupTable.sortType === 'totalFitTime'"
                   ></div>
                   <span class="setIn tableData">
-                    <ng-container *ngIf="groupAnalysis[row]?.totalFitSecond; else noData;">
-                      {{ ((groupAnalysis[row]?.totalFitSecond / groupAnalysis[row]?.totalFitSecondEffectCount) / 60) | number: '1.0-0' }}
+                    <ng-container *ngIf="groupAnalysis[row]?.totalFitSecond; else noData">
+                      {{
+                        groupAnalysis[row]?.totalFitSecond /
+                          groupAnalysis[row]?.totalFitSecondEffectCount /
+                          60 | number: '1.0-0'
+                      }}
                       <i
                         class="icon-svg_web-icon_p3_017-up upArrow"
                         *ngIf="groupAnalysis[row]?.totalFitSecondTrend === 'up'"
@@ -523,14 +555,17 @@
                   </div>
                 </mat-header-cell>
                 <mat-cell
-                  *matCellDef="let row; let i = index;"
+                  *matCellDef="let row; let i = index"
                   class="tableArrangement tableContent"
                   [style.display]="groupTableOpt.includes('avgSleep') ? '' : 'none'"
                 >
                   <span class="setIn tableData">
-                    <ng-container *ngIf="groupAnalysis[row]?.totalSleepSecondEffectCount; else noTimeData;">
+                    <ng-container
+                      *ngIf="groupAnalysis[row]?.totalSleepSecondEffectCount; else noTimeData"
+                    >
                       {{
-                        (groupAnalysis[row]?.totalSleepSecond / groupAnalysis[row]?.totalSleepSecondEffectCount) | sportTime: [true, true]
+                        groupAnalysis[row]?.totalSleepSecond /
+                          groupAnalysis[row]?.totalSleepSecondEffectCount | sportTime: [true, true]
                       }}
                     </ng-container>
                   </span>
@@ -564,7 +599,7 @@
                   </div>
                 </mat-header-cell>
                 <mat-cell
-                  *matCellDef="let row; let i = index;"
+                  *matCellDef="let row; let i = index"
                   class="tableArrangement tableContent"
                   [style.display]="groupTableOpt.includes('distance') ? '' : 'none'"
                 >
@@ -574,17 +609,20 @@
                     *ngIf="groupTable.sortType === 'distance'"
                   ></div>
                   <span class="setIn tableData">
-                    <ng-container *ngIf="groupAnalysis[row]?.totalDistanceMeters; else noData;">
+                    <ng-container *ngIf="groupAnalysis[row]?.totalDistanceMeters; else noData">
                       <ng-container *ngIf="userInfo.unit === unitEnum.metric">
                         {{
-                          ((groupAnalysis[row]?.totalDistanceMeters / groupAnalysis[row]?.totalDistanceMetersEffectCount) / 1000)
-                          | number: '1.0-1'
+                          groupAnalysis[row]?.totalDistanceMeters /
+                            groupAnalysis[row]?.totalDistanceMetersEffectCount /
+                            1000 | number: '1.0-1'
                         }}
                       </ng-container>
                       <ng-container *ngIf="userInfo.unit === unitEnum.imperial">
                         {{
-                          (((groupAnalysis[row]?.totalDistanceMeters / groupAnalysis[row]?.totalDistanceMetersEffectCount) / 1000) / mi)
-                          | number: '1.0-1'
+                          groupAnalysis[row]?.totalDistanceMeters /
+                            groupAnalysis[row]?.totalDistanceMetersEffectCount /
+                            1000 /
+                            mi | number: '1.0-1'
                         }}
                       </ng-container>
                       <i
@@ -619,13 +657,16 @@
                   </div>
                 </mat-header-cell>
                 <mat-cell
-                  *matCellDef="let row; let i = index;"
+                  *matCellDef="let row; let i = index"
                   class="tableArrangement tableContent"
                   [style.display]="groupTableOpt.includes('fatRate') ? '' : 'none'"
                 >
                   <span class="setIn tableData">
-                    <ng-container *ngIf="groupAnalysis[row]?.fatRate; else noData;">
-                      {{ (groupAnalysis[row]?.fatRate / groupAnalysis[row]?.fatRateEffectCount) | number: '1.0-1' }}
+                    <ng-container *ngIf="groupAnalysis[row]?.fatRate; else noData">
+                      {{
+                        groupAnalysis[row]?.fatRate / groupAnalysis[row]?.fatRateEffectCount
+                          | number: '1.0-1'
+                      }}
                       <i
                         class="icon-svg_web-icon_p3_017-up upArrow"
                         *ngIf="groupAnalysis[row]?.fatRateTrend === 'up'"
@@ -658,13 +699,16 @@
                   </div>
                 </mat-header-cell>
                 <mat-cell
-                  *matCellDef="let row; let i = index;"
+                  *matCellDef="let row; let i = index"
                   class="tableArrangement tableContent"
                   [style.display]="groupTableOpt.includes('muscleRate') ? '' : 'none'"
                 >
                   <span class="setIn tableData">
-                    <ng-container *ngIf="groupAnalysis[row]?.muscleRate; else noData;">
-                      {{ (groupAnalysis[row]?.muscleRate / groupAnalysis[row]?.muscleRateEffectCount) | number: '1.0-1' }}
+                    <ng-container *ngIf="groupAnalysis[row]?.muscleRate; else noData">
+                      {{
+                        groupAnalysis[row]?.muscleRate / groupAnalysis[row]?.muscleRateEffectCount
+                          | number: '1.0-1'
+                      }}
                       <i
                         class="icon-svg_web-icon_p3_017-up upArrow"
                         *ngIf="groupAnalysis[row]?.muscleRateTrend === 'up'"
@@ -707,37 +751,43 @@
     <section class="report-displaySection pageBreak">
       <div class="flexCol">
         <div class="cardTitle flexRow report-haveOptBtn">
-          <h6 class="cardSubtitle">{{'universal_group_personalAnalysis' | translate}}</h6>
+          <h6 class="cardSubtitle">{{ 'universal_group_personalAnalysis' | translate }}</h6>
           <button>
-            <i class="icon-svg_web-icon_p1_001-setting" (click)="handleShowOpt($event, 'person')"></i>
+            <i
+              class="icon-svg_web-icon_p1_001-setting"
+              (click)="handleShowOpt($event, 'person')"
+            ></i>
           </button>
           <div
             class="flexCol tableMenu analysisMenu"
-            (click)="$event.stopPropagation();"
-            (scroll)="$event.stopPropagation();"
+            (click)="$event.stopPropagation()"
+            (scroll)="$event.stopPropagation()"
             *ngIf="personTable.showOpt"
           >
             <div>
               <div class="flexRow">
-                <span class="tableMenuTitle">{{'universal_activityData_fieldDisplay' | translate}}</span>
+                <span class="tableMenuTitle">{{
+                  'universal_activityData_fieldDisplay' | translate
+                }}</span>
                 <span
-                  style="font-size: 12px; margin-left: 5px;"
+                  style="font-size: 12px; margin-left: 5px"
                   [style.color]="personTableOpt.length >= tableColumn.max ? 'red' : '#ababab'"
                 >
-                  ({{ 'universal_activityData_most' | translate: {'number': tableColumn.max} }})
+                  ({{ 'universal_activityData_most' | translate: { number: tableColumn.max } }})
                 </span>
               </div>
-              <div class="tableCheckbox" *ngFor="let _opt of personTable.showDataDef;">
+              <div class="tableCheckbox" *ngFor="let _opt of personTable.showDataDef">
                 <mat-checkbox
                   color="primary"
                   value="{{ _opt }}"
                   [checked]="personTableOpt.includes(_opt)"
                   (change)="changeTableOpt($event, 'person')"
                   [class]="
-                    _opt === 'name'
-                      || (personTableOpt.length >= tableColumn.max && !personTableOpt.includes(_opt))
-                      || (personTableOpt.length <= tableColumn.min && personTableOpt.includes(_opt))
-                    ? 'reportCheckBox--disable' : 'reportCheckBox'
+                    _opt === 'name' ||
+                    (personTableOpt.length >= tableColumn.max && !personTableOpt.includes(_opt)) ||
+                    (personTableOpt.length <= tableColumn.min && personTableOpt.includes(_opt))
+                      ? 'reportCheckBox--disable'
+                      : 'reportCheckBox'
                   "
                 >
                   <span style="font-size: 14px">
@@ -749,7 +799,7 @@
           </div>
         </div>
         <div class="analysisTable">
-          <div style="margin-top: 10px;">
+          <div style="margin-top: 10px">
             <mat-table
               class="matTable"
               [dataSource]="personTable.list.data"
@@ -763,23 +813,20 @@
                   mat-sort-header
                   disableClear="true"
                   class="tableArrangement"
-                  style="justify-content: flex-start;"
+                  style="justify-content: flex-start"
                   id="personName"
                 >
-                  <span
-                    class="tableTitleWord"
-                    style="text-align: start;"
-                  >
+                  <span class="tableTitleWord" style="text-align: start">
                     {{ 'universal_activityData_name' | translate }}
                   </span>
                 </mat-header-cell>
                 <mat-cell
-                  *matCellDef="let row; let i = index;"
+                  *matCellDef="let row; let i = index"
                   class="tableArrangement tableContent flexCol"
-                  style="align-items: flex-start; justify-content: center;"
-                  [style.color]="analysisMenu.focusId == row ? '#157fcc': ''"
+                  style="align-items: flex-start; justify-content: center"
+                  [style.color]="analysisMenu.focusId == row ? '#157fcc' : ''"
                 >
-                  <span style="text-align: center;">{{ personAnalysis[row]?.name }}</span>
+                  <span style="text-align: center">{{ personAnalysis[row]?.name }}</span>
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="totalStep">
@@ -791,12 +838,14 @@
                   [style.display]="personTableOpt.includes('totalStep') ? '' : 'none'"
                 >
                   <div class="tableTitle">
-                    <span class="tableTitleWord">{{ 'universal_activityData_activityTotalSteps' | translate }}</span>
+                    <span class="tableTitleWord">{{
+                      'universal_activityData_activityTotalSteps' | translate
+                    }}</span>
                     <span class="chartTitleUnit">step</span>
                   </div>
                 </mat-header-cell>
                 <mat-cell
-                  *matCellDef="let row; let i = index;"
+                  *matCellDef="let row; let i = index"
                   class="tableArrangement tableContent"
                   [style.display]="personTableOpt.includes('totalStep') ? '' : 'none'"
                 >
@@ -807,9 +856,9 @@
                   ></div>
                   <span
                     class="setIn tableData"
-                    *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;"
+                    *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock"
                   >
-                    <ng-container *ngIf="personAnalysis[row]?.totalStep; else noData;">
+                    <ng-container *ngIf="personAnalysis[row]?.totalStep; else noData">
                       {{ personAnalysis[row]?.totalStep | thousandConversion: ' ' }}
                       <i
                         class="icon-svg_web-icon_p3_017-up upArrow"
@@ -844,7 +893,7 @@
                   </div>
                 </mat-header-cell>
                 <mat-cell
-                  *matCellDef="let row; let i = index;"
+                  *matCellDef="let row; let i = index"
                   class="tableArrangement tableContent"
                   [style.display]="personTableOpt.includes('totalFitTime') ? '' : 'none'"
                 >
@@ -855,10 +904,10 @@
                   ></div>
                   <span
                     class="setIn tableData"
-                    *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;"
+                    *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock"
                   >
-                    <ng-container *ngIf="personAnalysis[row]?.totalFitSecond; else noData;">
-                      {{ (personAnalysis[row]?.totalFitSecond / 60) | number: '1.0-0' }}
+                    <ng-container *ngIf="personAnalysis[row]?.totalFitSecond; else noData">
+                      {{ personAnalysis[row]?.totalFitSecond / 60 | number: '1.0-0' }}
                       <i
                         class="icon-svg_web-icon_p3_017-up upArrow"
                         *ngIf="personAnalysis[row]?.totalFitSecondTrend === 'up'"
@@ -892,17 +941,20 @@
                   </div>
                 </mat-header-cell>
                 <mat-cell
-                  *matCellDef="let row; let i = index;"
+                  *matCellDef="let row; let i = index"
                   class="tableArrangement tableContent"
                   [style.display]="personTableOpt.includes('avgSleep') ? '' : 'none'"
                 >
                   <span
                     class="setIn tableData"
-                    *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;"
+                    *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock"
                   >
-                    <ng-container *ngIf="personAnalysis[row]?.totalSleepSecondEffectCount; else noTimeData;">
+                    <ng-container
+                      *ngIf="personAnalysis[row]?.totalSleepSecondEffectCount; else noTimeData"
+                    >
                       {{
-                        (personAnalysis[row]?.totalSleepSecond / personAnalysis[row]?.totalSleepSecondEffectCount) | sportTime: [true, true]
+                        personAnalysis[row]?.totalSleepSecond /
+                          personAnalysis[row]?.totalSleepSecondEffectCount | sportTime: [true, true]
                       }}
                     </ng-container>
                   </span>
@@ -926,17 +978,13 @@
                       {{ 'universal_userProfile_walkingDistance' | translate }}
                     </span>
                     <span class="chartTitleUnit">
-                      <ng-container *ngIf="userInfo.unit === unitEnum.metric">
-                        km
-                      </ng-container>
-                      <ng-container *ngIf="userInfo.unit === unitEnum.imperial">
-                        mi
-                      </ng-container>
+                      <ng-container *ngIf="userInfo.unit === unitEnum.metric"> km </ng-container>
+                      <ng-container *ngIf="userInfo.unit === unitEnum.imperial"> mi </ng-container>
                     </span>
                   </div>
                 </mat-header-cell>
                 <mat-cell
-                  *matCellDef="let row; let i = index;"
+                  *matCellDef="let row; let i = index"
                   class="tableArrangement tableContent"
                   [style.display]="personTableOpt.includes('distance') ? '' : 'none'"
                 >
@@ -947,14 +995,14 @@
                   ></div>
                   <span
                     class="setIn tableData"
-                    *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;"
+                    *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock"
                   >
-                    <ng-container *ngIf="personAnalysis[row]?.totalDistanceMeters; else noData;">
+                    <ng-container *ngIf="personAnalysis[row]?.totalDistanceMeters; else noData">
                       <ng-container *ngIf="userInfo.unit === unitEnum.metric">
-                        {{ (personAnalysis[row]?.totalDistanceMeters / 1000) | number: '1.0-1' }}
+                        {{ personAnalysis[row]?.totalDistanceMeters / 1000 | number: '1.0-1' }}
                       </ng-container>
                       <ng-container *ngIf="userInfo.unit === unitEnum.imperial">
-                        {{ ((personAnalysis[row]?.totalDistanceMeters / 1000) / mi) | number: '1.0-1' }}
+                        {{ personAnalysis[row]?.totalDistanceMeters / 1000 / mi | number: '1.0-1' }}
                       </ng-container>
                       <i
                         class="icon-svg_web-icon_p3_017-up upArrow"
@@ -988,15 +1036,15 @@
                   </div>
                 </mat-header-cell>
                 <mat-cell
-                  *matCellDef="let row; let i = index;"
+                  *matCellDef="let row; let i = index"
                   class="tableArrangement tableContent"
                   [style.display]="personTableOpt.includes('restHr') ? '' : 'none'"
                 >
                   <span
                     class="setIn tableData"
-                    *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;"
+                    *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock"
                   >
-                    <ng-container *ngIf="personAnalysis[row]?.restHeartRate; else noData;">
+                    <ng-container *ngIf="personAnalysis[row]?.restHeartRate; else noData">
                       {{ personAnalysis[row]?.restHeartRate | number: '1.0-0' }}
                       <i
                         class="icon-svg_web-icon_p3_017-up upArrow"
@@ -1023,23 +1071,23 @@
                   [style.display]="personTableOpt.includes('BMI') ? '' : 'none'"
                 >
                   <div class="tableTitle">
-                    <span class="tableTitleWord">
-                      BMI
-                    </span>
+                    <span class="tableTitleWord"> BMI </span>
                   </div>
                 </mat-header-cell>
                 <mat-cell
-                  *matCellDef="let row; let i = index;"
+                  *matCellDef="let row; let i = index"
                   class="tableArrangement tableContent"
                   [style.display]="personTableOpt.includes('BMI') ? '' : 'none'"
                 >
-
                   <span
                     class="setIn tableData"
-                    *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;"
+                    *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock"
                   >
                     <ng-container
-                      *ngIf="personAnalysis[row]?.bodyHeight && personAnalysis[row]?.bodyWeight; else noData;"
+                      *ngIf="
+                        personAnalysis[row]?.bodyHeight && personAnalysis[row]?.bodyWeight;
+                        else noData
+                      "
                     >
                       {{ [personAnalysis[row]?.bodyHeight, personAnalysis[row]?.bodyWeight] | bmi }}
                       <i
@@ -1074,15 +1122,15 @@
                   </div>
                 </mat-header-cell>
                 <mat-cell
-                  *matCellDef="let row; let i = index;"
+                  *matCellDef="let row; let i = index"
                   class="tableArrangement tableContent"
                   [style.display]="personTableOpt.includes('fatRate') ? '' : 'none'"
                 >
                   <span
                     class="setIn tableData"
-                    *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;"
+                    *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock"
                   >
-                    <ng-container *ngIf="personAnalysis[row]?.fatRate; else noData;">
+                    <ng-container *ngIf="personAnalysis[row]?.fatRate; else noData">
                       {{ personAnalysis[row]?.fatRate | number: '1.0-1' }}
                       <i
                         class="icon-svg_web-icon_p3_017-up upArrow"
@@ -1116,15 +1164,15 @@
                   </div>
                 </mat-header-cell>
                 <mat-cell
-                  *matCellDef="let row; let i = index;"
+                  *matCellDef="let row; let i = index"
                   class="tableArrangement tableContent"
                   [style.display]="personTableOpt.includes('muscleRate') ? '' : 'none'"
                 >
                   <span
                     class="setIn tableData"
-                    *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;"
+                    *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock"
                   >
-                    <ng-container *ngIf="personAnalysis[row]?.muscleRate; else noData;">
+                    <ng-container *ngIf="personAnalysis[row]?.muscleRate; else noData">
                       {{ personAnalysis[row]?.muscleRate | number: '1.0-1' }}
                       <i
                         class="icon-svg_web-icon_p3_017-up upArrow"
@@ -1142,7 +1190,7 @@
                   ></div>
                 </mat-cell>
               </ng-container>
-            <!--
+              <!--
               <ng-container matColumnDef="FFMI">
                 <mat-header-cell
                   *matHeaderCellDef
@@ -1207,21 +1255,25 @@
                   </div>
                 </mat-header-cell>
                 <mat-cell
-                  *matCellDef="let row; let i = index;"
+                  *matCellDef="let row; let i = index"
                   class="tableArrangement tableContent"
                   [style.display]="personTableOpt.includes('bodyAssessment') ? '' : 'none'"
                 >
                   <span
                     class="setIn tableData"
-                    *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;"
+                    *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock"
                   >
-                    <ng-container *ngIf="personAnalysis[row]?.FFMI && personAnalysis[row]?.fatRate; else noData;">
+                    <ng-container
+                      *ngIf="personAnalysis[row]?.FFMI && personAnalysis[row]?.fatRate; else noData"
+                    >
                       {{
                         [
                           personAnalysis[row]?.gender,
                           personAnalysis[row]?.FFMI,
                           personAnalysis[row]?.fatRate
-                        ] | bodyAssessment | translate
+                        ]
+                          | bodyAssessment
+                          | translate
                       }}
                     </ng-container>
                   </span>
@@ -1254,10 +1306,10 @@
       class="flexCol tableMenu"
       [style.top]="analysisMenu.y"
       [style.left]="analysisMenu.x"
-      (click)="$event.stopPropagation();"
+      (click)="$event.stopPropagation()"
       *ngIf="analysisMenu.focusId"
     >
-      <div class="flexCol" style="padding: 15px 15px 0px 15px;">
+      <div class="flexCol" style="padding: 15px 15px 0px 15px">
         <span class="report-menuSubtitle">
           <ng-container *ngIf="analysisMenu.type === 'group'">
             {{ 'universal_group_member' | translate }}
@@ -1270,7 +1322,9 @@
           <div>
             <ng-container *ngIf="analysisMenu.type === 'group'">
               <span
-                [style.color]="personAnalysis[_member.userId].gender !== undefined ? 'black' : 'red'"
+                [style.color]="
+                  personAnalysis[_member.userId].gender !== undefined ? 'black' : 'red'
+                "
                 (click)="goPage(person, _member.userId)"
                 *ngFor="let _member of groupAnalysis[analysisMenu.focusId].memberList"
               >
@@ -1289,7 +1343,11 @@
           </div>
         </div>
       </div>
-      <a target="_blank" class="tableMenuList" (click)="goPage(analysisMenu.type, analysisMenu.focusId)">
+      <a
+        target="_blank"
+        class="tableMenuList"
+        (click)="goPage(analysisMenu.type, analysisMenu.focusId)"
+      >
         <ng-container *ngIf="analysisMenu.type === 'group'">
           {{ 'universal_group_groupInfo' | translate }}
         </ng-container>
@@ -1299,19 +1357,13 @@
       </a>
     </div>
   </ng-container>
-  <div *ngIf="uiFlag.isPreviewMode && uiFlag.progress === 100" class="printMark">
-    GPTfit
-  </div>
+  <div *ngIf="uiFlag.isPreviewMode && uiFlag.progress === 100" class="printMark">GPTfit</div>
 </div>
 <ng-template #noChartData>
   <span class="report-noChartData">{{ 'universal_status_noData' | translate }}</span>
 </ng-template>
-<ng-template #noTimeData>
-  -:--
-</ng-template>
-<ng-template #noData>
-  --
-</ng-template>
+<ng-template #noTimeData> -:-- </ng-template>
+<ng-template #noData> -- </ng-template>
 <ng-template #privacyLock>
   <i
     class="icon-svg_web-icon_p1_059-lock lockIcon setIn tableData"

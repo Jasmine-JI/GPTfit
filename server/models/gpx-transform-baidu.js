@@ -1,28 +1,26 @@
-const fastXmlParser = require("fast-xml-parser");
-const fs = require("fs");
+const fastXmlParser = require('fast-xml-parser');
+const fs = require('fs');
 const gcoord = require('gcoord');
 const moment = require('moment');
 
 exports.writeCloudRunGpx = function (path, fromFormat, toFormat, res) {
-  let parsedGPX = fastXmlParser.parse(
-    fs.readFileSync(path, "utf8"), {
-      ignoreAttributes: false
-    }
-  );
+  let parsedGPX = fastXmlParser.parse(fs.readFileSync(path, 'utf8'), {
+    ignoreAttributes: false,
+  });
   const points = parsedGPX.gpx.trk.trkseg;
   const coordinates = [];
-  const transFormPoints = points.map(_point => {
-    return _point.trkpt.map(_p => {
+  const transFormPoints = points.map((_point) => {
+    return _point.trkpt.map((_p) => {
       const preLon = _p['@_lon'];
       const preLat = _p['@_lat'];
       const altitude = _p['ele'];
-      const transPt = gcoord.transform([+preLon, +preLat], gcoord[fromFormat], gcoord[toFormat])
+      const transPt = gcoord.transform([+preLon, +preLat], gcoord[fromFormat], gcoord[toFormat]);
       const latitude = transPt[1];
       const longitude = transPt[0];
       coordinates.push({
         latitudeDegrees: latitude,
-        longitudeDegrees: longitude
-      })
+        longitudeDegrees: longitude,
+      });
       return `<trkpt lat="${latitude}" lon="${longitude}">
             <ele>${altitude}</ele>
           </trkpt>
@@ -42,7 +40,7 @@ exports.writeCloudRunGpx = function (path, fromFormat, toFormat, res) {
       console.log(err);
       return res.json({
         resultCode: 500,
-        rtnMsg: 'failed'
+        rtnMsg: 'failed',
       });
     } else {
       console.log('write gpx file successfully');
@@ -50,8 +48,8 @@ exports.writeCloudRunGpx = function (path, fromFormat, toFormat, res) {
         resultCode: 200,
         rtnMsg: 'success',
         fileName: `${moment().format('YYYYMMDDHHmmss')}_test.gpx`,
-        coordinates
+        coordinates,
       });
     }
   });
-}
+};

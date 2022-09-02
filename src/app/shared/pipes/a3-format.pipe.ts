@@ -1,8 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({name: 'a3Format'})
+@Pipe({ name: 'a3Format' })
 export class A3FormatPipe implements PipeTransform {
-
   /**
    * a3轉譯
    * @param value {string}-a3格式代碼
@@ -287,6 +286,5 @@ export class A3FormatPipe implements PipeTransform {
       case '17-103':
         return 'miniGforceZ';
     }
-
   }
 }

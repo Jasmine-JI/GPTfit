@@ -1,11 +1,6 @@
-<span style="font-weight: bold; color:grey;" *ngIf="noData">
-  {{'universal_status_noData' | translate}}
+<span style="font-weight: bold; color: grey" *ngIf="noData">
+  {{ 'universal_status_noData' | translate }}
 </span>
 <figure id="mainSeciton" class="chartFigure">
-  <div
-    #container
-    id="chartBlock"
-  >
-    chart
-  </div>
+  <div #container id="chartBlock">chart</div>
 </figure>

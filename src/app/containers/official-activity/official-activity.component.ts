@@ -20,13 +20,21 @@ import { ResetPasswordFlow, UnlockFlow, QrSignInFlow } from '../../shared/models
 import { AlaApp } from '../../shared/models/app-id';
 import { NodejsApiService } from '../../core/services/nodejs-api.service';
 import { AuthService } from '../../core/services/auth.service';
-import { setLocalStorageObject, getLocalStorageObject, getCurrentTimestamp, deepCopy } from '../../shared/utils/index';
-
+import {
+  setLocalStorageObject,
+  getLocalStorageObject,
+  getCurrentTimestamp,
+  deepCopy,
+  checkResponse,
+} from '../../shared/utils/index';
+import { Api50xxService } from '../../core/services/api-50xx.service';
+import { StationMailService } from '../station-mail/services/station-mail.service';
+import { appPath } from '../../app-path.const';
 
 const errorMsg = 'Something error! Please try again later.';
 
 type Page =
-    'activity-list'
+  | 'activity-list'
   | 'my-activity'
   | 'activity-detail'
   | 'apply-activity'
@@ -37,19 +45,25 @@ type Page =
   | '403'
   | '404';
 
-type AuthAction = 'login' | 'register' | 'qrLogin' | 'forgetPassword' | 'resetPassword' | 'sendVerifySuccess';
+type AuthAction =
+  | 'login'
+  | 'register'
+  | 'qrLogin'
+  | 'forgetPassword'
+  | 'resetPassword'
+  | 'sendVerifySuccess';
 type AuthInput = 'accountInput' | 'passwordInput' | 'nicknameInput' | 'smsInput';
 type AlertType = 'empty' | 'format' | 'mistake' | 'repeat' | 'improper' | 'overdue' | 'notExist';
 
 @Component({
   selector: 'app-official-activity',
   templateUrl: './official-activity.component.html',
-  styleUrls: ['./official-activity.component.scss']
+  styleUrls: ['./official-activity.component.scss'],
 })
 export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();
-  private pageResize = new Subscription;
-  private globleEventSubscription = new Subscription;
+  private pageResize = new Subscription();
+  private globleEventSubscription = new Subscription();
 
   @ViewChild('accountInput') accountInput: ElementRef;
   @ViewChild('passwordInput') passwordInput: ElementRef;
@@ -74,7 +88,9 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     showPassword: false,
     focusInput: false,
     clickSubmit: false,
-    fixFooter: false
+    fixFooter: false,
+    showStationMailList: false,
+    haveNewMail: false,
   };
 
   /**
@@ -82,8 +98,8 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    */
   authInfo = <any>{
     signInType: <SignTypeEnum>null,
-    password: null
-  }
+    password: null,
+  };
 
   /**
    * 登入/註冊/忘記密碼等欄位提示
@@ -94,29 +110,29 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     nickname: <AlertType>null,
     qrLogin: <AlertType>null,
     sms: <AlertType>null,
-    captcha: <AlertType>null
-  }
+    captcha: <AlertType>null,
+  };
 
   /**
    * 圖碼鎖定相關
    */
   imgCaptcha = <any>{
-    unlockFlow: null
-  }
+    unlockFlow: null,
+  };
 
   /**
    * 使用者ip及該ip所在國家
    */
   userLocation = {
     ip: null,
-    countryCode: null
-  }
+    countryCode: null,
+  };
 
   qrLoginUrl: string;
   userInfo: UserProfileInfo;
   token = this.auth.token;
   advertise = [];
-  carousel: { img: string; advertiseId: number; link: string; };
+  carousel: { img: string; advertiseId: number; link: string };
   carouselProgress: any;
   carouselWidth = 840;
   carouselAnimation: any;
@@ -128,6 +144,8 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
   agreeDeclaration = false;
   activityKeyword = '';
   requestHeader = {};
+  mailNotify: NodeJS.Timeout;
+  notifyUpdateTime: number | null = null;
   readonly SignTypeEnum = SignTypeEnum;
   readonly countryCodeList = codes;
 
@@ -143,8 +161,10 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     private snackbar: MatSnackBar,
     private getClientIp: GetClientIpService,
     private signupService: SignupService,
-    private nodejsApiService: NodejsApiService
-  ) { }
+    private nodejsApiService: NodejsApiService,
+    private api50xxService: Api50xxService,
+    private stationMailService: StationMailService
+  ) {}
 
   ngOnInit(): void {
     this.utils.checkBrowserLang();
@@ -166,12 +186,9 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin
    */
   checkBrowser() {
-    this.translate.onLangChange.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(resArr => {
+    this.translate.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe((resArr) => {
       this.detectInappService.checkBrowser();
     });
-
   }
 
   /**
@@ -205,7 +222,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
         documentLang = 'en-US';
         break;
     }
-    
+
     this.termsConditionsUrl = `${host}/${documentLang}/termsConditions.html`;
     this.privacyPolicyUrl = `${host}/${documentLang}/privacyPolicy.html`;
   }
@@ -215,18 +232,13 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin-1091110
    */
   detectParamChange() {
-    this.router.events.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(event => {
-
+    this.router.events.pipe(takeUntil(this.ngUnsubscribe)).subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.closeAuthBox();
         this.handleAdvertiseSize();
         this.checkCurrentPage();
       }
-
-    })
-
+    });
   }
 
   /**
@@ -250,7 +262,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     } else {
       this.stopCarousel();
     }
-    
   }
 
   /**
@@ -259,11 +270,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin-1110208
    */
   checkShowAdvertisePage(path: string) {
-    this.uiFlag.showAdvertise = [
-      'activity-list',
-      'my-activity',
-      'edit-carousel'
-    ].includes(path);
+    this.uiFlag.showAdvertise = ['activity-list', 'my-activity', 'edit-carousel'].includes(path);
   }
 
   /**
@@ -275,7 +282,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     setTimeout(() => {
       this.uiFlag.fixFooter = ['403', '404'].includes(path);
     });
-    
   }
 
   /**
@@ -296,16 +302,11 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
             linkActiveUnderline.style.width = `${width}px`;
             linkActiveUnderline.style.left = `${x - entryXPosition}px`;
           }
-
         } else {
-
           if (linkActiveUnderline) linkActiveUnderline.style.width = '0px';
-
         }
       }
-
     }, 500);
-
   }
 
   /**
@@ -314,26 +315,23 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    */
   handlePageResize() {
     const page = fromEvent(window, 'resize');
-    this.pageResize = page.pipe(
-      debounceTime(300),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    this.pageResize = page.pipe(debounceTime(300), takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.checkScreenSize();
       this.unsubscribePluralEvent();
     });
-
   }
 
   /**
    * 取得登入者資訊
    */
   getUserProfile() {
-    this.userService.getUser().rxUserProfile.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.userInfo = res;
-    });
-
+    this.userService
+      .getUser()
+      .rxUserProfile.pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.userInfo = res;
+        this.pollingNewMail();
+      });
   }
 
   /**
@@ -354,7 +352,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     if (showAdvertise) {
       this.handleAdvertiseSize();
     }
-
   }
 
   /**
@@ -364,24 +361,21 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
   handleAdvertiseSize() {
     const innerWidth = document.documentElement.clientWidth;
     const { isMobile } = this.uiFlag,
-          advertiseElement = document.querySelectorAll('.carousel__block')[0] as any,
-          advertiseImg = document.querySelectorAll('.carousel__img'),
-          totalOtherWidth = isMobile ? 120 : 330;
+      advertiseElement = document.querySelectorAll('.carousel__block')[0] as any,
+      advertiseImg = document.querySelectorAll('.carousel__img'),
+      totalOtherWidth = isMobile ? 120 : 330;
     if (advertiseElement) {
       const widthCount = innerWidth - totalOtherWidth;
       this.carouselWidth = widthCount > 840 ? 840 : widthCount;
-      (advertiseElement).style.width = `${this.carouselWidth}px`;
-      advertiseImg.forEach(_adImg => {
+      advertiseElement.style.width = `${this.carouselWidth}px`;
+      advertiseImg.forEach((_adImg) => {
         (_adImg as any).style.width = `${this.carouselWidth}px`;
       });
-
     } else {
       setTimeout(() => {
         this.handleAdvertiseSize();
       });
-      
     }
-
   }
 
   /**
@@ -390,33 +384,31 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    */
   getEventAdvertise() {
     const body = {
-      token: this.token
+      token: this.token,
     };
 
-    this.officialActivityService.getCarouselTime().pipe(
-      switchMap(time => this.officialActivityService.getEventAdvertise(body))
-    ).subscribe(res => {
-      if (this.utils.checkRes(res)) {
-        const { advertise } = res;
-        this.advertise = advertise
-          .filter(_ad => this.officialActivityService.filterInvalidCarousel(_ad))
-          .map((_ad, index) => {
-            _ad.advertiseId = index + 1;
-            return _ad;
-          });
+    this.officialActivityService
+      .getCarouselTime()
+      .pipe(switchMap((time) => this.officialActivityService.getEventAdvertise(body)))
+      .subscribe((res) => {
+        if (this.utils.checkRes(res)) {
+          const { advertise } = res;
+          this.advertise = advertise
+            .filter((_ad) => this.officialActivityService.filterInvalidCarousel(_ad))
+            .map((_ad, index) => {
+              _ad.advertiseId = index + 1;
+              return _ad;
+            });
 
-        const { showAdvertise } = this.uiFlag;
-        const advertiseLength = this.advertise.length;
-        const haveAdvertise = advertiseLength > 0;
-        if (showAdvertise && haveAdvertise) {
-          this.handleAdvertiseSize();
-          this.startCarousel();
+          const { showAdvertise } = this.uiFlag;
+          const advertiseLength = this.advertise.length;
+          const haveAdvertise = advertiseLength > 0;
+          if (showAdvertise && haveAdvertise) {
+            this.handleAdvertiseSize();
+            this.startCarousel();
+          }
         }
-
-      }
-
-    });
-
+      });
   }
 
   /**
@@ -424,7 +416,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin-1101006
    */
   startCarousel() {
-    this.stopCarousel();  // 避免因切換頁面造成重複啟動計時器
+    this.stopCarousel(); // 避免因切換頁面造成重複啟動計時器
     const { advertise, uiFlag } = this;
     if (advertise && advertise.length > 0) {
       const { currentAdvertiseId } = uiFlag;
@@ -432,18 +424,15 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       this.carousel = {
         advertiseId,
         img,
-        link
+        link,
       };
 
       if (advertise.length > 1) {
         this.carouselProgress = setInterval(() => {
           this.switchNextCarousel();
         }, 7000);
-
       }
-
     }
-
   }
 
   /**
@@ -455,12 +444,11 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       clearInterval(this.carouselProgress);
       this.carouselProgress = undefined;
     }
-    
+
     if (this.carouselAnimation) {
       clearInterval(this.carouselAnimation);
       this.carouselAnimation = undefined;
     }
-    
   }
 
   /**
@@ -479,7 +467,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
 
       this.carouselPlay('next');
     }
-
   }
 
   /**
@@ -498,7 +485,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
 
       this.carouselPlay('pre');
     }
-
   }
 
   /**
@@ -524,7 +510,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     } else {
       carouselList.appendChild(switchCarousel);
     }
-    
+
     const animationTotalTime = 500;
     const oneShiftTime = 10;
     let timeCount = 0;
@@ -545,7 +531,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
 
       timeCount += oneShiftTime;
     }, oneShiftTime);
-
   }
 
   /**
@@ -553,15 +538,13 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin-1101007
    */
   getCloudrunMapInfo() {
-    this.cloudrunService.getAllMapInfo().subscribe(res => {
+    this.cloudrunService.getAllMapInfo().subscribe((res) => {
       if (this.utils.checkRes) {
         const { list, leaderboard } = res;
         this.officialActivityService.saveAllMapInfo(list);
         this.officialActivityService.saveRoutine(leaderboard);
-      };
-
+      }
     });
-
   }
 
   /**
@@ -595,7 +578,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     inputElement.value = '';
     this.activityKeyword = '';
     const { currentPage } = this.uiFlag;
-    this.searchActivity(currentPage);  // 將關鍵字去除
+    this.searchActivity(currentPage); // 將關鍵字去除
   }
 
   /**
@@ -612,7 +595,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       this.uiFlag.showPersonalMenu = true;
       this.subscribePluralEvent();
     }
-
   }
 
   /**
@@ -629,7 +611,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       this.uiFlag.showEntryMenu = true;
       this.subscribePluralEvent();
     }
-    
   }
 
   /**
@@ -638,14 +619,13 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    */
   subscribePluralEvent() {
     const scrollElement = document.querySelector('.main__page'),
-          clickEvent = fromEvent(document, 'click'),
-          scrollEvent = fromEvent(scrollElement, 'scroll');
-    this.globleEventSubscription = merge(clickEvent, scrollEvent).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
-      this.unsubscribePluralEvent();
-    });
-
+      clickEvent = fromEvent(document, 'click'),
+      scrollEvent = fromEvent(scrollElement, 'scroll');
+    this.globleEventSubscription = merge(clickEvent, scrollEvent)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((e) => {
+        this.unsubscribePluralEvent();
+      });
   }
 
   /**
@@ -656,6 +636,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     this.uiFlag.showPersonalMenu = false;
     this.uiFlag.showEntryMenu = false;
     this.uiFlag.showCountryCodeList = false;
+    this.uiFlag.showStationMailList = false;
     this.globleEventSubscription.unsubscribe();
   }
 
@@ -679,7 +660,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       this.captchaImg = null;
       this.uiFlag.authBox = null;
     }
-
   }
 
   /**
@@ -689,14 +669,13 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
   initAuthInfo() {
     this.authInfo = {
       signInType: <SignTypeEnum>null,
-      password: null
+      password: null,
     };
 
     this.uiFlag.clickSubmit = false;
     if (this.accountInput) {
       this.accountInput.nativeElement.value = '';
     }
-    
   }
 
   /**
@@ -710,9 +689,8 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       nickname: null,
       qrLogin: null,
       sms: null,
-      captcha: null
+      captcha: null,
     };
-
   }
 
   /**
@@ -725,16 +703,13 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     this.initAuthInfo();
     this.initAuthAlert();
     if (type === 'qrLogin') {
-
       if (this.checkFrequency()) {
         const loginQrCode = this.createLoginQrcode();
         this.waitQrcodeLogin(loginQrCode);
       } else {
         this.authAlert.qrLogin = 'improper';
       }
-
     }
-
   }
 
   /**
@@ -757,7 +732,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       this.authInfo.signInType = SignTypeEnum.email;
       delete this.authInfo.countryCode;
     }
-
   }
 
   /**
@@ -779,13 +753,12 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     const value = (e as any).target.value.trim();
     const { signInType } = this.authInfo;
     if (signInType === SignTypeEnum.phone) {
-      this.checkPhoneFormat(+value);  // 藉由轉數字將開頭所有0去除
+      this.checkPhoneFormat(+value); // 藉由轉數字將開頭所有0去除
     } else if (signInType === SignTypeEnum.email) {
       this.checkEmailFormat(value);
     } else {
       this.authAlert.account = 'empty';
     }
-
   }
 
   /**
@@ -802,7 +775,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       this.uiFlag.showCountryCodeList = true;
       this.subscribePluralEvent();
     }
-    
   }
 
   /**
@@ -819,10 +791,10 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       this.authInfo.countryCode = newCountryCode;
       setLocalStorageObject('countryCode', newCountryCode);
     }
-    
+
     this.unsubscribePluralEvent();
   }
-  
+
   /**
    * 確認電話號碼是否符合格式
    * @param newPhone {number}-新編輯之手機號碼
@@ -838,7 +810,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       this.authAlert.account = null;
       this.authInfo.mobileNumber = newPhoneNumber;
     }
-
   }
 
   /**
@@ -855,7 +826,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       this.authAlert.account = null;
       this.authInfo.email = newEmail;
     }
-
   }
 
   /**
@@ -886,7 +856,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       this.authInfo.nickname = nickname;
       this.checkNickname(nickname);
     }
-
   }
 
   /**
@@ -905,7 +874,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       this.authAlert.password = null;
       this.authInfo.password = password;
     }
-    
   }
 
   /**
@@ -922,7 +890,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       this.authAlert.sms = null;
       this.authInfo.sms = sms;
     }
-
   }
 
   /**
@@ -932,7 +899,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin-1101206
    */
   checkEnter(e: KeyboardEvent, currentInput: AuthInput) {
-    const { keyCode } = (e as any);
+    const { keyCode } = e as any;
     const isEnter = keyCode === KeyCode.enter;
     if (isEnter) {
       this.handleNextStep(currentInput);
@@ -940,7 +907,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     } else {
       return false;
     }
-
   }
 
   /**
@@ -961,11 +927,10 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       this.uiFlag.progress = 30;
       combineLatest([
         this.auth.accountLogin(this.authInfo),
-        this.translate.get('hellow world')  // 確保翻譯載入完成
-      ]).subscribe(result => {
+        this.translate.get('hellow world'), // 確保翻譯載入完成
+      ]).subscribe((result) => {
         const loginResult = result[0];
         if (this.utils.checkRes(loginResult, false)) {
-
           this.handleLoginSuccess(loginResult.signIn.token);
         } else {
           this.handleLoginError(loginResult);
@@ -973,9 +938,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
 
         this.uiFlag.progress = 100;
       });
-
     }
-
   }
 
   /**
@@ -989,7 +952,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     this.auth.tokenLogin();
     this.closeAuthBox();
     const msg = this.translate.instant('universal_userAccount_signSuceesfully');
-    this.snackbar.open(msg, 'OK', { duration: 3000 } );
+    this.snackbar.open(msg, 'OK', { duration: 3000 });
   }
 
   /**
@@ -1007,11 +970,9 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       } else {
         this.utils.showSnackBar(errorMsg);
       }
-
     } else {
       this.utils.showSnackBar(errorMsg);
     }
-
   }
 
   /**
@@ -1024,14 +985,12 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       return of(this.userLocation);
     } else {
       return this.getClientIp.requestIpAddress().pipe(
-        tap(res => {
-          const { ip, country: countryCode } = (res as any);
+        tap((res) => {
+          const { ip, country: countryCode } = res as any;
           this.userLocation = { ip, countryCode };
         })
       );
-
     }
-
   }
 
   /**
@@ -1041,7 +1000,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
   register() {
     const { progress } = this.uiFlag;
     if (progress === 100) {
-      
       if (this.captchaImg) {
         this.handleCaptchaUnlock(UnlockFlow.sendUnlockCode, null, 'register');
       } else {
@@ -1055,44 +1013,41 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
           name,
           fromType: 1,
           fromId: AlaApp.gptfit,
-          ...body
+          ...body,
         };
 
-        this.getClientIpaddress().pipe(
-          switchMap((ipResult: any) => {
-            const { ip, countryCode } = ipResult;
-            if (ip) {
-              this.requestHeader = {
-                remoteAddr: ip,
-                regionCode: countryCode || 'US'
-              };
+        this.getClientIpaddress()
+          .pipe(
+            switchMap((ipResult: any) => {
+              const { ip, countryCode } = ipResult;
+              if (ip) {
+                this.requestHeader = {
+                  remoteAddr: ip,
+                  regionCode: countryCode || 'US',
+                };
 
-              return combineLatest([
-                this.signupService.fetchRegister(body, this.requestHeader),
-                this.translate.get('hellow world')  // 確保翻譯載入完成
-              ]);
+                return combineLatest([
+                  this.signupService.fetchRegister(body, this.requestHeader),
+                  this.translate.get('hellow world'), // 確保翻譯載入完成
+                ]);
+              } else {
+                this.utils.showSnackBar(errorMsg);
+                return of(false);
+              }
+            })
+          )
+          .subscribe((result) => {
+            const registerResult = result[0];
+            if (this.utils.checkRes(registerResult, false)) {
+              this.handleRegisterSuccess(registerResult);
             } else {
-              this.utils.showSnackBar(errorMsg);
-              return of(false);
+              this.handleRegisterError(registerResult);
             }
 
-          })
-
-        ).subscribe(result => {
-          const registerResult = result[0];
-          if (this.utils.checkRes(registerResult, false)) {
-            this.handleRegisterSuccess(registerResult);
-          } else {
-            this.handleRegisterError(registerResult);
-          }
-
-          this.uiFlag.progress = 100;
-        });
-
+            this.uiFlag.progress = 100;
+          });
       }
-
     }
-
   }
 
   /**
@@ -1101,14 +1056,16 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin-1101206
    */
   handleRegisterSuccess(successResult: any) {
-    const { register: { token } } = successResult;
+    const {
+      register: { token },
+    } = successResult;
     this.token = token;
     this.handleLoginFollowUp(token);
     this.closeAuthBox();
     const signUpTranslation = this.translate.instant('universal_userAccount_signUp');
     const successTranslation = this.translate.instant('universal_status_success');
     const msg = `${signUpTranslation} ${successTranslation}`;
-    this.snackbar.open(msg, 'OK', { duration: 3000 } );
+    this.snackbar.open(msg, 'OK', { duration: 3000 });
   }
 
   /**
@@ -1123,16 +1080,16 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       if (imgLockCode) {
         this.handleCaptchaUnlock(UnlockFlow.requestUnlockImage, imgLockCode);
       } else {
-        const accountRepeat = apiReturnCode === 2046 || apiReturnMessage === 'Register account is existing.';
-        const nicknameRepeat = apiReturnCode === 2047 || apiReturnMessage === 'Register name is existing.';
+        const accountRepeat =
+          apiReturnCode === 2046 || apiReturnMessage === 'Register account is existing.';
+        const nicknameRepeat =
+          apiReturnCode === 2047 || apiReturnMessage === 'Register name is existing.';
         if (accountRepeat) this.authAlert.account = 'repeat';
         if (nicknameRepeat) this.authAlert.nickname = 'repeat';
       }
-
     } else {
       this.utils.showSnackBar(errorMsg);
     }
-
   }
 
   /**
@@ -1152,7 +1109,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
   sendVerify() {
     const { progress } = this.uiFlag;
     if (progress === 100) {
-
       if (this.captchaImg) {
         this.handleCaptchaUnlock(UnlockFlow.sendUnlockCode, null, 'sendVerify');
       } else {
@@ -1161,11 +1117,10 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
         const { signInType: accountType } = this.authInfo;
         combineLatest([
           this.fetchForgetPwd(flow, accountType),
-          this.translate.get('hellow world')  // 確保翻譯載入完成
-        ]).subscribe(result => {
+          this.translate.get('hellow world'), // 確保翻譯載入完成
+        ]).subscribe((result) => {
           const requestResult = result[0];
           if (this.utils.checkRes(requestResult, false)) {
-
             if (accountType === SignTypeEnum.email) {
               this.uiFlag.authBox = 'sendVerifySuccess';
             } else {
@@ -1173,18 +1128,14 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
               const msg = this.translate.instant('universal_userAccount_sendSmsSuccess');
               this.utils.showSnackBar(msg);
             }
-
           } else {
             this.handleSendVerifyError(requestResult);
           }
 
           this.uiFlag.progress = 100;
         });
-
       }
-
     }
-
   }
 
   /**
@@ -1201,11 +1152,9 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       } else {
         this.utils.showSnackBar(errorMsg);
       }
-
     } else {
       this.utils.showSnackBar(errorMsg);
     }
-
   }
 
   /**
@@ -1216,11 +1165,9 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     const { sms } = this.authInfo;
     const { progress } = this.uiFlag;
     if (progress === 100) {
-
       if (this.captchaImg) {
         this.handleCaptchaUnlock(UnlockFlow.sendUnlockCode, null, 'submitVerify');
       } else {
-
         if (sms.length === 0) {
           this.authAlert.sms = 'empty';
         } else {
@@ -1229,8 +1176,8 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
           const accountType = SignTypeEnum.phone;
           combineLatest([
             this.fetchForgetPwd(flow, accountType),
-            this.translate.get('hellow world')  // 確保翻譯載入完成
-          ]).subscribe(result => {
+            this.translate.get('hellow world'), // 確保翻譯載入完成
+          ]).subscribe((result) => {
             const verifyResult = result[0];
             if (this.utils.checkRes(verifyResult)) {
               this.uiFlag.authBox = 'resetPassword';
@@ -1239,14 +1186,10 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
             }
 
             this.uiFlag.progress = 100;
-          })
-
+          });
         }
-      
       }
-
     }
-
   }
 
   /**
@@ -1273,13 +1216,10 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
             this.utils.showSnackBar(errorMsg);
             break;
         }
-
       }
-
     } else {
       this.utils.showSnackBar(errorMsg);
     }
-
   }
 
   /**
@@ -1292,8 +1232,8 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       this.uiFlag.progress = 30;
       combineLatest([
         this.fetchForgetPwd(ResetPasswordFlow.reset, SignTypeEnum.phone),
-        this.translate.get('hellow world')  // 確保翻譯載入完成
-      ]).subscribe(result => {
+        this.translate.get('hellow world'), // 確保翻譯載入完成
+      ]).subscribe((result) => {
         const resetResult = result[0];
         if (this.utils.checkRes(resetResult, false)) {
           this.handleResetPwdSuccess(resetResult);
@@ -1303,9 +1243,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
 
         this.uiFlag.progress = 100;
       });
-
     }
-
   }
 
   /**
@@ -1321,7 +1259,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     const resetTranslation = this.translate.instant('universal_operating_reset');
     const successTranslation = this.translate.instant('universal_status_success');
     const msg = `${resetTranslation} ${successTranslation}`;
-    this.snackbar.open(msg, 'OK', { duration: 3000 } );
+    this.snackbar.open(msg, 'OK', { duration: 3000 });
   }
 
   /**
@@ -1336,16 +1274,16 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       countryCode,
       mobileNumber,
       sms: verificationCode,
-      password: newPassword
+      password: newPassword,
     } = this.authInfo;
     let body = <any>{
       resetPasswordFlow: flow,
       accountType: accountType,
-      project: AlaApp.gptfit
+      project: AlaApp.gptfit,
     };
 
     if (accountType === SignTypeEnum.email) {
-      body = { email, ...body};
+      body = { email, ...body };
     } else {
       body = { countryCode, mobileNumber, ...body };
     }
@@ -1353,10 +1291,10 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     const flowAfterRequest = flow >= ResetPasswordFlow.verify;
     const isPhoneAccount = accountType === SignTypeEnum.phone;
     const isResetPwdFlow = flow === ResetPasswordFlow.reset;
-    if (flowAfterRequest) body = { verificationCode, ...body};
+    if (flowAfterRequest) body = { verificationCode, ...body };
 
     // email重設密碼暫仍導回gptfit原頁面進行
-    if (isPhoneAccount && isResetPwdFlow) body = { newPassword, ...body};
+    if (isPhoneAccount && isResetPwdFlow) body = { newPassword, ...body };
 
     return this.getClientIpaddress().pipe(
       switchMap((ipResult: any) => {
@@ -1367,13 +1305,10 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
         } else {
           return of(false);
         }
-
       })
-
     );
-
   }
-  
+
   /**
    * 確認暱稱是否重複
    * @param nickname {string}-暱稱
@@ -1383,16 +1318,13 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     const args = { nickname };
     const target = ['nickname'];
     if (!this.token) {
-      this.checkRepeat(args, target).subscribe(res => {
+      this.checkRepeat(args, target).subscribe((res) => {
         if (this.utils.checkRes(res)) {
           const { nickname } = res.result[0] ?? {};
           this.authAlert.nickname = nickname ? 'repeat' : null;
         }
-
       });
-
     }
-
   }
 
   /**
@@ -1400,7 +1332,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * @param e {MouseEvent | Event}
    * @author kidin-1101207
    */
-  checkImgCaptcha (e: MouseEvent | Event) {
+  checkImgCaptcha(e: MouseEvent | Event) {
     this.uiFlag.focusInput = false;
     const { value } = (e as any).target;
     if (value.length === 0) {
@@ -1409,7 +1341,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       this.imgCaptcha.unlockKey = value;
       this.authAlert.captcha = null;
     }
-
   }
 
   /**
@@ -1423,9 +1354,9 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       search: {
         userInfo: {
           args,
-          target
-        }
-      }
+          target,
+        },
+      },
     };
 
     return this.nodejsApiService.getAssignInfo(body);
@@ -1439,6 +1370,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     this.token = undefined;
     this.userInfo = undefined;
     this.auth.logout();
+    this.stopPollingNewMail();
   }
 
   /**
@@ -1455,12 +1387,14 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
         inputOrder = ['accountInput', 'passwordInput'];
         break;
       case 'register':
-        inputOrder = ['accountInput', 'passwordInput', 'nicknameInput'];;
+        inputOrder = ['accountInput', 'passwordInput', 'nicknameInput'];
         break;
-      case 'forgetPassword':
+      case 'forgetPassword': {
         const { signInType } = this.authInfo;
-        inputOrder = signInType === SignTypeEnum.phone ? ['accountInput', 'smsInput'] : ['accountInput'];
+        inputOrder =
+          signInType === SignTypeEnum.phone ? ['accountInput', 'smsInput'] : ['accountInput'];
         break;
+      }
     }
 
     const finalStep = inputOrder.length - 1;
@@ -1474,7 +1408,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       const nextFocusInput = totalInput[nextStep];
       this[nextFocusInput].nativeElement.focus();
     }
-
   }
 
   /**
@@ -1488,20 +1421,23 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     this.uiFlag.clickSubmit = true;
     const passCheck = !alertElement && checkEmptyPass;
     switch (authBox) {
-      case 'login':
+      case 'login': {
         const { account: accountAlert } = this.authAlert;
         if (passCheck || accountAlert === 'mistake') this.login();
         break;
-      case 'register':
+      }
+      case 'register': {
         if (passCheck && this.agreeDeclaration) this.register();
         break;
-      case 'forgetPassword':
+      }
+      case 'forgetPassword': {
         const { signInType } = this.authInfo;
         if (passCheck || this.captchaImg) {
           signInType === SignTypeEnum.phone ? this.submitVerify() : this.sendVerify();
         }
 
         break;
+      }
       case 'resetPassword':
         if (passCheck) this.resetPassword();
         break;
@@ -1509,7 +1445,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
         this.uiFlag.authBox = null;
         break;
     }
-
   }
 
   /**
@@ -1517,7 +1452,10 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin-1101216
    */
   checkAuthInfo() {
-    const { uiFlag: { authBox }, authInfo } = this;
+    const {
+      uiFlag: { authBox },
+      authInfo,
+    } = this;
     const havePhone = authInfo.countryCode && authInfo.mobileNumber ? true : false;
     const haveEmail = authInfo.email ? true : false;
     const havePassword = authInfo.password ? true : false;
@@ -1532,7 +1470,6 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       case 'resetPassword':
         return havePassword;
     }
-
   }
 
   /**
@@ -1548,7 +1485,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * 確認是否過於頻繁開啟qrcode頁面
    * @author kidin-1101206
    */
-  checkFrequency () {
+  checkFrequency() {
     const timeStampCount = getLocalStorageObject('count');
     const currentTimeStamp = getCurrentTimestamp('ms');
     if (!timeStampCount) {
@@ -1561,23 +1498,21 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       const minute = 60 * 1000;
       if (currentTimeStamp - timeStamp >= 3 * minute) {
         setLocalStorageObject('count', `${currentTimeStamp}1`);
-        return true;  // 超過三分鐘解瑣
-      } else if (count > 4) {  
-        return false;  // 操作超過四次則上鎖
+        return true; // 超過三分鐘解瑣
+      } else if (count > 4) {
+        return false; // 操作超過四次則上鎖
       } else {
         setLocalStorageObject('count', `${timeStamp} ${count + 1}`);
         return true;
       }
-
     }
-
   }
 
   /**
    * 創建qrcode並發送guid給server進行長輪詢
    * @author kidin-1101206
    */
-  createLoginQrcode () {
+  createLoginQrcode() {
     const guid = this.createGuid();
     this.qrLoginUrl = `${location.origin}/qrSignIn?qsf=1&g=${guid}`;
     return guid;
@@ -1588,65 +1523,65 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * @param guid {string}-由timestamp和亂數產生之guid
    * @author kidin-1101206
    */
-  waitQrcodeLogin (guid: string) {
+  waitQrcodeLogin(guid: string) {
     const firstFlowBody = { qrSignInFlow: QrSignInFlow.submitGuid, guid };
-    this.getClientIpaddress().pipe(
-      switchMap((ipResult: any) => {
-        const { ip } = ipResult;
-        if (ip) {
-          this.requestHeader = { remoteAddr: ip };
-          return this.signupService.fetchQrcodeLogin(firstFlowBody, this.requestHeader).pipe(
-            switchMap(firstFlowResult => {
-              if (this.utils.checkRes(firstFlowResult)) {
-                const secondFlowBody = { qrSignInFlow: QrSignInFlow.longPolling, guid };
-                return this.signupService.fetchQrcodeLogin(secondFlowBody, this.requestHeader);
-              } else {
-                return of(firstFlowResult);
-              }
-      
-            })
-          )
+    this.getClientIpaddress()
+      .pipe(
+        switchMap((ipResult: any) => {
+          const { ip } = ipResult;
+          if (ip) {
+            this.requestHeader = { remoteAddr: ip };
+            return this.signupService.fetchQrcodeLogin(firstFlowBody, this.requestHeader).pipe(
+              switchMap((firstFlowResult) => {
+                if (this.utils.checkRes(firstFlowResult)) {
+                  const secondFlowBody = { qrSignInFlow: QrSignInFlow.longPolling, guid };
+                  return this.signupService.fetchQrcodeLogin(secondFlowBody, this.requestHeader);
+                } else {
+                  return of(firstFlowResult);
+                }
+              })
+            );
+          } else {
+            this.utils.showSnackBar(errorMsg);
+            return of(false);
+          }
+        })
+      )
+      .subscribe((res: any) => {
+        const { processResult, qrSignIn } = res;
+        if (this.utils.checkRes(res, false)) {
+          this.handleLoginSuccess(qrSignIn.token);
         } else {
-          this.utils.showSnackBar(errorMsg);
-          return of(false);
+          const { apiReturnCode } = processResult;
+          switch (apiReturnCode) {
+            case 2104:
+              this.authAlert.qrLogin = 'overdue';
+              break;
+            default:
+              this.snackbar.open(errorMsg, 'OK', { duration: 3000 });
+              break;
+          }
         }
-
-      })
-    ).subscribe((res: any) => {
-      const { processResult, qrSignIn } = res;
-      if (this.utils.checkRes(res, false)) {
-        this.handleLoginSuccess(qrSignIn.token);
-      } else {
-        const { apiReturnCode } = processResult;
-        switch (apiReturnCode) {
-          case 2104:
-            this.authAlert.qrLogin = 'overdue';
-            break;
-          default:
-            this.snackbar.open(errorMsg, 'OK', { duration: 3000 } );
-            break;
-        }
-
-      }
-
-    });
-
+      });
   }
 
   /**
    * 使用亂數與現在時間組合成guid
    * @author kidin-1101206
    */
-  createGuid () {
-    const currentTimeStamp = getCurrentTimestamp('ms');;
+  createGuid() {
+    const currentTimeStamp = getCurrentTimestamp('ms');
     const hexadecimalTimeStamp = currentTimeStamp.toString(16);
     let guid = '';
     for (let i = 0; i < 32 - hexadecimalTimeStamp.length; i++) {
-      guid += (Math.floor(Math.random() * 16)).toString(16);
+      guid += Math.floor(Math.random() * 16).toString(16);
     }
 
     guid += hexadecimalTimeStamp;
-    return `${guid.slice(0, 8)}-${guid.slice(8, 12)}-${guid.slice(12, 16)}-${guid.slice(16, 20)}-${guid.slice(20, 32)}`;
+    return `${guid.slice(0, 8)}-${guid.slice(8, 12)}-${guid.slice(12, 16)}-${guid.slice(
+      16,
+      20
+    )}-${guid.slice(20, 32)}`;
   }
 
   /**
@@ -1665,68 +1600,61 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       return false;
     }
 
-    this.getClientIpaddress().pipe(
-      switchMap((ipResult: any) => {
-        const { ip } = ipResult;
-        if (ip) {
-          this.requestHeader = { remoteAddr: ip };
-          return this.signupService.fetchCaptcha(this.imgCaptcha, this.requestHeader);
-        } else {
-          return of(false);
-        }
-
-      })
-
-    ).subscribe((res: any) => {
-      if (this.utils.checkRes(res, false)) {
-
-        switch (unlockFlow) {
-          case UnlockFlow.requestUnlockImage:
-            this.captchaImg = res.captcha.randomCodeImg;
-            break;
-          case UnlockFlow.sendUnlockCode:
-            this.initCaptcha();
-            this[callback]();
-            break;
-        }
-
-      } else {
-        const { processResult } = res;
-        if (processResult) {
-          const { apiReturnMessage } = processResult;
-          switch (apiReturnMessage) {
-            case "Post fail, found parameter 'unlockKey' error.":
-            case 'Found a wrong unlock key.':
-              this.authAlert.captcha = 'mistake';
+    this.getClientIpaddress()
+      .pipe(
+        switchMap((ipResult: any) => {
+          const { ip } = ipResult;
+          if (ip) {
+            this.requestHeader = { remoteAddr: ip };
+            return this.signupService.fetchCaptcha(this.imgCaptcha, this.requestHeader);
+          } else {
+            return of(false);
+          }
+        })
+      )
+      .subscribe((res: any) => {
+        if (this.utils.checkRes(res, false)) {
+          switch (unlockFlow) {
+            case UnlockFlow.requestUnlockImage:
+              this.captchaImg = res.captcha.randomCodeImg;
               break;
-            default:
-              this.utils.showSnackBar(errorMsg);
+            case UnlockFlow.sendUnlockCode:
+              this.initCaptcha();
+              this[callback]();
               break;
           }
         } else {
-          this.utils.showSnackBar(errorMsg);
+          const { processResult } = res;
+          if (processResult) {
+            const { apiReturnMessage } = processResult;
+            switch (apiReturnMessage) {
+              case "Post fail, found parameter 'unlockKey' error.":
+              case 'Found a wrong unlock key.':
+                this.authAlert.captcha = 'mistake';
+                break;
+              default:
+                this.utils.showSnackBar(errorMsg);
+                break;
+            }
+          } else {
+            this.utils.showSnackBar(errorMsg);
+          }
         }
-        
-      }
-
-    });
-
+      });
   }
 
   /**
    * 倒數計時避免濫用認證簡訊
    * @author kidin-1101206
    */
-  reciprocal () {
+  reciprocal() {
     this.intervals = setInterval(() => {
       this.timeCount--;
       if (this.timeCount === 0) {
         this.timeCount = 30;
         window.clearInterval(this.intervals);
       }
-
     }, 1000);
-
   }
 
   /**
@@ -1735,7 +1663,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    */
   initCaptcha() {
     this.imgCaptcha = {
-      unlockFlow: null
+      unlockFlow: null,
     };
 
     this.captchaImg = null;
@@ -1764,17 +1692,91 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
         this.router.navigateByUrl(`/official-activity/activity-list?search=${activityKeyword}`);
         break;
     }
+  }
 
+  /**
+   * 顯示收件匣與否
+   * @param {MouseEvent}
+   */
+  showStationMailList(e: MouseEvent) {
+    e.stopPropagation();
+    const { showStationMailList } = this.uiFlag;
+    if (showStationMailList) {
+      this.unsubscribePluralEvent();
+    } else {
+      this.uiFlag.showStationMailList = true;
+      this.uiFlag.haveNewMail = false;
+      this.subscribePluralEvent();
+    }
+  }
+
+  /**
+   * 定時call api確認是否有最新郵件
+   */
+  pollingNewMail() {
+    if (this.auth.token) {
+      this.mailNotify = setInterval(() => {
+        this.checkNewMail();
+      }, 30000);
+    }
+  }
+
+  /**
+   * 取消確認是否有新郵件
+   */
+  stopPollingNewMail() {
+    if (this.mailNotify) clearInterval(this.mailNotify);
+  }
+
+  /**
+   * 確認是否有無最新信件
+   */
+  checkNewMail() {
+    const body = { token: this.auth.token };
+    this.api50xxService.fetchMessageNotifyFlagStatus(body).subscribe((res) => {
+      if (checkResponse(res, false)) {
+        const { status, updateTime } = res.flag;
+        const haveNewMail = status === 2;
+        if (haveNewMail && updateTime !== this.notifyUpdateTime) {
+          this.uiFlag.haveNewMail = true;
+          this.stationMailService.setNewMailNotify(true);
+        }
+      } else {
+        this.uiFlag.haveNewMail = false;
+      }
+    });
+  }
+
+  /**
+   * 轉導至收件匣
+   * @param e {MouseEvent}
+   */
+  navigateInbox(e: MouseEvent) {
+    e.preventDefault();
+    const {
+      stationMail: { home, inbox },
+    } = appPath;
+    this.router.navigateByUrl(`/dashboard/${home}/${inbox}`);
+  }
+
+  /**
+   * 轉導至建立新訊息頁面
+   */
+  navigateNewMailPage() {
+    const {
+      stationMail: { home, newMail },
+    } = appPath;
+    this.router.navigateByUrl(`/dashboard/${home}/${newMail}`);
   }
 
   /**
    * 解除rxjs訂閱和計時器
    */
   ngOnDestroy() {
-    if (this.intervals) window.clearInterval(this.intervals);
+    if (this.intervals) clearInterval(this.intervals);
+    this.stopPollingNewMail();
     this.stopCarousel();
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

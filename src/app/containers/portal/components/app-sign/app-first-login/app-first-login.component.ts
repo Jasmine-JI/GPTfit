@@ -13,16 +13,15 @@ import { UtilsService } from '../../../../../shared/services/utils.service';
 @Component({
   selector: 'app-app-first-login',
   templateUrl: './app-first-login.component.html',
-  styleUrls: ['./app-first-login.component.scss']
+  styleUrls: ['./app-first-login.component.scss'],
 })
 export class AppFirstLoginComponent implements OnInit, OnDestroy {
-
   private ngUnsubscribe = new Subject();
 
   i18n = {
     birthday: '',
     bodyHeight: '',
-    bodyWeight: ''
+    bodyWeight: '',
   };
   sending = false;
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
@@ -38,19 +37,19 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
       avatar: {
         large: '',
         mid: '',
-        small: ''
+        small: '',
       },
       bodyHeight: 175,
       bodyWeight: 70,
       birthday: 19900101,
-    }
+    },
   };
 
   // 可能新增其他錯誤提示訊息，故暫用obj
   cue = {
     birthday: '',
     bodyHeight: '',
-    bodyWeight: ''
+    bodyWeight: '',
   };
 
   constructor(
@@ -61,12 +60,9 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private api10xxService: Api10xxService
   ) {
-    translate.onLangChange.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    translate.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.getTranslate();
     });
-
   }
 
   ngOnInit() {
@@ -85,40 +81,34 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
     this.getUserInfo();
 
     // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)
-    this.authService.isLogin.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
+    this.authService.isLogin.pipe(takeUntil(this.ngUnsubscribe)).subscribe((res) => {
       if (!res && this.pcView === true) {
         return this.router.navigateByUrl('/signIn-web');
       } else if (!res && !this.pcView) {
         return this.router.navigateByUrl('/signIn');
       }
-
     });
-
   }
 
   // 取得多國語系翻譯-kidin-1090620
-  getTranslate () {
-    this.translate.get('hollo word').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.i18n = {
-        birthday: this.translate.instant('universal_userProfile_birthday'),
-        bodyHeight: this.translate.instant('universal_userProfile_bodyHeight'),
-        bodyWeight: this.translate.instant('universal_userProfile_bodyWeight')
-      };
-
-    });
-
+  getTranslate() {
+    this.translate
+      .get('hollo word')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.i18n = {
+          birthday: this.translate.instant('universal_userProfile_birthday'),
+          bodyHeight: this.translate.instant('universal_userProfile_bodyHeight'),
+          bodyWeight: this.translate.instant('universal_userProfile_bodyWeight'),
+        };
+      });
   }
 
   // 取得使用者選擇的照片-kidin-1090526
   handleAttachmentChange(file) {
     if (file) {
-      const {isTypeCorrect, errorMsg, link } = file;
+      const { isTypeCorrect, errorMsg, link } = file;
       if (!isTypeCorrect) {
-
       } else {
         this.finalImageLink = link;
       }
@@ -126,18 +116,17 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
   }
 
   // 取得預設生日(30歲)-kidin-1090525
-  getDefaultBirthday () {
+  getDefaultBirthday() {
     const currentYear = +dayjs().year();
     this.editBody.userProfile.birthday = +`${currentYear - 30}0101`;
   }
 
   // 使用token取得使用者帳號資訊-kidin-1090514
-  getUserInfo () {
+  getUserInfo() {
     const body = { token: this.authService.token };
-    this.api10xxService.fetchGetUserProfile(body).subscribe(res => {
+    this.api10xxService.fetchGetUserProfile(body).subscribe((res) => {
       this.nickName = res.userProfile.nickname;
     });
-
   }
 
   /**
@@ -149,11 +138,10 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
     if (!numReg.test(e.key)) {
       e.preventDefault();
     }
-
   }
 
   // 確認生日是否為異常值-kidin-1090525
-  checkBirthday (e) {
+  checkBirthday(e) {
     this.cue.birthday = '';
     const inputBirthday = e.currentTarget.value;
 
@@ -162,13 +150,13 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
       this.errorDateFormat(e);
     } else {
       let year = inputBirthday.slice(0, 4),
-          month = inputBirthday.slice(4, 6),
-          day = inputBirthday.slice(6, 8);
-      const monthReg = /[0][1-9]|[1][0-2]/,  // 01-12月
-            dayReg = /[0][1-9]|[1-2][0-9]|[3][0-1]/,  // 01-31日
-            bigMonthReg = /[0][13578]|[1][02]/,  // 大月
-            smallMonthReg = /[0][469]|[1][1]/,  // 小月，2月另外判斷
-            currentYear = +dayjs().year();
+        month = inputBirthday.slice(4, 6),
+        day = inputBirthday.slice(6, 8);
+      const monthReg = /[0][1-9]|[1][0-2]/, // 01-12月
+        dayReg = /[0][1-9]|[1-2][0-9]|[3][0-1]/, // 01-31日
+        bigMonthReg = /[0][13578]|[1][02]/, // 大月
+        smallMonthReg = /[0][469]|[1][1]/, // 小月，2月另外判斷
+        currentYear = +dayjs().year();
 
       // 先判斷年份是否合乎範圍值
       if (year < currentYear - 80) {
@@ -202,7 +190,6 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
 
       this.editBody.userProfile.birthday = +`${year}${month}${day}`;
     }
-
   }
 
   // 不符合日期格式則取符合格式片段並給予提示-kidin-1090526
@@ -212,10 +199,9 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
   }
 
   // 確認身高是否為異常值-kidin-1090525
-  checkBodyHeight (e) {
+  checkBodyHeight(e) {
     const height = e.currentTarget.value;
     if ((e.type === 'keypress' && e.key === 'Enter') || e.type === 'focusout') {
-
       if (height.length === 0) {
         this.editBody.userProfile.bodyHeight = 175;
       } else if (+height < 100) {
@@ -228,22 +214,18 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
         this.editBody.userProfile.bodyHeight = +height;
         this.cue.bodyHeight = '';
       }
-
     } else {
       const numReg = /\d+$/;
       if (!numReg.test(e.key) || (height.length === 0 && +e.key === 0)) {
         e.preventDefault();
       }
-
     }
-
   }
 
   // 確認體重是否為異常值-kidin-1090525
-  checkBodyWeight (e) {
+  checkBodyWeight(e) {
     const weight = e.currentTarget.value;
     if ((e.type === 'keypress' && e.key === 'Enter') || e.type === 'focusout') {
-
       if (weight.length === 0) {
         this.editBody.userProfile.bodyWeight = 70;
       } else if (+weight < 40) {
@@ -256,19 +238,16 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
         this.editBody.userProfile.bodyWeight = +weight;
         this.cue.bodyWeight = '';
       }
-
     } else {
       const numReg = /\d+$/;
       if (!numReg.test(e.key) || (weight.length === 0 && +e.key === 0)) {
         e.preventDefault();
       }
-
     }
-
   }
 
   // 送出表單-kidin-1090526
-  submit () {
+  submit() {
     (this.editBody.userProfile.gender as any) = +this.editBody.userProfile.gender;
 
     const image = new Image();
@@ -277,24 +256,22 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
     this.editBody.userProfile.avatar.mid = this.imageToDataUri(image, 128, 128);
     this.editBody.userProfile.avatar.small = this.imageToDataUri(image, 64, 64);
 
-    this.api10xxService.fetchEditUserProfile(this.editBody).subscribe(res => {
+    this.api10xxService.fetchEditUserProfile(this.editBody).subscribe((res) => {
       if (res.processResult.resultCode !== 200) {
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
           data: {
             title: 'Message',
             body: 'Error.<br />Please try again later.',
-            confirmText: this.translate.instant(
-              'universal_operating_confirm'
-            )
-          }
+            confirmText: this.translate.instant('universal_operating_confirm'),
+          },
         });
-
       } else {
-        const msg = `${
-          this.translate.instant('universal_operating_update')} ${
-          this.translate.instant('universal_userProfile_info')} ${
-          this.translate.instant('universal_status_success')}
+        const msg = `${this.translate.instant(
+          'universal_operating_update'
+        )} ${this.translate.instant('universal_userProfile_info')} ${this.translate.instant(
+          'universal_status_success'
+        )}
         `;
 
         this.dialog.open(MessageBoxComponent, {
@@ -303,17 +280,12 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
           data: {
             title: 'Message',
             body: msg,
-            confirmText: this.translate.instant(
-              'universal_operating_confirm'
-            ),
-            onConfirm: this.navigateToDashboard.bind(this)
-          }
+            confirmText: this.translate.instant('universal_operating_confirm'),
+            onConfirm: this.navigateToDashboard.bind(this),
+          },
         });
-
       }
-
     });
-
   }
 
   // 將圖片轉為base64格式-kidin-1090526
@@ -334,19 +306,17 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
   }
 
   // 轉導至目標頁或dashboard-kidin-1090526
-  navigateToDashboard () {
+  navigateToDashboard() {
     if (this.authService.backUrl.length > 0) {
       return (location.href = this.authService.backUrl);
     } else {
       return (location.href = '/dashboard');
     }
-
   }
 
   // 離開頁面則取消隱藏navbar及取消rxjs訂閱-kidin-1090514
-  ngOnDestroy () {
+  ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

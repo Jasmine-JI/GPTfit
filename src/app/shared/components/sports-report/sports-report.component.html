@@ -7,9 +7,9 @@
 <app-condition-selector
   [progress]="uiFlag.progress"
   [initialCondition]="initReportCondition"
-  (onConfirm)="getReportCondition($event)"
+  (confirm)="getReportCondition($event)"
 ></app-condition-selector>
-<article *ngIf="reportCondition && sportsTarget">
+<article *ngIf="reportCondition && sportsTargetCondition">
   <section class="flexRow report-headTitleSection">
     <i class="report-sportsIcon" [ngClass]="reportCondition.sportType | sportTypeIcon"></i>
     <div class="flexCol">
@@ -39,21 +39,39 @@
         {{ 'universal_vocabulary_activityTarget' | translate }}
       </h6>
     </div>
-    <div class="flexRow">
-      <div class="report-targetCycle">
-        {{ 'universal_activityData_everyUnit' | translate: {
-          number: '', unit: ((sportsTarget.personalSportTarget.cycle === DateUnit.week ? 'universal_time_week' : 'universal_time_day') | translate)
-        } }}
-      </div>
-      <div class="flexRowWrap">
-        <span class="report-targetCondition" *ngFor="let _condition of sportsTarget.personalSportTarget.condition">
-          {{ _condition.filedName | targetFieldName | translate }}
-          &ge;
-          {{ _condition.filedName.toLocaleLowerCase().includes('time') ? _condition.filedValue / 60 : _condition.filedValue }}
-          {{ _condition.filedName | targetFieldUnit | translate }}
-        </span>
-      </div>
-    </div>
+    <div
+      *ngTemplateOutlet="
+        sportTargetInfo;
+        context: {
+          diffRange: 1,
+          condition: sportsTargetCondition
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        sportTargetInfo;
+        context: {
+          diffRange: diffTime.base,
+          condition: sportsTargetCondition,
+          startTime: reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD'),
+          endTime: reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD')
+        }
+      "
+    ></div>
+    <ng-container *ngIf="uiFlag.isCompareMode">
+      <div
+        *ngTemplateOutlet="
+          sportTargetInfo;
+          context: {
+            diffRange: diffTime.compare,
+            condition: sportsTargetCondition,
+            startTime: reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD'),
+            endTime: reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD')
+          }
+        "
+      ></div>
+    </ng-container>
   </section>
 
   <section class="report-section">
@@ -61,25 +79,40 @@
       <h6 class="cardSubtitle">{{ 'universal_activityData_summary' | translate }}</h6>
     </div>
     <div class="flexCol">
-      <div *ngTemplateOutlet="infoDataRow; context: {
-        infoData: sportInfoData.base.infoData,
-        startDate: reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD'),
-        endDate: reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD'),
-        infoType: 'base'
-      }"></div>
+      <div
+        *ngTemplateOutlet="
+          infoDataRow;
+          context: {
+            infoData: sportInfoData.base.infoData,
+            startDate: reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD'),
+            endDate: reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD'),
+            infoType: 'base'
+          }
+        "
+      ></div>
       <ng-container *ngIf="uiFlag.isCompareMode && sportInfoData.compare">
-        <div *ngTemplateOutlet="infoDataRow; context: {
-          infoData: sportInfoData.compare?.infoData,
-          startDate: reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD'),
-          endDate: reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD'),
-          infoType: 'compare'
-        }"></div>
+        <div
+          *ngTemplateOutlet="
+            infoDataRow;
+            context: {
+              infoData: sportInfoData.compare?.infoData,
+              startDate: reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD'),
+              endDate: reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD'),
+              infoType: 'compare'
+            }
+          "
+        ></div>
       </ng-container>
       <ng-container *ngIf="uiFlag.isCompareMode && sportInfoData.compare">
-        <div *ngTemplateOutlet="infoDataRow; context: {
-          infoData: sportInfoData.diff,
-          infoType: 'diff'
-        }"></div>
+        <div
+          *ngTemplateOutlet="
+            infoDataRow;
+            context: {
+              infoData: sportInfoData.diff,
+              infoType: 'diff'
+            }
+          "
+        ></div>
       </ng-container>
     </div>
   </section>
@@ -94,11 +127,16 @@
       {{ 'universal_activityData_activityAnalysisReportDescription' | translate }}
     </p>
     <div class="flexRow report-anlysisChartRow">
-      <div *ngTemplateOutlet="ringChartSection; context: {
-        timeRange: reportCondition.baseTime,
-        activities: chartData.baseTypeAllChart.activitiesStatistics,
-        totalSecond: chartData.baseTypeAllChart.totalSecondStatistics
-      }"></div>
+      <div
+        *ngTemplateOutlet="
+          ringChartSection;
+          context: {
+            timeRange: reportCondition.baseTime,
+            activities: chartData.baseTypeAllChart.activitiesStatistics,
+            totalSecond: chartData.baseTypeAllChart.totalSecondStatistics
+          }
+        "
+      ></div>
       <div class="report-distributionChartBlock">
         <app-distribution-canvas-chart
           [data]="chartData.baseTypeAllChart.dotList"
@@ -109,11 +147,16 @@
     </div>
     <ng-container *ngIf="uiFlag.isCompareMode">
       <div class="flexRow report-anlysisChartRow">
-        <div *ngTemplateOutlet="ringChartSection; context: {
-          timeRange: reportCondition.compareTime,
-          activities: chartData.compareTypeAllChart.activitiesStatistics,
-          totalSecond: chartData.compareTypeAllChart.totalSecondStatistics
-        }"></div>
+        <div
+          *ngTemplateOutlet="
+            ringChartSection;
+            context: {
+              timeRange: reportCondition.compareTime,
+              activities: chartData.compareTypeAllChart.activitiesStatistics,
+              totalSecond: chartData.compareTypeAllChart.totalSecondStatistics
+            }
+          "
+        ></div>
         <div class="report-distributionChartBlock">
           <app-distribution-canvas-chart
             [data]="chartData.compareTypeAllChart.dotList"
@@ -125,21 +168,29 @@
     </ng-container>
     <div class="flexRowWrap">
       <ng-container
-        *ngFor="let _activity of chartData.baseTypeAllChart.activitiesStatistics; let _index = index;"
+        *ngFor="
+          let _activity of chartData.baseTypeAllChart.activitiesStatistics;
+          let _index = index
+        "
       >
         <div
           class="flexCol report-perTypeInfo"
           [class.report-typeFullInfo]="!uiFlag.isCompareMode"
           (click)="changeSelectedType(_index + 1)"
           *ngIf="_activity !== 0 || uiFlag.isCompareMode"
-          >
+        >
           <div class="flexRow">
             <span
               class="report-dot"
-              [style.color]="[SportType.all, _index + 1].includes(uiFlag.selectedType) ? SPORT_TYPE_COLOR[_index] : '#9e9e9e'"
-            >●</span>
+              [style.color]="
+                [SportType.all, _index + 1].includes(uiFlag.selectedType)
+                  ? SPORT_TYPE_COLOR[_index]
+                  : '#9e9e9e'
+              "
+              >●</span
+            >
             <span class="report-perTypeTitle">
-              {{ (_index + 1) | sportType | translate }}
+              {{ _index + 1 | sportType | translate }}
               <ng-container *ngIf="!uiFlag.isCompareMode">
                 {{ _activity }}
                 {{ 'universal_activityData_numberOf' | translate }}
@@ -158,7 +209,7 @@
   <section class="report-section" *ngIf="reportCondition.sportType === SportType.weightTrain">
     <div class="flexRow cardTitle">
       <h6 class="cardSubtitle">
-       {{ 'universal_training_concluWT' | translate }}
+        {{ 'universal_training_concluWT' | translate }}
       </h6>
       <div class="report-optionSection">
         <button (click)="showWeightTrainSettingMenu($event)">
@@ -187,9 +238,15 @@
       </h6>
     </div>
     <p class="report-areaDescription">
-      {{ 'universal_activityData_hrStatisticsDuringThePeriod' | translate: {
-        number: uiFlag.isCompareMode ? 'n' : (sportInfoData.base.infoData.totalActivities || 0)
-      } }}
+      {{
+        'universal_activityData_hrStatisticsDuringThePeriod'
+          | translate
+            : {
+                number: uiFlag.isCompareMode
+                  ? 'n'
+                  : sportInfoData.base.infoData.totalActivities || 0
+              }
+      }}
     </p>
     <div class="flexRow report-zoneChartInfo">
       <figure class="report-zoneChart">
@@ -224,7 +281,7 @@
         </ng-container>
       </figure>
       <figure class="report-infoChart">
-        <app-hrzone-info></app-hrzone-info>
+        <app-hrzone-info [hrZoneRange]="hrZoneRange"></app-hrzone-info>
       </figure>
     </div>
   </section>
@@ -264,12 +321,33 @@
         </ng-container>
       </figure>
       <figure class="report-infoChart">
-        <div *ngTemplateOutlet="totalRepsChartHint; context: { muscleGroup: MuscleGroup.armMuscle }"></div>
-        <div *ngTemplateOutlet="totalRepsChartHint; context: { muscleGroup: MuscleGroup.pectoralsMuscle }"></div>
-        <div *ngTemplateOutlet="totalRepsChartHint; context: { muscleGroup: MuscleGroup.shoulderMuscle }"></div>
-        <div *ngTemplateOutlet="totalRepsChartHint; context: { muscleGroup: MuscleGroup.backMuscle }"></div>
-        <div *ngTemplateOutlet="totalRepsChartHint; context: { muscleGroup: MuscleGroup.abdominalMuscle }"></div>
-        <div *ngTemplateOutlet="totalRepsChartHint; context: { muscleGroup: MuscleGroup.legMuscle }"></div>
+        <div
+          *ngTemplateOutlet="totalRepsChartHint; context: { muscleGroup: MuscleGroup.armMuscle }"
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            totalRepsChartHint;
+            context: { muscleGroup: MuscleGroup.pectoralsMuscle }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            totalRepsChartHint;
+            context: { muscleGroup: MuscleGroup.shoulderMuscle }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="totalRepsChartHint; context: { muscleGroup: MuscleGroup.backMuscle }"
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            totalRepsChartHint;
+            context: { muscleGroup: MuscleGroup.abdominalMuscle }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="totalRepsChartHint; context: { muscleGroup: MuscleGroup.legMuscle }"
+        ></div>
       </figure>
     </div>
   </section>
@@ -289,19 +367,29 @@
         <div class="gradient__hint__bar"></div>
         <span class="gradient__hint__text">{{ levelText[2] }}</span>
       </div>
-      <ng-container *ngFor="let _muscleGroup of muscleGroupTrendData;">
-        <div *ngTemplateOutlet="weightTrendTemplate; context: {
-          iconClass: _muscleGroup.index | muscleGroupIcon,
-          data: _muscleGroup.data,
-          unfold: musclePartTrendData[_muscleGroup.index].unfold,
-          muscleGroup: _muscleGroup.index
-        }"></div>
+      <ng-container *ngFor="let _muscleGroup of muscleGroupTrendData">
+        <div
+          *ngTemplateOutlet="
+            weightTrendTemplate;
+            context: {
+              iconClass: _muscleGroup.index | muscleGroupIcon,
+              data: _muscleGroup.data,
+              unfold: musclePartTrendData[_muscleGroup.index].unfold,
+              muscleGroup: _muscleGroup.index
+            }
+          "
+        ></div>
         <ng-container *ngIf="musclePartTrendData[_muscleGroup.index].unfold">
-          <ng-container *ngFor="let _musclePart of musclePartTrendData[_muscleGroup.index].info;">
-            <div *ngTemplateOutlet="weightTrendTemplate; context: {
-              iconClass: _musclePart.muscleCode | musclePartIcon,
-              data: _musclePart.data
-            }"></div>
+          <ng-container *ngFor="let _musclePart of musclePartTrendData[_muscleGroup.index].info">
+            <div
+              *ngTemplateOutlet="
+                weightTrendTemplate;
+                context: {
+                  iconClass: _musclePart.muscleCode | musclePartIcon,
+                  data: _musclePart.data
+                }
+              "
+            ></div>
           </ng-container>
         </ng-container>
       </ng-container>
@@ -319,9 +407,15 @@
       <div class="flexRow report-trendChart">
         <div class="flexCol report-chartHint">
           <p class="report-chartDescription">
-            {{ 'universal_activityData_hrStatisticsDuringThePeriod' | translate: {
-              number: uiFlag.isCompareMode ? 'n' : (sportInfoData.base.infoData.totalActivities || 0)
-            } }}
+            {{
+              'universal_activityData_hrStatisticsDuringThePeriod'
+                | translate
+                  : {
+                      number: uiFlag.isCompareMode
+                        ? 'n'
+                        : sportInfoData.base.infoData.totalActivities || 0
+                    }
+            }}
           </p>
           <ng-container *ngIf="uiFlag.isCompareMode">
             <span class="report-baseHrzoneTrend">
@@ -352,55 +446,90 @@
       <div class="flexRow report-trendChart">
         <div class="flexCol report-chartHint">
           <ng-container *ngIf="!uiFlag.isCompareMode">
-            <span *ngTemplateOutlet="chartInfoTemplate; context: {
-              key: 'universal_activityData_totalTime',
-              valueUnit: {
-                value: sportInfoData.base.infoData.totalSecond || 0 | sportTime,
-                unit: ''
-              }
-            }"></span>
-            <span *ngTemplateOutlet="chartInfoTemplate; context: {
-              key: 'universal_activityData_totalTime',
-              valueUnit: {
-                value: ((sportInfoData.base.infoData.totalSecond || 0) / (chartData.totalSecondTrend.baseDataLength || Infinity)) | sportTime,
-                unit: ''
-              },
-              dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
-            }"></span>
+            <span
+              *ngTemplateOutlet="
+                chartInfoTemplate;
+                context: {
+                  key: 'universal_activityData_totalTime',
+                  valueUnit: {
+                    value: sportInfoData.base.infoData.totalSecond || 0 | sportTime,
+                    unit: ''
+                  }
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                chartInfoTemplate;
+                context: {
+                  key: 'universal_activityData_totalTime',
+                  valueUnit: {
+                    value:
+                      (sportInfoData.base.infoData.totalSecond || 0) /
+                        (chartData.totalSecondTrend.baseDataLength || Infinity) | sportTime,
+                    unit: ''
+                  },
+                  dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
+                }
+              "
+            ></span>
           </ng-container>
           <ng-container *ngIf="uiFlag.isCompareMode">
-            <div *ngTemplateOutlet="infoWithColorBar; context: {
-              timeRange: reportCondition.baseTime,
-              valueUnit: {
-                value: sportInfoData.base.infoData.totalSecond || 0 | sportTime,
-                unit: ''
-              },
-              color: trendChartColor.totalSecond.base
-            }"></div>
-            <div *ngTemplateOutlet="infoWithColorBar; context: {
-              timeRange: reportCondition.compareTime,
-              valueUnit: {
-                value: sportInfoData.compare?.infoData.totalSecond || 0 | sportTime,
-                unit: ''
-              },
-              color: trendChartColor.totalSecond.compare
-            }"></div>
-            <div *ngTemplateOutlet="chartInfoDiff; context: {
-              originValue: sportInfoData.diff?.totalSecond || 0,
-              value: sportInfoData.diff?.totalSecond || 0 | sportTime,
-              unit: ''
-            }"></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  timeRange: reportCondition.baseTime,
+                  valueUnit: {
+                    value: sportInfoData.base.infoData.totalSecond || 0 | sportTime,
+                    unit: ''
+                  },
+                  color: trendChartColor.totalSecond.base
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  timeRange: reportCondition.compareTime,
+                  valueUnit: {
+                    value: sportInfoData.compare?.infoData.totalSecond || 0 | sportTime,
+                    unit: ''
+                  },
+                  color: trendChartColor.totalSecond.compare
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                chartInfoDiff;
+                context: {
+                  originValue: sportInfoData.diff?.totalSecond || 0,
+                  value: sportInfoData.diff?.totalSecond || 0 | sportTime,
+                  unit: ''
+                }
+              "
+            ></div>
           </ng-container>
-          <span class="report-targetLineHint" *ngIf="getAssignCondition('totalTime')">
+          <span
+            class="report-targetLineHint"
+            *ngIf="
+              reportCondition.dateUnit.unit === reportCondition.targetUnit &&
+              getAssignCondition('totalTime')
+            "
+          >
             {{ 'universal_vocabulary_targetTime' | translate }}
-            {{ getAssignCondition('totalTime') | sportTime }}/{{ reportCondition.dateUnit.getUnitI18nKey() | translate }}
+            {{ getAssignCondition('totalTime') | sportTime }}/{{
+              reportCondition.targetUnit | dateUnitKey | translate
+            }}
           </span>
         </div>
         <div class="report-chartFigure">
           <app-compare-column-trend
             [data]="chartData.totalSecondTrend.chartData"
             [type]="'totalTime'"
-            [condition]="transformCondition"
+            [conditionValue]="getAssignCondition('totalTime')"
             [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
             *ngIf="chartData.totalSecondTrend?.chartData"
           ></app-compare-column-trend>
@@ -415,55 +544,90 @@
       <div class="flexRow report-trendChart">
         <div class="flexCol report-chartHint">
           <ng-container *ngIf="!uiFlag.isCompareMode">
-            <span *ngTemplateOutlet="chartInfoTemplate; context: {
-              key: 'universal_activityData_benefitime',
-              valueUnit: {
-                value: sportInfoData.base.infoData.benefitTime || 0 | sportTime,
-                unit: ''
-              }
-            }"></span>
-            <span *ngTemplateOutlet="chartInfoTemplate; context: {
-              key: 'universal_activityData_benefitime',
-              valueUnit: {
-                value: ((sportInfoData.base.infoData.benefitTime || 0) / (chartData.benefitTimeTrend.baseDataLength || Infinity)) | sportTime,
-                unit: ''
-              },
-              dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
-            }"></span>
+            <span
+              *ngTemplateOutlet="
+                chartInfoTemplate;
+                context: {
+                  key: 'universal_activityData_benefitime',
+                  valueUnit: {
+                    value: sportInfoData.base.infoData.benefitTime || 0 | sportTime,
+                    unit: ''
+                  }
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                chartInfoTemplate;
+                context: {
+                  key: 'universal_activityData_benefitime',
+                  valueUnit: {
+                    value:
+                      (sportInfoData.base.infoData.benefitTime || 0) /
+                        (chartData.benefitTimeTrend.baseDataLength || Infinity) | sportTime,
+                    unit: ''
+                  },
+                  dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
+                }
+              "
+            ></span>
           </ng-container>
           <ng-container *ngIf="uiFlag.isCompareMode">
-            <div *ngTemplateOutlet="infoWithColorBar; context: {
-              timeRange: reportCondition.baseTime,
-              valueUnit: {
-                value: sportInfoData.base.infoData.benefitTime || 0 | sportTime,
-                unit: ''
-              },
-              color: trendChartColor.benefitTime.base
-            }"></div>
-            <div *ngTemplateOutlet="infoWithColorBar; context: {
-              timeRange: reportCondition.compareTime,
-              valueUnit: {
-                value: sportInfoData.compare?.infoData.benefitTime || 0 | sportTime,
-                unit: ''
-              },
-              color: trendChartColor.benefitTime.compare
-            }"></div>
-            <div *ngTemplateOutlet="chartInfoDiff; context: {
-              originValue: sportInfoData.diff?.benefitTime || 0,
-              value: sportInfoData.diff?.benefitTime || 0 | sportTime,
-              unit: ''
-            }"></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  timeRange: reportCondition.baseTime,
+                  valueUnit: {
+                    value: sportInfoData.base.infoData.benefitTime || 0 | sportTime,
+                    unit: ''
+                  },
+                  color: trendChartColor.benefitTime.base
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  timeRange: reportCondition.compareTime,
+                  valueUnit: {
+                    value: sportInfoData.compare?.infoData.benefitTime || 0 | sportTime,
+                    unit: ''
+                  },
+                  color: trendChartColor.benefitTime.compare
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                chartInfoDiff;
+                context: {
+                  originValue: sportInfoData.diff?.benefitTime || 0,
+                  value: sportInfoData.diff?.benefitTime || 0 | sportTime,
+                  unit: ''
+                }
+              "
+            ></div>
           </ng-container>
-          <span class="report-targetLineHint" *ngIf="getAssignCondition('benefitTime')">
+          <span
+            class="report-targetLineHint"
+            *ngIf="
+              reportCondition.dateUnit.unit === reportCondition.targetUnit &&
+              getAssignCondition('benefitTime')
+            "
+          >
             {{ 'universal_training_targetEffectiveTime' | translate }}
-            {{ getAssignCondition('benefitTime') | sportTime }}/{{ reportCondition.dateUnit.getUnitI18nKey() | translate }}
+            {{ getAssignCondition('benefitTime') | sportTime }}/{{
+              reportCondition.targetUnit | dateUnitKey | translate
+            }}
           </span>
         </div>
         <div class="report-chartFigure">
           <app-compare-column-trend
             [data]="chartData.benefitTimeTrend.chartData"
             [type]="'benefitTime'"
-            [condition]="transformCondition"
+            [conditionValue]="getAssignCondition('benefitTime')"
             [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
             *ngIf="chartData.benefitTimeTrend?.chartData"
           ></app-compare-column-trend>
@@ -478,46 +642,79 @@
       <div class="flexRow report-trendChart">
         <div class="flexCol report-chartHint">
           <ng-container *ngIf="!uiFlag.isCompareMode">
-            <span *ngTemplateOutlet="chartInfoTemplate; context: {
-              key: 'universal_activityData_pai',
-              valueUnit: {
-                value: sportInfoData.base.infoData.pai || 0,
-                unit: ''
-              }
-            }"></span>
-            <span *ngTemplateOutlet="chartInfoTemplate; context: {
-              key: 'universal_activityData_pai',
-              valueUnit: {
-                value: ((sportInfoData.base.infoData.pai || 0) / (chartData.paiTrend.baseDataLength || Infinity) | number: '1.0-1'),
-                unit: ''
-              },
-              dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
-            }"></span>
+            <span
+              *ngTemplateOutlet="
+                chartInfoTemplate;
+                context: {
+                  key: 'universal_activityData_pai',
+                  valueUnit: {
+                    value: sportInfoData.base.infoData.pai || 0,
+                    unit: ''
+                  }
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                chartInfoTemplate;
+                context: {
+                  key: 'universal_activityData_pai',
+                  valueUnit: {
+                    value:
+                      ((sportInfoData.base.infoData.pai || 0) /
+                        (chartData.paiTrend.baseDataLength || Infinity) | number: '1.0-1'),
+                    unit: ''
+                  },
+                  dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
+                }
+              "
+            ></span>
           </ng-container>
           <ng-container *ngIf="uiFlag.isCompareMode">
-            <div *ngTemplateOutlet="infoWithColorBar; context: {
-              timeRange: reportCondition.baseTime,
-              valueUnit: {
-                value: sportInfoData.base.infoData.pai || 0,
-                unit: ''
-              },
-              color: trendChartColor.pai.base
-            }"></div>
-            <div *ngTemplateOutlet="infoWithColorBar; context: {
-              timeRange: reportCondition.compareTime,
-              valueUnit: {
-                value: sportInfoData.compare?.infoData.pai || 0,
-                unit: ''
-              },
-              color: trendChartColor.pai.compare
-            }"></div>
-            <div *ngTemplateOutlet="chartInfoDiff; context: {
-              originValue: sportInfoData.diff?.pai || 0,
-              value: sportInfoData.diff?.pai || 0 | number: '1.0-1',
-              unit: ''
-            }"></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  timeRange: reportCondition.baseTime,
+                  valueUnit: {
+                    value: sportInfoData.base.infoData.pai || 0,
+                    unit: ''
+                  },
+                  color: trendChartColor.pai.base
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  timeRange: reportCondition.compareTime,
+                  valueUnit: {
+                    value: sportInfoData.compare?.infoData.pai || 0,
+                    unit: ''
+                  },
+                  color: trendChartColor.pai.compare
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                chartInfoDiff;
+                context: {
+                  originValue: sportInfoData.diff?.pai || 0,
+                  value: sportInfoData.diff?.pai || 0 | number: '1.0-1',
+                  unit: ''
+                }
+              "
+            ></div>
           </ng-container>
-          <span class="report-targetLineHint" *ngIf="getAssignCondition('pai')">
+          <span
+            class="report-targetLineHint"
+            *ngIf="
+              reportCondition.dateUnit.unit === reportCondition.targetUnit &&
+              getAssignCondition('pai')
+            "
+          >
             {{ 'universal_training_targetPai' | translate }} {{ getAssignCondition('pai') }}
           </span>
         </div>
@@ -525,7 +722,7 @@
           <app-compare-column-trend
             [data]="chartData.paiTrend.chartData"
             [type]="'pai'"
-            [condition]="transformCondition"
+            [conditionValue]="getAssignCondition('pai')"
             [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
             *ngIf="chartData.paiTrend?.chartData"
           ></app-compare-column-trend>
@@ -540,55 +737,91 @@
       <div class="flexRow report-trendChart">
         <div class="flexCol report-chartHint">
           <ng-container *ngIf="!uiFlag.isCompareMode">
-            <span *ngTemplateOutlet="chartInfoTemplate; context: {
-              key: 'universal_activityData_numberOfActivity',
-              valueUnit: {
-                value: sportInfoData.base.infoData.totalActivities || 0,
-                unit: ''
-              }
-            }"></span>
-            <span *ngTemplateOutlet="chartInfoTemplate; context: {
-              key: 'universal_activityData_numberOfActivity',
-              valueUnit: {
-                value: ((sportInfoData.base.infoData.totalActivities || 0) / (chartData.totalActivitiesTrend.baseDataLength || Infinity)) | number: '1.0-1',
-                unit: ''
-              },
-              dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
-            }"></span>
+            <span
+              *ngTemplateOutlet="
+                chartInfoTemplate;
+                context: {
+                  key: 'universal_activityData_numberOfActivity',
+                  valueUnit: {
+                    value: sportInfoData.base.infoData.totalActivities || 0,
+                    unit: ''
+                  }
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                chartInfoTemplate;
+                context: {
+                  key: 'universal_activityData_numberOfActivity',
+                  valueUnit: {
+                    value:
+                      (sportInfoData.base.infoData.totalActivities || 0) /
+                        (chartData.totalActivitiesTrend.baseDataLength || Infinity)
+                      | number: '1.0-1',
+                    unit: ''
+                  },
+                  dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
+                }
+              "
+            ></span>
           </ng-container>
           <ng-container *ngIf="uiFlag.isCompareMode">
-            <div *ngTemplateOutlet="infoWithColorBar; context: {
-              timeRange: reportCondition.baseTime,
-              valueUnit: {
-                value: sportInfoData.base.infoData.totalActivities || 0,
-                unit: ''
-              },
-              color: trendChartColor.totalActivities.base
-            }"></div>
-            <div *ngTemplateOutlet="infoWithColorBar; context: {
-              timeRange: reportCondition.compareTime,
-              valueUnit: {
-                value: sportInfoData.compare?.infoData.totalActivities || 0,
-                unit: ''
-              },
-              color: trendChartColor.totalActivities.compare
-            }"></div>
-            <div *ngTemplateOutlet="chartInfoDiff; context: {
-              originValue: sportInfoData.diff?.totalActivities || 0,
-              value: sportInfoData.diff?.totalActivities || 0,
-              unit: ''
-            }"></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  timeRange: reportCondition.baseTime,
+                  valueUnit: {
+                    value: sportInfoData.base.infoData.totalActivities || 0,
+                    unit: ''
+                  },
+                  color: trendChartColor.totalActivities.base
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  timeRange: reportCondition.compareTime,
+                  valueUnit: {
+                    value: sportInfoData.compare?.infoData.totalActivities || 0,
+                    unit: ''
+                  },
+                  color: trendChartColor.totalActivities.compare
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                chartInfoDiff;
+                context: {
+                  originValue: sportInfoData.diff?.totalActivities || 0,
+                  value: sportInfoData.diff?.totalActivities || 0,
+                  unit: ''
+                }
+              "
+            ></div>
           </ng-container>
-          <span class="report-targetLineHint" *ngIf="getAssignCondition('totalActivities')">
+          <span
+            class="report-targetLineHint"
+            *ngIf="
+              reportCondition.dateUnit.unit === reportCondition.targetUnit &&
+              getAssignCondition('totalActivities')
+            "
+          >
             {{ 'universal_training_targetTimes' | translate }}
-            {{ getAssignCondition('totalActivities') }}/{{ reportCondition.dateUnit.getUnitI18nKey() | translate }}
+            {{ getAssignCondition('totalActivities') }}/{{
+              reportCondition.targetUnit | dateUnitKey | translate
+            }}
           </span>
         </div>
         <div class="report-chartFigure">
           <app-compare-column-trend
             [data]="chartData.totalActivitiesTrend.chartData"
             [type]="'totalActivities'"
-            [condition]="transformCondition"
+            [conditionValue]="getAssignCondition('totalActivities')"
             [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
             *ngIf="chartData.totalActivitiesTrend?.chartData"
           ></app-compare-column-trend>
@@ -603,56 +836,89 @@
       <div class="flexRow report-trendChart">
         <div class="flexCol report-chartHint">
           <ng-container *ngIf="!uiFlag.isCompareMode">
-            <span *ngTemplateOutlet="chartInfoTemplate; context: {
-              key: 'universal_activityData_totalCalories',
-              valueUnit: {
-                value: sportInfoData.base.infoData.calories || 0 | number: '1.0-0',
-                unit: 'cal'
-              }
-            }"></span>
-            <span *ngTemplateOutlet="chartInfoTemplate; context: {
-              key: 'universal_activityData_totalCalories',
-              valueUnit: {
-                value: ((sportInfoData.base.infoData.calories || 0) / (chartData.totalSecondTrend.baseDataLength || Infinity)) | number: '1.0-0',
-                unit: 'cal'
-              },
-              dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
-            }"></span>
+            <span
+              *ngTemplateOutlet="
+                chartInfoTemplate;
+                context: {
+                  key: 'universal_activityData_totalCalories',
+                  valueUnit: {
+                    value: sportInfoData.base.infoData.calories || 0 | number: '1.0-0',
+                    unit: 'cal'
+                  }
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                chartInfoTemplate;
+                context: {
+                  key: 'universal_activityData_totalCalories',
+                  valueUnit: {
+                    value:
+                      (sportInfoData.base.infoData.calories || 0) /
+                        (chartData.totalSecondTrend.baseDataLength || Infinity) | number: '1.0-0',
+                    unit: 'cal'
+                  },
+                  dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
+                }
+              "
+            ></span>
           </ng-container>
           <ng-container *ngIf="uiFlag.isCompareMode">
-            <div *ngTemplateOutlet="infoWithColorBar; context: {
-              timeRange: reportCondition.baseTime,
-              valueUnit: {
-                value: sportInfoData.base.infoData.calories || 0 | number: '1.0-0',
-                unit: 'cal'
-              },
-              color: trendChartColor.calories.base
-            }"></div>
-            <div *ngTemplateOutlet="infoWithColorBar; context: {
-              timeRange: reportCondition.compareTime,
-              valueUnit: {
-                value: sportInfoData.compare?.infoData.calories || 0 | number: '1.0-0',
-                unit: 'cal'
-              },
-              color: trendChartColor.calories.compare
-            }"></div>
-            <div *ngTemplateOutlet="chartInfoDiff; context: {
-              originValue: sportInfoData.diff?.calories || 0,
-              value: sportInfoData.diff?.calories || 0 | number: '1.0-0',
-              unit: 'cal'
-            }"></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  timeRange: reportCondition.baseTime,
+                  valueUnit: {
+                    value: sportInfoData.base.infoData.calories || 0 | number: '1.0-0',
+                    unit: 'cal'
+                  },
+                  color: trendChartColor.calories.base
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  timeRange: reportCondition.compareTime,
+                  valueUnit: {
+                    value: sportInfoData.compare?.infoData.calories || 0 | number: '1.0-0',
+                    unit: 'cal'
+                  },
+                  color: trendChartColor.calories.compare
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                chartInfoDiff;
+                context: {
+                  originValue: sportInfoData.diff?.calories || 0,
+                  value: sportInfoData.diff?.calories || 0 | number: '1.0-0',
+                  unit: 'cal'
+                }
+              "
+            ></div>
           </ng-container>
-          <span class="report-targetLineHint" *ngIf="getAssignCondition('calories')">
+          <span
+            class="report-targetLineHint"
+            *ngIf="
+              reportCondition.dateUnit.unit === reportCondition.targetUnit &&
+              getAssignCondition('calories')
+            "
+          >
             {{ 'universal_lifeTracking_targetCalories' | translate }}
             {{ getAssignCondition('calories') }}
-            car/{{ reportCondition.dateUnit.getUnitI18nKey() | translate }}
+            car/{{ reportCondition.targetUnit | dateUnitKey | translate }}
           </span>
         </div>
         <div class="report-chartFigure">
           <app-compare-column-trend
             [data]="chartData.caloriesTrend.chartData"
             [type]="'calories'"
-            [condition]="transformCondition"
+            [conditionValue]="getAssignCondition('calories')"
             [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
             *ngIf="chartData.caloriesTrend?.chartData"
           ></app-compare-column-trend>
@@ -667,68 +933,101 @@
       <div class="flexRow report-trendChart">
         <div class="flexCol report-chartHint">
           <ng-container *ngIf="!uiFlag.isCompareMode">
-            <span *ngTemplateOutlet="infoWithColorBar; context: {
-              subTitleKey: 'universal_userProfile_maxHr',
-              valueUnit: {
-                value: sportInfoData.base.infoData.avgMaxHeartRateBpm || 0 | number: '1.0-0',
-                unit: 'bpm'
-              },
-              color: trendChartColor.complexHrTrend.base.max
-            }"></span>
-            <span *ngTemplateOutlet="infoWithColorBar; context: {
-              subTitleKey: 'universal_activityData_avgHr',
-              valueUnit: {
-                value: sportInfoData.base.infoData.avgHeartRateBpm || 0 | number: '1.0-0',
-                unit: 'bpm/times'
-              },
-              color: trendChartColor.complexHrTrend.base.avg
-            }"></span>
+            <span
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  subTitleKey: 'universal_userProfile_maxHr',
+                  valueUnit: {
+                    value: sportInfoData.base.infoData.avgMaxHeartRateBpm || 0 | number: '1.0-0',
+                    unit: 'bpm'
+                  },
+                  color: trendChartColor.complexHrTrend.base.max
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  subTitleKey: 'universal_activityData_avgHr',
+                  valueUnit: {
+                    value: sportInfoData.base.infoData.avgHeartRateBpm || 0 | number: '1.0-0',
+                    unit: 'bpm/times'
+                  },
+                  color: trendChartColor.complexHrTrend.base.avg
+                }
+              "
+            ></span>
           </ng-container>
           <ng-container *ngIf="uiFlag.isCompareMode">
-            <div *ngTemplateOutlet="infoWithColorDot; context: {
-              timeRange: reportCondition.baseTime,
-              topInfo: {
-                titleKey: 'universal_userProfile_maxHr',
-                valueUnit: {
-                  value: sportInfoData.base.infoData.avgMaxHeartRateBpm || 0 | number: '1.0-0',
-                  unit: 'bpm'
-                },
-                color: trendChartColor.complexHrTrend.base.max
-              },
-              bottomInfo: {
-                titleKey: 'universal_activityData_avgHr',
-                valueUnit: {
-                  value: sportInfoData.base.infoData.avgHeartRateBpm || 0 | number: '1.0-0',
-                  unit: 'bpm/times'
-                },
-                color: trendChartColor.complexHrTrend.base.avg
-              }
-            }"></div>
-            <div *ngTemplateOutlet="infoWithColorDot; context: {
-              timeRange: reportCondition.compareTime,
-              topInfo: {
-                titleKey: 'universal_userProfile_maxHr',
-                valueUnit: {
-                  value: sportInfoData.compare?.infoData.avgMaxHeartRateBpm || 0 | number: '1.0-0',
-                  unit: 'bpm'
-                },
-                color: trendChartColor.complexHrTrend.compare.max
-              },
-              bottomInfo: {
-                titleKey: 'universal_activityData_avgHr',
-                valueUnit: {
-                  value: sportInfoData.compare?.infoData.avgHeartRateBpm || 0 | number: '1.0-0',
-                  unit: 'bpm/times'
-                },
-                color: trendChartColor.complexHrTrend.compare.avg
-              }
-            }"></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorDot;
+                context: {
+                  timeRange: reportCondition.baseTime,
+                  topInfo: {
+                    titleKey: 'universal_userProfile_maxHr',
+                    valueUnit: {
+                      value: sportInfoData.base.infoData.avgMaxHeartRateBpm || 0 | number: '1.0-0',
+                      unit: 'bpm'
+                    },
+                    color: trendChartColor.complexHrTrend.base.max
+                  },
+                  bottomInfo: {
+                    titleKey: 'universal_activityData_avgHr',
+                    valueUnit: {
+                      value: sportInfoData.base.infoData.avgHeartRateBpm || 0 | number: '1.0-0',
+                      unit: 'bpm/times'
+                    },
+                    color: trendChartColor.complexHrTrend.base.avg
+                  }
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorDot;
+                context: {
+                  timeRange: reportCondition.compareTime,
+                  topInfo: {
+                    titleKey: 'universal_userProfile_maxHr',
+                    valueUnit: {
+                      value:
+                        sportInfoData.compare?.infoData.avgMaxHeartRateBpm || 0 | number: '1.0-0',
+                      unit: 'bpm'
+                    },
+                    color: trendChartColor.complexHrTrend.compare.max
+                  },
+                  bottomInfo: {
+                    titleKey: 'universal_activityData_avgHr',
+                    valueUnit: {
+                      value: sportInfoData.compare?.infoData.avgHeartRateBpm || 0 | number: '1.0-0',
+                      unit: 'bpm/times'
+                    },
+                    color: trendChartColor.complexHrTrend.compare.avg
+                  }
+                }
+              "
+            ></div>
           </ng-container>
+          <span
+            class="report-targetLineHint"
+            *ngIf="
+              reportCondition.dateUnit.unit === reportCondition.targetUnit &&
+              getAssignCondition('avgHeartRate')
+            "
+          >
+            {{ 'universal_activityData_avgHr' | translate }}
+            {{ getAssignCondition('avgHeartRate') }}
+            bpm/{{ reportCondition.targetUnit | dateUnitKey | translate }}
+          </span>
         </div>
         <div class="report-chartFigure">
           <app-compare-overlay-column-chart
             [data]="chartData.complexHrTrend.chartData"
             [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
+            [conditionValue]="getAssignCondition('avgHeartRate')"
             *ngIf="chartData.complexHrTrend?.chartData"
           ></app-compare-overlay-column-chart>
         </div>
@@ -737,13 +1036,11 @@
 
     <div
       class="flexCol"
-      *ngIf="[
-        SportType.run,
-        SportType.cycle,
-        SportType.swim,
-        SportType.row,
-        SportType.ball
-      ].includes(reportCondition.sportType)"
+      *ngIf="
+        [SportType.run, SportType.cycle, SportType.swim, SportType.row, SportType.ball].includes(
+          reportCondition.sportType
+        )
+      "
     >
       <h6 class="report-trendChartTitle">
         {{ 'universal_activityData_totalDistance' | translate }}
@@ -751,42 +1048,81 @@
       <div class="flexRow report-trendChart">
         <div class="flexCol report-chartHint">
           <ng-container *ngIf="!uiFlag.isCompareMode">
-            <span *ngTemplateOutlet="chartInfoTemplate; context: {
-              key: 'universal_activityData_totalDistance',
-              valueUnit: transformDistance(sportInfoData.base.infoData.totalDistanceMeters, getUserUnit())
-            }"></span>
-            <span *ngTemplateOutlet="chartInfoTemplate; context: {
-              key: 'universal_activityData_totalDistance',
-              valueUnit: transformDistance(
-                (sportInfoData.base.infoData.totalDistanceMeters || 0) / (chartData.totalSecondTrend.baseDataLength || Infinity),
-                getUserUnit()
-              ),
-              dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
-            }"></span>
+            <span
+              *ngTemplateOutlet="
+                chartInfoTemplate;
+                context: {
+                  key: 'universal_activityData_totalDistance',
+                  valueUnit: transformDistance(
+                    sportInfoData.base.infoData.totalDistanceMeters,
+                    getUserUnit()
+                  )
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                chartInfoTemplate;
+                context: {
+                  key: 'universal_activityData_totalDistance',
+                  valueUnit: transformDistance(
+                    (sportInfoData.base.infoData.totalDistanceMeters || 0) /
+                      (chartData.totalSecondTrend.baseDataLength || Infinity),
+                    getUserUnit()
+                  ),
+                  dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
+                }
+              "
+            ></span>
           </ng-container>
           <ng-container *ngIf="uiFlag.isCompareMode">
-            <div *ngTemplateOutlet="infoWithColorBar; context: {
-              timeRange: reportCondition.baseTime,
-              valueUnit: transformDistance(sportInfoData.base.infoData.totalDistanceMeters, getUserUnit()),
-              color: trendChartColor.distance.base
-            }"></div>
-            <div *ngTemplateOutlet="infoWithColorBar; context: {
-              timeRange: reportCondition.compareTime,
-              valueUnit: transformDistance(sportInfoData.compare?.infoData.totalDistanceMeters, getUserUnit()),
-              color: trendChartColor.distance.compare
-            }"></div>
-            <div *ngTemplateOutlet="chartInfoDiff; context: {
-              originValue: transformDistance(sportInfoData.diff?.totalDistanceMeters, getUserUnit()).value,
-              value: transformDistance(sportInfoData.diff?.totalDistanceMeters, getUserUnit()).value,
-              unit: transformDistance(sportInfoData.diff?.totalDistanceMeters, getUserUnit()).unit
-            }"></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  timeRange: reportCondition.baseTime,
+                  valueUnit: transformDistance(
+                    sportInfoData.base.infoData.totalDistanceMeters,
+                    getUserUnit()
+                  ),
+                  color: trendChartColor.distance.base
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  timeRange: reportCondition.compareTime,
+                  valueUnit: transformDistance(
+                    sportInfoData.compare?.infoData.totalDistanceMeters,
+                    getUserUnit()
+                  ),
+                  color: trendChartColor.distance.compare
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                chartInfoDiff;
+                context: {
+                  originValue: transformDistance(
+                    sportInfoData.diff?.totalDistanceMeters,
+                    getUserUnit()
+                  ).value,
+                  value: transformDistance(sportInfoData.diff?.totalDistanceMeters, getUserUnit())
+                    .value,
+                  unit: transformDistance(sportInfoData.diff?.totalDistanceMeters, getUserUnit())
+                    .unit
+                }
+              "
+            ></div>
           </ng-container>
         </div>
         <div class="report-chartFigure">
           <app-compare-column-trend
             [data]="chartData.distanceTrend.chartData"
             [type]="'distance'"
-            [condition]="transformCondition"
             [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
             *ngIf="chartData.distanceTrend?.chartData"
           ></app-compare-column-trend>
@@ -796,77 +1132,96 @@
 
     <div
       class="flexCol"
-      *ngIf="[
-        SportType.run,
-        SportType.cycle,
-        SportType.ball
-      ].includes(reportCondition.sportType) && !showPace()"
+      *ngIf="
+        [SportType.run, SportType.cycle, SportType.ball].includes(reportCondition.sportType) &&
+        !showPace()
+      "
     >
       <h6 class="report-trendChartTitle">
         {{ 'universal_activityData_speed' | translate }}
-      <ng-container *ngIf="reportCondition.sportType === SportType.run">
-        <button *ngTemplateOutlet="speedPaceSwitchButton"></button>
-      </ng-container>
+        <ng-container *ngIf="reportCondition.sportType === SportType.run">
+          <button *ngTemplateOutlet="speedPaceSwitchButton"></button>
+        </ng-container>
       </h6>
       <div class="flexRow report-trendChart">
         <div class="flexCol report-chartHint">
           <ng-container *ngIf="!uiFlag.isCompareMode">
-            <span *ngTemplateOutlet="infoWithColorBar; context: {
-              subTitleKey: 'universal_activityData_maxSpeed',
-              valueUnit: {
-                value: sportInfoData.base.infoData.avgMaxSpeed || 0 | number: '1.0-0',
-                unit: 'speed' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
-              },
-              color: trendChartColor.speedPaceTrend.base.max
-            }"></span>
-            <span *ngTemplateOutlet="infoWithColorBar; context: {
-              subTitleKey: 'universal_activityData_avgSpeed',
-              valueUnit: {
-                value: sportInfoData.base.infoData.avgSpeed || 0 | number: '1.0-0',
-                unit: 'speed' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
-              },
-              color: trendChartColor.speedPaceTrend.base.avg
-            }"></span>
+            <span
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  subTitleKey: 'universal_activityData_maxSpeed',
+                  valueUnit: {
+                    value: sportInfoData.base.infoData.avgMaxSpeed || 0 | number: '1.0-0',
+                    unit: 'speed' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                  },
+                  color: trendChartColor.speedPaceTrend.base.max
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  subTitleKey: 'universal_activityData_avgSpeed',
+                  valueUnit: {
+                    value: sportInfoData.base.infoData.avgSpeed || 0 | number: '1.0-0',
+                    unit: 'speed' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                  },
+                  color: trendChartColor.speedPaceTrend.base.avg
+                }
+              "
+            ></span>
           </ng-container>
           <ng-container *ngIf="uiFlag.isCompareMode">
-            <div *ngTemplateOutlet="infoWithColorDot; context: {
-              timeRange: reportCondition.baseTime,
-              topInfo: {
-                titleKey: 'universal_activityData_maxSpeed',
-                valueUnit: {
-                  value: sportInfoData.base.infoData.avgMaxSpeed || 0 | number: '1.0-0',
-                  unit: 'speed' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
-                },
-                color: trendChartColor.speedPaceTrend.base.max
-              },
-              bottomInfo: {
-                titleKey: 'universal_activityData_avgSpeed',
-                valueUnit: {
-                  value: sportInfoData.base.infoData.avgSpeed || 0 | number: '1.0-0',
-                  unit: 'speed' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
-                },
-                color: trendChartColor.speedPaceTrend.base.avg
-              }
-            }"></div>
-            <div *ngTemplateOutlet="infoWithColorDot; context: {
-              timeRange: reportCondition.compareTime,
-              topInfo: {
-                titleKey: 'universal_activityData_maxSpeed',
-                valueUnit: {
-                  value: sportInfoData.compare?.infoData.avgMaxSpeed || 0 | number: '1.0-0',
-                  unit: 'speed' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
-                },
-                color: trendChartColor.speedPaceTrend.compare.max
-              },
-              bottomInfo: {
-                titleKey: 'universal_activityData_avgSpeed',
-                valueUnit: {
-                  value: sportInfoData.compare?.infoData.avgSpeed || 0 | number: '1.0-0',
-                  unit: 'speed' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
-                },
-                color: trendChartColor.speedPaceTrend.compare.avg
-              }
-            }"></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorDot;
+                context: {
+                  timeRange: reportCondition.baseTime,
+                  topInfo: {
+                    titleKey: 'universal_activityData_maxSpeed',
+                    valueUnit: {
+                      value: sportInfoData.base.infoData.avgMaxSpeed || 0 | number: '1.0-0',
+                      unit: 'speed' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                    },
+                    color: trendChartColor.speedPaceTrend.base.max
+                  },
+                  bottomInfo: {
+                    titleKey: 'universal_activityData_avgSpeed',
+                    valueUnit: {
+                      value: sportInfoData.base.infoData.avgSpeed || 0 | number: '1.0-0',
+                      unit: 'speed' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                    },
+                    color: trendChartColor.speedPaceTrend.base.avg
+                  }
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorDot;
+                context: {
+                  timeRange: reportCondition.compareTime,
+                  topInfo: {
+                    titleKey: 'universal_activityData_maxSpeed',
+                    valueUnit: {
+                      value: sportInfoData.compare?.infoData.avgMaxSpeed || 0 | number: '1.0-0',
+                      unit: 'speed' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                    },
+                    color: trendChartColor.speedPaceTrend.compare.max
+                  },
+                  bottomInfo: {
+                    titleKey: 'universal_activityData_avgSpeed',
+                    valueUnit: {
+                      value: sportInfoData.compare?.infoData.avgSpeed || 0 | number: '1.0-0',
+                      unit: 'speed' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                    },
+                    color: trendChartColor.speedPaceTrend.compare.avg
+                  }
+                }
+              "
+            ></div>
           </ng-container>
         </div>
         <div class="report-chartFigure">
@@ -882,11 +1237,10 @@
 
     <div
       class="flexCol"
-      *ngIf="[
-        SportType.run,
-        SportType.swim,
-        SportType.row
-      ].includes(reportCondition.sportType) && showPace()"
+      *ngIf="
+        [SportType.run, SportType.swim, SportType.row].includes(reportCondition.sportType) &&
+        showPace()
+      "
     >
       <h6 class="report-trendChartTitle">
         {{ 'universal_activityData_pace' | translate }}
@@ -897,64 +1251,96 @@
       <div class="flexRow report-trendChart">
         <div class="flexCol report-chartHint">
           <ng-container *ngIf="!uiFlag.isCompareMode">
-            <span *ngTemplateOutlet="infoWithColorBar; context: {
-              subTitleKey: 'universal_activityData_liveBestPace',
-              valueUnit: {
-                value: sportInfoData.base.infoData.avgMaxSpeed || 0 | sportPaceSibs: [reportCondition.sportType, getUserUnit(), false],
-                unit: getPaceUnit(reportCondition.sportType, getUserUnit())
-              },
-              color: trendChartColor.speedPaceTrend.base.max,
-              fontSize: '18px'
-            }"></span>
-            <span *ngTemplateOutlet="infoWithColorBar; context: {
-              subTitleKey: 'universal_activityData_avgPace',
-              valueUnit: {
-                value: sportInfoData.base.infoData.avgSpeed || 0 | sportPaceSibs: [reportCondition.sportType, getUserUnit(), false],
-                unit: getPaceUnit(reportCondition.sportType, getUserUnit())
-              },
-              color: trendChartColor.speedPaceTrend.base.avg,
-              fontSize: '18px'
-            }"></span>
+            <span
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  subTitleKey: 'universal_activityData_liveBestPace',
+                  valueUnit: {
+                    value:
+                      sportInfoData.base.infoData.avgMaxSpeed || 0
+                      | sportPaceSibs: [reportCondition.sportType, getUserUnit(), false],
+                    unit: getPaceUnit(reportCondition.sportType, getUserUnit())
+                  },
+                  color: trendChartColor.speedPaceTrend.base.max,
+                  fontSize: '18px'
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  subTitleKey: 'universal_activityData_avgPace',
+                  valueUnit: {
+                    value:
+                      sportInfoData.base.infoData.avgSpeed || 0
+                      | sportPaceSibs: [reportCondition.sportType, getUserUnit(), false],
+                    unit: getPaceUnit(reportCondition.sportType, getUserUnit())
+                  },
+                  color: trendChartColor.speedPaceTrend.base.avg,
+                  fontSize: '18px'
+                }
+              "
+            ></span>
           </ng-container>
           <ng-container *ngIf="uiFlag.isCompareMode">
-            <div *ngTemplateOutlet="infoWithColorDot; context: {
-              timeRange: reportCondition.baseTime,
-              topInfo: {
-                titleKey: 'universal_activityData_liveBestPace',
-                valueUnit: {
-                  value: sportInfoData.base.infoData.avgMaxSpeed || 0 | sportPaceSibs: [reportCondition.sportType, getUserUnit(), false],
-                  unit: getPaceUnit(reportCondition.sportType, getUserUnit())
-                },
-                color: trendChartColor.speedPaceTrend.base.max
-              },
-              bottomInfo: {
-                titleKey: 'universal_activityData_avgPace',
-                valueUnit: {
-                  value: sportInfoData.base.infoData.avgSpeed || 0 | sportPaceSibs: [reportCondition.sportType, getUserUnit(), false],
-                  unit: getPaceUnit(reportCondition.sportType, getUserUnit())
-                },
-                color: trendChartColor.speedPaceTrend.base.avg
-              }
-            }"></div>
-            <div *ngTemplateOutlet="infoWithColorDot; context: {
-              timeRange: reportCondition.compareTime,
-              topInfo: {
-                titleKey: 'universal_activityData_liveBestPace',
-                valueUnit: {
-                  value: sportInfoData.compare?.infoData.avgMaxSpeed || 0 | sportPaceSibs: [reportCondition.sportType, getUserUnit(), false],
-                  unit: getPaceUnit(reportCondition.sportType, getUserUnit())
-                },
-                color: trendChartColor.speedPaceTrend.compare.max
-              },
-              bottomInfo: {
-                titleKey: 'universal_activityData_avgPace',
-                valueUnit: {
-                  value: sportInfoData.compare?.infoData.avgSpeed || 0 | sportPaceSibs: [reportCondition.sportType, getUserUnit(), false],
-                  unit: getPaceUnit(reportCondition.sportType, getUserUnit())
-                },
-                color: trendChartColor.speedPaceTrend.compare.avg
-              }
-            }"></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorDot;
+                context: {
+                  timeRange: reportCondition.baseTime,
+                  topInfo: {
+                    titleKey: 'universal_activityData_liveBestPace',
+                    valueUnit: {
+                      value:
+                        sportInfoData.base.infoData.avgMaxSpeed || 0
+                        | sportPaceSibs: [reportCondition.sportType, getUserUnit(), false],
+                      unit: getPaceUnit(reportCondition.sportType, getUserUnit())
+                    },
+                    color: trendChartColor.speedPaceTrend.base.max
+                  },
+                  bottomInfo: {
+                    titleKey: 'universal_activityData_avgPace',
+                    valueUnit: {
+                      value:
+                        sportInfoData.base.infoData.avgSpeed || 0
+                        | sportPaceSibs: [reportCondition.sportType, getUserUnit(), false],
+                      unit: getPaceUnit(reportCondition.sportType, getUserUnit())
+                    },
+                    color: trendChartColor.speedPaceTrend.base.avg
+                  }
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorDot;
+                context: {
+                  timeRange: reportCondition.compareTime,
+                  topInfo: {
+                    titleKey: 'universal_activityData_liveBestPace',
+                    valueUnit: {
+                      value:
+                        sportInfoData.compare?.infoData.avgMaxSpeed || 0
+                        | sportPaceSibs: [reportCondition.sportType, getUserUnit(), false],
+                      unit: getPaceUnit(reportCondition.sportType, getUserUnit())
+                    },
+                    color: trendChartColor.speedPaceTrend.compare.max
+                  },
+                  bottomInfo: {
+                    titleKey: 'universal_activityData_avgPace',
+                    valueUnit: {
+                      value:
+                        sportInfoData.compare?.infoData.avgSpeed || 0
+                        | sportPaceSibs: [reportCondition.sportType, getUserUnit(), false],
+                      unit: getPaceUnit(reportCondition.sportType, getUserUnit())
+                    },
+                    color: trendChartColor.speedPaceTrend.compare.avg
+                  }
+                }
+              "
+            ></div>
           </ng-container>
         </div>
         <div class="report-chartFigure">
@@ -972,12 +1358,11 @@
 
     <div
       class="flexCol"
-      *ngIf="[
-        SportType.run,
-        SportType.cycle,
-        SportType.swim,
-        SportType.row
-      ].includes(reportCondition.sportType)"
+      *ngIf="
+        [SportType.run, SportType.cycle, SportType.swim, SportType.row].includes(
+          reportCondition.sportType
+        )
+      "
     >
       <h6 class="report-trendChartTitle">
         {{ 'cadence' | dataTypeTranslate: [reportCondition.sportType] | translate }}
@@ -985,62 +1370,92 @@
       <div class="flexRow report-trendChart">
         <div class="flexCol report-chartHint">
           <ng-container *ngIf="!uiFlag.isCompareMode">
-            <span *ngTemplateOutlet="infoWithColorBar; context: {
-              subTitleKey: getMaxCadenceI18nKey(reportCondition.sportType),
-              valueUnit: {
-                value: getCadenceInfo(reportCondition.sportType, 'base', true) || 0 | number: '1.0-0',
-                unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
-              },
-              color: trendChartColor.cadenceTrend.base.max
-            }"></span>
-            <span *ngTemplateOutlet="infoWithColorBar; context: {
-              subTitleKey: getAvgCadenceI18nKey(reportCondition.sportType),
-              valueUnit: {
-                value: getCadenceInfo(reportCondition.sportType, 'base', false) | number: '1.0-0',
-                unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
-              },
-              color: trendChartColor.cadenceTrend.base.avg
-            }"></span>
+            <span
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  subTitleKey: getMaxCadenceI18nKey(reportCondition.sportType),
+                  valueUnit: {
+                    value:
+                      getCadenceInfo(reportCondition.sportType, 'base', true) || 0
+                      | number: '1.0-0',
+                    unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                  },
+                  color: trendChartColor.cadenceTrend.base.max
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  subTitleKey: getAvgCadenceI18nKey(reportCondition.sportType),
+                  valueUnit: {
+                    value:
+                      getCadenceInfo(reportCondition.sportType, 'base', false) | number: '1.0-0',
+                    unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                  },
+                  color: trendChartColor.cadenceTrend.base.avg
+                }
+              "
+            ></span>
           </ng-container>
           <ng-container *ngIf="uiFlag.isCompareMode">
-            <div *ngTemplateOutlet="infoWithColorDot; context: {
-              timeRange: reportCondition.baseTime,
-              topInfo: {
-                titleKey: getMaxCadenceI18nKey(reportCondition.sportType),
-                valueUnit: {
-                  value: getCadenceInfo(reportCondition.sportType, 'base', true) || 0 | number: '1.0-0',
-                  unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
-                },
-                color: trendChartColor.cadenceTrend.base.max
-              },
-              bottomInfo: {
-                titleKey: getAvgCadenceI18nKey(reportCondition.sportType),
-                valueUnit: {
-                  value: getCadenceInfo(reportCondition.sportType, 'base', false) | number: '1.0-0',
-                  unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
-                },
-                color: trendChartColor.cadenceTrend.base.avg
-              }
-            }"></div>
-            <div *ngTemplateOutlet="infoWithColorDot; context: {
-              timeRange: reportCondition.compareTime,
-              topInfo: {
-                titleKey: getMaxCadenceI18nKey(reportCondition.sportType),
-                valueUnit: {
-                  value: getCadenceInfo(reportCondition.sportType, 'compare', true) || 0 | number: '1.0-0',
-                  unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
-                },
-                color: trendChartColor.cadenceTrend.compare.max
-              },
-              bottomInfo: {
-                titleKey: getAvgCadenceI18nKey(reportCondition.sportType),
-                valueUnit: {
-                  value: getCadenceInfo(reportCondition.sportType, 'compare', false) || 0 | number: '1.0-0',
-                  unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
-                },
-                color: trendChartColor.cadenceTrend.compare.avg
-              }
-            }"></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorDot;
+                context: {
+                  timeRange: reportCondition.baseTime,
+                  topInfo: {
+                    titleKey: getMaxCadenceI18nKey(reportCondition.sportType),
+                    valueUnit: {
+                      value:
+                        getCadenceInfo(reportCondition.sportType, 'base', true) || 0
+                        | number: '1.0-0',
+                      unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                    },
+                    color: trendChartColor.cadenceTrend.base.max
+                  },
+                  bottomInfo: {
+                    titleKey: getAvgCadenceI18nKey(reportCondition.sportType),
+                    valueUnit: {
+                      value:
+                        getCadenceInfo(reportCondition.sportType, 'base', false) | number: '1.0-0',
+                      unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                    },
+                    color: trendChartColor.cadenceTrend.base.avg
+                  }
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorDot;
+                context: {
+                  timeRange: reportCondition.compareTime,
+                  topInfo: {
+                    titleKey: getMaxCadenceI18nKey(reportCondition.sportType),
+                    valueUnit: {
+                      value:
+                        getCadenceInfo(reportCondition.sportType, 'compare', true) || 0
+                        | number: '1.0-0',
+                      unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                    },
+                    color: trendChartColor.cadenceTrend.compare.max
+                  },
+                  bottomInfo: {
+                    titleKey: getAvgCadenceI18nKey(reportCondition.sportType),
+                    valueUnit: {
+                      value:
+                        getCadenceInfo(reportCondition.sportType, 'compare', false) || 0
+                        | number: '1.0-0',
+                      unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                    },
+                    color: trendChartColor.cadenceTrend.compare.avg
+                  }
+                }
+              "
+            ></div>
           </ng-container>
         </div>
         <div class="report-chartFigure">
@@ -1056,10 +1471,7 @@
 
     <div
       class="flexCol"
-      *ngIf="[
-        SportType.cycle,
-        SportType.row
-      ].includes(reportCondition.sportType)"
+      *ngIf="[SportType.cycle, SportType.row].includes(reportCondition.sportType)"
     >
       <h6 class="report-trendChartTitle">
         {{ 'universal_activityData_power' | translate }}
@@ -1067,62 +1479,90 @@
       <div class="flexRow report-trendChart">
         <div class="flexCol report-chartHint">
           <ng-container *ngIf="!uiFlag.isCompareMode">
-            <span *ngTemplateOutlet="infoWithColorBar; context: {
-              subTitleKey: 'universal_activityData_maxPower',
-              valueUnit: {
-                value: getPowerInfo(reportCondition.sportType, 'base', true) || 0 | number: '1.0-0',
-                unit: 'w'
-              },
-              color: trendChartColor.powerTrend.base.max
-            }"></span>
-            <span *ngTemplateOutlet="infoWithColorBar; context: {
-              subTitleKey: 'universal_activityData_avgPower',
-              valueUnit: {
-                value: getPowerInfo(reportCondition.sportType, 'base', false) | number: '1.0-0',
-                unit: 'w'
-              },
-              color: trendChartColor.powerTrend.base.avg
-            }"></span>
+            <span
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  subTitleKey: 'universal_activityData_maxPower',
+                  valueUnit: {
+                    value:
+                      getPowerInfo(reportCondition.sportType, 'base', true) || 0 | number: '1.0-0',
+                    unit: 'w'
+                  },
+                  color: trendChartColor.powerTrend.base.max
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  subTitleKey: 'universal_activityData_avgPower',
+                  valueUnit: {
+                    value: getPowerInfo(reportCondition.sportType, 'base', false) | number: '1.0-0',
+                    unit: 'w'
+                  },
+                  color: trendChartColor.powerTrend.base.avg
+                }
+              "
+            ></span>
           </ng-container>
           <ng-container *ngIf="uiFlag.isCompareMode">
-            <div *ngTemplateOutlet="infoWithColorDot; context: {
-              timeRange: reportCondition.baseTime,
-              topInfo: {
-                titleKey: 'universal_activityData_maxPower',
-                valueUnit: {
-                  value: getPowerInfo(reportCondition.sportType, 'base', true) || 0 | number: '1.0-0',
-                  unit: 'w'
-                },
-                color: trendChartColor.powerTrend.base.max
-              },
-              bottomInfo: {
-                titleKey: 'universal_activityData_avgPower',
-                valueUnit: {
-                  value: getPowerInfo(reportCondition.sportType, 'base', false) | number: '1.0-0',
-                  unit: 'w'
-                },
-                color: trendChartColor.powerTrend.base.avg
-              }
-            }"></div>
-            <div *ngTemplateOutlet="infoWithColorDot; context: {
-              timeRange: reportCondition.compareTime,
-              topInfo: {
-                titleKey: 'universal_activityData_maxPower',
-                valueUnit: {
-                  value: getPowerInfo(reportCondition.sportType, 'compare', true) || 0 | number: '1.0-0',
-                  unit: 'w'
-                },
-                color: trendChartColor.powerTrend.compare.max
-              },
-              bottomInfo: {
-                titleKey: 'universal_activityData_avgPower',
-                valueUnit: {
-                  value: getPowerInfo(reportCondition.sportType, 'compare', false) || 0 | number: '1.0-0',
-                  unit: 'w'
-                },
-                color: trendChartColor.powerTrend.compare.avg
-              }
-            }"></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorDot;
+                context: {
+                  timeRange: reportCondition.baseTime,
+                  topInfo: {
+                    titleKey: 'universal_activityData_maxPower',
+                    valueUnit: {
+                      value:
+                        getPowerInfo(reportCondition.sportType, 'base', true) || 0
+                        | number: '1.0-0',
+                      unit: 'w'
+                    },
+                    color: trendChartColor.powerTrend.base.max
+                  },
+                  bottomInfo: {
+                    titleKey: 'universal_activityData_avgPower',
+                    valueUnit: {
+                      value:
+                        getPowerInfo(reportCondition.sportType, 'base', false) | number: '1.0-0',
+                      unit: 'w'
+                    },
+                    color: trendChartColor.powerTrend.base.avg
+                  }
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorDot;
+                context: {
+                  timeRange: reportCondition.compareTime,
+                  topInfo: {
+                    titleKey: 'universal_activityData_maxPower',
+                    valueUnit: {
+                      value:
+                        getPowerInfo(reportCondition.sportType, 'compare', true) || 0
+                        | number: '1.0-0',
+                      unit: 'w'
+                    },
+                    color: trendChartColor.powerTrend.compare.max
+                  },
+                  bottomInfo: {
+                    titleKey: 'universal_activityData_avgPower',
+                    valueUnit: {
+                      value:
+                        getPowerInfo(reportCondition.sportType, 'compare', false) || 0
+                        | number: '1.0-0',
+                      unit: 'w'
+                    },
+                    color: trendChartColor.powerTrend.compare.avg
+                  }
+                }
+              "
+            ></div>
           </ng-container>
         </div>
         <div class="report-chartFigure">
@@ -1144,62 +1584,82 @@
         <div class="flexRow report-trendChart">
           <div class="flexCol report-chartHint">
             <ng-container *ngIf="!uiFlag.isCompareMode">
-              <span *ngTemplateOutlet="infoWithColorBar; context: {
-                subTitleKey: 'universal_activityData_maxRight',
-                valueUnit: {
-                  value: sportInfoData.base.infoData.maxGforceX || 0 | number: '1.0-1',
-                  unit: 'g'
-                },
-                color: trendChartColor.gForceTrend.base.max
-              }"></span>
-              <span *ngTemplateOutlet="infoWithColorBar; context: {
-                subTitleKey: 'universal_activityData_limit_maxLeft',
-                valueUnit: {
-                  value: sportInfoData.base.infoData.miniGforceX || 0 | number: '1.0-1',
-                  unit: 'g'
-                },
-                color: trendChartColor.gForceTrend.base.min
-              }"></span>
+              <span
+                *ngTemplateOutlet="
+                  infoWithColorBar;
+                  context: {
+                    subTitleKey: 'universal_activityData_maxRight',
+                    valueUnit: {
+                      value: sportInfoData.base.infoData.maxGforceX || 0 | number: '1.0-1',
+                      unit: 'g'
+                    },
+                    color: trendChartColor.gForceTrend.base.max
+                  }
+                "
+              ></span>
+              <span
+                *ngTemplateOutlet="
+                  infoWithColorBar;
+                  context: {
+                    subTitleKey: 'universal_activityData_limit_maxLeft',
+                    valueUnit: {
+                      value: sportInfoData.base.infoData.miniGforceX || 0 | number: '1.0-1',
+                      unit: 'g'
+                    },
+                    color: trendChartColor.gForceTrend.base.min
+                  }
+                "
+              ></span>
             </ng-container>
             <ng-container *ngIf="uiFlag.isCompareMode">
-              <div *ngTemplateOutlet="infoWithColorDot; context: {
-                timeRange: reportCondition.baseTime,
-                topInfo: {
-                  titleKey: 'universal_activityData_maxRight',
-                  valueUnit: {
-                    value: sportInfoData.base.infoData.maxGforceX || 0 | number: '1.0-1',
-                    unit: 'g'
-                  },
-                  color: trendChartColor.gForceTrend.base.max
-                },
-                bottomInfo: {
-                  titleKey: 'universal_activityData_limit_maxLeft',
-                  valueUnit: {
-                    value: sportInfoData.base.infoData.miniGforceX || 0 | number: '1.0-1',
-                    unit: 'g'
-                  },
-                  color: trendChartColor.gForceTrend.base.min
-                }
-              }"></div>
-              <div *ngTemplateOutlet="infoWithColorDot; context: {
-                timeRange: reportCondition.compareTime,
-                topInfo: {
-                  titleKey: 'universal_activityData_maxRight',
-                  valueUnit: {
-                    value: sportInfoData.compare?.infoData.maxGforceX || 0 | number: '1.0-1',
-                    unit: 'g'
-                  },
-                  color: trendChartColor.gForceTrend.compare.max
-                },
-                bottomInfo: {
-                  titleKey: 'universal_activityData_limit_maxLeft',
-                  valueUnit: {
-                    value: sportInfoData.compare?.infoData.miniGforceX || 0 | number: '1.0-1',
-                    unit: 'g'
-                  },
-                  color: trendChartColor.gForceTrend.compare.min
-                }
-              }"></div>
+              <div
+                *ngTemplateOutlet="
+                  infoWithColorDot;
+                  context: {
+                    timeRange: reportCondition.baseTime,
+                    topInfo: {
+                      titleKey: 'universal_activityData_maxRight',
+                      valueUnit: {
+                        value: sportInfoData.base.infoData.maxGforceX || 0 | number: '1.0-1',
+                        unit: 'g'
+                      },
+                      color: trendChartColor.gForceTrend.base.max
+                    },
+                    bottomInfo: {
+                      titleKey: 'universal_activityData_limit_maxLeft',
+                      valueUnit: {
+                        value: sportInfoData.base.infoData.miniGforceX || 0 | number: '1.0-1',
+                        unit: 'g'
+                      },
+                      color: trendChartColor.gForceTrend.base.min
+                    }
+                  }
+                "
+              ></div>
+              <div
+                *ngTemplateOutlet="
+                  infoWithColorDot;
+                  context: {
+                    timeRange: reportCondition.compareTime,
+                    topInfo: {
+                      titleKey: 'universal_activityData_maxRight',
+                      valueUnit: {
+                        value: sportInfoData.compare?.infoData.maxGforceX || 0 | number: '1.0-1',
+                        unit: 'g'
+                      },
+                      color: trendChartColor.gForceTrend.compare.max
+                    },
+                    bottomInfo: {
+                      titleKey: 'universal_activityData_limit_maxLeft',
+                      valueUnit: {
+                        value: sportInfoData.compare?.infoData.miniGforceX || 0 | number: '1.0-1',
+                        unit: 'g'
+                      },
+                      color: trendChartColor.gForceTrend.compare.min
+                    }
+                  }
+                "
+              ></div>
             </ng-container>
           </div>
           <div class="report-chartFigure">
@@ -1219,62 +1679,82 @@
         <div class="flexRow report-trendChart">
           <div class="flexCol report-chartHint">
             <ng-container *ngIf="!uiFlag.isCompareMode">
-              <span *ngTemplateOutlet="infoWithColorBar; context: {
-                subTitleKey: 'universal_activityData_maxAcceleration',
-                valueUnit: {
-                  value: sportInfoData.base.infoData.maxGforceY || 0 | number: '1.0-1',
-                  unit: 'g'
-                },
-                color: trendChartColor.gForceTrend.base.max
-              }"></span>
-              <span *ngTemplateOutlet="infoWithColorBar; context: {
-                subTitleKey: 'universal_activityData_maxImpact',
-                valueUnit: {
-                  value: sportInfoData.base.infoData.miniGforceY || 0 | number: '1.0-1',
-                  unit: 'g'
-                },
-                color: trendChartColor.gForceTrend.base.min
-              }"></span>
+              <span
+                *ngTemplateOutlet="
+                  infoWithColorBar;
+                  context: {
+                    subTitleKey: 'universal_activityData_maxAcceleration',
+                    valueUnit: {
+                      value: sportInfoData.base.infoData.maxGforceY || 0 | number: '1.0-1',
+                      unit: 'g'
+                    },
+                    color: trendChartColor.gForceTrend.base.max
+                  }
+                "
+              ></span>
+              <span
+                *ngTemplateOutlet="
+                  infoWithColorBar;
+                  context: {
+                    subTitleKey: 'universal_activityData_maxImpact',
+                    valueUnit: {
+                      value: sportInfoData.base.infoData.miniGforceY || 0 | number: '1.0-1',
+                      unit: 'g'
+                    },
+                    color: trendChartColor.gForceTrend.base.min
+                  }
+                "
+              ></span>
             </ng-container>
             <ng-container *ngIf="uiFlag.isCompareMode">
-              <div *ngTemplateOutlet="infoWithColorDot; context: {
-                timeRange: reportCondition.baseTime,
-                topInfo: {
-                  titleKey: 'universal_activityData_maxAcceleration',
-                  valueUnit: {
-                    value: sportInfoData.base.infoData.maxGforceY || 0 | number: '1.0-1',
-                    unit: 'g'
-                  },
-                  color: trendChartColor.gForceTrend.base.max
-                },
-                bottomInfo: {
-                  titleKey: 'universal_activityData_maxImpact',
-                  valueUnit: {
-                    value: sportInfoData.base.infoData.miniGforceY || 0 | number: '1.0-1',
-                    unit: 'g'
-                  },
-                  color: trendChartColor.gForceTrend.base.min
-                }
-              }"></div>
-              <div *ngTemplateOutlet="infoWithColorDot; context: {
-                timeRange: reportCondition.compareTime,
-                topInfo: {
-                  titleKey: 'universal_activityData_maxAcceleration',
-                  valueUnit: {
-                    value: sportInfoData.compare?.infoData.maxGforceY || 0 | number: '1.0-1',
-                    unit: 'g'
-                  },
-                  color: trendChartColor.gForceTrend.compare.max
-                },
-                bottomInfo: {
-                  titleKey: 'universal_activityData_maxImpact',
-                  valueUnit: {
-                    value: sportInfoData.compare?.infoData.miniGforceY || 0 | number: '1.0-1',
-                    unit: 'g'
-                  },
-                  color: trendChartColor.gForceTrend.compare.min
-                }
-              }"></div>
+              <div
+                *ngTemplateOutlet="
+                  infoWithColorDot;
+                  context: {
+                    timeRange: reportCondition.baseTime,
+                    topInfo: {
+                      titleKey: 'universal_activityData_maxAcceleration',
+                      valueUnit: {
+                        value: sportInfoData.base.infoData.maxGforceY || 0 | number: '1.0-1',
+                        unit: 'g'
+                      },
+                      color: trendChartColor.gForceTrend.base.max
+                    },
+                    bottomInfo: {
+                      titleKey: 'universal_activityData_maxImpact',
+                      valueUnit: {
+                        value: sportInfoData.base.infoData.miniGforceY || 0 | number: '1.0-1',
+                        unit: 'g'
+                      },
+                      color: trendChartColor.gForceTrend.base.min
+                    }
+                  }
+                "
+              ></div>
+              <div
+                *ngTemplateOutlet="
+                  infoWithColorDot;
+                  context: {
+                    timeRange: reportCondition.compareTime,
+                    topInfo: {
+                      titleKey: 'universal_activityData_maxAcceleration',
+                      valueUnit: {
+                        value: sportInfoData.compare?.infoData.maxGforceY || 0 | number: '1.0-1',
+                        unit: 'g'
+                      },
+                      color: trendChartColor.gForceTrend.compare.max
+                    },
+                    bottomInfo: {
+                      titleKey: 'universal_activityData_maxImpact',
+                      valueUnit: {
+                        value: sportInfoData.compare?.infoData.miniGforceY || 0 | number: '1.0-1',
+                        unit: 'g'
+                      },
+                      color: trendChartColor.gForceTrend.compare.min
+                    }
+                  }
+                "
+              ></div>
             </ng-container>
           </div>
           <div class="report-chartFigure">
@@ -1294,62 +1774,82 @@
         <div class="flexRow report-trendChart">
           <div class="flexCol report-chartHint">
             <ng-container *ngIf="!uiFlag.isCompareMode">
-              <span *ngTemplateOutlet="infoWithColorBar; context: {
-                subTitleKey: 'universal_activityData_maxJump',
-                valueUnit: {
-                  value: sportInfoData.base.infoData.maxGforceZ || 0 | number: '1.0-0',
-                  unit: 'g'
-                },
-                color: trendChartColor.gForceTrend.base.max
-              }"></span>
-              <span *ngTemplateOutlet="infoWithColorBar; context: {
-                subTitleKey: 'universal_activityData_maxFloorImpact',
-                valueUnit: {
-                  value: sportInfoData.base.infoData.miniGforceZ || 0 | number: '1.0-0',
-                  unit: 'g'
-                },
-                color: trendChartColor.gForceTrend.base.min
-              }"></span>
+              <span
+                *ngTemplateOutlet="
+                  infoWithColorBar;
+                  context: {
+                    subTitleKey: 'universal_activityData_maxJump',
+                    valueUnit: {
+                      value: sportInfoData.base.infoData.maxGforceZ || 0 | number: '1.0-0',
+                      unit: 'g'
+                    },
+                    color: trendChartColor.gForceTrend.base.max
+                  }
+                "
+              ></span>
+              <span
+                *ngTemplateOutlet="
+                  infoWithColorBar;
+                  context: {
+                    subTitleKey: 'universal_activityData_maxFloorImpact',
+                    valueUnit: {
+                      value: sportInfoData.base.infoData.miniGforceZ || 0 | number: '1.0-0',
+                      unit: 'g'
+                    },
+                    color: trendChartColor.gForceTrend.base.min
+                  }
+                "
+              ></span>
             </ng-container>
             <ng-container *ngIf="uiFlag.isCompareMode">
-              <div *ngTemplateOutlet="infoWithColorDot; context: {
-                timeRange: reportCondition.baseTime,
-                topInfo: {
-                  titleKey: 'universal_activityData_maxJump',
-                  valueUnit: {
-                    value: sportInfoData.base.infoData.maxGforceZ || 0 | number: '1.0-0',
-                    unit: 'g'
-                  },
-                  color: trendChartColor.gForceTrend.base.max
-                },
-                bottomInfo: {
-                  titleKey: 'universal_activityData_maxFloorImpact',
-                  valueUnit: {
-                    value: sportInfoData.base.infoData.miniGforceZ || 0 | number: '1.0-0',
-                    unit: 'g'
-                  },
-                  color: trendChartColor.gForceTrend.base.min
-                }
-              }"></div>
-              <div *ngTemplateOutlet="infoWithColorDot; context: {
-                timeRange: reportCondition.compareTime,
-                topInfo: {
-                  titleKey: 'universal_activityData_maxJump',
-                  valueUnit: {
-                    value: sportInfoData.compare?.infoData.maxGforceZ || 0 | number: '1.0-0',
-                    unit: 'g'
-                  },
-                  color: trendChartColor.gForceTrend.compare.max
-                },
-                bottomInfo: {
-                  titleKey: 'universal_activityData_maxFloorImpact',
-                  valueUnit: {
-                    value: sportInfoData.compare?.infoData.miniGforceZ || 0 | number: '1.0-0',
-                    unit: 'g'
-                  },
-                  color: trendChartColor.gForceTrend.compare.min
-                }
-              }"></div>
+              <div
+                *ngTemplateOutlet="
+                  infoWithColorDot;
+                  context: {
+                    timeRange: reportCondition.baseTime,
+                    topInfo: {
+                      titleKey: 'universal_activityData_maxJump',
+                      valueUnit: {
+                        value: sportInfoData.base.infoData.maxGforceZ || 0 | number: '1.0-0',
+                        unit: 'g'
+                      },
+                      color: trendChartColor.gForceTrend.base.max
+                    },
+                    bottomInfo: {
+                      titleKey: 'universal_activityData_maxFloorImpact',
+                      valueUnit: {
+                        value: sportInfoData.base.infoData.miniGforceZ || 0 | number: '1.0-0',
+                        unit: 'g'
+                      },
+                      color: trendChartColor.gForceTrend.base.min
+                    }
+                  }
+                "
+              ></div>
+              <div
+                *ngTemplateOutlet="
+                  infoWithColorDot;
+                  context: {
+                    timeRange: reportCondition.compareTime,
+                    topInfo: {
+                      titleKey: 'universal_activityData_maxJump',
+                      valueUnit: {
+                        value: sportInfoData.compare?.infoData.maxGforceZ || 0 | number: '1.0-0',
+                        unit: 'g'
+                      },
+                      color: trendChartColor.gForceTrend.compare.max
+                    },
+                    bottomInfo: {
+                      titleKey: 'universal_activityData_maxFloorImpact',
+                      valueUnit: {
+                        value: sportInfoData.compare?.infoData.miniGforceZ || 0 | number: '1.0-0',
+                        unit: 'g'
+                      },
+                      color: trendChartColor.gForceTrend.compare.min
+                    }
+                  }
+                "
+              ></div>
             </ng-container>
           </div>
           <div class="report-chartFigure">
@@ -1362,7 +1862,6 @@
         </div>
       </div>
     </ng-container>
-
 
     <div class="flexCol">
       <h6 class="report-trendChartTitle">
@@ -1407,31 +1906,41 @@
       </h6>
       <div class="flexRow report-trendChart">
         <div class="flexCol report-chartHint">
-          <div *ngTemplateOutlet="infoWithColorDot; context: {
-            timeRange: reportCondition.baseTime,
-            topInfo: {
-              titleKey: 'universal_userProfile_bodyWeight',
-              color: trendChartColor.bodyWeightTrend.base
-            },
-            bottomInfo: {
-              titleKey: 'universal_activityData_bodyFatRate',
-              color: trendChartColor.bodyWeightTrend.base,
-              isDashLine: true
-            }
-          }"></div>
-          <ng-container *ngIf="uiFlag.isCompareMode">
-            <div *ngTemplateOutlet="infoWithColorDot; context: {
-              timeRange: reportCondition.compareTime,
-              topInfo: {
-                titleKey: 'universal_userProfile_bodyWeight',
-                color: trendChartColor.bodyWeightTrend.compare
-              },
-              bottomInfo: {
-                titleKey: 'universal_activityData_bodyFatRate',
-                color: trendChartColor.bodyWeightTrend.compare,
-                isDashLine: true
+          <div
+            *ngTemplateOutlet="
+              infoWithColorDot;
+              context: {
+                timeRange: reportCondition.baseTime,
+                topInfo: {
+                  titleKey: 'universal_userProfile_bodyWeight',
+                  color: trendChartColor.bodyWeightTrend.base
+                },
+                bottomInfo: {
+                  titleKey: 'universal_activityData_bodyFatRate',
+                  color: trendChartColor.bodyWeightTrend.base,
+                  isDashLine: true
+                }
               }
-            }"></div>
+            "
+          ></div>
+          <ng-container *ngIf="uiFlag.isCompareMode">
+            <div
+              *ngTemplateOutlet="
+                infoWithColorDot;
+                context: {
+                  timeRange: reportCondition.compareTime,
+                  topInfo: {
+                    titleKey: 'universal_userProfile_bodyWeight',
+                    color: trendChartColor.bodyWeightTrend.compare
+                  },
+                  bottomInfo: {
+                    titleKey: 'universal_activityData_bodyFatRate',
+                    color: trendChartColor.bodyWeightTrend.compare,
+                    isDashLine: true
+                  }
+                }
+              "
+            ></div>
           </ng-container>
         </div>
         <div class="report-chartFigure">
@@ -1444,15 +1953,14 @@
         </div>
       </div>
     </div>
-
   </section>
 
   <section
     class="report-section"
     *ngIf="
-      uiFlag.isPageOwner
-      && reportCondition.sportType === SportType.weightTrain
-      && weightTrainingAnalysis
+      uiFlag.isPageOwner &&
+      reportCondition.sportType === SportType.weightTrain &&
+      weightTrainingAnalysis
     "
   >
     <div class="flexRow cardTitle">
@@ -1471,72 +1979,127 @@
       </div>
     </div>
     <div class="flexRow report-analysisHintArea" *ngIf="uiFlag.isCompareMode">
-      <span *ngTemplateOutlet="analysisDateHint; context: {
-        infoType: true,
-        startDate: reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD'),
-        endDate: reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD')
-      }"></span>
-      <span *ngTemplateOutlet="analysisDateHint; context: {
-        infoType: false,
-        startDate: reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD'),
-        endDate: reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD')
-      }"></span>
+      <span
+        *ngTemplateOutlet="
+          analysisDateHint;
+          context: {
+            infoType: true,
+            startDate: reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD'),
+            endDate: reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD')
+          }
+        "
+      ></span>
+      <span
+        *ngTemplateOutlet="
+          analysisDateHint;
+          context: {
+            infoType: false,
+            startDate: reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD'),
+            endDate: reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD')
+          }
+        "
+      ></span>
     </div>
     <div class="flexRow report-analysisHeaderRow">
-      <div *ngTemplateOutlet="analysisHeader; context: {
-        columnType: 'trainingName',
-        title: 'universal_activityData_name' | translate,
-        className: 'analysis__name',
-        showHeader: true
-      }"></div>
+      <div
+        *ngTemplateOutlet="
+          analysisHeader;
+          context: {
+            columnType: 'trainingName',
+            title: 'universal_activityData_name' | translate,
+            className: 'analysis__name',
+            showHeader: true
+          }
+        "
+      ></div>
       <div class="flexRow report-analysisDataRow">
-        <div *ngTemplateOutlet="analysisHeader; context: {
-          columnType: 'oneRepMax',
-          title: 'universal_activityData_max1Rm' | translate,
-          dataUnit: getUserUnit() === Unit.metric ? 'kg' : 'lb',
-          className: 'analysis__rep__max',
-          showHeader: weightTrainingAnalysisOption.getItemSelectStatus(MuscleAnalysisColumn.oneRepMax)
-        }"></div>
-        <div *ngTemplateOutlet="analysisHeader; context: {
-          columnType: 'totalSets',
-          title: 'universal_activityData_totalSets' | translate,
-          dataUnit: 'set',
-          className: 'analysis__total__sets',
-          showHeader: weightTrainingAnalysisOption.getItemSelectStatus(MuscleAnalysisColumn.totalSets)
-        }"></div>
-        <div *ngTemplateOutlet="analysisHeader; context: {
-          columnType: 'totalReps',
-          title: 'universal_activityData_totalReps' | translate,
-          dataUnit: 'rep',
-          className: 'analysis__total__reps',
-          showHeader: weightTrainingAnalysisOption.getItemSelectStatus(MuscleAnalysisColumn.totalReps)
-        }"></div>
-        <div *ngTemplateOutlet="analysisHeader; context: {
-          columnType: 'avgWeightKg',
-          title: 'universal_activityData_avgWeight' | translate,
-          dataUnit: getUserUnit() === Unit.metric ? 'kg' : 'lb',
-          className: 'analysis__avg__weight',
-          showHeader: weightTrainingAnalysisOption.getItemSelectStatus(MuscleAnalysisColumn.avgWeightKg)
-        }"></div>
-        <div *ngTemplateOutlet="analysisHeader; context: {
-          columnType: 'trainingLevel',
-          title: 'universal_activityData_weightTrainingExtent' | translate,
-          dataUnit: '%',
-          className: 'analysis__training__level',
-          showHeader: weightTrainingAnalysisOption.getItemSelectStatus(MuscleAnalysisColumn.trainingLevel)
-        }"></div>
-        <div *ngTemplateOutlet="analysisHeader; context: {
-          title: 'universal_activityData_muscleGroup' | translate,
-          className: 'analysis__muscle__group',
-          showHeader: weightTrainingAnalysisOption.getItemSelectStatus(MuscleAnalysisColumn.belongMuscleGroup)
-        }"></div>
+        <div
+          *ngTemplateOutlet="
+            analysisHeader;
+            context: {
+              columnType: 'oneRepMax',
+              title: 'universal_activityData_max1Rm' | translate,
+              dataUnit: getUserUnit() === Unit.metric ? 'kg' : 'lb',
+              className: 'analysis__rep__max',
+              showHeader: weightTrainingAnalysisOption.getItemSelectStatus(
+                MuscleAnalysisColumn.oneRepMax
+              )
+            }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            analysisHeader;
+            context: {
+              columnType: 'totalSets',
+              title: 'universal_activityData_totalSets' | translate,
+              dataUnit: 'set',
+              className: 'analysis__total__sets',
+              showHeader: weightTrainingAnalysisOption.getItemSelectStatus(
+                MuscleAnalysisColumn.totalSets
+              )
+            }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            analysisHeader;
+            context: {
+              columnType: 'totalReps',
+              title: 'universal_activityData_totalReps' | translate,
+              dataUnit: 'rep',
+              className: 'analysis__total__reps',
+              showHeader: weightTrainingAnalysisOption.getItemSelectStatus(
+                MuscleAnalysisColumn.totalReps
+              )
+            }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            analysisHeader;
+            context: {
+              columnType: 'avgWeightKg',
+              title: 'universal_activityData_avgWeight' | translate,
+              dataUnit: getUserUnit() === Unit.metric ? 'kg' : 'lb',
+              className: 'analysis__avg__weight',
+              showHeader: weightTrainingAnalysisOption.getItemSelectStatus(
+                MuscleAnalysisColumn.avgWeightKg
+              )
+            }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            analysisHeader;
+            context: {
+              columnType: 'trainingLevel',
+              title: 'universal_activityData_weightTrainingExtent' | translate,
+              dataUnit: '%',
+              className: 'analysis__training__level',
+              showHeader: weightTrainingAnalysisOption.getItemSelectStatus(
+                MuscleAnalysisColumn.trainingLevel
+              )
+            }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            analysisHeader;
+            context: {
+              title: 'universal_activityData_muscleGroup' | translate,
+              className: 'analysis__muscle__group',
+              showHeader: weightTrainingAnalysisOption.getItemSelectStatus(
+                MuscleAnalysisColumn.belongMuscleGroup
+              )
+            }
+          "
+        ></div>
       </div>
     </div>
 
     <ul class="flexCol report-analysisRowData">
-      <ng-container
-        *ngFor="let _analysis of weightTrainingAnalysis.menuList; let index = index;"
-      >
+      <ng-container *ngFor="let _analysis of weightTrainingAnalysis.menuList; let index = index">
         <li
           class="flexRow report-analysisRow training__analysis__row"
           *ngIf="index < 10 || uiFlag.analysisSeeMore"
@@ -1549,44 +2112,88 @@
               class="flexRow report-analysisDataRow"
               [class.report-analysisBaseRow]="uiFlag.isCompareMode"
             >
-              <span *ngTemplateOutlet="analysisData; context: {
-                data: _analysis[1].base.oneRepMax | weightSibs | number: '1.0-1',
-                diff: checkProgressive(_analysis, 'oneRepMax'),
-                className: 'analysis__rep__max',
-                showData: weightTrainingAnalysisOption.getItemSelectStatus(MuscleAnalysisColumn.oneRepMax)
-              }"></span>
-              <span *ngTemplateOutlet="analysisData; context: {
-                data: _analysis[1].base.totalSets,
-                diff: checkProgressive(_analysis, 'totalSets'),
-                className: 'analysis__total__sets',
-                showData: weightTrainingAnalysisOption.getItemSelectStatus(MuscleAnalysisColumn.totalSets)
-              }"></span>
-              <span *ngTemplateOutlet="analysisData; context: {
-                data: _analysis[1].base.totalReps,
-                diff: checkProgressive(_analysis, 'totalReps'),
-                className: 'analysis__total__reps',
-                showData: weightTrainingAnalysisOption.getItemSelectStatus(MuscleAnalysisColumn.totalReps)
-              }"></span>
-              <span *ngTemplateOutlet="analysisData; context: {
-                data: _analysis[1].base.avgWeightKg | weightSibs | number: '1.0-1',
-                diff: checkProgressive(_analysis, 'avgWeightKg'),
-                className: 'analysis__avg__weight',
-                showData: weightTrainingAnalysisOption.getItemSelectStatus(MuscleAnalysisColumn.avgWeightKg)
-              }"></span>
-              <span *ngTemplateOutlet="analysisData; context: {
-                data: _analysis[1].base.trainingLevel,
-                diff: checkProgressive(_analysis, 'trainingLevel'),
-                className: 'analysis__training__level',
-                showData: weightTrainingAnalysisOption.getItemSelectStatus(MuscleAnalysisColumn.trainingLevel)
-              }"></span>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _analysis[1].base.oneRepMax | weightSibs | number: '1.0-1',
+                    diff: checkProgressive(_analysis, 'oneRepMax'),
+                    className: 'analysis__rep__max',
+                    showData: weightTrainingAnalysisOption.getItemSelectStatus(
+                      MuscleAnalysisColumn.oneRepMax
+                    )
+                  }
+                "
+              ></span>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _analysis[1].base.totalSets,
+                    diff: checkProgressive(_analysis, 'totalSets'),
+                    className: 'analysis__total__sets',
+                    showData: weightTrainingAnalysisOption.getItemSelectStatus(
+                      MuscleAnalysisColumn.totalSets
+                    )
+                  }
+                "
+              ></span>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _analysis[1].base.totalReps,
+                    diff: checkProgressive(_analysis, 'totalReps'),
+                    className: 'analysis__total__reps',
+                    showData: weightTrainingAnalysisOption.getItemSelectStatus(
+                      MuscleAnalysisColumn.totalReps
+                    )
+                  }
+                "
+              ></span>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _analysis[1].base.avgWeightKg | weightSibs | number: '1.0-1',
+                    diff: checkProgressive(_analysis, 'avgWeightKg'),
+                    className: 'analysis__avg__weight',
+                    showData: weightTrainingAnalysisOption.getItemSelectStatus(
+                      MuscleAnalysisColumn.avgWeightKg
+                    )
+                  }
+                "
+              ></span>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _analysis[1].base.trainingLevel,
+                    diff: checkProgressive(_analysis, 'trainingLevel'),
+                    className: 'analysis__training__level',
+                    showData: weightTrainingAnalysisOption.getItemSelectStatus(
+                      MuscleAnalysisColumn.trainingLevel
+                    )
+                  }
+                "
+              ></span>
               <span
                 class="analysis__muscle__group"
-                *ngIf="weightTrainingAnalysisOption.getItemSelectStatus(MuscleAnalysisColumn.belongMuscleGroup)"
+                *ngIf="
+                  weightTrainingAnalysisOption.getItemSelectStatus(
+                    MuscleAnalysisColumn.belongMuscleGroup
+                  )
+                "
               >
                 <span class="report-analysisColumnData report-analysisIcon">
-                  <ng-container *ngTemplateOutlet="belongMuscleGroup; context: {
-                    list: weightTrainingAnalysis.getBelongMuscleGroup(_analysis[0])
-                  }"></ng-container>
+                  <ng-container
+                    *ngTemplateOutlet="
+                      belongMuscleGroup;
+                      context: {
+                        list: weightTrainingAnalysis.getBelongMuscleGroup(_analysis[0])
+                      }
+                    "
+                  ></ng-container>
                 </span>
               </span>
             </div>
@@ -1595,39 +2202,83 @@
               [class.report-analysisCompareRow]="uiFlag.isCompareMode"
               *ngIf="uiFlag.isCompareMode"
             >
-              <span *ngTemplateOutlet="analysisData; context: {
-                data: _analysis[1].compare.oneRepMax | weightSibs | number: '1.0-1',
-                className: 'analysis__rep__max',
-                showData: weightTrainingAnalysisOption.getItemSelectStatus(MuscleAnalysisColumn.oneRepMax)
-              }"></span>
-              <span *ngTemplateOutlet="analysisData; context: {
-                data: _analysis[1].compare.totalSets,
-                className: 'analysis__total__sets',
-                showData: weightTrainingAnalysisOption.getItemSelectStatus(MuscleAnalysisColumn.totalSets)
-              }"></span>
-              <span *ngTemplateOutlet="analysisData; context: {
-                data: _analysis[1].compare.totalReps,
-                className: 'analysis__total__reps',
-                showData: weightTrainingAnalysisOption.getItemSelectStatus(MuscleAnalysisColumn.totalReps)
-              }"></span>
-              <span *ngTemplateOutlet="analysisData; context: {
-                data: _analysis[1].compare.avgWeightKg | weightSibs | number: '1.0-1',
-                className: 'analysis__avg__weight',
-                showData: weightTrainingAnalysisOption.getItemSelectStatus(MuscleAnalysisColumn.avgWeightKg)
-              }"></span>
-              <span *ngTemplateOutlet="analysisData; context: {
-                data: _analysis[1].compare.trainingLevel,
-                className: 'analysis__training__level',
-                showData: weightTrainingAnalysisOption.getItemSelectStatus(MuscleAnalysisColumn.trainingLevel)
-              }"></span>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _analysis[1].compare.oneRepMax | weightSibs | number: '1.0-1',
+                    className: 'analysis__rep__max',
+                    showData: weightTrainingAnalysisOption.getItemSelectStatus(
+                      MuscleAnalysisColumn.oneRepMax
+                    )
+                  }
+                "
+              ></span>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _analysis[1].compare.totalSets,
+                    className: 'analysis__total__sets',
+                    showData: weightTrainingAnalysisOption.getItemSelectStatus(
+                      MuscleAnalysisColumn.totalSets
+                    )
+                  }
+                "
+              ></span>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _analysis[1].compare.totalReps,
+                    className: 'analysis__total__reps',
+                    showData: weightTrainingAnalysisOption.getItemSelectStatus(
+                      MuscleAnalysisColumn.totalReps
+                    )
+                  }
+                "
+              ></span>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _analysis[1].compare.avgWeightKg | weightSibs | number: '1.0-1',
+                    className: 'analysis__avg__weight',
+                    showData: weightTrainingAnalysisOption.getItemSelectStatus(
+                      MuscleAnalysisColumn.avgWeightKg
+                    )
+                  }
+                "
+              ></span>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _analysis[1].compare.trainingLevel,
+                    className: 'analysis__training__level',
+                    showData: weightTrainingAnalysisOption.getItemSelectStatus(
+                      MuscleAnalysisColumn.trainingLevel
+                    )
+                  }
+                "
+              ></span>
               <span
                 class="analysis__muscle__group"
-                *ngIf="weightTrainingAnalysisOption.getItemSelectStatus(MuscleAnalysisColumn.belongMuscleGroup)"
+                *ngIf="
+                  weightTrainingAnalysisOption.getItemSelectStatus(
+                    MuscleAnalysisColumn.belongMuscleGroup
+                  )
+                "
               >
                 <span class="report-analysisColumnData report-analysisIcon">
-                  <ng-container *ngTemplateOutlet="belongMuscleGroup; context: {
-                    list: weightTrainingAnalysis.getBelongMuscleGroup(_analysis[0])
-                  }"></ng-container>
+                  <ng-container
+                    *ngTemplateOutlet="
+                      belongMuscleGroup;
+                      context: {
+                        list: weightTrainingAnalysis.getBelongMuscleGroup(_analysis[0])
+                      }
+                    "
+                  ></ng-container>
                 </span>
               </span>
             </div>
@@ -1645,7 +2296,6 @@
       </button>
     </div>
   </section>
-
 </article>
 <div class="menu__padding"></div>
 
@@ -1664,162 +2314,279 @@
       {{ 'universal_training_difference' | translate }}
     </span>
     <div class="flexRow report-infoRow">
-      <div *ngTemplateOutlet="oneInfoData; context: {
-        data: getInfoData(infoData, 'totalActivities'),
-        type: 'activities',
-        infoType
-      }"></div>
-      <div *ngTemplateOutlet="oneInfoData; context: {
-        data: getInfoData(infoData, 'totalSecond'),
-        type: 'time',
-        infoType
-      }"></div>
+      <div
+        *ngTemplateOutlet="
+          oneInfoData;
+          context: {
+            data: getInfoData(infoData, 'totalActivities'),
+            type: 'activities',
+            infoType
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          oneInfoData;
+          context: {
+            data: getInfoData(infoData, 'totalSecond'),
+            type: 'time',
+            infoType
+          }
+        "
+      ></div>
       <ng-container *ngIf="reportCondition.sportType === SportType.all">
-        <div *ngTemplateOutlet="oneInfoData; context: {
-          data: getInfoData(infoData, 'benefitTime'),
-          type: 'benefitTime',
-          infoType
-        }"></div>
-        <div *ngTemplateOutlet="oneInfoData; context: {
-          data: getInfoData(infoData, 'pai'),
-          type: 'pai',
-          infoType
-        }"></div>
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              data: getInfoData(infoData, 'benefitTime'),
+              type: 'benefitTime',
+              infoType
+            }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              data: getInfoData(infoData, 'pai'),
+              type: 'pai',
+              infoType
+            }
+          "
+        ></div>
       </ng-container>
       <ng-container *ngIf="reportCondition.sportType === SportType.weightTrain">
-        <div *ngTemplateOutlet="oneInfoData; context: {
-          data: getInfoData(infoData, 'totalActivitySecond'),
-          type: 'activityTime',
-          infoType
-        }"></div>
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              data: getInfoData(infoData, 'totalActivitySecond'),
+              type: 'activityTime',
+              infoType
+            }
+          "
+        ></div>
       </ng-container>
-      <div *ngTemplateOutlet="oneInfoData; context: {
-        data: getInfoData(infoData, 'calories'),
-        type: 'calories',
-        infoType
-      }"></div>
-      <div *ngTemplateOutlet="oneInfoData; context: {
-        data: getInfoData(infoData, 'avgHeartRateBpm'),
-        type: 'avgHr',
-        infoType
-      }"></div>
+      <div
+        *ngTemplateOutlet="
+          oneInfoData;
+          context: {
+            data: getInfoData(infoData, 'calories'),
+            type: 'calories',
+            infoType
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          oneInfoData;
+          context: {
+            data: getInfoData(infoData, 'avgHeartRateBpm'),
+            type: 'avgHr',
+            infoType
+          }
+        "
+      ></div>
       <ng-container
-        *ngIf="[
-          SportType.run,
-          SportType.cycle,
-          SportType.swim,
-          SportType.row,
-          SportType.ball
-        ].includes(reportCondition.sportType)
-      ">
-        <div *ngTemplateOutlet="oneInfoData; context: {
-          data: getInfoData(infoData, 'totalDistanceMeters'),
-          type: 'distance',
-          infoType
-        }"></div>
+        *ngIf="
+          [SportType.run, SportType.cycle, SportType.swim, SportType.row, SportType.ball].includes(
+            reportCondition.sportType
+          )
+        "
+      >
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              data: getInfoData(infoData, 'totalDistanceMeters'),
+              type: 'distance',
+              infoType
+            }
+          "
+        ></div>
       </ng-container>
       <ng-container *ngIf="reportCondition.sportType === SportType.run">
-        <div *ngTemplateOutlet="oneInfoData; context: {
-          data: getInfoData(infoData, 'elevGain'),
-          type: 'climb',
-          infoType
-        }"></div>
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              data: getInfoData(infoData, 'elevGain'),
+              type: 'climb',
+              infoType
+            }
+          "
+        ></div>
         <ng-container *ngIf="infoType !== 'diff' && showPace()">
-          <div *ngTemplateOutlet="oneInfoData; context: {
-            data: getInfoData(infoData, 'avgSpeed'),
-            type: getUserUnit() === Unit.metric ? 'kmPace' : 'miPace',
-            infoType
-          }"></div>
+          <div
+            *ngTemplateOutlet="
+              oneInfoData;
+              context: {
+                data: getInfoData(infoData, 'avgSpeed'),
+                type: getUserUnit() === Unit.metric ? 'kmPace' : 'miPace',
+                infoType
+              }
+            "
+          ></div>
         </ng-container>
         <ng-container *ngIf="infoType === 'diff' && showPace()">
-          <div *ngTemplateOutlet="oneInfoData; context: {
-            data: getInfoData(infoData, 'paceSecond'),
-            type: getUserUnit() === Unit.metric ? 'kmPace' : 'miPace',
-            infoType,
-            compareReverse: true
-          }"></div>
+          <div
+            *ngTemplateOutlet="
+              oneInfoData;
+              context: {
+                data: getInfoData(infoData, 'paceSecond'),
+                type: getUserUnit() === Unit.metric ? 'kmPace' : 'miPace',
+                infoType,
+                compareReverse: true
+              }
+            "
+          ></div>
         </ng-container>
-        <div *ngTemplateOutlet="oneInfoData; context: {
-          data: getInfoData(infoData, 'runAvgCadence'),
-          type: 'runCadence',
-          infoType
-        }"></div>
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              data: getInfoData(infoData, 'runAvgCadence'),
+              type: 'runCadence',
+              infoType
+            }
+          "
+        ></div>
       </ng-container>
       <ng-container
-        *ngIf="[SportType.run, SportType.cycle, SportType.ball].includes(reportCondition.sportType) && !showPace()">
-        <div *ngTemplateOutlet="oneInfoData; context: {
-          data: getInfoData(infoData, 'avgSpeed'),
-          type: 'speed',
-          infoType
-        }"></div>
+        *ngIf="
+          [SportType.run, SportType.cycle, SportType.ball].includes(reportCondition.sportType) &&
+          !showPace()
+        "
+      >
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              data: getInfoData(infoData, 'avgSpeed'),
+              type: 'speed',
+              infoType
+            }
+          "
+        ></div>
       </ng-container>
       <ng-container *ngIf="reportCondition.sportType === SportType.cycle">
-        <div *ngTemplateOutlet="oneInfoData; context: {
-          data: getInfoData(infoData, 'cycleAvgCadence'),
-          type: 'cycleCadence',
-          infoType
-        }"></div>
-        <div *ngTemplateOutlet="oneInfoData; context: {
-          data: getInfoData(infoData, 'cycleAvgWatt'),
-          type: 'power',
-          infoType
-        }"></div>
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              data: getInfoData(infoData, 'cycleAvgCadence'),
+              type: 'cycleCadence',
+              infoType
+            }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              data: getInfoData(infoData, 'cycleAvgWatt'),
+              type: 'power',
+              infoType
+            }
+          "
+        ></div>
       </ng-container>
       <ng-container *ngIf="reportCondition.sportType === SportType.weightTrain">
-        <div *ngTemplateOutlet="oneInfoData; context: {
-          data: getInfoData(infoData, 'totalWeightKg'),
-          type: 'totalWeight',
-          infoType
-        }"></div>
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              data: getInfoData(infoData, 'totalWeightKg'),
+              type: 'totalWeight',
+              infoType
+            }
+          "
+        ></div>
       </ng-container>
       <ng-container *ngIf="reportCondition.sportType === SportType.swim">
         <ng-container *ngIf="infoType !== 'diff'">
-          <div *ngTemplateOutlet="oneInfoData; context: {
-            data: getInfoData(infoData, 'avgSpeed'),
-            type: 'oneHundredPace',
-            infoType
-          }"></div>
+          <div
+            *ngTemplateOutlet="
+              oneInfoData;
+              context: {
+                data: getInfoData(infoData, 'avgSpeed'),
+                type: 'oneHundredPace',
+                infoType
+              }
+            "
+          ></div>
         </ng-container>
         <ng-container *ngIf="infoType === 'diff'">
-          <div *ngTemplateOutlet="oneInfoData; context: {
-            data: getInfoData(infoData, 'paceSecond'),
-            type: 'oneHundredPace',
-            infoType,
-            compareReverse: true
-          }"></div>
+          <div
+            *ngTemplateOutlet="
+              oneInfoData;
+              context: {
+                data: getInfoData(infoData, 'paceSecond'),
+                type: 'oneHundredPace',
+                infoType,
+                compareReverse: true
+              }
+            "
+          ></div>
         </ng-container>
-        <div *ngTemplateOutlet="oneInfoData; context: {
-          data: getInfoData(infoData, 'swimAvgCadence'),
-          type: 'swimCadence',
-          infoType
-        }"></div>
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              data: getInfoData(infoData, 'swimAvgCadence'),
+              type: 'swimCadence',
+              infoType
+            }
+          "
+        ></div>
       </ng-container>
       <ng-container *ngIf="reportCondition.sportType === SportType.row">
         <ng-container *ngIf="infoType !== 'diff'">
-          <div *ngTemplateOutlet="oneInfoData; context: {
-            data: getInfoData(infoData, 'avgSpeed'),
-            type: 'fiveHundredPace',
-            infoType
-          }"></div>
+          <div
+            *ngTemplateOutlet="
+              oneInfoData;
+              context: {
+                data: getInfoData(infoData, 'avgSpeed'),
+                type: 'fiveHundredPace',
+                infoType
+              }
+            "
+          ></div>
         </ng-container>
         <ng-container *ngIf="infoType === 'diff'">
-          <div *ngTemplateOutlet="oneInfoData; context: {
-            data: getInfoData(infoData, 'paceSecond'),
-            type: 'fiveHundredPace',
-            infoType,
-            compareReverse: true
-          }"></div>
+          <div
+            *ngTemplateOutlet="
+              oneInfoData;
+              context: {
+                data: getInfoData(infoData, 'paceSecond'),
+                type: 'fiveHundredPace',
+                infoType,
+                compareReverse: true
+              }
+            "
+          ></div>
         </ng-container>
-        <div *ngTemplateOutlet="oneInfoData; context: {
-          data: getInfoData(infoData, 'rowingAvgCadence'),
-          type: 'rowCadence',
-          infoType
-        }"></div>
-        <div *ngTemplateOutlet="oneInfoData; context: {
-          data: getInfoData(infoData, 'rowingAvgWatt'),
-          type: 'power',
-          infoType
-        }"></div>
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              data: getInfoData(infoData, 'rowingAvgCadence'),
+              type: 'rowCadence',
+              infoType
+            }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              data: getInfoData(infoData, 'rowingAvgWatt'),
+              type: 'power',
+              infoType
+            }
+          "
+        ></div>
       </ng-container>
     </div>
   </div>
@@ -1843,10 +2610,10 @@
         class="report-infoDataValue"
         [class.report-plusValue]="infoType === 'diff' && data.value > 0"
         [class.report-progression]="
-          infoType === 'diff' && (compareReverse ? (data.value < 0) : (data.value > 0))
+          infoType === 'diff' && (compareReverse ? data.value < 0 : data.value > 0)
         "
         [class.report-regression]="
-          infoType === 'diff' && (compareReverse ? (data.value > 0) : (data.value < 0))
+          infoType === 'diff' && (compareReverse ? data.value > 0 : data.value < 0)
         "
       >
         <ng-container *ngIf="checkInfoType(type, 'time')">
@@ -1863,10 +2630,7 @@
         {{ data.unit }}
       </span>
     </span>
-    <span
-      class="report-infoDataType"
-      [ngSwitch]="type"
-    >
+    <span class="report-infoDataType" [ngSwitch]="type">
       <ng-container *ngSwitchCase="'benefitTime'">
         {{ 'universal_activityData_benefitime' | translate }}
       </ng-container>
@@ -1939,26 +2703,21 @@
 >
   <div class="fleCol report-ringChartBlock">
     <span class="report-dateHint" *ngIf="uiFlag.isCompareMode">
-      {{ timeRange.getStartTimeFormat('YYYY-MM-DD') }} ~ {{ timeRange.getEndTimeFormat('YYYY-MM-DD') }}
+      {{ timeRange.getStartTimeFormat('YYYY-MM-DD') }} ~
+      {{ timeRange.getEndTimeFormat('YYYY-MM-DD') }}
     </span>
     <div class="flexRow report-ringchartRow">
       <div class="report-oneRingChart flexCol">
         <span class="report-ringChartTitle">
           {{ 'universal_activityData_amountOfQuantity' | translate }}
         </span>
-        <app-ring-chart
-          [data]="activities"
-          [selectType]="uiFlag.selectedType"
-        ></app-ring-chart>
+        <app-ring-chart [data]="activities" [selectType]="uiFlag.selectedType"></app-ring-chart>
       </div>
       <div class="report-oneRingChart flexCol">
         <span class="report-ringChartTitle">
           {{ 'universal_activityData_proportionOfTime' | translate }}
         </span>
-        <app-ring-chart
-          [data]="totalSecond"
-          [selectType]="uiFlag.selectedType"
-        ></app-ring-chart>
+        <app-ring-chart [data]="totalSecond" [selectType]="uiFlag.selectedType"></app-ring-chart>
       </div>
     </div>
   </div>
@@ -1975,7 +2734,7 @@
       <span class="report-chartDataAnnotation">
         {{ key | translate }}<span *ngIf="dateUnitKey">/{{ dateUnitKey }}</span>
       </span>
-      <span *ngTemplateOutlet="chartDataUnitTemp; context:{ valueUnit }"></span>
+      <span *ngTemplateOutlet="chartDataUnitTemp; context: { valueUnit }"></span>
     </div>
   </div>
 </ng-template>
@@ -1991,19 +2750,27 @@
   <div class="flexRow report-trendChartInfo">
     <div
       class="report-chartHintBar"
-      [style.background]="color.top ? 'linear-gradient(180deg,' + color.top + ' 0%,' + color.bottom + ' 100%)' : color"
+      [style.background]="
+        color.top ? 'linear-gradient(180deg,' + color.top + ' 0%,' + color.bottom + ' 100%)' : color
+      "
     ></div>
     <div class="flexCol">
       <span class="report-chartDataAnnotation" *ngIf="timeRange">
-        {{ timeRange.getStartTimeFormat('YYYY-MM-DD') }} ~ {{ timeRange.getEndTimeFormat('YYYY-MM-DD') }}
+        {{ timeRange.getStartTimeFormat('YYYY-MM-DD') }} ~
+        {{ timeRange.getEndTimeFormat('YYYY-MM-DD') }}
       </span>
       <span class="report-chartDataAnnotation" *ngIf="subTitleKey">
         {{ subTitleKey | translate }}
       </span>
-      <span *ngTemplateOutlet="chartDataUnitTemp; context:{
-        valueUnit,
-        fontSize
-      }"></span>
+      <span
+        *ngTemplateOutlet="
+          chartDataUnitTemp;
+          context: {
+            valueUnit,
+            fontSize
+          }
+        "
+      ></span>
     </div>
   </div>
 </ng-template>
@@ -2017,20 +2784,23 @@
 >
   <div class="flexCol">
     <span class="report-chartDataAnnotation" *ngIf="uiFlag.isCompareMode">
-      {{ timeRange.getStartTimeFormat('YYYY-MM-DD') }} ~ {{ timeRange.getEndTimeFormat('YYYY-MM-DD') }}
+      {{ timeRange.getStartTimeFormat('YYYY-MM-DD') }} ~
+      {{ timeRange.getEndTimeFormat('YYYY-MM-DD') }}
     </span>
     <div class="flexRow report-dotHintRow">
-      <span
-        class="report-chartHintDot"
-        [style.background-color]="topInfo.color"
-      ></span>
+      <span class="report-chartHintDot" [style.background-color]="topInfo.color"></span>
       <span *ngIf="topInfo.titleKey">
         {{ topInfo.titleKey | translate }}
         <ng-container *ngIf="topInfo.valueUnit">
-          <span *ngTemplateOutlet="chartDataUnitTemp; context:{
-            valueUnit: topInfo.valueUnit,
-            isDotInfo: true
-          }"></span>
+          <span
+            *ngTemplateOutlet="
+              chartDataUnitTemp;
+              context: {
+                valueUnit: topInfo.valueUnit,
+                isDotInfo: true
+              }
+            "
+          ></span>
         </ng-container>
       </span>
     </div>
@@ -2043,10 +2813,15 @@
       <span *ngIf="bottomInfo.titleKey">
         {{ bottomInfo.titleKey | translate }}
         <ng-container *ngIf="bottomInfo.valueUnit">
-          <span *ngTemplateOutlet="chartDataUnitTemp; context: {
-            valueUnit: bottomInfo.valueUnit,
-            isDotInfo: true
-          }"></span>
+          <span
+            *ngTemplateOutlet="
+              chartDataUnitTemp;
+              context: {
+                valueUnit: bottomInfo.valueUnit,
+                isDotInfo: true
+              }
+            "
+          ></span>
         </ng-container>
       </span>
     </div>
@@ -2059,26 +2834,15 @@
   let-fontSize="fontSize"
   let-isDotInfo="isDotInfo"
 >
-  <span
-    [class.report-chartDataValue]="!isDotInfo"
-    [style.font-size]="fontSize"
-  >
+  <span [class.report-chartDataValue]="!isDotInfo" [style.font-size]="fontSize">
     {{ valueUnit.value }}
-    <span
-      class="report-infoDataUnit"
-      *ngIf="valueUnit.unit"
-    >
+    <span class="report-infoDataUnit" *ngIf="valueUnit.unit">
       {{ valueUnit.unit }}
     </span>
   </span>
 </ng-template>
 
-<ng-template
-  #chartInfoDiff
-  let-originValue="originValue"
-  let-value="value"
-  let-unit="unit"
->
+<ng-template #chartInfoDiff let-originValue="originValue" let-value="value" let-unit="unit">
   <div class="flexRow report-diffInfo">
     <span class="report-diffTitle">
       {{ '差異' | translate }}
@@ -2094,28 +2858,14 @@
   </div>
 </ng-template>
 
-<ng-template
-  #speedPaceSwitchButton
->
-  <button
-    class="chart__switch__button"
-    (click)="conversePaceSpeed()"
-  >
-    <i
-      class="icon-svg_web-icon_p3_086-switch_spd"
-      *ngIf="showPace()"
-    ></i>
-    <i
-      class="icon-svg_web-icon_p3_087-switch_pace"
-      *ngIf="!showPace()"
-    ></i>
+<ng-template #speedPaceSwitchButton>
+  <button class="chart__switch__button" (click)="conversePaceSpeed()">
+    <i class="icon-svg_web-icon_p3_086-switch_spd" *ngIf="showPace()"></i>
+    <i class="icon-svg_web-icon_p3_087-switch_pace" *ngIf="!showPace()"></i>
   </button>
 </ng-template>
 
-<ng-template
-  #totalRepsChartHint
-  let-muscleGroup="muscleGroup"
->
+<ng-template #totalRepsChartHint let-muscleGroup="muscleGroup">
   <div class="flexRow muscle__hint__row">
     <div
       class="muscle__color__hint"
@@ -2123,16 +2873,14 @@
         'background-color': getMuscleGroupColor(muscleGroup)
       }"
     ></div>
-    <i
-      [class]="muscleGroup | muscleGroupIcon"
-      [class.analysis__icon]="true"
-    ></i>
+    <i [class]="muscleGroup | muscleGroupIcon" [class.analysis__icon]="true"></i>
     <span
       class="muscle__group__name"
       [style]="{
-        'color': getMuscleGroupColor(muscleGroup)
+        color: getMuscleGroupColor(muscleGroup)
       }"
-    >{{ muscleGroup | muscleGroupName | translate }}</span>
+      >{{ muscleGroup | muscleGroupName | translate }}</span
+    >
   </div>
 </ng-template>
 
@@ -2147,7 +2895,7 @@
   <div
     [class]="className"
     [ngClass]="{
-      'flexRow': true,
+      flexRow: true,
       'report-analysisHeader': true,
       'report-headerCorrection': !uiFlag.isCompareMode
     }"
@@ -2166,19 +2914,11 @@
     </div>
     <ng-container *ngIf="columnType">
       <div class="report-sortArrow">
-        <ng-container
-          *ngIf="weightTrainingSort.isSorting(columnType)"
-        >
-          <mat-icon
-            class="report-sortArrowIcon"
-            *ngIf="!weightTrainingSort.isAscending"
-          >
+        <ng-container *ngIf="weightTrainingSort.isSorting(columnType)">
+          <mat-icon class="report-sortArrowIcon" *ngIf="!weightTrainingSort.isAscending">
             arrow_upward
           </mat-icon>
-          <mat-icon
-            class="report-sortArrowIcon"
-            *ngIf="weightTrainingSort.isAscending"
-          >
+          <mat-icon class="report-sortArrowIcon" *ngIf="weightTrainingSort.isAscending">
             arrow_downward
           </mat-icon>
         </ng-container>
@@ -2197,46 +2937,37 @@
   <span [class]="className" *ngIf="showData">
     <span class="report-analysisColumnData">{{ data }}</span>
     <span class="report-progressiveHint" *ngIf="uiFlag.isCompareMode">
-      <i
-        class="icon-svg_web-icon_p3_017-up report-progressiveIcon"
-        *ngIf="diff && diff > 0"
-      ></i>
-      <i
-        class="icon-svg_web-icon_p3_018-down report-regressiveIcon"
-        *ngIf="diff && diff < 0"
-      ></i>
+      <i class="icon-svg_web-icon_p3_017-up report-progressiveIcon" *ngIf="diff && diff > 0"></i>
+      <i class="icon-svg_web-icon_p3_018-down report-regressiveIcon" *ngIf="diff && diff < 0"></i>
     </span>
   </span>
 </ng-template>
 
-<ng-template
-  #belongMuscleGroup
-  let-list="list"
->
-  <ng-container *ngFor="let _list of list;">
+<ng-template #belongMuscleGroup let-list="list">
+  <ng-container *ngFor="let _list of list">
     <i
       class="icon-svg_web-icon_p3_028-hand_muscle prefer__icon"
-      *ngIf="_list == MuscleGroup.armMuscle"
+      *ngIf="+_list === MuscleGroup.armMuscle"
     ></i>
     <i
       class="icon-svg_web-icon_p3_033-chest_muscles prefer__icon"
-      *ngIf="_list == MuscleGroup.pectoralsMuscle"
+      *ngIf="+_list === MuscleGroup.pectoralsMuscle"
     ></i>
     <i
       class="icon-svg_web-icon_p3_032-shoulder_muscles prefer__icon"
-      *ngIf="_list == MuscleGroup.shoulderMuscle"
+      *ngIf="+_list === MuscleGroup.shoulderMuscle"
     ></i>
     <i
       class="icon-svg_web-icon_p3_031-back_muscles prefer__icon"
-      *ngIf="_list == MuscleGroup.backMuscle"
+      *ngIf="+_list === MuscleGroup.backMuscle"
     ></i>
     <i
       class="icon-svg_web-icon_p3_030-abdominal_muscles prefer__icon"
-      *ngIf="_list == MuscleGroup.abdominalMuscle"
+      *ngIf="+_list === MuscleGroup.abdominalMuscle"
     ></i>
     <i
       class="icon-svg_web-icon_p3_029-foot_muscles prefer__icon"
-      *ngIf="_list == MuscleGroup.legMuscle"
+      *ngIf="+_list === MuscleGroup.legMuscle"
     ></i>
   </ng-container>
 </ng-template>
@@ -2261,10 +2992,7 @@
           muscle__part__icon: !muscleGroup
         }"
       ></i>
-      <button
-        (click)="unfoldMuscleGroupDetail(muscleGroup)"
-        *ngIf="unfold !== undefined"
-      >
+      <button (click)="unfoldMuscleGroupDetail(muscleGroup)" *ngIf="unfold !== undefined">
         <i
           class="icon-svg_web-icon_p1_007-fold fold__icon"
           [class.muscle__icon--unfold]="unfold"
@@ -2276,8 +3004,56 @@
         [data]="data"
         [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
         [chartUnit]="'bodyWeight' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]"
+        [conditionValue]="getAssignCondition('avgHeartRate')"
         *ngIf="data"
       ></app-compare-overlay-column-chart>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template
+  #sportTargetInfo
+  let-diffRange="diffRange"
+  let-condition="condition"
+  let-startTime="startTime"
+  let-endTime="endTime"
+>
+  <div class="flexCol">
+    <div class="report-targetCycle" *ngIf="!startTime">
+      {{
+        'universal_activityData_everyUnit'
+          | translate
+            : {
+                number: '',
+                unit: (reportCondition.targetUnit | dateUnitKey | translate)
+              }
+      }}
+    </div>
+    <div class="report-targetCycle" *ngIf="startTime">
+      <span class="report-compareDate"> {{ startTime }} ~ {{ endTime }} </span>
+    </div>
+    <div class="flexRowWrap">
+      <span class="report-targetCondition" *ngFor="let _condition of condition | keyvalue">
+        {{ _condition.key | translateKey | translate }}
+        &ge;
+        <ng-container *ngIf="_condition.key === 'totalTime' || _condition.key === 'benefitTime'">
+          {{ (_condition.value.filedValue * diffRange) / 60 | number: '1.0-0' }}
+        </ng-container>
+        <ng-container *ngIf="_condition.key === 'pai' || _condition.key === 'avgHeartRate'">
+          {{ _condition.value.filedValue }}
+        </ng-container>
+        <ng-container
+          *ngIf="
+            _condition.key !== 'totalTime' &&
+            _condition.key !== 'benefitTime' &&
+            _condition.key !== 'pai' &&
+            _condition.key !== 'avgHeartRate'
+          "
+        >
+          {{ _condition.value.filedValue * diffRange | number: '1.0-0' }}
+        </ng-container>
+        {{ _condition.key | translateUnitKey | translate }}
+      </span>
     </div>
   </div>
 </ng-template>

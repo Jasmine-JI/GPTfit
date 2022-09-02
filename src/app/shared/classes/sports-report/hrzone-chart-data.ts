@@ -1,16 +1,16 @@
 /**
  * 處理心率區間數據(用於心率佔比圖)
  */
- export class HrZoneChartData {
-
+export class HrZoneChartData {
   private _hrZone = [0, 0, 0, 0, 0, 0];
 
   /**
    * 統計各心率區間數據
-   * @param count 
+   * @param count
    */
   add(data: Array<number>) {
-    if (data[0] !== null) this._hrZone = this._hrZone.map((_second, _index) => _second + data[_index]);
+    if (data[0] !== null)
+      this._hrZone = this._hrZone.map((_second, _index) => _second + data[_index]);
   }
 
   /**
@@ -19,5 +19,4 @@
   get chartData() {
     return this._hrZone;
   }
-
 }

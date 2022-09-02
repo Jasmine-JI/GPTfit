@@ -1,9 +1,6 @@
 <app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
 <nav>
-  <button
-    class="flexRow appview-backButton"
-    (click)="turnBack()"
-  >
+  <button class="flexRow appview-backButton" (click)="turnBack()">
     <i class="icon-svg_web-icon_p1_016-back"></i>
     <span>{{ 'universal_operating_back' | translate }}</span>
   </button>
@@ -19,14 +16,11 @@
       {{ 'universal_userAccount_accountDeletion' | translate }}
     </h4>
     <div class="flexCol">
-      <div
-        class="flexCol appview-contentDetail"
-        *ngIf="!uiFlag.cancelDestroy"
-      >
+      <div class="flexCol appview-contentDetail" *ngIf="!uiFlag.cancelDestroy">
         <p>
           {{ 'universal_userAccount_accountDeletionInstructions1' | translate }}
         </p>
-        <p style="margin: 0;">
+        <p style="margin: 0">
           {{ 'universal_userAccount_accountDeletionInstructions2' | translate }}
         </p>
       </div>
@@ -38,7 +32,7 @@
           <h6 class="appview-sectionSubTitle">
             {{ 'universal_userAccount_account' | translate }}
           </h6>
-          <p class="appview-breakAccount" style="margin: 0;">
+          <p class="appview-breakAccount" style="margin: 0">
             <ng-container *ngIf="user.accountType === AccountTypeEnum.email">
               {{ user.email }}
             </ng-container>
@@ -47,10 +41,7 @@
             </ng-container>
           </p>
         </div>
-        <div
-          class="flexRow appview-agreeCheckbox"
-          *ngIf="uiFlag.isAnyGroupAdmin"
-        >
+        <div class="flexRow appview-agreeCheckbox" *ngIf="uiFlag.isAnyGroupAdmin">
           <div
             role="checkbox"
             tabindex="0"
@@ -74,9 +65,9 @@
           <button
             class="appview-submitButton appview-center"
             [class.appview-unclickable]="
-              uiFlag.progress !== 100
-              || !checkBox.compressed
-              || (uiFlag.isAnyGroupAdmin && !checkBox.adminGiveUp)
+              uiFlag.progress !== 100 ||
+              !checkBox.compressed ||
+              (uiFlag.isAnyGroupAdmin && !checkBox.adminGiveUp)
             "
             (click)="applyDestroy()"
           >
@@ -105,7 +96,7 @@
                 maxlength="8"
                 (focusout)="handleVerifyCode($event)"
                 (keypress)="handleVerifyCode($event)"
-              >
+              />
               <button
                 class="appview-submitButton appview-left"
                 [class.appview-unclickable]="uiFlag.progress !== 100 || timeCount !== 30"
@@ -133,10 +124,7 @@
             >
               {{ 'universal_userAccount_verifyAccount' | translate }}
             </button>
-            <button
-              class="appview-cancelButton appview-left"
-              (click)="cancelDestroy()"
-            >
+            <button class="appview-cancelButton appview-left" (click)="cancelDestroy()">
               {{ 'universal_userAccount_cancelAccountDeletion' | translate }}
             </button>
           </div>
@@ -149,10 +137,7 @@
             <p [innerHtml]="deleteApplySuccessText"></p>
           </div>
           <div class="appview-buttonArea">
-            <button
-              class="appview-cancelButton appview-center"
-              (click)="cancelDestroy()"
-            >
+            <button class="appview-cancelButton appview-center" (click)="cancelDestroy()">
               {{ 'universal_userAccount_cancelAccountDeletion' | translate }}
             </button>
           </div>
@@ -161,21 +146,17 @@
 
       <ng-container *ngIf="uiFlag.cancelDestroy">
         <div class="flexCol appview-contentDetail">
-          <p style="margin: 0;">
+          <p style="margin: 0">
             {{ 'universal_userAccount_undeleteSuccessfully' | translate }}
           </p>
         </div>
         <div class="appview-buttonArea">
-          <button
-            class="appview-submitButton appview-center"
-            (click)="turnBack()"
-          >
+          <button class="appview-submitButton appview-center" (click)="turnBack()">
             {{ 'universal_operating_close' | translate }}
           </button>
         </div>
       </ng-container>
-
     </div>
   </div>
 </main>
-<footer style="min-height: 30px;"></footer>
+<footer style="min-height: 30px"></footer>

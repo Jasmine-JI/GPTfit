@@ -26,7 +26,6 @@ import { InfoComponent } from '../dashboard/personal/info/info.component';
 import { MyLifeTrackingComponent } from '../../shared/components/my-life-tracking/my-life-tracking.component';
 import { CloudrunReportComponent as PersonCloudrunReport } from '../dashboard/components/cloudrun-report/cloudrun-report.component';
 
-
 const routes: Routes = [
   {
     path: 'introduction/system',
@@ -46,42 +45,42 @@ const routes: Routes = [
     children: [
       {
         path: 'pair',
-        component: DeviceInfoComponent
+        component: DeviceInfoComponent,
       },
       {
         path: 'activity/:fileId',
-        component: ActivityDetailComponent
+        component: ActivityDetailComponent,
       },
-      
+
       {
         path: 'user-profile/:userId',
         component: PersonalComponent,
         children: [
           {
             path: 'activity-list',
-            component: ActivityListComponent
+            component: ActivityListComponent,
           },
           {
             path: 'sport-report',
-            component: SportsReportComponent
+            component: SportsReportComponent,
           },
           {
             path: 'life-tracking',
-            component: MyLifeTrackingComponent
+            component: MyLifeTrackingComponent,
           },
           {
             path: 'cloudrun',
-            component: PersonCloudrunReport
+            component: PersonCloudrunReport,
           },
           {
             path: 'info',
-            component: InfoComponent
+            component: InfoComponent,
           },
           {
             path: '',
-            component: ActivityListComponent
+            component: ActivityListComponent,
           },
-        ]
+        ],
       },
       {
         path: 'group-info/:groupId',
@@ -89,121 +88,119 @@ const routes: Routes = [
         children: [
           {
             path: 'group-introduction',
-            component: GroupIntroductionComponent
-          }
-        ]
+            component: GroupIntroductionComponent,
+          },
+        ],
       },
       {
         path: 'first-login',
-        component: AppFirstLoginComponent
+        component: AppFirstLoginComponent,
       },
       {
         path: 'qrupload/activityfile',
-        component: QrcodeUploadComponent
+        component: QrcodeUploadComponent,
       },
       {
         path: 'signin',
         component: AppSigninComponent,
-        canActivate: [SigninGuard]
+        canActivate: [SigninGuard],
       },
       {
         path: 'register',
-        component: AppSignupComponent
+        component: AppSignupComponent,
       },
       {
         path: 'signIn',
         component: AppSigninComponent,
-        canActivate: [SigninGuard]
+        canActivate: [SigninGuard],
       },
       {
         path: 'enableAccount',
-        component: AppEnableComponent
+        component: AppEnableComponent,
       },
       {
         path: 'resetPassword',
-        component: AppForgetpwComponent
+        component: AppForgetpwComponent,
       },
       {
         path: 'editPassword',
-        component: AppModifypwComponent
+        component: AppModifypwComponent,
       },
       {
         path: 'changeAccount',
-        component: AppChangeAccountComponent
+        component: AppChangeAccountComponent,
       },
       {
         path: 'qrSignIn',
-        component: AppQrcodeLoginComponent
+        component: AppQrcodeLoginComponent,
       },
       {
         path: 'signInQrcode',
-        component: AppQrcodeLoginComponent
+        component: AppQrcodeLoginComponent,
       },
       {
         path: 'firstLogin',
-        component: AppFirstLoginComponent
+        component: AppFirstLoginComponent,
       },
       {
         path: 'compressData',
-        component: AppCompressDataComponent
-        
+        component: AppCompressDataComponent,
       },
       {
         path: 'destroyAccount',
-        component: AppDestroyAccountComponent
-        
+        component: AppDestroyAccountComponent,
       },
       {
         path: 'register-web',
-        component: AppSignupComponent
+        component: AppSignupComponent,
       },
       {
         path: 'signIn-web',
         component: AppSigninComponent,
-        canActivate: [SigninGuard]
+        canActivate: [SigninGuard],
       },
       {
         path: 'enableAccount-web',
-        component: AppEnableComponent
+        component: AppEnableComponent,
       },
       {
         path: 'resetPassword-web',
-        component: AppForgetpwComponent
+        component: AppForgetpwComponent,
       },
       {
         path: 'editPassword-web',
-        component: AppModifypwComponent
+        component: AppModifypwComponent,
       },
       {
         path: 'changeAccount-web',
-        component: AppChangeAccountComponent
+        component: AppChangeAccountComponent,
       },
       {
         path: 'signInQrcode-web',
-        component: AppQrcodeLoginComponent
+        component: AppQrcodeLoginComponent,
       },
       {
         path: 'firstLogin-web',
-        component: AppFirstLoginComponent
+        component: AppFirstLoginComponent,
       },
       {
         path: '404',
-        component: Page404Component
+        component: Page404Component,
       },
       {
         path: '403',
-        component: Page403Component
+        component: Page403Component,
       },
       {
         path: '**',
-        redirectTo: '404'
-      }
-    ]
-  }
+        redirectTo: '404',
+      },
+    ],
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class PortalRoutingModule { }
+export class PortalRoutingModule {}

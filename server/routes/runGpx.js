@@ -10,9 +10,7 @@ const writeCloudRunGpx = require('../models/gpx-transform-baidu').writeCloudRunG
 router.get('/make', function (req, res, next) {
   const {
     con,
-    query: {
-      md5_unicode
-    }
+    query: { md5_unicode },
   } = req;
   const sql = `
     select r.longitude, r.latitude, r.altitude, r.utc,
@@ -40,7 +38,7 @@ router.get('/make', function (req, res, next) {
 router.post('/download', (req, res) => {
   // FILEPATH 填入要被下載檔案的路徑
   // FILENAME 無所謂，因為會被 Angular 定義的新名稱蓋掉
-  res.download('/var/www/html/dist/test.gpx', 'test.gpx', err => {
+  res.download('/var/www/html/dist/test.gpx', 'test.gpx', (err) => {
     if (err) {
       res.send(err);
     } else {
@@ -53,14 +51,11 @@ router.post('/upload', (req, res, next) => {
   form.parse(req, (err, fields, files) => {
     if (err) {
       return res.status(500).send({
-        errorMessage: err.sqlMessage
+        errorMessage: err.sqlMessage,
       });
     }
     const path = files.file.path; // 第二個file是formData的key名
-    const {
-      toFormat,
-      fromFormat
-    } = fields;
+    const { toFormat, fromFormat } = fields;
     return writeCloudRunGpx(path, fromFormat, toFormat, res);
   });
 });

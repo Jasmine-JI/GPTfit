@@ -15,33 +15,42 @@ import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
 import { AlbumType } from '../../../../shared/models/image';
 import { ImageUploadService } from '../../../dashboard/services/image-upload.service';
 import { SelectDate } from '../../../../shared/models/utils-type';
-import { EventInfo, EventDetail, CardTypeEnum, HaveProduct, EventStatus } from '../../models/activity-content';
+import {
+  EventInfo,
+  EventDetail,
+  CardTypeEnum,
+  HaveProduct,
+  EventStatus,
+} from '../../models/activity-content';
 import { AccessRight } from '../../../../shared/enum/accessright';
 import { deepCopy } from '../../../../shared/utils/index';
-import { setLocalStorageObject, getLocalStorageObject, removeLocalStorageObject } from '../../../../shared/utils/index';
+import {
+  setLocalStorageObject,
+  getLocalStorageObject,
+  removeLocalStorageObject,
+} from '../../../../shared/utils/index';
 import { AuthService } from '../../../../core/services/auth.service';
 import { DAY } from '../../../../shared/models/utils-constant';
 
-
 const leaveMessage = '尚未儲存，是否仍要離開此頁面？';
-const contentTextLimit = 2500;  // 詳細內容單一區塊字數上限
-const contentInnerHtmlLimit = 4096;  // 詳細內容含html標籤後的字數上限
+const contentTextLimit = 2500; // 詳細內容單一區塊字數上限
+const contentInnerHtmlLimit = 4096; // 詳細內容含html標籤後的字數上限
 
 type DateType = 'applyStartDate' | 'applyEndDate' | 'raceStartDate' | 'raceEndDate';
 type EditSection = 'content' | 'group' | 'applyFee';
 enum HaveNumberLimit {
   no = 1,
-  yes
-};
+  yes,
+}
 
 @Component({
   selector: 'app-edit-activity',
   templateUrl: './edit-activity.component.html',
-  styleUrls: ['./edit-activity.component.scss']
+  styleUrls: ['./edit-activity.component.scss'],
 })
 export class EditActivityComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
-  private globalEventSubscription = new Subscription;
+  private globalEventSubscription = new Subscription();
 
   @ViewChild('imgUploadInput') imgUploadInput: ElementRef;
 
@@ -57,17 +66,17 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     showGenderSelector: null,
     openImgSelector: null,
     imgCurrentEditId: null,
-    numberLimit: HaveNumberLimit.no
+    numberLimit: HaveNumberLimit.no,
   };
 
   imgUpload = {
     theme: {
       origin: null,
-      crop: null
+      crop: null,
     },
     content: {},
-    applyFee: {}
-  }
+    applyFee: {},
+  };
 
   currentTimestamp = dayjs().startOf('day').unix();
   startDateMin = this.currentTimestamp * 1000;
@@ -82,12 +91,12 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   deleteList = {
     contentId: [],
     groupId: [],
-    applyFeeId: []
+    applyFeeId: [],
   };
 
   private compareContent = {
     eventInfo: <EventInfo>null,
-    eventDetail: <EventDetail>null
+    eventDetail: <EventDetail>null,
   };
 
   readonly defaultNumberLimit = 50;
@@ -103,16 +112,31 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     placeholder: '請輸入內文...',
     toolbar: {
       items: [
-        'heading', '|',
-        'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor', '|',
-        'alignment', 'bold', 'italic', 'underline', 'strikethrough', '|',
-        'numberedList', 'bulletedList', '|',
-        'link', 'blockQuote', 'insertTable', 'mediaEmbed', '|',
-        'undo', 'redo'
-      ]
-
-    }
-
+        'heading',
+        '|',
+        'fontfamily',
+        'fontsize',
+        'fontColor',
+        'fontBackgroundColor',
+        '|',
+        'alignment',
+        'bold',
+        'italic',
+        'underline',
+        'strikethrough',
+        '|',
+        'numberedList',
+        'bulletedList',
+        '|',
+        'link',
+        'blockQuote',
+        'insertTable',
+        'mediaEmbed',
+        '|',
+        'undo',
+        'redo',
+      ],
+    },
   };
 
   public editor = DecoupledEditor;
@@ -126,7 +150,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private imageUploadService: ImageUploadService,
     private authService: AuthService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.getAccessRight();
@@ -143,14 +167,13 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   getAccessRight() {
     const token = this.authService.token;
     if (token) {
-      this.userService.getUser().rxUserProfile.pipe(
-        takeUntil(this.ngUnsubscribe)
-      ).subscribe(res => {
-        this.systemAccessright = this.userService.getUser().systemAccessright;
-      });
-
+      this.userService
+        .getUser()
+        .rxUserProfile.pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe((res) => {
+          this.systemAccessright = this.userService.getUser().systemAccessright;
+        });
     }
-    
   }
 
   /**
@@ -159,9 +182,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   subscribeBeforeUnloadEvent() {
     const unloadEvent = fromEvent(window, 'beforeunload');
-    unloadEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    unloadEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       const { isSaved } = this.uiFlag;
       if (isSaved) {
         return true;
@@ -169,9 +190,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         (e || window.event).returnValue = leaveMessage as any;
         return leaveMessage;
       }
-
     });
-
   }
 
   /**
@@ -186,7 +205,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       this.uiFlag.editMode = 'edit';
       this.startDateMin = this.currentTimestamp * 1000 + DAY;
     }
-
   }
 
   /**
@@ -200,9 +218,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       const eventDraft = JSON.parse(eventDraftString);
       const { eventId: draftEventId } = eventDraft.eventInfo;
       if (draftEventId === eventId) this.askImportDraft(eventDraft, eventId);
-
     }
-
   }
 
   /**
@@ -221,11 +237,9 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         confirmText: '確定',
         onConfirm: () => this.importDraft(draft),
         cancelText: '取消',
-        onCancel: () => this.removeDraft()
-      }
-
+        onCancel: () => this.removeDraft(),
+      },
     });
-
   }
 
   /**
@@ -254,7 +268,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     } else {
       this.uiFlag.numberLimit = HaveNumberLimit.no;
     }
-
   }
 
   /**
@@ -269,7 +282,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     } else {
       this.getEventDetail(eventId);
     }
-    
   }
 
   /**
@@ -300,7 +312,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         this.language = MapLanguageEnum.EN;
         break;
     }
-
   }
 
   /**
@@ -308,13 +319,13 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101021
    */
   getAllCloudrunMap() {
-    this.officialActivityService.getRxAllMapInfo().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe((res: any) => {
-      this.mapList = deepCopy(res).sort((a, b) => +a.distance - +b.distance);
-      this.getSelectMapName();
-    });
-
+    this.officialActivityService
+      .getRxAllMapInfo()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res: any) => {
+        this.mapList = deepCopy(res).sort((a, b) => +a.distance - +b.distance);
+        this.getSelectMapName();
+      });
   }
 
   /**
@@ -330,30 +341,34 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       description: '',
       eventStatus: EventStatus.notAudit,
       applyDate: {
-          startDate: startTimestamp,
-          endDate: endTimestamp
+        startDate: startTimestamp,
+        endDate: endTimestamp,
       },
       raceDate: {
-          startDate: startTimestamp,
-          endDate: endTimestamp
+        startDate: startTimestamp,
+        endDate: endTimestamp,
       },
-      cloudrunMapId: -1
+      cloudrunMapId: -1,
     };
 
     this.eventDetail = {
       content: [],
-      applyFee: [{
-        feeId: 1,
-        title: '報名費用',
-        fee: 49999,
-        haveProduct: HaveProduct.no
-      }],
-      group: [{
-        id: 1,
-        name: '分組',
-        gender: Sex.unlimit,
-      }]
-    }
+      applyFee: [
+        {
+          feeId: 1,
+          title: '報名費用',
+          fee: 49999,
+          haveProduct: HaveProduct.no,
+        },
+      ],
+      group: [
+        {
+          id: 1,
+          name: '分組',
+          gender: Sex.unlimit,
+        },
+      ],
+    };
 
     this.uiFlag.isSaved = false;
     this.checkDraft(this.eventInfo.eventId);
@@ -367,7 +382,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   getEventDetail(eventId: number) {
     this.uiFlag.progress = 30;
-    this.officialActivityService.getEventDetail({ eventId }).subscribe(res => {
+    this.officialActivityService.getEventDetail({ eventId }).subscribe((res) => {
       if (this.utils.checkRes(res)) {
         const { eventInfo, eventDetail } = res;
         this.eventInfo = eventInfo;
@@ -382,18 +397,16 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           this.eventDetail = eventDetail;
           this.compareContent = deepCopy({
             eventInfo,
-            eventDetail
+            eventDetail,
           });
 
           this.checkDraft(this.eventInfo.eventId);
         }
-
       }
 
       this.subscribeBeforeUnloadEvent();
       this.uiFlag.progress = 100;
     });
-
   }
 
   /**
@@ -416,9 +429,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       } else {
         this.saveEdit();
       }
-
     }
-
   }
 
   /**
@@ -435,15 +446,12 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           body: leaveMessage,
           confirmText: '確定',
           onConfirm: () => this.turnBack(),
-          cancelText: '取消'
-        }
-
+          cancelText: '取消',
+        },
       });
-
     } else {
       this.turnBack();
     }
-
   }
 
   /**
@@ -469,39 +477,38 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       const body = {
         token,
         eventInfo,
-        eventDetail
+        eventDetail,
       };
 
-      this.officialActivityService.createEvent(body).pipe(
-        switchMap(createRes => {
-          if (this.utils.checkRes(createRes)) {
-            const { eventId } = createRes;
-            return this.uploadImg(eventId).pipe(
-              map(uploadRes => {
-                uploadRes = {
-                  eventId,
-                  ...uploadRes
-                };
+      this.officialActivityService
+        .createEvent(body)
+        .pipe(
+          switchMap((createRes) => {
+            if (this.utils.checkRes(createRes)) {
+              const { eventId } = createRes;
+              return this.uploadImg(eventId).pipe(
+                map((uploadRes) => {
+                  uploadRes = {
+                    eventId,
+                    ...uploadRes,
+                  };
 
-                return uploadRes;
-              })
-
-            );
+                  return uploadRes;
+                })
+              );
+            }
+          })
+        )
+        .subscribe((result) => {
+          if (this.utils.checkRes(result)) {
+            this.saveSuccess();
+            const newEventId = result.eventId;
+            this.router.navigateByUrl(`/official-activity/activity-detail/${newEventId}`);
           }
 
-        })
-      ).subscribe(result => {
-        if (this.utils.checkRes(result)) {
-          this.saveSuccess();
-          const newEventId = result.eventId;
-          this.router.navigateByUrl(`/official-activity/activity-detail/${newEventId}`);
-        }
-
-        this.uiFlag.progress = 100;
-      });
-
+          this.uiFlag.progress = 100;
+        });
     }
-
   }
 
   /**
@@ -520,43 +527,37 @@ export class EditActivityComponent implements OnInit, OnDestroy {
 
     const newTheme = theme.crop;
     if (newTheme) {
-      [imgArray, formData] =
-        this.appendNewImg(
-          imgArray,
-          formData,
-          eventId,
-          AlbumType.eventTheme,
-          newTheme
-        );
-
+      [imgArray, formData] = this.appendNewImg(
+        imgArray,
+        formData,
+        eventId,
+        AlbumType.eventTheme,
+        newTheme
+      );
     }
 
-    for (let _contentId in content) {
+    for (const _contentId in content) {
       const newContentImg = content[_contentId];
-      [imgArray, formData] =
-        this.appendNewImg(
-          imgArray,
-          formData,
-          eventId,
-          AlbumType.eventContent,
-          newContentImg,
-          +_contentId
-        );
-
+      [imgArray, formData] = this.appendNewImg(
+        imgArray,
+        formData,
+        eventId,
+        AlbumType.eventContent,
+        newContentImg,
+        +_contentId
+      );
     }
 
-    for (let _applyFeeId in applyFee) {
+    for (const _applyFeeId in applyFee) {
       const { crop: newFeeImg } = applyFee[_applyFeeId];
-      [imgArray, formData] =
-        this.appendNewImg(
-          imgArray,
-          formData,
-          eventId,
-          AlbumType.eventApplyFee,
-          newFeeImg,
-          +_applyFeeId
-        );
-
+      [imgArray, formData] = this.appendNewImg(
+        imgArray,
+        formData,
+        eventId,
+        AlbumType.eventApplyFee,
+        newFeeImg,
+        +_applyFeeId
+      );
     }
 
     formData.set('img', JSON.stringify(imgArray));
@@ -574,7 +575,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101029
    */
   appendNewImg(
-    imgArray: Array<{ albumType: AlbumType; fileNameFull: string; id?: number;}>,
+    imgArray: Array<{ albumType: AlbumType; fileNameFull: string; id?: number }>,
     formData: any,
     eventId: number,
     type: AlbumType,
@@ -589,7 +590,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       case AlbumType.eventTheme:
         imgArray.push({
           albumType: type,
-          fileNameFull: fileNameFull
+          fileNameFull: fileNameFull,
         });
 
         break;
@@ -598,7 +599,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         imgArray.push({
           albumType: type,
           fileNameFull: fileNameFull,
-          id
+          id,
         });
 
         break;
@@ -625,33 +626,31 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         token,
         targetEventId,
         ...editContent,
-        ...deleteList
+        ...deleteList,
       };
 
-      this.officialActivityService.editEventDetail(body).pipe(
-        switchMap(editRes => {
-          if (this.utils.checkRes(editRes)) {
-
-            if (this.checkImgChange()) {
-              return this.uploadImg(targetEventId);
-            } else {
-              return of(editRes);
+      this.officialActivityService
+        .editEventDetail(body)
+        .pipe(
+          switchMap((editRes) => {
+            if (this.utils.checkRes(editRes)) {
+              if (this.checkImgChange()) {
+                return this.uploadImg(targetEventId);
+              } else {
+                return of(editRes);
+              }
             }
-
+          })
+        )
+        .subscribe((result) => {
+          if (this.utils.checkRes(result)) {
+            this.saveSuccess();
+            this.router.navigateByUrl(`/official-activity/activity-detail/${targetEventId}`);
           }
 
-        })
-      ).subscribe(result => {
-        if (this.utils.checkRes(result)) {
-          this.saveSuccess();
-          this.router.navigateByUrl(`/official-activity/activity-detail/${targetEventId}`);
-        }
-
-        this.uiFlag.progress = 100;
-      });
-
+          this.uiFlag.progress = 100;
+        });
     }
-
   }
 
   /**
@@ -669,11 +668,9 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   checkImgChange() {
     const {
-      theme: {
-        crop
-      },
+      theme: { crop },
       content,
-      applyFee
+      applyFee,
     } = this.imgUpload;
     const themeChange = crop !== null;
     const contentImgChange = Object.keys(content).length > 0;
@@ -689,27 +686,25 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   getEditContent(compareObj: any, newObj: any) {
     let editPart = {};
-    for (let _key in compareObj) {
+    for (const _key in compareObj) {
       const compareValue = compareObj[_key];
       const newValue = newObj[_key];
       switch (_key) {
         case 'eventInfo':
         case 'eventDetail':
-          const editedObj =  this.getEditContent(compareValue, newValue);
+          const editedObj = this.getEditContent(compareValue, newValue);
           const editedObjSize = Object.keys(editedObj).length;
           if (editedObjSize > 0) {
             editPart = {
               ...editPart,
-              [_key]: editedObj
+              [_key]: editedObj,
             };
-
           } else {
             // eventInfo, eventDetail沒編輯亦要帶空物件
             editPart = {
               ...editPart,
-              [_key]: {}
+              [_key]: {},
             };
-
           }
 
           break;
@@ -718,11 +713,10 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           if (this.isDifferentObject(newValue, compareValue)) {
             editPart = {
               [_key]: newValue,
-              ...editPart
+              ...editPart,
             };
-
           }
-          
+
           break;
         case 'content':
         case 'applyFee':
@@ -731,7 +725,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           if (this.isDifferentArray(newValue, compareValue)) {
             editPart = {
               [_key]: newValue,
-              ...editPart
+              ...editPart,
             };
           }
 
@@ -743,18 +737,15 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         case 'currentApplyNumber':
           break;
         default:
-
           if (compareValue !== newValue) {
             editPart = {
               [_key]: newValue,
-              ...editPart
+              ...editPart,
             };
-
           }
 
           break;
       }
-
     }
 
     return editPart;
@@ -773,7 +764,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       return true;
     } else {
       let isDifferent = false;
-      for (let _key in oldObj) {
+      for (const _key in oldObj) {
         const _oldValue = oldObj[_key];
         const _newValue = newObj[_key];
         if (_newValue !== _oldValue) isDifferent = true;
@@ -781,7 +772,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
 
       return isDifferent;
     }
-
   }
 
   /**
@@ -796,33 +786,24 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     if (newValueLength !== compareValueLength) {
       return true;
     } else {
-
       for (let i = 0; i < oldArray.length; i++) {
         const _compareObj = oldArray[i];
         const _newObj = newArray[i];
-        for (let _compareObjKey in _compareObj) {
-          
+        for (const _compareObjKey in _compareObj) {
           if (_newObj[_compareObjKey] !== undefined) {
             const _newValue = _newObj[_compareObjKey];
             const _oldValue = _compareObj[_compareObjKey];
             if (_compareObjKey !== 'age') {
-
               if (_newValue !== _oldValue) return true;
-
             } else {
-              return this.isDifferentObject(_newObj, _compareObj)
+              return this.isDifferentObject(_newObj, _compareObj);
             }
-
           } else {
             return true;
           }
-
         }
-
       }
-
     }
-
   }
 
   /**
@@ -847,19 +828,21 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       this.deleteList.groupId = this.getDeleleteIdList(newGroup.length, delLength);
     }
 
-    const { contentId, groupId, applyFeeId } = this.deleteList || { contentId: [], groupId: [], applyFeeId: [] };
+    const { contentId, groupId, applyFeeId } = this.deleteList || {
+      contentId: [],
+      groupId: [],
+      applyFeeId: [],
+    };
     const haveDeleteContent = contentId.length > 0;
     const haveDeleteGroup = groupId.length > 0;
     const haveDeleteApplyFee = applyFeeId.length > 0;
     if (haveDeleteContent || haveDeleteGroup || haveDeleteApplyFee) {
       return {
-        del: this.deleteList
-      }
-
+        del: this.deleteList,
+      };
     } else {
-      return {}
+      return {};
     }
-
   }
 
   /**
@@ -869,7 +852,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101224
    */
   getDeleleteIdList(base: number, length: number) {
-    let list = [];
+    const list = [];
     for (let i = 0; i < length; i++) {
       const deleteId = base + 1 + i;
       list.push(deleteId);
@@ -896,11 +879,9 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           confirmText: '是',
           onConfirm: () => this.confirmReleaseEvent(),
           cancelText: '否',
-          onCancel: () => this.uncheckReleaseEvent()
-        }
-
+          onCancel: () => this.uncheckReleaseEvent(),
+        },
       });
-
     }
   }
 
@@ -939,13 +920,10 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           confirmText: '是',
           onConfirm: () => this.confirmCancelEvent(),
           cancelText: '否',
-          onCancel: () => this.uncheckCancelEvent()
-        }
-
+          onCancel: () => this.uncheckCancelEvent(),
+        },
       });
-
     }
-
   }
 
   /**
@@ -953,7 +931,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101118
    */
   confirmCancelEvent() {
-    this.eventInfo.eventStatus = EventStatus.cancel
+    this.eventInfo.eventStatus = EventStatus.cancel;
   }
 
   /**
@@ -977,9 +955,8 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       contentId: newContentId,
       cardType: CardTypeEnum.video,
       title: '',
-      videoLink: ''
+      videoLink: '',
     });
-
   }
 
   /**
@@ -992,9 +969,8 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     this.eventDetail.content.push({
       contentId: newContentId,
       cardType: CardTypeEnum.img,
-      title: ''
+      title: '',
     });
-
   }
 
   /**
@@ -1008,9 +984,8 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       contentId: newContentId,
       cardType: CardTypeEnum.text,
       title: '',
-      text: ''
+      text: '',
     });
-
   }
 
   /**
@@ -1034,7 +1009,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       this.eventInfo.eventName = title;
       this.saveDraft();
     }
-
   }
 
   /**
@@ -1045,14 +1019,8 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   getSelectDate(date: SelectDate, type: DateType) {
     const {
-      applyDate: {
-        startDate: applyStartTimestamp,
-        endDate: applyEndTimestamp
-      },
-      raceDate: {
-        startDate: raceStartTimestamp,
-        endDate: raceEndTimestamp
-      }
+      applyDate: { startDate: applyStartTimestamp, endDate: applyEndTimestamp },
+      raceDate: { startDate: raceStartTimestamp, endDate: raceEndTimestamp },
     } = this.eventInfo;
     const newStartTimestamp = dayjs(date.startDate).unix();
     const newEndTimestamp = dayjs(date.endDate).unix();
@@ -1062,13 +1030,14 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         if (newStartTimestamp !== applyStartTimestamp) {
           this.eventInfo.applyDate = {
             startDate: newStartTimestamp,
-            endDate: applyEndTimestamp < newEndTimestamp ? newEndTimestamp : applyEndTimestamp
+            endDate: applyEndTimestamp < newEndTimestamp ? newEndTimestamp : applyEndTimestamp,
           };
 
           this.eventInfo.raceDate = {
-            startDate: raceStartTimestamp < newStartTimestamp ? newStartTimestamp : raceStartTimestamp,
-            endDate: raceEndTimestamp < newEndTimestamp ? newEndTimestamp : raceEndTimestamp
-          }
+            startDate:
+              raceStartTimestamp < newStartTimestamp ? newStartTimestamp : raceStartTimestamp,
+            endDate: raceEndTimestamp < newEndTimestamp ? newEndTimestamp : raceEndTimestamp,
+          };
 
           this.saveDraft();
         }
@@ -1077,12 +1046,13 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       case 'applyEndDate':
         if (newEndTimestamp !== applyEndTimestamp) {
           this.eventInfo.applyDate = {
-            startDate: applyStartTimestamp > newStartTimestamp ? newStartTimestamp : applyStartTimestamp,
-            endDate: newEndTimestamp
+            startDate:
+              applyStartTimestamp > newStartTimestamp ? newStartTimestamp : applyStartTimestamp,
+            endDate: newEndTimestamp,
           };
 
           this.eventInfo.raceDate.endDate =
-            raceEndTimestamp < newEndTimestamp ? newEndTimestamp : raceEndTimestamp
+            raceEndTimestamp < newEndTimestamp ? newEndTimestamp : raceEndTimestamp;
 
           this.saveDraft();
         }
@@ -1092,8 +1062,8 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         if (newStartTimestamp !== raceStartTimestamp) {
           this.eventInfo.raceDate = {
             startDate: newStartTimestamp,
-            endDate: raceEndTimestamp < newEndTimestamp ? newEndTimestamp : raceEndTimestamp
-          }
+            endDate: raceEndTimestamp < newEndTimestamp ? newEndTimestamp : raceEndTimestamp,
+          };
 
           this.saveDraft();
         }
@@ -1102,16 +1072,16 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       case 'raceEndDate':
         if (newEndTimestamp !== raceEndTimestamp) {
           this.eventInfo.raceDate = {
-            startDate: raceStartTimestamp > newStartTimestamp ? newStartTimestamp : raceStartTimestamp,
-            endDate: newEndTimestamp
-          }
+            startDate:
+              raceStartTimestamp > newStartTimestamp ? newStartTimestamp : raceStartTimestamp,
+            endDate: newEndTimestamp,
+          };
 
           this.saveDraft();
         }
 
         break;
     }
-
   }
 
   /**
@@ -1123,12 +1093,11 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     const { value } = (e as any).target;
     if (value == HaveNumberLimit.no) {
       this.uiFlag.numberLimit = HaveNumberLimit.no;
-      this.eventInfo.numberLimit = -1;  // 使用-1當作無限制人數
+      this.eventInfo.numberLimit = -1; // 使用-1當作無限制人數
     } else {
       this.uiFlag.numberLimit = HaveNumberLimit.yes;
       Object.assign(this.eventInfo, { numberLimit: this.defaultNumberLimit });
     }
-
   }
 
   /**
@@ -1139,7 +1108,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   handlePeopleLimitInput(e: MouseEvent) {
     const { value } = (e as any).target;
     this.uiFlag.numberLimit = HaveNumberLimit.yes;
-    Object.assign(this.eventInfo, {numberLimit: +value});
+    Object.assign(this.eventInfo, { numberLimit: +value });
     const element = document.getElementById('peopel__limit') as any;
     element.checked = true;
   }
@@ -1154,7 +1123,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       this.uiFlag.showMapList = true;
       this.subscribeGlobalEvent();
     }
-
   }
 
   /**
@@ -1162,7 +1130,11 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101116
    */
   checkCanEdit() {
-    const { uiFlag: { editMode }, currentTimestamp, eventInfo } = this;
+    const {
+      uiFlag: { editMode },
+      currentTimestamp,
+      eventInfo,
+    } = this;
     const isCreateMode = editMode === 'create';
     const beforeEventApplyStart = currentTimestamp < eventInfo.applyDate.startDate;
     return isCreateMode || beforeEventApplyStart;
@@ -1176,12 +1148,11 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     const scrollElement = document.getElementById('main__edit__content');
     const scrollEvent = fromEvent(scrollElement, 'scroll');
     const clickEvent = fromEvent(document, 'click');
-    this.globalEventSubscription = merge(scrollEvent, clickEvent).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
-      this.unSubscribeGlobalEvent();
-    });
-
+    this.globalEventSubscription = merge(scrollEvent, clickEvent)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((e) => {
+        this.unSubscribeGlobalEvent();
+      });
   }
 
   /**
@@ -1195,7 +1166,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     if (this.globalEventSubscription) {
       this.globalEventSubscription.unsubscribe();
     }
-
   }
 
   /**
@@ -1213,7 +1183,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       this.getSelectMapName(newMapId);
       this.saveDraft();
     }
-    
+
     this.unSubscribeGlobalEvent();
   }
 
@@ -1227,10 +1197,9 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     if (eventInfo && mapList && mapId && mapId > 0) {
       const { cloudrunMapId } = eventInfo;
       const id = mapId ?? cloudrunMapId;
-      const index = mapList.findIndex(_map => _map.mapId == id);
+      const index = mapList.findIndex((_map) => _map.mapId == id);
       this.selectedMap = mapList[index].info[language].mapName;
     }
-
   }
 
   /**
@@ -1245,7 +1214,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       this.eventInfo.description = newDescription;
       this.saveDraft();
     }
-
   }
 
   /**
@@ -1261,7 +1229,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       this.eventDetail.content[id - 1].title = newTitle;
       this.saveDraft();
     }
-
   }
 
   /**
@@ -1299,7 +1266,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       this.eventDetail.content[id - 1].videoLink = embedLink;
       this.saveDraft();
     }
-
   }
 
   /**
@@ -1315,7 +1281,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     } else {
       return link;
     }
-
   }
 
   /**
@@ -1338,7 +1303,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         default:
           if (!passCount) length++;
       }
-
     }
 
     return length;
@@ -1359,11 +1323,9 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         body: message,
         confirmText: '確定',
         onConfirm: () => this.deleteSection(type, id),
-        cancelText: '取消'
-      }
-
+        cancelText: '取消',
+      },
     });
-
   }
 
   /**
@@ -1384,7 +1346,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         this.deleteApplyFee(id);
         break;
     }
-
   }
 
   /**
@@ -1395,7 +1356,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   deleteContent(id: number) {
     const imgUploadCache = {};
     this.eventDetail.content = this.eventDetail.content
-      .filter(_content => _content.contentId !== id)
+      .filter((_content) => _content.contentId !== id)
       .map((_content, index) => {
         const oldId = _content.contentId;
         const newId = index + 1;
@@ -1419,7 +1380,10 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     const targetContent = deepCopy(this.eventDetail.content[index]);
     const switchIndex = index + (direction === 'up' ? -1 : 1);
     const switchContent = deepCopy(this.eventDetail.content[switchIndex]);
-    [this.eventDetail.content[index], this.eventDetail.content[switchIndex]] = [switchContent, targetContent];
+    [this.eventDetail.content[index], this.eventDetail.content[switchIndex]] = [
+      switchContent,
+      targetContent,
+    ];
     const imgUploadCache = {};
     this.eventDetail.content = this.eventDetail.content.map((_content, index) => {
       const oldId = _content.contentId;
@@ -1465,7 +1429,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       this.eventDetail.group[targetIndex].name = name;
       this.saveDraft();
     }
-
   }
 
   /**
@@ -1489,7 +1452,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       this.eventDetail.applyFee[targetIndex].title = title;
       this.saveDraft();
     }
-
   }
 
   /**
@@ -1501,13 +1463,12 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   handleFeeInput(e: MouseEvent, id: number) {
     const fee = +(e as any).target.value;
     const targetIndex = id - 1;
-    const maxFee = 49999;  // 綠界付款ATM最大付款金額
+    const maxFee = 49999; // 綠界付款ATM最大付款金額
     const oldFee = +this.eventDetail.applyFee[targetIndex].fee;
     if (fee !== oldFee) {
       this.eventDetail.applyFee[targetIndex].fee = fee > maxFee ? maxFee : fee;
       this.saveDraft();
     }
-
   }
 
   /**
@@ -1516,11 +1477,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @param id {number}-分組id
    * @author kidin-1101026
    */
-  openAgeSelector(
-    e: MouseEvent,
-    type: 'min' | 'max',
-    id: number
-  ) {
+  openAgeSelector(e: MouseEvent, type: 'min' | 'max', id: number) {
     e.stopPropagation();
     this.unSubscribeGlobalEvent();
     if (this.checkCanEdit()) {
@@ -1530,9 +1487,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         this.uiFlag.showAgeSelector = target;
         this.subscribeGlobalEvent();
       }
-
     }
-    
   }
 
   /**
@@ -1561,32 +1516,29 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     const targetGroup = this.eventDetail.group[targetIndex];
     let editAge: number;
     if (type === 'max') {
-      editAge = age < 0  ? 100 : age;
+      editAge = age < 0 ? 100 : age;
     } else {
-      editAge = age < 0  ? 0 : age;
+      editAge = age < 0 ? 0 : age;
     }
 
     if (targetGroup.age === undefined) {
-      
       if (editAge) {
         this.eventDetail.group[targetIndex] = {
           age: {
             min: 0,
-            max: 100
+            max: 100,
           },
-          ...this.eventDetail.group[targetIndex]
+          ...this.eventDetail.group[targetIndex],
         };
 
         this.eventDetail.group[targetIndex].age[type] = editAge;
       }
-
     } else {
       this.eventDetail.group[targetIndex].age[type] = editAge;
       const { min, max } = this.eventDetail.group[targetIndex].age;
       if (!min && !max) {
         delete this.eventDetail.group[targetIndex].age;
       }
-
     }
 
     this.saveDraft();
@@ -1608,9 +1560,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         this.uiFlag.showGenderSelector = id;
         this.subscribeGlobalEvent();
       }
-
     }
-
   }
 
   /**
@@ -1627,7 +1577,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       this.eventDetail.group[targetIndex].gender = gender;
       this.saveDraft();
     }
-    
+
     this.unSubscribeGlobalEvent();
   }
 
@@ -1638,7 +1588,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   deleteGroup(id: number) {
     this.eventDetail.group = this.eventDetail.group
-      .filter(_group => _group.id !== id)
+      .filter((_group) => _group.id !== id)
       .map((_group, index) => {
         _group.id = index + 1;
         return _group;
@@ -1655,7 +1605,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   deleteApplyFee(id: number) {
     const imgUploadCache = {};
     this.eventDetail.applyFee = this.eventDetail.applyFee
-      .filter(_applyFee => _applyFee.feeId !== id)
+      .filter((_applyFee) => _applyFee.feeId !== id)
       .map((_applyFee, index) => {
         const oldId = _applyFee.feeId;
         const newId = index + 1;
@@ -1682,16 +1632,14 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         name: '',
         gender: Sex.unlimit,
       });
-
     } else {
       const newId = this.eventDetail.applyFee.length + 1;
       this.eventDetail.applyFee.push({
         feeId: newId,
         title: '',
         fee: 49999,
-        haveProduct: HaveProduct.no
+        haveProduct: HaveProduct.no,
       });
-
     }
 
     this.saveDraft();
@@ -1702,10 +1650,9 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101027
    */
   editorOnReady(editor: any) {
-    editor.ui.getEditableElement().parentElement.insertBefore(
-      editor.ui.view.toolbar.element,
-      editor.ui.getEditableElement()
-    );
+    editor.ui
+      .getEditableElement()
+      .parentElement.insertBefore(editor.ui.view.toolbar.element, editor.ui.getEditableElement());
 
     // console.log('ckeditor', Array.from(editor.ui.componentFactory.names()));
   }
@@ -1729,16 +1676,13 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           Object.assign(this.imgUpload.applyFee, {
             [targetId]: {
               origin,
-              crop: base64
-            }
-
+              crop: base64,
+            },
           });
 
           this.uiFlag.imgCurrentEditId = null;
           break;
       }
-      
-      
     }
 
     this.uiFlag.openImgSelector = null;
@@ -1778,9 +1722,8 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   cancelEditThemeImg() {
     this.imgUpload.theme = {
       origin: null,
-      crop: null
-    }
-
+      crop: null,
+    };
   }
 
   /**
@@ -1791,41 +1734,40 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   handleContentImgSelected(e: Event) {
     const img = (e as any).target.files[0];
     if (img) {
-      this.utils.getBase64(img).pipe(
-        switchMap(e => {
-          const { currentTarget, type } = e;
-          if (type === 'load') {
-            const { result } = currentTarget as any;
-            return this.utils.checkImgFormat(result);
-          } else {
-            const message = '載入圖片失敗<br>請重新選擇圖片';
-            this.dialog.open(MessageBoxComponent, {
-              hasBackdrop: true,
-              data: {
-                title: 'Message',
-                body: message,
-                confirmText: '確定',
-              }
-    
-            });
-            
-            return of(e);
-          }
+      this.utils
+        .getBase64(img)
+        .pipe(
+          switchMap((e) => {
+            const { currentTarget, type } = e;
+            if (type === 'load') {
+              const { result } = currentTarget as any;
+              return this.utils.checkImgFormat(result);
+            } else {
+              const message = '載入圖片失敗<br>請重新選擇圖片';
+              this.dialog.open(MessageBoxComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'Message',
+                  body: message,
+                  confirmText: '確定',
+                },
+              });
 
-        }),
-        takeUntil(this.ngUnsubscribe)
-      ).subscribe(base64 => {
-        const targetId = `${this.uiFlag.imgCurrentEditId}`;
-        Object.assign(this.imgUpload.content, {
-          [targetId]: base64
+              return of(e);
+            }
+          }),
+          takeUntil(this.ngUnsubscribe)
+        )
+        .subscribe((base64) => {
+          const targetId = `${this.uiFlag.imgCurrentEditId}`;
+          Object.assign(this.imgUpload.content, {
+            [targetId]: base64,
+          });
+
+          this.uiFlag.isSaved = false;
+          this.uiFlag.imgCurrentEditId = null;
         });
-
-        this.uiFlag.isSaved = false;
-        this.uiFlag.imgCurrentEditId = null;
-      });
-
     }
-    
   }
 
   /**
@@ -1842,7 +1784,6 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     } else {
       this.eventDetail.applyFee[index].haveProduct = HaveProduct.no;
     }
-
   }
 
   /**
@@ -1852,10 +1793,9 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   cancelEditContentImg(id: number) {
     const targetId = `${id}`;
-    if (this.imgUpload.content.hasOwnProperty(targetId)) {
+    if (Object.prototype.hasOwnProperty.call(this.imgUpload.content, targetId)) {
       delete this.imgUpload.content[targetId];
     }
-
   }
 
   /**
@@ -1865,10 +1805,9 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   cancelEditApplyFeeImg(id: number) {
     const targetId = `${id}`;
-    if (this.imgUpload.applyFee.hasOwnProperty(targetId)) {
+    if (Object.prototype.hasOwnProperty.call(this.imgUpload.applyFee, targetId)) {
       delete this.imgUpload.applyFee[targetId];
     }
-
   }
 
   /**
@@ -1879,7 +1818,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     this.uiFlag.isSaved = false;
     const draft = {
       eventInfo: this.eventInfo,
-      eventDetail: this.eventDetail
+      eventDetail: this.eventDetail,
     };
 
     const eventDraft = JSON.stringify(draft);
@@ -1893,5 +1832,4 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

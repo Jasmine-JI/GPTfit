@@ -8,11 +8,14 @@ $warn-color: rgba(255, 141, 0, 1);
 $error-color: rgba(255, 0, 0, 1);
 $debug-color: rgba(128, 0, 128, 1);
 
-h4, h5, h6 {
+h4,
+h5,
+h6 {
   color: $title-color;
 }
 
-h4, h5 {
+h4,
+h5 {
   font-weight: bold;
 }
 
@@ -31,7 +34,6 @@ section {
   div {
     margin: 5px 0 5px 10px;
   }
-
 }
 
 .alert__empty {
@@ -87,20 +89,15 @@ section {
         background-color: rgba(38, 171, 227, 1);
         @include transition(background-color);
       }
-
     }
-
   }
-
 }
 
 .drop__menu--active {
-
   &:after {
     @include el-rotate(180deg);
     @include transition(transform);
   }
-
 }
 
 .info__color {
@@ -119,7 +116,8 @@ section {
   color: $debug-color;
 }
 
-#clear__btn, #submit__btn {
+#clear__btn,
+#submit__btn {
   height: 35px;
   width: 80px;
   border-radius: 5px;
@@ -169,14 +167,12 @@ section {
   word-break: break-all;
 }
 
-
 /***************************** media *************************************/
 
 @media (max-width: 991px) {
   .name__column {
     display: none;
   }
-
 }
 
 @media (max-width: 991px) {
@@ -188,5 +184,4 @@ section {
     white-space: pre-wrap;
     word-break: break-all;
   }
-
 }

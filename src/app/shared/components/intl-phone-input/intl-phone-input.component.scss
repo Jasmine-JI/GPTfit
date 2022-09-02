@@ -24,12 +24,12 @@
   padding: 0px;
 }
 
-.dropdown-menu.show>li {
+.dropdown-menu.show > li {
   padding: 12px 16px;
   border: 1px solid rgba(0, 0, 0, 0.125);
 }
 
-.dropdown-menu.show>li:hover {
+.dropdown-menu.show > li:hover {
   /* background-color: #008bcd;
   color: #fff; */
   cursor: pointer;
@@ -65,7 +65,6 @@
     text-overflow: ellipsis;
     padding: 0;
   }
-
 }
 
 .selected-flag-v2 {

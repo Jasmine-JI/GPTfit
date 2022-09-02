@@ -16,22 +16,19 @@ const BROWSER = {
   chrome: /\bCrMo\b|CriOS|Android.*Chrome\/[.0-9]* (Mobile)?/,
   safari: /Version.*Mobile.*Safari|Safari.*Mobile|MobileSafari/,
   ie: /IEMobile|MSIEMobile/,
-  firefox: /fennec|firefox.*maemo|(Mobile|Tablet).*Firefox|Firefox.*Mobile|FxiOS/
+  firefox: /fennec|firefox.*maemo|(Mobile|Tablet).*Firefox|Firefox.*Mobile|FxiOS/,
 };
 
 @Injectable()
 export class DetectInappService {
   ua = '';
 
-  constructor(
-    private dialog: MatDialog,
-    private translate: TranslateService
-  ) {
+  constructor(private dialog: MatDialog, private translate: TranslateService) {
     this.ua = navigator.userAgent || navigator.vendor || window['opera'];
   }
 
   get browser(): string {
-    return findKey(BROWSER, regex => regex.test(this.ua)) || 'other';
+    return findKey(BROWSER, (regex) => regex.test(this.ua)) || 'other';
   }
 
   get isIE(): boolean {
@@ -49,28 +46,20 @@ export class DetectInappService {
   }
 
   get isInApp(): boolean {
-    const rules = [
-      'WebView',
-      '(iPhone|iPod|iPad)(?!.*Safari/)',
-      'Android.*(wv|.0.0.0)'
-    ];
+    const rules = ['WebView', '(iPhone|iPod|iPad)(?!.*Safari/)', 'Android.*(wv|.0.0.0)'];
     const regex = new RegExp(`(${rules.join('|')})`, 'ig');
     return Boolean(this.ua.match(regex));
   }
 
-
   checkBrowser() {
     if (this.isIE || this.isInApp) {
-
       if (this.isLine) {
-
         if (location.search.length === 0) {
           location.href += '?openExternalBrowser=1';
         } else {
           location.href += '&openExternalBrowser=1';
         }
-
-      }/* else {
+      } /* else {
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
           data: {
@@ -82,9 +71,6 @@ export class DetectInappService {
         });
 
       }*/
-
     }
-
   }
-
 }

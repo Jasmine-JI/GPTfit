@@ -2,9 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { Unit } from '../enum/value-conversion';
 import { SportType } from '../enum/sports';
 
-@Pipe({name: 'dataTypeTranslate'})
+@Pipe({ name: 'dataTypeTranslate' })
 export class DataTypeTranslatePipe implements PipeTransform {
-
   /**
    * 將運動資料類別轉為多國語系的鍵
    * @param value {string}-app id
@@ -20,10 +19,11 @@ export class DataTypeTranslatePipe implements PipeTransform {
       case 'speed':
         return 'universal_activityData_speedPerHour';
       case 'pace':
-
         switch (sportType) {
           case SportType.run:
-            return userUnit === Unit.metric ? 'universal_activityData_kilometerPace' : 'universal_activityData_milePace';
+            return userUnit === Unit.metric
+              ? 'universal_activityData_kilometerPace'
+              : 'universal_activityData_milePace';
           case SportType.swim:
             return 'universal_activityData_100mPace';
           case SportType.row:
@@ -31,7 +31,6 @@ export class DataTypeTranslatePipe implements PipeTransform {
         }
 
       case 'cadence':
-        
         switch (sportType) {
           case SportType.run:
             return 'universal_activityData_stepCadence';
@@ -68,7 +67,7 @@ export class DataTypeTranslatePipe implements PipeTransform {
           default:
             return 'universal_activityData_totalTime';
         }
-        
+
       case 'time':
         return 'universal_activityData_time';
       case 'stroke':
@@ -95,7 +94,5 @@ export class DataTypeTranslatePipe implements PipeTransform {
       default:
         return 'universal_vocabulary_other';
     }
-
   }
-
 }

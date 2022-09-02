@@ -8,9 +8,8 @@ describe('EquidistantChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ EquidistantChartComponent ]
-    })
-    .compileComponents();
+      declarations: [EquidistantChartComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

@@ -5,15 +5,13 @@ import { Router, NavigationEnd, NavigationCancel, NavigationError } from '@angul
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
   title = 'app';
   appLoaded = false;
 
-  constructor(
-    private router: Router
-  ) {
+  constructor(private router: Router) {
     this.checkDomain();
     this.subscribeNavigation();
   }
@@ -32,24 +30,20 @@ export class AppComponent {
     } else if (hostname === Domain.oldProd) {
       location.href = href.replace(Domain.oldProd, Domain.newProd);
     }
-
   }
 
   /**
    * 訂閱轉導事件，並只取前面幾個事件，讓載入angular及call api 1003和1010不會只有白畫面
    */
   subscribeNavigation() {
-    this.router.events.subscribe(e => {
+    this.router.events.subscribe((e) => {
       if (
-        e instanceof NavigationEnd
-        || e instanceof NavigationCancel
-        || e instanceof NavigationError
+        e instanceof NavigationEnd ||
+        e instanceof NavigationCancel ||
+        e instanceof NavigationError
       ) {
         this.appLoaded = true;
       }
-
     });
-
   }
-  
 }

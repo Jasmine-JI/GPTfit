@@ -11,22 +11,11 @@
         class="flexRow page__link"
         (click)="navigate($event, '/official-activity/activity-list')"
       >
-        <img 
-          src="/assets/icons/logo.svg"
-          alt="GPTfit"
-          class="webLogo"
-        >
-        <img 
-          src="/assets/icons/event.svg"
-          alt="Event"
-          class="webSubLogo sub__logo"
-        >
+        <img src="/assets/icons/logo.svg" alt="GPTfit" class="webLogo" />
+        <img src="/assets/icons/event.svg" alt="Event" class="webSubLogo sub__logo" />
       </a>
       <button (click)="showEntryMenu($event)">
-        <i
-          class="icon-svg_web-icon_p1_005-menu"
-          *ngIf="uiFlag.isMobile"
-        ></i>
+        <i class="icon-svg_web-icon_p1_005-menu" *ngIf="uiFlag.isMobile"></i>
       </button>
     </h1>
     <div class="flexCol">
@@ -64,59 +53,69 @@
         >
           {{ 'universal_vocabulary_aboutCloudrun' | translate }}
         </a>
+        <a
+          href="/"
+          class="page__link child__page__link"
+          name="home"
+          (click)="navigate($event, '/')"
+        >
+          {{ 'universal_system_homePage' | translate }}
+        </a>
       </div>
       <div id="link__active__bar" *ngIf="!uiFlag.isMobile">
         <div id="link__active"></div>
       </div>
     </div>
     <div class="flexRow">
-      <div
-        class="flexRow personal__menu__entry"
-        (click)="showPersonalMenu($event)"
-      >
+      <div class="flexCenter mail__button__section">
+        <button class="mail__button" (click)="showStationMailList($event)">
+          <i class="icon-svg_web-icon_p4_012-message"></i>
+          <i
+            class="icon-svg_web-icon_p1_069-about alert__icon__mail"
+            *ngIf="uiFlag.haveNewMail"
+          ></i>
+        </button>
+        <div class="brief__mail__list" *ngIf="uiFlag.showStationMailList">
+          <div class="flexRow message__title__section">
+            <h5 class="mail__list__title">
+              {{ 'universal_deviceSetting_message' | translate }}
+            </h5>
+            <button class="create__message__button" (click)="navigateNewMailPage()">
+              <i class="icon-svg_web-icon_p1_029-add"></i>
+            </button>
+          </div>
+          <app-inbox [isBriefList]="true"></app-inbox>
+          <a href="#" class="inbox__link" (click)="navigateInbox($event)">
+            {{ 'universal_operating_more' | translate }}
+          </a>
+        </div>
+      </div>
+      <div class="flexRow personal__menu__entry" (click)="showPersonalMenu($event)">
         <img
           id="avatar"
           [src]="userInfo ? userInfo.avatarUrl : '/assets/images/user2.png'"
-          (error)="this.userInfo.avatarUrl='/assets/images/user2.png';"
+          (error)="this.userInfo.avatarUrl = '/assets/images/user2.png'"
           alt="avatar"
-        >
+        />
         <span id="nav__nickname" *ngIf="!uiFlag.isMobile && userInfo">
           {{ userInfo?.nickname }}
         </span>
         <i class="icon-svg_web-icon_p1_006-unfold nav__fold"></i>
       </div>
-      <ul
-        class="flexCol personal__menu"
-        *ngIf="uiFlag.showPersonalMenu"
-      >
-        <li
-          (click)="showLoginBox()"
-          *ngIf="!token"
-        >
+      <ul class="flexCol personal__menu" *ngIf="uiFlag.showPersonalMenu">
+        <li (click)="showLoginBox()" *ngIf="!token">
           {{ 'universal_userAccount_logIn' | translate }}
         </li>
-        <li
-          (click)="logout()"
-          *ngIf="token"
-        >
+        <li (click)="logout()" *ngIf="token">
           {{ 'universal_userAccount_logOut' | translate }}
         </li>
         <li (click)="navigate($event, '/official-activity/contact-us')">
           <a
             href="/official-activity/contact-us"
             class="page__link"
-            (click)="$event.preventDefault();"
+            (click)="$event.preventDefault()"
           >
             {{ 'universal_vocabulary_contactUs' | translate }}
-          </a>
-        </li>
-        <li (click)="navigate($event, '/')">
-          <a 
-            href="/"
-            class="page__link"
-            (click)="$event.preventDefault();"
-          >
-            {{ 'universal_system_homePage' | translate }}
           </a>
         </li>
       </ul>
@@ -141,10 +140,7 @@
         {{ 'universal_race_leaderboard' | translate }}
       </a>
     </li>
-    <li
-      [class.page__link--active]="uiFlag.currentPage === 'my-activity'"
-      *ngIf="token"
-    >
+    <li [class.page__link--active]="uiFlag.currentPage === 'my-activity'" *ngIf="token">
       <a
         href="/official-activity/my-activity"
         class="page__link child__page__link"
@@ -162,12 +158,17 @@
         {{ 'universal_vocabulary_aboutCloudrun' | translate }}
       </a>
     </li>
+    <li>
+      <a href="/" class="page__link child__page__link" (click)="navigate($event, '/')">
+        {{ 'universal_system_homePage' | translate }}
+      </a>
+    </li>
   </ul>
   <section
     class="flexCol main__page"
     [ngClass]="{
-      'scroll__not': uiFlag.currentPage === 'edit-activity',
-      'full__height': ['edit-activity', 'apply-activity'].includes(uiFlag.currentPage)
+      scroll__not: uiFlag.currentPage === 'edit-activity',
+      full__height: ['edit-activity', 'apply-activity'].includes(uiFlag.currentPage)
     }"
   >
     <main
@@ -179,7 +180,9 @@
           'apply-activity',
           'contestant-list',
           'about-cloudrun'
-        ].includes(uiFlag.currentPage) ? 'unset' : '10px 2vw'
+        ].includes(uiFlag.currentPage)
+          ? 'unset'
+          : '10px 2vw'
       "
     >
       <ng-container *ngIf="advertise.length > 0 && uiFlag.showAdvertise">
@@ -196,10 +199,12 @@
               <ul class="flexRow carousel__list">
                 <li class="carousel__list__item">
                   <a
-                    [href]="carousel.link.includes('https') ? carousel.link : 'https://' + carousel.link"
+                    [href]="
+                      carousel.link.includes('https') ? carousel.link : 'https://' + carousel.link
+                    "
                     target="_blank"
                   >
-                    <img [src]="carousel.img" alt="ad" class="carousel__img">
+                    <img [src]="carousel.img" alt="ad" class="carousel__img" />
                   </a>
                 </li>
               </ul>
@@ -217,7 +222,7 @@
               <li
                 class="carousel__dot"
                 [class.carousel__dot--active]="uiFlag.currentAdvertiseId === _advertise.advertiseId"
-                *ngFor="let _advertise of advertise; let _dotIndex = index;"
+                *ngFor="let _advertise of advertise; let _dotIndex = index"
               ></li>
             </ul>
           </div>
@@ -225,18 +230,12 @@
       </ng-container>
       <div
         id="child__page"
-        [class.wide__page]="![
-          'activity-detail',
-          'edit-activity',
-          'apply-activity',
-          'contestant-list'
-        ].includes(uiFlag.currentPage)"
-        [class.middle__page]="
-          [
-            'activity-detail',
-            'about-cloudrun'
-          ].includes(uiFlag.currentPage)
+        [class.wide__page]="
+          !['activity-detail', 'edit-activity', 'apply-activity', 'contestant-list'].includes(
+            uiFlag.currentPage
+          )
         "
+        [class.middle__page]="['activity-detail', 'about-cloudrun'].includes(uiFlag.currentPage)"
       >
         <router-outlet></router-outlet>
       </div>
@@ -249,16 +248,12 @@
     >
       <div class="flexRow footer__link__area">
         <span>
-          <img 
-            src="/assets/icons/logo.svg"
-            alt="GPTfit"
-            class="webLogo footer__logo"
-          >
-          <img 
+          <img src="/assets/icons/logo.svg" alt="GPTfit" class="webLogo footer__logo" />
+          <img
             src="/assets/icons/event.svg"
             alt="Event"
             class="webSubLogo sub__logo footer__sub__logo"
-          >
+          />
         </span>
         <div class="flexRow footer__link">
           <a [href]="privacyPolicyUrl" target="_blank">
@@ -273,20 +268,18 @@
           class="official-submitButton"
           (click)="navigate($event, '/official-activity/contact-us')"
         >
-          <a href="/official-activity/contact-us" (click)="$event.preventDefault();">
+          <a href="/official-activity/contact-us" (click)="$event.preventDefault()">
             {{ 'universal_vocabulary_contactUs' | translate }}
           </a>
         </button>
       </div>
-      <div class="flexCol" style="align-items: center;">
-        <img                                  
+      <div class="flexCol" style="align-items: center">
+        <img
           src="/assets/images/event-email.png"
-          alt="Official email"                
-          style="height: 25px; width: 190px;" 
-        >                                     
-        <p id="footer__copyright">
-          英達科技有限公司 © 2022 Alatech Ltd. Co. All Rights Reserved.
-        </p>
+          alt="Official email"
+          style="height: 25px; width: 190px"
+        />
+        <p id="footer__copyright">英達科技有限公司 © 2022 Alatech Ltd. Co. All Rights Reserved.</p>
       </div>
     </footer>
     <div
@@ -296,15 +289,8 @@
   </section>
 </div>
 
-<div
-  class="official-dialog"
-  (click)="closeAuthBox()"
-  *ngIf="uiFlag.authBox"
->
-  <div
-    class="flexCol"
-    (click)="$event.stopPropagation();"
-  >
+<div class="official-dialog" (click)="closeAuthBox()" *ngIf="uiFlag.authBox">
+  <div class="flexCol" (click)="$event.stopPropagation()">
     <div class="official-dialogTitle">
       <h5>
         <ng-container *ngIf="uiFlag.authBox === 'login'">
@@ -341,17 +327,12 @@
                 [class.official-selector--active]="uiFlag.showCountryCodeList"
                 (click)="showCountryCodeList($event)"
               >
-                <span>
-                  +{{ authInfo?.countryCode }}
-                </span>
-                <ul
-                  class="official-countryCodeList"
-                  *ngIf="uiFlag.showCountryCodeList"
-                >
+                <span> +{{ authInfo?.countryCode }} </span>
+                <ul class="official-countryCodeList" *ngIf="uiFlag.showCountryCodeList">
                   <li
                     class="flexRow"
                     (click)="selectCountryCode($event, _list.code)"
-                    *ngFor="let _list of countryCodeList;"
+                    *ngFor="let _list of countryCodeList"
                   >
                     <span class="official-countryNumber">
                       {{ _list.code }}
@@ -369,16 +350,18 @@
             <input
               #accountInput
               type="text"
-              [placeholder]="(
-                'universal_userAccount_enterInfo' | translate: {
-                  info: ('universal_userAccount_account' | translate)
-                }
-              )"
+              [placeholder]="
+                'universal_userAccount_enterInfo'
+                  | translate
+                    : {
+                        info: ('universal_userAccount_account' | translate)
+                      }
+              "
               (focus)="focusInput()"
               (keyup)="checkAccountType($event)"
               (change)="checkAccountFormat($event)"
               (focusout)="checkAccountFormat($event)"
-            >
+            />
           </div>
           <button
             class="icon__button"
@@ -388,10 +371,7 @@
             <i class="icon-svg_web-icon_p1_004-qr_code"></i>
           </button>
         </div>
-        <span
-          class="form__alert"
-          [attr.data-pass]="!authAlert.account"
-        >
+        <span class="form__alert" [attr.data-pass]="!authAlert.account">
           <ng-container *ngIf="authAlert.account === 'empty'">
             {{ 'universal_userAccount_fullField' | translate }}
           </ng-container>
@@ -399,7 +379,8 @@
             {{ 'universal_status_wrongFormat' | translate }}
           </ng-container>
           <ng-container *ngIf="authAlert.account === 'repeat'">
-            {{ 'universal_userAccount_account' | translate }} {{ 'universal_deviceSetting_repeat' | translate }}
+            {{ 'universal_userAccount_account' | translate }}
+            {{ 'universal_deviceSetting_repeat' | translate }}
           </ng-container>
         </span>
         <ng-container *ngIf="uiFlag.authBox !== 'forgetPassword'">
@@ -409,19 +390,23 @@
               <input
                 #passwordInput
                 [type]="uiFlag.showPassword ? 'text' : 'password'"
-                [placeholder]="(
-                  'universal_userAccount_enterInfo' | translate: {
-                    info: ((uiFlag.authBox === 'resetPassword' ? 
-                      'universal_userAccount_newPassword' : 'universal_userAccount_password'
-                    ) | translate)
-                  }
-                )"
+                [placeholder]="
+                  'universal_userAccount_enterInfo'
+                    | translate
+                      : {
+                          info:
+                            ((uiFlag.authBox === 'resetPassword'
+                              ? 'universal_userAccount_newPassword'
+                              : 'universal_userAccount_password'
+                            ) | translate)
+                        }
+                "
                 maxlength="20"
                 (focus)="focusInput()"
                 (keyup)="checkEnter($event, 'passwordInput')"
                 (change)="checkPassword($event)"
                 (focusout)="checkPassword($event)"
-              >
+              />
             </div>
             <button
               class="icon__button"
@@ -431,10 +416,7 @@
               <i class="icon-svg_web-icon_p1_081-watch"></i>
             </button>
           </div>
-          <span
-            class="form__alert"
-            [attr.data-pass]="!authAlert.password"
-          >
+          <span class="form__alert" [attr.data-pass]="!authAlert.password">
             <ng-container *ngIf="authAlert.password === 'empty'">
               {{ 'universal_userAccount_fullField' | translate }}
             </ng-container>
@@ -446,24 +428,23 @@
         <ng-container *ngIf="uiFlag.authBox === 'register'">
           <div class="flexRow input__row">
             <mat-icon>person</mat-icon>
-            <input 
+            <input
               #nicknameInput
               type="text"
-              [placeholder]="(
-                'universal_userAccount_enterInfo' | translate: {
-                  info: ('universal_userAccount_nickname' | translate)
-                }
-              )"
+              [placeholder]="
+                'universal_userAccount_enterInfo'
+                  | translate
+                    : {
+                        info: ('universal_userAccount_nickname' | translate)
+                      }
+              "
               (focus)="focusInput()"
               (keyup)="checkEnter($event, 'nicknameInput')"
               (change)="checkNicknameFormat($event)"
               (focusout)="checkNicknameFormat($event)"
-            >
+            />
           </div>
-          <span
-            class="form__alert"
-            [attr.data-pass]="!authAlert.nickname"
-          >
+          <span class="form__alert" [attr.data-pass]="!authAlert.nickname">
             <ng-container *ngIf="authAlert.nickname === 'empty'">
               {{ 'universal_userAccount_fullField' | translate }}
             </ng-container>
@@ -471,26 +452,19 @@
               {{ 'universal_userAccount_nameCharactersToLong' | translate }}
             </ng-container>
             <ng-container *ngIf="authAlert.nickname === 'repeat'">
-              {{ 'universal_userAccount_nickname' | translate }} {{ 'universal_deviceSetting_repeat' | translate }}
+              {{ 'universal_userAccount_nickname' | translate }}
+              {{ 'universal_deviceSetting_repeat' | translate }}
             </ng-container>
           </span>
         </ng-container>
-        <ng-container
-          *ngIf="uiFlag.authBox === 'login'"
-        >
-          <span
-            class="form__alert"
-            *ngIf="authAlert.account === 'mistake' && !authAlert.password"
-          >
+        <ng-container *ngIf="uiFlag.authBox === 'login'">
+          <span class="form__alert" *ngIf="authAlert.account === 'mistake' && !authAlert.password">
             <ng-container>
               {{ 'universal_userAccount_errorAccountPassword' | translate }}
             </ng-container>
           </span>
           <span id="forget__password__link">
-            <button
-              class="hint__text"
-              (click)="changeAuthBoxType('forgetPassword')"
-            >
+            <button class="hint__text" (click)="changeAuthBoxType('forgetPassword')">
               {{ 'universal_userAccount_forgetPassword' | translate }}?
             </button>
           </span>
@@ -500,24 +474,23 @@
         >
           <div class="flexRow input__row">
             <mat-icon>sms</mat-icon>
-            <input 
+            <input
               #smsInput
               type="text"
-              [placeholder]="(
-                'universal_userAccount_enterInfo' | translate: {
-                  info: ('universal_userAccount_phoneCaptcha' | translate)
-                }
-              )"
+              [placeholder]="
+                'universal_userAccount_enterInfo'
+                  | translate
+                    : {
+                        info: ('universal_userAccount_phoneCaptcha' | translate)
+                      }
+              "
               (focus)="focusInput()"
               (keyup)="checkEnter($event, 'nicknameInput')"
               (change)="checkSMS($event)"
               (focusout)="checkSMS($event)"
-            >
+            />
           </div>
-          <span
-            class="form__alert"
-            [attr.data-pass]="!authAlert.sms"
-          >
+          <span class="form__alert" [attr.data-pass]="!authAlert.sms">
             <ng-container *ngIf="authAlert.sms === 'empty'">
               {{ 'universal_userAccount_fullField' | translate }}
             </ng-container>
@@ -549,10 +522,7 @@
           </ng-container>
         </span>
       </div>
-      <div
-        class="flexCol"
-        *ngIf="captchaImg"
-      >
+      <div class="flexCol" *ngIf="captchaImg">
         <div class="flexRow captcha__area">
           <input
             placeholder="{{ 'universal_userAccount_imgCaptcha' | translate }}"
@@ -561,27 +531,20 @@
             (change)="checkImgCaptcha($event)"
             (focusout)="checkImgCaptcha($event)"
           />
-          <img [src]="'data:image/png;base64,' + captchaImg">
+          <img [src]="'data:image/png;base64,' + captchaImg" />
         </div>
-        <span
-          class="form__alert"
-          data-pass="false"
-          *ngIf="authAlert.captcha"
-        >
+        <span class="form__alert" data-pass="false" *ngIf="authAlert.captcha">
           {{ 'universal_userAccount_errorCaptcha' | translate }}
         </span>
       </div>
-      <div
-        class="flexRow declaration"
-        *ngIf="uiFlag.authBox === 'register'"
-      >
-        <input 
+      <div class="flexRow declaration" *ngIf="uiFlag.authBox === 'register'">
+        <input
           id="declaration"
           type="checkbox"
           [class.checkbox__alert]="uiFlag.clickSubmit && !agreeDeclaration"
           [value]="true"
           [(ngModel)]="agreeDeclaration"
-        >
+        />
         <label for="declaration">
           {{ 'universal_userAccount_clauseContentPage1' | translate }}
           <a [href]="termsConditionsUrl" target="_blank">
@@ -593,17 +556,11 @@
           {{ 'universal_userAccount_clauseContentPage2' | translate }}
         </label>
       </div>
-      <div
-        style="text-align: center;"
-        *ngIf="uiFlag.authBox === 'sendVerifySuccess'"
-      >
+      <div style="text-align: center" *ngIf="uiFlag.authBox === 'sendVerifySuccess'">
         {{ 'universal_userAccount_sendCaptchaChackEmail' | translate }}
       </div>
       <div class="flexCol">
-        <span
-          class="hint__text"
-          *ngIf="uiFlag.authBox === 'login'"
-        >
+        <span class="hint__text" *ngIf="uiFlag.authBox === 'login'">
           {{ 'universal_vocabulary_notMember' | translate }}
         </span>
         <div

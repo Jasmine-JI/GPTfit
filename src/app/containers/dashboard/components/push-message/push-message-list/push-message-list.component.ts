@@ -13,17 +13,15 @@ import { NodejsApiService } from '../../../../../core/services/nodejs-api.servic
 import { AuthService } from '../../../../../core/services/auth.service';
 import { AccessRight } from '../../../../../shared/enum/accessright';
 
-
 @Component({
   selector: 'app-push-message-list',
   templateUrl: './push-message-list.component.html',
-  styleUrls: ['./push-message-list.component.scss']
+  styleUrls: ['./push-message-list.component.scss'],
 })
 export class PushMessageListComponent implements OnInit, OnDestroy {
-
-  @ViewChild('paginator', {static: true})
+  @ViewChild('paginator', { static: true })
   paginator: MatPaginator;
-  ngUnsubscribe = new Subject;
+  ngUnsubscribe = new Subject();
   timeout: any;
 
   uiFlag = {
@@ -31,7 +29,7 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
     noTableData: true,
     cancelIndex: null,
     totalCount: 0,
-    haveReservation: false
+    haveReservation: false,
   };
 
   pushCondition = ['地區', '系統', '應用', '群組', '會員'];
@@ -44,18 +42,18 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
     system: [],
     app: [],
     groupId: [],
-    userId: []
+    userId: [],
   };
 
   systemAccessright = this.userService.getUser().systemAccessright;
 
   req = {
     token: this.authService.token,
-      filter: {},
-      page: {
-        index: 1,
-        counts: 10
-      }
+    filter: {},
+    page: {
+      index: 1,
+      counts: 10,
+    },
   };
 
   res: Array<any> = [];
@@ -73,7 +71,7 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
     private router: Router,
     private nodejsApiService: NodejsApiService,
     private authService: AuthService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.checkCurrentPage();
@@ -89,17 +87,14 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
     this.currentPage = {
       pageIndex: 0,
       pageSize: 10,
-      length: null
+      length: null,
     };
 
     // 分頁切換時，重新取得資料
-    this.paginator.page.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe((page: PageEvent) => {
+    this.paginator.page.pipe(takeUntil(this.ngUnsubscribe)).subscribe((page: PageEvent) => {
       this.currentPage = page;
       this.getPushMessage();
     });
-
   }
 
   /**
@@ -118,70 +113,62 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
     this.uiFlag.isTableLoading = true;
 
     for (const key in this.filterCondition) {
-
-      if (this.filterCondition.hasOwnProperty(key)) {
-
+      if (Object.prototype.hasOwnProperty.call(this.filterCondition, key)) {
         if (this.filterCondition[key].length !== 0) {
-          Object.assign(this.req.filter, {[key]: this.filterCondition[key] / 1000});
+          Object.assign(this.req.filter, { [key]: this.filterCondition[key] / 1000 });
         }
-
       }
-
     }
 
     this.req.page.index = this.currentPage.pageIndex;
     this.req.page.counts = this.currentPage.pageSize;
 
-    this.pushMessageService.getPushMessageList(this.req).pipe(
-      switchMap(res => {
-        if (res.processResult.resultCode !== 200) {
-          console.error(`${res.processResult.apiCode}：${res.processResult.apiReturnMessage}`);
+    this.pushMessageService
+      .getPushMessageList(this.req)
+      .pipe(
+        switchMap((res) => {
+          if (res.processResult.resultCode !== 200) {
+            console.error(`${res.processResult.apiCode}：${res.processResult.apiReturnMessage}`);
+          } else {
+            // 取得發送者暱稱
+            const userIdArr = [];
+            res.notificationList.forEach((_list) => {
+              userIdArr.push(_list.createUser);
+            });
+
+            const body = {
+              userIdList: userIdArr,
+            };
+
+            return this.nodejsApiService.getUserList(body).pipe(
+              map((resp) => {
+                if (resp.resultCode !== 200) {
+                  console.error(`${resp.apiCode}：${resp.resultMessage}`);
+                } else {
+                  resp.nickname.forEach((_user, index) => {
+                    Object.assign(res.notificationList[index], { creatorName: _user.nickname });
+                  });
+                }
+
+                return res;
+              })
+            );
+          }
+        })
+      )
+      .subscribe((response) => {
+        this.res = (response as any).notificationList;
+        this.uiFlag.totalCount = (response as any).page.totalCounts;
+
+        if (this.uiFlag.totalCount === 0) {
+          this.uiFlag.noTableData = true;
         } else {
-          // 取得發送者暱稱
-          const userIdArr = [];
-          res.notificationList.forEach(_list => {
-            userIdArr.push(_list.createUser);
-          });
-
-          const body = {
-            userIdList: userIdArr
-          };
-
-          return this.nodejsApiService.getUserList(body).pipe(
-            map(resp => {
-              if (resp.resultCode !== 200) {
-                console.error(`${resp.apiCode}：${resp.resultMessage}`);
-              } else {
-                resp.nickname.forEach((_user, index) => {
-
-                  Object.assign(res.notificationList[index], {creatorName: _user.nickname});
-                });
-
-              }
-
-              return res;
-            })
-
-          );
-
+          this.uiFlag.noTableData = false;
         }
 
-      })
-    ).subscribe(response => {
-      this.res = (response as any).notificationList;
-      this.uiFlag.totalCount = (response as any).page.totalCounts;
-
-      if (this.uiFlag.totalCount === 0) {
-        this.uiFlag.noTableData = true;
-      } else {
-        this.uiFlag.noTableData = false;
-      }
-
-      this.uiFlag.isTableLoading = false;
-      this.checkHaveReservation();
-    });
-
-
+        this.uiFlag.isTableLoading = false;
+        this.checkHaveReservation();
+      });
   }
 
   /**
@@ -191,14 +178,11 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
   checkHaveReservation() {
     this.uiFlag.haveReservation = false;
     for (let i = 0; i < this.res.length; i++) {
-
       if (this.res[i].pushStatus === 1 && this.res[i].pushTimeStamp > dayjs().unix()) {
         this.uiFlag.haveReservation = true;
         break;
       }
-
     }
-
   }
 
   /**
@@ -215,7 +199,6 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
 
       this.createClock();
     }, 1000);
-
   }
 
   /**
@@ -224,13 +207,14 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
    */
   checkPushTime() {
     for (let i = 0; i < this.res.length; i++) {
-      if (dayjs(this.res[i].pushTimeStamp * 1000).format('YYYYMMDDHHmmss') === dayjs(this.currentTime).format('YYYYMMDDHHmmss')) {
+      if (
+        dayjs(this.res[i].pushTimeStamp * 1000).format('YYYYMMDDHHmmss') ===
+        dayjs(this.currentTime).format('YYYYMMDDHHmmss')
+      ) {
         this.getPushMessage();
         break;
       }
-
     }
-
   }
 
   /**
@@ -257,17 +241,15 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
       hasBackdrop: true,
       data: {
         title: '取消預約發送',
-        body: `是否取消預約此訊息？<br>${
-          dayjs(this.res[index].pushTimeStamp * 1000).format('YYYY-MM-DD HH:mm:ss')
-        }<br>標題：${this.res[index].title}`,
+        body: `是否取消預約此訊息？<br>${dayjs(this.res[index].pushTimeStamp * 1000).format(
+          'YYYY-MM-DD HH:mm:ss'
+        )}<br>標題：${this.res[index].title}`,
         jusCon: 'space-between',
         confirmText: '確定取消發送',
         cancelText: '關閉',
-        onConfirm: this.cancelPush.bind(this)
-      }
-
+        onConfirm: this.cancelPush.bind(this),
+      },
     });
-
   }
 
   /**
@@ -277,10 +259,10 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
   cancelPush() {
     const body = {
       token: this.authService.token,
-      pushNotifyId: [this.res[this.uiFlag.cancelIndex].pushNotifyId]
+      pushNotifyId: [this.res[this.uiFlag.cancelIndex].pushNotifyId],
     };
 
-    this.pushMessageService.cancelPushMessage(body).subscribe(res => {
+    this.pushMessageService.cancelPushMessage(body).subscribe((res) => {
       if (res.processResult.resultCode !== 200) {
         console.error(`${res.processResult.apiCode}：${res.processResult.apiReturnMessage}`);
       } else {
@@ -288,11 +270,8 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
         setTimeout(() => {
           this.getPushMessage();
         }, 2000);
-
       }
-
     });
-
   }
 
   /**
@@ -301,7 +280,9 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
    * @author kidin-1090923
    */
   navigatePushDetail(index: number) {
-    this.router.navigateByUrl(`/dashboard/system/push-detail?push_id=${this.res[index].pushNotifyId}`);
+    this.router.navigateByUrl(
+      `/dashboard/system/push-detail?push_id=${this.res[index].pushNotifyId}`
+    );
   }
 
   /**
@@ -312,5 +293,4 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
     clearTimeout(this.timeout);
   }
-
 }

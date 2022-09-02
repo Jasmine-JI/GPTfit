@@ -6,11 +6,12 @@ import { UserService } from '../../../core/services/user.service';
 @Component({
   selector: 'app-privacy-setting-dialog',
   templateUrl: './privacy-setting-dialog.component.html',
-  styleUrls: ['./privacy-setting-dialog.component.scss']
+  styleUrls: ['./privacy-setting-dialog.component.scss'],
 })
 export class PrivacySettingDialogComponent implements OnInit {
-  i18n = {  // 可能再增加新的翻譯
-    gym: ''
+  i18n = {
+    // 可能再增加新的翻譯
+    gym: '',
   };
   groupId: string;
   token: string;
@@ -52,25 +53,30 @@ export class PrivacySettingDialogComponent implements OnInit {
    */
   setDefaultPrivacy() {
     // 隱私權預設勾選「新運動檔案」、「新運動期間報告」、「新生活追蹤報告」開放給體適能教練
-    this.tempActivityTracking = this.privacy.activityTracking.map(_activity => +_activity);
-    this.tempActivityTrackingReport = this.privacy.activityTrackingReport.map(_activityTracking => +_activityTracking);
-    this.tempLifeTracking = this.privacy.lifeTrackingReport.map(_lifeTracking => +_lifeTracking);
+    this.tempActivityTracking = this.privacy.activityTracking.map((_activity) => +_activity);
+    this.tempActivityTrackingReport = this.privacy.activityTrackingReport.map(
+      (_activityTracking) => +_activityTracking
+    );
+    this.tempLifeTracking = this.privacy.lifeTrackingReport.map((_lifeTracking) => +_lifeTracking);
 
-    if (!this.tempActivityTracking.some(_activityTracking => +_activityTracking === 4)) {
+    if (!this.tempActivityTracking.some((_activityTracking) => +_activityTracking === 4)) {
       this.tempActivityTracking.push(4);
       this.tempActivityTracking.sort();
     }
 
-    if (!this.tempActivityTrackingReport.some(_activityTrackingReport => +_activityTrackingReport === 4)) {
+    if (
+      !this.tempActivityTrackingReport.some(
+        (_activityTrackingReport) => +_activityTrackingReport === 4
+      )
+    ) {
       this.tempActivityTrackingReport.push(4);
       this.tempActivityTrackingReport.sort();
     }
 
-    if (!this.tempLifeTracking.some(_lifeTrackingReport => +_lifeTrackingReport === 4)) {
+    if (!this.tempLifeTracking.some((_lifeTrackingReport) => +_lifeTrackingReport === 4)) {
       this.tempLifeTracking.push(4);
       this.tempLifeTracking.sort();
     }
-
   }
 
   confirm() {
@@ -78,15 +84,14 @@ export class PrivacySettingDialogComponent implements OnInit {
       privacy: {
         activityTracking: this.tempActivityTracking,
         activityTrackingReport: this.tempActivityTrackingReport,
-        lifeTrackingReport: this.tempLifeTracking
-      }
+        lifeTrackingReport: this.tempLifeTracking,
+      },
     };
 
     this.userService.updateUserProfile(updateContent).subscribe(() => {
       this.onConfirm();
       this.dialog.closeAll();
     });
-
   }
 
   /**
@@ -99,9 +104,10 @@ export class PrivacySettingDialogComponent implements OnInit {
   handleCheckBox(event: any, type: 1 | 2 | 3, obj: number) {
     switch (type) {
       case 1:
-
-        if (this.tempActivityTracking.some(_activityTracking => +_activityTracking === obj)) {
-          this.tempActivityTracking = this.tempActivityTracking.filter(_activityTracking => +_activityTracking !== obj);
+        if (this.tempActivityTracking.some((_activityTracking) => +_activityTracking === obj)) {
+          this.tempActivityTracking = this.tempActivityTracking.filter(
+            (_activityTracking) => +_activityTracking !== obj
+          );
         } else {
           this.tempActivityTracking.push(obj);
           this.tempActivityTracking.sort();
@@ -109,9 +115,14 @@ export class PrivacySettingDialogComponent implements OnInit {
 
         break;
       case 2:
-
-        if (this.tempActivityTrackingReport.some(_activityTrackingReport => +_activityTrackingReport === obj)) {
-          this.tempActivityTrackingReport = this.tempActivityTrackingReport.filter(_activityTrackingReport => +_activityTrackingReport !== obj);
+        if (
+          this.tempActivityTrackingReport.some(
+            (_activityTrackingReport) => +_activityTrackingReport === obj
+          )
+        ) {
+          this.tempActivityTrackingReport = this.tempActivityTrackingReport.filter(
+            (_activityTrackingReport) => +_activityTrackingReport !== obj
+          );
         } else {
           this.tempActivityTrackingReport.push(obj);
           this.tempActivityTrackingReport.sort();
@@ -119,9 +130,10 @@ export class PrivacySettingDialogComponent implements OnInit {
 
         break;
       case 3:
-
-        if (this.tempLifeTracking.some(_lifeTrackingReport => +_lifeTrackingReport === obj)) {
-          this.tempLifeTracking = this.tempLifeTracking.filter(_lifeTrackingReport => +_lifeTrackingReport !== obj);
+        if (this.tempLifeTracking.some((_lifeTrackingReport) => +_lifeTrackingReport === obj)) {
+          this.tempLifeTracking = this.tempLifeTracking.filter(
+            (_lifeTrackingReport) => +_lifeTrackingReport !== obj
+          );
         } else {
           this.tempLifeTracking.push(obj);
           this.tempLifeTracking.sort();
@@ -129,11 +141,10 @@ export class PrivacySettingDialogComponent implements OnInit {
 
         break;
     }
-
   }
 
   // 取得輸入框顯示與否的狀態-kidin-1090326
-  showBox (e) {
+  showBox(e) {
     this.showBatchChangeBox = e;
   }
 }

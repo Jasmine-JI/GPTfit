@@ -4,7 +4,7 @@ import { planDatas } from '../desc';
 @Component({
   selector: 'app-commerce-plan-table',
   templateUrl: './commerce-plan-table.component.html',
-  styleUrls: ['./commerce-plan-table.component.scss']
+  styleUrls: ['./commerce-plan-table.component.scss'],
 })
 export class CommercePlanTableComponent implements OnInit {
   @Input() createType: number;

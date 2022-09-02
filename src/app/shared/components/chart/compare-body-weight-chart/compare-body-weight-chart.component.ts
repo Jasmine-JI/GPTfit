@@ -1,4 +1,12 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, OnDestroy, OnChanges } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnChanges,
+} from '@angular/core';
 import { of, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
@@ -10,23 +18,21 @@ import { compareChartDefault } from '../../../models/chart-data';
 import { bodyWeightTooltip } from '../../../utils/chart-formatter';
 import { lb } from '../../../models/bs-constant';
 
-
 @Component({
   selector: 'app-compare-body-weight-chart',
   templateUrl: './compare-body-weight-chart.component.html',
-  styleUrls: ['./compare-body-weight-chart.component.scss', '../chart-share-style.scss']
+  styleUrls: ['./compare-body-weight-chart.component.scss', '../chart-share-style.scss'],
 })
 export class CompareBodyWeightChartComponent implements OnInit, OnDestroy, OnChanges {
-
   private ngUnsubscribe = new Subject();
 
-  @Input('data') data: Array<any>;
+  @Input() data: Array<any>;
 
-  @Input('xAxisTitle') xAxisTitle: string;
+  @Input() xAxisTitle: string;
 
-  @Input('isMetric') isMetric: boolean;
+  @Input() isMetric: boolean;
 
-  @ViewChild('container', {static: false})
+  @ViewChild('container', { static: false })
   container: ElementRef;
 
   /**
@@ -51,11 +57,12 @@ export class CompareBodyWeightChartComponent implements OnInit, OnDestroy, OnCha
    * 訂閱全域自定義事件
    */
   subscribeGlobalEvents() {
-    this.globalEventsService.getRxSideBarMode().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.handleChart();
-    });
+    this.globalEventsService
+      .getRxSideBarMode()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.handleChart();
+      });
   }
 
   /**
@@ -66,12 +73,14 @@ export class CompareBodyWeightChartComponent implements OnInit, OnDestroy, OnCha
       this.noData = true;
     } else {
       const { data } = this;
-      of(data).pipe(
-        map(data => this.handleImperialUnit(data)),
-        map(transform => this.initChart(transform)),
-        map(option => this.handleSeriesName(option)),
-        map(final => this.createChart(final))
-      ).subscribe();
+      of(data)
+        .pipe(
+          map((data) => this.handleImperialUnit(data)),
+          map((transform) => this.initChart(transform)),
+          map((option) => this.handleSeriesName(option)),
+          map((final) => this.createChart(final))
+        )
+        .subscribe();
 
       this.noData = false;
     }
@@ -85,8 +94,8 @@ export class CompareBodyWeightChartComponent implements OnInit, OnDestroy, OnCha
     if (this.isMetric) return data;
     const [baseFatRateInfo, baseWeightInfo, compareFatRateInfo, compareWeightInfo] = deepCopy(data);
     const transform = (info: any) => {
-      info.data = info.data.map(_weight => {
-        _weight.y = mathRounding(_weight.y / lb , 1);
+      info.data = info.data.map((_weight) => {
+        _weight.y = mathRounding(_weight.y / lb, 1);
         return _weight;
       });
 
@@ -94,7 +103,8 @@ export class CompareBodyWeightChartComponent implements OnInit, OnDestroy, OnCha
     };
 
     let result = [baseFatRateInfo, transform(baseWeightInfo)];
-    if (compareWeightInfo) result = result.concat([compareFatRateInfo, transform(compareWeightInfo)]);
+    if (compareWeightInfo)
+      result = result.concat([compareFatRateInfo, transform(compareWeightInfo)]);
 
     return result;
   }
@@ -134,7 +144,7 @@ export class CompareBodyWeightChartComponent implements OnInit, OnDestroy, OnCha
    * @author kidin-1110413
    */
   createChart(option: any) {
-    setTimeout (() => {
+    setTimeout(() => {
       if (!this.container) {
         this.createChart(option);
       } else {
@@ -148,12 +158,9 @@ export class CompareBodyWeightChartComponent implements OnInit, OnDestroy, OnCha
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }
 
-
 class ChartOption {
-
   private _option = deepCopy(compareChartDefault);
 
   constructor(data: Array<any>, xAxisTitle: string, isMetric: boolean) {
@@ -174,7 +181,6 @@ class ChartOption {
     } else {
       this.handleNormalOption(data);
     }
-
   }
 
   /**
@@ -193,18 +199,17 @@ class ChartOption {
       {
         ...deepCopy(yAxisDefault),
         labels: {
-          format: `{value} ${isMetric ? 'kg' : 'lb'}`
-        }
+          format: `{value} ${isMetric ? 'kg' : 'lb'}`,
+        },
       },
       {
         ...deepCopy(yAxisDefault),
         labels: {
-          format: '{value}%'
+          format: '{value}%',
         },
-        opposite: true
-      }
+        opposite: true,
+      },
     ];
-
   }
 
   /**
@@ -220,17 +225,16 @@ class ChartOption {
       xAxis: {
         ...xAxis,
         type: 'datetime',
-        tickPositions: weightData.data.map(_data => _data.additionalInfo[0]),
+        tickPositions: weightData.data.map((_data) => _data.additionalInfo[0]),
         labels: {
           ...labels,
-          formatter: function() {
+          formatter: function () {
             return dayjs(this.value).format('MM/DD');
-          }
-        }
+          },
+        },
       },
-      series: data
+      series: data,
     };
-
   }
 
   /**
@@ -248,14 +252,13 @@ class ChartOption {
         ...xAxis,
         title: {
           ...xAxis.title,
-          text: `( ${xAxisTitle} )`
+          text: `( ${xAxisTitle} )`,
         },
         categories,
         crosshair: true,
       },
-      series: chartData
+      series: chartData,
     };
-
   }
 
   /**
@@ -264,5 +267,4 @@ class ChartOption {
   get option() {
     return this._option;
   }
-
 }

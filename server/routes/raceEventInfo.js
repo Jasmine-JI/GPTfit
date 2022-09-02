@@ -1,26 +1,22 @@
 var express = require('express');
 var moment = require('moment');
 var router = express.Router(),
-    routerProtected = express.Router();
+  routerProtected = express.Router();
 
-const {
-  checkSessionExit,
-  checkEventId,
-  checkShowPortalNum
-} = require('../models/event_model');
+const { checkSessionExit, checkEventId, checkShowPortalNum } = require('../models/event_model');
 
-routerProtected.get('/', function(req, res, next) {
-  const { con, query: { event_id, session_id } } = req;
-  const query1 =
-    event_id
-      ? `where event_id = ${event_id}`
-      : '';
+routerProtected.get('/', function (req, res, next) {
+  const {
+    con,
+    query: { event_id, session_id },
+  } = req;
+  const query1 = event_id ? `where event_id = ${event_id}` : '';
   const sql = `
   SELECT  * from ??
   ${query1}
   ;`;
 
-  con.query(sql, 'race_event_info', function(err, rows) {
+  con.query(sql, 'race_event_info', function (err, rows) {
     if (err) {
       return console.log(err);
     }
@@ -39,16 +35,13 @@ routerProtected.post('/create', (req, res) => {
       description,
       event_time_start,
       event_time_end,
-      sessions
+      sessions,
     },
-    con
+    con,
   } = req;
   try {
-
     const launch_time_stamp = moment().unix();
-    const lanuch_date = moment
-      .unix(launch_time_stamp)
-      .format('YYYY-MM-DD H:mm:ss');
+    const lanuch_date = moment.unix(launch_time_stamp).format('YYYY-MM-DD H:mm:ss');
     const event_time_name = event_time_start + ' ~ ' + event_time_end;
     const event_id = moment(event_time_start, 'YMDH').format('YMDH');
     const event_start = moment(event_time_start, 'YYYY-MM-DD H:mm:ss').unix();
@@ -58,7 +51,7 @@ routerProtected.post('/create', (req, res) => {
       if (response) {
         let showPortalNum = 0;
         if (sessions.length > 0) {
-          results = sessions.map(_session => {
+          results = sessions.map((_session) => {
             const {
               session_end_date,
               session_name,
@@ -66,7 +59,7 @@ routerProtected.post('/create', (req, res) => {
               isRealTime,
               isShowPortal,
               isSpecificMap,
-              chooseMaps
+              chooseMaps,
             } = _session;
             if (isShowPortal) {
               showPortalNum++;
@@ -93,7 +86,7 @@ routerProtected.post('/create', (req, res) => {
               isRealTime,
               isShowPortal,
               isSpecificMap,
-              chooseMaps
+              chooseMaps,
             ];
           });
         } else {
@@ -110,7 +103,7 @@ routerProtected.post('/create', (req, res) => {
             event_id,
             `${event_name}`,
             event_start,
-            event_end
+            event_end,
           ];
         }
 
@@ -164,7 +157,7 @@ routerProtected.post('/create', (req, res) => {
             con.query(sql, ['race_event_info', results], (err, rows) => {
               if (err) {
                 return res.status(500).send({
-                  errorMessage: err.sqlMessage
+                  errorMessage: err.sqlMessage,
                 });
               }
               res.send({
@@ -173,35 +166,34 @@ routerProtected.post('/create', (req, res) => {
                 launch_time_stamp,
                 lanuch_date,
                 launch_user_name,
-                description
+                description,
               });
             });
-          }  else {
+          } else {
             res.status(500).json(currNum);
           }
-
         });
-
       } else {
-        res.status(409).json({resultMessage: 'duplicate eventId'});
+        res.status(409).json({ resultMessage: 'duplicate eventId' });
       }
-
     });
-  }
-    catch (err) {
+  } catch (err) {
     console.log(err);
     res.status(500).send(err);
   }
 });
 
-routerProtected.delete('/:id', function(req, res, next) {
-  const { con, params: { id } } = req;
+routerProtected.delete('/:id', function (req, res, next) {
+  const {
+    con,
+    params: { id },
+  } = req;
   const sql = `
   delete from ??
   where event_id = ?
   ;`;
 
-  con.query(sql, ['race_event_info', id], function(err, rows) {
+  con.query(sql, ['race_event_info', id], function (err, rows) {
     if (err) {
       return res.status(500).send(err);
     }
@@ -218,22 +210,20 @@ routerProtected.put('/edit', (req, res, next) => {
       launch_user_name,
       description,
       event_time_start,
-      event_time_end
+      event_time_end,
     },
-    con
+    con,
   } = req;
   try {
     let values = [];
     const launch_time_stamp = moment().unix();
-    const lanuch_date = moment
-      .unix(launch_time_stamp)
-      .format('YYYY-MM-DD H:mm:ss');
+    const lanuch_date = moment.unix(launch_time_stamp).format('YYYY-MM-DD H:mm:ss');
     const event_time_name = event_time_start + ' ~ ' + event_time_end;
     const event_start = moment(event_time_start, 'YYYY-MM-DD H:mm:ss').unix();
     const event_end = moment(event_time_end, 'YYYY-MM-DD H:mm:ss').unix();
     let showPortalNum = 0;
     if (sessions.length > 0) {
-      values = sessions.map(_session => {
+      values = sessions.map((_session) => {
         const {
           session_end_date,
           session_name,
@@ -242,19 +232,13 @@ routerProtected.put('/edit', (req, res, next) => {
           isRealTime,
           isShowPortal,
           chooseMapStr,
-          isSpecificMap
+          isSpecificMap,
         } = _session;
         if (isShowPortal) {
           showPortalNum++;
         }
-        const time_stamp_start = moment(
-          session_start_date,
-          'YYYY-MM-DD H:mm:ss'
-        ).unix();
-        const time_stamp_end = moment(
-          session_end_date,
-          'YYYY-MM-DD H:mm:ss'
-        ).unix();
+        const time_stamp_start = moment(session_start_date, 'YYYY-MM-DD H:mm:ss').unix();
+        const time_stamp_end = moment(session_end_date, 'YYYY-MM-DD H:mm:ss').unix();
 
         return [
           `(
@@ -277,12 +261,12 @@ routerProtected.put('/edit', (req, res, next) => {
             ${isRealTime},
             ${isSpecificMap},
             '${chooseMapStr}'
-          )`
+          )`,
         ];
       });
     }
     let sql = '';
-    checkSessionExit(event_id, sessions).then(deleteIds => {
+    checkSessionExit(event_id, sessions).then((deleteIds) => {
       if (sessions.length > 0) {
         sql = `
         INSERT INTO race_event_info (
@@ -352,15 +336,15 @@ routerProtected.put('/edit', (req, res, next) => {
       checkShowPortalNum(showPortalNum, event_id).then((data) => {
         const { isTooMuch, currNum } = data;
         if (!isTooMuch) {
-          con.query(`${sql}${sql2}`, [values], function(err, rows) {
+          con.query(`${sql}${sql2}`, [values], function (err, rows) {
             if (err) {
               console.log(err.sqlMessage);
               res.status(500).send(err);
             }
             if (rows) {
-              res.json({resultMessage: '更新成功'});
+              res.json({ resultMessage: '更新成功' });
             } else {
-              res.status(500).json({resultMessage: '有遺失喔'});
+              res.status(500).json({ resultMessage: '有遺失喔' });
             }
           });
         } else {
@@ -374,13 +358,13 @@ routerProtected.put('/edit', (req, res, next) => {
   }
 });
 
-router.get('/rankTab', function(req, res, next) {
+router.get('/rankTab', function (req, res, next) {
   const { con } = req;
   const sql = `select is_show_portal, is_real_time,
   time_stamp_start, time_stamp_end, session_name, session_id, event_id, specific_map
   from ??
   where is_show_portal = 1;`;
-  con.query(sql, 'race_event_info', function(err, rows) {
+  con.query(sql, 'race_event_info', function (err, rows) {
     if (err) {
       console.log(err);
     }
@@ -388,10 +372,10 @@ router.get('/rankTab', function(req, res, next) {
   });
 });
 
-routerProtected.get('/map', function(req, res, next) {
+routerProtected.get('/map', function (req, res, next) {
   const { con } = req;
   const sql = `select map_index, map_name from ?? `;
-  con.query(sql, 'race_map_info', function(err, rows) {
+  con.query(sql, 'race_map_info', function (err, rows) {
     if (err) {
       console.log(err);
     }
@@ -399,15 +383,10 @@ routerProtected.get('/map', function(req, res, next) {
   });
 });
 
-routerProtected.get('/top3', function(req, res, next) {
+routerProtected.get('/top3', function (req, res, next) {
   const {
     con,
-    query: {
-      sessionId,
-      eventId,
-      gender,
-      mapId
-    }
+    query: { sessionId, eventId, gender, mapId },
   } = req;
   const genderQuery = gender ? `and a.gender = ${con.escape(gender)}` : '';
   const sql = `
@@ -467,9 +446,9 @@ routerProtected.get('/top3', function(req, res, next) {
       'run_rank',
       'user_race_enroll',
       sessionId,
-      eventId
+      eventId,
     ],
-    function(err, rows) {
+    function (err, rows) {
       if (err) {
         console.log(err);
       }
@@ -480,5 +459,5 @@ routerProtected.get('/top3', function(req, res, next) {
 // Exports
 module.exports = {
   protected: routerProtected,
-  unprotected: router
+  unprotected: router,
 };

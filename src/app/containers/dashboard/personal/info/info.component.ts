@@ -11,7 +11,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 @Component({
   selector: 'app-info',
   templateUrl: './info.component.html',
-  styleUrls: ['./info.component.scss', '../personal-child-page.scss']
+  styleUrls: ['./info.component.scss', '../personal-child-page.scss'],
 })
 export class InfoComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
@@ -21,8 +21,8 @@ export class InfoComponent implements OnInit, OnDestroy {
    */
   uiFlag = {
     editMode: <EditMode>'close',
-    isPageOwner: false
-  }
+    isPageOwner: false,
+  };
 
   inputDescription: string;
 
@@ -36,7 +36,7 @@ export class InfoComponent implements OnInit, OnDestroy {
     private dashboardService: DashboardService,
     private hashIdService: HashIdService,
     private authService: AuthService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.getPageOwnerProfile();
@@ -47,16 +47,18 @@ export class InfoComponent implements OnInit, OnDestroy {
    */
   getPageOwnerProfile() {
     const [empty, firstPath, secondPath, ...rest] = location.pathname.split('/');
-    const pageOwnerId = firstPath === 'user-profile' ?
-        +this.hashIdService.handleUserIdDecode(secondPath) : this.userService.getUser().userId;
+    const pageOwnerId =
+      firstPath === 'user-profile'
+        ? +this.hashIdService.handleUserIdDecode(secondPath)
+        : this.userService.getUser().userId;
 
-    this.userService.getTargetUserInfo(pageOwnerId).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.pageOwnerUserProfile = res;
-      this.uiFlag.isPageOwner = this.authService.isLogin.value && pageOwnerId === res.userId;
-    });
-
+    this.userService
+      .getTargetUserInfo(pageOwnerId)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.pageOwnerUserProfile = res;
+        this.uiFlag.isPageOwner = this.authService.isLogin.value && pageOwnerId === res.userId;
+      });
   }
 
   /**
@@ -87,7 +89,6 @@ export class InfoComponent implements OnInit, OnDestroy {
     if (this.inputDescription) {
       this.updateUserProfile();
     }
-
   }
 
   /**
@@ -96,14 +97,12 @@ export class InfoComponent implements OnInit, OnDestroy {
    */
   updateUserProfile() {
     const updateContent = { description: this.inputDescription };
-    this.userService.updateUserProfile(updateContent).subscribe(res => {
+    this.userService.updateUserProfile(updateContent).subscribe((res) => {
       if (checkResponse(res)) {
         this.inputDescription = undefined;
         this.dashboardService.setRxEditMode('complete');
       }
-
     });
-
   }
 
   /**
@@ -113,5 +112,4 @@ export class InfoComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

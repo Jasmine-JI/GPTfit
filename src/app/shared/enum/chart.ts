@@ -1,4 +1,3 @@
-
 /**
  * 用於運動報告成效分佈圖
  */
@@ -11,5 +10,5 @@ export enum ChartBlock {
   middleBottom,
   rightTop,
   rightMiddle,
-  rightBottom
-};
+  rightBottom,
+}

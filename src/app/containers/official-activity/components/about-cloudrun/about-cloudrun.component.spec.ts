@@ -8,9 +8,8 @@ describe('AboutCloudrunComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AboutCloudrunComponent ]
-    })
-    .compileComponents();
+      declarations: [AboutCloudrunComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

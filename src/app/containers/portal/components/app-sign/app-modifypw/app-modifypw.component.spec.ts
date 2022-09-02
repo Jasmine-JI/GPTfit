@@ -8,9 +8,8 @@ describe('AppModifypwComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AppModifypwComponent ]
-    })
-    .compileComponents();
+      declarations: [AppModifypwComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

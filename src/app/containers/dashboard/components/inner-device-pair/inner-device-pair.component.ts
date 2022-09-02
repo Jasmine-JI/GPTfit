@@ -7,18 +7,15 @@ import { getUrlQueryStrings } from '../../../../shared/utils/index';
 @Component({
   selector: 'app-inner-device-pair',
   templateUrl: './inner-device-pair.component.html',
-  styleUrls: ['./inner-device-pair.component.scss']
+  styleUrls: ['./inner-device-pair.component.scss'],
 })
 export class InnerDevicePairComponent implements OnInit {
   targetUserId: number;
   targetUserName: string;
   deviceSN: string;
 
-  constructor(
-    public dialog: MatDialog,
-    private router: Router
-  ) {}
-  
+  constructor(public dialog: MatDialog, private router: Router) {}
+
   ngOnInit() {
     const queryStrings = getUrlQueryStrings(location.search);
     this.targetUserId = queryStrings.targetUserId;
@@ -34,8 +31,8 @@ export class InnerDevicePairComponent implements OnInit {
         adminLists,
         type: 1,
         onConfirm: this.handleConfirm.bind(this),
-        isInnerAdmin: true
-      }
+        isInnerAdmin: true,
+      },
     });
   }
 
@@ -43,15 +40,11 @@ export class InnerDevicePairComponent implements OnInit {
     const { userId, userName } = _lists[0];
     this.targetUserName = userName;
     this.targetUserId = userId;
-    this.router.navigateByUrl(
-      `${location.pathname}?targetUserId=${this.targetUserId}`
-    );
+    this.router.navigateByUrl(`${location.pathname}?targetUserId=${this.targetUserId}`);
   }
 
   watchDeviceSNDetail() {
     this.deviceSN = this.deviceSN.toUpperCase();
-    this.router.navigateByUrl(
-      `/dashboard/system/device/info/${this.deviceSN}`
-    );
+    this.router.navigateByUrl(`/dashboard/system/device/info/${this.deviceSN}`);
   }
 }

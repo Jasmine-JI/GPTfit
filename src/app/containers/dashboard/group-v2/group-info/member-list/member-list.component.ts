@@ -11,10 +11,9 @@ const errMsg = `Error.<br />Please try again later.`;
 @Component({
   selector: 'app-member-list',
   templateUrl: './member-list.component.html',
-  styleUrls: ['./member-list.component.scss', '../group-child-page.scss']
+  styleUrls: ['./member-list.component.scss', '../group-child-page.scss'],
 })
 export class MemberListComponent implements OnInit, OnDestroy {
-
   private ngUnsubscribe = new Subject();
 
   /**
@@ -23,7 +22,7 @@ export class MemberListComponent implements OnInit, OnDestroy {
   uiFlag = {
     editMode: <'complete' | 'edit'>'complete',
     seeMoreMember: false,
-    seeMoreWaitMember: false
+    seeMoreWaitMember: false,
   };
 
   /**
@@ -46,10 +45,7 @@ export class MemberListComponent implements OnInit, OnDestroy {
    */
   waitMemberList: Array<MemberInfo> = [];
 
-  constructor(
-    private groupService: GroupService,
-    private utils: UtilsService
-  ) { }
+  constructor(private groupService: GroupService, private utils: UtilsService) {}
 
   ngOnInit(): void {
     this.initPage();
@@ -64,19 +60,17 @@ export class MemberListComponent implements OnInit, OnDestroy {
       this.groupService.getRxGroupDetail(),
       this.groupService.getRxCommerceInfo(),
       this.groupService.getUserSimpleInfo(),
-      this.groupService.getRXNormalMemberList()
-    ]).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(resArr => {
-      Object.assign(resArr[0], {groupLevel: this.utils.displayGroupLevel(resArr[0].groupId)});
-      Object.assign(resArr[0], {expired: resArr[1].expired});
-      Object.assign(resArr[0], {commerceStatus: resArr[1].commerceStatus});
-      this.sortMember(resArr[3]);
-      this.groupInfo = resArr[0];
-      this.userSimpleInfo = resArr[2];
-
-    })
-
+      this.groupService.getRXNormalMemberList(),
+    ])
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((resArr) => {
+        Object.assign(resArr[0], { groupLevel: this.utils.displayGroupLevel(resArr[0].groupId) });
+        Object.assign(resArr[0], { expired: resArr[1].expired });
+        Object.assign(resArr[0], { commerceStatus: resArr[1].commerceStatus });
+        this.sortMember(resArr[3]);
+        this.groupInfo = resArr[0];
+        this.userSimpleInfo = resArr[2];
+      });
   }
 
   /**
@@ -90,32 +84,34 @@ export class MemberListComponent implements OnInit, OnDestroy {
       groupId: this.groupInfo.groupId,
       groupLevel: this.utils.displayGroupLevel(this.groupInfo.groupId),
       infoType: 2,
-      avatarType: 3
-    }
+      avatarType: 3,
+    };
 
     const memberBody = {
       token: this.userSimpleInfo.token,
       groupId: this.groupInfo.groupId,
       groupLevel: this.utils.displayGroupLevel(this.groupInfo.groupId),
       infoType: 3,
-      avatarType: 3
-    }
+      avatarType: 3,
+    };
 
     forkJoin([
       this.groupService.fetchGroupMemberList(adminBody),
-      this.groupService.fetchGroupMemberList(memberBody)
-    ]).subscribe(resArr => {
+      this.groupService.fetchGroupMemberList(memberBody),
+    ]).subscribe((resArr) => {
       if (resArr[0].resultCode !== 200 || resArr[1].resultCode !== 200) {
         this.utils.openAlert(errMsg);
-        console.error(`${resArr[0].resultCode}: Api ${resArr[0].apiCode} ${resArr[0].resultMessage}`);
-        console.error(`${resArr[1].resultCode}: Api ${resArr[1].apiCode} ${resArr[1].resultMessage}`);
+        console.error(
+          `${resArr[0].resultCode}: Api ${resArr[0].apiCode} ${resArr[0].resultMessage}`
+        );
+        console.error(
+          `${resArr[1].resultCode}: Api ${resArr[1].apiCode} ${resArr[1].resultMessage}`
+        );
       } else {
         this.groupService.setAdminList(resArr[0].info.groupMemberInfo);
         this.groupService.setNormalMemberList(resArr[1].info.groupMemberInfo);
       }
-
-    })
-
+    });
   }
 
   /**
@@ -125,15 +121,13 @@ export class MemberListComponent implements OnInit, OnDestroy {
    */
   sortMember(memArr: Array<MemberInfo>) {
     this.initList();
-    memArr.forEach(_mem => {
+    memArr.forEach((_mem) => {
       if (_mem.joinStatus === 2) {
         this.normalMemberList.push(_mem);
       } else if (_mem.joinStatus === 1) {
         this.waitMemberList.push(_mem);
       }
-
     });
-
   }
 
   /**
@@ -154,7 +148,7 @@ export class MemberListComponent implements OnInit, OnDestroy {
       this.uiFlag.editMode = 'edit';
       this.groupService.setEditMode('edit');
     } else {
-      this.uiFlag.editMode = 'complete'
+      this.uiFlag.editMode = 'complete';
       this.groupService.setEditMode('complete');
     }
   }
@@ -186,7 +180,6 @@ export class MemberListComponent implements OnInit, OnDestroy {
     this.uiFlag[`seeMore${type}`] = true;
   }
 
-
   /**
    * 取消rxjs訂閱
    * @author kidin-1091112
@@ -195,5 +188,4 @@ export class MemberListComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

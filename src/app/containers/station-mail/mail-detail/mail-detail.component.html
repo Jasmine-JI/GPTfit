@@ -25,19 +25,13 @@
     <h5 class="mail__title">
       {{ mailDetail ? mailDetail.title : ('universal_system_none' | translate) }}
     </h5>
-    <div
-      class="flexRow sender__row"
-      *ngIf="mailDetail?.type === MessageType.normal"
-    >
+    <div class="flexRow sender__row" *ngIf="mailDetail?.type === MessageType.normal">
       <img
         class="sender__icon"
         [src]="mailDetail?.senderAvatarUrl"
-        (error)="mailDetail.senderAvatarUrl='/assets/images/user2.png'"
-      >
-      <span
-        class="sender__name"
-        (click)="showSenderMenu($event)"
-      >
+        (error)="mailDetail.senderAvatarUrl = '/assets/images/user2.png'"
+      />
+      <span class="sender__name" (click)="showSenderMenu($event)">
         {{ mailDetail ? mailDetail.senderName : ('universal_status_noData' | translate) }}
       </span>
       <i
@@ -48,14 +42,8 @@
         class="icon-svg_web-icon_p1_090-unfavorite unfavorite__icon"
         *ngIf="!uiFlag.senderIsFavorite"
       ></i>
-      <ul
-        class="child-sender__menu"
-        *ngIf="uiFlag.showSenderMenu"
-      >
-        <li
-          class="child-sender__menu__item"
-          (click)="navigateSenderPage()"
-        >
+      <ul class="child-sender__menu" *ngIf="uiFlag.showSenderMenu">
+        <li class="child-sender__menu__item" (click)="navigateSenderPage()">
           {{ 'universal_deviceSetting_adout' | translate }}
         </li>
         <li
@@ -72,11 +60,7 @@
         >
           {{ '取消常用名單' | translate }}
         </li>
-        <li
-          class="child-sender__menu__item"
-          (click)="addBlackList()"
-          *ngIf="!uiFlag.senderIsBlack"
-        >
+        <li class="child-sender__menu__item" (click)="addBlackList()" *ngIf="!uiFlag.senderIsBlack">
           {{ '設為黑名單' | translate }}
         </li>
         <li
@@ -95,11 +79,13 @@
       {{ 'universal_message_systemMessage' | translate }}
     </p>
     <p class="mail__send__date">
-      {{ mailDetail ? (mailDetail.sendTimestamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm') : '---------------' }}
+      {{
+        mailDetail
+          ? (mailDetail.sendTimestamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm')
+          : '---------------'
+      }}
     </p>
-    <app-receiver-list
-      [showBlackList]="true"
-    ></app-receiver-list>
+    <app-receiver-list [showBlackList]="true"></app-receiver-list>
     <div class="mail__content__section">
       <div
         class="main__mail__content"
@@ -114,7 +100,7 @@
       </button>
       <div
         class="flexCol child-reply__mail"
-        *ngFor="let _replyMail of replyMailList; let index = index;"
+        *ngFor="let _replyMail of replyMailList; let index = index"
         (click)="unfoldReplyMail(index)"
       >
         <div class="flexRow child-reply__mail__info">
@@ -124,7 +110,7 @@
               [src]="_replyMail.senderAvatarUrl"
               [alt]="_replyMail.senderName"
               (error)="_replyMail.senderAvatarUrl = '/assets/images/user2.png'"
-            >
+            />
             <span>{{ _replyMail.senderName }}</span>
             <span class="child-divide__symbol">|</span>
             <h5 class="child-reply__mail__title">

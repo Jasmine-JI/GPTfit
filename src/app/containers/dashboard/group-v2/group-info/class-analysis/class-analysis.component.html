@@ -1,21 +1,22 @@
-<div
-  class="flexCol"
-  *ngIf="groupInfo && groupInfo.groupRootInfo"
->
+<div class="flexCol" *ngIf="groupInfo && groupInfo.groupRootInfo">
   <header class="flexCol childPageCard" [style.display]="uiFlag.isPreviewMode ? 'none' : ''">
     <span class="contentSubtitle">{{ 'universal_time_recentActivities' | translate }}</span>
     <div class="flexRow calender__area">
       <section class="flexCol calender__section">
-        <div class="flexRow" style="justify-content: space-between; margin-bottom: 10px;">
+        <div class="flexRow" style="justify-content: space-between; margin-bottom: 10px">
           <span class="switch__btn clickable" (click)="switchCalender('pre')">&lt;</span>
-          <span>{{ calender.startTimestamp | timeFormat: 'MM/DD' }} - {{ calender.endTimestamp | timeFormat: 'MM/DD' }}</span>
+          <span
+            >{{ calender.startTimestamp | timeFormat: 'MM/DD' }} -
+            {{ calender.endTimestamp | timeFormat: 'MM/DD' }}</span
+          >
           <span
             class="switch__btn clickable"
             (click)="switchCalender('next')"
             [class.unclickable]="calender.endTimestamp >= calender.currentTimestamp"
-          >&gt;</span>
+            >&gt;</span
+          >
         </div>
-        <div class="flexRow calender__week__format" style="pointer-events: none;">
+        <div class="flexRow calender__week__format" style="pointer-events: none">
           <span class="calender__day">Su</span>
           <span class="calender__day">Mo</span>
           <span class="calender__day">Tu</span>
@@ -33,7 +34,7 @@
             [class.have__date__mark]="_dayOfOne.haveDate"
             [class.focus__one__day]="_dayOfOne.timestamp === uiFlag.focusDay"
             (click)="focusOneDay('weekOne', _idxA)"
-            *ngFor="let _dayOfOne of calender.weekOne; let _idxA = index;"
+            *ngFor="let _dayOfOne of calender.weekOne; let _idxA = index"
           >
             {{ _dayOfOne.day }}
           </span>
@@ -47,15 +48,15 @@
             [class.have__date__mark]="_dayOfTwo.haveDate"
             [class.focus__one__day]="_dayOfTwo.timestamp === uiFlag.focusDay"
             (click)="focusOneDay('weekTwo', _idxB)"
-            *ngFor="let _dayOfTwo of calender.weekTwo; let _idxB = index;"
+            *ngFor="let _dayOfTwo of calender.weekTwo; let _idxB = index"
           >
             {{ _dayOfTwo.day }}
           </span>
         </div>
       </section>
       <section class="flexCol class__list">
-        <ng-container *ngIf="focusDayActivities.length !== 0; else noActivity;">
-          <ng-container *ngFor="let _activity of focusDayActivities; let _aIdx = index;">
+        <ng-container *ngIf="focusDayActivities.length !== 0; else noActivity">
+          <ng-container *ngFor="let _activity of focusDayActivities; let _aIdx = index">
             <div
               class="flexRow activity__row"
               [style.pointer-events]="_aIdx === uiFlag.focusActivity ? 'none' : 'initial'"
@@ -66,25 +67,31 @@
                 class="item__bar acitivty__item__component"
                 [class.item__bar--active]="_aIdx === uiFlag.focusActivity"
               ></div>
-              <span class="acitivty__item__component" [class.item--focous]="_aIdx === uiFlag.focusActivity">
+              <span
+                class="acitivty__item__component"
+                [class.item--focous]="_aIdx === uiFlag.focusActivity"
+              >
                 {{ _activity.fileInfo.creationDate | timeFormat: 'HH:mm' }}
               </span>
               <i
                 class="acitivty__item__component"
                 [class]="_activity.activityInfoLayer.type | sportTypeIcon"
                 [class.item--focous]="_aIdx === uiFlag.focusActivity"
-                style="font-size: 24px;"
+                style="font-size: 24px"
               ></i>
-              <span class="acitivty__item__component" [class.item--focous]="_aIdx === uiFlag.focusActivity">
+              <span
+                class="acitivty__item__component"
+                [class.item--focous]="_aIdx === uiFlag.focusActivity"
+              >
                 {{ _activity.fileInfo.dispName }}
               </span>
             </div>
           </ng-container>
         </ng-container>
         <ng-template #noActivity>
-          <div class="flexRow" style="align-items: center; padding: 5px;">
+          <div class="flexRow" style="align-items: center; padding: 5px">
             <div
-              style="background-color: rgba(150, 150, 150, 1);"
+              style="background-color: rgba(150, 150, 150, 1)"
               class="item__bar acitivty__item__component"
             ></div>
             <span class="acitivty__item__component">
@@ -96,24 +103,27 @@
     </div>
   </header>
   <main class="childPageCard">
-    <ng-container *ngIf="!uiFlag.isLoading && !uiFlag.noData; else noData;">
+    <ng-container *ngIf="!uiFlag.isLoading && !uiFlag.noData; else noData">
       <div class="functionBtnBar">
         <div>
-          <button class="alatech-btn alatech-btn--default"
-            title="{{'universal_operating_print' | translate}}"
+          <button
+            class="alatech-btn alatech-btn--default"
+            title="{{ 'universal_operating_print' | translate }}"
             (click)="print()"
             *ngIf="uiFlag.isPreviewMode"
           >
-            {{'universal_operating_print' | translate}}
+            {{ 'universal_operating_print' | translate }}
           </button>
-          <button class="alatech-btn--default"
+          <button
+            class="alatech-btn--default"
             (click)="goBack()"
             *ngIf="!uiFlag.isPreviewMode"
-            style="border: none; display: none;"
+            style="border: none; display: none"
           >
             <i class="icon-svg_web-icon_p1_013-share"></i>
           </button>
-          <a target="_blank"
+          <a
+            target="_blank"
             [href]="previewUrl"
             class="alatech-btn--default"
             *ngIf="!uiFlag.isPreviewMode"
@@ -123,316 +133,408 @@
         </div>
       </div>
       <div class="reprotHeadArea" [class.fitWindow]="!uiFlag.isPreviewMode">
-        <div style="display: flex; flex-direction: row;">
-          <div style="margin-right: 10px;">
+        <div style="display: flex; flex-direction: row">
+          <div style="margin-right: 10px">
             <img
-              style="max-width: 64px; max-height: 64px;"
-              src="{{groupInfo.groupRootInfo[2].brandIcon}}"
+              style="max-width: 64px; max-height: 64px"
+              src="{{ groupInfo.groupRootInfo[2].brandIcon }}"
               (error)="this.groupInfo.groupRootInfo[2].brandIcon = '/assets/images/group.jpg'"
-            >
+            />
           </div>
-          <div style="display: flex; flex-direction: column;">
-            <span class="brandName">{{groupInfo.groupRootInfo[2].brandName}}</span>
-            <span style="font-size: 14px;">{{groupInfo.groupRootInfo[3].branchName}}</span>
+          <div style="display: flex; flex-direction: column">
+            <span class="brandName">{{ groupInfo.groupRootInfo[2].brandName }}</span>
+            <span style="font-size: 14px">{{ groupInfo.groupRootInfo[3].branchName }}</span>
           </div>
         </div>
-        <div style="display: flex; flex-direction: column;">
-          <span style="font-size: 12px; color:#919191; text-align: end;">
-            {{'universal_activityData_creatTime' | translate}} {{reportCreatedTime}}
+        <div style="display: flex; flex-direction: column">
+          <span style="font-size: 12px; color: #919191; text-align: end">
+            {{ 'universal_activityData_creatTime' | translate }} {{ reportCreatedTime }}
           </span>
           <div class="reportName">
-            <p>{{fileInfo?.dispName}}</p>
-            <p style="margin-left: 10px;">{{'universal_group_groupAnalysis' | translate}}</p>
+            <p>{{ fileInfo?.dispName }}</p>
+            <p style="margin-left: 10px">{{ 'universal_group_groupAnalysis' | translate }}</p>
           </div>
         </div>
       </div>
-      <div style="display: flex; flex-direction: column;">
-        <span class="ala-dashboard-title activity-title">{{'universal_activityData_summary' | translate}}</span>
+      <div style="display: flex; flex-direction: column">
+        <span class="ala-dashboard-title activity-title">{{
+          'universal_activityData_summary' | translate
+        }}</span>
         <div>
           <div id="reportInfo" class="report-areaDescription"></div>
-          <div style="display: flex; flex-direction: row; margin: 10px 0px; align-items: center;">
+          <div style="display: flex; flex-direction: row; margin: 10px 0px; align-items: center">
             <div class="activity-icon">
               <i [class]="activityDetail[0].activityInfoLayer.type | sportTypeIcon"></i>
             </div>
-            <span style="margin-left: 15px; color: #919191; font-size: 26px;">{{fileInfo?.dispName}}</span>
+            <span style="margin-left: 15px; color: #919191; font-size: 26px">{{
+              fileInfo?.dispName
+            }}</span>
           </div>
           <div class="report-summaryArea">
             <div>
-              <span class="report-summaryData">{{avgActivityTime}}</span>
-              <p class="report-summaryDescription">{{'universal_adjective_avg' | translate}} {{'universal_activityData_time' | translate}}</p>
+              <span class="report-summaryData">{{ avgActivityTime }}</span>
+              <p class="report-summaryDescription">
+                {{ 'universal_adjective_avg' | translate }}
+                {{ 'universal_activityData_time' | translate }}
+              </p>
             </div>
             <div *ngIf="activityDetail[0].activityInfoLayer.type !== '5'">
-              <span class="report-summaryData" *ngIf="avgDistance >= 1000">{{avgDistance / 1000 | number:'1.0-1'}} km</span>
-              <span class="report-summaryData" *ngIf="avgDistance < 1000">{{avgDistance}} m</span>
-              <p class="report-summaryDescription">{{'universal_activityData_totalDistance' | translate}}</p>
+              <span class="report-summaryData" *ngIf="avgDistance >= 1000"
+                >{{ avgDistance / 1000 | number: '1.0-1' }} km</span
+              >
+              <span class="report-summaryData" *ngIf="avgDistance < 1000">{{ avgDistance }} m</span>
+              <p class="report-summaryDescription">
+                {{ 'universal_activityData_totalDistance' | translate }}
+              </p>
             </div>
             <div *ngIf="activityDetail[0].activityInfoLayer.type !== '5'">
-              <span class="report-summaryData">{{avgSpeed | number:'1.0-1'}} km/h</span>
-              <p class="report-summaryDescription">{{'universal_activityData_avgSpeed' | translate}}</p>
+              <span class="report-summaryData">{{ avgSpeed | number: '1.0-1' }} km/h</span>
+              <p class="report-summaryDescription">
+                {{ 'universal_activityData_avgSpeed' | translate }}
+              </p>
             </div>
             <div>
-              <span class="report-summaryData">{{avgHR | number:'1.0-1'}} bpm</span>
-              <p class="report-summaryDescription">{{'universal_activityData_avgHr' | translate}}</p>
+              <span class="report-summaryData">{{ avgHR | number: '1.0-1' }} bpm</span>
+              <p class="report-summaryDescription">
+                {{ 'universal_activityData_avgHr' | translate }}
+              </p>
             </div>
             <div>
-              <span class="report-summaryData">{{avgCalories | number:'1.0-1'}} cal</span>
-              <p class="report-summaryDescription">{{'universal_activityData_totalCalorie' | translate}}</p>
+              <span class="report-summaryData">{{ avgCalories | number: '1.0-1' }} cal</span>
+              <p class="report-summaryDescription">
+                {{ 'universal_activityData_totalCalorie' | translate }}
+              </p>
             </div>
           </div>
         </div>
       </div>
-      <div style="display: flex; flex-direction: column;">
-        <span class="ala-dashboard-title activity-title">{{'universal_activityData_exerciseAchievement' | translate}}</span>
+      <div style="display: flex; flex-direction: column">
+        <span class="ala-dashboard-title activity-title">{{
+          'universal_activityData_exerciseAchievement' | translate
+        }}</span>
         <div>
           <p class="report-areaDescription">
-            {{'universal_group_allMembersReport' | translate}}
+            {{ 'universal_group_allMembersReport' | translate }}
           </p>
           <div #container class="sportEfficiencyArea">
-              <div class="HRZone">
-                <div class="sportEfficiency">
-                  <p class="report-chartTitle">{{'universal_activityData_hrZoneFallPoint' | translate}}</p>
-                  <p class="report-chartTitle">{{'universal_activityData_enduranceZone' | translate}} {{HRZoneThree}}%</p>
-                </div>
-                <div #classHRZoneChartTarget class="chart">
-                  chart target
-                </div>
+            <div class="HRZone">
+              <div class="sportEfficiency">
+                <p class="report-chartTitle">
+                  {{ 'universal_activityData_hrZoneFallPoint' | translate }}
+                </p>
+                <p class="report-chartTitle">
+                  {{ 'universal_activityData_enduranceZone' | translate }} {{ HRZoneThree }}%
+                </p>
               </div>
-              <div class="bodyQuality">
-                <div class="sportEfficiency">
-                  <p class="report-chartTitle">{{'universal_adjective_all' | translate}} {{'universal_group_member' | translate}} {{'universal_activityData_totalCalorie' | translate}}</p>
-                </div>
-                <div #classCaloriesChartTarget class="chart">
-                  chart target
-                </div>
-              </div>
+              <div #classHRZoneChartTarget class="chart">chart target</div>
             </div>
+            <div class="bodyQuality">
+              <div class="sportEfficiency">
+                <p class="report-chartTitle">
+                  {{ 'universal_adjective_all' | translate }}
+                  {{ 'universal_group_member' | translate }}
+                  {{ 'universal_activityData_totalCalorie' | translate }}
+                </p>
+              </div>
+              <div #classCaloriesChartTarget class="chart">chart target</div>
+            </div>
+          </div>
         </div>
       </div>
-      <div style="display: flex; flex-direction: column; margin-bottom: 10px;">
-          <p class="ala-dashboard-title activity-title">{{'universal_group_personalAnalysis' | translate}}</p>
-          <div>
-            <mat-table [dataSource]="tableData" matSort #sortTable="matSort" (matSortChange)="sortData()">
-              <ng-container matColumnDef="name">
-                <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" class="tableArrangement">
-                  <span class="tableTitleWord">{{'universal_activityData_name' | translate}}</span>
-                </mat-header-cell>
-                <mat-cell
-                  *matCellDef="let row; let i = index;"
-                  class="tableArrangement"
-                >
-                  {{row?.name}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="distance">
-                <mat-header-cell
-                  *matHeaderCellDef
-                  mat-sort-header
-                  disableClear="true"
-                  class="tableArrangement"
-                  [hidden]="activityDetail[0].activityInfoLayer.type === '5'"
-                >
-                  <div class="tableTitle">
-                    <span class="tableTitleWord">{{'universal_activityData_distance' | translate}}</span>
-                    <span class="chartTitleUnit">km</span>
-                  </div>
-                </mat-header-cell>
-                <mat-cell
-                  *matCellDef="let row; let i = index;"
-                  class="tableArrangement"
-                  [hidden]="activityDetail[0].activityInfoLayer.type === '5'"
-                >
-                  {{row?.distance / 1000 | number:'1.0-1'}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="avgSpeed">
-                <mat-header-cell
-                  *matHeaderCellDef
-                  mat-sort-header
-                  disableClear="true"
-                  class="tableArrangement"
-                  [hidden]="activityDetail[0].activityInfoLayer.type === '5'"
-                >
-                  <div class="tableTitle">
-                    <span class="tableTitleWord">{{'universal_activityData_limit_avgSpeed' | translate}}</span>
-                    <span class="chartTitleUnit">km/h</span>
-                  </div>
-                </mat-header-cell>
-                <mat-cell
-                  *matCellDef="let row; let i = index;"
-                  class="tableArrangement"
-                  [hidden]="activityDetail[0].activityInfoLayer.type === '5'"
-                >
-                  {{row?.avgSpeed}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="avgHr">
-                <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" class="tableArrangement">
-                  <div class="tableTitle">
-                    <span class="tableTitleWord">{{'universal_activityData_avgHr' | translate}}</span>
-                    <span class="chartTitleUnit">bpm</span>
-                  </div>
-                </mat-header-cell>
-                <mat-cell
-                  *matCellDef="let row; let i = index;"
-                  class="tableArrangement"
-                >
-                  {{row?.avgHr}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="maxHr">
-                <mat-header-cell
-                  *matHeaderCellDef
-                  mat-sort-header
-                  disableClear="true"
-                  class="tableArrangement"
-                  [class.hideColumn]="activityDetail[0].activityInfoLayer.type !== '5'"
-                >
-                  <div class="tableTitle">
-                    <span class="tableTitleWord">{{'universal_userProfile_maxHr' | translate}}</span>
-                    <span class="chartTitleUnit">bpm</span>
-                  </div>
-                </mat-header-cell>
-                <mat-cell
-                  *matCellDef="let row; let i = index;"
-                  class="tableArrangement"
-                  [class.hideColumn]="activityDetail[0].activityInfoLayer.type !== '5'"
-                >
-                  {{row?.maxHr}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="calories">
-                <mat-header-cell
-                  *matHeaderCellDef
-                  mat-sort-header
-                  disableClear="true"
-                  class="tableArrangement"
-                  [class.hideColumn]="activityDetail[0].activityInfoLayer.type !== '5'"
-                >
-                  <div class="tableTitle">
-                    <span class="tableTitleWord">{{'universal_userProfile_calories' | translate}}</span>
-                    <span class="chartTitleUnit">cal</span>
-                  </div>
-                </mat-header-cell>
-                <mat-cell
-                  *matCellDef="let row; let i = index;"
-                  class="tableArrangement"
-                  [class.hideColumn]="activityDetail[0].activityInfoLayer.type !== '5'"
-                >
-                  {{row?.calories}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="avgWatt">
-                <mat-header-cell
-                  *matHeaderCellDef
-                  mat-sort-header
-                  disableClear="true"
-                  class="tableArrangement hideColumn"
-                  [hidden]="activityDetail[0].activityInfoLayer.type !== '2'"
-                >
-                  <div class="tableTitle">
-                    <span class="tableTitleWord">{{'universal_activityData_avgPower' | translate}}</span>
-                    <span class="chartTitleUnit">watt</span>
-                  </div>
-                </mat-header-cell>
-                <mat-cell
-                  *matCellDef="let row; let i = index;"
-                  class="tableArrangement hideColumn"
-                  [hidden]="activityDetail[0].activityInfoLayer.type !== '2'"
-                >
-                  {{row?.avgWatt}}
-                </mat-cell>
-              </ng-container>
-              <ng-container matColumnDef="HRZoneChart">
-                <mat-header-cell *matHeaderCellDef disableClear="true" class="tableArrangement">
-                  <div class="tableTitle">
-                    <span class="tableTitleWord">{{'universal_activityData_exerciseAchievement' | translate}}</span>
-                    <span class="chartTitleUnit">{{'universal_activityData_hrZone' | translate}}</span>
-                  </div>
-                </mat-header-cell>
-                <mat-cell *matCellDef="let row; let i = index;">
-                  <div class="memberHRZoneChart">
-                    Chart error
-                  </div>
-                </mat-cell>
-              </ng-container>
-              <ng-container>
-                <mat-header-row
-                  *matHeaderRowDef="['name', 'distance', 'avgSpeed', 'avgHr', 'maxHr', 'calories', 'avgWatt','HRZoneChart']"
-                >
-                </mat-header-row>
-                <mat-row
-                  *matRowDef="let logRow; let j = index; columns: ['name', 'distance', 'avgSpeed', 'avgHr', 'maxHr', 'calories', 'avgWatt','HRZoneChart']"
-                  (click)="handleClickMember($event)"
-                  id="{{j}}"
-                >
-                </mat-row>
-              </ng-container>
-            </mat-table>
-          </div>
-          <div class="seeMoreLink" (click)="handleTableData('showAll')" [hidden]="showMore">{{'universal_operating_more' | translate}}</div>
+      <div style="display: flex; flex-direction: column; margin-bottom: 10px">
+        <p class="ala-dashboard-title activity-title">
+          {{ 'universal_group_personalAnalysis' | translate }}
+        </p>
+        <div>
+          <mat-table
+            [dataSource]="tableData"
+            matSort
+            #sortTable="matSort"
+            (matSortChange)="sortData()"
+          >
+            <ng-container matColumnDef="name">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="tableArrangement"
+              >
+                <span class="tableTitleWord">{{ 'universal_activityData_name' | translate }}</span>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row; let i = index" class="tableArrangement">
+                {{ row?.name }}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="distance">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="tableArrangement"
+                [hidden]="activityDetail[0].activityInfoLayer.type === '5'"
+              >
+                <div class="tableTitle">
+                  <span class="tableTitleWord">{{
+                    'universal_activityData_distance' | translate
+                  }}</span>
+                  <span class="chartTitleUnit">km</span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index"
+                class="tableArrangement"
+                [hidden]="activityDetail[0].activityInfoLayer.type === '5'"
+              >
+                {{ row?.distance / 1000 | number: '1.0-1' }}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="avgSpeed">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="tableArrangement"
+                [hidden]="activityDetail[0].activityInfoLayer.type === '5'"
+              >
+                <div class="tableTitle">
+                  <span class="tableTitleWord">{{
+                    'universal_activityData_limit_avgSpeed' | translate
+                  }}</span>
+                  <span class="chartTitleUnit">km/h</span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index"
+                class="tableArrangement"
+                [hidden]="activityDetail[0].activityInfoLayer.type === '5'"
+              >
+                {{ row?.avgSpeed }}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="avgHr">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="tableArrangement"
+              >
+                <div class="tableTitle">
+                  <span class="tableTitleWord">{{
+                    'universal_activityData_avgHr' | translate
+                  }}</span>
+                  <span class="chartTitleUnit">bpm</span>
+                </div>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row; let i = index" class="tableArrangement">
+                {{ row?.avgHr }}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="maxHr">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="tableArrangement"
+                [class.hideColumn]="activityDetail[0].activityInfoLayer.type !== '5'"
+              >
+                <div class="tableTitle">
+                  <span class="tableTitleWord">{{
+                    'universal_userProfile_maxHr' | translate
+                  }}</span>
+                  <span class="chartTitleUnit">bpm</span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index"
+                class="tableArrangement"
+                [class.hideColumn]="activityDetail[0].activityInfoLayer.type !== '5'"
+              >
+                {{ row?.maxHr }}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="calories">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="tableArrangement"
+                [class.hideColumn]="activityDetail[0].activityInfoLayer.type !== '5'"
+              >
+                <div class="tableTitle">
+                  <span class="tableTitleWord">{{
+                    'universal_userProfile_calories' | translate
+                  }}</span>
+                  <span class="chartTitleUnit">cal</span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index"
+                class="tableArrangement"
+                [class.hideColumn]="activityDetail[0].activityInfoLayer.type !== '5'"
+              >
+                {{ row?.calories }}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="avgWatt">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="tableArrangement hideColumn"
+                [hidden]="activityDetail[0].activityInfoLayer.type !== '2'"
+              >
+                <div class="tableTitle">
+                  <span class="tableTitleWord">{{
+                    'universal_activityData_avgPower' | translate
+                  }}</span>
+                  <span class="chartTitleUnit">watt</span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index"
+                class="tableArrangement hideColumn"
+                [hidden]="activityDetail[0].activityInfoLayer.type !== '2'"
+              >
+                {{ row?.avgWatt }}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="HRZoneChart">
+              <mat-header-cell *matHeaderCellDef disableClear="true" class="tableArrangement">
+                <div class="tableTitle">
+                  <span class="tableTitleWord">{{
+                    'universal_activityData_exerciseAchievement' | translate
+                  }}</span>
+                  <span class="chartTitleUnit">{{
+                    'universal_activityData_hrZone' | translate
+                  }}</span>
+                </div>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row; let i = index">
+                <div class="memberHRZoneChart">Chart error</div>
+              </mat-cell>
+            </ng-container>
+            <ng-container>
+              <mat-header-row
+                *matHeaderRowDef="[
+                  'name',
+                  'distance',
+                  'avgSpeed',
+                  'avgHr',
+                  'maxHr',
+                  'calories',
+                  'avgWatt',
+                  'HRZoneChart'
+                ]"
+              >
+              </mat-header-row>
+              <mat-row
+                *matRowDef="
+                  let logRow;
+                  let j = index;
+                  columns: [
+                    'name',
+                    'distance',
+                    'avgSpeed',
+                    'avgHr',
+                    'maxHr',
+                    'calories',
+                    'avgWatt',
+                    'HRZoneChart'
+                  ]
+                "
+                (click)="handleClickMember($event)"
+                id="{{ j }}"
+              >
+              </mat-row>
+            </ng-container>
+          </mat-table>
+        </div>
+        <div class="seeMoreLink" (click)="handleTableData('showAll')" [hidden]="showMore">
+          {{ 'universal_operating_more' | translate }}
+        </div>
       </div>
     </ng-container>
     <ng-template #noData>
-      <div class="flexRow" style="align-items: center; padding: 5px;">
+      <div class="flexRow" style="align-items: center; padding: 5px">
         <span class="acitivty__item__component">
           {{ 'universal_status_noData' | translate }}
         </span>
       </div>
     </ng-template>
   </main>
-  <footer class="flexRow class__analysis__footer" *ngIf="!uiFlag.isLoading && !uiFlag.noData;">
+  <footer class="flexRow class__analysis__footer" *ngIf="!uiFlag.isLoading && !uiFlag.noData">
     <div class="otherInfoSection">
-      <p class="ala-dashboard-title activity-title">{{'universal_deviceSetting_device' | translate}}</p>
-      <img src="{{this.deviceImgUrl}}" style="height: auto; width: auto; width: 100px; height: 100px; margin: 0 auto;">
+      <p class="ala-dashboard-title activity-title">
+        {{ 'universal_deviceSetting_device' | translate }}
+      </p>
+      <img
+        src="{{ this.deviceImgUrl }}"
+        style="height: auto; width: auto; width: 100px; height: 100px; margin: 0 auto"
+      />
       <span class="introductionName">
         {{ deviceInfo?.modelName || 'universal_status_noData' | translate }}
       </span>
-      <p>{{"universal_deviceSetting_modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'universal_status_noData' | translate }}</p>
+      <p>
+        {{ 'universal_deviceSetting_modeType' | translate }}：{{
+          (deviceInfo?.modelTypeID | productType | translate) || 'universal_status_noData'
+            | translate
+        }}
+      </p>
     </div>
     <div class="otherInfoSection">
-      <p class="ala-dashboard-title activity-title">{{'universal_group_courseIntroduction' | translate}}</p>
-      <div style="display: flex; flex-direction: column;">
+      <p class="ala-dashboard-title activity-title">
+        {{ 'universal_group_courseIntroduction' | translate }}
+      </p>
+      <div style="display: flex; flex-direction: column">
         <div class="groupPagePhoto">
           <img
-            src="{{groupInfo.groupIcon}}"
+            src="{{ groupInfo.groupIcon }}"
             (error)="this.groupInfo.groupIcon = '/assets/images/group.jpg'"
-          >
+          />
         </div>
-        <div class="lesson-title" style="padding-left: 10px; display: flex; flex-direction: column; margin-bottom: 10px;">
+        <div
+          class="lesson-title"
+          style="padding-left: 10px; display: flex; flex-direction: column; margin-bottom: 10px"
+        >
           <span class="introductionName">
-            {{groupInfo.groupName}}
+            {{ groupInfo.groupName }}
           </span>
-          <span style="text-align: right; font-size: 10px;">
-            {{groupInfo.groupRootInfo[2].brandName}} / {{groupInfo.groupRootInfo[3].branchName}}
+          <span style="text-align: right; font-size: 10px">
+            {{ groupInfo.groupRootInfo[2].brandName }} / {{ groupInfo.groupRootInfo[3].branchName }}
           </span>
         </div>
       </div>
-      <span>{{lessonPartInfo}}</span>
+      <span>{{ lessonPartInfo }}</span>
       <div
         *ngIf="!showAllLessonInfo"
-        style="color: #5fbae3;cursor:pointer;text-align: right"
+        style="color: #5fbae3; cursor: pointer; text-align: right"
         (click)="handleExtendCoachInfo('lessonInfo')"
       >
-        ...{{ "universal_operating_more" | translate}}
+        ...{{ 'universal_operating_more' | translate }}
       </div>
     </div>
     <div class="otherInfoSection">
-      <p class="ala-dashboard-title activity-title">{{'universal_group_coachIntroduction' | translate}}</p>
-      <div style="display: flex; flex-direction: column;">
+      <p class="ala-dashboard-title activity-title">
+        {{ 'universal_group_coachIntroduction' | translate }}
+      </p>
+      <div style="display: flex; flex-direction: column">
         <div class="groupPagePhoto">
-          <img src="{{coachInfo?.avatarUrl}}" (error)="this.coachInfo.avatarUrl='/assets/images/user2.png'">
+          <img
+            src="{{ coachInfo?.avatarUrl }}"
+            (error)="this.coachInfo.avatarUrl = '/assets/images/user2.png'"
+          />
         </div>
         <span class="introductionName">
-          {{coachInfo?.nickname}}
+          {{ coachInfo?.nickname }}
         </span>
       </div>
-      <p>{{coachPartInfo}}</p>
+      <p>{{ coachPartInfo }}</p>
       <div
         *ngIf="!showAllCoachInfo"
-        style="color: #5fbae3;cursor:pointer;text-align: right"
+        style="color: #5fbae3; cursor: pointer; text-align: right"
         (click)="handleExtendCoachInfo('coachInfo')"
       >
-        ...{{ "universal_operating_more" | translate}}
+        ...{{ 'universal_operating_more' | translate }}
       </div>
     </div>
   </footer>

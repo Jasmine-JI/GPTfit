@@ -9,10 +9,9 @@ import { AuthService } from '../../../../core/services/auth.service';
 @Component({
   selector: 'app-people-selector-win',
   templateUrl: './people-selector-win.component.html',
-  styleUrls: ['./people-selector-win.component.scss']
+  styleUrls: ['./people-selector-win.component.scss'],
 })
 export class PeopleSelectorWinComponent implements OnInit {
-
   pushCondition = ['地區', '系統', '應用', '群組', '會員', '語言'];
   lanTmpList = [];
 
@@ -20,7 +19,7 @@ export class PeopleSelectorWinComponent implements OnInit {
     titleChoice: false,
     titleIdx: 0,
     showTitleSelector: false,
-    canSearch: true
+    canSearch: true,
   };
 
   tmpPushSetting: any;
@@ -93,14 +92,12 @@ export class PeopleSelectorWinComponent implements OnInit {
    * @author kidin-1090917
    */
   checkType() {
-
     switch (this.type) {
       case 1:
       case 2:
         this.selectedDatas = this.adminLists;
         break;
       case 3:
-
         if (Array.isArray(this.title)) {
           this.uiFlag.titleChoice = true;
           this.uiFlag.titleIdx = this.titleIdx;
@@ -113,7 +110,6 @@ export class PeopleSelectorWinComponent implements OnInit {
 
         break;
     }
-
   }
 
   /**
@@ -125,7 +121,6 @@ export class PeopleSelectorWinComponent implements OnInit {
     } else {
       this.uiFlag.showTitleSelector = true;
     }
-
   }
 
   /**
@@ -175,7 +170,6 @@ export class PeopleSelectorWinComponent implements OnInit {
         this.uiFlag.canSearch = false;
         break;
     }
-
   }
 
   /**
@@ -186,7 +180,7 @@ export class PeopleSelectorWinComponent implements OnInit {
    */
   getLanguageList(message: Array<any>) {
     const lanList = [];
-    message.forEach(_message => {
+    message.forEach((_message) => {
       lanList.push(`${_message.language}-${_message.countryRegion}`);
     });
 
@@ -204,7 +198,7 @@ export class PeopleSelectorWinComponent implements OnInit {
       countryRegion: lan.split('-')[1],
       title: '',
       content: '',
-      deepLink: ''
+      deepLink: '',
     };
 
     return newLan;
@@ -244,7 +238,6 @@ export class PeopleSelectorWinComponent implements OnInit {
    * @author kidin-1090921
    */
   assignItem() {
-
     if (this.chooseIndex > -1) {
       const chooseData = this.fakeDatas[this.chooseIndex];
       this.fakeDatas.splice(this.chooseIndex, 1);
@@ -255,7 +248,6 @@ export class PeopleSelectorWinComponent implements OnInit {
           this.adminLists.push(chooseData);
           break;
         case 3:
-
           if (this.uiFlag.titleIdx === 5) {
             this.tmpPushSetting.message.push(this.getLanguageObj(chooseData));
             this.selectedDatas = this.getLanguageList(this.tmpPushSetting.message);
@@ -268,7 +260,6 @@ export class PeopleSelectorWinComponent implements OnInit {
 
       this.chooseIndex = -1;
     }
-
   }
 
   /**
@@ -289,11 +280,10 @@ export class PeopleSelectorWinComponent implements OnInit {
 
       this.chooseExistIndex = -1;
     }
-
   }
 
   handleGroupOptions() {
-    this.groupService.getGroupList().subscribe(_res => this.groupLists = _res);
+    this.groupService.getGroupList().subscribe((_res) => (this.groupLists = _res));
   }
 
   /**
@@ -301,27 +291,25 @@ export class PeopleSelectorWinComponent implements OnInit {
    * @author kidin-1090806
    */
   search() {
-
     if (this.type === 3 && this.uiFlag.titleIdx === 3) {
       const groupId = this.hashids.handleGroupIdDecode(this.keyword),
-            body = {
-              token: this.authService.token,
-              groupId: groupId,
-              findRoot: 1,
-              avatarType: 2
-            };
-      this.groupService.fetchGroupListDetail(body).subscribe(res => {
+        body = {
+          token: this.authService.token,
+          groupId: groupId,
+          findRoot: 1,
+          avatarType: 2,
+        };
+      this.groupService.fetchGroupListDetail(body).subscribe((res) => {
         if (res.resultCode === 200) {
-          this.fakeDatas = [{
-            groupId,
-            groupName: res.info.groupName
-          }];
-
+          this.fakeDatas = [
+            {
+              groupId,
+              groupName: res.info.groupName,
+            },
+          ];
         }
-
       });
     } else {
-
       if (this.chooseGroupId.length > 0 || this.isInnerAdmin) {
         let params = new HttpParams();
         params = params.set('type', '0');
@@ -332,27 +320,25 @@ export class PeopleSelectorWinComponent implements OnInit {
           params = params.set('searchType', this.type);
         }
 
-
         if (this.isInnerAdmin) {
           params = params.set('groupId', '0-0-0-0-0-0');
         } else {
           params = params.set('groupId', this.chooseGroupId);
         }
 
-        this.groupService.searchMember(params).subscribe(_result => {
+        this.groupService.searchMember(params).subscribe((_result) => {
           this.fakeDatas = _result;
-          this.fakeDatas = this.fakeDatas.filter(_data => {
-            return this.selectedDatas.findIndex(_selectedData => _data.userId === _selectedData.userId) === -1;
+          this.fakeDatas = this.fakeDatas.filter((_data) => {
+            return (
+              this.selectedDatas.findIndex(
+                (_selectedData) => _data.userId === _selectedData.userId
+              ) === -1
+            );
           });
-
         });
-
       } else {
         this.fakeDatas = [];
       }
-
     }
-
   }
-
 }

@@ -1,0 +1,139 @@
+@import 'drop-triangle.scss';
+@import 'overflow-scroll.scss';
+
+$selector-height: 25px;
+$hover-color: rgba(50, 150, 255, 0.3);
+
+.date__result__section {
+  position: relative;
+  height: $selector-height;
+  padding: 2px 15px;
+  margin: 0 10px;
+  border-radius: 22px;
+  border: 1px solid black;
+  cursor: pointer;
+  font-size: 14px;
+  width: fit-content;
+  min-width: 110px;
+}
+
+.drop__calender {
+  position: absolute;
+  z-index: 1;
+  align-items: center;
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: 2px;
+  width: 240px;
+  left: 0;
+  top: $selector-height;
+  font-family: monospace;
+  cursor: initial;
+}
+
+.calender__year__section {
+  position: relative;
+}
+
+.calender__year__text {
+  padding: 0 10px;
+  @include drop-triangle(6px, 4px, black, 0) {
+    top: 8px;
+  }
+}
+
+.drop__down {
+  @include drop-triangle-active();
+}
+
+.year__drop__list {
+  $height: 100px;
+  position: absolute;
+  bottom: calc(-#{$height});
+  z-index: 2;
+  list-style: none;
+  padding: 5px;
+  margin: 0;
+  max-height: $height;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 2px;
+  @include overflow-y-scroll();
+}
+
+.year__drop__item {
+  padding: 2px 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $hover-color;
+  }
+}
+
+.calender__month__switcher {
+  width: 100%;
+  justify-content: space-between;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.calender {
+  list-style: none;
+  padding: 0;
+}
+
+.calender__day {
+  display: inline-block;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  min-width: 24px;
+  padding: 4px 7px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.calender__choice__day {
+  cursor: pointer;
+
+  &:hover {
+    background-color: $hover-color;
+  }
+}
+
+.calender__today {
+  border: 1px solid rgba(150, 150, 150, 1);
+}
+
+.calender__other__month {
+  opacity: 0.7;
+}
+
+.holiday__hint {
+  color: rgba(229, 68, 68, 1);
+}
+
+.calender__day--disable {
+  text-decoration-line: line-through;
+  opacity: 0.5;
+  pointer-events: none;
+  font-weight: 300;
+}
+
+.calender__day--active {
+  color: white;
+  opacity: 1;
+  background-color: rgba(50, 150, 255, 1);
+}
+
+.today__button {
+  color: white;
+  background-color: rgba(60, 154, 205, 1);
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.button--disable {
+  pointer-events: none;
+  opacity: 0.5;
+}

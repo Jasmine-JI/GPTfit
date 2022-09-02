@@ -1,9 +1,17 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, OnDestroy, OnChanges } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnChanges,
+} from '@angular/core';
 import { of, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
-import { TargetCondition, TargetField } from '../../../models/sport-target';
+import { TargetField } from '../../../../core/models/api/api-common/sport-target.model';
 import { TARGET_LINE_COLOR, compareChartDefault } from '../../../models/chart-data';
 import {
   yAxisTimeFormat,
@@ -12,7 +20,7 @@ import {
   tooltipPercentageFormat,
   tooltipFormat,
   distanceAxisFormat,
-  distanceTooltipFormat
+  distanceTooltipFormat,
 } from '../../../utils/chart-formatter';
 import { TargetFieldNamePipe } from '../../../pipes/target-field-name.pipe';
 import dayjs from 'dayjs';
@@ -21,25 +29,23 @@ import { UserService } from '../../../../core/services/user.service';
 import { Unit } from '../../../enum/value-conversion';
 import { deepCopy } from '../../../utils/index';
 
-
 @Component({
   selector: 'app-compare-column-trend',
   templateUrl: './compare-column-trend.component.html',
-  styleUrls: ['./compare-column-trend.component.scss', '../chart-share-style.scss']
+  styleUrls: ['./compare-column-trend.component.scss', '../chart-share-style.scss'],
 })
 export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy {
-
   private ngUnsubscribe = new Subject();
 
-  @Input('data') data: Array<any>;
+  @Input() data: Array<any>;
 
-  @Input('type') type: TargetField;
+  @Input() type: TargetField;
 
-  @Input('condition') condition: Array<TargetCondition>;
+  @Input() conditionValue: number;
 
-  @Input('xAxisTitle') xAxisTitle: string;
+  @Input() xAxisTitle: string;
 
-  @ViewChild('container', {static: false})
+  @ViewChild('container', { static: false })
   container: ElementRef;
 
   /**
@@ -52,7 +58,7 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
     private targetFieldNamePipe: TargetFieldNamePipe,
     private globalEventsService: GlobalEventsService,
     private userService: UserService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.subscribeGlobalEvents();
@@ -69,13 +75,14 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
     if (!this.data) {
       this.noData = true;
     } else {
-      const { data, condition, type } = this;
-      of('').pipe(
-        map(() => this.getRelatedCondition(type, condition)),
-        map(targetLineValue => this.initChart(data, type, targetLineValue)),
-        map(option => this.handleSeriesName(option, type)),
-        map(final => this.createChart(final))
-      ).subscribe();
+      const { data, conditionValue, type } = this;
+      of('')
+        .pipe(
+          map(() => this.initChart(data, type, conditionValue)),
+          map((option) => this.handleSeriesName(option, type)),
+          map((final) => this.createChart(final))
+        )
+        .subscribe();
 
       this.noData = false;
     }
@@ -85,22 +92,12 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
    * 訂閱全域自定義事件
    */
   subscribeGlobalEvents() {
-    this.globalEventsService.getRxSideBarMode().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.handleChart();
-    });
-  }
-
-  /**
-   * 取得與此圖表有關的運動目標條件
-   * @param type {TargetField}-此圖表的類別
-   * @param condition {Array<TargetCondition>}-所有運動目標條件
-   * @author kidin-1110418
-   */
-  getRelatedCondition(type: TargetField, condition: Array<TargetCondition>) {
-    const relatedIndex = condition.findIndex(_condition => _condition.filedName === type);
-    return relatedIndex > -1 ? condition[relatedIndex].filedValue : null;
+    this.globalEventsService
+      .getRxSideBarMode()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.handleChart();
+      });
   }
 
   /**
@@ -123,7 +120,7 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
    * @author kidin-1110318
    */
   handleSeriesName(option: any, type: TargetField) {
-    option.series = option.series.map(_series => {
+    option.series = option.series.map((_series) => {
       _series['name'] = this.translate.instant(this.targetFieldNamePipe.transform(type));
       return _series;
     });
@@ -137,7 +134,7 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
    * @author kidin-1110413
    */
   createChart(option: any) {
-    setTimeout (() => {
+    setTimeout(() => {
       if (!this.container) {
         this.createChart(option);
       } else {
@@ -147,23 +144,18 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
     }, 200);
   }
 
-
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }
 
-
 class ChartOption {
-
   private _option = deepCopy(compareChartDefault);
-
 
   constructor(
     data: Array<any>,
-    type: TargetField,
+    type: TargetField | string,
     targetLineValue: number | null,
     unit: Unit,
     xAxisTitle: string
@@ -186,7 +178,6 @@ class ChartOption {
     } else {
       this.handleNormalOption(data);
     }
-
   }
 
   /**
@@ -199,50 +190,49 @@ class ChartOption {
 
   /**
    * 根據數據類別設定y軸與浮動框顯示格式
-   * @param type {TargetField}-數據類別
+   * @param type {TargetField | string}-數據類別
    * @param unit {Unit}-使用者使用單位
    */
-  handleDataType(type: TargetField, unit: Unit) {
+  handleDataType(type: TargetField | string, unit: Unit) {
     switch (type) {
       case 'totalTime':
       case 'benefitTime':
         this._option.yAxis['labels'] = {
-          formatter: yAxisTimeFormat
+          formatter: yAxisTimeFormat,
         };
 
         this._option['tooltip'] = {
-          formatter: tooltipTimeFormat
+          formatter: tooltipTimeFormat,
         };
-        
+
         break;
       case 'achievementRate':
         this._option.yAxis['labels'] = {
-          formatter: yAxisPercentageFormat
+          formatter: yAxisPercentageFormat,
         };
 
         this._option['tooltip'] = {
-          formatter: tooltipPercentageFormat
+          formatter: tooltipPercentageFormat,
         };
 
         break;
       case 'distance':
         this._option.yAxis['labels'] = {
-          formatter: distanceAxisFormat(unit)
+          formatter: distanceAxisFormat(unit),
         };
 
         this._option['tooltip'] = {
-          formatter: distanceTooltipFormat(unit)
+          formatter: distanceTooltipFormat(unit),
         };
 
         break;
       default:
         this._option['tooltip'] = {
-          formatter: tooltipFormat
+          formatter: tooltipFormat,
         };
 
         break;
     }
-
   }
 
   /**
@@ -257,23 +247,22 @@ class ChartOption {
       xAxis: {
         ...xAxis,
         type: 'datetime',
-        tickPositions: data[0].custom.dateRange.map(_range => _range[0]),
+        tickPositions: data[0].custom.dateRange.map((_range) => _range[0]),
         labels: {
           ...labels,
-          formatter: function() {
+          formatter: function () {
             return dayjs(this.value).format('MM/DD');
-          }
-        }
+          },
+        },
       },
       plotOptions: {
         ...plotOptions,
         column: {
-          ...plotOptions.column
-        }
+          ...plotOptions.column,
+        },
       },
-      series: data
+      series: data,
     };
-
   }
 
   /**
@@ -290,14 +279,13 @@ class ChartOption {
         ...xAxis,
         title: {
           ...xAxis.title,
-          text: `( ${xAxisTitle} )`
+          text: `( ${xAxisTitle} )`,
         },
         categories,
         crosshair: true,
       },
-      series: chartData
+      series: chartData,
     };
-
   }
 
   /**
@@ -305,12 +293,13 @@ class ChartOption {
    * @param value {number}-目標線數值
    */
   handleTargetLine(value: number) {
-    this._option.yAxis['plotLines'] = [{
-      color: TARGET_LINE_COLOR,
-      width: 2,
-      value
-    }];
-
+    this._option.yAxis['plotLines'] = [
+      {
+        color: TARGET_LINE_COLOR,
+        width: 2,
+        value,
+      },
+    ];
   }
 
   /**
@@ -319,5 +308,4 @@ class ChartOption {
   get option() {
     return this._option;
   }
-
 }

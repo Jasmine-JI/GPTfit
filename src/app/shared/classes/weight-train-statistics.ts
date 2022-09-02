@@ -3,12 +3,10 @@ import { WeightTrainingInfo } from '../models/weight-train';
 import { mathRounding } from '../utils/index';
 import { getCorrespondingMuscleGroup } from '../utils/sports';
 
-
 /**
  * 統計個人重訓肌群數據
  */
 export class WeightTrainStatistics {
-
   /**
    * 統計偏好肌群
    */
@@ -23,7 +21,7 @@ export class WeightTrainStatistics {
     [MuscleGroup.shoulderMuscle]: [0, 0, 0],
     [MuscleGroup.backMuscle]: [0, 0, 0],
     [MuscleGroup.abdominalMuscle]: [0, 0, 0],
-    [MuscleGroup.legMuscle]: [0, 0, 0]
+    [MuscleGroup.legMuscle]: [0, 0, 0],
   };
 
   /**
@@ -37,7 +35,6 @@ export class WeightTrainStatistics {
     } else {
       this._preferMuscleGroup = { ..._preferMuscleGroup, [muscleGroup]: count };
     }
-
   }
 
   /**
@@ -50,7 +47,7 @@ export class WeightTrainStatistics {
         const [_bKey, _bValue] = _b;
         return (_bValue as number) - (_aValue as number);
       })
-      .map(_result => {
+      .map((_result) => {
         const [_key, _value] = _result;
         return +_key;
       });
@@ -65,7 +62,11 @@ export class WeightTrainStatistics {
     const { muscle, totalWeightKg, totalSets, totalReps } = info;
     const muscleGroup = getCorrespondingMuscleGroup(muscle);
     const [weight, reps, sets] = this._muscleGroupData[muscleGroup];
-    this._muscleGroupData[muscleGroup] = [weight + totalWeightKg, reps + totalReps, sets + totalSets];
+    this._muscleGroupData[muscleGroup] = [
+      weight + totalWeightKg,
+      reps + totalReps,
+      sets + totalSets,
+    ];
   }
 
   /**
@@ -73,11 +74,11 @@ export class WeightTrainStatistics {
    */
   get muscleGroupData() {
     let data = {};
-    Object.entries(this._muscleGroupData).forEach(_muscleGroup => {
+    Object.entries(this._muscleGroupData).forEach((_muscleGroup) => {
       const [key, valueArray] = _muscleGroup;
       const [totalWeight, totalReps, totalSets] = valueArray;
-      const avgWeightPerRep = (totalWeight / totalReps) || 0;  // 可能需再轉換成英制單位，故不先四捨五入
-      const avgRepsPerSet = mathRounding((totalReps / totalSets), 1) || 0;
+      const avgWeightPerRep = totalWeight / totalReps || 0; // 可能需再轉換成英制單位，故不先四捨五入
+      const avgRepsPerSet = mathRounding(totalReps / totalSets, 1) || 0;
       data = { ...data, [key]: [avgWeightPerRep, avgRepsPerSet, totalSets] };
     });
 
@@ -89,7 +90,7 @@ export class WeightTrainStatistics {
    */
   get muscleGroupTotalReps() {
     const result = [0, 0, 0, 0, 0, 0];
-    Object.entries(this._muscleGroupData).forEach(_muscleGroup => {
+    Object.entries(this._muscleGroupData).forEach((_muscleGroup) => {
       const [key, valueArray] = _muscleGroup;
       const [totalWeight, totalReps, ...rest] = valueArray;
       result[+key - 1] = totalReps;
@@ -97,5 +98,4 @@ export class WeightTrainStatistics {
 
     return result;
   }
-
 }

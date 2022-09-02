@@ -14,7 +14,6 @@ $list-min-width: 300px;
 $list-padding: 0 2vw;
 $edit-button-size: 30px;
 
-
 @mixin box-shadow($color: rgba(0, 0, 0, 0.5)) {
   box-shadow: 2px 2px 4px $color, -2px 2px 4px $color;
 }
@@ -51,11 +50,10 @@ $edit-button-size: 30px;
   width: 100%;
   overflow-y: hidden;
 
-  >img {
+  > img {
     @include filter(blur(10px));
     width: 100%;
   }
-  
 }
 
 #headerInfo {
@@ -83,10 +81,9 @@ $edit-button-size: 30px;
   border: 1px solid white;
   overflow: hidden;
 
-  >img {
+  > img {
     height: 100%;
   }
-
 }
 
 #header__title {
@@ -111,11 +108,10 @@ $edit-button-size: 30px;
   border-radius: $input-height;
   text-shadow: none;
 
-  >input {
+  > input {
     border: none;
     outline: none;
   }
-
 }
 
 #search__icon {
@@ -135,13 +131,12 @@ $edit-button-size: 30px;
   align-items: center;
   cursor: pointer;
 
-  >span {
+  > span {
     display: inline-block;
     min-width: 150px;
     text-align: center;
     font-weight: bold;
   }
-
 }
 
 .drop__icon {
@@ -214,10 +209,9 @@ $edit-button-size: 30px;
   min-width: $list-min-width;
   padding: $list-padding;
 
-  >h6 {
+  > h6 {
     margin: 0;
   }
-
 }
 
 .contestant__list {
@@ -242,7 +236,6 @@ $edit-button-size: 30px;
   &:hover {
     background-color: rgba(240, 240, 240, 1);
   }
-
 }
 
 .important__info {
@@ -310,7 +303,6 @@ $edit-button-size: 30px;
   &:not(:last-child) {
     border-bottom: 1px solid black;
   }
-
 }
 
 .edit__button {
@@ -377,7 +369,6 @@ $edit-button-size: 30px;
     width: 100%;
     background-color: black;
   }
-
 }
 
 .alert__icon {
@@ -428,22 +419,19 @@ $edit-button-size: 30px;
 }
 
 .classification__area {
-
-  >h6 {
+  > h6 {
     font-weight: bold;
   }
 
-  >div {
+  > div {
     display: flex;
     align-items: center;
     margin-left: 10px;
 
-    >input {
+    > input {
       cursor: pointer;
     }
-
   }
-
 }
 
 .radio__label {
@@ -455,36 +443,29 @@ $edit-button-size: 30px;
 /************************************************* media ******************************************/
 
 @media (max-width: 1150px) {
-  
-  .contestant__list, .list__title {
+  .contestant__list,
+  .list__title {
     width: 90vw;
   }
-
 }
 
 @media (max-width: 1000px) {
-  
-  .contestant__list, .list__title {
+  .contestant__list,
+  .list__title {
     width: 95vw;
   }
-
 }
 
 @media (max-width: 767px) {
-  
   .filter__entry {
-    
-    >span {
+    > span {
       font-size: 14px;
       min-width: 120px;
     }
-
   }
-
 }
 
 @media (max-width: 575px) {
-
   #map__icon {
     position: absolute;
     top: -100px;
@@ -519,5 +500,4 @@ $edit-button-size: 30px;
   .alert__icon {
     top: -7px;
   }
-
 }

@@ -1,24 +1,25 @@
-const fastXmlParser = require("fast-xml-parser");
-const fs = require("fs");
+const fastXmlParser = require('fast-xml-parser');
+const fs = require('fs');
 const gcoord = require('gcoord');
 let parsedGPX = fastXmlParser.parse(
-  fs.readFileSync("/home/dezhi/web/server/models/beijin_marathon_21k-cj02.gpx", "utf8"), {
-    ignoreAttributes: false
+  fs.readFileSync('/home/dezhi/web/server/models/beijin_marathon_21k-cj02.gpx', 'utf8'),
+  {
+    ignoreAttributes: false,
   }
 );
 // console.log(parsedGPX.gpx.trk.trkseg[0].trkpt);
 const points = parsedGPX.gpx.trk.trkseg;
 
 // console.log('points: ', points);
-const transFormPoints = points.map(_point => {
+const transFormPoints = points.map((_point) => {
   // console.log(_point.trkpt.length);
-  return _point.trkpt.map(_p => {
+  return _point.trkpt.map((_p) => {
     const preLon = _p['@_lon'];
     const preLat = _p['@_lat'];
     const altitude = _p['ele'];
     // console.log('altitude: ', altitude);
     // console.log('pre : ', preLon, preLat);
-    const transPt = gcoord.transform([+preLon, +preLat], gcoord['GCJ02'], gcoord['WGS84'])
+    const transPt = gcoord.transform([+preLon, +preLat], gcoord['GCJ02'], gcoord['WGS84']);
     // console.log('transform: ', transPt);
     const latitude = transPt[1];
     const longitude = transPt[0];

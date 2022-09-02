@@ -17,14 +17,13 @@ import {
   headerKeyTranslate,
   getUrlQueryStrings,
   setLocalStorageObject,
-  getLocalStorageObject
+  getLocalStorageObject,
 } from '../../../../../shared/utils/index';
-
 
 enum QrSignInFlow {
   submitGuid = 1,
   polling,
-  login
+  login,
 }
 
 type QrLoginStatus = 'check' | 'logging' | 'success';
@@ -33,7 +32,7 @@ const errorMsg = 'Error. Try again later.';
 @Component({
   selector: 'app-app-qrcode-login',
   templateUrl: './app-qrcode-login.component.html',
-  styleUrls: ['./app-qrcode-login.component.scss']
+  styleUrls: ['./app-qrcode-login.component.scss'],
 })
 export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();
@@ -55,13 +54,13 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
 
   userInfo = {
     icon: '',
-    name: ''
+    name: '',
   };
 
   loginBody = {
     qrSignInFlow: QrSignInFlow.login,
     guid: '',
-    token: ''
+    token: '',
   };
 
   constructor(
@@ -73,7 +72,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
     private dialog: MatDialog,
     private router: Router,
     private getClientIp: GetClientIpService
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.loginBody.token = this.auth.token;
@@ -86,7 +85,6 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
     if (this.pcView === false) {
       this.getAppId();
     }
-
   }
 
   /**
@@ -98,9 +96,8 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
     this.tftView = query.p == AlaApp.tft;
     this.requestHeader = {
       ...this.requestHeader,
-      ...headerKeyTranslate(query)
+      ...headerKeyTranslate(query),
     };
-
   }
 
   /**
@@ -109,31 +106,24 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
    */
   subscribeResizeEvent() {
     const resizeEvent = fromEvent(window, 'resize');
-    this.resizeSubscription = resizeEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.resizeSubscription = resizeEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.mobileSize = window.innerWidth < TFTViewMinWidth;
     });
-
   }
 
   // 返回app-kidin-1090513
-  turnBack () {
+  turnBack() {
     if (this.appSys === 1) {
       (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
     } else if (this.appSys === 2) {
       (window as any).android.closeWebView('Close');
     } else {
-
       if (this.pcView) {
         this.router.navigateByUrl('/signIn-web');
       } else {
         this.router.navigateByUrl('/signIn');
       }
-
-
     }
-
   }
 
   /**
@@ -148,14 +138,13 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
         this.createLoginQrcode();
         this.waitQrcodeLogin();
       } else {
-        this.translate.get('hello.world').pipe(
-          takeUntil(this.ngUnsubscribe)
-        ).subscribe(() => {
-          this.cue = 'universal_userAccount_improperOperation';
-        });
-
+        this.translate
+          .get('hello.world')
+          .pipe(takeUntil(this.ngUnsubscribe))
+          .subscribe(() => {
+            this.cue = 'universal_userAccount_improperOperation';
+          });
       }
-
     } else {
       this.setPageStyle(true);
       this.displayPage = 'login';
@@ -166,7 +155,6 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
         this.getUrlString(location.search);
         this.getUserInfo();
       }
-
     }
 
     if (pathname.indexOf('web') > 0) {
@@ -176,7 +164,6 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
       this.pcView = false;
       this.setPageStyle(true);
     }
-
   }
 
   /**
@@ -190,7 +177,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   // 取得註冊來源平台、類型和ID-kidin-1090512
-  getAppId () {
+  getAppId() {
     if ((window as any).webkit) {
       this.appSys = 1;
     } else if ((window as any).android) {
@@ -201,136 +188,137 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
 
     this.requestHeader = {
       deviceType: this.appSys,
-      ...this.requestHeader
+      ...this.requestHeader,
     };
-
   }
 
   // 取得使用者ip位址-kidin-1090521
-  getClientIpaddress () {
+  getClientIpaddress() {
     const { remoteAddr } = this.requestHeader as any;
     if (!remoteAddr) {
       return this.getClientIp.requestIpAddress().pipe(
-        tap(res => {
+        tap((res) => {
           this.ip = (res as any).ip;
           this.requestHeader = {
             ...this.requestHeader,
-            remoteAddr: this.ip
+            remoteAddr: this.ip,
           };
         })
       );
-
     } else {
       return of(this.requestHeader);
     }
-
   }
 
   // 創建qrcode並發送guid給server進行長輪詢-kidin-1090527
-  createLoginQrcode () {
+  createLoginQrcode() {
     this.createGuid();
     this.qrURL = `${location.origin}/qrSignIn?qsf=1&g=${this.guid}`;
   }
 
   // 創建guid-kidin-1090527
-  createGuid () {
+  createGuid() {
     const hexadecimalTimeStamp = this.currentTimeStamp.toString(16);
     let guid = '';
     for (let i = 0; i < 32 - hexadecimalTimeStamp.length; i++) {
-      guid += (Math.floor(Math.random() * 16)).toString(16);
+      guid += Math.floor(Math.random() * 16).toString(16);
     }
 
     guid += hexadecimalTimeStamp;
-    this.guid = `${guid.slice(0, 8)}-${guid.slice(8, 12)}-${guid.slice(12, 16)}-${guid.slice(16, 20)}-${guid.slice(20, 32)}`;
+    this.guid = `${guid.slice(0, 8)}-${guid.slice(8, 12)}-${guid.slice(12, 16)}-${guid.slice(
+      16,
+      20
+    )}-${guid.slice(20, 32)}`;
   }
 
   // 確認是否開啟過多次qrcode頁面-kidin-1090528
-  checkFrequency () {
+  checkFrequency() {
     const timeStampCount = getLocalStorageObject('count');
     if (!timeStampCount) {
       setLocalStorageObject('count', `${this.currentTimeStamp}1`);
       return true;
     } else {
       const timeStamp = +timeStampCount.slice(0, timeStampCount.length - 1),
-            count = +timeStampCount.slice(timeStampCount.length - 1, timeStampCount.length);
+        count = +timeStampCount.slice(timeStampCount.length - 1, timeStampCount.length);
 
-      if (this.currentTimeStamp - timeStamp >= 3 * 60 * 1000) {  // 超過三分鐘前端解瑣
+      if (this.currentTimeStamp - timeStamp >= 3 * 60 * 1000) {
+        // 超過三分鐘前端解瑣
         setLocalStorageObject('count', `${this.currentTimeStamp}1`);
         return true;
-      } else if (count > 4) {  // 操作超過五次前端上鎖
+      } else if (count > 4) {
+        // 操作超過五次前端上鎖
         this.cue = 'universal_userAccount_improperOperation';
         return false;
       } else {
         setLocalStorageObject('count', `${timeStamp} ${count + 1}`);
         return true;
       }
-
     }
-
   }
 
   // 等待B裝置登入-kidin-1090527
-  waitQrcodeLogin () {
+  waitQrcodeLogin() {
     const body = {
       qrSignInFlow: QrSignInFlow.submitGuid,
-      guid: this.guid
+      guid: this.guid,
     };
 
-    this.getClientIpaddress().pipe(
-      switchMap(ipResult => this.signupService.fetchQrcodeLogin(body, this.requestHeader))
-    ).subscribe((res: any) => {
-      if (res.processResult.resultCode !== 200) {
-
-        switch (res.processResult.apiReturnMessage) {  // 不寫死方便新增回應訊息
-          default:
-            this.showMsg(errorMsg, true);
-            console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
-            break;
-
-        }
-
-      } else {
-        const waitBody = {
-          qrSignInFlow: QrSignInFlow.polling,
-          guid: this.guid
-        };
-
-        this.getClientIpaddress().pipe(
-          switchMap(ipResult => this.signupService.fetchQrcodeLogin(waitBody, this.requestHeader))
-        ).subscribe((response: any) => {
-          if (response.processResult.resultCode !== 200) {
-
-            switch (response.processResult.apiReturnMessage) {
-              case 'Waiting for QR sign in time out.':
-                // tft 裝置常駐qrcode，故過時就更新qrcode
-                if (this.tftView) {
-                  this.createLoginQrcode();
-                  this.waitQrcodeLogin();
-                }
-                this.cue = 'universal_userAccount_idleForTooLong';
-                break;
-              default:
-                this.showMsg(errorMsg, true);
-                console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
-                break;
-            }
-
-          } else {
-            this.cue = 'universal_userAccount_signSuceesfully';
-            const token = response.qrSignIn.token;
-            this.userLogin(token);
+    this.getClientIpaddress()
+      .pipe(switchMap((ipResult) => this.signupService.fetchQrcodeLogin(body, this.requestHeader)))
+      .subscribe((res: any) => {
+        if (res.processResult.resultCode !== 200) {
+          switch (
+            res.processResult.apiReturnMessage // 不寫死方便新增回應訊息
+          ) {
+            default:
+              this.showMsg(errorMsg, true);
+              console.error(
+                `${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`
+              );
+              break;
           }
+        } else {
+          const waitBody = {
+            qrSignInFlow: QrSignInFlow.polling,
+            guid: this.guid,
+          };
 
-        });
-
-      }
-
-    });
-
+          this.getClientIpaddress()
+            .pipe(
+              switchMap((ipResult) =>
+                this.signupService.fetchQrcodeLogin(waitBody, this.requestHeader)
+              )
+            )
+            .subscribe((response: any) => {
+              if (response.processResult.resultCode !== 200) {
+                switch (response.processResult.apiReturnMessage) {
+                  case 'Waiting for QR sign in time out.':
+                    // tft 裝置常駐qrcode，故過時就更新qrcode
+                    if (this.tftView) {
+                      this.createLoginQrcode();
+                      this.waitQrcodeLogin();
+                    }
+                    this.cue = 'universal_userAccount_idleForTooLong';
+                    break;
+                  default:
+                    this.showMsg(errorMsg, true);
+                    console.error(
+                      `${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`
+                    );
+                    break;
+                }
+              } else {
+                this.cue = 'universal_userAccount_signSuceesfully';
+                const token = response.qrSignIn.token;
+                this.userLogin(token);
+              }
+            });
+        }
+      });
   }
 
   // 使用者登入-kidin-1090714
-  userLogin (token: string) {
+  userLogin(token: string) {
     if (this.appSys === 1) {
       (window as any).webkit.messageHandlers.returnToken.postMessage(token);
       (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
@@ -344,59 +332,59 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
       const { backUrl } = this.auth;
       location.href = backUrl ? backUrl : '/dashboard';
     }
-
   }
 
   // 取得url query string-kidin-1090514
-  getUrlString (urlStr: string) {
+  getUrlString(urlStr: string) {
     const { g } = getUrlQueryStrings(urlStr);
     if (g) this.loginBody.guid = g;
   }
 
   // 使用token取得使用者帳號資訊-kidin-1090514
-  getUserInfo () {
+  getUserInfo() {
     const body = { token: this.auth.token };
-    this.api10xxService.fetchGetUserProfile(body).subscribe(res => {
+    this.api10xxService.fetchGetUserProfile(body).subscribe((res) => {
       const profile = res.userProfile;
       this.userInfo.name = profile.nickname;
       this.userInfo.icon = `${profile.avatarUrl}`;
     });
-
   }
 
   // 登入-kidin-1090522
-  qrcodeLogin () {
+  qrcodeLogin() {
     this.qrLoginStatus = 'logging';
     if (this.loginBody.guid.length === 0) {
       const msg = this.translate.instant('universal_userAccount_linkHasExpired');
       this.showMsg(msg);
       this.qrLoginStatus = 'check';
     } else {
-      this.getClientIpaddress().pipe(
-        switchMap(ipResult => this.signupService.fetchQrcodeLogin(this.loginBody, this.requestHeader))
-      ).subscribe((res: any) => {
-        if (res.processResult.resultCode !== 200) {
+      this.getClientIpaddress()
+        .pipe(
+          switchMap((ipResult) =>
+            this.signupService.fetchQrcodeLogin(this.loginBody, this.requestHeader)
+          )
+        )
+        .subscribe((res: any) => {
+          if (res.processResult.resultCode !== 200) {
+            switch (res.processResult.apiReturnMessage) {
+              case `Post fail, found parameter 'guid' error.`:
+                const msg = this.translate.instant('universal_userAccount_linkHasExpired');
+                this.showMsg(msg);
+                break;
+              default:
+                this.showMsg(errorMsg);
+                console.error(
+                  `${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`
+                );
+                break;
+            }
 
-          switch (res.processResult.apiReturnMessage) {
-            case `Post fail, found parameter 'guid' error.`:
-              const msg = this.translate.instant('universal_userAccount_linkHasExpired');
-              this.showMsg(msg);
-              break;
-            default:
-              this.showMsg(errorMsg);
-              console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
-              break;
+            this.qrLoginStatus = 'check';
+          } else {
+            this.qrLoginStatus = 'success';
           }
-
-          this.qrLoginStatus = 'check';
-        } else {
-          this.qrLoginStatus = 'success';
-        }
-
-      });
-
+        });
     }
-
   }
 
   /**
@@ -404,12 +392,12 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
    * @param msg {string}-欲顯示之訊息
    * @author kidin-1110113
    */
-  showMsg(msg: string, leavePage: boolean = false) {
+  showMsg(msg: string, leavePage = false) {
     if (this.pcView) {
       const data = {
         title: 'Message',
         body: msg,
-        confirmText: this.translate.instant('universal_operating_confirm')
+        confirmText: this.translate.instant('universal_operating_confirm'),
       };
 
       if (leavePage) {
@@ -422,16 +410,13 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
       if (leavePage) {
         setTimeout(this.turnBack.bind(this), 2000);
       }
-
     }
-
   }
 
   // 離開頁面則取消隱藏navbar-kidin-1090514
-  ngOnDestroy () {
-    this.setPageStyle(false);  // 避免回到首頁仍吃到會員系統頁面樣式
+  ngOnDestroy() {
+    this.setPageStyle(false); // 避免回到首頁仍吃到會員系統頁面樣式
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

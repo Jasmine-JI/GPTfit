@@ -5,7 +5,7 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 @Component({
   selector: 'app-msg',
   templateUrl: './msg-dialog.component.html',
-  styleUrls: ['./msg-dialog.component.scss']
+  styleUrls: ['./msg-dialog.component.scss'],
 })
 export class MsgDialogComponent implements OnInit {
   @Output() onConfirm: EventEmitter<any> = new EventEmitter();

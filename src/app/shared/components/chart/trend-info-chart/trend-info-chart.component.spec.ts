@@ -8,9 +8,8 @@ describe('TrendInfoChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TrendInfoChartComponent ]
-    })
-    .compileComponents();
+      declarations: [TrendInfoChartComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

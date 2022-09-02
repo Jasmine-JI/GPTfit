@@ -8,9 +8,8 @@ describe('MyLifeTrackingComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ MyLifeTrackingComponent ]
-    })
-    .compileComponents();
+      declarations: [MyLifeTrackingComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

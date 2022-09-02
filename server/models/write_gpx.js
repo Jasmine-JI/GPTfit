@@ -1,7 +1,6 @@
 module.exports = function writeGpx(results, fs) {
-
   return new Promise((resolve, reject) => {
-    let trkptDatas = results.map(_result => {
+    let trkptDatas = results.map((_result) => {
       const {
         longitude,
         latitude,
@@ -12,23 +11,23 @@ module.exports = function writeGpx(results, fs) {
         cadence,
         pace,
         calorie,
-        incline
+        incline,
       } = _result;
-    let timeArr = file_name.split('');
-    timeArr =timeArr.slice(0, 8);
+      let timeArr = file_name.split('');
+      timeArr = timeArr.slice(0, 8);
 
-    timeArr.splice(4, 0, '-');
-    timeArr.splice(7, 0, '-');
-    timeArr.splice(10, 0, 'T');
+      timeArr.splice(4, 0, '-');
+      timeArr.splice(7, 0, '-');
+      timeArr.splice(10, 0, 'T');
 
-    let timeStr = timeArr.join('');
-    let utcValue = utc;
-    if (utcValue.length !== 8) {
-      utcValue = '0' + utcValue;
-    }
-    timeStr = timeStr + utcValue + '.000Z';
+      let timeStr = timeArr.join('');
+      let utcValue = utc;
+      if (utcValue.length !== 8) {
+        utcValue = '0' + utcValue;
+      }
+      timeStr = timeStr + utcValue + '.000Z';
 
-    return `<trkpt lat="${latitude}" lon="${longitude}">
+      return `<trkpt lat="${latitude}" lon="${longitude}">
         <ele>${altitude}</ele>
         <time>${timeStr}</time>
         <extensions>
@@ -41,17 +40,17 @@ module.exports = function writeGpx(results, fs) {
           </ns3:TrackPointExtension>
         </extensions>
       </trkpt>`;
-  });
-  const { file_name } = results[0];
-  let timeArr = file_name.split('');
+    });
+    const { file_name } = results[0];
+    let timeArr = file_name.split('');
 
-  timeArr.splice(4, 0, '-');
-  timeArr.splice(7, 0, '-');
-  timeArr.splice(10, 0, 'T');
-  timeArr.splice(13, 0, ':');
-  timeArr.splice(16, 0, ':');
-  timeArr.splice(19, 0, '.000Z');
-  const timeStr = timeArr.join('');
+    timeArr.splice(4, 0, '-');
+    timeArr.splice(7, 0, '-');
+    timeArr.splice(10, 0, 'T');
+    timeArr.splice(13, 0, ':');
+    timeArr.splice(16, 0, ':');
+    timeArr.splice(19, 0, '.000Z');
+    const timeStr = timeArr.join('');
     trkptDatas = trkptDatas.join('\n');
     const content = `<?xml version="1.0" encoding="UTF-8"?>
     <gpx creator="Alatech Connect" version="1.0"
@@ -74,7 +73,7 @@ module.exports = function writeGpx(results, fs) {
         </trkseg>
       </trk>
     </gpx>`;
-    fs.writeFile('/var/www/html/dist/test.gpx', content, function(err) {
+    fs.writeFile('/var/www/html/dist/test.gpx', content, function (err) {
       if (err) reject(err);
       else {
         resolve(true);

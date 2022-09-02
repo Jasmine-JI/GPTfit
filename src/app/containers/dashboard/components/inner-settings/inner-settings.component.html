@@ -1,43 +1,72 @@
 <div class="d-flex" style="margin-bottom: 15px">
   <span class="pageTitle">
-    {{'universal_group_internalStaffPermissionSetting' | translate }}
+    {{ 'universal_group_internalStaffPermissionSetting' | translate }}
   </span>
 </div>
 <table class="table alatech-table">
   <thead>
     <tr class="tr-only-hide">
-      <th class="alatech-table__cell--head">{{'universal_group_settingItem' | translate }}</th>
-      <th class="alatech-table__cell--head">{{'universal_group_currentResponsiblePerson' | translate }}</th>
-      <th class="alatech-table__cell--head">{{'universal_operating_description' | translate }}</th>
-      <th class="alatech-table__cell--head">{{'universal_system_managementFunction' | translate }}</th>
+      <th class="alatech-table__cell--head">{{ 'universal_group_settingItem' | translate }}</th>
+      <th class="alatech-table__cell--head">
+        {{ 'universal_group_currentResponsiblePerson' | translate }}
+      </th>
+      <th class="alatech-table__cell--head">{{ 'universal_operating_description' | translate }}</th>
+      <th class="alatech-table__cell--head">
+        {{ 'universal_system_managementFunction' | translate }}
+      </th>
     </tr>
   </thead>
   <tbody>
     <ng-container *ngIf="!isLoading">
-      <tr *ngTemplateOutlet="tableRow; context: {
-        accessright: AccessRight.god,
-        adminList: systemDevelopers
-      }"></tr>
-      <tr *ngTemplateOutlet="tableRow; context: {
-        accessright: AccessRight.maintainer,
-        adminList: systemMaintainers
-      }"></tr>
-      <tr *ngTemplateOutlet="tableRow; context: {
-        accessright: AccessRight.auditor,
-        adminList: systemAuditor
-      }"></tr>
-      <tr *ngTemplateOutlet="tableRow; context: {
-        accessright: AccessRight.pusher,
-        adminList: systemPushners
-      }"></tr>
-      <tr *ngTemplateOutlet="tableRow; context: {
-        accessright: AccessRight.marketing,
-        adminList: marketingDevelopers
-      }"></tr>
+      <tr
+        *ngTemplateOutlet="
+          tableRow;
+          context: {
+            accessright: AccessRight.god,
+            adminList: systemDevelopers
+          }
+        "
+      ></tr>
+      <tr
+        *ngTemplateOutlet="
+          tableRow;
+          context: {
+            accessright: AccessRight.maintainer,
+            adminList: systemMaintainers
+          }
+        "
+      ></tr>
+      <tr
+        *ngTemplateOutlet="
+          tableRow;
+          context: {
+            accessright: AccessRight.auditor,
+            adminList: systemAuditor
+          }
+        "
+      ></tr>
+      <tr
+        *ngTemplateOutlet="
+          tableRow;
+          context: {
+            accessright: AccessRight.pusher,
+            adminList: systemPushners
+          }
+        "
+      ></tr>
+      <tr
+        *ngTemplateOutlet="
+          tableRow;
+          context: {
+            accessright: AccessRight.marketing,
+            adminList: marketingDevelopers
+          }
+        "
+      ></tr>
     </ng-container>
     <tr *ngIf="isLoading">
       <td class="alatech-table__cell" colspan="4" style="text-align: center">
-        <div style="height: 100%;" class="flexCenter">
+        <div style="height: 100%" class="flexCenter">
           <mat-spinner></mat-spinner>
         </div>
       </td>
@@ -45,47 +74,36 @@
   </tbody>
 </table>
 
-<ng-template
-  #tableRow
-  let-accessright="accessright"
-  let-adminList="adminList"
->
+<ng-template #tableRow let-accessright="accessright" let-adminList="adminList">
   <tr [ngSwitch]="accessright">
     <td class="alatech-table__cell">
       <ng-container *ngSwitchCase="AccessRight.god">
-        {{'universal_group_systemDeveloper' | translate }}
+        {{ 'universal_group_systemDeveloper' | translate }}
       </ng-container>
       <ng-container *ngSwitchCase="AccessRight.maintainer">
-        {{'universal_group_systemMaintenance' | translate }}
+        {{ 'universal_group_systemMaintenance' | translate }}
       </ng-container>
-      <ng-container *ngSwitchCase="AccessRight.auditor">
-        系統-審核員
-      </ng-container>
-      <ng-container *ngSwitchCase="AccessRight.pusher">
-        系統-推播員
-      </ng-container>
+      <ng-container *ngSwitchCase="AccessRight.auditor"> 系統-審核員 </ng-container>
+      <ng-container *ngSwitchCase="AccessRight.pusher"> 系統-推播員 </ng-container>
       <ng-container *ngSwitchCase="AccessRight.marketing">
-        {{'universal_group_systemMarketing' | translate }}
+        {{ 'universal_group_systemMarketing' | translate }}
       </ng-container>
-      {{'universal_group_permissionSetting' | translate }}({{ accessright }})
+      {{ 'universal_group_permissionSetting' | translate }}({{ accessright }})
     </td>
     <td class="alatech-table__cell" *ngIf="adminList.length === 0">
-      {{'universal_group_noRelevantPersonnel' | translate }}
+      {{ 'universal_group_noRelevantPersonnel' | translate }}
     </td>
-    <td
-      class="alatech-table__cell"
-      *ngIf="adminList && adminList.length > 0"
-    >
+    <td class="alatech-table__cell" *ngIf="adminList && adminList.length > 0">
       <span class="innerAdmin-name" *ngFor="let admin of adminList">
         {{ admin.userName }}
       </span>
     </td>
     <td class="alatech-table__cell">
       <ng-container *ngSwitchCase="AccessRight.god">
-        {{'universal_group_systemDeveloperDescription' | translate }}
+        {{ 'universal_group_systemDeveloperDescription' | translate }}
       </ng-container>
       <ng-container *ngSwitchCase="AccessRight.maintainer">
-        {{'universal_group_systemMaintainerDescription' | translate }}
+        {{ 'universal_group_systemMaintainerDescription' | translate }}
       </ng-container>
       <ng-container *ngSwitchCase="AccessRight.auditor">
         設定各系統審核人員，便於申請人指定推播人員
@@ -94,7 +112,7 @@
         設定各系統推播人員，便於申請人指定推播人員
       </ng-container>
       <ng-container *ngSwitchCase="AccessRight.marketing">
-        {{'universal_group_marketingPermissionDescription' | translate }}
+        {{ 'universal_group_marketingPermissionDescription' | translate }}
       </ng-container>
     </td>
     <td class="alatech-table__cell">

@@ -1,9 +1,6 @@
-<div
-  class="flexCol weight__train__setting"
-  (click)="$event.stopPropagation()"
->
+<div class="flexCol weight__train__setting" (click)="$event.stopPropagation()">
   <span>{{ 'universal_activityData_weightTrainingExtent' | translate }}</span>
-  <div class="flexCol" style="position: relative;">
+  <div class="flexCol" style="position: relative">
     <span
       class="report-dropMenu weight__train__menu"
       [class.report-dropMenu--active]="showLevelSelector"

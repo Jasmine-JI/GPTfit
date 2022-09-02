@@ -8,9 +8,7 @@ import { deepCopy } from '../../utils/index';
 import { getCorrespondingMuscleGroup } from '../../utils/sports';
 import { ReportDateType } from '../../models/report-condition';
 
-
 dayjs.extend(quarterOfYear);
-
 
 /**
  * 重訓肌群與肌肉部位疊合趨勢圖之數據
@@ -20,22 +18,20 @@ const trendModel = [
     name: 'universal_activityData_max1Rm',
     linkedTo: 'base',
     pointPlacement: 0.1,
-    data: []
+    data: [],
   },
   {
     name: 'universal_activityData_avgWeight',
     id: 'base',
     showInLegend: false,
-    data: []
-  }
+    data: [],
+  },
 ];
-
 
 /**
  * 處理 api 2104 response
  */
 export class WeightTrainingTrend {
-
   /**
    * 使用者體重
    */
@@ -51,7 +47,7 @@ export class WeightTrainingTrend {
    */
   private _max1RMTrendData = {
     base: [],
-    compare: []
+    compare: [],
   };
 
   /**
@@ -59,7 +55,7 @@ export class WeightTrainingTrend {
    */
   private _max1RM = {
     base: {},
-    compare: {}
+    compare: {},
   };
 
   /**
@@ -82,10 +78,7 @@ export class WeightTrainingTrend {
    */
   private _sameGroupData = {};
 
-  constructor(
-    level: WeightTrainingLevel = WeightTrainingLevel.metacarpus,
-    bodyWeight: number = 60
-  ) {
+  constructor(level: WeightTrainingLevel = WeightTrainingLevel.metacarpus, bodyWeight = 60) {
     this._proficiency = this.getProficiency(level);
     this._bodyWeight = bodyWeight;
   }
@@ -103,7 +96,6 @@ export class WeightTrainingTrend {
       case WeightTrainingLevel.novice:
         return Proficiency.novice;
     }
-
   }
 
   /**
@@ -116,16 +108,16 @@ export class WeightTrainingTrend {
     this._allDateList.push(dateRange);
     this._max1RMTrendData[type].push({ dateRange, max1RM: {} });
     this._sameGroupData = {};
-    info.forEach(_info => {
+    info.forEach((_info) => {
       const { max1RmWeightKg, muscle } = _info;
       const currentMax1RM = this._max1RM[type][muscle];
       // 1RM取該部位目前最大值
-      this._max1RM[type][muscle] = !currentMax1RM || currentMax1RM < max1RmWeightKg ? max1RmWeightKg : currentMax1RM;
+      this._max1RM[type][muscle] =
+        !currentMax1RM || currentMax1RM < max1RmWeightKg ? max1RmWeightKg : currentMax1RM;
       if (type === 'base') {
         this.handlePartTrainingData(_info, dateRange);
         this.mergeSameMuscleGroup(_info);
       }
-
     });
 
     this.handlePartMax1RMData(type);
@@ -140,9 +132,8 @@ export class WeightTrainingTrend {
     const max1RMData = this._max1RMTrendData[type];
     const currentDataLength = max1RMData.length - 1;
     this._max1RMTrendData[type][currentDataLength].max1RM = {
-      ...this.setMuscleMapColor(this._max1RM[type])
+      ...this.setMuscleMapColor(this._max1RM[type]),
     };
-
   }
 
   /**
@@ -151,7 +142,7 @@ export class WeightTrainingTrend {
    */
   setMuscleMapColor(data: any) {
     const result = {};
-    Object.entries(data).forEach(_data => {
+    Object.entries(data).forEach((_data) => {
       const [_key, _value] = _data;
       Object.assign(result, { [_key]: this.setColor(_value as number).max1RMColor });
     });
@@ -172,8 +163,18 @@ export class WeightTrainingTrend {
 
     const [max1RMData, avgWeightData] = this._partTrainingData[muscle];
     const { max1RMColor, avgWeightColor } = this.setColor(max1RmWeightKg, false);
-    max1RMData.data.push({ x: startDate, y: max1RmWeightKg, color: max1RMColor, additionalInfo: dateRange });
-    avgWeightData.data.push({ x: startDate, y: avgWeight, color: avgWeightColor, additionalInfo: dateRange });
+    max1RMData.data.push({
+      x: startDate,
+      y: max1RmWeightKg,
+      color: max1RMColor,
+      additionalInfo: dateRange,
+    });
+    avgWeightData.data.push({
+      x: startDate,
+      y: avgWeight,
+      color: avgWeightColor,
+      additionalInfo: dateRange,
+    });
   }
 
   /**
@@ -183,44 +184,59 @@ export class WeightTrainingTrend {
   handleGroupTrainingData(dateRange: Array<number>) {
     const { _sameGroupData } = this;
     const [startDate, ...rest] = dateRange;
-    Object.entries(_sameGroupData).forEach(_muscleGroupData => {
+    Object.entries(_sameGroupData).forEach((_muscleGroupData) => {
       const [_muscleCode, _data] = _muscleGroupData;
       const { max1RM, totalWeight, totalReps } = _data as any;
       const avgWeight = mathRounding(totalWeight / totalReps, 3);
-      if (!this._groupTrainingData[_muscleCode]) this._groupTrainingData[_muscleCode] = deepCopy(trendModel);
+      if (!this._groupTrainingData[_muscleCode])
+        this._groupTrainingData[_muscleCode] = deepCopy(trendModel);
 
       const [max1RMData, avgWeightData] = this._groupTrainingData[_muscleCode];
       const { max1RMColor, avgWeightColor } = this.setColor(max1RM, false);
-      max1RMData.data.push({ x: startDate, y: max1RM, color: max1RMColor, additionalInfo: dateRange });
-      avgWeightData.data.push({ x: startDate, y: avgWeight, color: avgWeightColor, additionalInfo: dateRange });
+      max1RMData.data.push({
+        x: startDate,
+        y: max1RM,
+        color: max1RMColor,
+        additionalInfo: dateRange,
+      });
+      avgWeightData.data.push({
+        x: startDate,
+        y: avgWeight,
+        color: avgWeightColor,
+        additionalInfo: dateRange,
+      });
     });
-
   }
 
   /**
    * 根據使用者設定訓練程度設定呈現顏色
    * @param max1RM {number}-最大1RM
    */
-  setColor(max1RM: number, useInMuscleMap: boolean = true) {
-    const { saturation, brightnessFor1RM, brightnessForAvgWeight, transparency } = WEIGHT_TRAIN_COLOR;
+  setColor(max1RM: number, useInMuscleMap = true) {
+    const { saturation, brightnessFor1RM, brightnessForAvgWeight, transparency } =
+      WEIGHT_TRAIN_COLOR;
     const { _bodyWeight, _proficiency } = this;
     const transparencyPercentage = useInMuscleMap ? transparency : 1;
-    let hue = Math.round(200 - ((max1RM / _bodyWeight) * 100 * _proficiency));
+    let hue = Math.round(200 - (max1RM / _bodyWeight) * 100 * _proficiency);
     if (hue < 0) hue = 0;
     if (hue > 200) hue = 200;
 
     return {
       max1RMColor: `hsla(${hue}, ${saturation}, ${brightnessFor1RM}, ${transparencyPercentage})`,
-      avgWeightColor: `hsla(${hue}, ${saturation}, ${brightnessForAvgWeight}, ${transparencyPercentage})`
+      avgWeightColor: `hsla(${hue}, ${saturation}, ${brightnessForAvgWeight}, ${transparencyPercentage})`,
     };
-
   }
 
   /**
    * 合併同肌群之肌肉部位數據
    */
   mergeSameMuscleGroup(partInfo: WeightTrainingInfo) {
-    const { max1RmWeightKg: current1RM, muscle, totalWeightKg: currentWeight, totalReps: currentReps } = partInfo;
+    const {
+      max1RmWeightKg: current1RM,
+      muscle,
+      totalWeightKg: currentWeight,
+      totalReps: currentReps,
+    } = partInfo;
     const muscleGroup = getCorrespondingMuscleGroup(muscle);
     if (!this._sameGroupData[muscleGroup]) {
       this._sameGroupData[muscleGroup] = {
@@ -235,9 +251,7 @@ export class WeightTrainingTrend {
         totalWeight: totalWeight + currentWeight,
         totalReps: totalReps + currentReps,
       };
-
     }
-
   }
 
   /**
@@ -249,11 +263,11 @@ export class WeightTrainingTrend {
     const maxData = [];
     const avgData = [];
     const fillup = (obj: any) => {
-      maxData.push(obj)
+      maxData.push(obj);
       avgData.push(obj);
     };
 
-    this._allDateList.forEach(_date => {
+    this._allDateList.forEach((_date) => {
       const [_startDate, ...rest] = _date;
       const filler = { x: _startDate, y: 0, additionalInfo: _date };
       const currentIndexData = dataArray[0].data[index];
@@ -268,9 +282,7 @@ export class WeightTrainingTrend {
           avgData.push(dataArray[1].data[index]);
           index++;
         }
-
       }
-
     });
 
     dataArray[0].data = maxData;
@@ -289,14 +301,15 @@ export class WeightTrainingTrend {
    * 取得期間同部位訓練趨勢數據
    */
   get partTrainingData() {
-    let result = {};
-    for (let _muscleCode in this._partTrainingData as any) {
+    const result = {};
+    for (const _muscleCode in this._partTrainingData as any) {
       const muscleCode = +_muscleCode as MuscleCode;
       const muscleGroup = getCorrespondingMuscleGroup(muscleCode);
       const _data = this._partTrainingData[_muscleCode];
       const dataInfo = { muscleCode, data: this.fillupDate(_data) };
-      result[muscleGroup] ?
-        result[muscleGroup].info.push(dataInfo) : Object.assign(result, { [muscleGroup]: { unfold: false, info: [dataInfo] } });
+      result[muscleGroup]
+        ? result[muscleGroup].info.push(dataInfo)
+        : Object.assign(result, { [muscleGroup]: { unfold: false, info: [dataInfo] } });
     }
 
     return result;
@@ -309,7 +322,5 @@ export class WeightTrainingTrend {
     return Object.entries(this._groupTrainingData).map(([_muscleGroup, _data]) => {
       return { index: _muscleGroup, data: this.fillupDate(_data) };
     });
-
   }
-
 }

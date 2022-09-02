@@ -4,7 +4,7 @@
 export enum WeightTrainingLevel {
   novice = 50,
   metacarpus = 100,
-  asept = 200
+  asept = 200,
 }
 
 /**
@@ -13,7 +13,7 @@ export enum WeightTrainingLevel {
 export enum Proficiency {
   asept = 1,
   metacarpus = 2,
-  novice = 4
+  novice = 4,
 }
 
 /**
@@ -135,7 +135,7 @@ export enum MuscleCode {
   /**
    * 腕伸屈肌
    */
-  wristFlexor = 128
+  wristFlexor = 128,
 }
 
 /**
@@ -147,7 +147,7 @@ export enum MuscleGroup {
   shoulderMuscle,
   backMuscle,
   abdominalMuscle,
-  legMuscle
+  legMuscle,
 }
 
 /**
@@ -159,5 +159,5 @@ export enum MuscleAnalysisColumn {
   totalReps,
   avgWeightKg,
   trainingLevel,
-  belongMuscleGroup
+  belongMuscleGroup,
 }

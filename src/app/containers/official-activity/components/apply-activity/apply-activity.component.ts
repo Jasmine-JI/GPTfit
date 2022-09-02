@@ -28,19 +28,17 @@ import { LockCaptcha } from '../../../../shared/classes/lock-captcha';
 import { checkResponse, getCurrentTimestamp } from '../../../../shared/utils/index';
 import { NodejsApiService } from '../../../../core/services/nodejs-api.service';
 
-
 const stageHeight = 90;
 type InputAlert = 'format' | 'empty' | 'repeat' | 'login';
 interface NewRegister {
   token: string;
   password: string;
-};
-
+}
 
 @Component({
   selector: 'app-apply-activity',
   templateUrl: './apply-activity.component.html',
-  styleUrls: ['./apply-activity.component.scss']
+  styleUrls: ['./apply-activity.component.scss'],
 })
 export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();
@@ -72,7 +70,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     clickSubmitButton: false,
     isApplied: false,
     notQualified: false,
-    displayPW: false
+    displayPW: false,
   };
 
   eventInfo: any;
@@ -84,7 +82,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   stageTop = {
     start: 0,
     edit: 0,
-    final: 0
+    final: 0,
   };
 
   /**
@@ -93,17 +91,16 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   progressLine = {
     start: {
       top: 0,
-      height: 0
+      height: 0,
     },
     finished: {
       top: 0,
-      height: 0
+      height: 0,
     },
     edit: {
       top: 0,
-      height: 0
+      height: 0,
     },
-
   };
 
   applyInfo = {
@@ -124,11 +121,10 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       emergencyContact: {
         name: null,
         mobileNumber: null,
-        relationship: null
+        relationship: null,
       },
-      remark: null
-    }
-     
+      remark: null,
+    },
   };
 
   alert = {
@@ -142,9 +138,8 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     emergencyContact: {
       name: <InputAlert>null,
       mobileNumber: <InputAlert>null,
-      relationship: <InputAlert>null
-    }
-
+      relationship: <InputAlert>null,
+    },
   };
 
   /**
@@ -152,7 +147,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   loginBody = <any>{
     signInType: <SignTypeEnum>SignTypeEnum.phone,
-    password: null
+    password: null,
   };
 
   /**
@@ -160,7 +155,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   enableBody = <any>{
     enableAccountFlow: EnableAccountFlow.request,
-    project: AlaApp.gptfit
+    project: AlaApp.gptfit,
   };
 
   /**
@@ -170,8 +165,8 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     editType: 1,
     token: null,
     oldPassword: null,
-    newPassword: null
-  }
+    newPassword: null,
+  };
 
   /**
    * 紀錄所選方案組合
@@ -179,12 +174,12 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   selectPlanInfo = {
     feeId: null,
     title: null,
-    fee: null
-  }
+    fee: null,
+  };
 
   imgLock: LockCaptcha;
-  groupList = [];  // 使用者可選擇之分組類別
-  defaultBirthday = dayjs().subtract(40, 'year').startOf('year'); 
+  groupList = []; // 使用者可選擇之分組類別
+  defaultBirthday = dayjs().subtract(40, 'year').startOf('year');
   token = this.auth.token;
   userId: number;
   intervals: NodeJS.Timeout;
@@ -209,7 +204,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     private translate: TranslateService,
     private signupService: SignupService,
     private nodejsApiService: NodejsApiService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.checkEventId();
@@ -228,12 +223,9 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   subscribeResizeEvent() {
     const page = fromEvent(window, 'resize');
-    this.resizeEvent = page.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    this.resizeEvent = page.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.checkScreenSize();
     });
-
   }
 
   /**
@@ -251,18 +243,21 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101119
    */
   checkApplied() {
-    const { token, applyInfo: { targetEventId: eventId } } = this;
+    const {
+      token,
+      applyInfo: { targetEventId: eventId },
+    } = this;
     const body = {
       token,
       search: {
         userApplyInfo: {
           args: { eventId },
-          target: ['eventId', 'applyStatus']
-        }
-      }
+          target: ['eventId', 'applyStatus'],
+        },
+      },
     };
 
-    this.nodejsApiService.getAssignInfo(body).subscribe(res => {
+    this.nodejsApiService.getAssignInfo(body).subscribe((res) => {
       if (this.utils.checkRes(res)) {
         const { applyStatus } = res.result[0] ?? { applyStatus: ApplyStatus.notYet };
         if (applyStatus !== ApplyStatus.notYet) {
@@ -270,11 +265,8 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         } else {
           this.getEventUserProfile(this.token);
         }
-        
       }
-      
     });
-    
   }
 
   /**
@@ -292,26 +284,29 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   getEventUserProfile(token: string) {
     combineLatest([
-      this.officialActivityService.getEventUserProfile({token}),
-      this.api10xxService.fetchGetUserProfile({ token })
-    ]).pipe(
-      tap(result => {
-        const [eventUserProfileResult, userProfileResult] = result;
-        if (this.utils.checkRes(eventUserProfileResult)) {
-          const { userProfile: eventUserProfile } = eventUserProfileResult;
-          this.handleEventUserProfile(eventUserProfile);
-        }
+      this.officialActivityService.getEventUserProfile({ token }),
+      this.api10xxService.fetchGetUserProfile({ token }),
+    ])
+      .pipe(
+        tap((result) => {
+          const [eventUserProfileResult, userProfileResult] = result;
+          if (this.utils.checkRes(eventUserProfileResult)) {
+            const { userProfile: eventUserProfile } = eventUserProfileResult;
+            this.handleEventUserProfile(eventUserProfile);
+          }
 
-        if (this.utils.checkRes(userProfileResult)) {
-          const { signIn: { accountStatus, accountType }, userProfile } = userProfileResult;
-          this.loginBody.signInType = accountType;
-          this.uiFlag.enableAccount = accountStatus === AccountStatusEnum.enabled;
-          this.handleUserProfile(userProfile);
-        }
-
-      })
-    ).subscribe();
-
+          if (this.utils.checkRes(userProfileResult)) {
+            const {
+              signIn: { accountStatus, accountType },
+              userProfile,
+            } = userProfileResult;
+            this.loginBody.signInType = accountType;
+            this.uiFlag.enableAccount = accountStatus === AccountStatusEnum.enabled;
+            this.handleUserProfile(userProfile);
+          }
+        })
+      )
+      .subscribe();
   }
 
   /**
@@ -320,12 +315,11 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101116
    */
   handleEventUserProfile(eventUserProfile: any) {
-    for (let _key in this.applyInfo.userProfile) {
+    for (const _key in this.applyInfo.userProfile) {
       const value = eventUserProfile[_key];
       if (value !== null && value !== undefined) {
         this.applyInfo.userProfile[_key] = value;
       }
-
     }
 
     this.defaultBirthday = dayjs(eventUserProfile.birthday, 'YYYYMMDD');
@@ -339,15 +333,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101116
    */
   handleUserProfile(userProfile: UserProfileInfo) {
-    const {
-      nickname,
-      email,
-      birthday,
-      gender,
-      countryCode,
-      mobileNumber,
-      userId
-    } = userProfile;
+    const { nickname, email, birthday, gender, countryCode, mobileNumber, userId } = userProfile;
 
     this.applyInfo.userProfile.nickname = nickname;
     this.applyInfo.userProfile.gender = gender;
@@ -375,7 +361,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     } else {
       this.navigate404();
     }
-
   }
 
   /**
@@ -392,11 +377,13 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101104
    */
   getEventDetail(eventId: number) {
-    this.officialActivityService.getEventDetail({eventId}).subscribe(res => {
+    this.officialActivityService.getEventDetail({ eventId }).subscribe((res) => {
       if (checkResponse(res)) {
         const { eventInfo, eventDetail } = res;
         const { eventStatus } = eventInfo;
-        const { applyDate: { startDate, endDate } } = eventInfo;
+        const {
+          applyDate: { startDate, endDate },
+        } = eventInfo;
         const overApplyDate = this.checkApplyDateOver(startDate, endDate);
         const canApply = !overApplyDate && eventStatus === EventStatus.audit;
         if (canApply) {
@@ -406,12 +393,10 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
           this.handleDefaultApplyFee(eventDetail);
           return true;
         }
-
-      } 
+      }
 
       return this.navigate404();
     });
-
   }
 
   /**
@@ -424,9 +409,8 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     this.selectPlanInfo = {
       feeId,
       title,
-      fee
+      fee,
     };
-
   }
 
   /**
@@ -495,16 +479,13 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
           this.stageTop = {
             start: phoneInputTop - originTop,
             edit: focusInputTop - originTop,
-            final: submitTop - originTop
+            final: submitTop - originTop,
           };
 
-          this.checkProgressPosition()
+          this.checkProgressPosition();
         }
-
       }
-
     });
-
   }
 
   /**
@@ -523,21 +504,18 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       this.progressLine = {
         start: {
           top: originElementBottom - originElementTop,
-          height: start - (originElementBottom - originElementTop)
+          height: start - (originElementBottom - originElementTop),
         },
         finished: {
           top: startBottom,
-          height: edit - startBottom < 0 ? 0 : edit - startBottom
+          height: edit - startBottom < 0 ? 0 : edit - startBottom,
         },
         edit: {
           top: editBottom,
-          height: final - editBottom
-        }
-
+          height: final - editBottom,
+        },
       };
-
     }
-
   }
 
   /**
@@ -558,7 +536,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
 
       this.checkStagePosition();
     }
-
   }
 
   /**
@@ -568,7 +545,10 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   showCountryCodeList(e: MouseEvent) {
     e.stopPropagation();
-    const { token, loginBody: { signInType } } = this;
+    const {
+      token,
+      loginBody: { signInType },
+    } = this;
     if (!token || signInType !== SignTypeEnum.phone) {
       const { showCountryCodeList } = this.uiFlag;
       if (showCountryCodeList) {
@@ -578,9 +558,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         this.positionMark(e);
         this.subscribeClickScrollEvent();
       }
-
     }
-    
   }
 
   /**
@@ -593,12 +571,11 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     const targetElement = document.querySelector(targetClass);
     const clickEvent = fromEvent(document, 'click');
     const scrollEvent = fromEvent(targetElement, 'scroll');
-    this.clickScrollEvent = merge(clickEvent, scrollEvent).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.unsubscribeClickScrollEvent();
-    });
-
+    this.clickScrollEvent = merge(clickEvent, scrollEvent)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.unsubscribeClickScrollEvent();
+      });
   }
 
   /**
@@ -610,7 +587,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     this.uiFlag.showGroupList = false;
     if (this.clickScrollEvent) this.clickScrollEvent.unsubscribe();
   }
-  
+
   /**
    * 選擇國碼
    * @param e {MouseEvent}
@@ -625,7 +602,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       this.applyInfo.userProfile.countryCode = newCountryCode;
       this.checkPhoneAccount();
     }
-    
+
     this.unsubscribeClickScrollEvent();
   }
 
@@ -641,7 +618,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       const { showLoginButton } = this.uiFlag;
       if (showLoginButton === AccountTypeEnum.phone) this.uiFlag.showLoginButton = null;
     } else {
-      const newPhone = `${+trimValue}`;  // 藉由轉數字將開頭所有0去除
+      const newPhone = `${+trimValue}`; // 藉由轉數字將開頭所有0去除
       if (!formTest.phone.test(newPhone)) {
         this.alert.mobileNumber = 'format';
       } else {
@@ -649,9 +626,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         this.applyInfo.userProfile.mobileNumber = +newPhone;
         this.checkPhoneAccount();
       }
-
     }
-
   }
 
   /**
@@ -661,7 +636,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   checkEmergencyPhoneFormat(e: MouseEvent) {
     const trimValue = (e as any).target.value.trim();
-    const newPhone = `${+trimValue}`;  // 藉由轉數字將開頭所有0去除
+    const newPhone = `${+trimValue}`; // 藉由轉數字將開頭所有0去除
     if (trimValue.length !== 0 && !formTest.phone.test(newPhone)) {
       this.alert.emergencyContact.mobileNumber = 'format';
     } else {
@@ -669,7 +644,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       this.applyInfo.userProfile.emergencyContact.mobileNumber = +newPhone || '';
       this.checkPhoneAccount();
     }
-
   }
 
   /**
@@ -681,11 +655,11 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     if (!this.token && mobileNumber && countryCode) {
       const args = { countryCode, phone: mobileNumber };
       const target = ['phone'];
-      this.checkRepeat(args, target).subscribe(res => {
+      this.checkRepeat(args, target).subscribe((res) => {
         if (checkResponse(res)) {
           const { phone } = res.result[0] ?? {};
           if (phone) {
-            delete this.loginBody.email;  // 避免多帳號者更換帳號
+            delete this.loginBody.email; // 避免多帳號者更換帳號
             this.loginBody.signInType = SignTypeEnum.phone;
             this.loginBody.countryCode = countryCode;
             this.loginBody.mobileNumber = mobileNumber;
@@ -694,13 +668,9 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
             const { showLoginButton } = this.uiFlag;
             if (showLoginButton === AccountTypeEnum.phone) this.uiFlag.showLoginButton = null;
           }
-
         }
-
       });
-
     }
-
   }
 
   /**
@@ -715,7 +685,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       const { showLoginButton } = this.uiFlag;
       if (showLoginButton === AccountTypeEnum.email) this.uiFlag.showLoginButton = null;
     } else {
-
       if (!formTest.email.test(newEmail)) {
         this.alert.email = 'format';
       } else {
@@ -723,9 +692,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         this.applyInfo.userProfile.email = newEmail;
         this.checkEmailAccount(newEmail);
       }
-
     }
-
   }
 
   /**
@@ -737,11 +704,11 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     const args = { email };
     const target = ['email'];
     if (!this.token) {
-      this.checkRepeat(args, target).subscribe(res => {
+      this.checkRepeat(args, target).subscribe((res) => {
         if (checkResponse(res)) {
           const { email } = res.result[0] ?? {};
           if (email) {
-            delete this.loginBody.countryCode;  // 避免多帳號者更換帳號
+            delete this.loginBody.countryCode; // 避免多帳號者更換帳號
             delete this.loginBody.mobileNumber;
             this.loginBody.signInType = SignTypeEnum.email;
             this.loginBody.email = email;
@@ -750,13 +717,9 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
             const { showLoginButton } = this.uiFlag;
             if (showLoginButton === AccountTypeEnum.email) this.uiFlag.showLoginButton = null;
           }
-
         }
-
       });
-
     }
-
   }
 
   /**
@@ -788,9 +751,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         this.applyInfo.userProfile.nickname = nickname;
         this.checkNickname(nickname);
       }
-
     }
-
   }
 
   /**
@@ -811,30 +772,32 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     const { progress } = this.uiFlag;
     if (progress === 100) {
       this.uiFlag.progress = 30;
-      this.auth.accountLogin(this.loginBody).pipe(
-        switchMap(loginResponse => {
-          if (checkResponse(loginResponse)) {
-            const { signIn: { token, accountStatus } } = loginResponse;
-            this.uiFlag.enableAccount = accountStatus === AccountStatusEnum.enabled;
-            this.handleLoginSuccess(token);
-            const args = { eventId: this.applyInfo.targetEventId };
-            const target = ['eventId'];
-            return this.checkRepeat(args, target, token, 'userApplyInfo').pipe(
-              tap(checkApplyResponse => this.checkApply(checkApplyResponse))
-            );
-          } else {
-            const msg = 'Login failed.';
-            this.snackbar.open(msg, 'OK', { duration: 3000 } );
-            return of(loginResponse);
-          }
-
-        })
-      ).subscribe(res => {
-        this.uiFlag.progress = 100;
-      });
-
+      this.auth
+        .accountLogin(this.loginBody)
+        .pipe(
+          switchMap((loginResponse) => {
+            if (checkResponse(loginResponse)) {
+              const {
+                signIn: { token, accountStatus },
+              } = loginResponse;
+              this.uiFlag.enableAccount = accountStatus === AccountStatusEnum.enabled;
+              this.handleLoginSuccess(token);
+              const args = { eventId: this.applyInfo.targetEventId };
+              const target = ['eventId'];
+              return this.checkRepeat(args, target, token, 'userApplyInfo').pipe(
+                tap((checkApplyResponse) => this.checkApply(checkApplyResponse))
+              );
+            } else {
+              const msg = 'Login failed.';
+              this.snackbar.open(msg, 'OK', { duration: 3000 });
+              return of(loginResponse);
+            }
+          })
+        )
+        .subscribe((res) => {
+          this.uiFlag.progress = 100;
+        });
     }
-
   }
 
   /**
@@ -849,7 +812,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     this.uiFlag.showLoginButton = null;
     this.getEventUserProfile(token);
     const msg = 'Login success.';
-    this.snackbar.open(msg, 'OK', { duration: 3000 } );
+    this.snackbar.open(msg, 'OK', { duration: 3000 });
   }
 
   /**
@@ -858,27 +821,25 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101229
    */
   checkApply(response: any) {
-    this.translate.get('hellow world').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      const { eventId: appliedEventId } = response.result[0] || { eventId: null };
-      if (appliedEventId) {
-        this.uiFlag.isApplied = true;
-        const backUrl = `/official-activity/activity-detail/${appliedEventId}`;
-        this.dialog.open(MessageBoxComponent, {
-          hasBackdrop: true,
-          data: {
-            title: 'Message',
-            body: `已報名此賽事`,
-            confirmText: this.translate.instant('universal_operating_confirm'),
-            onConfirm: () => this.router.navigateByUrl(backUrl)
-          }
-        });
-
-      }
-
-    })
-
+    this.translate
+      .get('hellow world')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        const { eventId: appliedEventId } = response.result[0] || { eventId: null };
+        if (appliedEventId) {
+          this.uiFlag.isApplied = true;
+          const backUrl = `/official-activity/activity-detail/${appliedEventId}`;
+          this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            data: {
+              title: 'Message',
+              body: `已報名此賽事`,
+              confirmText: this.translate.instant('universal_operating_confirm'),
+              onConfirm: () => this.router.navigateByUrl(backUrl),
+            },
+          });
+        }
+      });
   }
 
   /**
@@ -890,16 +851,13 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     const args = { nickname };
     const target = ['nickname'];
     if (!this.token) {
-      this.checkRepeat(args, target).subscribe(res => {
+      this.checkRepeat(args, target).subscribe((res) => {
         if (this.utils.checkRes(res)) {
           const { nickname } = res.result[0] ?? {};
           this.alert.nickname = nickname ? 'repeat' : null;
         }
-
       });
-
     }
-
   }
 
   /**
@@ -915,7 +873,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       this.alert.truthName = null;
       this.applyInfo.userProfile.truthName = truthName;
     }
-
   }
 
   /**
@@ -937,7 +894,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       this.alert.idCardNumber = null;
       this.applyInfo.userProfile.idCardNumber = idCardNumber;
     }
-
   }
 
   /**
@@ -961,13 +917,13 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     const address = (e as any).target.value.trim();
     if (address.length === 0) {
       this.alert.address = 'empty';
-    } else if (address.length < 10) {  // 地址至少10字以上
+    } else if (address.length < 10) {
+      // 地址至少10字以上
       this.alert.address = 'format';
     } else {
       this.alert.address = null;
       this.applyInfo.userProfile.address = address;
     }
-
   }
 
   /**
@@ -980,7 +936,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     setTimeout(() => {
       this.positionMark(e);
     }, 300);
-
   }
 
   /**
@@ -998,7 +953,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       this.positionMark(e);
       this.subscribeClickScrollEvent();
     }
-    
   }
 
   /**
@@ -1025,9 +979,8 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     this.selectPlanInfo = {
       feeId,
       title,
-      fee
+      fee,
     };
-
   }
 
   /**
@@ -1036,51 +989,43 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   checkForm() {
     this.uiFlag.clickSubmitButton = true;
-    this.translate.get('hellow world').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      // 透過先更新ui，以獲取尚未填寫之欄位
-      setTimeout(() => {
-        const errorInput = document.querySelectorAll('.alert__text');
-        if (errorInput.length > 0) {
-          const targetElement = errorInput[0] as HTMLElement;
-          const targetPosition = targetElement.offsetTop;
-          window.scrollTo({top: targetPosition, behavior: 'smooth'});
-        } else {
+    this.translate
+      .get('hellow world')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        // 透過先更新ui，以獲取尚未填寫之欄位
+        setTimeout(() => {
+          const errorInput = document.querySelectorAll('.alert__text');
+          if (errorInput.length > 0) {
+            const targetElement = errorInput[0] as HTMLElement;
+            const targetPosition = targetElement.offsetTop;
+            window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+          } else {
+            const { targetGroupId } = this.applyInfo;
+            const { name } = this.eventDetail.group[targetGroupId - 1];
+            const { title, fee } = this.selectPlanInfo;
+            const checkI18n = this.translate.instant('universal_vocabulary_infoConfirm');
+            const applyGroupI18n = this.translate.instant('universal_vocabulary_raceCatagory');
+            const feeNameI18n = this.translate.instant('universal_vocabulary_racePackage');
+            const feeI18n = this.translate.instant('universal_vocabulary_raceFee');
+            const unEditableI18n = this.translate.instant('universal_vocabulary_noChangeAfterSign');
 
-          const { targetGroupId } = this.applyInfo;
-          const { name } = this.eventDetail.group[targetGroupId - 1];
-          const { title, fee } = this.selectPlanInfo;
-          const checkI18n = this.translate.instant('universal_vocabulary_infoConfirm');
-          const applyGroupI18n = this.translate.instant('universal_vocabulary_raceCatagory');
-          const feeNameI18n = this.translate.instant('universal_vocabulary_racePackage');
-          const feeI18n = this.translate.instant('universal_vocabulary_raceFee');
-          const unEditableI18n = this.translate.instant('universal_vocabulary_noChangeAfterSign');
-
-          const msg = `${checkI18n}<br><br>${applyGroupI18n}: ${
-            name}<br>${feeNameI18n}: ${
-            title}<br>${feeI18n}: $${
-            fee}<br><br>${unEditableI18n}
+            const msg = `${checkI18n}<br><br>${applyGroupI18n}: ${name}<br>${feeNameI18n}: ${title}<br>${feeI18n}: $${fee}<br><br>${unEditableI18n}
           `;
-          this.dialog.open(MessageBoxComponent, {
-            hasBackdrop: true,
-            data: {
-              title: 'Message',
-              body: msg,
-              cancelText: this.translate.instant('universal_operating_cancel'),
-              onCancel: () => false,
-              confirmText: this.translate.instant('universal_operating_confirm'),
-              onConfirm: () => this.applyActivity()
-            }
-
-          });
-          
-        }
-
+            this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: msg,
+                cancelText: this.translate.instant('universal_operating_cancel'),
+                onCancel: () => false,
+                confirmText: this.translate.instant('universal_operating_confirm'),
+                onConfirm: () => this.applyActivity(),
+              },
+            });
+          }
+        });
       });
-
-    });
-
   }
 
   /**
@@ -1088,13 +1033,16 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101111
    */
   applyActivity() {
-    const { uiFlag: { progress, isApplied, enableAccount }, token } = this;
+    const {
+      uiFlag: { progress, isApplied, enableAccount },
+      token,
+    } = this;
     if (!isApplied && progress === 100) {
       this.uiFlag.progress = 30;
 
       if (token) Object.assign(this.applyInfo, { token });
 
-      this.officialActivityService.applyEvent(this.applyInfo).subscribe(res => {
+      this.officialActivityService.applyEvent(this.applyInfo).subscribe((res) => {
         this.uiFlag.progress = 100;
         if (this.utils.checkRes(res)) {
           const { register } = res;
@@ -1106,11 +1054,8 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
 
           this.uiFlag.applyComplish = true;
         }
-
       });
-
     }
-
   }
 
   /**
@@ -1133,17 +1078,17 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @param token {string}-權杖
    * @author kidin-1101116
    */
-  tokenLogin(token: string, newAccount: boolean = false) {
+  tokenLogin(token: string, newAccount = false) {
     const body = {
       signInType: SignTypeEnum.token,
-      token
+      token,
     };
 
-    this.auth.accountLogin(body).subscribe(res => {
+    this.auth.accountLogin(body).subscribe((res) => {
       if (checkResponse(res)) {
         const {
           signIn: { accountStatus, accountType },
-          userProfile: { userId }
+          userProfile: { userId },
         } = res;
 
         this.userId = userId;
@@ -1151,9 +1096,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         this.loginBody.signInType = accountType;
         if (newAccount) this.getVerification();
       }
-
     });
-
   }
 
   /**
@@ -1162,19 +1105,14 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @param target {Array<string>}-欲取得之目標資訊
    * @author kidin-1101112
    */
-  checkRepeat(
-    args: any,
-    target: Array<string>,
-    token: string = null,
-    tableName: string = 'userInfo'
-  ) {
+  checkRepeat(args: any, target: Array<string>, token: string = null, tableName = 'userInfo') {
     const body = {
       search: {
         [tableName]: {
           args,
-          target
-        }
-      }
+          target,
+        },
+      },
     };
 
     if (token) Object.assign(body, { token });
@@ -1214,7 +1152,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       this.uiFlag.newPasswordFormatError = false;
       this.editAccountBody.newPassword = value;
     }
-
   }
 
   /**
@@ -1224,41 +1161,37 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   handleUpdatePassword() {
     const {
       uiFlag: { progress, newPasswordFormatError, newPasswordUpdated },
-      editAccountBody: { newPassword }
+      editAccountBody: { newPassword },
     } = this;
 
-    if (
-      !newPasswordFormatError
-      && !newPasswordUpdated
-      && newPassword
-      && progress === 100
-    ) {
+    if (!newPasswordFormatError && !newPasswordUpdated && newPassword && progress === 100) {
       this.uiFlag.progress = 30;
-      this.getClientIp.requestIpAddress().pipe(
-        switchMap(ipResult => {
-          const header = { ip: (ipResult as any).ip };
-          return this.signupService.fetchEditAccountInfo(this.editAccountBody, header).pipe(
-            map(editResult => editResult)
-          )
-        })
-      ).subscribe(res => {
-        if (this.utils.checkRes(res)) {
-          const { newToken } = res.editAccount;
-          this.token = newToken;
-          this.auth.setToken(newToken);
-          this.uiFlag.newPasswordUpdated = true;
-          const msg = 'Update success.';
-          this.snackbar.open(msg, 'OK', { duration: 3000 } );
-        } else {
-          const msg = 'Update failed.';
-          this.snackbar.open(msg, 'OK', { duration: 3000 } );
-        }
+      this.getClientIp
+        .requestIpAddress()
+        .pipe(
+          switchMap((ipResult) => {
+            const header = { ip: (ipResult as any).ip };
+            return this.signupService
+              .fetchEditAccountInfo(this.editAccountBody, header)
+              .pipe(map((editResult) => editResult));
+          })
+        )
+        .subscribe((res) => {
+          if (this.utils.checkRes(res)) {
+            const { newToken } = res.editAccount;
+            this.token = newToken;
+            this.auth.setToken(newToken);
+            this.uiFlag.newPasswordUpdated = true;
+            const msg = 'Update success.';
+            this.snackbar.open(msg, 'OK', { duration: 3000 });
+          } else {
+            const msg = 'Update failed.';
+            this.snackbar.open(msg, 'OK', { duration: 3000 });
+          }
 
-        this.uiFlag.progress = 100;
-      });
-
+          this.uiFlag.progress = 100;
+        });
     }
-
   }
 
   /**
@@ -1269,17 +1202,17 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     const {
       token,
       applyInfo: { targetEventId: eventId },
-      selectPlanInfo: { feeId, title: productName, fee }
+      selectPlanInfo: { feeId, title: productName, fee },
     } = this;
     const body = {
       token,
       eventId,
       feeId,
       productName,
-      totalAmount: fee
+      totalAmount: fee,
     };
 
-    this.officialActivityService.createProductOrder(body).subscribe(res => {
+    this.officialActivityService.createProductOrder(body).subscribe((res) => {
       if (checkResponse(res)) {
         const { responseHtml } = res;
         const newElement = document.createElement('div');
@@ -1288,9 +1221,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         target.appendChild(newElement);
         (document.getElementById('data_set') as any).submit();
       }
-      
     });
-
   }
 
   /**
@@ -1313,7 +1244,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       const { gender, birthday } = this.applyInfo.userProfile;
       const momentBirthday = birthday ? dayjs(birthday, 'YYYYMMDD') : this.defaultBirthday;
       const age = dayjs().diff(momentBirthday, 'year');
-      this.groupList = this.eventDetail.group.filter(_list => {
+      this.groupList = this.eventDetail.group.filter((_list) => {
         const { gender: groupGender, age: groupAge } = _list;
         const { max, min } = groupAge || { max: 100, min: 0 };
         const fitGender = groupGender === Sex.unlimit || gender === groupGender;
@@ -1328,9 +1259,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         this.showGroupAlert();
         this.uiFlag.notQualified = true;
       }
-
     }
-    
   }
 
   /**
@@ -1338,13 +1267,13 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1110104
    */
   showGroupAlert() {
-    this.translate.get('hellow world').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      const msg = this.translate.instant('universal_vocabulary_notQualifiedWarning');
-      this.utils.openAlert(msg);
-    })
-    
+    this.translate
+      .get('hellow world')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        const msg = this.translate.instant('universal_vocabulary_notQualifiedWarning');
+        this.utils.openAlert(msg);
+      });
   }
 
   /**
@@ -1371,9 +1300,8 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       emergencyContact: {
         name: null,
         mobileNumber: null,
-        relationship: null
-      }
-
+        relationship: null,
+      },
     };
   }
 
@@ -1386,16 +1314,18 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       uiFlag: { progress },
       timeCount,
       imgLock,
-      selectPlanInfo: { fee }
+      selectPlanInfo: { fee },
     } = this;
     this.enableBody.enableAccountFlow = EnableAccountFlow.request;
     if (progress === 100 && fee > 0) {
-      
       if (imgLock) {
         this.handleCaptchaUnlock(this.getVerification.bind(this));
       } else if (timeCount === 30) {
         this.uiFlag.progress = 30;
-        const { token, loginBody: { signInType } } = this;
+        const {
+          token,
+          loginBody: { signInType },
+        } = this;
         let enableBody = { ...this.enableBody, token };
         let msgKey = 'universal_userAccount_sendSmsSuccess';
 
@@ -1404,40 +1334,42 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
           msgKey = 'universal_userAccount_sendCaptchaChackEmail';
         }
 
-        this.getClientIp.requestIpAddress().pipe(
-          switchMap((ipResult: any) => {
-            const header = { remoteAddr: ipResult.ip };
-            return this.signupService.fetchEnableAccount(enableBody, header);
-          })
-        ).subscribe((res: any) => {
-          if (!checkResponse(res)) {
-            const { processResult } = res;
-            if (processResult) {
-              const { apiReturnMessage } = processResult;
-              switch (apiReturnMessage) {
-                case 'Found attack, update status to lock!':
-                case 'Found lock!':
-                  const { imgLockCode } = processResult;
-                  this.imgLock = new LockCaptcha(imgLockCode, this.signupService, this.getClientIp);
-                  break;
+        this.getClientIp
+          .requestIpAddress()
+          .pipe(
+            switchMap((ipResult: any) => {
+              const header = { remoteAddr: ipResult.ip };
+              return this.signupService.fetchEnableAccount(enableBody, header);
+            })
+          )
+          .subscribe((res: any) => {
+            if (!checkResponse(res)) {
+              const { processResult } = res;
+              if (processResult) {
+                const { apiReturnMessage } = processResult;
+                switch (apiReturnMessage) {
+                  case 'Found attack, update status to lock!':
+                  case 'Found lock!':
+                    const { imgLockCode } = processResult;
+                    this.imgLock = new LockCaptcha(
+                      imgLockCode,
+                      this.signupService,
+                      this.getClientIp
+                    );
+                    break;
+                }
               }
-
+            } else {
+              const msg = this.translate.instant(msgKey);
+              this.utils.showSnackBar(msg);
+              this.enableBody.enableAccountFlow = EnableAccountFlow.verify;
+              if (signInType === SignTypeEnum.phone) this.reciprocal();
             }
-                
-          } else {
-            const msg = this.translate.instant(msgKey);
-            this.utils.showSnackBar(msg);
-            this.enableBody.enableAccountFlow = EnableAccountFlow.verify;
-            if (signInType === SignTypeEnum.phone) this.reciprocal();
-          }
 
-          this.uiFlag.progress = 100;
-        });
-
+            this.uiFlag.progress = 100;
+          });
       }
-
     }
-
   }
 
   /**
@@ -1451,9 +1383,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         this.timeCount = 30;
         window.clearInterval(this.intervals);
       }
-
     }, 1000);
-
   }
 
   /**
@@ -1461,33 +1391,34 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1110214
    */
   handleEnableAccount() {
-    const { uiFlag: { progress }, imgLock } = this;
+    const {
+      uiFlag: { progress },
+      imgLock,
+    } = this;
     if (progress === 100) {
-
       if (imgLock) {
         this.handleCaptchaUnlock(this.handleEnableAccount.bind(this));
       } else {
         this.enableBody = { ...this.enableBody, userId: this.userId };
-        this.getClientIp.requestIpAddress().pipe(
-          switchMap((ipResult: any) => {
-            const header = { remoteAddr: ipResult.ip };
-            return this.signupService.fetchEnableAccount(this.enableBody, header);
-          })
-        ).subscribe((res: any) => {
-          if (!checkResponse(res)) {
-            this.uiFlag.smsError = true;
-          } else {
-            this.uiFlag.smsError = false;
-            this.uiFlag.enableAccount = true;
-            this.uiFlag.enableAccomplishment = true;
-          }
-
-        })
-
+        this.getClientIp
+          .requestIpAddress()
+          .pipe(
+            switchMap((ipResult: any) => {
+              const header = { remoteAddr: ipResult.ip };
+              return this.signupService.fetchEnableAccount(this.enableBody, header);
+            })
+          )
+          .subscribe((res: any) => {
+            if (!checkResponse(res)) {
+              this.uiFlag.smsError = true;
+            } else {
+              this.uiFlag.smsError = false;
+              this.uiFlag.enableAccount = true;
+              this.uiFlag.enableAccomplishment = true;
+            }
+          });
       }
-
     }
-
   }
 
   /**
@@ -1496,16 +1427,15 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101206
    */
   handleCaptchaUnlock(callback: Function = null) {
-    this.imgLock.requestUnlock().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(isUnlock => {
-      if (isUnlock) {
-        this.imgLock = undefined;
-        callback();
-      }
-
-    });
-    
+    this.imgLock
+      .requestUnlock()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((isUnlock) => {
+        if (isUnlock) {
+          this.imgLock = undefined;
+          callback();
+        }
+      });
   }
 
   /**
@@ -1516,5 +1446,4 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

@@ -8,9 +8,8 @@ describe('CompareColumnTrendComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CompareColumnTrendComponent ]
-    })
-    .compileComponents();
+      declarations: [CompareColumnTrendComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

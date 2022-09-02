@@ -1,19 +1,31 @@
 <h2 class="ala-dialog" mat-dialog-title>
-  {{'universal_privacy_set' | translate}}
+  {{ 'universal_privacy_set' | translate }}
 </h2>
-<mat-dialog-content style="color: var(--scale-0-255);">
-  {{'universal_privacy_wantToJoin' | translate}} <span style="color: #108bcd">{{groupName}}</span>
-  {{'universal_group_privacyOpenGroupObject' | translate}}：{{'universal_group_groupAdministrator' | translate}}。
-  <br /><br />
-  {{'universal_privacy_needChangeYourPrivacy' | translate}}
-  <div style="margin-top: 30px;height: 250px;">
+<mat-dialog-content style="color: var(--scale-0-255)">
+  {{ 'universal_privacy_wantToJoin' | translate }}
+  <span style="color: #108bcd">{{ groupName }}</span>
+  {{ 'universal_group_privacyOpenGroupObject' | translate }}：{{
+    'universal_group_groupAdministrator' | translate
+  }}。 <br /><br />
+  {{ 'universal_privacy_needChangeYourPrivacy' | translate }}
+  <div style="margin-top: 30px; height: 250px">
     <div class="control-list">
       <label class="ala-form__label settings-item">
-        {{'universal_privacy_newAvtivityData' | translate}}
-        <app-hover-hint class="hover__hint" [type]="'sportsFile'" [leftPosition]="true" (showBox)="showBox($event)"></app-hover-hint>
+        {{ 'universal_privacy_newAvtivityData' | translate }}
+        <app-hover-hint
+          class="hover__hint"
+          [type]="'sportsFile'"
+          [leftPosition]="true"
+          (showBox)="showBox($event)"
+        ></app-hover-hint>
       </label>
       <div class="settings-control">
-        <mat-checkbox color="primary" value="4" [checked]="true" (change)="handleCheckBox($event, 1, 4)">
+        <mat-checkbox
+          color="primary"
+          value="4"
+          [checked]="true"
+          (change)="handleCheckBox($event, 1, 4)"
+        >
           <span style="font-size: 14px">
             {{ 'universal_group_myGroupAdmin' | translate }}
           </span>
@@ -22,11 +34,21 @@
     </div>
     <div class="control-list">
       <label class="ala-form__label settings-item">
-        {{'universal_privacy_newAvtivityReport' | translate}}
-        <app-hover-hint class="hover__hint" [type]="'sportsReport'" [leftPosition]="true" (showBox)="showBox($event)"></app-hover-hint>
+        {{ 'universal_privacy_newAvtivityReport' | translate }}
+        <app-hover-hint
+          class="hover__hint"
+          [type]="'sportsReport'"
+          [leftPosition]="true"
+          (showBox)="showBox($event)"
+        ></app-hover-hint>
       </label>
       <div class="settings-control">
-        <mat-checkbox color="primary" value="4" [checked]="true" (change)="handleCheckBox($event, 2, 4)">
+        <mat-checkbox
+          color="primary"
+          value="4"
+          [checked]="true"
+          (change)="handleCheckBox($event, 2, 4)"
+        >
           <span style="font-size: 14px">
             {{ 'universal_group_myGroupAdmin' | translate }}
           </span>
@@ -35,11 +57,21 @@
     </div>
     <div class="control-list">
       <label class="ala-form__label settings-item">
-        {{'universal_privacy_newLifeTrackingReport' | translate}}
-        <app-hover-hint class="hover__hint" [type]="'lifeTrackingReport'" [leftPosition]="true" (showBox)="showBox($event)"></app-hover-hint>
+        {{ 'universal_privacy_newLifeTrackingReport' | translate }}
+        <app-hover-hint
+          class="hover__hint"
+          [type]="'lifeTrackingReport'"
+          [leftPosition]="true"
+          (showBox)="showBox($event)"
+        ></app-hover-hint>
       </label>
       <div class="settings-control">
-        <mat-checkbox color="primary" value="4" [checked]="true" (change)="handleCheckBox($event, 3, 4)">
+        <mat-checkbox
+          color="primary"
+          value="4"
+          [checked]="true"
+          (change)="handleCheckBox($event, 3, 4)"
+        >
           <span style="font-size: 14px">
             {{ 'universal_group_myGroupAdmin' | translate }}
           </span>
@@ -50,10 +82,10 @@
 </mat-dialog-content>
 
 <mat-dialog-actions class="justify-content-end">
-  <button
-    mat-button
-    style="color: var(--003c67-0096ff);"
-    (click)="confirm()"
-  >{{'universal_operating_confirm' | translate}}</button>
-  <button mat-button mat-dialog-close color="warn">{{'universal_operating_cancel' | translate}}</button>
+  <button mat-button style="color: var(--003c67-0096ff)" (click)="confirm()">
+    {{ 'universal_operating_confirm' | translate }}
+  </button>
+  <button mat-button mat-dialog-close color="warn">
+    {{ 'universal_operating_cancel' | translate }}
+  </button>
 </mat-dialog-actions>

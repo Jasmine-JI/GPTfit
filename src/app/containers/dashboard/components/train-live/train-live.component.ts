@@ -1,20 +1,13 @@
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  ElementRef,
-  AfterViewInit
-} from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CoachService } from '../../../../shared/services/coach.service';
 import { Router } from '@angular/router';
 import { buildBase64ImgString } from '../../../../shared/utils/index';
 import { AuthService } from '../../../../core/services/auth.service';
 
-
 @Component({
   selector: 'app-train-live',
   templateUrl: './train-live.component.html',
-  styleUrls: ['./train-live.component.scss']
+  styleUrls: ['./train-live.component.scss'],
 })
 export class TrainLiveComponent implements OnInit, AfterViewInit {
   classLists: any;
@@ -34,14 +27,15 @@ export class TrainLiveComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     const body = {
       token: this.authService.token,
-      classType: '7'
+      classType: '7',
     };
-    this.coachService.fetchClassRoomList(body).subscribe(res => {
+    this.coachService.fetchClassRoomList(body).subscribe((res) => {
       this.classLists = res.info.classList;
-      this.classLists = this.classLists.map(_list => {
+      this.classLists = this.classLists.map((_list) => {
         _list.coachAvatar =
           _list.coachAvatar && _list.coachAvatar.length > 0
-            ? buildBase64ImgString(_list.coachAvatar) : '/assets/images/user2.png';
+            ? buildBase64ImgString(_list.coachAvatar)
+            : '/assets/images/user2.png';
         _list.groupDesc = this.handleClassInfo(_list.groupDesc);
         return _list;
       });
@@ -79,21 +73,19 @@ export class TrainLiveComponent implements OnInit, AfterViewInit {
 
   computeStyle(elem, prop) {
     if (!window.getComputedStyle) {
-      window.getComputedStyle = function(el: any, pseudo) {
+      window.getComputedStyle = function (el: any, pseudo) {
         // this.el = el;
-        this.getPropertyValue = function(prop) {
+        this.getPropertyValue = function (prop) {
           const re = /(\-([a-z]){1})/g;
           if (prop === 'float') {
             prop = 'styleFloat';
           }
           if (re.test(prop)) {
-            prop = prop.replace(re, function() {
+            prop = prop.replace(re, function () {
               return arguments[2].toUpperCase();
             });
           }
-          return el.currentStyle && el.currentStyle[prop]
-            ? el.currentStyle[prop]
-            : null;
+          return el.currentStyle && el.currentStyle[prop] ? el.currentStyle[prop] : null;
         };
         return this;
       };

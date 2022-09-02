@@ -6,15 +6,12 @@ var XLSX = require('xlsx');
 var fs = require('fs');
 var router = express.Router();
 var checkID = require('../utils').checkID;
-var async = require('async')
+var async = require('async');
 
 router.get('/', function (req, res, next) {
   const {
     con,
-    query: {
-      event_id,
-      session_id
-    }
+    query: { event_id, session_id },
   } = req;
   const sessionQuery = session_id ? `and session_id = ${session_id}` : '';
 
@@ -24,16 +21,14 @@ router.get('/', function (req, res, next) {
   con.query(sql, 'user_race_enroll', function (err, rows) {
     if (err) {
       return res.status(500).send({
-        errorMessage: err.sqlMessage
+        errorMessage: err.sqlMessage,
       });
     }
     res.status(200).json(rows);
   });
 });
 router.get('/todayLoginList', function (req, res, next) {
-  const {
-    con
-  } = req;
+  const { con } = req;
   var now = new Date();
   var now_mill = now.getTime();
   const today_stamp = Math.round(now_mill / 1000);
@@ -45,7 +40,7 @@ router.get('/todayLoginList', function (req, res, next) {
   con.query(sql, ['user_profile', start_time, end_time], function (err, rows) {
     if (err) {
       return res.status(500).send({
-        errorMessage: err.sqlMessage
+        errorMessage: err.sqlMessage,
       });
     }
     res.status(200).json(rows);
@@ -54,40 +49,43 @@ router.get('/todayLoginList', function (req, res, next) {
 router.post('/fastEnroll', function (req, res, next) {
   const {
     con,
-    body: {
-      eventId,
-      sessionId,
-      userIds
-    }
+    body: { eventId, sessionId, userIds },
   } = req;
   var now = new Date();
   var now_mill = now.getTime();
   const today_stamp = Math.round(now_mill / 1000);
-  normalQuerys = userIds.map(_id => `
+  normalQuerys = userIds.map(
+    (_id) => `
     INSERT INTO ?? (e_mail, phone, country_code, login_acc, event_id, session_id, enroll_time)
-    select e_mail, phone, country_code, login_acc, ?, ?, ? from ?? where user_id = ${con.escape(_id)};`
+    select e_mail, phone, country_code, login_acc, ?, ?, ? from ?? where user_id = ${con.escape(
+      _id
+    )};`
   );
   const processer = function (query) {
-    con.query(query, ['user_race_enroll', eventId, sessionId, today_stamp, 'user_profile'], function (err, rows) {
-      if (err) {
-        console.log(err);
-        return res.status(500).send({
-          errorMessage: err.sqlMessage
-        });
+    con.query(
+      query,
+      ['user_race_enroll', eventId, sessionId, today_stamp, 'user_profile'],
+      function (err, rows) {
+        if (err) {
+          console.log(err);
+          return res.status(500).send({
+            errorMessage: err.sqlMessage,
+          });
+        }
       }
-    });
-  }
+    );
+  };
   res.json({
     resultCode: 200,
-    rtnMsg: 'success'
+    rtnMsg: 'success',
   });
   async.eachLimit(normalQuerys, 10, processer, function (error, result) {
-  console.log('!!!!!');
-  console.log('error: ', error);
-  console.log('result: ', result);
+    console.log('!!!!!');
+    console.log('error: ', error);
+    console.log('result: ', result);
   });
 });
-router.post('/enroll', async(req, res) => {
+router.post('/enroll', async (req, res) => {
   const {
     body: {
       userName,
@@ -101,9 +99,9 @@ router.post('/enroll', async(req, res) => {
       session_id,
       country_code,
       pay_method,
-      status
+      status,
     },
-    con
+    con,
   } = req;
   try {
     const trimEmail = email.trim();
@@ -115,9 +113,21 @@ router.post('/enroll', async(req, res) => {
     var now = new Date();
     var now_mill = now.getTime();
     const enroll_time = Math.round(now_mill / 1000);
-    const sqlParams = ['user_race_enroll', login_acc, e_mail, phone, age_range,
-      gender, id_number, address, event_id, session_id, enroll_time, country_code,
-      pay_method, status
+    const sqlParams = [
+      'user_race_enroll',
+      login_acc,
+      e_mail,
+      phone,
+      age_range,
+      gender,
+      id_number,
+      address,
+      event_id,
+      session_id,
+      enroll_time,
+      country_code,
+      pay_method,
+      status,
     ];
     const sql = `
     INSERT INTO ?? (
@@ -150,10 +160,10 @@ router.post('/enroll', async(req, res) => {
       ?,
       ?
     );`;
-    await con.query(sql, sqlParams, async(err, rows) => {
+    await con.query(sql, sqlParams, async (err, rows) => {
       if (err) {
         return res.status(500).send({
-          errorMessage: err.sqlMessage
+          errorMessage: err.sqlMessage,
         });
       }
       res.send({
@@ -166,23 +176,20 @@ router.post('/enroll', async(req, res) => {
         address,
         event_id,
         session_id,
-        country_code
+        country_code,
       });
     });
   } catch (err) {
     res.status(500).send({
-      errorMessage: '請檢查報名資料欄位'
-    });;
+      errorMessage: '請檢查報名資料欄位',
+    });
   }
 });
 
-router.get('/emailsValidate', async(req, res, next) => {
+router.get('/emailsValidate', async (req, res, next) => {
   const {
     con,
-    query: {
-      email,
-      event_id
-    }
+    query: { email, event_id },
   } = req;
   try {
     const sql = `
@@ -192,7 +199,7 @@ router.get('/emailsValidate', async(req, res, next) => {
     con.query(sql, ['user_race_enroll', event_id], function (err, rows) {
       if (err) {
         return res.status(500).send({
-          errorMessage: err.sqlMessage
+          errorMessage: err.sqlMessage,
         });
       }
       if (email.length === 0) {
@@ -201,8 +208,8 @@ router.get('/emailsValidate', async(req, res, next) => {
       const emailRule = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
       const trimEmail = decodeURIComponent(email).trim();
       if (email && trimEmail.search(emailRule) > -1) {
-        let results = rows.map(_row => _row.e_mail);
-        results = results.filter(_res => _res === trimEmail);
+        let results = rows.map((_row) => _row.e_mail);
+        results = results.filter((_res) => _res === trimEmail);
         if (results.length === 0) return res.json('email無重複');
         return res.status(409).send('此email已報名');
       } else {
@@ -214,20 +221,17 @@ router.get('/emailsValidate', async(req, res, next) => {
   }
 });
 
-router.get('/phoneValidate', async(req, res, next) => {
+router.get('/phoneValidate', async (req, res, next) => {
   const {
     con,
-    query: {
-      phone,
-      event_id
-    }
+    query: { phone, event_id },
   } = req;
   try {
     const sql = `
     SELECT phone FROM ?? where event_id = ?;
     `;
 
-    con.query(sql, ['user_race_enroll', event_id], function(err, rows) {
+    con.query(sql, ['user_race_enroll', event_id], function (err, rows) {
       if (err) {
         return res.status(500).send({ errorMessage: err.sqlMessage });
       }
@@ -236,8 +240,8 @@ router.get('/phoneValidate', async(req, res, next) => {
       }
       const trimPhone = phone.trim();
 
-      let results = rows.map(_row => _row.phone);
-      results = results.filter(_res => _res === trimPhone);
+      let results = rows.map((_row) => _row.phone);
+      results = results.filter((_res) => _res === trimPhone);
       if (results.length === 0) return res.json('電話無重複');
       return res.status(409).send('此電話已報名');
     });
@@ -246,13 +250,10 @@ router.get('/phoneValidate', async(req, res, next) => {
   }
 });
 
-router.get('/idNumberValidate', async(req, res, next) => {
+router.get('/idNumberValidate', async (req, res, next) => {
   const {
     con,
-    query: {
-      idNumber,
-      event_id
-    }
+    query: { idNumber, event_id },
   } = req;
   try {
     const sql = `
@@ -262,7 +263,7 @@ router.get('/idNumberValidate', async(req, res, next) => {
     con.query(sql, ['user_race_enroll', event_id], function (err, rows) {
       if (err) {
         return res.status(500).send({
-          errorMessage: err.sqlMessage
+          errorMessage: err.sqlMessage,
         });
       }
       if (idNumber.length === 0) {
@@ -271,8 +272,8 @@ router.get('/idNumberValidate', async(req, res, next) => {
       const trimIdNumber = idNumber.trim();
       const idNum = trimIdNumber.toUpperCase();
       if (idNum && checkID('1', idNum)) {
-        let results = rows.map(_row => _row.id_number);
-        results = results.filter(_res => _res === idNum);
+        let results = rows.map((_row) => _row.id_number);
+        results = results.filter((_res) => _res === idNum);
         if (results.length === 0) return res.json('身分證字號無重複');
         return res.status(409).send('此身分證字號已報名');
       } else {
@@ -284,44 +285,39 @@ router.get('/idNumberValidate', async(req, res, next) => {
   }
 });
 
-router.post('/upload', async (req, res, next) => {
-  const sql = `SELECT  * from ??`;
-  const { con } = req;
-  con.query(sql, 'race_event_info', function(err, rows) {
-    if (err) {
-      return console.log(err);
-    }
-    res.events = rows;
-    var path;
-    var form = new formidable.IncomingForm();
-    form.parse(req, (err, fields, files) => {
+router.post(
+  '/upload',
+  async (req, res, next) => {
+    const sql = `SELECT  * from ??`;
+    const { con } = req;
+    con.query(sql, 'race_event_info', function (err, rows) {
       if (err) {
-        return res.status(500).send({ errorMessage: err.sqlMessage });
+        return console.log(err);
       }
-      const { eventId, sessionId } = fields;
-      path = files.file.path;
-      res.path = path;
-      if (eventId && sessionId) {
-        res.eventId = eventId;
-        res.sessionId = sessionId;
-      } else {
-        return res.status(500).send({ errorMessage: '請檢查報名資料欄位' });
-      }
+      res.events = rows;
+      var path;
+      var form = new formidable.IncomingForm();
+      form.parse(req, (err, fields, files) => {
+        if (err) {
+          return res.status(500).send({ errorMessage: err.sqlMessage });
+        }
+        const { eventId, sessionId } = fields;
+        path = files.file.path;
+        res.path = path;
+        if (eventId && sessionId) {
+          res.eventId = eventId;
+          res.sessionId = sessionId;
+        } else {
+          return res.status(500).send({ errorMessage: '請檢查報名資料欄位' });
+        }
 
         next();
-
+      });
     });
-  });
-
-
-}, (req, res, next) => {
+  },
+  (req, res, next) => {
     const { con } = req;
-    const {
-      path,
-      events,
-      eventId,
-      sessionId
-    } = res;
+    const { path, events, eventId, sessionId } = res;
 
     var buf = fs.readFileSync(path);
     var wb = XLSX.read(buf, { type: 'buffer' });
@@ -332,9 +328,9 @@ router.post('/upload', async (req, res, next) => {
     const keys = Object.keys(worksheet);
     keys
       // 过滤以 ! 开头的 key
-      .filter(k => k[0] !== '!')
+      .filter((k) => k[0] !== '!')
       // 遍历所有单元格
-      .forEach(k => {
+      .forEach((k) => {
         // 如 A11 中的 A
         let col = k.substring(0, 1);
         // 如 A11 中的 11
@@ -354,8 +350,8 @@ router.post('/upload', async (req, res, next) => {
       });
     let count = 0;
     let parseResults = [];
-    datas = datas.filter(_data => _data !== undefined);
-    parseResults = datas.map(_data => {
+    datas = datas.filter((_data) => _data !== undefined);
+    parseResults = datas.map((_data) => {
       count++;
       var map = {
         電子郵件地址: 'e_mail',
@@ -363,15 +359,15 @@ router.post('/upload', async (req, res, next) => {
         性別: 'gender',
         年齡: 'age_range',
         電話: 'phone',
-        住址: 'address'
+        住址: 'address',
       };
       const resultData = {
         eventId,
         sessionId,
         enroll_time: moment().unix(),
-        country_code: '886'
+        country_code: '886',
       };
-      _.each(_data, function(value, key) {
+      _.each(_data, function (value, key) {
         resultData[map[key]] = value;
         if (map[key] !== undefined) {
           if (map[key] === 'e_mail') {
@@ -388,14 +384,13 @@ router.post('/upload', async (req, res, next) => {
             }
           }
         }
-
       });
       return resultData;
     });
     res.parseResults = parseResults;
     next();
-  }
-, (req, res) => {
+  },
+  (req, res) => {
     const { con } = req;
     const { parseResults } = res;
     try {
@@ -416,10 +411,10 @@ router.post('/upload', async (req, res, next) => {
         address
       )
       values ?;`;
-      con.query(sql, ['user_race_enroll', results], async(err, rows) => {
+      con.query(sql, ['user_race_enroll', results], async (err, rows) => {
         if (err) {
           return res.status(500).send({
-            errorMessage: err.sqlMessage
+            errorMessage: err.sqlMessage,
           });
         }
         res.json('上傳成功!!');
@@ -427,7 +422,8 @@ router.post('/upload', async (req, res, next) => {
     } catch (err) {
       return res.status(500).send({ errorMessage: '請檢查報名資料欄位' });
     }
-});
+  }
+);
 
 // Exports
 module.exports = router;

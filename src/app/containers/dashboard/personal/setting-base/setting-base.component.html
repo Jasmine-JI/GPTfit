@@ -40,12 +40,9 @@
             [placeholder]="'universal_userAccount_nickname' | translate"
             [value]="setting.nickname"
             (focusout)="handleNicknameInput($event)"
-          >
+          />
         </div>
-        <span
-          class="contentDescription"
-          [style.color]="uiFlag.nicknameAlert ? 'red' : ''"
-        >
+        <span class="contentDescription" [style.color]="uiFlag.nicknameAlert ? 'red' : ''">
           <ng-container *ngIf="uiFlag.nicknameAlert !== 'repeat'">
             {{ 'universal_userAccount_nameCharactersToLong' | translate }}
           </ng-container>
@@ -61,7 +58,7 @@
         {{ 'universal_userProfile_bodyHeight' | translate }}
       </label>
       <span class="contentText" *ngIf="uiFlag.editMode === 'close'">
-        {{ (userInfo.bodyHeight) | bodyHeightSibs: [userInfo.unit, false] }}
+        {{ userInfo.bodyHeight | bodyHeightSibs: [userInfo.unit, false] }}
       </span>
       <div class="contentInput">
         <input
@@ -74,15 +71,15 @@
           (keydown)="checkHeightFormat($event)"
           (focusout)="handleHeightInput($event)"
           *ngIf="uiFlag.editMode === 'edit'"
-        >
+        />
         <span class="valueUnit">{{ 'bodyHeight' | dataTypeUnit: [null, userInfo.unit] }}</span>
       </div>
-      <span
-        class="contentDescription"
-        [style.color]="uiFlag.heightAlert ? 'red' : ''"
-      >
+      <span class="contentDescription" [style.color]="uiFlag.heightAlert ? 'red' : ''">
         <ng-container *ngIf="!uiFlag.heightAlert">
-          {{ 'universal_privacy_your' | translate: { object: ('universal_userProfile_bodyHeight' | translate)} }}
+          {{
+            'universal_privacy_your'
+              | translate: { object: ('universal_userProfile_bodyHeight' | translate) }
+          }}
         </ng-container>
         <ng-container *ngIf="uiFlag.heightAlert">
           {{ 'universal_status_wrongFormat' | translate }}
@@ -107,11 +104,14 @@
           (keydown)="checkWeightFormat($event)"
           (focusout)="handleWeightInput($event)"
           *ngIf="uiFlag.editMode === 'edit'"
-        >
+        />
         <span class="valueUnit">{{ 'bodyWeight' | dataTypeUnit: [null, userInfo.unit] }}</span>
       </div>
       <span class="contentDescription">
-        {{ 'universal_privacy_your' | translate: { object: ('universal_userProfile_bodyWeight' | translate)} }}
+        {{
+          'universal_privacy_your'
+            | translate: { object: ('universal_userProfile_bodyWeight' | translate) }
+        }}
       </span>
     </div>
     <div class="flexRow rowContent">
@@ -129,17 +129,22 @@
           [refStartDate]="userInfo.birthday | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
           [default]="userInfo.birthday | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'"
           [selectBirthday]="true"
-          [editStyle]="'
+          [editStyle]="
+            '
             border: none;
             border-bottom: 1px solid var(--scale-150-180);
             font-weight: bold;
             outline: none;
-          '"
+          '
+          "
           *ngIf="!patchEditPrivacy"
         ></app-date-range-picker>
       </div>
       <span class="contentDescription">
-        {{ 'universal_privacy_your' | translate: { object: ('universal_userProfile_birthday' | translate)} }}
+        {{
+          'universal_privacy_your'
+            | translate: { object: ('universal_userProfile_birthday' | translate) }
+        }}
       </span>
     </div>
     <div class="flexRow rowContent">
@@ -150,10 +155,7 @@
       <div class="flexRow contentInput" *ngIf="uiFlag.editMode === 'edit'">
         <div class="flexRow">
           <span class="flexRow radioSelector" (click)="changeGender(Sex.male)">
-            <span
-              class="radioBtn"
-              [class.radioBtn--active]="setting.gender === Sex.male"
-            ></span>
+            <span class="radioBtn" [class.radioBtn--active]="setting.gender === Sex.male"></span>
             <span class="radioText">{{ 'universal_userProfile_male' | translate }}</span>
           </span>
           <span class="flexRow radioSelector" (click)="changeGender(Sex.female)">
@@ -166,7 +168,10 @@
         </div>
       </div>
       <span class="contentDescription">
-        {{ 'universal_privacy_your' | translate: { object: ('universal_userProfile_gender' | translate)} }}
+        {{
+          'universal_privacy_your'
+            | translate: { object: ('universal_userProfile_gender' | translate) }
+        }}
       </span>
     </div>
   </div>

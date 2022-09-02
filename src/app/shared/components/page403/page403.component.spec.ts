@@ -8,9 +8,8 @@ describe('Page403Component', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ Page403Component ]
-    })
-    .compileComponents();
+      declarations: [Page403Component],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

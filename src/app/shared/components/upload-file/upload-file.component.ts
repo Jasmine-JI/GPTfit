@@ -8,7 +8,7 @@ import {
   HostListener,
   OnChanges,
   SimpleChanges,
-  OnDestroy
+  OnDestroy,
 } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
@@ -19,7 +19,7 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-upload-file',
   templateUrl: './upload-file.component.html',
-  styleUrls: ['./upload-file.component.scss']
+  styleUrls: ['./upload-file.component.scss'],
 })
 export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isUserAvastarMode: false;
@@ -40,7 +40,7 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
   isImgUpLoading = false;
 
   @Output() onChange = new EventEmitter();
-  @ViewChild('fileUpload', {static: false})
+  @ViewChild('fileUpload', { static: false })
   set lookUp(ref: any) {
     ref.nativeElement.value = null;
   }
@@ -65,20 +65,17 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
     this.handleChange(evt);
   }
 
-  @ViewChild(ImageCropperComponent, {static: false})
+  @ViewChild(ImageCropperComponent, { static: false })
   imageCropper: ImageCropperComponent;
 
-  constructor(
-    private utilsService: UtilsService,
-    private translate: TranslateService
-  ) {}
+  constructor(private utilsService: UtilsService, private translate: TranslateService) {}
 
   ngOnInit() {}
 
   // 監測是否有選擇新圖片
-  ngOnChanges(changes: SimpleChanges) { }
+  ngOnChanges(changes: SimpleChanges) {}
 
-  handleBtnEvent () {
+  handleBtnEvent() {
     const inputSection = document.getElementById('inputFile');
     inputSection.click();
   }
@@ -99,13 +96,13 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
     if (files.length > 0) {
       const fileReader = new FileReader();
 
-      fileReader.onload = e => {
+      fileReader.onload = (e) => {
         const fileName = files[0].name.split('.');
         const fileType = fileName[fileName.length - 1];
         this.fileInformation = {
           value: files[0] || null,
           link: fileReader.result || '',
-          isTypeCorrect: false
+          isTypeCorrect: false,
         };
         if (acceptFileArray.indexOf(fileType.toUpperCase()) > -1) {
           this.fileInformation.isTypeCorrect = true;
@@ -135,7 +132,6 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-
   // 關閉裁切功能-kidin-1090109
   closeImgCropping() {
     this.utilsService.setImgSelectedStatus(false);
@@ -160,7 +156,7 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
   cropperReady() {
     this.isImgUpLoading = false;
   }
-  loadImageFailed () {
+  loadImageFailed() {
     console.error('Load failed');
   }
 
@@ -180,11 +176,11 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
     this.imageCropper.flipVertical();
   }
 
-  reEditImg () {
+  reEditImg() {
     this.imgCropping = true;
   }
 
-  ngOnDestroy () {
+  ngOnDestroy() {
     this.utilsService.setImgSelectedStatus(false);
   }
 }

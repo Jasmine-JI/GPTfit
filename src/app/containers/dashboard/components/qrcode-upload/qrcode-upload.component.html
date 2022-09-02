@@ -1,40 +1,43 @@
-<div class="flexCol" style="align-items: center;">
-  <div class="flexCol" style="align-items: center;">
-    <img src="./assets/logoTitle.png" alt="Alatech Logo" style="max-width: 300px; margin: 20px 0px;">
+<div class="flexCol" style="align-items: center">
+  <div class="flexCol" style="align-items: center">
+    <img
+      src="./assets/logoTitle.png"
+      alt="Alatech Logo"
+      style="max-width: 300px; margin: 20px 0px"
+    />
     <div class="avatar-wrapper">
-      <img *ngIf="userInfo && userInfo.avatarUrl"
-        [src]="(userInfo.avatarUrl | safeHtml)"
-      >
+      <img *ngIf="userInfo && userInfo.avatarUrl" [src]="userInfo.avatarUrl | safeHtml" />
     </div>
-    <h1
-      style="font-weight: bold; color: #6b6a6a;"
-      *ngIf="displayInfo.type === '2'"
-    >
+    <h1 style="font-weight: bold; color: #6b6a6a" *ngIf="displayInfo.type === '2'">
       {{ translatedInfo.fileInfo ? translatedInfo.fileInfo.dispName : 'None' }}
     </h1>
   </div>
-  <div class="flexCol" style="margin-left: 25px;">
+  <div class="flexCol" style="margin-left: 25px">
     <table>
       <td class="description">
         <tr>
-          <span>{{'universal_activityData_limit_totalTime' | translate}}</span><br/>
+          <span>{{ 'universal_activityData_limit_totalTime' | translate }}</span
+          ><br />
         </tr>
         <tr>
-          <span>{{'universal_userProfile_calories' | translate}}</span><br/>
+          <span>{{ 'universal_userProfile_calories' | translate }}</span
+          ><br />
         </tr>
         <tr>
-          <span>{{'universal_activityData_limit_avgSpeed' | translate}}</span><br/>
+          <span>{{ 'universal_activityData_limit_avgSpeed' | translate }}</span
+          ><br />
         </tr>
         <tr>
-          <span>{{'universal_activityData_creatTime' | translate}}</span><br/>
+          <span>{{ 'universal_activityData_creatTime' | translate }}</span
+          ><br />
         </tr>
       </td>
       <td class="data">
         <tr>
-          <span>{{displayInfo.totalTime}}</span>
+          <span>{{ displayInfo.totalTime }}</span>
         </tr>
         <tr>
-          <span>{{displayInfo.calories}} cal</span>
+          <span>{{ displayInfo.calories }} cal</span>
         </tr>
         <tr>
           <span>
@@ -47,7 +50,7 @@
           </span>
         </tr>
         <tr>
-          <span>{{displayInfo.createdTime}}</span>
+          <span>{{ displayInfo.createdTime }}</span>
         </tr>
       </td>
     </table>

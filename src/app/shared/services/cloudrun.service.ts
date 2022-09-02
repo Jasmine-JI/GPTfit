@@ -1,26 +1,25 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { throwError, of } from 'rxjs';
-import { catchError, map, } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { UtilsService } from './utils.service';
 import { environment } from '../../../environments/environment';
 
 const { API_SERVER } = environment.url;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CloudrunService {
-
   /**
    * api-2004 開啟競賽
    * @param body {any}
    * @author kidin-1101117
    */
-  createRace (body: any) {
-    return this.http.post<any>('/api/v1/race/createRace', body).pipe(
-      catchError(err => throwError(err))
-    );
+  createRace(body: any) {
+    return this.http
+      .post<any>('/api/v1/race/createRace', body)
+      .pipe(catchError((err) => throwError(err)));
   }
 
   /**
@@ -28,10 +27,10 @@ export class CloudrunService {
    * @param body {any}
    * @author kidin-1090421
    */
-  getRankData (body: any) {
-    return this.http.post<any>('/api/v1/race/getRankData', body).pipe(
-      catchError(err => throwError(err))
-    );
+  getRankData(body: any) {
+    return this.http
+      .post<any>('/api/v1/race/getRankData', body)
+      .pipe(catchError((err) => throwError(err)));
   }
 
   /**
@@ -39,10 +38,10 @@ export class CloudrunService {
    * @param body {any}
    * @author kidin-1101117
    */
-  editScheduleRace (body: any) {
-    return this.http.post<any>('/api/v1/race/editScheduleRace', body).pipe(
-      catchError(err => throwError(err))
-    );
+  editScheduleRace(body: any) {
+    return this.http
+      .post<any>('/api/v1/race/editScheduleRace', body)
+      .pipe(catchError((err) => throwError(err)));
   }
 
   /**
@@ -50,10 +49,7 @@ export class CloudrunService {
    */
   mapList: any;
 
-  constructor(
-    private http: HttpClient,
-    private utils: UtilsService
-  ) { }
+  constructor(private http: HttpClient, private utils: UtilsService) {}
 
   /**
    * 取得所有地圖資訊
@@ -63,9 +59,8 @@ export class CloudrunService {
     if (this.mapList) {
       return of(this.mapList);
     } else {
-
       return this.http.post<any>(API_SERVER + 'cloudrun/getAllMapInfo', {}).pipe(
-        map(res => {
+        map((res) => {
           if (res.resultCode !== 200) {
             const msg = 'Get map information fail.<br>Please try again later.';
             return throwError(msg);
@@ -74,16 +69,13 @@ export class CloudrunService {
             return this.mapList;
           }
         }),
-        catchError(err => {
+        catchError((err) => {
           const msg = 'Get map information fail.<br>Please try again later.';
           this.utils.openAlert(msg);
           return throwError(err);
         })
-
       );
-
     }
-
   }
 
   /**
@@ -93,23 +85,20 @@ export class CloudrunService {
    */
   getMapGpx(body: any) {
     return this.http.post<any>(`${API_SERVER}cloudrun/getMapGpx`, body).pipe(
-      map(res => {
+      map((res) => {
         if (res.resultCode !== 200) {
           const msg = 'Get map GPX fail.<br>Please try again later.';
           return throwError(msg);
         } else {
           return res.info;
         }
-
       }),
-      catchError(err => {
+      catchError((err) => {
         const msg = 'Get map GPX fail.<br>Please try again later.';
         this.utils.openAlert(msg);
         return throwError(err);
       })
-
     );
-
   }
 
   /**
@@ -118,10 +107,9 @@ export class CloudrunService {
    * @param body {any}
    * @author kidin-1090421
    */
-  getLeaderboardStatistics (body: any) {
-    return this.http.post<any>(`${API_SERVER}cloudrun/getLeaderboardStatistics`, body).pipe(
-      catchError(err => throwError(err))
-    );
+  getLeaderboardStatistics(body: any) {
+    return this.http
+      .post<any>(`${API_SERVER}cloudrun/getLeaderboardStatistics`, body)
+      .pipe(catchError((err) => throwError(err)));
   }
-
 }

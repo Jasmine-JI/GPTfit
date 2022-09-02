@@ -63,7 +63,6 @@ $btn-height: 40px;
     border-width: 10px 6px 0px 6px;
     border-color: black transparent transparent transparent;
   }
-
 }
 
 .axis__selector__list {
@@ -85,9 +84,7 @@ $btn-height: 40px;
       background-color: rgba(17, 166, 235, 1);
       @include transition(background-color);
     }
-
   }
-
 }
 
 #main__section {
@@ -137,16 +134,16 @@ $btn-height: 40px;
   height: $btn-height;
 }
 
-
 /**************************************** media *****************************************/
 
-@media(max-width: 767px) {
+@media (max-width: 767px) {
   #main__section {
     flex-direction: column;
     align-items: center;
   }
 
-  #info__section, #quadrant__chart {
+  #info__section,
+  #quadrant__chart {
     width: 98%;
   }
 
@@ -161,7 +158,6 @@ $btn-height: 40px;
   .data__title {
     font-size: 14px;
   }
-
 }
 
 @media print {
@@ -169,5 +165,4 @@ $btn-height: 40px;
     flex-direction: row;
     align-items: initial;
   }
-
 }

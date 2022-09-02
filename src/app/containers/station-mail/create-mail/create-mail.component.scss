@@ -1,8 +1,8 @@
 @import 'color.scss';
+@import 'overflow-scroll.scss';
 
 $search-input-height: 35px;
 $box-shadow-color: rgba(0, 0, 0, 0.2);
-
 
 .functional__button__row {
   justify-content: flex-end;
@@ -46,7 +46,8 @@ $box-shadow-color: rgba(0, 0, 0, 0.2);
   font-weight: bold;
 }
 
-#receiver__input, #mail__title {
+#receiver__input,
+#mail__title {
   height: $search-input-height;
   outline: none;
   border: none;
@@ -68,21 +69,19 @@ $box-shadow-color: rgba(0, 0, 0, 0.2);
   max-height: 200px;
   margin: 0;
   padding: 2px 5px;
-  overflow-y: scroll;
   background-color: white;
   z-index: 5;
   top: calc(#{$search-input-height} + 1px);
   box-shadow: 2px 2px 2px $box-shadow-color, -2px 2px 2px $box-shadow-color;
+  @include overflow-y-scroll();
 }
 
 .receiver__search__option {
-
   &:hover {
     cursor: pointer;
     background-color: $primary-blue;
     color: white;
   }
-
 }
 
 .receiver__section {

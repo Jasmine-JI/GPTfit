@@ -12,7 +12,6 @@ import { AccessRight } from '../../../../shared/enum/accessright';
 import { NodejsApiService } from '../../../../core/services/nodejs-api.service';
 import { AuthService } from '../../../../core/services/auth.service';
 
-
 const switchButtonWidth = 40;
 enum ApplyButtonStatus {
   canApply = 1,
@@ -21,17 +20,17 @@ enum ApplyButtonStatus {
   cutOff,
   eventCancelled,
   applyCancelled,
-  applyCancelling
-};
+  applyCancelling,
+}
 
 @Component({
   selector: 'app-activity-detail',
   templateUrl: './activity-detail.component.html',
-  styleUrls: ['./activity-detail.component.scss']
+  styleUrls: ['./activity-detail.component.scss'],
 })
 export class ActivityDetailComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
-  private resizeSubscription = new Subscription;
+  private resizeSubscription = new Subscription();
 
   /**
    * ui會用到的flag
@@ -44,8 +43,8 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     isMobile: false,
     showSwitchButton: false,
     currentShortcutIndex: 0,
-    canBrowserPage: false
-  }
+    canBrowserPage: false,
+  };
 
   eventId: number;
   eventInfo: any;
@@ -56,7 +55,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     day: '0',
     hour: '0',
     minute: '0',
-    second: '0'
+    second: '0',
   };
 
   readonly EventStatus = EventStatus;
@@ -70,7 +69,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private nodejsApiService: NodejsApiService,
     private authService: AuthService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.checkEventId();
@@ -89,7 +88,6 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     } else {
       this.router.navigateByUrl(pageNotFoundPath);
     }
-
   }
 
   /**
@@ -98,19 +96,18 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
    */
   getAccessRight() {
     return this.userService.getUser().rxUserProfile.pipe(
-      switchMap(userProfile => {
+      switchMap((userProfile) => {
         if (userProfile) {
           const token = this.authService.token;
           const { eventId } = this;
           return this.checkApplied(token, eventId).pipe(
-            map(applyResult => [userProfile, applyResult])
-          )
+            map((applyResult) => [userProfile, applyResult])
+          );
         } else {
           return of([userProfile]);
         }
-
       }),
-      tap(res => {
+      tap((res) => {
         const [userProfile, checkApplied] = res;
         if (userProfile) {
           const { systemAccessright } = this.userService.getUser();
@@ -127,8 +124,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
         }
       }),
       takeUntil(this.ngUnsubscribe)
-    )
-
+    );
   }
 
   /**
@@ -148,7 +144,6 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
         this.uiFlag.applyButtonStatus = ApplyButtonStatus.applyCancelling;
         break;
     }
-
   }
 
   /**
@@ -159,30 +154,32 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     this.uiFlag.progress = 30;
     this.eventId = +this.activatedRoute.snapshot.paramMap.get('eventId');
     const body = { eventId: this.eventId };
-    this.officialActivityService.getEventDetail(body).pipe(
-      switchMap(res => {
-        const token = this.authService.token;
-        if (token) {
-          return this.getAccessRight().pipe(map(accessRight => res));
+    this.officialActivityService
+      .getEventDetail(body)
+      .pipe(
+        switchMap((res) => {
+          const token = this.authService.token;
+          if (token) {
+            return this.getAccessRight().pipe(map((accessRight) => res));
+          }
+
+          return of(res);
+        })
+      )
+      .subscribe((res) => {
+        if (this.utils.checkRes(res, false)) {
+          const { eventInfo, eventDetail, currentTimestamp } = res;
+          this.checkEventStatus(eventInfo.eventStatus);
+          this.eventInfo = eventInfo;
+          this.eventDetail = eventDetail;
+          if (!this.countdownInterval) this.currentTimestamp = currentTimestamp;
+          this.checkCanApply();
+        } else {
+          this.router.navigateByUrl(pageNotFoundPath);
         }
 
-        return of(res);
-      })
-    ).subscribe(res => {
-      if (this.utils.checkRes(res, false)) {
-        const { eventInfo, eventDetail, currentTimestamp } = res;
-        this.checkEventStatus(eventInfo.eventStatus);
-        this.eventInfo = eventInfo;
-        this.eventDetail = eventDetail;
-        if (!this.countdownInterval) this.currentTimestamp = currentTimestamp;
-        this.checkCanApply();
-      } else {
-        this.router.navigateByUrl(pageNotFoundPath);
-      }
-
-      this.uiFlag.progress = 100;
-    });
-
+        this.uiFlag.progress = 100;
+      });
   }
 
   /**
@@ -214,20 +211,14 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
           if (applyButtonStatus === ApplyButtonStatus.canApply) {
             this.checkApplyDate(this.currentTimestamp);
           }
-
         } else {
-
           if (this.countdownInterval) {
             clearInterval(this.countdownInterval);
             this.countdownInterval = undefined;
           }
-
         }
-
       }, 1000);
-
     }
-
   }
 
   /**
@@ -236,27 +227,22 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
    */
   checkCanApply() {
     const {
-      eventInfo: {
-        numberLimit,
-        currentApplyNumber,
-        eventStatus
-      },
-      uiFlag: { applyButtonStatus }
+      eventInfo: { numberLimit, currentApplyNumber, eventStatus },
+      uiFlag: { applyButtonStatus },
     } = this;
 
     const eventCancelled = eventStatus === EventStatus.cancel;
     if (eventCancelled) {
       this.uiFlag.applyButtonStatus = ApplyButtonStatus.eventCancelled;
     } else {
-
       if (applyButtonStatus !== ApplyButtonStatus.applied) {
-        const applyFull = numberLimit && numberLimit > 0 ? currentApplyNumber >= numberLimit : false;
+        const applyFull =
+          numberLimit && numberLimit > 0 ? currentApplyNumber >= numberLimit : false;
         if (applyFull) this.uiFlag.applyButtonStatus = ApplyButtonStatus.applyFull;
       }
-      
+
       this.setCountdown();
     }
-
   }
 
   /**
@@ -265,16 +251,16 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
    * @author kidin-1101018
    */
   checkApplyDate(currentTimestamp: number) {
-    const { applyDate: {startDate, endDate}} = this.eventInfo;
+    const {
+      applyDate: { startDate, endDate },
+    } = this.eventInfo;
     const beforeApplyStart = currentTimestamp < startDate;
     const afterApplyEnd = currentTimestamp > endDate;
     const notAtApplyDate = beforeApplyStart || afterApplyEnd;
     if (notAtApplyDate) {
       this.uiFlag.applyButtonStatus = ApplyButtonStatus.cutOff;
     }
-
   }
-
 
   /**
    * 確認使用者是否已經報名
@@ -288,9 +274,9 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
       search: {
         userApplyInfo: {
           args: { eventId },
-          target: ['eventId', 'applyStatus']
-        }
-      }
+          target: ['eventId', 'applyStatus'],
+        },
+      },
     };
 
     return this.nodejsApiService.getAssignInfo(body);
@@ -308,7 +294,6 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     if (!afterRaceEnd) {
       this.getRaceCountdown(currentTimestamp, endDate);
     }
-
   }
 
   /**
@@ -320,14 +305,14 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
   getRaceCountdown(currentTimestamp: number, endTimestamp: number) {
     const diffTimestamp = endTimestamp - currentTimestamp;
     const numberTranslate = (value: number, coefficient: Array<number>) => {
-      let result = [];
+      const result = [];
       coefficient.reduce((previousValue, _coefficient) => {
         const quotient = Math.floor(previousValue / _coefficient);
         const remainder = previousValue - quotient * _coefficient;
         result.push(quotient);
         return remainder;
       }, value);
-      
+
       return result;
     };
 
@@ -335,14 +320,18 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     const oneMinute = 60 * oneSecond;
     const oneHour = 60 * oneMinute;
     const oneDay = 24 * oneHour;
-    const [day, hour, minute, second] = numberTranslate(diffTimestamp, [oneDay, oneHour, oneMinute, oneSecond]);
+    const [day, hour, minute, second] = numberTranslate(diffTimestamp, [
+      oneDay,
+      oneHour,
+      oneMinute,
+      oneSecond,
+    ]);
     this.raceEndCountdwon = {
       day: `${day}`.padStart(2, '0'),
       hour: `${hour}`.padStart(2, '0'),
-      minute: `${minute}`.padStart(2, '0'), 
-      second: `${second}`.padStart(2, '0')
+      minute: `${minute}`.padStart(2, '0'),
+      second: `${second}`.padStart(2, '0'),
     };
-
   }
 
   /**
@@ -359,9 +348,8 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     const navHeight = 60;
     scrollElement.scrollTo({
       top: targetElementTop - navHeight,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
-
   }
 
   /**
@@ -372,13 +360,10 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     this.checkMobileSize(window.innerWidth);
     this.checkShortcutWidth();
     const resizeEvent = fromEvent(window, 'resize');
-    this.resizeSubscription = resizeEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.resizeSubscription = resizeEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.checkMobileSize(window.innerWidth);
       this.checkShortcutWidth();
     });
-
   }
 
   /**
@@ -415,11 +400,8 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
           this.uiFlag.showSwitchButton = false;
           shfitElement.style.left = '0px';
         }
-
       }
-
     }, 100);
-
   }
 
   /**
@@ -431,9 +413,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     if (currentShortcutIndex > 0) {
       this.uiFlag.currentShortcutIndex--;
       this.switchShortcut();
-
     }
-    
   }
 
   /**
@@ -447,7 +427,6 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
       this.uiFlag.currentShortcutIndex++;
       this.switchShortcut();
     }
-
   }
 
   /**
@@ -464,7 +443,6 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
         const currentElementWidth = currentElement.getBoundingClientRect().width;
         return previewValue + currentElementWidth;
       }
-      
     }, 0);
 
     const shfitElement = document.getElementById('shortcut__list');
@@ -481,7 +459,6 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
       const { eventId } = this.eventInfo;
       this.router.navigateByUrl(`/official-activity/apply-activity/${eventId}`);
     }
-    
   }
 
   /**
@@ -491,5 +468,4 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

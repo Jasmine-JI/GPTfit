@@ -5,7 +5,7 @@ import {
   ElementRef,
   Renderer2,
   OnDestroy,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import { LifeTrackingService } from '../../services/life-tracking.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
@@ -23,7 +23,7 @@ import { AuthService } from '../../../../core/services/auth.service';
   selector: 'app-life-tracking',
   templateUrl: './life-tracking.component.html',
   styleUrls: ['./life-tracking.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class LifeTrackingComponent implements OnInit, OnDestroy {
   _options = {
@@ -37,7 +37,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     spinnerPosition: 'right',
     direction: 'ltr+',
     color: '#108bcd',
-    thick: false
+    thick: false,
   };
   isShowNoRight = false;
   isLoading = false;
@@ -46,7 +46,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   fileInfo: any;
   userLink = {
     userName: '',
-    userId: null
+    userId: null,
   };
   infoDate: string;
   syncDate: string;
@@ -57,39 +57,39 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   charts = [];
   isInitialChartDone = false;
 
-  @ViewChild('container', {static: false})
+  @ViewChild('container', { static: false })
   container: ElementRef;
-  @ViewChild('activityChartTarget', {static: false})
+  @ViewChild('activityChartTarget', { static: false })
   activityChartTarget: ElementRef;
-  @ViewChild('airPressureChartTarget', {static: false})
+  @ViewChild('airPressureChartTarget', { static: false })
   airPressureChartTarget: ElementRef;
-  @ViewChild('elevChartTarget', {static: false})
+  @ViewChild('elevChartTarget', { static: false })
   elevChartTarget: ElementRef;
-  @ViewChild('heartRateChartTarget', {static: false})
+  @ViewChild('heartRateChartTarget', { static: false })
   heartRateChartTarget: ElementRef;
-  @ViewChild('stressChartTarget', {static: false})
+  @ViewChild('stressChartTarget', { static: false })
   stressChartTarget: ElementRef;
-  @ViewChild('tempChartTarget', {static: false})
+  @ViewChild('tempChartTarget', { static: false })
   tempChartTarget: ElementRef;
-  @ViewChild('totalActivityCaloriesChartTarget', {static: false})
+  @ViewChild('totalActivityCaloriesChartTarget', { static: false })
   totalActivityCaloriesChartTarget: ElementRef;
-  @ViewChild('totalDistanceMetersChartTarget', {static: false})
+  @ViewChild('totalDistanceMetersChartTarget', { static: false })
   totalDistanceMetersChartTarget: ElementRef;
-  @ViewChild('totalElevGainChartTarget', {static: false})
+  @ViewChild('totalElevGainChartTarget', { static: false })
   totalElevGainChartTarget: ElementRef;
-  @ViewChild('totalElevLossChartTarget', {static: false})
+  @ViewChild('totalElevLossChartTarget', { static: false })
   totalElevLossChartTarget: ElementRef;
-  @ViewChild('totalLifeCaloriesChartTarget', {static: false})
+  @ViewChild('totalLifeCaloriesChartTarget', { static: false })
   totalLifeCaloriesChartTarget: ElementRef;
-  @ViewChild('totalStepChartTarget', {static: false})
+  @ViewChild('totalStepChartTarget', { static: false })
   totalStepChartTarget: ElementRef;
-  @ViewChild('wearingStatusChartTarget', {static: false})
+  @ViewChild('wearingStatusChartTarget', { static: false })
   wearingStatusChartTarget: ElementRef;
-  @ViewChild('walkElevGainChartTarget', {static: false})
+  @ViewChild('walkElevGainChartTarget', { static: false })
   walkElevGainChartTarget: ElementRef;
-  @ViewChild('walkElevLossChartTarget', {static: false})
+  @ViewChild('walkElevLossChartTarget', { static: false })
   walkElevLossChartTarget: ElementRef;
-  @ViewChild('localPressureChartTarget', {static: false})
+  @ViewChild('localPressureChartTarget', { static: false })
   localPressureChartTarget: ElementRef;
 
   isactivityChartTargetDisplay = false;
@@ -129,9 +129,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     private renderer: Renderer2,
     public dialog: MatDialog,
     private authService: AuthService
-  ) {
-
-  }
+  ) {}
 
   ngOnInit() {
     this.progressRef = this.ngProgress.ref();
@@ -148,14 +146,14 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
         adminLists,
         type: 1,
         onConfirm: this.handleConfirm.bind(this),
-        isInnerAdmin: true
-      }
+        isInnerAdmin: true,
+      },
     });
   }
 
   handleConfirm(type, _lists) {
-    const userIds = _lists.map(_list => _list.userId);
-    const userNames = _lists.map(_list => _list.userName);
+    const userIds = _lists.map((_list) => _list.userId);
+    const userNames = _lists.map((_list) => _list.userName);
 
     this.targetUserId = userIds[0].toString();
     this.targetUserName = userNames[0];
@@ -171,11 +169,11 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       token: this.authService.token,
       targetUserId: (this.targetUserId && this.targetUserId.toString()) || '',
       filterStartTime: this.filterStartTime,
-      filterEndTime: this.filterEndTime
+      filterEndTime: this.filterEndTime,
     };
 
     this.progressRef.start();
-    this.lifeTrackingService.getTrackingDayDetail(body).subscribe(res => {
+    this.lifeTrackingService.getTrackingDayDetail(body).subscribe((res) => {
       if (res.resultCode === 401 || res.resultCode === 402) {
         this.isShowNoRight = true;
         this.isLoading = false;
@@ -192,10 +190,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
         if (this.fileInfo.author.indexOf('?') > -1) {
           // 防止後續author會帶更多參數，先不寫死
           this.userLink.userName = this.fileInfo.author.split('?')[0];
-          this.userLink.userId = this.fileInfo.author
-            .split('?')[1]
-            .split('=')[1]
-            .replace(')', '');
+          this.userLink.userId = this.fileInfo.author.split('?')[1].split('=')[1].replace(')', '');
         }
 
         this.syncDate = dayjs(this.fileInfo.syncDate).format('YYYY-MM-DD HH:mm:SS');
@@ -214,14 +209,11 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       this.progressRef.complete();
       this.isLoading = false;
     });
-
   }
 
   goToProfile() {
     this.router.navigateByUrl(
-      `/user-profile/${this.hashIdService.handleUserIdEncode(
-        this.userLink.userId
-      )}`
+      `/user-profile/${this.hashIdService.handleUserIdEncode(this.userLink.userId)}`
     );
   }
 
@@ -256,10 +248,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       const _chart: any = charts[i];
       if (_chart !== undefined) {
         if (charts.length !== finalDatas.length) {
-          if (
-            finalDatas[i - (charts.length - finalDatas.length)]
-              .isSyncExtremes
-          ) {
+          if (finalDatas[i - (charts.length - finalDatas.length)].isSyncExtremes) {
             const event = _chart.pointer.normalize(e); // Find coordinates within the chart
             const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
             if (point && point.index) {
@@ -290,61 +279,50 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
 
     this.finalDatas.forEach((_option, idx) => {
       this[`is${chartTargets[idx]}Display`] = true;
-      _option[
-        chartTargets[idx]
-      ].xAxis.events.setExtremes = this.syncExtremes.bind(
+      _option[chartTargets[idx]].xAxis.events.setExtremes = this.syncExtremes.bind(
         this,
         idx,
         finalDatas
       );
-      this.charts[idx] = chart(
-        this[chartTargets[idx]].nativeElement,
-        _option[chartTargets[idx]]
-      );
+      this.charts[idx] = chart(this[chartTargets[idx]].nativeElement, _option[chartTargets[idx]]);
     });
     this.isInitialChartDone = true;
 
-    this.renderer.listen(this.container.nativeElement, 'mousemove', e =>
+    this.renderer.listen(this.container.nativeElement, 'mousemove', (e) =>
       this.handleSynchronizedPoint(e, finalDatas)
     );
 
-    this.renderer.listen(this.container.nativeElement, 'touchmove', e =>
+    this.renderer.listen(this.container.nativeElement, 'touchmove', (e) =>
       this.handleSynchronizedPoint(e, finalDatas)
     );
 
-    this.renderer.listen(this.container.nativeElement, 'touchstart', e =>
+    this.renderer.listen(this.container.nativeElement, 'touchstart', (e) =>
       this.handleSynchronizedPoint(e, finalDatas)
     );
-    
   }
 
   syncExtremes(num, finalDatas, e) {
     // 調整縮放會同步
     const thisChart = this.charts[num];
     if (e.trigger !== 'syncExtremes') {
-      each(charts, function(_chart, idx) {
+      each(charts, function (_chart, idx) {
         if (charts.length !== finalDatas.length) {
           if (
             _chart !== thisChart &&
             _chart &&
-            finalDatas[idx - (charts.length - finalDatas.length)]
-              .isSyncExtremes
+            finalDatas[idx - (charts.length - finalDatas.length)].isSyncExtremes
           ) {
             if (_chart.xAxis[0].setExtremes) {
               _chart.xAxis[0].setExtremes(e.min, e.max, undefined, false, {
-                trigger: 'syncExtremes'
+                trigger: 'syncExtremes',
               });
             }
           }
         } else {
-          if (
-            _chart !== thisChart &&
-            _chart &&
-            finalDatas[idx].isSyncExtremes
-          ) {
+          if (_chart !== thisChart && _chart && finalDatas[idx].isSyncExtremes) {
             if (_chart.xAxis[0].setExtremes) {
               _chart.xAxis[0].setExtremes(e.min, e.max, undefined, false, {
-                trigger: 'syncExtremes'
+                trigger: 'syncExtremes',
               });
             }
           }
@@ -354,12 +332,8 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   }
 
   handleDateChange($event: MatDatepickerInputEvent<Dayjs>) {
-    this.filterStartTime = dayjs($event.value).format(
-      'YYYY-MM-DDTHH:mm:00.000+08:00'
-    );
-    this.filterEndTime = dayjs($event.value).format(
-      'YYYY-MM-DDT00:00:00.000+08:00'
-    );
+    this.filterStartTime = dayjs($event.value).format('YYYY-MM-DDTHH:mm:00.000+08:00');
+    this.filterEndTime = dayjs($event.value).format('YYYY-MM-DDT00:00:00.000+08:00');
   }
 
   ngOnDestroy() {
@@ -371,5 +345,4 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       });
     }
   }
-
 }

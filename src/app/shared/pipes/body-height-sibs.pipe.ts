@@ -2,12 +2,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { UtilsService } from '../services/utils.service';
 import { Unit } from '../enum/value-conversion';
 
-@Pipe({name: 'bodyHeightSibs'})
+@Pipe({ name: 'bodyHeightSibs' })
 export class BodyHeightSibsPipe implements PipeTransform {
-
-  constructor(
-    private utils: UtilsService
-  ) {}
+  constructor(private utils: UtilsService) {}
 
   /**
    * 依公英制轉換身高單位。
@@ -25,8 +22,7 @@ export class BodyHeightSibsPipe implements PipeTransform {
     } else {
       unitStr = 'cm';
     }
-    
+
     return showUnit || showUnit === undefined ? `${result} ${unitStr}` : `${result}`;
   }
-
 }

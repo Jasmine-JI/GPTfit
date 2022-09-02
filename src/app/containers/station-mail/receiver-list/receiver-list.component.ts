@@ -7,7 +7,7 @@ import {
   Output,
   EventEmitter,
   ViewChild,
-  ElementRef
+  ElementRef,
 } from '@angular/core';
 import { Api50xxService } from '../../../core/services/api-50xx.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -16,19 +16,16 @@ import { checkResponse } from '../../../shared/utils/index';
 import { Subject, Subscription, combineLatest, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-
 type ContactListType = 'favorite' | 'black' | null;
 
 @Component({
   selector: 'app-receiver-list',
   templateUrl: './receiver-list.component.html',
-  styleUrls: ['./receiver-list.component.scss']
+  styleUrls: ['./receiver-list.component.scss'],
 })
 export class ReceiverListComponent implements OnInit, OnChanges, OnDestroy {
-
-  @Input('showBlackList') showBlackList: boolean = false;
-  @Output('addReceiver') addReceiver = new EventEmitter();
-
+  @Input() showBlackList = false;
+  @Output() addReceiver = new EventEmitter();
 
   private ngUnsubscribe = new Subject();
   private senderListSubscription = new Subscription();
@@ -39,8 +36,8 @@ export class ReceiverListComponent implements OnInit, OnChanges, OnDestroy {
    * ui 用到之flag
    */
   uiFlag = {
-    currentTag: <ContactListType>null
-  }
+    currentTag: <ContactListType>null,
+  };
 
   /**
    * 常用名單
@@ -61,12 +58,11 @@ export class ReceiverListComponent implements OnInit, OnChanges, OnDestroy {
     private api50xxService: Api50xxService,
     private authService: AuthService,
     private stationMailService: StationMailService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.getContactList();
   }
-
 
   ngOnChanges(): void {}
 
@@ -76,13 +72,13 @@ export class ReceiverListComponent implements OnInit, OnChanges, OnDestroy {
   getContactList() {
     this.senderListSubscription = combineLatest([
       this.stationMailService.getFavoriteList(),
-      this.stationMailService.getBlackList()
-    ]).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(([favoriteList, blackList]) => {
-      this.favoriteList = favoriteList;
-      this.blackList = blackList;
-    });
+      this.stationMailService.getBlackList(),
+    ])
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(([favoriteList, blackList]) => {
+        this.favoriteList = favoriteList;
+        this.blackList = blackList;
+      });
   }
 
   /**
@@ -94,7 +90,6 @@ export class ReceiverListComponent implements OnInit, OnChanges, OnDestroy {
       const receiver = this.favoriteList[index];
       this.addReceiver.emit(receiver);
     }
-
   }
 
   /**
@@ -119,17 +114,15 @@ export class ReceiverListComponent implements OnInit, OnChanges, OnDestroy {
       token: this.authService.token,
       type: 2,
       action: 2,
-      contactList: [id]
+      contactList: [id],
     };
 
-    this.api50xxService.fetchEditContactList(body).subscribe(res => {
+    this.api50xxService.fetchEditContactList(body).subscribe((res) => {
       if (checkResponse(res)) {
-        const newList = this.blackList?.filter(_list => _list.id !== id);
+        const newList = this.blackList?.filter((_list) => _list.id !== id);
         this.stationMailService.saveBlackList(newList as Array<any>);
       }
-
     });
-
   }
 
   /**
@@ -142,17 +135,15 @@ export class ReceiverListComponent implements OnInit, OnChanges, OnDestroy {
       token: this.authService.token,
       type: 1,
       action: 2,
-      contactList: [id]
+      contactList: [id],
     };
 
-    this.api50xxService.fetchEditContactList(body).subscribe(res => {
+    this.api50xxService.fetchEditContactList(body).subscribe((res) => {
       if (checkResponse(res, false)) {
-        const newList = this.favoriteList?.filter(_list => _list.id !== id);
+        const newList = this.favoriteList?.filter((_list) => _list.id !== id);
         this.stationMailService.saveFavoriteList(newList as Array<any>);
       }
-
     });
-
   }
 
   /**
@@ -169,7 +160,6 @@ export class ReceiverListComponent implements OnInit, OnChanges, OnDestroy {
       this.uiFlag.currentTag = tab;
       this.subScribePluralEvent();
     }
-    
   }
 
   /**
@@ -179,12 +169,11 @@ export class ReceiverListComponent implements OnInit, OnChanges, OnDestroy {
     const scrollTargetEvent = document.querySelector('.main__container') as Element;
     const scrollEvent = fromEvent(scrollTargetEvent, 'scroll');
     const clickEvent = fromEvent(window, 'click');
-    this.pluralEventSubscription = merge(scrollEvent, clickEvent).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.unSubScribePluralEvent();
-    });
-
+    this.pluralEventSubscription = merge(scrollEvent, clickEvent)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.unSubScribePluralEvent();
+      });
   }
 
   /**
@@ -213,9 +202,9 @@ export class ReceiverListComponent implements OnInit, OnChanges, OnDestroy {
    */
   searchList(keyword: string, listType: ContactListType) {
     const targetList = listType === 'favorite' ? this.favoriteList : this.blackList;
-    this.searchResultList = targetList.filter(_list => {
+    this.searchResultList = targetList.filter((_list) => {
       const name = _list.name.toLowerCase();
-      return name.includes(keyword)
+      return name.includes(keyword);
     });
   }
 
@@ -233,5 +222,4 @@ export class ReceiverListComponent implements OnInit, OnChanges, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

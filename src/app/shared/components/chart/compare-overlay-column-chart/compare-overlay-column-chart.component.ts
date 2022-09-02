@@ -1,4 +1,12 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, OnDestroy, OnChanges } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnChanges,
+} from '@angular/core';
 import { of, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
@@ -7,25 +15,25 @@ import dayjs from 'dayjs';
 import { GlobalEventsService } from '../../../../core/services/global-events.service';
 import { complexTrendTooltip } from '../../../utils/chart-formatter';
 import { deepCopy } from '../../../utils/index';
-import { compareChartDefault } from '../../../models/chart-data';
-
+import { compareChartDefault, TARGET_LINE_COLOR } from '../../../models/chart-data';
 
 @Component({
   selector: 'app-compare-overlay-column-chart',
   templateUrl: './compare-overlay-column-chart.component.html',
-  styleUrls: ['./compare-overlay-column-chart.component.scss', '../chart-share-style.scss']
+  styleUrls: ['./compare-overlay-column-chart.component.scss', '../chart-share-style.scss'],
 })
 export class CompareOverlayColumnChartComponent implements OnInit, OnDestroy, OnChanges {
-
   private ngUnsubscribe = new Subject();
 
-  @Input('data') data: Array<any>;
+  @Input() data: Array<any>;
 
-  @Input('xAxisTitle') xAxisTitle: string;
+  @Input() xAxisTitle: string;
 
-  @Input('chartUnit') chartUnit: string = '';
+  @Input() chartUnit = '';
 
-  @ViewChild('container', {static: false})
+  @Input() conditionValue: number;
+
+  @ViewChild('container', { static: false })
   container: ElementRef;
 
   /**
@@ -50,11 +58,12 @@ export class CompareOverlayColumnChartComponent implements OnInit, OnDestroy, On
    * 訂閱全域自定義事件
    */
   subscribeGlobalEvents() {
-    this.globalEventsService.getRxSideBarMode().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.handleChart();
-    });
+    this.globalEventsService
+      .getRxSideBarMode()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.handleChart();
+      });
   }
 
   /**
@@ -64,12 +73,14 @@ export class CompareOverlayColumnChartComponent implements OnInit, OnDestroy, On
     if (!this.data) {
       this.noData = true;
     } else {
-      const { data } = this;
-      of('').pipe(
-        map(() => this.initChart(data)),
-        map(option => this.handleSeriesName(option)),
-        map(final => this.createChart(final))
-      ).subscribe();
+      const { data, conditionValue } = this;
+      of('')
+        .pipe(
+          map(() => this.initChart(data, conditionValue)),
+          map((option) => this.handleSeriesName(option)),
+          map((final) => this.createChart(final))
+        )
+        .subscribe();
 
       this.noData = false;
     }
@@ -78,11 +89,11 @@ export class CompareOverlayColumnChartComponent implements OnInit, OnDestroy, On
   /**
    * 初始化圖表
    * @param data {Array<number>}-圖表所需數據
-   * @author kidin-1110413
+   * @param targetLineValue {number | null}-運動目標線數值
    */
-  initChart(data: Array<number>) {
+  initChart(data: Array<number>, targetLineValue: number | null) {
     const { xAxisTitle, chartUnit } = this;
-    const chartOption = new ChartOption(data, xAxisTitle, chartUnit);
+    const chartOption = new ChartOption(data, xAxisTitle, chartUnit, targetLineValue);
     return chartOption.option;
   }
 
@@ -106,7 +117,7 @@ export class CompareOverlayColumnChartComponent implements OnInit, OnDestroy, On
    * @author kidin-1110413
    */
   createChart(option: any) {
-    setTimeout (() => {
+    setTimeout(() => {
       if (!this.container) {
         this.createChart(option);
       } else {
@@ -120,17 +131,19 @@ export class CompareOverlayColumnChartComponent implements OnInit, OnDestroy, On
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }
 
-
 class ChartOption {
-
   private _option = deepCopy(compareChartDefault);
 
-
-  constructor(data: Array<any>, xAxisTitle: string, chartUnit: string) {
+  constructor(
+    data: Array<any>,
+    xAxisTitle: string,
+    chartUnit: string,
+    targetLineValue: number | null
+  ) {
     this.initChart(data, xAxisTitle, chartUnit);
+    if (targetLineValue) this.handleTargetLine(targetLineValue);
   }
 
   /**
@@ -147,7 +160,6 @@ class ChartOption {
     } else {
       this.handleNormalOption(data);
     }
-
   }
 
   /**
@@ -174,17 +186,16 @@ class ChartOption {
       xAxis: {
         ...xAxis,
         type: 'datetime',
-        tickPositions: avgData.data.map(_data => _data.additionalInfo[0]),
+        tickPositions: avgData.data.map((_data) => _data.additionalInfo[0]),
         labels: {
           ...labels,
-          formatter: function() {
+          formatter: function () {
             return dayjs(this.value).format('MM/DD');
-          }
-        }
+          },
+        },
       },
-      series: data
+      series: data,
     };
-
   }
 
   /**
@@ -202,14 +213,27 @@ class ChartOption {
         ...xAxis,
         title: {
           ...xAxis.title,
-          text: `( ${xAxisTitle} )`
+          text: `( ${xAxisTitle} )`,
         },
         categories,
         crosshair: true,
       },
-      series: chartData
+      series: chartData,
     };
+  }
 
+  /**
+   * 若有設定運動目標，則顯示目標線
+   * @param value {number}-目標線數值
+   */
+  handleTargetLine(value: number) {
+    this._option.yAxis['plotLines'] = [
+      {
+        color: TARGET_LINE_COLOR,
+        width: 2,
+        value,
+      },
+    ];
   }
 
   /**
@@ -218,5 +242,4 @@ class ChartOption {
   get option() {
     return this._option;
   }
-
 }

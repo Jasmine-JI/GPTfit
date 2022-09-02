@@ -1,14 +1,11 @@
 @import 'transition.scss';
 
-
 @mixin hover-bg($bgColor) {
-
   @include transition(background-color);
   &:hover {
     background-color: $bgColor;
     @include transition(background-color);
   }
-
 }
 
 .create__btn {
@@ -33,7 +30,6 @@
   h6 {
     margin: 0;
   }
-
 }
 
 .list__btn {
@@ -50,19 +46,18 @@
   @include hover-bg(rgba(255, 230, 230, 1));
 }
 
-.user__list, .folder__list {
+.user__list,
+.folder__list {
   padding: 5px 0;
 }
 
 .user__list {
-
   span {
     display: inline-block;
     padding: 2px 5px;
     cursor: pointer;
     @include hover-bg(rgba(186, 255, 197, 1));
   }
-
 }
 
 .user__name--focus {
@@ -103,7 +98,11 @@
   color: var(--scale-0-255);
 }
 
-#account, #pwd, #folder, #check__pwd, #user__add__folder {
+#account,
+#pwd,
+#folder,
+#check__pwd,
+#user__add__folder {
   border: none;
   outline: none;
   margin-left: 20px;
@@ -124,19 +123,18 @@
     right: 0;
     cursor: pointer;
   }
-
 }
 
 .radio__section {
   margin: 5px 0;
 
-  >span {
+  > span {
     margin-bottom: 5px;
   }
-
 }
 
-#cancel__btn , #confirm__btn {
+#cancel__btn,
+#confirm__btn {
   width: 60px;
   height: 35px;
 }
@@ -147,7 +145,6 @@
   &:hover {
     background: rgba(255, 0, 0, 0.1);
   }
-
 }
 
 #confirm__btn {
@@ -156,7 +153,6 @@
   &:hover {
     background: rgba(0, 255, 0, 0.1);
   }
-
 }
 
 .edit__confirm__btn {

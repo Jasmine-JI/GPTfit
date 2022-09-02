@@ -8,9 +8,8 @@ describe('PushMessageListComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ PushMessageListComponent ]
-    })
-    .compileComponents();
+      declarations: [PushMessageListComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

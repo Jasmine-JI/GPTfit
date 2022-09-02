@@ -1,8 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({name: 'appId'})
+@Pipe({ name: 'appId' })
 export class AppIdPipe implements PipeTransform {
-
   /**
    * 將app id轉成app 名稱或介紹
    * @param value {number}-app id
@@ -10,14 +9,7 @@ export class AppIdPipe implements PipeTransform {
    * @author kidin
    */
   transform(value: number, args: 'name' | 'descriptionKey' = 'name'): string {
-    const name = [
-      'GPTfit',
-      'Connect',
-      'Cloud run',
-      'Train live',
-      'Fitness',
-      'TFT'
-    ];
+    const name = ['GPTfit', 'Connect', 'Cloud run', 'Train live', 'Fitness', 'TFT'];
 
     const key = [
       'universal_app_gptInfo3',
@@ -25,7 +17,7 @@ export class AppIdPipe implements PipeTransform {
       'universal_app_cloudRunInfo',
       'universal_app_trainLiveInfo',
       'universal_app_fitnessInfo',
-      'TFT'
+      'TFT',
     ];
 
     const appName = name[value] ?? 'Unknow';
@@ -35,7 +27,5 @@ export class AppIdPipe implements PipeTransform {
     } else {
       return null;
     }
-
   }
-
 }

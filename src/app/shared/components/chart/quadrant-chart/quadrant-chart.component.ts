@@ -1,4 +1,12 @@
-import { Component, OnInit, OnChanges, OnDestroy, Input, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnChanges,
+  OnDestroy,
+  Input,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { SportType } from '../../../enum/sports';
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -17,17 +25,17 @@ type ChartOpt = {
   xAxis: {
     type: QuadrantDataOpt;
     origin: number;
-  },
+  };
   yAxis: {
     type: QuadrantDataOpt;
-    origin: number
-  },
+    origin: number;
+  };
   meaning: {
     quadrantI: string;
     quadrantII: string;
     quadrantIII: string;
     quadrantIV: string;
-  },
+  };
   customMeaning: boolean;
   assignUser: Array<number>;
 };
@@ -36,18 +44,17 @@ type ChartOpt = {
   selector: 'app-quadrant-chart',
   templateUrl: './quadrant-chart.component.html',
   styleUrls: ['./quadrant-chart.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
+  private ngUnsubscribe = new Subject();
 
-  private ngUnsubscribe = new Subject;
-
-  @Input('userPoint') userPoint: Array<any>;
-  @Input('userInfo') userInfo: Array<any>;
-  @Input('sportType') sportType: SportType;
-  @Input('sysAccessRight') sysAccessRight: number;
-  @Input('unit') unit: Unit;
-  @Input('hrRange') hrRange: HrZoneRange;
+  @Input() userPoint: Array<any>;
+  @Input() userInfo: Array<any>;
+  @Input() sportType: SportType;
+  @Input() sysAccessRight: number;
+  @Input() unit: Unit;
+  @Input() hrRange: HrZoneRange;
 
   /**
    * ui會用到的各種flag
@@ -57,8 +64,8 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
     showDataSelector: null,
     showUserList: false,
     optTempChange: false,
-    focusInput: false
-  }
+    focusInput: false,
+  };
 
   /**
    * 象限顏色
@@ -67,8 +74,8 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
     quadrantI: '#ea5757',
     quadrantII: '#cfef4b',
     quadrantIII: '#6bebf9',
-    quadrantIV: '#72e8b0'
-  }
+    quadrantIV: '#72e8b0',
+  };
 
   /**
    * 圖表設定
@@ -76,21 +83,21 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
   chartOpt = <ChartOpt>{
     xAxis: {
       type: null,
-      origin: null
+      origin: null,
     },
     yAxis: {
       type: null,
-      origin: null
+      origin: null,
     },
     meaning: {
       quadrantI: '',
       quadrantII: '',
       quadrantIII: '',
-      quadrantIV: ''
+      quadrantIV: '',
     },
     customMeaning: false,
-    assignUser: null
-  }
+    assignUser: null,
+  };
 
   /**
    * 使用者變更中的設定
@@ -98,21 +105,21 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
   tempOpt = <ChartOpt>{
     xAxis: {
       type: null,
-      origin: null
+      origin: null,
     },
     yAxis: {
       type: null,
-      origin: null
+      origin: null,
     },
     meaning: {
       quadrantI: '',
       quadrantII: '',
       quadrantIII: '',
-      quadrantIV: ''
+      quadrantIV: '',
     },
     customMeaning: false,
-    assignUser: null
-  }
+    assignUser: null,
+  };
 
   /**
    * 圖表預設的設定
@@ -120,28 +127,28 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
   defaultOpt = <ChartOpt>{
     xAxis: {
       type: null,
-      origin: null
+      origin: null,
     },
     yAxis: {
       type: null,
-      origin: null
+      origin: null,
     },
     meaning: {
       quadrantI: '',
       quadrantII: '',
       quadrantIII: '',
-      quadrantIV: ''
+      quadrantIV: '',
     },
     customMeaning: false,
-    assignUser: null
-  }
+    assignUser: null,
+  };
 
   /**
    * 設定框軸線源點設定欄位的顯示
    */
   axisInputValue = {
     xAxis: <string | number>null,
-    yAxis: <string | number>null
+    yAxis: <string | number>null,
   };
 
   /**
@@ -151,44 +158,44 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
     line: {
       xAxis: {
         x: null,
-        y: null
+        y: null,
       },
       yAxis: {
         x: null,
-        y: null
-      }
+        y: null,
+      },
     },
     x: {
       max: null,
-      min: null
+      min: null,
     },
     y: {
       max: null,
-      min: null
+      min: null,
     },
     label: {
       xAxis: {
         x: null,
-        y: null
+        y: null,
       },
       yAxis: {
         x: null,
-        y: null
+        y: null,
       },
-      size: 16
+      size: 16,
     },
     pointNum: {
       quadrantI: 0,
       quadrantII: 0,
       quadrantIII: 0,
       quadrantIV: 0,
-      total: 0
+      total: 0,
     },
     chartPoint: [],
     displayPoint: [],
     chartSvgWidth: 450,
-    chartSvgHeight: 300
-  }
+    chartSvgHeight: 300,
+  };
 
   clickEvent: Subscription;
   check = 0;
@@ -200,8 +207,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef
   ) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   ngOnChanges(): void {
     this.uiFlag.showUserList = this.userPoint.length <= 1;
@@ -213,16 +219,16 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100228
    */
   initChart() {
-    this.translate.get('hellow world').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.initData();
-      this.setDefaultOpt();
-      this.setUserOpt();
-      this.createChart(this.userPoint);
-      this.changeDetectorRef.markForCheck();
-    });
-
+    this.translate
+      .get('hellow world')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.initData();
+        this.setDefaultOpt();
+        this.setUserOpt();
+        this.createChart(this.userPoint);
+        this.changeDetectorRef.markForCheck();
+      });
   }
 
   /**
@@ -234,45 +240,44 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
       line: {
         xAxis: {
           x: null,
-          y: null
+          y: null,
         },
         yAxis: {
           x: null,
-          y: null
-        }
+          y: null,
+        },
       },
       x: {
         max: null,
-        min: null
+        min: null,
       },
       y: {
         max: null,
-        min: null
+        min: null,
       },
       label: {
         xAxis: {
           x: null,
-          y: null
+          y: null,
         },
         yAxis: {
           x: null,
-          y: null
+          y: null,
         },
-        size: 16
+        size: 16,
       },
       pointNum: {
         quadrantI: 0,
         quadrantII: 0,
         quadrantIII: 0,
         quadrantIV: 0,
-        total: 0
+        total: 0,
       },
       chartPoint: [],
       displayPoint: [],
       chartSvgWidth: 450,
-      chartSvgHeight: 300
+      chartSvgHeight: 300,
     };
-
   }
 
   /**
@@ -285,20 +290,26 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
         this.defaultOpt = {
           xAxis: {
             type: 'pace',
-            origin: 10
+            origin: 10,
           },
           yAxis: {
             type: 'hr',
-            origin: this.hrRange.z4 as number
+            origin: this.hrRange.z4 as number,
           },
           meaning: {
-            quadrantI: `${this.translate.instant('universal_activityData_sprint')}/${this.translate.instant('universal_activityData_highLoad')}`,
-            quadrantII: `${this.translate.instant('universal_activityData_uphill')}/${this.translate.instant('universal_activityData_ineffective')}`,
+            quadrantI: `${this.translate.instant(
+              'universal_activityData_sprint'
+            )}/${this.translate.instant('universal_activityData_highLoad')}`,
+            quadrantII: `${this.translate.instant(
+              'universal_activityData_uphill'
+            )}/${this.translate.instant('universal_activityData_ineffective')}`,
             quadrantIII: `${this.translate.instant('universal_activityData_resumeTraining')}`,
-            quadrantIV: `${this.translate.instant('universal_activityData_downhill')}/${this.translate.instant('universal_activityData_highEfficiency')}`
+            quadrantIV: `${this.translate.instant(
+              'universal_activityData_downhill'
+            )}/${this.translate.instant('universal_activityData_highEfficiency')}`,
           },
           customMeaning: false,
-          assignUser: null
+          assignUser: null,
         };
 
         break;
@@ -306,40 +317,52 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
         this.defaultOpt = {
           xAxis: {
             type: 'speed',
-            origin: 30
+            origin: 30,
           },
           yAxis: {
             type: 'cadence',
-            origin: 100
+            origin: 100,
           },
           meaning: {
-            quadrantI: `${this.translate.instant('universal_activityData_sprint')}/${this.translate.instant('universal_activityData_accelerate')}`,
+            quadrantI: `${this.translate.instant(
+              'universal_activityData_sprint'
+            )}/${this.translate.instant('universal_activityData_accelerate')}`,
             quadrantII: `${this.translate.instant('universal_activityData_lightGearRatio')}`,
-            quadrantIII: `${this.translate.instant('universal_activityData_uphill')}/${this.translate.instant('universal_activityData_ineffective')}`,
-            quadrantIV: `${this.translate.instant('universal_activityData_glide')}/${this.translate.instant('universal_activityData_gearRatio')}`
+            quadrantIII: `${this.translate.instant(
+              'universal_activityData_uphill'
+            )}/${this.translate.instant('universal_activityData_ineffective')}`,
+            quadrantIV: `${this.translate.instant(
+              'universal_activityData_glide'
+            )}/${this.translate.instant('universal_activityData_gearRatio')}`,
           },
           customMeaning: false,
-          assignUser: null
+          assignUser: null,
         };
         break;
       case SportType.swim:
         this.defaultOpt = {
           xAxis: {
             type: 'pace',
-            origin: 4.5
+            origin: 4.5,
           },
           yAxis: {
             type: 'cadence',
-            origin: 30
+            origin: 30,
           },
           meaning: {
-            quadrantI: `${this.translate.instant('universal_activityData_sprint')}/${this.translate.instant('universal_activityData_accelerate')}`,
-            quadrantII: `${this.translate.instant('universal_activityData_retrograde')}/${this.translate.instant('universal_activityData_ineffective')}`,
+            quadrantI: `${this.translate.instant(
+              'universal_activityData_sprint'
+            )}/${this.translate.instant('universal_activityData_accelerate')}`,
+            quadrantII: `${this.translate.instant(
+              'universal_activityData_retrograde'
+            )}/${this.translate.instant('universal_activityData_ineffective')}`,
             quadrantIII: `${this.translate.instant('universal_activityData_leisureActivities')}`,
-            quadrantIV: `${this.translate.instant('universal_activityData_forward')}/${this.translate.instant('universal_activityData_highEfficiency')}`
+            quadrantIV: `${this.translate.instant(
+              'universal_activityData_forward'
+            )}/${this.translate.instant('universal_activityData_highEfficiency')}`,
           },
           customMeaning: false,
-          assignUser: null
+          assignUser: null,
         };
 
         break;
@@ -347,24 +370,29 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
         this.defaultOpt = {
           xAxis: {
             type: 'pace',
-            origin: 15
+            origin: 15,
           },
           yAxis: {
             type: 'cadence',
-            origin: 40
+            origin: 40,
           },
           meaning: {
-            quadrantI: `${this.translate.instant('universal_activityData_sprint')}/${this.translate.instant('universal_activityData_accelerate')}`,
-            quadrantII: `${this.translate.instant('universal_activityData_retrograde')}/${this.translate.instant('universal_activityData_ineffective')}`,
+            quadrantI: `${this.translate.instant(
+              'universal_activityData_sprint'
+            )}/${this.translate.instant('universal_activityData_accelerate')}`,
+            quadrantII: `${this.translate.instant(
+              'universal_activityData_retrograde'
+            )}/${this.translate.instant('universal_activityData_ineffective')}`,
             quadrantIII: `${this.translate.instant('universal_activityData_leisureActivities')}`,
-            quadrantIV: `${this.translate.instant('universal_activityData_forward')}/${this.translate.instant('universal_activityData_highEfficiency')}`
+            quadrantIV: `${this.translate.instant(
+              'universal_activityData_forward'
+            )}/${this.translate.instant('universal_activityData_highEfficiency')}`,
           },
           customMeaning: false,
-          assignUser: null
+          assignUser: null,
         };
         break;
     }
-
   }
 
   /**
@@ -376,10 +404,20 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
    * @param uniy {Unit}-使用者使用的單位
    * @author kidin-1100202
    */
-  handleAxisInput(axis: Axis, refType: QuadrantDataOpt, refValue: number, sportType: SportType, uniy: Unit) {
+  handleAxisInput(
+    axis: Axis,
+    refType: QuadrantDataOpt,
+    refValue: number,
+    sportType: SportType,
+    uniy: Unit
+  ) {
     switch (refType) {
       case 'pace':
-        this.axisInputValue[axis] = this.sportPaceSibsPipe.transform(refValue, [sportType, uniy, 1]);
+        this.axisInputValue[axis] = this.sportPaceSibsPipe.transform(refValue, [
+          sportType,
+          uniy,
+          1,
+        ]);
         break;
       case 'speed':
         this.axisInputValue[axis] = uniy === 0 ? refValue : +(refValue / mi).toFixed(1);
@@ -388,7 +426,6 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
         this.axisInputValue[axis] = refValue;
         break;
     }
-
   }
 
   /**
@@ -418,7 +455,6 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
       this.sportType,
       this.unit
     );
-
   }
 
   /**
@@ -427,17 +463,20 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100128
    */
   createChart(points: Array<any>) {
-    const { 
-      xAxis: { origin: xOrigin, type: xAxisType }, 
-      yAxis: { origin: yOrigin, type: yAxisType }
+    const {
+      xAxis: { origin: xOrigin, type: xAxisType },
+      yAxis: { origin: yOrigin, type: yAxisType },
     } = this.chartOpt;
-    points.forEach(_points => {
+    points.forEach((_points) => {
       const xPointArr = _points[this.handleDataKey(xAxisType, this.sportType)];
       const yPointArr = _points[this.handleDataKey(yAxisType, this.sportType)];
       this.chart.chartPoint.push(
         xPointArr.map((_xPoint, idx) => {
           const _yPoint = yPointArr[idx];
-          const { x: { max: xMax, min: xMin }, y: { max: yMax, min: yMin } } = this.chart;
+          const {
+            x: { max: xMax, min: xMin },
+            y: { max: yMax, min: yMin },
+          } = this.chart;
           // 取得象限圖表邊界
           this.chart.x.min = xMin === null || xMin > _xPoint ? _xPoint : xMin;
           this.chart.x.max = xMax === null || xMax < _xPoint ? _xPoint : xMax;
@@ -464,15 +503,16 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
           return {
             x: _xPoint,
             y: _yPoint,
-            color: pointColor
+            color: pointColor,
           };
-
         })
       );
-
     });
 
-    const { x: { max: xMax, min: xMin }, y: { max: yMax, min: yMin } } = this.chart;
+    const {
+      x: { max: xMax, min: xMin },
+      y: { max: yMax, min: yMin },
+    } = this.chart;
     // 如數據皆在源點某側，則邊界取源點*1.2或源點*0.8
     this.chart.x.min = xMin > xOrigin ? xOrigin : xMin;
     this.chart.x.max = xMax < xOrigin ? xOrigin : xMax;
@@ -491,50 +531,54 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
       x: { max: xNewMax, min: xNewMin },
       y: { max: yNweMax, min: yNewMin },
       chartSvgWidth,
-      chartSvgHeight
+      chartSvgHeight,
     } = this.chart;
     // 取得圖表軸線位置
     const yRange = yNweMax - yNewMin;
     const xRange = xNewMax - xNewMin;
-    const xAxisYPosition = yRange ? +(((yNweMax - yOrigin) / yRange) * chartSvgHeight).toFixed(0) : 0,
-          yAxisXPosition = xRange ? +(((xOrigin - xNewMin) / xRange) * chartSvgWidth).toFixed(0) : 0;
+    const xAxisYPosition = yRange
+        ? +(((yNweMax - yOrigin) / yRange) * chartSvgHeight).toFixed(0)
+        : 0,
+      yAxisXPosition = xRange ? +(((xOrigin - xNewMin) / xRange) * chartSvgWidth).toFixed(0) : 0;
     this.chart.line = {
       xAxis: {
         x: [0, chartSvgWidth],
-        y: xAxisYPosition
+        y: xAxisYPosition,
       },
       yAxis: {
         x: yAxisXPosition,
-        y: [0, chartSvgHeight]
-      }
-    }
+        y: [0, chartSvgHeight],
+      },
+    };
 
     // 取得x、y軸數值標示位置
-    const xLabelYPosition = yRange ? +(((yNweMax - (yNewMin - yPadding)) / yRange) * chartSvgHeight).toFixed(0) : 0,
-          yLabelXPosition = xRange ? +((((xNewMin - xPadding) - xNewMin) / xRange) * chartSvgWidth).toFixed(0) : 0;
+    const xLabelYPosition = yRange
+        ? +(((yNweMax - (yNewMin - yPadding)) / yRange) * chartSvgHeight).toFixed(0)
+        : 0,
+      yLabelXPosition = xRange
+        ? +(((xNewMin - xPadding - xNewMin) / xRange) * chartSvgWidth).toFixed(0)
+        : 0;
     this.chart.label = {
       xAxis: {
         x: [0, chartSvgWidth / 2, chartSvgWidth],
-        y: xLabelYPosition
+        y: xLabelYPosition,
       },
       yAxis: {
         x: yLabelXPosition,
-        y: [chartSvgHeight, chartSvgHeight / 2, 0]
+        y: [chartSvgHeight, chartSvgHeight / 2, 0],
       },
-      size: 16
-    }
+      size: 16,
+    };
 
     // 計算該點在svg的位置
-    this.chart.chartPoint.forEach(_points => {
-      _points.forEach(_point => {
+    this.chart.chartPoint.forEach((_points) => {
+      _points.forEach((_point) => {
         this.chart.displayPoint.push({
-            x: xRange ? Math.round(((_point.x - xNewMin) / xRange) * chartSvgWidth) : 0,
-            y: yRange ? Math.round(((yNweMax - _point.y) / yRange) * chartSvgHeight) : 0,
-            color: _point.color
+          x: xRange ? Math.round(((_point.x - xNewMin) / xRange) * chartSvgWidth) : 0,
+          y: yRange ? Math.round(((yNweMax - _point.y) / yRange) * chartSvgHeight) : 0,
+          color: _point.color,
         });
-
       });
-
     });
 
     // 降噪
@@ -584,7 +628,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
       case 'pace':
         return 'speed';
       case 'cadence':
-        switch(sportType) {
+        switch (sportType) {
           case SportType.run:
             return 'runCadence';
           case SportType.cycle:
@@ -597,7 +641,6 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
       case 'power':
         return sportType === 2 ? 'cycleWatt' : 'rowingWatt';
     }
-
   }
 
   /**
@@ -626,9 +669,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
    */
   subscribeClick() {
     const click = fromEvent(document, 'click');
-    this.clickEvent = click.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    this.clickEvent = click.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       // 無聚焦再關閉設定框
       if (!this.uiFlag.focusInput) {
         this.uiFlag.showChartOpt = false;
@@ -636,10 +677,9 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
         this.restoreOrigin();
         this.ngUnsubscribeClick();
       }
-      
+
       this.changeDetectorRef.markForCheck();
     });
-
   }
 
   /**
@@ -706,12 +746,12 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
         quadrantI: '',
         quadrantII: '',
         quadrantIII: '',
-        quadrantIV: ''
+        quadrantIV: '',
       };
 
       this.tempOpt.customMeaning = true;
     }
-    
+
     this.changeDetectorRef.markForCheck();
   }
 
@@ -730,7 +770,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
       case 'pace':
         return this.getDefaultPace(sportType);
       case 'cadence':
-        switch(sportType) {
+        switch (sportType) {
           case SportType.run:
             return 180;
           case SportType.cycle:
@@ -743,7 +783,6 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
       case 'power':
         return sportType === 2 ? 350 : 400;
     }
-
   }
 
   /**
@@ -752,7 +791,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100202
    */
   getDefaultPace(type: SportType) {
-    switch(type) {
+    switch (type) {
       case SportType.run:
         return 10;
       case SportType.swim:
@@ -774,10 +813,13 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
     if (this.tempOpt[axis].type === 'pace') {
       const paceReg = /(^([0-5]?\d)'[0-5]\d")|(60'00")/;
       if (paceReg.test(editValue)) {
-        const totalSecond = (+editValue.split(`'`)[0]) * 60 + (+editValue.split(`'`)[1].split(`"`)[0]);
+        const totalSecond = +editValue.split(`'`)[0] * 60 + +editValue.split(`'`)[1].split(`"`)[0];
         switch (this.sportType) {
           case SportType.run:
-            finalValue = this.unit === 1 ? +((3600 / totalSecond) * mi).toFixed(2) : +(3600 / totalSecond).toFixed(2);
+            finalValue =
+              this.unit === 1
+                ? +((3600 / totalSecond) * mi).toFixed(2)
+                : +(3600 / totalSecond).toFixed(2);
             break;
           case SportType.swim:
             finalValue = +(3600 / (totalSecond * 10)).toFixed(2);
@@ -786,19 +828,17 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
             finalValue = +(3600 / (totalSecond * 2)).toFixed(2);
             break;
         }
-
       } else {
         finalValue = this.getDefaultPace(this.sportType);
       }
-
     } else {
       const numReg = /^[0-9]+$/;
       if (!numReg.test(editValue)) {
         finalValue = this.changeAxisOrigin(this.tempOpt[axis].type, this.sportType) as number;
       } else {
-        finalValue = this.tempOpt[axis].type === 'speed' && this.unit === 1 ? +editValue * mi : +editValue;
+        finalValue =
+          this.tempOpt[axis].type === 'speed' && this.unit === 1 ? +editValue * mi : +editValue;
       }
-
     }
 
     this.tempOpt[axis].origin = finalValue;
@@ -868,7 +908,6 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
       this.sportType,
       this.unit
     );
-
   }
 
   /**
@@ -888,5 +927,4 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

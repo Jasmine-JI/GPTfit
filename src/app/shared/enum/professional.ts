@@ -5,7 +5,7 @@ export enum GroupLevel {
   brand = 30,
   branch = 40,
   class = 60,
-  normal = 80
+  normal = 80,
 }
 
 /**
@@ -13,7 +13,7 @@ export enum GroupLevel {
  */
 export enum BrandType {
   brand = 1,
-  enterprise
+  enterprise,
 }
 
 /**
@@ -25,7 +25,7 @@ export enum GroupStatus {
   hide,
   disband,
   notFound,
-  lock
+  lock,
 }
 
 /**
@@ -36,5 +36,5 @@ export enum GroupJoinStatus {
   allow,
   refuse,
   blacklist,
-  outOfJoin
+  outOfJoin,
 }

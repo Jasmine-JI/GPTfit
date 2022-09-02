@@ -1,8 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({name: 'longText'})
+@Pipe({ name: 'longText' })
 export class LongTextPipe implements PipeTransform {
-
   /**
    * 將過長的文字以'...'表示
    * @param value {string}-待處理的字串
@@ -16,7 +15,5 @@ export class LongTextPipe implements PipeTransform {
     } else {
       return value;
     }
-    
   }
-  
 }

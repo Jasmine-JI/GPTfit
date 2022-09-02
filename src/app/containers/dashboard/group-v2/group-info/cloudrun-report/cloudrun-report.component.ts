@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { Subject, combineLatest, fromEvent, Subscription } from 'rxjs';
 import { takeUntil, switchMap, map, first } from 'rxjs/operators';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
@@ -17,23 +24,22 @@ import { setLocalStorageObject, getLocalStorageObject } from '../../../../../sha
 import { AuthService } from '../../../../../core/services/auth.service';
 import { AccessRight } from '../../../../../shared/enum/accessright';
 
-
 type AnalysisTable = 'group' | 'member';
-type AnalysisData = 
-  'name'|
-  'gender' |
-  'age' |
-  'completeNum' |
-  'avgTime' |
-  'totalTime' |
-  'avgPace' |
-  'avgHr' |
-  'avgCalories' |
-  'avgCadence' |
-  'hrZone' |
-  'runTimes' |
-  'bestTime' |
-  'totalCalories';
+type AnalysisData =
+  | 'name'
+  | 'gender'
+  | 'age'
+  | 'completeNum'
+  | 'avgTime'
+  | 'totalTime'
+  | 'avgPace'
+  | 'avgHr'
+  | 'avgCalories'
+  | 'avgCadence'
+  | 'hrZone'
+  | 'runTimes'
+  | 'bestTime'
+  | 'totalCalories';
 type NavigationPage = 'info' | 'sportsReport' | 'cloudrunReport';
 
 enum GroupTableCol {
@@ -45,8 +51,8 @@ enum GroupTableCol {
   avgHr,
   avgCalories,
   avgCadence,
-  hrZone
-};
+  hrZone,
+}
 
 enum MemberTableCol {
   name,
@@ -60,17 +66,16 @@ enum MemberTableCol {
   avgHr,
   totalCalories,
   avgCadence,
-  hrZone
-};
+  hrZone,
+}
 
 @Component({
   selector: 'app-cloudrun-report',
   templateUrl: './cloudrun-report.component.html',
   styleUrls: ['./cloudrun-report.component.scss', '../group-child-page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CloudrunReportComponent implements OnInit, OnDestroy {
-
   private ngUnsubscribe = new Subject();
   scrollEvent = new Subscription();
   clickEvent = new Subscription();
@@ -87,8 +92,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     haveUrlCondition: false,
     reportCompleted: false,
     noData: true,
-    defaultOpt: true
-  }
+    defaultOpt: true,
+  };
 
   /**
    * 報告頁面可讓使用者篩選的條件
@@ -98,47 +103,47 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     date: {
       startTimestamp: dayjs().startOf('month').valueOf(),
       endTimestamp: dayjs().endOf('month').valueOf(),
-      type: 'thisMonth'
+      type: 'thisMonth',
     },
     sportType: 1,
     cloudRun: {
       mapId: 1,
       month: dayjs().format('YYYYMM'),
-      checkCompletion: true
+      checkCompletion: true,
     },
     age: {
       min: null,
-      max: null
+      max: null,
     },
     gender: null,
-    hideConfirmBtn: false
-  }
+    hideConfirmBtn: false,
+  };
 
   /**
    * 使用者所選時間
    */
   selectDate = {
     startDate: dayjs().startOf('month').format('YYYY-MM-DDT00:00:00.000Z'),
-    endDate: dayjs().endOf('month').format('YYYY-MM-DDT23:59:59.999Z')
+    endDate: dayjs().endOf('month').format('YYYY-MM-DDT23:59:59.999Z'),
   };
 
   /**
    * 團體分析數據
    */
-  groupTableData = new MatTableDataSource<any>();  // matTable用資料
+  groupTableData = new MatTableDataSource<any>(); // matTable用資料
 
   /**
    * 個人分析數據
    */
-  memberTableData = new MatTableDataSource<any>();  // matTable用資料
+  memberTableData = new MatTableDataSource<any>(); // matTable用資料
 
   /**
    * 未經篩選的數據
    */
   backUpData = {
     group: null,
-    member: null
-  }
+    member: null,
+  };
 
   /**
    * 依group id當key的數據物件
@@ -157,11 +162,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     showOpt: false,
     showAll: false,
     showLevel: [30, 40, 60],
-    showDataType: [
-      0, 1, 3, 6, 7
-    ],  // 預設顯示完賽人數、人均總時間、人均配速、人均步頻、心率圖表
+    showDataType: [0, 1, 3, 6, 7], // 預設顯示完賽人數、人均總時間、人均配速、人均步頻、心率圖表
     sortType: null,
-    sorted: false
+    sorted: false,
   };
 
   /**
@@ -171,12 +174,10 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     showOpt: false,
     showAll: false,
     showLevel: [30, 40, 60],
-    showDataType: [
-      2, 3, 4, 6, 10
-    ],  // 預設顯示總筆數、最佳時間、平均時間、平均配速、心率圖表
+    showDataType: [2, 3, 4, 6, 10], // 預設顯示總筆數、最佳時間、平均時間、平均配速、心率圖表
     sortType: null,
-    sorted: false
-  }
+    sorted: false,
+  };
 
   /**
    * 頁面所在群組的資訊
@@ -186,7 +187,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     id: '',
     icon: '',
     level: null,
-    brandType: 2
+    brandType: 2,
   };
 
   /**
@@ -196,7 +197,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     show: false,
     focusId: null,
     x: null,
-    y: null
+    y: null,
   };
 
   /**
@@ -206,7 +207,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     show: false,
     focusId: null,
     x: null,
-    y: null
+    y: null,
   };
 
   /**
@@ -214,7 +215,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   tableColumn = {
     max: 5,
-    min: 2
+    min: 2,
   };
 
   readonly tableLength = 8;
@@ -227,7 +228,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     'avgHr',
     'avgCalories',
     'avgCadence',
-    'hrZone'
+    'hrZone',
   ];
 
   memberHeaderRowDef = [
@@ -242,7 +243,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     'avgHr',
     'totalCalories',
     'avgCadence',
-    'hrZone'
+    'hrZone',
   ];
 
   /**
@@ -250,7 +251,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   groupTableOpt: any = {
     filter: [],
-    column: []
+    column: [],
   };
 
   /**
@@ -258,11 +259,11 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   memberTableOpt: any = {
     filter: [],
-    column: []
+    column: [],
   };
 
   userId: number;
-  unit = <Unit>0;  // 使用者所使用的單位
+  unit = <Unit>0; // 使用者所使用的單位
   systemAccessRight = AccessRight.guest;
   allMapList: any;
   mapInfo: any;
@@ -271,15 +272,15 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   reportEndDate: string;
   reportTimeRange: string;
   createTime: string;
-  windowWidth = 320;  // 視窗寬度
-  currentMapId = 1;  // 另外設定map id 變數，避免污染子組件ngOnChanges event
+  windowWidth = 320; // 視窗寬度
+  currentMapId = 1; // 另外設定map id 變數，避免污染子組件ngOnChanges event
   progress = 0;
   previewUrl = '';
   mapSource = 'google';
   compare = {
     urlList: [],
-    clickList: []
-  }
+    clickList: [],
+  };
   readonly GroupTableCol = GroupTableCol;
   readonly MemberTableCol = MemberTableCol;
   constructor(
@@ -292,7 +293,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private changeDetectorRef: ChangeDetectorRef,
     private authService: AuthService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.windowWidth = window.innerWidth;
@@ -308,14 +309,11 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   checkWindowSize() {
     const resize = fromEvent(window, 'resize');
-    this.resizeEvent = resize.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.resizeEvent = resize.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.windowWidth = (e as any).target.innerWidth;
       this.assignChooseNum(this.windowWidth);
       this.changeDetectorRef.markForCheck();
     });
-
   }
 
   /**
@@ -323,9 +321,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100316
    */
   getTranslate() {
-    let key_30: string,
-        key_40: string,
-        key_50: string;
+    let key_30: string, key_40: string, key_50: string;
     if (this.currentGroup.brandType === 1) {
       key_30 = 'universal_group_brand';
       key_40 = 'universal_group_branch';
@@ -340,128 +336,141 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       filter: [
         {
           i18n: this.translate.instant(key_30),
-          level: 30
+          level: 30,
         },
         {
           i18n: this.translate.instant(key_40),
-          level: 40
+          level: 40,
         },
         {
           i18n: this.translate.instant(key_50),
-          level: 60
-        }
+          level: 60,
+        },
       ],
       column: [
         {
           rowType: this.memberHeaderRowDef[GroupTableCol.name],
-          i18n: this.translate.instant('universal_activityData_name')
+          i18n: this.translate.instant('universal_activityData_name'),
         },
         {
           rowType: this.groupHeaderRowDef[GroupTableCol.completeNum],
-          i18n: `${this.translate.instant('universal_operating_finished')} ${this.translate.instant('universal_activityData_people')}`
+          i18n: `${this.translate.instant('universal_operating_finished')} ${this.translate.instant(
+            'universal_activityData_people'
+          )}`,
         },
         {
           rowType: this.groupHeaderRowDef[GroupTableCol.avgTime],
-          i18n: `${this.translate.instant('universal_adjective_avg')} ${this.translate.instant('universal_activityData_timing')}`
+          i18n: `${this.translate.instant('universal_adjective_avg')} ${this.translate.instant(
+            'universal_activityData_timing'
+          )}`,
         },
         {
           rowType: this.groupHeaderRowDef[GroupTableCol.totalTime],
-          i18n: this.translate.instant('universal_activityData_limit_totalTime')
+          i18n: this.translate.instant('universal_activityData_limit_totalTime'),
         },
         {
           rowType: this.groupHeaderRowDef[GroupTableCol.avgPace],
           i18n: this.translate.instant(
-            this.unit === 0 ? 'universal_activityData_limit_avgKilometerPace' : 'universal_activityData_limit_avgMilePace'
-          )
+            this.unit === 0
+              ? 'universal_activityData_limit_avgKilometerPace'
+              : 'universal_activityData_limit_avgMilePace'
+          ),
         },
         {
           rowType: this.groupHeaderRowDef[GroupTableCol.avgHr],
-          i18n: this.translate.instant('universal_activityData_limit_avgHr')
+          i18n: this.translate.instant('universal_activityData_limit_avgHr'),
         },
         {
           rowType: this.groupHeaderRowDef[GroupTableCol.avgCalories],
-          i18n: `${this.translate.instant('universal_adjective_avg')} ${this.translate.instant('universal_userProfile_calories')}`
+          i18n: `${this.translate.instant('universal_adjective_avg')} ${this.translate.instant(
+            'universal_userProfile_calories'
+          )}`,
         },
         {
           rowType: this.groupHeaderRowDef[GroupTableCol.avgCadence],
-          i18n: this.translate.instant('universal_activityData_limit_avgStepCadence')
+          i18n: this.translate.instant('universal_activityData_limit_avgStepCadence'),
         },
         {
           rowType: this.groupHeaderRowDef[GroupTableCol.hrZone],
-          i18n: this.translate.instant('universal_activityData_hrZone')
-        }
-      ]
+          i18n: this.translate.instant('universal_activityData_hrZone'),
+        },
+      ],
     };
 
     this.memberTableOpt = {
       filter: [
         {
           i18n: this.translate.instant(key_30),
-          level: 30
+          level: 30,
         },
         {
           i18n: this.translate.instant(key_40),
-          level: 40
+          level: 40,
         },
         {
           i18n: this.translate.instant(key_50),
-          level: 60
-        }
+          level: 60,
+        },
       ],
       column: [
         {
           rowType: this.memberHeaderRowDef[MemberTableCol.name],
-          i18n: this.translate.instant('universal_activityData_name')
+          i18n: this.translate.instant('universal_activityData_name'),
         },
         {
           rowType: this.memberHeaderRowDef[MemberTableCol.gender],
-          i18n: this.translate.instant('universal_userProfile_gender')
+          i18n: this.translate.instant('universal_userProfile_gender'),
         },
         {
           rowType: this.memberHeaderRowDef[MemberTableCol.age],
-          i18n: this.translate.instant('universal_userProfile_age')
+          i18n: this.translate.instant('universal_userProfile_age'),
         },
         {
           rowType: this.memberHeaderRowDef[MemberTableCol.runTimes],
-          i18n: this.translate.instant('universal_activityData_totalActivity')
+          i18n: this.translate.instant('universal_activityData_totalActivity'),
         },
         {
           rowType: this.memberHeaderRowDef[MemberTableCol.bestTime],
-          i18n: `${this.translate.instant('universal_adjective_maxBest')} ${this.translate.instant('universal_activityData_timing')}`
+          i18n: `${this.translate.instant('universal_adjective_maxBest')} ${this.translate.instant(
+            'universal_activityData_timing'
+          )}`,
         },
         {
           rowType: this.memberHeaderRowDef[MemberTableCol.avgTime],
-          i18n: `${this.translate.instant('universal_adjective_avg')} ${this.translate.instant('universal_activityData_timing')}`
+          i18n: `${this.translate.instant('universal_adjective_avg')} ${this.translate.instant(
+            'universal_activityData_timing'
+          )}`,
         },
         {
           rowType: this.memberHeaderRowDef[MemberTableCol.totalTime],
-          i18n: this.translate.instant('universal_activityData_limit_totalTime')
+          i18n: this.translate.instant('universal_activityData_limit_totalTime'),
         },
         {
           rowType: this.memberHeaderRowDef[MemberTableCol.avgPace],
           i18n: this.translate.instant(
-            this.unit === 0 ? 'universal_activityData_limit_avgKilometerPace' : 'universal_activityData_limit_avgMilePace'
-          )
+            this.unit === 0
+              ? 'universal_activityData_limit_avgKilometerPace'
+              : 'universal_activityData_limit_avgMilePace'
+          ),
         },
         {
           rowType: this.memberHeaderRowDef[MemberTableCol.avgHr],
-          i18n: this.translate.instant('universal_activityData_limit_avgHr')
+          i18n: this.translate.instant('universal_activityData_limit_avgHr'),
         },
         {
           rowType: this.memberHeaderRowDef[MemberTableCol.totalCalories],
-          i18n: this.translate.instant('universal_activityData_totalCalories')
+          i18n: this.translate.instant('universal_activityData_totalCalories'),
         },
         {
           rowType: this.memberHeaderRowDef[MemberTableCol.avgCadence],
-          i18n: this.translate.instant('universal_activityData_limit_avgStepCadence')
+          i18n: this.translate.instant('universal_activityData_limit_avgStepCadence'),
         },
         {
           rowType: this.memberHeaderRowDef[MemberTableCol.hrZone],
-          i18n: this.translate.instant('universal_activityData_hrZone')
-        }
-      ]
+          i18n: this.translate.instant('universal_activityData_hrZone'),
+        },
+      ],
     };
-
   }
 
   /**
@@ -473,20 +482,26 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     const query = queryString.split('?')[1];
     if (query) {
       const queryArr = query.split('&');
-      queryArr.forEach(_query => {
+      queryArr.forEach((_query) => {
         const _queryArr = _query.split('='),
-              [_key, _value] = [..._queryArr];
+          [_key, _value] = [..._queryArr];
         switch (_key) {
           case 'ipm':
             this.uiFlag.isPreviewMode = true;
             break;
           case 'startdate':
-            this.selectDate.startDate = dayjs(_value, 'YYYY-MM-DD').startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
-            this.reportConditionOpt.date.startTimestamp = dayjs(this.selectDate.startDate).valueOf();
+            this.selectDate.startDate = dayjs(_value, 'YYYY-MM-DD')
+              .startOf('day')
+              .format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+            this.reportConditionOpt.date.startTimestamp = dayjs(
+              this.selectDate.startDate
+            ).valueOf();
             this.reportConditionOpt.date.type = 'custom';
             break;
           case 'enddate':
-            this.selectDate.endDate = dayjs(_value, 'YYYY-MM-DD').endOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+            this.selectDate.endDate = dayjs(_value, 'YYYY-MM-DD')
+              .endOf('day')
+              .format('YYYY-MM-DDTHH:mm:ss.SSSZ');
             this.reportConditionOpt.date.endTimestamp = dayjs(this.selectDate.endDate).valueOf();
             this.reportConditionOpt.date.type = 'custom';
             break;
@@ -499,7 +514,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
             this.mapSource = _value;
             break;
           case 'compare':
-            this.compare.urlList = _value.split('p').map(_value => _value);
+            this.compare.urlList = _value.split('p').map((_value) => _value);
             break;
           case 'seemore':
             if (_value.includes('g')) this.groupTable.showAll = true;
@@ -509,71 +524,68 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
             this.reportConditionOpt.cloudRun.checkCompletion = _value === 'true';
             break;
         }
-
       });
-
     }
-
   }
 
   /**
    * 取得使用者個人資訊與群組所有階層資訊，並確認多國語系載入
    * @author kidin-11100308
-   */   
+   */
   getNeedInfo() {
     combineLatest([
       this.groupService.getUserSimpleInfo(),
       this.groupService.getAllLevelGroupData(),
       this.cloudrunService.getAllMapInfo(),
       this.groupService.getRxGroupDetail(),
-      this.translate.get('hellow world')
-    ]).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(resArr => {
-      this.getTranslate();
-      const { unit, userId, accessRight } = resArr[0];
-      const { brands, branches, coaches } = resArr[1];
-      const { groupName, groupIcon, groupId, brandType } = resArr[3];
-      const level = +this.utils.displayGroupLevel(groupId);
-      
-      this.userId = userId;
-      this.unit = unit;
-      this.systemAccessRight = accessRight;
-      // 僅管理員以上權限可以看性別與年齡數據
-      if (accessRight > level) {
-        this.memberHeaderRowDef = 
-          this.memberHeaderRowDef.filter(_rowDef => !['gender', 'age'].includes(_rowDef));
-      }
+      this.translate.get('hellow world'),
+    ])
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((resArr) => {
+        this.getTranslate();
+        const { unit, userId, accessRight } = resArr[0];
+        const { brands, branches, coaches } = resArr[1];
+        const { groupName, groupIcon, groupId, brandType } = resArr[3];
+        const level = +this.utils.displayGroupLevel(groupId);
 
-      this.allMapList = resArr[2];
-      if (!this.uiFlag.isPreviewMode && !this.uiFlag.haveUrlCondition) {
-        this.reportConditionOpt.cloudRun.mapId = this.allMapList.leaderboard[0].mapId;  // 預設顯示本月例行賽報告
-      }
-      
-      this.currentGroup = {
-        name: groupName,
-        icon: groupIcon,
-        id: groupId,
-        level,
-        brandType: brandType
-      }
+        this.userId = userId;
+        this.unit = unit;
+        this.systemAccessRight = accessRight;
+        // 僅管理員以上權限可以看性別與年齡數據
+        if (accessRight > level) {
+          this.memberHeaderRowDef = this.memberHeaderRowDef.filter(
+            (_rowDef) => !['gender', 'age'].includes(_rowDef)
+          );
+        }
 
-      this.branchList = branches;
-      this.groupList = {
-        coaches: coaches
-      };
+        this.allMapList = resArr[2];
+        if (!this.uiFlag.isPreviewMode && !this.uiFlag.haveUrlCondition) {
+          this.reportConditionOpt.cloudRun.mapId = this.allMapList.leaderboard[0].mapId; // 預設顯示本月例行賽報告
+        }
 
-      if (this.currentGroup.level === 30) {
-        Object.assign(this.groupList, {brands: brands[0]});
-        Object.assign(this.groupList, {branches: branches});
-      } else if (this.currentGroup.level === 40) {
-        Object.assign(this.groupList, {branches: branches});
-      }
+        this.currentGroup = {
+          name: groupName,
+          icon: groupIcon,
+          id: groupId,
+          level,
+          brandType: brandType,
+        };
 
-      this.reportService.setReportCondition(this.reportConditionOpt);
-      this.getReportSelectedCondition();
-    });
+        this.branchList = branches;
+        this.groupList = {
+          coaches: coaches,
+        };
 
+        if (this.currentGroup.level === 30) {
+          Object.assign(this.groupList, { brands: brands[0] });
+          Object.assign(this.groupList, { branches: branches });
+        } else if (this.currentGroup.level === 40) {
+          Object.assign(this.groupList, { branches: branches });
+        }
+
+        this.reportService.setReportCondition(this.reportConditionOpt);
+        this.getReportSelectedCondition();
+      });
   }
 
   /**
@@ -581,20 +593,19 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100308
    */
   getReportSelectedCondition() {
-    this.reportService.getReportCondition().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      if (res.date) {
-        this.selectDate = {
-          startDate: dayjs(res.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-          endDate: dayjs(res.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ')
-        };
-  
-        this.handleSubmitSearch('click');
-      }
+    this.reportService
+      .getReportCondition()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        if (res.date) {
+          this.selectDate = {
+            startDate: dayjs(res.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+            endDate: dayjs(res.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          };
 
-    });
-
+          this.handleSubmitSearch('click');
+        }
+      });
   }
 
   /**
@@ -602,17 +613,16 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @param act {string}-觸發此函式的動作
    * @author kidin-1100308
    */
-  handleSubmitSearch (act: string) {
-    if ([0, 100].includes(this.progress)) { // 避免重複call運動報告
+  handleSubmitSearch(act: string) {
+    if ([0, 100].includes(this.progress)) {
+      // 避免重複call運動報告
       this.uiFlag.reportCompleted = false;
       this.createReport();
 
       if (act === 'click') {
         this.updateUrl();
       }
-
     }
-
   }
 
   /**
@@ -621,11 +631,10 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   updateUrl() {
     const { startDate, endDate } = this.selectDate,
-          startDateString = startDate.split('T')[0],
-          endDateString = endDate.split('T')[0],
-          { checkCompletion: check } = this.reportConditionOpt.cloudRun;
-    let searchString =
-      `?ipm=s&startdate=${startDateString}&enddate=${endDateString}&mapid=${this.currentMapId}&source=${this.mapSource}&check=${check}`;
+      startDateString = startDate.split('T')[0],
+      endDateString = endDate.split('T')[0],
+      { checkCompletion: check } = this.reportConditionOpt.cloudRun;
+    let searchString = `?ipm=s&startdate=${startDateString}&enddate=${endDateString}&mapid=${this.currentMapId}&source=${this.mapSource}&check=${check}`;
 
     let compare: string;
     const { clickList } = this.compare;
@@ -661,7 +670,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           type: 1,
           fuzzyTime: [],
           filterStartTime: startDate,
-          filterEndTime: endDate
+          filterEndTime: endDate,
         },
         searchRule: {
           activity: 1,
@@ -675,63 +684,62 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
             class: '',
             teacher: '',
             tag: '',
-            cloudRunMapId: this.currentMapId
-          }
+            cloudRunMapId: this.currentMapId,
+          },
         },
         display: {
           activityLapLayerDisplay: 3,
           activityLapLayerDataField: [],
           activityPointLayerDisplay: 3,
-          activityPointLayerDataField: []
+          activityPointLayerDataField: [],
         },
         page: 0,
-        pageCounts: 10000
+        pageCounts: 10000,
       };
 
-      this.cloudrunService.getMapGpx({gpxPath}).pipe(
-        switchMap(gpx => {
-          return this.activityService.fetchMultiActivityData(body).pipe(  // 取得使用者數據
-            map(data => {
-              if (data.resultCode !== 200) {
-                this.uiFlag.noData = true;
-                const {resultCode, apiCode, resultMessage} = data;
-                this.utils.handleError(resultCode, apiCode, resultMessage);
-                return [gpx, []];
-              } else {
-                this.uiFlag.noData = false;
-                return [gpx, data.info.activities];
-              }
-
-            })
-
-          )
-
-        })
-      ).subscribe(response => {
-        const { point, altitude } = response[0],
-              { city, country, introduce, mapName } = info[this.checkLanguage()];
-        this.mapInfo = {
-          city,
-          country,
-          introduce,
-          mapName,
-          distance,
-          incline,
-          mapImg,
-          point,
-          altitude
-        };
-        this.handleReportTime();
-        this.progress = 50;
-        this.getGroupMemList(this.sortOriginData(response[1]));
-        this.changeDetectorRef.markForCheck();
-      });
-      
+      this.cloudrunService
+        .getMapGpx({ gpxPath })
+        .pipe(
+          switchMap((gpx) => {
+            return this.activityService.fetchMultiActivityData(body).pipe(
+              // 取得使用者數據
+              map((data) => {
+                if (data.resultCode !== 200) {
+                  this.uiFlag.noData = true;
+                  const { resultCode, apiCode, resultMessage } = data;
+                  this.utils.handleError(resultCode, apiCode, resultMessage);
+                  return [gpx, []];
+                } else {
+                  this.uiFlag.noData = false;
+                  return [gpx, data.info.activities];
+                }
+              })
+            );
+          })
+        )
+        .subscribe((response) => {
+          const { point, altitude } = response[0],
+            { city, country, introduce, mapName } = info[this.checkLanguage()];
+          this.mapInfo = {
+            city,
+            country,
+            introduce,
+            mapName,
+            distance,
+            incline,
+            mapImg,
+            point,
+            altitude,
+          };
+          this.handleReportTime();
+          this.progress = 50;
+          this.getGroupMemList(this.sortOriginData(response[1]));
+          this.changeDetectorRef.markForCheck();
+        });
     } else {
       const msg = 'Can not get cloud run gpx file.<br>Please try again later.';
       this.utils.openAlert(msg);
     }
-
   }
 
   /**
@@ -743,13 +751,12 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     this.groupTableData.data.length = 0;
     this.groupTable.sorted = false;
     this.memberTable.sorted = false;
-    this.groupTable.showLevel = [30, 40, 60].filter(_level => _level >= this.currentGroup.level);
-    this.memberTable.showLevel = [30, 40, 60].filter(_level => _level >= this.currentGroup.level);
+    this.groupTable.showLevel = [30, 40, 60].filter((_level) => _level >= this.currentGroup.level);
+    this.memberTable.showLevel = [30, 40, 60].filter((_level) => _level >= this.currentGroup.level);
     if (!this.uiFlag.isPreviewMode) {
       this.groupTable.showAll = false;
       this.memberTable.showAll = false;
     }
-
   }
 
   /**
@@ -757,16 +764,16 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100311
    */
   handleReportTime() {
-    this.translate.get('hellow world').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.createTime = dayjs().format('YYYY-MM-DD HH:mm');
-      const { startDate, endDate } = this.selectDate,
-            range = dayjs(endDate).diff(startDate, 'day') + 1;
-      this.reportEndDate = endDate.split('T')[0];
-      this.reportTimeRange = `${range} ${this.translate.instant('universal_time_day')}`;
-    });
-
+    this.translate
+      .get('hellow world')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.createTime = dayjs().format('YYYY-MM-DD HH:mm');
+        const { startDate, endDate } = this.selectDate,
+          range = dayjs(endDate).diff(startDate, 'day') + 1;
+        this.reportEndDate = endDate.split('T')[0];
+        this.reportTimeRange = `${range} ${this.translate.instant('universal_time_day')}`;
+      });
   }
 
   /**
@@ -776,57 +783,51 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   sortOriginData(data: any) {
     const middleData = {};
-    data.forEach(_data => {
+    data.forEach((_data) => {
       const { privacyMatch } = _data;
       if (!privacyMatch || privacyMatch === 'false') {
         const { userId } = _data;
-        if (!middleData.hasOwnProperty(userId)) {
+        if (!Object.prototype.hasOwnProperty.call(middleData, userId)) {
           Object.assign(middleData, {
             [userId]: {
               info: {
                 name: '',
-                icon: ''
+                icon: '',
               },
               privacy: false,
               record: [],
               belongGroup: [],
-              level: []
-            }
-
+              level: [],
+            },
           });
-          
         }
-
       } else {
         const { activityInfoLayer, fileInfo } = _data,
-              userId = this.getUserId(fileInfo),
-              record = this.getUserRecord(activityInfoLayer);
+          userId = this.getUserId(fileInfo),
+          record = this.getUserRecord(activityInfoLayer);
         if (record) {
           const { fileId, privacy: filePrivacy } = fileInfo;
-          Object.assign(record, {fileId, filePrivacy});
+          Object.assign(record, { fileId, filePrivacy });
         }
 
-        if (!middleData.hasOwnProperty(userId)) {
+        if (!Object.prototype.hasOwnProperty.call(middleData, userId)) {
           Object.assign(middleData, {
             [userId]: {
               info: {
                 name: '',
-                icon: ''
+                icon: '',
               },
               privacy: true,
               record: record ? [record] : [],
               belongGroup: [],
-              level: []
-            }
-
+              level: [],
+            },
           });
         } else {
           middleData[userId]['privacy'] = true;
           if (record) middleData[userId]['record'].push(record);
         }
-
       }
-
     });
 
     return this.mergeData(middleData) as any;
@@ -839,41 +840,40 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   mergeData(middleData: any) {
     const finalData = {};
-    for (let _user in middleData) {
-
-      if (middleData.hasOwnProperty(_user)) {
+    for (const _user in middleData) {
+      if (Object.prototype.hasOwnProperty.call(middleData, _user)) {
         const { privacy, record, belongGroup, level } = middleData[_user],
-              runTimes = record ? record.length : 0;
+          runTimes = record ? record.length : 0;
         if (privacy && runTimes > 0) {
           let totalSeconds = 0,
-              totalSpeed = 0,
-              totalCalories = 0,
-              totalHr = 0,
-              totalCadence = 0,
-              totalZ0 = 0,
-              totalZ1 = 0,
-              totalZ2 = 0,
-              totalZ3 = 0,
-              totalZ4 = 0,
-              totalZ5 = 0,
-              bestFile = {
-                time: null,
-                fileId: null,
-                filePrivacy: null,
-                avgHr: null,
-                avgSpeed: null,
-                calories: null,
-                runAvgCadence: null,
-                hrZone: {
-                  z0: null,
-                  z1: null,
-                  z2: null,
-                  z3: null,
-                  z4: null,
-                  z5: null
-                }
-              };
-          record.forEach(_record => {
+            totalSpeed = 0,
+            totalCalories = 0,
+            totalHr = 0,
+            totalCadence = 0,
+            totalZ0 = 0,
+            totalZ1 = 0,
+            totalZ2 = 0,
+            totalZ3 = 0,
+            totalZ4 = 0,
+            totalZ5 = 0,
+            bestFile = {
+              time: null,
+              fileId: null,
+              filePrivacy: null,
+              avgHr: null,
+              avgSpeed: null,
+              calories: null,
+              runAvgCadence: null,
+              hrZone: {
+                z0: null,
+                z1: null,
+                z2: null,
+                z3: null,
+                z4: null,
+                z5: null,
+              },
+            };
+          record.forEach((_record) => {
             const {
               avgHeartRateBpm,
               avgSpeed,
@@ -887,7 +887,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
               totalHrZone3Second,
               totalHrZone4Second,
               totalHrZone5Second,
-              totalSecond
+              totalSecond,
             } = _record;
             if (bestFile.time === null || totalSecond < bestFile.time) {
               bestFile = {
@@ -904,11 +904,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
                   z2: totalHrZone2Second,
                   z3: totalHrZone3Second,
                   z4: totalHrZone4Second,
-                  z5: totalHrZone5Second
-                }
-                
-              }
-
+                  z5: totalHrZone5Second,
+                },
+              };
             }
 
             totalSeconds += totalSecond;
@@ -939,16 +937,14 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
               z2: totalZ2,
               z3: totalZ3,
               z4: totalZ4,
-              z5: totalZ5
-            }
+              z5: totalZ5,
+            },
           };
-          Object.assign(finalData, {[_user]: {privacy, belongGroup, level, record: result}})
+          Object.assign(finalData, { [_user]: { privacy, belongGroup, level, record: result } });
         } else {
-          Object.assign(finalData, {[_user]: {privacy, belongGroup, level, record: null}});
+          Object.assign(finalData, { [_user]: { privacy, belongGroup, level, record: null } });
         }
-
       }
-
     }
 
     return finalData;
@@ -960,44 +956,46 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100309
    */
   getGroupMemList(memberData: any) {
-    this.groupService.getMemList().pipe(
-      first(),
-      switchMap(res => {
-        const { id: currentGroupId } = this.currentGroup;
-        if (res.groupId === currentGroupId) {
-          return res;
-        } else {
-          const body = {
-            token: this.authService.token,
-            groupId: currentGroupId,
-            groupLevel: this.utils.displayGroupLevel(currentGroupId),
-            infoType: 5,
-            avatarType: 3
-          };
-          return this.groupService.fetchGroupMemberList(body).pipe(
-            map(resp => {
-              if (resp.resultCode !== 200) {
-                this.utils.handleError(resp.resultCode, resp.apiCode, resp.resultMessage);
-                return [];
-              } else {
-                const filterList = resp.info.groupMemberInfo.filter(_mem => _mem.joinStatus === 2);
-                this.groupService.setMemList(filterList);
-                return filterList;
-              }
-              
-            })
-          )
-        }
-
-      }),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(result => {
-      this.progress = 70;
-      this.sortGroupData(result, memberData);
-      this.progress = 100;
-      this.changeDetectorRef.markForCheck();
-    });
-
+    this.groupService
+      .getMemList()
+      .pipe(
+        first(),
+        switchMap((res) => {
+          const { id: currentGroupId } = this.currentGroup;
+          if (res.groupId === currentGroupId) {
+            return res;
+          } else {
+            const body = {
+              token: this.authService.token,
+              groupId: currentGroupId,
+              groupLevel: this.utils.displayGroupLevel(currentGroupId),
+              infoType: 5,
+              avatarType: 3,
+            };
+            return this.groupService.fetchGroupMemberList(body).pipe(
+              map((resp) => {
+                if (resp.resultCode !== 200) {
+                  this.utils.handleError(resp.resultCode, resp.apiCode, resp.resultMessage);
+                  return [];
+                } else {
+                  const filterList = resp.info.groupMemberInfo.filter(
+                    (_mem) => _mem.joinStatus === 2
+                  );
+                  this.groupService.setMemList(filterList);
+                  return filterList;
+                }
+              })
+            );
+          }
+        }),
+        takeUntil(this.ngUnsubscribe)
+      )
+      .subscribe((result) => {
+        this.progress = 70;
+        this.sortGroupData(result, memberData);
+        this.progress = 100;
+        this.changeDetectorRef.markForCheck();
+      });
   }
 
   /**
@@ -1011,7 +1009,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
 
     // 30階
     if (this.groupList.brands) {
-      const {groupId, groupName} = this.groupList.brands;
+      const { groupId, groupName } = this.groupList.brands;
       Object.assign(middleObj, {
         [groupId]: {
           name: groupName,
@@ -1023,27 +1021,24 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
               z2: 0,
               z3: 0,
               z4: 0,
-              z5: 0
+              z5: 0,
             },
             completeNum: 0,
             totalCalories: 0,
             totalSeconds: 0,
             totalHr: 0,
             totalSpeed: 0,
-            totalCadence: 0
-          }
-        }
-
+            totalCadence: 0,
+          },
+        },
       });
-
     }
 
     // 40階
     if (this.groupList.branches) {
-
       const { branches } = this.groupList;
       for (let i = 0, len = branches.length; i < len; i++) {
-        const {groupId, groupName} = branches[i];
+        const { groupId, groupName } = branches[i];
         Object.assign(middleObj, {
           [groupId]: {
             name: groupName,
@@ -1055,28 +1050,24 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
                 z2: 0,
                 z3: 0,
                 z4: 0,
-                z5: 0
+                z5: 0,
               },
               completeNum: 0,
               totalCalories: 0,
               totalSeconds: 0,
               totalHr: 0,
               totalSpeed: 0,
-              totalCadence: 0
-            }
-
-          }
-
+              totalCadence: 0,
+            },
+          },
         });
-
       }
-
     }
 
     // 50階
     const { coaches } = this.groupList;
     for (let j = 0, len = coaches.length; j < len; j++) {
-      const {groupId, groupName} = coaches[j];
+      const { groupId, groupName } = coaches[j];
       let parentsName: string;
       for (let k = 0, branchesLen = this.branchList.length; k < branchesLen; k++) {
         const _branch = this.branchList[k];
@@ -1098,20 +1089,17 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
               z2: 0,
               z3: 0,
               z4: 0,
-              z5: 0
+              z5: 0,
             },
             completeNum: 0,
             totalCalories: 0,
             totalSeconds: 0,
             totalHr: 0,
             totalSpeed: 0,
-            totalCadence: 0
-          }
-
-        }
-
+            totalCadence: 0,
+          },
+        },
       });
-
     }
 
     this.groupCombineUser(middleObj, memList, memberData);
@@ -1125,92 +1113,92 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   groupCombineUser(groupList: any, memList: any, memberData: any) {
     const refDate = dayjs(this.selectDate.startDate),
-          { gender: genderFilter, age: { max: ageMax, min: ageMin } } = this.reportConditionOpt;
+      {
+        gender: genderFilter,
+        age: { max: ageMax, min: ageMin },
+      } = this.reportConditionOpt;
     for (let i = 0, len = memList.length; i < len; i++) {
-      const { 
+      const {
         groupId,
         memberId: _userId,
         memberIcon: _icon,
         memberName: _nickName,
         birthday,
-        gender
+        gender,
       } = memList[i];
-      const age = refDate.diff(dayjs(birthday, 'YYYYMMDD'), 'year'),  // 年齡以報告開始日為基準
-            groupLevel = +this.utils.displayGroupLevel(groupId),
-            brandsGroupId = `${this.groupService.getPartGroupId(groupId, 3)}-0-0-0`,
-            branchesGroupId = `${this.groupService.getPartGroupId(groupId, 4)}-0-0`,
-            outOfAge = (ageMax !== null && age > ageMax) || (ageMin !== null && age < ageMin),
-            outOfGender = genderFilter !== null && gender !== genderFilter;
-      if (groupList.hasOwnProperty(groupId) && !outOfAge && !outOfGender) {
+      const age = refDate.diff(dayjs(birthday, 'YYYYMMDD'), 'year'), // 年齡以報告開始日為基準
+        groupLevel = +this.utils.displayGroupLevel(groupId),
+        brandsGroupId = `${this.groupService.getPartGroupId(groupId, 3)}-0-0-0`,
+        branchesGroupId = `${this.groupService.getPartGroupId(groupId, 4)}-0-0`,
+        outOfAge = (ageMax !== null && age > ageMax) || (ageMin !== null && age < ageMin),
+        outOfGender = genderFilter !== null && gender !== genderFilter;
+      if (Object.prototype.hasOwnProperty.call(groupList, groupId) && !outOfAge && !outOfGender) {
         const _memData = memberData[_userId];
         /** 團體分析所需的成員清單及成績加總，上面階層會將下面階層成員包含進去 */
         if (
-          groupList.hasOwnProperty(brandsGroupId)
-          && !groupList[brandsGroupId].member.some(_list => _list.id === _userId)
+          Object.prototype.hasOwnProperty.call(groupList, brandsGroupId) &&
+          !groupList[brandsGroupId].member.some((_list) => _list.id === _userId)
         ) {
-          const brandData =  groupList[brandsGroupId];
-          brandData.member.push({id: _userId, name: _nickName, age});
+          const brandData = groupList[brandsGroupId];
+          brandData.member.push({ id: _userId, name: _nickName, age });
           if (
-            memberData.hasOwnProperty(_userId)
-            && _memData.record
-            && _memData.record.length !== 0
+            Object.prototype.hasOwnProperty.call(memberData, _userId) &&
+            _memData.record &&
+            _memData.record.length !== 0
           ) {
             const { record } = brandData,
-                  { bestFile } = _memData.record;
+              { bestFile } = _memData.record;
             brandData.record = this.addUpData(record, bestFile);
           }
-
         }
-        
+
         if (
-          groupList.hasOwnProperty(branchesGroupId)
-          && !groupList[branchesGroupId].member.some(_list => _list.id === _userId)
+          Object.prototype.hasOwnProperty.call(groupList, branchesGroupId) &&
+          !groupList[branchesGroupId].member.some((_list) => _list.id === _userId)
         ) {
           const branchData = groupList[branchesGroupId];
-          branchData.member.push({id: _userId, name: _nickName, age});
+          branchData.member.push({ id: _userId, name: _nickName, age });
           if (
-            memberData.hasOwnProperty(_userId)
-            && _memData.record
-            && _memData.record.length !== 0
+            Object.prototype.hasOwnProperty.call(memberData, _userId) &&
+            _memData.record &&
+            _memData.record.length !== 0
           ) {
             const { record } = branchData,
-                  { bestFile } = _memData.record;
+              { bestFile } = _memData.record;
             branchData.record = this.addUpData(record, bestFile);
           }
-
         }
 
-        if (!groupList[groupId].member.some(_list => _list.id === _userId)) {
+        if (!groupList[groupId].member.some((_list) => _list.id === _userId)) {
           const coachData = groupList[groupId];
-          coachData.member.push({id: _userId, name: _nickName, age});
+          coachData.member.push({ id: _userId, name: _nickName, age });
           if (
-            memberData.hasOwnProperty(_userId)
-            && _memData.record
-            && _memData.record.length !== 0
+            Object.prototype.hasOwnProperty.call(memberData, _userId) &&
+            _memData.record &&
+            _memData.record.length !== 0
           ) {
             const { record } = coachData,
-                  { bestFile } = _memData.record;
+              { bestFile } = _memData.record;
             coachData.record = this.addUpData(record, bestFile);
           }
         }
         /******************************************************************/
 
         // 個人分析所需資訊，包含個人所屬群組
-        if (memberData.hasOwnProperty(_userId)) {
+        if (Object.prototype.hasOwnProperty.call(memberData, _userId)) {
           _memData.info = {
             name: _nickName,
             icon: _icon,
             age,
-            gender
+            gender,
           };
           _memData.belongGroup.push({
             id: groupId,
-            name: groupList[groupId].name
+            name: groupList[groupId].name,
           });
 
           if (!_memData.level.includes(groupLevel)) !_memData.level.push(groupLevel);
         } else {
-
           /**無成績者視為隱私權已開放 */
           Object.assign(memberData, {
             [_userId]: {
@@ -1218,30 +1206,29 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
                 name: _nickName,
                 icon: _icon,
                 age,
-                gender
+                gender,
               },
               privacy: true,
               record: null,
-              belongGroup: [{
-                id: groupId,
-                name: groupList[groupId].name
-              }],
-              level: [groupLevel]
-            }
-
+              belongGroup: [
+                {
+                  id: groupId,
+                  name: groupList[groupId].name,
+                },
+              ],
+              level: [groupLevel],
+            },
           });
           /***************************/
         }
-
       }
-
     }
 
     this.groupDataObj = groupList;
     this.memberDataObj = memberData;
     this.backUpData = {
       group: this.handleGroupTableData(groupList),
-      member: this.handleMemTableData(memberData)
+      member: this.handleMemTableData(memberData),
     };
 
     this.filterGroup('group');
@@ -1255,37 +1242,23 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100310
    */
   addUpData(groupData: any, userData: any) {
-    let {
-      hrZone: {
-        z0,
-        z1,
-        z2,
-        z3,
-        z4,
-        z5
-      },
+    const {
+      hrZone: { z0, z1, z2, z3, z4, z5 },
       completeNum,
       totalCalories,
       totalSeconds,
       totalHr,
       totalSpeed,
-      totalCadence
+      totalCadence,
     } = groupData;
 
-    let {
+    const {
       time,
       avgHr,
       avgSpeed,
       calories,
       runAvgCadence,
-      hrZone: {
-        z0: zone0,
-        z1: zone1,
-        z2: zone2,
-        z3: zone3,
-        z4: zone4,
-        z5: zone5
-      },
+      hrZone: { z0: zone0, z1: zone1, z2: zone2, z3: zone3, z4: zone4, z5: zone5 },
     } = userData;
 
     return {
@@ -1295,16 +1268,15 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         z2: z2 + zone2,
         z3: z3 + zone3,
         z4: z4 + zone4,
-        z5: z5 + zone5
+        z5: z5 + zone5,
       },
       completeNum: completeNum + 1,
       totalCalories: totalCalories + calories,
       totalSeconds: totalSeconds + time,
       totalHr: totalHr + avgHr,
       totalSpeed: totalSpeed + avgSpeed,
-      totalCadence: totalCadence + runAvgCadence
+      totalCadence: totalCadence + runAvgCadence,
     };
-
   }
 
   /**
@@ -1314,31 +1286,23 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   handleGroupTableData(groupData: any) {
     const tableArr = [];
-    for (let key in groupData) {
-
-      if (groupData.hasOwnProperty(key)) {
+    for (const key in groupData) {
+      if (Object.prototype.hasOwnProperty.call(groupData, key)) {
         const {
           name,
           parents,
           member,
           record: {
             completeNum,
-            hrZone: {
-              z0,
-              z1,
-              z2,
-              z3,
-              z4,
-              z5
-            },
+            hrZone: { z0, z1, z2, z3, z4, z5 },
             totalCadence,
             totalCalories,
             totalHr,
             totalSeconds,
-            totalSpeed
-          }
+            totalSpeed,
+          },
         } = groupData[key];
-        
+
         tableArr.push({
           groupId: key,
           level: +this.utils.displayGroupLevel(key),
@@ -1347,22 +1311,19 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           memberNum: member.length,
           completeNum,
           totalSeconds,
-          avgSecond: (totalSeconds / completeNum) || null,
-          avgHr: (totalHr / completeNum) || null,
-          avgCadence: (totalCadence / completeNum) || null,
-          avgCalories: (totalCalories / completeNum) || null,
-          avgSpeed: (totalSpeed / completeNum) || null,
+          avgSecond: totalSeconds / completeNum || null,
+          avgHr: totalHr / completeNum || null,
+          avgCadence: totalCadence / completeNum || null,
+          avgCalories: totalCalories / completeNum || null,
+          avgSpeed: totalSpeed / completeNum || null,
           hrZone: [z0, z1, z2, z3, z4, z5],
-          ratio: '0%'
+          ratio: '0%',
         });
-
       }
-
     }
 
     return tableArr;
   }
-
 
   /**
    * 將分類過後的個人數據再進行整理以方便呈現
@@ -1371,38 +1332,26 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   handleMemTableData(memData: any) {
     const tableArr = [];
-    for (let key in memData) {
+    for (const key in memData) {
       const { record, info } = memData[key];
-      if (memData.hasOwnProperty(key) && record && info) {
+      if (Object.prototype.hasOwnProperty.call(memData, key) && record && info) {
         const {
-          info: {
-            name,
-            icon,
-            age,
-            gender
-          },
+          info: { name, icon, age, gender },
           level,
           record: {
             runTimes,
             bestFile,
-            hrZone: {
-              z0,
-              z1,
-              z2,
-              z3,
-              z4,
-              z5
-            },
+            hrZone: { z0, z1, z2, z3, z4, z5 },
             avgCadence,
             avgHr,
             avgSpeed,
             avgSecond,
             totalSeconds,
-            totalCalories
+            totalCalories,
           },
-          privacy
+          privacy,
         } = memData[key];
-        
+
         tableArr.push({
           userId: key,
           level,
@@ -1422,15 +1371,17 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           totalCalories,
           avgSpeed,
           hrZone: [z0, z1, z2, z3, z4, z5],
-          privacy
+          privacy,
         });
-
       } else {
-
         if (!memData[key].info) {
-          delete memData[key];  // 該成員數據為connect跨網域補傳數據，故移除。
+          delete memData[key]; // 該成員數據為connect跨網域補傳數據，故移除。
         } else {
-          const { info: {name, icon, age, gender }, privacy, level } = memData[key];
+          const {
+            info: { name, icon, age, gender },
+            privacy,
+            level,
+          } = memData[key];
           tableArr.push({
             userId: key,
             name,
@@ -1451,13 +1402,10 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
             avgSpeed: 0,
             hrZone: [0, 0, 0, 0, 0, 0],
             privacy,
-            ratio: '0%'
+            ratio: '0%',
           });
-
         }
-
       }
-
     }
 
     return tableArr;
@@ -1500,10 +1448,13 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       totalHrZone4Second,
       totalHrZone5Second,
       totalSecond,
-      totalStep
+      totalStep,
     } = record;
 
-    if (!this.reportConditionOpt.cloudRun.checkCompletion || this.checkRaceComplete(+distance, +totalStep)) {
+    if (
+      !this.reportConditionOpt.cloudRun.checkCompletion ||
+      this.checkRaceComplete(+distance, +totalStep)
+    ) {
       return {
         avgHeartRateBpm,
         avgSpeed,
@@ -1515,12 +1466,11 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         totalHrZone3Second,
         totalHrZone4Second,
         totalHrZone5Second,
-        totalSecond
+        totalSecond,
       };
     } else {
       return null;
     }
-
   }
 
   /**
@@ -1536,7 +1486,6 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     } else {
       return false;
     }
-
   }
 
   /**
@@ -1557,7 +1506,6 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       default:
         return id;
     }
-
   }
 
   /**
@@ -1576,14 +1524,13 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       default:
         return 2;
     }
-
   }
 
   /**
    * 預先建立分析table
    * @author kidin-1100315
    */
-  createSortTable () {
+  createSortTable() {
     this.memberTableData.sort = this.memberSortTable;
     this.groupTableData.sort = this.groupSortTable;
   }
@@ -1593,31 +1540,27 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @param width {number}-視窗寬度
    * @author kidin-1100316
    */
-  assignChooseNum (width: number) {
+  assignChooseNum(width: number) {
     if (width < 500) {
       this.tableColumn = {
         max: 3,
-        min: 2
+        min: 2,
       };
-
     } else if (width < 630) {
       this.tableColumn = {
         max: 4,
-        min: 2
+        min: 2,
       };
-
     } else if (width < 950) {
       this.tableColumn = {
         max: 5,
-        min: 2
+        min: 2,
       };
-
     } else {
       this.tableColumn = {
         max: 6,
-        min: 3
+        min: 3,
       };
-
     }
 
     const { max } = this.tableColumn;
@@ -1626,7 +1569,6 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     } else {
       this.hideExtraOpt(max);
     }
-
   }
 
   /**
@@ -1643,7 +1585,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           GroupTableCol.avgTime,
           GroupTableCol.avgPace,
           GroupTableCol.avgCadence,
-          GroupTableCol.avgHr
+          GroupTableCol.avgHr,
         ];
         this.memberTable.showDataType = [
           MemberTableCol.name,
@@ -1651,7 +1593,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           MemberTableCol.bestTime,
           MemberTableCol.avgTime,
           MemberTableCol.avgPace,
-          MemberTableCol.hrZone
+          MemberTableCol.hrZone,
         ];
         break;
       case 5:
@@ -1660,14 +1602,14 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           GroupTableCol.completeNum,
           GroupTableCol.avgTime,
           GroupTableCol.avgPace,
-          GroupTableCol.avgCadence
+          GroupTableCol.avgCadence,
         ];
         this.memberTable.showDataType = [
           MemberTableCol.name,
           MemberTableCol.runTimes,
           MemberTableCol.bestTime,
           MemberTableCol.avgTime,
-          MemberTableCol.avgPace
+          MemberTableCol.avgPace,
         ];
         break;
       case 4:
@@ -1681,7 +1623,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           MemberTableCol.name,
           MemberTableCol.runTimes,
           MemberTableCol.bestTime,
-          MemberTableCol.avgPace
+          MemberTableCol.avgPace,
         ];
         break;
       case 3:
@@ -1693,7 +1635,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         this.memberTable.showDataType = [
           MemberTableCol.name,
           MemberTableCol.bestTime,
-          MemberTableCol.avgPace
+          MemberTableCol.avgPace,
         ];
         break;
     }
@@ -1714,7 +1656,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   }
 
   // 依照群組階層決定可篩選的條件-kidin-1090609
-  assignFilter (level: number) {
+  assignFilter(level: number) {
     const defaultFil = {
       group: [2], // 預設50階
       person: [2], // 預設50階
@@ -1722,23 +1664,19 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
 
     switch (level) {
       case 30:
-        defaultFil.group = [
-          0, 1, 2
-        ]; // 預設30~50階
-        defaultFil.person = [
-          0, 1, 2
-        ]; // 預設30~50階
+        defaultFil.group = [0, 1, 2]; // 預設30~50階
+        defaultFil.person = [0, 1, 2]; // 預設30~50階
         break;
       case 40:
         defaultFil.group = [1, 2]; // 預設40~50階
         defaultFil.person = [1, 2]; // 預設40~50階
         break;
-      default:
-        defaultFil.group = [2]; // 預設50階
-        defaultFil.person = [2]; // 預設50階
+      default: // 預設50階
+        // 預設50階
+        defaultFil.group = [2];
+        defaultFil.person = [2];
         break;
     }
-
   }
 
   /**
@@ -1750,8 +1688,12 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     this[`${table}Table`].sorted = true;
     this[`${table}Table`].sortType = this[`${table}SortTable`].active;
     const sortCategory = this.getSortType(this[`${table}Table`].sortType as AnalysisData),
-          sortDirection = this[`${table}SortTable`].direction;
-    this[`${table}TableData`].data = this.sortData(this[`${table}TableData`].data, sortCategory, sortDirection === 'asc');
+      sortDirection = this[`${table}SortTable`].direction;
+    this[`${table}TableData`].data = this.sortData(
+      this[`${table}TableData`].data,
+      sortCategory,
+      sortDirection === 'asc'
+    );
     this.changeDetectorRef.markForCheck();
   }
 
@@ -1782,7 +1724,6 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       case 'bestTime':
         return 'bestSeconds';
     }
-
   }
 
   /**
@@ -1794,16 +1735,16 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   sortData(data: Array<any>, sortCategory: string, asc: boolean) {
     let sortDenominator = 0,
-        swaped = true;
+      swaped = true;
     const [...sortData] = data;
     for (let i = 0, len = sortData.length; i < len && swaped; i++) {
       swaped = false;
       for (let j = 0; j < len - 1 - i; j++) {
-        let _dataA = sortData[j][sortCategory],
-            _dataB = sortData[j + 1][sortCategory];
+        const _dataA = sortData[j][sortCategory],
+          _dataB = sortData[j + 1][sortCategory];
         // 排序時一併找出最大值
         const _valA = sortCategory === 'avgSpeed' ? 3600 / (_dataA || 3600) : _dataA,
-              _valB = sortCategory === 'avgSpeed' ?  3600 / (_dataB || 3600) : _dataB;
+          _valB = sortCategory === 'avgSpeed' ? 3600 / (_dataB || 3600) : _dataB;
         if (_valA > sortDenominator) {
           sortDenominator = _valA;
         } else if (_valB > sortDenominator) {
@@ -1812,35 +1753,32 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
 
         // 無成績者皆必排最後
         const noDataCond = !_dataA && _dataB && _dataB !== 0,
-              ascCond = asc && _dataB < _dataA,
-              descCond = !asc && _dataB > _dataA,
-              genderArrange = sortCategory === 'gender';
+          ascCond = asc && _dataB < _dataA,
+          descCond = !asc && _dataB > _dataA,
+          genderArrange = sortCategory === 'gender';
         if (genderArrange) {
-
           if (ascCond || descCond) {
             swaped = true;
             [sortData[j], sortData[j + 1]] = [sortData[j + 1], sortData[j]];
           }
-          
         } else {
-
           if (noDataCond || (_dataB && ascCond) || descCond || genderArrange) {
             swaped = true;
             [sortData[j], sortData[j + 1]] = [sortData[j + 1], sortData[j]];
           }
-
         }
-
       }
-
     }
 
     if (['name', 'age', 'gender'].includes(sortCategory) && sortDenominator !== 0) {
-      return sortData.map(_data => {
+      return sortData.map((_data) => {
         const sortItemData = _data[sortCategory];
         let numerator: number;
         if (sortItemData) {
-          numerator = sortCategory === 'avgSpeed' ? +(3600 / sortItemData).toFixed(0) : +sortItemData.toFixed(0);
+          numerator =
+            sortCategory === 'avgSpeed'
+              ? +(3600 / sortItemData).toFixed(0)
+              : +sortItemData.toFixed(0);
         } else {
           numerator = 0;
         }
@@ -1848,11 +1786,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         _data.ratio = `${((numerator / sortDenominator) * 100).toFixed(0)}%`;
         return _data;
       });
-
     } else {
       return sortData;
     }
-
   }
 
   /**
@@ -1887,7 +1823,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     this.initShowMenu();
 
     let x = `${e.clientX}px`,
-        y = `${e.clientY}px`;
+      y = `${e.clientY}px`;
 
     // 點選位置太靠右則將選單往左移。
     if (e.view.innerWidth - e.clientX < 270) {
@@ -1903,7 +1839,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       show: true,
       focusId: id,
       x,
-      y
+      y,
     };
 
     this.handleScrollEvent();
@@ -1917,15 +1853,12 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   handleScrollEvent() {
     const mainSection = document.querySelector('.main-body'),
-          scroll = fromEvent(mainSection, 'scroll');
-    this.scrollEvent = scroll.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+      scroll = fromEvent(mainSection, 'scroll');
+    this.scrollEvent = scroll.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.initShowMenu();
       this.scrollEvent.unsubscribe();
       this.changeDetectorRef.markForCheck();
     });
-
   }
 
   /**
@@ -1943,14 +1876,11 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   handleClickEvent() {
     const click = fromEvent(document, 'click');
-    this.clickEvent = click.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.clickEvent = click.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.initShowMenu();
       this.clickEvent.unsubscribe();
       this.changeDetectorRef.markForCheck();
     });
-
   }
 
   /**
@@ -1962,14 +1892,14 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       show: false,
       focusId: null,
       x: null,
-      y: null
+      y: null,
     };
 
     this.memberMenu = {
       show: false,
       focusId: null,
       x: null,
-      y: null
+      y: null,
     };
 
     this.groupTable.showOpt = false;
@@ -1981,7 +1911,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @param type { AnalysisTable }
    * @author kidin-1100316
    */
-  showAllData (type: AnalysisTable) {
+  showAllData(type: AnalysisTable) {
     this[`${type}Table`].showAll = true;
     this.updateUrl();
     this.changeDetectorRef.markForCheck();
@@ -1994,9 +1924,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   goGroupPage(id: string, page: NavigationPage) {
     const hashGroupId = this.hashIdService.handleGroupIdEncode(id),
-          startDateString = dayjs(this.selectDate.startDate).format('YYYY-MM-DD'),
-          endDateString = dayjs(this.selectDate.endDate).format('YYYY-MM-DD'),
-          reportConditionString = `?startdate=${startDateString}&enddate=${endDateString}`;
+      startDateString = dayjs(this.selectDate.startDate).format('YYYY-MM-DD'),
+      endDateString = dayjs(this.selectDate.endDate).format('YYYY-MM-DD'),
+      reportConditionString = `?startdate=${startDateString}&enddate=${endDateString}`;
     switch (page) {
       case 'info':
         window.open(`/dashboard/group-info/${hashGroupId}/group-introduction`);
@@ -2005,12 +1935,13 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         window.open(`/dashboard/group-info/${hashGroupId}/sports-report${reportConditionString}`);
         break;
       case 'cloudrunReport':
-        window.open(`/dashboard/group-info/${hashGroupId}/cloudrun-report${reportConditionString}&mapid=${this.currentMapId}`);
+        window.open(
+          `/dashboard/group-info/${hashGroupId}/cloudrun-report${reportConditionString}&mapid=${this.currentMapId}`
+        );
         break;
     }
-    
-    this.initShowMenu();
 
+    this.initShowMenu();
   }
 
   /**
@@ -2020,9 +1951,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   goMemberPage(id: number, page: NavigationPage) {
     const hashUserId = this.hashIdService.handleUserIdEncode(id.toString()),
-          startDateString = dayjs(this.selectDate.startDate).format('YYYY-MM-DD'),
-          endDateString = dayjs(this.selectDate.endDate).format('YYYY-MM-DD'),
-          reportConditionString = `?startdate=${startDateString}&enddate=${endDateString}`;
+      startDateString = dayjs(this.selectDate.startDate).format('YYYY-MM-DD'),
+      endDateString = dayjs(this.selectDate.endDate).format('YYYY-MM-DD'),
+      reportConditionString = `?startdate=${startDateString}&enddate=${endDateString}`;
     switch (page) {
       case 'info':
         window.open(`/user-profile/${hashUserId}`);
@@ -2036,7 +1967,6 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         break;
       */
     }
-
   }
 
   /**
@@ -2049,9 +1979,10 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   changeTableOpt(e: any, table: AnalysisTable, type: 'filter' | 'column') {
     const value = +e.source.value;
     if (type === 'filter') {
-
       if (this[`${table}Table`].showLevel.includes(value)) {
-        this[`${table}Table`].showLevel = this[`${table}Table`].showLevel.filter(_level => _level !== value);
+        this[`${table}Table`].showLevel = this[`${table}Table`].showLevel.filter(
+          (_level) => _level !== value
+        );
       } else {
         this[`${table}Table`].showLevel.push(value);
         this[`${table}Table`].showLevel.sort();
@@ -2059,9 +1990,10 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
 
       this.filterGroup(table);
     } else {
-
       if (this[`${table}Table`].showDataType.includes(value)) {
-        this[`${table}Table`].showDataType = this[`${table}Table`].showDataType.filter(_type => _type !== value);
+        this[`${table}Table`].showDataType = this[`${table}Table`].showDataType.filter(
+          (_type) => _type !== value
+        );
       } else {
         this[`${table}Table`].showDataType.push(value);
         this[`${table}Table`].showDataType.sort();
@@ -2089,14 +2021,13 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     } else {
       setLocalStorageObject('cloudRunOpt-mem', JSON.stringify(opt));
     }
-    
   }
 
   /**
    * 從localstorage取得使用者先前分析列表的欄位顯示設定
    * @author kidin-1100319
    */
-  getAnalysisOpt () {
+  getAnalysisOpt() {
     let opt: any;
     if (this.systemAccessRight <= this.currentGroup.level) {
       opt = getLocalStorageObject('cloudRunOpt');
@@ -2123,22 +2054,20 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   filterGroup(table: AnalysisTable) {
     if (table === 'group') {
-      this.groupTableData.data = this.backUpData.group.filter(_group => {
+      this.groupTableData.data = this.backUpData.group.filter((_group) => {
         return this.groupTable.showLevel.includes(_group.level);
       });
 
       if (this.groupTable.sorted) this.arrangeData('group');
     } else {
-      this.memberTableData.data = this.backUpData.member.filter(_member => {
+      this.memberTableData.data = this.backUpData.member.filter((_member) => {
         const levelArr = _member.level;
         let isLevel = false;
         for (let i = 0, len = levelArr.length; i < len; i++) {
-
           if (this.memberTable.showLevel.includes(levelArr[i])) {
             isLevel = true;
             break;
           }
-
         }
 
         return isLevel;
@@ -2146,7 +2075,6 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
 
       if (this.memberTable.sorted) this.arrangeData('member');
     }
-    
   }
 
   /**
@@ -2170,7 +2098,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     if (e < 0) {
       this.compare.clickList = [];
     } else if (clickList.includes(e)) {
-      this.compare.clickList = this.compare.clickList.filter(_list => _list !== e);
+      this.compare.clickList = this.compare.clickList.filter((_list) => _list !== e);
     } else {
       this.compare.clickList.push(e);
     }
@@ -2194,5 +2122,4 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

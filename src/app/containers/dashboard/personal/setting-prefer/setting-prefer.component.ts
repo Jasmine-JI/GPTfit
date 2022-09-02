@@ -10,22 +10,22 @@ import { HrZoneRange } from '../../../../shared/models/chart-data';
 import dayjs from 'dayjs';
 import { TranslateService } from '@ngx-translate/core';
 import { DashboardService } from '../../services/dashboard.service';
-import { TargetField, PersonalTarget, TargetCondition } from '../../../../shared/models/sport-target';
-import { ConditionSymbols } from '../../../../shared/enum/sport-target';
+import { TargetConditionMap } from '../../../../core/models/api/api-common/sport-target.model';
 import { DateUnit } from '../../../../shared/enum/report';
-import { deepCopy, checkResponse, mathRounding, valueConvert } from '../../../../shared/utils/index';
-import { SportsTargetDefault } from '../../../../shared/models/variable-init';
+import { checkResponse, mathRounding, valueConvert } from '../../../../shared/utils/index';
 import { UserService } from '../../../../core/services/user.service';
 import { getUserHrRange, getUserFtpZone } from '../../../../shared/utils/sports';
+import { SportsTarget } from '../../../../shared/classes/sports-target';
+import { LocalstorageService } from '../../../../core/services/localstorage.service';
 
 enum DominantHand {
   right,
-  left
+  left,
 }
 
 enum AutoStepTarget {
   close,
-  open
+  open,
 }
 
 type TimeEditType = 'hour' | 'min';
@@ -35,7 +35,7 @@ const wheelSizeCoefficient = inch * 10;
 @Component({
   selector: 'app-setting-prefer',
   templateUrl: './setting-prefer.component.html',
-  styleUrls: ['./setting-prefer.component.scss', '../personal-child-page.scss']
+  styleUrls: ['./setting-prefer.component.scss', '../personal-child-page.scss'],
 })
 export class SettingPreferComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
@@ -49,13 +49,11 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   uiFlag = {
     progress: 100,
-    showTimeSelector: null,
+    showTimeSelector: <string | null>null,
     valueShifting: false,
     isMobile: 'ontouchmove' in window,
     expand: false,
-    showEditDialog: <SetType>null,
-    showCycleList: false,
-    showFiledNameList: false
+    showEditDialog: <SetType | null>null,
   };
 
   /**
@@ -82,23 +80,24 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       step: 5000,
       bodyWeight: 70,
       muscleRate: 50,
-      fatRate: 20
-    }
-
+      fatRate: 20,
+    },
   };
 
   /**
    * 個人運動目標(預設值)
    */
-  sportsTarget: PersonalTarget = deepCopy(SportsTargetDefault);
+  sportsTarget: SportsTarget;
 
   /**
-   * 新的目標條件
+   * 目標條件
    */
-  newCondition: TargetCondition = {
-    filedName: <TargetField>'',
-    symbols: ConditionSymbols.greaterEqual,
-    filedValue: null
+  cycleCondition = {
+    day: <TargetConditionMap | null>null,
+    week: <TargetConditionMap | null>null,
+    month: <TargetConditionMap | null>null,
+    season: <TargetConditionMap | null>null,
+    year: <TargetConditionMap | null>null,
   };
 
   /**
@@ -109,7 +108,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     strideLengthCentimeter: false,
     wheelSize: false,
     distance: false,
-    bodyWeight: false
+    bodyWeight: false,
   };
 
   /**
@@ -119,8 +118,13 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     hourList: ['20', '21', '22', '23', '00', '01', '02', '03', '04'],
     minList: ['56', '57', '58', '59', '00', '01', '02', '03', '04'],
     hour: '00',
-    min: '00'
+    min: '00',
   };
+
+  /**
+   * 進階模式開關狀態
+   */
+  advancedSportsTarget = this.localstorageService.getAdvancedSportsTarget();
 
   userInfo: any;
   userHrZone: HrZoneRange;
@@ -135,8 +139,9 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private translate: TranslateService,
     private dashboardService: DashboardService,
-    private userService: UserService
-  ) { }
+    private userService: UserService,
+    private localstorageService: LocalstorageService
+  ) {}
 
   ngOnInit(): void {
     this.getRxUserProfile();
@@ -147,20 +152,22 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    * @author kidin-1100818
    */
   getRxUserProfile() {
-    this.userService.getUser().rxUserProfile.pipe(
-      map(resp => {
-        const { handedness } = resp;
-        if (handedness === undefined || resp.length === 0) {
-          resp.handedness = DominantHand.right;
-        }
+    this.userService
+      .getUser()
+      .rxUserProfile.pipe(
+        map((resp) => {
+          const { handedness } = resp;
+          if (handedness === undefined || resp.length === 0) {
+            resp.handedness = DominantHand.right;
+          }
 
-        return resp;
-      }),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.userInfo = res;
-    });
-
+          return resp;
+        }),
+        takeUntil(this.ngUnsubscribe)
+      )
+      .subscribe((res) => {
+        this.userInfo = res;
+      });
   }
 
   /**
@@ -172,24 +179,43 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     this.uiFlag.showEditDialog = type;
     switch (type) {
       case 'sportsTarget':
-        this.handleSportTargetDialog();
+        this.getSportTarget();
         break;
       default:
         this.handleSettingDialog();
         break;
     }
-
   }
 
   /**
    * 處理設定運動目標所需資訊
    */
-  handleSportTargetDialog() {
+  getSportTarget() {
     const { workoutTarget } = this.userInfo;
-    if (workoutTarget && Object.keys(workoutTarget).length > 0) {
-      this.sportsTarget = deepCopy(workoutTarget);
-    }
-    
+    this.sportsTarget = new SportsTarget(workoutTarget ?? {});
+    this.saveAllCondition();
+  }
+
+  /**
+   * 將條件另外儲存
+   */
+  saveAllCondition() {
+    this.cycleCondition = {
+      day: this.sportsTarget.getArrangeCondition(DateUnit.day),
+      week: this.sportsTarget.getArrangeCondition(DateUnit.week),
+      month: this.sportsTarget.getArrangeCondition(DateUnit.month),
+      season: this.sportsTarget.getArrangeCondition(DateUnit.season),
+      year: this.sportsTarget.getArrangeCondition(DateUnit.year),
+    };
+  }
+
+  /**
+   * 變更運動目標進階功能狀態
+   */
+  changeAdvancedTargetStatus() {
+    const currentStatus = this.advancedSportsTarget.personal;
+    this.advancedSportsTarget.personal = !currentStatus;
+    this.localstorageService.setAdvancedSportsTarget(this.advancedSportsTarget);
   }
 
   /**
@@ -217,8 +243,8 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
         step,
         bodyWeight,
         muscleRate,
-        fatRate
-      }
+        fatRate,
+      },
     } = this.userInfo;
 
     const isMetric = userUnit === Unit.metric;
@@ -230,7 +256,9 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       heartRateResting,
       normalBedTime,
       normalWakeTime,
-      wheelSize: isMetric ? wheelSize : valueConvert(wheelSize, !isMetric, true, wheelSizeCoefficient, 1),
+      wheelSize: isMetric
+        ? wheelSize
+        : valueConvert(wheelSize, !isMetric, true, wheelSizeCoefficient, 1),
       autoTargetStep,
       cycleFtp,
       handedness,
@@ -243,20 +271,28 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
         step,
         bodyWeight: valueConvert(bodyWeight, !isMetric, true, lb, 1),
         muscleRate,
-        fatRate
-      }
-
+        fatRate,
+      },
     };
 
     this.editFlag = {
       strideLengthCentimeter: false,
       wheelSize: false,
       distance: false,
-      bodyWeight: false
-    }
+      bodyWeight: false,
+    };
 
     this.handleCountHrZone();
     this.handleCountFtpZone();
+  }
+
+  /**
+   * 變更指定日期單位的目標條件
+   * @param contentMap {TargetConditionMap}-條件Map物件
+   * @param cycle {DateUnit}-日期單位
+   */
+  changeCondition(contentMap: TargetConditionMap, cycle: DateUnit) {
+    this.sportsTarget.changeAllCondition(cycle, contentMap);
   }
 
   /**
@@ -266,7 +302,6 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     if (this.uiFlag.progress === 100) {
       this.uiFlag.showEditDialog = null;
     }
-    
   }
 
   /**
@@ -283,12 +318,13 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    * 更新運動目標設定
    */
   updateSportsTarget() {
-    const updateContent = { workoutTarget: this.sportsTarget };
+    const newSportsTarget = this.sportsTarget.getReductionTarget();
+    const updateContent = { workoutTarget: newSportsTarget };
     this.saveSettingChange(updateContent);
   }
 
   /**
-   * 更新運動目標以外的偏好設定，若未編輯任何選項則僅關閉視窗 
+   * 更新運動目標以外的偏好設定，若未編輯任何選項則僅關閉視窗
    */
   updatePreferSetting() {
     const newSet = this.checkEdit(this.userInfo, this.setting);
@@ -302,28 +338,26 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   saveSettingChange(updateContent: any) {
     if (this.uiFlag.progress === 100) {
       this.uiFlag.progress = 30;
-      this.userService.updateUserProfile(updateContent).pipe(
-        switchMap(res => this.translate.get('hellow world').pipe(
-          map(resp => res)
-        )),
-        takeUntil(this.ngUnsubscribe)
-      ).subscribe(res => {
-        if (!checkResponse(res, false)) {
-          const errorMsg = this.translate.instant('universal_popUpMessage_updateFailed');
-          this.utils.showSnackBar(errorMsg);
-          this.uiFlag.progress = 100;
-        } else {
-          this.uiFlag.progress = 100;
-          this.closeDialog();
-          const successMsg = this.translate.instant('universal_status_updateCompleted');
-          this.utils.showSnackBar(successMsg);
-          this.dashboardService.setRxEditMode('complete');
-        }
-
-      });
-
+      this.userService
+        .updateUserProfile(updateContent)
+        .pipe(
+          switchMap((res) => this.translate.get('hellow world').pipe(map(() => res))),
+          takeUntil(this.ngUnsubscribe)
+        )
+        .subscribe((res) => {
+          if (!checkResponse(res, false)) {
+            const errorMsg = this.translate.instant('universal_popUpMessage_updateFailed');
+            this.utils.showSnackBar(errorMsg);
+            this.uiFlag.progress = 100;
+          } else {
+            this.uiFlag.progress = 100;
+            this.closeDialog();
+            const successMsg = this.translate.instant('universal_status_updateCompleted');
+            this.utils.showSnackBar(successMsg);
+            this.dashboardService.setRxEditMode('complete');
+          }
+        });
     }
-
   }
 
   /**
@@ -333,38 +367,32 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    * @author kidin-1100825
    */
   checkEdit(oldSet: any, newSet: any): any {
-    let updateObj = {},
-        isUpdate = false;
-    for (let _key in newSet) {
-
-      if (newSet.hasOwnProperty(_key)) {
+    let updateObj = {};
+    let isUpdate = false;
+    for (const _key in newSet) {
+      if (Object.prototype.hasOwnProperty.call(newSet, _key)) {
         const oldValue = oldSet[_key],
-              newValue = newSet[_key];
+          newValue = newSet[_key];
         if (typeof newSet[_key] === 'object') {
           const updateChild = this.checkEdit(oldValue, newValue);
           if (updateChild) {
             isUpdate = true;
             updateObj = {
               [_key]: updateChild,
-              ...updateObj
+              ...updateObj,
             };
           }
-
         } else {
           const revertNewValue = this.valueRevert(_key, newValue);
           if (revertNewValue != oldValue) {
             isUpdate = true;
             updateObj = {
               [_key]: revertNewValue,
-              ...updateObj
+              ...updateObj,
             };
-
           }
-
         }
-
       }
-
     }
 
     return isUpdate ? updateObj : isUpdate;
@@ -378,7 +406,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   valueRevert(key: string, value: string | number) {
     const isMetric = this.setting.unit === Unit.metric,
-          edited = this.editFlag[key];
+      edited = this.editFlag[key];
     switch (key) {
       case 'strideLengthCentimeter':
         if (edited) {
@@ -405,15 +433,12 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
           return this.userInfo.target[key];
         }
       case 'fitTime':
-          return mathRounding(+value * 60, 0);
+        return mathRounding(+value * 60, 0);
       case 'sleep':
-          return mathRounding(+value * 3600, 0);
+        return mathRounding(+value * 3600, 0);
       default:
         return value;
-        
     }
-
-
   }
 
   /**
@@ -432,14 +457,16 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    * @author kidin-1100823
    */
   checkFormat(e: KeyboardEvent, haveDot = false) {
-    const { key, target: { value } } = e as any,
-          numTest = formTest.number.test(`${key}`),
-          isFnKey = key.length > 1,
-          checkDot = key === '.' && haveDot && !value.includes('.');
+    const {
+        key,
+        target: { value },
+      } = e as any,
+      numTest = formTest.number.test(`${key}`),
+      isFnKey = key.length > 1,
+      checkDot = key === '.' && haveDot && !value.includes('.');
     if (!(numTest || isFnKey || checkDot)) {
       e.preventDefault();
     }
-
   }
 
   /**
@@ -451,7 +478,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     const inputValue = +(e as any).target.value;
     if (inputValue && formTest.number.test(`${inputValue}`)) {
       const min = 140,
-            max = 220;
+        max = 220;
       if (inputValue < min) {
         this.setting.heartRateMax = min;
       } else if (inputValue > max) {
@@ -478,7 +505,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     const inputValue = +(e as any).target.value;
     if (inputValue && formTest.number.test(`${inputValue}`)) {
       const min = 40,
-            max = 100;
+        max = 100;
       if (inputValue < min) {
         this.setting.heartRateResting = min;
       } else if (inputValue > max) {
@@ -492,7 +519,6 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       const { heartRateResting } = this.userInfo;
       (e as any).target.value = heartRateResting;
     }
-
   }
 
   /**
@@ -504,7 +530,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     const inputValue = +(e as any).target.value;
     if (inputValue && formTest.number.test(`${inputValue}`)) {
       const min = 1,
-            max = 600;
+        max = 600;
       if (inputValue < min) {
         this.setting.cycleFtp = min;
       } else if (inputValue > max) {
@@ -530,23 +556,28 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     if (userUnit != this.setting.unit) {
       this.setting.unit = userUnit;
       const isMetric = userUnit === Unit.metric,
-            { 
-              strideLengthCentimeter,
-              wheelSize,
-              target: { distance, bodyWeight }
-            } = this.setting;
+        {
+          strideLengthCentimeter,
+          wheelSize,
+          target: { distance, bodyWeight },
+        } = this.setting;
       if (isMetric) {
-        const { 
+        const {
           strideLengthCentimeter: stepLenChange,
           wheelSize: wheelSizeChange,
           distance: distanceChange,
-          bodyWeight: bodyWeightChange
+          bodyWeight: bodyWeightChange,
         } = this.editFlag;
 
         // 判斷是否編輯該數值，避免連續切換單位設定造成數值因四捨五入而異動
         if (stepLenChange) {
-          this.setting.strideLengthCentimeter = 
-            valueConvert(strideLengthCentimeter, true, false, inch, 1);
+          this.setting.strideLengthCentimeter = valueConvert(
+            strideLengthCentimeter,
+            true,
+            false,
+            inch,
+            1
+          );
         } else {
           this.setting.strideLengthCentimeter = this.userInfo.strideLengthCentimeter;
         }
@@ -556,7 +587,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
         } else {
           this.setting.wheelSize = this.userInfo.wheelSize;
         }
-        
+
         if (distanceChange) {
           this.setting.target.distance = valueConvert(distance, true, false, ft, 2);
         } else {
@@ -568,17 +599,19 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
         } else {
           this.setting.target.bodyWeight = this.userInfo.target.bodyWeight;
         }
-        
       } else {
-        this.setting.strideLengthCentimeter = 
-          valueConvert(strideLengthCentimeter, true, true, inch, 1);
+        this.setting.strideLengthCentimeter = valueConvert(
+          strideLengthCentimeter,
+          true,
+          true,
+          inch,
+          1
+        );
         this.setting.wheelSize = valueConvert(wheelSize, true, true, wheelSizeCoefficient, 1);
         this.setting.target.distance = valueConvert(distance, true, true, ft, 2);
         this.setting.target.bodyWeight = valueConvert(bodyWeight, true, true, lb, 1);
       }
-
     }
-    
   }
 
   /**
@@ -597,15 +630,15 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   handleStepLenInput(e: MouseEvent) {
     const oldValue = this.userInfo.strideLengthCentimeter,
-          inputValue = +(e as any).target.value,
-          isMetric = this.setting.unit === Unit.metric,
-          testFormat = formTest.decimalValue.test(`${inputValue}`),
-          newValue = valueConvert(inputValue, !isMetric, false, inch, 1),
-          valueChanged = newValue !== oldValue;
+      inputValue = +(e as any).target.value,
+      isMetric = this.setting.unit === Unit.metric,
+      testFormat = formTest.decimalValue.test(`${inputValue}`),
+      newValue = valueConvert(inputValue, !isMetric, false, inch, 1),
+      valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       this.editFlag.strideLengthCentimeter = true;
       const min = 30,
-            max = 255;
+        max = 255;
       if (newValue < min) {
         this.setting.strideLengthCentimeter = valueConvert(min, !isMetric, true, inch, 1);
       } else if (newValue > max) {
@@ -620,7 +653,6 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       const { strideLengthCentimeter } = this.userInfo;
       (e as any).target.value = valueConvert(strideLengthCentimeter, !isMetric, true, inch, 1);
     }
-
   }
 
   /**
@@ -630,15 +662,15 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   handleWheelSizeInput(e: MouseEvent) {
     const oldValue = this.userInfo.wheelSize,
-          inputValue = +(e as any).target.value,
-          isMetric = this.setting.unit === Unit.metric,
-          testFormat = formTest.decimalValue.test(`${inputValue}`),
-          newValue = valueConvert(inputValue, !isMetric, false, wheelSizeCoefficient, 1),
-          valueChanged = newValue !== oldValue;
+      inputValue = +(e as any).target.value,
+      isMetric = this.setting.unit === Unit.metric,
+      testFormat = formTest.decimalValue.test(`${inputValue}`),
+      newValue = valueConvert(inputValue, !isMetric, false, wheelSizeCoefficient, 1),
+      valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       this.editFlag.wheelSize = true;
       const min = 300,
-            max = 9000;
+        max = 9000;
       if (newValue < min) {
         this.setting.wheelSize = valueConvert(min, !isMetric, true, wheelSizeCoefficient, 1);
       } else if (newValue > max) {
@@ -653,7 +685,6 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       const { wheelSize } = this.userInfo;
       (e as any).target.value = valueConvert(wheelSize, !isMetric, true, wheelSizeCoefficient, 1);
     }
-
   }
 
   /**
@@ -674,7 +705,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     const inputValue = +(e as any).target.value;
     if (inputValue && formTest.number.test(`${inputValue}`)) {
       const min = 100,
-            max = 65535;
+        max = 65535;
       if (inputValue < min) {
         this.setting.target.step = min;
       } else if (inputValue > max) {
@@ -687,7 +718,6 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     } else {
       (e as any).target.value = this.userInfo.target.step;
     }
-
   }
 
   /**
@@ -697,11 +727,11 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   handleTargetDistanceInput(e: MouseEvent) {
     const oldValue = this.userInfo.target.distance,
-          inputValue = +(e as any).target.value,
-          isMetric = this.setting.unit === Unit.metric,
-          testFormat = formTest.decimalValue.test(`${inputValue}`),
-          newValue = valueConvert(inputValue, !isMetric, false, ft, 2),
-          valueChanged = newValue !== oldValue;
+      inputValue = +(e as any).target.value,
+      isMetric = this.setting.unit === Unit.metric,
+      testFormat = formTest.decimalValue.test(`${inputValue}`),
+      newValue = valueConvert(inputValue, !isMetric, false, ft, 2),
+      valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       this.editFlag.distance = true;
       const max = 65535;
@@ -717,7 +747,6 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       const { distance } = this.userInfo.target;
       (e as any).target.value = valueConvert(distance, !isMetric, true, ft, 2);
     }
-
   }
 
   /**
@@ -739,7 +768,6 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     } else {
       (e as any).target.value = this.userInfo.target.elevGain;
     }
-
   }
 
   /**
@@ -751,7 +779,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     const inputValue = +(e as any).target.value;
     if (inputValue && formTest.number.test(`${inputValue}`)) {
       const min = 1300,
-            max = 5000;
+        max = 5000;
       if (inputValue < min) {
         this.setting.target.calorie = min;
       } else if (inputValue > max) {
@@ -764,7 +792,6 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     } else {
       (e as any).target.value = this.userInfo.target.calorie;
     }
-
   }
 
   /**
@@ -774,13 +801,13 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   handleTargetFitTimeInput(e: MouseEvent) {
     const oldValue = this.userInfo.target.fitTime,
-          inputValue = +(e as any).target.value,
-          testFormat = formTest.number.test(`${inputValue}`),
-          newValue = mathRounding(inputValue * 60, 0),
-          valueChanged = newValue !== oldValue;
+      inputValue = +(e as any).target.value,
+      testFormat = formTest.number.test(`${inputValue}`),
+      newValue = mathRounding(inputValue * 60, 0),
+      valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       const min = 60,
-            max = 64800;
+        max = 64800;
       if (newValue < min) {
         this.setting.target.fitTime = mathRounding(min / 60, 0);
       } else if (newValue > max) {
@@ -794,7 +821,6 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       const { fitTime } = this.userInfo.target;
       (e as any).target.value = mathRounding(fitTime / 60, 0);
     }
-
   }
 
   /**
@@ -804,13 +830,13 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   handleTargetSleepInput(e: MouseEvent) {
     const oldValue = this.userInfo.target.sleep,
-          inputValue = +(e as any).target.value,
-          testFormat = formTest.decimalValue.test(`${inputValue}`),
-          newValue = mathRounding(inputValue * 3600, 0),
-          valueChanged = newValue !== oldValue;
+      inputValue = +(e as any).target.value,
+      testFormat = formTest.decimalValue.test(`${inputValue}`),
+      newValue = mathRounding(inputValue * 3600, 0),
+      valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       const min = 600,
-            max = 64800;
+        max = 64800;
       if (newValue < min) {
         this.setting.target.sleep = mathRounding(min / 3600, 1);
       } else if (newValue > max) {
@@ -824,7 +850,6 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       const { sleep } = this.userInfo.target;
       (e as any).target.value = mathRounding(sleep / 3600, 1);
     }
-
   }
 
   /**
@@ -834,15 +859,15 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   handleTargetWeightInput(e: MouseEvent) {
     const oldValue = this.userInfo.target.bodyWeight,
-          inputValue = +(e as any).target.value,
-          isMetric = this.setting.unit === Unit.metric,
-          testFormat = formTest.decimalValue.test(`${inputValue}`),
-          newValue = valueConvert(inputValue, !isMetric, false, lb, 1),
-          valueChanged = newValue !== oldValue;
+      inputValue = +(e as any).target.value,
+      isMetric = this.setting.unit === Unit.metric,
+      testFormat = formTest.decimalValue.test(`${inputValue}`),
+      newValue = valueConvert(inputValue, !isMetric, false, lb, 1),
+      valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       this.editFlag.bodyWeight = true;
       const min = 40,
-            max = 255;
+        max = 255;
       if (newValue < min) {
         this.setting.target.bodyWeight = valueConvert(min, !isMetric, true, lb, 1);
       } else if (newValue > max) {
@@ -857,7 +882,6 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       const { bodyWeight } = this.userInfo.target;
       (e as any).target.value = valueConvert(bodyWeight, !isMetric, true, lb, 1);
     }
-
   }
 
   /**
@@ -867,12 +891,12 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   handleTargetMuscleRateInput(e: MouseEvent) {
     const oldValue = this.userInfo.target.muscleRate,
-          inputValue = +(e as any).target.value,
-          testFormat = formTest.decimalValue.test(`${inputValue}`),
-          valueChanged = inputValue !== oldValue;
+      inputValue = +(e as any).target.value,
+      testFormat = formTest.decimalValue.test(`${inputValue}`),
+      valueChanged = inputValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       const min = 5,
-            max = 50;
+        max = 50;
       if (inputValue < min) {
         this.setting.target.muscleRate = min;
       } else if (inputValue > max) {
@@ -885,7 +909,6 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     } else {
       (e as any).target.value = this.userInfo.target.muscleRate;
     }
-
   }
 
   /**
@@ -895,12 +918,12 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   handleTargetFatRateInput(e: MouseEvent) {
     const oldValue = this.userInfo.target.fatRate,
-          inputValue = +(e as any).target.value,
-          testFormat = formTest.decimalValue.test(`${inputValue}`),
-          valueChanged = inputValue !== oldValue;
+      inputValue = +(e as any).target.value,
+      testFormat = formTest.decimalValue.test(`${inputValue}`),
+      valueChanged = inputValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       const min = 5,
-            max = 50;
+        max = 50;
       if (inputValue < min) {
         this.setting.target.fatRate = min;
       } else if (inputValue > max) {
@@ -913,7 +936,6 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     } else {
       (e as any).target.value = this.userInfo.target.fatRate;
     }
-
   }
 
   /**
@@ -924,12 +946,12 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   openTimeSelector(e: KeyboardEvent, type: 'normalBedTime' | 'normalWakeTime') {
     e.stopPropagation();
-    const [hour, min, second] = this.setting[type].split(':'),
-          hourList = [],
-          minList = [];
+    const [hour, min] = this.setting[type].split(':');
+    const hourList: Array<any> = [];
+    const minList: Array<any> = [];
     for (let i = -4; i <= 4; i++) {
       const _hour = +hour + i,
-            _min = +min + i;
+        _min = +min + i;
       hourList.push(this.timeCheck(_hour, 'hour'));
       minList.push(this.timeCheck(_min, 'min'));
     }
@@ -938,17 +960,16 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       hour,
       min,
       hourList,
-      minList
+      minList,
     };
 
     this.uiFlag.showTimeSelector = type;
     setTimeout(() => {
-      const hourEl = document.getElementById('hour__selector'),
-            minEl = document.getElementById('min__selector');
+      const hourEl = document.getElementById('hour__selector') as Element;
+      const minEl = document.getElementById('min__selector') as Element;
       this.subscribeWheelEvent(hourEl, minEl);
       this.subscribeGlobalClick();
     });
-    
   }
 
   /**
@@ -960,13 +981,12 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   timeCheck(value: number, type: TimeEditType): string {
     const max = type === 'hour' ? 24 : 60;
     if (value < 0) {
-      return (`${value + max}`.padStart(2, '0'));
+      return `${value + max}`.padStart(2, '0');
     } else if (value >= max) {
-      return (`${value - max}`.padStart(2, '0'));
+      return `${value - max}`.padStart(2, '0');
     } else {
-      return (`${value}`.padStart(2, '0'));
+      return `${value}`.padStart(2, '0');
     }
-
   }
 
   /**
@@ -976,60 +996,58 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    * @author kidin-1100830
    */
   subscribeWheelEvent(hourEl: Element, minEl: Element) {
-    const hourWheelEvent = fromEvent(hourEl, 'wheel'),
-          minWheelEvent = fromEvent(minEl, 'wheel');
-    this.wheelEvent = merge(hourWheelEvent, minWheelEvent).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
-      e.preventDefault();
-      // 避免正在校正數值與位置時又觸發滾輪事件
-      if (!this.uiFlag.valueShifting) {
-        this.uiFlag.valueShifting = true;
-        const ttlShift = 25,  // 數字偏移量
-              animationTime = 25,  // 總偏移時間
-              interval = 5,  // 偏移間隔時間
-              { deltaY, currentTarget } = e as any,
-              { id, style: { top } } = currentTarget,
-              topVal = +top.split('px')[0],
-              timeType = id.split('__')[0],  // hour或min
-              ref = `${timeType}List`;  // hourList或minList
-        let refList = this.timeSelector[ref],
-            start = 0;
-        const animation = setInterval(() => {
-          start += interval;
-          if (start >= animationTime) {
-            // 將位置校正回來
-            if (deltaY > 0) {
-              const lastVal = refList[refList.length - 1],
-                    newVal = this.timeCheck(+lastVal + 1, timeType);
-              refList.push(newVal);
-              refList.shift();
+    const hourWheelEvent = fromEvent(hourEl, 'wheel');
+    const minWheelEvent = fromEvent(minEl, 'wheel');
+    this.wheelEvent = merge(hourWheelEvent, minWheelEvent)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((e) => {
+        e.preventDefault();
+        // 避免正在校正數值與位置時又觸發滾輪事件
+        if (!this.uiFlag.valueShifting) {
+          this.uiFlag.valueShifting = true;
+          const ttlShift = 25, // 數字偏移量
+            animationTime = 25, // 總偏移時間
+            interval = 5, // 偏移間隔時間
+            { deltaY, currentTarget } = e as any,
+            {
+              id,
+              style: { top },
+            } = currentTarget,
+            topVal = +top.split('px')[0],
+            timeType = id.split('__')[0], // hour或min
+            ref = `${timeType}List`; // hourList或minList
+          const refList = this.timeSelector[ref];
+          let start = 0;
+          const animation = setInterval(() => {
+            start += interval;
+            if (start >= animationTime) {
+              // 將位置校正回來
+              if (deltaY > 0) {
+                const lastVal = refList[refList.length - 1],
+                  newVal = this.timeCheck(+lastVal + 1, timeType);
+                refList.push(newVal);
+                refList.shift();
+              } else {
+                const firstVal = refList[0],
+                  newVal = this.timeCheck(+firstVal - 1, timeType);
+                refList.unshift(newVal);
+                refList.pop();
+              }
+
+              currentTarget.style.top = `${topVal}px`;
+              clearInterval(animation);
+              this.uiFlag.valueShifting = false;
             } else {
-              const firstVal = refList[0],
-                    newVal = this.timeCheck(+firstVal - 1, timeType);
-              refList.unshift(newVal);
-              refList.pop();
+              const shift = ttlShift * (start / animationTime);
+              if (deltaY > 0) {
+                currentTarget.style.top = `${topVal - shift}px`;
+              } else {
+                currentTarget.style.top = `${topVal + shift}px`;
+              }
             }
-            
-            currentTarget.style.top = `${topVal}px`;
-            clearInterval(animation);
-            this.uiFlag.valueShifting = false;
-          } else {
-            const shift = ttlShift * (start / animationTime);
-            if (deltaY > 0) {
-              currentTarget.style.top = `${topVal - shift}px`;
-            } else {
-              currentTarget.style.top = `${topVal + shift}px`;
-            }
-
-          }
-
-        }, interval);
-
-      }
-
-    });
-
+          }, interval);
+        }
+      });
   }
 
   /**
@@ -1048,13 +1066,10 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   subscribeGlobalClick() {
     const clickEvent = fromEvent(document, 'click');
-    this.clickEvent = clickEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    this.clickEvent = clickEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.closeTimeSelector();
       this.unsubscribeEvent();
     });
-
   }
 
   /**
@@ -1084,9 +1099,9 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   selectTime(e: MouseEvent, type: TimeEditType, value: string) {
     e.stopPropagation();
     this.timeSelector[type] = value;
-    const { showTimeSelector } = this.uiFlag,
-          { hour, min } = this.timeSelector;
-    this.setting[showTimeSelector] = `${hour}:${min}:00`;
+    const { showTimeSelector } = this.uiFlag;
+    const { hour, min } = this.timeSelector;
+    this.setting[showTimeSelector as string] = `${hour}:${min}:00`;
   }
 
   /**
@@ -1103,8 +1118,8 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   handleCountHrZone() {
     const { birthday } = this.userInfo,
-          { heartRateBase, heartRateMax, heartRateResting } = this.setting,
-          age = dayjs().diff(dayjs(birthday, 'YYYYMMDD'), 'year');
+      { heartRateBase, heartRateMax, heartRateResting } = this.setting,
+      age = dayjs().diff(dayjs(birthday, 'YYYYMMDD'), 'year');
     this.userHrZone = getUserHrRange(heartRateBase, age, heartRateMax, heartRateResting);
   }
 
@@ -1128,159 +1143,14 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 展開/收合日期計算基準清單
-   * @param e {MouseEvent}
-   */
-  toggleCycleList(e: MouseEvent) {
-    e.stopPropagation();
-    const { showCycleList } = this.uiFlag;
-    showCycleList ? this.foldCycleList() : this.unfoldCycleList();
-  }
-
-  /**
-   * 展開日期計算基準清單
-   */
-  unfoldCycleList() {
-    this.foldAllList();
-    this.uiFlag.showCycleList = true;
-    this.subscribeDialogClickEvent();
-  }
-
-  /**
-   * 收合日期計算基準清單
-   */
-  foldCycleList() {
-    this.uiFlag.showCycleList = false;
-    this.unsubscribeEvent();
-  }
-
-  /**
-   * 選擇目標條件之日期基準
-   * @param cycle {DateUnit}-指定的基準序位
-   */
-  selectDateCycle(cycle: DateUnit) {
-    this.sportsTarget.cycle = cycle;
-    this.foldCycleList();
-  }
-
-  /**
-   * 展開/收合目標條件名稱清單
-   * @param e {MouseEvent}
-   */
-  toggleFiledNameList(e: MouseEvent) {
-    e.stopPropagation();
-    const { showFiledNameList } = this.uiFlag;
-    showFiledNameList ? this.foldFiledNameList() : this.unfoldFiledNameList();
-  }
-
-  /**
-   * 展開目標條件名稱清單
-   */
-  unfoldFiledNameList() {
-    this.foldAllList();
-    this.uiFlag.showFiledNameList = true;
-    this.subscribeDialogClickEvent();
-  }
-
-  /**
-   * 收合目標條件名稱
-   */
-  foldFiledNameList() {
-    this.uiFlag.showFiledNameList = false;
-    this.unsubscribeEvent();
-  }
-
-  /**
-   * 選擇新的條件名稱
-   * @param field {TargetField}
-   */
-  selectNewConditionFiled(field: TargetField) {
-    this.newCondition.filedName = field;
-    const { filedValue } = this.newCondition;
-    if (filedValue) {
-      
-      if (field.toLowerCase().includes('time')) {
-        this.newCondition.filedValue = filedValue * 60;
-      }
-      
-      this.addNewCondition();
-    }
-
-    this.foldFiledNameList();
-  }
-
-  /**
-   * 設定目標條件之達成值
-   * @param e {MouseEvent}
-   */
-  setNewConditionValue(e: MouseEvent) {
-    const { value } = (e as any).target;
-    if (formTest.number.test(value)) {
-      this.newCondition.filedValue = +value;
-      const { filedName, filedValue } = this.newCondition;
-      if (filedName) {
-        // 若目標項目跟時間有關，則將數值由分轉為秒
-        if (filedName.toLocaleLowerCase().includes('time')) {
-          this.newCondition.filedValue = filedValue * 60;
-        }
-
-        this.addNewCondition();
-      }
-
-    }
-
-    (e as any).target.value = '';
-  }
-
-  /**
-   * 將設定好的新條件納入目標中，若條件名稱重複則覆蓋舊條件
-   */
-  addNewCondition() {
-    const { filedName } = this.newCondition;
-    const repeatIndex = this.sportsTarget.condition
-      .findIndex(_condition => _condition.filedName === filedName);
-    
-    if (repeatIndex >= 0) this.deleteCondition(repeatIndex);
-    const newCondition = deepCopy(this.newCondition);
-    this.sportsTarget.condition.push(newCondition);
-    this.newCondition = {
-      filedName: <TargetField>'',
-      symbols: ConditionSymbols.greaterEqual,
-      filedValue: null
-    };
-
-  }
-
-  /**
-   * 移除指定之條件
-   * @param index {number}-條件序列
-   */
-  deleteCondition(index: number) {
-    this.sportsTarget.condition.splice(index, 1);
-  }
-
-  /**
-   * 將所有已顯示清單收合
-   * @author kidin-1110308
-   */
-  foldAllList() {
-    this.uiFlag.showCycleList = false;
-    this.uiFlag.showFiledNameList = false;
-  }
-
-  /**
    * 訂閱彈跳設定視窗點擊事件
    */
   subscribeDialogClickEvent() {
-    const element = document.querySelector('.dialog-box');
+    const element = document.querySelector('.dialog-box') as Element;
     const clickEvent = fromEvent(element, 'click');
-    this.dialogClickEvent = clickEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.foldAllList();
+    this.dialogClickEvent = clickEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.unsubscribeDialogClickEvent();
     });
-
   }
 
   /**
@@ -1296,6 +1166,5 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-  }  
-
+  }
 }

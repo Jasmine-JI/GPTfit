@@ -8,7 +8,13 @@ import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { pageNotFoundPath } from '../../models/official-activity-const';
 import { CloudrunService } from '../../../../shared/services/cloudrun.service';
 import { RankType } from '../../../../shared/models/cloudrun-leaderboard';
-import { ProductShipped, HaveProduct, ApplyStatus, PaidStatusEnum, Nationality } from '../../models/activity-content';
+import {
+  ProductShipped,
+  HaveProduct,
+  ApplyStatus,
+  PaidStatusEnum,
+  Nationality,
+} from '../../models/activity-content';
 import dayjs from 'dayjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PaidStatusPipe } from '../../pipes/paid-status.pipe';
@@ -20,13 +26,19 @@ import { AgePipe } from '../../../../shared/pipes/age.pipe';
 import { getCurrentTimestamp, deepCopy } from '../../../../shared/utils/index';
 import { AuthService } from '../../../../core/services/auth.service';
 
-
-type SortType = 'rank' | 'group' | 'paidStatus' | 'orderStatus' | 'awardStatus' | 'paidDate' | 'shippedDate';
+type SortType =
+  | 'rank'
+  | 'group'
+  | 'paidStatus'
+  | 'orderStatus'
+  | 'awardStatus'
+  | 'paidDate'
+  | 'shippedDate';
 type SortSequence = 'asc' | 'desc';
 type ShippedType = 'productShipped' | 'awardShipped';
 type ListType = 'normal' | 'leaving' | 'leave';
-type ProfileEditType = 
-    'truthName'
+type ProfileEditType =
+  | 'truthName'
   | 'address'
   | 'remark'
   | 'name'
@@ -40,18 +52,18 @@ interface SortSet {
 
 const defaultSortSet = <SortSet>{
   type: 'rank',
-  order: 'asc'
+  order: 'asc',
 };
 
 @Component({
   selector: 'app-contestant-list',
   templateUrl: './contestant-list.component.html',
-  styleUrls: ['./contestant-list.component.scss']
+  styleUrls: ['./contestant-list.component.scss'],
 })
 export class ContestantListComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
-  private resizeSubscription = new Subscription;
-  private PluralEvent = new Subscription;
+  private resizeSubscription = new Subscription();
+  private PluralEvent = new Subscription();
 
   /**
    * ui會用到的flag
@@ -70,12 +82,12 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     listEditMode: false,
     showSortMenu: false,
     focusInput: false,
-    listType: <ListType>'normal'
+    listType: <ListType>'normal',
   };
 
   sortSet = <SortSet>{
     type: 'rank',
-    order: 'asc'
+    order: 'asc',
   };
 
   /**
@@ -86,8 +98,8 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     targetEventId: null,
     page: {
       index: 0,
-      counts: 100
-    }
+      counts: 100,
+    },
   };
 
   /**
@@ -96,7 +108,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
   listFilter = {
     type: <SortType>null,
     value: null,
-    groupName: null
+    groupName: null,
   };
 
   /**
@@ -104,8 +116,8 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    */
   listArrange = {
     type: <SortType>'rank',
-    action: <SortSequence>'asc'
-  }
+    action: <SortSequence>'asc',
+  };
 
   /**
    * 組別
@@ -160,7 +172,6 @@ export class ContestantListComponent implements OnInit, OnDestroy {
       this.token = token;
       this.searchInfo.token = token;
     }
-    
   }
 
   /**
@@ -175,7 +186,6 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     } else {
       this.router.navigateByUrl(pageNotFoundPath);
     }
-
   }
 
   /**
@@ -186,55 +196,56 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     this.eventId = +this.activatedRoute.snapshot.paramMap.get('eventId');
     const { eventId, token } = this;
     combineLatest([
-      this.officialActivityService.getEventDetail({eventId}),
-      this.officialActivityService.getRxAllMapInfo()
-    ]).pipe(
-      switchMap(resultArray => {
-        const [detail, mapInfo] = resultArray;
-        const { eventInfo, eventDetail: { group } } = detail;
-        this.eventInfo = eventInfo;
-        this.groupList = this.getGroupList(group);
-        this.allMapInfo = mapInfo as Array<any>;
-        if (this.utils.checkRes(detail)) {
+      this.officialActivityService.getEventDetail({ eventId }),
+      this.officialActivityService.getRxAllMapInfo(),
+    ])
+      .pipe(
+        switchMap((resultArray) => {
+          const [detail, mapInfo] = resultArray;
           const {
-            eventInfo: {
-              cloudrunMapId: mapId,
-              raceDate: {
-                startDate: raceStartDate,
-                endDate: raceEndDate
-              }
-            },
-            currentTimestamp
+            eventInfo,
+            eventDetail: { group },
           } = detail;
-          this.saveServerTime(currentTimestamp);
-          const body = {
-            token,
-            eventId,
-            mapId: +mapId,
-            rankType: RankType.designatedEvent,
-            raceStartDate,
-            raceEndDate,
-            page: 0,
-            pageCounts: 10000
-          };
+          this.eventInfo = eventInfo;
+          this.groupList = this.getGroupList(group);
+          this.allMapInfo = mapInfo as Array<any>;
+          if (this.utils.checkRes(detail)) {
+            const {
+              eventInfo: {
+                cloudrunMapId: mapId,
+                raceDate: { startDate: raceStartDate, endDate: raceEndDate },
+              },
+              currentTimestamp,
+            } = detail;
+            this.saveServerTime(currentTimestamp);
+            const body = {
+              token,
+              eventId,
+              mapId: +mapId,
+              rankType: RankType.designatedEvent,
+              raceStartDate,
+              raceEndDate,
+              page: 0,
+              pageCounts: 10000,
+            };
 
-          return this.cloudrunService.getLeaderboardStatistics(body).pipe(
-            map(leaderboardResult => leaderboardResult)
-          )
-        } else {
-          return this.router.navigateByUrl(pageNotFoundPath);
+            return this.cloudrunService
+              .getLeaderboardStatistics(body)
+              .pipe(map((leaderboardResult) => leaderboardResult));
+          } else {
+            return this.router.navigateByUrl(pageNotFoundPath);
+          }
+        })
+      )
+      .subscribe((result) => {
+        if (this.utils.checkRes(result)) {
+          const {
+            info: { rankList },
+          } = result as any;
+          this.leaderboard = rankList;
+          this.getParticipantList();
         }
-
-      })
-    ).subscribe(result => {
-      if (this.utils.checkRes(result)) {
-        const { info: { rankList } } = result as any;
-        this.leaderboard = rankList;
-        this.getParticipantList();
-      }
-
-    });
-
+      });
   }
 
   /**
@@ -262,36 +273,38 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     const { progress } = this.uiFlag;
     if (progress === 100) {
       this.uiFlag.progress = 30;
-      this.officialActivityService.getParticipantList(this.searchInfo).pipe(
-        map(res => {
-          if (this.utils.checkRes(res)) {
-            const { participantList } = res;
-            return this.reEditList(participantList);
-          } else {
-            return [];
-          }
+      this.officialActivityService
+        .getParticipantList(this.searchInfo)
+        .pipe(
+          map((res) => {
+            if (this.utils.checkRes(res)) {
+              const { participantList } = res;
+              return this.reEditList(participantList);
+            } else {
+              return [];
+            }
+          }),
+          map((reEditList) => this.bindRecord(reEditList))
+        )
+        .subscribe((bindResult) => {
+          const [normalList, leavingList, leaveList] = this.filterApplyStatus(bindResult);
+          this.participantList = normalList;
+          this.backupLeavingList = deepCopy(leavingList);
+          this.leavingList = deepCopy(leavingList);
+          this.backupLeaveList = deepCopy(leaveList);
+          this.leaveList = deepCopy(leaveList);
+          of(this.participantList)
+            .pipe(
+              map((list) => this.sortList(list)),
+              map((sortList) => this.assignRank(sortList))
+            )
+            .subscribe((finalList) => {
+              this.reArrangeList = finalList;
+            });
 
-        }),
-        map(reEditList => this.bindRecord(reEditList))
-      ).subscribe(bindResult => {
-        const [normalList, leavingList, leaveList] = this.filterApplyStatus(bindResult);
-        this.participantList = normalList;
-        this.backupLeavingList = deepCopy(leavingList);
-        this.leavingList = deepCopy(leavingList);
-        this.backupLeaveList = deepCopy(leaveList);
-        this.leaveList = deepCopy(leaveList);
-        of(this.participantList).pipe(
-          map(list => this.sortList(list)),
-          map(sortList => this.assignRank(sortList))
-        ).subscribe(finalList => {
-          this.reArrangeList = finalList;
+          this.uiFlag.progress = 100;
         });
-
-        this.uiFlag.progress = 100;
-      });
-
     }
-
   }
 
   /**
@@ -303,7 +316,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     const normalList = [];
     const leavingList = [];
     const leaveList = [];
-    list.forEach(_list => {
+    list.forEach((_list) => {
       switch (_list.applyStatus) {
         case ApplyStatus.applied:
           normalList.push(_list);
@@ -315,7 +328,6 @@ export class ContestantListComponent implements OnInit, OnDestroy {
           leaveList.push(_list);
           break;
       }
-
     });
 
     return [normalList, leavingList, leaveList];
@@ -329,15 +341,14 @@ export class ContestantListComponent implements OnInit, OnDestroy {
   reEditList(list: Array<any>) {
     // 出貨7天過後即可視為結案
     const closeCaseDate = dayjs().add(7, 'day').unix();
-    return list.map(_list => {
-      const {
+    return list.map((_list) => {
+      const { productShipped, awardShipped, productShippingDate, awardShippingDate, haveProduct } =
+        _list;
+      const productCaseClose = this.checkCanClose(
         productShipped,
-        awardShipped,
         productShippingDate,
-        awardShippingDate,
-        haveProduct
-      } = _list;
-      const productCaseClose = this.checkCanClose(productShipped, productShippingDate, closeCaseDate);
+        closeCaseDate
+      );
       const awardCaseClose = this.checkCanClose(awardShipped, awardShippingDate, closeCaseDate);
       if (haveProduct === HaveProduct.no) {
         _list.productShipped = ProductShipped.needNotShip;
@@ -351,7 +362,6 @@ export class ContestantListComponent implements OnInit, OnDestroy {
 
       return _list;
     });
-
   }
 
   /**
@@ -366,7 +376,6 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     } else {
       return false;
     }
-
   }
 
   /**
@@ -376,7 +385,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    */
   bindRecord(list: Array<any>) {
     const { leaderboard } = this;
-    leaderboard.forEach(_leaderboard => {
+    leaderboard.forEach((_leaderboard) => {
       const { userId, result: record } = _leaderboard;
       list = this.matchInfo(list, userId, record);
     });
@@ -398,9 +407,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         Object.assign(list[i], { record });
         return list;
       }
-
     }
-
   }
 
   /**
@@ -449,7 +456,6 @@ export class ContestantListComponent implements OnInit, OnDestroy {
 
       return order === 'asc' ? compareA - compareB : compareB - compareA;
     });
- 
   }
 
   /**
@@ -459,7 +465,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    */
   assignRank(sortList: Array<any>) {
     return sortList.map((_list, index) => {
-      delete _list.rank;  // 初始化名次
+      delete _list.rank; // 初始化名次
       const { record } = _list;
       if (record) {
         let rank: number;
@@ -472,10 +478,9 @@ export class ContestantListComponent implements OnInit, OnDestroy {
 
         Object.assign(_list, { rank });
       }
-      
+
       return _list;
     });
-
   }
 
   /**
@@ -492,7 +497,6 @@ export class ContestantListComponent implements OnInit, OnDestroy {
       this.sortSet.order = newOrder;
       this.reArrangeList = this.sortList(this.reArrangeList);
     }
-
   }
 
   /**
@@ -509,7 +513,6 @@ export class ContestantListComponent implements OnInit, OnDestroy {
       this.sortSet.type = newType;
       this.reArrangeList = this.sortList(this.reArrangeList);
     }
-
   }
 
   /**
@@ -518,12 +521,9 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    */
   handlePageResize() {
     const resizeEvent = fromEvent(window, 'resize');
-    this.resizeSubscription = resizeEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.resizeSubscription = resizeEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.uiFlag.screenSize = window.innerWidth;
     });
-
   }
 
   /**
@@ -537,13 +537,19 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     const isPhoneWord = formTest.number.test(keyword);
     const isEmailWord = formTest.email.test(keyword);
     if (isPhoneWord) {
-      this.reArrangeList = this.participantList.filter(_list => `${_list.mobileNumber}`.includes(keyword));
-      this.leavingList = this.backupLeavingList.filter(_list => `${_list.mobileNumber}`.includes(keyword));
-      this.leaveList = this.backupLeaveList.filter(_list => `${_list.mobileNumber}`.includes(keyword));
+      this.reArrangeList = this.participantList.filter((_list) =>
+        `${_list.mobileNumber}`.includes(keyword)
+      );
+      this.leavingList = this.backupLeavingList.filter((_list) =>
+        `${_list.mobileNumber}`.includes(keyword)
+      );
+      this.leaveList = this.backupLeaveList.filter((_list) =>
+        `${_list.mobileNumber}`.includes(keyword)
+      );
     } else if (isEmailWord) {
-      this.reArrangeList = this.participantList.filter(_list => _list.email.includes(keyword));
-      this.leavingList = this.backupLeavingList.filter(_list => _list.email.includes(keyword));
-      this.leaveList = this.backupLeaveList.filter(_list => _list.email.includes(keyword));
+      this.reArrangeList = this.participantList.filter((_list) => _list.email.includes(keyword));
+      this.leavingList = this.backupLeavingList.filter((_list) => _list.email.includes(keyword));
+      this.leaveList = this.backupLeaveList.filter((_list) => _list.email.includes(keyword));
     } else {
       const matchKeyword = (list) => {
         const { email, nickname, truthName } = list;
@@ -551,13 +557,12 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         const nicknameMatch = nickname.includes(keyword);
         const truthNameMatch = truthName.includes(keyword);
         return emailMatch || nicknameMatch || truthNameMatch;
-      }
+      };
 
-      this.reArrangeList = this.participantList.filter(_list => matchKeyword(_list));
-      this.leavingList = this.backupLeavingList.filter(_list => matchKeyword(_list));
-      this.leaveList = this.backupLeaveList.filter(_list => matchKeyword(_list));
+      this.reArrangeList = this.participantList.filter((_list) => matchKeyword(_list));
+      this.leavingList = this.backupLeavingList.filter((_list) => matchKeyword(_list));
+      this.leaveList = this.backupLeaveList.filter((_list) => matchKeyword(_list));
     }
-
   }
 
   /**
@@ -574,7 +579,6 @@ export class ContestantListComponent implements OnInit, OnDestroy {
       this.uiFlag.showFilterSelector = true;
       this.subscribePluralEvent();
     }
-
   }
 
   /**
@@ -585,14 +589,13 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     const targetElement = document.querySelector('.main__page');
     const clickEvent = fromEvent(document, 'click');
     const scrollEvent = fromEvent(targetElement, 'scroll');
-    this.PluralEvent = merge(clickEvent, scrollEvent).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.unsubscribePluralEvent();
-    });
-
+    this.PluralEvent = merge(clickEvent, scrollEvent)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.unsubscribePluralEvent();
+      });
   }
-  
+
   /**
    * 取消訂閱全域點擊與滾動事件
    * @author kidin-1101108
@@ -615,7 +618,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     this.listFilter = {
       type: null,
       value: null,
-      groupName: null
+      groupName: null,
     };
 
     this.filterList();
@@ -631,7 +634,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     this.listFilter = {
       type: 'group',
       value: groupId,
-      groupName
+      groupName,
     };
 
     this.filterList();
@@ -682,13 +685,13 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         item = 'groupId';
         break;
       case 'paidStatus':
-        item = 'paidStatus'
+        item = 'paidStatus';
         break;
       case 'orderStatus':
-        item = 'productShipped'
+        item = 'productShipped';
         break;
       case 'awardStatus':
-        item = 'awardShipped'
+        item = 'awardShipped';
         break;
       default:
         item = null;
@@ -707,15 +710,16 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    * @author kidin-1110221
    */
   filterParticipant(item: string, value: string | number) {
-    of(this.participantList).pipe(
-      map(list => item ? list.filter(_list => _list[item] === value) : list),
-      map(filterList => this.sortList(filterList, defaultSortSet)),
-      map(sortList => this.assignRank(sortList)),
-      map(rankList => this.sortList(rankList))
-    ).subscribe(finalList => {
-      this.reArrangeList = finalList;
-    });
-
+    of(this.participantList)
+      .pipe(
+        map((list) => (item ? list.filter((_list) => _list[item] === value) : list)),
+        map((filterList) => this.sortList(filterList, defaultSortSet)),
+        map((sortList) => this.assignRank(sortList)),
+        map((rankList) => this.sortList(rankList))
+      )
+      .subscribe((finalList) => {
+        this.reArrangeList = finalList;
+      });
   }
 
   /**
@@ -726,7 +730,9 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    */
   filterLeavingList(item: string, value: string | number) {
     const backupLeavingList = deepCopy(this.backupLeavingList);
-    this.leavingList = item ? backupLeavingList.filter(_list => _list[item] === value) : backupLeavingList;
+    this.leavingList = item
+      ? backupLeavingList.filter((_list) => _list[item] === value)
+      : backupLeavingList;
   }
 
   /**
@@ -737,7 +743,9 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    */
   filterLeaveList(item: string, value: string | number) {
     const backupLeaveList = deepCopy(this.backupLeaveList);
-    this.leaveList = item ? backupLeaveList.filter(_list => _list[item] === value) : backupLeaveList;
+    this.leaveList = item
+      ? backupLeaveList.filter((_list) => _list[item] === value)
+      : backupLeaveList;
   }
 
   /**
@@ -754,7 +762,6 @@ export class ContestantListComponent implements OnInit, OnDestroy {
       const { focusInput } = this.uiFlag;
       if (!focusInput) this.uiFlag.expandDetail = null;
     }
-
   }
 
   /**
@@ -765,12 +772,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    * @param index {number}-清單顯示順位
    * @author kidin-1101124
    */
-  showSelector(
-    e: MouseEvent,
-    listType: ListType,
-    type: string,
-    index: number
-  ) {
+  showSelector(e: MouseEvent, listType: ListType, type: string, index: number) {
     e.stopPropagation();
     const isNormalList = listType === 'normal';
     const passType = ['showPaidStatusSelector', 'showOrderStatusSelector'];
@@ -783,9 +785,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
       } else {
         this.unsubscribePluralEvent();
       }
-
     }
-
   }
 
   /**
@@ -806,27 +806,25 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    * @param index {number}-顯示順位
    * @author kidin-1101125
    */
-  changeGroup(
-    e: MouseEvent,
-    group: any,
-    index: number
-  ) {
+  changeGroup(e: MouseEvent, group: any, index: number) {
     e.stopPropagation();
     const { id: groupId, name: groupName } = group;
-    const { 
+    const {
       groupId: oldGroupId,
       groupName: oldGroupName,
-      userId: targetUserId
+      userId: targetUserId,
     } = this.reArrangeList[index];
     if (oldGroupId !== groupId) {
       this.reArrangeList[index].groupId = groupId;
       this.reArrangeList[index].groupName = groupName;
-      const update = [{
-        targetUserId,
-        groupId
-      }];
+      const update = [
+        {
+          targetUserId,
+          groupId,
+        },
+      ];
 
-      this.updateUserEventProfile(update).subscribe(success => {
+      this.updateUserEventProfile(update).subscribe((success) => {
         if (success) {
           const replace = { groupId, groupName };
           this.updateOriginProfile(targetUserId, replace);
@@ -834,9 +832,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
           this.reArrangeList[index].groupId = oldGroupId;
           this.reArrangeList[index].groupName = oldGroupName;
         }
-
       });
-
     }
 
     this.unsubscribePluralEvent();
@@ -851,29 +847,30 @@ export class ContestantListComponent implements OnInit, OnDestroy {
   removeNormalContestant(e: MouseEvent, index: number) {
     e.stopPropagation();
     const { userId: targetUserId } = this.reArrangeList[index];
-    const update = [{
-      targetUserId,
-      applyStatus: ApplyStatus.cancel
-    }];
+    const update = [
+      {
+        targetUserId,
+        applyStatus: ApplyStatus.cancel,
+      },
+    ];
 
-    this.updateUserEventProfile(update).subscribe(success => {
+    this.updateUserEventProfile(update).subscribe((success) => {
       if (success) {
-        const leaveIndex = this.participantList.findIndex(_list => _list.userId == targetUserId);
+        const leaveIndex = this.participantList.findIndex((_list) => _list.userId == targetUserId);
         const [leaveContestant] = this.participantList.splice(leaveIndex, 1);
         this.backupLeaveList.push(leaveContestant);
         this.leaveList.push(leaveContestant);
-        of(this.participantList).pipe(
-          map(list => this.sortList(list, defaultSortSet)),
-          map(sortList => this.assignRank(sortList)),
-          map(rankList => this.sortList(rankList)),
-        ).subscribe(result => {
-          this.reArrangeList = result;
-        });
-
+        of(this.participantList)
+          .pipe(
+            map((list) => this.sortList(list, defaultSortSet)),
+            map((sortList) => this.assignRank(sortList)),
+            map((rankList) => this.sortList(rankList))
+          )
+          .subscribe((result) => {
+            this.reArrangeList = result;
+          });
       }
-
     });
-
   }
 
   /**
@@ -885,27 +882,28 @@ export class ContestantListComponent implements OnInit, OnDestroy {
   cancelLeaveContestant(e: MouseEvent, delIndex: number) {
     e.stopPropagation();
     const { userId: targetUserId } = this.backupLeaveList[delIndex];
-    const update = [{
-      targetUserId,
-      applyStatus: ApplyStatus.applied
-    }];
+    const update = [
+      {
+        targetUserId,
+        applyStatus: ApplyStatus.applied,
+      },
+    ];
 
-    this.updateUserEventProfile(update).subscribe(success => {
+    this.updateUserEventProfile(update).subscribe((success) => {
       if (success) {
-        this.leaveList = this.leaveList.filter(_list => _list.userId !== targetUserId);
+        this.leaveList = this.leaveList.filter((_list) => _list.userId !== targetUserId);
         const [addContestant] = this.backupLeaveList.splice(delIndex, 1);
         this.participantList.push(addContestant);
-        of(this.participantList).pipe(
-          map(list => this.sortList(list, defaultSortSet)),
-          map(sortList => this.assignRank(sortList))
-        ).subscribe(result => {
-          this.reArrangeList = result;
-        });
-
+        of(this.participantList)
+          .pipe(
+            map((list) => this.sortList(list, defaultSortSet)),
+            map((sortList) => this.assignRank(sortList))
+          )
+          .subscribe((result) => {
+            this.reArrangeList = result;
+          });
       }
-
     });
-
   }
 
   /**
@@ -917,22 +915,24 @@ export class ContestantListComponent implements OnInit, OnDestroy {
   removeLeavingContestant(e: MouseEvent, index: number) {
     e.stopPropagation();
     const { userId: targetUserId } = this.leavingList[index];
-    const update = [{
-      targetUserId,
-      applyStatus: ApplyStatus.cancel
-    }];
+    const update = [
+      {
+        targetUserId,
+        applyStatus: ApplyStatus.cancel,
+      },
+    ];
 
-    this.updateUserEventProfile(update).subscribe(success => {
+    this.updateUserEventProfile(update).subscribe((success) => {
       if (success) {
-        const leaveIndex = this.backupLeavingList.findIndex(_list => _list.userId == targetUserId);
+        const leaveIndex = this.backupLeavingList.findIndex(
+          (_list) => _list.userId == targetUserId
+        );
         const [leaveContestant] = this.backupLeavingList.splice(leaveIndex, 1);
         this.leavingList = deepCopy(this.backupLeavingList);
         this.backupLeaveList.push(leaveContestant);
         this.leaveList.push(leaveContestant);
       }
-
     });
-
   }
 
   /**
@@ -944,27 +944,28 @@ export class ContestantListComponent implements OnInit, OnDestroy {
   cancelLeavingContestant(e: MouseEvent, delIndex: number) {
     e.stopPropagation();
     const { userId: targetUserId } = this.backupLeavingList[delIndex];
-    const update = [{
-      targetUserId,
-      applyStatus: ApplyStatus.applied
-    }];
+    const update = [
+      {
+        targetUserId,
+        applyStatus: ApplyStatus.applied,
+      },
+    ];
 
-    this.updateUserEventProfile(update).subscribe(success => {
+    this.updateUserEventProfile(update).subscribe((success) => {
       if (success) {
         const [addContestant] = this.backupLeavingList.splice(delIndex, 1);
-        this.leavingList = this.leavingList.filter(_list => _list.userId !== targetUserId);
+        this.leavingList = this.leavingList.filter((_list) => _list.userId !== targetUserId);
         this.participantList.push(addContestant);
-        of(this.participantList).pipe(
-          map(list => this.sortList(list, defaultSortSet)),
-          map(sortList => this.assignRank(sortList))
-        ).subscribe(result => {
-          this.reArrangeList = result;
-        });
-
+        of(this.participantList)
+          .pipe(
+            map((list) => this.sortList(list, defaultSortSet)),
+            map((sortList) => this.assignRank(sortList))
+          )
+          .subscribe((result) => {
+            this.reArrangeList = result;
+          });
       }
-
     });
-
   }
 
   /**
@@ -975,36 +976,28 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    * @param paidStatus {PaidStatusEnum}-繳費狀態
    * @author kidin-1101125
    */
-  changePaidStatus(
-    e: MouseEvent,
-    listType: ListType,
-    paidStatus: PaidStatusEnum,
-    index: number
-  ) {
+  changePaidStatus(e: MouseEvent, listType: ListType, paidStatus: PaidStatusEnum, index: number) {
     e.stopPropagation();
     const { reArrangeList, leavingList } = this;
     const list = listType === 'normal' ? reArrangeList : leavingList;
-    const {
-      paidStatus: oldPaidStatus,
-      userId: targetUserId
-    } = list[index];
+    const { paidStatus: oldPaidStatus, userId: targetUserId } = list[index];
     if (paidStatus !== oldPaidStatus) {
       list[index].paidStatus = paidStatus;
-      const update = [{
-        targetUserId,
-        paidStatus
-      }];
+      const update = [
+        {
+          targetUserId,
+          paidStatus,
+        },
+      ];
 
-      this.updateUserEventProfile(update).subscribe(success => {
+      this.updateUserEventProfile(update).subscribe((success) => {
         if (success) {
           const replace = { paidStatus };
           this.updateOriginProfile(targetUserId, replace);
         } else {
           list[index].paidStatus = oldPaidStatus;
         }
-
       });
-
     }
 
     this.unsubscribePluralEvent();
@@ -1029,27 +1022,27 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     e.stopPropagation();
     const { reArrangeList, leavingList } = this;
     const list = listType === 'normal' ? reArrangeList : leavingList;
-    const { userId: targetUserId} = list[index];
+    const { userId: targetUserId } = list[index];
     const oldStatus = list[index][type];
     if (shipped !== oldStatus) {
       list[index][type] = shipped;
       const shippingDate = this.getShippingDate(type, shipped);
-      const update = [{
-        targetUserId,
-        [type]: shipped,
-        ...shippingDate
-      }];
+      const update = [
+        {
+          targetUserId,
+          [type]: shipped,
+          ...shippingDate,
+        },
+      ];
 
-      this.updateUserEventProfile(update).subscribe(success => {
+      this.updateUserEventProfile(update).subscribe((success) => {
         if (success) {
           const replace = { [type]: shipped, ...shippingDate };
           this.updateOriginProfile(targetUserId, replace);
         } else {
           list[index][type] = oldStatus;
         }
-
       });
-
     }
 
     this.unsubscribePluralEvent();
@@ -1080,7 +1073,6 @@ export class ContestantListComponent implements OnInit, OnDestroy {
       case 'awardShipped':
         return { awardShippingDate: ServerCurrentTimeStamp };
     }
-
   }
 
   /**
@@ -1098,8 +1090,9 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     const { userId: targetUserId } = assignUserInfo;
     const emergencyInfo = ['name', 'mobileNumber', 'relationship'];
     const isEmergencyInfo = emergencyInfo.includes(type);
-    const oldValue = isEmergencyInfo ?
-      assignUserInfo['emergencyContact'][type] : assignUserInfo[type];
+    const oldValue = isEmergencyInfo
+      ? assignUserInfo['emergencyContact'][type]
+      : assignUserInfo[type];
     if (newValue !== oldValue) {
       let update: Array<any>;
       if (isEmergencyInfo) {
@@ -1110,25 +1103,20 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         update = [{ targetUserId, [type]: newValue }];
       }
 
-      this.updateUserEventProfile(update).subscribe(success => {
+      this.updateUserEventProfile(update).subscribe((success) => {
         if (success) {
           const { emergencyContact } = this.reArrangeList[index];
           const replace = { emergencyContact };
           this.updateOriginProfile(targetUserId, replace);
         } else {
-
           if (isEmergencyInfo) {
             this.reArrangeList[index]['emergencyContact'][type] = oldValue;
           } else {
             this.reArrangeList[index][type] = oldValue;
           }
-          
         }
-
       });
-
     }
-
   }
 
   /**
@@ -1141,24 +1129,23 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     const body = {
       token,
       targetEventId,
-      update
+      update,
     };
 
     return combineLatest([
       this.officialActivityService.editParticipantList(body),
-      this.translate.get('hellow world')
+      this.translate.get('hellow world'),
     ]).pipe(
-      map(resArr => {
+      map((resArr) => {
         const [editResult, ...rest] = resArr;
         const successMsg = this.translate.instant('universal_status_updateCompleted');
         const failureMsg = this.translate.instant('universal_popUpMessage_updateFailed');
         const success = this.utils.checkRes(editResult);
         const msg = success ? successMsg : failureMsg;
-        this.snackbar.open(msg, 'OK', {duration: 2000});
+        this.snackbar.open(msg, 'OK', { duration: 2000 });
         return success;
       })
     );
-
   }
 
   /**
@@ -1172,17 +1159,14 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     for (let i = 0; i < participantList.length; i++) {
       const { userId } = participantList[i];
       if (targetUserId === userId) {
-        
-        for (let _key in replace) {
+        for (const _key in replace) {
           const value = replace[_key];
           if (value !== undefined) this.participantList[i][_key] = replace[_key];
         }
 
         break;
       }
-
     }
-
   }
 
   /**
@@ -1199,29 +1183,29 @@ export class ContestantListComponent implements OnInit, OnDestroy {
       this.uiFlag.showSortMenu = true;
       this.subscribePluralEvent();
     }
-
   }
 
   /**
    * 將參賽者名單製成CSV檔並提供下載
    * @author kidin-1101129
    */
-   downloadCSV() {
+  downloadCSV() {
     const { eventName } = this.eventInfo;
     const fileName = `${eventName}_參賽者名單.csv`;
     const data = this.switchCSVFile();
-    const blob = new Blob(['\ufeff' + data], {  // 加上bom（\ufeff）讓excel辨識編碼
-      type: 'text/csv;charset=utf8'
+    const blob = new Blob(['\ufeff' + data], {
+      // 加上bom（\ufeff）讓excel辨識編碼
+      type: 'text/csv;charset=utf8',
     });
-    const href = URL.createObjectURL(blob);  // 建立csv檔url
-    const link = document.createElement('a');  // 建立連結供csv下載使用
+    const href = URL.createObjectURL(blob); // 建立csv檔url
+    const link = document.createElement('a'); // 建立連結供csv下載使用
 
     document.body.appendChild(link);
     link.href = href;
     link.download = fileName;
     link.click();
   }
-  
+
   /**
    * 將所需資料轉換為csv格式
    * @author kidin-1101129
@@ -1257,10 +1241,10 @@ export class ContestantListComponent implements OnInit, OnDestroy {
       '備註',
       '緊急聯絡人姓名',
       '緊急聯絡人電話',
-      '緊急聯絡人關係'
+      '緊急聯絡人關係',
     ];
 
-    title.forEach(_title => {
+    title.forEach((_title) => {
       csvData += `${_title},`;
     });
 
@@ -1294,54 +1278,38 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         idCardNumber,
         address,
         remark,
-        emergencyContact: {
-          name: emergencyName,
-          mobileNumber: emergencyPhone,
-          relationship
-        }
+        emergencyContact: { name: emergencyName, mobileNumber: emergencyPhone, relationship },
       } = list;
 
       const ageBase = {
         birth: birthday,
         birthFormat: 'YYYYMMDD',
         baseDate: this.convertTimestamp(appliedDate),
-        baseFormat: null
+        baseFormat: null,
       };
 
-      return `${
-        this.convertDateFormat(appliedDate)
-        },${userId
-        },${nickname
-        },${groupName
-        },${feeTitle
-        },${fee
-        },${this.getPaidStatus(paidStatus)
-        },${this.convertDateFormat(paidDate)
-        },${officialPaidId ? officialPaidId : ''
-        },${thirdPartyPaidId ? thirdPartyPaidId : ''
-        },${this.getShippedStatus(productShipped)
-        },${this.convertDateFormat(productShippingDate)
-        },${rank ? rank : ''
-        },${record ? this.sportTimePipe.transform(record) : 0
-        },${this.getShippedStatus(awardShipped)
-        },${this.convertDateFormat(awardShippingDate)
-        },${truthName
-        },${this.agePipe.transform(ageBase)
-        },${gender === Sex.male ? '男' : '女'
-        },+${countryCode
-        },${mobileNumber
-        },${email ? email : ''
-        },${taiwaness === Nationality.taiwaness ? '本國' : '外國'
-        },${idCardNumber
-        },${address
-        },${remark ? remark : ''
-        },${emergencyName ? emergencyName : ''
-        },${emergencyPhone ? emergencyPhone : ''
-        },${relationship ? relationship : ''
+      return `${this.convertDateFormat(
+        appliedDate
+      )},${userId},${nickname},${groupName},${feeTitle},${fee},${this.getPaidStatus(
+        paidStatus
+      )},${this.convertDateFormat(paidDate)},${officialPaidId ? officialPaidId : ''},${
+        thirdPartyPaidId ? thirdPartyPaidId : ''
+      },${this.getShippedStatus(productShipped)},${this.convertDateFormat(productShippingDate)},${
+        rank ? rank : ''
+      },${record ? this.sportTimePipe.transform(record) : 0},${this.getShippedStatus(
+        awardShipped
+      )},${this.convertDateFormat(awardShippingDate)},${truthName},${this.agePipe.transform(
+        ageBase
+      )},${gender === Sex.male ? '男' : '女'},+${countryCode},${mobileNumber},${
+        email ? email : ''
+      },${taiwaness === Nationality.taiwaness ? '本國' : '外國'},${idCardNumber},${address},${
+        remark ? remark : ''
+      },${emergencyName ? emergencyName : ''},${emergencyPhone ? emergencyPhone : ''},${
+        relationship ? relationship : ''
       },\n`;
     };
 
-    reArrangeList.forEach(_list => {
+    reArrangeList.forEach((_list) => {
       csvData += createRowInfo(_list);
     });
 
@@ -1422,36 +1390,36 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         token,
         eventId,
         feeId,
-        officialPaidId
+        officialPaidId,
       };
 
-      this.officialActivityService.updateProductOrder(body).pipe(
-        switchMap(updateResult => {
-          if (this.utils.checkRes(updateResult)) {
-            return this.officialActivityService.getParticipantList(this.searchInfo).pipe(
-              map(participantList => participantList)
-            )
-          } else {
-            return updateResult;
+      this.officialActivityService
+        .updateProductOrder(body)
+        .pipe(
+          switchMap((updateResult) => {
+            if (this.utils.checkRes(updateResult)) {
+              return this.officialActivityService
+                .getParticipantList(this.searchInfo)
+                .pipe(map((participantList) => participantList));
+            } else {
+              return updateResult;
+            }
+          })
+        )
+        .subscribe((res) => {
+          if (this.utils.checkRes(res)) {
+            const { participantList } = res as any;
+            const newUserInfo = participantList.filter((_list) => _list.userId === targetUserId);
+            const { paidStatus, thirdPartyPaidId, paidDate } = newUserInfo[0];
+            this.reArrangeList[index].paidStatus = paidStatus;
+            this.reArrangeList[index].thirdPartyPaidId = thirdPartyPaidId;
+            this.reArrangeList[index].paidDate = paidDate;
+
+            const replace = { paidStatus, thirdPartyPaidId, paidDate };
+            this.updateOriginProfile(targetUserId, replace);
           }
-        })
-      ).subscribe(res => {
-        if (this.utils.checkRes(res)) {
-          const { participantList } = res as any;
-          const newUserInfo = participantList.filter(_list => _list.userId === targetUserId);
-          const { paidStatus, thirdPartyPaidId, paidDate } = newUserInfo[0];
-          this.reArrangeList[index].paidStatus = paidStatus;
-          this.reArrangeList[index].thirdPartyPaidId = thirdPartyPaidId;
-          this.reArrangeList[index].paidDate = paidDate;
-
-          const replace = { paidStatus, thirdPartyPaidId, paidDate };
-          this.updateOriginProfile(targetUserId, replace);
-        }
-
-      });
-
+        });
     }
-
   }
 
   /**
@@ -1489,5 +1457,4 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

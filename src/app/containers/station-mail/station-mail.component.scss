@@ -15,7 +15,8 @@ $create-button-width: 50px;
   width: $inbox-width;
 }
 
-.create__mail__section, .mail__detail__section {
+.create__mail__section,
+.mail__detail__section {
   width: calc(100% - #{$inbox-width} - #{$create-button-width});
   margin: 0 2vw;
 }

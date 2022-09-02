@@ -3,18 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-
 /**
  * 圖床相關api
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ImageUploadService {
-
-  constructor(
-    private http: HttpClient
-  ) {}
+  constructor(private http: HttpClient) {}
 
   /**
    * 8001-新增圖片
@@ -23,9 +19,9 @@ export class ImageUploadService {
    * @author kidin-1090715
    */
   addImg(body: object) {
-    return this.http.post<any>('/api/v1/img/addimg', body).pipe(
-      catchError(err => throwError(err))
-    );
+    return this.http
+      .post<any>('/api/v1/img/addimg', body)
+      .pipe(catchError((err) => throwError(err)));
   }
 
   /**
@@ -35,9 +31,9 @@ export class ImageUploadService {
    * @author kidin-1090715
    */
   deleteImg(body: object) {
-    return this.http.post<any>('/api/v1/img/deleteimg', body).pipe(
-      catchError(err => throwError(err))
-    );
+    return this.http
+      .post<any>('/api/v1/img/deleteimg', body)
+      .pipe(catchError((err) => throwError(err)));
   }
 
   /**
@@ -47,9 +43,8 @@ export class ImageUploadService {
    * @author kidin-1090715
    */
   getImgList(body: object) {
-    return this.http.post<any>('/api/v1/img/getimglist', body).pipe(
-      catchError(err => throwError(err))
-    );
+    return this.http
+      .post<any>('/api/v1/img/getimglist', body)
+      .pipe(catchError((err) => throwError(err)));
   }
-
 }

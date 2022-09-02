@@ -8,9 +8,8 @@ describe('ComparePaceChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ComparePaceChartComponent ]
-    })
-    .compileComponents();
+      declarations: [ComparePaceChartComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

@@ -1,9 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-
-@Pipe({name: 'rankSuffix'})
+@Pipe({ name: 'rankSuffix' })
 export class RankSuffixPipe implements PipeTransform {
-
   constructor() {}
 
   /**
@@ -12,7 +10,7 @@ export class RankSuffixPipe implements PipeTransform {
    * @param args {number}-是否只回傳字尾
    * @returns {string}}-加上後綴之排名
    */
-  transform(value: number, args: boolean = false): string {
+  transform(value: number, args = false): string {
     if (value) {
       switch (value) {
         case 1:
@@ -24,12 +22,8 @@ export class RankSuffixPipe implements PipeTransform {
         default:
           return args ? 'th' : `${value}th`;
       }
-
     } else {
       return '--';
     }
-    
   }
-
 }
-

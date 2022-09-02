@@ -19,7 +19,6 @@ $expand-button-height: 30px;
     background-color: $bg-hover-color;
     @include transition(background-color);
   }
-
 }
 
 #main__section {
@@ -42,7 +41,6 @@ $expand-button-height: 30px;
   &:hover {
     background-color: rgba(200, 200, 200, 0.2);
   }
-
 }
 
 .device__img {
@@ -78,31 +76,25 @@ $expand-button-height: 30px;
     border-width: 2px;
   }
 
-  >button {
+  > button {
     @include center();
     width: 60px;
     height: $expand-button-height;
-  
-    >i {
+
+    > i {
       font-size: 22px;
       @include transition(transform);
     }
-
   }
-
 }
 
 .expand__btn--active {
-
-  >button {
-    
-    >i {
+  > button {
+    > i {
       @include el-rotate(180deg);
       @include transition(transform);
     }
-
   }
-  
 }
 
 .drop__menu {
@@ -139,23 +131,20 @@ $expand-button-height: 30px;
     border-color: black transparent transparent transparent;
     @include transition(transform);
   }
-
 }
 
 .drop__menu--active {
-
-  >span {
-
+  > span {
     &:after {
       @include el-rotate(180deg);
       @include transition(transform);
     }
-
   }
-
 }
 
-.anyone__option, .self__option, .close__option {
+.anyone__option,
+.self__option,
+.close__option {
   margin: 5px 0;
   border-radius: 7px;
   padding: 5px;
@@ -163,26 +152,15 @@ $expand-button-height: 30px;
 }
 
 .anyone__option {
-  @include menu-option(
-    rgba(214, 250, 229, 1),
-    rgba(190, 250, 229, 1)
-  );
+  @include menu-option(rgba(214, 250, 229, 1), rgba(190, 250, 229, 1));
 }
 
 .self__option {
-  @include menu-option(
-    rgba(247, 250, 214, 1),
-    rgba(247, 250, 190, 1)
-  );
-
+  @include menu-option(rgba(247, 250, 214, 1), rgba(247, 250, 190, 1));
 }
 
 .close__option {
-  @include menu-option(
-    rgba(250, 214, 214, 1),
-    rgba(250, 190, 214, 1)
-  );
-
+  @include menu-option(rgba(250, 214, 214, 1), rgba(250, 190, 214, 1));
 }
 
 .row__header {
@@ -198,16 +176,11 @@ $expand-button-height: 30px;
   font-size: 15px;
 }
 
-
-
-
 /************************************** media ****************************************/
 
 @media (max-width: 767px) {
-  
   #main__section {
     flex-direction: column;
     align-items: center;
   }
-
 }

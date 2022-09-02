@@ -3,26 +3,21 @@ import { Routes, RouterModule } from '@angular/router';
 import { ProfessionalComponent } from './professional.component';
 import { appPath } from '../../app-path.const';
 
-
 const routes: Routes = [
   {
     path: '',
     component: ProfessionalComponent,
     children: [
-      
       {
         path: '**',
-        redirectTo: '404'
-      }
-
-    ]
-
-  }
-
+        redirectTo: '404',
+      },
+    ],
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class DashboardRoutingModule { }
+export class DashboardRoutingModule {}

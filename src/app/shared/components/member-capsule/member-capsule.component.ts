@@ -7,7 +7,7 @@ import {
   ElementRef,
   EventEmitter,
   Output,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import { GroupService } from '../../services/group.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -23,7 +23,7 @@ import { ProfessionalService } from '../../../containers/professional/services/p
   selector: 'app-member-capsule',
   templateUrl: './member-capsule.component.html',
   styleUrls: ['./member-capsule.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class MemberCapsuleComponent implements OnInit, OnChanges {
   @Input() memberInfo: any;
@@ -57,7 +57,7 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
     leagueAdministrator: '',
     departmentAdministrator: '',
     onlyOneAdmin: '',
-    confirmText: ''
+    confirmText: '',
   };
   active = false;
   width = '100%';
@@ -104,7 +104,7 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
    * 待套件載好再取得多國語系翻譯
    * @author kidin-1090622
    */
-  getTranslate () {
+  getTranslate() {
     this.translate.get('hellow world').subscribe(() => {
       this.i18n = {
         teacher: this.translate.instant('universal_group_teacher'),
@@ -112,11 +112,9 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
         leagueAdministrator: this.translate.instant('universal_group_administrator'),
         departmentAdministrator: this.translate.instant('universal_group_departmentAdmin'),
         onlyOneAdmin: this.translate.instant('universal_group_addAdministrator'),
-        confirmText: this.translate.instant('universal_operating_confirm')
+        confirmText: this.translate.instant('universal_operating_confirm'),
       };
-
     });
-
   }
 
   /**
@@ -125,20 +123,20 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
    */
   checkParentsLength() {
     if (this.parentsName && this.parentsName.length > 11) {
-      
       if (this.parentsName.indexOf('/') > -1) {
         const groupName = this.parentsName.split('/'),
-              branchName = groupName[0],
-              coachName = groupName[1];
-        this.displayParentsName = `${this.longTextPipe.transform(branchName, 2)}/${this.longTextPipe.transform(coachName, 8)}`;
+          branchName = groupName[0],
+          coachName = groupName[1];
+        this.displayParentsName = `${this.longTextPipe.transform(
+          branchName,
+          2
+        )}/${this.longTextPipe.transform(coachName, 8)}`;
       } else {
         this.displayParentsName = `${this.longTextPipe.transform(this.parentsName, 8)}`;
       }
-
     } else {
       this.displayParentsName = this.parentsName;
     }
-
   }
 
   /**
@@ -146,13 +144,15 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
    */
   toggleMenu() {
     if (this.isSubGroupInfo && !this.isHadMenu) {
-      const targetUrl = `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/group-introduction`;
+      const targetUrl = `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+        this.groupId
+      )}/group-introduction`;
       this.router.navigateByUrl(targetUrl);
     } else {
       this.active = !this.active;
     }
   }
-  
+
   /**
    * 更改成員加入群組狀態
    * @param _type {number}-加入狀態
@@ -164,15 +164,14 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
       joinUserId: this.userId,
       joinStatus: _type,
       groupLevel: this.groupLevel,
-      brandType: this.brandType
+      brandType: this.brandType,
     };
 
-    this.groupService.updateJoinStatus(body).subscribe(res => {
+    this.groupService.updateJoinStatus(body).subscribe((res) => {
       if (res.resultCode === 200) {
         return this.onWaittingMemberInfoChange.emit(this.userId);
       }
     });
-
   }
 
   /**
@@ -183,10 +182,10 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
       token: this.token,
       groupId: this.groupId,
       userId: this.userId,
-      accessRight: '90'
+      accessRight: '90',
     };
 
-    this.groupService.editGroupMember(body).subscribe(res => {
+    this.groupService.editGroupMember(body).subscribe((res) => {
       if (res.resultCode === 200) {
         this.professionalService.refreshAllGroupAccessright();
         return this.onRemoveAdmin.emit(this.userId);
@@ -197,31 +196,27 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
           hasBackdrop: true,
           data: {
             title: 'message',
-            body: res.resultMessage
-          }
+            body: res.resultMessage,
+          },
         });
       }
-
     });
-
   }
 
   /**
    * 跳出移除管理員提示框
    */
   handleRemoveAdmin() {
-    const adminLength = this.adminList.filter(_admin => _admin.groupId === this.groupId).length;
+    const adminLength = this.adminList.filter((_admin) => _admin.groupId === this.groupId).length;
     if (adminLength <= 1) {
-
       this.dialog.open(MessageBoxComponent, {
         hasBackdrop: true,
         data: {
           title: 'message',
           body: this.i18n.onlyOneAdmin,
-          confirmText: this.i18n.confirmText
-        }
+          confirmText: this.i18n.confirmText,
+        },
       });
-
     } else {
       this.dialog.open(MessageBoxComponent, {
         hasBackdrop: true,
@@ -230,13 +225,10 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
           body: `${this.translate.instant('universal_group_removeAdmin')}?`,
           confirmText: this.translate.instant('universal_operating_confirm'),
           cancelText: this.translate.instant('universal_operating_cancel'),
-          onConfirm: this.handleEditGroupMember.bind(this)
-        }
-
+          onConfirm: this.handleEditGroupMember.bind(this),
+        },
       });
-
     }
-
   }
 
   /**
@@ -257,10 +249,10 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
       token: this.token,
       groupId: this.groupId,
       userId: this.userId,
-      accessRight
+      accessRight,
     };
-    
-    this.groupService.editGroupMember(body).subscribe(res => {
+
+    this.groupService.editGroupMember(body).subscribe((res) => {
       if (res.resultCode === 200) {
         this.professionalService.refreshAllGroupAccessright();
         this.onAssignAdmin.emit(this.userId);
@@ -272,12 +264,11 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
           hasBackdrop: true,
           data: {
             title: 'message',
-            body: res.resultMessage
-          }
+            body: res.resultMessage,
+          },
         });
       }
     });
-
   }
 
   /**
@@ -288,9 +279,9 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
       token: this.token,
       groupId: this.groupId,
       userId: this.userId,
-      groupLevel: this.groupLevel
+      groupLevel: this.groupLevel,
     };
-    this.groupService.deleteGroupMember(body).subscribe(res => {
+    this.groupService.deleteGroupMember(body).subscribe((res) => {
       if (res.resultCode === 200) {
         return this.onRemoveAdmin.emit(this.userId);
       }
@@ -308,8 +299,8 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
         body: this.translate.instant('universal_group_removeMember'),
         confirmText: this.translate.instant('universal_operating_confirm'),
         cancelText: this.translate.instant('universal_operating_cancel'),
-        onConfirm: this.handleDeleteGroupMember.bind(this)
-      }
+        onConfirm: this.handleDeleteGroupMember.bind(this),
+      },
     });
   }
 
@@ -321,9 +312,9 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
       token: this.token,
       groupId: this.groupId,
       changeStatus: '4',
-      groupLevel: this.groupLevel
+      groupLevel: this.groupLevel,
     };
-    this.groupService.changeGroupStatus(body).subscribe(res => {
+    this.groupService.changeGroupStatus(body).subscribe((res) => {
       if (res.resultCode === 200) {
         return this.onRemoveGroup.emit(this.groupId);
       }
@@ -340,12 +331,12 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
       data: {
         title: 'message',
         body: this.translate.instant('universal_group_confirmDissolution', {
-          groupName: targetName
+          groupName: targetName,
         }),
         confirmText: this.translate.instant('universal_operating_confirm'),
         cancelText: this.translate.instant('universal_operating_cancel'),
-        onConfirm: this.handleDeleteGroup.bind(this)
-      }
+        onConfirm: this.handleDeleteGroup.bind(this),
+      },
     });
   }
 
@@ -357,7 +348,6 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
       this.goToUserProfileInEditGroupInfo();
     }
   }
-
 
   goToUserProfileInEditGroupInfo() {
     const targetUrl = `/user-profile/${this.hashIdService.handleUserIdEncode(this.userId)}`;
@@ -373,7 +363,5 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
     } else {
       this.icon = '/assets/images/user2.png';
     }
-
   }
-
 }

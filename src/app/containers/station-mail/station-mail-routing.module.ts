@@ -9,7 +9,6 @@ import { InboxComponent } from './inbox/inbox.component';
 import { MailDetailComponent } from './mail-detail/mail-detail.component';
 import { ReceiverListComponent } from './receiver-list/receiver-list.component';
 
-
 const routes: Routes = [
   {
     path: '',
@@ -18,39 +17,39 @@ const routes: Routes = [
     children: [
       {
         path: appPath.stationMail.newMail,
-        component: CreateMailComponent
+        component: CreateMailComponent,
       },
       {
         path: appPath.stationMail.mailDetail,
-        component: MailDetailComponent
+        component: MailDetailComponent,
       },
       {
         path: appPath.stationMail.inbox,
-        component: InboxComponent
+        component: InboxComponent,
       },
       {
         path: appPath.stationMail.receiverList,
-        component: ReceiverListComponent
+        component: ReceiverListComponent,
       },
       {
         path: '',
-        redirectTo: appPath.stationMail.inbox
-      }
-    ]
+        redirectTo: appPath.stationMail.inbox,
+        pathMatch: 'full',
+      },
+    ],
   },
   {
     path: appPath.pageNotFound,
-    component: Page404Component
+    component: Page404Component,
   },
   {
     path: '**',
-    redirectTo: appPath.pageNotFound
-  }
-  
+    redirectTo: appPath.pageNotFound,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class StationMailRoutingModule { }
+export class StationMailRoutingModule {}

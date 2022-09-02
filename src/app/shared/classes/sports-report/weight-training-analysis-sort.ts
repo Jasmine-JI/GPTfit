@@ -2,7 +2,6 @@
  * 處理重訓動作分析數據排序相關
  */
 export class WeightTrainingAnalysisSort {
-
   /**
    * 陣列數據
    */
@@ -18,15 +17,15 @@ export class WeightTrainingAnalysisSort {
    */
   private _type: string;
 
-  constructor(data: Array<any>, sortType: string = 'trainingName') {
+  constructor(data: Array<any>, sortType = 'trainingName') {
     this._data = data;
     this._type = sortType;
     this.sortData();
   }
 
   /**
-  * 設定排序方向
-  */
+   * 設定排序方向
+   */
   changeOrder() {
     this._isAscending = !this._isAscending;
     this.sortData();
@@ -74,7 +73,6 @@ export class WeightTrainingAnalysisSort {
         this.sortNormalData();
         break;
     }
-
   }
 
   /**
@@ -99,7 +97,6 @@ export class WeightTrainingAnalysisSort {
       const bValue = +b[1].base[_type] || 0;
       return _isAscending ? aValue - bValue : bValue - aValue;
     });
-
   }
 
   /**
@@ -108,5 +105,4 @@ export class WeightTrainingAnalysisSort {
   get data() {
     return this._data;
   }
-
 }

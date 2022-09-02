@@ -4,50 +4,38 @@ var getGroupNameList = require('../models/exist_innerAdmin').getGroupNameList;
 
 // groupId[]查找群組名稱-kidin-1090923
 router.post('/getGroupNameList', function (req, res, next) {
-  const {
-    con,
-    body
-  } = req;
+  const { con, body } = req;
 
-  const result = getGroupNameList(body.groupIdList).then(resp => {
+  const result = getGroupNameList(body.groupIdList).then((resp) => {
     if (resp) {
       const resList = [];
-      body.groupIdList.forEach(_list => {
-        resp.forEach(__resp => {
+      body.groupIdList.forEach((_list) => {
+        resp.forEach((__resp) => {
           if (_list === __resp.groupId) {
             resList.push(__resp);
           }
-
         });
-
       });
 
       return res.json({
         apiCode: 'N8002', // 暫定
         resultCode: 200,
-        resultMessage: "Get result success.",
-        nickname: result
+        resultMessage: 'Get result success.',
+        nickname: result,
       });
-
     } else {
       return res.json({
         apiCode: 'N8002', // 暫定
         resultCode: 400,
-        resultMessage: "Get result failed.",
-      })
-
+        resultMessage: 'Get result failed.',
+      });
     }
-
   });
-
 });
 
 // apiCode-group02:取得所有營運中群組清單
 router.post('/searchGroup', function (req, res, next) {
-  const {
-    con,
-    body
-  } = req;
+  const { con, body } = req;
 
   const sql = `
     select g.group_name as groupName, g.group_id as groupId
@@ -58,13 +46,12 @@ router.post('/searchGroup', function (req, res, next) {
     if (err) {
       console.log(err);
       return res.status(500).send({
-        errorMessage: err.sqlMessage
+        errorMessage: err.sqlMessage,
       });
     }
 
     return res.json(rows);
   });
-
 });
 
 // Exports

@@ -1,30 +1,20 @@
 <ng-container>
-  <main class="flexCol" style="align-items: center;">
+  <main class="flexCol" style="align-items: center">
     <div class="flexCol">
-      <div class="flexRow" style="justify-content: flex-end;" *ngIf="!uiFlag.readonly">
+      <div class="flexRow" style="justify-content: flex-end" *ngIf="!uiFlag.readonly">
         <span id="send__btn" (click)="sendPush()">發送</span>
       </div>
-      <section style="margin-bottom: 20px;">
-        <h6 style="font-weight: bold;">發送條件</h6>
+      <section style="margin-bottom: 20px">
+        <h6 style="font-weight: bold">發送條件</h6>
         <div class="flexRow condition__content">
           <span>發送方式：</span>
           <div class="flexRow radio__item" (click)="changeSendType(2)" *ngIf="!uiFlag.readonly">
-            <div
-              class="radio"
-              [class.radio__checked]="req.pushMode.type === 2"
-            ></div>
-            <span>
-              預約發送
-            </span>
+            <div class="radio" [class.radio__checked]="req.pushMode.type === 2"></div>
+            <span> 預約發送 </span>
           </div>
           <div class="flexRow radio__item" (click)="changeSendType(1)" *ngIf="!uiFlag.readonly">
-            <div
-              class="radio"
-              [class.radio__checked]="req.pushMode.type === 1"
-            ></div>
-            <span>
-              立即發送
-            </span>
+            <div class="radio" [class.radio__checked]="req.pushMode.type === 1"></div>
+            <span> 立即發送 </span>
           </div>
         </div>
         <div class="flexRow condition__content" *ngIf="req.pushMode.type === 2 && !uiFlag.readonly">
@@ -40,57 +30,61 @@
           <div class="media__margin">
             <input
               type="time"
-              style="border: none; outline: none;"
+              style="border: none; outline: none"
               [min]="uiFlag.minTime ? uiFlag.minTime : ''"
               [value]="reservation.timeFormat"
               (change)="getSelectTime($event)"
-            >
+            />
           </div>
         </div>
         <div class="flexRow condition__content" *ngIf="uiFlag.readonly">
           <span *ngIf="uiFlag.readonly">預約/發送時間：</span>
-          <span class="media__margin">{{ req.pushMode.timeStamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm:ss' }}</span>
+          <span class="media__margin">{{
+            req.pushMode.timeStamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm:ss'
+          }}</span>
         </div>
         <div class="flexRow condition__content" *ngIf="uiFlag.readonly">
           <span>發送狀態：</span>
           <div
             class="flexRow media__margin"
-            style="color: rgba(36, 129, 233, 1); cursor: pointer;"
+            style="color: rgba(36, 129, 233, 1); cursor: pointer"
             (click)="cancelPush()"
             *ngIf="uiFlag.pushStatus === 1"
           >
             <span>
               未發送
-              <i class="icon-svg_web-icon_p2_084-pause" style="font-size: 20px; font-weight: bold;"></i>
+              <i
+                class="icon-svg_web-icon_p2_084-pause"
+                style="font-size: 20px; font-weight: bold"
+              ></i>
             </span>
           </div>
           <span *ngIf="uiFlag.pushStatus === 2">已發送</span>
-          <span style="color: rgba(200, 200, 200, 1);" *ngIf="uiFlag.pushStatus === 3">中止發送</span>
+          <span style="color: rgba(200, 200, 200, 1)" *ngIf="uiFlag.pushStatus === 3"
+            >中止發送</span
+          >
         </div>
         <div class="flexRow condition__content">
           <span>指定對象：</span>
           <div class="flexRow radio__item" (click)="changeObjType(1)" *ngIf="!uiFlag.readonly">
-            <div
-              class="radio"
-              [class.radio__checked]="req.pushMode.objectType[0] === 1"
-            ></div>
-            <span>
-              所有人
-            </span>
+            <div class="radio" [class.radio__checked]="req.pushMode.objectType[0] === 1"></div>
+            <span> 所有人 </span>
           </div>
           <div class="flexRow radio__item" (click)="changeObjType(null)" *ngIf="!uiFlag.readonly">
-            <div
-              class="radio"
-              [class.radio__checked]="req.pushMode.objectType[0] !== 1"
-            ></div>
-            <span>
-              條件式
-            </span>
+            <div class="radio" [class.radio__checked]="req.pushMode.objectType[0] !== 1"></div>
+            <span> 條件式 </span>
           </div>
         </div>
-        <div class="flexRow" style="margin-left: 40px; flex-wrap: wrap;" *ngIf="req.pushMode.objectType[0] !== 1">
-          <div class="flexCol " *ngIf="req.pushMode.countryRegion?.length !== 0">
-            <div class="flexRow condition__tag" *ngFor="let _countryRegion of req.pushMode.countryRegion; let _rIdx = index;">
+        <div
+          class="flexRow"
+          style="margin-left: 40px; flex-wrap: wrap"
+          *ngIf="req.pushMode.objectType[0] !== 1"
+        >
+          <div class="flexCol" *ngIf="req.pushMode.countryRegion?.length !== 0">
+            <div
+              class="flexRow condition__tag"
+              *ngFor="let _countryRegion of req.pushMode.countryRegion; let _rIdx = index"
+            >
               <span>地區：{{ _countryRegion | regionCode }}</span>
               <i
                 class="icon-svg_web-icon_p1_092-delete add__or__delete"
@@ -100,7 +94,10 @@
             </div>
           </div>
           <div class="flexCol" *ngIf="req.pushMode.system?.length > 0">
-            <div class="flexRow condition__tag" *ngFor="let _system of req.pushMode.system; let _sIdx = index;">
+            <div
+              class="flexRow condition__tag"
+              *ngFor="let _system of req.pushMode.system; let _sIdx = index"
+            >
               <span>系統：{{ +_system | systemId }}</span>
               <i
                 class="icon-svg_web-icon_p1_092-delete add__or__delete"
@@ -110,7 +107,10 @@
             </div>
           </div>
           <div class="flexCol" *ngIf="req.pushMode.app?.length > 0">
-            <div class="flexRow condition__tag" *ngFor="let _app of req.pushMode.app; let _aIdx = index;">
+            <div
+              class="flexRow condition__tag"
+              *ngFor="let _app of req.pushMode.app; let _aIdx = index"
+            >
               <span>應用：{{ +_app | appId }}</span>
               <i
                 class="icon-svg_web-icon_p1_092-delete add__or__delete"
@@ -120,7 +120,10 @@
             </div>
           </div>
           <div class="flexCol" *ngIf="req.pushMode.groupId?.length > 0">
-            <div class="flexRow condition__tag" *ngFor="let _group of req.pushMode.groupId; let _gIdx = index;">
+            <div
+              class="flexRow condition__tag"
+              *ngFor="let _group of req.pushMode.groupId; let _gIdx = index"
+            >
               <span>群組：{{ _group.groupName }}</span>
               <i
                 class="icon-svg_web-icon_p1_092-delete add__or__delete"
@@ -130,7 +133,10 @@
             </div>
           </div>
           <div class="flexCol" *ngIf="req.pushMode.userId?.length > 0">
-            <div class="flexRow condition__tag" *ngFor="let _user of req.pushMode.userId; let _uIdx = index;">
+            <div
+              class="flexRow condition__tag"
+              *ngFor="let _user of req.pushMode.userId; let _uIdx = index"
+            >
               <span>會員：{{ _user.userName ? _user.userName : _user.nickname }}</span>
               <i
                 class="icon-svg_web-icon_p1_092-delete add__or__delete"
@@ -152,24 +158,25 @@
         </div>
         <div class="flexRow condition__content" *ngIf="uiFlag.readonly">
           <span>建立日期：</span>
-          <span class="media__margin">{{ creator.createTimeStamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm' }}</span>
+          <span class="media__margin">{{
+            creator.createTimeStamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm'
+          }}</span>
         </div>
       </section>
       <section class="flexCol">
-        <h6 style="font-weight: bold;">訊息內容</h6>
+        <h6 style="font-weight: bold">訊息內容</h6>
         <div class="flexCol condition__content">
-          <div class="flexCol" *ngFor="let _message of req.message; let _mIdx = index;">
+          <div class="flexCol" *ngFor="let _message of req.message; let _mIdx = index">
             <span>
-              {{ _message.language }}-{{ _message.countryRegion }} {{ (_message.language + '-' +_message.countryRegion) | languageCode }}
+              {{ _message.language }}-{{ _message.countryRegion }}
+              {{ _message.language + '-' + _message.countryRegion | languageCode }}
               <span
-                style="color: red;"
+                style="color: red"
                 *ngIf="
-                  (
-                    (_message.language + '-' +_message.countryRegion) === 'zh-TW'
-                    || (_message.language + '-' +_message.countryRegion) === 'zh-CN'
-                    || (_message.language + '-' +_message.countryRegion) === 'en-US'
-                  )
-                  && !uiFlag.readonly
+                  (_message.language + '-' + _message.countryRegion === 'zh-TW' ||
+                    _message.language + '-' + _message.countryRegion === 'zh-CN' ||
+                    _message.language + '-' + _message.countryRegion === 'en-US') &&
+                  !uiFlag.readonly
                 "
               >
                 (必填)
@@ -186,10 +193,10 @@
                 [style.pointer-events]="uiFlag.readonly ? 'none' : 'initial'"
                 [value]="_message.title"
                 (change)="saveContext($event, _mIdx, 'title')"
-              >
+              />
             </div>
-            <div class="flexRow lan__input" style="align-items: initial;">
-              <span class="input__title" style="margin-top: 20px;">內文</span>
+            <div class="flexRow lan__input" style="align-items: initial">
+              <span class="input__title" style="margin-top: 20px">內文</span>
               <textarea
                 placeholder="請輸入內文"
                 class="lan__input__content"
@@ -203,16 +210,20 @@
             <div class="flexRow lan__input">
               <span class="input__title">連結</span>
               <div class="link__input">
-                <div id="link__selector__section" (click)="openLinkSelector(_mIdx)" *ngIf="!uiFlag.readonly">
-                  <div class="selector__prompt" [class.selector__drop]="uiFlag.showLinkSelector === _mIdx">
+                <div
+                  id="link__selector__section"
+                  (click)="openLinkSelector(_mIdx)"
+                  *ngIf="!uiFlag.readonly"
+                >
+                  <div
+                    class="selector__prompt"
+                    [class.selector__drop]="uiFlag.showLinkSelector === _mIdx"
+                  >
                     {{ linkType[uiFlag.deepLinkType] }}
-                    <div
-                      id="link__drop__list"
-                      *ngIf="uiFlag.showLinkSelector === _mIdx"
-                    >
+                    <div id="link__drop__list" *ngIf="uiFlag.showLinkSelector === _mIdx">
                       <div
                         class="link__selector"
-                        *ngFor="let _type of linkType; let _tIdx = index;"
+                        *ngFor="let _type of linkType; let _tIdx = index"
                         (click)="switchDeepLinkType(_tIdx)"
                       >
                         <span>
@@ -231,11 +242,13 @@
                   [style.pointer-events]="uiFlag.readonly ? 'none' : 'initial'"
                   [class.readonly__width]="uiFlag.readonly"
                   (change)="saveContext($event, _mIdx, 'deepLink')"
-                >
+                />
               </div>
             </div>
           </div>
-          <span id="language__link" (click)="openSelector(5)" *ngIf="!uiFlag.readonly">+添加或刪除其他語系訊息</span>
+          <span id="language__link" (click)="openSelector(5)" *ngIf="!uiFlag.readonly"
+            >+添加或刪除其他語系訊息</span
+          >
         </div>
       </section>
     </div>

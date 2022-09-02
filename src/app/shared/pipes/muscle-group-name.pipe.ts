@@ -2,12 +2,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { MuscleGroup } from '../enum/weight-train';
 
-
-@Pipe({name: 'muscleGroupName'})
+@Pipe({ name: 'muscleGroupName' })
 export class MuscleGroupNamePipe implements PipeTransform {
-  constructor(
-    public translateService: TranslateService
-  ) {}
+  constructor(public translateService: TranslateService) {}
 
   /**
    * 將肌肉代碼轉為多國語系的鍵

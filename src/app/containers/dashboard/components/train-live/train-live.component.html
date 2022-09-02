@@ -1,74 +1,85 @@
 <div class="d-flex justify-content-between" style="margin-bottom: 15px">
   <span class="pageTitle">
     Train live
-    <div style="color: rgb(40, 35, 45);font-weight:500">{{ "universal_live_newLive" | translate}}</div>
+    <div style="color: rgb(40, 35, 45); font-weight: 500">
+      {{ 'universal_live_newLive' | translate }}
+    </div>
   </span>
 </div>
 <!-- <div *ngIf="classLists?.length === 0">
   尚無直播課程
 </div> -->
 <div class="d-md-flex flex-wrap">
-<mat-card class="example-card"
-  *ngIf="isDemoMode"
-  (click)="goToClass('99999', 5)"
->
-  <mat-card-header>
-    <div mat-card-avatar
-      class="example-header-image"
-      [style.background-image]="'url(/assets/demo/coach.png)'"
+  <mat-card class="example-card" *ngIf="isDemoMode" (click)="goToClass('99999', 5)">
+    <mat-card-header>
+      <div
+        mat-card-avatar
+        class="example-header-image"
+        [style.background-image]="'url(/assets/demo/coach.png)'"
+      ></div>
+      <mat-card-title>High-Low Impact Aerobics</mat-card-title>
+      <mat-card-subtitle>Eve Beardall</mat-card-subtitle>
+      <div class="live-icon">Live</div>
+      <div class="member-counts">6人</div>
+    </mat-card-header>
+    <div
+      class="live-image mat-card-image"
+      [ngStyle]="{ 'background-image': 'url(' + '/assets/demo/demoClass.jpg' + ')' }"
     ></div>
-    <mat-card-title>High-Low Impact Aerobics</mat-card-title>
-    <mat-card-subtitle>Eve Beardall</mat-card-subtitle>
-    <div class="live-icon">Live</div>
-    <div class="member-counts">6人</div>
-  </mat-card-header>
-  <div class="live-image mat-card-image"
-    [ngStyle]="{'background-image': 'url(' + '/assets/demo/demoClass.jpg' + ')'}"
-  ></div>
-  <!-- <img mat-card-image src="/assets/demo/demoClass.jpg"> -->
-  <mat-card-content>
-    <div style="height: 70px">
-      <p #desc>
-        {{demoClassDesc}}
-      </p>
-    </div>
-
-  </mat-card-content>
-  <mat-card-actions>
-    <span>sport type : <div>Aerobic course</div></span>
-    <span>location : <div>Fitness gym / Taichung New Era</div></span>
-  </mat-card-actions>
-</mat-card>
-<ng-container *ngIf="classLists?.length > 0">
-    <mat-card class="example-card"
-      *ngFor="let classData of classLists;"
+    <!-- <img mat-card-image src="/assets/demo/demoClass.jpg"> -->
+    <mat-card-content>
+      <div style="height: 70px">
+        <p #desc>
+          {{ demoClassDesc }}
+        </p>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <span
+        >sport type :
+        <div>Aerobic course</div></span
+      >
+      <span
+        >location :
+        <div>Fitness gym / Taichung New Era</div></span
+      >
+    </mat-card-actions>
+  </mat-card>
+  <ng-container *ngIf="classLists?.length > 0">
+    <mat-card
+      class="example-card"
+      *ngFor="let classData of classLists"
       (click)="goToClass(classData.classId, classData.classType)"
     >
       <mat-card-header>
-        <img mat-card-avatar
-          [src]="(classData?.coachAvatar | safeHtml)"
-        />
-        <mat-card-title>{{classData?.className}}</mat-card-title>
-        <mat-card-subtitle>{{classData?.coachName}}</mat-card-subtitle>
+        <img mat-card-avatar [src]="classData?.coachAvatar | safeHtml" />
+        <mat-card-title>{{ classData?.className }}</mat-card-title>
+        <mat-card-subtitle>{{ classData?.coachName }}</mat-card-subtitle>
         <div class="live-icon">Live</div>
-        <div class="member-counts">{{classData?.memberTotalCounts}}人</div>
+        <div class="member-counts">{{ classData?.memberTotalCounts }}人</div>
       </mat-card-header>
-        <div class="live-image mat-card-image"
-        [ngStyle]="{'background-image': 'url(' + classData?.classIcon + ')'}"
-        ></div>
-        <!-- <img mat-card-image [src]="classData?.classIcon"> -->
+      <div
+        class="live-image mat-card-image"
+        [ngStyle]="{ 'background-image': 'url(' + classData?.classIcon + ')' }"
+      ></div>
+      <!-- <img mat-card-image [src]="classData?.classIcon"> -->
       <mat-card-content>
-      <div style="height: 70px">
-        <p>
-          {{classData?.groupDesc}}
-        </p>
-      </div>
+        <div style="height: 70px">
+          <p>
+            {{ classData?.groupDesc }}
+          </p>
+        </div>
       </mat-card-content>
       <mat-card-actions>
-        <span>sport type : <div>{{classData?.classType | sportType | translate}}</div></span>
-        <span>location : <div>{{classData?.locationBrand }}/ {{classData?.locationBranch }}</div></span>
+        <span
+          >sport type :
+          <div>{{ classData?.classType | sportType | translate }}</div></span
+        >
+        <span
+          >location :
+          <div>{{ classData?.locationBrand }}/ {{ classData?.locationBranch }}</div></span
+        >
       </mat-card-actions>
     </mat-card>
-
-</ng-container>
+  </ng-container>
 </div>

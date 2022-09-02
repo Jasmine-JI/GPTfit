@@ -8,9 +8,8 @@ describe('ShareGroupInfoDialogComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ShareGroupInfoDialogComponent ]
-    })
-    .compileComponents();
+      declarations: [ShareGroupInfoDialogComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

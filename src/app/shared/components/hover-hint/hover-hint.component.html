@@ -1,15 +1,11 @@
-<div
-  class="device-hint"
-  (mouseenter)="mouseEnter()"
-  (mouseleave)="mouseLeave()"
->
-  <mat-icon style="color: #157fcc; font-size: 16px;">help</mat-icon>
+<div class="device-hint" (mouseenter)="mouseEnter()" (mouseleave)="mouseLeave()">
+  <mat-icon style="color: #157fcc; font-size: 16px">help</mat-icon>
   <div
     class="device-hint-box"
     [style.left]="leftPosition ? '-200px' : ''"
     [style.min-width]="leftPosition ? '200px' : ''"
     *ngIf="isDisplayBox"
   >
-    {{hint}}
+    {{ hint }}
   </div>
 </div>
