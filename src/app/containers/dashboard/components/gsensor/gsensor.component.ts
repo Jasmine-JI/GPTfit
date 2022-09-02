@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { fromEvent, Subject, Subscription } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter, tap } from 'rxjs/operators';
 import { deepCopy } from '../../../../shared/utils/index';
 import { Router } from '@angular/router';
 import { appPath } from '../../../../app-path.const';
+import { chart } from 'highcharts';
 
 type Axis = 'x' | 'y' | 'z';
 
@@ -12,6 +13,8 @@ enum WavePosition {
   center,
   bottom,
 }
+
+type SamplingChartRecord = Array<[number, number]>;
 
 interface WaveInfo {
   startTime: number;
@@ -40,7 +43,7 @@ const defaultOption = {
    * 振幅門檻係數
    * 用來獲取有效的重訓波形
    */
-  waveAmplitudeThreshold: 1 / 3,
+  waveAmplitudeThreshold: 1 / 5,
 
   /**
    * 波形有效最低時間(秒)（波長）
@@ -51,7 +54,12 @@ const defaultOption = {
   /**
    * 最大取樣振幅
    */
-  maxAmplitude: 40,
+  maxAmplitude: 20,
+
+  /**
+   * 取樣率(筆/毫秒)
+   */
+  samplingRate: 52 / 1000,
 };
 
 @Component({
@@ -60,6 +68,10 @@ const defaultOption = {
   styleUrls: ['./gsensor.component.scss'],
 })
 export class GsensorComponent implements OnInit, OnDestroy {
+  @ViewChild('xChart') xChart: ElementRef;
+  @ViewChild('yChart') yChart: ElementRef;
+  @ViewChild('zChart') zChart: ElementRef;
+
   ngUnsubscribe = new Subject();
   deviceMotionSubscription = new Subscription();
 
@@ -126,6 +138,11 @@ export class GsensorComponent implements OnInit, OnDestroy {
   totalPoint = 0;
 
   /**
+   * 取樣率
+   */
+  samplingRate = defaultOption.samplingRate;
+
+  /**
    * 紀錄波動作為順向開始或逆向開始
    * 用來判斷動作是否完整做完還是做到一半
    */
@@ -134,6 +151,17 @@ export class GsensorComponent implements OnInit, OnDestroy {
     y: <boolean | null>null,
     z: <boolean | null>null,
   };
+
+  /**
+   * 完整波形紀錄
+   */
+  samplingRecord = {
+    x: <SamplingChartRecord>[],
+    y: <SamplingChartRecord>[],
+    z: <SamplingChartRecord>[],
+  };
+
+  resultCount = 0;
 
   constructor(private router: Router) {}
 
@@ -192,20 +220,41 @@ export class GsensorComponent implements OnInit, OnDestroy {
   subscribeDeviceMotionEvent() {
     const deviceMotionEvent = fromEvent(window, 'devicemotion');
     this.deviceMotionSubscription = deviceMotionEvent
-      .pipe(takeUntil(this.ngUnsubscribe))
+      .pipe(
+        filter(() => !this.setFinished), // 確認是否已完成這組重訓動作
+        tap((e) => this.chartDataRecord(e)),
+        filter(() => this.totalPoint / this.trainingTime < +this.samplingRate),
+        takeUntil(this.ngUnsubscribe)
+      )
       .subscribe((e) => {
-        // 確認是否已完成這組重訓動作
-        if (!this.setFinished) {
-          const { trainingTime } = this;
-          const {
-            accelerationIncludingGravity: { x, y, z },
-          } = e as any;
-          this.handleValue('x', x, trainingTime);
-          this.handleValue('y', y, trainingTime);
-          this.handleValue('z', z, trainingTime);
-          this.totalPoint++;
-        }
+        const { trainingTime } = this;
+        const {
+          accelerationIncludingGravity: { x, y, z },
+        } = e as any;
+        this.handleValue('x', x, trainingTime);
+        this.handleValue('y', y, trainingTime);
+        this.handleValue('z', z, trainingTime);
+        this.totalPoint++;
       });
+  }
+
+  /**
+   * 紀錄圖表數據
+   * @param e {MotionEvent}
+   */
+  chartDataRecord(e: any) {
+    if (this.setFinished) return;
+    const { trainingTime, samplingRate } = this;
+    const currentLength = this.samplingRecord.x.length;
+    if (currentLength / trainingTime < samplingRate) {
+      const {
+        accelerationIncludingGravity: { x, y, z },
+      } = e as any;
+
+      this.samplingRecord.x.push([trainingTime, x]);
+      this.samplingRecord.y.push([trainingTime, y]);
+      this.samplingRecord.z.push([trainingTime, z]);
+    }
   }
 
   /**
@@ -348,6 +397,7 @@ export class GsensorComponent implements OnInit, OnDestroy {
     }
 
     this.tempWave[axis].saveWaveToBe();
+    this.resultCount = this.getCount(axis);
 
     // 確認暫存波形是否為最後一下，如果為最後一下則視為訓練結束
     const { repsTarget, allRecord } = this;
@@ -368,6 +418,7 @@ export class GsensorComponent implements OnInit, OnDestroy {
     } = waveToBe;
     const doubleAmplitude = topValue - bottomValue;
     this.allRecord[axis].push(waveToBe);
+    this.resultCount = this.getCount();
     this.tempWave[axis].clearWaveToBe();
     this.handleRangeChange(axis, doubleAmplitude);
   }
@@ -402,21 +453,62 @@ export class GsensorComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 以三軸中波形範圍最大者判斷為主要參考次數
+   * 以三軸中平均兩倍振幅範圍最大者且次數最多的軸判斷為主要參考次數
    */
-  getCount() {
-    const effectAmplitudeX = this.waveRange.x.effectAmplitude;
-    const effectAmplitudeY = this.waveRange.y.effectAmplitude;
-    const effectAmplitudeZ = this.waveRange.z.effectAmplitude;
-    const amplitudeArray = [
-      ['x', effectAmplitudeX],
-      ['y', effectAmplitudeY],
-      ['z', effectAmplitudeZ],
-    ];
-    const [axis] = amplitudeArray.sort((a: Array<any>, b: Array<any>) => b[1] - a[1])[0];
-    const referenceLength = this.allRecord[axis].length;
-    if (referenceLength >= this.repsTarget) this.setFinished = true;
-    return this.allRecord[axis].length;
+  getCount(tempAxis: Axis | null = null) {
+    const recordInfoX = this.getRecordInfo('x');
+    const recordInfoY = this.getRecordInfo('y');
+    const recordInfoZ = this.getRecordInfo('z');
+
+    const sortResult = [recordInfoX, recordInfoY, recordInfoZ].sort((a, b) => {
+      const avgAmplitudeA = a.avgAmplitude;
+      const countA = a.count;
+      const avgAmplitudeB = b.avgAmplitude;
+      const countB = b.count;
+
+      // 兩倍振幅範圍最大者由大到小排列
+      if (avgAmplitudeB !== avgAmplitudeA) return avgAmplitudeB - avgAmplitudeA;
+
+      // 若兩倍振幅範圍相同，則次數由多到少排列
+      return countB - countA;
+    });
+
+    const reference = sortResult[0];
+    const referenceAxis = reference.axis;
+    const referenceCount = reference.count + (referenceAxis === tempAxis ? 1 : 0);
+
+    if (referenceCount >= this.repsTarget) this.handleRecordFinish(); // 次數超過設定就停止紀錄
+    return referenceCount;
+  }
+
+  /**
+   * 取得指定軸的概要波形紀錄
+   * @param axis {Axis}-軸線類別
+   */
+  getRecordInfo(axis: Axis) {
+    let totalAmplitude = 0;
+    let count = 0;
+    this.allRecord[axis].forEach((_allRecord) => {
+      const topValue = _allRecord.top.value;
+      const bottomValue = _allRecord.bottom.value;
+      totalAmplitude = totalAmplitude + (topValue - bottomValue);
+      count++;
+    });
+
+    const avgAmplitude = totalAmplitude / (count || Infinity); // 避免分母為0而變成無限大
+    return {
+      axis: axis,
+      avgAmplitude: avgAmplitude,
+      count: count,
+    };
+  }
+
+  /**
+   * 停止紀錄並產生圖表
+   */
+  handleRecordFinish() {
+    this.setFinished = true;
+    this.createChart();
   }
 
   /**
@@ -442,6 +534,14 @@ export class GsensorComponent implements OnInit, OnDestroy {
     this.waveRange.x.init();
     this.waveRange.y.init();
     this.waveRange.z.init();
+
+    this.samplingRecord = {
+      x: [],
+      y: [],
+      z: [],
+    };
+
+    this.resultCount = 0;
   }
 
   /**
@@ -450,6 +550,138 @@ export class GsensorComponent implements OnInit, OnDestroy {
    */
   stringify(axis: Axis) {
     return JSON.stringify(this.allRecord[axis]);
+  }
+
+  /**
+   * 變更取樣率
+   * @param e {ChangeEvent}
+   */
+  changeSamplingRate(e: any) {
+    this.samplingRate = +e.target.value;
+  }
+
+  /**
+   * 建立圖表
+   */
+  createChart() {
+    setTimeout(() => {
+      const { waveAmplitudeThreshold } = defaultOption;
+      const xLowChartOption = new ChartOptions([
+        {
+          data: this.samplingRecord.x,
+          showInLegend: false,
+        },
+      ]);
+
+      const { effectAmplitude: xEffectAmplitude, waveCenter: xWaveCenter } = this.waveRange.x;
+      const xThreshold = xEffectAmplitude * waveAmplitudeThreshold * 0.5;
+      xLowChartOption['yAxis']['plotLines'] = [
+        {
+          color: 'green',
+          width: 2,
+          value: xWaveCenter + xThreshold,
+        },
+        {
+          color: 'green',
+          width: 2,
+          value: xWaveCenter,
+        },
+        {
+          color: 'green',
+          width: 2,
+          value: xWaveCenter - xThreshold,
+        },
+      ];
+
+      const xAxisPlotLines: Array<{ color: string; width: 1; value: number }> = [];
+      this.allRecord.x.forEach((_record) => {
+        const { startTime, endTime } = _record;
+        xAxisPlotLines.push({ color: 'pink', width: 1, value: startTime });
+        xAxisPlotLines.push({ color: 'rgba(139, 247, 135, 1)', width: 1, value: endTime });
+      });
+
+      xLowChartOption['xAxis']['plotLines'] = xAxisPlotLines;
+      const xLowChartElement = this.xChart.nativeElement;
+      chart(xLowChartElement, xLowChartOption);
+
+      const yLowChartOption = new ChartOptions([
+        {
+          data: this.samplingRecord.y,
+          showInLegend: false,
+        },
+      ]);
+
+      const { effectAmplitude: yEffectAmplitude, waveCenter: yWaveCenter } = this.waveRange.y;
+      const yThreshold = yEffectAmplitude * waveAmplitudeThreshold * 0.5;
+      yLowChartOption['yAxis']['plotLines'] = [
+        {
+          color: 'green',
+          width: 2,
+          value: yWaveCenter + yThreshold,
+        },
+        {
+          color: 'green',
+          width: 2,
+          value: yWaveCenter,
+        },
+        {
+          color: 'green',
+          width: 2,
+          value: yWaveCenter - yThreshold,
+        },
+      ];
+
+      const yAxisPlotLines: Array<{ color: string; width: 1; value: number }> = [];
+      this.allRecord.y.forEach((_record) => {
+        const { startTime, endTime } = _record;
+        yAxisPlotLines.push({ color: 'pink', width: 1, value: startTime });
+        yAxisPlotLines.push({ color: 'rgba(139, 247, 135, 1)', width: 1, value: endTime });
+      });
+
+      yLowChartOption['xAxis']['plotLines'] = yAxisPlotLines;
+
+      const yLowChartElement = this.yChart.nativeElement;
+      chart(yLowChartElement, yLowChartOption);
+
+      const zLowChartOption = new ChartOptions([
+        {
+          data: this.samplingRecord.z,
+          showInLegend: false,
+        },
+      ]);
+
+      const { effectAmplitude: zEffectAmplitude, waveCenter: zWaveCenter } = this.waveRange.z;
+      const zThreshold = zEffectAmplitude * waveAmplitudeThreshold * 0.5;
+      zLowChartOption['yAxis']['plotLines'] = [
+        {
+          color: 'green',
+          width: 2,
+          value: zWaveCenter + zThreshold,
+        },
+        {
+          color: 'green',
+          width: 2,
+          value: zWaveCenter,
+        },
+        {
+          color: 'green',
+          width: 2,
+          value: zWaveCenter - zThreshold,
+        },
+      ];
+
+      const zAxisPlotLines: Array<{ color: string; width: 1; value: number }> = [];
+      this.allRecord.z.forEach((_record) => {
+        const { startTime, endTime } = _record;
+        zAxisPlotLines.push({ color: 'pink', width: 1, value: startTime });
+        zAxisPlotLines.push({ color: 'rgba(139, 247, 135, 1)', width: 1, value: endTime });
+      });
+
+      zLowChartOption['xAxis']['plotLines'] = zAxisPlotLines;
+
+      const zLowChartElement = this.zChart.nativeElement;
+      chart(zLowChartElement, zLowChartOption);
+    }, 500);
   }
 
   /**
@@ -666,7 +898,7 @@ class OneWave {
    * 取得暫存波型
    */
   get waveToBe() {
-    return this._waveToBe ? deepCopy(this._waveToBe) : this._waveToBe;
+    return this._waveToBe ? deepCopy(this._waveToBe) : null;
   }
 }
 
@@ -722,8 +954,10 @@ class WaveRange {
    * @param accelerationValue {number}-目前加速度
    */
   set effectAmplitude(accelerationValue: number) {
-    const { maxAmplitude } = defaultOption;
-    this._effectAmplitude = accelerationValue > maxAmplitude ? maxAmplitude : accelerationValue;
+    const { maxAmplitude, minAmplitude } = defaultOption;
+    if (accelerationValue > minAmplitude) {
+      this._effectAmplitude = accelerationValue > maxAmplitude ? maxAmplitude : accelerationValue;
+    }
   }
 
   /**
@@ -737,8 +971,11 @@ class WaveRange {
    * 取得波形y軸中心點
    */
   get waveCenter() {
+    /**
     const { _peakTop, _peakBottm } = this;
     return ((_peakTop || 0) + (_peakBottm || 0)) / 2;
+    */
+    return 0;
   }
 
   /**
@@ -762,5 +999,47 @@ class WaveRange {
     if (accelerationValue > centerTop) return WavePosition.top;
     if (accelerationValue < centerBottom) return WavePosition.bottom;
     return WavePosition.center;
+  }
+}
+
+// 建立圖表用-kidin-1081212
+class ChartOptions {
+  constructor(dataset) {
+    return {
+      chart: {
+        type: 'line',
+        height: 150,
+        backgroundColor: 'transparent',
+        zoomType: 'x',
+      },
+      title: {
+        text: '',
+      },
+      credits: {
+        enabled: false,
+      },
+      xAxis: {
+        minPadding: 0.1,
+        maxPadding: 0.03,
+      },
+      yAxis: {
+        title: {
+          text: '',
+        },
+        minPadding: 0.01,
+        maxPadding: 0.01,
+        tickAmount: 10,
+      },
+      plotOptions: {
+        series: {
+          connectNulls: true,
+        },
+        spline: {
+          pointPlacement: 'on',
+        },
+      },
+      tooltip: {},
+      series: dataset,
+    };
   }
 }

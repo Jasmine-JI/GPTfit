@@ -1,7 +1,8 @@
 import { AccessRight } from '../enum/accessright';
 import { GroupJoinStatus } from '../enum/professional';
-import { GroupSportTarget } from './sport-target';
+import { SportTarget } from '../../core/models/api/api-common/sport-target.model';
 import { Sex } from '../enum/personal';
+import { BrandType } from '../enum/professional';
 
 /**
  * api 1103 response 的 info.groupAccessRight[] 的內容
@@ -30,7 +31,7 @@ export interface GroupMemberInfo {
  * api 1102 response 的 info 內容
  */
 export interface GroupDetail {
-  brandType: number;
+  brandType: BrandType;
   classActivityType: Array<any>;
   coachType: string;
   groupDesc: string;
@@ -46,5 +47,5 @@ export interface GroupDetail {
   shareActivityToMember: object;
   shareAvatarToMember: object;
   shareReportToMember: object;
-  target?: GroupSportTarget;
+  target?: SportTarget;
 }

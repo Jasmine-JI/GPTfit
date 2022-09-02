@@ -15,7 +15,10 @@ import { ReportCondition, ReportDateType } from '../../models/report-condition';
 import { DateRange } from '../../classes/date-range';
 import { DateUnit } from '../../enum/report';
 import { ReportDateUnit } from '../../classes/report-date-unit';
-import { TargetCondition, TargetField } from '../../models/sport-target';
+import {
+  TargetField,
+  TargetConditionMap,
+} from '../../../core/models/api/api-common/sport-target.model';
 import { QueryString } from '../../enum/query-string';
 import { deepCopy, getUrlQueryStrings, checkResponse, mathRounding } from '../../utils/index';
 import { UserService } from '../../../core/services/user.service';
@@ -23,11 +26,10 @@ import { Api21xxService } from '../../../core/services/api-21xx.service';
 import { ActivatedRoute } from '@angular/router';
 import { HashIdService } from '../../services/hash-id.service';
 import { ReportService } from '../../../core/services/report.service';
-import { SportsTargetDefault } from '../../models/variable-init';
 import { SportsTarget } from '../../classes/sports-target';
 import { SportsReport } from '../../classes/sports-report/sports-report';
 import { PersonalSportsChartData } from '../../classes/sports-report/personal-sports-chart-data';
-import { SPORT_TYPE_COLOR, trendChartColor } from '../../models/chart-data';
+import { SPORT_TYPE_COLOR, trendChartColor, HrZoneRange } from '../../models/chart-data';
 import { mi, ft, lb } from '../../models/bs-constant';
 import { Unit } from '../../enum/value-conversion';
 import { DefaultDateRange } from '../../classes/default-date-range';
@@ -51,8 +53,15 @@ import {
   paceSecondTimeFormat,
 } from '../../utils/sports';
 import { AuthService } from '../../../core/services/auth.service';
+import { SameWeekSportsData } from '../../classes/sports-report/same-week-sports-data';
+import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
+import { SameWeekLifeTrackingData } from '../../classes/same-week-lifetracking-data';
+import { getUserHrRange } from '../../utils/sports';
 
-const sevenDay = DefaultDateRange.getSevenDay();
+dayjs.extend(isoWeek);
+
+const thisWeek = DefaultDateRange.getThisWeek();
 const muscleAnalysisColumnList = Object.values(MuscleAnalysisColumn).filter(
   (value) => typeof value === 'number'
 );
@@ -94,9 +103,10 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   initReportCondition: ReportCondition = {
     moduleType: 'personal',
     pageType: 'sportsReport',
-    baseTime: new DateRange(sevenDay.startTime, sevenDay.endTime),
-    compareTime: null!,
-    dateUnit: new ReportDateUnit(DateUnit.day),
+    baseTime: new DateRange(thisWeek.startTime, thisWeek.endTime),
+    compareTime: null,
+    dateUnit: new ReportDateUnit(DateUnit.week),
+    targetUnit: DateUnit.week,
     sportType: SportType.all,
     needRefreshData: false,
   };
@@ -107,11 +117,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   reportCondition: ReportCondition;
 
   /**
-   * 依報告時間單位換算過後的總目標條件
-   */
-  transformCondition: Array<TargetCondition>;
-
-  /**
    * 目標使用者編號(用於觀看他人運動報告)
    */
   targetUserId: number;
@@ -119,14 +124,14 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   /**
    * 個人運動目標
    */
-  sportsTarget: SportsTarget;
+  sportsTargetCondition: TargetConditionMap;
 
   /**
    * 運動概要數據
    */
   sportInfoData = {
-    base: <SportsReport>null!,
-    compare: <SportsReport>null!,
+    base: <SportsReport>null,
+    compare: <SportsReport>null,
     diff: <any>null,
   };
 
@@ -172,6 +177,19 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 重訓程度
    */
   levelText = getWeightTrainingLevelText();
+
+  /**
+   * 日期橫跨範圍
+   */
+  diffTime = {
+    base: <number | null>null,
+    compare: <number | null>null,
+  };
+
+  /**
+   * 心率區間
+   */
+  hrZoneRange: HrZoneRange | null = null;
 
   readonly SportType = SportType;
   readonly Unit = Unit;
@@ -244,7 +262,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 確認頁面擁有者是否為登入者
    */
   checkPageOwner() {
-    const hashUserId = this.route.snapshot.parent!.paramMap.get('userId');
+    const hashUserId = this.route.snapshot.parent.paramMap.get('userId');
     const { userId, systemAccessright } = this.userService.getUser();
     if (systemAccessright <= AccessRight.marketing) this.uiFlag.isSystemAdmin = true;
     if (hashUserId) {
@@ -270,10 +288,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     for (const _key in query) {
       const value = query[_key];
       switch (_key) {
-        case QueryString.debug:
+        case QueryString.debug: {
           const { systemAccessright } = this.userService.getUser();
           if (systemAccessright <= AccessRight.marketing) this.uiFlag.isDebugMode = true;
           break;
+        }
         case QueryString.baseStartTime:
           this.initReportCondition.baseTime.startTimestamp = +value;
           break;
@@ -291,7 +310,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           this.initReportCondition.compareTime.endTimestamp = +value;
           break;
         case QueryString.dateRangeUnit:
-          this.initReportCondition.dateUnit!.unit = +value;
+          this.initReportCondition.dateUnit.unit = +value;
           break;
         case QueryString.sportType:
           this.initReportCondition.sportType = +value;
@@ -321,6 +340,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       this.reportCondition = deepCopy(condition);
       this.uiFlag.isCompareMode = compareTime ? true : false;
       const { isCompareMode } = this.uiFlag;
+      const isMondayFirst = dayjs(baseTime.startTimestamp).isoWeekday() === 1;
+      const isWeekReport = dateUnit.unit === DateUnit.week;
+      const needMergeData = isMondayFirst && isWeekReport;
       // 取得使用者資訊與運動數據，並根據該頁面是否為使用者擁有決定是否顯示體重與體脂
       this.subscribeUserProfile = getUserInfo()
         .pipe(
@@ -347,51 +369,67 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
               return of(resultObj);
             } else {
-              const body = this.getSummaryRequestBody(baseTime, dateUnit!);
+              const body = this.getSummaryRequestBody(baseTime, dateUnit);
               return this.api21xxService.fetchSportSummaryArray(body).pipe(
                 map((baseActivitiesData) => {
-                  return { ...resultObj, baseActivitiesData };
+                  const sportsBaseMergeData = this.mergeSameWeekSportsData(
+                    needMergeData,
+                    baseActivitiesData
+                  );
+                  return { ...resultObj, baseActivitiesData: sportsBaseMergeData };
                 })
               );
             }
           }),
-          switchMap((resultObj: Object) => {
+          switchMap((resultObj: any) => {
             if (needRefreshData && isCompareMode) {
-              const body = this.getSummaryRequestBody(compareTime!, dateUnit!);
+              const body = this.getSummaryRequestBody(compareTime, dateUnit);
               return this.api21xxService.fetchSportSummaryArray(body).pipe(
                 map((compareActivitiesData) => {
-                  return { ...resultObj, compareActivitiesData };
+                  const sportsCompareMergeData = this.mergeSameWeekSportsData(
+                    needMergeData,
+                    compareActivitiesData
+                  );
+                  return { ...resultObj, compareActivitiesData: sportsCompareMergeData };
                 })
               );
             }
 
             return of(resultObj);
           }),
-          switchMap((resultObj: Object) => {
+          switchMap((resultObj: any) => {
             if (needRefreshData && isPageOwner) {
-              const body = this.getSummaryRequestBody(baseTime, dateUnit!);
+              const body = this.getSummaryRequestBody(baseTime, dateUnit);
               return this.api21xxService.fetchTrackingSummaryArray(body).pipe(
                 map((baseLifeTracking) => {
-                  return { ...resultObj, baseLifeTracking };
+                  const lifeTrackingBaseMergeData = this.mergeSameWeekLifeTrackingData(
+                    needMergeData,
+                    baseLifeTracking
+                  );
+                  return { ...resultObj, baseLifeTracking: lifeTrackingBaseMergeData };
                 })
               );
             }
 
             return of(resultObj);
           }),
-          switchMap((resultObj: Object) => {
+          switchMap((resultObj: any) => {
             if (needRefreshData && isCompareMode && isPageOwner) {
-              const body = this.getSummaryRequestBody(compareTime!, dateUnit!);
+              const body = this.getSummaryRequestBody(compareTime, dateUnit);
               return this.api21xxService.fetchTrackingSummaryArray(body).pipe(
                 map((compareLifeTracking) => {
-                  return { ...resultObj, compareLifeTracking };
+                  const lifeTrackingCompareMergeData = this.mergeSameWeekLifeTrackingData(
+                    needMergeData,
+                    compareLifeTracking
+                  );
+                  return { ...resultObj, compareLifeTracking: lifeTrackingCompareMergeData };
                 })
               );
             }
 
             return of(resultObj);
           }),
-          switchMap((resultObj: Object) => {
+          switchMap((resultObj: any) => {
             if (isPageOwner && this.reportCondition.sportType === SportType.weightTrain) {
               const body = this.getMultiActivityRequestBody(baseTime);
               return combineLatest([
@@ -407,13 +445,13 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
             return of(resultObj);
           }),
-          switchMap((resultObj: Object) => {
+          switchMap((resultObj: any) => {
             if (
               isPageOwner &&
               this.reportCondition.sportType === SportType.weightTrain &&
               isCompareMode
             ) {
-              const body = this.getMultiActivityRequestBody(compareTime!);
+              const body = this.getMultiActivityRequestBody(compareTime);
               return this.api21xxService.fetchMultiActivityData(body).pipe(
                 map((compareWeightTrainingLap) => {
                   return { ...resultObj, compareWeightTrainingLap };
@@ -428,11 +466,104 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         .subscribe((resultObj) => {
           this.saveData(resultObj);
           this.createReport(condition, resultObj);
+          this.diffTime = this.getDiffTime(condition);
           this.scrollToReport();
           this.uiFlag.progress = 100;
           this.changeDetectorRef.markForCheck();
         });
     }
+  }
+
+  /**
+   * 取得橫跨時間範圍
+   * @param condition {ReportCondition}-篩選條件
+   */
+  getDiffTime(condition: ReportCondition) {
+    const { dateUnit, baseTime, compareTime } = condition;
+    const unit = dateUnit.getUnitString();
+    return {
+      base: baseTime.getDiffRange(unit) + 1,
+      compare: compareTime ? compareTime.getDiffRange(unit) + 1 : null,
+    };
+  }
+
+  /**
+   * 若選擇週報告但起始日為週一，則用日報告合併成周運動報告
+   * @param needMerge {boolean}-是否需要合併成周報告
+   * @param data {Array<any>}-運動日報告數據
+   */
+  mergeSameWeekSportsData(needMerge: boolean, data: Array<any>) {
+    if (!needMerge) return data;
+    const sameWeekData = new SameWeekSportsData();
+    const { reportActivityDays } = data[0];
+    const reportActivityWeeks: Array<any> = [];
+    reportActivityDays.forEach((_reportActivityDay) => {
+      const { activities, startTime } = _reportActivityDay;
+      activities.forEach((_activities) => {
+        const weekTime = this.getWeekRangeTime(startTime);
+        if (!sameWeekData.startTime) {
+          sameWeekData.next({ activities: _activities, ...weekTime });
+        } else {
+          if (weekTime.startTime !== sameWeekData.startTime) {
+            reportActivityWeeks.push(sameWeekData.result);
+            sameWeekData.next({ activities: _activities, ...weekTime });
+          } else {
+            sameWeekData.mergeData(_activities);
+          }
+        }
+      });
+    });
+
+    if (sameWeekData.size > 0) reportActivityWeeks.push(sameWeekData.result);
+    delete data[0].reportActivityDays;
+    data[0].reportActivityWeeks = reportActivityWeeks;
+    return data;
+  }
+
+  /**
+   * 若選擇週報告但起始日為週一，則用日報告合併成周生活追蹤報告
+   * @param needMerge {boolean}-是否需要合併成周報告
+   * @param data {Array<any>}-生活追蹤日報告數據
+   */
+  mergeSameWeekLifeTrackingData(needMerge: boolean, data: Array<any>) {
+    if (!needMerge || data[0].reportLifeTrackingWeeks) return data;
+    const sameWeekData = new SameWeekLifeTrackingData();
+    const reportLifeTrackingWeeks: Array<any> = [];
+    const { reportLifeTrackingDays } = data[0];
+    reportLifeTrackingDays.forEach((_lifeTrackingDays) => {
+      const { startTime, endTime } = this.getWeekRangeTime(_lifeTrackingDays.startTime);
+      const newDaysObj = {
+        ..._lifeTrackingDays,
+        startTime,
+        endTime,
+      };
+
+      if (!sameWeekData.haveMergingData) {
+        sameWeekData.next(newDaysObj);
+      } else {
+        if (startTime !== sameWeekData.startTime) {
+          reportLifeTrackingWeeks.push(sameWeekData.result);
+          sameWeekData.next(newDaysObj);
+        } else {
+          sameWeekData.mergeData(_lifeTrackingDays);
+        }
+      }
+    });
+
+    if (sameWeekData.haveMergingData) reportLifeTrackingWeeks.push(sameWeekData.result);
+    delete data[0].reportLifeTrackingDays;
+    data[0].reportLifeTrackingWeeks = reportLifeTrackingWeeks;
+    return data;
+  }
+
+  /**
+   * 取得當週的日期(起始日為週一)
+   * @param utcStartTime {string}-開始日期(UTC)
+   */
+  getWeekRangeTime(utcStartTime: string) {
+    const startTime = dayjs(utcStartTime).startOf('isoWeek').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+    const endTime = dayjs(startTime).endOf('isoWeek').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+    return { startTime, endTime };
   }
 
   /**
@@ -456,13 +587,13 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * @param dateUnit {ReportDateUnit}-報告所使用之單位
    */
   getSummaryRequestBody(rangeTime: DateRange, dateUnit: ReportDateUnit) {
-    const { utcStartTime, utcEndTime } = rangeTime;
+    const { utcStartTime, utcEndTime, startTimestamp } = rangeTime;
     return {
       token: this.authService.token,
       targetUserId: [this.targetUserId],
       filterStartTime: utcStartTime,
       filterEndTime: utcEndTime,
-      type: dateUnit.reportDateType,
+      type: dateUnit.getReportDateType(startTimestamp),
     };
   }
 
@@ -514,13 +645,30 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   createReport(condition: ReportCondition, dataObj: any) {
     const { userInfo, baseActivitiesData, compareActivitiesData } = dataObj;
-    let { workoutTarget } = userInfo;
-    if (!workoutTarget || Object.keys(workoutTarget).length === 0)
-      workoutTarget = deepCopy(SportsTargetDefault);
-    this.sportsTarget = new SportsTarget(workoutTarget);
+    const { workoutTarget } = userInfo;
+
+    const { targetUnit } = condition;
+    this.sportsTargetCondition = new SportsTarget(workoutTarget || {}).getArrangeCondition(
+      targetUnit
+    );
+    this.hrZoneRange = this.getUserHrRange(userInfo);
     this.handleInfoData(condition, baseActivitiesData, compareActivitiesData);
-    this.handleChartData(condition, dataObj, this.sportsTarget);
+    this.handleChartData(condition, dataObj);
     this.handleWeightTrainingAnalysis(condition, dataObj);
+  }
+
+  /**
+   * 取得心率區間
+   * @param userInfo {any}-使用者資訊
+   */
+  getUserHrRange(userInfo: any) {
+    const { heartRateBase, heartRateMax, heartRateResting, birthday } = userInfo;
+    if (birthday) {
+      const age = dayjs().diff(dayjs(birthday, 'YYYYMMDD'), 'year');
+      return getUserHrRange(heartRateBase, age, heartRateMax, heartRateResting);
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -536,15 +684,16 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   ) {
     const getParameter = (timeType: ReportDateType, data: Array<any>) => {
       const openPrivacy = !data || data[0].resultCode !== 403;
-      const activities = data[0][condition.dateUnit!.getReportKey('sportsReport')];
-      return { openPrivacy, target: this.sportsTarget, condition, data: activities, timeType };
+      const activities = data[0][condition.dateUnit.getReportKey('sportsReport')];
+      const targetCondition = this.sportsTargetCondition;
+      return { openPrivacy, targetCondition, condition, data: activities, timeType };
     };
 
     const baseParameter = getParameter('base', baseSportSummary);
     this.sportInfoData.base = new SportsReport(baseParameter);
     this.sportInfoData.compare = this.uiFlag.isCompareMode
       ? new SportsReport(getParameter('compare', compareSportSummary))
-      : null!;
+      : null;
     if (this.uiFlag.isCompareMode) this.sportInfoData.diff = this.getSportInfoDiff();
   }
 
@@ -554,10 +703,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * @param dataObj {Array<any>}-個人資訊、基準與比較之運動數據及生活追蹤數據
    * @param sportsTarget {SportsTarget}-群組設定的運動目標
    */
-  handleChartData(condition: ReportCondition, dataObj: any, sportsTarget: SportsTarget) {
-    const { dateUnit, sportType } = condition;
-    this.transformCondition = sportsTarget.getTransformCondition(dateUnit!.unit, 1);
-    this.chartData = new PersonalSportsChartData(condition, dataObj, this.transformCondition);
+  handleChartData(condition: ReportCondition, dataObj: any) {
+    const { sportType } = condition;
+    this.chartData = new PersonalSportsChartData(condition, dataObj, this.sportsTargetCondition);
     if (sportType === SportType.weightTrain) {
       this.muscleGroupTrendData = deepCopy(this.chartData.weightTrainingTrend.groupTrainingData);
       this.musclePartTrendData = deepCopy(this.chartData.weightTrainingTrend.partTrainingData);
@@ -621,7 +769,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       const element = document.querySelector('.report-headTitleSection') as HTMLElement;
       const top = element.offsetTop - 70;
       const scrollElement = document.querySelector('.main__container');
-      scrollElement!.scrollTo({ top, behavior: 'smooth' });
+      scrollElement.scrollTo({ top, behavior: 'smooth' });
     }, 200);
   }
 
@@ -655,7 +803,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         case 'avgHeartRateBpm':
           result.update(Math.round(value), 'bpm');
           break;
-        case 'totalDistanceMeters':
+        case 'totalDistanceMeters': {
           // 距離統一使用千位數單位進行四捨五入
           const thousandsNumber = value / 1000;
           let distanceConverse: number | string;
@@ -675,18 +823,19 @@ export class SportsReportComponent implements OnInit, OnDestroy {
             unit
           );
           break;
+        }
         case 'elevGain':
           isMetric
             ? result.update(mathRounding(value, 1), 'm')
             : result.update(mathRounding(value / ft, 1), 'ft');
           break;
-        case 'avgSpeed':
+        case 'avgSpeed': {
           const paceList = [SportType.run, SportType.swim, SportType.row];
-          if (paceList.includes(sportType!) && this.showPace()) {
+          if (paceList.includes(sportType) && this.showPace()) {
             const { value: pace, unit: paceUnit } = speedToPace(
               value,
-              sportType!,
-              this.getUserUnit()!
+              sportType,
+              this.getUserUnit()
             );
             result.update(pace, paceUnit);
           } else {
@@ -696,6 +845,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           }
 
           break;
+        }
         case 'runAvgCadence':
           result.update(Math.round(value), 'spm');
           break;
@@ -712,7 +862,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           result.update(Math.round(value), 'watt');
           break;
         case 'paceSecond':
-          result.update(Math.round(value), getPaceUnit(sportType!, this.getUserUnit()!));
+          result.update(Math.round(value), getPaceUnit(sportType, this.getUserUnit()));
           break;
         default:
           result.update(Math.round(value));
@@ -739,10 +889,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * @author kidin-1110418
    */
   getAssignCondition(type: TargetField) {
-    const relatedIndex = this.transformCondition.findIndex(
-      (_condition) => _condition.filedName === type
-    );
-    return relatedIndex > -1 ? +this.transformCondition[relatedIndex].filedValue : null;
+    const assignCondition = this.sportsTargetCondition.get(type);
+    return assignCondition ? +assignCondition.filedValue : null;
   }
 
   /**
@@ -871,7 +1019,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   subscribePluralEvent() {
     const targetElement = document.querySelector('.main__container');
-    const scrollEvent = fromEvent(targetElement!, 'scroll');
+    const scrollEvent = fromEvent(targetElement, 'scroll');
     const clickEvent = fromEvent(document, 'click');
     this.pluralEvent = merge(scrollEvent, clickEvent)
       .pipe(takeUntil(this.ngUnsubscribe))
@@ -971,8 +1119,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         if (key === 'avgSpeed') {
           const { sportType } = this.reportCondition;
           const unit = this.getUserUnit();
-          const basePaceSecond = speedToPaceSecond(baseValue ?? 0, sportType!, unit!);
-          const comparePaceSecond = speedToPaceSecond(compareValue ?? 0, sportType!, unit!);
+          const basePaceSecond = speedToPaceSecond(baseValue ?? 0, sportType, unit);
+          const comparePaceSecond = speedToPaceSecond(compareValue ?? 0, sportType, unit);
           result = {
             ...result,
             ['paceSecond']: basePaceSecond - comparePaceSecond,

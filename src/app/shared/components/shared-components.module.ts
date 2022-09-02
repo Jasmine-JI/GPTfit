@@ -76,6 +76,10 @@ import { ComparePaceChartComponent } from './chart/compare-pace-chart/compare-pa
 import { CompareExtremeGforceChartComponent } from './chart/compare-extreme-gforce-chart/compare-extreme-gforce-chart.component';
 import { WeightTrainLevelSelectorComponent } from './weight-train-level-selector/weight-train-level-selector.component';
 import { AnalysisOptionComponent } from './analysis-option/analysis-option.component';
+import { DateUnitKeyModule } from '../../core/pipes/date-unit-key.pipe';
+import { TranslateKeyModule } from '../../core/pipes/translate-key.pipe';
+import { TranslateUnitKeyModule } from '../../core/pipes/translate-unit-key.pipe';
+import { CalenderSelectorModule } from '../../components/calender-selector/calender-selector.component';
 
 @NgModule({
   imports: [
@@ -89,6 +93,10 @@ import { AnalysisOptionComponent } from './analysis-option/analysis-option.compo
     SharedPipes,
     NgProgressModule,
     QRCodeModule,
+    DateUnitKeyModule,
+    TranslateKeyModule,
+    TranslateUnitKeyModule,
+    CalenderSelectorModule,
   ],
   declarations: [
     NavbarComponent,

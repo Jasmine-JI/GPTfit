@@ -1,6 +1,10 @@
-import { DateUnit } from '../enum/report';
+import { DateUnit } from '../../core/enums/common/date-unit.enum';
 import { PageType } from '../models/report-condition';
 import { DAY, MONTH, WEEK, SEASON, YEAR } from '../models/utils-constant';
+import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
+
+dayjs.extend(isoWeek);
 
 /**
  * 處理時間範圍單位
@@ -68,15 +72,21 @@ export class ReportDateUnit {
 
   /**
    * 取得報告時間範圍單位（用於api 2104/2107）
+   * @param baseStartTimestamp {number | null}-報告基準開始時間戳(ms)
    */
-  get reportDateType() {
+  getReportDateType(baseStartTimestamp: number) {
     switch (this._dateUnit) {
       case DateUnit.year:
       case DateUnit.season:
       case DateUnit.month:
         return DateUnit.month;
+      case DateUnit.week: {
+        // 若起始日為星期一，則用日報告api產生週報告
+        const weekDay = dayjs(baseStartTimestamp).isoWeekday();
+        return weekDay === 1 ? DateUnit.day : DateUnit.week;
+      }
       default:
-        return this._dateUnit;
+        return DateUnit.day;
     }
   }
 

@@ -1,0 +1,75 @@
+<div
+  class="date__result__section"
+  [class.button--disable]="dayType === 'end' && !assignTimestamp"
+  (click)="handleCalenderDropList($event)"
+>
+  <span [ngSwitch]="calenderType">
+    {{ assignTimestamp ? (assignTimestamp | timeFormat: 'YYYY-MM-DD') : '' }}
+  </span>
+  <div class="flexCol drop__calender" *ngIf="showCalender" (click)="$event.stopPropagation()">
+    <div class="flexRow calender__year__section" (click)="handleYearDropList($event)">
+      <span class="calender__year__text" [class.drop__down]="showYearList">
+        {{ calenderYear }}
+      </span>
+      <ul class="year__drop__list" *ngIf="showYearList">
+        <li
+          class="year__drop__item"
+          *ngFor="let _year of yearList"
+          (click)="selectCalenderYear(_year)"
+        >
+          {{ _year }}
+        </li>
+      </ul>
+    </div>
+    <div class="flexRow calender__month__switcher">
+      <button
+        class="switch__button"
+        [class.button--disable]="!canSwitchPreviousMonth"
+        (click)="switchPreviousMonth()"
+      >
+        <i class="icon-svg_web-icon_p1_073-level_fold"></i>
+      </button>
+      <span>{{ calenderMonth }}</span>
+      <button
+        class="switch__button"
+        [class.button--disable]="!canSwitchNextMonth"
+        (click)="switchNextMonth()"
+      >
+        <i class="icon-svg_web-icon_p1_074-level_unfold"></i>
+      </button>
+    </div>
+    <ul class="flexCol calender">
+      <li>
+        <span class="calender__day holiday__hint">Su</span>
+        <span class="calender__day">Mo</span>
+        <span class="calender__day">Tu</span>
+        <span class="calender__day">We</span>
+        <span class="calender__day">Th</span>
+        <span class="calender__day">Fr</span>
+        <span class="calender__day holiday__hint">Sa</span>
+      </li>
+      <li class="calender__week__row" *ngFor="let _week of dayList; let weekIndex = index">
+        <span
+          class="calender__day calender__choice__day"
+          [ngClass]="{
+            holiday__hint: dayIndex === 0 || dayIndex === 6,
+            calender__today: _dayInfo.isToday,
+            calender__other__month:
+              +_dayInfo.month !== calenderMonth || +_dayInfo.year !== calenderYear,
+            'calender__day--disable': _dayInfo.isDisabled,
+            'calender__day--active': _dayInfo.isSelected
+          }"
+          *ngFor="let _dayInfo of _week; let dayIndex = index"
+          (click)="selectDay($event, _dayInfo)"
+        >
+          {{ _dayInfo.day }}
+        </span>
+      </li>
+    </ul>
+    <div class="flexRow">
+      <button class="today__button" (click)="selectToday($event)" *ngIf="!todayButtonDisable">
+        {{ 'universal_time_today' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -11,6 +11,7 @@ $nav-height: 60px;
 $carousel-dot-size: 10px;
 $input-height: 24px;
 $declaration-color: rgba(100, 100, 100, 1);
+$alert-icon-color: rgba(255, 56, 56, 1);
 
 @mixin drop-list() {
   position: absolute;
@@ -459,6 +460,67 @@ $declaration-color: rgba(100, 100, 100, 1);
 
 .footer__sub__logo {
   @include filter(saturate(2));
+}
+
+.mail__button__section {
+  position: relative;
+}
+
+.mail__button {
+  color: white;
+  font-size: 28px;
+}
+
+.alert__icon__mail {
+  position: absolute;
+  color: $alert-icon-color;
+  font-size: 24px;
+  right: -5px;
+  bottom: -5px;
+  cursor: pointer;
+}
+
+.alert__icon__enable {
+  color: $alert-icon-color;
+  font-size: 30px;
+  position: absolute;
+  right: -15px;
+  bottom: 0px;
+}
+
+.brief__mail__list {
+  $shodow-color: rgba(200, 200, 200, 1);
+  $width: 250px;
+  position: absolute;
+  top: 30px;
+  background-color: white;
+  color: black;
+  z-index: 10;
+  padding: 5px;
+  width: $width;
+  min-width: $width;
+  box-shadow: 2px 2px 2px $shodow-color, -2px 2px 2px $shodow-color;
+}
+
+.inbox__link {
+  width: 100%;
+  text-align: center;
+  display: block;
+  padding: 5px 0;
+}
+
+.message__title__section {
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.mail__list__title {
+  font-weight: bold;
+  margin: 0;
+}
+
+.create__message__button {
+  font-size: 24px;
 }
 
 /************************************************* media ****************************************/

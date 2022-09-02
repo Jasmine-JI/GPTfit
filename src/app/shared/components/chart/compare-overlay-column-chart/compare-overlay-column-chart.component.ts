@@ -15,7 +15,7 @@ import dayjs from 'dayjs';
 import { GlobalEventsService } from '../../../../core/services/global-events.service';
 import { complexTrendTooltip } from '../../../utils/chart-formatter';
 import { deepCopy } from '../../../utils/index';
-import { compareChartDefault } from '../../../models/chart-data';
+import { compareChartDefault, TARGET_LINE_COLOR } from '../../../models/chart-data';
 
 @Component({
   selector: 'app-compare-overlay-column-chart',
@@ -30,6 +30,8 @@ export class CompareOverlayColumnChartComponent implements OnInit, OnDestroy, On
   @Input() xAxisTitle: string;
 
   @Input() chartUnit = '';
+
+  @Input() conditionValue: number;
 
   @ViewChild('container', { static: false })
   container: ElementRef;
@@ -71,10 +73,10 @@ export class CompareOverlayColumnChartComponent implements OnInit, OnDestroy, On
     if (!this.data) {
       this.noData = true;
     } else {
-      const { data } = this;
+      const { data, conditionValue } = this;
       of('')
         .pipe(
-          map(() => this.initChart(data)),
+          map(() => this.initChart(data, conditionValue)),
           map((option) => this.handleSeriesName(option)),
           map((final) => this.createChart(final))
         )
@@ -87,11 +89,11 @@ export class CompareOverlayColumnChartComponent implements OnInit, OnDestroy, On
   /**
    * 初始化圖表
    * @param data {Array<number>}-圖表所需數據
-   * @author kidin-1110413
+   * @param targetLineValue {number | null}-運動目標線數值
    */
-  initChart(data: Array<number>) {
+  initChart(data: Array<number>, targetLineValue: number | null) {
     const { xAxisTitle, chartUnit } = this;
-    const chartOption = new ChartOption(data, xAxisTitle, chartUnit);
+    const chartOption = new ChartOption(data, xAxisTitle, chartUnit, targetLineValue);
     return chartOption.option;
   }
 
@@ -134,8 +136,14 @@ export class CompareOverlayColumnChartComponent implements OnInit, OnDestroy, On
 class ChartOption {
   private _option = deepCopy(compareChartDefault);
 
-  constructor(data: Array<any>, xAxisTitle: string, chartUnit: string) {
+  constructor(
+    data: Array<any>,
+    xAxisTitle: string,
+    chartUnit: string,
+    targetLineValue: number | null
+  ) {
     this.initChart(data, xAxisTitle, chartUnit);
+    if (targetLineValue) this.handleTargetLine(targetLineValue);
   }
 
   /**
@@ -212,6 +220,20 @@ class ChartOption {
       },
       series: chartData,
     };
+  }
+
+  /**
+   * 若有設定運動目標，則顯示目標線
+   * @param value {number}-目標線數值
+   */
+  handleTargetLine(value: number) {
+    this._option.yAxis['plotLines'] = [
+      {
+        color: TARGET_LINE_COLOR,
+        width: 2,
+        value,
+      },
+    ];
   }
 
   /**

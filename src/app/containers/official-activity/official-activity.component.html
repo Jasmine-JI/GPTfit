@@ -53,12 +53,43 @@
         >
           {{ 'universal_vocabulary_aboutCloudrun' | translate }}
         </a>
+        <a
+          href="/"
+          class="page__link child__page__link"
+          name="home"
+          (click)="navigate($event, '/')"
+        >
+          {{ 'universal_system_homePage' | translate }}
+        </a>
       </div>
       <div id="link__active__bar" *ngIf="!uiFlag.isMobile">
         <div id="link__active"></div>
       </div>
     </div>
     <div class="flexRow">
+      <div class="flexCenter mail__button__section">
+        <button class="mail__button" (click)="showStationMailList($event)">
+          <i class="icon-svg_web-icon_p4_012-message"></i>
+          <i
+            class="icon-svg_web-icon_p1_069-about alert__icon__mail"
+            *ngIf="uiFlag.haveNewMail"
+          ></i>
+        </button>
+        <div class="brief__mail__list" *ngIf="uiFlag.showStationMailList">
+          <div class="flexRow message__title__section">
+            <h5 class="mail__list__title">
+              {{ 'universal_deviceSetting_message' | translate }}
+            </h5>
+            <button class="create__message__button" (click)="navigateNewMailPage()">
+              <i class="icon-svg_web-icon_p1_029-add"></i>
+            </button>
+          </div>
+          <app-inbox [isBriefList]="true"></app-inbox>
+          <a href="#" class="inbox__link" (click)="navigateInbox($event)">
+            {{ 'universal_operating_more' | translate }}
+          </a>
+        </div>
+      </div>
       <div class="flexRow personal__menu__entry" (click)="showPersonalMenu($event)">
         <img
           id="avatar"
@@ -85,11 +116,6 @@
             (click)="$event.preventDefault()"
           >
             {{ 'universal_vocabulary_contactUs' | translate }}
-          </a>
-        </li>
-        <li (click)="navigate($event, '/')">
-          <a href="/" class="page__link" (click)="$event.preventDefault()">
-            {{ 'universal_system_homePage' | translate }}
           </a>
         </li>
       </ul>
@@ -130,6 +156,11 @@
         (click)="navigate($event, '/official-activity/about-cloudrun')"
       >
         {{ 'universal_vocabulary_aboutCloudrun' | translate }}
+      </a>
+    </li>
+    <li>
+      <a href="/" class="page__link child__page__link" (click)="navigate($event, '/')">
+        {{ 'universal_system_homePage' | translate }}
       </a>
     </li>
   </ul>

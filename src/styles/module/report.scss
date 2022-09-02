@@ -511,13 +511,15 @@ $color-dot-hint-size: 20px;
 }
 
 .report-infoRow {
-  flex-wrap: wrap;
+  display: grid;
+  grid-gap: 10px;
+  grid-template-columns: repeat(auto-fill, 120px);
 }
 
 .report-infoItem {
+  flex-grow: 1;
   align-items: center;
   min-width: 120px;
-  margin: 10px;
   background-color: rgba(200, 200, 200, 0.1);
 
   &:before {
@@ -773,7 +775,8 @@ $color-dot-hint-size: 20px;
 }
 
 .report-targetCycle {
-  @include center();
+  display: flex;
+  align-items: center;
   min-width: 50px;
   min-height: 34px;
   font-weight: bold;
@@ -863,6 +866,11 @@ $color-dot-hint-size: 20px;
 
   .report-trendInfoColumn {
     align-items: center;
+  }
+
+  .report-infoRow {
+    flex-wrap: wrap;
+    justify-content: center;
   }
 }
 

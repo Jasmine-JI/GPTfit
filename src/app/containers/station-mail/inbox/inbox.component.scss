@@ -1,5 +1,6 @@
 @import 'font.scss';
 @import 'color.scss';
+@import 'overflow-scroll.scss';
 
 .functional__section {
   margin: 10px 0;
@@ -34,7 +35,7 @@
   margin: 0;
   padding: 0;
   max-height: 70vh;
-  overflow-y: scroll;
+  @include overflow-y-scroll();
 }
 
 .checkbox__column {

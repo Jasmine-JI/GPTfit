@@ -888,7 +888,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     }
     this.tableData.data = middleData;
 
-    if (this.sortTable && this.sortTable.hasOwnProperty('active')) {
+    if (this.sortTable && Object.prototype.hasOwnProperty.call(this.sortTable, 'active')) {
       this.sortData();
     }
 
@@ -1380,7 +1380,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       this.focusMember = null;
     }
     this.initInfoHighChart();
-    if (this.sortTable && this.sortTable.hasOwnProperty('active')) {
+    if (this.sortTable && Object.prototype.hasOwnProperty.call(this.sortTable, 'active')) {
       this.initMemberHRZoneChart();
       this.sortHRZoneChart();
     } else {

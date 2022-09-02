@@ -787,7 +787,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       const { privacyMatch } = _data;
       if (!privacyMatch || privacyMatch === 'false') {
         const { userId } = _data;
-        if (!middleData.hasOwnProperty(userId)) {
+        if (!Object.prototype.hasOwnProperty.call(middleData, userId)) {
           Object.assign(middleData, {
             [userId]: {
               info: {
@@ -810,7 +810,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           Object.assign(record, { fileId, filePrivacy });
         }
 
-        if (!middleData.hasOwnProperty(userId)) {
+        if (!Object.prototype.hasOwnProperty.call(middleData, userId)) {
           Object.assign(middleData, {
             [userId]: {
               info: {
@@ -841,7 +841,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   mergeData(middleData: any) {
     const finalData = {};
     for (const _user in middleData) {
-      if (middleData.hasOwnProperty(_user)) {
+      if (Object.prototype.hasOwnProperty.call(middleData, _user)) {
         const { privacy, record, belongGroup, level } = middleData[_user],
           runTimes = record ? record.length : 0;
         if (privacy && runTimes > 0) {
@@ -1132,17 +1132,17 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         branchesGroupId = `${this.groupService.getPartGroupId(groupId, 4)}-0-0`,
         outOfAge = (ageMax !== null && age > ageMax) || (ageMin !== null && age < ageMin),
         outOfGender = genderFilter !== null && gender !== genderFilter;
-      if (groupList.hasOwnProperty(groupId) && !outOfAge && !outOfGender) {
+      if (Object.prototype.hasOwnProperty.call(groupList, groupId) && !outOfAge && !outOfGender) {
         const _memData = memberData[_userId];
         /** 團體分析所需的成員清單及成績加總，上面階層會將下面階層成員包含進去 */
         if (
-          groupList.hasOwnProperty(brandsGroupId) &&
+          Object.prototype.hasOwnProperty.call(groupList, brandsGroupId) &&
           !groupList[brandsGroupId].member.some((_list) => _list.id === _userId)
         ) {
           const brandData = groupList[brandsGroupId];
           brandData.member.push({ id: _userId, name: _nickName, age });
           if (
-            memberData.hasOwnProperty(_userId) &&
+            Object.prototype.hasOwnProperty.call(memberData, _userId) &&
             _memData.record &&
             _memData.record.length !== 0
           ) {
@@ -1153,13 +1153,13 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         }
 
         if (
-          groupList.hasOwnProperty(branchesGroupId) &&
+          Object.prototype.hasOwnProperty.call(groupList, branchesGroupId) &&
           !groupList[branchesGroupId].member.some((_list) => _list.id === _userId)
         ) {
           const branchData = groupList[branchesGroupId];
           branchData.member.push({ id: _userId, name: _nickName, age });
           if (
-            memberData.hasOwnProperty(_userId) &&
+            Object.prototype.hasOwnProperty.call(memberData, _userId) &&
             _memData.record &&
             _memData.record.length !== 0
           ) {
@@ -1173,7 +1173,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           const coachData = groupList[groupId];
           coachData.member.push({ id: _userId, name: _nickName, age });
           if (
-            memberData.hasOwnProperty(_userId) &&
+            Object.prototype.hasOwnProperty.call(memberData, _userId) &&
             _memData.record &&
             _memData.record.length !== 0
           ) {
@@ -1185,7 +1185,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         /******************************************************************/
 
         // 個人分析所需資訊，包含個人所屬群組
-        if (memberData.hasOwnProperty(_userId)) {
+        if (Object.prototype.hasOwnProperty.call(memberData, _userId)) {
           _memData.info = {
             name: _nickName,
             icon: _icon,
@@ -1287,7 +1287,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   handleGroupTableData(groupData: any) {
     const tableArr = [];
     for (const key in groupData) {
-      if (groupData.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(groupData, key)) {
         const {
           name,
           parents,
@@ -1334,7 +1334,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     const tableArr = [];
     for (const key in memData) {
       const { record, info } = memData[key];
-      if (memData.hasOwnProperty(key) && record && info) {
+      if (Object.prototype.hasOwnProperty.call(memData, key) && record && info) {
         const {
           info: { name, icon, age, gender },
           level,

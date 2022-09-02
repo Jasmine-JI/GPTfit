@@ -281,7 +281,7 @@ export class DateRangePickerComponent implements OnInit, OnChanges, OnDestroy {
             endDate: dayjs().subtract(-1, 'year').format('YYYY-MM-DDT23:59:59.999Z'),
           };
           break;
-        default:
+        default: {
           let [startDate, endDate] = this.default.split('_');
           if (!endDate) endDate = dayjs(startDate).format('YYYY-MM-DDT23:59:59.999Z');
           this.defaultDate = {
@@ -289,6 +289,7 @@ export class DateRangePickerComponent implements OnInit, OnChanges, OnDestroy {
             endDate: dayjs(endDate).format('YYYY-MM-DDT23:59:59.999Z'),
           };
           break;
+        }
       }
     } else {
       this.defaultDate = {

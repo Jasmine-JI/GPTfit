@@ -27,6 +27,7 @@ import { GroupService } from '../../shared/services/group.service';
 import { ListStatusPipe } from './pipes/list-status.pipe';
 import { AboutCloudrunComponent } from './components/about-cloudrun/about-cloudrun.component';
 import { SportTimePipe } from '../../shared/pipes/sport-time.pipe';
+import { StationMailModule } from '../station-mail/station-mail.module';
 
 @NgModule({
   imports: [
@@ -40,6 +41,7 @@ import { SportTimePipe } from '../../shared/pipes/sport-time.pipe';
     CKEditorModule,
     FormsModule,
     QRCodeModule,
+    StationMailModule,
   ],
   declarations: [
     OfficialActivityComponent,

@@ -211,9 +211,20 @@
   <section class="flexCol info__section" *ngIf="groupDetail && groupDetail.brandType === 2">
     <h6 class="flexRow info-contentTitle">
       {{ 'universal_lifeTracking_target' | translate }}
+      <span class="target__description"
+        >({{ 'universal_activityData_perCapita' | translate }})</span
+      >
       <app-sports-target-tip></app-sports-target-tip>
     </h6>
     <div class="flexCol info-contentText">
+      <div class="flexRow advanced__target__option">
+        <span>{{ 'universal_app_advanced' | translate }}</span>
+        <button
+          class="rod__bar"
+          [class.rod__bar--active]="advancedSportsTarget.professional"
+          (click)="changeAdvancedTargetStatus()"
+        ></button>
+      </div>
       <div
         class="target__inherit"
         *ngIf="
@@ -224,16 +235,18 @@
         <span class="drop__list" (click)="toggleInheritList($event)">
           <ng-container
             *ngIf="
-              sportTarget.name !=
-              (uiFlag.editMode === 'create' ? uiFlag.createLevel : editBody.groupLevel)
+              +sportsTarget.reference !==
+              (uiFlag.editMode === 'create' ? +uiFlag.createLevel : +editBody.groupLevel)
             "
           >
-            {{ targetInheritList[sportTarget.name == GroupLevel.branch ? 1 : 0].groupName }}
+            {{
+              targetInheritList[+sportsTarget.reference === +GroupLevel.branch ? 1 : 0].groupName
+            }}
           </ng-container>
           <ng-container
             *ngIf="
-              sportTarget.name ==
-              (uiFlag.editMode === 'create' ? uiFlag.createLevel : editBody.groupLevel)
+              +sportsTarget.reference ===
+              (uiFlag.editMode === 'create' ? +uiFlag.createLevel : +editBody.groupLevel)
             "
           >
             {{ 'universal_system_custom' | translate }}
@@ -256,104 +269,41 @@
           </li>
         </ul>
       </div>
-      <div class="date__cycle" *ngIf="uiFlag.editMode !== 'close'">
-        <span class="drop__list" (click)="toggleCycleList($event)">
-          {{
-            (sportTarget.cycle === DateUnit.week ? 'universal_time_week' : 'universal_time_day')
-              | translate
-          }}
-          <i
-            class="icon-svg_web-icon_p1_006-unfold unfold__icon"
-            [class.fold__icon]="uiFlag.showCycleList"
-          ></i>
-        </span>
-        <ul class="date__cycle__list" *ngIf="uiFlag.showCycleList">
-          <li class="list__item" (click)="selectDateCycle(DateUnit.day)">
-            {{ 'universal_time_day' | translate }}
-          </li>
-          <li class="list__item" (click)="selectDateCycle(DateUnit.week)">
-            {{ 'universal_time_week' | translate }}
-          </li>
-        </ul>
-      </div>
-      <ul class="condition__list">
-        <li
-          class="flexRow condition__list__item"
-          *ngFor="let condition of sportTarget.condition; let index = index"
-        >
-          <button
-            class="delete__condition__button"
-            (click)="deleteCondition(index)"
-            *ngIf="uiFlag.editMode !== 'close'"
-          >
-            <i class="icon-svg_web-icon_p1_012-close"></i>
-          </button>
-          {{ condition.filedName | targetFieldName | translate }}
-          &ge;
-          {{
-            condition.filedName.toLocaleLowerCase().includes('time')
-              ? condition.filedValue / 60
-              : condition.filedValue
-          }}
-          {{ condition.filedName | targetFieldUnit | translate }}
-          /
-          {{
-            (sportTarget.cycle === DateUnit.week ? 'universal_time_week' : 'universal_time_day')
-              | translate
-          }}
-        </li>
-      </ul>
-      <p
-        *ngIf="
-          uiFlag.editMode === 'close' &&
-          (!sportTarget.condition || sportTarget.condition.length === 0)
-        "
-      >
-        {{ '未設定運動目標' | translate }}
-      </p>
-      <div class="flexRow filed__name" *ngIf="uiFlag.editMode !== 'close'">
-        <div>
-          <span class="drop__list" (click)="toggleFiledNameList($event)">
-            <ng-container *ngIf="!newCondition.filedName">
-              {{ 'universal_vocabulary_item' | translate }}
-            </ng-container>
-            <ng-container *ngIf="newCondition.filedName">
-              {{ newCondition.filedName | targetFieldName | translate }}
-            </ng-container>
-            <i
-              class="icon-svg_web-icon_p1_006-unfold unfold__icon"
-              [class.fold__icon]="uiFlag.showFiledNameList"
-            ></i>
-          </span>
-          <ul class="filed__name__list" *ngIf="uiFlag.showFiledNameList">
-            <li class="list__item" (click)="selectNewConditionFiled('totalActivities')">
-              {{ 'universal_activityData_reps' | translate }}
-            </li>
-            <li class="list__item" (click)="selectNewConditionFiled('totalTime')">
-              {{ 'universal_activityData_totalTime' | translate }}
-            </li>
-            <li class="list__item" (click)="selectNewConditionFiled('benefitTime')">
-              {{ 'universal_activityData_benefitime' | translate }}
-            </li>
-            <li class="list__item" (click)="selectNewConditionFiled('pai')">
-              {{ 'universal_activityData_pai' | translate }} PAI
-            </li>
-            <li class="list__item" (click)="selectNewConditionFiled('calories')">
-              {{ 'universal_userProfile_calories' | translate }}
-            </li>
-          </ul>
-        </div>
-        <span class="condition__symbol">&ge;</span>
-        <input
-          class="target__input"
-          type="text"
-          [placeHolder]="'整數' | translate"
-          [value]="newCondition.filedValue ? newCondition.filedValue : ''"
-          (focusout)="setNewConditionValue($event)"
-        />
-        <ng-container *ngIf="newCondition.filedName">
-          {{ newCondition.filedName | targetFieldUnit | translate }}
-        </ng-container>
+      <div class="flexRow target__card__section" *ngIf="sportsTarget">
+        <app-sport-target-setting
+          [cycle]="DateUnit.day"
+          [condition]="cycleCondition.day"
+          [isEditMode]="uiFlag.editMode !== 'close'"
+          (changeCondition)="changeCondition($event, DateUnit.day)"
+          *ngIf="advancedSportsTarget.professional"
+        ></app-sport-target-setting>
+        <app-sport-target-setting
+          [cycle]="DateUnit.week"
+          [condition]="cycleCondition.week"
+          [isEditMode]="uiFlag.editMode !== 'close'"
+          (changeCondition)="changeCondition($event, DateUnit.day)"
+        ></app-sport-target-setting>
+        <app-sport-target-setting
+          [cycle]="DateUnit.month"
+          [condition]="cycleCondition.month"
+          [isEditMode]="uiFlag.editMode !== 'close'"
+          (changeCondition)="changeCondition($event, DateUnit.month)"
+          *ngIf="advancedSportsTarget.professional"
+        ></app-sport-target-setting>
+        <app-sport-target-setting
+          [cycle]="DateUnit.season"
+          [condition]="cycleCondition.season"
+          [isEditMode]="uiFlag.editMode !== 'close'"
+          (changeCondition)="changeCondition($event, DateUnit.season)"
+          *ngIf="advancedSportsTarget.professional"
+        ></app-sport-target-setting>
+        <app-sport-target-setting
+          [cycle]="DateUnit.year"
+          [condition]="cycleCondition.year"
+          [isEditMode]="uiFlag.editMode !== 'close'"
+          (changeCondition)="changeCondition($event, DateUnit.year)"
+          *ngIf="advancedSportsTarget.professional"
+        ></app-sport-target-setting>
       </div>
     </div>
   </section>
@@ -522,6 +472,7 @@
       </span>
     </div>
   </section>
+  <div style="min-height: 80px" *ngIf="uiFlag.editMode !== 'close'"></div>
 </div>
 <ng-template #currentGroupName>
   <span

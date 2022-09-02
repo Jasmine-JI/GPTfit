@@ -41,18 +41,18 @@ export class SportsReport {
    * @param parameter {SportsParameter}-統計運動數據所需參數與數據
    */
   statisticalData(parameter: SportsParameter) {
-    const { openPrivacy, target, condition, data, timeType } = parameter;
+    const { openPrivacy, targetCondition, condition, data, timeType } = parameter;
     // 將統計數據另存至物件中
     let dataObj = { openPrivacy } as any;
     const avgDataIntermediary = {};
     const maxDataIntermediary = {};
     if (openPrivacy) {
-      const { sportType } = condition!;
+      const { sportType } = condition;
       const dataKey = this.getDataKey(sportType!);
       const preferSports = new PreferSportType();
       const preferWeightTrainGroup = new WeightTrainStatistics();
 
-      data!.forEach((_data) => {
+      data.forEach((_data) => {
         const { activities: _activities } = _data;
         _activities.forEach((_activity) => {
           const _sportType = +_activity.type as SportType;
@@ -71,7 +71,7 @@ export class SportsReport {
             }
 
             // 根據運動類別將所需數據進行加總
-            dataKey!.forEach((_key) => {
+            dataKey.forEach((_key) => {
               const isMaxData = _key.toLowerCase().includes('max');
               const _value = +_activity[_key];
               if (isMaxData) {
@@ -99,7 +99,7 @@ export class SportsReport {
           ...dataObj,
           ...maxDataIntermediary,
           ...this.getAvgData(avgDataIntermediary),
-          ...this.postProcessingData({ target, condition, dataObj, timeType }),
+          ...this.postProcessingData({ targetCondition, condition, dataObj, timeType }),
           preferSports: preferSports.preferSport,
         };
 
@@ -167,7 +167,7 @@ export class SportsReport {
    * @param parameter {any}-統計運動數據所需參數與數據
    */
   postProcessingData(parameter: any) {
-    const { target, condition, dataObj, timeType } = parameter;
+    const { targetCondition, condition, dataObj, timeType } = parameter;
     const { dateUnit, baseTime, compareTime } = condition;
     const {
       totalActivities,
@@ -188,15 +188,16 @@ export class SportsReport {
     const hrZone = [zone0, zone1, zone2, zone3, zone4, zone5];
     const { pai, totalWeightedValue } = SportsReport.countPai(hrZone, reportPeriodDay);
     const benefitTime = (zone2 ?? 0) + (zone3 ?? 0) + (zone4 ?? 0) + (zone5 ?? 0);
-    const unitKey = dateUnit.getUnitString();
+    const isMondayFirst = dayjs(realStartTime).isoWeekday() === 1;
+    let unitKey = dateUnit.getUnitString();
+    unitKey = unitKey === 'week' && isMondayFirst ? 'isoWeek' : unitKey;
     const crossRange = baseTime.getCrossRange(unitKey);
-    const transfromCondition = target.getTransformCondition(dateUnit.unit);
     let targetAchieved = totalActivities ? true : false;
 
-    transfromCondition.forEach((_condition) => {
-      const { filedName, filedValue } = _condition;
+    targetCondition.forEach((_value, _key) => {
+      const { filedValue } = _value;
       const targetValue = crossRange * +filedValue;
-      switch (filedName) {
+      switch (_key) {
         case 'pai':
           if (totalWeightedValue < targetValue) targetAchieved = false;
           break;
@@ -207,7 +208,7 @@ export class SportsReport {
           if (totalSecond < targetValue) targetAchieved = false;
           break;
         default:
-          if (dataObj[filedName] < targetValue) targetAchieved = false;
+          if (dataObj[_key] < targetValue) targetAchieved = false;
           break;
       }
     });

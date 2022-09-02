@@ -1,4 +1,4 @@
-import { TargetCondition } from '../../models/sport-target';
+import { TargetConditionMap } from '../../../core/models/api/api-common/sport-target.model';
 import { DateUnit } from '../../enum/report';
 import { mathRounding, countPercentage } from '../../utils/index';
 import { ReportCondition } from '../../models/report-condition';
@@ -8,6 +8,7 @@ import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ReportDateUnit } from '../report-date-unit';
 import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
 import { DateRange } from '../date-range';
 import { trendChartColor } from '../../models/chart-data';
 import { CompareTrendData } from '../sports-report/compare-trend-data';
@@ -15,6 +16,8 @@ import { HrZoneTrendChartData } from '../sports-report/hrzone-trend-chart-data';
 import { HrZoneChartData } from '../sports-report/hrzone-chart-data';
 import { TypeAllChart } from '../sports-report/type-all-chart';
 import { TemporaryCount } from '../sports-report/temporary-count';
+
+dayjs.extend(isoWeek);
 
 /**
  * 處理群組運動報告圖表數據
@@ -47,7 +50,7 @@ export class GroupSportsChartData {
     condition: ReportCondition,
     baseData: Array<any>,
     compareData: Array<any>,
-    perTransformTarget: Array<TargetCondition>,
+    sportTargetCondition: TargetConditionMap,
     totalPeople: number
   ) {
     const isCompareMode = compareData !== undefined;
@@ -57,15 +60,15 @@ export class GroupSportsChartData {
     this._achievementRate = new CompareTrendData(isCompareMode, trendChartColor.achieveRate);
 
     const { sportType, dateUnit, baseTime, compareTime } = condition;
-    const allDateList = this.createCompleteDate(dateUnit, baseTime, compareTime);
+    const allDateList = this.createCompleteDate(dateUnit!, baseTime, compareTime!);
     of([baseData, compareData])
       .pipe(
-        map((data) => this.filterPersonalData(data, dateUnit, sportType)),
-        map((filterData) => this.mergePersonalData(filterData, dateUnit)),
-        map((personalData) => this.postProcessingPerosnalData(personalData, perTransformTarget)),
+        map((data) => this.filterPersonalData(data, dateUnit!, sportType!)),
+        map((filterData) => this.mergePersonalData(filterData, dateUnit!)),
+        map((personalData) => this.postProcessingPerosnalData(personalData, sportTargetCondition)),
         map((completeData) => this.concatPersonalData(completeData)),
         map((concatData) => this.sortData(concatData)),
-        map((sortData) => this.mergeGroupData(sortData, dateUnit)),
+        map((sortData) => this.mergeGroupData(sortData, dateUnit!)),
         map((mergeData) => this.fillUpDate(mergeData, allDateList)),
         map((fillUpData) => this.handleChartData(fillUpData, totalPeople))
       )
@@ -97,9 +100,9 @@ export class GroupSportsChartData {
    */
   filterData = (data: Array<any>, sportType: SportType, key: string, isCompareData: boolean) => {
     const checkDataOpen = (resultCode: number) => resultCode === 200;
-    const filterResult = [];
+    const filterResult: Array<any> = [];
     data.forEach((_data) => {
-      const result = [];
+      const result: Array<any> = [];
       const { resultCode: _resultCode } = _data;
       if (checkDataOpen(_resultCode)) {
         _data[key].forEach((_dataRow) => {
@@ -138,7 +141,7 @@ export class GroupSportsChartData {
     const [baseData, compareData] = allData;
     const mergeData = (data: Array<any>, dateUnit: ReportDateUnit) => {
       const result = data.map((_data) => {
-        const personalData = [];
+        const personalData: Array<any> = [];
         const temporaryCount = new TemporaryCount();
         _data.forEach((_activity, _index) => {
           const { startTime: _startTime, endTime: _endTime, activities: _activities } = _activity;
@@ -176,9 +179,9 @@ export class GroupSportsChartData {
   /**
    * 計算各日期範圍目標達成與否，同時將所有成員數據合併唯一陣列，以便計算群組圖表數據
    * @param allData {Array<any>}-基準數據與比較數據
-   * @param perTransformTarget {Array<TargetCondition>}-依報告時間單位轉換的個人目標條件
+   * @param targetCondition {TargetConditionMap}-依報告時間單位轉換的個人目標內容
    */
-  postProcessingPerosnalData(allData: Array<any>, perTransformTarget: Array<TargetCondition>) {
+  postProcessingPerosnalData(allData: Array<any>, targetCondition: TargetConditionMap) {
     const [baseData, compareData] = allData;
     const achievementData = (data: Array<any>) => {
       return data.map((_data) => {
@@ -193,30 +196,37 @@ export class GroupSportsChartData {
             totalSecond,
             calories,
             totalActivities,
+            avgHeartRate,
           } = _dataRow.activities;
           let achieve = 1;
-          perTransformTarget.forEach((_condition) => {
-            const { filedName, filedValue } = _condition;
-            switch (filedName) {
+          targetCondition.forEach((_value, _filedName) => {
+            const _filedValue = +_value.filedValue;
+            switch (_filedName) {
               case 'totalActivities':
-                if (totalActivities < filedValue) achieve = 0;
+                if (totalActivities < _filedValue) achieve = 0;
                 break;
-              case 'totalTime':
-                const targetSecond = filedValue;
+              case 'totalTime': {
+                const targetSecond = _filedValue;
                 if (+totalSecond < targetSecond) achieve = 0;
                 break;
-              case 'benefitTime':
+              }
+              case 'benefitTime': {
                 const benefitTime = zone2 + zone3 + zone4 + zone5;
-                if (benefitTime < filedValue) achieve = 0;
+                if (benefitTime < _filedValue) achieve = 0;
                 break;
-              case 'pai':
+              }
+              case 'pai': {
                 const { z0, z1, z2, z3, z4, z5 } = PAI_COFFICIENT;
                 const pai =
                   zone0 * z0 + zone1 * z1 + zone2 * z2 + zone3 * z3 + zone4 * z4 + zone5 * z5;
-                if (pai < filedValue) achieve = 0;
+                if (pai < _filedValue) achieve = 0;
                 break;
+              }
               case 'calories':
-                if (calories < filedValue) achieve = 0;
+                if (calories < _filedValue) achieve = 0;
+                break;
+              case 'avgHeartRate':
+                if (avgHeartRate < _filedValue) achieve = 0;
                 break;
             }
           });
@@ -294,8 +304,8 @@ export class GroupSportsChartData {
   fillUpDate(allData: Array<any>, allDateList: Array<any>) {
     const [baseDateList, compareDateList] = allDateList;
     const [baseData, compareData] = allData;
-    const baseDataResult = [];
-    const compareDataResult = [];
+    const baseDataResult: Array<any> = [];
+    const compareDataResult: Array<any> = [];
     let baseDataIndex = 0;
     let compareDataIndex = 0;
 
@@ -465,14 +475,16 @@ export class GroupSportsChartData {
     const startTimestamp = dayjs(startTime).startOf('day').valueOf();
     const endTimestamp = dayjs(endTime).endOf('day').valueOf();
     switch (dateUnit.unit) {
-      case DateUnit.season:
+      case DateUnit.season: {
         const seasonStart = dayjs(startTimestamp).startOf('quarter').valueOf();
         const seasonEnd = dayjs(endTimestamp).endOf('quarter').valueOf();
         return { start: seasonStart, end: seasonEnd };
-      case DateUnit.year:
+      }
+      case DateUnit.year: {
         const rangeStart = dayjs(startTimestamp).startOf('year').valueOf();
         const rangeEnd = dayjs(endTimestamp).endOf('year').valueOf();
         return { start: rangeStart, end: rangeEnd };
+      }
       default:
         return { start: startTimestamp, end: endTimestamp };
     }
@@ -484,7 +496,7 @@ export class GroupSportsChartData {
    * @param dateUnit {ReportDateUnit}-報告所選擇的時間單位
    */
   mergeData(data: Array<any>, dateUnit: ReportDateUnit) {
-    const result = [];
+    const result: Array<any> = [];
     const temporaryCount = new TemporaryCount();
     data.forEach((_data, _index) => {
       const { startTime: _startTime, endTime: _endTime, activities: _activities } = _data;
@@ -561,29 +573,32 @@ export class GroupSportsChartData {
    * @param compareTime {DateRange}-報告比較日期
    */
   createCompleteDate(dateUnit: ReportDateUnit, baseTime: DateRange, compareTime: DateRange) {
-    const unitString = dateUnit.getUnitString();
-    const baseDiffTime = baseTime.getCrossRange(unitString);
-    const compareDiffTime = compareTime ? compareTime.getCrossRange(unitString) : -1;
-
     // 若有比較時間，則先確認基準與比較日期何者較長，以較長的日期作為日期範圍長度
     let baseDateList = [];
     let compareDateList = [];
+    const unitString = dateUnit.getUnitString();
     const { startTimestamp: baseStart, endTimestamp: baseEnd } = baseTime;
+    const isMondayFirst = dayjs(baseStart).isoWeekday() === 1;
+    const referenceUnitString = isMondayFirst ? 'isoWeek' : unitString;
+    const baseDiffTime = baseTime.getCrossRange(unitString, referenceUnitString);
+    const compareDiffTime = compareTime
+      ? compareTime.getCrossRange(unitString, referenceUnitString)
+      : -1;
     if (baseDiffTime >= compareDiffTime) {
       baseDateList = this.createDateList([], unitString, baseStart, baseEnd);
       if (compareTime) {
         const { startTimestamp: compareStart } = compareTime;
         const extentCompareEnd = dayjs(compareStart)
-          .add(baseDiffTime - 1, unitString as any)
-          .endOf(unitString)
+          .add(baseDiffTime - 1, unitString)
+          .endOf(referenceUnitString)
           .valueOf();
 
         compareDateList = this.createDateList([], unitString, compareStart, extentCompareEnd);
       }
     } else {
       const extentBaseEnd = dayjs(baseStart)
-        .add(compareDiffTime - 1, unitString as any)
-        .endOf(unitString)
+        .add(compareDiffTime - 1, unitString)
+        .endOf(referenceUnitString)
         .valueOf();
 
       baseDateList = this.createDateList([], unitString, baseStart, extentBaseEnd);
@@ -610,22 +625,32 @@ export class GroupSportsChartData {
   ) {
     if (list.length > 0) {
       const { start: prevStart } = list[list.length - 1];
-      const start = dayjs(prevStart).add(1, unitString).valueOf();
-
+      const newStart = dayjs(prevStart)
+        .add(1, unitString === 'isoWeek' ? 'week' : unitString)
+        .valueOf();
+      const newDate = this.getNewDate(unitString, newStart);
       // 將時間逐漸疊加至超過所選時間後，即完成日期清單
-      if (start <= dateEnd) {
-        const end = dayjs(start).endOf(unitString).valueOf();
-        list.push({ start, end });
+      if (newDate.start < dateEnd) {
+        list.push(newDate);
         return this.createDateList(list, unitString, dateStart, dateEnd);
       } else {
         return list;
       }
     } else {
-      const start = dayjs(dateStart).startOf(unitString).valueOf();
-      const end = dayjs(start).endOf(unitString).valueOf();
-      list.push({ start, end });
+      list.push(this.getNewDate(unitString, dateStart));
       return this.createDateList(list, unitString, dateStart, dateEnd);
     }
+  }
+
+  /**
+   * 根據時間單位與指定的開始日，取得日期範圍的起始日與結束日
+   * @param unitStr {string}-日期單位字串（使用any以符合dayjs type）
+   * @param newStart {number}-日期範圍的開始時間
+   */
+  getNewDate(unitStr: any, newStart: number) {
+    const dayjsObj = dayjs(newStart);
+    const end = dayjsObj.endOf(unitStr).valueOf();
+    return { start: newStart, end };
   }
 
   /**

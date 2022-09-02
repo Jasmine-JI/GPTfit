@@ -540,7 +540,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
             const _key = needKey[k],
               isLatestKey = this.getLatestKey().includes(_key);
 
-            if (_tracking.hasOwnProperty(_key)) {
+            if (Object.prototype.hasOwnProperty.call(_tracking, _key)) {
               let value: number;
               value = +_tracking[_key];
 

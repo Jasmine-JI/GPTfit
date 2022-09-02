@@ -18,10 +18,12 @@ export function speedToPaceSecond(value: number, sportType: SportType, unit: Uni
   const isMinus = value < 0;
   let result = 0;
   switch (sportType) {
-    case SportType.run: // 跑步配速
+    case SportType.run: {
+      // 跑步配速
       const valueConversion = isMetric ? value : value / mi;
       result = (60 / valueConversion) * 60;
       break;
+    }
     case SportType.swim: // 游泳配速
       result = ((60 / value) * 60) / 10;
       break;

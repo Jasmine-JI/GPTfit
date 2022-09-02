@@ -141,7 +141,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
             this.isPreviewMode = true;
             this.changeTheme('light', false); // 預覽列印頁面必為清亮模式
             break;
-          case 'theme':
+          case 'theme': {
             // 暗黑模式尚未完成，故只先開放20權
             const checkValue = ['light', 'dark'].includes(value);
             const isPreviewMode = queryString.includes('ipm=');
@@ -151,6 +151,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
             }
 
             break;
+          }
         }
       });
     }

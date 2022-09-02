@@ -99,7 +99,7 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
     const admin = commerce.groupManagerStatus;
     this.totalAdmin = 0;
     for (const _admin in admin) {
-      if (admin.hasOwnProperty(_admin)) {
+      if (Object.prototype.hasOwnProperty.call(admin, _admin)) {
         if (_admin.indexOf('current') > -1) {
           this.totalAdmin += +admin[_admin];
         }

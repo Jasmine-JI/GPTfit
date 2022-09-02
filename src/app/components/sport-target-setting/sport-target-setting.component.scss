@@ -1,0 +1,162 @@
+@import 'font.scss';
+@import 'color.scss';
+@import 'transition.scss';
+@import 'transform.scss';
+@import 'drop-triangle.scss';
+@import 'overflow-scroll.scss';
+
+@mixin list-grid() {
+  display: grid;
+  grid-gap: 10px;
+  grid-template-columns: 120px 10px 140px 20px;
+  align-items: center;
+
+  @media (max-width: 767px) {
+    grid-template-columns: 120px 10px 120px 20px;
+    grid-gap: 5px;
+  }
+}
+
+.target__card {
+  margin: 10px 10px 10px 0;
+}
+
+.target__title {
+  text-align: center;
+  @include bold-font(20px);
+}
+
+.divide__content__bar {
+  border-radius: 5px;
+  height: 5px;
+}
+
+.small__cycle {
+  background-color: rgba(126, 206, 244, 1);
+}
+
+.big__cycle {
+  background: linear-gradient(90deg, rgba(255, 166, 0, 1) 0%, rgba(255, 218, 0, 1) 100%);
+}
+
+.condition__list {
+  padding: 0;
+}
+
+.condition__list__item {
+  @include list-grid();
+  list-style: none;
+  margin: 5px 0;
+}
+
+.condition__type__name {
+  grid-column: 1/2;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.condition__symbol {
+  grid-column: 2/3;
+}
+
+.condition__value__block {
+  grid-column: 3/4;
+  background: linear-gradient(white, white) padding-box,
+    linear-gradient(180deg, rgba(223, 58, 58, 1) 0%, rgba(197, 73, 184, 1) 100%) border-box;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.condition__value {
+  background-color: rgba(67, 67, 67, 1);
+  color: white;
+  border-radius: 12px;
+  height: 24px;
+  margin-right: 5px;
+  padding: 0 12px;
+}
+
+.condition__delete__button {
+  grid: 4/5;
+  color: rgba(200, 0, 0, 1);
+  padding: 0;
+}
+
+.delete__icon {
+  font-size: 20px;
+}
+
+.filed__name__list {
+  $shadow: 4px rgba(0, 0, 0, 0.3);
+  position: absolute;
+  right: 0;
+  z-index: 1;
+  background-color: white;
+  cursor: pointer;
+  list-style: none;
+  padding: 5px;
+  margin: 0;
+  box-shadow: 2px 2px $shadow, -2px 2px $shadow, 2px -2px $shadow, -2px -2px $shadow;
+  min-width: 100px;
+  max-height: 120px;
+  @include overflow-y-scroll();
+}
+
+.new__condition__row {
+  @include list-grid();
+}
+
+.filed__name__selector {
+  position: relative;
+  grid-column: 1/2;
+  text-align: end;
+}
+
+.condition__input__block {
+  grid-column: 3/4;
+}
+
+.drop__list {
+  cursor: pointer;
+  border-bottom: 1px solid black;
+}
+
+.drop__list__item {
+  padding: 0 5px;
+
+  &:hover {
+    color: white;
+    background-color: $primary-blue;
+  }
+}
+
+.unfold__icon {
+  display: inline-block;
+  font-size: 20px;
+  @include transition(transform);
+}
+
+.fold__icon {
+  @include drop-active();
+}
+
+.condition__value__input {
+  $height: 26px;
+  $width: 80px;
+  width: $width;
+  min-width: $width;
+  height: $height;
+  border-radius: $height;
+  padding: 0 5px;
+}
+
+/************************************ media ***********************/
+
+@media (max-width: 767px) {
+  .condition__value__block {
+    background: none;
+    border: none;
+    padding: 0;
+  }
+}

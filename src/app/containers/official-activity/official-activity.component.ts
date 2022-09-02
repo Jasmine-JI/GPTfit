@@ -25,7 +25,11 @@ import {
   getLocalStorageObject,
   getCurrentTimestamp,
   deepCopy,
+  checkResponse,
 } from '../../shared/utils/index';
+import { Api50xxService } from '../../core/services/api-50xx.service';
+import { StationMailService } from '../station-mail/services/station-mail.service';
+import { appPath } from '../../app-path.const';
 
 const errorMsg = 'Something error! Please try again later.';
 
@@ -85,6 +89,8 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     focusInput: false,
     clickSubmit: false,
     fixFooter: false,
+    showStationMailList: false,
+    haveNewMail: false,
   };
 
   /**
@@ -138,6 +144,8 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
   agreeDeclaration = false;
   activityKeyword = '';
   requestHeader = {};
+  mailNotify: NodeJS.Timeout;
+  notifyUpdateTime: number | null = null;
   readonly SignTypeEnum = SignTypeEnum;
   readonly countryCodeList = codes;
 
@@ -153,7 +161,9 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     private snackbar: MatSnackBar,
     private getClientIp: GetClientIpService,
     private signupService: SignupService,
-    private nodejsApiService: NodejsApiService
+    private nodejsApiService: NodejsApiService,
+    private api50xxService: Api50xxService,
+    private stationMailService: StationMailService
   ) {}
 
   ngOnInit(): void {
@@ -320,6 +330,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       .rxUserProfile.pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((res) => {
         this.userInfo = res;
+        this.pollingNewMail();
       });
   }
 
@@ -625,6 +636,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     this.uiFlag.showPersonalMenu = false;
     this.uiFlag.showEntryMenu = false;
     this.uiFlag.showCountryCodeList = false;
+    this.uiFlag.showStationMailList = false;
     this.globleEventSubscription.unsubscribe();
   }
 
@@ -1358,6 +1370,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     this.token = undefined;
     this.userInfo = undefined;
     this.auth.logout();
+    this.stopPollingNewMail();
   }
 
   /**
@@ -1376,11 +1389,12 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       case 'register':
         inputOrder = ['accountInput', 'passwordInput', 'nicknameInput'];
         break;
-      case 'forgetPassword':
+      case 'forgetPassword': {
         const { signInType } = this.authInfo;
         inputOrder =
           signInType === SignTypeEnum.phone ? ['accountInput', 'smsInput'] : ['accountInput'];
         break;
+      }
     }
 
     const finalStep = inputOrder.length - 1;
@@ -1407,20 +1421,23 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     this.uiFlag.clickSubmit = true;
     const passCheck = !alertElement && checkEmptyPass;
     switch (authBox) {
-      case 'login':
+      case 'login': {
         const { account: accountAlert } = this.authAlert;
         if (passCheck || accountAlert === 'mistake') this.login();
         break;
-      case 'register':
+      }
+      case 'register': {
         if (passCheck && this.agreeDeclaration) this.register();
         break;
-      case 'forgetPassword':
+      }
+      case 'forgetPassword': {
         const { signInType } = this.authInfo;
         if (passCheck || this.captchaImg) {
           signInType === SignTypeEnum.phone ? this.submitVerify() : this.sendVerify();
         }
 
         break;
+      }
       case 'resetPassword':
         if (passCheck) this.resetPassword();
         break;
@@ -1678,10 +1695,86 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   /**
+   * 顯示收件匣與否
+   * @param {MouseEvent}
+   */
+  showStationMailList(e: MouseEvent) {
+    e.stopPropagation();
+    const { showStationMailList } = this.uiFlag;
+    if (showStationMailList) {
+      this.unsubscribePluralEvent();
+    } else {
+      this.uiFlag.showStationMailList = true;
+      this.uiFlag.haveNewMail = false;
+      this.subscribePluralEvent();
+    }
+  }
+
+  /**
+   * 定時call api確認是否有最新郵件
+   */
+  pollingNewMail() {
+    if (this.auth.token) {
+      this.mailNotify = setInterval(() => {
+        this.checkNewMail();
+      }, 30000);
+    }
+  }
+
+  /**
+   * 取消確認是否有新郵件
+   */
+  stopPollingNewMail() {
+    if (this.mailNotify) clearInterval(this.mailNotify);
+  }
+
+  /**
+   * 確認是否有無最新信件
+   */
+  checkNewMail() {
+    const body = { token: this.auth.token };
+    this.api50xxService.fetchMessageNotifyFlagStatus(body).subscribe((res) => {
+      if (checkResponse(res, false)) {
+        const { status, updateTime } = res.flag;
+        const haveNewMail = status === 2;
+        if (haveNewMail && updateTime !== this.notifyUpdateTime) {
+          this.uiFlag.haveNewMail = true;
+          this.stationMailService.setNewMailNotify(true);
+        }
+      } else {
+        this.uiFlag.haveNewMail = false;
+      }
+    });
+  }
+
+  /**
+   * 轉導至收件匣
+   * @param e {MouseEvent}
+   */
+  navigateInbox(e: MouseEvent) {
+    e.preventDefault();
+    const {
+      stationMail: { home, inbox },
+    } = appPath;
+    this.router.navigateByUrl(`/dashboard/${home}/${inbox}`);
+  }
+
+  /**
+   * 轉導至建立新訊息頁面
+   */
+  navigateNewMailPage() {
+    const {
+      stationMail: { home, newMail },
+    } = appPath;
+    this.router.navigateByUrl(`/dashboard/${home}/${newMail}`);
+  }
+
+  /**
    * 解除rxjs訂閱和計時器
    */
   ngOnDestroy() {
-    if (this.intervals) window.clearInterval(this.intervals);
+    if (this.intervals) clearInterval(this.intervals);
+    this.stopPollingNewMail();
     this.stopCarousel();
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();

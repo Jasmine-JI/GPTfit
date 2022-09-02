@@ -1,5 +1,5 @@
-import { SportsTarget } from '../classes/sports-target';
 import { ReportCondition, ReportDateType } from '../models/report-condition';
+import { TargetConditionMap } from '../../core/models/api/api-common/sport-target.model';
 
 /**
  * 各運動類別共通所需數據
@@ -144,7 +144,7 @@ export type Regression = 'up' | 'down';
  */
 export interface SportsParameter {
   openPrivacy: boolean;
-  target?: SportsTarget;
+  targetCondition?: TargetConditionMap;
   condition?: ReportCondition;
   data?: Array<any>;
   timeType?: ReportDateType;

@@ -107,7 +107,7 @@ export class CloudRunGpxComponent implements OnInit {
               this.isInChinaArea = true;
             }
             if (
-              _point.hasOwnProperty('latitudeDegrees') &&
+              Object.prototype.hasOwnProperty.call(_point, 'latitudeDegrees') &&
               +_point.latitudeDegrees !== 100 &&
               _point.latitudeDegrees &&
               !isSomeGpsPoint

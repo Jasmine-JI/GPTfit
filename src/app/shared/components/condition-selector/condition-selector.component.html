@@ -11,6 +11,14 @@
   </button>
   <ng-container *ngIf="uiFlag.unfold">
     <div class="flexCol selector__content">
+      <div class="flexRow advanced__target__option">
+        <span>{{ 'universal_app_advanced' | translate }}</span>
+        <button
+          class="rod__bar"
+          [class.rod__bar--active]="advancedOptionStatus"
+          (click)="changeAdvancedTargetStatus()"
+        ></button>
+      </div>
       <div
         class="flexRow group__selector"
         *ngIf="reportCondition.group && reportCondition.group.currentLevel < GroupLevel.class"
@@ -87,78 +95,96 @@
         </div>
       </div>
       <div class="flexRow date__selector__section">
-        <div class="flexCol date__setting__section gray__background__section">
-          <h6 class="date__unit__title">
-            <i class="icon-svg_web-icon_p3_085-period date__unit__icon"></i>
-            {{ 'universal_deviceSetting_unit' | translate }}
-          </h6>
-          <div class="flexRow drop__list date__drop" (click)="showDateUnitList($event)">
-            <span class="current__list__selected" [ngSwitch]="reportCondition.dateUnit.unit">
-              <ng-container *ngSwitchCase="DateUnit.day">
-                {{ 'universal_time_day' | translate }}
-              </ng-container>
-              <ng-container *ngSwitchCase="DateUnit.week">
-                {{ 'universal_time_week' | translate }}
-              </ng-container>
-              <ng-container *ngSwitchCase="DateUnit.month">
-                {{ 'universal_time_months' | translate }}
-              </ng-container>
-              <ng-container *ngSwitchCase="DateUnit.season">
-                {{ 'universal_system_season' | translate }}
-              </ng-container>
-              <ng-container *ngSwitchCase="DateUnit.year">
-                {{ 'universal_time_year' | translate }}
-              </ng-container>
-            </span>
-            <i
-              class="icon-svg_web-icon_p1_006-unfold drop__icon"
-              [class.drop__icon--active]="uiFlag.showDateUnitList"
-            ></i>
-            <ul class="unordered__list date__drop__list" *ngIf="uiFlag.showDateUnitList">
-              <li class="date__unit__list" (click)="selectDateUnit(DateUnit.day)">
-                {{ 'universal_time_day' | translate }}
-              </li>
-              <li class="date__unit__list" (click)="selectDateUnit(DateUnit.week)">
-                {{ 'universal_time_week' | translate }}
-              </li>
-              <li class="date__unit__list" (click)="selectDateUnit(DateUnit.month)">
-                {{ 'universal_time_months' | translate }}
-              </li>
-              <li class="date__unit__list" (click)="selectDateUnit(DateUnit.season)">
-                {{ 'universal_system_season' | translate }}
-              </li>
-              <li class="date__unit__list" (click)="selectDateUnit(DateUnit.year)">
-                {{ 'universal_time_year' | translate }}
-              </li>
-            </ul>
+        <div class="flexCol unit__selector__section" *ngIf="advancedOptionStatus">
+          <div class="flexCol date__setting__section gray__background__section">
+            <h6 class="date__unit__title">
+              <i class="icon-svg_web-icon_p3_085-period date__unit__icon"></i>
+              {{ 'universal_activityData_report' | translate }}
+            </h6>
+            <div class="flexRow drop__list date__drop" (click)="showDateUnitList($event)">
+              <span class="current__list__selected">
+                {{ reportCondition.dateUnit.unit | dateUnitKey | translate }}
+              </span>
+              <i
+                class="icon-svg_web-icon_p1_006-unfold drop__icon"
+                [class.drop__icon--active]="uiFlag.showDateUnitList"
+              ></i>
+              <ul class="unordered__list date__drop__list" *ngIf="uiFlag.showDateUnitList">
+                <ng-container
+                  *ngTemplateOutlet="
+                    dateUnitList;
+                    context: {
+                      action: selectDateUnit.bind(this)
+                    }
+                  "
+                ></ng-container>
+              </ul>
+            </div>
+          </div>
+
+          <div
+            class="flexCol date__setting__section gray__background__section"
+            *ngIf="reportCondition.sportType"
+          >
+            <h6 class="date__unit__title">
+              <i class="icon-svg_web-icon_p3_010-target date__unit__icon"></i>
+              {{ 'universal_lifeTracking_target' | translate }}
+            </h6>
+            <div class="flexRow drop__list date__drop" (click)="showTargetUnitList($event)">
+              <span class="current__list__selected">
+                {{ reportCondition.targetUnit | dateUnitKey | translate }}
+              </span>
+              <i
+                class="icon-svg_web-icon_p1_006-unfold drop__icon"
+                [class.drop__icon--active]="uiFlag.showTargetUnitList"
+              ></i>
+              <ul class="unordered__list date__drop__list" *ngIf="uiFlag.showTargetUnitList">
+                <ng-container
+                  *ngTemplateOutlet="
+                    dateUnitList;
+                    context: {
+                      action: selectTargetUnit.bind(this)
+                    }
+                  "
+                ></ng-container>
+              </ul>
+            </div>
           </div>
         </div>
         <div
-          *ngTemplateOutlet="
-            dateRangeTemplate;
-            context: {
-              startTime: reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD'),
-              endTime: reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD'),
-              dateUnit,
-              type: 'base'
-            }
-          "
-        ></div>
-        <div
-          *ngTemplateOutlet="
-            dateRangeTemplate;
-            context: {
-              startTime: reportCondition.compareTime
-                ? reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD')
-                : null,
-              endTime: reportCondition.compareTime
-                ? reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD')
-                : null,
-              dateUnit,
-              type: 'compare'
-            }
-          "
-        ></div>
+          class="calender__selector__section"
+          [ngClass]="{
+            flexCol: advancedOptionStatus,
+            flexRow: !advancedOptionStatus
+          }"
+        >
+          <div
+            *ngTemplateOutlet="
+              dateRangeTemplate;
+              context: {
+                startTime: reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD'),
+                endTime: reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD'),
+                dateUnit,
+                type: 'base'
+              }
+            "
+          ></div>
+          <div
+            *ngTemplateOutlet="
+              dateRangeTemplate;
+              context: {
+                startTime: reportCondition.compareTime
+                  ? reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD')
+                  : null,
+                endTime: reportCondition.compareTime
+                  ? reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD')
+                  : null,
+                dateUnit,
+                type: 'compare'
+              }
+            "
+          ></div>
+        </div>
       </div>
       <div class="flexRow sport__type__selector" *ngIf="reportCondition.sportType">
         <button
@@ -299,7 +325,7 @@
           </ng-container>
         </span>
       </div>
-      <div>
+      <div *ngIf="advancedOptionStatus">
         <div
           class="drop__list"
           (click)="
@@ -377,10 +403,18 @@
           *ngIf="type === 'base' ? uiFlag.showBaseDateRangeList : uiFlag.showCompareDateRangeList"
         >
           <ng-container *ngIf="type === 'base'">
-            <li class="date__range__list" (click)="selectBaseDateRange('today')">
+            <li
+              class="date__range__list"
+              (click)="selectBaseDateRange('today')"
+              *ngIf="reportCondition.dateUnit.unit === DateUnit.day"
+            >
               {{ 'universal_time_today' | translate }}
             </li>
-            <li class="date__range__list" (click)="selectBaseDateRange('sevenDay')">
+            <li
+              class="date__range__list"
+              (click)="selectBaseDateRange('sevenDay')"
+              *ngIf="reportCondition.dateUnit.unit === DateUnit.day"
+            >
               {{
                 'universal_deviceSetting_lastNumberUnit'
                   | translate
@@ -390,7 +424,11 @@
                       }
               }}
             </li>
-            <li class="date__range__list" (click)="selectBaseDateRange('thirtyDay')">
+            <li
+              class="date__range__list"
+              (click)="selectBaseDateRange('thirtyDay')"
+              *ngIf="reportCondition.dateUnit.unit === DateUnit.day"
+            >
               {{
                 'universal_deviceSetting_lastNumberUnit'
                   | translate
@@ -400,7 +438,11 @@
                       }
               }}
             </li>
-            <li class="date__range__list" (click)="selectBaseDateRange('sixMonth')">
+            <li
+              class="date__range__list"
+              (click)="selectBaseDateRange('sixMonth')"
+              *ngIf="reportCondition.dateUnit.unit === DateUnit.month"
+            >
               {{
                 'universal_deviceSetting_lastNumberUnit'
                   | translate
@@ -410,24 +452,54 @@
                       }
               }}
             </li>
-            <li class="date__range__list" (click)="selectBaseDateRange('thisWeek')">
+            <li
+              class="date__range__list"
+              (click)="selectBaseDateRange('thisWeek')"
+              *ngIf="reportCondition.dateUnit.unit <= DateUnit.week"
+            >
               {{ 'universal_time_thisWeek' | translate }}
             </li>
-            <li class="date__range__list" (click)="selectBaseDateRange('thisMonth')">
+            <li
+              class="date__range__list"
+              (click)="selectBaseDateRange('thisMonth')"
+              *ngIf="
+                reportCondition.dateUnit.unit === DateUnit.month ||
+                reportCondition.dateUnit.unit === DateUnit.day
+              "
+            >
               {{ 'universal_time_thisMonth' | translate }}
             </li>
-            <li class="date__range__list" (click)="selectBaseDateRange('thisYear')">
+            <li
+              class="date__range__list"
+              (click)="selectBaseDateRange('thisYear')"
+              *ngIf="reportCondition.dateUnit.unit >= DateUnit.month"
+            >
               {{ 'universal_time_thisYear' | translate }}
             </li>
           </ng-container>
           <ng-container *ngIf="type === 'compare'">
-            <li class="date__range__list" (click)="selectCompareDateRange('lastWeek')">
+            <li
+              class="date__range__list"
+              (click)="selectCompareDateRange('lastWeek')"
+              *ngIf="reportCondition.dateUnit.unit <= DateUnit.week"
+            >
               {{ 'universal_time_lastWeek' | translate }}
             </li>
-            <li class="date__range__list" (click)="selectCompareDateRange('lastMonth')">
+            <li
+              class="date__range__list"
+              (click)="selectCompareDateRange('lastMonth')"
+              *ngIf="
+                reportCondition.dateUnit.unit === DateUnit.month ||
+                reportCondition.dateUnit.unit === DateUnit.day
+              "
+            >
               {{ 'universal_time_lastMonth' | translate }}
             </li>
-            <li class="date__range__list" (click)="selectCompareDateRange('sameRangeLastYear')">
+            <li
+              class="date__range__list"
+              (click)="selectCompareDateRange('sameRangeLastYear')"
+              *ngIf="reportCondition.dateUnit.unit !== DateUnit.week"
+            >
               {{ 'universal_system_yoy' | translate }}
             </li>
             <li class="date__range__list" (click)="selectCompareDateRange('none')">
@@ -438,21 +510,45 @@
       </div>
     </div>
     <div class="flexRow date__range__input">
-      <input
-        type="date"
-        class="date__input"
-        [value]="startTime"
-        (focusout)="type === 'base' ? baseStartTimeChange($event) : compareStartTimeChange($event)"
-      />
-      ~
-      <input
-        type="date"
-        class="date__input"
-        [value]="endTime"
-        (focusout)="
-          type === 'base' ? baseEndTimeChange($event, type) : compareEndTimeChange($event)
+      <app-calender-selector
+        [calenderType]="reportCondition.dateUnit.unit"
+        [dayType]="'start'"
+        [weekDayLock]="type === 'base' ? weekDayLock.baseStart : weekDayLock.compareStart"
+        [assignTimestamp]="startTime"
+        (selectTimestamp)="
+          type === 'base' ? baseStartTimeChange($event) : compareStartTimeChange($event)
         "
-      />
+      ></app-calender-selector>
+      ~
+      <app-calender-selector
+        [calenderType]="reportCondition.dateUnit.unit"
+        [dayType]="'end'"
+        [weekDayLock]="weekDayLock.end"
+        [minDay]="type === 'base' ? endLimitDay.base.min : endLimitDay.compare.min"
+        [maxDay]="type === 'base' ? endLimitDay.base.max : endLimitDay.compare.max"
+        [assignTimestamp]="endTime"
+        (selectTimestamp)="
+          type === 'base' ? baseEndTimeChange($event) : compareEndTimeChange($event)
+        "
+      ></app-calender-selector>
     </div>
   </div>
+</ng-template>
+
+<ng-template #dateUnitList let-action="action">
+  <li class="date__unit__list" (click)="action(DateUnit.day)">
+    {{ 'universal_time_day' | translate }}
+  </li>
+  <li class="date__unit__list" (click)="action(DateUnit.week)">
+    {{ 'universal_time_week' | translate }}
+  </li>
+  <li class="date__unit__list" (click)="action(DateUnit.month)">
+    {{ 'universal_time_months' | translate }}
+  </li>
+  <li class="date__unit__list" (click)="action(DateUnit.season)">
+    {{ 'universal_system_season' | translate }}
+  </li>
+  <li class="date__unit__list" (click)="action(DateUnit.year)">
+    {{ 'universal_time_year' | translate }}
+  </li>
 </ng-template>

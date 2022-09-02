@@ -3,6 +3,7 @@ import { BrandType, GroupLevel } from '../enum/professional';
 import { SportType } from '../enum/sports';
 import { DateRange } from '../classes/date-range';
 import { ReportDateUnit } from '../classes/report-date-unit';
+import { DateUnit } from '../enum/report';
 
 /**
  * 報告頁面可讓使用者篩選的條件
@@ -85,32 +86,33 @@ export interface ReportCondition {
   moduleType: ModuleType;
   pageType: PageType;
   baseTime: DateRange;
-  compareTime?: DateRange;
+  compareTime?: DateRange | null;
   dateUnit?: ReportDateUnit;
+  targetUnit?: DateUnit;
   group?: {
     brandType: BrandType;
     currentLevel: GroupLevel;
     focusGroup: {
-      id: string;
-      level: GroupLevel;
-      name: string;
+      id: string | null;
+      level: GroupLevel | null;
+      name: string | null;
     };
-    brand: Array<GroupSimpleInfo>;
-    branches: Array<GroupSimpleInfo>;
-    classes: Array<GroupSimpleInfo>;
+    brand: Array<GroupSimpleInfo> | null;
+    branches: Array<GroupSimpleInfo> | null;
+    classes: Array<GroupSimpleInfo> | null;
   };
   sportType?: SportType;
   cloudRun?: {
-    mapId: number;
-    month: string;
-    checkCompletion: boolean;
+    mapId: number | null;
+    month: string | null;
+    checkCompletion: boolean | null;
   };
   filter?: {
     age?: {
-      min: number;
-      max: number;
+      min: number | null;
+      max: number | null;
     };
-    gender: Sex;
+    gender: Sex | null;
   };
   needRefreshData: boolean;
 }

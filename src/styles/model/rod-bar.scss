@@ -1,5 +1,6 @@
 @import 'transition.scss';
 @import 'color.scss';
+@import 'transform.scss';
 
 /*
  * rod bar樣式(switch bar)
@@ -32,5 +33,36 @@
     left: 22px;
     background-color: $rod-active-color;
     @include multiple-transition((left $move-effect, background-color $move-effect));
+  }
+}
+
+@mixin target-rod-bar($height: 10px, $width: 28px, $rod-size: 16px) {
+  position: relative;
+  height: $height;
+  width: $width;
+  border-radius: $height;
+  background-color: rgba(191, 191, 191, 1);
+  margin: 0 20px;
+
+  &:after {
+    content: '';
+    position: absolute;
+    width: $rod-size;
+    height: $rod-size;
+    left: calc(-#{$rod-size} / 2);
+    top: calc((#{$height} - #{$rod-size}) / 2);
+    background: linear-gradient(180deg, rgba(135, 135, 135, 1) 0%, rgba(28, 28, 28, 1) 100%);
+    border-radius: 50%;
+    @include transition(transform);
+  }
+}
+
+@mixin target-rod-bar-acitve($track-width: 28px) {
+  background-color: rgba(222, 58, 63, 0.45);
+
+  &:after {
+    background: linear-gradient(180deg, rgba(223, 58, 58, 1) 0%, rgba(197, 73, 184, 1) 100%);
+    transform: translateX($track-width);
+    @include transition(transform);
   }
 }

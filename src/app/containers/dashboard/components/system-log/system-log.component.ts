@@ -304,7 +304,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
       this.searchCondition.endTime = dayjs(this.selectedDate.endDate).format(apiDateFormat);
       const body = {};
       for (const key in this.searchCondition) {
-        if (this.searchCondition.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(this.searchCondition, key)) {
           const value = this.searchCondition[key];
           if (value !== null && (typeof value === 'number' || value.trim().length !== 0)) {
             Object.assign(body, { [key]: value });

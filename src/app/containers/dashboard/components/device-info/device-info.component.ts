@@ -472,7 +472,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
       this.userService.getUser().rxUserProfile,
     ];
     switch (displayPage) {
-      case 'fitPair':
+      case 'fitPair': {
         const uploadDeviceInfoBody = {
           token,
           uploadEquipmentSN: sn,
@@ -510,7 +510,8 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
             this.uiFlag.progress = 100;
           });
         break;
-      default:
+      }
+      default: {
         const getRelativeBody = (token: string, snKeyName: string, sn: string) => {
           return { token, [snKeyName]: sn };
         };
@@ -545,6 +546,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
             this.uiFlag.progress = 100;
           });
         break;
+      }
     }
   }
 
@@ -571,11 +573,11 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1100708
    */
   getManufactureTimestamp(sn: string): number {
-    const baseYear = 1952,
-      manufactureYear = sn.charCodeAt(0) + baseYear,
-      manufactureWeek = +sn.slice(1, 3),
-      manufactureTimestamp =
-        dayjs(manufactureYear, 'YYYY').valueOf() + manufactureWeek * 7 * 86400 * 1000;
+    const baseYear = 1952;
+    const manufactureYear = sn.charCodeAt(0) + baseYear;
+    const manufactureWeek = +sn.slice(1, 3);
+    const manufactureTimestamp =
+      dayjs(`${manufactureYear}`, 'YYYY').valueOf() + manufactureWeek * 7 * 86400 * 1000;
     return manufactureTimestamp;
   }
 

@@ -886,7 +886,10 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         newPointLen = point.length,
         lastPoint = point[newPointLen - 1];
       for (const key in lastPoint) {
-        if (lastPoint.hasOwnProperty(key) && repeatPoint.hasOwnProperty(key)) {
+        if (
+          Object.prototype.hasOwnProperty.call(lastPoint, key) &&
+          Object.prototype.hasOwnProperty.call(repeatPoint, key)
+        ) {
           if (key !== 'pointSecond' && lastPoint[key] && repeatPoint[key]) {
             lastPoint[key] = (+lastPoint[key] + +repeatPoint[key]) / 2;
           }
@@ -952,8 +955,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
         // 將各個所需資料分別合併為array，以供圖表使用
         this.needKey.forEach((_key) => {
-          if (_point.hasOwnProperty(_key)) {
-            this.activityPointLayer.hasOwnProperty(_key)
+          if (Object.prototype.hasOwnProperty.call(_point, _key)) {
+            Object.prototype.hasOwnProperty.call(this.activityPointLayer, _key)
               ? this.activityPointLayer[_key].push(+_point[_key])
               : Object.assign(this.activityPointLayer, { [_key]: [+_point[_key]] });
           }
@@ -1301,14 +1304,14 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           }
 
           // 將該分段數據進行加總
-          if (segmentTotal.hasOwnProperty(key)) {
+          if (Object.prototype.hasOwnProperty.call(segmentTotal, key)) {
             segmentTotal[key] += refYAxisData[apiKey][i] * scale;
           } else if (refYAxisData[apiKey]) {
             Object.assign(segmentTotal, { [key]: refYAxisData[apiKey][i] * scale });
           }
 
           // 確認是否為最後一個數據
-          if (i === dataLength - 1 && segmentTotal.hasOwnProperty(key)) {
+          if (i === dataLength - 1 && Object.prototype.hasOwnProperty.call(segmentTotal, key)) {
             this.segmentData.yAxis[key].push(+segmentTotal[key].toFixed(1));
 
             if (_index === 0) {
@@ -1638,7 +1641,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           const valueLength = value.length;
           maxLength = valueLength > maxLength ? valueLength : maxLength;
           // 同key則將數據整合至一個array中
-          if (finalObj.hasOwnProperty(key)) {
+          if (Object.prototype.hasOwnProperty.call(finalObj, key)) {
             finalObj[key] = finalObj[key].concat(value);
           } else {
             Object.assign(finalObj, { [key]: value });
@@ -1654,7 +1657,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
               const childValue = childObj[childKey];
               const childIsArray = Array.isArray(childValue);
               // 同key則將數據整合至一個array中
-              if (finalObj.hasOwnProperty(mergeKey)) {
+              if (Object.prototype.hasOwnProperty.call(finalObj, mergeKey)) {
                 if (childIsArray) {
                   finalObj[mergeKey] = finalObj[mergeKey].concat(childValue);
                 } else {
@@ -1673,7 +1676,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
             const mergeKey = `${key}.${childKey}`;
             const childValue = childObj[childKey];
             const childIsArray = Array.isArray(childValue);
-            if (finalObj.hasOwnProperty(mergeKey)) {
+            if (Object.prototype.hasOwnProperty.call(finalObj, mergeKey)) {
               finalObj[mergeKey].push(childIsArray ? childValue[0] : childValue);
             } else {
               Object.assign(finalObj, { [mergeKey]: childIsArray ? childValue : [childValue] });
@@ -1681,7 +1684,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           }
         } else {
           // 同key則將數據整合至一個array中
-          if (finalObj.hasOwnProperty(key)) {
+          if (Object.prototype.hasOwnProperty.call(finalObj, key)) {
             finalObj[key].push(value[0]);
           } else {
             Object.assign(finalObj, { [key]: value });

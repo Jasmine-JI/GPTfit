@@ -13,4 +13,5 @@ export enum LocalStorageKey {
   count = 'count', // 用來避免過度使用qrcode登入
   eventDraft = 'eventDraft', // 活動內容草稿
   token = 'ala_token', // 登入權杖
+  advancedSportsTarget = 'ast', // 群組與個人運動目標進階選項開關
 }

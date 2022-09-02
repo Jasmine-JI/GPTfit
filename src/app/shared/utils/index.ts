@@ -259,12 +259,12 @@ export function getMuscleGroupTranslation(translate: TranslateService) {
 
 /**
  * 計算百分比數據
- * @param molecular {number}-分子
+ * @param numerator {number}-分子
  * @param denominator {number}-分母
  * @param decimal {number}-四捨五入位數
  */
-export function countPercentage(molecular: number, denominator: number, decimal = 0) {
-  return mathRounding(((molecular ?? 0) / (denominator || Infinity)) * 100, decimal);
+export function countPercentage(numerator: number, denominator: number, decimal = 0) {
+  return mathRounding(((numerator ?? 0) / (denominator || Infinity)) * 100, decimal);
 }
 
 /**

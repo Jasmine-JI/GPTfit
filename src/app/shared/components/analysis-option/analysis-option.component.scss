@@ -1,6 +1,7 @@
 @import 'min-size.scss';
 @import 'check-box.scss';
 @import 'color.scss';
+@import 'overflow-scroll.scss';
 
 .option__menu {
   $shadow-blur: 4px rgba(0, 0, 0, 0.5);
@@ -10,11 +11,11 @@
   z-index: 5;
   padding: 5px;
   max-height: 250px;
-  overflow-y: scroll;
   background-color: white;
   box-shadow: $shadow-offset $shadow-offset $shadow-blur,
     calc(-#{$shadow-offset}) $shadow-offset $shadow-blur;
   @include min-width(200px);
+  @include overflow-y-scroll();
 }
 
 .option__menu__list {

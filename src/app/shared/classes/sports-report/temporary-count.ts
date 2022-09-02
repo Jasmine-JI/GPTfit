@@ -26,7 +26,7 @@ export class TemporaryCount {
       if (!this.storage[key]) this.storage[key] = 0;
     },
     getValue: function (key: string) {
-      return this.storage[key] === 0 ? Infinity : this.storage[key]; // 避免因除數為0造成infinity的結果
+      return !this.storage[key] || this.storage[key] === 0 ? Infinity : this.storage[key]; // 避免因除數為0造成infinity的結果
     },
     initStorage: function () {
       this.storage = {};
@@ -68,6 +68,7 @@ export class TemporaryCount {
           if ((this._countObj[_key] ?? Infinity) > checkValue) this._countObj[_key] = checkValue;
         } else {
           // 平均數據需依運動數目加權回來再進行加總
+
           if (checkValue) this._effectActivities.addValue(_key, totalActivities);
           const totalValue = isAvgData(_key) ? checkValue * totalActivities : checkValue;
           this._countObj[_key] = this._countObj[_key]

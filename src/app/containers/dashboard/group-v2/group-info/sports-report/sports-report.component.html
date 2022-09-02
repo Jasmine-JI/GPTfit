@@ -7,7 +7,7 @@
 <app-condition-selector
   [progress]="uiFlag.progress"
   [initialCondition]="initReportCondition"
-  (onConfirm)="getReportCondition($event)"
+  (confirm)="getReportCondition($event)"
   *ngIf="getGroupInfo().groupDetail"
 ></app-condition-selector>
 <article class="flexCol report-mainContent" *ngIf="reportCondition && groupSportsInfo">
@@ -43,37 +43,39 @@
         >
       </h6>
     </div>
-    <div class="flexRow">
-      <div class="report-targetCycle">
-        {{
-          'universal_activityData_everyUnit'
-            | translate
-              : {
-                  number: '',
-                  unit:
-                    ((sportsTarget.groupSportTarget.cycle === DateUnit.week
-                      ? 'universal_time_week'
-                      : 'universal_time_day'
-                    ) | translate)
-                }
-        }}
-      </div>
-      <div class="flexRowWrap">
-        <span
-          class="report-targetCondition"
-          *ngFor="let _condition of sportsTarget.groupSportTarget.condition"
-        >
-          {{ _condition.filedName | targetFieldName | translate }}
-          &ge;
-          {{
-            _condition.filedName.toLocaleLowerCase().includes('time')
-              ? _condition.filedValue / 60
-              : _condition.filedValue
-          }}
-          {{ _condition.filedName | targetFieldUnit | translate }}
-        </span>
-      </div>
-    </div>
+    <div
+      *ngTemplateOutlet="
+        sportTargetInfo;
+        context: {
+          diffRange: 1,
+          condition: sportsTargetCondition
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        sportTargetInfo;
+        context: {
+          diffRange: diffTime.base,
+          condition: sportsTargetCondition,
+          startTime: reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD'),
+          endTime: reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD')
+        }
+      "
+    ></div>
+    <ng-container *ngIf="uiFlag.isCompareMode">
+      <div
+        *ngTemplateOutlet="
+          sportTargetInfo;
+          context: {
+            diffRange: diffTime.compare,
+            condition: sportsTargetCondition,
+            startTime: reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD'),
+            endTime: reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD')
+          }
+        "
+      ></div>
+    </ng-container>
   </section>
 
   <section class="report-section">
@@ -356,10 +358,16 @@
               "
             ></div>
           </ng-container>
-          <span class="report-targetLineHint" *ngIf="getAssignCondition('totalTime')">
+          <span
+            class="report-targetLineHint"
+            *ngIf="
+              reportCondition.dateUnit.unit === reportCondition.targetUnit &&
+              getAssignCondition('totalTime')
+            "
+          >
             {{ 'universal_vocabulary_targetTime' | translate }}
             {{ getAssignCondition('totalTime') | sportTime }}/{{
-              reportCondition.dateUnit.getUnitI18nKey() | translate
+              reportCondition.targetUnit | dateUnitKey | translate
             }}
           </span>
         </div>
@@ -367,7 +375,7 @@
           <app-compare-column-trend
             [data]="groupChartData.totalSecondTrend.chartData"
             [type]="'totalTime'"
-            [condition]="transformCondition"
+            [conditionValue]="getAssignCondition('totalTime')"
             [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
             *ngIf="groupChartData.totalSecondTrend.chartData"
           ></app-compare-column-trend>
@@ -431,17 +439,23 @@
               "
             ></div>
           </ng-container>
-          <span class="report-targetLineHint" *ngIf="getAssignCondition('calories')">
+          <span
+            class="report-targetLineHint"
+            *ngIf="
+              reportCondition.dateUnit.unit === reportCondition.targetUnit &&
+              getAssignCondition('calories')
+            "
+          >
             {{ 'universal_lifeTracking_targetCalories' | translate }}
             {{ getAssignCondition('calories') }}
-            car/{{ reportCondition.dateUnit.getUnitI18nKey() | translate }}
+            car/{{ reportCondition.targetUnit | dateUnitKey | translate }}
           </span>
         </div>
         <div class="report-chartFigure">
           <app-compare-column-trend
             [data]="groupChartData.caloriesTrend.chartData"
             [type]="'calories'"
-            [condition]="transformCondition"
+            [conditionValue]="getAssignCondition('calories')"
             [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
             *ngIf="groupChartData.caloriesTrend.chartData"
           ></app-compare-column-trend>
@@ -449,15 +463,7 @@
       </div>
     </div>
 
-    <div
-      class="flexCol"
-      *ngIf="
-        !(
-          sportsTarget.groupSportTarget.cycle === DateUnit.week &&
-          reportCondition.dateUnit.unit === DateUnit.day
-        )
-      "
-    >
+    <div class="flexCol">
       <h6 class="report-trendChartTitle">
         {{ 'universal_vocabulary_targetAchievementRate' | translate }}
       </h6>
@@ -471,7 +477,6 @@
           <app-compare-column-trend
             [data]="groupChartData.achievementRate.chartData"
             [type]="'achievementRate'"
-            [condition]="[]"
             [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
             *ngIf="groupChartData.achievementRate.chartData"
           ></app-compare-column-trend>
@@ -2675,6 +2680,16 @@
         *ngTemplateOutlet="
           oneInfoData;
           context: {
+            data: getPeopleNumber(memberNumber, memberNumber - infoData.targetAchievedPeople),
+            type: 'notAchievedPeople',
+            isBaseData
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          oneInfoData;
+          context: {
             data: getPerAvgData(infoData, 'totalActivities'),
             type: 'perActivities',
             isBaseData
@@ -2887,6 +2902,9 @@
       </ng-container>
       <ng-container *ngSwitchCase="'targetAchievedPeople'">
         {{ 'universal_lifeTracking_achievementRate' | translate }}
+      </ng-container>
+      <ng-container *ngSwitchCase="'notAchievedPeople'">
+        {{ 'universal_vocabulary_missTarget' | translate }}
       </ng-container>
       <ng-container *ngSwitchCase="'perBenefitTime'">
         {{ 'universal_activityData_perCapita' | translate }}
@@ -3168,6 +3186,53 @@
       </span>
       <span class="report-chartDataValue">
         {{ value }}
+      </span>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template
+  #sportTargetInfo
+  let-diffRange="diffRange"
+  let-condition="condition"
+  let-startTime="startTime"
+  let-endTime="endTime"
+>
+  <div class="flexCol">
+    <div class="report-targetCycle" *ngIf="!startTime">
+      {{
+        'universal_activityData_everyUnit'
+          | translate
+            : {
+                number: '',
+                unit: (reportCondition.targetUnit | dateUnitKey | translate)
+              }
+      }}
+    </div>
+    <div class="report-targetCycle" *ngIf="startTime">
+      <span class="report-compareDate"> {{ startTime }} ~ {{ endTime }} </span>
+    </div>
+    <div class="flexRowWrap">
+      <span class="report-targetCondition" *ngFor="let _condition of condition | keyvalue">
+        {{ _condition.key | translateKey | translate }}
+        &ge;
+        <ng-container *ngIf="_condition.key === 'totalTime' || _condition.key === 'benefitTime'">
+          {{ (_condition.value.filedValue * diffRange) / 60 | number: '1.0-0' }}
+        </ng-container>
+        <ng-container *ngIf="_condition.key === 'pai' || _condition.key === 'avgHeartRate'">
+          {{ _condition.value.filedValue }}
+        </ng-container>
+        <ng-container
+          *ngIf="
+            _condition.key !== 'totalTime' &&
+            _condition.key !== 'benefitTime' &&
+            _condition.key !== 'pai' &&
+            _condition.key !== 'avgHeartRate'
+          "
+        >
+          {{ _condition.value.filedValue * diffRange | number: '1.0-0' }}
+        </ng-container>
+        {{ _condition.key | translateUnitKey | translate }}
       </span>
     </div>
   </div>

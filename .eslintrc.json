@@ -29,7 +29,29 @@
         "prettier"
       ],
       "rules": {
+        "@angular-eslint/directive-selector": [
+          "warn",
+          {
+            "type": "attribute",
+            "prefix": "app",
+            "style": "camelCase"
+          }
+        ],
+        "@angular-eslint/component-selector": [
+          "warn",
+          {
+            "type": "element",
+            "prefix": "app",
+            "style": "kebab-case"
+          }
+        ],
+        "@typescript-eslint/no-empty-function": [
+          "off"
+        ],
         "@angular-eslint/no-empty-lifecycle-method": [
+          "off"
+        ],
+        "@typescript-eslint/no-non-null-assertion": [
           "off"
         ]
       }
