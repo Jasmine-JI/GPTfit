@@ -92,7 +92,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     baseTime: new DateRange(thisWeek.startTime, thisWeek.endTime),
     compareTime: null,
     dateUnit: new ReportDateUnit(DateUnit.week),
-    targetUnit: DateUnit.week,
+    targetUnit: new ReportDateUnit(DateUnit.week),
     group: {
       brandType: BrandType.brand,
       currentLevel: GroupLevel.class,
@@ -368,8 +368,10 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     if (this.uiFlag.progress === 100) {
       this.uiFlag.progress = 30;
       this.reportCondition = deepCopy(condition);
-      const { group, sportType, baseTime, compareTime, dateUnit, needRefreshData } = condition;
-      this.diffTime = this.getDiffTime(dateUnit.getUnitString(), baseTime, compareTime);
+      const { group, sportType, baseTime, compareTime, dateUnit, targetUnit, needRefreshData } =
+        condition;
+      const targetUnitString = targetUnit.getUnitString();
+      this.diffTime = this.getDiffTime(targetUnitString, baseTime, compareTime);
       const { id, level } = group.focusGroup;
       const reportDayType = dateUnit.getReportDateType(baseTime.startTimestamp);
 
@@ -443,9 +445,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * @param compareTime {DateRange}-比較時間
    */
   getDiffTime(unit: string, baseTime: DateRange, compareTime: DateRange) {
+    const baseDiffRange = baseTime.getDiffRange(unit);
+    const compareDiffRange = compareTime ? compareTime.getDiffRange(unit) : null;
     return {
-      base: baseTime.getDiffRange(unit) + 1,
-      compare: compareTime ? compareTime.getDiffRange(unit) + 1 : null,
+      base: baseDiffRange,
+      compare: compareDiffRange,
     };
   }
 
@@ -538,7 +542,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     const { groupDetail } = this.getGroupInfo();
     this.sportsTargetCondition = this.groupService
       .getSportsTarget(groupDetail)
-      .getArrangeCondition(condition.targetUnit);
+      .getArrangeCondition(condition.targetUnit.unit);
     this.handlePersonalData(
       'base',
       condition,

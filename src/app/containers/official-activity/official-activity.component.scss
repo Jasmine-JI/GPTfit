@@ -464,6 +464,7 @@ $alert-icon-color: rgba(255, 56, 56, 1);
 
 .mail__button__section {
   position: relative;
+  margin-right: 5px;
 }
 
 .mail__button {
@@ -473,26 +474,19 @@ $alert-icon-color: rgba(255, 56, 56, 1);
 
 .alert__icon__mail {
   position: absolute;
-  color: $alert-icon-color;
+  color: rgba(255, 237, 20, 1);
   font-size: 24px;
-  right: -5px;
-  bottom: -5px;
+  right: 0;
+  bottom: 0;
   cursor: pointer;
-}
-
-.alert__icon__enable {
-  color: $alert-icon-color;
-  font-size: 30px;
-  position: absolute;
-  right: -15px;
-  bottom: 0px;
 }
 
 .brief__mail__list {
   $shodow-color: rgba(200, 200, 200, 1);
   $width: 250px;
   position: absolute;
-  top: 30px;
+  top: 35px;
+  right: -40px;
   background-color: white;
   color: black;
   z-index: 10;

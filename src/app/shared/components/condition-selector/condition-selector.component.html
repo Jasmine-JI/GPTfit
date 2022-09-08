@@ -132,7 +132,7 @@
             </h6>
             <div class="flexRow drop__list date__drop" (click)="showTargetUnitList($event)">
               <span class="current__list__selected">
-                {{ reportCondition.targetUnit | dateUnitKey | translate }}
+                {{ reportCondition.targetUnit.unit | dateUnitKey | translate }}
               </span>
               <i
                 class="icon-svg_web-icon_p1_006-unfold drop__icon"

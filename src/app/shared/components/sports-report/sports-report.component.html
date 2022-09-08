@@ -515,13 +515,13 @@
           <span
             class="report-targetLineHint"
             *ngIf="
-              reportCondition.dateUnit.unit === reportCondition.targetUnit &&
+              reportCondition.dateUnit.unit === reportCondition.targetUnit.unit &&
               getAssignCondition('totalTime')
             "
           >
             {{ 'universal_vocabulary_targetTime' | translate }}
             {{ getAssignCondition('totalTime') | sportTime }}/{{
-              reportCondition.targetUnit | dateUnitKey | translate
+              reportCondition.targetUnit.unit | dateUnitKey | translate
             }}
           </span>
         </div>
@@ -613,13 +613,13 @@
           <span
             class="report-targetLineHint"
             *ngIf="
-              reportCondition.dateUnit.unit === reportCondition.targetUnit &&
+              reportCondition.dateUnit.unit === reportCondition.targetUnit.unit &&
               getAssignCondition('benefitTime')
             "
           >
             {{ 'universal_training_targetEffectiveTime' | translate }}
             {{ getAssignCondition('benefitTime') | sportTime }}/{{
-              reportCondition.targetUnit | dateUnitKey | translate
+              reportCondition.targetUnit.unit | dateUnitKey | translate
             }}
           </span>
         </div>
@@ -711,7 +711,7 @@
           <span
             class="report-targetLineHint"
             *ngIf="
-              reportCondition.dateUnit.unit === reportCondition.targetUnit &&
+              reportCondition.dateUnit.unit === reportCondition.targetUnit.unit &&
               getAssignCondition('pai')
             "
           >
@@ -807,13 +807,13 @@
           <span
             class="report-targetLineHint"
             *ngIf="
-              reportCondition.dateUnit.unit === reportCondition.targetUnit &&
+              reportCondition.dateUnit.unit === reportCondition.targetUnit.unit &&
               getAssignCondition('totalActivities')
             "
           >
             {{ 'universal_training_targetTimes' | translate }}
             {{ getAssignCondition('totalActivities') }}/{{
-              reportCondition.targetUnit | dateUnitKey | translate
+              reportCondition.targetUnit.unit | dateUnitKey | translate
             }}
           </span>
         </div>
@@ -905,13 +905,13 @@
           <span
             class="report-targetLineHint"
             *ngIf="
-              reportCondition.dateUnit.unit === reportCondition.targetUnit &&
+              reportCondition.dateUnit.unit === reportCondition.targetUnit.unit &&
               getAssignCondition('calories')
             "
           >
             {{ 'universal_lifeTracking_targetCalories' | translate }}
             {{ getAssignCondition('calories') }}
-            car/{{ reportCondition.targetUnit | dateUnitKey | translate }}
+            car/{{ reportCondition.targetUnit.unit | dateUnitKey | translate }}
           </span>
         </div>
         <div class="report-chartFigure">
@@ -1014,13 +1014,13 @@
           <span
             class="report-targetLineHint"
             *ngIf="
-              reportCondition.dateUnit.unit === reportCondition.targetUnit &&
+              reportCondition.dateUnit.unit === reportCondition.targetUnit.unit &&
               getAssignCondition('avgHeartRate')
             "
           >
             {{ 'universal_activityData_avgHr' | translate }}
             {{ getAssignCondition('avgHeartRate') }}
-            bpm/{{ reportCondition.targetUnit | dateUnitKey | translate }}
+            bpm/{{ reportCondition.targetUnit.unit | dateUnitKey | translate }}
           </span>
         </div>
         <div class="report-chartFigure">
@@ -3025,7 +3025,7 @@
           | translate
             : {
                 number: '',
-                unit: (reportCondition.targetUnit | dateUnitKey | translate)
+                unit: (reportCondition.targetUnit.unit | dateUnitKey | translate)
               }
       }}
     </div>

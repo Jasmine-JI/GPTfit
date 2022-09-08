@@ -276,7 +276,7 @@ export class ProfessionalAnalysisOption {
     const { reportType, object } = this._optionInfo;
     let list = [];
     switch (reportType) {
-      case 'sports':
+      case 'sports': {
         const groupColumn = [
           AnalysisSportsColumn.targetAchievedRate,
           AnalysisSportsColumn.activityPeople,
@@ -295,6 +295,7 @@ export class ProfessionalAnalysisOption {
 
         list = object === 'group' ? groupColumn : personColumn;
         break;
+      }
       case 'lifeTracking':
       case 'cloudrun':
         break;

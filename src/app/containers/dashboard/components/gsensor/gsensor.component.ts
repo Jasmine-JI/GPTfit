@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { fromEvent, Subject, Subscription } from 'rxjs';
-import { takeUntil, filter, tap } from 'rxjs/operators';
-import { deepCopy } from '../../../../shared/utils/index';
+import { takeUntil, filter, tap, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { appPath } from '../../../../app-path.const';
 import { chart } from 'highcharts';
@@ -43,7 +42,7 @@ const defaultOption = {
    * 振幅門檻係數
    * 用來獲取有效的重訓波形
    */
-  waveAmplitudeThreshold: 1 / 5,
+  waveAmplitudeThreshold: 1 / 2,
 
   /**
    * 波形有效最低時間(秒)（波長）
@@ -88,7 +87,7 @@ export class GsensorComponent implements OnInit, OnDestroy {
   /**
    * 重訓次數設定
    */
-  repsTarget = 10;
+  repsTarget = 20;
 
   /**
    * 波形範圍，用來判斷有效波形
@@ -143,16 +142,6 @@ export class GsensorComponent implements OnInit, OnDestroy {
   samplingRate = defaultOption.samplingRate;
 
   /**
-   * 紀錄波動作為順向開始或逆向開始
-   * 用來判斷動作是否完整做完還是做到一半
-   */
-  startMotionIsForward = {
-    x: <boolean | null>null,
-    y: <boolean | null>null,
-    z: <boolean | null>null,
-  };
-
-  /**
    * 完整波形紀錄
    */
   samplingRecord = {
@@ -161,6 +150,27 @@ export class GsensorComponent implements OnInit, OnDestroy {
     z: <SamplingChartRecord>[],
   };
 
+  /**
+   * 紀錄上一點頂點是位於波峰或波谷(僅初始值紀錄為中心位置)
+   */
+  prevPeakPosition = {
+    x: <WavePosition>WavePosition.center,
+    y: <WavePosition>WavePosition.center,
+    z: <WavePosition>WavePosition.center,
+  };
+
+  /**
+   * 前一點資訊（用來平滑化）
+   */
+  prevPoint = {
+    x: { value: null, time: 0 },
+    y: { value: null, time: 0 },
+    z: { value: null, time: 0 },
+  };
+
+  /**
+   * 重訓次數結果
+   */
   resultCount = 0;
 
   constructor(private router: Router) {}
@@ -222,8 +232,9 @@ export class GsensorComponent implements OnInit, OnDestroy {
     this.deviceMotionSubscription = deviceMotionEvent
       .pipe(
         filter(() => !this.setFinished), // 確認是否已完成這組重訓動作
-        tap((e) => this.chartDataRecord(e)),
         filter(() => this.totalPoint / this.trainingTime < +this.samplingRate),
+        map((e) => this.smoothValue(e)),
+        tap((e) => this.chartDataRecord(e)),
         takeUntil(this.ngUnsubscribe)
       )
       .subscribe((e) => {
@@ -236,6 +247,58 @@ export class GsensorComponent implements OnInit, OnDestroy {
         this.handleValue('z', z, trainingTime);
         this.totalPoint++;
       });
+  }
+
+  /**
+   * 與前一點進行比較並平滑化
+   * @param e {any}-晃動事件
+   */
+  smoothValue(e: any) {
+    const { trainingTime } = this;
+    const {
+      accelerationIncludingGravity: { x, y, z },
+    } = e;
+
+    const newEventValue = {
+      accelerationIncludingGravity: {
+        x: 0,
+        y: 0,
+        z: 0,
+      },
+    };
+    newEventValue.accelerationIncludingGravity.x = this.smoothValueByAxis('x', x, trainingTime);
+    newEventValue.accelerationIncludingGravity.y = this.smoothValueByAxis('y', y, trainingTime);
+    newEventValue.accelerationIncludingGravity.z = this.smoothValueByAxis('z', z, trainingTime);
+    return newEventValue;
+  }
+
+  /**
+   * 將數值差異過大的點進行平滑化
+   * @param axis {Axis}-軸線類別
+   * @param value {number}-g值
+   * @param time {time}-目前訓練總計時
+   */
+  smoothValueByAxis(axis: Axis, value: number, time: number) {
+    const prevValue = this.prevPoint[axis].value;
+    const prevTime = this.prevPoint[axis].time;
+    if (!prevTime) {
+      this.prevPoint[axis] = { value, time };
+      return value;
+    }
+
+    const maxSlope = 0.05; // 兩點最大斜率（加速度/時間）
+    const valueDiff = value - prevValue;
+    const timeDiff = time - prevTime;
+    const absSlope = Math.abs(valueDiff / timeDiff);
+    if (absSlope > maxSlope) {
+      const fixSlope = valueDiff > 0 ? maxSlope : -maxSlope;
+      const fixedValue = prevValue + timeDiff * fixSlope;
+      this.prevPoint[axis] = { value: fixedValue, time };
+      return fixedValue;
+    } else {
+      this.prevPoint[axis] = { value, time };
+      return value;
+    }
   }
 
   /**
@@ -258,152 +321,130 @@ export class GsensorComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 解除訂閱晃動事件
-   */
-  unsubscribeDeviceMotionEvent() {
-    if (this.deviceMotionSubscription) this.deviceMotionSubscription.unsubscribe();
-  }
-
-  /**
    * 將數值進行處理
    * @param axis {Axis}-軸線類別
    * @param value {number}-g值
    * @param time {time}-目前訓練總計時
    */
   handleValue(axis: Axis, value: number, time: number) {
-    this.checkOverPeak(axis, value, time);
-    this.checkWave(axis, value);
+    if (this.totalPoint === 0) this.handleFirstPoint(axis, value, time);
     this.recordInfo(axis, value, time);
   }
 
   /**
-   * 確認數值是否超出之前的波峰，超出則更新波峰數值
    * @param axis {Axis}-軸線類別
    * @param value {number}-g值
    * @param time {time}-目前訓練總計時
    */
-  checkOverPeak(axis: Axis, value: number, time: number) {
-    const { totalPoint } = this;
-    const { peakTop, peakBottom } = this.waveRange[axis];
-
-    if (totalPoint === 0) {
-      this.waveRange[axis].peakTop = value;
-      this.waveRange[axis].peakBottom = value;
-      this.tempWave[axis].waveStartTime = time;
-      return;
-    }
-
-    if (value > peakTop) this.waveRange[axis].peakTop = value;
-    if (value < peakBottom) this.waveRange[axis].peakBottom = value;
+  handleFirstPoint(axis: Axis, value: number, time: number) {
+    this.waveRange[axis].peakTop = value;
+    this.waveRange[axis].peakBottom = value;
+    this.tempWave[axis].waveStartTime = time;
   }
 
   /**
-   * 判斷數值進入哪個區域後，
-   * 確認目前波形是進入新的一個重訓動作還是回程動作
+   * 確認是否前面已有完整波形並更新現在波形紀錄
    * @param axis {Axis}-軸線類別
    * @param value {number}-g值
+   * @param time {time}-目前訓練總計時
    */
-  checkWave(axis: Axis, value: number) {
-    const startMotionIsForward = this.startMotionIsForward[axis];
-    const { waveTopTime, waveBottomTime, waveToBe } = this.tempWave[axis];
+  recordInfo(axis: Axis, value: number, time: number) {
+    const { waveTopTime, waveBottomTime, waveStartTime } = this.tempWave[axis];
+    const currentPosition = this.waveRange[axis].getWavePosition(value);
+    const crossCenter =
+      currentPosition !== WavePosition.center && currentPosition !== this.prevPeakPosition[axis];
+    const haveCompleteWave = waveStartTime && waveTopTime && waveBottomTime && crossCenter;
+    if (haveCompleteWave) {
+      this.handleCompleteWave(axis, time);
+    } else {
+      this.updateCurrentRecord(axis, value, time);
+    }
+  }
+
+  /**
+   * 確認是否前面已有完整波形並更新現在波形紀錄
+   * @param axis {Axis}-軸線類別
+   * @param value {number}-g值
+   * @param time {time}-目前訓練總計時
+   */
+  updateCurrentRecord(axis: Axis, value: number, time: number) {
+    const { waveTopValue, waveBottomValue } = this.tempWave[axis];
     const currentPosition = this.waveRange[axis].getWavePosition(value);
     switch (currentPosition) {
-      case WavePosition.top:
-        if (startMotionIsForward === null) this.startMotionIsForward[axis] = true;
-
-        // 如果是反向動作且尚未紀錄到波谷資訊，代表為重訓回程動作
-        if (waveToBe) {
-          if (startMotionIsForward === false && !waveBottomTime) {
-            this.tempWave[axis].loadPreviousRecord();
-          } else {
-            this.saveWave(axis);
-          }
-        }
-        break;
-      case WavePosition.bottom:
-        if (startMotionIsForward === null) this.startMotionIsForward[axis] = false;
-
-        // 如果是正向動作且尚未紀錄到波峰資訊，代表為重訓回程動作
-        if (waveToBe) {
-          if (startMotionIsForward === true && !waveTopTime) {
-            this.tempWave[axis].loadPreviousRecord();
-          } else {
-            this.saveWave(axis);
-          }
+      case WavePosition.top: {
+        // 只紀錄該波形波峰最高值與時間
+        if (!waveTopValue || value > waveTopValue) {
+          this.tempWave[axis].waveTopValue = value;
+          this.tempWave[axis].waveTopTime = time;
         }
 
+        this.prevPeakPosition[axis] = currentPosition;
         break;
+      }
+      case WavePosition.bottom: {
+        // 只紀錄該波形波谷最低值與時間
+        if (!waveBottomValue || value < waveBottomValue) {
+          this.tempWave[axis].waveBottomValue = value;
+          this.tempWave[axis].waveBottomTime = time;
+        }
+
+        this.prevPeakPosition[axis] = currentPosition;
+        break;
+      }
       default:
         break;
     }
   }
 
   /**
-   * 判斷數值進入哪個區域
+   * 將前面的波形儲存以及開始紀錄下一段波形
    * @param axis {Axis}-軸線類別
-   * @param value {number}-g值
    * @param time {time}-目前訓練總計時
    */
-  recordInfo(axis: Axis, value: number, time: number) {
-    const { waveTopValue, waveBottomValue, waveTopTime, waveBottomTime, waveStartTime } =
-      this.tempWave[axis];
-
-    // 第一個point先視為中心點，以及第一個波形起始點
-    if (this.totalPoint === 0 && !waveStartTime) {
-      this.tempWave[axis].waveStartTime = time;
-      return;
+  handleCompleteWave(axis: Axis, time: number) {
+    this.tempWave[axis].waveEndTime = time;
+    if (this.checkWave(axis)) {
+      this.updateWavePeak(axis);
+      this.saveWave(axis);
     }
 
-    const currentPosition = this.waveRange[axis].getWavePosition(value);
-    switch (currentPosition) {
-      case WavePosition.top:
-        // 只紀錄該波形波峰最高值與時間
-        if (waveStartTime && (!waveTopValue || value > waveTopValue)) {
-          this.tempWave[axis].waveTopValue = value;
-          this.tempWave[axis].waveTopTime = time;
-        }
-        break;
-      case WavePosition.bottom:
-        // 只紀錄該波形波谷最低值與時間
-        if (waveStartTime && (!waveBottomValue || value < waveBottomValue)) {
-          this.tempWave[axis].waveBottomValue = value;
-          this.tempWave[axis].waveBottomTime = time;
-        }
-        break;
-      case WavePosition.center:
-        // 僅以波回到中心位置做為波形開始與結束
-        if (!waveStartTime || (!waveTopTime && !waveBottomTime))
-          this.tempWave[axis].waveStartTime = time;
-        if (waveStartTime && waveTopTime && waveBottomTime) this.tempWave[axis].waveEndTime = time;
-        break;
-    }
-
-    if (this.tempWave[axis].waveEndTime) this.saveWaveToBe(axis);
+    this.tempWave[axis].init();
+    this.tempWave[axis].waveStartTime = time; // 前個波形結束時間暫定為下個波形開始時間
   }
 
   /**
-   * 確認波形是否符合正常重訓動作的波形後，將波形暫存
+   * 確認波形是否過短或過小
    * @param axis {Axis}-軸線類別
    */
-  saveWaveToBe(axis: Axis) {
-    const { minWaveTime, minAmplitude } = defaultOption;
-    const { waveTime, doubleAmplitude } = this.tempWave[axis];
+  checkWave(axis: Axis) {
+    const { minAmplitude, minWaveTime, waveAmplitudeThreshold } = defaultOption;
+    const { doubleAmplitude, waveTime } = this.tempWave[axis];
     const timeTooShort = waveTime < minWaveTime;
-    const amplitudeTooSmall = doubleAmplitude < minAmplitude;
+    const amplitudeTooSmall = doubleAmplitude < minAmplitude * waveAmplitudeThreshold;
+    return !timeTooShort && !amplitudeTooSmall;
+  }
 
-    // 波長過短或振幅過小視為無效波
-    if (timeTooShort || amplitudeTooSmall) {
-      return this.tempWave[axis].init();
-    }
+  /**
+   * 更新波峰波谷值
+   * @param axis {Axis}-軸線類別
+   */
+  updateWavePeak(axis: Axis) {
+    const { waveInfo } = this.tempWave[axis];
+    const topValue = waveInfo.top.value;
+    const bottomValue = waveInfo.bottom.value;
+    this.checkOverPeak(axis, topValue);
+    this.checkOverPeak(axis, bottomValue);
+  }
 
-    this.tempWave[axis].saveWaveToBe();
-    this.resultCount = this.getCount(axis);
-
-    // 確認暫存波形是否為最後一下，如果為最後一下則視為訓練結束
-    const { repsTarget, allRecord } = this;
-    const currentRecordLength = allRecord[axis].length;
-    if (currentRecordLength >= repsTarget - 1) this.saveWave(axis);
-    return this.tempWave[axis].init();
+  /**
+   * 確認數值是否超出之前的波峰，超出則更新波峰數值
+   * @param axis {Axis}-軸線類別
+   * @param value {number}-g值
+   */
+  checkOverPeak(axis: Axis, value: number) {
+    const { peakTop, peakBottom } = this.waveRange[axis];
+    if (value > peakTop) this.waveRange[axis].peakTop = value;
+    if (value < peakBottom) this.waveRange[axis].peakBottom = value;
   }
 
   /**
@@ -411,16 +452,10 @@ export class GsensorComponent implements OnInit, OnDestroy {
    * @param axis {Axis}-軸線類別
    */
   saveWave(axis: Axis) {
-    const { waveToBe } = this.tempWave[axis];
-    const {
-      top: { value: topValue },
-      bottom: { value: bottomValue },
-    } = waveToBe;
-    const doubleAmplitude = topValue - bottomValue;
-    this.allRecord[axis].push(waveToBe);
-    this.resultCount = this.getCount();
-    this.tempWave[axis].clearWaveToBe();
+    const { waveInfo, doubleAmplitude } = this.tempWave[axis];
+    this.allRecord[axis].push(waveInfo);
     this.handleRangeChange(axis, doubleAmplitude);
+    this.resultCount = this.getCount();
   }
 
   /**
@@ -432,8 +467,9 @@ export class GsensorComponent implements OnInit, OnDestroy {
     const { effectAmplitude } = this.waveRange[axis];
     if (doubleAmplitude > effectAmplitude) {
       this.waveRange[axis].effectAmplitude = doubleAmplitude;
-      this.traceBackWave(axis);
     }
+
+    this.traceBackWave(axis);
   }
 
   /**
@@ -455,7 +491,7 @@ export class GsensorComponent implements OnInit, OnDestroy {
   /**
    * 以三軸中平均兩倍振幅範圍最大者且次數最多的軸判斷為主要參考次數
    */
-  getCount(tempAxis: Axis | null = null) {
+  getCount() {
     const recordInfoX = this.getRecordInfo('x');
     const recordInfoY = this.getRecordInfo('y');
     const recordInfoZ = this.getRecordInfo('z');
@@ -474,8 +510,7 @@ export class GsensorComponent implements OnInit, OnDestroy {
     });
 
     const reference = sortResult[0];
-    const referenceAxis = reference.axis;
-    const referenceCount = reference.count + (referenceAxis === tempAxis ? 1 : 0);
+    const referenceCount = reference.count;
 
     if (referenceCount >= this.repsTarget) this.handleRecordFinish(); // 次數超過設定就停止紀錄
     return referenceCount;
@@ -525,12 +560,6 @@ export class GsensorComponent implements OnInit, OnDestroy {
       z: [],
     };
 
-    this.startMotionIsForward = {
-      x: null,
-      y: null,
-      z: null,
-    };
-
     this.waveRange.x.init();
     this.waveRange.y.init();
     this.waveRange.z.init();
@@ -541,7 +570,23 @@ export class GsensorComponent implements OnInit, OnDestroy {
       z: [],
     };
 
+    this.prevPeakPosition = {
+      x: WavePosition.center,
+      y: WavePosition.center,
+      z: WavePosition.center,
+    };
+
     this.resultCount = 0;
+
+    this.prevPoint = {
+      x: { value: null, time: 0 },
+      y: { value: null, time: 0 },
+      z: { value: null, time: 0 },
+    };
+
+    this.tempWave.x.init();
+    this.tempWave.y.init();
+    this.tempWave.z.init();
   }
 
   /**
@@ -685,6 +730,13 @@ export class GsensorComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 解除訂閱晃動事件
+   */
+  unsubscribeDeviceMotionEvent() {
+    if (this.deviceMotionSubscription) this.deviceMotionSubscription.unsubscribe();
+  }
+
+  /**
    * 解除訂閱rxjs與計時器
    */
   ngOnDestroy(): void {
@@ -709,13 +761,6 @@ class OneWave {
   private _waveEndTime: number | null = null;
 
   /**
-   * 將最新的波形先佔存
-   * 確認下一個波形為並非回程動作時
-   * 再計入次數中
-   */
-  private _waveToBe: WaveInfo | null = null;
-
-  /**
    * 初始化變數
    */
   init() {
@@ -725,25 +770,6 @@ class OneWave {
     this._waveTopTime = null;
     this._waveBottomTime = null;
     this._waveEndTime = null;
-  }
-
-  /**
-   * 將之前暫存的波形寫回，以便更新該筆紀錄
-   */
-  loadPreviousRecord() {
-    const {
-      startTime,
-      top: { value: topValue, time: topTime },
-      bottom: { value: bottomValue, time: bottomTime },
-    } = this._waveToBe as WaveInfo;
-
-    this._waveTopValue = topValue;
-    this._waveBottomValue = bottomValue;
-    this._waveStartTime = startTime;
-    this._waveTopTime = topTime;
-    this._waveBottomTime = bottomTime;
-    this._waveEndTime = null; // 重load代表該動作尚未結束
-    this.clearWaveToBe();
   }
 
   /**
@@ -841,7 +867,8 @@ class OneWave {
    */
   get doubleAmplitude() {
     const { _waveTopValue, _waveBottomValue } = this;
-    return (_waveTopValue || 0) - (_waveBottomValue || 0);
+    const haveEffectAmplitude = _waveTopValue !== null && _waveBottomValue !== null;
+    return haveEffectAmplitude ? _waveTopValue - _waveBottomValue : 0;
   }
 
   /**
@@ -877,28 +904,6 @@ class OneWave {
         time: _waveBottomTime as number,
       },
     };
-  }
-
-  /**
-   * 清空波形暫存
-   */
-  clearWaveToBe() {
-    this._waveToBe = null;
-  }
-
-  /**
-   * 將波形暫存
-   */
-  saveWaveToBe() {
-    this._waveToBe = this.waveInfo;
-    this.init();
-  }
-
-  /**
-   * 取得暫存波型
-   */
-  get waveToBe() {
-    return this._waveToBe ? deepCopy(this._waveToBe) : null;
   }
 }
 
@@ -971,11 +976,11 @@ class WaveRange {
    * 取得波形y軸中心點
    */
   get waveCenter() {
-    /**
     const { _peakTop, _peakBottm } = this;
-    return ((_peakTop || 0) + (_peakBottm || 0)) / 2;
-    */
-    return 0;
+    const countCenter = ((_peakTop || 0) + (_peakBottm || 0)) / 2;
+    const absCountCenter = Math.abs(countCenter);
+    const limitCenter = absCountCenter > 9.8 ? 9.8 : absCountCenter;
+    return countCenter > 0 ? limitCenter : -limitCenter; // 中心點絕對值不超過g值
   }
 
   /**

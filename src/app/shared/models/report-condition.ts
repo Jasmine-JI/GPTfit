@@ -88,7 +88,7 @@ export interface ReportCondition {
   baseTime: DateRange;
   compareTime?: DateRange | null;
   dateUnit?: ReportDateUnit;
-  targetUnit?: DateUnit;
+  targetUnit?: ReportDateUnit;
   group?: {
     brandType: BrandType;
     currentLevel: GroupLevel;

@@ -168,7 +168,7 @@ export class SportsReport {
    */
   postProcessingData(parameter: any) {
     const { targetCondition, condition, dataObj, timeType } = parameter;
-    const { dateUnit, baseTime, compareTime } = condition;
+    const { dateUnit, targetUnit, baseTime, compareTime } = condition;
     const {
       totalActivities,
       totalHrZone0Second: zone0,
@@ -186,30 +186,29 @@ export class SportsReport {
         : compareTime.getReportRealTimeRange(dateUnit.unit);
     const reportPeriodDay = Math.round((realEndTime - realStartTime) / DAY);
     const hrZone = [zone0, zone1, zone2, zone3, zone4, zone5];
-    const { pai, totalWeightedValue } = SportsReport.countPai(hrZone, reportPeriodDay);
+    const { pai } = SportsReport.countPai(hrZone, reportPeriodDay);
     const benefitTime = (zone2 ?? 0) + (zone3 ?? 0) + (zone4 ?? 0) + (zone5 ?? 0);
-    const isMondayFirst = dayjs(realStartTime).isoWeekday() === 1;
-    let unitKey = dateUnit.getUnitString();
-    unitKey = unitKey === 'week' && isMondayFirst ? 'isoWeek' : unitKey;
-    const crossRange = baseTime.getCrossRange(unitKey);
+    const targetUnitKey = targetUnit.getUnitString();
+    const crossRange = baseTime.getDiffRange(targetUnitKey);
     let targetAchieved = totalActivities ? true : false;
-
     targetCondition.forEach((_value, _key) => {
       const { filedValue } = _value;
-      const targetValue = crossRange * +filedValue;
+      const targetValue = (_key === 'pai' ? 1 : crossRange) * +filedValue;
       switch (_key) {
         case 'pai':
-          if (totalWeightedValue < targetValue) targetAchieved = false;
+          if (pai < targetValue) targetAchieved = false;
           break;
         case 'benefitTime':
-          if (benefitTime < targetValue) targetAchieved = false;
+          if (!benefitTime || benefitTime < targetValue) targetAchieved = false;
           break;
         case 'totalTime':
-          if (totalSecond < targetValue) targetAchieved = false;
+          if (!totalSecond || totalSecond < targetValue) targetAchieved = false;
           break;
-        default:
-          if (dataObj[_key] < targetValue) targetAchieved = false;
+        default: {
+          const value = dataObj[_key];
+          if (!value || value < targetValue) targetAchieved = false;
           break;
+        }
       }
     });
 

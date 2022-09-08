@@ -106,7 +106,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     baseTime: new DateRange(thisWeek.startTime, thisWeek.endTime),
     compareTime: null,
     dateUnit: new ReportDateUnit(DateUnit.week),
-    targetUnit: DateUnit.week,
+    targetUnit: new ReportDateUnit(DateUnit.week),
     sportType: SportType.all,
     needRefreshData: false,
   };
@@ -479,11 +479,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * @param condition {ReportCondition}-篩選條件
    */
   getDiffTime(condition: ReportCondition) {
-    const { dateUnit, baseTime, compareTime } = condition;
-    const unit = dateUnit.getUnitString();
+    const { baseTime, compareTime, targetUnit } = condition;
+    const unit = targetUnit.getUnitString();
     return {
-      base: baseTime.getDiffRange(unit) + 1,
-      compare: compareTime ? compareTime.getDiffRange(unit) + 1 : null,
+      base: baseTime.getDiffRange(unit),
+      compare: compareTime ? compareTime.getDiffRange(unit) : null,
     };
   }
 
@@ -646,11 +646,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   createReport(condition: ReportCondition, dataObj: any) {
     const { userInfo, baseActivitiesData, compareActivitiesData } = dataObj;
     const { workoutTarget } = userInfo;
-
-    const { targetUnit } = condition;
-    this.sportsTargetCondition = new SportsTarget(workoutTarget || {}).getArrangeCondition(
-      targetUnit
-    );
+    const { unit } = condition.targetUnit;
+    this.sportsTargetCondition = new SportsTarget(workoutTarget || {}).getArrangeCondition(unit);
     this.hrZoneRange = this.getUserHrRange(userInfo);
     this.handleInfoData(condition, baseActivitiesData, compareActivitiesData);
     this.handleChartData(condition, dataObj);

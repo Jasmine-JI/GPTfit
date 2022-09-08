@@ -566,8 +566,8 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    */
   selectTargetUnit(unit: DateUnit) {
     const { targetUnit } = this.reportCondition;
-    if (unit !== targetUnit) {
-      this.reportCondition.targetUnit = unit;
+    if (unit !== targetUnit.unit) {
+      this.reportCondition.targetUnit.unit = unit;
       this.reportCondition.needRefreshData = true;
     }
   }
