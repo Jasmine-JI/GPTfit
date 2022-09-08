@@ -253,7 +253,7 @@ export class CalenderSelectorComponent implements OnInit, OnChanges, OnDestroy {
     if (this.canSwitchNextMonth) {
       const nextMonth = this.calenderMonth + this.getOffsetMonth();
       if (nextMonth > 12) {
-        this.calenderMonth = 1;
+        this.calenderMonth = nextMonth - 12;
         this.calenderYear++;
       } else {
         this.calenderMonth = nextMonth;
