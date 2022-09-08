@@ -152,6 +152,7 @@ export class SportTargetSettingComponent implements OnInit, OnDestroy {
    */
   deleteCondition(fieldName: TargetField) {
     this.condition.delete(fieldName);
+    this.changeCondition.emit(this.condition);
   }
 
   /**

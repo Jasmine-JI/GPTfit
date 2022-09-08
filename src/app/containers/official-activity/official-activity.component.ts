@@ -1714,6 +1714,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * 定時call api確認是否有最新郵件
    */
   pollingNewMail() {
+    this.checkNewMail();
     if (this.auth.token) {
       this.mailNotify = setInterval(() => {
         this.checkNewMail();
