@@ -1,5 +1,5 @@
-import { SportsTarget } from '../classes/sports-target';
 import { ReportCondition, ReportDateType } from '../models/report-condition';
+import { TargetConditionMap } from '../../core/models/api/api-common/sport-target.model';
 
 /**
  * 各運動類別共通所需數據
@@ -15,25 +15,25 @@ export const COMMON_DATA = [
   'totalHrZone3Second',
   'totalHrZone4Second',
   'totalHrZone5Second',
-  'totalSecond'
+  'totalSecond',
 ];
 
 /**
  * 跑步類別所需數據
  */
- export const RUN_DATA = [
+export const RUN_DATA = [
   'avgMaxSpeed',
   'avgRunMaxCadence',
   'avgSpeed',
   'elevGain',
   'runAvgCadence',
-  'totalDistanceMeters'
+  'totalDistanceMeters',
 ];
 
 /**
  * 騎乘類別所需數據
  */
- export const RIDE_DATA = [
+export const RIDE_DATA = [
   'avgCycleMaxCadence',
   'avgCycleMaxWatt',
   'avgMaxSpeed',
@@ -47,29 +47,25 @@ export const COMMON_DATA = [
   'totalFtpZone3Second',
   'totalFtpZone4Second',
   'totalFtpZone5Second',
-  'totalFtpZone6Second'
+  'totalFtpZone6Second',
 ];
 
 /**
  * 重訓類別所需數據
  */
- export const WEIGHT_TRAIN_DATA = [
-  'totalReps',
-  'totalWeightKg',
-  'totalActivitySecond'
-];
+export const WEIGHT_TRAIN_DATA = ['totalReps', 'totalWeightKg', 'totalActivitySecond'];
 
 /**
  * 游泳類別所需數據
  */
- export const SWIM_DATA = [
+export const SWIM_DATA = [
   'avgMaxSpeed',
   'avgSpeed',
   'avgSwimMaxCadence',
   'avgSwolf',
   'bestSwolf',
   'swimAvgCadence',
-  'totalDistanceMeters'
+  'totalDistanceMeters',
 ];
 
 /**
@@ -81,20 +77,20 @@ export const COMMON_DATA = [
 /**
  * 划船類別所需數據
  */
- export const ROW_DATA = [
+export const ROW_DATA = [
   'avgMaxSpeed',
   'avgRowingMaxCadence',
   'avgSpeed',
   'rowingAvgCadence',
   'rowingAvgWatt',
   'rowingMaxWatt',
-  'totalDistanceMeters'
+  'totalDistanceMeters',
 ];
 
 /**
  * 球類類別所需數據
  */
- export const BALL_DATA = [
+export const BALL_DATA = [
   'avgMaxSpeed',
   'avgSpeed',
   'totalDistanceMeters',
@@ -118,7 +114,7 @@ export const PERSON_BALL_DATA = BALL_DATA.concat([
   'totalForehandSwingCount',
   'totalBackhandSwingCount',
   'avgSwingSpeed',
-  'maxSwingSpeed'
+  'maxSwingSpeed',
 ]);
 
 /**
@@ -130,8 +126,8 @@ export const PAI_COFFICIENT = {
   z2: 1,
   z3: 2,
   z4: 2.2,
-  z5: 2.4
-}
+  z5: 2.4,
+};
 
 /**
  * 一天pai指標秒數（即經加權後運動時間等於該指標秒數，則pai為100）
@@ -148,7 +144,7 @@ export type Regression = 'up' | 'down';
  */
 export interface SportsParameter {
   openPrivacy: boolean;
-  target?: SportsTarget;
+  targetCondition?: TargetConditionMap;
   condition?: ReportCondition;
   data?: Array<any>;
   timeType?: ReportDateType;

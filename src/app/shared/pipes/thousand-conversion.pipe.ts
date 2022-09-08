@@ -1,7 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-
-@Pipe({name: 'thousandConversion'})
+@Pipe({ name: 'thousandConversion' })
 export class ThousandConversionPipe implements PipeTransform {
   /**
    * 距離超過1000以k顯示，並四捨五入至第1位
@@ -11,8 +10,7 @@ export class ThousandConversionPipe implements PipeTransform {
    * @author kidin
    */
   transform(value: number, args: string): string {
-    let finalValue: number,
-        unit: string;
+    let finalValue: number, unit: string;
     // 超過1000以k表示
     if (value >= 1000) {
       finalValue = parseFloat((value / 1000).toFixed(1));
@@ -27,7 +25,5 @@ export class ThousandConversionPipe implements PipeTransform {
     } else {
       return `${finalValue}`;
     }
-
   }
-
 }

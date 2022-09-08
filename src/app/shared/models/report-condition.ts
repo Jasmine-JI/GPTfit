@@ -3,6 +3,7 @@ import { BrandType, GroupLevel } from '../enum/professional';
 import { SportType } from '../enum/sports';
 import { DateRange } from '../classes/date-range';
 import { ReportDateUnit } from '../classes/report-date-unit';
+import { DateUnit } from '../enum/report';
 
 /**
  * 報告頁面可讓使用者篩選的條件
@@ -11,7 +12,15 @@ export interface ReportConditionOpt {
   date?: {
     startTimestamp: number;
     endTimestamp: number;
-    type: 'sevenDay' | 'thirtyDay' | 'sixMonth' | 'today' | 'thisWeek' | 'thisMonth' | 'thisYear' | 'custom';
+    type:
+      | 'sevenDay'
+      | 'thirtyDay'
+      | 'sixMonth'
+      | 'today'
+      | 'thisWeek'
+      | 'thisMonth'
+      | 'thisYear'
+      | 'custom';
   };
   brandType?: null | 1 | 2;
   pageType?: 'sport' | 'lifeTracking' | 'cloudRun' | 'deviceList' | 'file';
@@ -19,8 +28,8 @@ export interface ReportConditionOpt {
   sportType?: SportType;
   cloudRun?: {
     mapId: number;
-    month: string;  // 例行賽月份
-    checkCompletion: boolean;  // 是否檢查過濾未完賽數據（含防弊）
+    month: string; // 例行賽月份
+    checkCompletion: boolean; // 是否檢查過濾未完賽數據（含防弊）
   };
   age?: {
     min: number;
@@ -51,13 +60,19 @@ export interface GroupTree {
   brands: null | GroupSimpleInfo;
   branches: null | Array<GroupSimpleInfo>;
   coaches: Array<GroupSimpleInfo>;
-  selectGroup: string;  // 只擷取到前面有效片段，ex. '0-0-101-1'
+  selectGroup: string; // 只擷取到前面有效片段，ex. '0-0-101-1'
 }
 
 /**
  * 所屬模組(以container資料夾內的module進行區分)
  */
-export type ModuleType = 'professional' | 'personal' | 'official-activity' | 'device-manage' | 'admin-manage' | 'home';
+export type ModuleType =
+  | 'professional'
+  | 'personal'
+  | 'official-activity'
+  | 'device-manage'
+  | 'admin-manage'
+  | 'home';
 
 /**
  * 頁面類別
@@ -71,32 +86,33 @@ export interface ReportCondition {
   moduleType: ModuleType;
   pageType: PageType;
   baseTime: DateRange;
-  compareTime?: DateRange;
+  compareTime?: DateRange | null;
   dateUnit?: ReportDateUnit;
+  targetUnit?: ReportDateUnit;
   group?: {
     brandType: BrandType;
     currentLevel: GroupLevel;
     focusGroup: {
-      id: string;
-      level: GroupLevel;
-      name: string;
+      id: string | null;
+      level: GroupLevel | null;
+      name: string | null;
     };
-    brand: Array<GroupSimpleInfo>;
-    branches: Array<GroupSimpleInfo>;
-    classes: Array<GroupSimpleInfo>;
+    brand: Array<GroupSimpleInfo> | null;
+    branches: Array<GroupSimpleInfo> | null;
+    classes: Array<GroupSimpleInfo> | null;
   };
   sportType?: SportType;
   cloudRun?: {
-    mapId: number;
-    month: string;
-    checkCompletion: boolean;
+    mapId: number | null;
+    month: string | null;
+    checkCompletion: boolean | null;
   };
   filter?: {
     age?: {
-      min: number;
-      max: number;
+      min: number | null;
+      max: number | null;
     };
-    gender: Sex;
+    gender: Sex | null;
   };
   needRefreshData: boolean;
 }
@@ -105,7 +121,7 @@ export interface ReportCondition {
  * 時間範圍類別
  */
 export type DateRangeType =
-    'today'
+  | 'today'
   | 'sevenDay'
   | 'thirtyDay'
   | 'sixMonth'
@@ -116,8 +132,7 @@ export type DateRangeType =
   | 'lastMonth'
   | 'sameRangeLastYear'
   | 'custom'
-  | 'none'
-;
+  | 'none';
 
 /**
  * 報告日期範圍的類別（基準日期/比較日期）

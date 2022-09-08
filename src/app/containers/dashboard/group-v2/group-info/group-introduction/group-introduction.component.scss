@@ -3,10 +3,11 @@
 @import 'transition.scss';
 @import 'transform.scss';
 @import 'drop-triangle.scss';
+@import 'rod-bar.scss';
 
 $input-border-color: rgba(120, 120, 120, 1);
 $group-btn-blue: rgba(0, 183, 238, 1);
-
+$rod-track-width: 28px;
 
 .info__section {
   margin: 0 10px 20px 10px;
@@ -42,16 +43,13 @@ $group-btn-blue: rgba(0, 183, 238, 1);
     border-color: $input-border-color transparent transparent transparent;
     @include transition(transform);
   }
-
 }
 
 .status__selector__active {
-
   &:after {
     @include transition(transform);
     @include el-rotate(180deg);
   }
-
 }
 
 #status__selector__list {
@@ -66,15 +64,13 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   & span {
     color: var(--scale-0-255);
     @include transition(background-color);
-    
+
     &:hover {
       color: white;
       background-color: $group-btn-blue;
       @include transition(background-color);
     }
-
   }
-
 }
 
 .create__brand__input {
@@ -101,12 +97,12 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   @include drop-active();
 }
 
-.target__inherit, .date__cycle, .filed__name {
+.target__inherit {
   position: relative;
   margin: 5px 0;
 }
 
-.target__inherit__list, .date__cycle__list, .filed__name__list {
+.target__inherit__list {
   $shadow: 4px rgba(0, 0, 0, 0.3);
   position: absolute;
   z-index: 1;
@@ -153,28 +149,33 @@ $group-btn-blue: rgba(0, 183, 238, 1);
     color: white;
     background-color: $primary-blue;
   }
-
 }
 
-.condition__symbol {
-  display: inline-block;
-  margin: 0 20px;
+.target__card__section {
+  flex-wrap: wrap;
 }
 
-.target__input {
-  $width: 60px;
-  border: none;
-  border-bottom: 1px solid black;
-  width: $width;
-  min-width: $width;
-  outline: none;
-  text-align: center;
+.target__description {
+  font-size: 12px;
+  color: rgba(120, 120, 120, 1);
+  line-height: 2;
+}
+
+.advanced__target__option {
+  align-items: center;
+}
+
+.rod__bar {
+  @include target-rod-bar();
+}
+
+.rod__bar--active {
+  @include target-rod-bar-acitve();
 }
 
 /************************************** media ******************************/
 
 @media (max-width: 500px) {
-
   .group__layer__section {
     flex-direction: column;
   }
@@ -182,5 +183,4 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   .info__row {
     text-align: end;
   }
-
 }

@@ -1,4 +1,12 @@
-import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnChanges,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  Input,
+} from '@angular/core';
 import { chart } from 'highcharts';
 import dayjs from 'dayjs';
 import { TranslateService } from '@ngx-translate/core';
@@ -11,25 +19,24 @@ import {
   landingColor,
   forehandSwingColor,
   backHandSwingColor,
-  RelativeTrendChart
+  RelativeTrendChart,
 } from '../../../models/chart-data';
 import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
 
-
 // 建立圖表用-kidin-1081212
 class ChartOptions {
-  constructor (dataset) {
+  constructor(dataset) {
     return {
       chart: {
         type: 'column',
         height: 110,
-        backgroundColor: 'transparent'
+        backgroundColor: 'transparent',
       },
       title: {
-        text: ''
+        text: '',
       },
       credits: {
-        enabled: false
+        enabled: false,
       },
       xAxis: {
         type: 'datetime',
@@ -41,17 +48,17 @@ class ChartOptions {
           day: '%m/%d',
           week: '%m/%d',
           month: '%Y/%m',
-          year: '%Y'
-        }
+          year: '%Y',
+        },
       },
       yAxis: {
         title: {
-            text: ''
+          text: '',
         },
         startOnTick: true,
         minPadding: 0.01,
         maxPadding: 0.01,
-        tickAmount: 3
+        tickAmount: 3,
       },
       tooltip: {},
       plotOptions: {
@@ -61,42 +68,38 @@ class ChartOptions {
         },
         series: {
           pointWidth: null,
-          maxPointWidth: 30
-        }
+          maxPointWidth: 30,
+        },
       },
-      series: dataset
+      series: dataset,
     };
   }
 }
 
-
-
 @Component({
   selector: 'app-relative-column-chart',
   templateUrl: './relative-column-chart.component.html',
-  styleUrls: ['./relative-column-chart.component.scss', '../chart-share-style.scss']
+  styleUrls: ['./relative-column-chart.component.scss', '../chart-share-style.scss'],
 })
 export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   dateList = [];
   chartType: string;
   title = {
     positive: '',
-    negative: ''
-  }
+    negative: '',
+  };
 
   @Input() data: RelativeTrendChart;
   @Input() dateRange: string;
   @Input() sportType: string;
   @Input() chartName: string;
-  @Input() unit: number = 0;
-  @Input() page: string = 'sportReport';
-  @Input() isPreviewMode: boolean = false;
-  @ViewChild('container', {static: false})
+  @Input() unit = 0;
+  @Input() page = 'sportReport';
+  @Input() isPreviewMode = false;
+  @ViewChild('container', { static: false })
   container: ElementRef;
 
-  constructor(
-    private translate: TranslateService
-  ) { }
+  constructor(private translate: TranslateService) {}
 
   ngOnInit(): void {}
 
@@ -108,8 +111,7 @@ export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestro
    * 生成正負長條圖圖表
    */
   initChart() {
-    let positiveColor: string,
-        negativeColor: string;
+    let positiveColor: string, negativeColor: string;
     switch (this.chartName) {
       case 'TotalXGForce':
         this.chartType = 'xMoveGForce';
@@ -117,7 +119,7 @@ export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestro
         negativeColor = leftMoveColor;
         this.title = {
           positive: this.translate.instant('universal_activityData_totalRight'),
-          negative: this.translate.instant('universal_activityData_totalLeft')
+          negative: this.translate.instant('universal_activityData_totalLeft'),
         };
         break;
       case 'TotalYGForce':
@@ -126,7 +128,7 @@ export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestro
         negativeColor = hitColor;
         this.title = {
           positive: this.translate.instant('universal_activityData_totalAcceleration'),
-          negative: this.translate.instant('universal_activityData_totalImpact')
+          negative: this.translate.instant('universal_activityData_totalImpact'),
         };
         break;
       case 'TotalZGForce':
@@ -135,7 +137,7 @@ export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestro
         negativeColor = landingColor;
         this.title = {
           positive: this.translate.instant('universal_activityData_totalJump'),
-          negative: this.translate.instant('universal_activityData_totalFloorImpact')
+          negative: this.translate.instant('universal_activityData_totalFloorImpact'),
         };
         break;
       case 'SwingRatio':
@@ -144,27 +146,27 @@ export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestro
         negativeColor = backHandSwingColor;
         this.title = {
           positive: this.translate.instant('universal_activityData_forehandCount'),
-          negative: this.translate.instant('universal_activityData_backhandCcount')
+          negative: this.translate.instant('universal_activityData_backhandCcount'),
         };
         break;
     }
 
     const { positiveData, negativeData } = this.data,
-          { positive, negative } = this.title,
-          dataset = [
-            {
-              name: positive,
-              data: positiveData,
-              showInLegend: false,
-              color: positiveColor
-            },
-            {
-              name: negative,
-              data: negativeData,
-              showInLegend: false,
-              color: negativeColor
-            }
-          ];
+      { positive, negative } = this.title,
+      dataset = [
+        {
+          name: positive,
+          data: positiveData,
+          showInLegend: false,
+          color: positiveColor,
+        },
+        {
+          name: negative,
+          data: negativeData,
+          showInLegend: false,
+          color: negativeColor,
+        },
+      ];
 
     const chartOptions = new ChartOptions(dataset);
 
@@ -182,22 +184,22 @@ export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestro
       formatter: function () {
         const yVal = parseFloat(this.y.toFixed(1));
         if (this.series.xAxis.tickInterval === MONTH) {
-          return `${dayjs(this.x).format('YYYY-MM-DD')}~${dayjs(this.x + 6 * DAY).format('YYYY-MM-DD')}
+          return `${dayjs(this.x).format('YYYY-MM-DD')}~${dayjs(this.x + 6 * DAY).format(
+            'YYYY-MM-DD'
+          )}
             <br/>${this.series.name}: ${yVal}`;
         } else {
           return `${dayjs(this.x).format('YYYY-MM-DD')}
             <br/>${this.series.name}: ${yVal}`;
         }
-
-      }
-
+      },
     };
 
     const top = this.data.maxGForce ?? this.data.maxForehandCount,
-          bottom = this.data.minGForce ?? this.data.maxBackhandCount;
+      bottom = this.data.minGForce ?? this.data.maxBackhandCount;
     // 設定圖表上下限軸線位置，以顯示數值為0的軸線
-    let absPositive = Math.abs(parseFloat(top.toFixed(0))),
-        absNegative = Math.abs(parseFloat(bottom.toFixed(0)));
+    const absPositive = Math.abs(parseFloat(top.toFixed(0))),
+      absNegative = Math.abs(parseFloat(bottom.toFixed(0)));
     if (absPositive > absNegative) {
       chartOptions['yAxis']['tickPositions'] = [-absPositive, 0, absPositive];
     } else {
@@ -212,9 +214,8 @@ export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestro
    * @param option {ChartOptions}-highchart圖表設定
    * @author kidin-1100511
    */
-  createChart (option: ChartOptions) {
-
-    setTimeout (() => {
+  createChart(option: ChartOptions) {
+    setTimeout(() => {
       if (!this.container) {
         this.createChart(option);
       } else {
@@ -222,9 +223,7 @@ export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestro
         chart(chartDiv, option);
       }
     }, 200);
-
   }
 
   ngOnDestroy(): void {}
-
 }

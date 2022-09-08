@@ -1,40 +1,36 @@
 import { Component, OnInit, OnChanges, OnDestroy, Input, ChangeDetectorRef } from '@angular/core';
-import {  Subscription, Subject, forkJoin } from 'rxjs';
+import { Subscription, Subject, forkJoin } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UtilsService } from '../../services/utils.service';
 
 @Component({
   selector: 'app-loading-bar',
   templateUrl: './loading-bar.component.html',
-  styleUrls: ['./loading-bar.component.scss']
+  styleUrls: ['./loading-bar.component.scss'],
 })
 export class LoadingBarComponent implements OnInit, OnChanges, OnDestroy {
-
   private ngUnsubscribe = new Subject();
 
-  @Input('progress') progress: number;
-  @Input('isPreviewMode') isPreviewMode: boolean = false;
+  @Input() progress: number;
+  @Input() isPreviewMode = false;
 
   /**
    * UI用到的各個flag
    */
   uiFlag = {
-    pageComplete: true
-  }
+    pageComplete: true,
+  };
 
-  constructor(
-    private utils: UtilsService,
-    private changeDetectorRef: ChangeDetectorRef
-  ) { }
+  constructor(private utils: UtilsService, private changeDetectorRef: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    this.utils.getLoadingProgress().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.progress = res;
-      this.changeProgress();
-    });
-
+    this.utils
+      .getLoadingProgress()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.progress = res;
+        this.changeProgress();
+      });
   }
 
   ngOnChanges(): void {
@@ -54,9 +50,7 @@ export class LoadingBarComponent implements OnInit, OnChanges, OnDestroy {
         this.uiFlag.pageComplete = true;
         this.changeDetectorRef.markForCheck();
       }, 1000);
-
     }
-
   }
 
   /**
@@ -67,5 +61,4 @@ export class LoadingBarComponent implements OnInit, OnChanges, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

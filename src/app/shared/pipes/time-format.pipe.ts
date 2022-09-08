@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import dayjs from 'dayjs';
 
-@Pipe({name: 'timeFormat'})
+@Pipe({ name: 'timeFormat' })
 export class TimeFormatPipe implements PipeTransform {
   /**
    * 使用dayjs將日期或timestamp轉為所需格式
@@ -13,5 +13,4 @@ export class TimeFormatPipe implements PipeTransform {
   transform(value: string | number, args: string): string {
     return dayjs(value).format(args);
   }
-
 }

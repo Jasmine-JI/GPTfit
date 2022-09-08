@@ -1,11 +1,11 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { DEFAULT_MAXLENGTH } from '../../utils/index';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-form-text',
   templateUrl: './form-text.component.html',
-  styleUrls: ['./form-text.component.scss']
+  styleUrls: ['./form-text.component.scss'],
 })
 export class FormTextComponent implements OnInit {
   @Input() class_name = 'form-field';
@@ -15,7 +15,7 @@ export class FormTextComponent implements OnInit {
   @Input() content: string;
   @Input() invalidRemindText: string;
   @Input() remindText: string;
-  @Input() control: FormGroup;
+  @Input() control: UntypedFormGroup;
   @Input() controlName: string;
   @Input() disabled = false;
   @Input() placeholder = '';
@@ -27,7 +27,7 @@ export class FormTextComponent implements OnInit {
   setMyClasses() {
     const classes = {
       'form-field': true,
-      'form-field--invalid': this.isInvalid
+      'form-field--invalid': this.isInvalid,
     };
     return classes;
   }
@@ -37,10 +37,9 @@ export class FormTextComponent implements OnInit {
   }
 
   // 取消按enter鍵(Bug 1104)-kidin-1090415
-  handleKeyDown (e) {
+  handleKeyDown(e) {
     if (e.key === 'Enter') {
       return false;
     }
   }
-
 }

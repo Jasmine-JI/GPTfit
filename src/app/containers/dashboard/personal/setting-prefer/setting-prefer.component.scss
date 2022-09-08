@@ -2,6 +2,8 @@
 @import 'transition.scss';
 @import 'flex-center.scss';
 @import 'button.scss';
+@import 'drop-triangle.scss';
+@import 'rod-bar.scss';
 
 $turn-gap: 2px;
 $input-width: 60px;
@@ -21,9 +23,7 @@ $dot-diameter: 8px;
       margin-right: 5px;
       background-color: $bg-color;
     }
-
   }
-
 }
 
 .num__input {
@@ -37,9 +37,7 @@ $dot-diameter: 8px;
 #hr__zone__info {
   list-style: none;
   @for $i from 1 through 6 {
-
-    >:nth-last-child(#{$i}) {
-
+    > :nth-last-child(#{$i}) {
       div {
         align-items: center;
         width: fit-content;
@@ -53,23 +51,17 @@ $dot-diameter: 8px;
           margin-right: 5px;
           background-color: nth($zone-color, $i);
         }
-
       }
-
     }
-
   }
-
 }
 
 #ftp__zone__info {
   list-style: none;
   @for $i from 1 through 7 {
-
-    >:nth-last-child(#{$i}) {
+    > :nth-last-child(#{$i}) {
       @include list-content(nth($zone-color, $i));
     }
-
   }
 }
 
@@ -94,7 +86,8 @@ $dot-diameter: 8px;
   overflow: hidden;
 }
 
-#hour__selector, #min__selector {
+#hour__selector,
+#min__selector {
   position: absolute;
   width: 50%;
   align-items: center;
@@ -110,16 +103,16 @@ $dot-diameter: 8px;
       background-color: rgb(185, 236, 255, 0.5);
       @include transition(background-color);
     }
-
   }
-
 }
 
-#hour__selector, #hour__selector__temp {
+#hour__selector,
+#hour__selector__temp {
   left: $turn-gap;
 }
 
-#min__selector, #min__selector__temp {
+#min__selector,
+#min__selector__temp {
   right: $turn-gap;
 }
 
@@ -144,22 +137,10 @@ $dot-diameter: 8px;
   margin-bottom: 5px;
 }
 
-.date__cycle, .filed__name {
+.date__cycle,
+.filed__name {
   position: relative;
   margin: 5px 0;
-}
-
-.date__cycle__list, .filed__name__list {
-  $shadow: 4px rgba(0, 0, 0, 0.3);
-  position: fixed;
-  z-index: 2;
-  background-color: white;
-  cursor: pointer;
-  list-style: none;
-  padding: 5px;
-  margin: 0;
-  box-shadow: 2px 2px $shadow, -2px 2px $shadow, 2px -2px $shadow, -2px -2px $shadow;
-  min-width: 100px;
 }
 
 .condition__list {
@@ -196,7 +177,6 @@ $dot-diameter: 8px;
     color: white;
     background-color: $primary-blue;
   }
-
 }
 
 .condition__symbol {
@@ -212,4 +192,17 @@ $dot-diameter: 8px;
   min-width: $width;
   outline: none;
   text-align: center;
+}
+
+.advanced__target__option {
+  margin: 10px;
+  align-items: center;
+}
+
+.rod__bar {
+  @include target-rod-bar();
+}
+
+.rod__bar--active {
+  @include target-rod-bar-acitve();
 }

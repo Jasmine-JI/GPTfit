@@ -8,9 +8,8 @@ describe('CompareLineChartComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CompareLineChartComponent ]
-    })
-    .compileComponents();
+      declarations: [CompareLineChartComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

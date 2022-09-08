@@ -8,9 +8,8 @@ describe('DeviceLogComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DeviceLogComponent ]
-    })
-    .compileComponents();
+      declarations: [DeviceLogComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

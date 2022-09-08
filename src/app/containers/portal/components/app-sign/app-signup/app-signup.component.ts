@@ -16,7 +16,6 @@ import { SignTypeEnum } from '../../../../../shared/enum/account';
 import { TFTViewMinWidth } from '../../../models/app-webview';
 import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../shared/utils/index';
 
-
 interface RegCheck {
   email: RegExp;
   emailPass: boolean;
@@ -30,11 +29,10 @@ interface RegCheck {
 type PolicyType = 'termsConditions' | 'privacyPolicy';
 type InputType = 'account' | 'password' | 'nickname';
 
-
 @Component({
   selector: 'app-app-signup',
   templateUrl: './app-signup.component.html',
-  styleUrls: ['./app-signup.component.scss']
+  styleUrls: ['./app-signup.component.scss'],
 })
 export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();
@@ -45,7 +43,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly countryCodeList = codes;
   readonly SignTypeEnum = SignTypeEnum;
 
-  appSys = 0;  // 0:web, 1:ios, 2:android
+  appSys = 0; // 0:web, 1:ios, 2:android
   focusForm = '';
   displayPW = false;
   progress = 100;
@@ -75,7 +73,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     passwordPass: false,
     nickname: this.formReg.nickname,
     nicknamePass: false,
-    countryCodePass: false
+    countryCodePass: false,
   };
 
   // 儲存表單內容
@@ -88,7 +86,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     nickname: '',
     imgCaptcha: '',
     fromType: 1, // 預設number type
-    fromId: ''
+    fromId: '',
   };
 
   // 輸入錯誤各欄位提示內容
@@ -96,13 +94,13 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     account: '',
     password: '',
     nickname: '',
-    imgCaptcha: ''
+    imgCaptcha: '',
   };
 
   // 惡意註冊圖碼解鎖
   imgCaptcha = {
     show: false,
-    imgCode: ''
+    imgCode: '',
   };
 
   constructor(
@@ -112,7 +110,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     private dialog: MatDialog,
     private router: Router,
     public getClientIp: GetClientIpService,
-    private authService: AuthService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -127,7 +125,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       this.subscribeResizeEvent();
       this.setPageStyle(true);
     }
-
   }
 
   /**
@@ -138,7 +135,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.pcView === false) {
       this.getAppId(location.search);
     }
-
   }
 
   /**
@@ -159,14 +155,13 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     const query = getUrlQueryStrings(location.search);
     this.requestHeader = {
       ...this.requestHeader,
-      ...headerKeyTranslate(query)
+      ...headerKeyTranslate(query),
     };
 
     const { fi } = query;
     if (fi) {
       this.signupData.fromId = fi;
     }
-
   }
 
   /**
@@ -200,11 +195,9 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
         default:
           return 'en-us';
       }
-
     } else {
       return 'en-us';
     }
-
   }
 
   /**
@@ -217,15 +210,12 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     } else if (this.appSys === 2) {
       (window as any).android.closeWebView('Close');
     } else {
-
       if (this.pcView) {
         this.router.navigateByUrl('/signIn-web');
       } else {
         this.router.navigateByUrl('/signIn');
       }
-
     }
-
   }
 
   /**
@@ -244,33 +234,28 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.requestHeader = {
       deviceType: this.appSys,
-      ...this.requestHeader
+      ...this.requestHeader,
     };
-
   }
 
   // 取得使用者ip位址-kidin-1090521
-  getClientIpaddress () {
+  getClientIpaddress() {
     const { remoteAddr } = this.requestHeader as any;
     if (!remoteAddr) {
       return this.getClientIp.requestIpAddress().pipe(
-        tap(res => {
-          const { ip, country } = (res as any);
+        tap((res) => {
+          const { ip, country } = res as any;
           this.ip = ip;
           this.requestHeader = {
             ...this.requestHeader,
             remoteAddr: ip,
-            regionCode: country || 'US'
+            regionCode: country || 'US',
           };
-
         })
-        
       );
-
     } else {
       return of(this.requestHeader);
     }
-
   }
 
   /**
@@ -279,13 +264,9 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   subscribeResizeEvent() {
     const resizeEvent = fromEvent(window, 'resize');
-    this.resizeSubscription = resizeEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.resizeSubscription = resizeEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.checkScreenWidth();
-
     });
-
   }
 
   /**
@@ -319,7 +300,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     const account = e.currentTarget.value;
 
     if (e.key.length === 1 || e.key === 'Backspace') {
-
       if (e.key === 'Backspace') {
         const value = account.slice(0, account.length - 1);
         if (value.length > 0 && this.formReg.number.test(value)) {
@@ -327,15 +307,12 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
           this.signupData.type = 1;
         }
-  
       } else if (this.formReg.number.test(account) && this.formReg.number.test(e.key)) {
         this.signupData.type = 2;
       } else if (!this.formReg.number.test(e.key)) {
         this.signupData.type = 1;
       }
-
     }
-
   }
 
   /**
@@ -357,12 +334,10 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
         this.signupData.email = account;
         this.checkEmail(this.signupData.email);
       }
-
     } else {
       this.signupData.type = 1;
       this.signupCue.account = 'universal_status_wrongFormat';
     }
-
   }
 
   /**
@@ -393,7 +368,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.displayPW = false;
     }
-
   }
 
   /**
@@ -416,7 +390,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.checkAll(this.regCheck);
     }
-
   }
 
   /**
@@ -437,7 +410,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param e MouseEvent | KeyboardEvent
    * @author kidin-1090511
    */
-  checkNickname (e: any) {
+  checkNickname(e: any) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       this.signupData.nickname = this.trimWhiteSpace(e.currentTarget.value);
 
@@ -451,7 +424,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.checkAll(this.regCheck);
     }
-
   }
 
   /**
@@ -469,7 +441,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param e {MouseEvent | KeyboardEvent}
    * @author kidin-1090514
    */
-  checkImgCaptcha (e: any) {
+  checkImgCaptcha(e: any) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputImgCaptcha = e.currentTarget.value;
 
@@ -482,7 +454,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.checkAll(this.regCheck);
     }
-
   }
 
   /**
@@ -493,31 +464,29 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   checkAll(check: RegCheck): void {
     if (this.signupData.type === 1) {
       if (
-           !check.emailPass
-        || !check.passwordPass
-        || !check.nicknamePass
-        || (this.imgCaptcha.show && this.signupData.imgCaptcha.length === 0)
+        !check.emailPass ||
+        !check.passwordPass ||
+        !check.nicknamePass ||
+        (this.imgCaptcha.show && this.signupData.imgCaptcha.length === 0)
       ) {
         this.dataIncomplete = true;
       } else {
         this.dataIncomplete = false;
       }
-
     } else {
-
       if (this.pcView && !check.countryCodePass) {
         this.signupCue.account = 'universal_userAccount_countryRegionCode';
         this.dataIncomplete = true;
-      } else if (!check.passwordPass
-        || !check.nicknamePass
-        || (this.imgCaptcha.show && this.signupData.imgCaptcha.length === 0)
+      } else if (
+        !check.passwordPass ||
+        !check.nicknamePass ||
+        (this.imgCaptcha.show && this.signupData.imgCaptcha.length === 0)
       ) {
         this.dataIncomplete = true;
       } else {
         this.signupCue.account = '';
         this.dataIncomplete = false;
       }
-
     }
   }
 
@@ -531,65 +500,58 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.imgCaptcha.show) {
       const releaseBody = {
         unlockFlow: 2,
-        unlockKey: this.signupData.imgCaptcha
+        unlockKey: this.signupData.imgCaptcha,
       };
 
-      this.getClientIpaddress().pipe(
-        switchMap(ipResult => this.signupService.fetchCaptcha(releaseBody, this.requestHeader))
-      ).subscribe((res: any) => {
-        if (res.processResult && res.processResult.resultCode === 200) {
-          this.imgCaptcha.show = false;
-          this.submit();
-        } else {
-
-          if (res.processResult) {
-
-            switch (res.processResult.apiReturnMessage) {
-              case 'Found a wrong unlock key.':
-                this.signupCue.imgCaptcha = 'errorValue';
-                this.progress = 100;
-                break;
-              default:
-                this.dialog.open(MessageBoxComponent, {
-                  hasBackdrop: true,
-                  data: {
-                    title: 'Message',
-                    body: `Error.<br />Please try again later.`,
-                    confirmText: this.translate.instant(
-                      'universal_operating_confirm'
-                    ),
-                    onConfirm: this.turnBack.bind(this)
-                  }
-                });
-
-                console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
-                break;
-            }
-
+      this.getClientIpaddress()
+        .pipe(
+          switchMap((ipResult) => this.signupService.fetchCaptcha(releaseBody, this.requestHeader))
+        )
+        .subscribe((res: any) => {
+          if (res.processResult && res.processResult.resultCode === 200) {
+            this.imgCaptcha.show = false;
+            this.submit();
           } else {
+            if (res.processResult) {
+              switch (res.processResult.apiReturnMessage) {
+                case 'Found a wrong unlock key.':
+                  this.signupCue.imgCaptcha = 'errorValue';
+                  this.progress = 100;
+                  break;
+                default:
+                  this.dialog.open(MessageBoxComponent, {
+                    hasBackdrop: true,
+                    data: {
+                      title: 'Message',
+                      body: `Error.<br />Please try again later.`,
+                      confirmText: this.translate.instant('universal_operating_confirm'),
+                      onConfirm: this.turnBack.bind(this),
+                    },
+                  });
 
-            this.dialog.open(MessageBoxComponent, {
-              hasBackdrop: true,
-              data: {
-                title: 'Message',
-                body: `Error.<br />Please try again later.`,
-                confirmText: this.translate.instant(
-                  'universal_operating_confirm'
-                ),
-                onConfirm: this.turnBack.bind(this)
+                  console.error(
+                    `${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`
+                  );
+                  break;
               }
-            });
+            } else {
+              this.dialog.open(MessageBoxComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'Message',
+                  body: `Error.<br />Please try again later.`,
+                  confirmText: this.translate.instant('universal_operating_confirm'),
+                  onConfirm: this.turnBack.bind(this),
+                },
+              });
 
-            console.error(`${res.resultCode}: ${res.info}`);
+              console.error(`${res.resultCode}: ${res.info}`);
+            }
           }
-
-        }
-
-      });
+        });
     } else {
       this.sendFormInfo();
     }
-
   }
 
   /**
@@ -602,7 +564,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       name: this.signupData.nickname,
       password: this.signupData.password,
       fromType: this.signupData.fromType,
-      fromId: this.signupData.fromId
+      fromId: this.signupData.fromId,
     };
 
     if (this.signupData.type === 1) {
@@ -612,94 +574,88 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       body.mobileNumber = this.signupData.phone;
     }
 
-    this.getClientIpaddress().pipe(
-      switchMap(ipResult => this.signupService.fetchRegister(body, this.requestHeader))
-    ).subscribe((res: any) => {
-      if (res.processResult && res.processResult.resultCode !== 200) {
-
-        switch (res.processResult.apiReturnMessage) {
-          case 'Register account is existing.':
-            this.signupCue.account = 'accountRepeat';
-            break;
-          case 'Register name is existing.':
-            this.signupCue.nickname = 'nicknameRepeat';
-            break;
-          case 'Found attack, update status to lock!':
-          case 'Found lock!':
-            const captchaBody = {
-              unlockFlow: 1,
-              imgLockCode: res.processResult.imgLockCode
-            };
-
-            this.signupService.fetchCaptcha(captchaBody, this.requestHeader).subscribe((captchaRes: any) => {
-              this.imgCaptcha = {
-                show: true,
-                imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`
+    this.getClientIpaddress()
+      .pipe(switchMap((ipResult) => this.signupService.fetchRegister(body, this.requestHeader)))
+      .subscribe((res: any) => {
+        if (res.processResult && res.processResult.resultCode !== 200) {
+          switch (res.processResult.apiReturnMessage) {
+            case 'Register account is existing.':
+              this.signupCue.account = 'accountRepeat';
+              break;
+            case 'Register name is existing.':
+              this.signupCue.nickname = 'nicknameRepeat';
+              break;
+            case 'Found attack, update status to lock!':
+            case 'Found lock!':
+              const captchaBody = {
+                unlockFlow: 1,
+                imgLockCode: res.processResult.imgLockCode,
               };
-            });
 
-            break;
-          default:
-            this.dialog.open(MessageBoxComponent, {
-              hasBackdrop: true,
-              data: {
-                title: 'Message',
-                body: `Error.<br />Please try again later.`,
-                confirmText: this.translate.instant(
-                  'universal_operating_confirm'
-                ),
-                onConfirm: this.turnBack.bind(this)
-              }
-            });
+              this.signupService
+                .fetchCaptcha(captchaBody, this.requestHeader)
+                .subscribe((captchaRes: any) => {
+                  this.imgCaptcha = {
+                    show: true,
+                    imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
+                  };
+                });
 
-            console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
-            break;
-        }
+              break;
+            default:
+              this.dialog.open(MessageBoxComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'Message',
+                  body: `Error.<br />Please try again later.`,
+                  confirmText: this.translate.instant('universal_operating_confirm'),
+                  onConfirm: this.turnBack.bind(this),
+                },
+              });
 
-      } else if (res.resultCode && res.resultCode === 400) {
-        this.dialog.open(MessageBoxComponent, {
-          hasBackdrop: true,
-          data: {
-            title: 'Message',
-            body: `Error.<br />Please try again later.`,
-            confirmText: this.translate.instant(
-              'universal_operating_confirm'
-            ),
-            onConfirm: this.turnBack.bind(this)
+              console.error(
+                `${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`
+              );
+              break;
           }
-        });
-
-        console.error(`${res.resultCode}: ${res.info}`);
-      } else {
-        this.newToken = res.register.token;
-        this.saveToken(this.newToken);
-        this.authService.tokenLogin();
-
-        // 若有目標導向網址，則跳過詢問啟用步驟
-        if (this.authService.backUrl.length > 0) {
+        } else if (res.resultCode && res.resultCode === 400) {
           this.dialog.open(MessageBoxComponent, {
             hasBackdrop: true,
-            disableClose: true,
             data: {
               title: 'Message',
-              body: `${this.translate.instant('universal_status_success')} ${this.translate.instant('universal_userAccount_signUp')}`,
-              confirmText: this.translate.instant(
-                'universal_operating_confirm'
-              ),
-              onConfirm: this.finishSignup.bind(this)
-            }
-
+              body: `Error.<br />Please try again later.`,
+              confirmText: this.translate.instant('universal_operating_confirm'),
+              onConfirm: this.turnBack.bind(this),
+            },
           });
-          
+
+          console.error(`${res.resultCode}: ${res.info}`);
         } else {
-          this.toEnableAccount();
+          this.newToken = res.register.token;
+          this.saveToken(this.newToken);
+          this.authService.tokenLogin();
+
+          // 若有目標導向網址，則跳過詢問啟用步驟
+          if (this.authService.backUrl.length > 0) {
+            this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              disableClose: true,
+              data: {
+                title: 'Message',
+                body: `${this.translate.instant(
+                  'universal_status_success'
+                )} ${this.translate.instant('universal_userAccount_signUp')}`,
+                confirmText: this.translate.instant('universal_operating_confirm'),
+                onConfirm: this.finishSignup.bind(this),
+              },
+            });
+          } else {
+            this.toEnableAccount();
+          }
         }
 
-      }
-
-      this.progress = 100;
-    });
-
+        this.progress = 100;
+      });
   }
 
   /**
@@ -716,7 +672,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.router.navigateByUrl('/dashboard/user-settings');
     }
-
   }
 
   /**
@@ -725,13 +680,12 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090717
    */
   saveToken(token: string): void {
-    this.authService.setToken(token);  // 直接在瀏覽器幫使用者登入
+    this.authService.setToken(token); // 直接在瀏覽器幫使用者登入
     if (this.appSys === 1) {
       (window as any).webkit.messageHandlers.returnToken.postMessage(token);
     } else if (this.appSys === 2) {
       (window as any).android.returnToken(token);
     }
-
   }
 
   /**
@@ -745,7 +699,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.router.navigate(['/enableAccount'], { queryParamsHandling: 'preserve' });
     }
-
   }
 
   /**
@@ -753,7 +706,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param action {boolean}-同意/不同意
    * @author kidin-1091208
    */
-  handleAgreeTerms(action: boolean, turnBack: boolean = true) {
+  handleAgreeTerms(action: boolean, turnBack = true) {
     this.agreeTerms = action;
     if (!action && turnBack) {
       this.turnBack();
@@ -772,13 +725,11 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       if (targetElement) {
         const scrollTop = targetElement.getBoundingClientRect().top;
         const scrollElement = document.querySelector('.main');
-        scrollElement.scrollTo({top: scrollTop, behavior: 'smooth'});
+        scrollElement.scrollTo({ top: scrollTop, behavior: 'smooth' });
       } else {
         this.scrollToForm();
       }
-      
     }, 1);
-
   }
 
   /**
@@ -788,7 +739,10 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   showCountryCodeList(e: MouseEvent) {
     e.stopPropagation();
-    const { signupData: { type }, displayCountryCodeList } = this;
+    const {
+      signupData: { type },
+      displayCountryCodeList,
+    } = this;
     if (type === SignTypeEnum.phone) {
       if (displayCountryCodeList) {
         this.unsubscribeClickScrollEvent();
@@ -796,9 +750,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
         this.displayCountryCodeList = true;
         this.subscribeClickScrollEvent();
       }
-
     }
-    
   }
 
   /**
@@ -809,12 +761,11 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     const targetElement = document.querySelector('main');
     const clickEvent = fromEvent(document, 'click');
     const scrollEvent = fromEvent(targetElement, 'scroll');
-    this.clickScrollEvent = merge(clickEvent, scrollEvent).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.unsubscribeClickScrollEvent();
-    });
-
+    this.clickScrollEvent = merge(clickEvent, scrollEvent)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.unsubscribeClickScrollEvent();
+      });
   }
 
   /**
@@ -825,7 +776,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.displayCountryCodeList = false;
     if (this.clickScrollEvent) this.clickScrollEvent.unsubscribe();
   }
-  
+
   /**
    * 選擇國碼
    * @param e {MouseEvent}
@@ -837,7 +788,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.signupData.countryCode = +code.split('+')[1];
     this.regCheck.countryCodePass = true;
     this.signupCue.account = '';
-    this.checkAll(this.regCheck);    
+    this.checkAll(this.regCheck);
     this.unsubscribeClickScrollEvent();
   }
 
@@ -850,6 +801,4 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
-
 }

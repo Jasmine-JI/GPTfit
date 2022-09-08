@@ -3,12 +3,12 @@ import { ReplaySubject, Observable } from 'rxjs';
 import { EditMode } from '../models/personal';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DashboardService {
   editMode$ = new ReplaySubject<EditMode>(1); // 是否進入編輯模式或建立模式
 
-  constructor() { }
+  constructor() {}
 
   /**
    * 設置編輯模式以傳達給父組件
@@ -26,5 +26,4 @@ export class DashboardService {
   getRxEditMode(): Observable<EditMode> {
     return this.editMode$;
   }
-
 }

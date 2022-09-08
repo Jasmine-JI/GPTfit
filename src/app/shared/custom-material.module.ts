@@ -16,10 +16,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { 
-// MAT_DATE_LOCALE,
-// MAT_DATE_FORMATS,
-MatRadioModule } from '@angular/material/radio';
+import {
+  // MAT_DATE_LOCALE,
+  // MAT_DATE_FORMATS,
+  MatRadioModule,
+} from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -35,16 +36,17 @@ import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { LayoutModule } from '@angular/cdk/layout';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 
-export const TW_FORMATS = { // 可以自己定義時間格式，因為原本material設定台灣時間格式就是我們要的XX/XX/XX，所以這個變數沒用到
+export const TW_FORMATS = {
+  // 可以自己定義時間格式，因為原本material設定台灣時間格式就是我們要的XX/XX/XX，所以這個變數沒用到
   parse: {
-    dateInput: 'YYYY-MM-DD'
+    dateInput: 'YYYY-MM-DD',
   },
   display: {
     dateInput: 'YYYY-MM-DD',
     monthYearLabel: 'YYYY MMM',
     dateA11yLabel: 'YYYY-MM-DD',
-    monthYearA11yLabel: 'YYYY MMM'
-  }
+    monthYearA11yLabel: 'YYYY MMM',
+  },
 };
 
 @NgModule({
@@ -77,7 +79,7 @@ export const TW_FORMATS = { // 可以自己定義時間格式，因為原本mate
     MatBadgeModule,
     MatBottomSheetModule,
     MatSlideToggleModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
   ],
   exports: [
     MatIconModule,
@@ -109,18 +111,15 @@ export const TW_FORMATS = { // 可以自己定義時間格式，因為原本mate
     MatBadgeModule,
     MatBottomSheetModule,
     MatSlideToggleModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
     // { provide: MAT_DATE_FORMATS, useValue: TW_FORMATS }
-  ]
+  ],
 })
 export class CustomMaterialModule {
-  constructor(
-    private translate: TranslateService,
-    private adapter: DateAdapter<any>
-  ) {
+  constructor(private translate: TranslateService, private adapter: DateAdapter<any>) {
     translate.onLangChange.subscribe((params: LangChangeEvent) => {
       let lang = 'zh-tw';
       switch (params.lang) {
@@ -140,4 +139,3 @@ export class CustomMaterialModule {
     });
   }
 }
-

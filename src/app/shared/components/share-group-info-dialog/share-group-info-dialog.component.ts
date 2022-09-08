@@ -6,7 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-share-group-info-dialog',
   templateUrl: './share-group-info-dialog.component.html',
-  styleUrls: ['./share-group-info-dialog.component.scss']
+  styleUrls: ['./share-group-info-dialog.component.scss'],
 })
 export class ShareGroupInfoDialogComponent implements OnInit {
   get title() {
@@ -78,12 +78,6 @@ export class ShareGroupInfoDialogComponent implements OnInit {
 
     inputElement.setSelectionRange(0, 99999);
     document.execCommand('copy');
-    this.snackbar.open(
-      'Copied!!',
-      'OK',
-      { duration: 3000 }
-    );
-    
+    this.snackbar.open('Copied!!', 'OK', { duration: 3000 });
   }
-
 }

@@ -1,0 +1,199 @@
+<div [class.loadingMask]="uiFlag.progress !== 100" *ngIf="uiFlag.progress !== 100">
+  <div class="loadingMaskAnimation"></div>
+  <div class="loadingMaskAnimation"></div>
+  <div class="loadingMaskAnimation"></div>
+</div>
+<div class="flexCol">
+  <div class="child-back__button__row" *ngIf="uiFlag.isMobile">
+    <button (click)="turnBack()">
+      <i class="icon-svg_web-icon_p1_016-back child-functional__icon"></i>
+      <span class="child-turn__back">
+        {{ 'universal_operating_back' | translate }}
+      </span>
+    </button>
+  </div>
+  <div class="flexRow functional__button__row">
+    <button (click)="discardMail()">
+      <i class="icon-svg_web-icon_p1_009-delete child-functional__icon"></i>
+      <span>{{ 'universal_operating_giveUp' | translate }}</span>
+    </button>
+    <button (click)="mailSubmit()">
+      <i class="icon-svg_web-icon_p4_013-send child-functional__icon"></i>
+      <span>{{ 'universal_operating_send' | translate }}</span>
+    </button>
+  </div>
+  <form class="flexCol">
+    <div class="flexRow input__text__section">
+      <label class="input__label" for="mail__title">
+        {{ 'universal_message_title' | translate }}
+      </label>
+      <input
+        type="text"
+        id="mail__title"
+        autocomplete="off"
+        [value]="sendMail.title"
+        (focusout)="saveTitle($event)"
+        maxlength="50"
+      />
+    </div>
+    <div class="flexRow input__text__section" *ngIf="sendMail.receiverType === ReceiverType.assign">
+      <label class="input__label" for="receiver__input">
+        {{ 'universal_message_addressee' | translate }}
+      </label>
+      <div class="flexRow receiver__section">
+        <ng-container *ngFor="let _list of receiverList">
+          <div
+            class="flexRow receiver__sticker"
+            [class.sticker__no__button]="uiFlag.isReplyMode"
+            (click)="showReceiverMenu($event, _list)"
+          >
+            <span class="receiver__name">{{ _list.name }}</span>
+            <button (click)="delReceiver(_list.id)" *ngIf="!uiFlag.isReplyMode">
+              <i class="icon-svg_web-icon_p1_012-close"></i>
+            </button>
+            <ul
+              class="child-sender__menu"
+              *ngIf="uiFlag.showReceiverMenu && uiFlag.showReceiverMenu.id == _list.id"
+            >
+              <li
+                class="child-sender__menu__item"
+                (click)="navigateSenderPage(_list.id, _list.isGroup)"
+              >
+                {{ 'universal_deviceSetting_adout' | translate }}
+              </li>
+              <li
+                class="child-sender__menu__item"
+                (click)="addFavoriteList(_list)"
+                *ngIf="!uiFlag.isFavorite && !_list.isGroup"
+              >
+                {{ '設為常用名單' | translate }}
+              </li>
+              <li
+                class="child-sender__menu__item"
+                (click)="removeFavoriteList(_list)"
+                *ngIf="uiFlag.isFavorite && !_list.isGroup"
+              >
+                {{ '取消常用名單' | translate }}
+              </li>
+            </ul>
+          </div>
+        </ng-container>
+        <div class="flexCol autocomplete__list" *ngIf="!uiFlag.isReplyMode">
+          <input id="receiver__input" type="text" autocomplete="off" #receiverInput />
+          <ul class="receiver__search__list" *ngIf="searchList.length > 0">
+            <li
+              class="receiver__search__option"
+              *ngFor="let _user of searchList; let index = index"
+              (click)="checkReceiverRepeat(index)"
+            >
+              {{ _user.nickname }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <app-receiver-list
+      [showBlackList]="false"
+      (addReceiver)="addFavoriteReceiver($event)"
+      *ngIf="!uiFlag.isReplyMode && sendMail.receiverType === ReceiverType.assign"
+    ></app-receiver-list>
+    <div *ngIf="getSystemAccessRight() <= AccessRight.god">
+      <div class="flexRow mail__option">
+        <input
+          id="system__send"
+          type="radio"
+          name="mailType"
+          aria-selected="true"
+          value="3"
+          (click)="changeMailType($event)"
+        />
+        <label class="mail__option__label" for="system__send"> 系統發送 </label>
+        <input
+          id="normal__send"
+          type="radio"
+          name="mailType"
+          value="2"
+          checked="true"
+          (click)="changeMailType($event)"
+        />
+        <label class="mail__option__label" for="normal__send"> 一般發送 </label>
+      </div>
+      <div class="flexRow mail__option">
+        <input
+          id="all__receiver"
+          type="radio"
+          name="receiverRange"
+          value="1"
+          (click)="changeReceiverRange($event)"
+        />
+        <label class="mail__option__label" for="all__receiver"> 所有使用者 </label>
+        <input
+          id="assign__receiver"
+          type="radio"
+          name="receiverRange"
+          value="2"
+          checked="true"
+          (click)="changeReceiverRange($event)"
+        />
+        <label class="mail__option__label" for="assign__receiver"> 指定收件者 </label>
+      </div>
+    </div>
+    <div class="mail__content">
+      <!--
+      <div
+        #mainContentInput
+        class="mail__input__content"
+        contenteditable="true"
+        (paste)="checkPaste($event)"
+        (keydown)="checkTextLimit($event)"
+        (keyup)="handleMainContentKeyUp($event)"
+        (focusout)="saveMainContent($event)"
+        [innerHTML]="sendMail.content"
+      ></div>
+      -->
+      <textarea
+        #mainContentInput
+        class="mail__input__content"
+        [class.textArea__full__height]="replyMailList.length === 0"
+        (paste)="checkPaste($event)"
+        (keydown)="checkTextLimit($event)"
+        (keyup)="handleMainContentKeyUp($event)"
+        (focusout)="saveMainContent($event)"
+        [(value)]="textAreaContent"
+      ></textarea>
+      <div
+        class="flexCol child-reply__mail"
+        *ngFor="let _replyMail of replyMailList; let index = index"
+        (click)="unfoldReplyMail($event, index)"
+      >
+        <div class="flexRow child-reply__mail__info">
+          <div class="flexRow child-reply__mail__sender">
+            <img
+              class="child-reply__sender__icon"
+              [src]="_replyMail.senderAvatarUrl"
+              [alt]="_replyMail.senderName"
+              (error)="_replyMail.senderAvatarUrl = '/assets/images/user2.png'"
+            />
+            <span>
+              {{ _replyMail.senderName }}
+            </span>
+            <span class="child-divide__symbol">|</span>
+            <h5 class="child-reply__mail__title">
+              {{ _replyMail.title }}
+            </h5>
+          </div>
+          <i
+            class="icon-svg_web-icon_p1_006-unfold child-reply__mail__unfold"
+            [class.child-reply__mail__fold]="_replyMail.unfold"
+          ></i>
+        </div>
+        <div
+          class="reply__mail__detail"
+          [innerHTML]="_replyMail.content"
+          *ngIf="_replyMail.unfold"
+        ></div>
+      </div>
+    </div>
+    <p class="content__length__hint">{{ contentLength }}/{{ contentLimit }}</p>
+  </form>
+</div>

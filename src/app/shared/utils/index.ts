@@ -13,11 +13,11 @@ export function isObjectEmpty(object) {
 }
 
 export function debounce(func, wait) {
-  var timeout, args, context, timestamp, result;
+  let timeout, args, context, timestamp, result;
   if (null == wait) wait = 100;
 
   function later() {
-    var last = Date.now() - timestamp;
+    const last = Date.now() - timestamp;
 
     if (last < wait && last >= 0) {
       timeout = setTimeout(later, wait - last);
@@ -26,10 +26,9 @@ export function debounce(func, wait) {
       result = func.apply(context, args);
       context = args = null;
     }
+  }
 
-  };
-
-  var debounced = function () {
+  const debounced = function () {
     context = this;
     args = arguments;
     timestamp = Date.now();
@@ -43,7 +42,7 @@ export function debounce(func, wait) {
   };
 
   return debounced;
-};
+}
 
 /**
  * 設定localStorage
@@ -80,22 +79,19 @@ export function removeLocalStorageObject(key: string) {
  * @returns {boolean} resultCode是否回傳200
  * @author kidin-1100902
  */
-export function checkResponse(res: any, showErrorMessage: boolean = true): boolean {
+export function checkResponse(res: any, showErrorMessage = true): boolean {
   const { processResult, resultCode: resCode, apiCode: resApiCode, resultMessage: resMsg } = res;
   if (!processResult) {
-
     if (resCode !== 200) {
       if (showErrorMessage) showErrorApiLog(resCode, resApiCode, resMsg);
       return false;
     }
-    
   } else {
     const { resultCode, apiCode, resultMessage } = processResult;
     if (resultCode !== 200) {
       if (showErrorMessage) showErrorApiLog(resultCode, apiCode, resultMessage);
       return false;
     }
-
   }
 
   return true;
@@ -145,7 +141,7 @@ export function deepCopy(obj: any, cache = new WeakMap()) {
   cache.set(obj, copy);
 
   // 取出所有一般屬性 & 所有 key 為 symbol 的屬性
-  [...Object.getOwnPropertyNames(obj), ...Object.getOwnPropertySymbols(obj)].forEach(key => {
+  [...Object.getOwnPropertyNames(obj), ...Object.getOwnPropertySymbols(obj)].forEach((key) => {
     copy[key] = deepCopy(obj[key], cache);
   });
 
@@ -166,21 +162,19 @@ export function getUrlQueryStrings(search: string = undefined) {
   if (!queryString) {
     return queryObj;
   } else {
-
     if (queryString.includes('?')) {
       queryArr = queryString.split('?')[1].split('&');
     } else {
       queryArr = queryString.split('&');
     }
 
-    queryArr.forEach(_query => {
+    queryArr.forEach((_query) => {
       const [_key, _value] = _query.split('=');
-      Object.assign(queryObj, {[_key]: _value});
+      Object.assign(queryObj, { [_key]: _value });
     });
 
     return queryObj;
   }
-
 }
 
 /**
@@ -228,9 +222,8 @@ export function getHrZoneTranslation(translate: TranslateService) {
     translate.instant('universal_activityData_limit_aerobicZone'),
     translate.instant('universal_activityData_limit_enduranceZone'),
     translate.instant('universal_activityData_limit_marathonZone'),
-    translate.instant('universal_activityData_limit_anaerobicZone')
+    translate.instant('universal_activityData_limit_anaerobicZone'),
   ];
-
 }
 
 /**
@@ -245,9 +238,8 @@ export function getFtpZoneTranslation(translate: TranslateService) {
     translate.instant('universal_activityData_limit_ftpZ3'),
     translate.instant('universal_activityData_limit_ftpZ4'),
     translate.instant('universal_activityData_limit_ftpZ5'),
-    translate.instant('universal_activityData_limit_ftpZ6')
+    translate.instant('universal_activityData_limit_ftpZ6'),
   ];
-
 }
 
 /**
@@ -261,18 +253,18 @@ export function getMuscleGroupTranslation(translate: TranslateService) {
     translate.instant('universal_muscleName_shoulderMuscle'),
     translate.instant('universal_muscleName_backMuscle'),
     translate.instant('universal_muscleName_abdominalMuscle'),
-    translate.instant('universal_muscleName_legMuscle')
+    translate.instant('universal_muscleName_legMuscle'),
   ];
 }
 
 /**
  * 計算百分比數據
- * @param molecular {number}-分子
+ * @param numerator {number}-分子
  * @param denominator {number}-分母
  * @param decimal {number}-四捨五入位數
  */
-export function countPercentage(molecular: number, denominator: number, decimal: number = 0) {
-  return mathRounding((molecular ?? 0) / (denominator || Infinity) * 100, decimal);
+export function countPercentage(numerator: number, denominator: number, decimal = 0) {
+  return mathRounding(((numerator ?? 0) / (denominator || Infinity)) * 100, decimal);
 }
 
 /**
@@ -280,7 +272,7 @@ export function countPercentage(molecular: number, denominator: number, decimal:
  * @param color {string}-顏色，格式為rgba
  */
 export function changeOpacity(color: string, newOpacity: string | number) {
-  const trimColor = color.replace(/\s/g,'');
+  const trimColor = color.replace(/\s/g, '');
   const rgbaReg = /^(rgba\(\d+,\d+,\d+,)(\d+)(\))$/;
   return trimColor.replace(rgbaReg, `$1${newOpacity}$3`);
 }
@@ -292,7 +284,7 @@ export function changeOpacity(color: string, newOpacity: string | number) {
 export function getFileInfoParam(info: string) {
   const [origin, ...rest] = info.split('?');
   let result: any = { origin };
-  rest.forEach(_param => {
+  rest.forEach((_param) => {
     const [key, value] = _param.split('=');
     result = { ...result, [key]: value };
   });
@@ -326,19 +318,20 @@ export function valueConvert(
  * @param gpxB {Array<number>}
  */
 export function countDistance(gpxA: Array<number>, gpxB: Array<number>) {
-  const earthR = 6371;  // km
+  const earthR = 6371; // km
   const radConst = Math.PI / 180;
   const [φA, λA] = [...gpxA];
   const [φB, λB] = [...gpxB];
   if (φA !== φB || λA !== λB) {
     const [φRA, λRA] = [...[φA * radConst, λA * radConst]];
     const [φRB, λRB] = [...[φB * radConst, λB * radConst]];
-    const sigma = Math.acos(Math.sin(φRA) * Math.sin(φRB) + Math.cos(φRA) * Math.cos(φRB) * Math.cos(Math.abs(λRB - λRA)));
+    const sigma = Math.acos(
+      Math.sin(φRA) * Math.sin(φRB) + Math.cos(φRA) * Math.cos(φRB) * Math.cos(Math.abs(λRB - λRA))
+    );
     return +(earthR * sigma * 1000).toFixed(0);
   } else {
     return 0;
   }
-  
 }
 
 /**
@@ -365,7 +358,6 @@ export function headerKeyTranslate(query: any) {
         option = { equipmentSN: _value, ...option };
         break;
     }
-
   });
 
   return option;
@@ -393,12 +385,11 @@ export function buildBase64ImgString(value: string) {
  * @author kidin-1101216
  */
 export function getCurrentTimestamp(timeUnit: 's' | 'ms' = 's') {
-  const currentTimeStamp = (new Date()).getTime();
+  const currentTimeStamp = new Date().getTime();
   switch (timeUnit) {
     case 's':
       return Math.round(currentTimeStamp / 1000);
     case 'ms':
       return currentTimeStamp;
   }
-
 }

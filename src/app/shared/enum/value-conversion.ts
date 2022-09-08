@@ -1,7 +1,7 @@
 /**
  * 0.公制 1.英制
  */
- export enum Unit {
+export enum Unit {
   metric,
-  imperial
+  imperial,
 }

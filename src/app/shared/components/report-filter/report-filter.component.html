@@ -1,16 +1,18 @@
 <div
   #filterSection
-  style="width: 100%; margin: 0;"
+  style="width: 100%; margin: 0"
   class="cardContent"
   [class.reportPreviewMode]="uiFlag.isPreviewMode"
   [style.pointer-events]="uiFlag.isLoading ? 'none' : 'initial'"
 >
   <div
     class="flexRow"
-    style="width: fit-content; align-items: center; cursor: pointer; margin-bottom: 10px;"
+    style="width: fit-content; align-items: center; cursor: pointer; margin-bottom: 10px"
     (click)="openConditionSelector()"
   >
-    <h6 class="condition__title" style="margin-bottom: 0; font-size: 18px;">{{ 'universal_operating_filter' | translate }}</h6>
+    <h6 class="condition__title" style="margin-bottom: 0; font-size: 18px">
+      {{ 'universal_operating_filter' | translate }}
+    </h6>
     <i
       class="icon-svg_web-icon_p1_006-unfold condition__unfold__icon"
       [class.condition__fold__icon]="uiFlag.showConditionSelector"
@@ -19,7 +21,7 @@
   <main *ngIf="uiFlag.showConditionSelector">
     <ng-container *ngIf="reportConditionOpt && reportConditionOpt.date">
       <section id="date__selector__bar">
-        <div #dateSelectorBar class="flexRow" style="height: 48px; position: relative;">
+        <div #dateSelectorBar class="flexRow" style="height: 48px; position: relative">
           <i
             class="icon-svg_web-icon_p1_073-level_fold switch__btn"
             (click)="shiftDateTypeBar('pre')"
@@ -29,7 +31,7 @@
           ></i>
           <div
             class="flexCol date__type__content"
-            style="display: flex; overflow: hidden; justify-content: center; position: relative;"
+            style="display: flex; overflow: hidden; justify-content: center; position: relative"
             [style.max-width]="uiFlag.dateTypeBarWidth"
           >
             <div class="flexRow date__type__bar" [style.transform]="uiFlag.dateTypeBarOffset">
@@ -37,34 +39,51 @@
                 class="selector__tab__title"
                 [class.date__type--active]="date.type === 'sevenDay'"
                 (click)="selectDateRange($event, 0)"
-              >7{{'universal_time_day' | translate}}</span>
+                >7{{ 'universal_time_day' | translate }}</span
+              >
               <span
                 class="selector__tab__title"
                 [class.date__type--active]="date.type === 'thirtyDay'"
                 (click)="selectDateRange($event, 1)"
-              >30{{'universal_time_day' | translate}}</span>
+                >30{{ 'universal_time_day' | translate }}</span
+              >
               <span
                 class="selector__tab__title"
                 [class.date__type--active]="date.type === 'sixMonth'"
                 (click)="selectDateRange($event, 2)"
-              >6{{'universal_time_month' | translate}}</span>
-              <div #calendarPeriod style="display: flex; justify-content: center; position: relative;">
+                >6{{ 'universal_time_month' | translate }}</span
+              >
+              <div
+                #calendarPeriod
+                style="display: flex; justify-content: center; position: relative"
+              >
                 <span
                   class="selector__tab__title"
                   [class.date__type--active]="
-                    date.type === 'today' || date.type === 'thisWeek' || date.type === 'thisMonth' || date.type === 'thisYear'
+                    date.type === 'today' ||
+                    date.type === 'thisWeek' ||
+                    date.type === 'thisMonth' ||
+                    date.type === 'thisYear'
                   "
                   (click)="selectDateRange($event, 3)"
-                >{{'universal_activityData_calendarSelect' | translate}}</span>
+                  >{{ 'universal_activityData_calendarSelect' | translate }}</span
+                >
               </div>
               <div class="flexCenter">
                 <span
                   class="selector__tab__title"
                   [class.date__type--active]="date.type === 'custom'"
                   (click)="selectDateRange($event, 4)"
-                >{{'universal_activityData_dateRange' | translate}}</span>
+                  >{{ 'universal_activityData_dateRange' | translate }}</span
+                >
                 <app-date-range-picker
-                  style="position: absolute; bottom: 0px; z-index: -1; opacity: 0; pointer-events: none;"
+                  style="
+                    position: absolute;
+                    bottom: 0px;
+                    z-index: -1;
+                    opacity: 0;
+                    pointer-events: none;
+                  "
                   [pickerType]="'rangePick'"
                   [startTimeStamp]="date?.startTimestamp"
                   [endTimeStamp]="date.endTimestamp"
@@ -76,12 +95,17 @@
                 ></app-date-range-picker>
               </div>
             </div>
-            <div class="date__selector--active" [style.transform]="uiFlag.activeDateTypeOffset"></div>
+            <div
+              class="date__selector--active"
+              [style.transform]="uiFlag.activeDateTypeOffset"
+            ></div>
           </div>
           <i
             class="icon-svg_web-icon_p1_074-level_unfold switch__btn"
             (click)="shiftDateTypeBar('next')"
-            [style.border-left]="uiFlag.disableBtn !== 'next' ? '2px solid var(--tab-border)' : 'none'"
+            [style.border-left]="
+              uiFlag.disableBtn !== 'next' ? '2px solid var(--tab-border)' : 'none'
+            "
             [class.btn__disabled]="uiFlag.disableBtn === 'next'"
             *ngIf="uiFlag.showDateTypeShiftIcon"
           ></i>
@@ -90,78 +114,106 @@
             [style.transform]="uiFlag.calendarPeriodOffset"
             *ngIf="date.openSelector === 'calendarPeriod'"
           >
-            <span class="calendar_period__option" (click)="selectCalendarPeroid('today')">{{'universal_time_today' | translate}}</span>
-            <span class="calendar_period__option" (click)="selectCalendarPeroid('thisWeek')">{{'universal_time_thisWeek' | translate}}</span>
-            <span class="calendar_period__option" (click)="selectCalendarPeroid('thisMonth')">{{'universal_time_thisMonth' | translate}}</span>
-            <span class="calendar_period__option" (click)="selectCalendarPeroid('thisYear')">{{'universal_time_thisYear' | translate}}</span>
+            <span class="calendar_period__option" (click)="selectCalendarPeroid('today')">{{
+              'universal_time_today' | translate
+            }}</span>
+            <span class="calendar_period__option" (click)="selectCalendarPeroid('thisWeek')">{{
+              'universal_time_thisWeek' | translate
+            }}</span>
+            <span class="calendar_period__option" (click)="selectCalendarPeroid('thisMonth')">{{
+              'universal_time_thisMonth' | translate
+            }}</span>
+            <span class="calendar_period__option" (click)="selectCalendarPeroid('thisYear')">{{
+              'universal_time_thisYear' | translate
+            }}</span>
           </div>
         </div>
       </section>
       <section id="shiftDate">
-        <button
-          (click)="shiftPreTime()"
-          class="report__time__btn"
-        >
-          <mat-icon style="cursor: pointer">
-            keyboard_arrow_left
-          </mat-icon>
+        <button (click)="shiftPreTime()" class="report__time__btn">
+          <mat-icon style="cursor: pointer"> keyboard_arrow_left </mat-icon>
         </button>
         <button
           (click)="shiftNextTime()"
           [disabled]="date.endTimestamp >= date.maxTimestamp"
           class="report__time__btn"
         >
-          <mat-icon style="cursor: pointer">
-            keyboard_arrow_right
-          </mat-icon>
+          <mat-icon style="cursor: pointer"> keyboard_arrow_right </mat-icon>
         </button>
-        {{date.startTimestamp | timeFormat: 'YYYY-MM-DD'}} - {{date.endTimestamp | timeFormat: 'YYYY-MM-DD'}}
+        {{ date.startTimestamp | timeFormat: 'YYYY-MM-DD' }} -
+        {{ date.endTimestamp | timeFormat: 'YYYY-MM-DD' }}
       </section>
     </ng-container>
     <section
       class="flexCol condition__section"
       *ngIf="
-        reportConditionOpt
-        && reportConditionOpt.group
-        && reportConditionOpt.brandType !== null
-        && (reportConditionOpt.group.brands !== null || reportConditionOpt.group.branches !== null)
+        reportConditionOpt &&
+        reportConditionOpt.group &&
+        reportConditionOpt.brandType !== null &&
+        (reportConditionOpt.group.brands !== null || reportConditionOpt.group.branches !== null)
       "
     >
       <h6 class="condition__title">{{ 'universal_group_group' | translate }}</h6>
       <div class="flexCol condition__content">
         <div class="flexCol" *ngIf="reportConditionOpt.group.brands !== null">
-          <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 1">{{ 'universal_group_brand' | translate }}</span>
-          <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 2">{{ 'universal_group_enterprise' | translate }}</span>
+          <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 1">{{
+            'universal_group_brand' | translate
+          }}</span>
+          <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 2">{{
+            'universal_group_enterprise' | translate
+          }}</span>
           <div class="flexRow">
             <button
               class="condition__btn"
-              [class.condition__btn--active]="reportConditionOpt.group.brands.groupId.includes(reportConditionOpt.group.selectGroup)"
+              [class.condition__btn--active]="
+                reportConditionOpt.group.brands.groupId.includes(
+                  reportConditionOpt.group.selectGroup
+                )
+              "
               (click)="handleClickBrand()"
-            >{{ reportConditionOpt.group.brands.groupName }}</button>
+            >
+              {{ reportConditionOpt.group.brands.groupName }}
+            </button>
           </div>
         </div>
         <div class="flexCol" *ngIf="reportConditionOpt.group.branches !== null">
-          <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 1">{{ 'universal_group_branch' | translate }}</span>
-          <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 2">{{ 'universal_group_companyBranch' | translate }}</span>
+          <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 1">{{
+            'universal_group_branch' | translate
+          }}</span>
+          <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 2">{{
+            'universal_group_companyBranch' | translate
+          }}</span>
           <div class="flexRowWrap">
             <button
               class="condition__btn"
-              *ngFor="let _branches of reportConditionOpt.group.branches; let _branchIdx = index;"
-              [class.condition__btn--active]="_branches.groupId.includes(reportConditionOpt.group.selectGroup)"
+              *ngFor="let _branches of reportConditionOpt.group.branches; let _branchIdx = index"
+              [class.condition__btn--active]="
+                _branches.groupId.includes(reportConditionOpt.group.selectGroup)
+              "
               (click)="handleClickBranch(_branchIdx)"
-            >{{ _branches.groupName }}</button>
+            >
+              {{ _branches.groupName }}
+            </button>
           </div>
         </div>
         <div class="flexCol" *ngIf="reportConditionOpt.group.coaches.length > 0">
-          <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 1">{{ 'universal_group_coachingClass' | translate }}</span>
-          <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 2">{{ 'universal_group_department' | translate }}</span>
+          <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 1">{{
+            'universal_group_coachingClass' | translate
+          }}</span>
+          <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 2">{{
+            'universal_group_department' | translate
+          }}</span>
           <div class="flexRowWrap">
             <button
               class="condition__btn"
-              *ngFor="let _coaches of reportConditionOpt.group.coaches; let _coachIdx = index;"
-              [class.condition__btn--active]="_coaches.groupId.includes(reportConditionOpt.group.selectGroup)"
+              *ngFor="let _coaches of reportConditionOpt.group.coaches; let _coachIdx = index"
+              [class.condition__btn--active]="
+                _coaches.groupId.includes(reportConditionOpt.group.selectGroup)
+              "
               (click)="handleClickCoach(_coachIdx)"
-            >{{ _coaches.groupName }}</button>
+            >
+              {{ _coaches.groupName }}
+            </button>
           </div>
         </div>
       </div>
@@ -174,8 +226,10 @@
       <div class="flexRow condition__content">
         <span
           class="condition__btn"
-          *ngFor="let _type of sportCondition;"
-          [class.condition__btn--active]="reportConditionOpt.sportType === 99 || reportConditionOpt.sportType === _type"
+          *ngFor="let _type of sportCondition"
+          [class.condition__btn--active]="
+            reportConditionOpt.sportType === 99 || reportConditionOpt.sportType === _type
+          "
           (click)="handleClickSportType(_type)"
         >
           {{ _type | sportType | translate }}
@@ -194,7 +248,10 @@
             <span>{{ 'universal_adjective_all' | translate }}</span>
           </span>
           <span class="flexRow radioSelector" (click)="changeMapListType('routine')">
-            <span class="radioBtn" [class.radioBtn--active]="uiFlag.mapListType === 'routine'"></span>
+            <span
+              class="radioBtn"
+              [class.radioBtn--active]="uiFlag.mapListType === 'routine'"
+            ></span>
             <span>{{ 'universal_race_match' | translate }}</span>
           </span>
         </div>
@@ -206,7 +263,7 @@
         >
           <span class="map__choosed__text" [class.map__choose--active]="uiFlag.showMapSelector">
             <ng-container *ngIf="uiFlag.mapListType === 'all'">
-              <ng-container *ngIf="mapList && mapList.length !== 0; else loadingText;">
+              <ng-container *ngIf="mapList && mapList.length !== 0; else loadingText">
                 <ng-container *ngIf="uiFlag.currentLanguage === 'zh-tw'">
                   {{ mapList[reportConditionOpt.cloudRun.mapId - 1].info[0].mapName }}
                 </ng-container>
@@ -222,22 +279,20 @@
               </ng-container>
             </ng-container>
             <ng-container *ngIf="uiFlag.mapListType === 'routine'">
-              <ng-container *ngIf="routineRaceList && routineRaceList.length !== 0; else loadingText;">
+              <ng-container
+                *ngIf="routineRaceList && routineRaceList.length !== 0; else loadingText"
+              >
                 {{ reportConditionOpt.cloudRun.month }}
               </ng-container>
             </ng-container>
             <ng-template #loadingText>Loading...</ng-template>
           </span>
-          <div
-            id="map__drop__list"
-            class="flexCol"
-            *ngIf="uiFlag.showMapSelector"
-          >
+          <div id="map__drop__list" class="flexCol" *ngIf="uiFlag.showMapSelector">
             <ng-container *ngIf="uiFlag.mapListType === 'all'">
               <span
                 class="choice__item"
-                style="text-align: left;"
-                *ngFor="let _mapInfo of mapList; let mapIndex = index;"
+                style="text-align: left"
+                *ngFor="let _mapInfo of mapList; let mapIndex = index"
                 (click)="chooseMap(mapIndex + 1)"
               >
                 <ng-container *ngIf="uiFlag.currentLanguage === 'zh-tw'">
@@ -255,7 +310,11 @@
               </span>
             </ng-container>
             <ng-container *ngIf="uiFlag.mapListType === 'routine'">
-              <span class="choice__item" *ngFor="let _racelist of routineRaceList; let _idx = index;" (click)="chooseRoutine(_idx)">
+              <span
+                class="choice__item"
+                *ngFor="let _racelist of routineRaceList; let _idx = index"
+                (click)="chooseRoutine(_idx)"
+              >
                 {{ _racelist.month }}
               </span>
             </ng-container>
@@ -318,7 +377,7 @@
           placeholder="0"
           maxlength="3"
           (change)="handleAgeRange($event, 'min')"
-        >
+        />
         ～
         <input
           class="age__input"
@@ -326,9 +385,9 @@
           placeholder="100"
           maxlength="3"
           (change)="handleAgeRange($event, 'max')"
-        >
+        />
       </div>
-      <span class="condition__content" style="font-size: 12px; color: red;">
+      <span class="condition__content" style="font-size: 12px; color: red">
         *{{ 'universal_system_ageBasedOnReport' | translate }}
       </span>
     </section>
@@ -337,36 +396,41 @@
       *ngIf="reportConditionOpt && reportConditionOpt.deviceType"
     >
       <h6 class="condition__title">{{ 'universal_deviceSetting_modeType' | translate }}</h6>
-      <div class="flexRow condition__content" style="flex-wrap: wrap;">
+      <div class="flexRow condition__content" style="flex-wrap: wrap">
         <button
           class="condition__btn"
           [class.condition__btn--active]="reportConditionOpt.deviceType.includes('1')"
           (click)="selectDevice('1')"
-        >{{ 'universal_vocabulary_wearableDevice' | translate }}
+        >
+          {{ 'universal_vocabulary_wearableDevice' | translate }}
         </button>
         <button
           class="condition__btn"
           [class.condition__btn--active]="reportConditionOpt.deviceType.includes('2')"
           (click)="selectDevice('2')"
-        >{{ 'universal_vocabulary_treadmill' | translate }}
+        >
+          {{ 'universal_vocabulary_treadmill' | translate }}
         </button>
         <button
           class="condition__btn"
           [class.condition__btn--active]="reportConditionOpt.deviceType.includes('3')"
           (click)="selectDevice('3')"
-        >{{ 'universal_vocabulary_spinBike' | translate }}
+        >
+          {{ 'universal_vocabulary_spinBike' | translate }}
         </button>
         <button
           class="condition__btn"
           [class.condition__btn--active]="reportConditionOpt.deviceType.includes('4')"
           (click)="selectDevice('4')"
-        >{{ 'universal_vocabulary_rowingMachine' | translate }}
+        >
+          {{ 'universal_vocabulary_rowingMachine' | translate }}
         </button>
         <button
           class="condition__btn"
           [class.condition__btn--active]="reportConditionOpt.deviceType.includes('5')"
           (click)="selectDevice('5')"
-        >{{ 'universal_vocabulary_sensor' | translate }}
+        >
+          {{ 'universal_vocabulary_sensor' | translate }}
         </button>
       </div>
     </section>
@@ -376,7 +440,7 @@
     >
       <h6 class="condition__title">{{ 'universal_group_status' | translate }}</h6>
       <div class="flexRow condition__content">
-        <div class="flexRow radio__section map__child__block" style="flex-wrap: wrap;">
+        <div class="flexRow radio__section map__child__block" style="flex-wrap: wrap">
           <span class="flexRow radioSelector" (click)="changeFitpairUse('all')">
             <span
               class="radioBtn"
@@ -413,11 +477,11 @@
           [placeholder]="'universal_activityData_keyword' | translate"
           (focusout)="handleKeywordInput($event)"
           (change)="handleKeywordInput($event)"
-        >
+        />
       </div>
     </section>
     <div
-      style="display: flex; justify-content: flex-end;"
+      style="display: flex; justify-content: flex-end"
       *ngIf="reportConditionOpt && !reportConditionOpt.hideConfirmBtn"
     >
       <button class="confirm__btn" (click)="submit()">

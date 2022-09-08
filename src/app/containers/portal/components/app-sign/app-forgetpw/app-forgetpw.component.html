@@ -1,10 +1,7 @@
 <ng-container *ngIf="!pcView">
   <app-loading-bar [progress]="progress"></app-loading-bar>
   <nav>
-    <button
-      class="flexRow appview-backButton"
-      (click)="turnBack()"
-    >
+    <button class="flexRow appview-backButton" (click)="turnBack()">
       <i class="icon-svg_web-icon_p1_016-back"></i>
       <span>{{ 'universal_operating_back' | translate }}</span>
     </button>
@@ -25,9 +22,7 @@
             <label class="appview-inputLabel" for="appview__account">
               {{ 'universal_userAccount_account' | translate }}
             </label>
-            <ng-container
-              *ngIf="formValue.resetPasswordFlow !== ResetFlow.reset"
-            >
+            <ng-container *ngIf="formValue.resetPasswordFlow !== ResetFlow.reset">
               <div class="flexRow account__area appview-inputBorder">
                 <div
                   [class.appview-countryCodeSelector]="formValue.type === SignTypeEnum.phone"
@@ -35,17 +30,12 @@
                   (click)="showCountryCodeList($event)"
                   *ngIf="formValue.type === SignTypeEnum.phone"
                 >
-                  <span>
-                    +{{ formValue.countryCode }}
-                  </span>
-                  <ul
-                    class="appview-countryCodeList"
-                    *ngIf="displayCountryCodeList"
-                  >
+                  <span> +{{ formValue.countryCode }} </span>
+                  <ul class="appview-countryCodeList" *ngIf="displayCountryCodeList">
                     <li
                       class="flexRow"
                       (click)="selectCountryCode($event, _list.code)"
-                      *ngFor="let _list of countryCodeList;"
+                      *ngFor="let _list of countryCodeList"
                     >
                       <span class="appview-countryNumber">
                         {{ _list.code }}
@@ -61,24 +51,24 @@
                   id="appview__account"
                   class="appview-dataInput"
                   [placeholder]="
-                    'universal_userAccount_enterInfo' | translate: {
-                      info: ('universal_userAccount_emailPerPhone' | translate)
-                    }
+                    'universal_userAccount_enterInfo'
+                      | translate
+                        : {
+                            info: ('universal_userAccount_emailPerPhone' | translate)
+                          }
                   "
                   (keydown)="determineAccountType($event)"
                   (change)="saveAccount($event)"
-                >
+                />
               </div>
               <p class="appview-alertHint">
-                <ng-container
-                  *ngIf="cue.account !== ''"
-                >
+                <ng-container *ngIf="cue.account !== ''">
                   {{ cue.account | translate }}
                 </ng-container>
               </p>
             </ng-container>
             <ng-contanier *ngIf="formValue.resetPasswordFlow === ResetFlow.reset">
-              <p style="margin: 0;">
+              <p style="margin: 0">
                 <ng-container *ngIf="formValue.type === SignTypeEnum.email">
                   {{ formValue.email }}
                 </ng-container>
@@ -88,10 +78,12 @@
               </p>
             </ng-contanier>
           </div>
-          <div *ngIf="
-            formValue.type === SignTypeEnum.phone
-            && formValue.resetPasswordFlow !== ResetFlow.reset
-          ">
+          <div
+            *ngIf="
+              formValue.type === SignTypeEnum.phone &&
+              formValue.resetPasswordFlow !== ResetFlow.reset
+            "
+          >
             <input
               type="text"
               class="appview-dataInput appview-inputBorder appview-smsInput"
@@ -99,13 +91,15 @@
               maxlength="8"
               (focusout)="checkPhoneCaptcha($event)"
               (keypress)="checkPhoneCaptcha($event)"
-            >
+            />
             <p class="appview-alertHint">
               <ng-container *ngIf="cue.verificationCode !== ''">
                 {{ cue.verificationCode | translate }}
               </ng-container>
             </p>
-            <ng-container *ngIf="formValue.resetPasswordFlow !== ResetFlow.reset && imgCaptcha.show">
+            <ng-container
+              *ngIf="formValue.resetPasswordFlow !== ResetFlow.reset && imgCaptcha.show"
+            >
               <div *ngTemplateOutlet="imgCaptchaArea"></div>
             </ng-container>
             <button
@@ -117,11 +111,13 @@
               <span class="appview-timeCount">({{ timeCount }}s)</span>
             </button>
           </div>
-          <ng-container *ngIf="
-            formValue.resetPasswordFlow !== ResetFlow.reset
-            && imgCaptcha.show
-            && formValue.type === SignTypeEnum.email
-          ">
+          <ng-container
+            *ngIf="
+              formValue.resetPasswordFlow !== ResetFlow.reset &&
+              imgCaptcha.show &&
+              formValue.type === SignTypeEnum.email
+            "
+          >
             <div *ngTemplateOutlet="imgCaptchaArea"></div>
           </ng-container>
         </div>
@@ -132,9 +128,14 @@
           <div *ngTemplateOutlet="imgCaptchaArea"></div>
         </div>
         <ng-container *ngIf="formValue.resetPasswordFlow !== ResetFlow.reset">
-          <div *ngTemplateOutlet="buttonArea; context: {
-            type: formValue.type === SignTypeEnum.phone ? 'confirm' : 'send'
-          }"></div>
+          <div
+            *ngTemplateOutlet="
+              buttonArea;
+              context: {
+                type: formValue.type === SignTypeEnum.phone ? 'confirm' : 'send'
+              }
+            "
+          ></div>
         </ng-container>
         <section
           class="appview-bottomSlideIn"
@@ -150,14 +151,16 @@
                 class="appview-dataInput"
                 [type]="displayPW ? 'text' : 'password'"
                 [placeholder]="
-                  'universal_userAccount_enterInfo' | translate: {
-                    info: ('universal_userAccount_newPassword' | translate)
-                  }
+                  'universal_userAccount_enterInfo'
+                    | translate
+                      : {
+                          info: ('universal_userAccount_newPassword' | translate)
+                        }
                 "
                 maxlength="20"
                 (focusout)="checkPassword($event)"
                 (keypress)="checkPassword($event)"
-              >
+              />
               <button class="appview-showPassword" (click)="toggleDisplayPW()">
                 <i
                   class="icon-svg_web-icon_p1_081-watch"
@@ -165,16 +168,18 @@
                 ></i>
               </button>
             </div>
-            <p 
-              class="appview-alertHint"
-              [class.appview-hint]="cue.password === ''"
-            >
+            <p class="appview-alertHint" [class.appview-hint]="cue.password === ''">
               {{ 'universal_userAccount_passwordFormat' | translate }}
             </p>
           </div>
-          <div *ngTemplateOutlet="buttonArea; context: {
-            type: 'reset'
-          }"></div>
+          <div
+            *ngTemplateOutlet="
+              buttonArea;
+              context: {
+                type: 'reset'
+              }
+            "
+          ></div>
         </section>
       </div>
     </div>
@@ -213,7 +218,7 @@
         (focusout)="checkImgCaptcha($event)"
         (keypress)="checkImgCaptcha($event)"
       />
-      <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
+      <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha" />
     </div>
     <p class="appview-alertHint">
       <ng-container *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''">
@@ -224,24 +229,28 @@
 </ng-template>
 
 <ng-container *ngIf="pcView">
-  <div class="access-bg" style="margin-top: 0px;">
-    <div class="container signup" style="padding: 63px 0 70px 0;">
-      <div class="d-flex" style="flex-direction: column;align-items: center;">
-        <div class="access-panel" style="margin-top: 60px;">
+  <div class="access-bg" style="margin-top: 0px">
+    <div class="container signup" style="padding: 63px 0 70px 0">
+      <div class="d-flex" style="flex-direction: column; align-items: center">
+        <div class="access-panel" style="margin-top: 60px">
           <header class="access-header">
-            <img src="assets/attacus_logo.png" style="width: 36%">
+            <img src="assets/attacus_logo.png" style="width: 36%" />
           </header>
           <div class="access-panel-body">
             <div *ngIf="formValue.resetPasswordFlow <= ResetFlow.verify">
               <div class="flexCol webDiv">
-                <span class="access-text" style="margin-bottom: 10px;">
+                <span class="access-text" style="margin-bottom: 10px">
                   {{ 'universal_userAccount_account' | translate }}
                 </span>
                 <div class="flexRow member__input">
                   <input
-                    [placeholder]="'universal_userAccount_enterInfo' | translate: {
-                      info: ('universal_userAccount_account' | translate)
-                    }"
+                    [placeholder]="
+                      'universal_userAccount_enterInfo'
+                        | translate
+                          : {
+                              info: ('universal_userAccount_account' | translate)
+                            }
+                    "
                     class="form-control"
                     (keydown)="determineAccountType($event)"
                     (change)="saveAccount($event)"
@@ -250,7 +259,7 @@
                     (onChange)="onCodeChange($event)"
                     [currentCountryCode]="formValue.countryCode"
                     [webUi]="true"
-                    style="width: 190px;"
+                    style="width: 190px"
                     *ngIf="formValue.type === 2"
                   ></app-intl-phone-input>
                 </div>
@@ -258,18 +267,22 @@
                   {{ cue.account | translate }}
                 </span>
               </div>
-              <div class="flexCol" style="margin-top: 10px;">
+              <div class="flexCol" style="margin-top: 10px">
                 <div class="flexCol webDiv" *ngIf="formValue.type === 2 && !phoneFormIncomplete">
-                  <span class="access-text" style="margin-bottom: 10px;">
+                  <span class="access-text" style="margin-bottom: 10px">
                     {{ 'universal_userAccount_phoneCaptcha' | translate }}
                   </span>
                   <div>
                     <input
-                      style="margin: 0px; width: 100%;"
+                      style="margin: 0px; width: 100%"
                       class="form-control"
-                      [placeholder]="'universal_userAccount_enterInfo' | translate: {
-                          info: ('universal_userAccount_phoneCaptcha' | translate)
-                      }"
+                      [placeholder]="
+                        'universal_userAccount_enterInfo'
+                          | translate
+                            : {
+                                info: ('universal_userAccount_phoneCaptcha' | translate)
+                              }
+                      "
                       maxlength="8"
                       (focusout)="checkPhoneCaptcha($event)"
                       (keypress)="checkPhoneCaptcha($event)"
@@ -277,14 +290,12 @@
                     <span
                       class="form__message form__message--placeholder"
                       *ngIf="cue.verificationCode !== ''"
-                    >{{ cue.verificationCode | translate }}</span>
+                      >{{ cue.verificationCode | translate }}</span
+                    >
                   </div>
                 </div>
-                <div
-                  class="flexCol webDiv"
-                  [style.display]="imgCaptcha.show ? '' : 'none'"
-                >
-                  <span class="access-text" style="margin-bottom: 10px;">
+                <div class="flexCol webDiv" [style.display]="imgCaptcha.show ? '' : 'none'">
+                  <span class="access-text" style="margin-bottom: 10px">
                     {{ 'universal_userAccount_imgCaptcha' | translate }}
                   </span>
                   <div class="flexRow">
@@ -295,7 +306,7 @@
                       (focusout)="checkImgCaptcha($event)"
                       (keypress)="checkImgCaptcha($event)"
                     />
-                    <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
+                    <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha" />
                   </div>
                   <span
                     class="form__message form__message--placeholder"
@@ -303,32 +314,33 @@
                   >
                     {{ imgCaptcha.cue | translate }}
                   </span>
-                  
                 </div>
               </div>
             </div>
             <div *ngIf="formValue.resetPasswordFlow === ResetFlow.reset">
-              <div class="flexCol webDiv" style="min-height: initial;">
-                <span class="app-alert" style="font-size: 20px; font-weight: bold;">
+              <div class="flexCol webDiv" style="min-height: initial">
+                <span class="app-alert" style="font-size: 20px; font-weight: bold">
                   {{ 'universal_userAccount_changingPassword' | translate }}
                 </span>
-                <span style="font-size: 14px; font-weight: bold;" *ngIf="formValue.type === 1">
+                <span style="font-size: 14px; font-weight: bold" *ngIf="formValue.type === 1">
                   {{ formValue.email }}
                 </span>
-                <span style="font-size: 14px; font-weight: bold;" *ngIf="formValue.type === 2">
+                <span style="font-size: 14px; font-weight: bold" *ngIf="formValue.type === 2">
                   +{{ formValue.countryCode }} {{ formValue.phone }}
                 </span>
               </div>
               <div class="flexCol webDiv">
-                <span class="access-text" style="margin-bottom: 10px;">
+                <span class="access-text" style="margin-bottom: 10px">
                   {{ 'universal_userAccount_newPassword' | translate }}
                 </span>
                 <input
                   id="signupPW"
                   [placeholder]="
-                    'universal_userAccount_enterInfo' | translate: {
-                      info: ('universal_userAccount_newPassword' | translate)
-                    }
+                    'universal_userAccount_enterInfo'
+                      | translate
+                        : {
+                            info: ('universal_userAccount_newPassword' | translate)
+                          }
                   "
                   class="form-control"
                   [type]="displayPW ? 'text' : 'password'"
@@ -339,14 +351,11 @@
                 />
                 <i
                   class="icon-svg_web-icon_p1_081-watch inputIcon"
-                  style="top: -30px; left: 90%;"
+                  style="top: -30px; left: 90%"
                   [style.color]="displayPW ? 'black' : '#aaaaaa'"
                   (click)="toggleDisplayPW()"
                 ></i>
-                <span
-                  class="form__message form__message--placeholder"
-                  *ngIf="cue.password !== ''"
-                >
+                <span class="form__message form__message--placeholder" *ngIf="cue.password !== ''">
                   {{ cue.password | translate }}
                 </span>
               </div>
@@ -357,16 +366,23 @@
               [style.background]="progress !== 100 || timeCount !== 30 ? '#2b819b54' : ''"
               (click)="reciprocal()"
               *ngIf="
-                formValue.type === SignTypeEnum.phone
-                && formValue.resetPasswordFlow !== ResetFlow.reset
-                && !phoneFormIncomplete
+                formValue.type === SignTypeEnum.phone &&
+                formValue.resetPasswordFlow !== ResetFlow.reset &&
+                !phoneFormIncomplete
               "
             >
               <span>{{ 'universal_operating_send' | translate }}({{ timeCount }}s)</span>
             </button>
-            <div style="display: flex;justify-content: space-between; align-items: center; margin-top: 20px;">
-              <a class="access-text" style="cursor:pointer" [routerLink]="['/signIn-web']">
-                <{{'universal_operating_back' | translate}}
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 20px;
+              "
+            >
+              <a class="access-text" style="cursor: pointer" [routerLink]="['/signIn-web']">
+                <{{ 'universal_operating_back' | translate }}
               </a>
               <button
                 class="btn btn-primary access-btn"

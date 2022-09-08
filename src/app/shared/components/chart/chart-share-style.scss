@@ -14,7 +14,6 @@
     margin-left: 10px;
     flex-grow: 1;
   }
-
 }
 
 .infoBlock {
@@ -48,10 +47,12 @@
   color: rgba(120, 120, 120, 1);
 }
 
-.gforceX, .gforceY, .gforceZ {
+.gforceX,
+.gforceY,
+.gforceZ {
   display: flex;
   align-items: center;
-  
+
   &:after {
     content: '';
     display: block;
@@ -59,31 +60,24 @@
     width: 16px;
     height: 4px;
   }
-
 }
 
 .gforcX {
-  
   &:after {
     background-color: #6e9bff;
   }
-
 }
 
 .gforceY {
-  
   &:after {
     background-color: #75f25f;
   }
-
 }
 
 .gforceZ {
-  
   &:after {
     background-color: #ea5757;
   }
-
 }
 
 /*
@@ -95,31 +89,30 @@
 
 .noChartData {
   font-weight: bold;
-  color:grey;
+  color: grey;
 }
 
 .chartFigure {
   margin: 0;
 }
 
-
 /*********************************************** media ************************************/
 
-@media(max-width: 767px) {
+@media (max-width: 767px) {
   #mainSeciton {
     flex-direction: column;
+    margin: 0;
   }
 
-  .infoBlock, #chartBlock {
+  .infoBlock,
+  #chartBlock {
     width: 100%;
   }
 
   #chartBlock {
     margin-top: 10px;
   }
-
 }
-
 
 /**
  * 處理列印時，highchart無法自適應等跑版問題
@@ -147,5 +140,4 @@
     width: initial;
     flex-shrink: 0;
   }
-
 }

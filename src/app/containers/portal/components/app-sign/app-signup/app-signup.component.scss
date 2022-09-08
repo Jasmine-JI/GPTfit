@@ -30,10 +30,9 @@ $app-icon-size: 80px;
   padding: 0 3vw;
   justify-content: space-between;
 
-  >:first-child {
+  > :first-child {
     width: 66%;
   }
-
 }
 
 .tft__Page__title {
@@ -51,11 +50,9 @@ $app-icon-size: 80px;
 }
 
 .tft__page__content {
-
-  >div {
+  > div {
     width: 50%;
   }
-
 }
 
 .policy__link__button {
@@ -70,8 +67,7 @@ $app-icon-size: 80px;
     width: 45%;
     min-width: 100px;
     padding: 5px 10px;
-  };
-  
+  }
 }
 
 .tft__content__area {
@@ -85,10 +81,9 @@ $app-icon-size: 80px;
 .account__area {
   align-items: center;
 
-  >input {
+  > input {
     width: 100%;
   }
-
 }
 
 .password__area {
@@ -115,11 +110,10 @@ $app-icon-size: 80px;
   padding: 20px;
   margin: auto;
 
-  >div {
+  > div {
     height: 60vh;
     @include overflow-y-scroll();
   }
-
 }
 
 .close__button {
@@ -137,11 +131,10 @@ $app-icon-size: 80px;
 .app__icon {
   padding: 5px;
 
-  >img {
+  > img {
     height: $app-icon-size;
     width: $app-icon-size;
   }
-  
 }
 
 .aside__slogan {

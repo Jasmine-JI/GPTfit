@@ -1,4 +1,13 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { Subject, fromEvent, Subscription, of, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { UserService } from '../../../core/services/user.service';
@@ -35,7 +44,6 @@ import { Api10xxService } from '../../../core/services/api-10xx.service';
 
 dayjs.extend(weekday);
 
-
 const errMsg = `Error! Please try again later.`;
 
 type DisplayTag = 'summary' | 'detail' | 'segmentation' | 'chart';
@@ -48,7 +56,7 @@ type FooterDesc = 'classDesc' | 'teacherDesc';
   selector: 'app-activity-detail',
   templateUrl: './activity-detail.component.html',
   styleUrls: ['./activity-detail.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('tagBar') tagBar: ElementRef;
@@ -86,7 +94,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     isFileOwner: false,
     imageLoaded: false,
     openImgSelector: false,
-    deviceIndex: 0
+    deviceIndex: 0,
   };
 
   /**
@@ -94,8 +102,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   activeLine = {
     left: 0,
-    width: 60
-  }
+    width: 60,
+  };
 
   /**
    * 使用者資訊
@@ -107,7 +115,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   ownerProfile = {
     icon: null,
-    name: null
+    name: null,
   };
 
   /**
@@ -118,8 +126,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   /**
    * 運動檔案資訊
    */
-  fileInfo = <any> {
-    fileId: null
+  fileInfo = <any>{
+    fileId: null,
   };
 
   /**
@@ -154,7 +162,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       z2: <number | string>0,
       z3: <number | string>0,
       z4: <number | string>0,
-      z5: <number | string>0
+      z5: <number | string>0,
     },
     defaultHrInfo: <HrZoneRange>{
       hrBase: HrBase.max,
@@ -163,9 +171,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       z2: <number>0,
       z3: <number>0,
       z4: <number>0,
-      z5: <number>0
+      z5: <number>0,
     },
-    ftp: [0, 0, 0, 0, 0, 0, 0]
+    ftp: [0, 0, 0, 0, 0, 0, 0],
   };
 
   /**
@@ -182,9 +190,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       temperature: <Array<number>>[0],
       gforceX: <Array<number>>[0],
       gforceY: <Array<number>>[0],
-      gforceZ: <Array<number>>[0]
-    }
-  }
+      gforceZ: <Array<number>>[0],
+    },
+  };
 
   /**
    * footer其他資訊
@@ -193,7 +201,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     classInfo: null,
     teacherInfo: null,
     deviceInfo: null,
-    tagInfo: null
+    tagInfo: null,
   };
 
   /**
@@ -201,8 +209,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   unit = {
     mi: mi,
-    lb: lb
-  }
+    lb: lb,
+  };
 
   /**
    * 趨勢圖表設定
@@ -213,8 +221,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     segmentRange: <SegmentSecond | SegmentMeter>60,
     haveDistanceChoice: true,
     yAxisDataRef: null,
-    xAxisDataRef: null
-  }
+    xAxisDataRef: null,
+  };
 
   /**
    * 管理編輯頭像或佈景
@@ -222,8 +230,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   editImage = {
     edited: false,
     origin: null,
-    base64: null
-  }
+    base64: null,
+  };
 
   fileTime: string;
   sceneryImg: string;
@@ -238,7 +246,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   filePrivacy: Array<PrivacyObj> = [1];
   cloudrunMapId: number;
   systemAccessright = AccessRight.guest;
-  
+
   readonly AlbumType = AlbumType;
   readonly AccessRight = AccessRight;
 
@@ -259,7 +267,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     'gsensorYRawData',
     'gsensorZRawData',
     'moveRepetitions',
-    'distanceMeters'
+    'distanceMeters',
   ];
 
   constructor(
@@ -277,7 +285,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     private imageUploadService: ImageUploadService,
     private authService: AuthService,
     private api10xxService: Api10xxService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.checkUrlPath();
@@ -308,10 +316,10 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     const queryString = searchStr.split('?')[1];
     if (queryString) {
       const queryArr = queryString.split('&');
-      queryArr.forEach(_query => {
+      queryArr.forEach((_query) => {
         const query = _query.split('='),
-              key = query[0],
-              value = query[1];
+          key = query[0],
+          value = query[1];
         switch (key) {
           case 'debug':
             this.uiFlag.isDebug = true;
@@ -329,14 +337,11 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
             this.trendChartOpt.segmentMode = value === 'true';
             break;
           case 'segmentRange':
-            this.trendChartOpt.segmentRange = +value as (SegmentSecond | SegmentMeter);
+            this.trendChartOpt.segmentRange = +value as SegmentSecond | SegmentMeter;
             break;
         }
-
-      })
-
+      });
     }
-
   }
 
   /**
@@ -345,14 +350,11 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   handlePageResize() {
     const page = fromEvent(window, 'resize');
-    this.pageResize = page.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    this.pageResize = page.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.checkScreenSize();
       this.switchTag(this.uiFlag.currentTag);
       this.changeDetectorRef.markForCheck();
     });
-
   }
 
   /**
@@ -364,10 +366,10 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       this.uiFlag.currentTag = this.uiFlag.tagChanged ? this.uiFlag.currentTag : 'summary';
       this.uiFlag.pcView = false;
     } else {
-      this.uiFlag.currentTag = this.uiFlag.currentTag === 'segmentation' ? 'segmentation' : 'detail';
+      this.uiFlag.currentTag =
+        this.uiFlag.currentTag === 'segmentation' ? 'segmentation' : 'detail';
       this.uiFlag.pcView = true;
     }
-
   }
 
   /**
@@ -410,11 +412,10 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         visceralFat: null,
         weightTrainingStrengthLevel: 100,
         wheelSize: 600,
-      }
+      };
 
       return of(fakeUserProfile);
     }
-
   }
 
   /**
@@ -422,10 +423,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100104
    */
   getRxUserProfile() {
-    return this.userService.getUser().rxUserProfile.pipe(
-      takeUntil(this.ngUnsubscribe)
-    );
-
+    return this.userService.getUser().rxUserProfile.pipe(takeUntil(this.ngUnsubscribe));
   }
 
   /**
@@ -445,18 +443,18 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     };
 
     if (this.uiFlag.isDebug) {
-      body = {debug: 'true', ...body};
+      body = { debug: 'true', ...body };
     }
 
     combineLatest([
       this.getRxUserProfile(),
-      this.activityService.fetchSportListDetail(body)
-    ]).subscribe(resArr => {
+      this.activityService.fetchSportListDetail(body),
+    ]).subscribe((resArr) => {
       const [userProfile, activityDetail] = resArr;
       this.userProfile = userProfile;
       const { resultCode, apiCode, resultMessage } = activityDetail;
       switch (resultCode) {
-        case 400:  // 找不到該筆運動檔案或其他
+        case 400: // 找不到該筆運動檔案或其他
           this.progress = 100;
           console.error(`${resultCode}: Api ${apiCode} ${resultMessage}`);
           this.router.navigateByUrl('/404');
@@ -478,7 +476,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
       this.changeDetectorRef.markForCheck();
     });
-
   }
 
   /**
@@ -489,9 +486,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   handleActivityDetail(data: any) {
     this.rawData = data;
     const { fileInfo, activityInfoLayer, activityLapLayer, activityPointLayer } = data,
-          { type, subtype } = activityInfoLayer;
+      { type, subtype } = activityInfoLayer;
     this.activityInfoLayer = activityInfoLayer;
-    this.sceneryImg = this.handleScenery(fileInfo.photo, +type, +subtype); 
+    this.sceneryImg = this.handleScenery(fileInfo.photo, +type, +subtype);
     this.handleFileInfo(fileInfo);
     this.handleHrZoneData(activityInfoLayer);
     if (+type === 2) this.handleFtpZoneData(activityInfoLayer);
@@ -502,7 +499,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       this.handleActivityPoint(activityPointLayer);
     }
 
-    if(type == 3) {
+    if (type == 3) {
       if (!this.uiFlag.isPreviewMode) this.getUserWeightTrainLevel();
       this.createMuscleTranslate();
     }
@@ -524,7 +521,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     } else {
       return this.activityService.handleSceneryImg(type, subType);
     }
-
   }
 
   /**
@@ -541,53 +537,47 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     this.handleFileCreateDate(this.fileInfo.creationDate);
-    const targetUserId = this.fileInfo.author ? +getFileInfoParam(this.fileInfo.author).userId : undefined;
+    const targetUserId = this.fileInfo.author
+      ? +getFileInfoParam(this.fileInfo.author).userId
+      : undefined;
     if (!this.uiFlag.isPortal) {
-
       if (this.userProfile.userId === targetUserId) {
         this.uiFlag.isFileOwner = true;
       }
-
     }
 
     if (!this.uiFlag.isFileOwner) {
-
       if (targetUserId) {
         const body = { targetUserId: targetUserId };
-        this.api10xxService.fetchGetUserProfile(body).subscribe(res => {
+        this.api10xxService.fetchGetUserProfile(body).subscribe((res) => {
           const { processResult } = res;
           if (processResult) {
             const { resultCode, apiCode, resultMessage } = processResult;
             if (resultCode !== 200) {
               console.error(`${resultCode}: Api ${apiCode} ${resultMessage}`);
             } else {
-              const {userProfile} = res;
+              const { userProfile } = res;
               this.ownerProfile = {
                 icon: userProfile.avatarUrl,
-                name: userProfile.nickname
+                name: userProfile.nickname,
               };
-
-            } 
+            }
           } else {
             console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
           }
-    
         });
-
       } else {
         this.ownerProfile = {
           icon: null,
-          name: ''
+          name: '',
         };
       }
     } else {
       this.ownerProfile = {
         icon: this.userProfile.avatarUrl,
-        name: this.userProfile.nickname
-      }
-
+        name: this.userProfile.nickname,
+      };
     }
-
   }
 
   /**
@@ -598,37 +588,36 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   handleFileCreateDate(date: string) {
     const dayInWeek = dayjs(date).weekday();
     let weekDay: string;
-    this.translate.get('hollow world').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      switch (dayInWeek) {
-        case 0:
-          weekDay = this.translate.instant('universal_time_sun');
-          break;
-        case 1:
-          weekDay = this.translate.instant('universal_time_mon');
-          break;
-        case 2:
-          weekDay = this.translate.instant('universal_time_tue');
-          break;
-        case 3:
-          weekDay = this.translate.instant('universal_time_wed');
-          break;
-        case 4:
-          weekDay = this.translate.instant('universal_time_thu');
-          break;
-        case 5:
-          weekDay = this.translate.instant('universal_time_fri');
-          break;
-        case 6:
-          weekDay = this.translate.instant('universal_time_sat');
-          break;
-      }
+    this.translate
+      .get('hollow world')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        switch (dayInWeek) {
+          case 0:
+            weekDay = this.translate.instant('universal_time_sun');
+            break;
+          case 1:
+            weekDay = this.translate.instant('universal_time_mon');
+            break;
+          case 2:
+            weekDay = this.translate.instant('universal_time_tue');
+            break;
+          case 3:
+            weekDay = this.translate.instant('universal_time_wed');
+            break;
+          case 4:
+            weekDay = this.translate.instant('universal_time_thu');
+            break;
+          case 5:
+            weekDay = this.translate.instant('universal_time_fri');
+            break;
+          case 6:
+            weekDay = this.translate.instant('universal_time_sat');
+            break;
+        }
 
-      this.fileTime = dayjs(date).format('YYYY-MM-DDTHH:mm').replace('T', ` ${weekDay} `);
-    });
-    
-
+        this.fileTime = dayjs(date).format('YYYY-MM-DDTHH:mm').replace('T', ` ${weekDay} `);
+      });
   }
 
   /**
@@ -643,13 +632,15 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       info.totalHrZone2Second,
       info.totalHrZone3Second,
       info.totalHrZone4Second,
-      info.totalHrZone5Second
+      info.totalHrZone5Second,
     ];
-    
-    const userAge = this.uiFlag.isFileOwner ? dayjs().diff(this.userProfile.birthday, 'year') : null,
-          userHRBase = this.userProfile.heartRateBase,
-          userMaxHR = this.userProfile.heartRateMax,
-          userRestHR = this.userProfile.heartRateResting;
+
+    const userAge = this.uiFlag.isFileOwner
+        ? dayjs().diff(this.userProfile.birthday, 'year')
+        : null,
+      userHRBase = this.userProfile.heartRateBase,
+      userMaxHR = this.userProfile.heartRateMax,
+      userRestHR = this.userProfile.heartRateResting;
     this.chartData.hrInfo = getUserHrRange(userHRBase, userAge, userMaxHR, userRestHR);
     this.chartData.defaultHrInfo = getUserHrRange(0, 30, 190, 60); // 預設的心率區間
   }
@@ -667,9 +658,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       info.totalFtpZone3Second,
       info.totalFtpZone4Second,
       info.totalFtpZone5Second,
-      info.totalFtpZone6Second
+      info.totalFtpZone6Second,
     ];
-
   }
 
   /**
@@ -680,26 +670,22 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   getOtherInfo(fileInfo: any) {
     const { author, class: groupClass, teacher, equipmentSN } = fileInfo;
     if (author) {
-
       if (groupClass) {
         const classInfo = getFileInfoParam(groupClass);
         const groupId = classInfo.groupId ?? classInfo.origin;
-        if (groupId.includes('-')) this.getClassInfo(groupId);  // 確認是否抓到正確的groupId
+        if (groupId.includes('-')) this.getClassInfo(groupId); // 確認是否抓到正確的groupId
         this.getTeacherInfo(+getFileInfoParam(teacher).userId);
       }
 
       if (equipmentSN.length !== 0) {
         this.getProductInfo(equipmentSN);
       }
-
     } else {
       // 待頁面皆生成再取頁尾資訊
       setTimeout(() => {
         this.getOtherInfo(this.fileInfo);
       }, 2000);
-
     }
-
   }
 
   /**
@@ -707,7 +693,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100218
    */
   getUserWeightTrainLevel() {
-    switch(`${this.userProfile.weightTrainingStrengthLevel}%`) {
+    switch (`${this.userProfile.weightTrainingStrengthLevel}%`) {
       case '200%':
         this.uiFlag.weightTrainLevel = 'asept';
         break;
@@ -718,7 +704,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         this.uiFlag.weightTrainLevel = 'metacarpus';
         break;
     }
-
   }
 
   /**
@@ -726,17 +711,19 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100108
    */
   createMuscleTranslate() {
-    this.translate.get('hellow world').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      const muscleCodeArr = [16, 32, 48, 49, 50, 51, 52, 53, 64, 65, 66, 67, 68, 69, 80, 81, 82, 96, 97, 98, 99, 100, 112, 113, 114, 115, 116, 117, 128];
-      muscleCodeArr.forEach(_code => {
-        const muscleName = this.muscleName.transform(_code);
-        Object.assign(this.muscleTranslate, {[`${_code}`]: muscleName});
+    this.translate
+      .get('hellow world')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        const muscleCodeArr = [
+          16, 32, 48, 49, 50, 51, 52, 53, 64, 65, 66, 67, 68, 69, 80, 81, 82, 96, 97, 98, 99, 100,
+          112, 113, 114, 115, 116, 117, 128,
+        ];
+        muscleCodeArr.forEach((_code) => {
+          const muscleName = this.muscleName.transform(_code);
+          Object.assign(this.muscleTranslate, { [`${_code}`]: muscleName });
+        });
       });
-
-    });
-
   }
 
   /**
@@ -749,27 +736,26 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       token: this.authService.token,
       groupId,
       avatarType: 3,
-      findRoot: 1
+      findRoot: 1,
     };
 
-    this.groupService.fetchGroupListDetail(body).subscribe(res => {
+    this.groupService.fetchGroupListDetail(body).subscribe((res) => {
       if (res.resultCode !== 200) {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
-        const {info} = res;
+        const { info } = res;
         this.otherInfo.classInfo = {
           icon: info.groupIcon,
           name: info.groupName,
           parents: `${info.groupRootInfo[2].brandName}/${info.groupRootInfo[3].branchName}`,
-          desc: info.groupDesc
+          desc: info.groupDesc,
         };
 
         this.checkGroupResLength('classDesc');
       }
-      
+
       this.changeDetectorRef.markForCheck();
     });
-
   }
 
   /**
@@ -780,33 +766,31 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   getTeacherInfo(userId: number) {
     const body = {
       token: this.authService.token,
-      targetUserId: [userId]
+      targetUserId: [userId],
     };
 
-    this.api10xxService.fetchGetUserProfile(body).subscribe(res => {
+    this.api10xxService.fetchGetUserProfile(body).subscribe((res) => {
       const { processResult } = res;
       if (processResult) {
         const { resultCode, apiCode, resultMessage } = processResult;
         if (resultCode !== 200) {
           console.error(`${resultCode}: Api ${apiCode} ${resultMessage}`);
         } else {
-          const { userProfile} = res;
+          const { userProfile } = res;
           this.otherInfo.teacherInfo = {
             icon: userProfile[0].avatarUrl,
             name: userProfile[0].nickname,
-            desc: userProfile[0].description
+            desc: userProfile[0].description,
           };
 
           this.checkGroupResLength('teacherDesc');
         }
-
       } else {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       }
 
       this.changeDetectorRef.markForCheck();
     });
-
   }
 
   /**
@@ -818,10 +802,10 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     const body = {
       token: this.authService.token,
       queryType: 1,
-      queryArray: equipmentList
+      queryArray: equipmentList,
     };
 
-    this.qrcodeService.getProductInfo(body).subscribe(res => {
+    this.qrcodeService.getProductInfo(body).subscribe((res) => {
       if (res.resultCode !== 200) {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
@@ -830,7 +814,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
       this.changeDetectorRef.markForCheck();
     });
-
   }
 
   /**
@@ -847,20 +830,18 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         this.switchTag(this.uiFlag.currentTag);
       } else {
         const tagBarElement = this.tagBar.nativeElement,
-              currentTagElement = this[tag].nativeElement,
-              tagBarLeft = tagBarElement.getBoundingClientRect().left,
-              currentTagLeft = currentTagElement.getBoundingClientRect().left;
+          currentTagElement = this[tag].nativeElement,
+          tagBarLeft = tagBarElement.getBoundingClientRect().left,
+          currentTagLeft = currentTagElement.getBoundingClientRect().left;
 
         this.activeLine = {
           left: currentTagLeft - tagBarLeft,
-          width: currentTagElement.clientWidth
-        }
-
+          width: currentTagElement.clientWidth,
+        };
       }
 
       this.changeDetectorRef.markForCheck();
     }, 50);
-    
   }
 
   /**
@@ -868,25 +849,26 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100413
    */
   handleEmptyPoint() {
-    return [{
-      pointSecond: null,
-      altitudeMeters: null,
-      heartRateBpm: null,
-      speed: null,
-      runCadence: null,
-      cycleCadence: null,
-      cycleWatt: null,
-      swimCadence: null,
-      temp: null,
-      rowingWatt: null,
-      rowingCadence: null,
-      gsensorXRawData: null,
-      gsensorYRawData: null,
-      gsensorZRawData: null,
-      moveRepetitions: null,
-      distanceMeters: null
-    }];
-
+    return [
+      {
+        pointSecond: null,
+        altitudeMeters: null,
+        heartRateBpm: null,
+        speed: null,
+        runCadence: null,
+        cycleCadence: null,
+        cycleWatt: null,
+        swimCadence: null,
+        temp: null,
+        rowingWatt: null,
+        rowingCadence: null,
+        gsensorXRawData: null,
+        gsensorYRawData: null,
+        gsensorZRawData: null,
+        moveRepetitions: null,
+        distanceMeters: null,
+      },
+    ];
   }
 
   /**
@@ -896,25 +878,23 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   handleActivityPoint(point: any) {
     const pointLen = point.length,
-          { pointSecond } = point[pointLen - 1] || {pointSecond: 0},
-          { pointSecond: beforePointSecond } = point[pointLen - 2] || {pointSecond: undefined};
+      { pointSecond } = point[pointLen - 1] || { pointSecond: 0 },
+      { pointSecond: beforePointSecond } = point[pointLen - 2] || { pointSecond: undefined };
     // 若最後兩點時間相同，則將最後兩點進行均化
     if (pointSecond === beforePointSecond) {
       const repeatPoint = point.splice(pointLen - 1, pointLen)[0],
-            newPointLen = point.length,
-            lastPoint = point[newPointLen - 1];
-      for (let key in lastPoint) {
-
-        if (lastPoint.hasOwnProperty(key) && repeatPoint.hasOwnProperty(key)) {
-
+        newPointLen = point.length,
+        lastPoint = point[newPointLen - 1];
+      for (const key in lastPoint) {
+        if (
+          Object.prototype.hasOwnProperty.call(lastPoint, key) &&
+          Object.prototype.hasOwnProperty.call(repeatPoint, key)
+        ) {
           if (key !== 'pointSecond' && lastPoint[key] && repeatPoint[key]) {
-            lastPoint[key] = (+lastPoint[key] + (+repeatPoint[key])) / 2;
+            lastPoint[key] = (+lastPoint[key] + +repeatPoint[key]) / 2;
           }
-
         }
-
       }
-
     }
 
     // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
@@ -929,30 +909,31 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     // this.uiFlag.resolution = this.handleResolution(point.length); (預埋)
 
     // 距離為0或第一點的距離為null則趨勢圖表設定框分段解析不顯示距離選項
-    this.trendChartOpt.haveDistanceChoice = (this.activityInfoLayer.totalDistanceMeters && point[0]['distanceMeters']) ? true : false;
+    this.trendChartOpt.haveDistanceChoice =
+      this.activityInfoLayer.totalDistanceMeters && point[0]['distanceMeters'] ? true : false;
     let haveEffectiveCoordinates = false,
-        effectiveDegree = {  // 補斷點用
-          latitudeDegrees: null,
-          longitudeDegrees: null
-        },
-        convertDegree = {  // 儲存整理過後的gps座標
-          latitudeDegrees: [],
-          longitudeDegrees: []
-        };
-        
+      effectiveDegree = {
+        // 補斷點用
+        latitudeDegrees: null,
+        longitudeDegrees: null,
+      },
+      convertDegree = {
+        // 儲存整理過後的gps座標
+        latitudeDegrees: [],
+        longitudeDegrees: [],
+      };
+
     point.forEach((_point, _index) => {
       // point解析度調整(預埋)
       if (_index % this.uiFlag.resolution === 0) {
-
         // 處理gps座標
         if (_point['latitudeDegrees']) {
-
           // 當座標為null或(100, 100)時，視為未移動或無效點
           if (
-            (_point['latitudeDegrees'] === null || _point['longitudeDegrees'] === null)
-            || (_point['latitudeDegrees'] == 100 && _point['longitudeDegrees'] == 100)
+            _point['latitudeDegrees'] === null ||
+            _point['longitudeDegrees'] === null ||
+            (_point['latitudeDegrees'] == 100 && _point['longitudeDegrees'] == 100)
           ) {
-            
             if (effectiveDegree.latitudeDegrees) {
               convertDegree.latitudeDegrees.push(effectiveDegree.latitudeDegrees);
               convertDegree.longitudeDegrees.push(effectiveDegree.longitudeDegrees);
@@ -960,31 +941,27 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
               convertDegree.latitudeDegrees.push(null);
               convertDegree.longitudeDegrees.push(null);
             }
-
           } else {
             haveEffectiveCoordinates = true;
             effectiveDegree = {
               latitudeDegrees: +_point['latitudeDegrees'],
-              longitudeDegrees: +_point['longitudeDegrees']
+              longitudeDegrees: +_point['longitudeDegrees'],
             };
 
             convertDegree.latitudeDegrees.push(effectiveDegree.latitudeDegrees);
             convertDegree.longitudeDegrees.push(effectiveDegree.longitudeDegrees);
           }
-
         }
 
         // 將各個所需資料分別合併為array，以供圖表使用
-        this.needKey.forEach(_key => {
-          if (_point.hasOwnProperty(_key)) {
-            this.activityPointLayer.hasOwnProperty(_key) ?
-              this.activityPointLayer[_key].push(+_point[_key]) : Object.assign(this.activityPointLayer, {[_key]: [+_point[_key]]});
+        this.needKey.forEach((_key) => {
+          if (Object.prototype.hasOwnProperty.call(_point, _key)) {
+            Object.prototype.hasOwnProperty.call(this.activityPointLayer, _key)
+              ? this.activityPointLayer[_key].push(+_point[_key])
+              : Object.assign(this.activityPointLayer, { [_key]: [+_point[_key]] });
           }
-
         });
-
       }
-
     });
 
     if (this.uiFlag.isPreviewMode) {
@@ -992,22 +969,20 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       if (this.trendChartOpt.segmentMode) {
         this.countSegmentData();
       }
-  
+
       this.changeSegmentRange(this.trendChartOpt.segmentRange);
     } else {
       this.assignDataRef();
     }
-    
 
     // 若所有座標皆為無效點，則不顯示地圖
     if (!haveEffectiveCoordinates) {
       this.uiFlag.isNormalCoordinate = false;
     } else {
-      Object.assign(this.activityPointLayer, {'latitudeDegrees': convertDegree.latitudeDegrees});
-      Object.assign(this.activityPointLayer, {'longitudeDegrees': convertDegree.longitudeDegrees});
+      Object.assign(this.activityPointLayer, { latitudeDegrees: convertDegree.latitudeDegrees });
+      Object.assign(this.activityPointLayer, { longitudeDegrees: convertDegree.longitudeDegrees });
       this.uiFlag.isNormalCoordinate = true;
     }
-
   }
 
   /**
@@ -1021,7 +996,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     } else {
       return 1;
     }
-
   }
 
   /**
@@ -1057,14 +1031,12 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     const strengthLevel = this.getStrengthLevel(level);
     if (!this.uiFlag.isPortal || this.uiFlag.isFileOwner) {
       const updateContent = { weightTrainingStrengthLevel: strengthLevel };
-      this.userService.updateUserProfile(updateContent).subscribe(res => {
+      this.userService.updateUserProfile(updateContent).subscribe((res) => {
         const { processResult } = res;
         if (processResult && processResult.resultCode === 200) {
           this.userProfile.weightTrainingStrengthLevel = strengthLevel;
         }
-
       });
-
     }
 
     this.uiFlag.showLevelSelector = false;
@@ -1087,7 +1059,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       case 'asept':
         return 200;
     }
-
   }
 
   /**
@@ -1108,16 +1079,13 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   subscribeClick() {
     const click = fromEvent(document, 'click');
-    this.clickEvent = click.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    this.clickEvent = click.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.uiFlag.showChartOpt = false;
       this.uiFlag.showSegmentRangeList = false;
       this.uiFlag.showWeightTrainingOpt = false;
       this.ngUnsubscribeClick();
       this.changeDetectorRef.markForCheck();
     });
-
   }
 
   /**
@@ -1151,17 +1119,16 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     if (!this.uiFlag.isPreviewMode) {
       this.trendChartOpt.segmentRange = type === 'pointSecond' ? 60 : 100;
     }
-    
+
     this.trendChartOpt.xAxisType = type;
     const countList = this.getCountList(+this.activityInfoLayer.type as SportType);
     if (type === 'distanceMeters' && !this.trendChartData) {
-      const apiKeyList = countList.map(_list => _list[1]);
+      const apiKeyList = countList.map((_list) => _list[1]);
       this.trendChartData = this.handleRepeatXAxis(
         this.activityPointLayer['distanceMeters'],
         this.activityPointLayer,
         apiKeyList
       );
-
     }
 
     if (this.trendChartOpt.segmentMode) {
@@ -1178,7 +1145,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   assignDataRef() {
     if (!this.trendChartOpt.segmentMode) {
-
       if (this.trendChartOpt.xAxisType === 'pointSecond') {
         this.trendChartOpt.xAxisDataRef = this.activityPointLayer['pointSecond'];
         this.trendChartOpt.yAxisDataRef = this.activityPointLayer;
@@ -1186,12 +1152,10 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         this.trendChartOpt.xAxisDataRef = this.trendChartData.xAxis;
         this.trendChartOpt.yAxisDataRef = this.trendChartData.yAxis;
       }
-
     } else {
       this.trendChartOpt.xAxisDataRef = this.segmentData.xAxis;
       this.trendChartOpt.yAxisDataRef = this.segmentData.yAxis;
     }
-
   }
 
   /**
@@ -1231,7 +1195,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['temperature', 'temp'],
           ['altitude', 'altitudeMeters'],
           ['cadence', 'runCadence'],
-          ['speed', 'speed']
+          ['speed', 'speed'],
         ];
         break;
       case SportType.cycle:
@@ -1241,14 +1205,14 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['altitude', 'altitudeMeters'],
           ['cadence', 'cycleCadence'],
           ['power', 'cycleWatt'],
-          ['speed', 'speed']
+          ['speed', 'speed'],
         ];
         break;
       case SportType.weightTrain:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],
-          ['cadence', 'moveRepetitions']
+          ['cadence', 'moveRepetitions'],
         ];
         break;
       case SportType.swim:
@@ -1256,13 +1220,13 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],
           ['cadence', 'swimCadence'],
-          ['speed', 'speed']
+          ['speed', 'speed'],
         ];
         break;
       case SportType.aerobic:
         arr = [
           ['hr', 'heartRateBpm'],
-          ['temperature', 'temp']
+          ['temperature', 'temp'],
         ];
         break;
       case SportType.row:
@@ -1272,7 +1236,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['altitude', 'altitudeMeters'],
           ['cadence', 'rowingCadence'],
           ['speed', 'speed'],
-          ['power', 'rowingWatt']
+          ['power', 'rowingWatt'],
         ];
         break;
       case SportType.ball:
@@ -1283,13 +1247,13 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['speed', 'speed'],
           ['gforceX', 'gsensorXRawData'],
           ['gforceY', 'gsensorYRawData'],
-          ['gforceZ', 'gsensorZRawData']
+          ['gforceZ', 'gsensorZRawData'],
         ];
         break;
       default:
         arr = [
           ['hr', 'heartRateBpm'],
-          ['temperature', 'temp']
+          ['temperature', 'temp'],
         ];
         break;
     }
@@ -1309,61 +1273,68 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   countSegmentData() {
     this.initSegmentData();
     const countList = this.getCountList(+this.activityInfoLayer.type as SportType),
-          range = this.trendChartOpt.segmentRange,
-          refXAxisData = this.trendChartOpt.xAxisType === 'pointSecond' ? this.activityPointLayer['pointSecond'] : this.trendChartData.xAxis,
-          refYAxisData = this.trendChartOpt.xAxisType === 'pointSecond' ? this.activityPointLayer : this.trendChartData.yAxis;
+      range = this.trendChartOpt.segmentRange,
+      refXAxisData =
+        this.trendChartOpt.xAxisType === 'pointSecond'
+          ? this.activityPointLayer['pointSecond']
+          : this.trendChartData.xAxis,
+      refYAxisData =
+        this.trendChartOpt.xAxisType === 'pointSecond'
+          ? this.activityPointLayer
+          : this.trendChartData.yAxis;
 
     let divideIndex = 1,
-        segmentTotal = {};
+      segmentTotal = {};
     for (let i = 0, dataLength = refXAxisData.length; i < dataLength; i++) {
-
       // 將分段範圍內的數據進行均化
       if (refXAxisData[i] < range * divideIndex) {
         // 將分段範圍內的所需所有類型數據根據比例進行加總
         countList.forEach((_list, _index) => {
           const key = _list[0],
-                apiKey = _list[1];
+            apiKey = _list[1];
 
           // 確認是否為最後一段數據
           let scale: number;
           if (refXAxisData[dataLength - 1] < range * divideIndex) {
-            scale = (refXAxisData[i] - (refXAxisData[i - 1] || 0)) / (refXAxisData[dataLength - 1] - (range * (divideIndex - 1)));
+            scale =
+              (refXAxisData[i] - (refXAxisData[i - 1] || 0)) /
+              (refXAxisData[dataLength - 1] - range * (divideIndex - 1));
           } else {
-            scale = (refXAxisData[i] - (refXAxisData[i - 1] || 0)) / range;  // 數據在該分段佔比
+            scale = (refXAxisData[i] - (refXAxisData[i - 1] || 0)) / range; // 數據在該分段佔比
           }
 
           // 將該分段數據進行加總
-          if (segmentTotal.hasOwnProperty(key)) {
+          if (Object.prototype.hasOwnProperty.call(segmentTotal, key)) {
             segmentTotal[key] += refYAxisData[apiKey][i] * scale;
           } else if (refYAxisData[apiKey]) {
-            Object.assign(segmentTotal, {[key]: refYAxisData[apiKey][i] * scale});
+            Object.assign(segmentTotal, { [key]: refYAxisData[apiKey][i] * scale });
           }
 
           // 確認是否為最後一個數據
-          if (i === dataLength - 1 && segmentTotal.hasOwnProperty(key)) {
+          if (i === dataLength - 1 && Object.prototype.hasOwnProperty.call(segmentTotal, key)) {
             this.segmentData.yAxis[key].push(+segmentTotal[key].toFixed(1));
 
             if (_index === 0) {
               this.segmentData.xAxis.push(range * divideIndex);
             }
           }
-
         });
-
       } else {
-        const scale = (range * divideIndex - (refXAxisData[i - 1] || 0)) / range;  // 數據在該分段佔比
+        const scale = (range * divideIndex - (refXAxisData[i - 1] || 0)) / range; // 數據在該分段佔比
         // 當x軸數據大於目前分段範圍兩段以上時
-        if ((refXAxisData[i] / range) >= divideIndex + 1) {
+        if (refXAxisData[i] / range >= divideIndex + 1) {
           const nextBoundaryIdx = Math.ceil(refXAxisData[i] / range);
           countList.forEach((_list, _index) => {
-
             if (refYAxisData[_list[1]]) {
               const key = _list[0],
-                    apiKey = _list[1],
-                    fillLen = (nextBoundaryIdx - 1) - divideIndex ,  // 填充的array長度
-                    fillArr = new Array(fillLen),
-                    xAxisFillArr = Array.from(fillArr, (value, index) => range * ((divideIndex + 1) + index)),
-                    yAxisFillArr = fillArr.fill(refYAxisData[apiKey][i], 0, fillLen);
+                apiKey = _list[1],
+                fillLen = nextBoundaryIdx - 1 - divideIndex, // 填充的array長度
+                fillArr = new Array(fillLen),
+                xAxisFillArr = Array.from(
+                  fillArr,
+                  (value, index) => range * (divideIndex + 1 + index)
+                ),
+                yAxisFillArr = fillArr.fill(refYAxisData[apiKey][i], 0, fillLen);
 
               // y軸填入上一段數據後，再開始填充下一段數據
               segmentTotal[key] += refYAxisData[apiKey][i] * scale;
@@ -1380,22 +1351,18 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
               if (range * divideIndex !== refXAxisData[i]) {
                 // 下一個分段的數值加上該比例數值
                 if (i !== dataLength - 1) {
-                  const nextScale = (refXAxisData[i] - ((nextBoundaryIdx - 1) * range)) / range;
+                  const nextScale = (refXAxisData[i] - (nextBoundaryIdx - 1) * range) / range;
                   segmentTotal[key] = refYAxisData[apiKey][i] * nextScale;
-
                 } else {
                   this.segmentData.yAxis[key].push(refYAxisData[apiKey][i]);
                   if (_index === 0) {
                     this.segmentData.xAxis.push(range * nextBoundaryIdx);
                   }
-
                 }
               } else {
                 segmentTotal[key] = 0;
               }
-
             }
-
           });
 
           divideIndex = nextBoundaryIdx;
@@ -1405,7 +1372,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
             countList.forEach((_list, _index) => {
               if (refYAxisData[_list[1]]) {
                 const key = _list[0],
-                      apiKey = _list[1];
+                  apiKey = _list[1];
 
                 segmentTotal[key] += refYAxisData[apiKey][i] * scale;
                 this.segmentData.yAxis[key].push(+segmentTotal[key].toFixed(1));
@@ -1416,34 +1383,27 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
                 // 下一個分段的數值加上該比例數值
                 const nextScale = (refXAxisData[i] - range * divideIndex) / range;
                 segmentTotal[key] = refYAxisData[apiKey][i] * nextScale;
-
               }
-
             });
- 
           } else {
-            countList.forEach(_list => {
+            countList.forEach((_list) => {
               if (refYAxisData[_list[1]]) {
                 const key = _list[0],
-                      apiKey = _list[1];
+                  apiKey = _list[1];
 
                 segmentTotal[key] += refYAxisData[apiKey][i] * scale;
-                this.segmentData.yAxis[key].push(+(segmentTotal[key].toFixed(1))); 
+                this.segmentData.yAxis[key].push(+segmentTotal[key].toFixed(1));
                 segmentTotal[key] = 0;
               }
-
             });
-            
+
             this.segmentData.xAxis.push(range * divideIndex);
           }
 
           divideIndex++;
         }
-
       }
-
     }
-
   }
 
   /**
@@ -1462,10 +1422,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         temperature: <Array<number>>[0],
         gforceX: <Array<number>>[0],
         gforceY: <Array<number>>[0],
-        gforceZ: <Array<number>>[0]
-      }
-    }
-
+        gforceZ: <Array<number>>[0],
+      },
+    };
   }
 
   /**
@@ -1476,7 +1435,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   createSegmentXAxisData(maxXaxis: number, range: number): Array<number> {
     const length = Math.ceil(maxXaxis / range) + 1, // 含x = 0
-          xAxisDataArr = new Array(length);
+      xAxisDataArr = new Array(length);
 
     return xAxisDataArr.map((_x, index) => _x * index);
   }
@@ -1486,12 +1445,11 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1091204
    */
   checkGroupResLength(type: FooterDesc) {
-
     setTimeout(() => {
       const descSection = this[type].nativeElement,
-            descStyle = window.getComputedStyle(descSection, null),
-            descLineHeight = +descStyle.lineHeight.split('px')[0],
-            descHeight = +descStyle.height.split('px')[0];
+        descStyle = window.getComputedStyle(descSection, null),
+        descLineHeight = +descStyle.lineHeight.split('px')[0],
+        descHeight = +descStyle.height.split('px')[0];
 
       if (descHeight / descLineHeight > 5) {
         this.uiFlag[`${type}Overflow`] = true;
@@ -1501,7 +1459,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
       this.changeDetectorRef.markForCheck();
     });
-
   }
 
   /**
@@ -1528,19 +1485,14 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         data: {
           title: 'Message',
           body: `${this.translate.instant('universal_privacy_usingSharing')}`,
-          confirmText: this.translate.instant(
-            'universal_operating_confirm'
-          ),
-          cancelText: this.translate.instant(
-            'universal_operating_cancel'
-          ),
+          confirmText: this.translate.instant('universal_operating_confirm'),
+          cancelText: this.translate.instant('universal_operating_cancel'),
           onCancel: () => {
             return false;
           },
-          onConfirm: this.openFilePrivacy.bind(this)
-        }
+          onConfirm: this.openFilePrivacy.bind(this),
+        },
       });
-
     }
 
     this.changeDetectorRef.markForCheck();
@@ -1560,41 +1512,33 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @param willShare {boolean}-是否顯示分享框
    * @author kidin-1100302
    */
-  editFilePrivacy(willShare: boolean = false) {
+  editFilePrivacy(willShare = false) {
     const body = {
       token: this.authService.token,
       fileId: this.fileInfo.fileId,
       fileInfo: {
-        privacy: this.filePrivacy
-      }
+        privacy: this.filePrivacy,
+      },
     };
 
-    this.activityService.fetchEditActivityProfile(body).subscribe(res => {
+    this.activityService.fetchEditActivityProfile(body).subscribe((res) => {
       if (res.resultCode === 200) {
-        
         if (willShare) {
           this.showShareBox();
         } else {
           this.snackBar.open(
-            `${this.translate.instant(
-              'universal_operating_edit'
-            )}
-            ${this.translate.instant(
-              'universal_status_success'
-            )}`,
+            `${this.translate.instant('universal_operating_edit')}
+            ${this.translate.instant('universal_status_success')}`,
             'OK',
             { duration: 2000 }
           );
-
         }
-
       } else {
         this.utils.openAlert(errMsg);
       }
 
       this.changeDetectorRef.markForCheck();
     });
-
   }
 
   /**
@@ -1603,9 +1547,12 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   showShareBox() {
     const { systemAccessright } = this.userService.getUser();
-    const url = this.uiFlag.isPortal ? location.href : `${location.origin}${location.pathname.split('/dashboard')[1]}`;
-    const debugUrl = this.uiFlag.isPortal ?
-      `${location.origin}/dashboard${location.pathname}?debug=` : `${location.href.split('?')[0]}?debug=`;
+    const url = this.uiFlag.isPortal
+      ? location.href
+      : `${location.origin}${location.pathname.split('/dashboard')[1]}`;
+    const debugUrl = this.uiFlag.isPortal
+      ? `${location.origin}/dashboard${location.pathname}?debug=`
+      : `${location.href.split('?')[0]}?debug=`;
 
     this.dialog.open(ShareGroupInfoDialogComponent, {
       hasBackdrop: true,
@@ -1614,9 +1561,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         title: this.translate.instant('universal_operating_share'),
         shareName: this.fileInfo.dispName,
         cancelText: this.translate.instant('universal_operating_confirm'),
-        debugUrl: systemAccessright <= AccessRight.marketing ? debugUrl : ''
-      }
-
+        debugUrl: systemAccessright <= AccessRight.marketing ? debugUrl : '',
+      },
     });
 
     this.changeDetectorRef.markForCheck();
@@ -1629,11 +1575,12 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   downloadRawData() {
     const CSVName = `${this.rawData.fileInfo.dispName}${this.rawData.fileInfo.creationDate}.csv`;
     const data = this.switchCSVFile(this.rawData);
-    const blob = new Blob(['\ufeff' + data], {  // 加上bom（\ufeff）讓excel辨識編碼
-      type: 'text/csv;charset=utf8'
+    const blob = new Blob(['\ufeff' + data], {
+      // 加上bom（\ufeff）讓excel辨識編碼
+      type: 'text/csv;charset=utf8',
     });
-    const href = URL.createObjectURL(blob);  // 建立csv檔url
-    const link = document.createElement('a');  // 建立連結供csv下載使用
+    const href = URL.createObjectURL(blob); // 建立csv檔url
+    const link = document.createElement('a'); // 建立連結供csv下載使用
 
     document.body.appendChild(link);
     link.href = href;
@@ -1651,9 +1598,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     const [finalObj, finalLength] = this.flattenObj(rawData);
     csvData += '\n';
     for (let i = -1; i < finalLength; i++) {
-
-      for (let key in finalObj) {
-        
+      for (const key in finalObj) {
         if (i === -1) {
           // 欄位標題
           csvData += `${key},`;
@@ -1661,9 +1606,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           const value = finalObj[key][i];
           csvData += value !== undefined ? `${value},` : ',';
         }
-        
       }
-      
+
       csvData += '\n';
     }
 
@@ -1683,12 +1627,11 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       'msgCode',
       'resultCode',
       'resultMessage',
-      'fileInfo'
+      'fileInfo',
     ];
     const finalObj = {};
     let maxLength = 0;
-    for (let key in rawData) {
-
+    for (const key in rawData) {
       if (!excludeData.includes(key)) {
         const value = rawData[key];
         const isArray = Array.isArray(value) && typeof value[0] !== 'object';
@@ -1698,67 +1641,56 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           const valueLength = value.length;
           maxLength = valueLength > maxLength ? valueLength : maxLength;
           // 同key則將數據整合至一個array中
-          if (finalObj.hasOwnProperty(key)) {
+          if (Object.prototype.hasOwnProperty.call(finalObj, key)) {
             finalObj[key] = finalObj[key].concat(value);
           } else {
-            Object.assign(finalObj, {[key]: value});
+            Object.assign(finalObj, { [key]: value });
           }
-
         } else if (isArrayOfObj) {
           const valueLength = value.length;
           maxLength = valueLength > maxLength ? valueLength : maxLength;
-          value.forEach(_rawData => {
+          value.forEach((_rawData) => {
             const [childObj, childMaxLength] = this.flattenObj(_rawData);
             maxLength = childMaxLength > maxLength ? childMaxLength : maxLength;
-            for (let childKey in childObj) {
+            for (const childKey in childObj) {
               const mergeKey = `${key}.${childKey}`;
               const childValue = childObj[childKey];
               const childIsArray = Array.isArray(childValue);
               // 同key則將數據整合至一個array中
-              if (finalObj.hasOwnProperty(mergeKey)) {
-                
+              if (Object.prototype.hasOwnProperty.call(finalObj, mergeKey)) {
                 if (childIsArray) {
                   finalObj[mergeKey] = finalObj[mergeKey].concat(childValue);
                 } else {
                   finalObj[mergeKey].push(childValue);
                 }
-
               } else {
-                Object.assign(finalObj, {[mergeKey]: childIsArray ? childValue : [childValue]});
+                Object.assign(finalObj, { [mergeKey]: childIsArray ? childValue : [childValue] });
               }
-              
             }
-
           });
-
         } else if (isObj) {
           const [childObj, childMaxLength] = this.flattenObj(value);
           maxLength = childMaxLength > maxLength ? childMaxLength : maxLength;
-          for (let childKey in childObj) {
+          for (const childKey in childObj) {
             // 同key則將數據整合至一個array中
             const mergeKey = `${key}.${childKey}`;
             const childValue = childObj[childKey];
             const childIsArray = Array.isArray(childValue);
-            if (finalObj.hasOwnProperty(mergeKey)) {
+            if (Object.prototype.hasOwnProperty.call(finalObj, mergeKey)) {
               finalObj[mergeKey].push(childIsArray ? childValue[0] : childValue);
             } else {
-              Object.assign(finalObj, {[mergeKey]: childIsArray ? childValue : [childValue]});
+              Object.assign(finalObj, { [mergeKey]: childIsArray ? childValue : [childValue] });
             }
-            
           }
-
         } else {
           // 同key則將數據整合至一個array中
-          if (finalObj.hasOwnProperty(key)) {
+          if (Object.prototype.hasOwnProperty.call(finalObj, key)) {
             finalObj[key].push(value[0]);
           } else {
-            Object.assign(finalObj, {[key]: value});
+            Object.assign(finalObj, { [key]: value });
           }
-          
         }
-
       }
-
     }
 
     return [finalObj, maxLength];
@@ -1778,12 +1710,15 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100225
    */
   getPreviewUrl() {
-    let queryStringArr = ['ipm=s'];
-    if (this.activityInfoLayer.type == 3) queryStringArr.push(`weightTrainLevel=${this.uiFlag.weightTrainLevel}`);
-    if ([1, 2, 4, 6, 7].includes(+this.activityInfoLayer.type)) queryStringArr.push(this.compareChartQueryString);
+    const queryStringArr = ['ipm=s'];
+    if (this.activityInfoLayer.type == 3)
+      queryStringArr.push(`weightTrainLevel=${this.uiFlag.weightTrainLevel}`);
+    if ([1, 2, 4, 6, 7].includes(+this.activityInfoLayer.type))
+      queryStringArr.push(this.compareChartQueryString);
 
     let trendChartQueryString = `xAxisType=${this.trendChartOpt.xAxisType}&segmentMode=${this.trendChartOpt.segmentMode}`;
-    if (this.trendChartOpt.segmentMode) trendChartQueryString += `&segmentRange=${this.trendChartOpt.segmentRange}`;
+    if (this.trendChartOpt.segmentMode)
+      trendChartQueryString += `&segmentRange=${this.trendChartOpt.segmentRange}`;
     queryStringArr.push(trendChartQueryString);
 
     if (this.uiFlag.isDebug) queryStringArr.push('debug=true');
@@ -1808,22 +1743,16 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       hasBackdrop: true,
       data: {
         title: 'Message',
-        body: `${this.translate.instant(
-          'universal_activityData_file'
-        )} ${this.translate.instant(
+        body: `${this.translate.instant('universal_activityData_file')} ${this.translate.instant(
           'universal_popUpMessage_confirmDelete'
         )}`,
-        confirmText: this.translate.instant(
-          'universal_operating_confirm'
-        ),
-        cancelText: this.translate.instant(
-          'universal_operating_cancel'
-        ),
+        confirmText: this.translate.instant('universal_operating_confirm'),
+        cancelText: this.translate.instant('universal_operating_cancel'),
         onCancel: () => {
           return false;
         },
-        onConfirm: this.deleteFile.bind(this)
-      }
+        onConfirm: this.deleteFile.bind(this),
+      },
     });
 
     this.changeDetectorRef.markForCheck();
@@ -1833,21 +1762,17 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * 刪除運動檔案後導回運動列表
    * @author kidin-1100220
    */
-  deleteFile () {
+  deleteFile() {
     const body = {
       token: this.authService.token,
-      fileId: [this.fileInfo.fileId]
+      fileId: [this.fileInfo.fileId],
     };
 
-    this.activityService.deleteActivityData(body).subscribe(res => {
+    this.activityService.deleteActivityData(body).subscribe((res) => {
       if (+res.resultCode === 200) {
         this.snackBar.open(
-          `${this.translate.instant(
-            'universal_operating_delete'
-          )}
-          ${this.translate.instant(
-            'universal_status_success'
-          )}`,
+          `${this.translate.instant('universal_operating_delete')}
+          ${this.translate.instant('universal_status_success')}`,
           'OK',
           { duration: 2000 }
         );
@@ -1857,12 +1782,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         }, 2000);
       } else {
         this.snackBar.open(
-          `${this.translate.instant(
-            'universal_operating_delete'
-          )}
-          ${this.translate.instant(
-            'universal_status_failure'
-          )}`,
+          `${this.translate.instant('universal_operating_delete')}
+          ${this.translate.instant('universal_status_failure')}`,
           'OK',
           { duration: 2000 }
         );
@@ -1870,7 +1791,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
       this.changeDetectorRef.markForCheck();
     });
-
   }
 
   /**
@@ -1899,7 +1819,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   handleKeypress(e: KeyboardEvent) {
     const oldFileName = this.fileInfo.dispName;
-    if ((e.key === 'Enter' && this.newFileName === oldFileName)) {
+    if (e.key === 'Enter' && this.newFileName === oldFileName) {
       this.uiFlag.editNameMode = false;
     } else if (e.key === 'Enter' && this.newFileName.trim() === '') {
       this.newFileName = oldFileName;
@@ -1907,7 +1827,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     } else if (e.key === 'Enter' && this.newFileName !== oldFileName) {
       this.handleNewProfileName();
     }
-
   }
 
   /**
@@ -1931,7 +1850,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     } else {
       this.uiFlag.editNameMode = false;
     }
-    
+
     this.changeDetectorRef.markForCheck();
   }
 
@@ -1945,11 +1864,11 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       fileId: this.fileInfo.fileId,
       fileInfo: {
         dispName: this.newFileName,
-        editDate: dayjs().format('YYYY-MM-DDTHH:mm:ss.SSSZ')
-      }
+        editDate: dayjs().format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+      },
     };
 
-    this.activityService.fetchEditActivityProfile(body).subscribe(res => {
+    this.activityService.fetchEditActivityProfile(body).subscribe((res) => {
       if (res.resultCode === 200) {
         this.uiFlag.editNameMode = false;
         this.fileInfo.dispName = this.newFileName;
@@ -1959,7 +1878,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
       this.changeDetectorRef.markForCheck();
     });
-
   }
 
   /**
@@ -1990,10 +1908,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       data: {
         editType: 1,
         fileId: this.fileInfo.fileId,
-        openObj: this.fileInfo.privacy.map(_privacy => +_privacy),
-        onConfirm: this.editPrivacy.bind(this)
-      }
-
+        openObj: this.fileInfo.privacy.map((_privacy) => +_privacy),
+        onConfirm: this.editPrivacy.bind(this),
+      },
     });
 
     this.changeDetectorRef.markForCheck();
@@ -2013,18 +1930,18 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * 建立gpx檔案
    */
   downloadGpxFile() {
-    const { 
-            fileInfo: { dispName, creationDate },
-            activityPointLayer,
-            activityInfoLayer: {startTime}
-          } = this.rawData,
-          gpxName = `${dispName}${creationDate}.gpx`,
-          data = this.switchGpxFile(activityPointLayer, startTime, dispName),
-          blob = new Blob([data], {
-            type: 'text/csv;charset=utf8'
-          }),
-          href = URL.createObjectURL(blob),  // 建立gpx檔url
-          link = document.createElement('a');  // 建立連結供gpx下載使用
+    const {
+        fileInfo: { dispName, creationDate },
+        activityPointLayer,
+        activityInfoLayer: { startTime },
+      } = this.rawData,
+      gpxName = `${dispName}${creationDate}.gpx`,
+      data = this.switchGpxFile(activityPointLayer, startTime, dispName),
+      blob = new Blob([data], {
+        type: 'text/csv;charset=utf8',
+      }),
+      href = URL.createObjectURL(blob), // 建立gpx檔url
+      link = document.createElement('a'); // 建立連結供gpx下載使用
 
     document.body.appendChild(link);
     link.href = href;
@@ -2042,8 +1959,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   switchGpxFile(points: Array<any>, startTime: string, dispName: string) {
     let content = '';
     const startTimestamp = dayjs(startTime).valueOf();
-    points.forEach(_point => {
-      const { 
+    points.forEach((_point) => {
+      const {
         latitudeDegrees,
         longitudeDegrees,
         altitudeMeters,
@@ -2056,10 +1973,10 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         cycleWatt,
         rowingWatt,
         distanceMeters,
-        temp
+        temp,
       } = _point;
       let power = null,
-          cadence = null;
+        cadence = null;
       switch (+this.activityInfoLayer.type) {
         case SportType.run:
           cadence = runCadence;
@@ -2077,11 +1994,11 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       }
 
       const checkLat = latitudeDegrees && parseFloat(latitudeDegrees) !== 100,
-            checkLng = longitudeDegrees && parseFloat(longitudeDegrees) !== 100,
-            alt = altitudeMeters || 0,
-            pointTime = dayjs(startTimestamp + pointSecond * 1000).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+        checkLng = longitudeDegrees && parseFloat(longitudeDegrees) !== 100,
+        alt = altitudeMeters || 0,
+        pointTime = dayjs(startTimestamp + pointSecond * 1000).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
       // if (checkLat && checkLng) {  // 暫不做座標是否有效的判斷
-        content += `<trkpt lat="${latitudeDegrees}" lon="${longitudeDegrees}">
+      content += `<trkpt lat="${latitudeDegrees}" lon="${longitudeDegrees}">
             <ele>${alt}</ele>
             <time>${pointTime}</time>
             <extensions>
@@ -2096,19 +2013,10 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           </trkpt>
         `;
       // }
-
     });
 
-    let gpxData = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-    <gpx xmlns="${
-        "http://www.topografix.com/GPX/1/1"
-      }" xmlns:gpxtpx="${
-        "http://www.gptfit.com"
-      }" xmlns:xsi="${
-        "http://www.w3.org/2001/XMLSchema-instance"
-      }" xsi:schemaLocation="${
-        "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"
-    }">
+    const gpxData = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+    <gpx xmlns="${'http://www.topografix.com/GPX/1/1'}" xmlns:gpxtpx="${'http://www.gptfit.com'}" xmlns:xsi="${'http://www.w3.org/2001/XMLSchema-instance'}" xsi:schemaLocation="${'http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd'}">
       <trk>
         <name>${dispName}</name>
         <trkseg>
@@ -2125,7 +2033,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * 開啟圖片選擇器
    * @author kidin-1100817
    */
-   openImgSelector() {
+  openImgSelector() {
     this.uiFlag.openImgSelector = true;
   }
 
@@ -2152,9 +2060,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   upLoadImg() {
     const { edited, base64 } = this.editImage;
     if (edited) {
-      let imgArr = [];
+      const imgArr = [];
       const formData = new FormData(),
-            { userId } = this.userProfile;
+        { userId } = this.userProfile;
       formData.set('token', this.authService.token);
       formData.set('targetType', '1');
       // 個人icon
@@ -2163,20 +2071,15 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         imgArr.unshift({
           albumType: AlbumType.personalSportFile,
           fileNameFull: `${fileName}.jpg`,
-          activityFileId: this.fileInfo.fileId
-        })
+          activityFileId: this.fileInfo.fileId,
+        });
 
-        formData.append(
-          'file',
-          this.utils.base64ToFile(base64, fileName)
-        );
-
+        formData.append('file', this.utils.base64ToFile(base64, fileName));
       }
 
       formData.set('img', JSON.stringify(imgArr));
       this.sendImgUploadReq(formData);
     }
-
   }
 
   /**
@@ -2191,55 +2094,51 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       const delBody = {
         token: this.authService.token,
         targetType: 1,
-        img: [{
-          albumType: AlbumType.personalSportFile,
-          activityFileId: this.fileInfo.fileId,
-          fileNameFull: this.getPhotoName(photo)
-        }]
+        img: [
+          {
+            albumType: AlbumType.personalSportFile,
+            activityFileId: this.fileInfo.fileId,
+            fileNameFull: this.getPhotoName(photo),
+          },
+        ],
       };
 
-      this.imageUploadService.deleteImg(delBody).pipe(
-        switchMap(resp => {
-          const { resultCode, apiCode, resultMessage, processResult } = resp;
-          if (!processResult || processResult.resultCode !== 200) {
-            const errRes = processResult ? { processResult } : { resultCode, apiCode, resultMessage };
-            return of(errRes).pipe(
-              map(response => response)
-            );
-          } else {
-            return this.imageUploadService.addImg(formData).pipe(
-              map(response => response)
-            );
-          }
-
-        })
-      ).subscribe(res => {
-        this.handleUploadRes(res);
-      });
-
+      this.imageUploadService
+        .deleteImg(delBody)
+        .pipe(
+          switchMap((resp) => {
+            const { resultCode, apiCode, resultMessage, processResult } = resp;
+            if (!processResult || processResult.resultCode !== 200) {
+              const errRes = processResult
+                ? { processResult }
+                : { resultCode, apiCode, resultMessage };
+              return of(errRes).pipe(map((response) => response));
+            } else {
+              return this.imageUploadService.addImg(formData).pipe(map((response) => response));
+            }
+          })
+        )
+        .subscribe((res) => {
+          this.handleUploadRes(res);
+        });
     } else {
-      this.imageUploadService.addImg(formData).subscribe(res => {
+      this.imageUploadService.addImg(formData).subscribe((res) => {
         this.handleUploadRes(res);
       });
-
     }
-
   }
 
   /**
-   * 
-   * @param res 
+   *
+   * @param res
    */
   handleUploadRes(res: any) {
     const { resultCode, apiCode, resultMessage, processResult, img } = res;
     if (!processResult) {
       console.error(`${resultCode}: Api ${apiCode} ${resultMessage}`);
-      this.snackBar.open(
-        `${this.translate.instant('universal_popUpMessage_uploadFailed')}`,
-        'OK',
-        { duration: 2000 }
-      );
-
+      this.snackBar.open(`${this.translate.instant('universal_popUpMessage_uploadFailed')}`, 'OK', {
+        duration: 2000,
+      });
     } else {
       const { resultCode, apiCode, resultMessage } = processResult;
       if (resultCode !== 200) {
@@ -2252,7 +2151,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       } else {
         this.initImgSetting();
         const { url } = img[0],
-              normalSizeUrl = url.replace('_128', '');
+          normalSizeUrl = url.replace('_128', '');
         this.fileInfo.photo = normalSizeUrl;
         this.sceneryImg = normalSizeUrl;
         this.snackBar.open(
@@ -2260,9 +2159,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           'OK',
           { duration: 2000 }
         );
-
       }
-
     }
 
     this.changeDetectorRef.markForCheck();
@@ -2276,7 +2173,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   createFileName(length: number, userId: string) {
     const nameSpace = uuidv5('https://www.gptfit.com', uuidv5.URL),
-          keyword = `${dayjs().valueOf().toString()}${length}${userId.split('-').join('')}`;
+      keyword = `${dayjs().valueOf().toString()}${length}${userId.split('-').join('')}`;
     return uuidv5(keyword, nameSpace);
   }
 
@@ -2288,9 +2185,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.editImage = {
       edited: false,
       origin: null,
-      base64: null
+      base64: null,
     };
-
   }
 
   /**
@@ -2321,7 +2217,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       const { deviceIndex } = this.uiFlag;
       if (deviceIndex !== 0) this.uiFlag.deviceIndex--;
     }
-
   }
 
   /**
@@ -2333,7 +2228,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       const { deviceIndex } = this.uiFlag;
       if (deviceIndex < deviceInfo.length - 1) this.uiFlag.deviceIndex++;
     }
-
   }
 
   /**
@@ -2345,7 +2239,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     if (deviceIndex !== index) {
       this.uiFlag.deviceIndex = index;
     }
-
   }
 
   /**
@@ -2355,65 +2248,58 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100205
    */
   handleRepeatXAxis(
-    xData: Array<number>, yData: Array<Array<number>>, handleList: Array<string>
-  ): {xAxis: Array<number>, yAxis: object} {
-
+    xData: Array<number>,
+    yData: Array<Array<number>>,
+    handleList: Array<string>
+  ): { xAxis: Array<number>; yAxis: object } {
     const finalData = {
-            xAxis: [],
-            yAxis: {}
-          };
+      xAxis: [],
+      yAxis: {},
+    };
     let repeatTotal = {},
-        repeatLen = 0;
+      repeatLen = 0;
 
     for (let i = 0, xAxisLen = xData.length; i < xAxisLen; i++) {
-
       // 當前x軸數據與前一項x軸數據相同時，將y軸數據相加
-      if ((i === 0 || xData[i] === xData[i -1]) && i !== xAxisLen - 1) {
-
+      if ((i === 0 || xData[i] === xData[i - 1]) && i !== xAxisLen - 1) {
         if (i === 0) {
-          handleList.forEach(_list => {
+          handleList.forEach((_list) => {
             if (yData[_list]) {
-              Object.assign(finalData.yAxis, {[_list]: []});
-              Object.assign(repeatTotal, {[_list]: yData[_list][0]});
+              Object.assign(finalData.yAxis, { [_list]: [] });
+              Object.assign(repeatTotal, { [_list]: yData[_list][0] });
             }
-            
           });
         } else {
-          handleList.forEach(_list => {
+          handleList.forEach((_list) => {
             if (yData[_list]) repeatTotal[_list] += yData[_list][i];
           });
-
         }
 
         repeatLen++;
 
-      // 當前x軸數據與前一項x軸數據不同
+        // 當前x軸數據與前一項x軸數據不同
       } else {
-
         if (repeatLen) {
           finalData.xAxis.push(xData[i - 1]);
-          handleList.forEach(_list => {
-            if (finalData.yAxis[_list]) finalData.yAxis[_list].push(+(repeatTotal[_list] / repeatLen).toFixed(1));
+          handleList.forEach((_list) => {
+            if (finalData.yAxis[_list])
+              finalData.yAxis[_list].push(+(repeatTotal[_list] / repeatLen).toFixed(1));
           });
-
         }
-        
+
         if (i !== xAxisLen - 1) {
-          handleList.forEach(_list => {
+          handleList.forEach((_list) => {
             if (yData[_list]) repeatTotal[_list] = yData[_list][i];
           });
 
           repeatLen = 1;
         } else {
           finalData.xAxis.push(xData[i]);
-          handleList.forEach(_list => {
+          handleList.forEach((_list) => {
             if (finalData.yAxis[_list]) finalData.yAxis[_list].push(yData[_list][i]);
           });
-
         }
-
       }
-
     }
 
     return finalData;
@@ -2426,5 +2312,4 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

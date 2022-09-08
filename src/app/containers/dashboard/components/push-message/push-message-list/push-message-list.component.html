@@ -1,25 +1,27 @@
 <main>
-  <section class="flexRow" style="justify-content: space-between;">
+  <section class="flexRow" style="justify-content: space-between">
     <div>
-      <span style="font-weight: bold; color: rgba(0, 104, 183, 1);">訊息列表</span>
-      <span style="margin-left: 30px;">
+      <span style="font-weight: bold; color: rgba(0, 104, 183, 1)">訊息列表</span>
+      <span style="margin-left: 30px">
         現在時間：{{ currentTime | timeFormat: 'YYYY-MM-DD HH:mm:ss' }}
       </span>
     </div>
-    <div class="flexRow" style="width: 220px; justify-content: space-between;">
+    <div class="flexRow" style="width: 220px; justify-content: space-between">
       <span class="push__list__btn" (click)="refreshList()">刷新列表</span>
       <span
         class="push__list__btn"
         [routerLink]="['/dashboard/system/create-push']"
         *ngIf="[AccessRight.god, AccessRight.pusher].includes(systemAccessright)"
-      >建立推播</span>
+        >建立推播</span
+      >
     </div>
   </section>
-  <section class="flexRow" style="justify-content: space-between; align-items: center; margin: 20px 0;">
-    <div class="flexRow" style="align-items: center;">
-      <span>
-        篩選日期：
-      </span>
+  <section
+    class="flexRow"
+    style="justify-content: space-between; align-items: center; margin: 20px 0"
+  >
+    <div class="flexRow" style="align-items: center">
+      <span> 篩選日期： </span>
       <app-date-range-picker
         [pickerType]="'rangePick'"
         [startTimeStamp]="filterCondition.startTimeStamp"
@@ -43,7 +45,8 @@
       class="flexRow table__row"
       style="
         font-size: 18px;
-        font-weight: bold; color: rgba(100, 100, 100, 1);
+        font-weight: bold;
+        color: rgba(100, 100, 100, 1);
         border-bottom: 1px solid rgba(200, 200, 200, 1);
         padding-bottom: 10px;
       "
@@ -57,21 +60,29 @@
     <div class="ala-loading-shade" *ngIf="uiFlag.isTableLoading">
       <mat-spinner></mat-spinner>
     </div>
-    <span style="color: rgba(150, 150, 150, 1);" *ngIf="!uiFlag.isTableLoading && uiFlag.noTableData">無資料顯示</span>
+    <span style="color: rgba(150, 150, 150, 1)" *ngIf="!uiFlag.isTableLoading && uiFlag.noTableData"
+      >無資料顯示</span
+    >
     <div *ngIf="!uiFlag.isTableLoading && !uiFlag.noTableData">
       <div
         class="flexRow table__row table__row__content"
-        *ngFor="let _list of res; let _iIdx = index;"
+        *ngFor="let _list of res; let _iIdx = index"
         (click)="navigatePushDetail(_iIdx)"
       >
         <span
           class="table__time__content"
           [class.push__yet--color]="_list.pushStatus === 1"
-          [class.push__cancel--color]="_list.pushStatus === 3">
+          [class.push__cancel--color]="_list.pushStatus === 3"
+        >
           {{ _list.pushTimeStamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm:ss' }}
         </span>
         <span class="table__status__content">
-          <span class="push__yet--color" style="cursor: pointer;" (click)="checkCancelPush($event, _iIdx)" *ngIf="_list.pushStatus === 1">
+          <span
+            class="push__yet--color"
+            style="cursor: pointer"
+            (click)="checkCancelPush($event, _iIdx)"
+            *ngIf="_list.pushStatus === 1"
+          >
             未發送
             <i class="icon-svg_web-icon_p2_084-pause"></i>
           </span>
@@ -80,7 +91,7 @@
         </span>
         <span class="table__title__content">{{ _list.title }}</span>
         <span class="table__obj__content">
-          <span *ngFor="let _obj of _list.pushObjectType; let _lIdx = index;">
+          <span *ngFor="let _obj of _list.pushObjectType; let _lIdx = index">
             <span>{{ pushCondition[+_obj - 2] }}</span>
             <span *ngIf="_lIdx !== _list.pushObjectType.length - 1">,</span>
           </span>
@@ -90,4 +101,3 @@
     </div>
   </section>
 </main>
-

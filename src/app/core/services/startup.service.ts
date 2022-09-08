@@ -3,9 +3,7 @@ import { AuthService } from '../../core/services/auth.service';
 
 @Injectable()
 export class StartupService {
-  constructor(
-    private authService: AuthService
-  ) {}
+  constructor(private authService: AuthService) {}
 
   /**
    * 在web啟動時就埋入檢查token機制
@@ -26,7 +24,5 @@ export class StartupService {
     } else {
       this.authService.tokenLogin();
     }
-
   }
-
 }

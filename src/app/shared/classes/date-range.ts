@@ -1,8 +1,12 @@
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
+import isoWeek from 'dayjs/plugin/isoWeek';
 import { DateUnit } from '../enum/report';
-dayjs.extend(quarterOfYear);
+import { mathRounding } from '../utils/index';
+import { DAY } from '../models/utils-constant';
 
+dayjs.extend(quarterOfYear);
+dayjs.extend(isoWeek);
 
 const UTC_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 
@@ -10,7 +14,6 @@ const UTC_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
  * 處理選擇日期範圍
  */
 export class DateRange {
-
   private _startTime: number;
   private _endTime: number;
 
@@ -102,14 +105,16 @@ export class DateRange {
       case DateUnit.day:
         [realStartTime, realEndTime] = [_startTime, _endTime];
         break;
-      case DateUnit.week:
-        realStartTime = dayjs(_startTime).startOf('week').valueOf();
-        realEndTime = dayjs(_endTime).endOf('week').valueOf();
+      case DateUnit.week: {
+        const unitStr = dayjs(_startTime).isoWeekday() === 1 ? 'isoWeek' : 'week';
+        realStartTime = dayjs(_startTime).startOf(unitStr).valueOf();
+        realEndTime = dayjs(_endTime).endOf(unitStr).valueOf();
         break;
+      }
       default:
         realStartTime = dayjs(_startTime).startOf('month').valueOf();
         realEndTime = dayjs(_endTime).endOf('month').valueOf();
-        break ;
+        break;
     }
 
     return { realStartTime, realEndTime };
@@ -119,18 +124,37 @@ export class DateRange {
    * 取得該日期範圍相差數目
    * @param unit {string}-日期相差單位（day/week/month/quarter/year）
    */
-  getDiffRange(unit: string, showDecimal: boolean = false) {
-    return dayjs(this._endTime).diff(this._startTime, unit as any, showDecimal);
+  getDiffRange(unit: string) {
+    const diffDay = mathRounding((this._endTime - this._startTime) / DAY, 0);
+    switch (unit) {
+      case 'day':
+        return diffDay;
+      case 'week':
+        return mathRounding(diffDay / 7, 3);
+      case 'month':
+        return mathRounding(diffDay / 30, 3);
+      case 'quarter':
+        return mathRounding(diffDay / 90, 3);
+      case 'year':
+        return mathRounding(diffDay / 365, 3);
+    }
   }
 
   /**
    * 取得該日期範圍跨越數目（ex. 1101201~1110105 ＝> 跨了2年度）
    * @param unit {string}-日期相差單位（day/week/month/quarter/year）
+   * @param referenceUnit {string}-日期相差單位，受一週的第一天是否為星期日所影響（day/week/month/quarter/year）
    */
-  getCrossRange(unit: any) {
-    const diff = Math.ceil(this.getDiffRange(unit, true));
-    const cross = dayjs(this._startTime).add(diff - 1, unit).endOf(unit).valueOf() !== dayjs(this._endTime).endOf(unit).valueOf();
+  getCrossRange(unit: any, referenceUnit: any = null) {
+    const diff = Math.ceil(this.getDiffRange(unit));
+    const cross =
+      dayjs(this._startTime)
+        .add(diff - 1, unit)
+        .endOf(referenceUnit ?? unit)
+        .valueOf() !==
+      dayjs(this._endTime)
+        .endOf(referenceUnit ?? unit)
+        .valueOf();
     return cross ? diff + 1 : diff;
   }
-  
 }

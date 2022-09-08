@@ -12,7 +12,6 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { SelectDate } from '../../../../shared/models/utils-type';
 import { AuthService } from '../../../../core/services/auth.service';
 
-
 type Serverity = 'INFO' | 'WARN' | 'ERROR' | 'DEBUG';
 type TargetType = 'user' | 'equipment';
 const apiDateFormat = 'YYYY-MM-DD HH:mm:ss';
@@ -20,14 +19,14 @@ const apiDateFormat = 'YYYY-MM-DD HH:mm:ss';
 @Component({
   selector: 'app-system-log',
   templateUrl: './system-log.component.html',
-  styleUrls: ['./system-log.component.scss']
+  styleUrls: ['./system-log.component.scss'],
 })
 export class SystemLogComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
   clickSubscription: Subscription;
 
-  @ViewChild('paginatorA', {static: true}) paginatorA: MatPaginator;
-  @ViewChild('paginatorB', {static: true}) paginatorB: MatPaginator;
+  @ViewChild('paginatorA', { static: true }) paginatorA: MatPaginator;
+  @ViewChild('paginatorB', { static: true }) paginatorB: MatPaginator;
 
   /**
    * ui上會用到的各個flag
@@ -37,8 +36,8 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     showServeritySelector: false,
     showAppSelector: false,
     targetType: <TargetType>'user',
-    currentTargetType: <TargetType>'user'
-  }
+    currentTargetType: <TargetType>'user',
+  };
 
   /**
    * 搜尋條件
@@ -53,8 +52,8 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     startTime: dayjs().subtract(3, 'month').format(apiDateFormat),
     endTime: dayjs().format(apiDateFormat),
     page: 0,
-    pageCounts: 30
-  }
+    pageCounts: 30,
+  };
 
   /**
    * 日期顯示和暫存用
@@ -63,8 +62,8 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     startTimeStamp: dayjs().subtract(3, 'month').valueOf(),
     endTimeStamp: dayjs().valueOf(),
     startDate: null,
-    endDate: null
-  }
+    endDate: null,
+  };
 
   /**
    * 目標使用者
@@ -72,8 +71,8 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   targetUser = {
     id: null,
     name: null,
-    account: null
-  }
+    account: null,
+  };
 
   progress = 100;
   sysLog: Array<any>;
@@ -87,12 +86,11 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private api10xxService: Api10xxService,
     private authService: AuthService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.subscribePageChange();
   }
-
 
   subscribePageChange() {
     // 分頁切換時，重新取得資料
@@ -128,11 +126,9 @@ export class SystemLogComponent implements OnInit, OnDestroy {
         type,
         adminLists,
         onConfirm: this.targetConfirm.bind(this),
-        isInnerAdmin: true
-      }
-
+        isInnerAdmin: true,
+      },
     });
-
   }
 
   /**
@@ -145,25 +141,22 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     if (this.targetUser.id.trim().length !== 0) {
       const body = {
         token: this.authService.token,
-        targetUserId: this.targetUser.id
+        targetUserId: this.targetUser.id,
       };
 
-      this.api10xxService.fetchGetUserProfile(body).subscribe(res => {
+      this.api10xxService.fetchGetUserProfile(body).subscribe((res) => {
         if (res.processResult && res.processResult.resultCode === 200) {
           this.targetUser.name = res.userProfile.nickname;
           this.targetUser.account = null;
         } else {
-          let result = res.processResult ?? res;
+          const result = res.processResult ?? res;
           this.utils.handleError(result.resultCode, result.apiCode, result.resultMessage);
         }
-        
       });
-
     } else {
       this.targetUser.name = null;
       this.targetUser.account = null;
     }
-    
   }
 
   /**
@@ -177,17 +170,16 @@ export class SystemLogComponent implements OnInit, OnDestroy {
       this.targetUser = {
         id: userInfo.userId,
         name: userInfo.userName,
-        account: null
+        account: null,
       };
     } else {
       const userInfo = _lists[0];
       this.targetUser = {
         id: userInfo.user_id,
         name: userInfo.login_acc,
-        account: userInfo.e_mail || userInfo.phone
+        account: userInfo.e_mail || userInfo.phone,
       };
     }
-
   }
 
   /**
@@ -239,12 +231,9 @@ export class SystemLogComponent implements OnInit, OnDestroy {
    */
   clickSubscribe() {
     const clickEvent = fromEvent(document, 'click');
-    this.clickSubscription = clickEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    this.clickSubscription = clickEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.clickUnsubscribe();
     });
-
   }
 
   /**
@@ -295,40 +284,36 @@ export class SystemLogComponent implements OnInit, OnDestroy {
    * 送出搜尋
    * @author kidin-1100303
    */
-  submit(initPage: boolean = true) {
+  submit(initPage = true) {
     if (initPage) {
       this.searchCondition.page = 0;
       if (this.currentPage) {
         this.currentPage.pageIndex = 0;
       }
-      
     }
 
     const { targetType } = this.uiFlag;
     if (
-      (targetType === 'user' && this.targetUser.id)
-      || (targetType === 'equipment' && this.searchCondition.targetEquipmentSN)
+      (targetType === 'user' && this.targetUser.id) ||
+      (targetType === 'equipment' && this.searchCondition.targetEquipmentSN)
     ) {
       this.progress = 0;
       this.uiFlag.notChoiceTarget = false;
       this.searchCondition.targetUserId = targetType === 'user' ? +this.targetUser.id : null;
       this.searchCondition.startTime = dayjs(this.selectedDate.startDate).format(apiDateFormat);
       this.searchCondition.endTime = dayjs(this.selectedDate.endDate).format(apiDateFormat);
-      let body = {};
-      for (let key in this.searchCondition) {
-
-        if (this.searchCondition.hasOwnProperty(key)) {
+      const body = {};
+      for (const key in this.searchCondition) {
+        if (Object.prototype.hasOwnProperty.call(this.searchCondition, key)) {
           const value = this.searchCondition[key];
-          if (value !== null && (typeof(value) === 'number' || value.trim().length !== 0)) {
-            Object.assign(body, {[key]: value});
+          if (value !== null && (typeof value === 'number' || value.trim().length !== 0)) {
+            Object.assign(body, { [key]: value });
           }
-
         }
-
       }
 
       this.progress = 30;
-      this.innerSystemService.getSystemLog(body).subscribe(res => {
+      this.innerSystemService.getSystemLog(body).subscribe((res) => {
         if (res.resultCode === 200) {
           this.sysLog = res.info.content;
           this.totalCounts = res.info.totalCounts;
@@ -340,11 +325,9 @@ export class SystemLogComponent implements OnInit, OnDestroy {
 
         this.progress = 100;
       });
-
     } else {
       this.uiFlag.notChoiceTarget = true;
     }
-
   }
 
   /**
@@ -362,22 +345,21 @@ export class SystemLogComponent implements OnInit, OnDestroy {
       startTime: dayjs().subtract(3, 'month').format(apiDateFormat),
       endTime: dayjs().format(apiDateFormat),
       page: 0,
-      pageCounts: 30
-    }
+      pageCounts: 30,
+    };
 
     this.selectedDate = {
       startTimeStamp: dayjs().subtract(3, 'month').valueOf(),
       endTimeStamp: dayjs().valueOf(),
       startDate: null,
-      endDate: null
-    }
+      endDate: null,
+    };
 
     this.targetUser = {
       id: null,
       name: null,
-      account: null
-    }
-
+      account: null,
+    };
   }
 
   /**
@@ -388,11 +370,10 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     this.targetUser = {
       id: null,
       name: null,
-      account: null
-    }
+      account: null,
+    };
 
     this.searchCondition.targetEquipmentSN = null;
-
   }
 
   /**
@@ -403,5 +384,4 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

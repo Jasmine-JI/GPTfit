@@ -1,6 +1,6 @@
-// fix time 2022/06/27
+// fix time 2022/08/31
 export const version = {
-  develop: '1.11.0.2 alpha',
-  release: '1.11.0.2 alpha',
-  master: '1.11.0'
+  develop: '1.12.0.5 alpha',
+  release: '1.12.0.5 alpha',
+  master: '1.12.0',
 };

@@ -1,51 +1,40 @@
-import { GroupSportTarget, PersonalTarget, TargetCondition } from '../models/sport-target';
+import {
+  SportTarget,
+  TargetCondition,
+  TargetConditionMap,
+} from '../../core/models/api/api-common/sport-target.model';
 import { GroupLevel } from '../enum/professional';
-import { deepCopy, mathRounding } from '../utils/index';
+import { mathRounding } from '../utils/index';
 import { DateUnit } from '../enum/report';
-
+import { SportTargetSymbols } from '../../core/enums/sports';
+import { of } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 /**
  * 處理運動目標
  */
 export class SportsTarget {
-
   /**
    * 繼承目標的群組階層，若階層等於自身，則代表為自訂目標
    */
-  private _reference: string;  // 其值為groupLevel字串
+  private _reference: string; // 其值為groupLevel字串
 
   /**
-   * 目標的時間計算單位
+   * 將目標篩選重複並整理過後的內容
    */
-  private _cycle: DateUnit;
+  private _arrangeCondition: Map<DateUnit, TargetConditionMap>;
 
-  /**
-   * 目標設定清單
-   */
-  private _condition: Array<TargetCondition>;
-
-
-  constructor(target: PersonalTarget | GroupSportTarget) {
-    const { name, cycle, condition } = target as GroupSportTarget;
-    if (name) this.reference = name;
-    this._cycle = cycle;
-    this._condition = condition;
-  }
-
-  /**
-   * 取得群組運動目標資訊
-   */
-  get groupSportTarget(): GroupSportTarget {
-    const { _reference: name, _cycle: cycle, _condition: condition } = this;
-    return { name, cycle, condition };
-  }
-
-  /**
-   * 取得個人運動目標資訊
-   */
-  get personalSportTarget(): PersonalTarget {
-    const { _cycle: cycle, _condition: condition } = this;
-    return { name: '', cycle, condition };
+  constructor(target: SportTarget | Record<string, never>) {
+    const { name, condition } = target;
+    if (name) this._reference = name;
+    of(condition)
+      .pipe(
+        map((condition) => this.arrangeCondition(condition)),
+        map((arrangeCondition) => this.checkAllcycle(arrangeCondition))
+      )
+      .subscribe((res) => {
+        this._arrangeCondition = res;
+      });
   }
 
   /**
@@ -57,75 +46,113 @@ export class SportsTarget {
   }
 
   /**
-   * 儲存目標的時間範圍計算單位
-   * @param cycle {DateUnit}-時間範圍單位
+   * 取得套用的目標其群組階層
    */
-  set cycle(cycle: DateUnit) {
-    this._cycle = cycle;
+  get reference() {
+    return this._reference;
   }
 
   /**
-   * 儲存目標達成條件
-   * @param condition {Array<TargetCondition>}-目標達成條件
+   * 將運動目標依日期單位進行整理，
+   * 包含過濾重複cycle且重複filedName，
+   * 以及將同cycle的目標整理在一起
+   * @param condition {TargetCondition}-運動目標的內容
    */
-  set condition(condition: Array<TargetCondition>) {
-    this._condition = deepCopy(condition);
-  }
+  arrangeCondition(condition: Array<TargetCondition> | undefined) {
+    if (!condition) return this.getDefaultCondition();
 
-  /**
-   * 移除指定條件
-   * @param index {number}-欲刪除條件之序列
-   */
-  removeCondition(index: number) {
-    this._condition.splice(index, 1);
-  }
-
-  /**
-   * 加入指定條件
-   * @param condition {TargetCondition}
-   */
-  addCondition(condition: TargetCondition) {
-    this._condition.push(condition);
-  }
-
-  /**
-   * 移除所有條件
-   */
-  clearCondition() {
-    this._condition = [];
-  }
-
-  /**
-   * 取得依報告所選時間單位進行換算的目標數值
-   * @param reportUnit {DateUnit}-報告所選的時間單位
-   * @param peopleNumber {number}-人數（用於團體運動報告，計算所有人加總所需的目標值）
-   */
-  getTransformCondition(reportUnit: DateUnit, peopleNumber: number = 1) {
-    const _condition = deepCopy(this._condition);
-    const { _cycle } = this;
-    const sameUnit = _cycle === reportUnit;
-    const conditionNotSet = _condition.length === 0;
-    if (conditionNotSet || (peopleNumber === 1 && sameUnit)) return _condition;
-
-    const coefficient = this.getDateTransformCoefficient(reportUnit);
-    return _condition.map(_con => {
-      const { filedName } = _con;
-      const coefficientNum = filedName === 'pai' ? 1 : coefficient;  // pai已包含時間概念，故不需轉換
-      _con.filedValue = mathRounding(+_con.filedValue * coefficientNum * peopleNumber, 1);
-      return _con;
+    const resultMap = new Map();
+    condition.forEach((_condition) => {
+      const { cycle, filedName, filedValue, symbols } = _condition;
+      // 避免api回傳cycle為null值
+      if (cycle) {
+        const content = resultMap.get(cycle) ?? new Map();
+        content.set(filedName, { filedValue, symbols });
+        resultMap.set(cycle, content);
+      }
     });
 
+    return resultMap;
+  }
+
+  /**
+   * 確認是否所有日期單位皆有目標條件
+   */
+  checkAllcycle(targetMap: Map<DateUnit, TargetConditionMap>) {
+    for (let cycle = 1; cycle <= 5; cycle++) {
+      const content = targetMap.get(cycle);
+      if (!content) targetMap.set(cycle, this.getDefaultContent(cycle));
+    }
+
+    return targetMap;
+  }
+
+  /**
+   * 取得指定日期的目標內容
+   * @param cycle {DateUnit}-目標日期單位
+   */
+  getArrangeCondition(cycle: DateUnit) {
+    const condition = this._arrangeCondition.get(cycle);
+    return condition ?? this.getDefaultContent(cycle);
+  }
+
+  /**
+   * 取得預設運動目標
+   */
+  getDefaultCondition() {
+    const resultMap = new Map();
+    for (let cycle = 1; cycle <= 5; cycle++) {
+      resultMap.set(cycle, this.getDefaultContent(cycle));
+    }
+
+    return resultMap;
+  }
+
+  /**
+   * 取得指定日期單位的運動目標內容
+   * @param cycle {DateUnit}-目標日期單位
+   */
+  getDefaultContent(cycle: DateUnit) {
+    const dayTotalTime = 20 * 60; // 暫定一天運動目標為20分鐘
+    const weekTotalTime = 150 * 60; // 以一週運動150分鐘為基準
+    const monthTotalTime = weekTotalTime * 4; // 一個月以4週計算
+    const seasonTotalTime = monthTotalTime * 3;
+    const yearTotalTime = seasonTotalTime * 4;
+    const defaultTotalTime = [
+      dayTotalTime,
+      weekTotalTime,
+      monthTotalTime,
+      seasonTotalTime,
+      yearTotalTime,
+    ];
+    const assignTotalTime = defaultTotalTime[cycle - 1];
+    const content = new Map();
+    content.set('totalTime', {
+      symbols: SportTargetSymbols.greaterOrEqual,
+      filedValue: assignTotalTime,
+    });
+    content.set('pai', { symbols: SportTargetSymbols.greaterOrEqual, filedValue: 100 }); // pai已有時間概念在內，故皆設為100
+    return content as TargetConditionMap;
+  }
+
+  /**
+   * 變更指定時間單位的目標條件
+   * @param cycle {DateUnit}-目標日期單位
+   * @param content {TargetConditionMap}-目標條件的Map物件
+   */
+  changeAllCondition(cycle: DateUnit, content: TargetConditionMap) {
+    this._arrangeCondition.set(cycle, content);
   }
 
   /**
    * 取得日期範圍單位轉換係數
-   * @param reportUnit {DateUnit}-報告所選的時間單位
+   * @param reportUnit {DateUnit}-報告所選的呈現時間單位
+   * @param cycle {DateUnit}-報告所選的目標時間單位
    */
-  getDateTransformCoefficient(reportUnit: DateUnit) {
-    const { _cycle } = this;
-    const denominator = SportsTarget.getUnitDays(_cycle);
-    const molecular = SportsTarget.getUnitDays(reportUnit);
-    return mathRounding(molecular / denominator, 2);
+  getDateTransformCoefficient(reportUnit: DateUnit, cycle: DateUnit) {
+    const denominator = SportsTarget.getUnitDays(cycle);
+    const numerator = SportsTarget.getUnitDays(reportUnit);
+    return mathRounding(numerator / denominator, 5);
   }
 
   /**
@@ -147,4 +174,22 @@ export class SportsTarget {
     }
   }
 
+  /**
+   * 取得api可接受格式的運動目標
+   */
+  getReductionTarget() {
+    const result = {
+      name: this._reference ?? '',
+      condition: <Array<TargetCondition>>[],
+    };
+
+    this._arrangeCondition.forEach((_content, cycle) => {
+      _content.forEach((_value, filedName) => {
+        const { symbols, filedValue } = _value;
+        result.condition.push({ cycle, filedName, symbols, filedValue });
+      });
+    });
+
+    return result;
+  }
 }

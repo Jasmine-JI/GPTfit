@@ -15,17 +15,18 @@ import { GetClientIpService } from '../../../../../shared/services/get-client-ip
 import { SignTypeEnum } from '../../../../../shared/enum/account';
 import { codes } from '../../../../../shared/models/countryCode';
 import { TFTViewMinWidth } from '../../../models/app-webview';
-import { headerKeyTranslate, getUrlQueryStrings, getLocalStorageObject } from '../../../../../shared/utils/index';
-
-
+import {
+  headerKeyTranslate,
+  getUrlQueryStrings,
+  getLocalStorageObject,
+} from '../../../../../shared/utils/index';
 
 @Component({
   selector: 'app-app-change-account',
   templateUrl: './app-change-account.component.html',
-  styleUrls: ['./app-change-account.component.scss']
+  styleUrls: ['./app-change-account.component.scss'],
 })
 export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestroy {
-
   private ngUnsubscribe = new Subject();
   private clickScrollEvent = new Subscription();
   private resizeSubscription = new Subscription();
@@ -36,13 +37,13 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
   i18n = {
     account: '',
-    password: ''
+    password: '',
   };
   displayPW = false;
   dataIncomplete = true;
   progress = 100;
   newToken = '';
-  appSys = 0;  // 0:web, 1:ios, 2:android
+  appSys = 0; // 0:web, 1:ios, 2:android
   ip = '';
   pcView = false;
   mobileSize = window.innerWidth < TFTViewMinWidth;
@@ -58,12 +59,12 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
   cue = {
     password: '',
-    account: ''
+    account: '',
   };
 
   accountInfo = {
     oldType: SignTypeEnum.email,
-    oldAccount: ''
+    oldAccount: '',
   };
 
   // 驗證用
@@ -71,7 +72,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     email: this.formReg.email,
     emailPass: false,
     password: this.formReg.password,
-    passwordPass: false
+    passwordPass: false,
   };
 
   // 惡意註冊圖碼解鎖
@@ -80,7 +81,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     imgCode: '',
     code: '',
     cue: '',
-    placeholder: ''
+    placeholder: '',
   };
 
   accountType = AccountTypeEnum.email;
@@ -94,12 +95,9 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     private router: Router,
     private getClientIp: GetClientIpService
   ) {
-    translate.onLangChange.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    translate.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.getTranslate();
     });
-
   }
 
   ngOnInit() {
@@ -114,18 +112,16 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
       this.pcView = false;
       this.setPageStyle(true);
     }
-
   }
 
   /**
    * 因應ios嵌入webkit物件時間點較後面，故在此生命週期才判斷裝置平台
    * @author kidin-1090710
    */
-  ngAfterViewInit () {
+  ngAfterViewInit() {
     if (this.pcView === false) {
       this.getDeviceSys();
     }
-
   }
 
   /**
@@ -144,30 +140,26 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
    */
   subscribeResizeEvent() {
     const resizeEvent = fromEvent(window, 'resize');
-    this.resizeSubscription = resizeEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.resizeSubscription = resizeEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.mobileSize = window.innerWidth < TFTViewMinWidth;
     });
-
   }
 
   // 取得多國語系翻譯-kidin-1090620
-  getTranslate () {
-    this.translate.get('hollo word').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.i18n = {
-        account: this.translate.instant('universal_userAccount_emailPerPhone'),
-        password: this.translate.instant('universal_userAccount_password')
-      };
-
-    });
-
+  getTranslate() {
+    this.translate
+      .get('hollo word')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.i18n = {
+          account: this.translate.instant('universal_userAccount_emailPerPhone'),
+          password: this.translate.instant('universal_userAccount_password'),
+        };
+      });
   }
 
   // 取得裝置平台-kidin-1090518
-  getDeviceSys () {
+  getDeviceSys() {
     if ((window as any).webkit) {
       this.appSys = 1;
     } else if ((window as any).android) {
@@ -178,17 +170,16 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
     this.requestHeader = {
       deviceType: this.appSys,
-      ...this.requestHeader
+      ...this.requestHeader,
     };
-
   }
 
   // 取得url query string和token-kidin-1090514
-  getUrlString (urlStr) {
+  getUrlString(urlStr) {
     const query = getUrlQueryStrings(location.search);
     this.requestHeader = {
       ...this.requestHeader,
-      ...headerKeyTranslate(query)
+      ...headerKeyTranslate(query),
     };
 
     const { tk } = query;
@@ -197,66 +188,61 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     if (this.editBody.token === '') {
       this.editBody.token = this.authService.token;
     }
-
   }
 
   // 取得使用者ip位址-kidin-1090521
-  getClientIpaddress () {
+  getClientIpaddress() {
     const { remoteAddr } = this.requestHeader as any;
     if (!remoteAddr) {
       return this.getClientIp.requestIpAddress().pipe(
-        tap(res => {
+        tap((res) => {
           this.ip = (res as any).ip;
           this.requestHeader = {
             ...this.requestHeader,
-            remoteAddr: this.ip
+            remoteAddr: this.ip,
           };
         })
       );
-
     } else {
       return of(this.requestHeader);
     }
-
   }
 
   // 使用token取得使用者帳號資訊-kidin-1090514
-  getUserInfo () {
+  getUserInfo() {
     const body = {
-      token: this.editBody.token || ''
+      token: this.editBody.token || '',
     };
 
-    this.api10xxService.fetchGetUserProfile(body).subscribe(res => {
+    this.api10xxService.fetchGetUserProfile(body).subscribe((res) => {
       if (this.utils.checkRes(res)) {
-        const { signIn: { accountType }, userProfile } = res;
+        const {
+          signIn: { accountType },
+          userProfile,
+        } = res;
         this.accountType = accountType;
         if (accountType === AccountTypeEnum.email) {
           this.accountInfo = {
             oldType: SignTypeEnum.email,
-            oldAccount: userProfile.email
+            oldAccount: userProfile.email,
           };
         } else {
           this.accountInfo = {
             oldType: SignTypeEnum.phone,
-            oldAccount: `+${userProfile.countryCode} ${userProfile.mobileNumber}`
+            oldAccount: `+${userProfile.countryCode} ${userProfile.mobileNumber}`,
           };
-
         }
-
       }
-
     });
-
   }
 
   // 返回app-kidin-1090513
-  turnBack () {
+  turnBack() {
     if (this.appSys === 1) {
       (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
     } else if (this.appSys === 2) {
       (window as any).android.closeWebView('Close');
     } else {
-
       window.close();
       // 若無法關閉視窗就導回登入頁
       if (this.pcView === true) {
@@ -264,9 +250,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
       } else {
         this.router.navigateByUrl('/signIn');
       }
-
     }
-
   }
 
   /**
@@ -279,7 +263,6 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     } else if (this.appSys === 2) {
       (window as any).android.closeWebView('Close');
     } else {
-
       window.close();
       window.opener.location.reload();
       // 若無法關閉視窗就導回登入頁
@@ -288,16 +271,13 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
       } else {
         this.router.navigateByUrl('/signIn');
       }
-
     }
-
   }
 
   // 判斷使用者輸入的帳號切換帳號類型-kidin-1090518
   determineAccountType(e: KeyboardEvent) {
     const account = (e as any).currentTarget.value;
     if (e.key.length === 1 || e.key === 'Backspace') {
-     
       if (e.key === 'Backspace') {
         const value = account.slice(0, account.length - 1);
         if (value.length > 0 && this.formReg.number.test(value)) {
@@ -305,7 +285,6 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
         } else {
           this.editBody.newAccountType = SignTypeEnum.email;
         }
-  
       } else if (this.formReg.number.test(account) && this.formReg.number.test(e.key)) {
         this.editBody.newAccountType = SignTypeEnum.phone;
         this.setCountryCode();
@@ -313,9 +292,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
         this.editBody.newAccountType = SignTypeEnum.email;
         if (this.editBody.newCountryCode) delete this.editBody.newCountryCode;
       }
-
     }
-
   }
 
   /**
@@ -347,16 +324,14 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
         this.editBody.newEmail = account;
         this.checkEmail(this.editBody.newEmail);
       }
-
     } else {
       this.editBody.newAccountType = SignTypeEnum.email;
       this.cue.account = 'universal_status_wrongFormat';
     }
-
   }
 
   // 確認使用者信箱格式-kidin-1090511
-  checkEmail (email: string) {
+  checkEmail(email: string) {
     if (email.length === 0 || !this.regCheck.email.test(email)) {
       this.cue.account = 'universal_status_wrongFormat';
       this.regCheck.emailPass = false;
@@ -369,17 +344,16 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   // 顯示密碼-kidin-1090429
-  toggleDisplayPW () {
+  toggleDisplayPW() {
     if (this.displayPW === false) {
       this.displayPW = true;
     } else {
       this.displayPW = false;
     }
-
   }
 
   // 確認密碼格式-kidin-1090511
-  checkPassword (e) {
+  checkPassword(e) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputPassword = e.currentTarget.value;
       if (!this.regCheck.password.test(inputPassword)) {
@@ -393,18 +367,17 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
       this.checkAll(this.regCheck);
     }
-
   }
 
   // 取得使用者輸入的國碼-kidin-1090504
-  onCodeChange (countryCode) {
+  onCodeChange(countryCode) {
     this.editBody.newCountryCode = +countryCode;
     this.cue.account = '';
     this.checkAll(this.regCheck);
   }
 
   // 確認是否填寫圖形驗證碼欄位-kidin-1090514
-  checkImgCaptcha (e) {
+  checkImgCaptcha(e) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputImgCaptcha = e.currentTarget.value;
       if (inputImgCaptcha.length === 0) {
@@ -414,152 +387,146 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
         this.imgCaptcha.cue = '';
       }
     }
-
   }
 
   // 確認是否所有欄位皆已完成-kidin-1090512
-  checkAll (check) {
+  checkAll(check) {
     const { emailPass, passwordPass } = check;
     const { show, code } = this.imgCaptcha;
     if (this.editBody.newAccountType === SignTypeEnum.email) {
-
-      if (!emailPass || !passwordPass || (show && code.length === 0) ) {
+      if (!emailPass || !passwordPass || (show && code.length === 0)) {
         this.dataIncomplete = true;
       } else {
         this.dataIncomplete = false;
       }
-
     } else {
-
       if (!passwordPass || (show && code.length === 0)) {
         this.dataIncomplete = true;
       } else {
         this.cue.account = '';
         this.dataIncomplete = false;
       }
-
     }
-
   }
 
   // 進行變更帳號流程-kidin-1090518
-  submit () {
+  submit() {
     this.progress = 30;
     if (this.imgCaptcha.show) {
       const releaseBody = {
         unlockFlow: 2,
-        unlockKey: this.imgCaptcha.code
+        unlockKey: this.imgCaptcha.code,
       };
 
-      this.getClientIpaddress().pipe(
-        switchMap(ipResult => this.signupService.fetchCaptcha(releaseBody, this.requestHeader))
-      ).subscribe((res: any) => {
+      this.getClientIpaddress()
+        .pipe(
+          switchMap((ipResult) => this.signupService.fetchCaptcha(releaseBody, this.requestHeader))
+        )
+        .subscribe((res: any) => {
+          const {
+            processResult,
+            resultCode: resCode,
+            apiCode: resApiCode,
+            resultMessage: resMsg,
+          } = res as any;
+          if (!processResult) {
+            this.utils.handleError(resCode, resApiCode, resMsg);
+          } else {
+            const { resultCode, apiReturnMessage } = processResult;
+            if (resultCode === 200) {
+              this.imgCaptcha.show = false;
+              this.submit();
+            } else {
+              switch (apiReturnMessage) {
+                case 'Found a wrong unlock key.':
+                  this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
+                  break;
+                default:
+                  this.showErrorMsg();
+                  console.error(`${resultCode}: ${apiReturnMessage}`);
+                  break;
+              }
+            }
+          }
+
+          this.progress = 100;
+        });
+    } else {
+      this.sendFormInfo();
+    }
+  }
+
+  // 傳送變更表單-kidin-1090514
+  sendFormInfo() {
+    this.getClientIpaddress()
+      .pipe(
+        switchMap((ipResult) =>
+          this.signupService.fetchEditAccountInfo(this.editBody, this.requestHeader)
+        )
+      )
+      .subscribe((res: any) => {
         const {
           processResult,
           resultCode: resCode,
           apiCode: resApiCode,
-          resultMessage: resMsg
+          resultMessage: resMsg,
         } = res as any;
         if (!processResult) {
           this.utils.handleError(resCode, resApiCode, resMsg);
         } else {
-          const { resultCode, apiReturnMessage } = processResult;
-          if (resultCode === 200) {
-            this.imgCaptcha.show = false;
-            this.submit();
-          } else {
-
+          const { resultCode, apiReturnMessage, imgLockCode } = processResult;
+          if (resultCode !== 200) {
             switch (apiReturnMessage) {
-              case 'Found a wrong unlock key.':
-                this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
+              case 'Change account is existing.':
+                this.cue.account = 'accountRepeat';
+                break;
+              case 'Change account fail, old password is not correct.':
+                this.cue.password = 'universal_userAccount_notSamePassword';
+                break;
+              case 'Found attack, update status to lock!':
+              case 'Found lock!':
+                const captchaBody = {
+                  unlockFlow: 1,
+                  imgLockCode: imgLockCode,
+                };
+
+                this.signupService
+                  .fetchCaptcha(captchaBody, this.requestHeader)
+                  .subscribe((captchaRes: any) => {
+                    this.imgCaptcha.show = true;
+                    this.imgCaptcha.imgCode = `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`;
+                  });
+
                 break;
               default:
                 this.showErrorMsg();
                 console.error(`${resultCode}: ${apiReturnMessage}`);
                 break;
             }
-            
-          }
+          } else {
+            this.newToken = res.editAccount.newToken;
+            this.authService.setToken(this.newToken); // 直接在瀏覽器幫使用者登入
 
+            if (this.appSys === 1) {
+              (window as any).webkit.messageHandlers.returnToken.postMessage(this.newToken);
+            } else if (this.appSys === 2) {
+              (window as any).android.returnToken(this.newToken);
+            }
+
+            const modifyI18n = this.translate.instant('universal_operating_modify');
+            const successI18n = this.translate.instant('universal_status_success');
+            const msg = `${modifyI18n} ${successI18n}`;
+            this.utils.showSnackBar(msg);
+            this.toEnableAccount();
+          }
         }
 
         this.progress = 100;
       });
-    } else {
-      this.sendFormInfo();
-    }
-
-  }
-
-  // 傳送變更表單-kidin-1090514
-  sendFormInfo () {
-    this.getClientIpaddress().pipe(
-      switchMap(ipResult => this.signupService.fetchEditAccountInfo(this.editBody, this.requestHeader))
-    ).subscribe((res: any) => {
-      const {
-        processResult,
-        resultCode: resCode,
-        apiCode: resApiCode,
-        resultMessage: resMsg
-      } = res as any;
-      if (!processResult) {
-        this.utils.handleError(resCode, resApiCode, resMsg);
-      } else {
-        const { resultCode, apiReturnMessage, imgLockCode } = processResult;
-        if (resultCode !== 200) {
-
-          switch (apiReturnMessage) {
-            case 'Change account is existing.':
-              this.cue.account = 'accountRepeat';
-              break;
-            case 'Change account fail, old password is not correct.':
-              this.cue.password = 'universal_userAccount_notSamePassword';
-              break;
-            case 'Found attack, update status to lock!':
-            case 'Found lock!':
-              const captchaBody = {
-                unlockFlow: 1,
-                imgLockCode: imgLockCode
-              };
-
-              this.signupService.fetchCaptcha(captchaBody, this.requestHeader).subscribe((captchaRes: any) => {
-                this.imgCaptcha.show = true;
-                this.imgCaptcha.imgCode = `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`;
-              });
-
-              break;
-            default:
-              this.showErrorMsg();
-              console.error(`${resultCode}: ${apiReturnMessage}`);
-              break;
-          }
-
-        } else {
-          this.newToken = res.editAccount.newToken;
-          this.authService.setToken(this.newToken);  // 直接在瀏覽器幫使用者登入
-
-          if (this.appSys === 1) {
-            (window as any).webkit.messageHandlers.returnToken.postMessage(this.newToken);
-          } else if (this.appSys === 2) {
-            (window as any).android.returnToken(this.newToken);
-          }
-
-          const modifyI18n = this.translate.instant('universal_operating_modify');
-          const successI18n = this.translate.instant('universal_status_success');
-          const msg = `${modifyI18n} ${successI18n}`;
-          this.utils.showSnackBar(msg);
-          this.toEnableAccount();
-        }
-
-      }
-
-      this.progress = 100;
-    });
-
   }
 
   // 轉導至啟用帳號頁面-kidin-1090513
-  toEnableAccount () {
+  toEnableAccount() {
     this.utils.setHideNavbarStatus(false);
     this.router.navigateByUrl(`/enableAccount`);
   }
@@ -576,17 +543,14 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
         data: {
           title: 'Message',
           body: `Error.<br />Please try again later.`,
-          confirmText: this.translate.instant(
-            'universal_operating_confirm'
-          ),
-          onConfirm: this.turnBack.bind(this)
-        }
+          confirmText: this.translate.instant('universal_operating_confirm'),
+          onConfirm: this.turnBack.bind(this),
+        },
       });
     } else {
       const msg = 'Error! Please try again later.';
       this.debounceTurnBack(msg);
     }
-
   }
 
   /**
@@ -601,7 +565,6 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
       this.progress = 30;
       this.turnBack();
     }, 2000);
-
   }
 
   /**
@@ -611,7 +574,10 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
    */
   showCountryCodeList(e: MouseEvent) {
     e.stopPropagation();
-    const { editBody: { newAccountType }, displayCountryCodeList } = this;
+    const {
+      editBody: { newAccountType },
+      displayCountryCodeList,
+    } = this;
     if (newAccountType === SignTypeEnum.phone) {
       if (displayCountryCodeList) {
         this.unsubscribeClickScrollEvent();
@@ -619,9 +585,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
         this.displayCountryCodeList = true;
         this.subscribeClickScrollEvent();
       }
-
     }
-    
   }
 
   /**
@@ -632,14 +596,13 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     const targetElement = document.querySelector('main');
     const clickEvent = fromEvent(document, 'click');
     const scrollEvent = fromEvent(targetElement, 'scroll');
-    this.clickScrollEvent = merge(clickEvent, scrollEvent).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.unsubscribeClickScrollEvent();
-    });
-
+    this.clickScrollEvent = merge(clickEvent, scrollEvent)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.unsubscribeClickScrollEvent();
+      });
   }
-  
+
   /**
    * 選擇國碼
    * @param e {MouseEvent}
@@ -664,11 +627,9 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   // 離開頁面則取消隱藏navbar-kidin-1090514
-  ngOnDestroy () {
+  ngOnDestroy() {
     this.setPageStyle(false);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
-
 }

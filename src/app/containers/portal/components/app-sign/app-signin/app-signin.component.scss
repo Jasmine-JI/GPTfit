@@ -3,13 +3,13 @@
 .navigate__button__area {
   justify-content: space-between;
 
-  >button {
+  > button {
     border-radius: 5px;
     width: 33%;
     min-width: 90px;
     padding: 0;
 
-    >a {
+    > a {
       text-decoration: none;
       color: white;
       font-size: 12px;
@@ -17,9 +17,7 @@
       width: 100%;
       height: 100%;
     }
-
   }
-
 }
 
 .forget__password__button {

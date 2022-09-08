@@ -1,7 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-
-@Pipe({name: 'productType'})
+@Pipe({ name: 'productType' })
 export class ProductTypePipe implements PipeTransform {
   /**
    * 根據裝置類型回傳對應多國語系的鍵或佈景圖片路徑
@@ -13,23 +12,23 @@ export class ProductTypePipe implements PipeTransform {
     const device = {
       wearable: {
         key: 'universal_vocabulary_wearableDevice',
-        imgPath: `${imgDir}/wearable.jpg`
+        imgPath: `${imgDir}/wearable.jpg`,
       },
       treadmill: {
         key: 'universal_vocabulary_treadmill',
-        imgPath: `${imgDir}/run.jpg`
+        imgPath: `${imgDir}/run.jpg`,
       },
       spinBike: {
         key: 'universal_vocabulary_spinBike',
-        imgPath: `${imgDir}/bike.jpg`
+        imgPath: `${imgDir}/bike.jpg`,
       },
       rowMachine: {
         key: 'universal_vocabulary_rowingMachine',
-        imgPath: `${imgDir}/row.jpg`
+        imgPath: `${imgDir}/row.jpg`,
       },
       sensor: {
         key: 'universal_vocabulary_sensor',
-        imgPath: `${imgDir}/wt.jpg`
+        imgPath: `${imgDir}/wt.jpg`,
       },
     };
     switch (value + '') {
@@ -51,7 +50,5 @@ export class ProductTypePipe implements PipeTransform {
       default:
         return 'unknown type';
     }
-
   }
-
 }

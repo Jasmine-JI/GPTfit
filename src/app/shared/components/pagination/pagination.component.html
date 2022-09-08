@@ -1,27 +1,32 @@
 <div class="flexRow pagination__section">
   <span>{{ 'universal_status_pageCount' | translate }}</span>
   <span (click)="showPageSizeOpt($event)">
-    <span
-      class="one__page__size"
-      [class.one__page__size--active]="showPageSizeMenu"
-    >
+    <span class="one__page__size" [class.one__page__size--active]="showPageSizeMenu">
       {{ pageSettingObj.onePageSize }}
     </span>
     <div class="pagination__drop__menu" *ngIf="showPageSizeMenu">
-      <ng-container *ngFor="let _size of onePageSizeOpt;">
+      <ng-container *ngFor="let _size of onePageSizeOpt">
         <span (click)="changeOnePageSize(_size)">{{ _size }}</span>
       </ng-container>
     </div>
   </span>
   <div class="flexRow">
     <span>
-      {{ 'universal_status_page' | translate: 
-        {
-          number1: pageSettingObj.totalCounts === 0 ? 0 : pageSettingObj.pageIndex * pageSettingObj.onePageSize + 1,
-          number2: (pageSettingObj.pageIndex + 1) * pageSettingObj.onePageSize >= pageSettingObj.totalCounts ? 
-            pageSettingObj.totalCounts : (pageSettingObj.pageIndex + 1) * pageSettingObj.onePageSize,
-          number3: pageSettingObj.totalCounts
-        }
+      {{
+        'universal_status_page'
+          | translate
+            : {
+                number1:
+                  pageSettingObj.totalCounts === 0
+                    ? 0
+                    : pageSettingObj.pageIndex * pageSettingObj.onePageSize + 1,
+                number2:
+                  (pageSettingObj.pageIndex + 1) * pageSettingObj.onePageSize >=
+                  pageSettingObj.totalCounts
+                    ? pageSettingObj.totalCounts
+                    : (pageSettingObj.pageIndex + 1) * pageSettingObj.onePageSize,
+                number3: pageSettingObj.totalCounts
+              }
       }}
     </span>
     <div class="flexRow">
@@ -35,7 +40,9 @@
       <button
         class="switch__btn"
         (click)="switchPage('next')"
-        [disabled]="(pageSettingObj.pageIndex + 1) * pageSettingObj.onePageSize >= pageSettingObj.totalCounts"
+        [disabled]="
+          (pageSettingObj.pageIndex + 1) * pageSettingObj.onePageSize >= pageSettingObj.totalCounts
+        "
       >
         <i class="icon-svg_web-icon_p1_074-level_unfold"></i>
       </button>

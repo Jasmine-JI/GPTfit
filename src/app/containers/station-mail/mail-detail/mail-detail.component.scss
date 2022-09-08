@@ -1,0 +1,83 @@
+@import 'color.scss';
+
+.mail__content__section {
+  border: 1px solid rgba(150, 150, 150, 1);
+  min-height: 60vh;
+  padding: 5px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.functional__button__section {
+  justify-content: flex-end;
+}
+
+.functional__button {
+  &:hover {
+    background-color: rgba(245, 245, 245, 1);
+  }
+}
+
+.mail__title {
+  font-weight: bold;
+}
+
+.sender__row,
+.system__mail__mark,
+.mail__send__date {
+  margin-bottom: 5px;
+}
+
+.sender__row {
+  position: relative;
+  align-items: center;
+}
+
+.sender__icon {
+  $size: 18px;
+  max-height: $size;
+  height: $size;
+  max-width: $size;
+  width: $size;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.sender__name {
+  box-sizing: border-box;
+
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+
+.system__mail__mark {
+  $font-size: 12px;
+  $padding-height: 2px;
+  font-size: $font-size;
+  display: inline-block;
+  color: white;
+  background-color: $system-mail-color;
+  padding: $padding-height 8px;
+  border-radius: calc(#{$font-size} + #{$padding-height} * 2);
+}
+
+.favorite__icon,
+.unfavorite__icon {
+  font-size: 22px;
+}
+
+.favorite__icon {
+  color: rgba(230, 230, 0, 1);
+}
+
+.main__mail__content {
+  margin-bottom: 50px;
+}
+
+.show__reply__button {
+  width: 100%;
+  text-decoration: underline;
+  color: rgba(0, 0, 200, 1);
+}

@@ -1,4 +1,12 @@
-import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnChanges,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  Input,
+} from '@angular/core';
 import { chart } from 'highcharts';
 import dayjs from 'dayjs';
 import { TranslateService } from '@ngx-translate/core';
@@ -8,7 +16,7 @@ import {
   speedTrendColor,
   cadenceTrendColor,
   swolfTrendColor,
-  swingSpeedTrendColor
+  swingSpeedTrendColor,
 } from '../../../models/chart-data';
 import { Unit } from '../../../enum/value-conversion';
 import { SportType } from '../../../enum/sports';
@@ -17,24 +25,22 @@ import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
 import { speedToPaceSecond } from '../../../utils/sports';
 import isoWeek from 'dayjs/plugin/isoWeek';
 
-
 dayjs.extend(isoWeek);
-
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
-  constructor (dataset) {
+  constructor(dataset) {
     return {
       chart: {
         type: 'column',
         height: 110,
-        backgroundColor: 'transparent'
+        backgroundColor: 'transparent',
       },
       title: {
-        text: ''
+        text: '',
       },
       credits: {
-        enabled: false
+        enabled: false,
       },
       xAxis: {
         type: 'datetime',
@@ -46,30 +52,30 @@ class ChartOptions {
           day: '%m/%d',
           week: '%m/%d',
           month: '%Y/%m',
-          year: '%Y'
-        }
+          year: '%Y',
+        },
       },
       yAxis: {
         title: {
-            text: ''
+          text: '',
         },
         startOnTick: false,
         endOntick: true,
         minPadding: 0.01,
         maxPadding: 0.01,
-        tickAmount: 1
+        tickAmount: 1,
       },
       plotOptions: {
         column: {
-          pointPlacement: 0.33
+          pointPlacement: 0.33,
         },
         series: {
           pointWidth: 10,
-          borderRadius: 5
-        }
+          borderRadius: 5,
+        },
       },
       tooltip: {},
-      series: dataset
+      series: dataset,
     };
   }
 }
@@ -77,7 +83,7 @@ class ChartOptions {
 @Component({
   selector: 'app-discolor-column-chart',
   templateUrl: './discolor-column-chart.component.html',
-  styleUrls: ['./discolor-column-chart.component.scss', '../chart-share-style.scss']
+  styleUrls: ['./discolor-column-chart.component.scss', '../chart-share-style.scss'],
 })
 export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   dateList = [];
@@ -96,22 +102,22 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
   @Input() page: DisplayPage;
   @Input() sportType = <SportType>SportType.run;
   @Input() unit: Unit;
-  @Input() isPreviewMode: boolean = false;
-  @ViewChild('container', {static: true})
+  @Input() isPreviewMode = false;
+  @ViewChild('container', { static: true })
   container: ElementRef;
 
   constructor(
     private translate: TranslateService,
     private dataTypeTranslate: DataTypeTranslatePipe
-  ) { }
+  ) {}
 
   ngOnInit() {}
 
-  ngOnChanges () {
+  ngOnChanges() {
     this.initChart();
   }
 
-  initChart () {
+  initChart() {
     const { sportType, unit } = this;
     let trendDataset: any;
     let chartData = [];
@@ -124,9 +130,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
           `${this.translate.instant('universal_adjective_maxBest')} ${this.translate.instant(
             this.dataTypeTranslate.transform('pace', [sportType, unit])
           )}`,
-          this.translate.instant(
-            this.dataTypeTranslate.transform('pace', [sportType, unit])
-          ),
+          this.translate.instant(this.dataTypeTranslate.transform('pace', [sportType, unit])),
         ];
 
         const { dataArr: paceDataArr, minSpeed: paceminSpeed, maxSpeed: paceSpeed } = this.data;
@@ -146,7 +150,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         break;
       case 'Swolf':
         this.chartType = 'swolf';
-        colorSet = swolfTrendColor
+        colorSet = swolfTrendColor;
         const { dataArr: swolfDataArr, maxSwolf, minSwolf } = this.data;
         chartData = swolfDataArr;
         this.dataLength = swolfDataArr.length;
@@ -161,9 +165,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
           `${this.translate.instant('universal_adjective_maxBest')} ${this.translate.instant(
             this.dataTypeTranslate.transform('speed', [sportType, unit])
           )}`,
-          this.translate.instant(
-            this.dataTypeTranslate.transform('speed', [sportType, unit])
-          ),
+          this.translate.instant(this.dataTypeTranslate.transform('speed', [sportType, unit])),
         ];
 
         const { dataArr: speedDataArr, maxSpeed, minSpeed } = this.data;
@@ -177,7 +179,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         this.chartType = 'swingSpeed';
         this.chartTitle = [
           this.translate.instant('universal_activityData_maxSwing'),
-          this.translate.instant('universal_activityData_swingSpeed')
+          this.translate.instant('universal_activityData_swingSpeed'),
         ];
 
         const { dataArr, maxSpeed: swingMaxSpeed, minSpeed: swingminSpeed } = this.data;
@@ -191,12 +193,11 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         this.dataLength = this.data.length;
         break;
       case 'Muscle':
-        const saturation = '100%',  // 主訓練部位色彩飽和度
-              Brightness = '70%',  // 主訓練部位色彩明亮度
-              transparency = 1;  // 主訓練部位色彩透明度
+        const saturation = '100%', // 主訓練部位色彩飽和度
+          Brightness = '70%', // 主訓練部位色彩明亮度
+          transparency = 1; // 主訓練部位色彩透明度
         this.dataLength = this.data[0].length;
         for (let i = 0; i < this.dataLength; i++) {
-
           if (this.data[1][i] > this.highestPoint) {
             this.highestPoint = this.data[1][i];
           }
@@ -206,20 +207,18 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
           }
 
           // 計算當天該部位訓練程度-kidin-1090406
-          let trainingLevel = 200 - ((this.data[1][i]) / this.userWeight) * 100 * this.proficiencyCoefficient;
+          let trainingLevel =
+            200 - (this.data[1][i] / this.userWeight) * 100 * this.proficiencyCoefficient;
           if (trainingLevel < 0) {
             trainingLevel = 0;
           }
 
-          chartData.push(
-            {
-              x: this.data[0][i],
-              y: this.data[1][i],
-              low: this.data[2][i],
-              color: `hsla(${trainingLevel}, ${saturation}, ${Brightness}, ${transparency})`
-            }
-          );
-
+          chartData.push({
+            x: this.data[0][i],
+            y: this.data[1][i],
+            low: this.data[2][i],
+            color: `hsla(${trainingLevel}, ${saturation}, ${Brightness}, ${transparency})`,
+          });
         }
 
         break;
@@ -231,11 +230,11 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
           {
             name: [
               this.translate.instant('universal_userProfile_StepCount'),
-              this.translate.instant('universal_lifeTracking_targetStep')
+              this.translate.instant('universal_lifeTracking_targetStep'),
             ],
             data: chartData,
-            showInLegend: false
-          }
+            showInLegend: false,
+          },
         ];
 
         break;
@@ -244,8 +243,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
           {
             name: this.chartName,
             data: chartData,
-            showInLegend: false
-          }
+            showInLegend: false,
+          },
         ];
 
         break;
@@ -260,26 +259,26 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
                 x1: 0,
                 x2: 0,
                 y1: 0,
-                y2: 1
+                y2: 1,
               },
               stops: [
                 [0, colorSet ? colorSet[2] : this.data.colorSet[2]],
                 [0.5, colorSet ? colorSet[1] : this.data.colorSet[1]],
-                [1, colorSet ? colorSet[0] : this.data.colorSet[0]]
-              ]
-            }
-          }
+                [1, colorSet ? colorSet[0] : this.data.colorSet[0]],
+              ],
+            },
+          },
         ];
 
         break;
     }
 
     const trendChartOptions = new ChartOptions(trendDataset),
-          labelPadding = 2;
+      labelPadding = 2;
     switch (this.chartName) {
       case 'Pace':
-        trendChartOptions['yAxis'].max = (this.highestPoint + labelPadding) || null;
-        trendChartOptions['yAxis'].min = (this.lowestPoint - labelPadding) || null;
+        trendChartOptions['yAxis'].max = this.highestPoint + labelPadding || null;
+        trendChartOptions['yAxis'].min = this.lowestPoint - labelPadding || null;
         trendChartOptions['yAxis'].reversed = true; // 將y軸反轉-kidin-1090206
 
         // 設定圖表y軸單位格式-kidin-1090204
@@ -289,29 +288,27 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
               this.value = 3600;
             }
             const yVal = this.value,
-                  paceMin = Math.floor(yVal / 60),
-                  paceSec = Math.round(yVal - paceMin * 60),
-                  timeMin = `${paceMin}`.padStart(2, '0'),
-                  timeSecond = `${paceSec}`.padStart(2, '0');
+              paceMin = Math.floor(yVal / 60),
+              paceSec = Math.round(yVal - paceMin * 60),
+              timeMin = `${paceMin}`.padStart(2, '0'),
+              timeSecond = `${paceSec}`.padStart(2, '0');
 
             if (timeMin === '00') {
               return `0'${timeSecond}`;
             } else {
               return `${timeMin}'${timeSecond}`;
             }
-
-          }
-
+          },
         };
 
         // 設定浮動提示框顯示格式-kidin-1090204
         trendChartOptions['tooltip'] = {
           formatter: function () {
             const y = this.point.low,
-                  paceMin = Math.floor(y / 60),
-                  pacesecond = Math.round(y - paceMin * 60),
-                  timeMin = `${paceMin}`.padStart(2, '0'),
-                  timeSecond = `${pacesecond}`.padStart(2, '0');
+              paceMin = Math.floor(y / 60),
+              pacesecond = Math.round(y - paceMin * 60),
+              timeMin = `${paceMin}`.padStart(2, '0'),
+              timeSecond = `${pacesecond}`.padStart(2, '0');
 
             let bottomPace = '';
             if (timeMin === '00') {
@@ -321,10 +318,10 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
             }
 
             const yBest = this.point.y,
-                  bestMin = Math.floor(yBest / 60),
-                  bestSecond = Math.round(yBest - bestMin * 60),
-                  timeBestMin = `${bestMin}`.padStart(2, '0'),
-                  timeBestSecond = `${bestSecond}`.padStart(2, '0');
+              bestMin = Math.floor(yBest / 60),
+              bestSecond = Math.round(yBest - bestMin * 60),
+              timeBestMin = `${bestMin}`.padStart(2, '0'),
+              timeBestSecond = `${bestSecond}`.padStart(2, '0');
 
             let paceBestTime = '';
             if (timeBestMin === '00') {
@@ -344,9 +341,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
                 <br/>${this.series.name[0]}: ${paceBestTime}
                 <br/>${this.series.name[1]}: ${bottomPace}`;
             }
-
-          }
-
+          },
         };
 
         break;
@@ -358,8 +353,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         trendChartOptions['tooltip'] = {
           formatter: function () {
             const startDate = dayjs(this.x).format('YYYY-MM-DD'),
-                  yVal = parseFloat(this.point.y.toFixed(1)),
-                  lowVal = parseFloat(this.point.low.toFixed(1));
+              yVal = parseFloat(this.point.y.toFixed(1)),
+              lowVal = parseFloat(this.point.low.toFixed(1));
             if (this.series.xAxis.tickInterval === MONTH) {
               const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
               return `${startDate}~${endDate}
@@ -370,9 +365,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
                 <br/>Best cadence: ${yVal}
                 <br/>${this.series.name}: ${lowVal}`;
             }
-
-          }
-
+          },
         };
         break;
       case 'Swolf':
@@ -384,8 +377,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         trendChartOptions['tooltip'] = {
           formatter: function () {
             const startDate = dayjs(this.x).format('YYYY-MM-DD'),
-                  yVal = parseFloat(this.point.y.toFixed(1)),
-                  lowVal = parseFloat(this.point.low.toFixed(1));
+              yVal = parseFloat(this.point.y.toFixed(1)),
+              lowVal = parseFloat(this.point.low.toFixed(1));
             if (this.series.xAxis.tickInterval === MONTH) {
               const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
               return `${startDate}~${endDate}
@@ -396,9 +389,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
                 <br/>Best Swolf: ${lowVal}
                 <br/>${this.series.name}: ${yVal}`;
             }
-
-          }
-
+          },
         };
         break;
       case 'Speed':
@@ -410,8 +401,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         trendChartOptions['tooltip'] = {
           formatter: function () {
             const startDate = dayjs(this.x).format('YYYY-MM-DD'),
-                  yVal = parseFloat(this.point.y.toFixed(1)),
-                  lowVal = parseFloat(this.point.low.toFixed(1));
+              yVal = parseFloat(this.point.y.toFixed(1)),
+              lowVal = parseFloat(this.point.low.toFixed(1));
             if (this.series.xAxis.tickInterval === MONTH) {
               const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
               return `${startDate}~${endDate}
@@ -422,9 +413,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
                 <br/>${this.series.name[0]}: ${yVal}
                 <br/>${this.series.name[1]}: ${lowVal}`;
             }
-
-          }
-
+          },
         };
         break;
       case 'Step':
@@ -432,20 +421,19 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         trendChartOptions['tooltip'] = {
           formatter: function () {
             const startDate = dayjs(this.x).format('YYYY-MM-DD'),
-                  tVal = parseFloat(this.point.t.toFixed(1)),
-                  zVal = parseFloat(this.point.z.toFixed(1));
+              tVal = parseFloat(this.point.t.toFixed(1)),
+              zVal = parseFloat(this.point.z.toFixed(1));
             if (this.series.xAxis.tickInterval === MONTH) {
               const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
               return `${startDate}~${endDate}
                 <br/>${this.series.name[1]}: ${tVal}
                 <br/>${this.series.name[0]}: ${zVal}`;
-
             } else {
               return `${startDate}
                 <br/>${this.series.name[1]}: ${tVal}
                 <br/>${this.series.name[0]}: ${zVal}`;
             }
-          }
+          },
         };
 
         // 設定圖表高度-kidin-1090221
@@ -463,8 +451,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         trendChartOptions['tooltip'] = {
           formatter: function () {
             const startDate = dayjs(this.x).format('YYYY-MM-DD'),
-                  yVal = parseFloat(this.point.y.toFixed(1)),
-                  lowVal = parseFloat(this.point.low.toFixed(1));
+              yVal = parseFloat(this.point.y.toFixed(1)),
+              lowVal = parseFloat(this.point.low.toFixed(1));
             if (this.series.xAxis.tickInterval === MONTH) {
               const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
               return `${startDate}~${endDate}
@@ -475,9 +463,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
                 <br/>1RM: ${yVal}
                 <br/>Avg Weight: ${lowVal}`;
             }
-
-          }
-
+          },
         };
         break;
     }
@@ -491,26 +477,21 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
       } else {
         trendChartOptions['xAxis'].tickInterval = MONTH;
       }
-
     }
 
     this.createChart(trendChartOptions);
   }
 
   // 根據搜尋期間，列出日期清單供圖表使用-kidin-1090220
-  createDateList () {
-    let diff,
-        weekStartDay,
-        weekEndDay;
+  createDateList() {
+    let diff, weekStartDay, weekEndDay;
     if (this.dateRange === 'day') {
       diff = (this.searchDate[1] - this.searchDate[0]) / DAY;
 
       for (let i = 0; i < diff + 1; i++) {
         this.dateList.push(this.searchDate[0] + DAY * i);
       }
-
     } else if (this.dateRange === 'week') {
-
       // 周報告開頭是星期日-kidin-1090220
       if (dayjs(this.searchDate[0]).isoWeekday() !== 7) {
         weekStartDay = this.searchDate[0] - DAY * dayjs(this.searchDate[0]).isoWeekday();
@@ -524,30 +505,25 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         weekEndDay = this.searchDate[1];
       }
 
-      diff = ((weekEndDay - weekStartDay) / WEEK) + 1;
+      diff = (weekEndDay - weekStartDay) / WEEK + 1;
 
       for (let i = 0; i < diff + 1; i++) {
         this.dateList.push(weekStartDay + WEEK * i);
       }
     }
-
   }
 
   // 確認取得元素才建立圖表-kidin-1090706
-  createChart (option: ChartOptions) {
-
-    setTimeout (() => {
+  createChart(option: ChartOptions) {
+    setTimeout(() => {
       if (!this.container) {
         this.createChart(option);
       } else {
-
         const chartDiv = this.container.nativeElement;
         chart(chartDiv, option);
       }
     }, 200);
-
   }
 
-  ngOnDestroy () {}
-
+  ngOnDestroy() {}
 }

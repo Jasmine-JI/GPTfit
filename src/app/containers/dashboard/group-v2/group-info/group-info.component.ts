@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy, ElementRef, AfterViewChecked, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ElementRef,
+  AfterViewChecked,
+  ViewChild,
+} from '@angular/core';
 import { fromEvent, Subscription, Subject, forkJoin } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
@@ -24,6 +31,8 @@ import { deepCopy } from '../../../../shared/utils/index';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ProfessionalService } from '../../../professional/services/professional.service';
 import { AccessRight } from '../../../../shared/enum/accessright';
+import { appPath } from '../../../../app-path.const';
+import { QueryString } from '../../../../shared/enum/query-string';
 
 const errMsg = `Error.<br />Please try again later.`;
 const replaceResult = {
@@ -35,18 +44,16 @@ const replaceResult = {
     groupMemberInfo: [],
     rtnMsg: '',
     subGroupInfo: {},
-    totalCounts: 0
-  }
-
+    totalCounts: 0,
+  },
 };
 
 @Component({
   selector: 'app-group-info-v2',
   templateUrl: './group-info.component.html',
-  styleUrls: ['./group-info.component.scss']
+  styleUrls: ['./group-info.component.scss'],
 })
 export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
-
   @ViewChild('navSection') navSection: ElementRef;
   @ViewChild('pageListBar') pageListBar: ElementRef;
   @ViewChild('seeMore') seeMore: ElementRef;
@@ -72,7 +79,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     comAdmin: '',
     subComAdmin: '',
     departmentAdmin: '',
-    myGym: ''
+    myGym: '',
   };
 
   /**
@@ -89,8 +96,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     privacy: {
       activityTracking: [1],
       activityTrackingReport: [1],
-      lifeTrackingReport: [1]
-    }
+      lifeTrackingReport: [1],
+    },
   };
 
   /**
@@ -113,7 +120,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     hideScenery: false,
     portalMode: false,
     isLoading: false,
-    isJoinLoading: false
+    isJoinLoading: false,
   };
 
   /**
@@ -126,7 +133,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     groupLevel: 99,
     groupDetail: <GroupDetailInfo>{},
     allGroupInfo: {},
-    commerceInfo: <any>{}
+    commerceInfo: <any>{},
   };
 
   /**
@@ -139,7 +146,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   perPageOptSize = {
     total: 0,
-    perSize: []
+    perSize: [],
   };
 
   /**
@@ -149,15 +156,17 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     edited: false,
     icon: {
       origin: null,
-      base64: null
+      base64: null,
     },
     scenery: {
       origin: null,
-      base64: null
-    }
+      base64: null,
+    },
   };
 
   newGroupId: string;
+
+  readonly AccessRight = AccessRight;
 
   constructor(
     private translate: TranslateService,
@@ -198,12 +207,9 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   handlePageResize() {
     const page = fromEvent(window, 'resize');
-    this.pageResize = page.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    this.pageResize = page.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.checkScreenSize();
     });
-
   }
 
   /**
@@ -213,12 +219,9 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   handleScroll() {
     const targetElement = document.querySelector('.main__container');
     const targetScrollEvent = fromEvent(targetElement, 'scroll');
-    this.scrollEvent = targetScrollEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.scrollEvent = targetScrollEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.checkPageListBarPosition();
     });
-
   }
 
   /**
@@ -227,16 +230,16 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   checkPageListBarPosition() {
     const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as any,
-          headerDescriptionBlock = document.querySelectorAll('.info-headerDescriptionBlock')[0],
-          headerDescription = document.querySelectorAll('.info-headerDescription')[0],
-          scenerySection = document.querySelectorAll('.info-scenerySection')[0];
+      headerDescriptionBlock = document.querySelectorAll('.info-headerDescriptionBlock')[0],
+      headerDescription = document.querySelectorAll('.info-headerDescription')[0],
+      scenerySection = document.querySelectorAll('.info-scenerySection')[0];
     if (pageListBar && headerDescription && scenerySection) {
       const { top: barTop } = pageListBar.getBoundingClientRect(),
-            { bottom: descBottom } = headerDescription.getBoundingClientRect(),
-            { width } = scenerySection.getBoundingClientRect();
+        { bottom: descBottom } = headerDescription.getBoundingClientRect(),
+        { width } = scenerySection.getBoundingClientRect();
       if (barTop <= 51 && descBottom < 50) {
         pageListBar.classList.add('info-pageListBar-fixed');
-        headerDescriptionBlock.classList.add('info-pageListBar-replace');  // 填充原本功能列的高度
+        headerDescriptionBlock.classList.add('info-pageListBar-replace'); // 填充原本功能列的高度
         pageListBar.style.width = `${width}px`;
       } else {
         pageListBar.classList.remove('info-pageListBar-fixed');
@@ -246,12 +249,10 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
       if (this.uiFlag.portalMode) {
         const cardSection = document.querySelectorAll('.cardSection')[0],
-              { left } = cardSection.getBoundingClientRect();
+          { left } = cardSection.getBoundingClientRect();
         pageListBar.style.left = `${left}px`;
       }
-
     }
-
   }
 
   /**
@@ -259,16 +260,14 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091111
    */
   handleSideBarSwitch() {
-    this.globalEventsService.getRxSideBarMode().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-
-      setTimeout(() => {
-        this.checkScreenSize();
-      }, 250); // 待sidebar動畫結束再計算位置
-      
-    })
-
+    this.globalEventsService
+      .getRxSideBarMode()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        setTimeout(() => {
+          this.checkScreenSize();
+        }, 250); // 待sidebar動畫結束再計算位置
+      });
   }
 
   /**
@@ -276,14 +275,14 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091123
    */
   checkEditMode() {
-    this.groupService.getRxEditMode().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.upLoadImg(res);
-      this.uiFlag.openIconImgSelector = false;
-      this.uiFlag.openSceneryImgSelector = false;
-    });
-
+    this.groupService
+      .getRxEditMode()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.upLoadImg(res);
+        this.uiFlag.openIconImgSelector = false;
+        this.uiFlag.openSceneryImgSelector = false;
+      });
   }
 
   /**
@@ -293,7 +292,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   upLoadImg(editMode: EditMode) {
     if (editMode === 'complete' && this.editImage.edited) {
-      let imgArr = [];
+      const imgArr = [];
       const formData = new FormData();
       formData.set('token', this.authService.token);
       formData.set('targetType', '2');
@@ -303,91 +302,87 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
         // 群組icon
         if (this.editImage.icon.base64 !== null) {
-          const fileName = this.createFileName(imgArr.length, this.currentGroupInfo.groupDetail.groupId);
+          const fileName = this.createFileName(
+            imgArr.length,
+            this.currentGroupInfo.groupDetail.groupId
+          );
           imgArr.unshift({
             albumType: AlbumType.groupIcon,
-            fileNameFull: `${fileName}.jpg`
-          })
+            fileNameFull: `${fileName}.jpg`,
+          });
 
-          formData.append(
-            'file',
-            this.utils.base64ToFile(this.editImage.icon.base64, fileName)
-          );
-
+          formData.append('file', this.utils.base64ToFile(this.editImage.icon.base64, fileName));
         }
 
         // 群組佈景
-        if (this.editImage.scenery.base64 !== null) {   
-          const fileName = this.createFileName(imgArr.length, this.currentGroupInfo.groupDetail.groupId);
+        if (this.editImage.scenery.base64 !== null) {
+          const fileName = this.createFileName(
+            imgArr.length,
+            this.currentGroupInfo.groupDetail.groupId
+          );
           imgArr.unshift({
             albumType: AlbumType.groupScenery,
-            fileNameFull: `${fileName}.jpg`
-          })
+            fileNameFull: `${fileName}.jpg`,
+          });
 
-          formData.append(
-            'file',
-            this.utils.base64ToFile(this.editImage.scenery.base64, fileName)
-          );
-
+          formData.append('file', this.utils.base64ToFile(this.editImage.scenery.base64, fileName));
         }
 
         formData.set('img', JSON.stringify(imgArr));
         this.sendImgUploadReq(formData, this.currentGroupInfo.groupDetail.groupId);
       } else if (this.uiFlag.editMode === 'create') {
-        this.groupIdSubscription = this.groupService.getNewGroupId().pipe(
-          takeUntil(this.ngUnsubscribe)
-        ).subscribe(res => {
-          this.newGroupId = res;
-          // 群組icon
-          if (this.editImage.icon.base64 !== null) {
-            const fileName = this.createFileName(imgArr.length, this.newGroupId);
-            imgArr.unshift({
-              albumType: AlbumType.groupIcon,
-              fileNameFull: `${fileName}.jpg`
-            })
+        this.groupIdSubscription = this.groupService
+          .getNewGroupId()
+          .pipe(takeUntil(this.ngUnsubscribe))
+          .subscribe((res) => {
+            this.newGroupId = res;
+            // 群組icon
+            if (this.editImage.icon.base64 !== null) {
+              const fileName = this.createFileName(imgArr.length, this.newGroupId);
+              imgArr.unshift({
+                albumType: AlbumType.groupIcon,
+                fileNameFull: `${fileName}.jpg`,
+              });
 
-            formData.append(
-              'file',
-              this.utils.base64ToFile(this.editImage.icon.base64, fileName)
-            );
+              formData.append(
+                'file',
+                this.utils.base64ToFile(this.editImage.icon.base64, fileName)
+              );
+            }
 
-          }
+            // 群組佈景
+            if (this.editImage.scenery.base64 !== null) {
+              const fileName = this.createFileName(imgArr.length, this.newGroupId);
+              imgArr.unshift({
+                albumType: AlbumType.groupScenery,
+                fileNameFull: `${fileName}.jpg`,
+              });
 
-          // 群組佈景
-          if (this.editImage.scenery.base64 !== null) {   
-            const fileName = this.createFileName(imgArr.length, this.newGroupId);
-            imgArr.unshift({
-              albumType: AlbumType.groupScenery,
-              fileNameFull: `${fileName}.jpg`
-            })
+              formData.append(
+                'file',
+                this.utils.base64ToFile(this.editImage.scenery.base64, fileName)
+              );
+            }
 
-            formData.append(
-              'file',
-              this.utils.base64ToFile(this.editImage.scenery.base64, fileName)
-            );
-          }
-
-          formData.set('img', JSON.stringify(imgArr));
-          formData.set('targetGroupId', this.newGroupId);
-          this.sendImgUploadReq(formData, this.newGroupId);
-        });
-
+            formData.set('img', JSON.stringify(imgArr));
+            formData.set('targetGroupId', this.newGroupId);
+            this.sendImgUploadReq(formData, this.newGroupId);
+          });
       }
-
     } else if (this.uiFlag.editMode === 'create' && editMode === 'complete') {
       this.closeCreateMode();
-      this.groupIdSubscription = this.groupService.getNewGroupId().pipe(
-        takeUntil(this.ngUnsubscribe)
-      ).subscribe(res => {
-        this.handleNavigation(res);
-      });
+      this.groupIdSubscription = this.groupService
+        .getNewGroupId()
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe((res) => {
+          this.handleNavigation(res);
+        });
     } else if (editMode === 'complete') {
       this.getGroupNeedInfo();
       this.groupService.setEditMode('close');
     } else {
       this.uiFlag.editMode = editMode;
     }
-    
   }
 
   /**
@@ -397,8 +392,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091130
    */
   sendImgUploadReq(formData: FormData, groupId: string) {
-    this.imageUploadService.addImg(formData).subscribe(res => {
-
+    this.imageUploadService.addImg(formData).subscribe((res) => {
       if (res.processResult.resultCode !== 200) {
         this.utils.openAlert('Image upload error.');
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
@@ -411,15 +405,12 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
           this.getGroupNeedInfo();
           this.groupService.setEditMode('close');
         }
- 
       }
-
     });
 
     if (this.groupIdSubscription) {
       this.groupIdSubscription.unsubscribe();
     }
-
   }
 
   /**
@@ -430,7 +421,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   createFileName(length: number, groupId: string) {
     const nameSpace = uuidv5('https://www.gptfit.com', uuidv5.URL),
-          keyword = `${dayjs().valueOf().toString()}${length}${groupId.split('-').join('')}`;
+      keyword = `${dayjs().valueOf().toString()}${length}${groupId.split('-').join('')}`;
     return uuidv5(keyword, nameSpace);
   }
 
@@ -444,12 +435,12 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       edited: false,
       icon: {
         origin: null,
-        base64: null
+        base64: null,
       },
       scenery: {
         origin: null,
-        base64: null
-      }
+        base64: null,
+      },
     };
   }
 
@@ -459,12 +450,9 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   handleGlobalClick() {
     const clickEvent = fromEvent(document, 'click');
-    this.clickEvent = clickEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    this.clickEvent = clickEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.uiFlag.showMorePageOpt = false;
     });
-
   }
 
   /**
@@ -475,7 +463,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   checkQueryString(query: string) {
     if (query.indexOf('?') > -1) {
       const queryArr = query.split('?')[1].split('&');
-      queryArr.forEach(_query => {
+      queryArr.forEach((_query) => {
         switch (_query.split('=')[0]) {
           case 'createType':
             this.openCreateMode(_query.split('=')[1]);
@@ -487,11 +475,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
             this.uiFlag.isPreviewMode = true;
             break;
         }
-
       });
-
     }
-
   }
 
   /**
@@ -499,18 +484,13 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091110
    */
   detectParamChange() {
-    this.router.events.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(event => {
-
+    this.router.events.pipe(takeUntil(this.ngUnsubscribe)).subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.checkQueryString(event.url);
         this.getCurrentContentPage(event);
         this.getBtnPosition(this.uiFlag.currentTagIndex);
       }
-
-    })
-
+    });
   }
 
   /**
@@ -518,12 +498,9 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091110
    */
   detectGroupIdChange() {
-    this.route.params.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
+    this.route.params.pipe(takeUntil(this.ngUnsubscribe)).subscribe((res) => {
       this.detectGroupChange();
     });
-
   }
 
   /**
@@ -534,7 +511,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   openCreateMode(type: string) {
     const { accessRight } = this.user;
     if (accessRight) {
-
       switch (type) {
         case 'brand':
           if (accessRight <= AccessRight.marketing) {
@@ -559,15 +535,12 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
           this.closeCreateMode();
           break;
       }
-
     } else {
       // 待api取得user資訊再判斷是否進入create mode(網站重新整理時)
       setTimeout(() => {
         this.openCreateMode(type);
       }, 250);
-
     }
-
   }
 
   /**
@@ -577,7 +550,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   closeCreateMode() {
     // 移除query string，避免create mode被重複開啟
     const newUrl = `${location.origin}${location.pathname}`;
-    window.history.pushState({path: newUrl}, '', newUrl);
+    window.history.pushState({ path: newUrl }, '', newUrl);
     this.groupService.setEditMode('close');
   }
 
@@ -587,44 +560,42 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   checkScreenSize() {
     // 確認多國語系載入後再計算按鈕位置
-    this.translate.get('hellow world').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      const navSection = this.navSection.nativeElement,
-            navSectionWidth = navSection.clientWidth;
+    this.translate
+      .get('hellow world')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        const navSection = this.navSection.nativeElement,
+          navSectionWidth = navSection.clientWidth;
 
-      let reservedSpace = 0;
-      this.uiFlag.windowInnerWidth = window.innerWidth;
-      if (window.innerWidth >= 1000 && window.innerWidth <= 1390) {
-        reservedSpace = 270; // sidebar展開所需的空間
-      }
+        let reservedSpace = 0;
+        this.uiFlag.windowInnerWidth = window.innerWidth;
+        if (window.innerWidth >= 1000 && window.innerWidth <= 1390) {
+          reservedSpace = 270; // sidebar展開所需的空間
+        }
 
-      if (navSectionWidth < this.perPageOptSize.total + reservedSpace) {
-        const titleSizeList = this.perPageOptSize.perSize;
-        let total = 0;
-        for (let i = 0, sizeArrLen = titleSizeList.length; i < sizeArrLen; i++) {
-
-          total += titleSizeList[i];
-          if (total + reservedSpace + 130 >= navSectionWidth) { // 130為"更多"按鈕的空間
-            this.uiFlag.divideIndex = i;
-            break;
+        if (navSectionWidth < this.perPageOptSize.total + reservedSpace) {
+          const titleSizeList = this.perPageOptSize.perSize;
+          let total = 0;
+          for (let i = 0, sizeArrLen = titleSizeList.length; i < sizeArrLen; i++) {
+            total += titleSizeList[i];
+            if (total + reservedSpace + 130 >= navSectionWidth) {
+              // 130為"更多"按鈕的空間
+              this.uiFlag.divideIndex = i;
+              break;
+            }
           }
 
+          this.handleGlobalClick();
+        } else {
+          this.uiFlag.divideIndex = null;
+          if (this.clickEvent) {
+            this.clickEvent.unsubscribe();
+          }
         }
 
-        this.handleGlobalClick();
-      } else {
-        this.uiFlag.divideIndex = null;
-        if (this.clickEvent) {
-          this.clickEvent.unsubscribe();
-        }
-
-      }
-
-      this.getBtnPosition(this.uiFlag.currentTagIndex);
-      this.checkPageListBarPosition();
-    });
-
+        this.getBtnPosition(this.uiFlag.currentTagIndex);
+        this.checkPageListBarPosition();
+      });
   }
 
   /**
@@ -640,7 +611,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     } else {
       this.uiFlag.portalMode = false;
     }
-
   }
 
   /**
@@ -655,7 +625,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     } else {
       this.getRxGroupNeedInfo();
     }
-
   }
 
   /**
@@ -682,7 +651,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       token: this.user.token,
       groupId: this.currentGroupInfo.groupId,
       findRoot: 1,
-      avatarType: 3
+      avatarType: 3,
     };
 
     const groupIdArr = this.currentGroupInfo.groupId.split('-');
@@ -693,7 +662,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
      */
     const commerceBody = {
       token: this.user.token,
-      groupId: `${groupIdArr.join('-')}-0-0-0`
+      groupId: `${groupIdArr.join('-')}-0-0-0`,
     };
 
     /**
@@ -704,8 +673,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       avatarType: 3,
       groupId: this.currentGroupInfo.groupId,
       groupLevel: this.currentGroupInfo.groupLevel,
-      infoType: 1
-    }
+      infoType: 1,
+    };
 
     /**
      * api 1103 request body
@@ -715,8 +684,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       avatarType: 3,
       groupId: this.currentGroupInfo.groupId,
       groupLevel: this.currentGroupInfo.groupLevel,
-      infoType: 2
-    }
+      infoType: 2,
+    };
 
     /**
      * api 1103 request body
@@ -726,15 +695,15 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       avatarType: 3,
       groupId: this.currentGroupInfo.groupId,
       groupLevel: this.currentGroupInfo.groupLevel,
-      infoType: 3
-    }
+      infoType: 3,
+    };
 
     this.uiFlag.isLoading = true;
     if (this.uiFlag.portalMode) {
       forkJoin([
         this.groupService.fetchGroupListDetail(detailBody),
-        this.groupService.fetchCommerceInfo(commerceBody)
-      ]).subscribe(resArr => {
+        this.groupService.fetchCommerceInfo(commerceBody),
+      ]).subscribe((resArr) => {
         this.uiFlag.isLoading = false;
         this.uiFlag.hideScenery = false;
         this.handleDetail(resArr[0]);
@@ -743,36 +712,35 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.childPageList = this.initChildPageList();
         this.getCurrentContentPage();
         this.getPerPageOptSize();
-      })
-
+      });
     } else {
       forkJoin([
         this.groupService.fetchGroupListDetail(detailBody),
         this.groupService.fetchCommerceInfo(commerceBody),
         this.groupService.fetchGroupMemberList(childGroupBody),
         this.groupService.fetchGroupMemberList(adminListBody),
-        this.groupService.fetchGroupMemberList(memberListBody)
-      ]).pipe(
-        map(resArr => {
-          // 處理創建群組模式時api 1103 exception的問題
-          if (resArr[4].resultCode !== 200) resArr[4] = deepCopy(replaceResult);
-          return resArr;
-        })
-      ).subscribe(resArr => {
-        const [detail, commerceInfo, GroupList, adminList, memberList] = resArr;
-        this.uiFlag.isLoading = false;
-        this.uiFlag.hideScenery = false;
-        this.handleDetail(detail);
-        this.handleCommerce(commerceInfo);
-        this.handleMemberList(GroupList, adminList, memberList);
-        this.checkUserAccessRight();
-        this.childPageList = this.initChildPageList();
-        this.getCurrentContentPage();
-        this.getPerPageOptSize();
-      })
-
+        this.groupService.fetchGroupMemberList(memberListBody),
+      ])
+        .pipe(
+          map((resArr) => {
+            // 處理創建群組模式時api 1103 exception的問題
+            if (resArr[4].resultCode !== 200) resArr[4] = deepCopy(replaceResult);
+            return resArr;
+          })
+        )
+        .subscribe((resArr) => {
+          const [detail, commerceInfo, GroupList, adminList, memberList] = resArr;
+          this.uiFlag.isLoading = false;
+          this.uiFlag.hideScenery = false;
+          this.handleDetail(detail);
+          this.handleCommerce(commerceInfo);
+          this.handleMemberList(GroupList, adminList, memberList);
+          this.checkUserAccessRight();
+          this.childPageList = this.initChildPageList();
+          this.getCurrentContentPage();
+          this.getPerPageOptSize();
+        });
     }
-
   }
 
   /**
@@ -786,19 +754,17 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       avatarType: 3,
       groupId: this.currentGroupInfo.groupId,
       groupLevel: this.currentGroupInfo.groupLevel,
-      infoType: 3
-    }
+      infoType: 3,
+    };
 
-    this.groupService.fetchGroupMemberList(body).subscribe(res => {
+    this.groupService.fetchGroupMemberList(body).subscribe((res) => {
       if (res.resultCode !== 200) {
         this.utils.openAlert(errMsg);
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.groupService.setNormalMemberList(res.info.groupMemberInfo);
       }
-
-    })
-
+    });
   }
 
   /**
@@ -808,16 +774,13 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   handleDetail(res: any) {
     if (res.resultCode !== 200) {
-
       if (this.currentGroupInfo.groupId !== '0-0-0-0-0-0') {
         this.utils.openAlert(errMsg);
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.saveDefaultGroupDetail();
       }
-
     } else {
-  
       if (res.info.groupId === '0-0-0-0-0-0') {
         this.saveDefaultGroupDetail();
       } else {
@@ -828,9 +791,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.groupService.saveGroupDetail(this.handleSportTarget(info));
         this.checkGroupResLength();
       }
-
     }
-
   }
 
   /**
@@ -847,22 +808,34 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       groupDesc: '',
       groupIcon: '',
       groupThemeImgUrl: '',
-      groupId: "0-0-0-0-0-0",
+      groupId: '0-0-0-0-0-0',
       groupName: '',
       groupRootInfo: [null, null],
       groupStatus: 2,
       groupVideoUrl: '',
       rtnMsg: '',
       selfJoinStatus: 5,
-      shareActivityToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "2"},
-      shareAvatarToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "1"},
-      shareReportToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "2"},
+      shareActivityToMember: {
+        disableAccessRight: Array(0),
+        enableAccessRight: Array(0),
+        switch: '2',
+      },
+      shareAvatarToMember: {
+        disableAccessRight: Array(0),
+        enableAccessRight: Array(0),
+        switch: '1',
+      },
+      shareReportToMember: {
+        disableAccessRight: Array(0),
+        enableAccessRight: Array(0),
+        switch: '2',
+      },
       target: {
         name: `${GroupLevel.brand}`,
         cycle: DateUnit.week,
-        condition: []
-      }
-    }
+        condition: [],
+      },
+    };
 
     this.groupService.saveGroupDetail(rootGroupDetail);
     this.currentGroupInfo.groupDetail = rootGroupDetail;
@@ -880,17 +853,15 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     } else {
       const { info } = res;
       if (dayjs(info.commercePlanExpired).valueOf() < dayjs().valueOf()) {
-        Object.assign(info, {expired: true});
+        Object.assign(info, { expired: true });
       } else {
-        Object.assign(info, {expired: false});
-        
+        Object.assign(info, { expired: false });
       }
 
       this.currentGroupInfo.commerceInfo = info;
       this.groupService.getCurrentGroupInfo().commerceInfo = info;
       this.groupService.saveCommerceInfo(info);
     }
-
   }
 
   /**
@@ -900,21 +871,31 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091209
    */
   handleMemberList(childGroupRes: any, adminRes: any, memberRes: any) {
-    if (childGroupRes.resultCode !== 200 || adminRes.resultCode !== 200 || memberRes.resultCode !== 200) {
-      console.error(`${childGroupRes.resultCode}: Api ${childGroupRes.apiCode} ${childGroupRes.resultMessage}`);
+    if (
+      childGroupRes.resultCode !== 200 ||
+      adminRes.resultCode !== 200 ||
+      memberRes.resultCode !== 200
+    ) {
+      console.error(
+        `${childGroupRes.resultCode}: Api ${childGroupRes.apiCode} ${childGroupRes.resultMessage}`
+      );
       console.error(`${adminRes.resultCode}: Api ${adminRes.apiCode} ${adminRes.resultMessage}`);
       console.error(`${memberRes.resultCode}: Api ${memberRes.apiCode} ${memberRes.resultMessage}`);
     } else {
       const groupLevel = this.utils.displayGroupLevel(this.currentGroupInfo.groupId);
       if (groupLevel <= 30) {
-        Object.assign(this.currentGroupInfo.groupDetail, {branchNum: childGroupRes.info.subGroupInfo.branches.length});
+        Object.assign(this.currentGroupInfo.groupDetail, {
+          branchNum: childGroupRes.info.subGroupInfo.branches.length,
+        });
       }
 
       if (groupLevel <= 40) {
-        Object.assign(this.currentGroupInfo.groupDetail, {coachNum: childGroupRes.info.subGroupInfo.coaches.length});
+        Object.assign(this.currentGroupInfo.groupDetail, {
+          coachNum: childGroupRes.info.subGroupInfo.coaches.length,
+        });
       }
-      
-      Object.assign(childGroupRes.info.subGroupInfo, {groupId: this.currentGroupInfo.groupId});
+
+      Object.assign(childGroupRes.info.subGroupInfo, { groupId: this.currentGroupInfo.groupId });
       this.groupService.setAllLevelGroupData(childGroupRes.info.subGroupInfo);
       this.groupService.setAdminList(adminRes.info.groupMemberInfo);
       this.groupService.setNormalMemberList(memberRes.info.groupMemberInfo);
@@ -923,12 +904,17 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.groupService.getCurrentGroupInfo().adminList = adminRes.info.groupMemberInfo;
       this.groupService.getCurrentGroupInfo().memberList = memberRes.info.groupMemberInfo;
 
-      adminRes.info.groupMemberInfo = adminRes.info.groupMemberInfo.filter(_admin => _admin.groupId === this.currentGroupInfo.groupId);
-      Object.assign(this.currentGroupInfo.groupDetail, {adminNum: adminRes.info.groupMemberInfo.length});
-      Object.assign(this.currentGroupInfo.groupDetail, {memberNum: memberRes.info.groupMemberInfo.length});
+      adminRes.info.groupMemberInfo = adminRes.info.groupMemberInfo.filter(
+        (_admin) => _admin.groupId === this.currentGroupInfo.groupId
+      );
+      Object.assign(this.currentGroupInfo.groupDetail, {
+        adminNum: adminRes.info.groupMemberInfo.length,
+      });
+      Object.assign(this.currentGroupInfo.groupDetail, {
+        memberNum: memberRes.info.groupMemberInfo.length,
+      });
       this.groupService.saveGroupDetail(this.currentGroupInfo.groupDetail);
     }
-
   }
 
   /**
@@ -943,10 +929,13 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     if (target && target.name) {
       const targetReferenceLevel = +target.name;
       sportTarget =
-        targetReferenceLevel == groupLevel ? target : this.getReferenceTarget(info, targetReferenceLevel);
+        targetReferenceLevel == groupLevel
+          ? target
+          : this.getReferenceTarget(info, targetReferenceLevel);
     } else {
       // 若舊有子群組從未設置目標，則預設繼承品牌目標
-      sportTarget = groupLevel == GroupLevel.brand ? target : this.getReferenceTarget(info, GroupLevel.brand);
+      sportTarget =
+        groupLevel == GroupLevel.brand ? target : this.getReferenceTarget(info, GroupLevel.brand);
     }
 
     Object.assign(info, { target: sportTarget });
@@ -970,22 +959,18 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091105
    */
   getRxGroupNeedInfo() {
-    forkJoin([
-      this.groupService.getRxGroupDetail(),
-      this.groupService.getRxCommerceInfo()
-    ]).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(resArr => {
-      this.user.joinStatus = (resArr[0] as any).info.selfJoinStatus;
-      this.currentGroupInfo.groupDetail = (resArr[0] as any).info;
-      this.currentGroupInfo.commerceInfo = (resArr[1] as any).info;
-      this.checkUserAccessRight();
-      this.childPageList = this.initChildPageList();
-      this.getCurrentContentPage();
-      this.getPerPageOptSize();
-      this.checkGroupResLength();
-    })
-    
+    forkJoin([this.groupService.getRxGroupDetail(), this.groupService.getRxCommerceInfo()])
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((resArr) => {
+        this.user.joinStatus = (resArr[0] as any).info.selfJoinStatus;
+        this.currentGroupInfo.groupDetail = (resArr[0] as any).info;
+        this.currentGroupInfo.commerceInfo = (resArr[1] as any).info;
+        this.checkUserAccessRight();
+        this.childPageList = this.initChildPageList();
+        this.getCurrentContentPage();
+        this.getPerPageOptSize();
+        this.checkGroupResLength();
+      });
   }
 
   /**
@@ -993,21 +978,18 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091204
    */
   checkGroupResLength() {
-
     setTimeout(() => {
       const descSection = this.groupHeaderDescription.nativeElement,
-            descStyle = window.getComputedStyle(descSection, null),
-            descLineHeight = +descStyle.lineHeight.split('px')[0],
-            descHeight = +descStyle.height.split('px')[0];
+        descStyle = window.getComputedStyle(descSection, null),
+        descLineHeight = +descStyle.lineHeight.split('px')[0],
+        descHeight = +descStyle.height.split('px')[0];
 
       if (descHeight / descLineHeight > 2) {
         this.uiFlag.groupDescOverflow = true;
       } else {
         this.uiFlag.groupDescOverflow = false;
       }
-
     });
-
   }
 
   /**
@@ -1024,7 +1006,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
 
     if (urlArr.indexOf('group-info') > -1) {
-
       if (this.uiFlag.portalMode) {
         this.uiFlag.currentPage = 'group-introduction';
         this.uiFlag.currentTagIndex = 0;
@@ -1035,9 +1016,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       } else {
         this.handleNavigation(this.currentGroupInfo.groupId);
       }
-
     }
-    
   }
 
   /**
@@ -1046,40 +1025,44 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   checkUserAccessRight() {
     if (this.user.token.length !== 0) {
-      this.userService.getUser().rxUserProfile.pipe(
-        switchMap(res => this.professionalService.groupAccessright.pipe(
-          map(resp => {
-            const { nickname, userId, privacy, unit } = (res as any);
-            const userObj = {
-              accessRight: resp,
-              nickname,
-              userId,
-              privacy,
-              unit
-            };
+      this.userService
+        .getUser()
+        .rxUserProfile.pipe(
+          switchMap((res) =>
+            this.professionalService.groupAccessright.pipe(
+              map((resp) => {
+                const { nickname, userId, privacy, unit } = res as any;
+                const userObj = {
+                  accessRight: resp,
+                  nickname,
+                  userId,
+                  privacy,
+                  unit,
+                };
 
-            return userObj;
-          })
-        )),
-        takeUntil(this.ngUnsubscribe)
-      ).subscribe(result => {
-        const { systemAccessright } = this.userService.getUser();
-        const { accessRight, nickname, userId, privacy, unit } = (result as any);
-        this.user = {
-          ...this.user,
-          accessRight: systemAccessright <= AccessRight.marketing ? systemAccessright : accessRight,
-          nickname: nickname,
-          userId: userId,
-          privacy: privacy,
-          unit: unit,
-          isGroupAdmin: this.professionalService.isAdmin
-        };
+                return userObj;
+              })
+            )
+          ),
+          takeUntil(this.ngUnsubscribe)
+        )
+        .subscribe((result) => {
+          const { systemAccessright } = this.userService.getUser();
+          const { accessRight, nickname, userId, privacy, unit } = result as any;
+          this.user = {
+            ...this.user,
+            accessRight:
+              systemAccessright <= AccessRight.marketing ? systemAccessright : accessRight,
+            nickname: nickname,
+            userId: userId,
+            privacy: privacy,
+            unit: unit,
+            isGroupAdmin: this.professionalService.isAdmin,
+          };
 
-        this.groupService.saveUserSimpleInfo(this.user);
-      })
-
+          this.groupService.saveUserSimpleInfo(this.user);
+        });
     }
-
   }
 
   /**
@@ -1099,42 +1082,29 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     const upperMarktingManage = accessRight <= AccessRight.marketing;
     let childPageList = ['group-introduction'];
     if (!this.uiFlag.portalMode) {
-
       if (!isEnterpriseType && inClassLevel && inOperation && notLock && upperClassAdmin) {
         childPageList = childPageList.concat([
           'myclass-report',
           'class-analysis',
-          'cloudrun-report'
+          'cloudrun-report',
         ]);
       } else if (!isEnterpriseType && inClassLevel && inOperation && notLock) {
-        childPageList = childPageList.concat([
-          'myclass-report',
-          'cloudrun-report'
-        ]);
+        childPageList = childPageList.concat(['myclass-report', 'cloudrun-report']);
       } else if (isEnterpriseType && inOperation && notLock) {
-        childPageList = childPageList.concat([
-          'sports-report',
-          'life-tracking',
-          'cloudrun-report'
-        ]);
+        childPageList = childPageList.concat(['sports-report', 'life-tracking', 'cloudrun-report']);
       }
 
       if (!this.uiFlag.portalMode) {
-        childPageList = childPageList.concat([
-          'group-architecture',
-          'member-list',
-          'admin-list'
-        ]);
-        
+        childPageList = childPageList.concat(['group-architecture', 'member-list', 'admin-list']);
+
         if (upperClassAdmin) childPageList = childPageList.concat(['device-list']);
       }
 
       if (inBrandLevel && (upperMarktingManage || this.user.isGroupAdmin)) {
         childPageList.push('commerce-plan');
       }
-
     }
-    
+
     return childPageList;
   }
 
@@ -1152,14 +1122,13 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.initPageOptSize();
       const menuList = document.querySelectorAll('.main__page__list');
       this.uiFlag.barWidth = menuList[0].clientWidth;
-      menuList.forEach(_menu => {
+      menuList.forEach((_menu) => {
         this.perPageOptSize.perSize.push(_menu.clientWidth);
         this.perPageOptSize.total += _menu.clientWidth;
       });
 
       this.checkScreenSize();
-    })
-
+    });
   }
 
   /**
@@ -1174,9 +1143,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     this.perPageOptSize = {
       total: 0,
-      perSize: []
+      perSize: [],
     };
-
   }
 
   /**
@@ -1186,14 +1154,15 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   joinGroup() {
     if (this.user.token.length === 0) {
       this.router.navigateByUrl(
-        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.currentGroupInfo.groupId)}/group-introduction`
+        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+          this.currentGroupInfo.groupId
+        )}/group-introduction`
       );
     } else {
       this.translate.get('hellow world').subscribe(() => {
         const bodyText = this.translate.instant('universal_group_joinClassStatement', {
-            'object': this.translate.instant('universal_privacy_myGym')
-          }
-        );
+          object: this.translate.instant('universal_privacy_myGym'),
+        });
 
         return this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
@@ -1204,16 +1173,11 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
             cancelText: this.translate.instant('universal_operating_disagree'),
             onConfirm: () => {
               this.checkoutUserPrivacy();
-            }
-            
-          }
-
+            },
+          },
         });
-
       });
-
     }
-
   }
 
   /**
@@ -1222,17 +1186,16 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   checkoutUserPrivacy() {
     let openPrivacy = true;
-    for (let privacyType in this.user.privacy) {
-
-      if (this.user.privacy.hasOwnProperty(privacyType)) {
-
+    for (const privacyType in this.user.privacy) {
+      if (Object.prototype.hasOwnProperty.call(this.user.privacy, privacyType)) {
         const privacyArr = this.user.privacy[privacyType];
-        if (!privacyArr.some(_privacy => +_privacy === 4) && !privacyArr.some(_privacy => +_privacy === 99)) {
+        if (
+          !privacyArr.some((_privacy) => +_privacy === 4) &&
+          !privacyArr.some((_privacy) => +_privacy === 99)
+        ) {
           openPrivacy = false;
         }
-
       }
-
     }
 
     if (openPrivacy) {
@@ -1240,7 +1203,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     } else {
       this.openPrivacySetting();
     }
-    
   }
 
   /**
@@ -1257,13 +1219,10 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
           privacy: this.user.privacy,
           onConfirm: () => {
             this.handleJoinGroup(1);
-          }
-        }
-
+          },
+        },
       });
-
     });
-
   }
 
   /**
@@ -1273,15 +1232,17 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   handleJoinGroup(actionType: number) {
     const { token, joinStatus } = this.user;
-    const { groupId, groupDetail: { brandType, groupStatus } } = this.currentGroupInfo;
+    const {
+      groupId,
+      groupDetail: { brandType, groupStatus },
+    } = this.currentGroupInfo;
     const body = { token, groupId, brandType, actionType };
     this.uiFlag.isJoinLoading = true;
-    this.groupService.actionGroup(body).subscribe(res => {
+    this.groupService.actionGroup(body).subscribe((res) => {
       if (res.resultCode !== 200) {
         this.utils.openAlert(errMsg);
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
-
         if (groupStatus === 1 || joinStatus === 2) {
           this.professionalService.refreshAllGroupAccessright();
           this.getGroupNeedInfo();
@@ -1292,12 +1253,10 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
           this.user.joinStatus = 5;
           this.refreshMemberList();
         }
-
       }
 
       this.uiFlag.isJoinLoading = false;
     });
-
   }
 
   /**
@@ -1313,11 +1272,11 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       );
     } else {
       this.router.navigateByUrl(
-        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}/group-introduction`
+        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+          groupId
+        )}/group-introduction`
       );
-
     }
-
   }
 
   /**
@@ -1343,9 +1302,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091102
    */
   getBtnPosition(tagIdx: number) {
-
     if (this.uiFlag.divideIndex === null || tagIdx < this.uiFlag.divideIndex) {
-
       setTimeout(() => {
         const tagPosition = document.querySelectorAll('.main__page__list');
         if (tagPosition && tagPosition[tagIdx]) {
@@ -1357,13 +1314,10 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
           this.uiFlag.barPosition = frontSize;
         }
-
       });
-      
     } else {
       this.getSeeMorePosition();
     }
-    
   }
 
   /**
@@ -1374,13 +1328,12 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   scrollPage(page: string) {
     const mainBodyEle = document.querySelector('.main-body');
     if (page === 'group-introduction') {
-      mainBodyEle.scrollTo({top: 0, behavior: 'smooth'});
+      mainBodyEle.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as HTMLElement,
-            pageListBarTop = pageListBar.offsetTop;
-      mainBodyEle.scrollTo({top: pageListBarTop, behavior: 'smooth'});
+        pageListBarTop = pageListBar.offsetTop;
+      mainBodyEle.scrollTo({ top: pageListBarTop, behavior: 'smooth' });
     }
-    
   }
 
   /**
@@ -1388,14 +1341,13 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091102
    */
   getSeeMorePosition() {
-
     setTimeout(() => {
       const pageListBar = this.pageListBar.nativeElement,
-            seeMoreTag = this.seeMore.nativeElement;
+        seeMoreTag = this.seeMore.nativeElement;
       this.uiFlag.barWidth = seeMoreTag.clientWidth;
-      this.uiFlag.barPosition = seeMoreTag.getBoundingClientRect().left - pageListBar.getBoundingClientRect().left;
+      this.uiFlag.barPosition =
+        seeMoreTag.getBoundingClientRect().left - pageListBar.getBoundingClientRect().left;
     });
-    
   }
 
   /**
@@ -1413,8 +1365,12 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091102
    */
   openShareGroupInfoDialog() {
-    const { groupId, groupLevel, groupDetail: { groupName, groupRootInfo } } = this.currentGroupInfo;
-    let shareName:string;
+    const {
+      groupId,
+      groupLevel,
+      groupDetail: { groupName, groupRootInfo },
+    } = this.currentGroupInfo;
+    let shareName: string;
     switch (groupLevel) {
       case 30:
         shareName = groupName;
@@ -1433,16 +1389,14 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         url: `${location.origin}/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}`,
         title: this.translate.instant('universal_operating_share'),
         shareName: shareName || '',
-        cancelText: this.translate.instant('universal_operating_confirm')
-      }
-
+        cancelText: this.translate.instant('universal_operating_confirm'),
+      },
     });
-
   }
 
   /**
    * 開啟圖片選擇器
-   * 
+   *
    * @author kidin-1091123
    */
   openImgSelector(type: 'icon' | 'scenery') {
@@ -1451,7 +1405,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     } else {
       this.uiFlag.openSceneryImgSelector = true;
     }
-    
   }
 
   /**
@@ -1460,7 +1413,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   closeSelector(e: any) {
     if (e.action === 'complete') {
-
       this.editImage.edited = true;
       if (e.img.albumType === AlbumType.groupIcon) {
         this.editImage.icon.origin = e.img.origin;
@@ -1470,7 +1422,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.editImage.scenery.base64 = e.img.base64;
         this.uiFlag.hideScenery = false;
       }
-
     }
 
     this.uiFlag.openIconImgSelector = false;
@@ -1487,6 +1438,20 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   /**
+   * 轉導至建立新訊息頁面
+   */
+  navigateNewMailPage() {
+    const groupId = this.route.snapshot.paramMap.get('groupId');
+    const {
+      stationMail: { home, newMail },
+    } = appPath;
+    const { messageReceiverId, messageReceiverType } = QueryString;
+    this.router.navigateByUrl(
+      `/dashboard/${home}/${newMail}?${messageReceiverId}=${groupId}&${messageReceiverType}=g`
+    );
+  }
+
+  /**
    * 1. 移除訂閱
    * @author kidin-20200710
    */
@@ -1494,5 +1459,4 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

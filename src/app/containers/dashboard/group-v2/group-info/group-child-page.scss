@@ -2,14 +2,12 @@
   * 此scss檔案為群組子頁面共用樣式
   */
 
-
 @import 'font.scss';
 @import 'transition.scss';
 @import 'overflow-scroll';
 
 $warn-color: rgba(255, 75, 75, 1);
 $group-btn-blue: rgba(0, 183, 238, 1);
-
 
 .childPageBtn {
   border: 1px solid gray;
@@ -24,7 +22,6 @@ $group-btn-blue: rgba(0, 183, 238, 1);
     background-color: rgba(245, 245, 245, 1);
     @include transition(background-color);
   }
-
 }
 
 .childPageCard {
@@ -50,7 +47,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   color: black !important;
   cursor: progress;
   pointer-events: none;
-  @include transition(background-color)
+  @include transition(background-color);
 }
 
 .group-icon {
@@ -84,8 +81,6 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   @include subtitle-or-focus(18px);
   margin-bottom: 15px;
 }
-  
-
 
 /******************************** 我的報告和課程分析共用樣式(命名待重構) ***************************************/
 
@@ -190,7 +185,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 .other-info--area {
   position: absolute;
   width: 100%;
-  background-color: #EDEDED;
+  background-color: #ededed;
   padding: 10px 5px;
   left: 0;
   font-size: 16px;
@@ -241,7 +236,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 .otherInfoSection {
   display: flex;
   flex-direction: column;
-  margin:5px;
+  margin: 5px;
   padding: 0 10px;
   min-width: 29%;
   max-width: 350px;
@@ -281,7 +276,6 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 }
 
 .tableArrangement {
-
   .visualizeData {
     height: 40px;
     background-color: rgba(0, 167, 251, 0.18);
@@ -293,7 +287,6 @@ $group-btn-blue: rgba(0, 183, 238, 1);
     margin: 0 auto;
     z-index: 3;
   }
-
 }
 
 .tableData {
@@ -314,7 +307,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 }
 
 .chartTitleUnit {
-  color:#919191;
+  color: #919191;
 }
 
 .tableContent {
@@ -332,10 +325,11 @@ $group-btn-blue: rgba(0, 183, 238, 1);
     background-color: var(--scale-240-45);
     @include transition(background-color);
   }
-
 }
 
-.upArrow, .downArrow, .lockIcon {
+.upArrow,
+.downArrow,
+.lockIcon {
   font-size: 20px;
   font-weight: bold;
 }
@@ -410,9 +404,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
       margin: 3px;
       cursor: pointer;
     }
-
   }
-
 }
 
 .tableMenuList {
@@ -449,14 +441,17 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   background-color: #26abe3 !important;
 }
 
-mat-header-cell:first-child, mat-cell:first-child, mat-footer-cell:first-child {
+mat-header-cell:first-child,
+mat-cell:first-child,
+mat-footer-cell:first-child {
   padding-left: 0px !important;
 }
 
-mat-header-cell:last-child, mat-cell:last-child, mat-footer-cell:last-child {
+mat-header-cell:last-child,
+mat-cell:last-child,
+mat-footer-cell:last-child {
   padding-right: 0px !important;
 }
-
 
 /**************************************** media *********************************/
 
@@ -479,20 +474,17 @@ mat-header-cell:last-child, mat-cell:last-child, mat-footer-cell:last-child {
   }
 }
 
-
 @media (max-width: 410px) {
   .class__analysis__footer {
     flex-direction: column;
     align-items: center;
   }
-
 }
 
 @media (max-width: 340px) {
   .childPageCard {
     padding: 10px 2px;
   }
-
 }
 
 /***********************************************************************/

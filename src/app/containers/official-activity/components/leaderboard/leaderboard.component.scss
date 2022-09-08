@@ -16,25 +16,22 @@ $box-shadow-width: 2px;
   min-width: $icon-size;
 }
 
-@mixin icon ($icon-size) {
+@mixin icon($icon-size) {
   @include center();
   @include icon-resize($icon-size);
   border-radius: 50%;
   overflow: hidden;
 
-  >img {
+  > img {
     height: 100%;
   }
-
 }
 
 @mixin list-center() {
-
-  >ul {
+  > ul {
     text-align: center;
     margin: 0 auto;
   }
-
 }
 
 #leaderboard__page {
@@ -62,33 +59,31 @@ ul {
   flex-wrap: wrap;
   margin: 0 $list-horizon-padding;
 
-  >li {
-    margin: 10px 0
+  > li {
+    margin: 10px 0;
   }
-
 }
 
-#main__menu, #sub__menu {
+#main__menu,
+#sub__menu {
   padding: 0 10px;
   max-height: 100px;
   overflow-y: hidden;
   @include transition(top);
 
-  >ul {
+  > ul {
     @include transition(top);
     position: relative;
   }
-
 }
 
 #main__menu {
   width: $main-menu-width;
   justify-content: flex-end;
 
-  >ul {
+  > ul {
     text-align: right;
   }
-
 }
 
 #sub__menu {
@@ -118,7 +113,6 @@ ul {
   &:hover {
     background-color: rgba(245, 245, 245, 1);
   }
-
 }
 
 .focus__type {
@@ -127,17 +121,15 @@ ul {
   font-weight: bold;
 }
 
-
 .leaderboard__header {
   align-items: center;
   padding: 10px $list-horizon-padding;
   min-height: 60px;
 
-  >h5 {
+  > h5 {
     @include bold-font(32px);
     margin: 0 0 0 15px;
   }
-
 }
 
 .header__icon {
@@ -183,7 +175,6 @@ ul {
   &:first-child {
     background-color: rgba(195, 195, 195, 1);
   }
-  
 }
 
 .focus__button {
@@ -214,17 +205,15 @@ ul {
   &:nth-child(even) {
     background-color: rgba(245, 245, 245, 1);
   }
-
 }
 
 .rank__value {
   font-size: 24px;
 
-  >img {
+  > img {
     width: 80%;
     max-width: 60px;
   }
-
 }
 
 .rank__suffix {
@@ -243,20 +232,18 @@ ul {
   color: rgba(189, 70, 0, 1);
 }
 
-
 /********************************************************** media ***********************************************/
 
 @media (max-width: 767px) {
-
   #leaderboard__selector {
     flex-direction: column;
   }
 
   #main__menu {
     @include list-center();
-    width: 100%;  
+    width: 100%;
   }
-  
+
   #sub__menu {
     @include list-center();
     width: 100%;
@@ -265,20 +252,18 @@ ul {
     border-top: $selector-divide-line;
     padding-left: unset;
   }
-
 }
 
 @media (max-width: 767px) {
-
   #leaderboard__selector {
     flex-direction: column;
   }
 
   #main__menu {
     @include list-center();
-    width: 100%;  
+    width: 100%;
   }
-  
+
   #sub__menu {
     @include list-center();
     width: 100%;
@@ -287,17 +272,15 @@ ul {
     border-top: $selector-divide-line;
     padding-left: unset;
   }
-
 }
 
 @media (max-width: 575px) {
-
   .nickname {
     width: 60%;
   }
 
-  .nickname__content, .record__content {
+  .nickname__content,
+  .record__content {
     font-size: 12px;
   }
-
 }

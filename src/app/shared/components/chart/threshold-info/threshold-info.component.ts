@@ -4,11 +4,10 @@ import { getUserFtpZone } from '../../../utils/sports';
 @Component({
   selector: 'app-threshold-info',
   templateUrl: './threshold-info.component.html',
-  styleUrls: ['./threshold-info.component.scss']
+  styleUrls: ['./threshold-info.component.scss'],
 })
 export class ThresholdInfoComponent implements OnInit, OnChanges {
-
-  @Input('cycleFtp') cycleFtp: number = 200;
+  @Input() cycleFtp = 200;
 
   ftpZoneRange = {
     z0: 109,
@@ -20,13 +19,11 @@ export class ThresholdInfoComponent implements OnInit, OnChanges {
     z6: ' ', // 最上層不顯示數值
   };
 
-  constructor(
-  ) { }
+  constructor() {}
 
   ngOnInit(): void {
     this.ftpZoneRange = getUserFtpZone(this.cycleFtp);
   }
 
-  ngOnChanges () {}
-
+  ngOnChanges() {}
 }

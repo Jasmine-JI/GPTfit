@@ -1,14 +1,18 @@
-<div style="position: relative;" class="flexCol" [style.top]="uiFlag.portalMode ? '-63px' : '0'">
+<div style="position: relative" class="flexCol" [style.top]="uiFlag.portalMode ? '-63px' : '0'">
   <nav
     #navSection
     class="flexCol"
-    style="position: relative;"
+    style="position: relative"
     [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
   >
     <section class="info-scenerySection">
       <img
         class="info-imgAbs"
-        [src]="uiFlag.editMode !== 'close' && editImage.scenery.base64 !== null ? editImage.scenery.base64 : currentGroupInfo.groupDetail.groupThemeImgUrl"
+        [src]="
+          uiFlag.editMode !== 'close' && editImage.scenery.base64 !== null
+            ? editImage.scenery.base64
+            : currentGroupInfo.groupDetail.groupThemeImgUrl
+        "
         (error)="sceneryError()"
         *ngIf="!uiFlag.hideScenery && uiFlag.editMode !== 'create'"
       />
@@ -29,13 +33,22 @@
       <div class="flexCenter info-avatarIcon" [style.left]="uiFlag.portalMode ? 'initial' : '50px'">
         <div class="info-avatarImg">
           <img
-            [src]="uiFlag.editMode !== 'close' && editImage.icon.base64 !== null ? editImage.icon.base64 : currentGroupInfo.groupDetail.groupIcon"
+            [src]="
+              uiFlag.editMode !== 'close' && editImage.icon.base64 !== null
+                ? editImage.icon.base64
+                : currentGroupInfo.groupDetail.groupIcon
+            "
             (error)="this.currentGroupInfo.groupDetail.groupIcon = '/assets/images/group.jpg'"
             *ngIf="uiFlag.editMode !== 'create'"
           />
-          <i class="icon-svg_web-icon_p1_059-lock group__lock" *ngIf="currentGroupInfo.groupDetail.groupStatus === 6"></i>
+          <i
+            class="icon-svg_web-icon_p1_059-lock group__lock"
+            *ngIf="currentGroupInfo.groupDetail.groupStatus === 6"
+          ></i>
           <img
-            [src]="editImage.icon.base64 !== null ? editImage.icon.base64 : '/assets/images/group.jpg'"
+            [src]="
+              editImage.icon.base64 !== null ? editImage.icon.base64 : '/assets/images/group.jpg'
+            "
             *ngIf="uiFlag.editMode === 'create'"
           />
         </div>
@@ -53,15 +66,25 @@
             <div>
               <span
                 class="info-parentsName hover__bottom__border"
-                (click)="handleNavigation(currentGroupInfo.groupDetail.groupRootInfo[2].brandGroupId)"
-                *ngIf="currentGroupInfo.groupDetail.groupRootInfo && currentGroupInfo.groupDetail.groupRootInfo[2]"
+                (click)="
+                  handleNavigation(currentGroupInfo.groupDetail.groupRootInfo[2].brandGroupId)
+                "
+                *ngIf="
+                  currentGroupInfo.groupDetail.groupRootInfo &&
+                  currentGroupInfo.groupDetail.groupRootInfo[2]
+                "
               >
                 {{ currentGroupInfo.groupDetail.groupRootInfo[2].brandName }}\
               </span>
               <span
                 class="info-parentsName hover__bottom__border"
-                (click)="handleNavigation(currentGroupInfo.groupDetail.groupRootInfo[3].branchGroupId)"
-                *ngIf="currentGroupInfo.groupDetail.groupRootInfo && currentGroupInfo.groupDetail.groupRootInfo[3]"
+                (click)="
+                  handleNavigation(currentGroupInfo.groupDetail.groupRootInfo[3].branchGroupId)
+                "
+                *ngIf="
+                  currentGroupInfo.groupDetail.groupRootInfo &&
+                  currentGroupInfo.groupDetail.groupRootInfo[3]
+                "
               >
                 {{ currentGroupInfo.groupDetail.groupRootInfo[3].branchName }}\
               </span>
@@ -70,12 +93,12 @@
               {{ currentGroupInfo.groupDetail.groupName }}
             </span>
           </div>
-          <span style="font-weight: bold; font-size: 24px; color: rgba(0, 183, 238, 1);" *ngIf="uiFlag.editMode === 'create'">
-            {{
-              'universal_activityData_create' | translate
-            }} {{
-              uiFlag.createLevel | groupLevelTranslate: currentGroupInfo.brandType | translate
-            }}
+          <span
+            style="font-weight: bold; font-size: 24px; color: rgba(0, 183, 238, 1)"
+            *ngIf="uiFlag.editMode === 'create'"
+          >
+            {{ 'universal_activityData_create' | translate }}
+            {{ uiFlag.createLevel | groupLevelTranslate: currentGroupInfo.brandType | translate }}
           </span>
         </div>
         <div class="flexRow info-headerBtnBar">
@@ -84,25 +107,30 @@
               class="info-pageBtn info-primaryBtn"
               [class.can__not__join]="uiFlag.isJoinLoading"
               *ngIf="
-                (user.joinStatus === 3 || user.joinStatus === 5)
-                && (currentGroupInfo.groupDetail.groupStatus === 1 || currentGroupInfo.groupDetail.groupStatus === 2)
-                && !currentGroupInfo.commerceInfo.expired
-                && +currentGroupInfo.commerceInfo.groupMemberStatus.currentGroupMembers < +currentGroupInfo.commerceInfo.groupMemberStatus.maxGroupMembers
+                (user.joinStatus === 3 || user.joinStatus === 5) &&
+                (currentGroupInfo.groupDetail.groupStatus === 1 ||
+                  currentGroupInfo.groupDetail.groupStatus === 2) &&
+                !currentGroupInfo.commerceInfo.expired &&
+                +currentGroupInfo.commerceInfo.groupMemberStatus.currentGroupMembers <
+                  +currentGroupInfo.commerceInfo.groupMemberStatus.maxGroupMembers
               "
             >
               <span
-                *ngIf="!uiFlag.isJoinLoading && currentGroupInfo.groupDetail.groupStatus === 1;"
+                *ngIf="!uiFlag.isJoinLoading && currentGroupInfo.groupDetail.groupStatus === 1"
                 (click)="joinGroup(1)"
               >
                 +{{ 'universal_operating_join' | translate }}
               </span>
               <span
-                *ngIf="!uiFlag.isJoinLoading && currentGroupInfo.groupDetail.groupStatus === 2;"
+                *ngIf="!uiFlag.isJoinLoading && currentGroupInfo.groupDetail.groupStatus === 2"
                 (click)="joinGroup(1)"
               >
                 +{{ 'universal_group_applicationsForJoin' | translate }}
               </span>
-              <app-loading-icon style="font-size: 8px; pointer-events: none;" *ngIf="uiFlag.isJoinLoading"></app-loading-icon>
+              <app-loading-icon
+                style="font-size: 8px; pointer-events: none"
+                *ngIf="uiFlag.isJoinLoading"
+              ></app-loading-icon>
             </button>
             <button
               class="info-pageBtn"
@@ -110,23 +138,46 @@
               [class.info-unattraclyBtn]="user.joinStatus === 2"
               [class.can__not__join]="uiFlag.isJoinLoading"
               *ngIf="
-                ((user.joinStatus === 1 || user.joinStatus === 2) && !user.isGroupAdmin)
-                && currentGroupInfo.groupDetail.groupStatus !== 6
-                && uiFlag.editMode !== 'create'
+                (user.joinStatus === 1 || user.joinStatus === 2) &&
+                !user.isGroupAdmin &&
+                currentGroupInfo.groupDetail.groupStatus !== 6 &&
+                uiFlag.editMode !== 'create'
               "
             >
-              <span *ngIf="!uiFlag.isJoinLoading && user.joinStatus === 1;" (click)="handleJoinGroup(2)">
+              <span
+                *ngIf="!uiFlag.isJoinLoading && user.joinStatus === 1"
+                (click)="handleJoinGroup(2)"
+              >
                 {{ 'universal_group_cancelJoin' | translate }}
               </span>
-              <span *ngIf="!uiFlag.isJoinLoading && user.joinStatus === 2;" (click)="handleJoinGroup(2)">
+              <span
+                *ngIf="!uiFlag.isJoinLoading && user.joinStatus === 2"
+                (click)="handleJoinGroup(2)"
+              >
                 {{ 'universal_group_exitGroup' | translate }}
               </span>
-              <app-loading-icon style="font-size: 8px; pointer-events: none;" *ngIf="uiFlag.isJoinLoading"></app-loading-icon>
+              <app-loading-icon
+                style="font-size: 8px; pointer-events: none"
+                *ngIf="uiFlag.isJoinLoading"
+              ></app-loading-icon>
+            </button>
+            <button
+              [title]="'universal_message_sendGroupMessage' | translate"
+              (click)="navigateNewMailPage()"
+              *ngIf="user.accessRight <= AccessRight.marketing || user.isGroupAdmin"
+            >
+              <i
+                class="icon-svg_web-icon_p1_028-email info-pageBtn info-primaryBtn info-primaryBtnIcon"
+              ></i>
+            </button>
+            <button (click)="getGroupNeedInfo()">
+              <i
+                class="icon-svg_web-icon_p3_002-right_turn info-pageBtn info-primaryBtn info-primaryBtnIcon"
+              ></i>
             </button>
             <button>
               <i
-                class="icon-svg_web-icon_p1_013-share info-pageBtn info-primaryBtn"
-                style="color: white; font-size: 24px; padding: 2px; cursor: pointer;"
+                class="icon-svg_web-icon_p1_013-share info-pageBtn info-primaryBtn info-primaryBtnIcon"
                 *ngIf="!uiFlag.portalMode"
                 (click)="openShareGroupInfoDialog()"
               ></i>
@@ -135,7 +186,10 @@
         </div>
       </div>
     </section>
-    <section class="flexCol info-headerDescriptionBlock" [class.info-portalMode]="uiFlag.portalMode">
+    <section
+      class="flexCol info-headerDescriptionBlock"
+      [class.info-portalMode]="uiFlag.portalMode"
+    >
       <span
         #groupHeaderDescription
         [innerHTML]="currentGroupInfo.groupDetail.groupDesc"
@@ -144,21 +198,29 @@
         (click)="handleNavigation(currentGroupInfo.groupId)"
         *ngIf="!uiFlag.isLoading && uiFlag.editMode !== 'create'"
       ></span>
-      <app-loading-icon *ngIf="uiFlag.isLoading"
-      ></app-loading-icon>
+      <app-loading-icon *ngIf="uiFlag.isLoading"></app-loading-icon>
     </section>
-    <section #pageListBar class="flexCol info-pageListBar" [class.info-portalMode]="uiFlag.portalMode">
+    <section
+      #pageListBar
+      class="flexCol info-pageListBar"
+      [class.info-portalMode]="uiFlag.portalMode"
+    >
       <div class="info-barLine"></div>
       <div
         class="info-activeBar"
         [style.width]="uiFlag.barWidth + 'px'"
         [style.left]="uiFlag.barPosition + 'px'"
       ></div>
-      <div class="flexRow" style="justify-content: space-between; align-items: center;">
+      <div class="flexRow" style="justify-content: space-between; align-items: center">
         <div class="flexRow">
-          <ng-container *ngFor="let _page of childPageList; let _idx = index;">
-            <ng-container *ngIf="uiFlag.editMode !== 'create' || (uiFlag.editMode === 'create' && _page === 'group-introduction')">
-              <span 
+          <ng-container *ngFor="let _page of childPageList; let _idx = index">
+            <ng-container
+              *ngIf="
+                uiFlag.editMode !== 'create' ||
+                (uiFlag.editMode === 'create' && _page === 'group-introduction')
+              "
+            >
+              <span
                 class="info-childPageTitle main__page__list"
                 [class.info-active--color]="uiFlag.currentTagIndex === _idx"
                 (click)="handleShowContent($event, _page, _idx)"
@@ -168,10 +230,12 @@
                   {{ 'universal_deviceSetting_adout' | translate }}
                 </ng-container>
                 <ng-container *ngIf="_page === 'myclass-report'">
-                  {{ 'universal_userProfile_personal' | translate }} {{ 'universal_group_classReport' | translate }}
+                  {{ 'universal_userProfile_personal' | translate }}
+                  {{ 'universal_group_classReport' | translate }}
                 </ng-container>
                 <ng-container *ngIf="_page === 'class-analysis'">
-                  {{ 'universal_group_group' | translate }} {{ 'universal_group_classReport' | translate }}
+                  {{ 'universal_group_group' | translate }}
+                  {{ 'universal_group_classReport' | translate }}
                 </ng-container>
                 <ng-container *ngIf="_page === 'sports-report'">
                   {{ 'universal_activityData_sportReport' | translate }}
@@ -179,9 +243,7 @@
                 <ng-container *ngIf="_page === 'life-tracking'">
                   {{ 'universal_lifeTracking_lifeTracking' | translate }}
                 </ng-container>
-                <ng-container *ngIf="_page === 'cloudrun-report'">
-                  Cloud run
-                </ng-container>
+                <ng-container *ngIf="_page === 'cloudrun-report'"> Cloud run </ng-container>
                 <ng-container *ngIf="_page === 'member-list'">
                   {{ 'universal_group_member' | translate }}
                 </ng-container>
@@ -199,7 +261,11 @@
                 </ng-container>
                 <i
                   class="icon-svg_web-icon_p1_069-about warn__icon"
-                  *ngIf="_page === 'commerce-plan' && (currentGroupInfo.groupDetail.expired || +currentGroupInfo.commerceInfo.commerceStatus !== 1)"
+                  *ngIf="
+                    _page === 'commerce-plan' &&
+                    (currentGroupInfo.groupDetail.expired ||
+                      +currentGroupInfo.commerceInfo.commerceStatus !== 1)
+                  "
                 ></i>
               </span>
             </ng-container>
@@ -211,45 +277,48 @@
           (click)="handleShowMorePageOpt($event)"
           *ngIf="uiFlag.divideIndex !== null && uiFlag.editMode !== 'create'"
         >
-          <span [class.info-active--color]="uiFlag.currentTagIndex >= uiFlag.divideIndex && !uiFlag.showMorePageOpt">
-            <span style="position: relative;">
+          <span
+            [class.info-active--color]="
+              uiFlag.currentTagIndex >= uiFlag.divideIndex && !uiFlag.showMorePageOpt
+            "
+          >
+            <span style="position: relative">
               {{ 'universal_operating_more' | translate }}
               <i
-                style="top: -10px; right: -10px;"
+                style="top: -10px; right: -10px"
                 class="icon-svg_web-icon_p1_069-about warn__icon"
                 *ngIf="
-                  currentGroupInfo.groupLevel === 30
-                  && (currentGroupInfo.groupDetail.expired || +currentGroupInfo.commerceInfo.commerceStatus !== 1)
+                  currentGroupInfo.groupLevel === 30 &&
+                  (currentGroupInfo.groupDetail.expired ||
+                    +currentGroupInfo.commerceInfo.commerceStatus !== 1)
                 "
               ></i>
             </span>
             <span
               class="info-seeMoreTriangle"
-              [class.info-active--color]="uiFlag.currentTagIndex >= uiFlag.divideIndex && !uiFlag.showMorePageOpt"
+              [class.info-active--color]="
+                uiFlag.currentTagIndex >= uiFlag.divideIndex && !uiFlag.showMorePageOpt
+              "
               [class.info-openFold]="uiFlag.showMorePageOpt"
             ></span>
           </span>
-          <div
-            class="flexCol info-foldList"
-            *ngIf="uiFlag.showMorePageOpt"
-          >
-            <ng-container *ngFor="let _foldItem of childPageList; let _fIdx = index;">
-              <div
-                class="info-foldListItem"
-                *ngIf="_fIdx >= uiFlag.divideIndex"
-              >
+          <div class="flexCol info-foldList" *ngIf="uiFlag.showMorePageOpt">
+            <ng-container *ngFor="let _foldItem of childPageList; let _fIdx = index">
+              <div class="info-foldListItem" *ngIf="_fIdx >= uiFlag.divideIndex">
                 <span
-                  [class.info-active--color]="uiFlag.currentTagIndex === (_fIdx)"
+                  [class.info-active--color]="uiFlag.currentTagIndex === _fIdx"
                   (click)="handleShowContent($event, _foldItem, _fIdx)"
                 >
                   <ng-container *ngIf="_foldItem === 'group-introduction'">
                     {{ 'universal_deviceSetting_adout' | translate }}
                   </ng-container>
                   <ng-container *ngIf="_foldItem === 'myclass-report'">
-                    {{ 'universal_userProfile_personal' | translate }} {{ 'universal_group_classReport' | translate }}
+                    {{ 'universal_userProfile_personal' | translate }}
+                    {{ 'universal_group_classReport' | translate }}
                   </ng-container>
                   <ng-container *ngIf="_foldItem === 'class-analysis'">
-                    {{ 'universal_group_group' | translate }} {{ 'universal_group_classReport' | translate }}
+                    {{ 'universal_group_group' | translate }}
+                    {{ 'universal_group_classReport' | translate }}
                   </ng-container>
                   <ng-container *ngIf="_foldItem === 'sports-report'">
                     {{ 'universal_activityData_sportReport' | translate }}
@@ -257,9 +326,7 @@
                   <ng-container *ngIf="_foldItem === 'life-tracking'">
                     {{ 'universal_lifeTracking_lifeTracking' | translate }}
                   </ng-container>
-                  <ng-container *ngIf="_foldItem === 'cloudrun-report'">
-                    Cloud run
-                  </ng-container>
+                  <ng-container *ngIf="_foldItem === 'cloudrun-report'"> Cloud run </ng-container>
                   <ng-container *ngIf="_foldItem === 'member-list'">
                     {{ 'universal_group_member' | translate }}
                   </ng-container>
@@ -286,12 +353,11 @@
   <section
     class="cardSection"
     [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
-    *ngIf="[
-      'myclass-report',
-      'life-tracking',
-      'cloudrun-report',
-      'device-list'
-    ].includes(uiFlag.currentPage)"
+    *ngIf="
+      ['myclass-report', 'life-tracking', 'cloudrun-report', 'device-list'].includes(
+        uiFlag.currentPage
+      )
+    "
   >
     <app-report-filter></app-report-filter>
   </section>
@@ -299,7 +365,7 @@
     id="main__section"
     class="cardSection"
     [ngClass]="{
-      'cardSection': uiFlag.currentPage !== 'sports-report',
+      cardSection: uiFlag.currentPage !== 'sports-report',
       'info-portalMode': uiFlag.portalMode
     }"
   >
@@ -309,11 +375,15 @@
   </article>
   <section
     class="flexCenter info-editMask"
-    *ngIf="uiFlag.editMode !== 'close' && (uiFlag.openSceneryImgSelector || uiFlag.openIconImgSelector)"
+    *ngIf="
+      uiFlag.editMode !== 'close' && (uiFlag.openSceneryImgSelector || uiFlag.openIconImgSelector)
+    "
   >
     <div class="imgSelector">
       <app-image-cropper
-        [imgInputEvent]="uiFlag.openIconImgSelector ? editImage.icon.origin : editImage.scenery.origin"
+        [imgInputEvent]="
+          uiFlag.openIconImgSelector ? editImage.icon.origin : editImage.scenery.origin
+        "
         [albumType]="uiFlag.openIconImgSelector ? 11 : 12"
         (closeSelector)="closeSelector($event)"
       ></app-image-cropper>

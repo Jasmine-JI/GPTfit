@@ -1,5 +1,5 @@
 import { AccessRight } from '../enum/accessright';
-import { PersonalTarget } from './sport-target';
+import { SportTarget } from '../../core/models/api/api-common/sport-target.model';
 import { AccountStatusEnum, AccountTypeEnum } from '../enum/account';
 import { Sex, HrBase } from '../enum/personal';
 
@@ -32,9 +32,9 @@ export interface UserProfileInfo {
   normalBedTime?: string;
   normalWakeTime?: string;
   privacy?: {
-    activityTracking: Array<number | string>
-    activityTrackingReport: Array<number | string>
-    lifeTrackingReport: Array<number | string>
+    activityTracking: Array<number | string>;
+    activityTrackingReport: Array<number | string>;
+    lifeTrackingReport: Array<number | string>;
   };
   proteinRate?: number;
   skeletonRate?: number;
@@ -57,9 +57,8 @@ export interface UserProfileInfo {
   weightTrainingStrengthLevel?: number;
   wheelSize?: number;
   themeImgUrl?: string;
-  workoutTarget?: PersonalTarget;
+  workoutTarget?: SportTarget;
 }
-
 
 /**
  * api 1003 或 api 1010內的 signIn物件

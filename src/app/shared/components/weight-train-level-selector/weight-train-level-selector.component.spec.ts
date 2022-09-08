@@ -8,9 +8,8 @@ describe('WeightTrainLevelSelectorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ WeightTrainLevelSelectorComponent ]
-    })
-    .compileComponents();
+      declarations: [WeightTrainLevelSelectorComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

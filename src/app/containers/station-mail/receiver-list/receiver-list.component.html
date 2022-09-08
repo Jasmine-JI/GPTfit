@@ -1,0 +1,64 @@
+<div class="flexCol contact__list__tab">
+  <div class="flexRow list__tag__area" [class.half__tag]="!showBlackList">
+    <div
+      class="flexRow list__tag"
+      [class.list__tag--active]="uiFlag.currentTag === 'favorite'"
+      [class.list__tag__full]="!showBlackList"
+      (click)="switchTag($event, 'favorite')"
+    >
+      <i class="icon-svg_web-icon_p1_089-favorite favorite__icon"></i>
+      <span>{{ 'universal_message_favContacts' | translate }}</span>
+    </div>
+    <div
+      class="flexRow list__tag"
+      [class.list__tag--active]="uiFlag.currentTag === 'black'"
+      (click)="switchTag($event, 'black')"
+      *ngIf="showBlackList"
+    >
+      <mat-icon class="black__icon">do_not_disturb</mat-icon>
+      <span>{{ 'universal_message_blackList' | translate }}</span>
+    </div>
+  </div>
+  <div class="contact__list__menu" *ngIf="uiFlag.currentTag">
+    <div class="contact__search__area">
+      <i class="icon-svg_web-icon_p1_014-search search__icon"></i>
+      <input
+        type="text"
+        class="contact__keyword__input"
+        (click)="$event.stopPropagation()"
+        (keyup)="handleKeywordInput($event)"
+      />
+    </div>
+    <ul class="contact__list">
+      <li
+        *ngTemplateOutlet="
+          contactListTemplate;
+          context: {
+            list: searchResultList ?? (uiFlag.currentTag === 'favorite' ? favoriteList : blackList)
+          }
+        "
+      ></li>
+    </ul>
+  </div>
+</div>
+
+<ng-template #contactListTemplate let-list="list">
+  <li
+    class="flexRow contact__list__item"
+    *ngFor="let _list of list; let index = index"
+    (click)="selectReceiver(index)"
+  >
+    <div class="flexRow contact__info">
+      <img
+        class="contact__icon"
+        [src]="_list?.avatarUrl"
+        [alt]="_list.name"
+        (error)="_list.avatarUrl = '/assets/images/user2.png'"
+      />
+      <span class="list__nickname">{{ _list.name }}</span>
+    </div>
+    <button class="remove__button" (click)="removeList($event, _list.id)">
+      <i class="icon-svg_web-icon_p1_092-delete remove__icon"></i>
+    </button>
+  </li>
+</ng-template>

@@ -1,4 +1,3 @@
-
 /**
  * 目標條件之判斷
  */
@@ -7,5 +6,5 @@ export enum ConditionSymbols {
   greaterEqual,
   equal,
   lessThan,
-  lessThanEqual
-};
+  lessThanEqual,
+}

@@ -33,7 +33,7 @@ input[type='email']::-webkit-input-placeholder {
   height: 63px;
 }
 
-.nav-item+.nav-item {
+.nav-item + .nav-item {
   margin-left: 30px;
 }
 
@@ -41,7 +41,7 @@ input[type='email']::-webkit-input-placeholder {
   margin-right: 30px;
 }
 
-.show>.btn-secondary.dropdown-toggle {
+.show > .btn-secondary.dropdown-toggle {
   border-color: transparent;
   box-shadow: none;
 }
@@ -113,7 +113,6 @@ input[type='email']::-webkit-input-placeholder {
   .navbar-nav {
     height: 120vh;
   }
-
 }
 
 @media (max-width: 375px) {

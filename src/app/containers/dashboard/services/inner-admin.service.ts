@@ -13,8 +13,12 @@ export class InnerAdminService {
     return this.http.post<any>(API_SERVER + 'gpx/upload', body);
   }
   downloadGpxFile() {
-    return this.http.post(API_SERVER + 'gpx/download', {}, {
-      responseType: 'blob' // 注意這邊要選 `blob`
-    });
+    return this.http.post(
+      API_SERVER + 'gpx/download',
+      {},
+      {
+        responseType: 'blob', // 注意這邊要選 `blob`
+      }
+    );
   }
 }

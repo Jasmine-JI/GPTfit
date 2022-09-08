@@ -1,10 +1,7 @@
 <ng-container *ngIf="!pcView">
   <app-loading-bar [progress]="progress"></app-loading-bar>
   <nav>
-    <button
-      class="flexRow appview-backButton"
-      (click)="turnBack()"
-    >
+    <button class="flexRow appview-backButton" (click)="turnBack()">
       <i class="icon-svg_web-icon_p1_016-back"></i>
       <span>{{ 'universal_operating_back' | translate }}</span>
     </button>
@@ -17,14 +14,15 @@
           'appview-mobilePageTitle': mobileSize
         }"
       >
-        {{ 'universal_operating_modify' | translate }} {{ 'universal_userAccount_password' | translate }}
+        {{ 'universal_operating_modify' | translate }}
+        {{ 'universal_userAccount_password' | translate }}
       </h4>
       <div class="flexCol">
         <section class="flexCol appview-contentDetail">
           <h6 class="appview-sectionSubTitle">
             {{ 'universal_userAccount_account' | translate }}
           </h6>
-          <p style="margin: 0;" class="appview-breakAccount">
+          <p style="margin: 0" class="appview-breakAccount">
             <ng-container *ngIf="editBody.newAccountType === SignTypeEnum.email">
               {{ editBody.newEmail }}
             </ng-container>
@@ -46,11 +44,13 @@
               maxlength="20"
               (focusout)="checkPassword($event, 'oldPassword')"
               (keypress)="checkPassword($event, 'oldPassword')"
-            >
+            />
             <button class="appview-showPassword" (click)="toggleDisplayPW('oldPassword')">
               <i
                 class="icon-svg_web-icon_p1_081-watch"
-                [style.color]="displayPW.oldPassword ? 'rgba(200, 200, 200, 1)' : 'rgba(100, 100, 100, 1)'"
+                [style.color]="
+                  displayPW.oldPassword ? 'rgba(200, 200, 200, 1)' : 'rgba(100, 100, 100, 1)'
+                "
               ></i>
             </button>
           </div>
@@ -68,25 +68,26 @@
               class="appview-dataInput"
               [type]="displayPW.newPassword ? 'text' : 'password'"
               [placeholder]="
-                'universal_userAccount_enterInfo' | translate: {
-                  info: ('universal_userAccount_newPassword' | translate)
-                }
+                'universal_userAccount_enterInfo'
+                  | translate
+                    : {
+                        info: ('universal_userAccount_newPassword' | translate)
+                      }
               "
               maxlength="20"
               (focusout)="checkPassword($event, 'newPassword')"
               (keypress)="checkPassword($event, 'newPassword')"
-            >
+            />
             <button class="appview-showPassword" (click)="toggleDisplayPW('newPassword')">
               <i
                 class="icon-svg_web-icon_p1_081-watch"
-                [style.color]="displayPW.newPassword ? 'rgba(200, 200, 200, 1)' : 'rgba(100, 100, 100, 1)'"
+                [style.color]="
+                  displayPW.newPassword ? 'rgba(200, 200, 200, 1)' : 'rgba(100, 100, 100, 1)'
+                "
               ></i>
             </button>
           </div>
-          <p
-            class="appview-alertHint"
-            [class.appview-hint]="cue.newPassword === ''"
-          >
+          <p class="appview-alertHint" [class.appview-hint]="cue.newPassword === ''">
             <ng-container *ngIf="cue.newPassword === ''">
               {{ 'universal_userAccount_passwordFormat' | translate }}
             </ng-container>
@@ -94,10 +95,7 @@
               {{ cue.newPassword | translate }}
             </ng-container>
           </p>
-          <div
-            class="flexCol"
-            *ngIf="imgCaptcha.show"
-          >
+          <div class="flexCol" *ngIf="imgCaptcha.show">
             <label class="appview-inputLabel" for="img__captcha">
               {{ 'universal_userAccount_imgCaptcha' | translate }}
             </label>
@@ -110,7 +108,7 @@
                 (focusout)="checkImgCaptcha($event)"
                 (keypress)="checkImgCaptcha($event)"
               />
-              <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
+              <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha" />
             </div>
             <p class="appview-alertHint">
               <ng-container *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''">
@@ -135,27 +133,27 @@
 
 <ng-container *ngIf="pcView">
   <div class="access-bg">
-    <div class="container signup" style="padding: 63px 0 70px 0;">
-      <div class="d-flex" style="flex-direction: column;align-items: center;;">
-        <div class="access-panel" style="margin-top: 30px;">
+    <div class="container signup" style="padding: 63px 0 70px 0">
+      <div class="d-flex" style="flex-direction: column; align-items: center">
+        <div class="access-panel" style="margin-top: 30px">
           <header class="access-header">
-            <img src="assets/attacus_logo.png" style="width: 36%">
+            <img src="assets/attacus_logo.png" style="width: 36%" />
           </header>
           <div class="access-panel-body">
-            <div class="flexCol" style="min-height: initial;">
-              <span class="app-alert" style="font-size: 20px; font-weight: bold;">
+            <div class="flexCol" style="min-height: initial">
+              <span class="app-alert" style="font-size: 20px; font-weight: bold">
                 {{ 'universal_userAccount_changingPassword' | translate }}
               </span>
-              <span style="font-size: 14px; font-weight: bold;" *ngIf="editBody.editType === 1">
+              <span style="font-size: 14px; font-weight: bold" *ngIf="editBody.editType === 1">
                 {{ editBody.newEmail }}
               </span>
-              <span style="font-size: 14px; font-weight: bold;" *ngIf="editBody.editType === 2">
+              <span style="font-size: 14px; font-weight: bold" *ngIf="editBody.editType === 2">
                 +{{ editBody.newCountryCode }} {{ editBody.newMobileNumber }}
               </span>
             </div>
-            <div class="flexCol" style="margin-top: 10px;">
-              <div class="flexCol" style="min-height: 120px;">
-                <span class="access-text" style="margin-bottom: 10px;">
+            <div class="flexCol" style="margin-top: 10px">
+              <div class="flexCol" style="min-height: 120px">
+                <span class="access-text" style="margin-bottom: 10px">
                   {{ 'universal_userAccount_password' | translate }}
                 </span>
                 <input
@@ -170,14 +168,20 @@
                 />
                 <i
                   class="icon-svg_web-icon_p1_081-watch inputIcon"
-                  style="top: -30px; left: 90%;"
+                  style="top: -30px; left: 90%"
                   [style.color]="displayPW.oldPassword ? 'black' : '#aaaaaa'"
                   (click)="toggleDisplayPW('oldPassword')"
                 ></i>
-                <span class="form__message form__message--placeholder" *ngIf="cue.oldPassword !== ''">{{ cue.oldPassword | translate }}</span>
+                <span
+                  class="form__message form__message--placeholder"
+                  *ngIf="cue.oldPassword !== ''"
+                  >{{ cue.oldPassword | translate }}</span
+                >
               </div>
-              <div class="flexCol"  style="min-height: 120px;">
-                <span class="access-text" style="margin-bottom: 10px;">{{ 'universal_userAccount_newPassword' | translate }}</span>
+              <div class="flexCol" style="min-height: 120px">
+                <span class="access-text" style="margin-bottom: 10px">{{
+                  'universal_userAccount_newPassword' | translate
+                }}</span>
                 <input
                   [type]="displayPW.newPassword ? 'text' : 'password'"
                   id="newPassword"
@@ -190,17 +194,20 @@
                 />
                 <i
                   class="icon-svg_web-icon_p1_081-watch inputIcon"
-                  style="top: -30px; left: 90%;"
+                  style="top: -30px; left: 90%"
                   [style.color]="displayPW.newPassword ? 'black' : '#aaaaaa'"
                   (click)="toggleDisplayPW('newPassword')"
                 ></i>
-                <span class="form__message form__message--placeholder" *ngIf="cue.newPassword !== ''">{{ cue.newPassword | translate }}</span>
+                <span
+                  class="form__message form__message--placeholder"
+                  *ngIf="cue.newPassword !== ''"
+                  >{{ cue.newPassword | translate }}</span
+                >
               </div>
-              <div
-                class="flexCol"
-                [style.display]="imgCaptcha.show ? '' : 'none'"
-              >
-                <span class="access-text" style="margin-bottom: 10px;">{{ 'universal_userAccount_imgCaptcha' | translate }}</span>
+              <div class="flexCol" [style.display]="imgCaptcha.show ? '' : 'none'">
+                <span class="access-text" style="margin-bottom: 10px">{{
+                  'universal_userAccount_imgCaptcha' | translate
+                }}</span>
                 <div class="flexRow">
                   <input
                     placeholder="{{ imgCaptcha.placeholder }}"
@@ -209,14 +216,29 @@
                     (focusout)="checkImgCaptcha($event)"
                     (keypress)="checkImgCaptcha($event)"
                   />
-                  <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
+                  <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha" />
                 </div>
-                <span class="form__message form__message--placeholder" *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''">
+                <span
+                  class="form__message form__message--placeholder"
+                  *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''"
+                >
                   {{ imgCaptcha.cue | translate }}
                 </span>
               </div>
-              <div style="display: flex;justify-content: space-between; align-items: center; margin-top: 20px;">
-                <a class="access-text" style="cursor:pointer" [routerLink]="['/dashboard/user-settings']"><{{'universal_operating_back' | translate}}</a>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-top: 20px;
+                "
+              >
+                <a
+                  class="access-text"
+                  style="cursor: pointer"
+                  [routerLink]="['/dashboard/user-settings']"
+                  ><{{ 'universal_operating_back' | translate }}</a
+                >
                 <button
                   class="btn btn-primary access-btn"
                   [class.appview-unclickable]="progress !== 100 || dataIncomplete"

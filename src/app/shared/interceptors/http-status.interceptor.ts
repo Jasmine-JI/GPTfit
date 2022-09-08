@@ -5,7 +5,7 @@ import {
   HttpEvent,
   HttpInterceptor,
   HttpResponse,
-  HttpErrorResponse
+  HttpErrorResponse,
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -19,28 +19,21 @@ import { MessageBoxComponent } from '../components/message-box/message-box.compo
  */
 @Injectable()
 export class HttpStatusInterceptor implements HttpInterceptor {
-  constructor(
-    public dialog: MatDialog,
-    private authService: AuthService
-  ) {}
-  intercept(
-    request: HttpRequest<any>,
-    next: HttpHandler
-  ): Observable<HttpEvent<any>> {
+  constructor(public dialog: MatDialog, private authService: AuthService) {}
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
       tap(
         (event: HttpEvent<any>) => {
           if (event instanceof HttpResponse) {
             // do stuff with response if you want
             let parseBody;
-            if (typeof (event.body) !== 'object' && event.body.slice(0, 5) !== '<?xml') {
+            if (typeof event.body !== 'object' && event.body.slice(0, 5) !== '<?xml') {
               parseBody = JSON.parse(event.body);
               if (parseBody.processResult && parseBody.processResult.resultCode === 401) {
                 this.authService.logout();
                 console.error('Login identity error!');
               }
             }
-
           }
         },
         (err: any) => {
@@ -51,9 +44,8 @@ export class HttpStatusInterceptor implements HttpInterceptor {
                 data: {
                   title: 'Error',
                   body: `${err.status}：The network is abnormal, please try again later.`,
-                  confirmText: 'Confirm'
-                }
-
+                  confirmText: 'Confirm',
+                },
               });
 
               this.authService.logout();
@@ -64,14 +56,13 @@ export class HttpStatusInterceptor implements HttpInterceptor {
                 data: {
                   title: 'Error',
                   body: 'Server had problem',
-                  confirmText: 'Confirm'
-                }
+                  confirmText: 'Confirm',
+                },
               });
             }
           }
         }
       )
-
     );
   }
 }

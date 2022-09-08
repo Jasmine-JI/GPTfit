@@ -8,9 +8,8 @@ describe('FormTextComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ FormTextComponent ]
-    })
-    .compileComponents();
+      declarations: [FormTextComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

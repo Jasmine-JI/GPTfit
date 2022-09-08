@@ -8,10 +8,7 @@
   <app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
   -->
   <nav>
-    <button
-      class="flexRow appview-backButton"
-      (click)="turnBack()"
-    >
+    <button class="flexRow appview-backButton" (click)="turnBack()">
       <i class="icon-svg_web-icon_p1_016-back"></i>
       <span>{{ 'universal_operating_back' | translate }}</span>
     </button>
@@ -26,7 +23,7 @@
       >
         QR Code {{ 'universal_userAccount_logIn' | translate }}
       </h4>
-      <div class="flexCol" style="margin: 0 auto;">
+      <div class="flexCol" style="margin: 0 auto">
         <ng-container *ngIf="displayPage === 'login'">
           <p class="check__text">
             {{ 'universal_userAccount_unknownDevice' | translate }}
@@ -34,10 +31,10 @@
           <div class="flexCol appview-contentDetail">
             <div class="avatar-wrapper">
               <img
-                [src]="(userInfo.icon | safeHtml)"
-                (error)="this.userInfo.icon='/assets/images/user2.png';"
+                [src]="userInfo.icon | safeHtml"
+                (error)="this.userInfo.icon = '/assets/images/user2.png'"
                 *ngIf="userInfo"
-              >
+              />
             </div>
             <p class="user__name">
               {{ userInfo.name }}
@@ -46,7 +43,9 @@
           <div class="appview-buttonArea">
             <button
               class="appview-submitButton appview-center"
-              [class.appview-unclickable]="qrLoginStatus === 'logging' || qrLoginStatus === 'success'"
+              [class.appview-unclickable]="
+                qrLoginStatus === 'logging' || qrLoginStatus === 'success'
+              "
               (click)="qrcodeLogin()"
             >
               <span *ngIf="qrLoginStatus !== 'success'">
@@ -59,11 +58,11 @@
           </div>
         </ng-container>
         <ng-container *ngIf="displayPage === 'showQrcode'">
-          <img *ngTemplateOutlet="alatechLogo">
+          <img *ngTemplateOutlet="alatechLogo" />
           <qrcode [qrdata]="qrURL" size="128" level="'M'" *ngIf="cue === ''"></qrcode>
           <p
             *ngIf="cue !== ''"
-            style="margin: 50px; color: #ff9090; font-size: 20px; font-weight: bold;"
+            style="margin: 50px; color: #ff9090; font-size: 20px; font-weight: bold"
           >
             {{ cue | translate }}
           </p>
@@ -75,30 +74,29 @@
     </div>
   </main>
   <ng-template #alatechLogo>
-    <img 
-      src="./assets/ala_logo.svg"
-      alt="Alatech Logo"
-      class="alatech__logo"
-    >
+    <img src="./assets/ala_logo.svg" alt="Alatech Logo" class="alatech__logo" />
   </ng-template>
 </ng-container>
 
 <ng-container *ngIf="pcView">
   <div class="access-bg">
-    <div class="container signup" style="padding: 63px 0 70px 0;">
-      <div class="d-flex" style="flex-direction: column;align-items: center;;">
-        <div class="access-panel" style="margin-top: 30px;">
+    <div class="container signup" style="padding: 63px 0 70px 0">
+      <div class="d-flex" style="flex-direction: column; align-items: center">
+        <div class="access-panel" style="margin-top: 30px">
           <header class="access-header">
-            <img src="assets/attacus_logo.png" style="width: 36%">
+            <img src="assets/attacus_logo.png" style="width: 36%" />
           </header>
           <div class="access-panel-body">
             <ng-container *ngIf="displayPage === 'showQrcode'">
-              <div class="flexCol" style="align-items: center;">
+              <div class="flexCol" style="align-items: center">
                 <qrcode [qrdata]="qrURL" size="128" level="'M'" *ngIf="cue === ''"></qrcode>
-                <span *ngIf="cue !== ''" style="margin: 50px; color: #ff9090; font-size: 20px; font-weight: bold;">
+                <span
+                  *ngIf="cue !== ''"
+                  style="margin: 50px; color: #ff9090; font-size: 20px; font-weight: bold"
+                >
                   {{ cue | translate }}
                 </span>
-                <span class="formTitle" style="margin: 20px;">
+                <span class="formTitle" style="margin: 20px">
                   {{ 'universal_userAccount_scanLogin' | translate }}
                 </span>
               </div>

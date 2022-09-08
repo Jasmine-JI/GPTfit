@@ -8,10 +8,10 @@ import {
   EventEmitter,
   SimpleChanges,
   ChangeDetectionStrategy,
-  ChangeDetectorRef
+  ChangeDetectorRef,
 } from '@angular/core';
 import { DateRange } from '../../classes/date-range';
-import { ReportCondition, DateRangeType, ReportDateType } from '../../models/report-condition';
+import { ReportCondition, DateRangeType } from '../../models/report-condition';
 import { DateUnit } from '../../enum/report';
 import dayjs from 'dayjs';
 import { SportType } from '../../enum/sports';
@@ -20,17 +20,17 @@ import { GroupLevel, BrandType } from '../../enum/professional';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
 import { DefaultDateRange } from '../../classes/default-date-range';
-import { DAY, WEEK } from '../../models/utils-constant';
 import { GroupInfo } from '../../classes/group-info';
+import { LocalstorageService, GlobalEventsService } from '../../../core/services';
+import { weekDayLock } from '../../../core/models/compo';
 
 @Component({
   selector: 'app-condition-selector',
   templateUrl: './condition-selector.component.html',
   styleUrls: ['./condition-selector.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy {
-
   /**
    * 初始條件
    */
@@ -44,7 +44,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
   /**
    * 報告條件的發送器
    */
-  @Output() onConfirm: EventEmitter<ReportCondition> = new EventEmitter();
+  @Output() confirm: EventEmitter<ReportCondition> = new EventEmitter();
 
   private ngUnsubscribe = new Subject();
   private pluralEvent = new Subscription();
@@ -58,8 +58,9 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     showBaseDateRangeList: false,
     showCompareDateRangeList: false,
     showDateUnitList: false,
+    showTargetUnitList: false,
     unfold: true,
-    isMobile: false
+    isMobile: false,
   };
 
   /**
@@ -67,7 +68,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    */
   dateRange = {
     base: <DateRangeType>'custom',
-    compare: <DateRangeType>'none'
+    compare: <DateRangeType>'none',
   };
 
   /**
@@ -75,26 +76,62 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    */
   reportCondition: ReportCondition;
 
+  /**
+   * 進階模式開關狀態
+   */
+  advancedOptionStatus = false;
+
+  /**
+   * 日曆可選的星期
+   */
+  weekDayLock = {
+    baseStart: <weekDayLock>[false, false, false, false, false, false, false],
+    compareStart: <weekDayLock>[false, false, false, false, false, false, false],
+    end: <weekDayLock>[false, false, false, false, false, false, false],
+  };
+
+  /**
+   * 結束日期最小可選日期
+   */
+  endLimitDay = {
+    base: {
+      min: dayjs('2010', 'YYYY').valueOf(),
+      max: dayjs().endOf('year').valueOf(),
+    },
+    compare: {
+      min: dayjs('2010', 'YYYY').valueOf(),
+      max: dayjs().endOf('year').valueOf(),
+    },
+  };
+
   readonly SportType = SportType;
   readonly GroupLevel = GroupLevel;
   readonly BrandType = BrandType;
   readonly DateUnit = DateUnit;
+  private readonly groupListDropId = this.globalEventsService.getComponentUniqueId();
+  private readonly reportUnitDropId = this.globalEventsService.getComponentUniqueId();
+  private readonly targetUnitDropId = this.globalEventsService.getComponentUniqueId();
+  private readonly baseDateRangeDropId = this.globalEventsService.getComponentUniqueId();
+  private readonly compareDateRangeDropId = this.globalEventsService.getComponentUniqueId();
 
   constructor(
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private localstorageService: LocalstorageService,
+    private globalEventsService: GlobalEventsService
   ) {}
 
   ngOnInit(): void {}
-
 
   ngOnChanges(e: SimpleChanges): void {
     if (e.initialCondition) {
       this.checkDeviceWidth();
       this.subscribeResizeEvent();
       this.resetCondition();
+      this.advancedOptionStatus = this.getAdvancedOptionStatus();
+      this.weekDayLock = this.getWeekDayLock();
+      this.handleEndLimitDay();
       this.submitCondition();
     }
-    
   }
 
   /**
@@ -106,20 +143,68 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     this.uiFlag.isMobile = innerWidth < 767;
   }
 
-
   /**
    * 訂閱resize事件
    * @author kidin-1110427
    */
   subscribeResizeEvent() {
     const resizeEvent = fromEvent(window, 'resize');
-    this.resizeEvent = resizeEvent.pipe(
-      debounceTime(500),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.checkDeviceWidth();
-    });
+    this.resizeEvent = resizeEvent
+      .pipe(debounceTime(500), takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.checkDeviceWidth();
+      });
+  }
 
+  /**
+   * 取得日曆可選的星期
+   */
+  getWeekDayLock() {
+    const {
+      dateUnit: { unit },
+      baseTime: { startTimestamp },
+    } = this.reportCondition;
+    const defaultWeekLock: weekDayLock = [false, false, false, false, false, false, false];
+    switch (unit) {
+      case DateUnit.week: {
+        const weekStartDay = dayjs(startTimestamp).isoWeekday();
+        return {
+          baseStart: defaultWeekLock.map((_weekLock, _index) => _index > 1) as weekDayLock,
+          compareStart: defaultWeekLock.map(
+            (_weekLock, _index) => _index !== (weekStartDay === 7 ? 0 : 1)
+          ) as weekDayLock,
+          end: defaultWeekLock.map(
+            (_weekLock, _index) => _index !== (weekStartDay === 7 ? 6 : 0)
+          ) as weekDayLock,
+        };
+      }
+      default:
+        return { baseStart: defaultWeekLock, compareStart: defaultWeekLock, end: defaultWeekLock };
+    }
+  }
+
+  /**
+   * 取得進階功能開關狀態
+   */
+  getAdvancedOptionStatus() {
+    const advancedOption = this.localstorageService.getAdvancedSportsTarget();
+    const { group } = this.reportCondition;
+    const referenceOption = group ? 'professional' : 'personal';
+    return advancedOption[referenceOption];
+  }
+
+  /**
+   * 變更運動目標進階功能狀態
+   */
+  changeAdvancedTargetStatus() {
+    const advancedOption = this.localstorageService.getAdvancedSportsTarget();
+    const { group } = this.reportCondition;
+    const referenceOption = group ? 'professional' : 'personal';
+    const currentStatus = advancedOption[referenceOption];
+    this.advancedOptionStatus = !currentStatus;
+    advancedOption[referenceOption] = this.advancedOptionStatus;
+    this.localstorageService.setAdvancedSportsTarget(advancedOption);
+    if (!this.advancedOptionStatus) this.resetCondition();
   }
 
   /**
@@ -134,10 +219,11 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
       this.uiFlag.showGroupList = false;
       this.unSubscribePluralEvent();
     } else {
+      const { groupListDropId } = this;
+      this.globalEventsService.setRxCloseDropList(groupListDropId);
       this.uiFlag.showGroupList = true;
-      this.subscribePluralEvent();
+      this.subscribePluralEvent(groupListDropId);
     }
-
   }
 
   /**
@@ -152,10 +238,11 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
       this.uiFlag.showBaseDateRangeList = false;
       this.unSubscribePluralEvent();
     } else {
+      const { baseDateRangeDropId } = this;
+      this.globalEventsService.setRxCloseDropList(baseDateRangeDropId);
       this.uiFlag.showBaseDateRangeList = true;
-      this.subscribePluralEvent();
+      this.subscribePluralEvent(baseDateRangeDropId);
     }
-
   }
 
   /**
@@ -170,10 +257,11 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
       this.uiFlag.showCompareDateRangeList = false;
       this.unSubscribePluralEvent();
     } else {
+      const { compareDateRangeDropId } = this;
+      this.globalEventsService.setRxCloseDropList(compareDateRangeDropId);
       this.uiFlag.showCompareDateRangeList = true;
-      this.subscribePluralEvent();
+      this.subscribePluralEvent(compareDateRangeDropId);
     }
-
   }
 
   /**
@@ -188,10 +276,11 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
       this.uiFlag.showDateUnitList = false;
       this.unSubscribePluralEvent();
     } else {
+      const { reportUnitDropId } = this;
+      this.globalEventsService.setRxCloseDropList(reportUnitDropId);
       this.uiFlag.showDateUnitList = true;
-      this.subscribePluralEvent();
+      this.subscribePluralEvent(reportUnitDropId);
     }
-
   }
 
   /**
@@ -201,10 +290,10 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    * @author kidin-111315
    */
   selectGroup(id: string, name: string) {
-    const { id: oldId } = this.reportCondition.group!.focusGroup;
+    const { id: oldId } = this.reportCondition.group.focusGroup;
     if (id !== oldId) {
       const level = GroupInfo.getGroupLevel(id);
-      this.reportCondition.group!.focusGroup = { id, level, name };
+      this.reportCondition.group.focusGroup = { id, level, name };
       this.reportCondition.needRefreshData = true;
     }
 
@@ -223,14 +312,33 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
 
   /**
    * 將條件重置為初始條件
-   * @author kidin-1110315
    */
-  resetCondition() {
-    this.reportCondition = deepCopy(this.initialCondition);
-    this.selectBaseDateRange('sevenDay');
+  resetCondition(init = true) {
+    if (init) this.reportCondition = deepCopy(this.initialCondition);
+    const defaultDateRange = this.getDefaultDateRange();
+    this.selectBaseDateRange(defaultDateRange);
     this.selectCompareDateRange('none');
+    this.handleEndLimitDay();
     this.reportCondition.needRefreshData = true;
     this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 根據報告呈現單位取得預設範圍日期
+   */
+  getDefaultDateRange(): DateRangeType {
+    const { unit } = this.reportCondition.dateUnit;
+    switch (unit) {
+      case DateUnit.week:
+        return 'thisWeek';
+      case DateUnit.month:
+        return 'thisMonth';
+      case DateUnit.season:
+      case DateUnit.year:
+        return 'thisYear';
+      default:
+        return 'sevenDay';
+    }
   }
 
   /**
@@ -240,28 +348,29 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
   submitCondition() {
     if (this.progress === 100) {
       this.changeDetectorRef.markForCheck();
-      this.onConfirm.emit(this.reportCondition);
+      this.confirm.emit(this.reportCondition);
       this.reportCondition.needRefreshData = false;
       if (this.uiFlag.isMobile) this.uiFlag.unfold = false;
     }
-      
   }
 
   /**
    * 訂閱點擊和滾動事件
-   * @author kidin-1110315
+   * @param componentId {number}-組件唯一碼
    */
-  subscribePluralEvent() {
+  subscribePluralEvent(componentId: number) {
     const clickEvent = fromEvent(document, 'click');
     const scrollElement = document.querySelector('.main__container');
     const scrollEvent = fromEvent(scrollElement!, 'scroll');
-    this.pluralEvent = merge(clickEvent, scrollEvent).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.unSubscribePluralEvent();
-      this.changeDetectorRef.markForCheck();
-    });
-
+    const closeDropEvent = this.globalEventsService.getRxCloseDropList();
+    this.pluralEvent = merge(clickEvent, scrollEvent, closeDropEvent)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((e) => {
+        if (e !== componentId) {
+          this.unSubscribePluralEvent();
+          this.changeDetectorRef.markForCheck();
+        }
+      });
   }
 
   /**
@@ -274,7 +383,8 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
       showGroupList: false,
       showBaseDateRangeList: false,
       showCompareDateRangeList: false,
-      showDateUnitList: false
+      showDateUnitList: false,
+      showTargetUnitList: false,
     };
 
     this.pluralEvent.unsubscribe();
@@ -283,92 +393,72 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
 
   /**
    * 變更基準日期範圍開始時間
-   * @param e {MouseEvent}
-   * @author kidin-1110316
+   * @param timestamp {number}-所選日期之時間戳
    */
-  baseStartTimeChange(e: MouseEvent) {
-    const { target } = e as any;
-    const { value } = target;
-    if (value) {
-      const timestamp = dayjs(value, 'YYYY-MM-DD').valueOf();
-      this.reportCondition.baseTime.startTimestamp = timestamp;
-      this.dateRange.base = 'custom';
-    } else {
-      target.value = this.reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD');
-    }
-
-    this.checkDateRange('base', 'endTimestamp');
-    this.checkDateOverRange('base');
-    if (this.dateRange.compare === 'sameRangeLastYear') this.selectCompareDateRange('sameRangeLastYear');
+  baseStartTimeChange(timestamp: number) {
+    this.reportCondition.baseTime.startTimestamp = timestamp;
+    this.reportCondition.baseTime.endTimestamp = this.autoGetEndDay(timestamp);
+    this.reportCondition.compareTime = null;
+    this.dateRange.base = 'custom';
+    if (this.dateRange.compare === 'sameRangeLastYear')
+      this.selectCompareDateRange('sameRangeLastYear');
+    this.weekDayLock = this.getWeekDayLock();
     this.afterChangeDate();
   }
 
   /**
    * 變更基準日期範圍結束時間
-   * @param e {MouseEvent}
-   * @author kidin-1110316
+   * @param timestamp {number}-所選日期之時間戳
    */
-  baseEndTimeChange(e: MouseEvent) {
-    const { target } = e as any;
-    const { value } = target;
-    if (value) {
-      const timestamp = dayjs(value, 'YYYY-MM-DD').endOf('day').valueOf();
-      this.reportCondition.baseTime.endTimestamp = timestamp;
-      this.dateRange.base = 'custom';
-    } else {
-      target.value = this.reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD');
-    }
+  baseEndTimeChange(timestamp: number) {
+    this.reportCondition.baseTime.endTimestamp = timestamp;
+    this.dateRange.base = 'custom';
 
-    this.checkDateRange('base', 'startTimestamp');
-    this.checkDateOverRange('base');
-    if (this.dateRange.compare === 'sameRangeLastYear') this.selectCompareDateRange('sameRangeLastYear');
+    if (this.dateRange.compare === 'sameRangeLastYear')
+      this.selectCompareDateRange('sameRangeLastYear');
     this.afterChangeDate();
   }
 
   /**
    * 變更比較日期範圍開始時間
-   * @param e {MouseEvent}
-   * @author kidin-1110316
+   * @param timestamp {number}-所選日期之時間戳
    */
-  compareStartTimeChange(e: MouseEvent) {
-    const { target } = e as any;
-    const { value } = target;
-    if (value) {
-      if (!this.reportCondition.compareTime) this.reportCondition.compareTime = new DateRange;
-      const timestamp = dayjs(value, 'YYYY-MM-DD').valueOf();
-      this.reportCondition.compareTime.startTimestamp = timestamp;
-      this.dateRange.compare = 'custom';
-      this.checkDateRange('compare', 'endTimestamp');
-      this.checkDateOverRange('compare');
-    } else {
-      this.reportCondition.compareTime = null!;
-      this.dateRange.compare = 'none';
-    }
-
+  compareStartTimeChange(timestamp: number) {
+    if (!this.reportCondition.compareTime) this.reportCondition.compareTime = new DateRange();
+    this.reportCondition.compareTime.startTimestamp = timestamp;
+    this.reportCondition.compareTime.endTimestamp = this.autoGetEndDay(timestamp);
+    this.dateRange.compare = 'custom';
     this.afterChangeDate();
   }
 
   /**
    * 變更比較日期範圍結束時間
-   * @param e {MouseEvent}
-   * @author kidin-1110316
+   * @param timestamp {number}-所選日期之時間戳
    */
-  compareEndTimeChange(e: MouseEvent) {
-    const { target } = e as any;
-    const { value } = target;
-    if (value) {
-      if (!this.reportCondition.compareTime) this.reportCondition.compareTime = new DateRange;
-      const timestamp = dayjs(value, 'YYYY-MM-DD').endOf('day').valueOf();
-      this.reportCondition.compareTime.endTimestamp = timestamp;
-      this.dateRange.compare = 'custom';
-      this.checkDateRange('compare', 'startTimestamp');
-      this.checkDateOverRange('compare');
-    } else {
-      this.reportCondition.compareTime = null!;
-      this.dateRange.compare = 'none';
-    }
-
+  compareEndTimeChange(timestamp: number) {
+    if (!this.reportCondition.compareTime) return false;
+    this.reportCondition.compareTime.endTimestamp = timestamp;
+    this.dateRange.compare = 'custom';
     this.afterChangeDate();
+  }
+
+  /**
+   * 使用者選擇開始時間後，依據報告單位自動幫使用者選擇結束日
+   * @param startTimestamp {number}-所選日期之時間戳
+   */
+  autoGetEndDay(startTimestamp: number) {
+    const { unit } = this.reportCondition.dateUnit;
+    const dayjsObj = dayjs(startTimestamp);
+    switch (unit) {
+      case DateUnit.month:
+        return dayjsObj.endOf('month').valueOf();
+      case DateUnit.season:
+        return dayjsObj.endOf('quarter').valueOf();
+      case DateUnit.year:
+        return dayjsObj.endOf('year').valueOf();
+      default:
+        return dayjsObj.add(6, 'day').endOf('day').valueOf();
+    }
   }
 
   /**
@@ -376,25 +466,9 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    * @author kidin-1110325
    */
   afterChangeDate() {
+    this.handleEndLimitDay();
     this.reportCondition.needRefreshData = true;
     this.changeDetectorRef.markForCheck();
-  }
-
-  /**
-   * 確認日期是否結束時間大於開始時間
-   * @param type {ReportDateType}-日期範圍類別
-   * @param checkKey {'startTimestamp' | 'endTimestamp'}-受檢查的鍵名
-   * @author kidin-1110325
-   */
-  checkDateRange(type: ReportDateType, checkKey: 'startTimestamp' | 'endTimestamp') {
-    const datetTypeKey = type === 'base' ? 'baseTime' : 'compareTime';
-    const { startTimestamp, endTimestamp } = this.reportCondition[datetTypeKey]!;
-    if (endTimestamp < startTimestamp) {
-      const changeKey = checkKey === 'startTimestamp' ? 'endTimestamp' : 'startTimestamp'
-      const changeValue = this.reportCondition[datetTypeKey]![changeKey];
-      this.reportCondition[datetTypeKey]![checkKey] = changeValue;
-    }
-
   }
 
   /**
@@ -403,13 +477,12 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    */
   selectBaseDateRange(range: DateRangeType) {
     this.dateRange.base = range;
-    const { startTime, endTime } = DefaultDateRange.getAssignRangeDate(range)!;
+    const { startTime, endTime } = DefaultDateRange.getAssignRangeDate(range, false);
     this.reportCondition.baseTime.startTimestamp = startTime;
     this.reportCondition.baseTime.endTimestamp = endTime;
-    if (this.dateRange.compare === 'sameRangeLastYear') this.selectCompareDateRange('sameRangeLastYear');
-    this.checkDateOverRange('base');
-    this.reportCondition.needRefreshData = true;
-    this.changeDetectorRef.markForCheck();
+    if (this.dateRange.compare === 'sameRangeLastYear')
+      this.selectCompareDateRange('sameRangeLastYear');
+    this.afterChangeDate();
   }
 
   /**
@@ -418,93 +491,48 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    */
   selectCompareDateRange(range: DateRangeType) {
     this.dateRange.compare = range;
-    if (!this.reportCondition.compareTime) this.reportCondition.compareTime = new DateRange;
+    if (!this.reportCondition.compareTime) this.reportCondition.compareTime = new DateRange();
     switch (range) {
       case 'none':
-        this.reportCondition.compareTime! = null!;
+        this.reportCondition.compareTime = null;
         break;
-      case 'sameRangeLastYear':
+      case 'sameRangeLastYear': {
         const { startTimestamp, endTimestamp } = this.reportCondition.baseTime;
-        const { startTime, endTime } = DefaultDateRange.getSameRangeLastYear(startTimestamp, endTimestamp);
+        const { startTime, endTime } = DefaultDateRange.getSameRangeLastYear(
+          startTimestamp,
+          endTimestamp
+        );
         this.reportCondition.compareTime.startTimestamp = startTime;
         this.reportCondition.compareTime.endTimestamp = endTime;
         break;
-      default:
-        const { startTime: start, endTime: end } = DefaultDateRange.getAssignRangeDate(range)!;
+      }
+      default: {
+        const { startTime: start, endTime: end } = DefaultDateRange.getAssignRangeDate(
+          range,
+          false
+        );
         this.reportCondition.compareTime.startTimestamp = start;
         this.reportCondition.compareTime.endTimestamp = end;
         break;
+      }
     }
 
-    this.checkDateOverRange('compare');
-    this.reportCondition.needRefreshData = true;
-    this.changeDetectorRef.markForCheck();
-  }
-
-  /**
-   * 若選擇範圍過大，則日期單位調整為合理單位
-   * @param type {ReportDateType}-報告日期類型
-   */
-  checkDateOverRange(type: ReportDateType) {
-    const dayOverRange = 52 * DAY;
-    const weekOverRanage = 52 * WEEK;
-    const datetTypeKey = type === 'base' ? 'baseTime' : 'compareTime';
-    if (this.reportCondition[datetTypeKey]) {
-      const { unit } = this.reportCondition.dateUnit!;
-      const { startTimestamp, endTimestamp } = this.reportCondition[datetTypeKey]!;
-      const diffTime = endTimestamp - startTimestamp;
-      if (diffTime > weekOverRanage && unit < DateUnit.month) return this.selectDateUnit(DateUnit.month, true);
-      if (diffTime > dayOverRange && unit < DateUnit.week) return this.selectDateUnit(DateUnit.week, true);
-    }
-
+    this.afterChangeDate();
   }
 
   /**
    * 變更日期範圍單位
    * @param unit {DateUnit}-日期範圍單位
-   * @param checkChange {boolean}-是否為檢查日期範圍變更而非由使用者變更
    */
-  selectDateUnit(unit: DateUnit, checkChange = false) {
-    const { unit: beforeUnit } = this.reportCondition.dateUnit!;
+  selectDateUnit(unit: DateUnit) {
+    const { unit: beforeUnit } = this.reportCondition.dateUnit;
     if (unit !== beforeUnit) {
-
-      if (!checkChange && !this.checkUnitFitDateRange(unit)) this.resetCondition();
-      this.reportCondition.dateUnit!.unit = unit;
+      this.reportCondition.dateUnit.unit = unit;
+      this.resetCondition(false);
       this.reportCondition.needRefreshData = true;
+      this.getWeekDayLock();
+      this.handleEndLimitDay();
     }
-
-  }
-
-  /**
-   * 確認目前所選單位是否適用於基準與比較日期範圍
-   * @param unit {DateUnit}-日期範圍單位
-   */
-  checkUnitFitDateRange(unit: DateUnit) {
-    if (unit >= DateUnit.month) return true;  // 月 以上單位適用任呵時間範圍
-
-    // 確認目前時間範圍是否適用日期單位
-    const isOverUnitRange = (unit: DateUnit, diffTime: number) => {
-      const dayOverRange = 52 * DAY;
-      const weekOverRanage = 52 * WEEK;
-      if (unit === DateUnit.day && diffTime > dayOverRange) return true;
-      if (unit === DateUnit.week && diffTime > weekOverRanage) return true;
-      return false;
-    };
-
-    const { startTimestamp, endTimestamp } = this.reportCondition.baseTime;
-    const baseDiffTime = endTimestamp - startTimestamp;
-    if (isOverUnitRange(unit, baseDiffTime)) return false;
-
-    if (this.reportCondition.compareTime) {
-      const {
-        startTimestamp: compareStartTime,
-        endTimestamp: compareEndTime
-      } = this.reportCondition.compareTime;
-      const compareDiffTime = compareEndTime - compareStartTime;
-      if (isOverUnitRange(unit, compareDiffTime)) return false;
-    }
-
-    return true;
   }
 
   /**
@@ -515,11 +543,62 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   /**
+   * 顯示運動目標選擇清單
+   * @param e {MouseEvent}
+   */
+  showTargetUnitList(e: MouseEvent) {
+    e.stopPropagation();
+    const { showTargetUnitList } = this.uiFlag;
+    if (showTargetUnitList) {
+      this.uiFlag.showTargetUnitList = false;
+      this.unSubscribePluralEvent();
+    } else {
+      const { targetUnitDropId } = this;
+      this.globalEventsService.setRxCloseDropList(targetUnitDropId);
+      this.uiFlag.showTargetUnitList = true;
+      this.subscribePluralEvent(targetUnitDropId);
+    }
+  }
+
+  /**
+   * 變更目標日期單位
+   * @param unit {DateUnit}-日期範圍單位
+   */
+  selectTargetUnit(unit: DateUnit) {
+    const { targetUnit } = this.reportCondition;
+    if (unit !== targetUnit.unit) {
+      this.reportCondition.targetUnit.unit = unit;
+      this.reportCondition.needRefreshData = true;
+    }
+  }
+
+  /**
+   * 處理結束日可選擇的範圍
+   */
+  handleEndLimitDay() {
+    const defaultMax = dayjs().endOf('year').valueOf();
+    const columnMax = 52;
+    const {
+      baseTime: { startTimestamp: baseStartTime },
+      compareTime,
+      dateUnit,
+    } = this.reportCondition;
+    this.endLimitDay.base.min = baseStartTime;
+    this.endLimitDay.compare.min = compareTime ? compareTime.startTimestamp : null;
+    const dayjsUnitKey = dateUnit.getUnitString();
+    const baseMax = dayjs(baseStartTime).add(columnMax, dayjsUnitKey).valueOf();
+    const compareMax = compareTime
+      ? dayjs(compareTime.startTimestamp).add(columnMax, dayjsUnitKey).valueOf()
+      : defaultMax;
+    this.endLimitDay.base.max = baseMax > defaultMax ? defaultMax : baseMax;
+    this.endLimitDay.compare.max = compareMax > defaultMax ? defaultMax : defaultMax;
+  }
+
+  /**
    * 解除rxjs訂閱
    */
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

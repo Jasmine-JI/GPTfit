@@ -17,9 +17,12 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { UserProfileInfo } from '../../../../shared/models/user-profile-info';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { PaginationSetting } from '../../../../shared/models/pagination';
-import { setLocalStorageObject, getLocalStorageObject, removeLocalStorageObject } from '../../../../shared/utils/index';
+import {
+  setLocalStorageObject,
+  getLocalStorageObject,
+  removeLocalStorageObject,
+} from '../../../../shared/utils/index';
 import { AccessRight } from '../../../../shared/enum/accessright';
-
 
 type DisplayPage = 'fitPair' | 'system' | 'myDevice';
 type MainContent = 'info' | 'management' | 'odometer' | 'log' | 'register';
@@ -29,14 +32,14 @@ const errMsg = 'Error! Please try again later.';
 @Component({
   selector: 'app-device-info',
   templateUrl: './device-info.component.html',
-  styleUrls: ['./device-info.component.scss']
+  styleUrls: ['./device-info.component.scss'],
 })
 export class DeviceInfoComponent implements OnInit, OnDestroy {
   @ViewChild('navSection') navSection: ElementRef;
   @ViewChild('pageListBar') pageListBar: ElementRef;
   @ViewChild('seeMore') seeMore: ElementRef;
 
-  private ngUnsubscribe = new Subject;
+  private ngUnsubscribe = new Subject();
   clickEvent: Subscription;
   pageResize: Subscription;
   scrollEvent: Subscription;
@@ -59,7 +62,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     openAppDl: [],
     showFitPairSettingDialog: false,
     fitPairChanged: false,
-    isPortalMode: !location.pathname.includes('dashboard')
+    isPortalMode: !location.pathname.includes('dashboard'),
   };
 
   /**
@@ -79,8 +82,8 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     manufactureDate: null,
     qrURL: null,
     manual: {},
-    relatedLinks: {}
-  }
+    relatedLinks: {},
+  };
 
   /**
    * fitPair相關資訊
@@ -100,16 +103,16 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
       name: null,
       date: null,
       icon: null,
-    }
-  }
+    },
+  };
 
   /**
    * 裝置日誌日期範圍
    */
-   logDate = {
+  logDate = {
     filterStartTime: dayjs().subtract(6, 'month').format('YYYY-MM-DDT00:00:00.000Z'),
-    filterEndTime: dayjs().format('YYYY-MM-DDT23:59:59Z')
-  }
+    filterEndTime: dayjs().format('YYYY-MM-DDT23:59:59Z'),
+  };
 
   /**
    * 裝置日誌內容
@@ -119,30 +122,31 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
   /**
    * 子頁面清單
    */
-   childPageList: Array<MainContent> = ['info'];
+  childPageList: Array<MainContent> = ['info'];
 
-   /**
-    * 儲存子頁面清單各選項按鈕寬度
-    */
-   perPageOptSize = {
-     total: 0,
-     perSize: []
-   };
+  /**
+   * 儲存子頁面清單各選項按鈕寬度
+   */
+  perPageOptSize = {
+    total: 0,
+    perSize: [],
+  };
 
-   /**
-    * 頁碼設定
-    */
-   pageSetting: PaginationSetting = {
+  /**
+   * 頁碼設定
+   */
+  pageSetting: PaginationSetting = {
     totalCounts: 0,
     pageIndex: 0,
-    onePageSize: 10
+    onePageSize: 10,
   };
 
   currentLang: string;
   userId: number = null;
   systemAccessRight = AccessRight.guest;
-  readonly imgStoragePath = 
-    `http://${location.hostname.includes('192.168.1.235') ? 'app.alatech.com.tw' : location.hostname}/app/public_html/products`;
+  readonly imgStoragePath = `http://${
+    location.hostname.includes('192.168.1.235') ? 'app.alatech.com.tw' : location.hostname
+  }/app/public_html/products`;
   readonly appDlImgDomain = 'https://app.alatech.com.tw/app/public_html/products/img/';
   readonly onePageSizeOpt = [10, 30, 50];
   readonly AccessRight = AccessRight;
@@ -159,7 +163,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     private router: Router,
     private auth: AuthService,
     private globalEventsService: GlobalEventsService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.checkUrl();
@@ -186,7 +190,6 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
       this.uiFlag.displayPage = 'myDevice';
       this.deviceInfo.sn = this.route.snapshot.paramMap.get('deviceSN');
     }
-
   }
 
   /**
@@ -195,10 +198,9 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    */
   checkLang() {
     this.currentLang = this.translateService.currentLang;
-    this.translateService.onLangChange.subscribe(e => {
+    this.translateService.onLangChange.subscribe((e) => {
       this.currentLang = e.lang;
     });
-
   }
 
   /**
@@ -209,7 +211,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     const query = search.split('?')[1];
     if (query) {
       const queryArr = query.split('&');
-      queryArr.forEach(_query => {
+      queryArr.forEach((_query) => {
         const [_key, _value] = _query.split('=');
         switch (_key) {
           case 'device_sn':
@@ -219,16 +221,13 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
             this.deviceInfo.cs = _value;
             break;
         }
-
       });
 
       const { sn, cs } = this.deviceInfo;
       if (sn && cs) {
         this.uiFlag.checkSumError = !this.checkCheckSum(sn, cs);
       }
-
     }
-
   }
 
   /**
@@ -237,12 +236,9 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    */
   handlePageResize() {
     const page = fromEvent(window, 'resize');
-    this.pageResize = page.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    this.pageResize = page.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.checkScreenSize();
     });
-
   }
 
   /**
@@ -252,12 +248,9 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
   handleScroll() {
     const targetElement = document.querySelector('.main__container');
     const targetScrollEvent = fromEvent(targetElement, 'scroll');
-    this.scrollEvent = targetScrollEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.scrollEvent = targetScrollEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.checkPageListBarPosition();
     });
-
   }
 
   /**
@@ -266,31 +259,29 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    */
   checkPageListBarPosition() {
     const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as any,
-          headerRow = document.querySelectorAll('.info-headerRow')[0],
-          headerDescriptionBlock = document.querySelectorAll('.info-headerDescriptionBlock')[0],
-          scenerySection = document.querySelectorAll('.info-scenerySection')[0];
+      headerRow = document.querySelectorAll('.info-headerRow')[0],
+      headerDescriptionBlock = document.querySelectorAll('.info-headerDescriptionBlock')[0],
+      scenerySection = document.querySelectorAll('.info-scenerySection')[0];
     if (pageListBar && headerDescriptionBlock && scenerySection) {
       const { top: barTop } = pageListBar.getBoundingClientRect(),
-            { bottom: descBottom } = headerRow.getBoundingClientRect(),
-            { width } = scenerySection.getBoundingClientRect();
-        if (barTop <= 51 && descBottom < 50) {
-          pageListBar.classList.add('info-pageListBar-fixed');
-          headerDescriptionBlock.classList.add('info-pageListBar-replace');  // 填充原本功能列的高度
-          pageListBar.style.width = `${width}px`;
-        } else {
-          pageListBar.classList.remove('info-pageListBar-fixed');
-          headerDescriptionBlock.classList.remove('info-pageListBar-replace');
-          pageListBar.style.width = `100%`;
-        }
-
-        if (this.uiFlag.isPortalMode) {
-          const cardSection = document.querySelectorAll('.cardSection')[0],
-                { left } = cardSection.getBoundingClientRect();
-          pageListBar.style.left = `${left}px`;
-        }
-
+        { bottom: descBottom } = headerRow.getBoundingClientRect(),
+        { width } = scenerySection.getBoundingClientRect();
+      if (barTop <= 51 && descBottom < 50) {
+        pageListBar.classList.add('info-pageListBar-fixed');
+        headerDescriptionBlock.classList.add('info-pageListBar-replace'); // 填充原本功能列的高度
+        pageListBar.style.width = `${width}px`;
+      } else {
+        pageListBar.classList.remove('info-pageListBar-fixed');
+        headerDescriptionBlock.classList.remove('info-pageListBar-replace');
+        pageListBar.style.width = `100%`;
       }
 
+      if (this.uiFlag.isPortalMode) {
+        const cardSection = document.querySelectorAll('.cardSection')[0],
+          { left } = cardSection.getBoundingClientRect();
+        pageListBar.style.left = `${left}px`;
+      }
+    }
   }
 
   /**
@@ -299,61 +290,57 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    */
   checkScreenSize() {
     // 確認多國語系載入後再計算按鈕位置
-    this.translateService.get('hellow world').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      const navSection = this.navSection.nativeElement,
-            navSectionWidth = navSection.clientWidth;
+    this.translateService
+      .get('hellow world')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        const navSection = this.navSection.nativeElement,
+          navSectionWidth = navSection.clientWidth;
 
-      let reservedSpace = 0;
-      this.uiFlag.windowInnerWidth = window.innerWidth;
-      if (window.innerWidth >= 1000 && window.innerWidth <= 1390) {
-        reservedSpace = 270; // sidebar展開所需的空間
-      }
+        let reservedSpace = 0;
+        this.uiFlag.windowInnerWidth = window.innerWidth;
+        if (window.innerWidth >= 1000 && window.innerWidth <= 1390) {
+          reservedSpace = 270; // sidebar展開所需的空間
+        }
 
-      if (navSectionWidth < this.perPageOptSize.total + reservedSpace) {
-        const titleSizeList = this.perPageOptSize.perSize;
-        let total = 0;
-        for (let i = 0, sizeArrLen = titleSizeList.length; i < sizeArrLen; i++) {
-
-          total += titleSizeList[i];
-          if (total + reservedSpace + 130 >= navSectionWidth) { // 130為"更多"按鈕的空間
-            this.uiFlag.divideIndex = i;
-            break;
+        if (navSectionWidth < this.perPageOptSize.total + reservedSpace) {
+          const titleSizeList = this.perPageOptSize.perSize;
+          let total = 0;
+          for (let i = 0, sizeArrLen = titleSizeList.length; i < sizeArrLen; i++) {
+            total += titleSizeList[i];
+            if (total + reservedSpace + 130 >= navSectionWidth) {
+              // 130為"更多"按鈕的空間
+              this.uiFlag.divideIndex = i;
+              break;
+            }
           }
 
+          this.handleGlobalClick();
+        } else {
+          this.uiFlag.divideIndex = null;
+          if (this.clickEvent) {
+            this.clickEvent.unsubscribe();
+          }
         }
 
-        this.handleGlobalClick();
-      } else {
-        this.uiFlag.divideIndex = null;
-        if (this.clickEvent) {
-          this.clickEvent.unsubscribe();
-        }
-
-      }
-
-      this.getBtnPosition(this.uiFlag.currentTagIndex);
-      this.checkPageListBarPosition();
-    });
-
+        this.getBtnPosition(this.uiFlag.currentTagIndex);
+        this.checkPageListBarPosition();
+      });
   }
 
   /**
    * 當sidebar模式變更時，重新計算active bar位置
    * @author kidin-1091111
    */
-   handleSideBarSwitch() {
-    this.globalEventsService.getRxSideBarMode().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-
-      setTimeout(() => {
-        this.checkScreenSize();
-      }, 250); // 待sidebar動畫結束再計算位置
-      
-    })
-
+  handleSideBarSwitch() {
+    this.globalEventsService
+      .getRxSideBarMode()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        setTimeout(() => {
+          this.checkScreenSize();
+        }, 250); // 待sidebar動畫結束再計算位置
+      });
   }
 
   /**
@@ -370,21 +357,20 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
       this.initPageOptSize();
       const menuList = document.querySelectorAll('.main__page__list');
       this.uiFlag.barWidth = menuList[0].clientWidth;
-      menuList.forEach(_menu => {
+      menuList.forEach((_menu) => {
         this.perPageOptSize.perSize.push(_menu.clientWidth);
         this.perPageOptSize.total += _menu.clientWidth;
       });
 
       this.checkScreenSize();
-    })
-
+    });
   }
 
   /**
    * 將perPageOptSize參數進行初始化
    * @author kidin-1091110
    */
-   initPageOptSize() {
+  initPageOptSize() {
     this.uiFlag.divideIndex = null;
     if (this.clickEvent) {
       this.clickEvent.unsubscribe();
@@ -392,23 +378,19 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
 
     this.perPageOptSize = {
       total: 0,
-      perSize: []
+      perSize: [],
     };
-
   }
 
   /**
    * 偵測全域點擊事件，以收納"更多"選單
    * @author kidin-20201112
    */
-   handleGlobalClick() {
+  handleGlobalClick() {
     const clickEvent = fromEvent(document, 'click');
-    this.clickEvent = clickEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    this.clickEvent = clickEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.uiFlag.showMorePageOpt = false;
     });
-
   }
 
   /**
@@ -418,7 +400,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @param tagIdx {number}-tag的顯示序
    * @author kidin-1090811
    */
-   handleShowContent(e: MouseEvent, page: MainContent, tagIdx: number) {
+  handleShowContent(e: MouseEvent, page: MainContent, tagIdx: number) {
     e.stopPropagation();
     this.uiFlag.currentPage = page;
     this.uiFlag.currentTagIndex = tagIdx;
@@ -427,13 +409,12 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     switch (page) {
       case 'info':
         const mainBodyEle = document.querySelector('.main__container');
-        mainBodyEle.scrollTo({top: 0, behavior: 'smooth'});
+        mainBodyEle.scrollTo({ top: 0, behavior: 'smooth' });
         break;
       case 'log':
         this.getProductLog();
         break;
     }
-
   }
 
   /**
@@ -442,9 +423,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1091102
    */
   getBtnPosition(tagIdx: number) {
-
     if (this.uiFlag.divideIndex === null || tagIdx < this.uiFlag.divideIndex) {
-
       setTimeout(() => {
         const tagPosition = document.querySelectorAll('.main__page__list');
         if (tagPosition && tagPosition[tagIdx]) {
@@ -456,28 +435,24 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
 
           this.uiFlag.barPosition = frontSize;
         }
-
       });
-      
     } else {
       this.getSeeMorePosition();
     }
-    
   }
 
   /**
    * 取得"更多"按鈕的大小和位置，使active bar可以對齊
    * @author kidin-1091102
    */
-   getSeeMorePosition() {
-
+  getSeeMorePosition() {
     setTimeout(() => {
       const pageListBar = this.pageListBar.nativeElement,
-            seeMoreTag = this.seeMore.nativeElement;
+        seeMoreTag = this.seeMore.nativeElement;
       this.uiFlag.barWidth = seeMoreTag.clientWidth;
-      this.uiFlag.barPosition = seeMoreTag.getBoundingClientRect().left - pageListBar.getBoundingClientRect().left;
+      this.uiFlag.barPosition =
+        seeMoreTag.getBoundingClientRect().left - pageListBar.getBoundingClientRect().left;
     });
-    
   }
 
   /**
@@ -490,56 +465,53 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     const productInfoBody = {
       queryArray: [sn],
       queryType: 1,
-      token
+      token,
     };
     let apiList = [
       this.qrcodeService.getProductInfo(productInfoBody),
-      this.userService.getUser().rxUserProfile
+      this.userService.getUser().rxUserProfile,
     ];
     switch (displayPage) {
-      case 'fitPair':
+      case 'fitPair': {
         const uploadDeviceInfoBody = {
           token,
           uploadEquipmentSN: sn,
           verifyCode: cs,
           deviceDistance: '',
           deviceFWVer: '',
-          deviceRFVer: ''
+          deviceRFVer: '',
         };
 
         if (cs) {
           this.uiFlag.overManufactureDate = this.checkUpload(sn);
           if (this.uiFlag.overManufactureDate) {
-            apiList = apiList.concat([this.qrcodeService.uploadDeviceInfo(uploadDeviceInfoBody, sn)]);
+            apiList = apiList.concat([
+              this.qrcodeService.uploadDeviceInfo(uploadDeviceInfoBody, sn),
+            ]);
           } else {
-            this.snackbar.open(
-              '尚未出廠（Shipped not yet.）',
-              'OK',
-              { duration: 3000 }
-            );
-
+            this.snackbar.open('尚未出廠（Shipped not yet.）', 'OK', { duration: 3000 });
           }
-
         }
 
         this.uiFlag.progress = 30;
-        combineLatest(apiList).pipe(
-          takeUntil(this.ngUnsubscribe)
-        ).subscribe(resArr => {
-          const checkResult = this.checkResponse(resArr);
-          if (checkResult) {
-            const [productInfo, userProfile, fitPairInfo] = resArr;
-            this.handleProductInfo(productInfo);
-            this.handleUserProfile(userProfile);
-            if (fitPairInfo && !this.uiFlag.fitPairChanged) this.handleFitPairInfo(fitPairInfo);
-            this.checkActionAfterLogin();
-          }
+        combineLatest(apiList)
+          .pipe(takeUntil(this.ngUnsubscribe))
+          .subscribe((resArr) => {
+            const checkResult = this.checkResponse(resArr);
+            if (checkResult) {
+              const [productInfo, userProfile, fitPairInfo] = resArr;
+              this.handleProductInfo(productInfo);
+              this.handleUserProfile(userProfile);
+              if (fitPairInfo && !this.uiFlag.fitPairChanged) this.handleFitPairInfo(fitPairInfo);
+              this.checkActionAfterLogin();
+            }
 
-          this.getPerPageOptSize();
-          this.uiFlag.progress = 100;
-        });
+            this.getPerPageOptSize();
+            this.uiFlag.progress = 100;
+          });
         break;
-      default:
+      }
+      default: {
         const getRelativeBody = (token: string, snKeyName: string, sn: string) => {
           return { token, [snKeyName]: sn };
         };
@@ -547,35 +519,35 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
         const getFitPairInfoBody = {
           token,
           pairEquipmentSN: [sn],
-          avatarType: 2
+          avatarType: 2,
         };
 
         apiList = apiList.concat([
           this.qrcodeService.getDeviceDetail(getRelativeBody(token as string, 'myEquipmentSN', sn)),
           this.qrcodeService.getQRFitPairURL(getRelativeBody(token as string, 'equipmentSN', sn)),
-          this.coachService.fetchFitPairInfo(getFitPairInfoBody)
+          this.coachService.fetchFitPairInfo(getFitPairInfoBody),
         ]);
 
         this.uiFlag.progress = 30;
-        combineLatest(apiList).pipe(
-          takeUntil(this.ngUnsubscribe)
-        ).subscribe(resArr => {
-          const checkResult = this.checkResponse(resArr);
-          if (checkResult) {
-            const [productInfo, userProfile, ...rest] = resArr;
-            this.handleUserProfile(userProfile);
-            this.handleProductInfo(productInfo);
-            this.handleDeviceInfo(rest);
-            this.handleChildPageBtn();
-            this.checkFitPairSettingMsg();
-          }
+        combineLatest(apiList)
+          .pipe(takeUntil(this.ngUnsubscribe))
+          .subscribe((resArr) => {
+            const checkResult = this.checkResponse(resArr);
+            if (checkResult) {
+              const [productInfo, userProfile, ...rest] = resArr;
+              this.handleUserProfile(userProfile);
+              this.handleProductInfo(productInfo);
+              this.handleDeviceInfo(rest);
+              this.handleChildPageBtn();
+              this.checkFitPairSettingMsg();
+            }
 
-          this.getPerPageOptSize();
-          this.uiFlag.progress = 100;
-        });
+            this.getPerPageOptSize();
+            this.uiFlag.progress = 100;
+          });
         break;
+      }
     }
-
   }
 
   /**
@@ -593,7 +565,6 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     } else {
       return true;
     }
-
   }
 
   /**
@@ -602,10 +573,11 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1100708
    */
   getManufactureTimestamp(sn: string): number {
-    const baseYear = 1952,
-          manufactureYear = sn.charCodeAt(0) + baseYear,
-          manufactureWeek = +sn.slice(1, 3),
-          manufactureTimestamp = dayjs(manufactureYear, 'YYYY').valueOf() + manufactureWeek * 7 * 86400 * 1000;
+    const baseYear = 1952;
+    const manufactureYear = sn.charCodeAt(0) + baseYear;
+    const manufactureWeek = +sn.slice(1, 3);
+    const manufactureTimestamp =
+      dayjs(`${manufactureYear}`, 'YYYY').valueOf() + manufactureWeek * 7 * 86400 * 1000;
     return manufactureTimestamp;
   }
 
@@ -620,9 +592,8 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     if (checkSum == cs) {
       return true;
     } else {
-      return false
+      return false;
     }
-
   }
 
   /**
@@ -632,8 +603,8 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    */
   checkResponse(res: Array<any>): boolean {
     let passCheck = true,
-        errorMsg = errMsg;
-    res.forEach(_res => {
+      errorMsg = errMsg;
+    res.forEach((_res) => {
       if (_res) {
         const { resultCode, resultMessage, apiCode } = _res;
         if (resultCode && resultCode !== 200) {
@@ -647,11 +618,8 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
             this.uiFlag.checkSumError = true;
             passCheck = true;
           }
-
         }
-
       }
-
     });
 
     if (!passCheck) this.utils.openAlert(errorMsg);
@@ -669,7 +637,6 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
       this.userId = userId;
       this.systemAccessRight = systemAccessright;
     }
-    
   }
 
   /**
@@ -678,15 +645,11 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1100702
    */
   handleProductInfo(res: any) {
-    const { info: { productInfo }} = res;
-    const { 
-      mainApp,
-      secondaryApp,
-      modelImg,
-      modelName,
-      modelTypeID,
-      modelTypeName
-    } = productInfo[0];
+    const {
+      info: { productInfo },
+    } = res;
+    const { mainApp, secondaryApp, modelImg, modelName, modelTypeID, modelTypeName } =
+      productInfo[0];
 
     if (!modelTypeName) {
       const qrErrMsg = `Can't find this device.<br>Please check sn number.`;
@@ -707,30 +670,27 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
         manufactureDate: dayjs(this.getManufactureTimestamp(sn)).format('YYYY-MM'),
         qrURL: null,
         manual: {},
-        relatedLinks: {}
+        relatedLinks: {},
       };
 
       // 根據語系儲存相對應連結，以方便擴充語系
-      langList.forEach(_lang => {
+      langList.forEach((_lang) => {
         const [langCode, countryCode] = _lang.split('-'),
-              upperCtCode = countryCode.toUpperCase(),
-              keyLang = `${langCode}-${upperCtCode}`,
-              manualKey = `manual_${keyLang}`,
-              manual = productInfo[0][manualKey],
-              linkKey = `relatedLinks_${keyLang}`,
-              link = productInfo[0][linkKey];
+          upperCtCode = countryCode.toUpperCase(),
+          keyLang = `${langCode}-${upperCtCode}`,
+          manualKey = `manual_${keyLang}`,
+          manual = productInfo[0][manualKey],
+          linkKey = `relatedLinks_${keyLang}`,
+          link = productInfo[0][linkKey];
         if (manual && manual.length > 0) {
-          Object.assign(this.deviceInfo.manual, {[_lang]: manual});
+          Object.assign(this.deviceInfo.manual, { [_lang]: manual });
         }
-        
+
         if (link && link.length > 0) {
-          Object.assign(this.deviceInfo.relatedLinks, {[_lang]: link});
+          Object.assign(this.deviceInfo.relatedLinks, { [_lang]: link });
         }
-        
       });
-
     }
-
   }
 
   /**
@@ -740,13 +700,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    */
   handleFitPairInfo(res: any) {
     const { info } = res;
-    const { 
-      fitPairStatus,
-      fitPairType,
-      fitPairUserId,
-      isFitPaired,
-      warrantyStatus
-    } = info;
+    const { fitPairStatus, fitPairType, fitPairUserId, isFitPaired, warrantyStatus } = info;
 
     this.fitPairInfo = {
       status: fitPairStatus,
@@ -763,16 +717,15 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
         name: null,
         date: null,
         icon: null,
-      }
-
+      },
     };
 
     const action = getLocalStorageObject('actionAfterLogin');
     if (
-      fitPairStatus == 3
-      && isFitPaired
-      && fitPairUserId != this.userId
-      && action !== 'coverPair'
+      fitPairStatus == 3 &&
+      isFitPaired &&
+      fitPairUserId != this.userId &&
+      action !== 'coverPair'
     ) {
       this.openFitPairAlert();
     }
@@ -786,13 +739,9 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1100702
    */
   handleDeviceInfo(resArr: Array<any>) {
-    const [
-      deviceDetail,
-      qrFitPair,
-      fitPairInfo
-    ] = resArr;
+    const [deviceDetail, qrFitPair, fitPairInfo] = resArr;
     const { info: detailInfo } = deviceDetail,
-          { info: qrInfo } = qrFitPair;
+      { info: qrInfo } = qrFitPair;
     const {
       deviceBondUserId,
       deviceBondUserName,
@@ -800,12 +749,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
       fitPairStatus,
       fitPairType,
       deviceEnableDate,
-      equipmentInfo: {
-        equipmentSN,
-        totalNumberOfEnable,
-        totalUseMeter,
-        totalUseTimeSecond
-      }
+      equipmentInfo: { equipmentSN, totalNumberOfEnable, totalUseMeter, totalUseTimeSecond },
     } = detailInfo;
     const { qrURL } = qrInfo;
     this.deviceInfo.qrURL = qrURL;
@@ -825,15 +769,14 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
         name: deviceBondUserName,
         date: deviceBondDate,
         icon: null,
-      }
-
+      },
     };
 
     if (equipmentSN) {
       const odometer = {
         totalNumberOfEnable,
         totalUseMeter,
-        totalUseTimeSecond
+        totalUseTimeSecond,
       };
 
       Object.assign(this.deviceInfo, { odometer });
@@ -842,16 +785,15 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     if (fitPairInfo && fitPairInfo.info.deviceInfo.length > 0) {
       this.fitPairInfo.isFitPaired = true;
       const { info: pairInfo } = fitPairInfo,
-            { userId, userName, pairIcon } = pairInfo.deviceInfo[0];
+        { userId, userName, pairIcon } = pairInfo.deviceInfo[0];
       this.fitPairInfo.currentPair = {
         id: userId,
         name: userName,
-        icon: pairIcon
+        icon: pairIcon,
       };
 
       this.uiFlag.fitPairChanged = true;
     }
-
   }
 
   /**
@@ -862,19 +804,16 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     const overMaintantner = this.systemAccessRight <= AccessRight.maintainer;
     const overMarketing = this.systemAccessRight <= AccessRight.marketing;
     if (this.fitPairInfo.deviceBond.id == this.userId || overMarketing) {
-
       if (this.deviceInfo['odometer']) {
         this.childPageList = this.childPageList.concat(['management', 'odometer', 'register']);
       } else {
         this.childPageList = this.childPageList.concat(['management', 'register']);
       }
-
     }
 
     if (overMaintantner) {
       this.childPageList = this.childPageList.concat(['log']);
     }
-
   }
 
   /**
@@ -886,7 +825,6 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
       this.uiFlag.showFitPairSettingDialog = true;
       this.qrcodeService.setFitPairSettingMsg(false);
     }
-
   }
 
   /**
@@ -899,47 +837,46 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
       deviceSettingJson: '',
       fitPairStatus,
       myEquipmentSN: this.deviceInfo.sn,
-      token: this.auth.token
+      token: this.auth.token,
     };
 
-    this.qrcodeService.editDeviceInfo(body).pipe(
-      switchMap(res => this.translateService.get('hellow world').pipe(
-        map(() => res),
-        takeUntil(this.ngUnsubscribe)
-      ))
-    ).subscribe(res => {
-      const translateOfEdit = this.translateService.instant('universal_operating_edit');
-      if (res.resultCode !== 200) {
-        const failMsg = `${translateOfEdit} ${this.translateService.instant('universal_status_failure')}`
-        this.snackbar.open(
-          failMsg,
-          'OK',
-          { duration: 3000 }
-        );
-      } else {
-        this.fitPairInfo.status = fitPairStatus;
-        if (fitPairStatus !== 3) {
-          this.fitPairInfo.currentPair = {
-            icon: null,
-            id: null,
-            name: null
-          };
+    this.qrcodeService
+      .editDeviceInfo(body)
+      .pipe(
+        switchMap((res) =>
+          this.translateService.get('hellow world').pipe(
+            map(() => res),
+            takeUntil(this.ngUnsubscribe)
+          )
+        )
+      )
+      .subscribe((res) => {
+        const translateOfEdit = this.translateService.instant('universal_operating_edit');
+        if (res.resultCode !== 200) {
+          const failMsg = `${translateOfEdit} ${this.translateService.instant(
+            'universal_status_failure'
+          )}`;
+          this.snackbar.open(failMsg, 'OK', { duration: 3000 });
+        } else {
+          this.fitPairInfo.status = fitPairStatus;
+          if (fitPairStatus !== 3) {
+            this.fitPairInfo.currentPair = {
+              icon: null,
+              id: null,
+              name: null,
+            };
 
-          this.uiFlag.fitPairChanged = true;
+            this.uiFlag.fitPairChanged = true;
+          }
+
+          const successMsg = `${translateOfEdit} ${this.translateService.instant(
+            'universal_status_success'
+          )}`;
+          this.snackbar.open(successMsg, 'OK', { duration: 3000 });
         }
 
-        const successMsg = `${translateOfEdit} ${this.translateService.instant('universal_status_success')}`
-        this.snackbar.open(
-          successMsg,
-          'OK',
-          { duration: 3000 }
-        );
-
-      }
-
-      this.uiFlag.showFitPairSettingDialog = false;
-    });
-
+        this.uiFlag.showFitPairSettingDialog = false;
+      });
   }
 
   /**
@@ -957,22 +894,17 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
         token,
         bondEquipmentSN: sn,
         bondStatus,
-        targetUserId: bondStatus === 2 ? this.fitPairInfo.deviceBond.id : ''
+        targetUserId: bondStatus === 2 ? this.fitPairInfo.deviceBond.id : '',
       };
 
-      this.qrcodeService.updateDeviceBonding(body).subscribe(res => {
+      this.qrcodeService.updateDeviceBonding(body).subscribe((res) => {
         const { resultCode, resultMessage } = res;
         if (resultCode !== 200) {
           const errorMsg = bondStatus === 2 ? resultMessage : errMsg;
           this.utils.openAlert(errorMsg);
         } else {
-
           if (bondStatus === 2) {
-            this.snackbar.open(
-              '解綁成功',
-              'OK',
-              { duration: 3000 }
-            );
+            this.snackbar.open('解綁成功', 'OK', { duration: 3000 });
 
             this.router.navigateByUrl('/dashboard/system/device-pair-management');
           } else {
@@ -980,13 +912,9 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
             this.qrcodeService.setFitPairSettingMsg(true);
             this.router.navigateByUrl(navigatePath);
           }
-          
         }
-        
       });
-
     }
-
   }
 
   /**
@@ -1000,43 +928,41 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
         title: 'message',
         body: `${this.translateService.instant('universal_popUpMessage_continueExecution')} ${
           this.fitPairInfo.deviceBond.name
-        } ${this.translateService.instant('universal_uiFitpair_unbind')} sn: ${this.deviceInfo.sn} ?`,
+        } ${this.translateService.instant('universal_uiFitpair_unbind')} sn: ${
+          this.deviceInfo.sn
+        } ?`,
         confirmText: this.translateService.instant('universal_operating_confirm'),
         onConfirm: () => this.handleBonding(2),
-        cancelText: 'cancel'
-      }
-
+        cancelText: 'cancel',
+      },
     });
-
   }
 
   /**
    * 進行FitPair
    * @author kidin-1100702
    */
-  handleFitPair(fitPairType: 1 | 2, coverFitPair: boolean = false) {
+  handleFitPair(fitPairType: 1 | 2, coverFitPair = false) {
     const token = this.auth.token;
     const { sn, cs } = this.deviceInfo;
     if (!token) {
-
       if (coverFitPair) {
         this.handleGoLoginPage('coverPair');
       } else {
         this.handleGoLoginPage(fitPairType === 1 ? 'fitPair' : 'unFitPair');
       }
-      
     } else {
       // call api 7012
       const fetchFitPairSetting = (token: string, sn: string, type: 1 | 2) => {
         const fitPairBody = {
           token,
           pairEquipmentSN: [sn],
-          fitPairType: type
+          fitPairType: type,
         };
 
         return this.qrcodeService.fitPairSetting(fitPairBody);
-      }
-      
+      };
+
       // call api 7007
       const fetchUploadDeviceInfo = (token: string, sn: string, cs: string) => {
         const uploadDeviceInfoBody = {
@@ -1045,73 +971,64 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
           verifyCode: cs,
           deviceDistance: '',
           deviceFWVer: '',
-          deviceRFVer: ''
+          deviceRFVer: '',
         };
 
         return this.qrcodeService.uploadDeviceInfo(uploadDeviceInfoBody, sn);
-      }
+      };
 
-      fetchFitPairSetting(token, sn, fitPairType).pipe(
-        switchMap(res => {
-          const { apiCode, resultCode, resultMessage } = res;
+      fetchFitPairSetting(token, sn, fitPairType)
+        .pipe(
+          switchMap((res) => {
+            const { apiCode, resultCode, resultMessage } = res;
+            if (resultCode !== 200) {
+              this.utils.handleError(resultCode, apiCode, resultMessage);
+              return res;
+            } else {
+              // 覆蓋先前的fitpair對象
+              if (coverFitPair) {
+                return fetchFitPairSetting(token, sn, 1).pipe(
+                  switchMap((pairRes) => {
+                    const { apiCode, resultCode, resultMessage } = pairRes;
+                    if (resultCode !== 200) {
+                      this.utils.handleError(resultCode, apiCode, resultMessage);
+                      return pairRes;
+                    } else {
+                      // 再次call api 7007確認doulble check fitpair
+                      return fetchUploadDeviceInfo(token, sn, cs).pipe(map((resp) => resp));
+                    }
+                  })
+                );
+              } else {
+                // 再次call api 7007確認doulble check fitpair
+                return fetchUploadDeviceInfo(token, sn, cs).pipe(map((resp) => resp));
+              }
+            }
+          })
+        )
+        .subscribe((response) => {
+          const { apiCode, resultCode, resultMessage } = response as any;
           if (resultCode !== 200) {
             this.utils.handleError(resultCode, apiCode, resultMessage);
-            return res;
           } else {
-            // 覆蓋先前的fitpair對象
-            if (coverFitPair) {
-              return fetchFitPairSetting(token, sn, 1).pipe(
-                switchMap(pairRes => {
-                  const {apiCode, resultCode, resultMessage} = pairRes;
-                  if (resultCode !== 200) {
-                    this.utils.handleError(resultCode, apiCode, resultMessage);
-                    return pairRes;
-                  } else {
-                    // 再次call api 7007確認doulble check fitpair 
-                    return fetchUploadDeviceInfo(token, sn, cs).pipe(
-                      map(resp => resp)
-                    )
-                  }
+            this.translateService
+              .get('hellow world')
+              .pipe(takeUntil(this.ngUnsubscribe))
+              .subscribe(() => {
+                const operating =
+                  fitPairType === 1 || coverFitPair
+                    ? 'Fitpair'
+                    : this.translateService.instant('universal_uiFitpair_undoFitpair');
+                const resultMsg = `${operating} ${this.translateService.instant(
+                  'universal_status_success'
+                )}`;
+                this.snackbar.open(resultMsg, 'OK', { duration: 3000 });
+              });
 
-                })
-
-              )
-            } else {
-              // 再次call api 7007確認doulble check fitpair 
-              return fetchUploadDeviceInfo(token, sn, cs).pipe(
-                map(resp => resp)
-              )
-            }
-
+            this.handleFitPairInfo(response);
           }
-
-        })
-      ).subscribe(response => {
-        const { apiCode, resultCode, resultMessage } = response as any;
-        if (resultCode !== 200) {
-          this.utils.handleError(resultCode, apiCode, resultMessage);
-        } else {
-          this.translateService.get('hellow world').pipe(
-            takeUntil(this.ngUnsubscribe)
-          ).subscribe(() => {
-            const operating = fitPairType === 1 || coverFitPair ? 
-                    'Fitpair' : this.translateService.instant('universal_uiFitpair_undoFitpair');
-            const resultMsg = `${operating} ${this.translateService.instant('universal_status_success')}`;
-            this.snackbar.open(
-              resultMsg,
-              'OK',
-              { duration: 3000 }
-            );
-
-          });
-
-          this.handleFitPairInfo(response);
-        }
-
-      });
-
+        });
     }
-
   }
 
   /**
@@ -1128,24 +1045,22 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * 若使用者非該裝置榜定者，則跳出訊息提示是否複寫fitpair對象
    * @author kidin-1100709
    */
-   openFitPairAlert() {
-    this.translateService.get('hellow world').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      return this.dialog.open(MessageBoxComponent, {
-        hasBackdrop: true,
-        data: {
-          title: 'message',
-          body: this.translateService.instant('universal_deviceSetting_overwrite'),
-          confirmText: this.translateService.instant('universal_operating_confirm'),
-          onConfirm: this.handleFitPair.bind(this, 2, true),
-          cancelText: this.translateService.instant('universal_operating_cancel')
-        }
-  
+  openFitPairAlert() {
+    this.translateService
+      .get('hellow world')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        return this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: 'message',
+            body: this.translateService.instant('universal_deviceSetting_overwrite'),
+            confirmText: this.translateService.instant('universal_operating_confirm'),
+            onConfirm: this.handleFitPair.bind(this, 2, true),
+            cancelText: this.translateService.instant('universal_operating_cancel'),
+          },
+        });
       });
-
-    });
-
   }
 
   /**
@@ -1166,13 +1081,10 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
           confirmText: this.translateService.instant('universal_deviceSetting_productRegistration'),
           onConfirm: this.handleBonding.bind(this, 1),
           cancelText: this.translateService.instant('universal_uiFitpair_singleFitpair'),
-          onCancel: this.handleFitPair.bind(this, 1)
-        }
-
+          onCancel: this.handleFitPair.bind(this, 1),
+        },
       });
-
     }
-
   }
 
   /**
@@ -1180,7 +1092,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @param e {MouseEvent}
    * @author kidin-1091030
    */
-   handleShowMorePageOpt(e: MouseEvent) {
+  handleShowMorePageOpt(e: MouseEvent) {
     e.stopPropagation();
     this.uiFlag.showMorePageOpt = !this.uiFlag.showMorePageOpt;
   }
@@ -1192,11 +1104,10 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    */
   handleFoldDl(appId: string) {
     if (this.uiFlag.openAppDl.includes(appId)) {
-      this.uiFlag.openAppDl = this.uiFlag.openAppDl.filter(_appId => _appId !== appId);
+      this.uiFlag.openAppDl = this.uiFlag.openAppDl.filter((_appId) => _appId !== appId);
     } else {
       this.uiFlag.openAppDl.push(appId);
     }
-
   }
 
   /**
@@ -1220,7 +1131,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
         break;
     }
 
-   removeLocalStorageObject('actionAfterLogin');
+    removeLocalStorageObject('actionAfterLogin');
   }
 
   /**
@@ -1237,26 +1148,24 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
       filterStartTime,
       filterEndTime,
       page: this.pageSetting.pageIndex,
-      pageCounts: this.pageSetting.onePageSize
+      pageCounts: this.pageSetting.onePageSize,
     };
 
-    this.qrcodeService.getEquipmentLog(body).subscribe(res => {
+    this.qrcodeService.getEquipmentLog(body).subscribe((res) => {
       const { apiCode, resultCode, resultMessage, info } = res;
       if (resultCode !== 200) {
         this.utils.handleError(resultCode, apiCode, resultMessage);
       } else {
         const { totalCounts, equipmentErrorLog } = info,
-              { pageIndex, onePageSize } = this.pageSetting;
+          { pageIndex, onePageSize } = this.pageSetting;
         this.pageSetting = {
           totalCounts,
           pageIndex,
-          onePageSize
+          onePageSize,
         };
         this.equipmentLog = equipmentErrorLog;
       }
-
     });
-
   }
 
   /**
@@ -1271,7 +1180,6 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
       this.pageSetting.onePageSize = onePageSize;
       this.getProductLog();
     }
-
   }
 
   /**
@@ -1280,21 +1188,12 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @param isStartTime {boolean}
    * @author kidin-1100712
    */
-   handleDateChange(
-    $event: MatDatepickerInputEvent<Dayjs>,
-    isStartTime: boolean
-  ) {
+  handleDateChange($event: MatDatepickerInputEvent<Dayjs>, isStartTime: boolean) {
     if (isStartTime) {
-      this.logDate.filterStartTime = dayjs($event.value).format(
-        'YYYY-MM-DDT00:00:00.000Z'
-      );
+      this.logDate.filterStartTime = dayjs($event.value).format('YYYY-MM-DDT00:00:00.000Z');
     } else {
-      this.logDate.filterEndTime = dayjs($event.value).format(
-        'YYYY-MM-DDT23:59:59.000Z'
-      );
-
+      this.logDate.filterEndTime = dayjs($event.value).format('YYYY-MM-DDT23:59:59.000Z');
     }
-
   }
 
   /**
@@ -1304,5 +1203,4 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

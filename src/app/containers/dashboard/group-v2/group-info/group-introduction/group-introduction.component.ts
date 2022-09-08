@@ -2,7 +2,12 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { fromEvent, Subscription, Subject, forkJoin, merge } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { GroupDetailInfo, UserSimpleInfo, EditMode, GroupLevel } from '../../../models/group-detail';
+import {
+  GroupDetailInfo,
+  UserSimpleInfo,
+  EditMode,
+  GroupLevel,
+} from '../../../models/group-detail';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { GroupService } from '../../../../../shared/services/group.service';
 import { HashIdService } from '../../../../../shared/services/hash-id.service';
@@ -11,22 +16,20 @@ import { TranslateService } from '@ngx-translate/core';
 import { PeopleSelectorWinComponent } from '../../../components/people-selector-win/people-selector-win.component';
 import { planDatas } from '../../../group/desc';
 import dayjs from 'dayjs';
-import { TargetField, GroupSportTarget, TargetCondition } from '../../../../../shared/models/sport-target';
-import { ConditionSymbols } from '../../../../../shared/enum/sport-target';
 import { DateUnit } from '../../../../../shared/enum/report';
-import { formTest } from '../../../../../shared/models/form-test';
 import { deepCopy } from '../../../../../shared/utils/index';
-import { AuthService } from '../../../../../core/services/auth.service';
+import { AuthService, LocalstorageService } from '../../../../../core/services';
+import { SportsTarget } from '../../../../../shared/classes/sports-target';
+import { TargetConditionMap } from '../../../../../core/models/api/api-common';
 
 const errMsg = `Error.<br />Please try again later.`;
 
 @Component({
   selector: 'app-group-introduction',
   templateUrl: './group-introduction.component.html',
-  styleUrls: ['./group-introduction.component.scss', '../group-child-page.scss']
+  styleUrls: ['./group-introduction.component.scss', '../group-child-page.scss'],
 })
 export class GroupIntroductionComponent implements OnInit, OnDestroy {
-
   private ngUnsubscribe = new Subject();
   pluralEvent: Subscription;
 
@@ -36,7 +39,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   i18n = {
     enterName: '',
     enterDesc: '',
-    assignAdmin: ''
+    assignAdmin: '',
   };
 
   /**
@@ -50,8 +53,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     openStatusSelector: false,
     isLoading: false,
     showInheritList: false,
-    showCycleList: false,
-    showFiledNameList: false
   };
 
   /**
@@ -59,7 +60,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   formCheck = {
     name: null,
-    desc: null
+    desc: null,
   };
 
   /**
@@ -77,7 +78,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   editBody = {
     token: '',
-    groupLevel: null,
+    groupLevel: <GroupLevel | null>null,
     groupId: '',
     groupName: '',
     groupDesc: '',
@@ -102,30 +103,30 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     groupSetting: {
       maxBranches: 1,
       maxClasses: 2,
-      maxGeneralGroups: 0
+      maxGeneralGroups: 0,
     },
     groupManagerSetting: {
-      maxGroupManagers: null
+      maxGroupManagers: null,
     },
     groupMemberSetting: {
-      maxGroupMembers: null
+      maxGroupMembers: null,
     },
     commercePlanExpired: '',
     shareAvatarToMember: {
       switch: 1,
       enableAccessRight: [],
-      disableAccessRight: []
+      disableAccessRight: [],
     },
     shareActivityToMember: {
       switch: 2,
       enableAccessRight: [],
-      disableAccessRight: []
+      disableAccessRight: [],
     },
     shareReportToMember: {
       switch: 2,
       enableAccessRight: [],
-      disableAccessRight: []
-    }
+      disableAccessRight: [],
+    },
   };
 
   /**
@@ -137,42 +138,36 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * 建立品牌/企業群組所需相關設定
    */
   createBrandSetting = {
-    planName: '',  // 方案名稱
-    planDatas: planDatas,  // 群組各方案設定
-    totalCost: 0  // 建立群組方案所需的花費
+    planName: '', // 方案名稱
+    planDatas: planDatas, // 群組各方案設定
+    totalCost: 0, // 建立群組方案所需的花費
   };
 
   /**
-   * 紀錄舊有目標，避免使用者取消修改
+   * 群組運動目標
    */
-  originSportsTarget: GroupSportTarget = {
-    name: '',
-    cycle: DateUnit.week,
-    condition: []
-  };
+  sportsTarget: SportsTarget;
 
   /**
-   * 該群組運動目標
+   * 目標條件
    */
-  sportTarget: GroupSportTarget = {
-    name: '',
-    cycle: DateUnit.week,
-    condition: []
-  };
-
-  /**
-   * 新的目標條件
-   */
-  newCondition: TargetCondition = {
-    filedName: <TargetField>'',
-    symbols: ConditionSymbols.greaterEqual,
-    filedValue: null
+  cycleCondition = {
+    day: <TargetConditionMap | null>null,
+    week: <TargetConditionMap | null>null,
+    month: <TargetConditionMap | null>null,
+    season: <TargetConditionMap | null>null,
+    year: <TargetConditionMap | null>null,
   };
 
   /**
    * 可繼承的目標清單
    */
-  targetInheritList = [];
+  targetInheritList: any = [];
+
+  /**
+   * 進階模式開關狀態
+   */
+  advancedSportsTarget = this.localstorageService.getAdvancedSportsTarget();
 
   readonly DateUnit = DateUnit;
   readonly GroupLevel = GroupLevel;
@@ -184,8 +179,9 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private dialog: MatDialog,
     private router: Router,
-    private authService: AuthService
-  ) { }
+    private authService: AuthService,
+    private localstorageService: LocalstorageService
+  ) {}
 
   ngOnInit(): void {
     this.getGroupDetail();
@@ -197,51 +193,73 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091103
    */
   getGroupDetail() {
-    this.groupService.getRxGroupDetail().pipe(
-      switchMap(res => this.groupService.getRxCommerceInfo().pipe(
-        map(resp => {
-          Object.assign(res, {expired: resp.expired});
-          Object.assign(res, {commerceStatus: +resp.commerceStatus})
-          return res;
-        })
+    this.groupService
+      .getRxGroupDetail()
+      .pipe(
+        switchMap((res) =>
+          this.groupService.getRxCommerceInfo().pipe(
+            map((resp) => {
+              Object.assign(res, { expired: resp.expired });
+              Object.assign(res, { commerceStatus: +resp.commerceStatus });
+              return res;
+            })
+          )
+        ),
+        takeUntil(this.ngUnsubscribe)
+      )
+      .subscribe((res) => {
+        this.groupDetail = deepCopy(res);
+        const { groupName, groupId, groupDesc, groupVideoUrl, groupStatus } = res;
+        this.editBody = {
+          token: this.authService.token,
+          groupName,
+          groupId,
+          groupLevel: +this.utils.displayGroupLevel(groupId) as GroupLevel,
+          groupDesc,
+          groupVideoUrl,
+          changeStatus: groupStatus,
+        };
 
-      )),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.groupDetail = deepCopy(res);
-      this.editBody = {
-        token: this.authService.token,
-        groupName: this.groupDetail.groupName,
-        groupId: this.groupDetail.groupId,
-        groupLevel: this.utils.displayGroupLevel(this.groupDetail.groupId),
-        groupDesc: this.groupDetail.groupDesc,
-        groupVideoUrl: this.groupDetail.groupVideoUrl,
-        changeStatus: this.groupDetail.groupStatus
-      };
-
-      if (res.target && Object.keys(res.target).length > 0) {
-        const { target } = res;
-        this.originSportsTarget = deepCopy(target);
-        this.sportTarget = deepCopy(target);
-      }
-
-    });
-
+        this.handleSportsTarget();
+      });
   }
 
+  /**
+   * 取得運動目標，並將條件另外儲存
+   * @param reference {GroupLevel | null}-繼承目標的群組階層
+   */
+  handleSportsTarget(reference: GroupLevel | null = null) {
+    this.sportsTarget = reference
+      ? new SportsTarget(this.groupService.getReferenceTarget(this.groupDetail, reference))
+      : this.groupService.getSportsTarget(this.groupDetail);
+    this.saveAllCondition();
+  }
+
+  /**
+   * 將條件另外儲存
+   */
+  saveAllCondition() {
+    this.cycleCondition = {
+      day: this.sportsTarget.getArrangeCondition(DateUnit.day),
+      week: this.sportsTarget.getArrangeCondition(DateUnit.week),
+      month: this.sportsTarget.getArrangeCondition(DateUnit.month),
+      season: this.sportsTarget.getArrangeCondition(DateUnit.season),
+      year: this.sportsTarget.getArrangeCondition(DateUnit.year),
+    };
+  }
 
   /**
    * 取得已儲存的使用者資訊
    * @author kidin-1091103
    */
   getUserProfile() {
-    this.groupService.getUserSimpleInfo().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.userSimpleInfo = res;
-      this.checkQueryString(location.search.slice(1, location.search.length));
-    });
-
+    this.groupService
+      .getUserSimpleInfo()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        this.userSimpleInfo = res;
+        this.checkQueryString(location.search.slice(1, location.search.length));
+      });
   }
 
   /**
@@ -258,9 +276,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       } else if (queryArr[i].indexOf('brandType') > -1) {
         this.createBody.brandType = +queryArr[i].split('=')[1];
       }
-
     }
-
   }
 
   /**
@@ -312,7 +328,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         this.closeEditMode('close');
         break;
     }
-
   }
 
   /**
@@ -330,7 +345,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     } else {
       this.createBody.groupId = this.groupDetail.groupId;
       this.createBody.brandType = this.groupDetail.brandType;
-      this.createBody.groupManager = this.chooseLabels.map(_user => _user.userId);
+      this.createBody.groupManager = this.chooseLabels.map((_user) => _user.userId);
       this.setTargetReference(level === GroupLevel.branch ? GroupLevel.brand : GroupLevel.branch);
     }
 
@@ -344,7 +359,11 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   assignAdmin() {
     this.chooseLabels.length = 0;
-    this.chooseLabels.push({ 'groupName': 'GPTfit', 'userName': this.userSimpleInfo.nickname, 'userId': this.userSimpleInfo.userId });
+    this.chooseLabels.push({
+      groupName: 'GPTfit',
+      userName: this.userSimpleInfo.nickname,
+      userId: this.userSimpleInfo.userId,
+    });
   }
 
   /**
@@ -352,17 +371,16 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091106
    */
   getTranslate() {
-    this.translate.get('hellow world').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.i18n = {
-        enterName: `${this.translate.instant('universal_activityData_name')}`,
-        enterDesc: `${this.translate.instant('universal_group_introduction')}`,
-        assignAdmin: `${this.translate.instant('universal_group_assignAdmin')}`
-      }
-
-    })
-
+    this.translate
+      .get('hellow world')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.i18n = {
+          enterName: `${this.translate.instant('universal_activityData_name')}`,
+          enterDesc: `${this.translate.instant('universal_group_introduction')}`,
+          assignAdmin: `${this.translate.instant('universal_group_assignAdmin')}`,
+        };
+      });
   }
 
   /**
@@ -382,7 +400,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   closeEditMode(action: 'complete' | 'close') {
     if (this.uiFlag.editMode === 'edit') {
       this.uiFlag.editMode = 'close';
-      this.recoverTarget();
+      this.handleSportsTarget();
       this.groupService.setEditMode(action);
     } else if (this.uiFlag.editMode === 'create' && action !== 'complete') {
       this.cancelCreateMode();
@@ -390,7 +408,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       this.groupService.setEditMode(action);
       this.uiFlag.editMode = 'close';
     }
-    
   }
 
   /**
@@ -399,22 +416,20 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   cancelCreateMode() {
     this.uiFlag.editMode = 'close';
-    this.groupService.setEditMode('close');   
+    this.groupService.setEditMode('close');
     if (this.createBody.levelType !== 3) {
       this.router.navigateByUrl(
-        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.createBody.groupId)}/group-architecture`
+        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+          this.createBody.groupId
+        )}/group-architecture`
       );
-
     } else {
-
       if (this.createBody.brandType === 1) {
         this.router.navigateByUrl(`/dashboard/system/create-brand-group`);
       } else {
         this.router.navigateByUrl(`/dashboard/system/create-com-group`);
       }
-      
     }
-
   }
 
   /**
@@ -422,7 +437,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091103
    */
   handleEdit() {
-
     if (this.uiFlag.editMode === 'create') {
       this.checkCreateInput();
     } else if (this.uiFlag.editMode === 'edit') {
@@ -431,7 +445,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       this.openEditMode('edit');
       this.listenPluralEvent();
     }
-
   }
 
   /**
@@ -440,17 +453,14 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   checkCreateInput() {
     if (
-      this.formCheck.name
-      && this.formCheck.desc
-      && this.chooseLabels.length > 0
-      && (
-        this.createBody.levelType !== 3
-        || (this.createBody.levelType === 3 && this.createBody.commercePlanExpired !== '')
-      )
+      this.formCheck.name &&
+      this.formCheck.desc &&
+      this.chooseLabels.length > 0 &&
+      (this.createBody.levelType !== 3 ||
+        (this.createBody.levelType === 3 && this.createBody.commercePlanExpired !== ''))
     ) {
       this.saveCreateContent();
     } else {
-
       if (this.formCheck.name === null) {
         this.formCheck.name = false;
       }
@@ -458,9 +468,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       if (this.formCheck.desc === null) {
         this.formCheck.desc = false;
       }
-
     }
-
   }
 
   /**
@@ -468,12 +476,16 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin1091110
    */
   checkEditInput() {
-    if (this.formCheck.name === null && this.formCheck.desc === null && !this.uiFlag.contentChange && !this.uiFlag.statusChange) {
+    if (
+      this.formCheck.name === null &&
+      this.formCheck.desc === null &&
+      !this.uiFlag.contentChange &&
+      !this.uiFlag.statusChange
+    ) {
       this.closeEditMode('complete');
     } else if (this.editBody.groupName !== '' && this.editBody.groupDesc !== '') {
       this.saveEditContent();
     }
-
   }
 
   /**
@@ -484,13 +496,12 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     const element = document.querySelector('.main__container');
     const clickEvent = fromEvent(document, 'click');
     const scrollEvent = fromEvent(element, 'scroll');
-    this.pluralEvent = merge(clickEvent, scrollEvent).pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.foldAllList();
-      this.cancelListenPluralEvent();
-    });
-
+    this.pluralEvent = merge(clickEvent, scrollEvent)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.foldAllList();
+        this.cancelListenPluralEvent();
+      });
   }
 
   /**
@@ -508,8 +519,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   foldAllList() {
     this.uiFlag.openStatusSelector = false;
     this.uiFlag.showInheritList = false;
-    this.uiFlag.showCycleList = false;
-    this.uiFlag.showFiledNameList = false;
   }
 
   /**
@@ -557,15 +566,15 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @param _lists {Array<Object>}-指派的管理員清單
    * @author kidin-1091109
    */
-  handleConfirm(type: number, _lists: Array<Object>) {
+  handleConfirm(type: number, _lists: Array<any>) {
     this.chooseLabels = _lists;
-    this.createBody.groupManager = this.chooseLabels.map(_user => _user.userId);
+    this.createBody.groupManager = this.chooseLabels.map((_user) => _user.userId);
   }
 
   /**
    * 開啟管理員的選擇器
-   * @param _type 
-   * @param e 
+   * @param _type
+   * @param e
    */
   openSelectorWin(_type: number, e) {
     e.preventDefault();
@@ -578,11 +587,9 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         adminLists,
         type: 1,
         onConfirm: this.handleConfirm.bind(this),
-        isInnerAdmin: this.uiFlag.createLevel === 30 && this.userSimpleInfo.accessRight < 30
-      }
-
+        isInnerAdmin: this.uiFlag.createLevel === 30 && this.userSimpleInfo.accessRight < 30,
+      },
     });
-
   }
 
   /**
@@ -600,11 +607,9 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         this.uiFlag.contentChange = true;
         this.editBody.groupName = (e as any).target.value.trim();
       }
-
     } else {
       this.formCheck.name = false;
     }
-    
   }
 
   /**
@@ -622,11 +627,9 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         this.uiFlag.contentChange = true;
         this.editBody.groupDesc = (e as any).target.value;
       }
-
     } else {
       this.formCheck.desc = false;
     }
-    
   }
 
   /**
@@ -653,7 +656,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       this.uiFlag.statusChange = true;
       this.editBody.changeStatus = status;
     }
-    
+
     this.closeStatusSelector();
   }
 
@@ -690,7 +693,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       this.createBody.groupManagerSetting.maxGroupManagers = planDatas[2].maxGroupManagers;
       this.createBody.groupMemberSetting.maxGroupMembers = planDatas[2].maxGroupMembers;
     }
-    
   }
 
   /**
@@ -719,9 +721,9 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
     this.createBody.commercePlanExpired = date;
     if (this.createBody.commercePlan !== 1 && this.createBody.commercePlan !== 99) {
-      this.createBrandSetting.totalCost = +planDatas[this.createBody.commercePlan - 1].cost * +(e as any).value;
+      this.createBrandSetting.totalCost =
+        +planDatas[this.createBody.commercePlan - 1].cost * +(e as any).value;
     }
-
   }
 
   /**
@@ -732,7 +734,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   savePlanSetting(e: Event, formItem: 'branch' | 'class' | 'admin' | 'member') {
     const num = (e as any).target.value,
-          numReg = /\d+/;
+      numReg = /\d+/;
     switch (formItem) {
       case 'branch':
         if (numReg.test(num) && num >= 1 && num <= 1000) {
@@ -740,7 +742,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         } else {
           this.createBody.groupSetting.maxBranches = 10;
         }
-        
+
         break;
       case 'class':
         if (numReg.test(num) && num >= 1 && num <= 50000) {
@@ -748,7 +750,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         } else {
           this.createBody.groupSetting.maxClasses = 80;
         }
-        
+
         break;
       case 'admin':
         if (numReg.test(num) && num >= 1 && num <= 100000) {
@@ -756,7 +758,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         } else {
           this.createBody.groupManagerSetting.maxGroupManagers = 200;
         }
-        
+
         break;
       case 'member':
         if (numReg.test(num) && num >= 1 && num <= 1000000) {
@@ -767,7 +769,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
         break;
     }
-
   }
 
   /**
@@ -776,9 +777,10 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   saveCreateContent() {
     this.uiFlag.isLoading = true;
-    Object.assign(this.createBody, { target: this.sportTarget });
-    
-    this.groupService.createGroup(this.createBody).subscribe(res => {
+    const target = this.sportsTarget.getReductionTarget();
+    Object.assign(this.createBody, { target });
+
+    this.groupService.createGroup(this.createBody).subscribe((res) => {
       const { resultCode } = res;
       if (resultCode !== 200) {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
@@ -793,7 +795,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
             this.utils.openAlert(msg);
             break;
         }
-        
       } else {
         this.groupService.saveNewGroupId(res.info.newGroupId);
         this.closeEditMode('complete');
@@ -801,7 +802,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
       this.uiFlag.isLoading = false;
     });
-
   }
 
   /**
@@ -809,9 +809,10 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091103
    */
   saveEditContent() {
-    const { editBody, sportTarget: target } = this;
+    const { editBody, sportsTarget } = this;
     const editGroupBody = deepCopy(editBody);
-    if (target.name) Object.assign(editGroupBody, { target });
+    if (sportsTarget.reference)
+      Object.assign(editGroupBody, { target: sportsTarget.getReductionTarget() });
     const { token, groupLevel, groupId, changeStatus } = editBody;
     const changeGroupStatusBody = { token, groupLevel, groupId, changeStatus };
 
@@ -826,7 +827,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       this.closeEditMode('complete');
       this.cancelListenPluralEvent();
     }
-
   }
 
   /**
@@ -836,17 +836,16 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   sendEditGroupReq(body: any) {
     this.uiFlag.isLoading = true;
-    this.groupService.editGroup(body).subscribe(res => {
+    this.groupService.editGroup(body).subscribe((res) => {
       if (res.resultCode === 200) {
         this.initPage();
       } else {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
         this.utils.openAlert(errMsg);
       }
-      
+
       this.uiFlag.isLoading = false;
     });
-
   }
 
   /**
@@ -856,7 +855,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   sendchangeGroupStatusReq(body: any) {
     this.uiFlag.isLoading = true;
-    this.groupService.changeGroupStatus(body).subscribe(res => {
+    this.groupService.changeGroupStatus(body).subscribe((res) => {
       if (res.resultCode === 200) {
         this.initPage();
         this.refreshAllLevelGroupData();
@@ -864,10 +863,9 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
         this.utils.openAlert(errMsg);
       }
-      
+
       this.uiFlag.isLoading = false;
     });
-
   }
 
   /**
@@ -879,8 +877,8 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     this.uiFlag.isLoading = true;
     forkJoin([
       this.groupService.editGroup(editBody),
-      this.groupService.changeGroupStatus(changeBody)
-    ]).subscribe(res => {
+      this.groupService.changeGroupStatus(changeBody),
+    ]).subscribe((res) => {
       if (res[0].resultCode === 200 && res[1].resultCode === 200) {
         this.initPage();
         this.refreshAllLevelGroupData();
@@ -889,10 +887,9 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         console.error(`${res[1].resultCode}: Api-${res[1].apiCode} ${res[1].resultMessage}`);
         this.utils.openAlert(errMsg);
       }
-      
+
       this.uiFlag.isLoading = false;
     });
-
   }
 
   /**
@@ -905,19 +902,17 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       avatarType: 3,
       groupId: this.editBody.groupId,
       groupLevel: this.editBody.groupLevel,
-      infoType: 1
-    }
+      infoType: 1,
+    };
 
-    this.groupService.fetchGroupMemberList(body).subscribe(res => {
+    this.groupService.fetchGroupMemberList(body).subscribe((res) => {
       if (res.resultCode !== 200) {
         this.utils.openAlert(errMsg);
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.groupService.setAllLevelGroupData(res.info.subGroupInfo);
       }
-
     });
-
   }
 
   /**
@@ -941,19 +936,17 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       token: this.editBody.token,
       groupId: this.editBody.groupId,
       findRoot: 1,
-      avatarType: 3
+      avatarType: 3,
     };
 
-    this.groupService.fetchGroupListDetail(body).subscribe(res => {
+    this.groupService.fetchGroupListDetail(body).subscribe((res) => {
       if (res.resultCode !== 200) {
         this.utils.openAlert(errMsg);
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.groupService.saveGroupDetail(res.info);
       }
-
     });
-
   }
 
   /**
@@ -966,7 +959,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(
       `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}/group-introduction`
     );
-
   }
 
   /**
@@ -1004,173 +996,10 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1110307
    */
   setTargetReference(referenceLevel: GroupLevel) {
-    const targetName = `${referenceLevel}`;
-    const referenceIndex = this.targetInheritList.findIndex(_list => _list.level === referenceLevel);
-    const { cycle, condition } = deepCopy(this.targetInheritList[referenceIndex]);
-    if (cycle) {
-      this.sportTarget = { name: targetName, cycle, condition };
-    } else {
-      this.sportTarget = { name: targetName, cycle: DateUnit.week, condition: [] };
-    }
-
+    this.handleSportsTarget(referenceLevel);
+    this.sportsTarget.reference = referenceLevel;
     this.foldInheritList();
-  }
-
-  /**
-   * 展開/收合日期計算基準清單
-   * @param e {MouseEvent}
-   * @author kidin-1110308
-   */
-  toggleCycleList(e: MouseEvent) {
-    e.stopPropagation();
-    const { showCycleList } = this.uiFlag;
-    showCycleList ? this.foldCycleList() : this.unfoldCycleList();
-  }
-
-  /**
-   * 展開日期計算基準清單
-   * @author kidin-1110308
-   */
-  unfoldCycleList() {
-    this.foldAllList();
-    this.uiFlag.showCycleList = true;
-    this.listenPluralEvent();
-  }
-
-  /**
-   * 收合日期計算基準清單
-   * @author kidin-1110308
-   */
-  foldCycleList() {
-    this.uiFlag.showCycleList = false;
-    this.cancelListenPluralEvent();
-  }
-
-  /**
-   * 選擇目標條件之日期基準
-   * @param cycle {DateUnit}-指定的基準序位
-   * @author kidin-1110307
-   */
-  selectDateCycle(cycle: DateUnit) {
-    this.sportTarget.cycle = cycle;
-    this.setNoReference();
-    this.foldCycleList();
-  }
-
-  /**
-   * 展開/收合目標條件名稱清單
-   * @param e {MouseEvent}
-   * @author kidin-1110308
-   */
-  toggleFiledNameList(e: MouseEvent) {
-    e.stopPropagation();
-    const { showFiledNameList } = this.uiFlag;
-    showFiledNameList ? this.foldFiledNameList() : this.unfoldFiledNameList();
-  }
-
-  /**
-   * 展開目標條件名稱清單
-   * @author kidin-1110308
-   */
-  unfoldFiledNameList() {
-    this.foldAllList();
-    this.uiFlag.showFiledNameList = true;
-    this.listenPluralEvent();
-  }
-
-  /**
-   * 收合目標條件名稱
-   * @author kidin-1110308
-   */
-  foldFiledNameList() {
-    this.uiFlag.showFiledNameList = false;
-    this.cancelListenPluralEvent();
-  }
-
-  /**
-   * 選擇新的條件名稱
-   * @param field {TargetField}
-   * @author kidin-1110307
-   */
-  selectNewConditionFiled(field: TargetField) {
-    this.newCondition.filedName = field;
-    if (this.newCondition.filedValue) {
-      // 若條件跟時間有關，則將數值由分轉為秒
-      if (field.toLowerCase().includes('time')) {
-        this.newCondition.filedValue = this.newCondition.filedValue * 60;
-      }
-
-      this.addNewCondition();
-    }
-
-    this.foldFiledNameList();
-  }
-
-  /**
-   * 設定目標條件之達成值
-   * @param e {MouseEvent}
-   * @author kidin-1110307
-   */
-  setNewConditionValue(e: MouseEvent) {
-    const { value } = (e as any).target;
-    if (formTest.number.test(value)) {
-      this.newCondition.filedValue = +value;
-      const { filedName, filedValue } = this.newCondition;
-      if (filedName) {
-        // 若目標項目跟時間有關，則將數值由分轉為秒
-        if (filedName.toLocaleLowerCase().includes('time')) {
-          this.newCondition.filedValue = filedValue * 60;
-        }
-
-        this.addNewCondition();
-      }
-
-    }
-
-    (e as any).target.value = '';
-  }
-
-  /**
-   * 將設定好的新條件納入目標中，若條件名稱重複則覆蓋舊條件
-   * @author kidin-1110307
-   */
-  addNewCondition() {
-    const { filedName } = this.newCondition;
-    const repeatIndex = this.sportTarget.condition
-      .findIndex(_condition => _condition.filedName === filedName);
-    
-    if (repeatIndex >= 0) this.deleteCondition(repeatIndex);
-    const newCondition = deepCopy(this.newCondition);
-    this.sportTarget.condition.push(newCondition);
-    this.newCondition = {
-      filedName: <TargetField>'',
-      symbols: ConditionSymbols.greaterEqual,
-      filedValue: null
-    };
-
-    this.setNoReference();
-  }
-
-  /**
-   * 移除指定之條件
-   * @param index {number}-條件序列
-   * @author kidin-1110307
-   */
-  deleteCondition(index: number) {
-    this.sportTarget.condition.splice(index, 1);
-    this.setNoReference();
-  }
-
-  /**
-   * 變更條件之後，即代表此目標為自定義目標，非繼承目標
-   * @author kidin-1110307
-   */
-  setNoReference() {
     this.uiFlag.contentChange = true;
-    const { groupLevel } = this.editBody;
-    const { editMode, createLevel } = this.uiFlag;
-    const currentLevel = editMode === 'create' ? createLevel : groupLevel;
-    this.sportTarget.name = `${currentLevel}`;
   }
 
   /**
@@ -1179,60 +1008,42 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   getTargetInheritList() {
     this.targetInheritList = [];
-    const { editMode } = this.uiFlag;
-    const { groupName, groupRootInfo, target } = this.groupDetail;
-    if (editMode === 'create') {
-      const { createLevel } = this.uiFlag;
-      switch (createLevel) {
-        case GroupLevel.brand:
-          break;
-        case GroupLevel.class:
-          const { target: brandTarget, brandName } = groupRootInfo[2];          
-          this.targetInheritList.unshift(this.checkReferenceTarget(brandTarget, brandName, GroupLevel.brand));
-          // 這邊不中斷（break）;
-        case GroupLevel.branch:
-          const referenceLevel = createLevel == GroupLevel.branch ? GroupLevel.brand : GroupLevel.branch;
-          this.targetInheritList.unshift(this.checkReferenceTarget(target, groupName, referenceLevel));
-          break;
-      }
-
-    } else {
-      const { groupLevel } = this.editBody;
-      switch (groupLevel) {
-        case GroupLevel.class:
-          const { target: branchTarget, branchName } = groupRootInfo[3];
-          this.targetInheritList.unshift(this.checkReferenceTarget(branchTarget, branchName, GroupLevel.branch));
-          // 這邊不中斷（break）;
-        case GroupLevel.branch:
-          const { target: brandTarget, brandName } = groupRootInfo[2];
-          this.targetInheritList.unshift(this.checkReferenceTarget(brandTarget, brandName, GroupLevel.brand));
-          break;
-      }
-
+    const { editMode, createLevel } = this.uiFlag;
+    const [, , brandInfo, branchInfo] = this.groupDetail.groupRootInfo;
+    const brandSimpleInfo = { groupName: brandInfo?.brandName, level: GroupLevel.brand };
+    const branchSimpleInfo = { groupName: branchInfo?.branchName, level: GroupLevel.branch };
+    const groupLevel = editMode === 'create' ? createLevel : this.editBody.groupLevel;
+    switch (groupLevel) {
+      case GroupLevel.branch:
+        this.targetInheritList = [brandSimpleInfo];
+        break;
+      case GroupLevel.class:
+        this.targetInheritList = [brandSimpleInfo, branchSimpleInfo];
+        break;
+      default:
+        break;
     }
-
   }
 
   /**
-   * 確認目標是否有效，無效則回傳預設值
-   * @param target {GroupSportTarget}-運動目標
-   * @param groupName {string}-群組名稱
-   * @param level {GroupLevel}-群組階層
+   * 變更指定日期單位的目標條件
+   * @param contentMap {TargetConditionMap}-條件Map物件
+   * @param cycle {DateUnit}-日期單位
    */
-  checkReferenceTarget(target: GroupSportTarget, groupName: string, level: GroupLevel) {
-    if (target.name) {
-      const { cycle, condition } = target;
-      return { groupName, level, cycle, condition };
-    }
-
-    return { groupName, level, cycle: DateUnit.week, condition: [] };
+  changeCondition(contentMap: TargetConditionMap, cycle: DateUnit) {
+    const { groupId } = this.groupDetail;
+    this.sportsTarget.changeAllCondition(cycle, contentMap);
+    this.sportsTarget.reference = +this.utils.displayGroupLevel(groupId) as GroupLevel;
+    this.uiFlag.contentChange = true;
   }
 
   /**
-   * 將已編輯運動目標恢復未修改的狀態
+   * 變更運動目標進階功能狀態
    */
-  recoverTarget() {
-    this.sportTarget = deepCopy(this.originSportsTarget);
+  changeAdvancedTargetStatus() {
+    const currentStatus = this.advancedSportsTarget.professional;
+    this.advancedSportsTarget.professional = !currentStatus;
+    this.localstorageService.setAdvancedSportsTarget(this.advancedSportsTarget);
   }
 
   /**
@@ -1243,5 +1054,4 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

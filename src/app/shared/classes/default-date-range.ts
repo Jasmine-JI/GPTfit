@@ -1,18 +1,20 @@
 import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
 import { DateRangeType } from '../models/report-condition';
+
+dayjs.extend(isoWeek);
 
 /**
  * 提供特定時間範圍之值(timestamp)
  */
 export class DefaultDateRange {
-
   /**
    * 取得今日時間範圍
    */
   static getToday() {
     const dateRange = {
       startTime: dayjs().startOf('day').valueOf(),
-      endTime: dayjs().endOf('day').valueOf()
+      endTime: dayjs().endOf('day').valueOf(),
     };
 
     return dateRange;
@@ -24,7 +26,7 @@ export class DefaultDateRange {
   static getSevenDay() {
     const dateRange = {
       startTime: dayjs().subtract(7, 'day').startOf('day').valueOf(),
-      endTime: dayjs().subtract(1, 'day').endOf('day').valueOf()
+      endTime: dayjs().subtract(1, 'day').endOf('day').valueOf(),
     };
 
     return dateRange;
@@ -36,7 +38,7 @@ export class DefaultDateRange {
   static getThirtyDay() {
     const dateRange = {
       startTime: dayjs().subtract(30, 'day').startOf('day').valueOf(),
-      endTime: dayjs().subtract(1, 'day').endOf('day').valueOf()
+      endTime: dayjs().subtract(1, 'day').endOf('day').valueOf(),
     };
 
     return dateRange;
@@ -48,7 +50,7 @@ export class DefaultDateRange {
   static getSixMonth() {
     const dateRange = {
       startTime: dayjs().subtract(6, 'month').startOf('month').valueOf(),
-      endTime: dayjs().subtract(1, 'month').endOf('month').valueOf()
+      endTime: dayjs().subtract(1, 'month').endOf('month').valueOf(),
     };
 
     return dateRange;
@@ -56,11 +58,13 @@ export class DefaultDateRange {
 
   /**
    * 取得本週時間範圍
+   * @param sundayFirst {boolean}-一週開始日是否為週日
    */
-  static getThisWeek() {
+  static getThisWeek(sundayFirst = true) {
+    const referenceWeek = sundayFirst ? 'week' : 'isoWeek';
     const dateRange = {
-      startTime: dayjs().startOf('week').valueOf(),
-      endTime: dayjs().endOf('week').valueOf()
+      startTime: dayjs().startOf(referenceWeek).valueOf(),
+      endTime: dayjs().endOf(referenceWeek).valueOf(),
     };
 
     return dateRange;
@@ -72,7 +76,7 @@ export class DefaultDateRange {
   static getThisMonth() {
     const dateRange = {
       startTime: dayjs().startOf('month').valueOf(),
-      endTime: dayjs().endOf('month').valueOf()
+      endTime: dayjs().endOf('month').valueOf(),
     };
 
     return dateRange;
@@ -84,7 +88,7 @@ export class DefaultDateRange {
   static getThisYear() {
     const dateRange = {
       startTime: dayjs().startOf('year').valueOf(),
-      endTime: dayjs().endOf('year').valueOf()
+      endTime: dayjs().endOf('year').valueOf(),
     };
 
     return dateRange;
@@ -92,12 +96,14 @@ export class DefaultDateRange {
 
   /**
    * 取得上一週時間範圍
+   * @param sundayFirst {boolean}-一週開始日是否為週日
    */
-  static getLastWeek() {
+  static getLastWeek(sundayFirst = true) {
+    const referenceWeek = sundayFirst ? 'week' : 'isoWeek';
     const lastSevenDay = dayjs().subtract(7, 'day');
     const dateRange = {
-      startTime: lastSevenDay.startOf('week').valueOf(),
-      endTime: lastSevenDay.endOf('week').valueOf()
+      startTime: lastSevenDay.startOf(referenceWeek).valueOf(),
+      endTime: lastSevenDay.endOf(referenceWeek).valueOf(),
     };
 
     return dateRange;
@@ -110,7 +116,7 @@ export class DefaultDateRange {
     const lastMonth = dayjs().subtract(1, 'month');
     const dateRange = {
       startTime: lastMonth.startOf('month').valueOf(),
-      endTime: lastMonth.endOf('month').valueOf()
+      endTime: lastMonth.endOf('month').valueOf(),
     };
 
     return dateRange;
@@ -122,7 +128,7 @@ export class DefaultDateRange {
   static getSameRangeLastYear(startTime: number, endTime: number) {
     const dateRange = {
       startTime: dayjs(startTime).subtract(1, 'year').startOf('day').valueOf(),
-      endTime: dayjs(endTime).subtract(1, 'year').endOf('day').valueOf()
+      endTime: dayjs(endTime).subtract(1, 'year').endOf('day').valueOf(),
     };
 
     return dateRange;
@@ -131,8 +137,9 @@ export class DefaultDateRange {
   /**
    * 取得指定時間範圍
    * @param type {DateRangeType}-指定之時間範圍
+   * @param sundayFirst {boolean}-一週開始日是否為週日
    */
-  static getAssignRangeDate(type: DateRangeType) {
+  static getAssignRangeDate(type: DateRangeType, sundayFirst = true) {
     switch (type) {
       case 'today':
         return DefaultDateRange.getToday();
@@ -143,19 +150,17 @@ export class DefaultDateRange {
       case 'sixMonth':
         return DefaultDateRange.getSixMonth();
       case 'thisWeek':
-        return DefaultDateRange.getThisWeek();
+        return DefaultDateRange.getThisWeek(sundayFirst);
       case 'thisMonth':
         return DefaultDateRange.getThisMonth();
       case 'thisYear':
         return DefaultDateRange.getThisYear();
       case 'lastWeek':
-        return DefaultDateRange.getLastWeek();
+        return DefaultDateRange.getLastWeek(sundayFirst);
       case 'lastMonth':
         return DefaultDateRange.getLastMonth();
       case 'none':
         return null;
     }
-
   }
-
 }

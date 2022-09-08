@@ -27,7 +27,7 @@ import { GroupService } from '../../shared/services/group.service';
 import { ListStatusPipe } from './pipes/list-status.pipe';
 import { AboutCloudrunComponent } from './components/about-cloudrun/about-cloudrun.component';
 import { SportTimePipe } from '../../shared/pipes/sport-time.pipe';
-
+import { StationMailModule } from '../station-mail/station-mail.module';
 
 @NgModule({
   imports: [
@@ -40,7 +40,8 @@ import { SportTimePipe } from '../../shared/pipes/sport-time.pipe';
     NgProgressModule,
     CKEditorModule,
     FormsModule,
-    QRCodeModule
+    QRCodeModule,
+    StationMailModule,
   ],
   declarations: [
     OfficialActivityComponent,
@@ -55,7 +56,7 @@ import { SportTimePipe } from '../../shared/pipes/sport-time.pipe';
     EditCarouselComponent,
     ContactUsComponent,
     ListStatusPipe,
-    AboutCloudrunComponent
+    AboutCloudrunComponent,
   ],
   providers: [
     EditGuard,
@@ -64,8 +65,7 @@ import { SportTimePipe } from '../../shared/pipes/sport-time.pipe';
     ShippedStatusPipe,
     SportTimePipe,
     AdminGuard,
-    GroupService
-  ]
-
+    GroupService,
+  ],
 })
-export class OfficialActivityModule { }
+export class OfficialActivityModule {}

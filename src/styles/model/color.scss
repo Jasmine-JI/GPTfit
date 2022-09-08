@@ -7,18 +7,13 @@ $ligntest-gray: rgba(245, 245, 245, 1);
 $primary-blue: rgba(0, 183, 238, 1);
 $deep-blue: rgba(0, 104, 183);
 $warn-red: rgb(255, 75, 75, 1);
-$official-theme-color: linear-gradient(90deg, #8F1515 0%, #B50C5D 51.89%, #EA5400 100%);
+$official-theme-color: linear-gradient(90deg, #8f1515 0%, #b50c5d 51.89%, #ea5400 100%);
 $official-theme-color-light: rgba(229, 68, 68, 1);
 $report-base-color: rgba(249, 248, 212, 1);
 $report-compare-color: rgba(214, 238, 227, 1);
 $sport-analysis-color: rgba(57, 57, 57, 1);
+$system-mail-color: rgba(255, 111, 111, 1);
 
 // 心率或閾值區間顏色
-$zone-color:
-  rgba(112, 177, 243, 1),
-  rgba(100, 224, 236, 1),
-  rgba(171, 247, 132, 1),
-  rgba(247, 242, 91, 1),
-  rgba(243, 179, 83, 1),
-  rgba(243, 105, 83, 1),
-  rgba(239, 56, 150, 1);
+$zone-color: rgba(112, 177, 243, 1), rgba(100, 224, 236, 1), rgba(171, 247, 132, 1),
+  rgba(247, 242, 91, 1), rgba(243, 179, 83, 1), rgba(243, 105, 83, 1), rgba(239, 56, 150, 1);

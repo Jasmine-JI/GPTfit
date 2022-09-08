@@ -26,9 +26,7 @@ import { MyGroupListComponent } from './group/my-group-list/my-group-list.compon
 import { CreateGroupComponent } from './group/create-group/create-group.component';
 // import { MyGroupListComponent } from './group-v2/my-group-list/my-group-list.component';
 import { GroupIntroductionComponent } from './group-v2/group-info/group-introduction/group-introduction.component';
-import {
-  SportsReportComponent as GroupSportsReportComponent
-} from './group-v2/group-info/sports-report/sports-report.component';
+import { SportsReportComponent as GroupSportsReportComponent } from './group-v2/group-info/sports-report/sports-report.component';
 import { MyClassReportComponent } from './group-v2/group-info/my-class-report/my-class-report.component';
 import { CommercePlanComponent } from './group-v2/group-info/commerce-plan/commerce-plan.component';
 import { MemberListComponent } from './group-v2/group-info/member-list/member-list.component';
@@ -47,6 +45,14 @@ import { DeviceListComponent } from './group-v2/group-info/device-list/device-li
 import { PersonalComponent } from './personal/personal.component';
 import { InfoComponent } from './personal/info/info.component';
 import { ActivityListComponent } from './personal/activity-list/activity-list.component';
+import { StationMailComponent } from '../station-mail/station-mail.component';
+import { CreateMailComponent } from '../station-mail/create-mail/create-mail.component';
+import { InboxComponent } from '../station-mail/inbox/inbox.component';
+import { MailDetailComponent } from '../station-mail/mail-detail/mail-detail.component';
+import { ReceiverListComponent } from '../station-mail/receiver-list/receiver-list.component';
+import { appPath } from '../../app-path.const';
+import { GsensorComponent } from './components/gsensor/gsensor.component';
+import { Page404Component } from '../../shared/components/page404/page404.component';
 
 const routes: Routes = [
   {
@@ -56,119 +62,119 @@ const routes: Routes = [
     children: [
       {
         path: 'coach-dashboard/:classId',
-        component: CoachDashboardComponent
+        component: CoachDashboardComponent,
       },
       {
         path: 'my-group-list',
-        component: MyGroupListComponent
+        component: MyGroupListComponent,
       },
       {
         path: 'group-search',
-        component: GroupSearchComponent
+        component: GroupSearchComponent,
       },
       {
         path: 'system/setting-member',
         component: InnerSettingsComponent,
-        canActivate: [DashboardGuard]
+        canActivate: [DashboardGuard],
       },
       {
         path: 'system/device_log',
         component: DeviceLogComponent,
-        canActivate: [DashboardGuard]
+        canActivate: [DashboardGuard],
       },
       {
         path: 'system/device_log/detail/:userId',
         component: DeviceLogDetailComponent,
-        canActivate: [DashboardGuard]
+        canActivate: [DashboardGuard],
       },
       {
         path: 'system/all-group-list',
         component: AllGroupListComponent,
-        canActivate: [DashboardGuard]
+        canActivate: [DashboardGuard],
       },
       {
         path: 'system/create-brand-group',
         component: CreateGroupComponent,
-        canActivate: [DashboardGuard]
+        canActivate: [DashboardGuard],
       },
       {
         path: 'system/create-com-group',
         component: CreateGroupComponent,
-        canActivate: [DashboardGuard]
+        canActivate: [DashboardGuard],
       },
       {
         path: 'system/inner-test',
         component: InnerTestComponent,
-        canActivate: [DashboardGuard]
+        canActivate: [DashboardGuard],
       },
       {
         path: 'system/inner-gpx',
         component: CloudRunGpxComponent,
-        canActivate: [DashboardGuard]
+        canActivate: [DashboardGuard],
       },
       {
         path: 'system/device-pair-management',
         component: InnerDevicePairComponent,
-        canActivate: [DashboardGuard]
+        canActivate: [DashboardGuard],
       },
       {
         path: 'system/device/info/:deviceSN',
         component: DeviceInfoComponent,
-        canActivate: [DashboardGuard]
+        canActivate: [DashboardGuard],
       },
       {
         path: 'system/life-tracking',
-        component: LifeTrackingComponent
+        component: LifeTrackingComponent,
       },
       {
         path: 'system/create-push',
         component: EditPushMessageComponent,
-        canActivate: [DashboardGuard]
+        canActivate: [DashboardGuard],
       },
       {
         path: 'system/push-detail',
         component: EditPushMessageComponent,
-        canActivate: [DashboardGuard]
+        canActivate: [DashboardGuard],
       },
       {
         path: 'system/push-list',
         component: PushMessageListComponent,
-        canActivate: [DashboardGuard]
+        canActivate: [DashboardGuard],
       },
       {
         path: 'system/system-log',
         component: SystemLogComponent,
-        canActivate: [DashboardGuard]
+        canActivate: [DashboardGuard],
       },
       {
         path: 'system/folder-permission',
         component: SystemFolderPermissionComponent,
-        canActivate: [DashboardGuard]
+        canActivate: [DashboardGuard],
       },
       {
         path: 'system/ala-app-analysis',
         component: AlaAppAnalysisComponent,
-        canActivate: [DashboardGuard]
+        canActivate: [DashboardGuard],
       },
       {
         path: 'activity/:fileId',
-        component: ActivityDetailComponent
+        component: ActivityDetailComponent,
       },
       {
         path: 'device',
-        component: MyDeviceComponent
+        component: MyDeviceComponent,
       },
       {
         path: 'device/info/:deviceSN',
-        component: DeviceInfoComponent
+        component: DeviceInfoComponent,
       },
       {
         path: 'live/train-live',
-        component: TrainLiveComponent
+        component: TrainLiveComponent,
       },
       {
         path: 'qrupload/activityfile',
-        component: QrcodeUploadComponent
+        component: QrcodeUploadComponent,
       },
       {
         path: 'group-info/:groupId',
@@ -176,65 +182,65 @@ const routes: Routes = [
         children: [
           {
             path: 'group-introduction',
-            component: GroupIntroductionComponent
+            component: GroupIntroductionComponent,
           },
           {
             path: 'commerce-plan',
-            component: CommercePlanComponent
+            component: CommercePlanComponent,
           },
           {
             path: 'group-architecture',
-            component: GroupArchitectureComponent
+            component: GroupArchitectureComponent,
           },
           {
             path: 'member-list',
-            component: MemberListComponent
+            component: MemberListComponent,
           },
           {
             path: 'admin-list',
-            component: AdminListComponent
+            component: AdminListComponent,
           },
           {
             path: 'myclass-report',
-            component: MyClassReportComponent
+            component: MyClassReportComponent,
           },
           {
             path: 'class-analysis',
-            component: ClassAnalysisComponent
+            component: ClassAnalysisComponent,
           },
           {
             path: 'sports-report',
-            component: GroupSportsReportComponent
+            component: GroupSportsReportComponent,
           },
           {
             path: 'life-tracking',
-            component: LifeTrackingV2Component
+            component: LifeTrackingV2Component,
           },
           {
             path: 'cloudrun-report',
-            component: CloudrunReportComponent
+            component: CloudrunReportComponent,
           },
           {
             path: 'device-list',
-            component: DeviceListComponent
-          }
-        ]
+            component: DeviceListComponent,
+          },
+        ],
       },
       {
         path: 'search-group',
-        component: SearchGroupComponent
+        component: SearchGroupComponent,
       },
       {
         path: 'mygroup-list-v2',
-        component: MyGroupListComponent
+        component: MyGroupListComponent,
       },
       {
         path: 'user-settings',
-        component: PersonalComponent
+        component: PersonalComponent,
       },
       {
         path: 'settings/account-info',
-        component: PersonalComponent
+        component: PersonalComponent,
       },
       {
         path: '',
@@ -242,44 +248,75 @@ const routes: Routes = [
         children: [
           {
             path: 'activity-list',
-            component: ActivityListComponent
+            component: ActivityListComponent,
           },
           {
             path: 'sport-report',
-            component: SportsReportComponent
+            component: SportsReportComponent,
           },
           {
             path: 'life-tracking',
-            component: MyLifeTrackingComponent
+            component: MyLifeTrackingComponent,
           },
           {
             path: 'cloudrun',
-            component: PersonCloudrunReport
+            component: PersonCloudrunReport,
           },
           {
             path: 'info',
-            component: InfoComponent
+            component: InfoComponent,
           },
           {
             path: '',
-            redirectTo: 'activity-list'
-          }
-        ]
+            redirectTo: 'activity-list',
+            pathMatch: 'full',
+          },
+        ],
+      },
+      {
+        path: appPath.stationMail.home,
+        component: StationMailComponent,
+        children: [
+          {
+            path: appPath.stationMail.newMail,
+            component: CreateMailComponent,
+          },
+          {
+            path: appPath.stationMail.inbox,
+            component: InboxComponent,
+          },
+          {
+            path: appPath.stationMail.mailDetail,
+            component: MailDetailComponent,
+          },
+          {
+            path: appPath.stationMail.receiverList,
+            component: ReceiverListComponent,
+          },
+        ],
+      },
+      {
+        path: 'gsensor',
+        component: GsensorComponent,
+      },
+      {
+        path: '404',
+        component: Page404Component,
       },
       {
         path: '**',
-        redirectTo: '404'
-      }
-    ]
+        redirectTo: appPath.pageNotFound,
+      },
+    ],
   },
   {
     path: '**',
-    redirectTo: '404'
-  }
+    redirectTo: appPath.pageNotFound,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class DashboardRoutingModule { }
+export class DashboardRoutingModule {}

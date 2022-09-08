@@ -9,7 +9,7 @@ router.post('/upload', (req, res, next) => {
   form.parse(req, (err, fields, files) => {
     if (err) {
       return res.status(500).send({
-        errorMessage: err.sqlMessage
+        errorMessage: err.sqlMessage,
       });
     }
     const path = files.file.path; // 第二個file是formData的key名
@@ -24,8 +24,8 @@ router.post('/upload', (req, res, next) => {
         res.json({
           resultCode: 200,
           rtnMsg: 'upload successfully!!!',
-          datas: stdout.split('\n').filter(_file => _file.length > 0)
-        })
+          datas: stdout.split('\n').filter((_file) => _file.length > 0),
+        });
       });
     });
   });

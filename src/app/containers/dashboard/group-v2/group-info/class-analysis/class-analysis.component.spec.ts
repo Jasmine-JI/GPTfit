@@ -8,9 +8,8 @@ describe('ClassAnalysisComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ClassAnalysisComponent ]
-    })
-    .compileComponents();
+      declarations: [ClassAnalysisComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

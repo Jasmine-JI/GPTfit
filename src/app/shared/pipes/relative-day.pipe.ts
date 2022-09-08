@@ -1,7 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-
-@Pipe({name: 'relativeDay'})
+@Pipe({ name: 'relativeDay' })
 export class RelativeDayPipe implements PipeTransform {
   /**
    * 將timestamp依據不同天數長度回傳相對天數
@@ -17,7 +16,5 @@ export class RelativeDayPipe implements PipeTransform {
     } else {
       return `${Math.round(relativeDay / 365)}年前`;
     }
-
   }
-
 }

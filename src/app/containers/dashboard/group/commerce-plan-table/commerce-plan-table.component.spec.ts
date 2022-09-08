@@ -8,9 +8,8 @@ describe('CommercePlanTableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CommercePlanTableComponent ]
-    })
-    .compileComponents();
+      declarations: [CommercePlanTableComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

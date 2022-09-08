@@ -6,7 +6,6 @@ import { AnalysisOneOption } from './analysis-one-option';
  * 報告內分析項目可設定的選項
  */
 export class AnalysisOption {
-
   /**
    * 顯示欄位篩選項目清單
    */
@@ -32,13 +31,14 @@ export class AnalysisOption {
    * @param defaultList {Array<any>}-預設顯示欄位
    */
   createOptionList(columnList: Array<any>, defaultList: Array<any>) {
-    of(columnList).pipe(
-      tap(list => this.createOption(list)),
-      tap(() => this.setDefaultOption(defaultList)),
-      tap(() => this.checkOverLimit()),
-      tap(() => this.fillItem())
-    ).subscribe();
-
+    of(columnList)
+      .pipe(
+        tap((list) => this.createOption(list)),
+        tap(() => this.setDefaultOption(defaultList)),
+        tap(() => this.checkOverLimit()),
+        tap(() => this.fillItem())
+      )
+      .subscribe();
   }
 
   /**
@@ -46,8 +46,9 @@ export class AnalysisOption {
    * @param list {Array<any>}-可篩選之欄位清單
    */
   createOption(list: Array<any>) {
-    this._itemList = list.sort((a, b) => a - b)
-      .map(_item => new AnalysisOneOption({ item: _item }));
+    this._itemList = list
+      .sort((a, b) => a - b)
+      .map((_item) => new AnalysisOneOption({ item: _item }));
     return;
   }
 
@@ -56,9 +57,9 @@ export class AnalysisOption {
    * @param defaultList {Array<any>}-預設顯示的欄位清單
    */
   setDefaultOption(defaultList: Array<any>) {
-    defaultList.forEach(_list => {
+    defaultList.forEach((_list) => {
       const _itemValue = _list;
-      const index = this._itemList.findIndex(_list => _list.info.item === _itemValue);
+      const index = this._itemList.findIndex((_list) => _list.info.item === _itemValue);
       this._itemList[index].toggleSelected();
     });
 
@@ -73,7 +74,7 @@ export class AnalysisOption {
     this.checkSelectNumberLimit(width);
     const { _maxSelected, _minSelected } = this;
     let selectedNumber = 0;
-    this._itemList = this._itemList.map(_list => {
+    this._itemList = this._itemList.map((_list) => {
       const { selected } = _list;
       if (selected) selectedNumber++;
 
@@ -95,7 +96,7 @@ export class AnalysisOption {
     let selectedNumber = this.getSelectedList().length;
     const { _maxSelected } = this;
     if (selectedNumber < _maxSelected) {
-      this._itemList = this._itemList.map(_list => {
+      this._itemList = this._itemList.map((_list) => {
         if (selectedNumber < _maxSelected && !_list.selected) {
           _list.selected = true;
           selectedNumber++;
@@ -103,7 +104,6 @@ export class AnalysisOption {
 
         return _list;
       });
-
     }
 
     this.setCanSelectStatus(false);
@@ -134,7 +134,6 @@ export class AnalysisOption {
       this._maxSelected = 6;
       this._minSelected = 2;
     }
-
   }
 
   /**
@@ -142,11 +141,10 @@ export class AnalysisOption {
    * @param status {boolean}-是否可點擊的狀態
    */
   setCanSelectStatus(status: boolean) {
-    this._itemList = this._itemList.map(_list => {
+    this._itemList = this._itemList.map((_list) => {
       _list.canSelect = status;
       return _list;
     });
-
   }
 
   /**
@@ -154,19 +152,17 @@ export class AnalysisOption {
    * @param status {boolean}-是否可點擊的狀態
    */
   setCanCancelStatus(status: boolean) {
-    this._itemList = this._itemList.map(_list => {
+    this._itemList = this._itemList.map((_list) => {
       _list.canCancel = status;
       return _list;
     });
-
   }
 
   /**
    * 取得已選擇的項目
    */
   getSelectedList() {
-    return this._itemList.filter(_item => _item.selected)
-      .map(_item => _item.info.item);
+    return this._itemList.filter((_item) => _item.selected).map((_item) => _item.info.item);
   }
 
   /**
@@ -188,7 +184,7 @@ export class AnalysisOption {
    * @param item {string}-重訓動作分析欄位
    */
   getItemSelectStatus(item: string) {
-    const index = this._itemList.findIndex(_item => _item.info.item === item);
+    const index = this._itemList.findIndex((_item) => _item.info.item === item);
     const assignItem = this._itemList[index];
     return assignItem ? assignItem.selected : false;
   }
@@ -206,5 +202,4 @@ export class AnalysisOption {
   get minSelectedNumber() {
     return this._minSelected;
   }
-
 }

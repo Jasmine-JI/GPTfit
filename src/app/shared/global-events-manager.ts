@@ -4,7 +4,6 @@ import { RankForms } from './models/rankForm';
 
 @Injectable()
 export class GlobalEventsManager {
-
   private _showMask: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _openCollapse: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _closeCollapse: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -29,7 +28,7 @@ export class GlobalEventsManager {
   public getRankTabsEmitter: Observable<number> = this._getRankTabs.asObservable();
   public setFooterRWDEmitter: Observable<number> = this._setFooterRWD.asObservable();
 
-  constructor() { }
+  constructor() {}
 
   showLoading(ifShow: boolean) {
     this._showLoading.next(ifShow);

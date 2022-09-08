@@ -1,4 +1,12 @@
-import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnChanges,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  Input,
+} from '@angular/core';
 import { chart } from 'highcharts';
 import dayjs from 'dayjs';
 import { TranslateService } from '@ngx-translate/core';
@@ -12,28 +20,27 @@ import {
   hitColor,
   jumpColor,
   landingColor,
-  restHrColor
+  restHrColor,
 } from '../../../models/chart-data';
 import { Unit } from '../../../enum/value-conversion';
 import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-
 // 建立圖表用-kidin-1081212
 class ChartOptions {
-  constructor (dataset) {
+  constructor(dataset) {
     return {
       chart: {
         type: 'spline',
         height: 110,
-        backgroundColor: 'transparent'
+        backgroundColor: 'transparent',
       },
       title: {
-        text: ''
+        text: '',
       },
       credits: {
-        enabled: false
+        enabled: false,
       },
       xAxis: {
         type: 'datetime',
@@ -45,29 +52,29 @@ class ChartOptions {
           day: '%m/%d',
           week: '%m/%d',
           month: '%Y/%m',
-          year: '%Y'
+          year: '%Y',
         },
         minPadding: 0.1,
-        maxPadding: 0.03
+        maxPadding: 0.03,
       },
       yAxis: {
         title: {
-            text: ''
+          text: '',
         },
         minPadding: 0.01,
         maxPadding: 0.01,
-        tickAmount: 1
+        tickAmount: 1,
       },
       plotOptions: {
         series: {
-          connectNulls: true
+          connectNulls: true,
         },
         spline: {
-          pointPlacement: 'on'
-        }
+          pointPlacement: 'on',
+        },
       },
       tooltip: {},
-      series: dataset
+      series: dataset,
     };
   }
 }
@@ -75,10 +82,10 @@ class ChartOptions {
 @Component({
   selector: 'app-compare-line-chart',
   templateUrl: './compare-line-chart.component.html',
-  styleUrls: ['./compare-line-chart.component.scss', '../chart-share-style.scss']
+  styleUrls: ['./compare-line-chart.component.scss', '../chart-share-style.scss'],
 })
 export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
-  private ngUnsubscribe = new Subject;
+  private ngUnsubscribe = new Subject();
   noData = false;
   firstSunday: number;
   lastSunday: number;
@@ -93,30 +100,28 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() chartHeight = <number>110;
   @Input() page: DisplayPage;
   @Input() unit = <Unit>Unit.metric;
-  @Input() isPreviewMode: boolean = false;
-  @ViewChild('container', {static: false})
+  @Input() isPreviewMode = false;
+  @ViewChild('container', { static: false })
   container: ElementRef;
 
-  constructor(
-    private translate: TranslateService
-  ) { }
+  constructor(private translate: TranslateService) {}
 
   ngOnInit() {}
 
-  ngOnChanges () {
-    this.translate.get('hellow world').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
-      this.initChart();
-    });
-    
+  ngOnChanges() {
+    this.translate
+      .get('hellow world')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.initChart();
+      });
   }
 
   /**
    * 建立圖表
    * @author kidin-1100625
    */
-  initChart () {
+  initChart() {
     let trendDataset;
     switch (this.chartName) {
       case 'HR':
@@ -130,8 +135,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
             showInLegend: false,
             color: '#ff9a22',
             marker: {
-              symbol: 'circle'
-            }
+              symbol: 'circle',
+            },
           },
           {
             name: this.translate.instant('universal_activityData_hr'),
@@ -139,9 +144,9 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
             showInLegend: false,
             color: '#75f25f',
             marker: {
-              symbol: 'circle'
-            }
-          }
+              symbol: 'circle',
+            },
+          },
         ];
 
         break;
@@ -157,8 +162,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
             color: '#ff9a22',
             marker: {
               fillColor: '#ea5757',
-              symbol: 'circle'
-            }
+              symbol: 'circle',
+            },
           },
           {
             name: powerTitle,
@@ -167,89 +172,91 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
             color: '#72e8b0',
             marker: {
               fillColor: '#75f25f',
-              symbol: 'circle'
-            }
-          }
+              symbol: 'circle',
+            },
+          },
         ];
 
         break;
       case 'ExtremeXGForce':
         const extremeRightMoveTitle = this.translate.instant('universal_activityData_maxRight'),
-              extremeLeftMoveTitle = this.translate.instant('universal_activityData_maxLeft');
+          extremeLeftMoveTitle = this.translate.instant('universal_activityData_maxLeft');
         this.chartType = 'xMoveGForce';
         this.dataLength = this.data.maxXArr.length;
-          trendDataset = [
-            {
-              name: extremeRightMoveTitle,
-              data: this.data.maxXArr,
-              showInLegend: false,
-              color: rightMoveColor,
-              marker: {
-                symbol: 'circle'
-              }
+        trendDataset = [
+          {
+            name: extremeRightMoveTitle,
+            data: this.data.maxXArr,
+            showInLegend: false,
+            color: rightMoveColor,
+            marker: {
+              symbol: 'circle',
             },
-            {
-              name: extremeLeftMoveTitle,
-              data: this.data.minXArr,
-              showInLegend: false,
-              color: leftMoveColor,
-              marker: {
-                symbol: 'circle'
-              }
-            }
-          ];
+          },
+          {
+            name: extremeLeftMoveTitle,
+            data: this.data.minXArr,
+            showInLegend: false,
+            color: leftMoveColor,
+            marker: {
+              symbol: 'circle',
+            },
+          },
+        ];
         break;
       case 'ExtremeYGForce':
-        const extremeAccelateTitle = this.translate.instant('universal_activityData_maxAcceleration'),
-              extremeHitTitle = this.translate.instant('universal_activityData_maxImpact');
+        const extremeAccelateTitle = this.translate.instant(
+            'universal_activityData_maxAcceleration'
+          ),
+          extremeHitTitle = this.translate.instant('universal_activityData_maxImpact');
         this.chartType = 'yMoveGForce';
         this.dataLength = this.data.maxYArr.length;
-          trendDataset = [
-            {
-              name: extremeAccelateTitle,
-              data: this.data.maxYArr,
-              showInLegend: false,
-              color: acclerateColor,
-              marker: {
-                symbol: 'circle'
-              }
+        trendDataset = [
+          {
+            name: extremeAccelateTitle,
+            data: this.data.maxYArr,
+            showInLegend: false,
+            color: acclerateColor,
+            marker: {
+              symbol: 'circle',
             },
-            {
-              name: extremeHitTitle,
-              data: this.data.minYArr,
-              showInLegend: false,
-              color: hitColor,
-              marker: {
-                symbol: 'circle'
-              }
-            }
-          ];
+          },
+          {
+            name: extremeHitTitle,
+            data: this.data.minYArr,
+            showInLegend: false,
+            color: hitColor,
+            marker: {
+              symbol: 'circle',
+            },
+          },
+        ];
         break;
       case 'ExtremeZGForce':
         const extremeJumpTitle = this.translate.instant('universal_activityData_maxJump'),
-              extremeLandingTitle = this.translate.instant('universal_activityData_maxFloorImpact');
+          extremeLandingTitle = this.translate.instant('universal_activityData_maxFloorImpact');
         this.chartType = 'zMoveGForce';
         this.dataLength = this.data.maxZArr.length;
-          trendDataset = [
-            {
-              name: extremeJumpTitle,
-              data: this.data.maxZArr,
-              showInLegend: false,
-              color: jumpColor,
-              marker: {
-                symbol: 'circle'
-              }
+        trendDataset = [
+          {
+            name: extremeJumpTitle,
+            data: this.data.maxZArr,
+            showInLegend: false,
+            color: jumpColor,
+            marker: {
+              symbol: 'circle',
             },
-            {
-              name: extremeLandingTitle,
-              data: this.data.minZArr,
-              showInLegend: false,
-              color: landingColor,
-              marker: {
-                symbol: 'circle'
-              }
-            }
-          ];
+          },
+          {
+            name: extremeLandingTitle,
+            data: this.data.minZArr,
+            showInLegend: false,
+            color: landingColor,
+            marker: {
+              symbol: 'circle',
+            },
+          },
+        ];
         break;
       case 'LifeHR':
         this.dataLength = this.data.restHr.length;
@@ -263,8 +270,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
               enabled: true,
               fillColor: restHrColor.max,
               symbol: 'circle',
-              height: 20
-            }
+              height: 20,
+            },
           },
           {
             name: this.translate.instant('universal_userProfile_restHr'),
@@ -275,9 +282,9 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
               enabled: true,
               fillColor: restHrColor.rest,
               symbol: 'circle',
-              height: 20
-            }
-          }
+              height: 20,
+            },
+          },
         ];
 
         break;
@@ -293,16 +300,14 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
         trendChartOptions['tooltip'] = {
           formatter: function () {
             const startDate = dayjs(this.x).format('YYYY-MM-DD'),
-                  value = parseFloat(this.point.y.toFixed(1));
+              value = parseFloat(this.point.y.toFixed(1));
             if (this.series.xAxis.tickInterval === MONTH) {
               const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
               return `${startDate}~${endDate}<br/>${this.series.name}: ${value}`;
             } else {
               return `${startDate}<br/>${this.series.name}: ${value}`;
             }
-
-          }
-
+          },
         };
 
         // 設定圖表高度-kidin-1090221
@@ -315,16 +320,14 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
         trendChartOptions['tooltip'] = {
           formatter: function () {
             const startDate = dayjs(this.x).format('YYYY-MM-DD'),
-                  value = parseFloat(this.point.y.toFixed(3));
+              value = parseFloat(this.point.y.toFixed(3));
             if (this.series.xAxis.tickInterval === MONTH) {
               const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
               return `${startDate}~${endDate}<br/>${this.series.name}: ${value}`;
             } else {
               return `${startDate}<br/>${this.series.name}: ${value}`;
             }
-
-          }
-
+          },
         };
         break;
     }
@@ -332,20 +335,19 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
     if (this.page !== 'cloudrun') {
       // 設定圖表x軸時間間距-kidin-1090204
       if (this.dateRange === 'day' && this.dataLength <= 7) {
-        trendChartOptions['xAxis'].tickInterval = DAY;  // 間距一天
+        trendChartOptions['xAxis'].tickInterval = DAY; // 間距一天
       } else if (this.dateRange === 'day' && this.dataLength > 7) {
-        trendChartOptions['xAxis'].tickInterval = WEEK;  // 間距一週
+        trendChartOptions['xAxis'].tickInterval = WEEK; // 間距一週
       } else {
-        trendChartOptions['xAxis'].tickInterval = MONTH;  // 間距一個月
+        trendChartOptions['xAxis'].tickInterval = MONTH; // 間距一個月
       }
-
     }
 
     this.createChart(trendChartOptions);
   }
 
   // 根據心率區間的值決定該點顏色-kidin-1090210
-  assignColor (valueX: number | string, valueY: number, type: string) {
+  assignColor(valueX: number | string, valueY: number, type: string) {
     if (this.hrZoneRange['z0'] !== null) {
       if (valueY < this.hrZoneRange['z0']) {
         return {
@@ -353,8 +355,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           y: valueY,
           marker: {
             enabled: true,
-            fillColor: zoneColor[0]
-          }
+            fillColor: zoneColor[0],
+          },
         };
       } else if (valueY >= this.hrZoneRange['z0'] && valueY < this.hrZoneRange['z1']) {
         return {
@@ -362,8 +364,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           y: valueY,
           marker: {
             enabled: true,
-            fillColor: zoneColor[1]
-          }
+            fillColor: zoneColor[1],
+          },
         };
       } else if (valueY >= this.hrZoneRange['z1'] && valueY < this.hrZoneRange['z2']) {
         return {
@@ -371,8 +373,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           y: valueY,
           marker: {
             enabled: true,
-            fillColor: zoneColor[2]
-          }
+            fillColor: zoneColor[2],
+          },
         };
       } else if (valueY >= this.hrZoneRange['z2'] && valueY < this.hrZoneRange['z3']) {
         return {
@@ -380,8 +382,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           y: valueY,
           marker: {
             enabled: true,
-            fillColor: zoneColor[3]
-          }
+            fillColor: zoneColor[3],
+          },
         };
       } else if (valueY >= this.hrZoneRange['z3'] && valueY < this.hrZoneRange['z4']) {
         return {
@@ -389,8 +391,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           y: valueY,
           marker: {
             enabled: true,
-            fillColor: zoneColor[4]
-          }
+            fillColor: zoneColor[4],
+          },
         };
       } else {
         return {
@@ -398,11 +400,10 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           y: valueY,
           marker: {
             enabled: true,
-            fillColor: zoneColor[5]
-          }
+            fillColor: zoneColor[5],
+          },
         };
       }
-
     } else {
       if (type === 'normal') {
         return {
@@ -410,8 +411,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           y: valueY,
           marker: {
             enabled: true,
-            fillColor: '#9b70e0'
-          }
+            fillColor: '#9b70e0',
+          },
         };
       } else {
         return {
@@ -419,18 +420,16 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           y: valueY,
           marker: {
             enabled: true,
-            fillColor: '#6e9bff'
-          }
+            fillColor: '#6e9bff',
+          },
         };
       }
-
     }
   }
 
   // 確認取得元素才建立圖表-kidin-1090706
-  createChart (option: ChartOptions) {
-
-    setTimeout (() => {
+  createChart(option: ChartOptions) {
+    setTimeout(() => {
       if (!this.container) {
         this.createChart(option);
       } else {
@@ -438,16 +437,14 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
         chart(chartDiv, option);
       }
     }, 200);
-
   }
 
   /**
    * 解除rxjs訂閱
    * @author kidin-1100615
    */
-  ngOnDestroy () {
+  ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

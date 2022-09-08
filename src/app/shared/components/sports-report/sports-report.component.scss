@@ -71,11 +71,9 @@
 }
 
 .training__analysis__row {
-
   &:hover {
     cursor: default;
   }
-
 }
 
 .muscle__icon__section {
@@ -121,17 +119,21 @@
   width: 200px;
   border-radius: $height;
   margin: 0 10px;
-  background: linear-gradient(90deg, #7BDEFD 0%, #74F49F 24.29%, #F7EED0 50.33%, #FF4A4A 76.37%, #DB4AFF 100%);
+  background: linear-gradient(
+    90deg,
+    #7bdefd 0%,
+    #74f49f 24.29%,
+    #f7eed0 50.33%,
+    #ff4a4a 76.37%,
+    #db4aff 100%
+  );
 }
-
 
 /***************************************** media ***************************************/
 
 @media (max-width: 767px) {
-
   .part__trend__chart {
     flex-direction: column;
     align-items: center;
   }
-  
 }

@@ -5,15 +5,9 @@ import {
   AfterViewInit,
   ElementRef,
   ViewChild,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
-import {
-  trigger,
-  state,
-  style,
-  transition,
-  animate
-} from '@angular/animations';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 import { demoCoachInfo, demoLessonInfo } from './fakeUsers';
 import { CoachService } from '../../../../shared/services/coach.service';
 import { ActivatedRoute } from '@angular/router';
@@ -23,13 +17,10 @@ import dayjs from 'dayjs';
 import { stockChart } from 'highcharts/highstock';
 import { cloneDeep, keyBy } from 'lodash';
 import { getUrlQueryStrings } from '../../../../shared/utils/index';
-import { AuthService } from '../../../../core/services/auth.service'
+import { AuthService } from '../../../../core/services/auth.service';
 
 export class Message {
-  constructor(
-    public classMemberDataField: any,
-    public classMemberDataFieldValue: any
-  ) {}
+  constructor(public classMemberDataField: any, public classMemberDataFieldValue: any) {}
 }
 
 @Component({
@@ -42,45 +33,44 @@ export class Message {
       state(
         '0',
         style({
-          backgroundColor: '#2e4d9f'
+          backgroundColor: '#2e4d9f',
         })
       ),
       state(
         '1',
         style({
-          backgroundColor: '#2eb1e7'
+          backgroundColor: '#2eb1e7',
         })
       ),
       state(
         '2',
         style({
-          backgroundColor: '#92c422'
+          backgroundColor: '#92c422',
         })
       ),
       state(
         '3',
         style({
-          backgroundColor: '#f5ab14'
+          backgroundColor: '#f5ab14',
         })
       ),
       state(
         '4',
         style({
-          backgroundColor: '#eb5b19'
+          backgroundColor: '#eb5b19',
         })
       ),
       state(
         '5',
         style({
-          backgroundColor: '#c11920'
+          backgroundColor: '#c11920',
         })
       ),
-      transition('* => *', animate('1000ms'))
-    ])
-  ]
+      transition('* => *', animate('1000ms')),
+    ]),
+  ],
 })
-export class CoachDashboardComponent
-  implements OnInit, AfterViewInit, OnDestroy {
+export class CoachDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   width = 0;
   height = 0;
   fakeDatas: any;
@@ -142,7 +132,7 @@ export class CoachDashboardComponent
     coachName: 'Eve Beardall',
     groupVideoUrl: null,
     coachDesc: '',
-    groupDesc: ''
+    groupDesc: '',
   };
   series1: any;
   series2: any;
@@ -161,7 +151,7 @@ export class CoachDashboardComponent
       userName: 'Eve Beardall',
       colorIdx: 0,
       userIcon: '/assets/demo/coach.png',
-      imgClassName: 'user-photo--landscape'
+      imgClassName: 'user-photo--landscape',
     },
     {
       liveHr: 100,
@@ -171,7 +161,7 @@ export class CoachDashboardComponent
       userName: 'Alexia',
       colorIdx: 0,
       userIcon: '/assets/demo/1.png',
-      imgClassName: 'user-photo--landscape'
+      imgClassName: 'user-photo--landscape',
     },
     {
       liveHr: 100,
@@ -181,7 +171,7 @@ export class CoachDashboardComponent
       userName: 'Florence',
       colorIdx: 0,
       userIcon: '/assets/demo/2.png',
-      imgClassName: 'user-photo--landscape'
+      imgClassName: 'user-photo--landscape',
     },
     {
       liveHr: 100,
@@ -191,7 +181,7 @@ export class CoachDashboardComponent
       userName: 'Katherine',
       colorIdx: 0,
       userIcon: '/assets/demo/3.png',
-      imgClassName: 'user-photo--landscape'
+      imgClassName: 'user-photo--landscape',
     },
     {
       liveHr: 100,
@@ -201,7 +191,7 @@ export class CoachDashboardComponent
       userName: 'Martina',
       colorIdx: 0,
       userIcon: '/assets/demo/4.png',
-      imgClassName: 'user-photo--landscape'
+      imgClassName: 'user-photo--landscape',
     },
     {
       liveHr: 100,
@@ -211,8 +201,8 @@ export class CoachDashboardComponent
       userName: 'Stephanie',
       colorIdx: 0,
       userIcon: '/assets/demo/5.png',
-      imgClassName: 'user-photo--landscape'
-    }
+      imgClassName: 'user-photo--landscape',
+    },
   ];
   classImage =
     'https://www.healthcenterhoornsevaart.nl/wp-content/uploads/2018/02/combat-630x300.jpg';
@@ -237,8 +227,8 @@ export class CoachDashboardComponent
     this.socket$ = webSocket(`wss://${hostName}:9000/train`);
 
     this.socket$.subscribe(
-      message => this.display(message),
-      err => console.error(err),
+      (message) => this.display(message),
+      (err) => console.error(err),
       () => console.info('Completed!')
     );
   }
@@ -254,7 +244,7 @@ export class CoachDashboardComponent
       avatarType: '2',
     };
     if (!(this.classId === '99999' && this.isDemoMode)) {
-      this.coachService.fetchClassRoomDetail(body).subscribe(res => {
+      this.coachService.fetchClassRoomDetail(body).subscribe((res) => {
         this.classInfo = res.info;
         this.classInfo.groupIcon =
           this.classInfo.groupIcon && this.classInfo.groupIcon.length > 0
@@ -263,9 +253,7 @@ export class CoachDashboardComponent
         const groupIcon = new Image();
         groupIcon.src = this.classInfo.groupIcon;
         this.classInfo.groupIconClassName =
-          groupIcon.width > groupIcon.height
-            ? 'user-photo--landscape'
-            : 'user-photo--portrait';
+          groupIcon.width > groupIcon.height ? 'user-photo--landscape' : 'user-photo--portrait';
         this.classInfo.coachAvatar =
           this.classInfo.coachAvatar && this.classInfo.coachAvatar.length > 0
             ? `${this.classInfo.coachAvatar}`
@@ -292,14 +280,14 @@ export class CoachDashboardComponent
       series = cloneDeep(this.series3);
     }
     if (series && series[0].data.length > 0) {
-      series = series.sort(
-        (a, b) => a.data[a.data.length - 1][0] - b.data[b.data.length - 1][0]
-      );
+      series = series.sort((a, b) => a.data[a.data.length - 1][0] - b.data[b.data.length - 1][0]);
     }
     if (this.classId === '99999' && this.isDemoMode) {
       this.classInfo.groupIcon = '/assets/demo/demoClass.jpg';
       this.classInfo.coachAvatar = '/assets/demo/coach.png';
-      this.classInfo.groupVideoUrl = this.handleVideoUrl('https://www.youtube.com/embed/eHiDLxBhHGs')
+      this.classInfo.groupVideoUrl = this.handleVideoUrl(
+        'https://www.youtube.com/embed/eHiDLxBhHGs'
+      );
       this.handleCoachInfo(demoCoachInfo);
       this.handleLessonInfo(demoLessonInfo);
 
@@ -309,14 +297,14 @@ export class CoachDashboardComponent
     }
     const hrOptions: any = {
       chart: {
-        height: 250
+        height: 250,
       },
       exporting: {
-        enabled: false
+        enabled: false,
       },
       rangeSelector: {
         inputEnabled: false,
-        enabled: false
+        enabled: false,
       },
       xAxis: {
         type: 'datetime',
@@ -328,10 +316,10 @@ export class CoachDashboardComponent
           day: '%H:%M:%S',
           week: '%H:%M:%S',
           month: '%H:%M:%S',
-          year: '%H:%M:%S'
-        }
+          year: '%H:%M:%S',
+        },
       },
-      series
+      series,
     };
     this.initHChart(hrOptions);
   }
@@ -343,7 +331,7 @@ export class CoachDashboardComponent
         { name: 'Florence', data: [] },
         { name: 'Katherine', data: [] },
         { name: 'Martina', data: [] },
-        { name: 'Stephanie', data: [] }
+        { name: 'Stephanie', data: [] },
       ];
 
       this.series1 = cloneDeep(series);
@@ -383,14 +371,12 @@ export class CoachDashboardComponent
     let sum = 0;
     this.heartValues = [];
     if (typeof msg === 'string') {
-      this.serverMessages = JSON.parse(
-        msg.replace(/u'(?=[^:]+')/g, "'").replace(/'/g, '"')
-      );
+      this.serverMessages = JSON.parse(msg.replace(/u'(?=[^:]+')/g, "'").replace(/'/g, '"'));
       const chartDatas = this.serverMessages.classMemberDataFieldValue;
       const fields = this.serverMessages.classMemberDataField;
-      const heartIdx = fields.findIndex(_field => _field === '129');
-      const snIdx = fields.findIndex(_field => _field === 'equipmentSN');
-      const zoneIdx = fields.findIndex(_field => _field === '133');
+      const heartIdx = fields.findIndex((_field) => _field === '129');
+      const snIdx = fields.findIndex((_field) => _field === 'equipmentSN');
+      const zoneIdx = fields.findIndex((_field) => _field === '133');
       let speedIdx = '';
       let cadenceIdx = '';
       let calorieIdx = '';
@@ -398,22 +384,22 @@ export class CoachDashboardComponent
       let paceIdx = '';
       let distanceIdx = '';
       if (this.classType === '1') {
-        paceIdx = fields.findIndex(_field => _field === '81');
-        distanceIdx = fields.findIndex(_field => _field === '33');
+        paceIdx = fields.findIndex((_field) => _field === '81');
+        distanceIdx = fields.findIndex((_field) => _field === '33');
       }
       if (this.classType === '5') {
-        calorieIdx = fields.findIndex(_field => _field === '289');
+        calorieIdx = fields.findIndex((_field) => _field === '289');
       }
       if (this.classType === '2') {
-        speedIdx = fields.findIndex(_field => _field === '113');
-        cadenceIdx = fields.findIndex(_field => _field === '161');
+        speedIdx = fields.findIndex((_field) => _field === '113');
+        cadenceIdx = fields.findIndex((_field) => _field === '161');
       }
       if (this.classType === '6') {
-        speedIdx = fields.findIndex(_field => _field === '113');
-        wattIdx = fields.findIndex(_field => _field === '369');
+        speedIdx = fields.findIndex((_field) => _field === '113');
+        wattIdx = fields.findIndex((_field) => _field === '369');
       }
       if (this.userInfos.length === 0) {
-        const equipSnDatas = chartDatas.map(_data => {
+        const equipSnDatas = chartDatas.map((_data) => {
           return _data[snIdx];
         });
         this.handleSNInfo(equipSnDatas);
@@ -440,12 +426,7 @@ export class CoachDashboardComponent
               this.chart.series[idx].addPoint([time, calorie], true, false, 1000);
               sum += calorie;
             } else {
-              this.chart.series[idx].addPoint(
-                [time, colorIdx],
-                true,
-                false,
-                1000
-              );
+              this.chart.series[idx].addPoint([time, colorIdx], true, false, 1000);
               sum += colorIdx;
             }
           } else if (this.classType === '6') {
@@ -459,12 +440,7 @@ export class CoachDashboardComponent
               this.chart.series[idx].addPoint([time, speed], true, false, 1000);
               sum += speed;
             } else {
-              this.chart.series[idx].addPoint(
-                [time, watt],
-                true,
-                false,
-                1000
-              );
+              this.chart.series[idx].addPoint([time, watt], true, false, 1000);
               sum += watt;
             }
           } else if (this.classType === '1') {
@@ -478,12 +454,7 @@ export class CoachDashboardComponent
               this.chart.series[idx].addPoint([time, pace], true, false, 1000);
               sum += pace;
             } else {
-              this.chart.series[idx].addPoint(
-                [time, distance],
-                true,
-                false,
-                1000
-              );
+              this.chart.series[idx].addPoint([time, distance], true, false, 1000);
               sum += distance;
             }
           } else if (this.classType === '2') {
@@ -497,15 +468,11 @@ export class CoachDashboardComponent
               this.chart.series[idx].addPoint([time, cadence], true, false, 1000);
               sum += cadence;
             } else {
-              this.chart.series[idx].addPoint(
-                [time, speed],
-                true,
-                false,
-                1000
-              );
+              this.chart.series[idx].addPoint([time, speed], true, false, 1000);
               sum += speed;
             }
-          } else {}
+          } else {
+          }
 
           return {
             liveHr,
@@ -518,7 +485,7 @@ export class CoachDashboardComponent
             userName: this.userInfos[_data[snIdx]].userName,
             colorIdx,
             userIcon: this.userInfos[_data[snIdx]].userIcon,
-            imgClassName: this.userInfos[_data[snIdx]].imgClassName
+            imgClassName: this.userInfos[_data[snIdx]].imgClassName,
           };
         });
       }
@@ -540,9 +507,9 @@ export class CoachDashboardComponent
     const body = {
       token: this.token,
       avatarType: '2',
-      pairEquipmentSN: snDatas
+      pairEquipmentSN: snDatas,
     };
-    this.coachService.fetchFitPairInfo(body).subscribe(res => {
+    this.coachService.fetchFitPairInfo(body).subscribe((res) => {
       const datas = res.info.deviceInfo;
       const series = [];
       this.series1 = [];
@@ -551,10 +518,8 @@ export class CoachDashboardComponent
       let userIcon = '';
       let userName = '';
       let pairEquipmentSN = '';
-      const infos = snDatas.map(_snData => {
-        const existIdx = datas.findIndex(
-          _data => _data.pairEquipmentSN === _snData
-        );
+      const infos = snDatas.map((_snData) => {
+        const existIdx = datas.findIndex((_data) => _data.pairEquipmentSN === _snData);
         if (existIdx > -1) {
           userName = datas[existIdx].userName;
           pairEquipmentSN = datas[existIdx].pairEquipmentSN;
@@ -574,8 +539,7 @@ export class CoachDashboardComponent
         image.src = userIcon;
         const width = image.width;
         const height = image.height;
-        let imgClassName =
-          width > height ? 'user-photo--landscape' : 'user-photo--portrait';
+        let imgClassName = width > height ? 'user-photo--landscape' : 'user-photo--portrait';
         const proportion = width / height;
         if (proportion > 1.5) {
           imgClassName += ' photo-fit__50';
@@ -586,14 +550,14 @@ export class CoachDashboardComponent
       });
       const hrOptions: any = {
         chart: {
-          height: 250
+          height: 250,
         },
         exporting: {
-          enabled: false
+          enabled: false,
         },
         rangeSelector: {
           inputEnabled: false,
-          enabled: false
+          enabled: false,
         },
         xAxis: {
           type: 'datetime',
@@ -605,16 +569,14 @@ export class CoachDashboardComponent
             day: '%H:%M:%S',
             week: '%H:%M:%S',
             month: '%H:%M:%S',
-            year: '%H:%M:%S'
-          }
+            year: '%H:%M:%S',
+          },
         },
-        series
+        series,
       };
       this.initHChart(hrOptions);
       this.isLoading = false;
-      this.userInfos = keyBy(infos, keyName =>
-        keyName.pairEquipmentSN.trim()
-      );
+      this.userInfos = keyBy(infos, (keyName) => keyName.pairEquipmentSN.trim());
     });
   }
   getDemoData(type) {
@@ -626,81 +588,52 @@ export class CoachDashboardComponent
       this.heartValues = this.heartValues.map((_demoData, idx) => {
         if (idx === 0) {
           if (_demoData.liveHr >= 190) {
-            _demoData.liveHr =
-              _demoData.liveHr + (Math.floor(Math.random() * 5) - 1) - 7;
+            _demoData.liveHr = _demoData.liveHr + (Math.floor(Math.random() * 5) - 1) - 7;
           } else if (_demoData.liveHr <= 80) {
-            _demoData.liveHr =
-              _demoData.liveHr + (Math.floor(Math.random() * 5) - 1) + 5;
+            _demoData.liveHr = _demoData.liveHr + (Math.floor(Math.random() * 5) - 1) + 5;
           } else {
-            _demoData.liveHr =
-              _demoData.liveHr + (Math.floor(Math.random() * 5) - 1);
+            _demoData.liveHr = _demoData.liveHr + (Math.floor(Math.random() * 5) - 1);
           }
           coachLiveHr = _demoData.liveHr;
 
-          _demoData.calorie =
-            _demoData.calorie + (Math.floor(Math.random() * 3) + 1);
+          _demoData.calorie = _demoData.calorie + (Math.floor(Math.random() * 3) + 1);
         }
         if (idx === 1) {
           _demoData.liveHr =
-            coachLiveHr +
-            Math.round(1 * (Math.floor(Math.random() * 8.98) - 3.99));
-          _demoData.calorie =
-            _demoData.calorie + (Math.floor(Math.random() * 3) + 1);
+            coachLiveHr + Math.round(1 * (Math.floor(Math.random() * 8.98) - 3.99));
+          _demoData.calorie = _demoData.calorie + (Math.floor(Math.random() * 3) + 1);
         }
         if (idx === 2) {
           _demoData.liveHr =
-            coachLiveHr +
-            Math.round(2 * (Math.floor(Math.random() * 7.98) - 2.99));
-          _demoData.calorie =
-            _demoData.calorie + (Math.floor(Math.random() * 3) + 1);
+            coachLiveHr + Math.round(2 * (Math.floor(Math.random() * 7.98) - 2.99));
+          _demoData.calorie = _demoData.calorie + (Math.floor(Math.random() * 3) + 1);
         }
         if (idx === 3) {
           _demoData.liveHr =
-            coachLiveHr +
-            Math.round(5 * (Math.floor(Math.random() * 6.98) - 1.99));
-          _demoData.calorie =
-            _demoData.calorie + (Math.floor(Math.random() * 3) + 1);
+            coachLiveHr + Math.round(5 * (Math.floor(Math.random() * 6.98) - 1.99));
+          _demoData.calorie = _demoData.calorie + (Math.floor(Math.random() * 3) + 1);
         }
         if (idx === 4) {
           _demoData.liveHr =
-            coachLiveHr +
-            Math.round(6 * (Math.floor(Math.random() * 6.98) - 2.99));
-          _demoData.calorie =
-            _demoData.calorie + (Math.floor(Math.random() * 3) + 1);
+            coachLiveHr + Math.round(6 * (Math.floor(Math.random() * 6.98) - 2.99));
+          _demoData.calorie = _demoData.calorie + (Math.floor(Math.random() * 3) + 1);
         }
         if (idx === 5) {
           _demoData.liveHr =
-            coachLiveHr +
-            Math.round(3 * (Math.floor(Math.random() * 9.98) - 5.99));
-          _demoData.calorie =
-            _demoData.calorie + (Math.floor(Math.random() * 3) + 1);
+            coachLiveHr + Math.round(3 * (Math.floor(Math.random() * 9.98) - 5.99));
+          _demoData.calorie = _demoData.calorie + (Math.floor(Math.random() * 3) + 1);
         }
         _demoData.colorIdx = this.handleDemoColor(_demoData.liveHr);
 
         const time = dayjs().unix() * 1000;
         if (type === 0) {
-          this.chart.series[idx].addPoint(
-            [time, _demoData.liveHr],
-            true,
-            false,
-            1000
-          );
+          this.chart.series[idx].addPoint([time, _demoData.liveHr], true, false, 1000);
           sum += _demoData.liveHr;
         } else if (type === 1) {
-          this.chart.series[idx].addPoint(
-            [time, _demoData.calorie],
-            true,
-            false,
-            1000
-          );
+          this.chart.series[idx].addPoint([time, _demoData.calorie], true, false, 1000);
           sum += _demoData.calorie;
         } else {
-          this.chart.series[idx].addPoint(
-            [time, _demoData.colorIdx],
-            true,
-            false,
-            1000
-          );
+          this.chart.series[idx].addPoint([time, _demoData.colorIdx], true, false, 1000);
           sum += _demoData.colorIdx;
         }
         this.series1[idx].data.push([time, _demoData.liveHr]);
@@ -720,25 +653,17 @@ export class CoachDashboardComponent
       if (this.sortType === 0) {
         this.heartValues = this.heartValues.sort((a, b) => a.liveHr - b.liveHr);
       } else if (this.sortType === 1) {
-        this.heartValues = this.heartValues.sort(
-          (a, b) => a.calorie - b.calorie
-        );
+        this.heartValues = this.heartValues.sort((a, b) => a.calorie - b.calorie);
       } else {
-        this.heartValues = this.heartValues.sort(
-          (a, b) => a.colorIdx - b.colorIdx
-        );
+        this.heartValues = this.heartValues.sort((a, b) => a.colorIdx - b.colorIdx);
       }
     } else {
       if (this.sortType === 0) {
         this.heartValues = this.heartValues.sort((a, b) => b.liveHr - a.liveHr);
       } else if (this.sortType === 1) {
-        this.heartValues = this.heartValues.sort(
-          (a, b) => b.calorie - a.calorie
-        );
+        this.heartValues = this.heartValues.sort((a, b) => b.calorie - a.calorie);
       } else {
-        this.heartValues = this.heartValues.sort(
-          (a, b) => b.colorIdx - a.colorIdx
-        );
+        this.heartValues = this.heartValues.sort((a, b) => b.colorIdx - a.colorIdx);
       }
     }
   }

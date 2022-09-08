@@ -14,17 +14,15 @@
         <div class="flexCol appview-contentDetail">
           <div class="flexCol">
             <h6 class="appview-sectionSubTitle">
-              {{ 'universal_deviceSetting_switch' | translate }} {{ 'universal_userAccount_account' | translate }}
+              {{ 'universal_deviceSetting_switch' | translate }}
+              {{ 'universal_userAccount_account' | translate }}
             </h6>
-            <p class="appview-breakAccount" style="margin: 0;">
+            <p class="appview-breakAccount" style="margin: 0">
               {{ accountInfo.account }}
             </p>
           </div>
         </div>
-        <div
-          class="flexCol appview-contentDetail"
-          *ngIf="imgCaptcha.show"
-        >
+        <div class="flexCol appview-contentDetail" *ngIf="imgCaptcha.show">
           <label class="appview-inputLabel" for="img__captcha">
             {{ 'universal_userAccount_imgCaptcha' | translate }}
           </label>
@@ -37,7 +35,7 @@
               (focusout)="checkImgCaptcha($event)"
               (keypress)="checkImgCaptcha($event)"
             />
-            <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
+            <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha" />
           </div>
           <p class="appview-alertHint">
             <ng-container *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''">
@@ -56,7 +54,8 @@
             <ng-container *ngIf="accountInfo.type === AccountTypeEnum.email">
               <p
                 [innerHTML]="
-                  'universal_userAccount_newVerificationMailSucceeded' | translate: {email: accountInfo.account}
+                  'universal_userAccount_newVerificationMailSucceeded'
+                    | translate: { email: accountInfo.account }
                 "
               ></p>
             </ng-container>
@@ -69,7 +68,7 @@
                 maxlength="8"
                 (focusout)="checkPhoneCaptcha($event)"
                 (keypress)="checkPhoneCaptcha($event)"
-              >
+              />
               <button
                 class="appview-submitButton appview-left"
                 [class.appview-unclickable]="progress !== 100 || timeCount !== 30"
@@ -80,9 +79,14 @@
               </button>
             </div>
           </div>
-          <div *ngTemplateOutlet="buttonArea; context: {
-            backButton: accountInfo.type === AccountTypeEnum.email
-          }"></div>
+          <div
+            *ngTemplateOutlet="
+              buttonArea;
+              context: {
+                backButton: accountInfo.type === AccountTypeEnum.email
+              }
+            "
+          ></div>
         </section>
       </div>
     </div>
@@ -92,10 +96,7 @@
 <ng-template #buttonArea let-backButton="backButton">
   <div class="appview-buttonArea">
     <ng-container *ngIf="!backButton && !enableSuccess">
-      <button
-        class="appview-cancelButton appview-left"
-        (click)="turnFirstLoginOrBack()"
-      >
+      <button class="appview-cancelButton appview-left" (click)="turnFirstLoginOrBack()">
         {{ 'universal_operating_skip' | translate }}
       </button>
       <button
@@ -106,11 +107,7 @@
         {{ 'universal_deviceSetting_switch' | translate }}
       </button>
     </ng-container>
-    <button
-      class="appview-submitButton appview-right"
-      (click)="turnBack()"
-      *ngIf="backButton"
-    >
+    <button class="appview-submitButton appview-right" (click)="turnBack()" *ngIf="backButton">
       <i class="icon-svg_web-icon_p1_016-back"></i>
       {{ 'universal_operating_back' | translate }}
     </button>
@@ -118,31 +115,38 @@
 </ng-template>
 
 <ng-container *ngIf="pcView">
-  <div class="access-bg" style="margin-top: 0;">
-    <div class="container signup" style="padding: 63px 0 70px 0;">
-      <div class="d-flex" style="flex-direction: column;align-items: center;;">
-        <div class="access-panel" style="margin-top: 30px;">
+  <div class="access-bg" style="margin-top: 0">
+    <div class="container signup" style="padding: 63px 0 70px 0">
+      <div class="d-flex" style="flex-direction: column; align-items: center">
+        <div class="access-panel" style="margin-top: 30px">
           <header class="access-header">
-            <img src="assets/attacus_logo.png" style="width: 36%">
+            <img src="assets/attacus_logo.png" style="width: 36%" />
           </header>
           <div class="access-panel-body">
-            <div class="flexCol" style="margin-top: 10px;">
+            <div class="flexCol" style="margin-top: 10px">
               <div class="flexCol webDiv">
-                <span class="access-text">{{ 'universal_userAccount_activateAccount' | translate }}</span>
+                <span class="access-text">{{
+                  'universal_userAccount_activateAccount' | translate
+                }}</span>
                 <input
                   class="form-control"
-                  style="background: white;"
+                  style="background: white"
                   [value]="accountInfo.account"
                   disabled
                 />
               </div>
               <div class="flexCol webDiv" *ngIf="accountInfo.type === 2">
-                <span class="access-text">{{ 'universal_userAccount_phoneCaptcha' | translate }}</span>
+                <span class="access-text">{{
+                  'universal_userAccount_phoneCaptcha' | translate
+                }}</span>
                 <div>
                   <input
-                    style="margin: 0px; width: 100%; background: white;"
+                    style="margin: 0px; width: 100%; background: white"
                     class="form-control"
-                    placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': phoneCaptcha.placeholder } }}"
+                    placeholder="{{
+                      'universal_userAccount_enterInfo'
+                        | translate: { info: phoneCaptcha.placeholder }
+                    }}"
                     maxlength="8"
                     (focusout)="checkPhoneCaptcha($event)"
                     (keypress)="checkPhoneCaptcha($event)"
@@ -154,11 +158,10 @@
                   </p>
                 </div>
               </div>
-              <div
-                class="flexCol webDiv"
-                [style.display]="imgCaptcha.show ? '' : 'none'"
-              >
-                <span class="access-text">{{ 'universal_userAccount_imgCaptcha' | translate }}</span>
+              <div class="flexCol webDiv" [style.display]="imgCaptcha.show ? '' : 'none'">
+                <span class="access-text">{{
+                  'universal_userAccount_imgCaptcha' | translate
+                }}</span>
                 <div class="flexRow">
                   <input
                     placeholder="{{ 'universal_userAccount_imgCaptcha' | translate }}"
@@ -166,9 +169,9 @@
                     (focusout)="checkImgCaptcha($event)"
                     (keypress)="checkImgCaptcha($event)"
                   />
-                  <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
+                  <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha" />
                 </div>
-                <span 
+                <span
                   class="form__message form__message--placeholder"
                   *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''"
                 >
@@ -185,20 +188,28 @@
                 <span>{{ 'universal_operating_send' | translate }}({{ timeCount }}s)</span>
               </button>
             </div>
-            <div class="flexRow" style="justify-content: space-between; align-items: center; margin-top: 20px;">
-              <button
-                class="btn skip__btn"
-                (click)="turnFirstLoginOrBack()"
-              >
+            <div
+              class="flexRow"
+              style="justify-content: space-between; align-items: center; margin-top: 20px"
+            >
+              <button class="btn skip__btn" (click)="turnFirstLoginOrBack()">
                 <span>{{ 'universal_operating_skip' | translate }} &gt;&gt;</span>
               </button>
               <button
                 class="btn btn-primary access-btn"
-                [class.appview-unclickable]="(accountInfo.type === 2 && phoneCaptcha.value === '') || progress !== 100"
-                [style.background]="(accountInfo.type === 2 && phoneCaptcha.value === '') || progress !== 100 ? '#2b819b54' : ''"
+                [class.appview-unclickable]="
+                  (accountInfo.type === 2 && phoneCaptcha.value === '') || progress !== 100
+                "
+                [style.background]="
+                  (accountInfo.type === 2 && phoneCaptcha.value === '') || progress !== 100
+                    ? '#2b819b54'
+                    : ''
+                "
                 (click)="submit()"
               >
-                <span *ngIf="progress === 100">{{ 'universal_deviceSetting_switch' | translate }}</span>
+                <span *ngIf="progress === 100">{{
+                  'universal_deviceSetting_switch' | translate
+                }}</span>
                 <i *ngIf="progress !== 100" class="fa fa-spinner fa-pulse"></i>
               </button>
             </div>

@@ -11,7 +11,7 @@ enum ContentType {
   operation = 1,
   paymentsProblem,
   suggestion,
-  other
+  other,
 }
 
 type AlertType = 'empty' | 'format';
@@ -19,17 +19,17 @@ type AlertType = 'empty' | 'format';
 @Component({
   selector: 'app-contact-us',
   templateUrl: './contact-us.component.html',
-  styleUrls: ['./contact-us.component.scss']
+  styleUrls: ['./contact-us.component.scss'],
 })
 export class ContactUsComponent implements OnInit, OnDestroy {
-  private ngUnsubscribe = new Subject;
+  private ngUnsubscribe = new Subject();
 
   /**
    * ui上用到之flag
    */
   uiFlag = {
-    progress: 100
-  }
+    progress: 100,
+  };
 
   /**
    * 訊息內容
@@ -39,23 +39,23 @@ export class ContactUsComponent implements OnInit, OnDestroy {
     name: null,
     email: null,
     phone: null,
-    content: null
-  }
+    content: null,
+  };
 
   formAlert = {
     name: <AlertType>null,
     email: <AlertType>null,
     phone: <AlertType>null,
     content: <AlertType>null,
-    contentType: <AlertType>null
-  }
+    contentType: <AlertType>null,
+  };
 
   templateText = null;
   template = {
     operationalIssues: null,
     payIssues: null,
     suggestion: null,
-    otherIssues: null
+    otherIssues: null,
   };
 
   readonly ContentType = ContentType;
@@ -65,7 +65,7 @@ export class ContactUsComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private translate: TranslateService,
     private ngLocation: Location
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.getTemplateTranslate();
@@ -76,44 +76,53 @@ export class ContactUsComponent implements OnInit, OnDestroy {
    * @author kidin-111-126
    */
   getTemplateTranslate() {
-    this.translate.get('hellow world').pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      const operationalIssues = `${this.translate.instant('universal_vocabulary_hello')
-        }\n${this.translate.instant('universal_vocabulary_problemDescription')
-        }:\n\n${this.translate.instant('universal_vocabulary_problemTime')
-        }:\n\n${this.translate.instant('universal_vocabulary_problemProcesss')
-        }:\n\n${this.translate.instant('universal_vocabulary_registeredLeaveName')
-        }:\n\n${this.translate.instant('universal_vocabulary_nickname')
-        }:\n\n\n${this.translate.instant('universal_vocabulary_replySoon')
-      }`;
-      const payIssues = `${this.translate.instant('universal_vocabulary_hello')
-        }\n${this.translate.instant('universal_vocabulary_nickname')
-        }:\n\n${this.translate.instant('universal_vocabulary_eventNameWanted')
-        }:\n\n${this.translate.instant('universal_vocabulary_signPackage')
-        }:\n\n${this.translate.instant('universal_vocabulary_payMethod')
-        }:\n\n${this.translate.instant('universal_vocabulary_problemTime')
-        }:\n\n${this.translate.instant('universal_vocabulary_problemDescription')
-        }:\n\n\n${this.translate.instant('universal_vocabulary_replySoon')
-      }`;
-      const suggestion = `${this.translate.instant('universal_vocabulary_hello')
-        }\n${this.translate.instant('universal_vocabulary_opiContents')
-        }:\n\n\n${this.translate.instant('universal_vocabulary_tksReply')
-      }`;
-      const otherIssues = `${this.translate.instant('universal_vocabulary_hello')
-        }\n\n${this.translate.instant('universal_vocabulary_contents')
-      }:\n`;
-      
-      this.templateText = operationalIssues;
-      this.template = {
-        operationalIssues,
-        payIssues,
-        suggestion,
-        otherIssues
-      };
+    this.translate
+      .get('hellow world')
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        const operationalIssues = `${this.translate.instant(
+          'universal_vocabulary_hello'
+        )}\n${this.translate.instant(
+          'universal_vocabulary_problemDescription'
+        )}:\n\n${this.translate.instant(
+          'universal_vocabulary_problemTime'
+        )}:\n\n${this.translate.instant(
+          'universal_vocabulary_problemProcesss'
+        )}:\n\n${this.translate.instant(
+          'universal_vocabulary_registeredLeaveName'
+        )}:\n\n${this.translate.instant(
+          'universal_vocabulary_nickname'
+        )}:\n\n\n${this.translate.instant('universal_vocabulary_replySoon')}`;
+        const payIssues = `${this.translate.instant(
+          'universal_vocabulary_hello'
+        )}\n${this.translate.instant('universal_vocabulary_nickname')}:\n\n${this.translate.instant(
+          'universal_vocabulary_eventNameWanted'
+        )}:\n\n${this.translate.instant(
+          'universal_vocabulary_signPackage'
+        )}:\n\n${this.translate.instant(
+          'universal_vocabulary_payMethod'
+        )}:\n\n${this.translate.instant(
+          'universal_vocabulary_problemTime'
+        )}:\n\n${this.translate.instant(
+          'universal_vocabulary_problemDescription'
+        )}:\n\n\n${this.translate.instant('universal_vocabulary_replySoon')}`;
+        const suggestion = `${this.translate.instant(
+          'universal_vocabulary_hello'
+        )}\n${this.translate.instant(
+          'universal_vocabulary_opiContents'
+        )}:\n\n\n${this.translate.instant('universal_vocabulary_tksReply')}`;
+        const otherIssues = `${this.translate.instant(
+          'universal_vocabulary_hello'
+        )}\n\n${this.translate.instant('universal_vocabulary_contents')}:\n`;
 
-    });
-
+        this.templateText = operationalIssues;
+        this.template = {
+          operationalIssues,
+          payIssues,
+          suggestion,
+          otherIssues,
+        };
+      });
   }
 
   /**
@@ -129,7 +138,6 @@ export class ContactUsComponent implements OnInit, OnDestroy {
       this.formAlert.name = null;
       this.contentInfo.name = name;
     }
-
   }
 
   /**
@@ -156,7 +164,7 @@ export class ContactUsComponent implements OnInit, OnDestroy {
    */
   handlePhoneInput(e: MouseEvent | Event) {
     const phone = (e as any).target.value.trim();
-    const regTest = /^([+0-9\s]*)$/;  // 可能為市話或國碼+手機號碼等，故放寬限制
+    const regTest = /^([+0-9\s]*)$/; // 可能為市話或國碼+手機號碼等，故放寬限制
     if (phone.length === 0) {
       this.formAlert.phone = 'empty';
     } else if (!regTest.test(phone)) {
@@ -165,7 +173,6 @@ export class ContactUsComponent implements OnInit, OnDestroy {
       this.formAlert.phone = null;
       this.contentInfo.phone = phone;
     }
-
   }
 
   /**
@@ -181,7 +188,6 @@ export class ContactUsComponent implements OnInit, OnDestroy {
       this.formAlert.content = null;
       this.contentInfo.content = content;
     }
-
   }
 
   /**
@@ -207,7 +213,6 @@ export class ContactUsComponent implements OnInit, OnDestroy {
         this.templateText = operationalIssues;
         break;
     }
-
   }
 
   /**
@@ -223,28 +228,25 @@ export class ContactUsComponent implements OnInit, OnDestroy {
         this.uiFlag.progress = 30;
         combineLatest([
           this.officialActivityService.fetchOfficialContactus(this.contentInfo),
-          this.translate.get('hellow world')
-        ]).pipe(
-          takeUntil(this.ngUnsubscribe)
-        ).subscribe(res => {
-          const result = res[0];
-          const succeeded = this.utils.checkRes(result);
-          let msg = this.translate.instant('universal_operating_send');
-          if (succeeded) {
-            msg = `${msg} ${this.translate.instant('universal_status_success')}`;
-          } else {
-            msg = `${msg} ${this.translate.instant('universal_status_failure')}`;
-          }
+          this.translate.get('hellow world'),
+        ])
+          .pipe(takeUntil(this.ngUnsubscribe))
+          .subscribe((res) => {
+            const result = res[0];
+            const succeeded = this.utils.checkRes(result);
+            let msg = this.translate.instant('universal_operating_send');
+            if (succeeded) {
+              msg = `${msg} ${this.translate.instant('universal_status_success')}`;
+            } else {
+              msg = `${msg} ${this.translate.instant('universal_status_failure')}`;
+            }
 
-          this.utils.showSnackBar(msg);
-          this.uiFlag.progress = 100;
-          if (succeeded) this.back();
-        });
-
+            this.utils.showSnackBar(msg);
+            this.uiFlag.progress = 100;
+            if (succeeded) this.back();
+          });
       }
-
     }
-
   }
 
   /**
@@ -252,7 +254,7 @@ export class ContactUsComponent implements OnInit, OnDestroy {
    * @author kidin-1101214
    */
   checkForm() {
-    for (let _key in this.contentInfo) {
+    for (const _key in this.contentInfo) {
       const value = this.contentInfo[_key];
       if (!value) {
         this.formAlert[_key] = 'empty';
@@ -260,9 +262,7 @@ export class ContactUsComponent implements OnInit, OnDestroy {
       } else {
         return true;
       }
-
     }
-
   }
 
   /**
@@ -280,5 +280,4 @@ export class ContactUsComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

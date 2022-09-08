@@ -1,16 +1,14 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { UtilsService } from '../../../shared/services/utils.service';
 import { pageNoAccessright } from '../models/official-activity-const';
 import { AccessRight } from '../../../shared/enum/accessright';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserService } from '../../../core/services/user.service';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AdminGuard implements CanActivate {
   constructor(
@@ -23,16 +21,14 @@ export class AdminGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-
     const token = this.authService.token;
     if (token) {
       const { systemAccessright } = this.userService.getUser();
       const passAdmin = [AccessRight.auditor, AccessRight.pusher];
-      if (passAdmin.includes(systemAccessright)) return true;
+      return passAdmin.includes(systemAccessright) ? true : this.checkAccessRightFailed();
     } else {
       return this.checkAccessRightFailed();
     }
-
   }
 
   /**
@@ -43,5 +39,4 @@ export class AdminGuard implements CanActivate {
     this.router.navigateByUrl(pageNoAccessright);
     return false;
   }
-  
 }

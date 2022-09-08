@@ -1,19 +1,24 @@
 <div class="flexCol cardContent">
-  <section 
+  <section
     class="flexRow"
-    style="justify-content: flex-end; margin: 10px;"
+    style="justify-content: flex-end; margin: 10px"
     *ngIf="
-      userSimpleInfo
-      && (userSimpleInfo.accessRight <= editBody.groupLevel || uiFlag.editMode === 'create')
-      && groupDetail.groupStatus !== 4
-      && groupDetail.groupStatus !== 5
-      && (groupDetail.groupStatus !== 6 || (userSimpleInfo.accessRight < editBody.groupLevel && userSimpleInfo.accessRight < 50))
-      && !groupDetail.expired
-      && groupDetail.commerceStatus === 1
+      userSimpleInfo &&
+      (userSimpleInfo.accessRight <= editBody.groupLevel || uiFlag.editMode === 'create') &&
+      groupDetail.groupStatus !== 4 &&
+      groupDetail.groupStatus !== 5 &&
+      (groupDetail.groupStatus !== 6 ||
+        (userSimpleInfo.accessRight < editBody.groupLevel && userSimpleInfo.accessRight < 50)) &&
+      !groupDetail.expired &&
+      groupDetail.commerceStatus === 1
     "
   >
-    <button class="childPageBtn" (click)="closeEditMode('close')" *ngIf="uiFlag.editMode !== 'close'">
-      <span>{{ 'universal_operating_cancel' | translate}}</span>
+    <button
+      class="childPageBtn"
+      (click)="closeEditMode('close')"
+      *ngIf="uiFlag.editMode !== 'close'"
+    >
+      <span>{{ 'universal_operating_cancel' | translate }}</span>
     </button>
     <button
       class="childPageBtn"
@@ -21,40 +26,57 @@
       [class.btnLoadingStatus]="uiFlag.isLoading"
       (click)="handleEdit()"
     >
-      <span *ngIf="uiFlag.editMode === 'close'">{{ 'universal_operating_edit' | translate}}</span>
-      <span *ngIf="uiFlag.editMode !== 'close'">{{ 'universal_operating_finishEdit' | translate}}</span>
+      <span *ngIf="uiFlag.editMode === 'close'">{{ 'universal_operating_edit' | translate }}</span>
+      <span *ngIf="uiFlag.editMode !== 'close'">{{
+        'universal_operating_finishEdit' | translate
+      }}</span>
     </button>
   </section>
   <section class="flexCol info__section">
-    <h6 class="info-contentTitle">{{ 'universal_group_group' | translate}}</h6>
+    <h6 class="info-contentTitle">{{ 'universal_group_group' | translate }}</h6>
     <div class="flexCol info-contentText">
-      <div class="flexRow group__layer__section" *ngIf="uiFlag.editMode !== 'create' || createBody.levelType > 3">
+      <div
+        class="flexRow group__layer__section"
+        *ngIf="uiFlag.editMode !== 'create' || createBody.levelType > 3"
+      >
         <span class="info-itemTitle" *ngIf="groupDetail">
           {{ 30 | groupLevelTranslate: groupDetail.brandType | translate }} :
         </span>
         <span
-          style="cursor: pointer;"
+          style="cursor: pointer"
           class="info__row"
           (click)="navigateParentsGroup(groupDetail.groupRootInfo[2].brandGroupId)"
-          *ngIf="groupDetail &&  groupDetail.groupRootInfo && groupDetail.groupRootInfo.length >= 3; else currentGroupName;"
+          *ngIf="
+            groupDetail && groupDetail.groupRootInfo && groupDetail.groupRootInfo.length >= 3;
+            else currentGroupName
+          "
         >
           {{ groupDetail.groupRootInfo[2].brandName }}
         </span>
       </div>
-      <div class="flexRow group__layer__section" *ngIf="groupDetail &&  groupDetail.groupRootInfo && groupDetail.groupRootInfo.length >= 3;">
+      <div
+        class="flexRow group__layer__section"
+        *ngIf="groupDetail && groupDetail.groupRootInfo && groupDetail.groupRootInfo.length >= 3"
+      >
         <span class="info-itemTitle">
           {{ 40 | groupLevelTranslate: groupDetail.brandType | translate }} :
         </span>
         <span
-          style="cursor: pointer;"
+          style="cursor: pointer"
           class="info__row"
           (click)="navigateParentsGroup(groupDetail.groupRootInfo[3].branchGroupId)"
-          *ngIf="groupDetail &&  groupDetail.groupRootInfo && groupDetail.groupRootInfo.length >= 4; else currentGroupName;"
+          *ngIf="
+            groupDetail && groupDetail.groupRootInfo && groupDetail.groupRootInfo.length >= 4;
+            else currentGroupName
+          "
         >
           {{ groupDetail.groupRootInfo[3].branchName }}
         </span>
       </div>
-      <div class="flexRow group__layer__section" *ngIf="groupDetail &&  groupDetail.groupRootInfo && groupDetail.groupRootInfo.length >= 4;">
+      <div
+        class="flexRow group__layer__section"
+        *ngIf="groupDetail && groupDetail.groupRootInfo && groupDetail.groupRootInfo.length >= 4"
+      >
         <span class="info-itemTitle">
           {{ 60 | groupLevelTranslate: groupDetail.brandType | translate }} :
         </span>
@@ -77,14 +99,11 @@
     </div>
   </section>
   <section class="flexCol info__section">
-    <h6 class="info-contentTitle">{{ 'universal_group_status' | translate}}</h6>
-    <span
-      class="info-contentText"
-      *ngIf="uiFlag.editMode === 'close'"
-    >
+    <h6 class="info-contentTitle">{{ 'universal_group_status' | translate }}</h6>
+    <span class="info-contentText" *ngIf="uiFlag.editMode === 'close'">
       {{ groupDetail?.groupStatus | groupStatus | translate }}
       <span
-        style="color: red;"
+        style="color: red"
         *ngIf="groupDetail && (groupDetail.expired || groupDetail.commerceStatus !== 1)"
       >
         ({{ 'universal_group_outOfService' | translate }})
@@ -93,32 +112,48 @@
     <div
       class="flexCol info-contentText status__selector"
       [class.status__selector__active]="uiFlag.openStatusSelector"
-      style="position: relative;"
+      style="position: relative"
       *ngIf="uiFlag.editMode !== 'close'"
       (click)="toggleStatusSelector($event)"
     >
-      <span *ngIf="uiFlag.editMode === 'edit'">{{ editBody.changeStatus | groupStatus | translate }}</span>
-      <span *ngIf="uiFlag.editMode === 'create'">{{ createBody.groupStatus | groupStatus | translate }}</span>
+      <span *ngIf="uiFlag.editMode === 'edit'">{{
+        editBody.changeStatus | groupStatus | translate
+      }}</span>
+      <span *ngIf="uiFlag.editMode === 'create'">{{
+        createBody.groupStatus | groupStatus | translate
+      }}</span>
       <div id="status__selector__list" class="flexCol" *ngIf="uiFlag.openStatusSelector">
-        <span (click)="saveGroupStatus($event, 1)">{{ 'universal_group_freeToJoin' | translate }}</span>
-        <span (click)="saveGroupStatus($event, 2)">{{ 'universal_group_auditSystem' | translate }}</span>
-        <span (click)="saveGroupStatus($event, 3)">{{ 'universal_operating_hide' | translate }}</span>
+        <span (click)="saveGroupStatus($event, 1)">{{
+          'universal_group_freeToJoin' | translate
+        }}</span>
+        <span (click)="saveGroupStatus($event, 2)">{{
+          'universal_group_auditSystem' | translate
+        }}</span>
+        <span (click)="saveGroupStatus($event, 3)">{{
+          'universal_operating_hide' | translate
+        }}</span>
         <span
           (click)="saveGroupStatus($event, 6)"
           *ngIf="
-            uiFlag.editMode === 'edit'
-            && editBody.groupLevel > 30
-            && userSimpleInfo.accessRight < editBody.groupLevel
-            && userSimpleInfo.accessRight < 50"
-        >{{ 'universal_status_disable' | translate }}</span>
+            uiFlag.editMode === 'edit' &&
+            editBody.groupLevel > 30 &&
+            userSimpleInfo.accessRight < editBody.groupLevel &&
+            userSimpleInfo.accessRight < 50
+          "
+          >{{ 'universal_status_disable' | translate }}</span
+        >
       </div>
     </div>
   </section>
   <section class="flexCol info__section">
-    <h6 class="info-contentTitle">{{ 'universal_group_introduction' | translate}}</h6>
-    <span class="info-contentText" [innerHTML]="groupDetail.groupDesc | lineBreak" *ngIf="groupDetail && uiFlag.editMode === 'close'"></span>
+    <h6 class="info-contentTitle">{{ 'universal_group_introduction' | translate }}</h6>
+    <span
+      class="info-contentText"
+      [innerHTML]="groupDetail.groupDesc | lineBreak"
+      *ngIf="groupDetail && uiFlag.editMode === 'close'"
+    ></span>
     <textarea
-      style="min-height: 300px; resize: none;"
+      style="min-height: 300px; resize: none"
       [style.border-color]="formCheck.desc !== false ? 'initial' : 'red'"
       class="info-contentText"
       placeholder="{{ i18n.enterDesc }}"
@@ -126,7 +161,8 @@
       [value]="uiFlag.editMode === 'create' ? createBody.levelDesc : editBody.groupDesc"
       (focusout)="saveGroupDesc($event)"
       (change)="saveGroupDesc($event)"
-      *ngIf="uiFlag.editMode !== 'close'">
+      *ngIf="uiFlag.editMode !== 'close'"
+    >
     </textarea>
   </section>
   <section class="flexCol info__section" *ngIf="uiFlag.editMode === 'close' && userSimpleInfo">
@@ -158,39 +194,61 @@
   </section>
   <section
     class="flexCol info__section"
-    *ngIf="groupDetail && groupDetail.brandType === 1 && editBody.groupLevel === 60 && uiFlag.editMode === 'edit'"
+    *ngIf="
+      groupDetail &&
+      groupDetail.brandType === 1 &&
+      editBody.groupLevel === 60 &&
+      uiFlag.editMode === 'edit'
+    "
   >
-    <h6 class="info-contentTitle">{{ 'universal_live_liveLink' | translate}}</h6>
-    <input class="info-contentText" [value]="editBody.groupVideoUrl" (change)="saveVedioUrl($event)">
+    <h6 class="info-contentTitle">{{ 'universal_live_liveLink' | translate }}</h6>
+    <input
+      class="info-contentText"
+      [value]="editBody.groupVideoUrl"
+      (change)="saveVedioUrl($event)"
+    />
   </section>
-  <section
-    class="flexCol info__section"
-    *ngIf="groupDetail && groupDetail.brandType === 2"
-  >
+  <section class="flexCol info__section" *ngIf="groupDetail && groupDetail.brandType === 2">
     <h6 class="flexRow info-contentTitle">
-      {{ 'universal_lifeTracking_target' | translate}}
+      {{ 'universal_lifeTracking_target' | translate }}
+      <span class="target__description"
+        >({{ 'universal_activityData_perCapita' | translate }})</span
+      >
       <app-sports-target-tip></app-sports-target-tip>
     </h6>
     <div class="flexCol info-contentText">
+      <div class="flexRow advanced__target__option">
+        <span>{{ 'universal_app_advanced' | translate }}</span>
+        <button
+          class="rod__bar"
+          [class.rod__bar--active]="advancedSportsTarget.professional"
+          (click)="changeAdvancedTargetStatus()"
+        ></button>
+      </div>
       <div
         class="target__inherit"
         *ngIf="
-          (uiFlag.editMode === 'edit' && editBody.groupLevel > GroupLevel.brand)
-          || (uiFlag.editMode === 'create' && uiFlag.createLevel > GroupLevel.brand)
+          (uiFlag.editMode === 'edit' && editBody.groupLevel > GroupLevel.brand) ||
+          (uiFlag.editMode === 'create' && uiFlag.createLevel > GroupLevel.brand)
         "
       >
-        <span
-          class="drop__list"
-          (click)="toggleInheritList($event)"
-        >
-          <ng-container *ngIf="
-            sportTarget.name != (uiFlag.editMode === 'create' ? uiFlag.createLevel : editBody.groupLevel)
-          ">
-            {{ targetInheritList[sportTarget.name == GroupLevel.branch ? 1 : 0].groupName }}
+        <span class="drop__list" (click)="toggleInheritList($event)">
+          <ng-container
+            *ngIf="
+              +sportsTarget.reference !==
+              (uiFlag.editMode === 'create' ? +uiFlag.createLevel : +editBody.groupLevel)
+            "
+          >
+            {{
+              targetInheritList[+sportsTarget.reference === +GroupLevel.branch ? 1 : 0].groupName
+            }}
           </ng-container>
-          <ng-container *ngIf="
-            sportTarget.name == (uiFlag.editMode === 'create' ? uiFlag.createLevel : editBody.groupLevel)
-          ">
+          <ng-container
+            *ngIf="
+              +sportsTarget.reference ===
+              (uiFlag.editMode === 'create' ? +uiFlag.createLevel : +editBody.groupLevel)
+            "
+          >
             {{ 'universal_system_custom' | translate }}
           </ng-container>
           <i
@@ -202,145 +260,69 @@
           <li
             class="list__item"
             (click)="setTargetReference(_list.level)"
-            *ngFor="let _list of targetInheritList;"
+            *ngFor="let _list of targetInheritList"
           >
             {{ _list.groupName }}
           </li>
-          <li
-            class="list__item"
-            (click)="setTargetReference(editBody.groupLevel)"
-          >
+          <li class="list__item" (click)="setTargetReference(editBody.groupLevel)">
             {{ 'universal_system_custom' | translate }}
           </li>
         </ul>
       </div>
-      <div
-        class="date__cycle"
-        *ngIf="uiFlag.editMode !== 'close'"
-      >
-        <span class="drop__list" (click)="toggleCycleList($event)">
-          {{ (sportTarget.cycle === DateUnit.week ? 'universal_time_week' : 'universal_time_day') | translate }}
-          <i
-            class="icon-svg_web-icon_p1_006-unfold unfold__icon"
-            [class.fold__icon]="uiFlag.showCycleList"
-          ></i>
-        </span>
-        <ul class="date__cycle__list" *ngIf="uiFlag.showCycleList">
-          <li
-            class="list__item"
-            (click)="selectDateCycle(DateUnit.day)"
-          >
-            {{ 'universal_time_day' | translate }}
-          </li>
-          <li
-            class="list__item"
-            (click)="selectDateCycle(DateUnit.week)"
-          >
-            {{ 'universal_time_week' | translate }}
-          </li>
-        </ul>
-      </div>
-      <ul class="condition__list">
-        <li
-          class="flexRow condition__list__item"
-          *ngFor="let condition of sportTarget.condition; let index = index;"
-        >
-          <button
-            class="delete__condition__button"
-            (click)="deleteCondition(index)"
-            *ngIf="uiFlag.editMode !== 'close'"
-          >
-            <i class="icon-svg_web-icon_p1_012-close"></i>
-          </button>
-          {{ condition.filedName | targetFieldName | translate }}
-          &ge;
-          {{ condition.filedName.toLocaleLowerCase().includes('time') ? condition.filedValue / 60 : condition.filedValue }}
-          {{ condition.filedName | targetFieldUnit | translate }}
-          / {{ (sportTarget.cycle === DateUnit.week ? 'universal_time_week' : 'universal_time_day') | translate }}
-        </li>
-      </ul>
-      <p *ngIf="uiFlag.editMode === 'close' && (!sportTarget.condition || sportTarget.condition.length === 0)">
-        {{ '未設定運動目標' | translate }}
-      </p>
-      <div class="flexRow filed__name" *ngIf="uiFlag.editMode !== 'close'">
-        <div>
-          <span class="drop__list" (click)="toggleFiledNameList($event)">
-            <ng-container *ngIf="!newCondition.filedName">
-              {{ 'universal_vocabulary_item' | translate }}
-            </ng-container>
-            <ng-container *ngIf="newCondition.filedName">
-              {{ newCondition.filedName | targetFieldName | translate }}
-            </ng-container>
-            <i
-              class="icon-svg_web-icon_p1_006-unfold unfold__icon"
-              [class.fold__icon]="uiFlag.showFiledNameList"
-            ></i>
-          </span>
-          <ul class="filed__name__list" *ngIf="uiFlag.showFiledNameList">
-            <li
-              class="list__item"
-              (click)="selectNewConditionFiled('totalActivities')"
-            >
-              {{ 'universal_activityData_reps' | translate }}
-            </li>
-            <li
-              class="list__item"
-              (click)="selectNewConditionFiled('totalTime')"
-            >
-              {{ 'universal_activityData_totalTime' | translate }}
-            </li>
-            <li
-              class="list__item"
-              (click)="selectNewConditionFiled('benefitTime')"
-            >
-              {{ 'universal_activityData_benefitime' | translate }}
-            </li>
-            <li
-              class="list__item"
-              (click)="selectNewConditionFiled('pai')"
-            >
-              {{ 'universal_activityData_pai' | translate }} PAI
-            </li>
-            <li
-              class="list__item"
-              (click)="selectNewConditionFiled('calories')"
-            >
-              {{ 'universal_userProfile_calories' | translate }}
-            </li>
-          </ul>
-        </div>
-        <span class="condition__symbol">&ge;</span>
-        <input
-          class="target__input"
-          type="text"
-          [placeHolder]="'整數' | translate"
-          [value]="newCondition.filedValue ? newCondition.filedValue : ''"
-          (focusout)="setNewConditionValue($event)"
-        >
-        <ng-container *ngIf="newCondition.filedName">
-          {{ newCondition.filedName | targetFieldUnit | translate }}
-        </ng-container>
+      <div class="flexRow target__card__section" *ngIf="sportsTarget">
+        <app-sport-target-setting
+          [cycle]="DateUnit.day"
+          [condition]="cycleCondition.day"
+          [isEditMode]="uiFlag.editMode !== 'close'"
+          (changeCondition)="changeCondition($event, DateUnit.day)"
+          *ngIf="advancedSportsTarget.professional"
+        ></app-sport-target-setting>
+        <app-sport-target-setting
+          [cycle]="DateUnit.week"
+          [condition]="cycleCondition.week"
+          [isEditMode]="uiFlag.editMode !== 'close'"
+          (changeCondition)="changeCondition($event, DateUnit.week)"
+        ></app-sport-target-setting>
+        <app-sport-target-setting
+          [cycle]="DateUnit.month"
+          [condition]="cycleCondition.month"
+          [isEditMode]="uiFlag.editMode !== 'close'"
+          (changeCondition)="changeCondition($event, DateUnit.month)"
+          *ngIf="advancedSportsTarget.professional"
+        ></app-sport-target-setting>
+        <app-sport-target-setting
+          [cycle]="DateUnit.season"
+          [condition]="cycleCondition.season"
+          [isEditMode]="uiFlag.editMode !== 'close'"
+          (changeCondition)="changeCondition($event, DateUnit.season)"
+          *ngIf="advancedSportsTarget.professional"
+        ></app-sport-target-setting>
+        <app-sport-target-setting
+          [cycle]="DateUnit.year"
+          [condition]="cycleCondition.year"
+          [isEditMode]="uiFlag.editMode !== 'close'"
+          (changeCondition)="changeCondition($event, DateUnit.year)"
+          *ngIf="advancedSportsTarget.professional"
+        ></app-sport-target-setting>
       </div>
     </div>
   </section>
   <section class="info__section" *ngIf="uiFlag.editMode === 'create'">
     <div class="ala-list__item" style="margin-top: 20px">
-      <h6 class="info-contentTitle">
-        {{'universal_group_assignAdmin' | translate}}：
-      </h6>
+      <h6 class="info-contentTitle">{{ 'universal_group_assignAdmin' | translate }}：</h6>
       <div class="ala-form__col assign-admin">
         <button class="icon-btn" (click)="openSelectorWin(createBody.levelType, $event)">
           <i class="icon-svg_web-icon_p1_021-add_friend group-icon"></i>
         </button>
-        <div class="warnText" *ngIf="chooseLabels.length === 0;">
-          {{'universal_group_addAdministrator' | translate}}
+        <div class="warnText" *ngIf="chooseLabels.length === 0">
+          {{ 'universal_group_addAdministrator' | translate }}
         </div>
         <div style="margin-top: 15px" *ngIf="chooseLabels && chooseLabels.length > 0">
-          <ng-container *ngFor="let label of chooseLabels;let _idx = index">
+          <ng-container *ngFor="let label of chooseLabels; let _idx = index">
             <div class="candidate-label">
-              <div style="display: inline-block">{{label.groupName}}/{{label.userName}}</div>
+              <div style="display: inline-block">{{ label.groupName }}/{{ label.userName }}</div>
               <button class="icon-btn" (click)="removeLabel(_idx)">
-                <i class="fa fa-plus icon_fa" style="transform: rotate(45deg);"></i>
+                <i class="fa fa-plus icon_fa" style="transform: rotate(45deg)"></i>
               </button>
             </div>
           </ng-container>
@@ -353,21 +335,13 @@
     *ngIf="uiFlag.editMode === 'create' && uiFlag.createLevel === GroupLevel.brand"
   >
     <div>
-      <h6 class="info-contentTitle">
-        方案內容
-      </h6>
-      <div class="ala-list__item" 
-        style="margin-top: 20px"
-      >
-        <label class="ala-form__label">
-          方案名稱：
-        </label>
-        {{createBrandSetting.planName}}
+      <h6 class="info-contentTitle">方案內容</h6>
+      <div class="ala-list__item" style="margin-top: 20px">
+        <label class="ala-form__label"> 方案名稱： </label>
+        {{ createBrandSetting.planName }}
       </div>
       <div class="ala-list__item" style="margin-top: 20px">
-        <label class="ala-form__label">
-          購買時長：
-        </label>
+        <label class="ala-form__label"> 購買時長： </label>
         <mat-button-toggle-group
           name="fontStyle"
           aria-label="Font Style"
@@ -381,16 +355,16 @@
           <mat-button-toggle value="12">1年</mat-button-toggle>
         </mat-button-toggle-group>
       </div>
-      <div class="ala-list__item"
-        style="margin-top: 20px"
-      >
-        <label class="ala-form__label"
+      <div class="ala-list__item" style="margin-top: 20px">
+        <label
+          class="ala-form__label"
           [class.form__label--required]="createBody.commercePlan === 99"
           *ngIf="createBody.brandType === 1"
         >
           分店數量：
         </label>
-        <label class="ala-form__label"
+        <label
+          class="ala-form__label"
           [class.form__label--required]="createBody.commercePlan === 99"
           *ngIf="createBody.brandType === 2"
         >
@@ -407,18 +381,18 @@
           [value]="createBody.groupSetting.maxBranches"
           (change)="savePlanSetting($event, 'branch')"
           *ngIf="createBody.commercePlan === 99"
-        >
+        />
       </div>
-      <div class="ala-list__item" 
-        style="margin-top: 20px"
-      >
-        <label class="ala-form__label"
+      <div class="ala-list__item" style="margin-top: 20px">
+        <label
+          class="ala-form__label"
           [class.form__label--required]="createBody.commercePlan === 99"
           *ngIf="createBody.brandType === 1"
         >
           課程數量：
         </label>
-        <label class="ala-form__label"
+        <label
+          class="ala-form__label"
           [class.form__label--required]="createBody.commercePlan === 99"
           *ngIf="createBody.brandType === 2"
         >
@@ -435,12 +409,11 @@
           [value]="createBody.groupSetting.maxClasses"
           (change)="savePlanSetting($event, 'class')"
           *ngIf="createBody.commercePlan === 99"
-        >
+        />
       </div>
-      <div class="ala-list__item" 
-        style="margin-top: 20px"
-      >
-        <label class="ala-form__label"
+      <div class="ala-list__item" style="margin-top: 20px">
+        <label
+          class="ala-form__label"
           [class.form__label--required]="createBody.commercePlan === 99"
         >
           可入會成員：
@@ -456,12 +429,11 @@
           [value]="createBody.groupMemberSetting.maxGroupMembers"
           (change)="savePlanSetting($event, 'member')"
           *ngIf="createBody.commercePlan === 99"
-        >
+        />
       </div>
-      <div class="ala-list__item" 
-        style="margin-top: 20px"
-      >
-        <label class="ala-form__label"
+      <div class="ala-list__item" style="margin-top: 20px">
+        <label
+          class="ala-form__label"
           [class.form__label--required]="createBody.commercePlan === 99"
         >
           可建立管理員：
@@ -477,22 +449,36 @@
           [value]="createBody.groupManagerSetting.maxGroupManagers"
           (change)="savePlanSetting($event, 'admin')"
           *ngIf="createBody.commercePlan === 99"
-        >
+        />
       </div>
-      <hr>
+      <hr />
       <label class="ala-form__label">總計費用：</label>
-      <span style="color: #F1873A">
+      <span style="color: #f1873a">
         <span *ngIf="createBody.commercePlan === 1">free</span>
-        <span *ngIf="createBody.commercePlan !== 99 && createBody.commercePlan !== 1 && createBody.brandType === 1">
-          $ {{(createBrandSetting.totalCost | number:'.') || (createBrandSetting.planDatas[createBody.commercePlan - 1].cost  | number:'.')}}
+        <span
+          *ngIf="
+            createBody.commercePlan !== 99 &&
+            createBody.commercePlan !== 1 &&
+            createBody.brandType === 1
+          "
+        >
+          $
+          {{
+            (createBrandSetting.totalCost | number: '.') ||
+              (createBrandSetting.planDatas[createBody.commercePlan - 1].cost | number: '.')
+          }}
         </span>
         <span *ngIf="createBody.commercePlan === 99 || createBody.brandType === 2">自訂價格</span>
       </span>
     </div>
   </section>
+  <div style="min-height: 80px" *ngIf="uiFlag.editMode !== 'close'"></div>
 </div>
 <ng-template #currentGroupName>
-  <span class="groupBlueLabel info__row" *ngIf="groupDetail && (uiFlag.editMode === 'close' || uiFlag.editMode === 'create')">
+  <span
+    class="groupBlueLabel info__row"
+    *ngIf="groupDetail && (uiFlag.editMode === 'close' || uiFlag.editMode === 'create')"
+  >
     {{ groupDetail.groupName }}
   </span>
   <input

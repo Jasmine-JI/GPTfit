@@ -8,9 +8,8 @@ describe('SystemFolderPermissionComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SystemFolderPermissionComponent ]
-    })
-    .compileComponents();
+      declarations: [SystemFolderPermissionComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

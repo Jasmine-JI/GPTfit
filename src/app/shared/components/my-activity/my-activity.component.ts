@@ -23,9 +23,8 @@ import { getUrlQueryStrings } from '../../utils/index';
 @Component({
   selector: 'app-my-activity',
   templateUrl: './my-activity.component.html',
-  styleUrls: ['./my-activity.component.scss']
+  styleUrls: ['./my-activity.component.scss'],
 })
-
 export class MyActivityComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
 
@@ -46,7 +45,7 @@ export class MyActivityComponent implements OnInit, OnDestroy {
   @Input() userName;
   @ViewChild('picker', { read: MatInput }) input: MatInput;
 
-  @ViewChild('paginator', {static: true})
+  @ViewChild('paginator', { static: true })
   paginator: MatPaginator;
   constructor(
     private activityService: ActivityService,
@@ -82,12 +81,12 @@ export class MyActivityComponent implements OnInit, OnDestroy {
     this.currentPage = {
       pageIndex: +pageNumber - 1 || 0,
       pageSize: 10,
-      length: null
+      length: null,
     };
 
     this.currentSort = {
       active: '',
-      direction: ''
+      direction: '',
     };
     this.token = this.authService.token;
     this.getLists();
@@ -98,23 +97,23 @@ export class MyActivityComponent implements OnInit, OnDestroy {
       if (this.isPortal) {
         this.router.navigateByUrl(
           `${location.pathname}?pageNumber=${
-            this.currentPage.pageIndex + 1}&startTime=${
-            this.filterStartTime.slice(0, 10)}&endTime=${
-            this.filterEndTime.slice(0, 10)}&type=${
-            this.sportType}&searchWords=${
-            this.searchWords}${
-              debug !== undefined ? '&debug=' : ''
+            this.currentPage.pageIndex + 1
+          }&startTime=${this.filterStartTime.slice(0, 10)}&endTime=${this.filterEndTime.slice(
+            0,
+            10
+          )}&type=${this.sportType}&searchWords=${this.searchWords}${
+            debug !== undefined ? '&debug=' : ''
           }`
         );
       } else {
         this.router.navigateByUrl(
           `/dashboard/activity-list?pageNumber=${
-            this.currentPage.pageIndex + 1}&startTime=${
-            this.filterStartTime.slice(0, 10)}&endTime=${
-            this.filterEndTime.slice(0, 10)}&type=${
-            this.sportType}&searchWords=${
-            this.searchWords}${
-              debug !== undefined ? '&debug=' : ''
+            this.currentPage.pageIndex + 1
+          }&startTime=${this.filterStartTime.slice(0, 10)}&endTime=${this.filterEndTime.slice(
+            0,
+            10
+          )}&type=${this.sportType}&searchWords=${this.searchWords}${
+            debug !== undefined ? '&debug=' : ''
           }`
         );
       }
@@ -142,17 +141,15 @@ export class MyActivityComponent implements OnInit, OnDestroy {
       `${location.pathname}?startTime=${this.filterStartTime.slice(
         0,
         10
-      )}&endTime=${this.filterEndTime.slice(0, 10)}&type=${
-        this.sportType
-      }&searchWords=${this.searchWords}`
+      )}&endTime=${this.filterEndTime.slice(0, 10)}&type=${this.sportType}&searchWords=${
+        this.searchWords
+      }`
     );
     let isAfter;
     if (this.filterEndTime.length > 0 && this.filterStartTime.length === 0) {
       isAfter = true;
     } else {
-      isAfter = dayjs(this.filterEndTime).isAfter(
-        dayjs(this.filterStartTime)
-      );
+      isAfter = dayjs(this.filterEndTime).isAfter(dayjs(this.filterStartTime));
     }
     if (isAfter) {
       this.getLists();
@@ -162,8 +159,8 @@ export class MyActivityComponent implements OnInit, OnDestroy {
         data: {
           title: 'message',
           body: this.translate.instant('universal_race_timelineIncorrect'),
-          confirmText: this.translate.instant('universal_operating_confirm')
-        }
+          confirmText: this.translate.instant('universal_operating_confirm'),
+        },
       });
     }
   }
@@ -174,21 +171,18 @@ export class MyActivityComponent implements OnInit, OnDestroy {
       token: this.token,
       type: this.sportType,
       page: (this.currentPage && this.currentPage.pageIndex.toString()) || '0',
-      pageCounts:
-        (this.currentPage && this.currentPage.pageSize.toString()) || '10',
+      pageCounts: (this.currentPage && this.currentPage.pageSize.toString()) || '10',
       searchWords: this.searchWords,
       filterStartTime: this.filterStartTime
         ? dayjs(this.filterStartTime).format('YYYY-MM-DDTHH:mm:00.000Z')
         : '',
-      filterEndTime: dayjs(this.filterEndTime).format(
-        'YYYY-MM-DDTHH:mm:00.000Z'
-      ),
-      targetUserId: ''
+      filterEndTime: dayjs(this.filterEndTime).format('YYYY-MM-DDTHH:mm:00.000Z'),
+      targetUserId: '',
     };
     if (this.targetUserId) {
       body.targetUserId = this.targetUserId;
     }
-    this.activityService.fetchSportList(body).subscribe(res => {
+    this.activityService.fetchSportList(body).subscribe((res) => {
       this.isLoading = false;
 
       if (res.resultCode === 200) {
@@ -204,21 +198,14 @@ export class MyActivityComponent implements OnInit, OnDestroy {
     });
   }
 
-  handleDateChange(
-    $event: MatDatepickerInputEvent<Dayjs>,
-    isStartTime: boolean
-  ) {
+  handleDateChange($event: MatDatepickerInputEvent<Dayjs>, isStartTime: boolean) {
     if (isStartTime) {
-      this.filterStartTime = dayjs($event.value).format(
-        'YYYY-MM-DDTHH:mm:00.000Z'
-      );
+      this.filterStartTime = dayjs($event.value).format('YYYY-MM-DDTHH:mm:00.000Z');
     } else {
-      this.filterEndTime = dayjs($event.value).format(
-        'YYYY-MM-DDT23:59:00.000Z'
-      );
+      this.filterEndTime = dayjs($event.value).format('YYYY-MM-DDT23:59:00.000Z');
     }
   }
-  
+
   goDetail(fileId) {
     let debugString = '';
     if (location.search.includes('debug=')) {
@@ -230,7 +217,6 @@ export class MyActivityComponent implements OnInit, OnDestroy {
     } else {
       this.router.navigateByUrl(`/dashboard/activity/${fileId}${debugString}`);
     }
-    
   }
 
   reset() {
@@ -244,9 +230,8 @@ export class MyActivityComponent implements OnInit, OnDestroy {
    * 解除rxjs訂閱
    * @author kidin-1090722
    */
-   ngOnDestroy(): void {
+  ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

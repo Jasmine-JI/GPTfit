@@ -1,12 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { GroupService } from '../services/group.service';
 
-@Pipe({name: 'groupIdSlice'})
+@Pipe({ name: 'groupIdSlice' })
 export class GroupIdSlicePipe implements PipeTransform {
-
-  constructor(
-    private groupService: GroupService
-  ) {}
+  constructor(private groupService: GroupService) {}
 
   /**
    * 取得指定長度的groupid
@@ -18,5 +15,4 @@ export class GroupIdSlicePipe implements PipeTransform {
   transform(groupId: string, length: number): string {
     return this.groupService.getPartGroupId(groupId, length);
   }
-
 }

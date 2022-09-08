@@ -1,10 +1,7 @@
 <h2 mat-dialog-title class="ala-dialog">
   {{ 'universal_privacy_set' | translate }}
 </h2>
-<mat-dialog-content
-  class="post-form"
-  style="color: var(--scale-0-255); min-width: 245px;"
->
+<mat-dialog-content class="post-form" style="color: var(--scale-0-255); min-width: 245px">
   <h6>{{ 'universal_privacy_set' | translate }} {{ 'universal_vocabulary_object' | translate }}</h6>
   <div class="flexCol">
     <div class="flexRow rod__bar__section">
@@ -16,7 +13,7 @@
         [class.rodBar--active]="openObj.length > 1"
         (click)="selectModifyRange(PrivacyObj.self)"
       ></div>
-      <span style="margin-left: 10px;">
+      <span style="margin-left: 10px">
         {{ 'universal_privacy_openPrivacy' | translate }}
       </span>
     </div>
@@ -62,12 +59,11 @@
     </ng-container>
   </div>
 </mat-dialog-content>
-<mat-dialog-actions class="flexRow" style="justify-content: space-between;">
-  <button
-    mat-button mat-dialog-close
-    style="color: var(--scale-0-255);"
-  >{{ 'universal_operating_cancel' | translate }}</button>
-  <button mat-button color="warn" style="font-weight: bold;" (click)="handleConfirm()">
+<mat-dialog-actions class="flexRow" style="justify-content: space-between">
+  <button mat-button mat-dialog-close style="color: var(--scale-0-255)">
+    {{ 'universal_operating_cancel' | translate }}
+  </button>
+  <button mat-button color="warn" style="font-weight: bold" (click)="handleConfirm()">
     {{ 'universal_operating_confirm' | translate }} {{ 'universal_operating_modify' | translate }}
   </button>
 </mat-dialog-actions>

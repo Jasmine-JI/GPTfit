@@ -5,11 +5,22 @@ import Hashids from 'hashids';
 export class HashIdService {
   hashIds: any;
   constructor() {
-    this.hashIds = new Hashids('alatech center', 8, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890');
+    this.hashIds = new Hashids(
+      'alatech center',
+      8,
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+    );
   }
   handleGroupIdEncode(inputText: string) {
     const inputArr = inputText.split('-');
-    const id = this.hashIds.encode(+inputArr[0], +inputArr[1], +inputArr[2], +inputArr[3], +inputArr[4], +inputArr[5]);
+    const id = this.hashIds.encode(
+      +inputArr[0],
+      +inputArr[1],
+      +inputArr[2],
+      +inputArr[3],
+      +inputArr[4],
+      +inputArr[5]
+    );
     return id;
   }
 

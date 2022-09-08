@@ -8,9 +8,8 @@ describe('MyActivityComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ MyActivityComponent ]
-    })
-    .compileComponents();
+      declarations: [MyActivityComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

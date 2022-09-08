@@ -7,12 +7,11 @@ import { takeUntil } from 'rxjs/operators';
 @Component({
   selector: 'app-weight-train-level-selector',
   templateUrl: './weight-train-level-selector.component.html',
-  styleUrls: ['./weight-train-level-selector.component.scss']
+  styleUrls: ['./weight-train-level-selector.component.scss'],
 })
 export class WeightTrainLevelSelectorComponent implements OnInit, OnDestroy {
-
-  private ngUnsubscribe = new Subject;
-  private clickEventSubscription = new Subscription;
+  private ngUnsubscribe = new Subject();
+  private clickEventSubscription = new Subscription();
 
   /**
    * 顯示訓練程度選單與否
@@ -24,12 +23,9 @@ export class WeightTrainLevelSelectorComponent implements OnInit, OnDestroy {
    */
   weightTrainLevel: WeightTrainingLevel = WeightTrainingLevel.metacarpus;
 
-
   readonly WeightTrainingLevel = WeightTrainingLevel;
 
-  constructor(
-    private userService: UserService
-  ) { }
+  constructor(private userService: UserService) {}
 
   ngOnInit(): void {
     this.weightTrainLevel = this.userService.getUser().userProfile.weightTrainingStrengthLevel;
@@ -59,12 +55,9 @@ export class WeightTrainLevelSelectorComponent implements OnInit, OnDestroy {
   subscribeClickEvent() {
     this.showLevelSelector = true;
     const clickEvent = fromEvent(document, 'click');
-    this.clickEventSubscription = clickEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    this.clickEventSubscription = clickEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.unSubscribeClickEvent();
     });
-
   }
 
   /**
@@ -82,5 +75,4 @@ export class WeightTrainLevelSelectorComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

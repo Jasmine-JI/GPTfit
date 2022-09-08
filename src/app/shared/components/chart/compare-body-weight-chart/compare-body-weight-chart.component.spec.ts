@@ -8,9 +8,8 @@ describe('CompareBodyWeightChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CompareBodyWeightChartComponent ]
-    })
-    .compileComponents();
+      declarations: [CompareBodyWeightChartComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

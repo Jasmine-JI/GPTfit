@@ -8,9 +8,8 @@ describe('AppSigninComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AppSigninComponent ]
-    })
-    .compileComponents();
+      declarations: [AppSigninComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

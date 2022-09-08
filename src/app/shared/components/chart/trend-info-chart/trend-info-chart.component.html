@@ -1,6 +1,8 @@
 <section class="flexCol pageBreakAvoid">
-  <div class="flexRow" style="align-items: center; justify-content: space-between;">
-    <h6 id="chart__title">{{ finalChartType | dataTypeTranslate: [sportType, unit] | translate }}</h6>
+  <div class="flexRow" style="align-items: center; justify-content: space-between">
+    <h6 id="chart__title">
+      {{ finalChartType | dataTypeTranslate: [sportType, unit] | translate }}
+    </h6>
     <button
       class="switch__button"
       (click)="conversePaceSpeed()"
@@ -12,7 +14,11 @@
     <span id="row__line"></span>
   </div>
   <main id="main__seciton">
-    <div class="flexRow info__block" style="justify-content: space-between;" *ngIf="finalChartType !== 'gforce'">
+    <div
+      class="flexRow info__block"
+      style="justify-content: space-between"
+      *ngIf="finalChartType !== 'gforce'"
+    >
       <div class="flexCol info__section">
         <span class="data__number">
           <ng-container *ngIf="finalChartType === 'pace'">
@@ -56,7 +62,8 @@
             {{ gForceInfoData.x.max | number: '1.0-2' }}g
           </span>
           <span class="data__description">
-            {{ 'universal_adjective_maxHight' | translate }} {{ 'universal_unit_gforce' | translate }}-X
+            {{ 'universal_adjective_maxHight' | translate }}
+            {{ 'universal_unit_gforce' | translate }}-X
           </span>
         </div>
         <div class="flexCol info__section">
@@ -64,7 +71,8 @@
             {{ gForceInfoData.x.min | number: '1.0-2' }}g
           </span>
           <span class="data__description">
-            {{ 'universal_adjective_maxSmall' | translate }} {{ 'universal_unit_gforce' | translate }}-X
+            {{ 'universal_adjective_maxSmall' | translate }}
+            {{ 'universal_unit_gforce' | translate }}-X
           </span>
         </div>
       </div>
@@ -74,7 +82,8 @@
             {{ gForceInfoData.y.max | number: '1.0-2' }}g
           </span>
           <span class="data__description">
-            {{ 'universal_adjective_maxHight' | translate }} {{ 'universal_unit_gforce' | translate }}-Y
+            {{ 'universal_adjective_maxHight' | translate }}
+            {{ 'universal_unit_gforce' | translate }}-Y
           </span>
         </div>
         <div class="flexCol info__section">
@@ -82,7 +91,8 @@
             {{ gForceInfoData.y.min | number: '1.0-2' }}g
           </span>
           <span class="data__description">
-            {{ 'universal_adjective_maxSmall' | translate }} {{ 'universal_unit_gforce' | translate }}-Y
+            {{ 'universal_adjective_maxSmall' | translate }}
+            {{ 'universal_unit_gforce' | translate }}-Y
           </span>
         </div>
       </div>
@@ -92,7 +102,8 @@
             {{ gForceInfoData.z.max | number: '1.0-2' }}g
           </span>
           <span class="data__description">
-            {{ 'universal_adjective_maxHight' | translate }} {{ 'universal_unit_gforce' | translate }}-Z
+            {{ 'universal_adjective_maxHight' | translate }}
+            {{ 'universal_unit_gforce' | translate }}-Z
           </span>
         </div>
         <div class="flexCol info__section">
@@ -100,13 +111,12 @@
             {{ gForceInfoData.z.min | number: '1.0-2' }}g
           </span>
           <span class="data__description">
-            {{ 'universal_adjective_maxSmall' | translate }} {{ 'universal_unit_gforce' | translate }}-Z
+            {{ 'universal_adjective_maxSmall' | translate }}
+            {{ 'universal_unit_gforce' | translate }}-Z
           </span>
         </div>
       </div>
     </div>
-    <div #container id="chart__block">
-      chart
-    </div>
+    <div #container id="chart__block">chart</div>
   </main>
-</section>  
+</section>

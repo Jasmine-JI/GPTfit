@@ -8,9 +8,8 @@ describe('CheckEnrollDialogComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CheckEnrollDialogComponent ]
-    })
-    .compileComponents();
+      declarations: [CheckEnrollDialogComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

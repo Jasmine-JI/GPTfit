@@ -10,7 +10,7 @@ import { debounce, getUrlQueryStrings } from '../../../../shared/utils/index';
 @Component({
   selector: 'app-device-log',
   templateUrl: './device-log.component.html',
-  styleUrls: ['./device-log.component.scss']
+  styleUrls: ['./device-log.component.scss'],
 })
 export class DeviceLogComponent implements OnInit {
   logSource = new MatTableDataSource<any>();
@@ -21,15 +21,12 @@ export class DeviceLogComponent implements OnInit {
   selectedValue = '';
   isLoading = false;
 
-  @ViewChild('paginatorA', {static: true}) paginatorA: MatPaginator;
-  @ViewChild('paginatorB', {static: true}) paginatorB: MatPaginator;
-  @ViewChild('sortTable', {static: false}) sortTable: MatSort;
-  @ViewChild('filter', {static: false}) filter: ElementRef;
+  @ViewChild('paginatorA', { static: true }) paginatorA: MatPaginator;
+  @ViewChild('paginatorB', { static: true }) paginatorB: MatPaginator;
+  @ViewChild('sortTable', { static: false }) sortTable: MatSort;
+  @ViewChild('filter', { static: false }) filter: ElementRef;
 
-  constructor(
-    private deviceLogservice: DeviceLogService,
-    private router: Router
-  ) {
+  constructor(private deviceLogservice: DeviceLogService, private router: Router) {
     this.searchInfo = debounce(this.searchInfo, 1000);
   }
 
@@ -37,28 +34,32 @@ export class DeviceLogComponent implements OnInit {
     const queryStrings = getUrlQueryStrings(location.search);
     const { pageNumber } = queryStrings;
     this.currentPage = {
-      pageIndex: (+pageNumber - 1) || 0,
+      pageIndex: +pageNumber - 1 || 0,
       pageSize: 10,
-      length: null
+      length: null,
     };
 
     this.currentSort = {
       active: '',
-      direction: ''
+      direction: '',
     };
     this.getLists('changePage');
 
     // 分頁切換時，重新取得資料
     this.paginatorA.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
-      this.router.navigateByUrl(`/dashboard/system/device_log?pageNumber=${this.currentPage.pageIndex + 1}`);
+      this.router.navigateByUrl(
+        `/dashboard/system/device_log?pageNumber=${this.currentPage.pageIndex + 1}`
+      );
       this.getLists('changePage');
     });
 
     // 分頁切換時，重新取得資料
     this.paginatorB.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
-      this.router.navigateByUrl(`/dashboard/system/device_log?pageNumber=${this.currentPage.pageIndex + 1}`);
+      this.router.navigateByUrl(
+        `/dashboard/system/device_log?pageNumber=${this.currentPage.pageIndex + 1}`
+      );
       this.getLists('changePage');
     });
   }
@@ -80,7 +81,7 @@ export class DeviceLogComponent implements OnInit {
     params = params.set('pageNumber', pageNumber);
     params = params.set('pageSize', pageSize);
     params = params.set('sort', sort);
-    this.deviceLogservice.fetchLists(params).subscribe(res => {
+    this.deviceLogservice.fetchLists(params).subscribe((res) => {
       this.isLoading = false;
       this.logSource.data = res.datas;
       this.totalCount = res.meta.pageCount;
@@ -94,7 +95,7 @@ export class DeviceLogComponent implements OnInit {
     const keyword = e.target.value;
     let params = new HttpParams();
     params = params.set('keyword', keyword);
-    this.deviceLogservice.searchKeyword(params).subscribe(res => {
+    this.deviceLogservice.searchKeyword(params).subscribe((res) => {
       this.infoOptions = res;
     });
   }
@@ -109,7 +110,7 @@ export class DeviceLogComponent implements OnInit {
       params = params.set('pageSize', pageSize);
       params = params.set('sort', sort);
       params = params.set('keyword', this.selectedValue);
-      this.deviceLogservice.fetchLists(params).subscribe(res => {
+      this.deviceLogservice.fetchLists(params).subscribe((res) => {
         this.logSource.data = res.datas;
         this.totalCount = res.meta.pageCount;
       });

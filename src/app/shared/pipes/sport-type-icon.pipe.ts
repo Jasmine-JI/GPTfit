@@ -1,8 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { SportType } from '../enum/sports';
 
-
-@Pipe({name: 'sportTypeIcon'})
+@Pipe({ name: 'sportTypeIcon' })
 export class SportTypeIconPipe implements PipeTransform {
   /**
    * 依據不同運動類型回傳該icon的class name（需隨類別增加而更新）
@@ -31,7 +30,5 @@ export class SportTypeIconPipe implements PipeTransform {
       default:
         return 'icon-svg_web-icon_p2_038-complex';
     }
-
   }
-  
 }

@@ -32,7 +32,6 @@ $progress-apply: rgba(143, 21, 21, 1);
 $progress-pay: rgba(181, 12, 93, 1);
 $progress-record: rgba(234, 84, 0, 1);
 
-
 @mixin apply-date($background-color) {
   background-color: $background-color;
   color: white;
@@ -53,7 +52,6 @@ $progress-record: rgba(234, 84, 0, 1);
     content: '|';
     margin: 0 3px;
   }
-
 }
 
 @mixin race-description($max-height: 50px) {
@@ -83,7 +81,7 @@ $progress-record: rgba(234, 84, 0, 1);
 .activity__list {
   margin: 10px 0;
 
-  >a {
+  > a {
     display: flex;
     flex-direction: row;
     color: unset;
@@ -93,7 +91,6 @@ $progress-record: rgba(234, 84, 0, 1);
   &:hover {
     background-color: rgba(200, 200, 200, 0.1);
   }
-  
 }
 
 .theme__img {
@@ -104,27 +101,24 @@ $progress-record: rgba(234, 84, 0, 1);
   margin-right: 10px;
   width: $image-width;
 
-  >:first-of-type {
+  > :first-of-type {
     position: relative;
 
-    >img {
+    > img {
       max-width: 220px;
       position: absolute;
     }
-
   }
-  
 }
 
 .theme__no__img {
   box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.2);
   min-height: $theme-img-height;
-  
-  >i {
+
+  > i {
     font-size: 100px;
     color: rgba(0, 0, 0, 0.1);
   }
-
 }
 
 .apply__open__yet {
@@ -174,7 +168,8 @@ $progress-record: rgba(234, 84, 0, 1);
   box-shadow: 1px 2px 5px $calender-shadow-color, -1px 2px 5px $calender-shadow-color;
 }
 
-.calender__month, .calender__day {
+.calender__month,
+.calender__day {
   line-height: 1;
 }
 
@@ -205,16 +200,15 @@ $progress-record: rgba(234, 84, 0, 1);
   border-radius: 10px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 
-  >h6 {
+  > h6 {
     text-align: center;
     font-weight: bold;
     color: rgba(100, 100, 100, 1);
   }
 
-  >div {
+  > div {
     align-items: center;
   }
-
 }
 
 .calender__link {
@@ -239,11 +233,10 @@ $progress-record: rgba(234, 84, 0, 1);
   width: calc(100% - #{$map-img-width});
   text-align: center;
 
-  >span {
+  > span {
     max-width: 160px;
     white-space: pre-wrap;
   }
-  
 }
 
 .map__img {
@@ -254,10 +247,9 @@ $progress-record: rgba(234, 84, 0, 1);
   height: fit-content;
   overflow: hidden;
 
-  >img {
+  > img {
     height: 120px;
   }
-
 }
 
 .rece__end__mask {
@@ -303,7 +295,7 @@ $progress-record: rgba(234, 84, 0, 1);
   align-items: center;
   margin: 0 5px;
 
-  >h6 {
+  > h6 {
     @include center();
     height: $record-title-height;
     min-width: 120px;
@@ -314,11 +306,10 @@ $progress-record: rgba(234, 84, 0, 1);
     margin-bottom: 0;
   }
 
-  >span {
+  > span {
     @include bold-font(22px);
     text-align: center;
   }
-
 }
 
 .divider__line {
@@ -386,20 +377,18 @@ $progress-record: rgba(234, 84, 0, 1);
     height: calc(100% + 2 * #{$border-width});
     z-index: -1;
     border-radius: $border-radius;
-    background: linear-gradient(180deg, #901417 0%, #B40C5B 45.83%, #E1490E 95.83%);
+    background: linear-gradient(180deg, #901417 0%, #b40c5b 45.83%, #e1490e 95.83%);
   }
-  
 }
 
 .status__menu__content {
   cursor: pointer;
   position: relative;
   z-index: 1;
-  
+
   &:hover {
     background-color: rgba(231, 186, 186, 1);
   }
-
 }
 
 .drop__menu__check {
@@ -422,7 +411,6 @@ $progress-record: rgba(234, 84, 0, 1);
   &:hover {
     box-shadow: 1px 1px 3px $shadow-color-deep, -1px -1px 3px $shadow-color-deep;
   }
-
 }
 
 .date__filter {
@@ -430,7 +418,6 @@ $progress-record: rgba(234, 84, 0, 1);
 }
 
 .manage__menu__btn {
-
   &:after {
     content: '';
     border: solid;
@@ -438,7 +425,6 @@ $progress-record: rgba(234, 84, 0, 1);
     border-color: black transparent transparent transparent;
     margin-left: 2px;
   }
-
 }
 
 .manage__menu {
@@ -452,32 +438,32 @@ $progress-record: rgba(234, 84, 0, 1);
   background-color: white;
   z-index: 5;
 
-  >li {
+  > li {
     padding: 5px 20px;
   }
-
 }
 
 .edit__btn {
   width: calc(100% - #{$race-info-width});
   justify-content: space-around;
 
-  >button {
+  > button {
     font-size: 60px;
     color: rgba(100, 100, 100, 1);
     padding: 0;
   }
-  
 }
 
-.product__title, .product__fee {
+.product__title,
+.product__fee {
   $detail-table-width: 140px;
   text-align: center;
   min-width: $detail-table-width;
   max-width: $detail-table-width;
 }
 
-td.product__title, td.product__fee {
+td.product__title,
+td.product__fee {
   color: rgba(175, 175, 175, 1);
   white-space: pre-wrap;
   overflow: hidden;
@@ -497,7 +483,6 @@ td.product__title, td.product__fee {
   h6 {
     font-weight: bold;
   }
-
 }
 
 .dialog__map__img {
@@ -509,19 +494,16 @@ td.product__title, td.product__fee {
   margin-left: 10px;
   color: rgba(85, 85, 85, 1);
 
-  >p {
+  > p {
     font-weight: bold;
   }
 
-  >div {
-
-    >span {
+  > div {
+    > span {
       @include bold-font(14px);
       margin: 0 2px;
     }
-
   }
-
 }
 
 .schedule__name {
@@ -686,9 +668,9 @@ td.product__title, td.product__fee {
   &:hover {
     $blur: 2px;
     $color: rgba(225, 225, 225, 1);
-    box-shadow: 1px 1px $blur $color, 1px -1px $blur $color, -1px 1px $blur $color, -1px -1px $blur $color;
+    box-shadow: 1px 1px $blur $color, 1px -1px $blur $color, -1px 1px $blur $color,
+      -1px -1px $blur $color;
   }
-
 }
 
 .detail__drop__icon {
@@ -769,7 +751,12 @@ td.product__title, td.product__fee {
 
 .step__record__progress {
   width: 100%;
-  background: linear-gradient(90deg, $progress-apply 0%, $progress-pay 51.89%, $progress-record 100%);
+  background: linear-gradient(
+    90deg,
+    $progress-apply 0%,
+    $progress-pay 51.89%,
+    $progress-record 100%
+  );
 }
 
 /*********************************************************** mobile style **********************************************/
@@ -781,20 +768,18 @@ td.product__title, td.product__fee {
   border-radius: 50%;
   overflow: hidden;
 
-  >img {
+  > img {
     height: $map-img-height-mobile;
   }
-
 }
 
 .map__info__mobile {
   @include bold-font(16px);
   margin-left: 5px;
 
-  >span {
+  > span {
     @include text-overflow(230px, ellipsis);
   }
-  
 }
 
 .map__detail__mobile {
@@ -812,7 +797,8 @@ td.product__title, td.product__fee {
   width: 100%;
 }
 
-.pc__img, .mobile__image {
+.pc__img,
+.mobile__image {
   z-index: -3;
 }
 
@@ -840,11 +826,9 @@ td.product__title, td.product__fee {
   font-size: $block-icon-size;
 }
 
-
 /*************************************************************** media **********************************************/
 
 @media (max-width: 1150px) {
-
   .race__info {
     width: $race-info-width-media;
     padding-right: 20px;
@@ -855,11 +839,9 @@ td.product__title, td.product__fee {
   }
 
   .map__description {
-
     span {
       font-size: 14px;
     }
-
   }
 
   .map__img {
@@ -867,10 +849,9 @@ td.product__title, td.product__fee {
     height: $map-img-width-media;
     border-radius: 50%;
 
-    >img {
+    > img {
       height: $map-img-width-media;
     }
-
   }
 
   .history__detail {
@@ -884,11 +865,10 @@ td.product__title, td.product__fee {
   .history__record {
     flex-direction: row;
 
-    >span {
+    > span {
       margin: 0 10px;
       min-width: 90px;
     }
-
   }
 
   .apply__info {
@@ -896,11 +876,9 @@ td.product__title, td.product__fee {
     width: 100%;
     justify-content: space-between;
   }
-
 }
 
 @media (max-width: 950px) {
-
   .race__info {
     width: $race-info-width-media;
     padding-right: 20px;
@@ -913,27 +891,25 @@ td.product__title, td.product__fee {
   .map__description {
     width: 100%;
   }
-
 }
 
 @media (max-width: 995px) {
-
   .input__section {
     flex-direction: column;
   }
 
-  .info__input, .remark__input {
+  .info__input,
+  .remark__input {
     width: 100%;
   }
 
-  #address, #remark {
+  #address,
+  #remark {
     @include input-width(75vw);
   }
-
 }
 
 @media (max-width: 767px) {
-
   .history__record {
     flex-direction: column;
     align-items: center;
@@ -955,11 +931,9 @@ td.product__title, td.product__fee {
   .detail__section {
     flex-direction: column;
   }
-
 }
 
 @media (max-width: 500px) {
-
   .history__detail {
     height: 120px;
   }
@@ -976,5 +950,4 @@ td.product__title, td.product__fee {
   .filter__block {
     margin: 5px 0;
   }
-
 }

@@ -10,7 +10,6 @@
 @import 'drop-triangle.scss';
 @import 'overflow-scroll';
 
- 
 @mixin main-button() {
   border-radius: 10px;
   width: 120px;
@@ -31,7 +30,7 @@
   max-height: 200px;
   @include overflow-y-scroll();
 
-  >li {
+  > li {
     padding: 5px;
     font-size: 14px;
 
@@ -39,9 +38,7 @@
       background-color: $primary-blue;
       color: white;
     }
-
   }
-
 }
 
 @mixin selector-list($width) {
@@ -59,11 +56,10 @@
   background-color: rgba(0, 0, 0, 0.7);
   z-index: 5;
 
-  >div {
+  > div {
     width: 310px;
     background-color: white;
   }
-
 }
 
 .official-dialogTitle {
@@ -74,7 +70,7 @@
   height: $height;
   min-height: $height;
 
-  >h5 {
+  > h5 {
     @include center();
     @include bold-font(20px);
     position: relative;
@@ -82,12 +78,10 @@
     margin: 0;
     width: 80%;
 
-    >img {
+    > img {
       height: 20px;
     }
-
   }
-
 }
 
 .official-dialogContent {
@@ -96,11 +90,10 @@
   min-height: 150px;
   height: 100%;
   padding: 15px 20px;
-  
-  >div {
+
+  > div {
     width: 100%;
   }
-
 }
 
 .official-submitButton {
@@ -136,12 +129,11 @@
     color: white;
     max-width: 20px;
     padding: 0;
-  };
-  
-  >i {
-    font-size: 20px;
   }
 
+  > i {
+    font-size: 20px;
+  }
 }
 
 .official-countryCodeSelector {
@@ -155,11 +147,9 @@
 }
 
 .official-selector--active {
-
   &:after {
     @include drop-active();
   }
-  
 }
 
 .official-countryCodeList {

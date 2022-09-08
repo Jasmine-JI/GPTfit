@@ -8,9 +8,8 @@ describe('SmallHrzoneChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SmallHrzoneChartComponent ]
-    })
-    .compileComponents();
+      declarations: [SmallHrzoneChartComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

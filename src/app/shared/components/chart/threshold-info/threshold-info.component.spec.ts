@@ -8,9 +8,8 @@ describe('ThresholdInfoComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ThresholdInfoComponent ]
-    })
-    .compileComponents();
+      declarations: [ThresholdInfoComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

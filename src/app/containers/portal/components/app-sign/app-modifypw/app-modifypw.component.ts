@@ -17,13 +17,12 @@ import { Subject, Subscription, fromEvent, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../shared/utils/index';
 
-
 type InputType = 'oldPassword' | 'newPassword';
 
 @Component({
   selector: 'app-app-modifypw',
   templateUrl: './app-modifypw.component.html',
-  styleUrls: ['./app-modifypw.component.scss']
+  styleUrls: ['./app-modifypw.component.scss'],
 })
 export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();
@@ -43,7 +42,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   displayPW = {
     oldPassword: false,
-    newPassword: false
+    newPassword: false,
   };
 
   editBody: any = {
@@ -51,13 +50,13 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     token: '',
     oldPassword: '',
     newAccountType: 0,
-    newPassword: ''
+    newPassword: '',
   };
 
   // 輸入錯誤提示
   cue = {
     oldPassword: '',
-    newPassword: ''
+    newPassword: '',
   };
 
   // 惡意註冊圖碼解鎖
@@ -66,7 +65,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     imgCode: '',
     code: '',
     cue: '',
-    placeholder: ''
+    placeholder: '',
   };
 
   constructor(
@@ -79,7 +78,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     private snackbar: MatSnackBar,
     private getClientIp: GetClientIpService,
     private dialog: MatDialog
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.getUrlString(location.search);
@@ -95,23 +94,21 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)
-    this.authService.isLogin.subscribe(res => {
+    this.authService.isLogin.subscribe((res) => {
       if (!res && this.pcView) {
         return this.router.navigateByUrl('/signIn-web');
       }
     });
-
   }
 
   /**
    * 因應ios嵌入webkit物件時間點較後面，故在此生命週期才判斷裝置平台
    * @author kidin-1090710
    */
-  ngAfterViewInit () {
+  ngAfterViewInit() {
     if (this.pcView === false) {
       this.getDeviceSys();
     }
-
   }
 
   /**
@@ -130,16 +127,13 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   subscribeResizeEvent() {
     const resizeEvent = fromEvent(window, 'resize');
-    this.resizeSubscription = resizeEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.resizeSubscription = resizeEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.mobileSize = window.innerWidth < TFTViewMinWidth;
     });
-
   }
 
   // 取得裝置平台-kidin-1090518
-  getDeviceSys () {
+  getDeviceSys() {
     if ((window as any).webkit) {
       this.appSys = 1;
     } else if ((window as any).android) {
@@ -150,17 +144,16 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.requestHeader = {
       deviceType: this.appSys,
-      ...this.requestHeader
+      ...this.requestHeader,
     };
-
   }
 
   // 取得url query string和token-kidin-1090514
-  getUrlString (urlStr) {
+  getUrlString(urlStr) {
     const query = getUrlQueryStrings(urlStr);
     this.requestHeader = {
       ...this.requestHeader,
-      ...headerKeyTranslate(query)
+      ...headerKeyTranslate(query),
     };
 
     const { tk } = query;
@@ -169,38 +162,38 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.editBody.token === '') {
       this.editBody.token = this.authService.token;
     }
-
   }
 
   // 取得使用者ip位址-kidin-1090521
-  getClientIpaddress () {
+  getClientIpaddress() {
     const { remoteAddr } = this.requestHeader as any;
     if (!remoteAddr) {
       return this.getClientIp.requestIpAddress().pipe(
-        tap(res => {
+        tap((res) => {
           this.ip = (res as any).ip;
           this.requestHeader = {
             ...this.requestHeader,
-            remoteAddr: this.ip
+            remoteAddr: this.ip,
           };
         })
       );
-
     } else {
       return of(this.requestHeader);
     }
-
   }
 
   // 使用token取得使用者帳號資訊-kidin-1090514
-  getUserInfo () {
+  getUserInfo() {
     const body = {
-      token:  this.editBody.token
+      token: this.editBody.token,
     };
 
-    this.api10xxService.fetchGetUserProfile(body).subscribe(res => {
+    this.api10xxService.fetchGetUserProfile(body).subscribe((res) => {
       if (this.utils.checkRes(res)) {
-        const { userProfile, signIn: { accountType } } = res as any;
+        const {
+          userProfile,
+          signIn: { accountType },
+        } = res as any;
         if (accountType === AccountTypeEnum.email) {
           this.editBody.newAccountType = 1;
           this.editBody.newEmail = userProfile.email;
@@ -209,15 +202,12 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
           this.editBody.newCountryCode = userProfile.countryCode;
           this.editBody.newMobileNumber = userProfile.mobileNumber;
         }
-
       }
-
     });
-
   }
 
   // 返回app-kidin-1090513
-  turnBack () {
+  turnBack() {
     if (this.appSys === 1) {
       (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
     } else if (this.appSys === 2) {
@@ -225,24 +215,22 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.router.navigateByUrl('/dashboard/user-settings');
     }
-
   }
 
   // 顯示密碼-kidin-1090429
-  toggleDisplayPW (input: InputType) {
+  toggleDisplayPW(input: InputType) {
     if (this.displayPW[input] === false) {
       this.displayPW[input] = true;
     } else {
       this.displayPW[input] = false;
     }
-
   }
 
   // 確認密碼格式-kidin-1090511
-  checkPassword (e, input: InputType) {
+  checkPassword(e, input: InputType) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputPassword = e.currentTarget.value,
-            regPWD = this.passwordReg;
+        regPWD = this.passwordReg;
       if (!regPWD.test(inputPassword)) {
         this.cue[input] = 'universal_userAccount_passwordFormat';
       } else {
@@ -251,22 +239,20 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       if (
-        this.editBody.oldPassword.length > 0
-        && this.editBody.newPassword.length > 0
-        && this.cue.oldPassword.length === 0
-        && this.cue.newPassword.length === 0
+        this.editBody.oldPassword.length > 0 &&
+        this.editBody.newPassword.length > 0 &&
+        this.cue.oldPassword.length === 0 &&
+        this.cue.newPassword.length === 0
       ) {
         this.dataIncomplete = false;
       } else {
         this.dataIncomplete = true;
       }
-
     }
-
   }
 
   // 確認是否填寫圖形驗證碼欄位-kidin-1090514
-  checkImgCaptcha (e) {
+  checkImgCaptcha(e) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputImgCaptcha = e.currentTarget.value;
 
@@ -277,93 +263,98 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
         this.imgCaptcha.cue = '';
       }
     }
-
   }
 
   // 送出修改密碼-kidin-1090519
-  submit () {
+  submit() {
     this.progress = 30;
     if (this.imgCaptcha.show) {
       const releaseBody = {
         unlockFlow: 2,
-        unlockKey: this.imgCaptcha.code
+        unlockKey: this.imgCaptcha.code,
       };
 
-      this.getClientIpaddress().pipe(
-        switchMap(ipResult => this.signupService.fetchCaptcha(releaseBody, this.requestHeader))
-      ).subscribe((res: any) => {
-        if (res.processResult.resultCode === 200) {
-          this.imgCaptcha.show = false;
-          this.submit();
-        } else {
+      this.getClientIpaddress()
+        .pipe(
+          switchMap((ipResult) => this.signupService.fetchCaptcha(releaseBody, this.requestHeader))
+        )
+        .subscribe((res: any) => {
+          if (res.processResult.resultCode === 200) {
+            this.imgCaptcha.show = false;
+            this.submit();
+          } else {
+            switch (res.processResult.apiReturnMessage) {
+              case 'Found a wrong unlock key.':
+                this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
+                break;
+              default:
+                this.showErrorMsg();
+                console.error(
+                  `${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`
+                );
+                break;
+            }
+          }
 
+          this.progress = 100;
+        });
+    } else {
+      this.sendFormInfo();
+    }
+  }
+
+  // 傳送變更表單-kidin-1090514
+  sendFormInfo() {
+    this.getClientIpaddress()
+      .pipe(
+        switchMap((ipResult) =>
+          this.signupService.fetchEditAccountInfo(this.editBody, this.requestHeader)
+        )
+      )
+      .subscribe((res: any) => {
+        if (res.processResult.resultCode !== 200) {
           switch (res.processResult.apiReturnMessage) {
-            case 'Found a wrong unlock key.':
-              this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
+            case 'Edit account fail, old password is not correct.':
+              this.cue.oldPassword = 'universal_userAccount_notSamePassword';
+              break;
+            case 'Found attack, update status to lock!':
+            case 'Found lock!':
+              const captchaBody = {
+                unlockFlow: 1,
+                imgLockCode: res.processResult.imgLockCode,
+              };
+
+              this.signupService
+                .fetchCaptcha(captchaBody, this.requestHeader)
+                .subscribe((captchaRes) => {
+                  this.imgCaptcha.show = true;
+                  this.imgCaptcha.imgCode = `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`;
+                });
+
               break;
             default:
               this.showErrorMsg();
-              console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
-              break;
+              console.error(
+                `${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`
+              );
           }
+        } else {
+          this.newToken = res.editAccount.newToken;
+          this.authService.setToken(this.newToken); // 直接在瀏覽器幫使用者登入
+          this.authService.tokenLogin();
+          this.finishEdit(this.newToken);
+          const modifyI18n = this.translate.instant('universal_operating_modify');
+          const successI18n = this.translate.instant('universal_status_success');
+          this.snackbar.open(`${modifyI18n} ${successI18n}`, 'OK', { duration: 1000 });
 
+          setTimeout(() => {
+            window.close();
+            this.turnBack();
+          }, 1000);
         }
 
         this.progress = 100;
       });
-    } else {
-      this.sendFormInfo();
-    }
-
-  }
-
-  // 傳送變更表單-kidin-1090514
-  sendFormInfo () {
-    this.getClientIpaddress().pipe(
-      switchMap(ipResult => this.signupService.fetchEditAccountInfo(this.editBody, this.requestHeader))
-    ).subscribe((res: any) => {
-      if (res.processResult.resultCode !== 200) {
-        switch (res.processResult.apiReturnMessage) {
-          case 'Edit account fail, old password is not correct.':
-            this.cue.oldPassword = 'universal_userAccount_notSamePassword';
-            break;
-          case 'Found attack, update status to lock!':
-          case 'Found lock!':
-            const captchaBody = {
-              unlockFlow: 1,
-              imgLockCode: res.processResult.imgLockCode
-            };
-
-            this.signupService.fetchCaptcha(captchaBody, this.requestHeader).subscribe(captchaRes => {
-              this.imgCaptcha.show = true;
-              this.imgCaptcha.imgCode = `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`;
-            });
-
-            break;
-          default:
-            this.showErrorMsg();
-            console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
-        }
-
-      } else {
-        this.newToken = res.editAccount.newToken;
-        this.authService.setToken(this.newToken);  // 直接在瀏覽器幫使用者登入
-        this.authService.tokenLogin();
-        this.finishEdit(this.newToken);
-        const modifyI18n = this.translate.instant('universal_operating_modify');
-        const successI18n = this.translate.instant('universal_status_success');
-        this.snackbar.open(`${modifyI18n} ${successI18n}`, 'OK', { duration: 1000 });
-
-        setTimeout(() => {
-          window.close();
-          this.turnBack();
-        }, 1000);
-
-      }
-
-      this.progress = 100;
-    });
-
   }
 
   /**
@@ -378,17 +369,14 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
         data: {
           title: 'Message',
           body: `Error.<br />Please try again later.`,
-          confirmText: this.translate.instant(
-            'universal_operating_confirm'
-          ),
-          onConfirm: this.turnBack.bind(this)
-        }
+          confirmText: this.translate.instant('universal_operating_confirm'),
+          onConfirm: this.turnBack.bind(this),
+        },
       });
     } else {
       const msg = 'Error! Please try again later.';
       this.debounceTurnBack(msg);
     }
-
   }
 
   /**
@@ -403,26 +391,21 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
       this.progress = 30;
       this.turnBack();
     }, 2000);
-
   }
 
-  
-
   // 回傳新token-kidin-1090518
-  finishEdit (token) {
+  finishEdit(token) {
     if (this.appSys === 1) {
       (window as any).webkit.messageHandlers.returnToken.postMessage(token);
     } else if (this.appSys === 2) {
       (window as any).android.returnToken(token);
     }
-
   }
 
   // 離開頁面則取消隱藏navbar-kidin-1090514
-  ngOnDestroy () {
+  ngOnDestroy() {
     this.setPageStyle(false);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

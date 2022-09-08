@@ -13,14 +13,14 @@ import { AuthService } from '../../../../core/services/auth.service';
 enum StatisticTypeEnum {
   sports = 1,
   lifeTracking,
-  image
-};
+  image,
+}
 
 enum ObjType {
   all,
   user,
-  group
-};
+  group,
+}
 
 type StatisticMethod = 'pre' | 'realtime';
 type InputType = 'user' | 'group' | 'sn' | 'language' | 'region';
@@ -32,30 +32,30 @@ const allApp = [
   AlaApp.cloudrun,
   AlaApp.trainlive,
   AlaApp.fitness,
-  AlaApp.tft
+  AlaApp.tft,
 ];
 const commonRegion = [
-  {code: 'TW', name: '台灣'},
-  {code: 'CN', name: '中國'},
-  {code: 'us', name: '美國'}
+  { code: 'TW', name: '台灣' },
+  { code: 'CN', name: '中國' },
+  { code: 'us', name: '美國' },
 ];
 const commonLanguage = [
-  {code: 'zh', name: '中文'},
-  {code: 'en', name: '英文'},
-  {code: 'es', name: '西班牙語'},
-  {code: 'de', name: '德文'},
-  {code: 'fr', name: '法文'},
-  {code: 'it', name: '義大利文'},
-  {code: 'pt', name: '葡萄牙文'}
+  { code: 'zh', name: '中文' },
+  { code: 'en', name: '英文' },
+  { code: 'es', name: '西班牙語' },
+  { code: 'de', name: '德文' },
+  { code: 'fr', name: '法文' },
+  { code: 'it', name: '義大利文' },
+  { code: 'pt', name: '葡萄牙文' },
 ];
 
 @Component({
   selector: 'app-AlaApp-analysis',
   templateUrl: './ala-app-analysis.component.html',
-  styleUrls: ['./ala-app-analysis.component.scss']
+  styleUrls: ['./ala-app-analysis.component.scss'],
 })
 export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
-  private ngUnsubscribe = new Subject;
+  private ngUnsubscribe = new Subject();
   userInputSubscription = new Subscription();
   groupInputSubscription = new Subscription();
   clickEventSubscription = new Subscription();
@@ -73,15 +73,14 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
     statisticType: <StatisticTypeEnum>StatisticTypeEnum.sports,
     statisticMethod: <StatisticMethod>'pre',
     showAdvancedCondition: false,
-    showAutoCompleted: <InputType>null
-  }
+    showAutoCompleted: <InputType>null,
+  };
 
   /**
    * 流量統計條件
    */
   filterCondition = <any>{
     createFromApp: allApp,
-
   };
 
   /**
@@ -91,7 +90,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
     token: this.authService.token,
     objectType: ObjType.all,
     subset: false,
-    imgType: AlbumType.all
+    imgType: AlbumType.all,
   };
 
   /**
@@ -100,14 +99,14 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
   selectTime = {
     startTimestamp: dayjs().startOf('month').valueOf(),
     endTimestamp: dayjs().valueOf(),
-  }
+  };
 
   /**
    * api所需日期資訊
    */
   searchTime = {
     startTime: dayjs().startOf('month').format(dateFormat),
-    endTime: dayjs().format(dateFormat)
+    endTime: dayjs().format(dateFormat),
   };
 
   /**
@@ -120,11 +119,11 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
       cloudrun: [],
       trainlive: [],
       fitness: [],
-      tft: []
+      tft: [],
     },
     fileCount: 0,
     totalSpace: 0,
-    createTime: 'YYYY-MM-DD  HH:mm'
+    createTime: 'YYYY-MM-DD  HH:mm',
   };
 
   autoCompletedList = [];
@@ -139,10 +138,10 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private groupService: GroupService,
     private authService: AuthService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    this.submit();  // 先以預設條件呈現結果
+    this.submit(); // 先以預設條件呈現結果
   }
 
   /**
@@ -158,7 +157,6 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
       this.imgConditionRecovery();
       this.initSearchRes();
     }
-
   }
 
   /**
@@ -174,7 +172,6 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
       this.imgConditionRecovery();
       this.initSearchRes();
     }
-
   }
 
   /**
@@ -186,9 +183,8 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
     const { startDate, endDate } = e;
     this.searchTime = {
       startTime: startDate,
-      endTime: endDate
+      endTime: endDate,
     };
-
   }
 
   /**
@@ -207,7 +203,6 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
   checkCondition() {
     const { statisticType, statisticMethod } = this.uiFlag;
     if (this.uiFlag.showAdvancedCondition && statisticMethod === 'realtime') {
-
       if (statisticType !== StatisticTypeEnum.image) {
         this.subscribeInput(ObjType.user);
         this.subscribeInput(ObjType.group);
@@ -223,14 +218,11 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
           this.unSubscribeInput(ObjType.user);
           this.unSubscribeInput(ObjType.group);
         }
-
       }
-
     } else {
       this.unSubscribeInput(ObjType.user);
       this.unSubscribeInput(ObjType.group);
     }
-
   }
 
   /**
@@ -244,15 +236,12 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
     if (app === AlaApp.all) {
       this.filterCondition.createFromApp = currentLength < this.allAppNumber ? allApp : [];
     } else {
-
       if (createFromApp.includes(app)) {
-        this.filterCondition.createFromApp = createFromApp.filter(_app => _app !== app);
+        this.filterCondition.createFromApp = createFromApp.filter((_app) => _app !== app);
       } else {
         this.filterCondition.createFromApp.push(app);
       }
-
     }
-
   }
 
   /**
@@ -268,18 +257,14 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
         AlbumType.all,
         AlbumType.personalIcon,
         AlbumType.personalScenery,
-        AlbumType.personalSportFile
+        AlbumType.personalSportFile,
       ];
 
       this.imageReqBody.imgType = userImageType.includes(imgType) ? imgType : AlbumType.all;
       this.subscribeInput(ObjType.user);
       this.unSubscribeInput(ObjType.group);
     } else if (type === ObjType.group) {
-      const groupImageType = [
-        AlbumType.all,
-        AlbumType.groupIcon,
-        AlbumType.groupScenery
-      ];
+      const groupImageType = [AlbumType.all, AlbumType.groupIcon, AlbumType.groupScenery];
 
       this.imageReqBody.imgType = groupImageType.includes(imgType) ? imgType : AlbumType.all;
       this.subscribeInput(ObjType.group);
@@ -318,28 +303,22 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
     const key = type === ObjType.user ? 'user' : 'group';
     setTimeout(() => {
       const input = this[key].nativeElement,
-            keyUpEvent = fromEvent(input, 'keyup');
-      this[`${key}InputSubscription`] = keyUpEvent.pipe(
-        debounceTime(500),
-        takeUntil(this.ngUnsubscribe)
-      ).subscribe(event => {
-        const { value } = (event as any).target;
-        if (value && value.length > 0) {
-
-          if (type === ObjType.user) {
-            this.getUserSearch(value);
+        keyUpEvent = fromEvent(input, 'keyup');
+      this[`${key}InputSubscription`] = keyUpEvent
+        .pipe(debounceTime(500), takeUntil(this.ngUnsubscribe))
+        .subscribe((event) => {
+          const { value } = (event as any).target;
+          if (value && value.length > 0) {
+            if (type === ObjType.user) {
+              this.getUserSearch(value);
+            } else {
+              this.getGroupSearch(value);
+            }
           } else {
-            this.getGroupSearch(value);
+            this.uiFlag.showAutoCompleted = null;
           }
-
-        } else {
-          this.uiFlag.showAutoCompleted = null;
-        }
-
-      });
-
+        });
     });
-
   }
 
   /**
@@ -363,16 +342,14 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
     params = params.set('keyword', str);
     params = params.set('searchType', '1');
     params = params.set('groupId', '0-0-0-0-0-0');
-    this.groupService.searchMember(params).subscribe(res => {
+    this.groupService.searchMember(params).subscribe((res) => {
       if (res.length > 0) {
         this.autoCompletedList = res;
         this.uiFlag.showAutoCompleted = 'user';
       } else {
         this.uiFlag.showAutoCompleted = null;
       }
-      
     });
-
   }
 
   /**
@@ -383,14 +360,12 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
   getGroupSearch(str: string) {
     const body = {
       token: this.authService.token,
-      searchName: str
+      searchName: str,
     };
-    this.groupService.searchGroup(body).subscribe(res => {
+    this.groupService.searchGroup(body).subscribe((res) => {
       this.autoCompletedList = res;
-      this.uiFlag.showAutoCompleted = 
-        this.autoCompletedList.length > 0 ? 'group' : null;
+      this.uiFlag.showAutoCompleted = this.autoCompletedList.length > 0 ? 'group' : null;
     });
-
   }
 
   /**
@@ -402,7 +377,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
   clickAutoCompleted(e: MouseEvent, idx: number) {
     e.stopPropagation();
     const { showAutoCompleted } = this.uiFlag,
-          assignObj = this.autoCompletedList[idx];
+      assignObj = this.autoCompletedList[idx];
     let compareKey: string;
     switch (showAutoCompleted) {
       case 'user':
@@ -419,9 +394,9 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
 
     const condition = this.filterCondition[showAutoCompleted];
     if (condition) {
-
-      if (condition.findIndex(_condition => _condition[compareKey] === assignObj[compareKey]) < 0) {
-
+      if (
+        condition.findIndex((_condition) => _condition[compareKey] === assignObj[compareKey]) < 0
+      ) {
         const { statisticType } = this.uiFlag;
         if (statisticType === StatisticTypeEnum.image) {
           this.filterCondition[showAutoCompleted] = [assignObj];
@@ -429,13 +404,11 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
           condition.push(assignObj);
         }
       }
-
     } else {
       this.filterCondition = {
         [showAutoCompleted]: [assignObj],
-        ...this.filterCondition
+        ...this.filterCondition,
       };
-
     }
 
     const input = this[showAutoCompleted].nativeElement;
@@ -459,7 +432,11 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    * @author kidin-1100806
    */
   handleSnInput(e: KeyboardEvent | Event | MouseEvent) {
-    const { type, key, target: {value} } = (e as any);
+    const {
+      type,
+      key,
+      target: { value },
+    } = e as any;
     switch (type) {
       case 'keyup':
         if (key === 'Enter' && value.length > 0) {
@@ -472,8 +449,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
           this.addConditionValue('sn', value);
         }
         break;
-    };
-    
+    }
   }
 
   /**
@@ -484,15 +460,14 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
   addConditionValue(type: InputType, value: string) {
     const upperCaseList = ['sn', 'region'];
     const finalVal = upperCaseList.includes(type) ? value.toUpperCase() : value.toLowerCase(),
-          condition = this.filterCondition[type];
+      condition = this.filterCondition[type];
     if (condition && !condition.includes(finalVal)) {
       this.filterCondition[type].push(finalVal);
     } else {
       this.filterCondition = {
         [type]: [finalVal],
-        ...this.filterCondition
+        ...this.filterCondition,
       };
-
     }
 
     const input = this[type].nativeElement;
@@ -507,17 +482,14 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    */
   openCommonList(e: MouseEvent, type: 'region' | 'language') {
     e.stopPropagation();
-    this.unsubscribeClick();  // 避免重複點擊
+    this.unsubscribeClick(); // 避免重複點擊
     this.autoCompletedList = type === 'region' ? commonRegion : commonLanguage;
     this.uiFlag.showAutoCompleted = type;
     const clickEvent = fromEvent(window, 'click');
-    this.clickEventSubscription = clickEvent.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(e => {
+    this.clickEventSubscription = clickEvent.pipe(takeUntil(this.ngUnsubscribe)).subscribe((e) => {
       this.uiFlag.showAutoCompleted = null;
       this.unsubscribeClick();
     });
-
   }
 
   /**
@@ -534,7 +506,11 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    * @author kidin-1100806
    */
   handleRegionInput(e: KeyboardEvent | Event | MouseEvent) {
-    const { type, key, target: {value} } = (e as any);
+    const {
+      type,
+      key,
+      target: { value },
+    } = e as any;
     switch (type) {
       case 'keyup':
         if (key === 'Enter' && value.length > 0) {
@@ -549,8 +525,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
         }
 
         break;
-    };
-
+    }
   }
 
   /**
@@ -559,7 +534,11 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    * @author kidin-1100806
    */
   handleLanguageInput(e: KeyboardEvent | Event | MouseEvent) {
-    const { type, key, target: {value} } = (e as any);
+    const {
+      type,
+      key,
+      target: { value },
+    } = e as any;
     switch (type) {
       case 'keyup':
         if (key === 'Enter' && value.length > 0) {
@@ -574,8 +553,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
         }
 
         break;
-    };
-
+    }
   }
 
   /**
@@ -584,9 +562,8 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    */
   allConditionRecovery() {
     this.filterCondition = {
-      createFromApp: allApp
+      createFromApp: allApp,
     };
-
   }
 
   /**
@@ -598,9 +575,8 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
       token: this.authService.token,
       objectType: ObjType.all,
       subset: false,
-      imgType: AlbumType.all
+      imgType: AlbumType.all,
     };
-
   }
 
   /**
@@ -616,26 +592,24 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
         token: this.authService.token,
         searchFileType: statisticType,
         searchTime: this.searchTime,
-        filterCondition: this.filterCondition
+        filterCondition: this.filterCondition,
       };
 
       this.getTrackingCalculateData(body);
     } else {
-
       if (statisticType === StatisticTypeEnum.image) {
         body = this.imageReqBody;
         const { objectType } = this.imageReqBody;
-        if (objectType === ObjType.user)  {
+        if (objectType === ObjType.user) {
           body = {
             userId: this.filterCondition.user[0].userId,
-            ...body
+            ...body,
           };
         } else if (objectType === ObjType.group) {
           body = {
             groupId: this.filterCondition.group[0].groupId,
-            ...body
+            ...body,
           };
-
         }
 
         this.getGalleryStatisticsData(body);
@@ -644,9 +618,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
         body = this.arrangeCondition(statisticType, this.searchTime, this.filterCondition);
         this.getTrackingStatisticsData(body);
       }
-
     }
-
   }
 
   /**
@@ -661,13 +633,12 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
         cloudrun: [],
         trainlive: [],
         fitness: [],
-        tft: []
+        tft: [],
       },
       fileCount: 0,
       totalSpace: 0,
-      createTime: 'YYYY-MM-DD  HH:mm'
+      createTime: 'YYYY-MM-DD  HH:mm',
     };
-
   }
 
   /**
@@ -678,83 +649,83 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    */
   arrangeCondition(
     searchFileType: StatisticTypeEnum,
-    searchTime: { startTime: string, endTime: string },
+    searchTime: { startTime: string; endTime: string },
     condition: any
   ) {
     const body = {
       token: this.authService.token,
       searchFileType,
       searchTime,
-      filterCondition: {}
+      filterCondition: {},
     };
 
-    for (let _condition in condition) {
-
-      if (condition.hasOwnProperty(_condition)) {
+    for (const _condition in condition) {
+      if (Object.prototype.hasOwnProperty.call(condition, _condition)) {
         const content = condition[_condition];
         if (content.length > 0) {
-
           switch (_condition) {
             case 'createFromApp':
-                body.filterCondition = {
-                  createFromApp: content,
-                  ...body.filterCondition
-                };
+              body.filterCondition = {
+                createFromApp: content,
+                ...body.filterCondition,
+              };
               break;
-            case 'region':
-              const countryRegion = content.map(_content => {
+            case 'region': {
+              const countryRegion = content.map((_content) => {
                 if (_content.code) {
                   return `*${_content.code}*`;
                 } else {
                   return `*${_content}*`;
                 }
-
               });
 
               body.filterCondition = {
                 countryRegion,
-                ...body.filterCondition
+                ...body.filterCondition,
               };
               break;
-            case 'language':
-              const language = content.map(_content => {
+            }
+            case 'language': {
+              const language = content.map((_content) => {
                 if (_content.code) {
                   return `*${_content.code}*`;
                 } else {
                   return `*${_content}*`;
                 }
-
               });
 
               body.filterCondition = {
                 language,
-                ...body.filterCondition
+                ...body.filterCondition,
               };
               break;
-            case 'sn':
-              const equipmentSN = content.map(_content => `*${_content}*`);
+            }
+            case 'sn': {
+              const equipmentSN = content.map((_content) => `*${_content}*`);
               body.filterCondition = {
                 equipmentSN,
-                ...body.filterCondition
+                ...body.filterCondition,
               };
               break;
-            case 'user':
-              const author = content.map(_content => `*?userId=${_content.userId}*`);
+            }
+            case 'user': {
+              const author = content.map((_content) => `*?userId=${_content.userId}*`);
               body.filterCondition = {
                 author,
-                ...body.filterCondition
+                ...body.filterCondition,
               };
               break;
-            case 'group':
+            }
+            case 'group': {
               const brand = [],
-                    branch = [],
-                    coach = [];
-              content.forEach(_content => {
-                const { groupId } =  _content,
-                      blurId = `*groupId=${groupId}*`,
-                      idArr = _content.groupId.split('-'),
-                      isClass = idArr[4] != 0,
-                      isBranch = !isClass && idArr[3] != 0;
+                branch = [],
+                coach = [];
+              content.forEach((_content) => {
+                const { groupId } = _content,
+                  blurId = `*groupId=${groupId}*`,
+                  idArr = _content.groupId.split('-'),
+                  isClass = idArr[4] != 0,
+                  isBranch = !isClass && idArr[3] != 0;
                 if (isClass) {
                   coach.push(blurId);
                 } else if (isBranch) {
@@ -762,40 +733,34 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
                 } else {
                   brand.push(blurId);
                 }
-
               });
 
               if (coach.length > 0) {
                 body.filterCondition = {
                   class: coach,
-                  ...body.filterCondition
+                  ...body.filterCondition,
                 };
-
               }
 
               if (branch.length > 0) {
                 body.filterCondition = {
                   branch,
-                  ...body.filterCondition
+                  ...body.filterCondition,
                 };
-
               }
 
               if (brand.length > 0) {
                 body.filterCondition = {
                   brand,
-                  ...body.filterCondition
+                  ...body.filterCondition,
                 };
-
               }
-              
+
               break;
+            }
           }
-
         }
-
       }
-
     }
 
     return body;
@@ -808,7 +773,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    */
   getTrackingCalculateData(body: any) {
     this.uiFlag.progress = 50;
-    this.alaAppAnalysisService.getPreAnalysis(body).subscribe(res => {
+    this.alaAppAnalysisService.getPreAnalysis(body).subscribe((res) => {
       this.initSearchRes();
       const { processResult, dataStatistics } = res;
       if (!processResult) {
@@ -821,14 +786,14 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
           this.utils.handleError(resultCode, apiCode, resultMessage);
           this.uiFlag.progress = 100;
         } else {
-          dataStatistics.forEach(_data => {
+          dataStatistics.forEach((_data) => {
             const { analysis, startTime } = _data;
-            analysis.forEach(_analysis => {
+            analysis.forEach((_analysis) => {
               const { appId, byte, fileCount } = _analysis;
               this.searchRes.fileCount += fileCount;
               this.searchRes.totalSpace += byte;
               const startTimestamp = dayjs(startTime).valueOf(),
-                    oneRangeData = [startTimestamp, byte];
+                oneRangeData = [startTimestamp, byte];
               switch (appId) {
                 case AlaApp.gptfit:
                   this.searchRes.trendChart.gptfit.push(oneRangeData);
@@ -849,19 +814,14 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
                   this.searchRes.trendChart.tft.push(oneRangeData);
                   break;
               }
-
             });
-
           });
 
           this.searchRes.createTime = dayjs().format('YYYY-MM-DD HH:mm');
           this.uiFlag.progress = 100;
         }
-        
       }
-
     });
-
   }
 
   /**
@@ -871,7 +831,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    */
   getGalleryStatisticsData(body: any) {
     this.uiFlag.progress = 50;
-    this.alaAppAnalysisService.getImgAnalysis(body).subscribe(res => {
+    this.alaAppAnalysisService.getImgAnalysis(body).subscribe((res) => {
       this.initSearchRes();
       const { processResult, dataStatistics } = res;
       if (!processResult) {
@@ -884,24 +844,20 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
           this.utils.handleError(resultCode, apiCode, resultMessage);
           this.uiFlag.progress = 100;
         } else {
-          dataStatistics.forEach(_data => {
+          dataStatistics.forEach((_data) => {
             const { analysis } = _data;
-            analysis.forEach(_analysis => {
+            analysis.forEach((_analysis) => {
               const { byte, fileCount } = _analysis;
               this.searchRes.fileCount += fileCount;
               this.searchRes.totalSpace += byte;
             });
-
           });
 
           this.searchRes.createTime = dayjs().format('YYYY-MM-DD HH:mm');
           this.uiFlag.progress = 100;
         }
-        
       }
-
     });
-
   }
 
   /**
@@ -911,7 +867,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    */
   getTrackingStatisticsData(body: any) {
     this.uiFlag.progress = 50;
-    this.alaAppAnalysisService.getFileAnalysis(body).subscribe(res => {
+    this.alaAppAnalysisService.getFileAnalysis(body).subscribe((res) => {
       this.initSearchRes();
       const { processResult, dataStatistics } = res;
       if (!processResult) {
@@ -924,24 +880,20 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
           this.utils.handleError(resultCode, apiCode, resultMessage);
           this.uiFlag.progress = 100;
         } else {
-          dataStatistics.forEach(_data => {
+          dataStatistics.forEach((_data) => {
             const { analysis } = _data;
-            analysis.forEach(_analysis => {
+            analysis.forEach((_analysis) => {
               const { pointCount, fileCount } = _analysis;
               this.searchRes.fileCount += fileCount;
-              this.searchRes.totalSpace += pointCount * 32;  // 點陣數量 * 32byte
+              this.searchRes.totalSpace += pointCount * 32; // 點陣數量 * 32byte
             });
-
           });
 
           this.searchRes.createTime = dayjs().format('YYYY-MM-DD HH:mm');
           this.uiFlag.progress = 100;
         }
-        
       }
-
     });
-
   }
 
   /**
@@ -951,5 +903,4 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

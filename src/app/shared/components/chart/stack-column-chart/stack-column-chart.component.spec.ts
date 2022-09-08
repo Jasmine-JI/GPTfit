@@ -8,9 +8,8 @@ describe('StackColumnChartComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ StackColumnChartComponent ]
-    })
-    .compileComponents();
+      declarations: [StackColumnChartComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

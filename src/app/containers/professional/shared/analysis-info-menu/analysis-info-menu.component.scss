@@ -1,5 +1,6 @@
 @import 'color.scss';
 @import 'font.scss';
+@import 'overflow-scroll.scss';
 
 .analysis__assign__menu {
   position: fixed;
@@ -21,10 +22,7 @@
   padding: 5px;
   background-color: var(--scale-255-90);
   border: 1px solid #bcbcbc;
-  overflow-y: scroll;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  
+  @include overflow-y-scroll();
 }
 
 .name__list {
@@ -54,7 +52,6 @@
     color: white;
     background-color: $primary-blue;
   }
-
 }
 
 .not__achieved {

@@ -5,7 +5,8 @@ exports.getUserId = function (token) {
   return new Promise((resolve, reject) => {
     console.log('reject: ', reject);
     db.query(
-      `SELECT user_id FROM ?? WHERE access_token = ?`, ['user_profile', token],
+      `SELECT user_id FROM ?? WHERE access_token = ?`,
+      ['user_profile', token],
       function (err, rows) {
         if (err) {
           result.status = '驗證失敗。';
@@ -27,10 +28,10 @@ exports.getUserId = function (token) {
 };
 
 exports.searchNickname = function (keyword) {
-
   return new Promise((resolve, reject) => {
     db.query(
-      `SELECT login_acc, user_id FROM ?? WHERE login_acc like ? '%'`, ['user_profile', keyword],
+      `SELECT login_acc as nickname, user_id as userId FROM ?? WHERE login_acc like ? '%'`,
+      ['user_profile', keyword],
       function (err, rows) {
         if (err) {
           return reject(false);
@@ -41,19 +42,16 @@ exports.searchNickname = function (keyword) {
         } else {
           return reject(false);
         }
-
       }
-
     );
-
   });
-
 };
 
 exports.getUserList = function (list) {
   return new Promise((resolve, reject) => {
     db.query(
-      `SELECT login_acc as nickname, user_id as userId FROM ?? WHERE user_id in (?) `, ['user_profile', list],
+      `SELECT login_acc as nickname, user_id as userId FROM ?? WHERE user_id in (?) `,
+      ['user_profile', list],
       function (err, rows) {
         if (err) {
           return reject(false);
@@ -64,20 +62,16 @@ exports.getUserList = function (list) {
         } else {
           return reject(false);
         }
-
       }
-
     );
-
   });
-
 };
 
 exports.checkNicknameRepeat = function (keyword) {
-
   return new Promise((resolve, reject) => {
     db.query(
-      `SELECT login_acc FROM ?? WHERE login_acc = ?`, ['user_profile', keyword],
+      `SELECT login_acc FROM ?? WHERE login_acc = ?`,
+      ['user_profile', keyword],
       function (err, rows) {
         if (err) {
           return reject(false);
@@ -85,27 +79,19 @@ exports.checkNicknameRepeat = function (keyword) {
 
         return resolve(rows);
       }
-
     );
-
   });
-
 };
 
 exports.getTargetInfo = function (sql, algebra) {
-
   return new Promise((resolve, reject) => {
     db.query(sql, algebra, function (err, rows) {
-        if (err) {
-          console.log('err', err);
-          return reject(false);
-        }
-
-        return resolve(rows);
+      if (err) {
+        console.log('err', err);
+        return reject(false);
       }
 
-    );
-
+      return resolve(rows);
+    });
   });
-
 };

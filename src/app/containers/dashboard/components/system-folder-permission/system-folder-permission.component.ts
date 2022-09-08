@@ -6,16 +6,15 @@ import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { AuthService } from '../../../../core/services/auth.service';
 
-
 enum DevelopGroup {
   app = 1,
   watch,
-  treadmill
+  treadmill,
 }
 
 enum FwVersion {
   RD_FW = 1,
-  RD_FW_2
+  RD_FW_2,
 }
 
 type ListEditMode = 'delUser' | 'addFolder' | 'delFolder';
@@ -23,17 +22,16 @@ type ListEditMode = 'delUser' | 'addFolder' | 'delFolder';
 @Component({
   selector: 'app-system-folder-permission',
   templateUrl: './system-folder-permission.component.html',
-  styleUrls: ['./system-folder-permission.component.scss']
+  styleUrls: ['./system-folder-permission.component.scss'],
 })
 export class SystemFolderPermissionComponent implements OnInit {
-
   constructor(
     private systemFolderPermissionService: SystemFolderPermissionService,
     private utils: UtilsService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private authService: AuthService
-  ) { }
+  ) {}
 
   /**
    * ui會用到的各個flag
@@ -51,7 +49,7 @@ export class SystemFolderPermissionComponent implements OnInit {
     showNewPwd: false,
     showCheckPwd: false,
     addFolderRepeat: false,
-    listMode: <ListEditMode>null
+    listMode: <ListEditMode>null,
   };
 
   /**
@@ -63,7 +61,7 @@ export class SystemFolderPermissionComponent implements OnInit {
     checkPwd: '',
     newProjectName: '',
     version: 1,
-    assignGroup: 1
+    assignGroup: 1,
   };
 
   /**
@@ -71,13 +69,13 @@ export class SystemFolderPermissionComponent implements OnInit {
    */
   listEditBody = {
     username: '',
-    folder: <Array<string>>[]
+    folder: <Array<string>>[],
   };
 
   token = this.authService.token;
   userList: Array<string>;
   folderList: Array<string>;
-  tempAddFolderName: string = '';
+  tempAddFolderName = '';
   selectTempAddList: Array<string> = [];
   inputTempAddList: Array<string> = [];
   candidateFolderList: Array<string>;
@@ -95,10 +93,10 @@ export class SystemFolderPermissionComponent implements OnInit {
   getUserList() {
     const body = {
       token: this.token,
-      category: 1
+      category: 1,
     };
 
-    this.systemFolderPermissionService.getSysList(body).subscribe(res => {
+    this.systemFolderPermissionService.getSysList(body).subscribe((res) => {
       const { apiCode, resultCode, resultMessage, info } = res;
       if (resultCode !== 200) {
         const msg = `${apiCode}: ${resultMessage}`;
@@ -106,9 +104,7 @@ export class SystemFolderPermissionComponent implements OnInit {
       } else {
         this.userList = info.userList;
       }
-
     });
-
   }
 
   /**
@@ -122,10 +118,10 @@ export class SystemFolderPermissionComponent implements OnInit {
       const body = {
         token: this.token,
         category: 2,
-        username
+        username,
       };
 
-      this.systemFolderPermissionService.getSysList(body).subscribe(res => {
+      this.systemFolderPermissionService.getSysList(body).subscribe((res) => {
         const { apiCode, resultCode, resultMessage, info } = res;
         if (resultCode !== 200) {
           const msg = `${apiCode}: ${resultMessage}`;
@@ -135,9 +131,7 @@ export class SystemFolderPermissionComponent implements OnInit {
           this.folderList = accessFolderList ?? [];
           this.candidateFolderList = this.getCandidateFolderList(folderList);
         }
-
       });
-
     } else {
       this.dialog.open(MessageBoxComponent, {
         hasBackdrop: true,
@@ -146,13 +140,10 @@ export class SystemFolderPermissionComponent implements OnInit {
           body: `確認刪除 "${username}" ？`,
           confirmText: '確認',
           onConfirm: () => this.delUserConfirm(username),
-          cancelText: '取消'
-        }
-  
+          cancelText: '取消',
+        },
       });
-
     }
-
   }
 
   /**
@@ -176,7 +167,7 @@ export class SystemFolderPermissionComponent implements OnInit {
       checkPwd: '',
       newProjectName: null,
       version: 1,
-      assignGroup: 1
+      assignGroup: 1,
     };
 
     this.initCheck();
@@ -196,7 +187,6 @@ export class SystemFolderPermissionComponent implements OnInit {
       this.createBody.newAccount = value;
       this.checkInputEmpty('newAccount');
     }
-    
   }
 
   /**
@@ -213,7 +203,6 @@ export class SystemFolderPermissionComponent implements OnInit {
     } else if (checkPwd.length > 0) {
       this.uiFlag.pwdCheckError = false;
     }
-
   }
 
   /**
@@ -230,7 +219,6 @@ export class SystemFolderPermissionComponent implements OnInit {
     } else if (newPassword.length > 0) {
       this.uiFlag.pwdCheckError = false;
     }
-
   }
 
   /**
@@ -256,7 +244,6 @@ export class SystemFolderPermissionComponent implements OnInit {
       this.createBody.newProjectName = value;
       this.checkInputEmpty('newProjectName');
     }
-
   }
 
   /**
@@ -279,7 +266,6 @@ export class SystemFolderPermissionComponent implements OnInit {
     } else {
       this.uiFlag[`${type}Empty`] = false;
     }
-
   }
 
   /**
@@ -320,16 +306,15 @@ export class SystemFolderPermissionComponent implements OnInit {
       newProjectNameRepeat,
       checkPwdEmpty,
       pwdCheckError,
-
     } = this.uiFlag;
     if (
-      newAccountEmpty
-      || newPasswordEmpty
-      || newProjectNameEmpty
-      || checkPwdEmpty
-      || pwdCheckError
-      || newAccountRepeat
-      || newProjectNameRepeat
+      newAccountEmpty ||
+      newPasswordEmpty ||
+      newProjectNameEmpty ||
+      checkPwdEmpty ||
+      pwdCheckError ||
+      newAccountRepeat ||
+      newProjectNameRepeat
     ) {
       return false;
     } else {
@@ -340,7 +325,7 @@ export class SystemFolderPermissionComponent implements OnInit {
           token: this.token,
           newAccount,
           newPassword,
-          assignGroup
+          assignGroup,
         };
 
         this.createUser(body);
@@ -349,14 +334,12 @@ export class SystemFolderPermissionComponent implements OnInit {
           token: this.token,
           newProjectName,
           version,
-          assignGroup
+          assignGroup,
         };
 
         this.createFolder(body);
       }
-
     }
-
   }
 
   /**
@@ -365,8 +348,8 @@ export class SystemFolderPermissionComponent implements OnInit {
    * @author kidin-1100730
    */
   toggleDisplayPW(element: 'pwd' | 'check__pwd') {
-    let flag = element === 'pwd' ? 'showNewPwd' : 'showCheckPwd';
-    const pwInputType = (<HTMLInputElement>document.getElementById(element));
+    const flag = element === 'pwd' ? 'showNewPwd' : 'showCheckPwd';
+    const pwInputType = <HTMLInputElement>document.getElementById(element);
     if (this.uiFlag[flag]) {
       this.uiFlag[flag] = false;
       pwInputType.type = 'password';
@@ -382,7 +365,7 @@ export class SystemFolderPermissionComponent implements OnInit {
    * @author kidin-1100730
    */
   createUser(body: any) {
-    this.systemFolderPermissionService.createSysAccount(body).subscribe(res => {
+    this.systemFolderPermissionService.createSysAccount(body).subscribe((res) => {
       const { apiCode, resultCode, resultMessage } = res;
       if (resultCode !== 200) {
         const msg = `${apiCode}: ${resultMessage}`;
@@ -393,9 +376,7 @@ export class SystemFolderPermissionComponent implements OnInit {
         this.initCheck();
         this.uiFlag.createType = null;
       }
-
     });
-
   }
 
   /**
@@ -404,7 +385,7 @@ export class SystemFolderPermissionComponent implements OnInit {
    * @author kidin-1100730
    */
   createFolder(body: any) {
-    this.systemFolderPermissionService.createSysFolder(body).subscribe(res => {
+    this.systemFolderPermissionService.createSysFolder(body).subscribe((res) => {
       const { apiCode, resultCode, resultMessage } = res;
       if (resultCode !== 200) {
         const msg = `${apiCode}: ${resultMessage}`;
@@ -414,9 +395,7 @@ export class SystemFolderPermissionComponent implements OnInit {
         this.initCheck();
         this.uiFlag.createType = null;
       }
-
     });
-
   }
 
   /**
@@ -432,7 +411,6 @@ export class SystemFolderPermissionComponent implements OnInit {
       this.uiFlag.focusName = null;
       this.folderList = [];
     }
-
   }
 
   /**
@@ -441,9 +419,9 @@ export class SystemFolderPermissionComponent implements OnInit {
    * @author kidin-1100802
    */
   getCandidateFolderList(allList: Array<string>): Array<string> {
-    const candidateList = allList.filter(_allList => {
+    const candidateList = allList.filter((_allList) => {
       let notAdd = true;
-      this.folderList.forEach(_list => {
+      this.folderList.forEach((_list) => {
         if (_allList === _list) notAdd = false;
       });
 
@@ -470,22 +448,20 @@ export class SystemFolderPermissionComponent implements OnInit {
   delUserConfirm(username: string) {
     const body = {
       token: this.token,
-      username
+      username,
     };
 
-    this.systemFolderPermissionService.delSysAccount(body).subscribe(res => {
+    this.systemFolderPermissionService.delSysAccount(body).subscribe((res) => {
       const { apiCode, resultCode, resultMessage } = res;
       if (resultCode !== 200) {
         const msg = `${apiCode}: ${resultMessage}`;
         this.utils.openAlert(msg);
       } else {
-        this.userList = this.userList.filter(_user => _user !== username);
+        this.userList = this.userList.filter((_user) => _user !== username);
         this.snackBar.open('刪除成功', 'ok', { duration: 2000 });
         this.uiFlag.listMode = null;
       }
-
     });
-
   }
 
   /**
@@ -493,13 +469,12 @@ export class SystemFolderPermissionComponent implements OnInit {
    * @author kidin-1100730
    */
   editFolderConfirm() {
-    const {listMode} = this.uiFlag;
+    const { listMode } = this.uiFlag;
     if (listMode === 'addFolder') {
       this.userAddFolder();
     } else if (listMode === 'delFolder') {
       this.openDelFolderAlert();
     }
-
   }
 
   /**
@@ -509,8 +484,8 @@ export class SystemFolderPermissionComponent implements OnInit {
    */
   addTempFolder(name: string) {
     const haveName = name.length > 0,
-          currentFolderRepeat = this.folderList.includes(name),
-          tempFolderRepeat = this.inputTempAddList.includes(name);
+      currentFolderRepeat = this.folderList.includes(name),
+      tempFolderRepeat = this.inputTempAddList.includes(name);
     if (haveName && !currentFolderRepeat && !tempFolderRepeat) {
       this.inputTempAddList.push(name);
       this.tempAddFolderName = '';
@@ -520,7 +495,6 @@ export class SystemFolderPermissionComponent implements OnInit {
     } else {
       this.uiFlag.addFolderRepeat = false;
     }
-
   }
 
   /**
@@ -534,9 +508,8 @@ export class SystemFolderPermissionComponent implements OnInit {
     this.uiFlag.addFolderRepeat = false;
     this.listEditBody = {
       username: '',
-      folder: []
+      folder: [],
     };
-
   }
 
   /**
@@ -544,7 +517,7 @@ export class SystemFolderPermissionComponent implements OnInit {
    * @param folder {string}-資料夾名稱
    */
   handleDelTempFolder(folder: string) {
-    this.inputTempAddList = this.inputTempAddList.filter(_list => _list !== folder);
+    this.inputTempAddList = this.inputTempAddList.filter((_list) => _list !== folder);
   }
 
   /**
@@ -555,11 +528,10 @@ export class SystemFolderPermissionComponent implements OnInit {
   selectCandidate(candidate: string) {
     const { folder } = this.listEditBody;
     if (folder.includes(candidate)) {
-      this.listEditBody.folder = folder.filter(_folder => _folder !== candidate);
+      this.listEditBody.folder = folder.filter((_folder) => _folder !== candidate);
     } else {
       this.listEditBody.folder.push(candidate);
     }
-    
   }
 
   /**
@@ -568,16 +540,16 @@ export class SystemFolderPermissionComponent implements OnInit {
    */
   userAddFolder() {
     const { username, folder } = this.listEditBody,
-          allAddFolder = folder.concat(this.inputTempAddList);
+      allAddFolder = folder.concat(this.inputTempAddList);
     if (allAddFolder.length > 0) {
       const body = {
         token: this.token,
         category: 1,
         username,
-        folder: allAddFolder
+        folder: allAddFolder,
       };
 
-      this.systemFolderPermissionService.setUserAccessRight(body).subscribe(res => {
+      this.systemFolderPermissionService.setUserAccessRight(body).subscribe((res) => {
         const { apiCode, resultCode, resultMessage } = res;
         if (resultCode !== 200) {
           const msg = `${apiCode}: ${resultMessage}`;
@@ -588,14 +560,11 @@ export class SystemFolderPermissionComponent implements OnInit {
           this.uiFlag.listMode = null;
           this.initEdit();
         }
-
       });
-
     } else {
       this.uiFlag.listMode = null;
       this.initEdit();
     }
-
   }
 
   /**
@@ -606,11 +575,10 @@ export class SystemFolderPermissionComponent implements OnInit {
   selectDelFolder(del: string) {
     const { folder } = this.listEditBody;
     if (folder.includes(del)) {
-      this.listEditBody.folder = this.listEditBody.folder.filter(_folder => _folder !== del);
+      this.listEditBody.folder = this.listEditBody.folder.filter((_folder) => _folder !== del);
     } else {
       this.listEditBody.folder.push(del);
     }
-
   }
 
   /**
@@ -621,7 +589,7 @@ export class SystemFolderPermissionComponent implements OnInit {
     const { username, folder } = this.listEditBody;
     if (folder.length > 0) {
       let delList = '';
-      folder.forEach(_folder => {
+      folder.forEach((_folder) => {
         delList += `「${_folder}」, `;
       });
 
@@ -632,16 +600,13 @@ export class SystemFolderPermissionComponent implements OnInit {
           body: `"${username}"將移除${delList}權限，是否繼續？`,
           confirmText: '確認',
           onConfirm: () => this.userDelFolder(),
-          cancelText: '取消'
-        }
-
+          cancelText: '取消',
+        },
       });
-
     } else {
       this.uiFlag.listMode = null;
       this.initEdit();
     }
-
   }
 
   /**
@@ -650,24 +615,24 @@ export class SystemFolderPermissionComponent implements OnInit {
    */
   userDelFolder() {
     const { username, folder } = this.listEditBody,
-          body = {
-            token: this.token,
-            category: 2,
-            username,
-            folder
-          };
+      body = {
+        token: this.token,
+        category: 2,
+        username,
+        folder,
+      };
 
-    this.systemFolderPermissionService.setUserAccessRight(body).subscribe(res => {
+    this.systemFolderPermissionService.setUserAccessRight(body).subscribe((res) => {
       const { apiCode, resultCode, resultMessage } = res;
       if (resultCode !== 200) {
         const msg = `${apiCode}: ${resultMessage}`;
         this.utils.openAlert(msg);
       } else {
-        this.folderList = this.folderList.filter(_list => {
+        this.folderList = this.folderList.filter((_list) => {
           let remain = true;
-          folder.forEach(_folder => {
+          folder.forEach((_folder) => {
             if (_folder === _list) remain = false;
-          })
+          });
 
           return remain;
         });
@@ -676,9 +641,6 @@ export class SystemFolderPermissionComponent implements OnInit {
         this.uiFlag.listMode = null;
         this.initEdit();
       }
-
     });
-
   }
-
 }

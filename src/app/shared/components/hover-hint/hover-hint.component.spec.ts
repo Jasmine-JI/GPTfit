@@ -8,9 +8,8 @@ describe('HoverHintComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ HoverHintComponent ]
-    })
-    .compileComponents();
+      declarations: [HoverHintComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

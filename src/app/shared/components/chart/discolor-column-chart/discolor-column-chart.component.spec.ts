@@ -8,9 +8,8 @@ describe('DiscolorColumnChartComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DiscolorColumnChartComponent ]
-    })
-    .compileComponents();
+      declarations: [DiscolorColumnChartComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -1,9 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { mi } from '../models/bs-constant';
 
-@Pipe({name: 'speedSibs'})
+@Pipe({ name: 'speedSibs' })
 export class SpeedSibsPipe implements PipeTransform {
-
   /**
    * 若為英制，則將速度轉為英哩/小時
    * @param value {number}-速度
@@ -12,7 +11,7 @@ export class SpeedSibsPipe implements PipeTransform {
    */
   transform(value: number, args: number | Array<number>): string {
     let unitType: number,
-        showUnit = 0;
+      showUnit = 0;
     if (Array.isArray(args)) {
       [unitType, showUnit] = [...args];
     } else {
@@ -26,7 +25,5 @@ export class SpeedSibsPipe implements PipeTransform {
       const finalValue = (value / mi).toFixed(1);
       return showUnit === 0 ? `${finalValue} mi/h` : `${finalValue}`;
     }
-    
   }
-
 }

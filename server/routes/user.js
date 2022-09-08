@@ -16,8 +16,8 @@ const tableRename = {
     field: {
       accessRight: 'access_right',
       memberId: 'member_id',
-      groupId: 'group_id'
-    }
+      groupId: 'group_id',
+    },
   },
   userProfile: {
     needToken: true,
@@ -41,8 +41,8 @@ const tableRename = {
       phone: 'phone',
       theme: 'theme_img_url',
       counter: 'counter',
-      signInType: 'register_category'
-    }
+      signInType: 'register_category',
+    },
   },
   userInfo: {
     needToken: false,
@@ -54,8 +54,8 @@ const tableRename = {
       icon: 'avatar_url',
       countryCode: 'country_code',
       phone: 'phone',
-      theme: 'theme_img_url'
-    }
+      theme: 'theme_img_url',
+    },
   },
   userApplyInfo: {
     needToken: true,
@@ -64,17 +64,15 @@ const tableRename = {
       userId: 'user_id',
       eventId: 'target_event_id',
       applyStatus: 'apply_status',
-      paidStatus: 'paid_status'
-    }
-  }
-
+      paidStatus: 'paid_status',
+    },
+  },
 };
-
 
 router.get('/userProfile', function (req, res, next) {
   const {
     con,
-    query: { userId }
+    query: { userId },
   } = req;
   const sql = `
     select distinct u.login_acc, u.icon_large as userIcon from
@@ -84,7 +82,7 @@ router.get('/userProfile', function (req, res, next) {
     if (err) {
       console.log(err);
       return res.status(500).send({
-        errorMessage: err.sqlMessage
+        errorMessage: err.sqlMessage,
       });
     }
     let userName = '';
@@ -96,7 +94,7 @@ router.get('/userProfile', function (req, res, next) {
 
     res.json({
       userName,
-      userIcon
+      userIcon,
     });
   });
 });
@@ -104,15 +102,11 @@ router.get('/userProfile', function (req, res, next) {
 router.post('/userAvartar', function (req, res, next) {
   const {
     con,
-    body: {
-      token,
-      userId
-    }
+    body: { token, userId },
   } = req;
 
-  checkAccessRight(token, 29).then(_res => {
+  checkAccessRight(token, 29).then((_res) => {
     if (_res) {
-
       let keyword;
       if (Array.isArray(userId)) {
         keyword = 'in (?)';
@@ -138,23 +132,21 @@ router.post('/userAvartar', function (req, res, next) {
           birthday
         from ??
         where user_id ${keyword};
-      `
+      `;
 
       con.query(sql, ['user_profile', userId], function (err, rows) {
         if (err) {
           console.log(err);
           return res.status(500).send({
-            errorMessage: err.sqlMessage
+            errorMessage: err.sqlMessage,
           });
         }
 
         if (rows.length > 0 && Array.isArray(userId)) {
-
           res.json({
             resultCode: 200,
-            userList: rows
-          })
-
+            userList: rows,
+          });
         } else if (rows.length > 0) {
           const row = rows[0];
           res.json({
@@ -172,9 +164,8 @@ router.post('/userAvartar', function (req, res, next) {
             lastResetPwd: row.lastResetPwd,
             gender: row.gender,
             birthday: row.birthday,
-            accountType: +row.accountType
-          })
-
+            accountType: +row.accountType,
+          });
         } else {
           res.json({
             resultCode: 200,
@@ -191,188 +182,142 @@ router.post('/userAvartar', function (req, res, next) {
             gender: null,
             birthday: null,
             userList: [],
-            accountType: null
-          })
-
+            accountType: null,
+          });
         }
-
       });
     } else {
       res.json({
         resultCode: 403,
-        rtnMsg: '你沒權限~'
+        rtnMsg: '你沒權限~',
       });
     }
-
   });
 });
 
 // 使用關鍵字尋找相關暱稱(auto complete list)-kidin-1090908
 router.post('/search_nickname', function (req, res, next) {
-  const {
-    con,
-    body
-  } = req;
+  const { con, body } = req;
 
-  const result = searchNickname(body.keyword).then(result => {
+  const result = searchNickname(body.keyword).then((result) => {
     if (result) {
       return res.json({
         resultCode: 200,
-        resultMessage: "Get result success.",
-        nickname: result
+        resultMessage: 'Get result success.',
+        list: result,
       });
-
     } else {
       return res.json({
         resultCode: 400,
-        resultMessage: "Not found.",
-      })
-
+        resultMessage: 'Not found.',
+      });
     }
-
   });
-
 });
 
 // userId[]查找暱稱-kidin-1090923
 router.post('/getUserList', function (req, res, next) {
-  const {
-    con,
-    body
-  } = req;
+  const { con, body } = req;
 
   if (body.userIdList.length === 0) {
-
     return res.json({
       apiCode: 'N9001', // 暫定
       resultCode: 200,
-      resultMessage: "Get result success.",
-      nickname: []
+      resultMessage: 'Get result success.',
+      nickname: [],
     });
-
   } else {
-    const result = getUserList(body.userIdList).then(resp => {
-
+    const result = getUserList(body.userIdList).then((resp) => {
       if (resp) {
-
         const resList = [];
-        body.userIdList.forEach(_list => {
-
-          resp.forEach(__resp => {
-
+        body.userIdList.forEach((_list) => {
+          resp.forEach((__resp) => {
             if (_list === +__resp.userId) {
               resList.push(__resp);
             }
-
           });
-
         });
 
         return res.json({
           apiCode: 'N9001', // 暫定
           resultCode: 200,
-          resultMessage: "Get result success.",
-          nickname: resList
+          resultMessage: 'Get result success.',
+          nickname: resList,
         });
-
       } else {
         return res.json({
           apiCode: 'N9001', // 暫定
           resultCode: 400,
-          resultMessage: "Get result failed.",
-        })
-
+          resultMessage: 'Get result failed.',
+        });
       }
-
     });
-
   }
-
 });
 
 /**
  * 確認暱稱是否重複(可由N9003取代)
  */
 router.post('/checkNickname', function (req, res, next) {
-  const {
-    con,
-    body
-  } = req;
+  const { con, body } = req;
 
-  const result = checkNicknameRepeat(body.nickname).then(result => {
+  const result = checkNicknameRepeat(body.nickname).then((result) => {
     if (result && result.length > 0) {
-
       return res.json({
-        apiCode: 'N9002',  // 暫定
+        apiCode: 'N9002', // 暫定
         resultCode: 200,
         repeat: true,
-        resultMessage: "Get result success.",
+        resultMessage: 'Get result success.',
       });
-
     } else if (result && result.length === 0) {
-
       return res.json({
         apiCode: 'N9002',
         resultCode: 200,
         repeat: false,
-        resultMessage: "Get result success.",
-      })
-
+        resultMessage: 'Get result success.',
+      });
     } else {
-
       return res.json({
         apiCode: 'N9002',
         resultCode: 400,
-        resultMessage: "Get result failed.",
-      })
-
+        resultMessage: 'Get result failed.',
+      });
     }
-
   });
-
 });
 
 /**
  * 取得所需之資料
  */
- router.post('/alaql', function (req, res, next) {
-  const {
-    con,
-    body
-  } = req;
+router.post('/alaql', function (req, res, next) {
+  const { con, body } = req;
 
-  const {result: translateResult, sql, algebra} = queryTranslate(body);
+  const { result: translateResult, sql, algebra } = queryTranslate(body);
   if (!translateResult) {
-
     return res.json({
-      apiCode: 'N9003',  // 暫定
+      apiCode: 'N9003', // 暫定
       resultCode: 400,
-      resultMessage: "Need token or condition.",
+      resultMessage: 'Need token or condition.',
     });
-
   } else {
     const result = getTargetInfo(sql, algebra)
-      .then(response => {
+      .then((response) => {
         return res.json({
-          apiCode: 'N9003',  // 暫定
+          apiCode: 'N9003', // 暫定
           resultCode: 200,
           result: response,
-          resultMessage: "Get result success.",
+          resultMessage: 'Get result success.',
         });
-
       })
-      .catch(error => {
+      .catch((error) => {
         return res.json({
-          apiCode: 'N9003',  // 暫定
+          apiCode: 'N9003', // 暫定
           resultCode: 400,
           result: error,
-          resultMessage: "Get result failed.",
+          resultMessage: 'Get result failed.',
         });
-
       });
-
-    }
-
+  }
 });
 
 /**
@@ -383,13 +328,12 @@ function queryTranslate(body) {
   const translateResult = {
     result: false,
     sql: '',
-    algebra: []
+    algebra: [],
   };
 
   const table = [];
   const condition = [];
   for (let tableName in search) {
-
     if (!tableRename[tableName]) {
       return translateResult;
     } else {
@@ -402,20 +346,15 @@ function queryTranslate(body) {
         translateResult.sql = `select ${getTargetField(field, target, originName)}`;
 
         if (args) {
-
           for (let arg in args) {
             const schemaFieldName = field[arg];
             const key = `${originName}.${schemaFieldName}`;
             const value = args[arg];
             condition.push({ key, value });
           }
-
         }
-
       }
-
     }
-
   }
 
   if (!token && condition.length === 0) {
@@ -423,11 +362,9 @@ function queryTranslate(body) {
   } else {
     const [conditionString, algebra] = getCondition(table, condition, token);
     translateResult.algebra = algebra;
-    translateResult.sql = `${
-      translateResult.sql
-    } from ${getTargetTable(table)
-    } where ${conditionString
-    }`;
+    translateResult.sql = `${translateResult.sql} from ${getTargetTable(
+      table
+    )} where ${conditionString}`;
 
     translateResult.result = true;
   }
@@ -463,7 +400,7 @@ function getTargetTable(table) {
   let string = '';
   const tableLength = table.length;
   table.forEach((_table, index) => {
-    const addString = index === tableLength - 1 ? '??' : '??, '
+    const addString = index === tableLength - 1 ? '??' : '??, ';
     string = `${string}${addString}`;
   });
 
@@ -510,7 +447,6 @@ function getCondition(table, condition, token) {
       algebra.push(value);
       string = `${string}${key} like ${addString}`;
     }
-
   });
 
   if (orderBy) {
@@ -529,11 +465,10 @@ function getCondition(table, condition, token) {
  */
 function getUserIdCondition(table) {
   let string = '';
-  table.forEach(_table => {
+  table.forEach((_table) => {
     if (_table !== 'user_profile') {
       string = `${string} and ${_table}.user_id = user_profile.user_id`;
     }
-    
   });
 
   return string;

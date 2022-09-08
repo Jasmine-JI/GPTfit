@@ -5,16 +5,14 @@ import { BrandType, GroupLevel } from '../../enum/professional';
 import { AnalysisSportsColumn } from '../../../containers/professional/enum/report-analysis';
 import { MuscleAnalysisColumn } from '../../enum/weight-train';
 
-
 @Component({
   selector: 'app-analysis-option',
   templateUrl: './analysis-option.component.html',
-  styleUrls: ['./analysis-option.component.scss']
+  styleUrls: ['./analysis-option.component.scss'],
 })
 export class AnalysisOptionComponent implements OnInit, OnDestroy {
-
-  @Input('analysisOption') analysisOption: any;
-  @Output('optionChange') optionChange = new EventEmitter();
+  @Input() analysisOption: any;
+  @Output() optionChange = new EventEmitter();
 
   readonly SportType = SportType;
   readonly GroupLevel = GroupLevel;
@@ -22,10 +20,9 @@ export class AnalysisOptionComponent implements OnInit, OnDestroy {
   readonly AnalysisSportsColumn = AnalysisSportsColumn;
   readonly MuscleAnalysisColumn = MuscleAnalysisColumn;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   /**
    * 變更單一階層項目選擇狀態
@@ -49,7 +46,4 @@ export class AnalysisOptionComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {}
-
 }
-
-

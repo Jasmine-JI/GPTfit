@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { TOKEN } from '../../shared/models/utils-constant';
+import { LocalStorageKey } from '../../shared/enum/local-storage-key';
 import { Api10xxService } from './api-10xx.service';
 import { setLocalStorageObject, getLocalStorageObject } from '../../shared/utils/index';
 import { combineLatest, Observable, BehaviorSubject } from 'rxjs';
@@ -7,16 +7,14 @@ import { tap } from 'rxjs/operators';
 import { SignTypeEnum } from '../../shared/enum/account';
 import { UserService } from './user.service';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-
   /**
    * GPTfit登入權杖
    */
-  private _token = localStorage.getItem(TOKEN) || '';
+  private _token = localStorage.getItem(LocalStorageKey.token) || '';
 
   /**
    * 登入後，欲轉導之頁面網址
@@ -26,12 +24,9 @@ export class AuthService {
   /**
    * 登入狀態
    */
-  private _isLogin$ = new BehaviorSubject<boolean>(this._token && this._token !== '');
+  private _isLogin$ = new BehaviorSubject<boolean>((this._token && this._token !== '') as boolean);
 
-  constructor(
-    private api10xxService: Api10xxService,
-    private userService: UserService
-  ) { }
+  constructor(private api10xxService: Api10xxService, private userService: UserService) {}
 
   /**
    * 取得token
@@ -50,7 +45,7 @@ export class AuthService {
   /**
    * 設定欲轉導的網址
    */
-  set backUrl(url: string) {    
+  set backUrl(url: string) {
     this._backUrl = url;
   }
 
@@ -83,7 +78,7 @@ export class AuthService {
    */
   setToken(newToken: string): void {
     this._token = newToken;
-    localStorage.setItem(TOKEN, newToken);
+    localStorage.setItem(LocalStorageKey.token, newToken);
     this._isLogin$.next(true);
   }
 
@@ -93,7 +88,7 @@ export class AuthService {
    */
   removeToken(): void {
     this._token = '';
-    localStorage.removeItem(TOKEN);
+    localStorage.removeItem(LocalStorageKey.token);
     this._isLogin$.next(false);
   }
 
@@ -103,18 +98,18 @@ export class AuthService {
    */
   accountLogin(body: any): Observable<any> {
     return this.api10xxService.fetchSignIn(body).pipe(
-      tap(res => {
+      tap((res) => {
         if (this.checkTokenValid(res)) {
           // 若登入帳號為手機，則將國碼儲存以方便日後登入
-          const { signIn: { accountType }, userProfile: { countryCode } } = res as any;
+          const {
+            signIn: { accountType },
+            userProfile: { countryCode },
+          } = res as any;
           if (accountType === SignTypeEnum.phone) this.loginCountryCode = countryCode;
           this._isLogin$.next(true);
-        };
-
+        }
       })
-
     );
-
   }
 
   /**
@@ -128,8 +123,8 @@ export class AuthService {
       const userProfileBody = { token };
       combineLatest([
         this.api10xxService.fetchSignIn(loginBody),
-        this.api10xxService.fetchGetUserProfile(userProfileBody)
-      ]).subscribe(resultArray => {
+        this.api10xxService.fetchGetUserProfile(userProfileBody),
+      ]).subscribe((resultArray) => {
         const [loginResult, userProfileResult] = resultArray;
         if (this.checkTokenValid(loginResult)) {
           const { thirdPartyAgency } = loginResult as any;
@@ -139,21 +134,18 @@ export class AuthService {
         } else {
           this.logout();
         }
-
       });
-
     }
-    
   }
 
   /**
    * 登出，清除token與個人資訊
    */
   logout() {
-    this.userService.getUser().logout();
-    this._backUrl = '';
-    this._isLogin$.next(false);
     this.removeToken();
+    this._backUrl = '';
+    this.userService.getUser().logout();
+    this._isLogin$.next(false);
   }
 
   /**
@@ -162,7 +154,7 @@ export class AuthService {
    */
   checkTokenValid(response: any) {
     const { processResult, resultCode, signIn } = response;
-    if (resultCode && resultCode !== 200) return false;  // api v2 resultCode 在 processResult 中
+    if (resultCode && resultCode !== 200) return false; // api v2 resultCode 在 processResult 中
 
     switch (processResult.resultCode) {
       case 200:
@@ -174,7 +166,5 @@ export class AuthService {
       default:
         return false;
     }
-
   }
-
 }

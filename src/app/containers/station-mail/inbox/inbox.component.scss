@@ -1,0 +1,153 @@
+@import 'font.scss';
+@import 'color.scss';
+@import 'overflow-scroll.scss';
+
+.functional__section {
+  margin: 10px 0;
+}
+
+.mail__search__block {
+  $height: 32px;
+  max-height: $height;
+  height: $height;
+  max-width: 180px;
+  align-items: center;
+  border: 1px solid black;
+}
+
+.mail__search {
+  border: none;
+  outline: none;
+  width: 100%;
+}
+
+.inbox__title__section {
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.inbox__title {
+  @include bold-font(24px);
+  margin: 0;
+}
+
+.mail__list {
+  margin: 0;
+  padding: 0;
+  max-height: 70vh;
+  @include overflow-y-scroll();
+}
+
+.checkbox__column {
+  display: flex;
+  align-items: center;
+  margin-right: 5px;
+  $width: 30px;
+  min-width: $width;
+  width: $width;
+}
+
+.checkbox__button {
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.checkbox__icon {
+  font-size: 24px;
+}
+
+.mail__list__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: rgba(245, 245, 245, 1);
+  color: black;
+  padding: 5px;
+  margin: 2px 0;
+  width: 100%;
+  border-radius: 3px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(235, 235, 235, 1);
+  }
+}
+
+.list__item__unread {
+  &:before {
+    $width: 4px;
+    content: '';
+    position: absolute;
+    left: 0;
+    background: linear-gradient(180deg, rgba(223, 58, 58, 1) 0%, rgba(197, 73, 184, 1) 100%);
+    width: $width;
+    height: 100%;
+    border-radius: $width;
+  }
+}
+
+.sender__icon {
+  $size: 40px;
+  max-width: $size;
+  max-height: $size;
+  border-radius: 50%;
+  margin: 0 5px;
+}
+
+.mail__info {
+  width: 100%;
+}
+
+.mail__title {
+  font-weight: bold;
+  margin-bottom: 2px;
+  overflow: hidden;
+  max-width: 180px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.mail__sub__info {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sender__name {
+  font-size: 14px;
+  margin: 0;
+  max-width: 135px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.system__mail__label {
+  $height: 18px;
+  font-size: 12px;
+  color: white;
+  background-color: $system-mail-color;
+  width: fit-content;
+  height: $height;
+  border-radius: $height;
+  padding: 0 5px;
+}
+
+.mail__date {
+  font-weight: bold;
+  margin: 0;
+  color: black;
+}
+
+.mail__list__child {
+  padding: 0;
+  margin: 0;
+}
+
+.send__time {
+  font-size: 14px;
+  min-width: 45px;
+}
+
+.no__data__hint {
+  color: rgba(100, 100, 100, 1);
+}

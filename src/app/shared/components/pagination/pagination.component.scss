@@ -32,16 +32,13 @@ $drop-menu-width: 40px;
     border-color: $pagination-color transparent transparent transparent;
     @include transition(transform);
   }
-
 }
 
 .one__page__size--active {
-
   &:after {
     @include el-rotate(180deg);
     @include transition(transform);
   }
-
 }
 
 .switch__btn {
@@ -64,7 +61,5 @@ $drop-menu-width: 40px;
       background-color: $primary-blue;
       color: white;
     }
-
   }
-
 }

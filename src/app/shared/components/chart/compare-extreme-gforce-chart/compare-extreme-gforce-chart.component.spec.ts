@@ -8,9 +8,8 @@ describe('CompareExtremeGforceChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CompareExtremeGforceChartComponent ]
-    })
-    .compileComponents();
+      declarations: [CompareExtremeGforceChartComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

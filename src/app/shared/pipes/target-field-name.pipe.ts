@@ -1,9 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { TargetField } from '../models/sport-target';
+import { TargetField } from '../../core/models/api/api-common/sport-target.model';
 
-@Pipe({name: 'targetFieldName'})
+@Pipe({ name: 'targetFieldName' })
 export class TargetFieldNamePipe implements PipeTransform {
-
   constructor() {}
 
   /**
@@ -12,7 +11,7 @@ export class TargetFieldNamePipe implements PipeTransform {
    * @return {string}-多國語系鍵名
    * @author kidin-1110307
    */
-  transform(value: TargetField): string {
+  transform(value: TargetField | string): string {
     switch (value) {
       case 'totalActivities':
         return 'universal_activityData_reps';
@@ -28,8 +27,8 @@ export class TargetFieldNamePipe implements PipeTransform {
         return 'universal_lifeTracking_achievementRate';
       case 'distance':
         return 'universal_activityData_totalDistance';
+      default:
+        return value;
     }
-
   }
-
 }

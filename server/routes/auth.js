@@ -4,7 +4,9 @@ var router = express.Router();
 
 // 已停用，待廢棄-kidin-1090928
 router.get('/strava/callback', function (req, res, next) {
-  const { query: { code, type}  } = req;
+  const {
+    query: { code, type },
+  } = req;
   // https://www.strava.com/oauth/authorize?client_id=23461&response_type=code&redirect_uri=https://192.168.1.235:3000/nodejs/api/auth/strava/callback?type=2&approval_prompt=force
   switch (type) {
     case '1':

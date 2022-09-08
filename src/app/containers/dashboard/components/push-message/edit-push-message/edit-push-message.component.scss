@@ -19,11 +19,9 @@ $input-max-width: 600px;
   font-size: 18px;
   font-weight: bold;
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
-  @include multiple-transition((
-    left $move-effect,
-    top $move-effect,
-    background-color $move-effect
-  ));
+  @include multiple-transition(
+    (left $move-effect, top $move-effect, background-color $move-effect)
+  );
 
   &:hover {
     background-color: rgba(250, 250, 250, 1);
@@ -36,7 +34,6 @@ $input-max-width: 600px;
     box-shadow: none;
     @include multiple-transition((left $move-effect, top $move-effect));
   }
-
 }
 
 .condition__content {
@@ -69,7 +66,6 @@ $input-max-width: 600px;
     border-radius: 50%;
     background-color: $sea--blue;
   }
-
 }
 
 .condition__tag {
@@ -160,7 +156,6 @@ $input-max-width: 600px;
     margin: auto 0;
     @include transition(transform);
   }
-
 }
 
 .selector__drop {
@@ -169,7 +164,6 @@ $input-max-width: 600px;
     transform: rotate(180deg);
     @include transition(transform);
   }
-
 }
 
 .link__selector {
@@ -182,7 +176,6 @@ $input-max-width: 600px;
     background-color: rgba(0, 104, 183, 1);
     @include transition(background-color);
   }
-
 }
 
 #link__drop__list {
@@ -196,10 +189,9 @@ $input-max-width: 600px;
   border: 1px solid $middle-gray;
 }
 
-
 /******************** media ************************/
 
-@media  (max-width: 650px) {
+@media (max-width: 650px) {
   .link__input {
     flex-direction: column;
   }
@@ -207,17 +199,17 @@ $input-max-width: 600px;
   .lan__input__link {
     min-width: $input-min-width;
   }
-
 }
 
-@media  (max-width: 470px) {
-  .condition__content, .lan__input {
+@media (max-width: 470px) {
+  .condition__content,
+  .lan__input {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .radio__item, .media__margin {
+  .radio__item,
+  .media__margin {
     margin-left: 20px;
   }
-
 }

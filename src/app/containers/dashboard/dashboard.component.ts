@@ -1,10 +1,4 @@
-import {
-  Component,
-  OnInit,
-  ChangeDetectorRef,
-  AfterViewChecked,
-  OnDestroy
-} from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, AfterViewChecked, OnDestroy } from '@angular/core';
 import { GlobalEventsManager } from '../../shared/global-events-manager';
 import { AuthService } from '../../core/services/auth.service';
 import { Router } from '@angular/router';
@@ -13,14 +7,21 @@ import { TranslateService } from '@ngx-translate/core';
 import { NavigationEnd } from '@angular/router';
 import { HashIdService } from '../../shared/services/hash-id.service';
 import { DetectInappService } from '../../shared/services/detect-inapp.service';
-import { Subject, forkJoin } from 'rxjs';
+import { Subject, Subscription, forkJoin, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UserProfileInfo } from '../../shared/models/user-profile-info';
 import { GlobalEventsService } from '../../core/services/global-events.service';
 import { langData } from '../../shared/models/i18n';
 import { UserService } from '../../core/services/user.service';
 import { AccessRight } from '../../shared/enum/accessright';
-import { setLocalStorageObject, getLocalStorageObject } from '../../shared/utils/index';
+import {
+  setLocalStorageObject,
+  getLocalStorageObject,
+  checkResponse,
+} from '../../shared/utils/index';
+import { Api50xxService } from '../../core/services/api-50xx.service';
+import { appPath } from '../../app-path.const';
+import { StationMailService } from '../station-mail/services/station-mail.service';
 
 enum Dashboard {
   trainLive,
@@ -44,16 +45,7 @@ enum Dashboard {
   pushList,
   deviceSearch,
   deviceLog,
-  appFlowAnalysis
-};
-
-
-interface UiFlag {
-  currentDrop: string;
-  sidebarMode: 'hide' | 'narrow' | 'expand';
-  navFixed: boolean;
-  mobileMode: boolean;
-  hover: boolean;
+  appFlowAnalysis,
 }
 
 type Theme = 'light' | 'dark';
@@ -61,18 +53,20 @@ type Theme = 'light' | 'dark';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
-
   private ngUnsubscribe = new Subject();
+  private pluralEventSubscription = new Subscription();
 
-  uiFlag: UiFlag = {
+  uiFlag = {
     currentDrop: '',
     sidebarMode: 'narrow',
     navFixed: false,
     mobileMode: false,
-    hover: false
+    hover: false,
+    showStationMailList: false,
+    haveNewMail: false,
   };
 
   langName: string;
@@ -80,7 +74,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   isPreviewMode = false;
   isMaskShow = false;
   isCollapseOpen = false;
-  target = Dashboard.myActivity; // 目前預設是我的活動
+  target: Dashboard | null = Dashboard.myActivity; // 目前預設是我的活動
   isUserMenuShow = false;
   isHadContainer = true;
   footerAddClassName = '';
@@ -93,6 +87,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   systemAccessright = this.userService.getUser().systemAccessright;
   isLoading = true;
   accountStatus = this.userService.getUser().signInfo?.accountStatus;
+  mailNotify: NodeJS.Timeout;
+  notifyUpdateTime: number | null = null;
 
   readonly AccessRight = AccessRight;
 
@@ -106,7 +102,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     private hashIdService: HashIdService,
     private detectInappService: DetectInappService,
     private userService: UserService,
-    private globalEventsService: GlobalEventsService
+    private globalEventsService: GlobalEventsService,
+    private api50xxService: Api50xxService,
+    private stationMailService: StationMailService
   ) {}
 
   ngOnInit() {
@@ -120,6 +118,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.utilsService.checkBrowserLang();
     this.handleGlobalEvent();
     this.onResize();
+    this.checkNewMail();
+    this.pollingNewMail();
   }
 
   ngAfterViewChecked() {
@@ -134,14 +134,14 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   checkQueryString(queryString: string) {
     if (queryString) {
       const queryArr = queryString.split('?')[1].split('&');
-      queryArr.forEach(_query => {
+      queryArr.forEach((_query) => {
         const [key, value] = _query.split('=');
         switch (key) {
           case 'ipm':
             this.isPreviewMode = true;
             this.changeTheme('light', false); // 預覽列印頁面必為清亮模式
             break;
-          case 'theme':
+          case 'theme': {
             // 暗黑模式尚未完成，故只先開放20權
             const checkValue = ['light', 'dark'].includes(value);
             const isPreviewMode = queryString.includes('ipm=');
@@ -149,30 +149,28 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
             if (checkValue && !isPreviewMode && checkAccessRight) {
               this.changeTheme(value as Theme);
             }
-            
+
             break;
+          }
         }
-
       });
-
     }
-    
   }
 
   /**
    * 取得已儲存之user profile
    */
   getUserProfile() {
-    this.userService.getUser().rxUserProfile.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      const { systemAccessright, signInfo } = this.userService.getUser();
-      this.userProfile = res;
-      this.systemAccessright = systemAccessright;
-      this.accountStatus = signInfo?.accountStatus;
-      this.isLoading = this.userService.getUser().signInfo === undefined;
-    });
-
+    this.userService
+      .getUser()
+      .rxUserProfile.pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((res) => {
+        const { systemAccessright, signInfo } = this.userService.getUser();
+        this.userProfile = res;
+        this.systemAccessright = systemAccessright;
+        this.accountStatus = signInfo?.accountStatus;
+        this.isLoading = this.userService.getUser().signInfo === undefined;
+      });
   }
 
   /**
@@ -180,17 +178,13 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin
    */
   subscribeRouter() {
-    this.router.events.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
+    this.router.events.pipe(takeUntil(this.ngUnsubscribe)).subscribe((res) => {
       if (res instanceof NavigationEnd) {
         const url = res.url;
         this.checkUiMode(url);
         this.checkCurrentPage(url);
       }
-
     });
-
   }
 
   /**
@@ -198,12 +192,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin
    */
   subscribeLangChange() {
-    this.translateService.onLangChange.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    this.translateService.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.detectInappService.checkBrowser();
     });
-
   }
 
   /**
@@ -226,7 +217,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.uiFlag.mobileMode = false;
       this.shrinkSidebar();
     }
-
   }
 
   /**
@@ -265,7 +255,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.target = Dashboard.cloudrun;
         break;
       case 'system':
-        
         switch (thirdPath) {
           case 'device_log':
             this.target = Dashboard.deviceLog;
@@ -301,7 +290,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.target = null;
         break;
     }
-
   }
 
   /**
@@ -316,8 +304,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.globalEventsManager.showMask(false);
     forkJoin([
       this.globalEventsManager.showNavBarEmitter,
-      this.globalEventsManager.setFooterRWDEmitter
-    ]).subscribe(resArr => {
+      this.globalEventsManager.setFooterRWDEmitter,
+    ]).subscribe((resArr) => {
       const [mode, _num] = resArr;
       this.isMaskShow = mode as boolean;
       if (_num > 0) {
@@ -325,9 +313,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       } else {
         this.footerAddClassName = '';
       }
-
     });
-    
   }
 
   /**
@@ -338,8 +324,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   onResize(event: any = null) {
     const screenWidth = event ? event.target.innerWidth : window.innerWidth;
     const checkUrlCond = location.pathname.indexOf('/dashboard/group-info') > -1,
-          checkScreenWidthA = screenWidth < 1000,
-          checkScreenWidthB = screenWidth < 769;
+      checkScreenWidthA = screenWidth < 1000,
+      checkScreenWidthB = screenWidth < 769;
     if ((checkUrlCond && checkScreenWidthA) || checkScreenWidthB) {
       this.uiFlag.mobileMode = true;
       this.shrinkSidebar();
@@ -353,7 +339,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.uiFlag.mobileMode = false;
       this.shrinkSidebar();
     }
-
   }
 
   touchMask() {
@@ -364,9 +349,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   goToUserProfile(userId) {
-    this.router.navigateByUrl(
-      `/user-profile/${this.hashIdService.handleUserIdEncode(userId)}`
-    );
+    this.router.navigateByUrl(`/user-profile/${this.hashIdService.handleUserIdEncode(userId)}`);
   }
 
   chooseItem(_target) {
@@ -382,7 +365,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.uiFlag.currentDrop = '';
         break;
     }
-
   }
 
   logout() {
@@ -412,9 +394,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       if (!this.uiFlag.mobileMode && this.uiFlag.hover) {
         this.handleSideBarMode('expand');
       }
-
     }, 250);
-
   }
 
   /**
@@ -428,7 +408,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     } else if (!this.uiFlag.navFixed && this.uiFlag.mobileMode) {
       this.handleSideBarMode('hide');
     }
-    
   }
 
   /**
@@ -443,7 +422,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.uiFlag.navFixed = true;
       this.handleSideBarMode('expand');
     }
-    
   }
 
   /**
@@ -466,7 +444,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     } else {
       this.uiFlag.currentDrop = index;
     }
-
   }
 
   /**
@@ -486,7 +463,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     const isMaintainer = this.systemAccessright <= AccessRight.maintainer;
     if (isMaintainer && storeTheme) {
       this.changeTheme(storeTheme);
-    } else if (isMaintainer && storeTheme === undefined){
+    } else if (isMaintainer && storeTheme === undefined) {
       // 避免狀態與class name不符
       const checkClassName = document.body.classList.value.includes('theme__dark');
       if (checkClassName) {
@@ -494,9 +471,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       } else {
         this.theme = 'light';
       }
-
     }
-    
   }
 
   /**
@@ -504,7 +479,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @param theme {Theme}-主題顏色
    * @author kidin-1100602
    */
-  changeTheme(theme: Theme = undefined, save: boolean = true) {
+  changeTheme(theme: Theme | undefined = undefined, save = true) {
     let nextTheme: Theme;
     if (theme) {
       nextTheme = theme;
@@ -536,12 +511,100 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   /**
+   * 顯示收件匣與否
+   * @param {MouseEvent}
+   */
+  showStationMailList(e: MouseEvent) {
+    e.stopPropagation();
+    const { showStationMailList } = this.uiFlag;
+    if (showStationMailList) {
+      this.unsubscribePluralEvent();
+    } else {
+      this.uiFlag.showStationMailList = true;
+      this.uiFlag.haveNewMail = false;
+      this.subscribePluralEvent();
+    }
+  }
+
+  /**
+   * 訂閱全域點擊與滾動事件，以關閉列表
+   */
+  subscribePluralEvent() {
+    const scrollElement = document.querySelector('.main__container') as Element;
+    const scrollEvent = fromEvent(scrollElement, 'scroll');
+    const clickEvent = fromEvent(document, 'click');
+    this.pluralEventSubscription = merge(scrollEvent, clickEvent)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.unsubscribePluralEvent();
+      });
+  }
+
+  /**
+   * 解除訂閱全域點擊與滾動事件
+   */
+  unsubscribePluralEvent() {
+    this.uiFlag.showStationMailList = false;
+    this.pluralEventSubscription.unsubscribe();
+  }
+
+  /**
+   * 定時call api確認是否有最新郵件
+   */
+  pollingNewMail() {
+    this.mailNotify = setInterval(() => {
+      this.checkNewMail();
+    }, 30000);
+  }
+
+  /**
+   * 確認是否有無最新信件
+   */
+  checkNewMail() {
+    const body = { token: this.authService.token };
+    this.api50xxService.fetchMessageNotifyFlagStatus(body).subscribe((res) => {
+      if (checkResponse(res, false)) {
+        const { status, updateTime } = res.flag;
+        const haveNewMail = status === 2;
+        if (haveNewMail && updateTime !== this.notifyUpdateTime) {
+          this.uiFlag.haveNewMail = true;
+          this.stationMailService.setNewMailNotify(true);
+        }
+      } else {
+        this.uiFlag.haveNewMail = false;
+      }
+    });
+  }
+
+  /**
+   * 轉導至收件匣
+   * @param e {MouseEvent}
+   */
+  navigateInbox(e: MouseEvent) {
+    e.preventDefault();
+    const {
+      stationMail: { home, inbox },
+    } = appPath;
+    this.router.navigateByUrl(`/dashboard/${home}/${inbox}`);
+  }
+
+  /**
+   * 轉導至建立新訊息頁面
+   */
+  navigateNewMailPage() {
+    const {
+      stationMail: { home, newMail },
+    } = appPath;
+    this.router.navigateByUrl(`/dashboard/${home}/${newMail}`);
+  }
+
+  /**
    * 解除rxjs訂閱
    * @author kidin-1090722
    */
   ngOnDestroy(): void {
+    if (this.mailNotify) clearInterval(this.mailNotify);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
 }

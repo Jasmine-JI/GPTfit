@@ -4,14 +4,12 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-page404',
   templateUrl: './page404.component.html',
-  styleUrls: ['./page404.component.scss']
+  styleUrls: ['./page404.component.scss'],
 })
 export class Page404Component implements OnInit, OnDestroy {
   redirectUrl: string;
 
-  constructor(
-    private translate: TranslateService
-  ) {}
+  constructor(private translate: TranslateService) {}
 
   ngOnInit() {
     const { pathname, origin } = location;
@@ -20,5 +18,5 @@ export class Page404Component implements OnInit, OnDestroy {
     this.redirectUrl = `${origin}${isOfficialPage ? '/official-activity' : ''}`;
   }
 
-  ngOnDestroy() { }
+  ngOnDestroy() {}
 }

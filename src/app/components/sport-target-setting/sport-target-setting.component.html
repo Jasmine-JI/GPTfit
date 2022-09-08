@@ -1,0 +1,124 @@
+<div class="flexCol target__card">
+  <h6 class="target__title" [ngSwitch]="cycle">
+    <ng-containner *ngSwitchCase="DateUnit.day">
+      {{
+        'universal_activityData_everyUnit'
+          | translate: { number: '', unit: ('universal_time_day' | translate) }
+      }}
+    </ng-containner>
+    <ng-containner *ngSwitchCase="DateUnit.week">
+      {{
+        'universal_activityData_everyUnit'
+          | translate: { number: '', unit: ('universal_time_week' | translate) }
+      }}
+    </ng-containner>
+    <ng-containner *ngSwitchCase="DateUnit.month">
+      {{
+        'universal_activityData_everyUnit'
+          | translate: { number: '', unit: ('universal_time_months' | translate) }
+      }}
+    </ng-containner>
+    <ng-containner *ngSwitchCase="DateUnit.season">
+      {{
+        'universal_activityData_everyUnit'
+          | translate: { number: '', unit: ('universal_system_season' | translate) }
+      }}
+    </ng-containner>
+    <ng-containner *ngSwitchCase="DateUnit.year">
+      {{
+        'universal_activityData_everyUnit'
+          | translate: { number: '', unit: ('universal_time_year' | translate) }
+      }}
+    </ng-containner>
+  </h6>
+  <div
+    class="divide__content__bar"
+    [class.small__cycle]="cycle <= DateUnit.week"
+    [class.big__cycle]="cycle >= DateUnit.month"
+  ></div>
+  <div class="condition__detail">
+    <ul class="condition__list">
+      <li class="condition__list__item" *ngFor="let _condition of condition | keyvalue">
+        <div class="condition__type__name">
+          {{ _condition.key | translateKey | translate }}
+        </div>
+        <div class="condition__symbol">&ge;</div>
+        <div class="flexRow condition__value__block">
+          <div class="condition__value">
+            <ng-container
+              *ngIf="_condition.key === 'totalTime' || _condition.key === 'benefitTime'"
+            >
+              {{ _condition.value.filedValue / 60 | number: '1.0-0' }}
+            </ng-container>
+            <ng-container
+              *ngIf="_condition.key !== 'totalTime' && _condition.key !== 'benefitTime'"
+            >
+              {{ _condition.value.filedValue }}
+            </ng-container>
+          </div>
+          <span>
+            {{ _condition.key | translateUnitKey | translate }}
+          </span>
+        </div>
+        <button
+          class="condition__delete__button"
+          *ngIf="isEditMode && condition.size > 1"
+          (click)="deleteCondition(_condition.key)"
+        >
+          <i class="icon-svg_web-icon_p1_092-delete delete__icon"></i>
+        </button>
+      </li>
+    </ul>
+    <div class="new__condition__row" *ngIf="isEditMode">
+      <div class="filed__name__selector">
+        <span class="drop__list" (click)="toggleFiledNameList($event)">
+          <ng-container *ngIf="!newFiledName">
+            {{ 'universal_vocabulary_item' | translate }}
+          </ng-container>
+          <ng-container *ngIf="newFiledName">
+            {{ newFiledName | translateKey | translate }}
+          </ng-container>
+          <i
+            class="icon-svg_web-icon_p1_006-unfold unfold__icon"
+            [class.fold__icon]="showFiledNameList"
+          ></i>
+        </span>
+        <ul class="filed__name__list" *ngIf="showFiledNameList">
+          <li class="drop__list__item" (click)="selectNewConditionFiled('totalActivities')">
+            {{ 'universal_activityData_reps' | translate }}
+          </li>
+          <li class="drop__list__item" (click)="selectNewConditionFiled('totalTime')">
+            {{ 'universal_activityData_totalTime' | translate }}
+          </li>
+          <li class="drop__list__item" (click)="selectNewConditionFiled('benefitTime')">
+            {{ 'universal_activityData_benefitime' | translate }}
+          </li>
+          <li class="drop__list__item" (click)="selectNewConditionFiled('pai')">
+            {{ 'universal_activityData_pai' | translate }}
+          </li>
+          <li class="drop__list__item" (click)="selectNewConditionFiled('calories')">
+            {{ 'universal_userProfile_calories' | translate }}
+          </li>
+          <li class="drop__list__item" (click)="selectNewConditionFiled('avgHeartRate')">
+            {{ 'universal_activityData_avgHr' | translate }}
+          </li>
+        </ul>
+      </div>
+      <span class="condition__symbol">&ge;</span>
+      <div class="condition__input__block">
+        <input
+          #conditionValueInput
+          class="condition__value__input"
+          type="text"
+          maxlength="5"
+          [placeholder]="'universal_system_interger' | translate"
+          [value]="newFiledValue ? newFiledValue : ''"
+          (focusout)="setNewConditionValue($event)"
+        />
+        <span *ngIf="newFiledName">
+          {{ newFiledName | translateUnitKey | translate }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

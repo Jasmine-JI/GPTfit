@@ -1,12 +1,7 @@
 @import 'transition.scss';
 @import 'transform.scss';
 
-@mixin drop-triangle(
-  $width: 10px,
-  $height: 6px,
-  $color: black,
-  $right: 3px
-) {
+@mixin drop-triangle($width: 10px, $height: 6px, $color: black, $right: 3px) {
   position: relative;
   cursor: pointer;
   align-items: center;
@@ -21,11 +16,9 @@
     border-color: $color transparent transparent transparent;
     @content;
   }
-
 }
 
 @mixin drop-hint($border-top, $border-aside, $border-color) {
-
   &:after {
     content: '';
     border-style: solid;
@@ -33,7 +26,6 @@
     border-color: $border-color transparent transparent transparent;
     @include transition(transform);
   }
-
 }
 
 @mixin drop-active() {
@@ -42,10 +34,7 @@
 }
 
 @mixin drop-triangle-active() {
-
   &:after {
     @include drop-active();
   }
-
 }
-

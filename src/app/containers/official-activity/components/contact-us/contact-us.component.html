@@ -2,81 +2,6 @@
 <section class="flexCol main__section">
   <h4>{{ 'universal_vocabulary_contactUs' | translate }}</h4>
   <div id="form__content" class="flexCol">
-    <div class="flexRow content__input">
-      <div class="flexCol user__info">
-        <div class="flexCol">
-          <div class="flexRow user__info__row">
-            <mat-icon>person</mat-icon>
-            <input
-              type="text"
-              [placeholder]="('universal_vocabulary_userTitle' | translate) + '*'"
-              class="user__info__input"
-              maxlength="24"
-              (change)="handleNameInput($event)"
-              (focusout)="handleNameInput($event)"
-            >
-          </div>
-          <p class="hint__text" [class.form__alert]="formAlert.name">
-            <ng-container *ngIf="formAlert.name === 'empty'">
-              {{ 'universal_userAccount_fullField' | translate }}
-            </ng-container>
-          </p>
-        </div>
-        <div class="flexCol">
-          <div class="flexRow user__info__row">
-            <mat-icon>email</mat-icon>
-            <input
-              type="text"
-              [placeholder]="'Email*'"
-              class="user__info__input"
-              maxlength="50"
-              (change)="handleEmailInput($event)"
-              (focusout)="handleEmailInput($event)"
-            >
-          </div>
-          <p class="hint__text" [class.form__alert]="formAlert.email">
-            <ng-container *ngIf="formAlert.email === 'empty'">
-              {{ 'universal_userAccount_fullField' | translate }}
-            </ng-container>
-            <ng-container *ngIf="formAlert.email === 'format'">
-              {{ 'universal_userAccount_emailFormat' | translate }}
-            </ng-container>
-          </p>
-        </div>
-        <div class="flexCol">
-          <div class="flexRow user__info__row">
-            <mat-icon>smartphone</mat-icon>
-            <input
-              type="text"
-              [placeholder]="('universal_vocabulary_phoneNumber' | translate) + '*'"
-              class="user__info__input"
-              maxlength="20"
-              (change)="handlePhoneInput($event)"
-              (focusout)="handlePhoneInput($event)"
-            >
-          </div>
-          <p class="hint__text" [class.form__alert]="formAlert.phone">
-            <ng-container *ngIf="formAlert.phone === 'empty'">
-              {{ 'universal_userAccount_fullField' | translate }}
-            </ng-container>
-            <ng-container *ngIf="formAlert.phone === 'format'">
-              {{ 'universal_status_wrongFormat' | translate }}
-            </ng-container>
-          </p>
-        </div>
-      </div>
-      <div>
-        <textarea 
-          id="contact__content__input"
-          [class.form__alert]="formAlert.content === 'empty'"
-          [placeholder]="('universal_vocabulary_contents' | translate) + '*'"
-          maxlength="500"
-          [value]="templateText"
-          (change)="handleContentInput($event)"
-          (focusout)="handleContentInput($event)"
-        ></textarea>
-      </div>
-    </div>
     <div class="flexCol">
       <h5 [class.form__alert]="formAlert.contentType">
         {{ 'universal_vocabulary_theme' | translate }}
@@ -116,17 +41,86 @@
         </button>
       </div>
     </div>
+    <div class="flexRow content__input">
+      <div class="flexCol user__info">
+        <div class="flexCol">
+          <div class="flexRow user__info__row">
+            <mat-icon>person</mat-icon>
+            <input
+              type="text"
+              [placeholder]="('universal_vocabulary_userTitle' | translate) + '*'"
+              class="user__info__input"
+              maxlength="24"
+              (change)="handleNameInput($event)"
+              (focusout)="handleNameInput($event)"
+            />
+          </div>
+          <p class="hint__text" [class.form__alert]="formAlert.name">
+            <ng-container *ngIf="formAlert.name === 'empty'">
+              {{ 'universal_userAccount_fullField' | translate }}
+            </ng-container>
+          </p>
+        </div>
+        <div class="flexCol">
+          <div class="flexRow user__info__row">
+            <mat-icon>email</mat-icon>
+            <input
+              type="text"
+              [placeholder]="'Email*'"
+              class="user__info__input"
+              maxlength="50"
+              (change)="handleEmailInput($event)"
+              (focusout)="handleEmailInput($event)"
+            />
+          </div>
+          <p class="hint__text" [class.form__alert]="formAlert.email">
+            <ng-container *ngIf="formAlert.email === 'empty'">
+              {{ 'universal_userAccount_fullField' | translate }}
+            </ng-container>
+            <ng-container *ngIf="formAlert.email === 'format'">
+              {{ 'universal_userAccount_emailFormat' | translate }}
+            </ng-container>
+          </p>
+        </div>
+        <div class="flexCol">
+          <div class="flexRow user__info__row">
+            <mat-icon>smartphone</mat-icon>
+            <input
+              type="text"
+              [placeholder]="('universal_vocabulary_phoneNumber' | translate) + '*'"
+              class="user__info__input"
+              maxlength="20"
+              (change)="handlePhoneInput($event)"
+              (focusout)="handlePhoneInput($event)"
+            />
+          </div>
+          <p class="hint__text" [class.form__alert]="formAlert.phone">
+            <ng-container *ngIf="formAlert.phone === 'empty'">
+              {{ 'universal_userAccount_fullField' | translate }}
+            </ng-container>
+            <ng-container *ngIf="formAlert.phone === 'format'">
+              {{ 'universal_status_wrongFormat' | translate }}
+            </ng-container>
+          </p>
+        </div>
+      </div>
+      <div>
+        <textarea
+          id="contact__content__input"
+          [class.form__alert]="formAlert.content === 'empty'"
+          [placeholder]="('universal_vocabulary_contents' | translate) + '*'"
+          maxlength="500"
+          [value]="templateText"
+          (change)="handleContentInput($event)"
+          (focusout)="handleContentInput($event)"
+        ></textarea>
+      </div>
+    </div>
     <div class="flexRow form__operate__button">
-      <button
-        class="official-subButton"
-        (click)="back()"
-      >
+      <button class="official-subButton" (click)="back()">
         {{ 'universal_operating_back' | translate }}
       </button>
-      <button
-        class="official-submitButton"
-        (click)="sendContent()"
-      >
+      <button class="official-submitButton" (click)="sendContent()">
         {{ 'universal_operating_send' | translate }}
       </button>
     </div>

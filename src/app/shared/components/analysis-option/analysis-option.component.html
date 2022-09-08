@@ -1,7 +1,4 @@
-<div
-  class="flexCol option__menu"
-  (click)="$event.stopPropagation();"
->
+<div class="flexCol option__menu" (click)="$event.stopPropagation()">
   <ul
     class="option__menu__list"
     *ngIf="analysisOption.optionInfo?.object === 'group' && analysisOption.layerList?.length > 0"
@@ -9,7 +6,7 @@
     <h6 class="list__title">
       {{ 'universal_operating_filter' | translate }} {{ 'universal_group_layer' | translate }}
     </h6>
-    <li *ngFor="let _layer of analysisOption.layerList;">
+    <li *ngFor="let _layer of analysisOption.layerList">
       <div
         role="checkbox"
         class="menu__item"
@@ -18,30 +15,27 @@
         [ngSwitch]="_layer.info.level"
         (click)="changeLayerSelectedStatus(_layer)"
       >
-        <ng-container
-          *ngSwitchCase="GroupLevel.brand"
-        >
-          {{ (
-            analysisOption.optionInfo.brandType === BrandType.brand ?
-              'universal_group_brand' : 'universal_group_enterprise'
+        <ng-container *ngSwitchCase="GroupLevel.brand">
+          {{
+            (analysisOption.optionInfo.brandType === BrandType.brand
+              ? 'universal_group_brand'
+              : 'universal_group_enterprise'
             ) | translate
           }}
         </ng-container>
-        <ng-container
-          *ngSwitchCase="GroupLevel.branch"
-        >
-          {{ (
-            analysisOption.optionInfo.brandType === BrandType.brand ?
-              'universal_group_branch' : 'universal_group_companyBranch'
+        <ng-container *ngSwitchCase="GroupLevel.branch">
+          {{
+            (analysisOption.optionInfo.brandType === BrandType.brand
+              ? 'universal_group_branch'
+              : 'universal_group_companyBranch'
             ) | translate
           }}
         </ng-container>
-        <ng-container
-          *ngSwitchCase="GroupLevel.class"
-        >
-          {{ (
-            analysisOption.optionInfo.brandType === BrandType.brand ?
-              'universal_group_class' : 'universal_group_department'
+        <ng-container *ngSwitchCase="GroupLevel.class">
+          {{
+            (analysisOption.optionInfo.brandType === BrandType.brand
+              ? 'universal_group_class'
+              : 'universal_group_department'
             ) | translate
           }}
         </ng-container>
@@ -55,18 +49,19 @@
         class="column__option__hint"
         [class.option__hint--active]="analysisOption.itemSelectedFull"
       >
-        ({{ 'universal_activityData_most' | translate: { number: analysisOption.maxSelectedNumber } }})
+        ({{
+          'universal_activityData_most' | translate: { number: analysisOption.maxSelectedNumber }
+        }})
       </span>
     </h6>
-    <li *ngFor="let _column of analysisOption.itemList; let index = index;">
+    <li *ngFor="let _column of analysisOption.itemList; let index = index">
       <div
         role="checkbox"
         class="menu__item"
         [tabindex]="index"
         [attr.aria-checked]="_column.selected"
         [attr.aria-disabled]="
-          ( _column.selected && !_column.canCancel)
-          || (!_column.selected && !_column.canSelect)
+          (_column.selected && !_column.canCancel) || (!_column.selected && !_column.canSelect)
         "
         [ngSwitch]="analysisOption.optionInfo?.reportType"
         (click)="changeColumnSelectedStatus(_column)"
@@ -101,9 +96,10 @@
               {{ 'universal_activityData_totalDistance' | translate }}
             </ng-container>
             <ng-container *ngSwitchCase="AnalysisSportsColumn.speedOrPace">
-              {{ (
-                analysisOption.optionInfo.sportType === SportType.cycle ?
-                  'universal_activityData_avgSpeed' : 'universal_activityData_avgPace'
+              {{
+                (analysisOption.optionInfo.sportType === SportType.cycle
+                  ? 'universal_activityData_avgSpeed'
+                  : 'universal_activityData_avgPace'
                 ) | translate
               }}
             </ng-container>
@@ -184,7 +180,6 @@
             </ng-container>
           </ng-container>
         </ng-container>
-
       </div>
     </li>
   </ul>

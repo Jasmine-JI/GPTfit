@@ -1,6 +1,7 @@
 @import 'transition.scss';
 @import 'overflow-scroll';
 
+$alert-icon-color: rgba(255, 56, 56, 1);
 
 .version {
   color: #fff;
@@ -53,18 +54,17 @@
 }
 
 .header-nav-menu-section {
-
-  border-bottom: 1px solid #e5e5e5
+  border-bottom: 1px solid #e5e5e5;
 }
 .header-nav-menu-section ul {
   margin: 0;
   padding: 0;
   list-style: none;
 }
-.header-nav-menu-section ul>li {
+.header-nav-menu-section ul > li {
   padding: 15px 20px;
 }
-.header-nav-menu-section ul>li:hover {
+.header-nav-menu-section ul > li:hover {
   cursor: pointer;
   background-color: #f8f9fa;
 }
@@ -81,7 +81,7 @@
 .alatech-ribbon {
   width: 100%;
   height: 90px;
-  opacity: .9;
+  opacity: 0.9;
   background-color: #66abdd;
 }
 
@@ -126,11 +126,11 @@
   width: 44px;
 }
 
-.main-nav-toggle-icon.icon-svg_web-icon_p1_073-level_fold  {
+.main-nav-toggle-icon.icon-svg_web-icon_p1_073-level_fold {
   margin: 50% 0 0 50%;
-  -webkit-transform: translate(-58%,-58%);
-  -ms-transform: translate(-58%,-58%);
-  transform: translate(-58%,-58%);
+  -webkit-transform: translate(-58%, -58%);
+  -ms-transform: translate(-58%, -58%);
+  transform: translate(-58%, -58%);
   text-align: center;
 }
 
@@ -156,7 +156,7 @@
   -ms-flex-align: center;
   align-items: center;
   width: 100%;
-  z-index: 6!important;
+  z-index: 6 !important;
 }
 .mat-drawer {
   background-color: #1f2626;
@@ -187,8 +187,7 @@
   padding: 0px;
 }
 
-
-::ng-deep .ala-expansion-panel-header>.mat-expansion-indicator:after {
+::ng-deep .ala-expansion-panel-header > .mat-expansion-indicator:after {
   color: #fff;
 }
 
@@ -232,18 +231,18 @@
 .ala-sidenav-menu-item.ala-sidenav-menu-item__active,
 .ala-sidenav-menu-item__active {
   outline: none;
-  color: #9bf9ff
+  color: #9bf9ff;
 }
 
 .ala-dashboard-logo {
-  font-size:32px;
+  font-size: 32px;
   line-height: 32px;
   margin: 10px 0px;
   /* margin: 16px 20px; */
   /* position: fixed; */
 }
 
-.navbar.ala-dashboard-nav{
+.navbar.ala-dashboard-nav {
   flex-direction: column;
   align-items: flex-start;
   padding: 0;
@@ -260,11 +259,10 @@
   overflow: hidden;
 }
 ::ng-deep.mat-drawer-container {
-  overflow: visible!important;
-
+  overflow: visible !important;
 }
 ::ng-deep.mat-drawer-content {
-  overflow: visible!important;
+  overflow: visible !important;
 }
 ::ng-deep mat-drawer.mat-drawer.mat-drawer-side {
   z-index: 3;
@@ -338,7 +336,6 @@
   & span {
     white-space: normal;
   }
-
 }
 
 .nav__color {
@@ -405,15 +402,77 @@
   padding: 1vh 7vw;
 }
 
+.mail__button__section {
+  position: relative;
+}
+
+.mail__button {
+  color: white;
+  font-size: 28px;
+}
+
+.alert__icon__mail {
+  position: absolute;
+  color: $alert-icon-color;
+  font-size: 24px;
+  right: -5px;
+  bottom: -5px;
+  cursor: pointer;
+}
+
+.alert__icon__enable {
+  color: $alert-icon-color;
+  font-size: 30px;
+  position: absolute;
+  right: -15px;
+  bottom: 0px;
+}
+
+.brief__mail__list {
+  $shodow-color: rgba(200, 200, 200, 1);
+  $width: 250px;
+  position: absolute;
+  top: 30px;
+  background-color: white;
+  color: black;
+  z-index: 10;
+  padding: 5px;
+  width: $width;
+  min-width: $width;
+  box-shadow: 2px 2px 2px $shodow-color, -2px 2px 2px $shodow-color;
+}
+
+.inbox__link {
+  width: 100%;
+  text-align: center;
+  display: block;
+  padding: 5px 0;
+}
+
+.message__title__section {
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.mail__list__title {
+  font-weight: bold;
+  margin: 0;
+}
+
+.create__message__button {
+  font-size: 24px;
+}
+
 /*********************************** media ********************************************/
 
 @media (hover: none) {
-  .mat-expansion-panel:not(.mat-expanded):not([aria-disabled=true]) .mat-expansion-panel-header:hover {
+  .mat-expansion-panel:not(.mat-expanded):not([aria-disabled='true'])
+    .mat-expansion-panel-header:hover {
     background: initial;
   }
 }
 
-@media(max-width: 767px) {
+@media (max-width: 767px) {
   .footer-details.footer-rwd--1 {
     margin-bottom: 84px;
   }
@@ -443,14 +502,12 @@
   .dashboard__container {
     padding: 0 2vw;
   }
-
 }
 
-@media(max-width: 370px) {
+@media (max-width: 370px) {
   .container {
     padding: 10px 5px 60px 5px;
   }
-
 }
 
 @media print {
@@ -458,6 +515,4 @@
     overflow: visible;
     height: fit-content;
   }
-
 }
-

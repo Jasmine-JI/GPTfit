@@ -9,12 +9,12 @@ export interface EventInfo {
   currentApplyNumber?: number;
   eventStatus: EventStatus;
   applyDate: {
-      startDate: number;
-      endDate: number;
+    startDate: number;
+    endDate: number;
   };
   raceDate: {
-      startDate: number;
-      endDate: number;
+    startDate: number;
+    endDate: number;
   };
   cloudrunMapId: number;
   creatorId?: number;
@@ -59,25 +59,25 @@ export interface DetailGroup {
 export enum CardTypeEnum {
   text = 1,
   img,
-  video
+  video,
 }
 
 export enum EventStatus {
   notAudit,
   cancel,
-  audit
-};
+  audit,
+}
 
 export enum HaveProduct {
   yes = 1,
-  no
+  no,
 }
 
 export enum PaidStatusEnum {
   unPaid = 1,
   paid,
   approve,
-  refund
+  refund,
 }
 
 export enum ProductShipped {
@@ -85,19 +85,19 @@ export enum ProductShipped {
   shipped,
   returnGoods,
   closeCase,
-  needNotShip
+  needNotShip,
 }
 
 export enum ApplyStatus {
   notYet,
   applied,
   cancel,
-  applyingQuit
+  applyingQuit,
 }
 
 export enum Nationality {
   taiwaness = 1,
-  foreign
+  foreign,
 }
 
 export enum ListStatus {
@@ -107,5 +107,5 @@ export enum ListStatus {
   racing,
   eventFinished,
   eventCancel,
-  notAudit
-};
+  notAudit,
+}

@@ -36,7 +36,7 @@ export const zoneColor = [
   'rgba(247, 242, 91, 1)',
   'rgba(243, 179, 83, 1)',
   'rgba(243, 105, 83, 1)',
-  'rgba(239, 56, 150, 1)'
+  'rgba(239, 56, 150, 1)',
 ];
 
 /**
@@ -49,9 +49,8 @@ export const infoColor = [
   'rgba(255, 220, 1, 1)',
   'rgba(234, 164, 4, 1)',
   'rgba(243, 105, 83, 1)',
-  'rgba(239, 56, 150, 1)'
+  'rgba(239, 56, 150, 1)',
 ];
-
 
 export const SPORT_TYPE_COLOR = [
   'rgba(234, 87, 87, 1)',
@@ -60,7 +59,7 @@ export const SPORT_TYPE_COLOR = [
   'rgba(207, 239, 75, 1)',
   'rgba(117, 242, 95, 1)',
   'rgba(114, 232, 176, 1)',
-  'rgba(107, 235, 249, 1)'
+  'rgba(107, 235, 249, 1)',
 ];
 
 export const DISTRIBUTION_CHART_COLOR = {
@@ -110,19 +109,18 @@ export const DISTRIBUTION_CHART_COLOR = {
     background: 'rgba(250, 240, 213, 1)',
     fill: 'rgba(232, 197, 92, 1)',
     textShadow: 'rgba(178, 152, 71, 1)',
-  }
-
+  },
 };
 
 /**
  * 重訓肌肉地圖與趨勢圖顏色設定（hsla）
  */
 export const WEIGHT_TRAIN_COLOR = {
-  saturation: '100%',  // 主訓練部位色彩飽和度
-  brightnessFor1RM: '70%',  // 主訓練部位色彩明亮度(1RM)
-  brightnessForAvgWeight: '80%',  // 主訓練部位色彩明亮度(平均重量)
-  transparency: 0.7,  // 主訓練部位色彩透明度
-}
+  saturation: '100%', // 主訓練部位色彩飽和度
+  brightnessFor1RM: '70%', // 主訓練部位色彩明亮度(1RM)
+  brightnessForAvgWeight: '80%', // 主訓練部位色彩明亮度(平均重量)
+  transparency: 0.7, // 主訓練部位色彩透明度
+};
 
 /**
  * 步數趨勢圖顏色
@@ -130,7 +128,7 @@ export const WEIGHT_TRAIN_COLOR = {
 export const stepColor = {
   step: '#6fd205',
   target: '#7f7f7f',
-  reach: '#eb5293'
+  reach: '#eb5293',
 };
 
 /**
@@ -139,7 +137,7 @@ export const stepColor = {
 export const sleepColor = {
   light: '#35a8c9',
   deep: '#1e61bb',
-  standup: '#ccff00'
+  standup: '#ccff00',
 };
 
 /**
@@ -148,7 +146,7 @@ export const sleepColor = {
 export const BMIColor = {
   low: '#7ee33a',
   middle: 'yellow',
-  high: 'red'
+  high: 'red',
 };
 
 /**
@@ -156,7 +154,7 @@ export const BMIColor = {
  */
 export const fatRateColor = {
   low: '#e0a63a',
-  high: '#e04fc4'
+  high: '#e04fc4',
 };
 
 /**
@@ -164,7 +162,7 @@ export const fatRateColor = {
  */
 export const muscleRateColor = {
   low: '#3ae5da',
-  high: '#299fc6'
+  high: '#299fc6',
 };
 
 /**
@@ -173,17 +171,17 @@ export const muscleRateColor = {
 export const restHrColor = {
   line: '#ababab',
   rest: '#31df93',
-  max: '#e23333'
+  max: '#e23333',
 };
 
 export const maleBodyBoundary = {
   fatRate: [17, 21, 50],
-  FFMI: [18, 21, 28]
+  FFMI: [18, 21, 28],
 };
 
 export const femaleBodyBoundary = {
   fatRate: [23, 27, 56],
-  FFMI: [15, 18, 25]
+  FFMI: [15, 18, 25],
 };
 
 /**
@@ -193,134 +191,133 @@ export const trendChartColor = {
   totalSecond: {
     base: {
       top: 'rgba(106, 162, 203, 1)',
-      bottom: 'rgba(39, 181, 190, 1)'
+      bottom: 'rgba(39, 181, 190, 1)',
     },
     compare: {
       top: 'rgba(106, 203, 122, 1)',
-      bottom: 'rgba(178, 190, 39, 1)'
-    }
+      bottom: 'rgba(178, 190, 39, 1)',
+    },
   },
   benefitTime: {
     base: {
       top: 'rgba(204, 4, 222, 1)',
-      bottom: 'rgba(222, 124, 4, 1)'
+      bottom: 'rgba(222, 124, 4, 1)',
     },
     compare: {
       top: 'rgba(164, 222, 4, 1)',
-      bottom: 'rgba(4, 215, 222, 1)'
-    }
+      bottom: 'rgba(4, 215, 222, 1)',
+    },
   },
   pai: {
     base: {
       top: 'rgba(227, 213, 23, 1)',
-      bottom: 'rgba(166, 227, 23, 1)'
+      bottom: 'rgba(166, 227, 23, 1)',
     },
     compare: {
       top: 'rgba(27, 133, 209, 1)',
-      bottom: 'rgba(91, 27, 209, 1)'
-    }
+      bottom: 'rgba(91, 27, 209, 1)',
+    },
   },
   totalActivities: {
     base: {
       top: 'rgba(4, 222, 95, 1)',
-      bottom: 'rgba(4, 222, 207, 1)'
+      bottom: 'rgba(4, 222, 207, 1)',
     },
     compare: {
       top: 'rgba(4, 168, 222, 1)',
-      bottom: 'rgba(4, 55, 222, 1)'
-    }
+      bottom: 'rgba(4, 55, 222, 1)',
+    },
   },
   calories: {
     base: {
       top: 'rgba(255, 84, 55, 1)',
-      bottom: 'rgba(255, 150, 34, 1)'
+      bottom: 'rgba(255, 150, 34, 1)',
     },
     compare: {
       top: 'rgba(68, 71, 196, 1)',
-      bottom: 'rgba(241, 69, 160, 1)'
-    }
+      bottom: 'rgba(241, 69, 160, 1)',
+    },
   },
   achieveRate: {
     base: {
       top: 'rgba(35, 148, 255, 1)',
-      bottom: 'rgba(200, 59, 255, 1)'
+      bottom: 'rgba(200, 59, 255, 1)',
     },
     compare: {
       top: 'rgba(96, 198, 80, 1)',
-      bottom: 'rgba(45, 147, 195, 1)'
-    }
+      bottom: 'rgba(45, 147, 195, 1)',
+    },
   },
   distance: {
     base: {
       top: 'rgba(195, 201, 20, 1)',
-      bottom: 'rgba(201, 144, 20, 1)'
+      bottom: 'rgba(201, 144, 20, 1)',
     },
     compare: {
       top: 'rgba(86, 150, 199, 1)',
-      bottom: 'rgba(86, 188, 199, 1)'
-    }
+      bottom: 'rgba(86, 188, 199, 1)',
+    },
   },
   personalAchieve: {
     achieve: 'rgba(145, 239, 160, 1)',
     notAchieve: 'rgba(243, 110, 110, 1)',
-    nodata: 'rgba(255, 255, 255, 0)'
+    nodata: 'rgba(255, 255, 255, 0)',
   },
   complexHrTrend: {
     base: {
       max: 'rgba(208, 184, 218, 1)',
-      avg: 'rgba(200, 59, 255, 1)'
+      avg: 'rgba(200, 59, 255, 1)',
     },
     compare: {
       max: 'rgba(140, 190, 209, 1)',
-      avg: 'rgba(71, 190, 209, 1)'
-    }
+      avg: 'rgba(71, 190, 209, 1)',
+    },
   },
   bodyWeightTrend: {
     base: 'rgba(255, 217, 81, 1)',
-    compare: 'rgba(46, 113, 242, 1)'
+    compare: 'rgba(46, 113, 242, 1)',
   },
   speedPaceTrend: {
     base: {
       max: 'rgba(206, 224, 83, 1)',
-      avg: 'rgba(132, 214, 0, 1)'
+      avg: 'rgba(132, 214, 0, 1)',
     },
     compare: {
       max: 'rgba(137, 119, 186, 1)',
-      avg: 'rgba(106, 77, 184, 1)'
-    }
+      avg: 'rgba(106, 77, 184, 1)',
+    },
   },
   cadenceTrend: {
     base: {
       max: 'rgba(242, 166, 114, 1)',
-      avg: 'rgba(245, 99, 0, 1)'
+      avg: 'rgba(245, 99, 0, 1)',
     },
     compare: {
       max: 'rgba(103, 240, 201, 1)',
-      avg: 'rgba(0, 245, 176, 1)'
-    }
+      avg: 'rgba(0, 245, 176, 1)',
+    },
   },
   powerTrend: {
     base: {
       max: 'rgba(189, 242, 179, 1)',
-      avg: 'rgba(117, 242, 95, 1)'
+      avg: 'rgba(117, 242, 95, 1)',
     },
     compare: {
       max: 'rgba(247, 200, 143, 1)',
-      avg: 'rgba(255, 154, 34, 1)'
-    }
+      avg: 'rgba(255, 154, 34, 1)',
+    },
   },
   gForceTrend: {
     base: {
       max: 'rgba(52, 113, 235, 1)',
-      min: 'rgba(235, 64, 52, 1)'
+      min: 'rgba(235, 64, 52, 1)',
     },
     compare: {
       max: 'rgba(118, 112, 230, 1)',
-      min: 'rgba(212, 118, 227, 1)'
-    }
-  }
-
-}
+      min: 'rgba(212, 118, 227, 1)',
+    },
+  },
+};
 
 export interface HrZoneRange {
   hrBase: HrBase;
@@ -335,7 +332,7 @@ export interface HrZoneRange {
 /**
  * Array<[timestamp<number>, zoneseconds<number>]>
  */
- export interface ZoneTrendData {
+export interface ZoneTrendData {
   zoneZero: Array<[number, number]>;
   zoneOne: Array<[number, number]>;
   zoneTwo: Array<[number, number]>;
@@ -345,7 +342,7 @@ export interface HrZoneRange {
   zoneSix?: Array<[number, number]>;
 }
 
- export interface DiscolorTrendData {
+export interface DiscolorTrendData {
   avgCadence?: number;
   bestCadence?: number;
   cadence?: Array<number>;
@@ -354,7 +351,7 @@ export interface HrZoneRange {
   bestPace?: Array<number>;
   pace?: Array<number>;
   oneRangeBestPace?: string;
-  dataArr?: Array<{x: number; y: number; low: number}>;
+  dataArr?: Array<{ x: number; y: number; low: number }>;
   avgSpeed?: number;
   maxSpeed?: number;
   minSpeed?: number;
@@ -440,13 +437,13 @@ export const compareChartDefault: any = {
     height: 200,
     backgroundColor: 'transparent',
     marginLeft: 85,
-    marginRight: 40
+    marginRight: 40,
   },
   title: {
-    text: ''
+    text: '',
   },
   credits: {
-    enabled: false
+    enabled: false,
   },
   xAxis: {
     title: {
@@ -455,31 +452,31 @@ export const compareChartDefault: any = {
     },
     labels: {
       style: {
-        fontSize: '10px'
-      }
+        fontSize: '10px',
+      },
     },
   },
   yAxis: {
     min: 0,
     title: {
-      enabled: false
+      enabled: false,
     },
     labels: {},
     startOnTick: false,
     minPadding: 0.01,
     maxPadding: 0.01,
-    tickAmount: 5
+    tickAmount: 5,
   },
   tooltip: {},
   plotOptions: {
     column: {},
     series: {
       pointWidth: null,
-      maxPointWidth: 30
-    }
+      maxPointWidth: 30,
+    },
   },
   legend: {
-    enabled: false
+    enabled: false,
   },
-  series: []
-}
+  series: [],
+};
