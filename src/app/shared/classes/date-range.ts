@@ -4,6 +4,7 @@ import isoWeek from 'dayjs/plugin/isoWeek';
 import { DateUnit } from '../enum/report';
 import { mathRounding } from '../utils/index';
 import { DAY } from '../models/utils-constant';
+import { DateRangeType } from '../models/report-condition';
 
 dayjs.extend(quarterOfYear);
 dayjs.extend(isoWeek);
@@ -16,13 +17,17 @@ const UTC_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 export class DateRange {
   private _startTime: number;
   private _endTime: number;
+  private _rangeType: DateRangeType = 'thisWeek';
 
   /**
    * 指定時間範圍，若無指定則預設這個月
    * @param initStartTime {number}-開始時間(timestamp)
    * @param initEndTime {number}-結束時間(timestamp)
    */
-  constructor(initStartTime: number = undefined, initEndTime: number = undefined) {
+  constructor(
+    initStartTime: number | undefined = undefined,
+    initEndTime: number | undefined = undefined
+  ) {
     this.startTimestamp = initStartTime ? initStartTime : dayjs().startOf('month').valueOf();
     this.endTimestamp = initEndTime ? initEndTime : dayjs().endOf('month').valueOf();
   }
@@ -49,6 +54,20 @@ export class DateRange {
    */
   get utcStartTime(): string {
     return dayjs(this._startTime).format(UTC_FORMAT);
+  }
+
+  /**
+   * 設定該日期範圍之類別
+   */
+  set dateRange(type: DateRangeType) {
+    this._rangeType = type;
+  }
+
+  /**
+   * 取得該日期範圍之類別
+   */
+  get dateRange() {
+    return this._rangeType;
   }
 
   /**
@@ -122,21 +141,34 @@ export class DateRange {
 
   /**
    * 取得該日期範圍相差數目
-   * @param unit {string}-日期相差單位（day/week/month/quarter/year）
+   * @param dateUnit {string}-日期相差單位（day/week/month/quarter/year）
    */
-  getDiffRange(unit: string) {
-    const diffDay = mathRounding((this._endTime - this._startTime) / DAY, 0);
+  getDiffRange(unit: string, baseOnMonth = true) {
+    const { _startTime, _endTime } = this;
+    const diffDay = mathRounding((_endTime - _startTime) / DAY, 0);
+    const [startYear, startMonth] = dayjs(_startTime)
+      .format('YYYY-MM-DD')
+      .split('-')
+      .map((_str) => +_str);
+    const [endYear, endMonth] = dayjs(_endTime)
+      .format('YYYY-MM-DD')
+      .split('-')
+      .map((_str) => +_str);
+    const diffMonth = (endYear - startYear) * 12 + (endMonth - startMonth) + 1;
     switch (unit) {
-      case 'day':
-        return diffDay;
       case 'week':
         return mathRounding(diffDay / 7, 3);
-      case 'month':
-        return mathRounding(diffDay / 30, 3);
-      case 'quarter':
-        return mathRounding(diffDay / 90, 3);
-      case 'year':
-        return mathRounding(diffDay / 365, 3);
+      case 'month': {
+        return baseOnMonth ? diffMonth : mathRounding(diffDay / 30, 3);
+      }
+      case 'quarter': {
+        return baseOnMonth ? diffMonth / 3 : mathRounding(diffDay / 90, 3);
+      }
+      case 'year': {
+        return baseOnMonth ? diffMonth / 12 : mathRounding(diffDay / 365, 3);
+      }
+      default:
+        return diffDay;
     }
   }
 

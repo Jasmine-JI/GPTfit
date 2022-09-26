@@ -79,7 +79,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   };
 
   currentTimestamp = dayjs().startOf('day').unix();
-  startDateMin = this.currentTimestamp * 1000;
+  applyStartDateMin = this.currentTimestamp * 1000;
   language = MapLanguageEnum.TW;
   mapList: Array<any>;
   systemAccessright = AccessRight.guest;
@@ -203,7 +203,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       this.uiFlag.editMode = 'create';
     } else {
       this.uiFlag.editMode = 'edit';
-      this.startDateMin = this.currentTimestamp * 1000 + DAY;
+      this.applyStartDateMin = this.currentTimestamp * 1000 + DAY;
     }
   }
 

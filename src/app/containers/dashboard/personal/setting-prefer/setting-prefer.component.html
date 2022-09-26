@@ -97,7 +97,7 @@
     <div class="flexRow rowContent">
       <div class="flexRow contentTitle">
         {{ 'universal_vocabulary_activityTarget' | translate }}
-        <app-sports-target-tip></app-sports-target-tip>
+        <app-feature-noun-tips [tipsType]="'sportsTarget'"></app-feature-noun-tips>
       </div>
       <div class="contentInput"></div>
       <span class="contentDescription">
@@ -105,6 +105,44 @@
       </span>
       <button class="editBtn" (click)="showEditDialog('sportsTarget')">
         <i class="icon-svg_web-icon_p3_079-new-window openDialogIcon"></i>
+      </button>
+    </div>
+    <div class="flexRow rowContent">
+      <div class="flexRow contentTitle">
+        {{ 'universal_activityData_benefitime' | translate }}
+        <app-feature-noun-tips [tipsType]="'benefitTime'"></app-feature-noun-tips>
+      </div>
+      <div class="contentInput" (click)="toggleBenefitTimeList($event)">
+        <span class="mainText benefit__time__setting">
+          {{ setting.customField.activityTimeHRZ | referenceHrZone | translate }}
+          <i
+            class="icon-svg_web-icon_p1_006-unfold unfold__icon"
+            [class.fold__icon]="uiFlag.showBenefitTimeList"
+          ></i>
+        </span>
+        <ul class="setting__drop__list" *ngIf="uiFlag.showBenefitTimeList">
+          <li class="list__item" (click)="changeBenefitTimeStartZone(BenefitTimeStartZone.zone1)">
+            {{ BenefitTimeStartZone.zone1 | referenceHrZone | translate }}
+          </li>
+          <li class="list__item" (click)="changeBenefitTimeStartZone(BenefitTimeStartZone.zone2)">
+            {{ BenefitTimeStartZone.zone2 | referenceHrZone | translate }}
+          </li>
+          <li class="list__item" (click)="changeBenefitTimeStartZone(BenefitTimeStartZone.zone3)">
+            {{ BenefitTimeStartZone.zone3 | referenceHrZone | translate }}
+          </li>
+          <li class="list__item" (click)="changeBenefitTimeStartZone(BenefitTimeStartZone.zone4)">
+            {{ BenefitTimeStartZone.zone4 | referenceHrZone | translate }}
+          </li>
+        </ul>
+      </div>
+      <span class="contentDescription">
+        {{ 'universal_system_zoneSetting' | translate }}
+      </span>
+      <button class="editBtn" style="pointer-events: none" (click)="$event.preventDefault()">
+        <i
+          class="icon-svg_web-icon_p3_079-new-window openDialogIcon"
+          style="visibility: hidden"
+        ></i>
       </button>
     </div>
   </div>
@@ -403,14 +441,14 @@
               <span class="flexRow radioSelector" (click)="changeDominantHand(DominantHand.left)">
                 <span
                   class="radioBtn"
-                  [class.radioBtn--active]="setting.handedness == DominantHand.left"
+                  [class.radioBtn--active]="+setting.handedness === DominantHand.left"
                 ></span>
                 <span>{{ 'universal_vocabulary_leftHand' | translate }}</span>
               </span>
               <span class="flexRow radioSelector" (click)="changeDominantHand(DominantHand.right)">
                 <span
                   class="radioBtn"
-                  [class.radioBtn--active]="setting.handedness == DominantHand.right"
+                  [class.radioBtn--active]="+setting.handedness === DominantHand.right"
                 ></span>
                 <span>{{ 'universal_vocabulary_rightHand' | translate }}</span>
               </span>
@@ -709,14 +747,6 @@
         </div>
       </ng-container>
       <ng-container *ngIf="uiFlag.showEditDialog === 'sportsTarget'">
-        <div class="flexRow advanced__target__option">
-          <span>{{ 'universal_app_advanced' | translate }}</span>
-          <button
-            class="rod__bar"
-            [class.rod__bar--active]="advancedSportsTarget.personal"
-            (click)="changeAdvancedTargetStatus()"
-          ></button>
-        </div>
         <div class="flexCol info-contentText">
           <app-sport-target-setting
             [cycle]="DateUnit.day"
@@ -724,7 +754,6 @@
             [isEditMode]="true"
             [scrollElement]="'dialog-content'"
             (changeCondition)="changeCondition($event, DateUnit.day)"
-            *ngIf="advancedSportsTarget.personal"
           ></app-sport-target-setting>
           <app-sport-target-setting
             [cycle]="DateUnit.week"
@@ -739,7 +768,6 @@
             [isEditMode]="true"
             [scrollElement]="'dialog-content'"
             (changeCondition)="changeCondition($event, DateUnit.month)"
-            *ngIf="advancedSportsTarget.personal"
           ></app-sport-target-setting>
           <app-sport-target-setting
             [cycle]="DateUnit.season"
@@ -747,7 +775,6 @@
             [isEditMode]="true"
             [scrollElement]="'dialog-content'"
             (changeCondition)="changeCondition($event, DateUnit.season)"
-            *ngIf="advancedSportsTarget.personal"
           ></app-sport-target-setting>
           <app-sport-target-setting
             [cycle]="DateUnit.year"
@@ -755,7 +782,6 @@
             [isEditMode]="true"
             [scrollElement]="'dialog-content'"
             (changeCondition)="changeCondition($event, DateUnit.year)"
-            *ngIf="advancedSportsTarget.personal"
           ></app-sport-target-setting>
           <div style="height: 130px"></div>
         </div>

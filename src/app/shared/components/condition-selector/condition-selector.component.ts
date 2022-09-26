@@ -11,7 +11,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { DateRange } from '../../classes/date-range';
-import { ReportCondition, DateRangeType } from '../../models/report-condition';
+import { ReportCondition, DateRangeType, DateRangeInfo } from '../../models/report-condition';
 import { DateUnit } from '../../enum/report';
 import dayjs from 'dayjs';
 import { SportType } from '../../enum/sports';
@@ -22,7 +22,8 @@ import { takeUntil, debounceTime } from 'rxjs/operators';
 import { DefaultDateRange } from '../../classes/default-date-range';
 import { GroupInfo } from '../../classes/group-info';
 import { LocalstorageService, GlobalEventsService } from '../../../core/services';
-import { weekDayLock } from '../../../core/models/compo';
+import { WeekDayLock } from '../../../core/models/compo';
+import { ReportDateUnit } from '../../classes/report-date-unit';
 
 @Component({
   selector: 'app-condition-selector',
@@ -61,14 +62,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     showTargetUnitList: false,
     unfold: true,
     isMobile: false,
-  };
-
-  /**
-   * 日期範圍類別
-   */
-  dateRange = {
-    base: <DateRangeType>'custom',
-    compare: <DateRangeType>'none',
+    isIsoWeekUsing: true,
   };
 
   /**
@@ -77,17 +71,11 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
   reportCondition: ReportCondition;
 
   /**
-   * 進階模式開關狀態
-   */
-  advancedOptionStatus = false;
-
-  /**
    * 日曆可選的星期
    */
   weekDayLock = {
-    baseStart: <weekDayLock>[false, false, false, false, false, false, false],
-    compareStart: <weekDayLock>[false, false, false, false, false, false, false],
-    end: <weekDayLock>[false, false, false, false, false, false, false],
+    start: <WeekDayLock>[false, false, false, false, false, false, false],
+    end: <WeekDayLock>[false, false, false, false, false, false, false],
   };
 
   /**
@@ -95,13 +83,21 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    */
   endLimitDay = {
     base: {
-      min: dayjs('2010', 'YYYY').valueOf(),
-      max: dayjs().endOf('year').valueOf(),
+      min: <number | null>dayjs('2010', 'YYYY').valueOf(),
+      max: <number | null>dayjs().endOf('year').valueOf(),
     },
     compare: {
-      min: dayjs('2010', 'YYYY').valueOf(),
-      max: dayjs().endOf('year').valueOf(),
+      min: <number | null>dayjs('2010', 'YYYY').valueOf(),
+      max: <number | null>dayjs().endOf('year').valueOf(),
     },
+  };
+
+  /**
+   * 快速選單清單
+   */
+  quickDateList = {
+    base: <Array<DateRangeInfo>>[],
+    compare: <Array<DateRangeInfo>>[],
   };
 
   readonly SportType = SportType;
@@ -110,7 +106,6 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
   readonly DateUnit = DateUnit;
   private readonly groupListDropId = this.globalEventsService.getComponentUniqueId();
   private readonly reportUnitDropId = this.globalEventsService.getComponentUniqueId();
-  private readonly targetUnitDropId = this.globalEventsService.getComponentUniqueId();
   private readonly baseDateRangeDropId = this.globalEventsService.getComponentUniqueId();
   private readonly compareDateRangeDropId = this.globalEventsService.getComponentUniqueId();
 
@@ -126,8 +121,8 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     if (e.initialCondition) {
       this.checkDeviceWidth();
       this.subscribeResizeEvent();
+      this.uiFlag.isIsoWeekUsing = this.getIsoWeekUsing();
       this.resetCondition();
-      this.advancedOptionStatus = this.getAdvancedOptionStatus();
       this.weekDayLock = this.getWeekDayLock();
       this.handleEndLimitDay();
       this.submitCondition();
@@ -160,51 +155,25 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    * 取得日曆可選的星期
    */
   getWeekDayLock() {
-    const {
-      dateUnit: { unit },
-      baseTime: { startTimestamp },
-    } = this.reportCondition;
-    const defaultWeekLock: weekDayLock = [false, false, false, false, false, false, false];
+    const { isIsoWeekUsing } = this.uiFlag;
+    const { unit } = this.reportCondition.dateUnit ?? { unit: DateUnit.week };
+    const defaultWeekLock: WeekDayLock = [false, false, false, false, false, false, false];
     switch (unit) {
       case DateUnit.week: {
-        const weekStartDay = dayjs(startTimestamp).isoWeekday();
+        const openIsoWeekStartDay = isIsoWeekUsing ? 1 : 0;
+        const openIsoWeekEndDay = isIsoWeekUsing ? 0 : 6;
         return {
-          baseStart: defaultWeekLock.map((_weekLock, _index) => _index > 1) as weekDayLock,
-          compareStart: defaultWeekLock.map(
-            (_weekLock, _index) => _index !== (weekStartDay === 7 ? 0 : 1)
-          ) as weekDayLock,
+          start: defaultWeekLock.map(
+            (_weekLock, _index) => _index !== openIsoWeekStartDay
+          ) as WeekDayLock,
           end: defaultWeekLock.map(
-            (_weekLock, _index) => _index !== (weekStartDay === 7 ? 6 : 0)
-          ) as weekDayLock,
+            (_weekLock, _index) => _index !== openIsoWeekEndDay
+          ) as WeekDayLock,
         };
       }
       default:
-        return { baseStart: defaultWeekLock, compareStart: defaultWeekLock, end: defaultWeekLock };
+        return { start: defaultWeekLock, end: defaultWeekLock };
     }
-  }
-
-  /**
-   * 取得進階功能開關狀態
-   */
-  getAdvancedOptionStatus() {
-    const advancedOption = this.localstorageService.getAdvancedSportsTarget();
-    const { group } = this.reportCondition;
-    const referenceOption = group ? 'professional' : 'personal';
-    return advancedOption[referenceOption];
-  }
-
-  /**
-   * 變更運動目標進階功能狀態
-   */
-  changeAdvancedTargetStatus() {
-    const advancedOption = this.localstorageService.getAdvancedSportsTarget();
-    const { group } = this.reportCondition;
-    const referenceOption = group ? 'professional' : 'personal';
-    const currentStatus = advancedOption[referenceOption];
-    this.advancedOptionStatus = !currentStatus;
-    advancedOption[referenceOption] = this.advancedOptionStatus;
-    this.localstorageService.setAdvancedSportsTarget(advancedOption);
-    if (!this.advancedOptionStatus) this.resetCondition();
   }
 
   /**
@@ -290,14 +259,16 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    * @author kidin-111315
    */
   selectGroup(id: string, name: string) {
-    const { id: oldId } = this.reportCondition.group.focusGroup;
-    if (id !== oldId) {
-      const level = GroupInfo.getGroupLevel(id);
-      this.reportCondition.group.focusGroup = { id, level, name };
-      this.reportCondition.needRefreshData = true;
-    }
+    if (this.reportCondition.group) {
+      const { id: oldId } = this.reportCondition.group.focusGroup;
+      if (id !== oldId) {
+        const level = GroupInfo.getGroupLevel(id);
+        this.reportCondition.group.focusGroup = { id, level, name };
+        this.reportCondition.needRefreshData = true;
+      }
 
-    this.unSubscribePluralEvent();
+      this.unSubscribePluralEvent();
+    }
   }
 
   /**
@@ -315,6 +286,14 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    */
   resetCondition(init = true) {
     if (init) this.reportCondition = deepCopy(this.initialCondition);
+    this.resetDate();
+    this.quickDateList = this.getQuickDateList();
+  }
+
+  /**
+   * 將日期範圍條件重置為初始條件
+   */
+  resetDate() {
     const defaultDateRange = this.getDefaultDateRange();
     this.selectBaseDateRange(defaultDateRange);
     this.selectCompareDateRange('none');
@@ -327,13 +306,14 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    * 根據報告呈現單位取得預設範圍日期
    */
   getDefaultDateRange(): DateRangeType {
-    const { unit } = this.reportCondition.dateUnit;
+    const { unit } = this.reportCondition.dateUnit as ReportDateUnit;
     switch (unit) {
       case DateUnit.week:
         return 'thisWeek';
       case DateUnit.month:
         return 'thisMonth';
       case DateUnit.season:
+        return 'thisSeason';
       case DateUnit.year:
         return 'thisYear';
       default:
@@ -398,11 +378,14 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
   baseStartTimeChange(timestamp: number) {
     this.reportCondition.baseTime.startTimestamp = timestamp;
     this.reportCondition.baseTime.endTimestamp = this.autoGetEndDay(timestamp);
-    this.reportCondition.compareTime = null;
-    this.dateRange.base = 'custom';
-    if (this.dateRange.compare === 'sameRangeLastYear')
+    this.reportCondition.baseTime.dateRange = 'custom';
+    if (this.reportCondition.compareTime?.dateRange === 'sameRangeLastYear') {
       this.selectCompareDateRange('sameRangeLastYear');
-    this.weekDayLock = this.getWeekDayLock();
+    } else {
+      this.reportCondition.compareTime = null;
+    }
+
+    this.quickDateList = this.getQuickDateList();
     this.afterChangeDate();
   }
 
@@ -412,10 +395,11 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    */
   baseEndTimeChange(timestamp: number) {
     this.reportCondition.baseTime.endTimestamp = timestamp;
-    this.dateRange.base = 'custom';
+    this.reportCondition.baseTime.dateRange = 'custom';
 
-    if (this.dateRange.compare === 'sameRangeLastYear')
+    if (this.reportCondition.compareTime?.dateRange === 'sameRangeLastYear')
       this.selectCompareDateRange('sameRangeLastYear');
+    this.quickDateList = this.getQuickDateList();
     this.afterChangeDate();
   }
 
@@ -427,7 +411,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     if (!this.reportCondition.compareTime) this.reportCondition.compareTime = new DateRange();
     this.reportCondition.compareTime.startTimestamp = timestamp;
     this.reportCondition.compareTime.endTimestamp = this.autoGetEndDay(timestamp);
-    this.dateRange.compare = 'custom';
+    this.reportCondition.compareTime.dateRange = 'custom';
     this.afterChangeDate();
   }
 
@@ -438,7 +422,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
   compareEndTimeChange(timestamp: number) {
     if (!this.reportCondition.compareTime) return false;
     this.reportCondition.compareTime.endTimestamp = timestamp;
-    this.dateRange.compare = 'custom';
+    this.reportCondition.compareTime.dateRange = 'custom';
     this.afterChangeDate();
   }
 
@@ -447,7 +431,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    * @param startTimestamp {number}-所選日期之時間戳
    */
   autoGetEndDay(startTimestamp: number) {
-    const { unit } = this.reportCondition.dateUnit;
+    const { unit } = this.reportCondition.dateUnit ?? { unit: DateUnit.week };
     const dayjsObj = dayjs(startTimestamp);
     switch (unit) {
       case DateUnit.month:
@@ -476,13 +460,20 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    * @author kidin-1110316
    */
   selectBaseDateRange(range: DateRangeType) {
-    this.dateRange.base = range;
-    const { startTime, endTime } = DefaultDateRange.getAssignRangeDate(range, false);
-    this.reportCondition.baseTime.startTimestamp = startTime;
-    this.reportCondition.baseTime.endTimestamp = endTime;
-    if (this.dateRange.compare === 'sameRangeLastYear')
-      this.selectCompareDateRange('sameRangeLastYear');
-    this.afterChangeDate();
+    this.reportCondition.baseTime.dateRange = range;
+    const { unit } = this.reportCondition.dateUnit as ReportDateUnit;
+    const { isIsoWeekUsing } = unit === DateUnit.week ? this.uiFlag : { isIsoWeekUsing: undefined };
+    const dateRange = DefaultDateRange.getAssignRangeDate(range, isIsoWeekUsing);
+    if (dateRange) {
+      const { startTime, endTime } = dateRange;
+      this.reportCondition.baseTime.startTimestamp = startTime;
+      this.reportCondition.baseTime.endTimestamp = endTime;
+      if (this.reportCondition.compareTime?.dateRange === 'sameRangeLastYear')
+        this.selectCompareDateRange('sameRangeLastYear');
+      this.afterChangeDate();
+    }
+
+    this.quickDateList = this.getQuickDateList();
   }
 
   /**
@@ -490,8 +481,8 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    * @author kidin-1110316
    */
   selectCompareDateRange(range: DateRangeType) {
-    this.dateRange.compare = range;
     if (!this.reportCondition.compareTime) this.reportCondition.compareTime = new DateRange();
+    this.reportCondition.compareTime.dateRange = range;
     switch (range) {
       case 'none':
         this.reportCondition.compareTime = null;
@@ -507,12 +498,17 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
         break;
       }
       default: {
-        const { startTime: start, endTime: end } = DefaultDateRange.getAssignRangeDate(
-          range,
-          false
-        );
-        this.reportCondition.compareTime.startTimestamp = start;
-        this.reportCondition.compareTime.endTimestamp = end;
+        const { isIsoWeekUsing } =
+          this.reportCondition.dateUnit?.unit === DateUnit.week
+            ? this.uiFlag
+            : { isIsoWeekUsing: undefined };
+        const dateRange = DefaultDateRange.getAssignRangeDate(range, isIsoWeekUsing);
+        if (dateRange) {
+          const { startTime: start, endTime: end } = dateRange;
+          this.reportCondition.compareTime.startTimestamp = start;
+          this.reportCondition.compareTime.endTimestamp = end;
+        }
+
         break;
       }
     }
@@ -525,13 +521,15 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    * @param unit {DateUnit}-日期範圍單位
    */
   selectDateUnit(unit: DateUnit) {
-    const { unit: beforeUnit } = this.reportCondition.dateUnit;
+    const { dateUnit } = this.reportCondition;
+    const { unit: beforeUnit } = dateUnit ?? { unit: DateUnit.week };
     if (unit !== beforeUnit) {
-      this.reportCondition.dateUnit.unit = unit;
+      (this.reportCondition.dateUnit as ReportDateUnit).unit = unit;
       this.resetCondition(false);
       this.reportCondition.needRefreshData = true;
-      this.getWeekDayLock();
+      this.weekDayLock = this.getWeekDayLock();
       this.handleEndLimitDay();
+      this.quickDateList = this.getQuickDateList();
     }
   }
 
@@ -540,36 +538,6 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    */
   foldSelector() {
     this.uiFlag.unfold = !this.uiFlag.unfold;
-  }
-
-  /**
-   * 顯示運動目標選擇清單
-   * @param e {MouseEvent}
-   */
-  showTargetUnitList(e: MouseEvent) {
-    e.stopPropagation();
-    const { showTargetUnitList } = this.uiFlag;
-    if (showTargetUnitList) {
-      this.uiFlag.showTargetUnitList = false;
-      this.unSubscribePluralEvent();
-    } else {
-      const { targetUnitDropId } = this;
-      this.globalEventsService.setRxCloseDropList(targetUnitDropId);
-      this.uiFlag.showTargetUnitList = true;
-      this.subscribePluralEvent(targetUnitDropId);
-    }
-  }
-
-  /**
-   * 變更目標日期單位
-   * @param unit {DateUnit}-日期範圍單位
-   */
-  selectTargetUnit(unit: DateUnit) {
-    const { targetUnit } = this.reportCondition;
-    if (unit !== targetUnit.unit) {
-      this.reportCondition.targetUnit.unit = unit;
-      this.reportCondition.needRefreshData = true;
-    }
   }
 
   /**
@@ -585,13 +553,88 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
     } = this.reportCondition;
     this.endLimitDay.base.min = baseStartTime;
     this.endLimitDay.compare.min = compareTime ? compareTime.startTimestamp : null;
-    const dayjsUnitKey = dateUnit.getUnitString();
+    const dayjsUnitKey = dateUnit?.getUnitString() ?? 'week';
     const baseMax = dayjs(baseStartTime).add(columnMax, dayjsUnitKey).valueOf();
     const compareMax = compareTime
       ? dayjs(compareTime.startTimestamp).add(columnMax, dayjsUnitKey).valueOf()
       : defaultMax;
     this.endLimitDay.base.max = baseMax > defaultMax ? defaultMax : baseMax;
-    this.endLimitDay.compare.max = compareMax > defaultMax ? defaultMax : defaultMax;
+    this.endLimitDay.compare.max = compareMax > defaultMax ? defaultMax : compareMax;
+  }
+
+  /**
+   * 變更是否使用isoWeek(週一為一週第一天)
+   */
+  changeIsoWeekUsing() {
+    this.uiFlag.isIsoWeekUsing = !this.uiFlag.isIsoWeekUsing;
+    this.localstorageService.setIsoWeekStatus(this.uiFlag.isIsoWeekUsing);
+    this.weekDayLock = this.getWeekDayLock();
+    this.resetDate();
+  }
+
+  /**
+   * 確認是否是否使用isoWeek(週一為一週第一天)
+   */
+  getIsoWeekUsing() {
+    return this.localstorageService.getIsoWeekStatus();
+  }
+
+  /**
+   * 取得可選擇的快速日期範圍清單
+   */
+  getQuickDateList() {
+    const { unit } = this.reportCondition.dateUnit as ReportDateUnit;
+    let baseList: Array<DateRangeType>;
+    let compareList: Array<DateRangeType>;
+    let isIsoWeekUsing: boolean | undefined;
+    switch (unit) {
+      case DateUnit.season:
+        baseList = ['thisSeason', 'thisYear'];
+        compareList = ['lastSeason', 'lastYear', 'sameRangeLastYear', 'none'];
+        break;
+      case DateUnit.month:
+        baseList = ['sixMonth', 'thisMonth', 'thisSeason', 'thisYear'];
+        compareList = ['lastMonth', 'lastSeason', 'lastYear', 'sameRangeLastYear', 'none'];
+        break;
+      case DateUnit.week: {
+        baseList = ['sixMonth', 'thisWeek', 'thisMonth', 'thisSeason', 'thisYear'];
+        compareList = ['lastWeek', 'lastMonth', 'lastSeason', 'lastYear', 'none'];
+        isIsoWeekUsing = this.uiFlag.isIsoWeekUsing;
+        break;
+      }
+      case DateUnit.day:
+        baseList = ['today', 'sevenDay', 'thirtyDay', 'thisWeek', 'thisMonth', 'thisSeason'];
+        compareList = ['lastWeek', 'lastMonth', 'lastSeason', 'sameRangeLastYear', 'none'];
+        break;
+      default:
+        baseList = ['thisYear'];
+        compareList = ['lastYear', 'sameRangeLastYear', 'none'];
+        break;
+    }
+
+    return {
+      base: baseList.map((_type) => this.getAssignRangeDate(_type, isIsoWeekUsing)),
+      compare: compareList.map((_type) => this.getAssignRangeDate(_type, isIsoWeekUsing)),
+    };
+  }
+
+  /**
+   * 取得指定範圍的時間
+   * @param type {DateRangeType}-日期範圍類別
+   * @param isIsoWeekUsing {isIsoWeekUsing}-是否週一為一週起始日
+   */
+  getAssignRangeDate(type: DateRangeType, isIsoWeekUsing: boolean | undefined) {
+    let dateRange: DateRangeInfo | null;
+    if (type === 'sameRangeLastYear') {
+      const { startTimestamp, endTimestamp } = this.reportCondition.baseTime;
+      dateRange = DefaultDateRange.getSameRangeLastYear(startTimestamp, endTimestamp);
+    } else {
+      dateRange = DefaultDateRange.getAssignRangeDate(type, isIsoWeekUsing);
+    }
+
+    if (!dateRange) return { startTime: null, endTime: null, type };
+    const { startTime, endTime } = dateRange;
+    return { startTime, endTime, type };
   }
 
   /**

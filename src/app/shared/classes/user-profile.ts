@@ -7,6 +7,7 @@ import { AccessRight } from '../enum/accessright';
 import { WeightTrainingLevel } from '../enum/weight-train';
 import { BehaviorSubject } from 'rxjs';
 import { ThirdParty } from '../enum/thirdParty';
+import { BenefitTimeStartZone } from '../../core/enums/common';
 
 const guestProfile: UserProfileInfo = {
   avatarUrl: '/assets/images/user2.png',
@@ -177,6 +178,13 @@ export class User {
    */
   get unit() {
     return this._userProfile.unit;
+  }
+
+  /**
+   * 取得個人設定效益時間有效開始心率區間
+   */
+  get benefitTimeStartZone() {
+    return this._userProfile.customField?.activityTimeHRZ || BenefitTimeStartZone.zone2;
   }
 
   /**

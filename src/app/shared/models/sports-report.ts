@@ -1,5 +1,6 @@
 import { ReportCondition, ReportDateType } from '../models/report-condition';
 import { TargetConditionMap } from '../../core/models/api/api-common/sport-target.model';
+import { BenefitTimeStartZone } from '../../core/enums/common';
 
 /**
  * 各運動類別共通所需數據
@@ -148,4 +149,5 @@ export interface SportsParameter {
   condition?: ReportCondition;
   data?: Array<any>;
   timeType?: ReportDateType;
+  benefitTimeStartZone?: BenefitTimeStartZone;
 }

@@ -46,22 +46,20 @@ export class DefaultDateRange {
 
   /**
    * 取得過去6個月時間範圍
+   * @param isMondayFirst {boolean}-一週開始日是否為週一
    */
-  static getSixMonth() {
-    const dateRange = {
-      startTime: dayjs().subtract(6, 'month').startOf('month').valueOf(),
-      endTime: dayjs().subtract(1, 'month').endOf('month').valueOf(),
-    };
-
-    return dateRange;
+  static getSixMonth(isMondayFirst: boolean | undefined = undefined) {
+    const firstDayByMonth = dayjs().subtract(6, 'month').startOf('month');
+    const endDayByMonth = dayjs().subtract(1, 'month').endOf('month');
+    return this.getDateRange(firstDayByMonth, endDayByMonth, isMondayFirst);
   }
 
   /**
    * 取得本週時間範圍
-   * @param sundayFirst {boolean}-一週開始日是否為週日
+   * @param isMondayFirst {boolean}-一週開始日是否為週日
    */
-  static getThisWeek(sundayFirst = true) {
-    const referenceWeek = sundayFirst ? 'week' : 'isoWeek';
+  static getThisWeek(isMondayFirst = true) {
+    const referenceWeek = isMondayFirst ? 'isoWeek' : 'week';
     const dateRange = {
       startTime: dayjs().startOf(referenceWeek).valueOf(),
       endTime: dayjs().endOf(referenceWeek).valueOf(),
@@ -72,34 +70,40 @@ export class DefaultDateRange {
 
   /**
    * 取得本月時間範圍
+   * @param isMondayFirst {boolean}-一週開始日是否為週一
    */
-  static getThisMonth() {
-    const dateRange = {
-      startTime: dayjs().startOf('month').valueOf(),
-      endTime: dayjs().endOf('month').valueOf(),
-    };
+  static getThisMonth(isMondayFirst: boolean | undefined = undefined) {
+    const firstDayByMonth = dayjs().startOf('month');
+    const endDayByMonth = dayjs().endOf('month');
+    return this.getDateRange(firstDayByMonth, endDayByMonth, isMondayFirst);
+  }
 
-    return dateRange;
+  /**
+   * 取得本季時間範圍
+   * @param isMondayFirst {boolean}-一週開始日是否為週一
+   */
+  static getThisSeason(isMondayFirst: boolean | undefined = undefined) {
+    const firstDayByMonth = dayjs().startOf('quarter');
+    const endDayByMonth = dayjs().endOf('quarter');
+    return this.getDateRange(firstDayByMonth, endDayByMonth, isMondayFirst);
   }
 
   /**
    * 取得今年時間範圍
+   * @param isMondayFirst {boolean}-一週開始日是否為週一
    */
-  static getThisYear() {
-    const dateRange = {
-      startTime: dayjs().startOf('year').valueOf(),
-      endTime: dayjs().endOf('year').valueOf(),
-    };
-
-    return dateRange;
+  static getThisYear(isMondayFirst: boolean | undefined = undefined) {
+    const firstDayByMonth = dayjs().startOf('year');
+    const endDayByMonth = dayjs().endOf('year');
+    return this.getDateRange(firstDayByMonth, endDayByMonth, isMondayFirst);
   }
 
   /**
    * 取得上一週時間範圍
-   * @param sundayFirst {boolean}-一週開始日是否為週日
+   * @param isMondayFirst {boolean}-一週開始日是否為週日
    */
-  static getLastWeek(sundayFirst = true) {
-    const referenceWeek = sundayFirst ? 'week' : 'isoWeek';
+  static getLastWeek(isMondayFirst = true) {
+    const referenceWeek = isMondayFirst ? 'isoWeek' : 'week';
     const lastSevenDay = dayjs().subtract(7, 'day');
     const dateRange = {
       startTime: lastSevenDay.startOf(referenceWeek).valueOf(),
@@ -111,15 +115,35 @@ export class DefaultDateRange {
 
   /**
    * 取得上個月時間範圍
+   * @param isMondayFirst {boolean}-一週開始日是否為週一
    */
-  static getLastMonth() {
+  static getLastMonth(isMondayFirst: boolean | undefined = undefined) {
     const lastMonth = dayjs().subtract(1, 'month');
-    const dateRange = {
-      startTime: lastMonth.startOf('month').valueOf(),
-      endTime: lastMonth.endOf('month').valueOf(),
-    };
+    const firstDayByMonth = lastMonth.startOf('month');
+    const endDayByMonth = lastMonth.endOf('month');
+    return this.getDateRange(firstDayByMonth, endDayByMonth, isMondayFirst);
+  }
 
-    return dateRange;
+  /**
+   * 取得上一季時間範圍
+   * @param isMondayFirst {boolean}-一週開始日是否為週一
+   */
+  static getLastSeason(isMondayFirst: boolean | undefined = undefined) {
+    const lastSeason = dayjs().subtract(1, 'quarter');
+    const firstDayByMonth = lastSeason.startOf('quarter');
+    const endDayByMonth = lastSeason.endOf('quarter');
+    return this.getDateRange(firstDayByMonth, endDayByMonth, isMondayFirst);
+  }
+
+  /**
+   * 取得上一年時間範圍
+   * @param isMondayFirst {boolean}-一週開始日是否為週一
+   */
+  static getLastYear(isMondayFirst: boolean | undefined = undefined) {
+    const lastYear = dayjs().subtract(1, 'year');
+    const firstDayByMonth = lastYear.startOf('year');
+    const endDayByMonth = lastYear.endOf('year');
+    return this.getDateRange(firstDayByMonth, endDayByMonth, isMondayFirst);
   }
 
   /**
@@ -137,9 +161,9 @@ export class DefaultDateRange {
   /**
    * 取得指定時間範圍
    * @param type {DateRangeType}-指定之時間範圍
-   * @param sundayFirst {boolean}-一週開始日是否為週日
+   * @param isMondayFirst {boolean}-一週開始日是否為週一
    */
-  static getAssignRangeDate(type: DateRangeType, sundayFirst = true) {
+  static getAssignRangeDate(type: DateRangeType, isMondayFirst: boolean | undefined = undefined) {
     switch (type) {
       case 'today':
         return DefaultDateRange.getToday();
@@ -148,19 +172,71 @@ export class DefaultDateRange {
       case 'thirtyDay':
         return DefaultDateRange.getThirtyDay();
       case 'sixMonth':
-        return DefaultDateRange.getSixMonth();
+        return DefaultDateRange.getSixMonth(isMondayFirst);
       case 'thisWeek':
-        return DefaultDateRange.getThisWeek(sundayFirst);
+        return DefaultDateRange.getThisWeek(isMondayFirst);
       case 'thisMonth':
-        return DefaultDateRange.getThisMonth();
+        return DefaultDateRange.getThisMonth(isMondayFirst);
+      case 'thisSeason':
+        return DefaultDateRange.getThisSeason(isMondayFirst);
       case 'thisYear':
-        return DefaultDateRange.getThisYear();
+        return DefaultDateRange.getThisYear(isMondayFirst);
       case 'lastWeek':
-        return DefaultDateRange.getLastWeek(sundayFirst);
+        return DefaultDateRange.getLastWeek(isMondayFirst);
       case 'lastMonth':
-        return DefaultDateRange.getLastMonth();
+        return DefaultDateRange.getLastMonth(isMondayFirst);
+      case 'lastSeason':
+        return DefaultDateRange.getLastSeason(isMondayFirst);
+      case 'lastYear':
+        return DefaultDateRange.getLastYear(isMondayFirst);
       case 'none':
         return null;
+      default:
+        return DefaultDateRange.getSevenDay();
+    }
+  }
+
+  /**
+   * 確認日期範圍是否為以週為基底，並回傳對應的日期範圍
+   * @param tentativeStartDate {dayjs.Dayjs}-預定起始日期
+   * @param tentativeEndDate {dayjs.Dayjs}-預定結束日期
+   * @param isMondayFirst {boolean | undefined}-一週開始日是否為週一
+   */
+  static getDateRange(
+    tentativeStartDate: dayjs.Dayjs,
+    tentativeEndDate: dayjs.Dayjs,
+    isMondayFirst: boolean | undefined
+  ) {
+    if (isMondayFirst !== undefined) {
+      const { unit, firstWeekDay, endWeekDay } =
+        DefaultDateRange.getDayjsWeekParameter(isMondayFirst);
+      const monthFirstDayByWeek = tentativeStartDate.isoWeekday() === firstWeekDay;
+      const monthEndDayByWeek = tentativeEndDate.isoWeekday() === endWeekDay;
+      return {
+        startTime: monthFirstDayByWeek
+          ? tentativeStartDate.valueOf()
+          : tentativeStartDate.add(1, 'week').startOf(unit).valueOf(),
+        endTime: monthEndDayByWeek
+          ? tentativeEndDate.valueOf()
+          : tentativeEndDate.endOf(unit).valueOf(),
+      };
+    } else {
+      return {
+        startTime: tentativeStartDate.valueOf(),
+        endTime: tentativeEndDate.valueOf(),
+      };
+    }
+  }
+
+  /**
+   * 取得dayjs使用的週單位
+   * @param isMondayFirst {boolean | undefined}-一週開始日是否為週一
+   */
+  static getDayjsWeekParameter(isMondayFirst: boolean | undefined) {
+    if (isMondayFirst) {
+      return { unit: <dayjs.OpUnitType>'isoWeek', firstWeekDay: 1, endWeekDay: 7 };
+    } else {
+      return { unit: <dayjs.OpUnitType>'week', firstWeekDay: 7, endWeekDay: 6 };
     }
   }
 }

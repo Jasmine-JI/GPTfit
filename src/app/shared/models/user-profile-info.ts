@@ -2,6 +2,7 @@ import { AccessRight } from '../enum/accessright';
 import { SportTarget } from '../../core/models/api/api-common/sport-target.model';
 import { AccountStatusEnum, AccountTypeEnum } from '../enum/account';
 import { Sex, HrBase } from '../enum/personal';
+import { BenefitTimeStartZone } from '../../core/enums/common';
 
 /**
  * 合併api v2 1010
@@ -58,6 +59,9 @@ export interface UserProfileInfo {
   wheelSize?: number;
   themeImgUrl?: string;
   workoutTarget?: SportTarget;
+  customField?: {
+    activityTimeHRZ: BenefitTimeStartZone;
+  };
 }
 
 /**

@@ -512,16 +512,10 @@
               "
             ></div>
           </ng-container>
-          <span
-            class="report-targetLineHint"
-            *ngIf="
-              reportCondition.dateUnit.unit === reportCondition.targetUnit.unit &&
-              getAssignCondition('totalTime')
-            "
-          >
+          <span class="report-targetLineHint" *ngIf="getAssignCondition('totalTime')">
             {{ 'universal_vocabulary_targetTime' | translate }}
             {{ getAssignCondition('totalTime') | sportTime }}/{{
-              reportCondition.targetUnit.unit | dateUnitKey | translate
+              reportCondition.dateUnit.unit | dateUnitKey | translate
             }}
           </span>
         </div>
@@ -610,16 +604,10 @@
               "
             ></div>
           </ng-container>
-          <span
-            class="report-targetLineHint"
-            *ngIf="
-              reportCondition.dateUnit.unit === reportCondition.targetUnit.unit &&
-              getAssignCondition('benefitTime')
-            "
-          >
+          <span class="report-targetLineHint" *ngIf="getAssignCondition('benefitTime')">
             {{ 'universal_training_targetEffectiveTime' | translate }}
             {{ getAssignCondition('benefitTime') | sportTime }}/{{
-              reportCondition.targetUnit.unit | dateUnitKey | translate
+              reportCondition.dateUnit.unit | dateUnitKey | translate
             }}
           </span>
         </div>
@@ -708,13 +696,7 @@
               "
             ></div>
           </ng-container>
-          <span
-            class="report-targetLineHint"
-            *ngIf="
-              reportCondition.dateUnit.unit === reportCondition.targetUnit.unit &&
-              getAssignCondition('pai')
-            "
-          >
+          <span class="report-targetLineHint" *ngIf="getAssignCondition('pai')">
             {{ 'universal_training_targetPai' | translate }} {{ getAssignCondition('pai') }}
           </span>
         </div>
@@ -804,16 +786,10 @@
               "
             ></div>
           </ng-container>
-          <span
-            class="report-targetLineHint"
-            *ngIf="
-              reportCondition.dateUnit.unit === reportCondition.targetUnit.unit &&
-              getAssignCondition('totalActivities')
-            "
-          >
+          <span class="report-targetLineHint" *ngIf="getAssignCondition('totalActivities')">
             {{ 'universal_training_targetTimes' | translate }}
             {{ getAssignCondition('totalActivities') }}/{{
-              reportCondition.targetUnit.unit | dateUnitKey | translate
+              reportCondition.dateUnit.unit | dateUnitKey | translate
             }}
           </span>
         </div>
@@ -902,16 +878,10 @@
               "
             ></div>
           </ng-container>
-          <span
-            class="report-targetLineHint"
-            *ngIf="
-              reportCondition.dateUnit.unit === reportCondition.targetUnit.unit &&
-              getAssignCondition('calories')
-            "
-          >
+          <span class="report-targetLineHint" *ngIf="getAssignCondition('calories')">
             {{ 'universal_lifeTracking_targetCalories' | translate }}
             {{ getAssignCondition('calories') }}
-            car/{{ reportCondition.targetUnit.unit | dateUnitKey | translate }}
+            car/{{ reportCondition.dateUnit.unit | dateUnitKey | translate }}
           </span>
         </div>
         <div class="report-chartFigure">
@@ -1011,16 +981,10 @@
               "
             ></div>
           </ng-container>
-          <span
-            class="report-targetLineHint"
-            *ngIf="
-              reportCondition.dateUnit.unit === reportCondition.targetUnit.unit &&
-              getAssignCondition('avgHeartRate')
-            "
-          >
+          <span class="report-targetLineHint" *ngIf="getAssignCondition('avgHeartRate')">
             {{ 'universal_activityData_avgHr' | translate }}
             {{ getAssignCondition('avgHeartRate') }}
-            bpm/{{ reportCondition.targetUnit.unit | dateUnitKey | translate }}
+            bpm/{{ reportCondition.dateUnit.unit | dateUnitKey | translate }}
           </span>
         </div>
         <div class="report-chartFigure">
@@ -2318,6 +2282,16 @@
         *ngTemplateOutlet="
           oneInfoData;
           context: {
+            data: getInfoData(infoData, 'targetAchieveRate'),
+            type: 'targetAchieveRate',
+            infoType
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          oneInfoData;
+          context: {
             data: getInfoData(infoData, 'totalActivities'),
             type: 'activities',
             infoType
@@ -2607,14 +2581,15 @@
   >
     <span>
       <span
-        class="report-infoDataValue"
-        [class.report-plusValue]="infoType === 'diff' && data.value > 0"
-        [class.report-progression]="
-          infoType === 'diff' && (compareReverse ? data.value < 0 : data.value > 0)
-        "
-        [class.report-regression]="
-          infoType === 'diff' && (compareReverse ? data.value > 0 : data.value < 0)
-        "
+        [ngClass]="{
+          'report-infoDataValue': true,
+          'report-plusValue': infoType === 'diff' && data.value > 0,
+          'report-progression':
+            infoType === 'diff' && (compareReverse ? data.value < 0 : data.value > 0),
+          'report-regression':
+            infoType === 'diff' && (compareReverse ? data.value > 0 : data.value < 0),
+          'report-infoTimeValue': type.toLowerCase().includes('time')
+        }"
       >
         <ng-container *ngIf="checkInfoType(type, 'time')">
           {{ data.value | sportTime }}
@@ -2631,6 +2606,9 @@
       </span>
     </span>
     <span class="report-infoDataType" [ngSwitch]="type">
+      <ng-container *ngSwitchCase="'targetAchieveRate'">
+        {{ 'universal_lifeTracking_achievementRate' | translate }}
+      </ng-container>
       <ng-container *ngSwitchCase="'benefitTime'">
         {{ 'universal_activityData_benefitime' | translate }}
       </ng-container>
@@ -3025,7 +3003,7 @@
           | translate
             : {
                 number: '',
-                unit: (reportCondition.targetUnit.unit | dateUnitKey | translate)
+                unit: (reportCondition.dateUnit.unit | dateUnitKey | translate)
               }
       }}
     </div>

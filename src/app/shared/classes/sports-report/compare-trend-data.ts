@@ -1,4 +1,4 @@
-import { deepCopy } from '../../utils/index';
+import { deepCopy, mathRounding } from '../../utils/index';
 
 /**
  * 比較趨勢圖
@@ -8,6 +8,16 @@ export class CompareTrendData {
    * 用來標註目標線(yAxis.plotLines)
    */
   private _target: number;
+
+  /**
+   * 基準數據加總
+   */
+  private _baseDataTotal = 0;
+
+  /**
+   * 比較數據加總
+   */
+  private _compareDataTotal = 0;
 
   /**
    * 顏色設定
@@ -79,6 +89,7 @@ export class CompareTrendData {
   addBaseData(data: number, dateRange: Array<number>) {
     this._trendData[0].data.push([dateRange[0], data || 0]);
     this._trendData[0].custom.dateRange.push(dateRange);
+    this._baseDataTotal += data || 0;
   }
 
   /**
@@ -98,6 +109,8 @@ export class CompareTrendData {
     this._trendData[0].custom.dateRange.push(baseDateRange);
     this._trendData[1].data.push(compareData || 0);
     this._trendData[1].custom.dateRange.push(compareDateRange);
+    this._baseDataTotal += baseData || 0;
+    this._compareDataTotal += compareData || 0;
   }
 
   /**
@@ -141,5 +154,21 @@ export class CompareTrendData {
    */
   get compareDataLength() {
     return this._trendData[1]?.data?.length;
+  }
+
+  /**
+   * 取得基準平均數據
+   */
+  get baseDataAvg() {
+    const { _baseDataTotal, baseDataLength } = this;
+    return mathRounding(_baseDataTotal / (baseDataLength || Infinity), 1);
+  }
+
+  /**
+   * 取得比較平均數據
+   */
+  get compareDataAvg() {
+    const { _compareDataTotal, compareDataLength } = this;
+    return mathRounding((_compareDataTotal || 0) / (compareDataLength || Infinity), 1);
   }
 }

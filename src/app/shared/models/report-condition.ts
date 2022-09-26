@@ -3,7 +3,6 @@ import { BrandType, GroupLevel } from '../enum/professional';
 import { SportType } from '../enum/sports';
 import { DateRange } from '../classes/date-range';
 import { ReportDateUnit } from '../classes/report-date-unit';
-import { DateUnit } from '../enum/report';
 
 /**
  * 報告頁面可讓使用者篩選的條件
@@ -88,7 +87,6 @@ export interface ReportCondition {
   baseTime: DateRange;
   compareTime?: DateRange | null;
   dateUnit?: ReportDateUnit;
-  targetUnit?: ReportDateUnit;
   group?: {
     brandType: BrandType;
     currentLevel: GroupLevel;
@@ -127,9 +125,12 @@ export type DateRangeType =
   | 'sixMonth'
   | 'thisWeek'
   | 'thisMonth'
+  | 'thisSeason'
   | 'thisYear'
   | 'lastWeek'
   | 'lastMonth'
+  | 'lastSeason'
+  | 'lastYear'
   | 'sameRangeLastYear'
   | 'custom'
   | 'none';
@@ -138,3 +139,12 @@ export type DateRangeType =
  * 報告日期範圍的類別（基準日期/比較日期）
  */
 export type ReportDateType = 'base' | 'compare';
+
+/**
+ * 快速日期範圍資訊
+ */
+export interface DateRangeInfo {
+  startTime: number | null;
+  endTime: number | null;
+  type?: DateRangeType;
+}
