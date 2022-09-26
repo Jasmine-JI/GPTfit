@@ -1,4 +1,4 @@
-import { TargetConditionMap } from '../../../core/models/api/api-common/sport-target.model';
+import { TargetConditionMap } from '../../../core/models/api/api-common';
 import { DateUnit } from '../../enum/report';
 import { ReportCondition } from '../../models/report-condition';
 import { SportType } from '../../enum/sports';
@@ -20,6 +20,8 @@ import { HrZoneChartData } from '../sports-report/hrzone-chart-data';
 import { TypeAllChart } from '../sports-report/type-all-chart';
 import { TemporaryCount } from '../sports-report/temporary-count';
 import { SportsReport } from './sports-report';
+import { countBenefitTime } from '../../utils';
+import { BenefitTimeStartZone } from '../../../core/enums/common';
 
 dayjs.extend(isoWeek);
 
@@ -53,8 +55,15 @@ export class PersonalSportsChartData {
    * @param condition {ReportCondition}-報告條件
    * @param dataObj {Array<any>}-基準與比較之運動/生活追蹤數據
    * @param perTransformTarget {Array<TargetCondition>}-依報告時間單位轉換的個人目標條件
+   * @param benefitTimeStartZone {BenefitTimeStartZone}-效益時間有效開始區間
    */
-  constructor(condition: ReportCondition, dataObj: any, sportTargetCondition: TargetConditionMap) {
+  constructor(
+    condition: ReportCondition,
+    dataObj: any,
+    sportTargetCondition: TargetConditionMap,
+    isMondayFirst: boolean,
+    benefitTimeStartZone: BenefitTimeStartZone
+  ) {
     const {
       userInfo,
       baseActivitiesData,
@@ -132,11 +141,13 @@ export class PersonalSportsChartData {
         break;
     }
 
-    const allDateList = this.createCompleteDate(dateUnit!, baseTime, compareTime!);
+    const allDateList = this.createCompleteDate(dateUnit, isMondayFirst, baseTime, compareTime!);
     of([baseActivitiesData, compareActivitiesData])
       .pipe(
         map((data) => this.filterPersonalData(data, dateUnit!, sportType!)),
-        map((filterData) => this.postProcessingPerosnalData(filterData, sportTargetCondition)),
+        map((filterData) =>
+          this.postProcessingPerosnalData(filterData, sportTargetCondition, benefitTimeStartZone)
+        ),
         map((completeData) => this.mergeSameDateData(completeData, dateUnit!)),
         map((mergeData) =>
           this.fillUpDate(condition, mergeData, allDateList, baseLifeTracking, compareLifeTracking)
@@ -152,13 +163,17 @@ export class PersonalSportsChartData {
    * @param baseTime {DateRange}-報告基準日期
    * @param compareTime {DateRange}-報告比較日期
    */
-  createCompleteDate(dateUnit: ReportDateUnit, baseTime: DateRange, compareTime: DateRange) {
+  createCompleteDate(
+    dateUnit: ReportDateUnit,
+    isMondayFirst: boolean,
+    baseTime: DateRange,
+    compareTime: DateRange
+  ) {
     // 若有比較時間，則先確認基準與比較日期何者較長，以較長的日期作為日期範圍長度
     let baseDateList = [];
     let compareDateList = [];
     const unitString = dateUnit.getUnitString();
     const { startTimestamp: baseStart, endTimestamp: baseEnd } = baseTime;
-    const isMondayFirst = dayjs(baseStart).isoWeekday() === 1;
     const referenceUnitString = isMondayFirst ? 'isoWeek' : unitString;
     const baseDiffTime = baseTime.getCrossRange(unitString, referenceUnitString);
     const compareDiffTime = compareTime
@@ -295,8 +310,13 @@ export class PersonalSportsChartData {
    * 計算各日期範圍之效益時間、pai、目標達成與否，同時將數據合併唯一陣列，以便計算圖表數據
    * @param allData {Array<any>}-基準數據與比較數據
    * @param targetCondition {TargetConditionMap}-依報告時間單位轉換的個人目標條件
+   * @param benefitTimeStartZone {BenefitTimeStartZone}-效益時間有效開始區間
    */
-  postProcessingPerosnalData(allData: Array<any>, targetCondition: TargetConditionMap) {
+  postProcessingPerosnalData(
+    allData: Array<any>,
+    targetCondition: TargetConditionMap,
+    benefitTimeStartZone: BenefitTimeStartZone
+  ) {
     const [baseData, compareData] = allData;
     const achievementData = (data: Array<any>) => {
       return data.map((_data) => {
@@ -318,13 +338,13 @@ export class PersonalSportsChartData {
             endTime,
           } = _dataRow;
 
+          const hrZone = [zone0, zone1, zone2, zone3, zone4, zone5];
           // 計算效益時間並寫回activities
-          const benefitTime = (zone2 ?? 0) + (zone3 ?? 0) + (zone4 ?? 0) + (zone5 ?? 0);
+          const benefitTime = countBenefitTime(hrZone, benefitTimeStartZone);
           _dataRow.activities.benefitTime = benefitTime;
 
           // 計算pai並寫回activities
           const rowPeriodDay = Math.round((endTime - startTime) / DAY);
-          const hrZone = [zone0, zone1, zone2, zone3, zone4, zone5];
           const { pai } = SportsReport.countPai(hrZone, rowPeriodDay);
           _dataRow.activities.pai = pai;
 

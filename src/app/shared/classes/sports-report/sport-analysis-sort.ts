@@ -24,11 +24,14 @@ export class SportAnalysisSort {
    */
   private _type = 'name';
 
-  constructor(data: Array<any>, sortType: 'targetAchievedPeople' | 'memberName') {
+  constructor(
+    data: Array<any>,
+    sortType: 'targetAchievedPeople' | 'memberName',
+    isGroupAnalysis: boolean
+  ) {
     this._data = data;
     this._type = sortType;
-    this._isGroupAnalysis = sortType === 'targetAchievedPeople';
-    this._isAscending = sortType === 'memberName';
+    this._isGroupAnalysis = isGroupAnalysis;
     this.sortData();
   }
 
@@ -80,7 +83,7 @@ export class SportAnalysisSort {
         this.sortName();
         break;
       case 'targetAchievedPeople':
-        this.sortAchievedRate();
+        this._isGroupAnalysis ? this.sortAchievedRate() : this.sortTargetAchievedRate();
         break;
       case 'activityPeople':
         this.sortNormalData();
@@ -220,6 +223,18 @@ export class SportAnalysisSort {
       const aValue = a.base[_type] || 0;
       const bValue = b.base[_type] || 0;
       return _isAscending ? aValue - bValue : bValue - aValue;
+    });
+  }
+
+  /**
+   * 針對個人達成率進行排序
+   */
+  sortTargetAchievedRate() {
+    const key = 'targetAchieveRate';
+    this._data.sort((a, b) => {
+      const aValue = a.base[key] || 0;
+      const bValue = b.base[key] || 0;
+      return this._isAscending ? aValue - bValue : bValue - aValue;
     });
   }
 

@@ -39,39 +39,48 @@
         <p style="color: blue">x軸判定次數：{{ allRecord.x.length }}</p>
         <p>橫跨範圍：{{ waveRange.x.range }}</p>
         <p>中心點：{{ waveRange.x.waveCenter }}</p>
-        <p>最大振幅：{{ waveRange.x.effectAmplitude }}</p>
+        <p>平均最大振幅：{{ getRecordInfo('x').avgAmplitude }}</p>
         <p style="color: green">y軸判定次數：{{ allRecord.y.length }}</p>
         <p>橫跨範圍：{{ waveRange.y.range }}</p>
         <p>中心點：{{ waveRange.y.waveCenter }}</p>
-        <p>最大振幅：{{ waveRange.y.effectAmplitude }}</p>
+        <p>平均最大振幅：{{ getRecordInfo('y').avgAmplitude }}</p>
         <p style="color: brown">z軸判定次數：{{ allRecord.z.length }}</p>
         <p>橫跨範圍：{{ waveRange.z.range }}</p>
         <p>中心點：{{ waveRange.z.waveCenter }}</p>
-        <p>最大振幅：{{ waveRange.z.effectAmplitude }}</p>
+        <p>平均最大振幅：{{ getRecordInfo('z').avgAmplitude }}</p>
       </div>
       <div class="flexCol" *ngIf="setFinished">
-        <p>x軸：</p>
+        <p>x軸：(原始數據/平滑後)</p>
+        <figure>
+          <div #xOChart id="chart__x__low">chart</div>
+        </figure>
         <figure>
           <div #xChart id="chart__x__low">chart</div>
         </figure>
-        <p>y軸：</p>
+        <p>y軸：(原始數據/平滑後)</p>
+        <figure>
+          <div #yOChart id="chart__y__low">chart</div>
+        </figure>
         <figure>
           <div #yChart id="chart__y__low">chart</div>
         </figure>
-        <p>z軸：</p>
+        <p>z軸：(原始數據/平滑後)</p>
+        <figure>
+          <div #zOChart id="chart__z__low">chart</div>
+        </figure>
         <figure>
           <div #zChart id="chart__z__low">chart</div>
         </figure>
       </div>
-      <div class="flexCol">
+      <div class="flexCol wave__log">
         <p style="color: blue">x軸波形紀錄：</p>
         <p>{{ stringify('x') }}</p>
       </div>
-      <div class="flexCol">
+      <div class="flexCol wave__log">
         <p style="color: green">y軸波形紀錄：</p>
         <p>{{ stringify('y') }}</p>
       </div>
-      <div class="flexCol">
+      <div class="flexCol wave__log">
         <p style="color: brown">z軸波形紀錄：</p>
         <p>{{ stringify('z') }}</p>
       </div>

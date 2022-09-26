@@ -121,7 +121,7 @@
                   eventInfo.applyDate.startDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'
                 "
                 [serialId]="'1'"
-                [limitMin]="startDateMin"
+                [limitMin]="applyStartDateMin"
                 [editStyle]="
                   '
                   border: none;
@@ -158,7 +158,7 @@
                   eventInfo.applyDate.endDate * 1000 | timeFormat: 'YYYY-MM-DDTHH:mm:ss.SSSZ'
                 "
                 [serialId]="'2'"
-                [limitMin]="startDateMin"
+                [limitMin]="eventInfo.applyDate.startDate * 1000"
                 [limitMax]="
                   currentTimestamp >= eventInfo.raceDate.startDate && uiFlag.editMode !== 'create'
                     ? eventInfo.raceDate.endDate * 1000

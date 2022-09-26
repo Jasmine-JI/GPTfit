@@ -2688,5 +2688,16 @@
  "universal_group_targetChartInfo": "If the time unit displayed in the report is different from the time unit in which the group sets the sports goal, the system will convert the sports goal setting and display the ratio of the number of people in each unit time group to the total number of people",
  "universal_system_interger": "Interger",
  "universal_system_changeTarget": "Change you activity target",
- "universal_system_targetInfo": "Setup target will display in your activity reports with rate of fullfillment"
-}
+ "universal_system_targetInfo": "Setup target will display in your activity reports with rate of fullfillment",
+ "universal_system_thisSeason": "This season",
+ "universal_system_lastSeason": "Last season",
+ "universal_system_lastYear": "Last year",
+ "universal_system_limitPerPerson": "PP",
+ "universal_system_zoneSetting": "Change your effective time setting",
+ "universal_system_aboveZone2": "Above Zone 2",
+ "universal_system_aboveZone3": "Above Zone 3",
+ "universal_system_aboveZone4": "Above Zone 4",
+ "universal_system_aboveZone1": "Above Zone 1",
+ "universal_system_zoneInfo": "Effective time base on HR zone, you can set effective zones here",
+ "universal_system_startDate": "Start date",
+ "universal_system_reportSetting": "Report settings"}

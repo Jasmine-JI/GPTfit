@@ -16,7 +16,7 @@ import { checkResponse, mathRounding, valueConvert } from '../../../../shared/ut
 import { UserService } from '../../../../core/services/user.service';
 import { getUserHrRange, getUserFtpZone } from '../../../../shared/utils/sports';
 import { SportsTarget } from '../../../../shared/classes/sports-target';
-import { LocalstorageService } from '../../../../core/services/localstorage.service';
+import { BenefitTimeStartZone } from '../../../../core/enums/common';
 
 enum DominantHand {
   right,
@@ -42,6 +42,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   private clickEvent = new Subscription();
   private wheelEvent = new Subscription();
   private touchEvent = new Subscription();
+  private pluralEvent = new Subscription();
   private dialogClickEvent = new Subscription();
 
   /**
@@ -54,6 +55,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     isMobile: 'ontouchmove' in window,
     expand: false,
     showEditDialog: <SetType | null>null,
+    showBenefitTimeList: false,
   };
 
   /**
@@ -81,6 +83,9 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       bodyWeight: 70,
       muscleRate: 50,
       fatRate: 20,
+    },
+    customField: {
+      activityTimeHRZ: BenefitTimeStartZone.zone2,
     },
   };
 
@@ -121,11 +126,6 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
     min: '00',
   };
 
-  /**
-   * 進階模式開關狀態
-   */
-  advancedSportsTarget = this.localstorageService.getAdvancedSportsTarget();
-
   userInfo: any;
   userHrZone: HrZoneRange;
   userFtpZone: any;
@@ -134,13 +134,13 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   readonly DominantHand = DominantHand;
   readonly AutoStepTarget = AutoStepTarget;
   readonly DateUnit = DateUnit;
+  readonly BenefitTimeStartZone = BenefitTimeStartZone;
 
   constructor(
     private utils: UtilsService,
     private translate: TranslateService,
     private dashboardService: DashboardService,
-    private userService: UserService,
-    private localstorageService: LocalstorageService
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
@@ -167,6 +167,8 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       )
       .subscribe((res) => {
         this.userInfo = res;
+        const { activityTimeHRZ } = this.userInfo.customField;
+        this.setting.customField.activityTimeHRZ = activityTimeHRZ;
       });
   }
 
@@ -210,15 +212,6 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 變更運動目標進階功能狀態
-   */
-  changeAdvancedTargetStatus() {
-    const currentStatus = this.advancedSportsTarget.personal;
-    this.advancedSportsTarget.personal = !currentStatus;
-    this.localstorageService.setAdvancedSportsTarget(this.advancedSportsTarget);
-  }
-
-  /**
    * 處理設定其他偏好設定所需資訊
    */
   handleSettingDialog() {
@@ -245,6 +238,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
         muscleRate,
         fatRate,
       },
+      customField: { activityTimeHRZ },
     } = this.userInfo;
 
     const isMetric = userUnit === Unit.metric;
@@ -272,6 +266,9 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
         bodyWeight: valueConvert(bodyWeight, !isMetric, true, lb, 1),
         muscleRate,
         fatRate,
+      },
+      customField: {
+        activityTimeHRZ,
       },
     };
 
@@ -1158,6 +1155,68 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    */
   unsubscribeDialogClickEvent() {
     this.dialogClickEvent.unsubscribe();
+  }
+
+  /**
+   * 顯示效益時間選單與否
+   * @param e {MouseEvent}
+   */
+  toggleBenefitTimeList(e: MouseEvent) {
+    e.stopPropagation();
+    const { showBenefitTimeList } = this.uiFlag;
+    showBenefitTimeList ? this.closeBenefitTimeList() : this.openBenefitTimeList();
+  }
+
+  /**
+   * 顯示效益時間設定區間選單
+   */
+  openBenefitTimeList() {
+    this.uiFlag.showBenefitTimeList = true;
+    this.listenPluralEvent();
+  }
+
+  /**
+   * 隱藏效益時間設定區間選單
+   */
+  closeBenefitTimeList() {
+    this.uiFlag.showBenefitTimeList = false;
+    this.cancelListenPluralEvent();
+  }
+
+  /**
+   * 訂閱點擊與滾動事件
+   */
+  listenPluralEvent() {
+    const element = document.querySelector('.main__container') as Element;
+    const clickEvent = fromEvent(document, 'click');
+    const scrollEvent = fromEvent(element, 'scroll');
+    this.pluralEvent = merge(clickEvent, scrollEvent)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.cancelListenPluralEvent();
+      });
+  }
+
+  /**
+   * 取消訂閱滾動與點擊事件
+   */
+  cancelListenPluralEvent() {
+    this.uiFlag.showBenefitTimeList = false;
+    if (this.pluralEvent) this.pluralEvent.unsubscribe();
+  }
+
+  /**
+   * 變更效益時間計算起始心率區間
+   */
+  changeBenefitTimeStartZone(zone: BenefitTimeStartZone) {
+    const { activityTimeHRZ } = this.setting.customField;
+    if (zone === activityTimeHRZ) {
+      this.cancelListenPluralEvent();
+    } else {
+      this.setting.customField.activityTimeHRZ = zone;
+      const updateContent = { customField: { activityTimeHRZ: zone } };
+      this.saveSettingChange(updateContent);
+    }
   }
 
   /**

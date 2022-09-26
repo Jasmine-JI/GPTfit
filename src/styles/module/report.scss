@@ -519,6 +519,7 @@ $color-dot-hint-size: 20px;
 .report-infoItem {
   flex-grow: 1;
   align-items: center;
+  justify-content: space-between;
   min-width: 120px;
   background-color: rgba(200, 200, 200, 0.1);
 
@@ -543,7 +544,12 @@ $color-dot-hint-size: 20px;
 }
 
 .report-infoDataValue {
+  white-space: nowrap;
   @include bold-font(24px);
+}
+
+.report-infoTimeValue {
+  font-size: 20px;
 }
 
 .report-infoDataUnit {
@@ -555,6 +561,7 @@ $color-dot-hint-size: 20px;
 .report-infoDataType {
   font-size: 14px;
   color: rgba(115, 115, 115, 1);
+  text-align: center;
 }
 
 .report-analysisHeader {
@@ -819,6 +826,7 @@ $color-dot-hint-size: 20px;
 
 .report-diffInfo {
   align-items: center;
+  justify-content: space-between;
 }
 
 .report-diffTitle {

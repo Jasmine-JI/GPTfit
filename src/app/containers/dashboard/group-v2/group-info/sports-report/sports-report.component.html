@@ -361,13 +361,13 @@
           <span
             class="report-targetLineHint"
             *ngIf="
-              reportCondition.dateUnit.unit === reportCondition.targetUnit.unit &&
+              reportCondition.dateUnit.unit === reportCondition.dateUnit.unit &&
               getAssignCondition('totalTime')
             "
           >
             {{ 'universal_vocabulary_targetTime' | translate }}
             {{ getAssignCondition('totalTime') | sportTime }}/{{
-              reportCondition.targetUnit.unit | dateUnitKey | translate
+              reportCondition.dateUnit.unit | dateUnitKey | translate
             }}
           </span>
         </div>
@@ -442,13 +442,13 @@
           <span
             class="report-targetLineHint"
             *ngIf="
-              reportCondition.dateUnit.unit === reportCondition.targetUnit.unit &&
+              reportCondition.dateUnit.unit === reportCondition.dateUnit.unit &&
               getAssignCondition('calories')
             "
           >
             {{ 'universal_lifeTracking_targetCalories' | translate }}
             {{ getAssignCondition('calories') }}
-            car/{{ reportCondition.targetUnit.unit | dateUnitKey | translate }}
+            car/{{ reportCondition.dateUnit.unit | dateUnitKey | translate }}
           </span>
         </div>
         <div class="report-chartFigure">
@@ -1425,6 +1425,20 @@
             analysisHeader;
             context: {
               isGroupAnalysis: false,
+              columnType: 'targetAchievedPeople',
+              title: 'universal_lifeTracking_achievementRate' | translate,
+              className: 'analysis__achieved__people',
+              showHeader: personalAnalysisOption.getItemSelectStatus(
+                AnalysisSportsColumn.targetAchievedRate
+              )
+            }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            analysisHeader;
+            context: {
+              isGroupAnalysis: false,
               columnType: 'totalActivities',
               title: 'universal_activityData_numberOfActivity' | translate,
               dataUnit: 'times',
@@ -1807,6 +1821,20 @@
               class="flexRow report-analysisDataRow"
               [class.report-analysisBaseRow]="uiFlag.isCompareMode"
             >
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: getPersonalData(_person.base, 'targetAchieveRate'),
+                    diff: checkPersonProgressive(_person.memberId, 'targetAchieveRate'),
+                    className: 'analysis__achieved__people',
+                    showData: personalAnalysisOption.getItemSelectStatus(
+                      AnalysisSportsColumn.targetAchievedRate
+                    ),
+                    openPrivacy: _person.base.openPrivacy
+                  }
+                "
+              ></span>
               <span
                 *ngTemplateOutlet="
                   analysisData;
@@ -2235,6 +2263,19 @@
               [class.report-analysisCompareRow]="uiFlag.isCompareMode"
               *ngIf="uiFlag.isCompareMode"
             >
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: getPersonalData(_person.compare, 'targetAchieveRate'),
+                    className: 'analysis__achieved__people',
+                    showData: personalAnalysisOption.getItemSelectStatus(
+                      AnalysisSportsColumn.targetAchievedRate
+                    ),
+                    openPrivacy: _person.compare?.openPrivacy
+                  }
+                "
+              ></span>
               <span
                 *ngTemplateOutlet="
                   analysisData;
@@ -2680,8 +2721,8 @@
         *ngTemplateOutlet="
           oneInfoData;
           context: {
-            data: getPeopleNumber(memberNumber, memberNumber - infoData.targetAchievedPeople),
-            type: 'notAchievedPeople',
+            data: getAchievedPeople(infoData.targetAchievedPeople),
+            type: 'achievedPeople',
             isBaseData
           }
         "
@@ -2889,7 +2930,10 @@
     [class.report-compareInfo]="!isBaseData"
   >
     <span>
-      <span class="report-infoDataValue">
+      <span
+        class="report-infoDataValue"
+        [class.report-infoTimeValue]="type.toLowerCase().includes('time')"
+      >
         {{ type.toLowerCase().includes('time') ? (data.value | sportTime) : data.value }}
       </span>
       <span class="report-infoDataUnit" *ngIf="data.unit">
@@ -2903,8 +2947,8 @@
       <ng-container *ngSwitchCase="'targetAchievedPeople'">
         {{ 'universal_lifeTracking_achievementRate' | translate }}
       </ng-container>
-      <ng-container *ngSwitchCase="'notAchievedPeople'">
-        {{ 'universal_vocabulary_missTarget' | translate }}
+      <ng-container *ngSwitchCase="'achievedPeople'">
+        {{ 'universal_training_targetComplete' | translate }}
       </ng-container>
       <ng-container *ngSwitchCase="'perBenefitTime'">
         {{ 'universal_activityData_perCapita' | translate }}
@@ -3019,7 +3063,9 @@
         <span>
           {{ title }}
         </span>
-        <span class="report-analysisUnit" *ngIf="isPersonAvgData"> /{{ '人' | translate }} </span>
+        <span class="report-analysisUnit" *ngIf="isPersonAvgData">
+          /{{ 'universal_system_limitPerPerson' | translate }}
+        </span>
       </h6>
       <span class="report-analysisUnit" *ngIf="dataUnit">
         {{ dataUnit }}
@@ -3205,7 +3251,7 @@
           | translate
             : {
                 number: '',
-                unit: (reportCondition.targetUnit.unit | dateUnitKey | translate)
+                unit: (reportCondition.dateUnit.unit | dateUnitKey | translate)
               }
       }}
     </div>

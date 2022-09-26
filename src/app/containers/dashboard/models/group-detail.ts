@@ -1,5 +1,6 @@
-import { SportTarget } from '../../../core/models/api/api-common/sport-target.model';
+import { SportTarget } from '../../../core/models/api/api-common';
 import { AccessRight } from '../../../shared/enum/accessright';
+import { BenefitTimeStartZone } from '../../../core/enums/common';
 
 /**
  * api 1102 的info
@@ -25,6 +26,9 @@ export interface GroupDetailInfo {
   shareReportToMember: object;
   groupLevel?: number;
   target?: SportTarget;
+  customField?: {
+    activityTimeHRZ: BenefitTimeStartZone;
+  };
 }
 
 /**

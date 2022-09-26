@@ -21,6 +21,7 @@ import {
   tooltipFormat,
   distanceAxisFormat,
   distanceTooltipFormat,
+  dataLabelsFormatter,
 } from '../../../utils/chart-formatter';
 import { TargetFieldNamePipe } from '../../../pipes/target-field-name.pipe';
 import dayjs from 'dayjs';
@@ -215,6 +216,10 @@ class ChartOption {
           formatter: tooltipPercentageFormat,
         };
 
+        this.option['plotOptions'].series.dataLabels = {
+          enabled: true,
+          formattter: dataLabelsFormatter,
+        };
         break;
       case 'distance':
         this._option.yAxis['labels'] = {

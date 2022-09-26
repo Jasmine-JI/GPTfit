@@ -11,14 +11,6 @@
   </button>
   <ng-container *ngIf="uiFlag.unfold">
     <div class="flexCol selector__content">
-      <div class="flexRow advanced__target__option">
-        <span>{{ 'universal_app_advanced' | translate }}</span>
-        <button
-          class="rod__bar"
-          [class.rod__bar--active]="advancedOptionStatus"
-          (click)="changeAdvancedTargetStatus()"
-        ></button>
-      </div>
       <div
         class="flexRow group__selector"
         *ngIf="reportCondition.group && reportCondition.group.currentLevel < GroupLevel.class"
@@ -94,8 +86,20 @@
           </ul>
         </div>
       </div>
+      <div class="flexRowWrap isoweek__switch">
+        <span class="isoweek__switch__title">{{ 'universal_system_startDate' | translate }}</span>
+        <div class="flexRow rod__bar__option">
+          <span>{{ 'universal_time_sun' | translate }}</span>
+          <button
+            class="rod__bar"
+            [class.rod__bar--active]="uiFlag.isIsoWeekUsing"
+            (click)="changeIsoWeekUsing()"
+          ></button>
+          <span>{{ 'universal_time_mon' | translate }}</span>
+        </div>
+      </div>
       <div class="flexRow date__selector__section">
-        <div class="flexCol unit__selector__section" *ngIf="advancedOptionStatus">
+        <div class="flexCol unit__selector__section">
           <div class="flexCol date__setting__section gray__background__section">
             <h6 class="date__unit__title">
               <i class="icon-svg_web-icon_p3_085-period date__unit__icon"></i>
@@ -121,49 +125,13 @@
               </ul>
             </div>
           </div>
-
-          <div
-            class="flexCol date__setting__section gray__background__section"
-            *ngIf="reportCondition.sportType"
-          >
-            <h6 class="date__unit__title">
-              <i class="icon-svg_web-icon_p3_010-target date__unit__icon"></i>
-              {{ 'universal_lifeTracking_target' | translate }}
-            </h6>
-            <div class="flexRow drop__list date__drop" (click)="showTargetUnitList($event)">
-              <span class="current__list__selected">
-                {{ reportCondition.targetUnit.unit | dateUnitKey | translate }}
-              </span>
-              <i
-                class="icon-svg_web-icon_p1_006-unfold drop__icon"
-                [class.drop__icon--active]="uiFlag.showTargetUnitList"
-              ></i>
-              <ul class="unordered__list date__drop__list" *ngIf="uiFlag.showTargetUnitList">
-                <ng-container
-                  *ngTemplateOutlet="
-                    dateUnitList;
-                    context: {
-                      action: selectTargetUnit.bind(this)
-                    }
-                  "
-                ></ng-container>
-              </ul>
-            </div>
-          </div>
         </div>
-        <div
-          class="calender__selector__section"
-          [ngClass]="{
-            flexCol: advancedOptionStatus,
-            flexRow: !advancedOptionStatus
-          }"
-        >
+        <div class="flexRow calender__selector__section">
           <div
             *ngTemplateOutlet="
               dateRangeTemplate;
               context: {
-                startTime: reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD'),
-                endTime: reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD'),
+                referenceDate: reportCondition.baseTime,
                 dateUnit,
                 type: 'base'
               }
@@ -173,12 +141,7 @@
             *ngTemplateOutlet="
               dateRangeTemplate;
               context: {
-                startTime: reportCondition.compareTime
-                  ? reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD')
-                  : null,
-                endTime: reportCondition.compareTime
-                  ? reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD')
-                  : null,
+                referenceDate: reportCondition.compareTime,
                 dateUnit,
                 type: 'compare'
               }
@@ -298,8 +261,7 @@
 
 <ng-template
   #dateRangeTemplate
-  let-startTime="startTime"
-  let-endTime="endTime"
+  let-referenceDate="referenceDate"
   let-dateUnit="dateUnit"
   let-type="type"
 >
@@ -325,71 +287,20 @@
           </ng-container>
         </span>
       </div>
-      <div *ngIf="advancedOptionStatus">
+      <div>
         <div
           class="drop__list"
           (click)="
             type === 'base' ? showBaseDateRangeList($event) : showCompareDateRangeList($event)
           "
         >
-          <span class="current__list__selected" [ngSwitch]="dateRange[type]">
-            <ng-container *ngSwitchCase="'today'">
-              {{ 'universal_time_today' | translate }}
-            </ng-container>
-            <ng-container *ngSwitchCase="'sevenDay'">
-              {{
-                'universal_deviceSetting_lastNumberUnit'
-                  | translate
-                    : {
-                        number: 7,
-                        unit: 'universal_time_day' | translate
-                      }
-              }}
-            </ng-container>
-            <ng-container *ngSwitchCase="'thirtyDay'">
-              {{
-                'universal_deviceSetting_lastNumberUnit'
-                  | translate
-                    : {
-                        number: 30,
-                        unit: 'universal_time_day' | translate
-                      }
-              }}
-            </ng-container>
-            <ng-container *ngSwitchCase="'sixMonth'">
-              {{
-                'universal_deviceSetting_lastNumberUnit'
-                  | translate
-                    : {
-                        number: 6,
-                        unit: 'universal_time_month' | translate
-                      }
-              }}
-            </ng-container>
-            <ng-container *ngSwitchCase="'thisWeek'">
-              {{ 'universal_time_thisWeek' | translate }}
-            </ng-container>
-            <ng-container *ngSwitchCase="'thisMonth'">
-              {{ 'universal_time_thisMonth' | translate }}
-            </ng-container>
-            <ng-container *ngSwitchCase="'thisYear'">
-              {{ 'universal_time_thisYear' | translate }}
-            </ng-container>
-            <ng-container *ngSwitchCase="'lastWeek'">
-              {{ 'universal_time_lastWeek' | translate }}
-            </ng-container>
-            <ng-container *ngSwitchCase="'lastMonth'">
-              {{ 'universal_time_lastMonth' | translate }}
-            </ng-container>
-            <ng-container *ngSwitchCase="'sameRangeLastYear'">
-              {{ 'universal_system_yoy' | translate }}
-            </ng-container>
-            <ng-container *ngSwitchCase="'custom'">
-              {{ 'universal_system_custom' | translate }}
-            </ng-container>
-            <ng-container *ngSwitchCase="'none'">
-              {{ 'universal_system_none' | translate }}
-            </ng-container>
+          <span class="current__list__selected">
+            <ng-container
+              *ngTemplateOutlet="
+                quickDateName;
+                context: { type: referenceDate ? referenceDate.dateRange : 'none' }
+              "
+            ></ng-container>
           </span>
           <i
             class="icon-svg_web-icon_p1_006-unfold drop__icon"
@@ -402,108 +313,24 @@
           class="unordered__list"
           *ngIf="type === 'base' ? uiFlag.showBaseDateRangeList : uiFlag.showCompareDateRangeList"
         >
-          <ng-container *ngIf="type === 'base'">
+          <ng-container *ngFor="let _list of quickDateList[type]">
             <li
-              class="date__range__list"
-              (click)="selectBaseDateRange('today')"
-              *ngIf="reportCondition.dateUnit.unit === DateUnit.day"
-            >
-              {{ 'universal_time_today' | translate }}
-            </li>
-            <li
-              class="date__range__list"
-              (click)="selectBaseDateRange('sevenDay')"
-              *ngIf="reportCondition.dateUnit.unit === DateUnit.day"
-            >
-              {{
-                'universal_deviceSetting_lastNumberUnit'
-                  | translate
-                    : {
-                        number: 7,
-                        unit: 'universal_time_day' | translate
-                      }
-              }}
-            </li>
-            <li
-              class="date__range__list"
-              (click)="selectBaseDateRange('thirtyDay')"
-              *ngIf="reportCondition.dateUnit.unit === DateUnit.day"
-            >
-              {{
-                'universal_deviceSetting_lastNumberUnit'
-                  | translate
-                    : {
-                        number: 30,
-                        unit: 'universal_time_day' | translate
-                      }
-              }}
-            </li>
-            <li
-              class="date__range__list"
-              (click)="selectBaseDateRange('sixMonth')"
-              *ngIf="reportCondition.dateUnit.unit === DateUnit.month"
-            >
-              {{
-                'universal_deviceSetting_lastNumberUnit'
-                  | translate
-                    : {
-                        number: 6,
-                        unit: 'universal_time_month' | translate
-                      }
-              }}
-            </li>
-            <li
-              class="date__range__list"
-              (click)="selectBaseDateRange('thisWeek')"
-              *ngIf="reportCondition.dateUnit.unit <= DateUnit.week"
-            >
-              {{ 'universal_time_thisWeek' | translate }}
-            </li>
-            <li
-              class="date__range__list"
-              (click)="selectBaseDateRange('thisMonth')"
-              *ngIf="
-                reportCondition.dateUnit.unit === DateUnit.month ||
-                reportCondition.dateUnit.unit === DateUnit.day
+              class="flexCol date__range__list"
+              (click)="
+                type === 'base'
+                  ? selectBaseDateRange(_list.type)
+                  : selectCompareDateRange(_list.type)
               "
             >
-              {{ 'universal_time_thisMonth' | translate }}
-            </li>
-            <li
-              class="date__range__list"
-              (click)="selectBaseDateRange('thisYear')"
-              *ngIf="reportCondition.dateUnit.unit >= DateUnit.month"
-            >
-              {{ 'universal_time_thisYear' | translate }}
-            </li>
-          </ng-container>
-          <ng-container *ngIf="type === 'compare'">
-            <li
-              class="date__range__list"
-              (click)="selectCompareDateRange('lastWeek')"
-              *ngIf="reportCondition.dateUnit.unit <= DateUnit.week"
-            >
-              {{ 'universal_time_lastWeek' | translate }}
-            </li>
-            <li
-              class="date__range__list"
-              (click)="selectCompareDateRange('lastMonth')"
-              *ngIf="
-                reportCondition.dateUnit.unit === DateUnit.month ||
-                reportCondition.dateUnit.unit === DateUnit.day
-              "
-            >
-              {{ 'universal_time_lastMonth' | translate }}
-            </li>
-            <li
-              class="date__range__list"
-              (click)="selectCompareDateRange('sameRangeLastYear')"
-              *ngIf="reportCondition.dateUnit.unit !== DateUnit.week"
-            >
-              {{ 'universal_system_yoy' | translate }}
-            </li>
-            <li class="date__range__list" (click)="selectCompareDateRange('none')">
-              {{ 'universal_system_none' | translate }}
+              <div>
+                <ng-container
+                  *ngTemplateOutlet="quickDateName; context: { type: _list.type }"
+                ></ng-container>
+              </div>
+              <div class="quick__date__hint" *ngIf="_list.startTime">
+                {{ _list.startTime | timeFormat: 'YYYY-MM-DD' }} ~
+                {{ _list.endTime | timeFormat: 'YYYY-MM-DD' }}
+              </div>
             </li>
           </ng-container>
         </ul>
@@ -513,8 +340,8 @@
       <app-calender-selector
         [calenderType]="reportCondition.dateUnit.unit"
         [dayType]="'start'"
-        [weekDayLock]="type === 'base' ? weekDayLock.baseStart : weekDayLock.compareStart"
-        [assignTimestamp]="startTime"
+        [weekDayLock]="weekDayLock.start"
+        [assignTimestamp]="referenceDate ? referenceDate.getStartTimeFormat('YYYY-MM-DD') : null"
         (selectTimestamp)="
           type === 'base' ? baseStartTimeChange($event) : compareStartTimeChange($event)
         "
@@ -526,7 +353,7 @@
         [weekDayLock]="weekDayLock.end"
         [minDay]="type === 'base' ? endLimitDay.base.min : endLimitDay.compare.min"
         [maxDay]="type === 'base' ? endLimitDay.base.max : endLimitDay.compare.max"
-        [assignTimestamp]="endTime"
+        [assignTimestamp]="referenceDate ? referenceDate.getEndTimeFormat('YYYY-MM-DD') : null"
         (selectTimestamp)="
           type === 'base' ? baseEndTimeChange($event) : compareEndTimeChange($event)
         "
@@ -551,4 +378,75 @@
   <li class="date__unit__list" (click)="action(DateUnit.year)">
     {{ 'universal_time_year' | translate }}
   </li>
+</ng-template>
+
+<ng-template #quickDateName let-type="type">
+  <ng-container [ngSwitch]="type">
+    <ng-container *ngSwitchCase="'today'">
+      {{ 'universal_time_today' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="'sevenDay'">
+      {{
+        'universal_deviceSetting_lastNumberUnit'
+          | translate
+            : {
+                number: 7,
+                unit: 'universal_time_day' | translate
+              }
+      }}
+    </ng-container>
+    <ng-container *ngSwitchCase="'thirtyDay'">
+      {{
+        'universal_deviceSetting_lastNumberUnit'
+          | translate
+            : {
+                number: 30,
+                unit: 'universal_time_day' | translate
+              }
+      }}
+    </ng-container>
+    <ng-container *ngSwitchCase="'sixMonth'">
+      {{
+        'universal_deviceSetting_lastNumberUnit'
+          | translate
+            : {
+                number: 6,
+                unit: 'universal_time_month' | translate
+              }
+      }}
+    </ng-container>
+    <ng-container *ngSwitchCase="'thisWeek'">
+      {{ 'universal_time_thisWeek' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="'thisMonth'">
+      {{ 'universal_time_thisMonth' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="'thisSeason'">
+      {{ 'universal_system_thisSeason' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="'thisYear'">
+      {{ 'universal_time_thisYear' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="'lastWeek'">
+      {{ 'universal_time_lastWeek' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="'lastMonth'">
+      {{ 'universal_time_lastMonth' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="'lastSeason'">
+      {{ 'universal_system_lastSeason' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="'lastYear'">
+      {{ 'universal_system_lastYear' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="'sameRangeLastYear'">
+      {{ 'universal_system_yoy' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="'custom'">
+      {{ 'universal_system_custom' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="'none'">
+      {{ 'universal_system_none' | translate }}
+    </ng-container>
+  </ng-container>
 </ng-template>

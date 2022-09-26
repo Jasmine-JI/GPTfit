@@ -70,6 +70,9 @@ export class GsensorComponent implements OnInit, OnDestroy {
   @ViewChild('xChart') xChart: ElementRef;
   @ViewChild('yChart') yChart: ElementRef;
   @ViewChild('zChart') zChart: ElementRef;
+  @ViewChild('xOChart') xOChart: ElementRef;
+  @ViewChild('yOChart') yOChart: ElementRef;
+  @ViewChild('zOChart') zOChart: ElementRef;
 
   ngUnsubscribe = new Subject();
   deviceMotionSubscription = new Subscription();
@@ -151,6 +154,15 @@ export class GsensorComponent implements OnInit, OnDestroy {
   };
 
   /**
+   * 完整波形紀錄
+   */
+  samplingOriginRecord = {
+    x: <SamplingChartRecord>[],
+    y: <SamplingChartRecord>[],
+    z: <SamplingChartRecord>[],
+  };
+
+  /**
    * 紀錄上一點頂點是位於波峰或波谷(僅初始值紀錄為中心位置)
    */
   prevPeakPosition = {
@@ -163,9 +175,9 @@ export class GsensorComponent implements OnInit, OnDestroy {
    * 前一點資訊（用來平滑化）
    */
   prevPoint = {
-    x: { value: null, time: 0 },
-    y: { value: null, time: 0 },
-    z: { value: null, time: 0 },
+    x: { value: <number | null>null, time: 0 },
+    y: { value: <number | null>null, time: 0 },
+    z: { value: <number | null>null, time: 0 },
   };
 
   /**
@@ -233,6 +245,7 @@ export class GsensorComponent implements OnInit, OnDestroy {
       .pipe(
         filter(() => !this.setFinished), // 確認是否已完成這組重訓動作
         filter(() => this.totalPoint / this.trainingTime < +this.samplingRate),
+        tap((e) => this.chartDataOriginRecord(e)),
         map((e) => this.smoothValue(e)),
         tap((e) => this.chartDataRecord(e)),
         takeUntil(this.ngUnsubscribe)
@@ -279,14 +292,14 @@ export class GsensorComponent implements OnInit, OnDestroy {
    * @param time {time}-目前訓練總計時
    */
   smoothValueByAxis(axis: Axis, value: number, time: number) {
-    const prevValue = this.prevPoint[axis].value;
+    const prevValue = this.prevPoint[axis].value as number;
     const prevTime = this.prevPoint[axis].time;
     if (!prevTime) {
       this.prevPoint[axis] = { value, time };
       return value;
     }
 
-    const maxSlope = 0.05; // 兩點最大斜率（加速度/時間）
+    const maxSlope = 0.025; // 兩點最大斜率（加速度/時間）
     const valueDiff = value - prevValue;
     const timeDiff = time - prevTime;
     const absSlope = Math.abs(valueDiff / timeDiff);
@@ -317,6 +330,25 @@ export class GsensorComponent implements OnInit, OnDestroy {
       this.samplingRecord.x.push([trainingTime, x]);
       this.samplingRecord.y.push([trainingTime, y]);
       this.samplingRecord.z.push([trainingTime, z]);
+    }
+  }
+
+  /**
+   * 紀錄圖表數據
+   * @param e {MotionEvent}
+   */
+  chartDataOriginRecord(e: any) {
+    if (this.setFinished) return;
+    const { trainingTime, samplingRate } = this;
+    const currentLength = this.samplingOriginRecord.x.length;
+    if (currentLength / trainingTime < samplingRate) {
+      const {
+        accelerationIncludingGravity: { x, y, z },
+      } = e as any;
+
+      this.samplingOriginRecord.x.push([trainingTime, x]);
+      this.samplingOriginRecord.y.push([trainingTime, y]);
+      this.samplingOriginRecord.z.push([trainingTime, z]);
     }
   }
 
@@ -544,6 +576,7 @@ export class GsensorComponent implements OnInit, OnDestroy {
   handleRecordFinish() {
     this.setFinished = true;
     this.createChart();
+    this.createOriginChart();
   }
 
   /**
@@ -565,6 +598,12 @@ export class GsensorComponent implements OnInit, OnDestroy {
     this.waveRange.z.init();
 
     this.samplingRecord = {
+      x: [],
+      y: [],
+      z: [],
+    };
+
+    this.samplingOriginRecord = {
       x: [],
       y: [],
       z: [],
@@ -725,6 +764,127 @@ export class GsensorComponent implements OnInit, OnDestroy {
       zLowChartOption['xAxis']['plotLines'] = zAxisPlotLines;
 
       const zLowChartElement = this.zChart.nativeElement;
+      chart(zLowChartElement, zLowChartOption);
+    }, 500);
+  }
+
+  createOriginChart() {
+    setTimeout(() => {
+      const { waveAmplitudeThreshold } = defaultOption;
+      const xLowChartOption = new ChartOptions([
+        {
+          data: this.samplingOriginRecord.x,
+          showInLegend: false,
+        },
+      ]);
+
+      const { effectAmplitude: xEffectAmplitude, waveCenter: xWaveCenter } = this.waveRange.x;
+      const xThreshold = xEffectAmplitude * waveAmplitudeThreshold * 0.5;
+      xLowChartOption['yAxis']['plotLines'] = [
+        {
+          color: 'green',
+          width: 2,
+          value: xWaveCenter + xThreshold,
+        },
+        {
+          color: 'green',
+          width: 2,
+          value: xWaveCenter,
+        },
+        {
+          color: 'green',
+          width: 2,
+          value: xWaveCenter - xThreshold,
+        },
+      ];
+
+      const xAxisPlotLines: Array<{ color: string; width: 1; value: number }> = [];
+      this.allRecord.x.forEach((_record) => {
+        const { startTime, endTime } = _record;
+        xAxisPlotLines.push({ color: 'pink', width: 1, value: startTime });
+        xAxisPlotLines.push({ color: 'rgba(139, 247, 135, 1)', width: 1, value: endTime });
+      });
+
+      xLowChartOption['xAxis']['plotLines'] = xAxisPlotLines;
+      const xLowChartElement = this.xOChart.nativeElement;
+      chart(xLowChartElement, xLowChartOption);
+
+      const yLowChartOption = new ChartOptions([
+        {
+          data: this.samplingOriginRecord.y,
+          showInLegend: false,
+        },
+      ]);
+
+      const { effectAmplitude: yEffectAmplitude, waveCenter: yWaveCenter } = this.waveRange.y;
+      const yThreshold = yEffectAmplitude * waveAmplitudeThreshold * 0.5;
+      yLowChartOption['yAxis']['plotLines'] = [
+        {
+          color: 'green',
+          width: 2,
+          value: yWaveCenter + yThreshold,
+        },
+        {
+          color: 'green',
+          width: 2,
+          value: yWaveCenter,
+        },
+        {
+          color: 'green',
+          width: 2,
+          value: yWaveCenter - yThreshold,
+        },
+      ];
+
+      const yAxisPlotLines: Array<{ color: string; width: 1; value: number }> = [];
+      this.allRecord.y.forEach((_record) => {
+        const { startTime, endTime } = _record;
+        yAxisPlotLines.push({ color: 'pink', width: 1, value: startTime });
+        yAxisPlotLines.push({ color: 'rgba(139, 247, 135, 1)', width: 1, value: endTime });
+      });
+
+      yLowChartOption['xAxis']['plotLines'] = yAxisPlotLines;
+
+      const yLowChartElement = this.yOChart.nativeElement;
+      chart(yLowChartElement, yLowChartOption);
+
+      const zLowChartOption = new ChartOptions([
+        {
+          data: this.samplingOriginRecord.z,
+          showInLegend: false,
+        },
+      ]);
+
+      const { effectAmplitude: zEffectAmplitude, waveCenter: zWaveCenter } = this.waveRange.z;
+      const zThreshold = zEffectAmplitude * waveAmplitudeThreshold * 0.5;
+      zLowChartOption['yAxis']['plotLines'] = [
+        {
+          color: 'green',
+          width: 2,
+          value: zWaveCenter + zThreshold,
+        },
+        {
+          color: 'green',
+          width: 2,
+          value: zWaveCenter,
+        },
+        {
+          color: 'green',
+          width: 2,
+          value: zWaveCenter - zThreshold,
+        },
+      ];
+
+      const zAxisPlotLines: Array<{ color: string; width: 1; value: number }> = [];
+      this.allRecord.z.forEach((_record) => {
+        const { startTime, endTime } = _record;
+        zAxisPlotLines.push({ color: 'pink', width: 1, value: startTime });
+        zAxisPlotLines.push({ color: 'rgba(139, 247, 135, 1)', width: 1, value: endTime });
+      });
+
+      zLowChartOption['xAxis']['plotLines'] = zAxisPlotLines;
+
+      const zLowChartElement = this.zOChart.nativeElement;
       chart(zLowChartElement, zLowChartOption);
     }, 500);
   }
