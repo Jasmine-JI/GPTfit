@@ -15,6 +15,11 @@
     grid-template-columns: 120px 10px 120px 20px;
     grid-gap: 5px;
   }
+
+  @media (max-width: 479px) {
+    grid-template-columns: 100px 10px 100px 20px;
+    grid-gap: 5px;
+  }
 }
 
 .target__card {
@@ -158,5 +163,11 @@
     background: none;
     border: none;
     padding: 0;
+  }
+}
+
+@media (max-width: 479px) {
+  .condition__detail {
+    font-size: 14px;
   }
 }

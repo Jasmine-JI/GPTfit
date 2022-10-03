@@ -18,9 +18,10 @@ import { planDatas } from '../../../group/desc';
 import dayjs from 'dayjs';
 import { DateUnit } from '../../../../../shared/enum/report';
 import { deepCopy } from '../../../../../shared/utils/index';
-import { AuthService, LocalstorageService } from '../../../../../core/services';
+import { AuthService } from '../../../../../core/services';
 import { SportsTarget } from '../../../../../shared/classes/sports-target';
 import { TargetConditionMap } from '../../../../../core/models/api/api-common';
+import { BenefitTimeStartZone } from '../../../../../core/enums/common';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -53,14 +54,15 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     openStatusSelector: false,
     isLoading: false,
     showInheritList: false,
+    showBenefitTimeList: false,
   };
 
   /**
    * 表單驗證用flag
    */
   formCheck = {
-    name: null,
-    desc: null,
+    name: <boolean | null>null,
+    desc: <boolean | null>null,
   };
 
   /**
@@ -84,6 +86,9 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     groupDesc: '',
     groupVideoUrl: '',
     changeStatus: 1,
+    customField: {
+      activityTimeHRZ: BenefitTimeStartZone.zone2,
+    },
   };
 
   /**
@@ -91,48 +96,48 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   createBody = {
     token: '',
-    brandType: null,
+    brandType: <number | null>null,
     groupId: '',
     groupStatus: 2,
-    groupManager: [],
+    groupManager: <Array<any>>[],
     levelName: '',
     levelDesc: '',
     levelType: 5,
-    coachType: null,
-    commercePlan: null,
+    coachType: <number | null>null,
+    commercePlan: <number | null>null,
     groupSetting: {
       maxBranches: 1,
       maxClasses: 2,
       maxGeneralGroups: 0,
     },
     groupManagerSetting: {
-      maxGroupManagers: null,
+      maxGroupManagers: <number | null>null,
     },
     groupMemberSetting: {
-      maxGroupMembers: null,
+      maxGroupMembers: <number | null>null,
     },
     commercePlanExpired: '',
     shareAvatarToMember: {
       switch: 1,
-      enableAccessRight: [],
-      disableAccessRight: [],
+      enableAccessRight: <Array<any>>[],
+      disableAccessRight: <Array<any>>[],
     },
     shareActivityToMember: {
       switch: 2,
-      enableAccessRight: [],
-      disableAccessRight: [],
+      enableAccessRight: <Array<any>>[],
+      disableAccessRight: <Array<any>>[],
     },
     shareReportToMember: {
       switch: 2,
-      enableAccessRight: [],
-      disableAccessRight: [],
+      enableAccessRight: <Array<any>>[],
+      disableAccessRight: <Array<any>>[],
     },
   };
 
   /**
    * 新建群組的管理員名單
    */
-  chooseLabels = [];
+  chooseLabels: Array<any> = [];
 
   /**
    * 建立品牌/企業群組所需相關設定
@@ -164,13 +169,9 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   targetInheritList: any = [];
 
-  /**
-   * 進階模式開關狀態
-   */
-  advancedSportsTarget = this.localstorageService.getAdvancedSportsTarget();
-
   readonly DateUnit = DateUnit;
   readonly GroupLevel = GroupLevel;
+  readonly BenefitTimeStartZone = BenefitTimeStartZone;
 
   constructor(
     private groupService: GroupService,
@@ -179,8 +180,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private dialog: MatDialog,
     private router: Router,
-    private authService: AuthService,
-    private localstorageService: LocalstorageService
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -209,7 +209,14 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       )
       .subscribe((res) => {
         this.groupDetail = deepCopy(res);
-        const { groupName, groupId, groupDesc, groupVideoUrl, groupStatus } = res;
+        const {
+          groupName,
+          groupId,
+          groupDesc,
+          groupVideoUrl,
+          groupStatus,
+          customField: { activityTimeHRZ },
+        } = res;
         this.editBody = {
           token: this.authService.token,
           groupName,
@@ -218,6 +225,9 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
           groupDesc,
           groupVideoUrl,
           changeStatus: groupStatus,
+          customField: {
+            activityTimeHRZ,
+          },
         };
 
         this.handleSportsTarget();
@@ -345,7 +355,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     } else {
       this.createBody.groupId = this.groupDetail.groupId;
       this.createBody.brandType = this.groupDetail.brandType;
-      this.createBody.groupManager = this.chooseLabels.map((_user) => _user.userId);
+      this.createBody.groupManager = this.chooseLabels.map((_user: any) => _user.userId);
       this.setTargetReference(level === GroupLevel.branch ? GroupLevel.brand : GroupLevel.branch);
     }
 
@@ -493,7 +503,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-20201104
    */
   listenPluralEvent() {
-    const element = document.querySelector('.main__container');
+    const element = document.querySelector('.main__container') as Element;
     const clickEvent = fromEvent(document, 'click');
     const scrollEvent = fromEvent(element, 'scroll');
     this.pluralEvent = merge(clickEvent, scrollEvent)
@@ -519,12 +529,12 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   foldAllList() {
     this.uiFlag.openStatusSelector = false;
     this.uiFlag.showInheritList = false;
+    this.uiFlag.showBenefitTimeList = false;
   }
 
   /**
    * 開啟群組狀態選單
    * @param e {MouseEvent}
-   * @author kidin-1091104
    */
   toggleStatusSelector(e: MouseEvent) {
     e.stopPropagation();
@@ -544,7 +554,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 顯示群組狀態清單
-   * @author kidin-1110308
    */
   closeStatusSelector() {
     this.uiFlag.openStatusSelector = false;
@@ -554,7 +563,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   /**
    * 移除所選擇的管理員
    * @param idx {number}-所選的管理員序
-   * @author kidin-1091106
    */
   removeLabel(idx: number) {
     this.chooseLabels.splice(idx, 1);
@@ -564,7 +572,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * 選擇完管理員並點擊確認後異動管理員名單
    * @param type {number}-選單類別
    * @param _lists {Array<Object>}-指派的管理員清單
-   * @author kidin-1091109
    */
   handleConfirm(type: number, _lists: Array<any>) {
     this.chooseLabels = _lists;
@@ -719,10 +726,11 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         break;
     }
 
+    const { commercePlan } = this.createBody;
     this.createBody.commercePlanExpired = date;
-    if (this.createBody.commercePlan !== 1 && this.createBody.commercePlan !== 99) {
-      this.createBrandSetting.totalCost =
-        +planDatas[this.createBody.commercePlan - 1].cost * +(e as any).value;
+    if (commercePlan && commercePlan !== 1 && commercePlan !== 99) {
+      const { cost } = planDatas[commercePlan - 1];
+      this.createBrandSetting.totalCost = +(cost as number) * +(e as any).value;
     }
   }
 
@@ -1038,12 +1046,45 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 變更運動目標進階功能狀態
+   * 顯示效益時間選單與否
+   * @param e {MouseEvent}
    */
-  changeAdvancedTargetStatus() {
-    const currentStatus = this.advancedSportsTarget.professional;
-    this.advancedSportsTarget.professional = !currentStatus;
-    this.localstorageService.setAdvancedSportsTarget(this.advancedSportsTarget);
+  toggleBenefitTimeList(e: MouseEvent) {
+    e.stopPropagation();
+    const { showBenefitTimeList, editMode } = this.uiFlag;
+    if (editMode !== 'close')
+      showBenefitTimeList ? this.closeBenefitTimeList() : this.openBenefitTimeList();
+  }
+
+  /**
+   * 顯示效益時間設定區間選單
+   */
+  openBenefitTimeList() {
+    this.foldAllList();
+    this.uiFlag.showBenefitTimeList = true;
+    this.listenPluralEvent();
+  }
+
+  /**
+   * 隱藏效益時間設定區間選單
+   */
+  closeBenefitTimeList() {
+    this.uiFlag.showBenefitTimeList = false;
+    this.cancelListenPluralEvent();
+  }
+
+  /**
+   * 變更效益時間起始計算的心率區間
+   * @param zone {BenefitTimeStartZone}-起始心率區間
+   */
+  changeBenefitTimeStartZone(zone: BenefitTimeStartZone) {
+    const { activityTimeHRZ } = this.groupDetail.customField!;
+    if (activityTimeHRZ !== zone) {
+      this.editBody.customField.activityTimeHRZ = zone;
+      this.uiFlag.contentChange = true;
+    }
+
+    this.cancelListenPluralEvent();
   }
 
   /**
@@ -1051,6 +1092,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091103
    */
   ngOnDestroy() {
+    this.cancelListenPluralEvent();
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }

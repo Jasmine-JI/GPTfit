@@ -26,7 +26,7 @@ export function getDateTimeLabelFormats() {
  * 將時間轉為所需格式(HH:mm:ss)(highchart用)
  * @author kidin=1110418
  */
-export function timeFormatter(value: number = undefined) {
+export function timeFormatter(value: number | undefined = undefined) {
   const yVal = value !== undefined ? value : this.y;
   if (yVal === 0) return 0;
 
@@ -133,7 +133,7 @@ export function tooltipPercentageFormat() {
  */
 export function distanceAxisFormat(unit: Unit) {
   const isMetric = unit === Unit.metric;
-  let formatter: Function;
+  let formatter: () => string;
   if (isMetric) {
     formatter = function () {
       const [yVal, userUnit] = this.value >= 1000 ? [this.value / 1000, 'km'] : [this.value, 'm'];
@@ -157,7 +157,7 @@ export function distanceAxisFormat(unit: Unit) {
  */
 export function distanceTooltipFormat(unit: Unit) {
   const isMetric = unit === Unit.metric;
-  let formatter: Function;
+  let formatter: () => string;
   if (isMetric) {
     formatter = function () {
       const dateRangeIndex = this.point.index;
@@ -274,4 +274,11 @@ export function paceTooltipFormatter(sportType: SportType, userUnit: Unit) {
 export function paceYAxisFormatter() {
   if (this.value === 0) return `00'00"`;
   return paceSecondTimeFormat(this.value);
+}
+
+/**
+ * 圖表每一點（柱）標註轉換為指定格式
+ */
+export function dataLabelsFormatter() {
+  return mathRounding(this.point.y, 1);
 }

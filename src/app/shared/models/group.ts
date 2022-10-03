@@ -3,6 +3,7 @@ import { GroupJoinStatus } from '../enum/professional';
 import { SportTarget } from '../../core/models/api/api-common/sport-target.model';
 import { Sex } from '../enum/personal';
 import { BrandType } from '../enum/professional';
+import { BenefitTimeStartZone } from '../../core/enums/common';
 
 /**
  * api 1103 response 的 info.groupAccessRight[] 的內容
@@ -48,4 +49,7 @@ export interface GroupDetail {
   shareAvatarToMember: object;
   shareReportToMember: object;
   target?: SportTarget;
+  customField?: {
+    activityTimeHRZ: BenefitTimeStartZone;
+  };
 }

@@ -40,19 +40,18 @@
     </div>
     <ul class="flexCol calender">
       <li>
-        <span class="calender__day holiday__hint">Su</span>
+        <span class="calender__day">Su</span>
         <span class="calender__day">Mo</span>
         <span class="calender__day">Tu</span>
         <span class="calender__day">We</span>
         <span class="calender__day">Th</span>
         <span class="calender__day">Fr</span>
-        <span class="calender__day holiday__hint">Sa</span>
+        <span class="calender__day">Sa</span>
       </li>
       <li class="calender__week__row" *ngFor="let _week of dayList; let weekIndex = index">
         <span
           class="calender__day calender__choice__day"
           [ngClass]="{
-            holiday__hint: dayIndex === 0 || dayIndex === 6,
             calender__today: _dayInfo.isToday,
             calender__other__month:
               +_dayInfo.month !== calenderMonth || +_dayInfo.year !== calenderYear,

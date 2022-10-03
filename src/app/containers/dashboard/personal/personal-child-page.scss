@@ -103,6 +103,7 @@ $setting-border: 1px solid var(--scale-200-100);
 }
 
 .contentInput {
+  position: relative;
   width: 30%;
 
   > input {

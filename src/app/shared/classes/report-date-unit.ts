@@ -74,7 +74,7 @@ export class ReportDateUnit {
    * 取得報告時間範圍單位（用於api 2104/2107）
    * @param baseStartTimestamp {number | null}-報告基準開始時間戳(ms)
    */
-  getReportDateType(baseStartTimestamp: number) {
+  getReportDateType(baseStartTimestamp: number | null = null) {
     switch (this._dateUnit) {
       case DateUnit.year:
       case DateUnit.season:
@@ -82,6 +82,7 @@ export class ReportDateUnit {
         return DateUnit.month;
       case DateUnit.week: {
         // 若起始日為星期一，則用日報告api產生週報告
+        if (!baseStartTimestamp) return DateUnit.week;
         const weekDay = dayjs(baseStartTimestamp).isoWeekday();
         return weekDay === 1 ? DateUnit.day : DateUnit.week;
       }

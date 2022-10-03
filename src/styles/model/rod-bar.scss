@@ -36,12 +36,12 @@
   }
 }
 
-@mixin target-rod-bar($height: 10px, $width: 28px, $rod-size: 16px) {
+@mixin isoweek-rod-bar($height: 10px, $width: 28px, $rod-size: 16px) {
   position: relative;
   height: $height;
   width: $width;
   border-radius: $height;
-  background-color: rgba(191, 191, 191, 1);
+  background-color: rgb(140, 213, 245, 1);
   margin: 0 20px;
 
   &:after {
@@ -51,13 +51,13 @@
     height: $rod-size;
     left: calc(-#{$rod-size} / 2);
     top: calc((#{$height} - #{$rod-size}) / 2);
-    background: linear-gradient(180deg, rgba(135, 135, 135, 1) 0%, rgba(28, 28, 28, 1) 100%);
+    background: linear-gradient(180deg, rgb(58, 154, 223, 1) 0%, rgb(73, 105, 197, 1) 100%);
     border-radius: 50%;
     @include transition(transform);
   }
 }
 
-@mixin target-rod-bar-acitve($track-width: 28px) {
+@mixin isoweek-rod-bar-acitve($track-width: 28px) {
   background-color: rgba(222, 58, 63, 0.45);
 
   &:after {

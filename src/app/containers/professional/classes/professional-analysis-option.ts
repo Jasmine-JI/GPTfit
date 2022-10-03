@@ -22,7 +22,7 @@ export class ProfessionalAnalysisOption {
   /**
    * 群組篩選項目清單
    */
-  private _layerList = [];
+  private _layerList: Array<AnalysisOneOption> = [];
 
   /**
    * 顯示欄位篩選項目清單
@@ -170,6 +170,7 @@ export class ProfessionalAnalysisOption {
   createPersonalSportOption() {
     const { sportType } = this._optionInfo;
     let list = [
+      AnalysisSportsColumn.targetAchievedRate,
       AnalysisSportsColumn.activities,
       AnalysisSportsColumn.totalSecond,
       AnalysisSportsColumn.calories,
@@ -274,7 +275,7 @@ export class ProfessionalAnalysisOption {
    */
   setDefaultOption() {
     const { reportType, object } = this._optionInfo;
-    let list = [];
+    let list: Array<AnalysisSportsColumn> = [];
     switch (reportType) {
       case 'sports': {
         const groupColumn = [
@@ -286,9 +287,9 @@ export class ProfessionalAnalysisOption {
         ];
 
         const personColumn = [
+          AnalysisSportsColumn.targetAchievedRate,
           AnalysisSportsColumn.activities,
           AnalysisSportsColumn.totalSecond,
-          AnalysisSportsColumn.calories,
           AnalysisSportsColumn.averageHeartRate,
           AnalysisSportsColumn.hrChart,
         ];
