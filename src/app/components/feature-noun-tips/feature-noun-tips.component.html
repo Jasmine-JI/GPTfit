@@ -1,0 +1,25 @@
+<div class="target__hint__area">
+  <mat-icon
+    class="target__hint"
+    (mouseenter)="openTargetHint()"
+    (mouseleave)="closeTargetHint()"
+    (click)="toggleTargetHint($event)"
+  >
+    help_outline
+  </mat-icon>
+  <div class="flexCol target__hint__box" [ngSwitch]="tipsType" *ngIf="showTargetHint">
+    <ng-container *ngSwitchCase="'sportsTarget'">
+      <img src="/assets/images/target_example.PNG" alt="Target hint" />
+      <span class="chart__label">{{ 'universal_lifeTracking_target' | translate }}</span>
+      <p class="hint__description">
+        {{ 'universal_system_targetInfo' | translate }}
+      </p>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'benefitTime'">
+      <p class="hint__description">
+        {{ 'universal_system_zoneInfo' | translate }}
+      </p>
+    </ng-container>
+  </div>
+</div>

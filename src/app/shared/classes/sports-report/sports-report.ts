@@ -1,4 +1,4 @@
-import { mathRounding } from '../../utils/index';
+import { mathRounding, isAvgData, countBenefitTime } from '../../utils';
 import {
   COMMON_DATA,
   RUN_DATA,
@@ -18,7 +18,7 @@ import { PreferSportType } from '../prefer-sport-type';
 import { WeightTrainStatistics } from '../weight-train-statistics';
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
-import { isAvgData } from '../../utils/sports';
+import { TargetConditionMap } from '../../../core/models/api/api-common';
 
 dayjs.extend(quarterOfYear);
 
@@ -41,7 +41,8 @@ export class SportsReport {
    * @param parameter {SportsParameter}-統計運動數據所需參數與數據
    */
   statisticalData(parameter: SportsParameter) {
-    const { openPrivacy, targetCondition, condition, data, timeType } = parameter;
+    const { openPrivacy, targetCondition, condition, data, timeType, benefitTimeStartZone } =
+      parameter;
     // 將統計數據另存至物件中
     let dataObj = { openPrivacy } as any;
     const avgDataIntermediary = {};
@@ -99,8 +100,18 @@ export class SportsReport {
           ...dataObj,
           ...maxDataIntermediary,
           ...this.getAvgData(avgDataIntermediary),
-          ...this.postProcessingData({ targetCondition, condition, dataObj, timeType }),
           preferSports: preferSports.preferSport,
+        };
+
+        dataObj = {
+          ...dataObj,
+          ...this.postProcessingData({
+            targetCondition,
+            condition,
+            dataObj,
+            timeType,
+            benefitTimeStartZone,
+          }),
         };
 
         if (sportType === SportType.weightTrain) {
@@ -167,8 +178,8 @@ export class SportsReport {
    * @param parameter {any}-統計運動數據所需參數與數據
    */
   postProcessingData(parameter: any) {
-    const { targetCondition, condition, dataObj, timeType } = parameter;
-    const { dateUnit, targetUnit, baseTime, compareTime } = condition;
+    const { targetCondition, condition, dataObj, timeType, benefitTimeStartZone } = parameter;
+    const { dateUnit, baseTime, compareTime } = condition;
     const {
       totalActivities,
       totalHrZone0Second: zone0,
@@ -178,35 +189,62 @@ export class SportsReport {
       totalHrZone4Second: zone4,
       totalHrZone5Second: zone5,
       totalSecond,
+      avgHeartRateBpm,
     } = dataObj;
-
     const { realStartTime, realEndTime } =
       timeType === 'base'
         ? baseTime.getReportRealTimeRange(dateUnit.unit)
         : compareTime.getReportRealTimeRange(dateUnit.unit);
+    const targetUnitKey = dateUnit.getUnitString();
+    const crossRange = baseTime.getDiffRange(targetUnitKey);
+    const conditionPercentage = this.getConditionPercentage(targetCondition);
     const reportPeriodDay = Math.round((realEndTime - realStartTime) / DAY);
     const hrZone = [zone0, zone1, zone2, zone3, zone4, zone5];
     const { pai } = SportsReport.countPai(hrZone, reportPeriodDay);
-    const benefitTime = (zone2 ?? 0) + (zone3 ?? 0) + (zone4 ?? 0) + (zone5 ?? 0);
-    const targetUnitKey = targetUnit.getUnitString();
-    const crossRange = baseTime.getDiffRange(targetUnitKey);
+    const benefitTime = countBenefitTime(hrZone, benefitTimeStartZone);
     let targetAchieved = totalActivities ? true : false;
+    let targetAchieveRate = 0;
     targetCondition.forEach((_value, _key) => {
       const { filedValue } = _value;
-      const targetValue = (_key === 'pai' ? 1 : crossRange) * +filedValue;
+      const notWeighted = _key === 'pai' || _key === 'avgHeartRate';
+      const targetValue = (notWeighted ? 1 : crossRange) * +filedValue;
       switch (_key) {
         case 'pai':
           if (pai < targetValue) targetAchieved = false;
+          targetAchieveRate += this.getConditionAchieveRate(pai, targetValue, conditionPercentage);
           break;
         case 'benefitTime':
           if (!benefitTime || benefitTime < targetValue) targetAchieved = false;
+          targetAchieveRate += this.getConditionAchieveRate(
+            benefitTime,
+            targetValue,
+            conditionPercentage
+          );
           break;
         case 'totalTime':
           if (!totalSecond || totalSecond < targetValue) targetAchieved = false;
+          targetAchieveRate += this.getConditionAchieveRate(
+            totalSecond,
+            targetValue,
+            conditionPercentage
+          );
+          break;
+        case 'avgHeartRate':
+          if (!avgHeartRateBpm || avgHeartRateBpm < targetValue) targetAchieved = false;
+          targetAchieveRate += this.getConditionAchieveRate(
+            avgHeartRateBpm,
+            targetValue,
+            conditionPercentage
+          );
           break;
         default: {
           const value = dataObj[_key];
           if (!value || value < targetValue) targetAchieved = false;
+          targetAchieveRate += this.getConditionAchieveRate(
+            value,
+            targetValue,
+            conditionPercentage
+          );
           break;
         }
       }
@@ -215,6 +253,7 @@ export class SportsReport {
     const result = {
       benefitTime,
       pai,
+      targetAchieveRate,
       targetAchieved,
     };
 
@@ -246,8 +285,34 @@ export class SportsReport {
         DAY_PAI_TARGET) *
       100;
 
-    const pai = mathRounding(totalWeightedValue / periodDay, 1);
+    const pai = mathRounding(totalWeightedValue / periodDay, 0);
     return { totalWeightedValue, pai };
+  }
+
+  /**
+   * 取得條件達成率
+   * @param value {number}-運動數據
+   * @param conditionTarget {number}-達成該目標條件的數值
+   * @param conditionPercentage {number}-該條件佔所有條件的佔比
+   */
+  getConditionAchieveRate(value: number, conditionTarget: number, conditionPercentage: number) {
+    let percentage = 0;
+    if (!conditionTarget || value > conditionTarget) {
+      percentage = 1;
+    } else {
+      percentage = (value ?? 0) / conditionTarget;
+    }
+
+    return mathRounding(percentage * conditionPercentage, 3);
+  }
+
+  /**
+   * 取得條件佔比
+   * @param conditionMap {TargetConditionMap}-目標日期單位
+   */
+  getConditionPercentage(conditionMap: TargetConditionMap) {
+    const totalConditionCount = conditionMap?.size;
+    return totalConditionCount ? 1 / totalConditionCount : 1;
   }
 }
 

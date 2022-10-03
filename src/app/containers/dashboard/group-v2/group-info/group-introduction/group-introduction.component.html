@@ -153,7 +153,7 @@
       *ngIf="groupDetail && uiFlag.editMode === 'close'"
     ></span>
     <textarea
-      style="min-height: 300px; resize: none"
+      style="min-height: 300px; padding: 0 2px; resize: none"
       [style.border-color]="formCheck.desc !== false ? 'initial' : 'red'"
       class="info-contentText"
       placeholder="{{ i18n.enterDesc }}"
@@ -209,22 +209,54 @@
     />
   </section>
   <section class="flexCol info__section" *ngIf="groupDetail && groupDetail.brandType === 2">
+    <h6 class="info-contentTitle">
+      {{ 'universal_system_reportSetting' | translate }}
+    </h6>
+    <div class="flexRow info-contentText benefit__time__setting">
+      <span> {{ 'universal_activityData_benefitime' | translate }}： </span>
+      <div class="benefit__time__value" (click)="toggleBenefitTimeList($event)">
+        <div class="flexRow">
+          <span [class.drop__list]="uiFlag.editMode !== 'close'">
+            <ng-container *ngIf="uiFlag.editMode === 'close'">
+              {{ groupDetail.customField.activityTimeHRZ | referenceHrZone | translate }}
+            </ng-container>
+            <ng-container *ngIf="uiFlag.editMode !== 'close'">
+              {{ editBody.customField.activityTimeHRZ | referenceHrZone | translate }}
+            </ng-container>
+            <i
+              class="icon-svg_web-icon_p1_006-unfold unfold__icon"
+              [class.fold__icon]="uiFlag.showBenefitTimeList"
+              *ngIf="uiFlag.editMode !== 'close'"
+            ></i>
+          </span>
+          <app-feature-noun-tips [tipsType]="'benefitTime'"></app-feature-noun-tips>
+        </div>
+        <ul class="setting__drop__list" *ngIf="uiFlag.showBenefitTimeList">
+          <li class="list__item" (click)="changeBenefitTimeStartZone(BenefitTimeStartZone.zone1)">
+            {{ BenefitTimeStartZone.zone1 | referenceHrZone | translate }}
+          </li>
+          <li class="list__item" (click)="changeBenefitTimeStartZone(BenefitTimeStartZone.zone2)">
+            {{ BenefitTimeStartZone.zone2 | referenceHrZone | translate }}
+          </li>
+          <li class="list__item" (click)="changeBenefitTimeStartZone(BenefitTimeStartZone.zone3)">
+            {{ BenefitTimeStartZone.zone3 | referenceHrZone | translate }}
+          </li>
+          <li class="list__item" (click)="changeBenefitTimeStartZone(BenefitTimeStartZone.zone4)">
+            {{ BenefitTimeStartZone.zone4 | referenceHrZone | translate }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+  <section class="flexCol info__section" *ngIf="groupDetail && groupDetail.brandType === 2">
     <h6 class="flexRow info-contentTitle">
       {{ 'universal_lifeTracking_target' | translate }}
-      <span class="target__description"
-        >({{ 'universal_activityData_perCapita' | translate }})</span
-      >
-      <app-sports-target-tip></app-sports-target-tip>
+      <span class="target__description">
+        ({{ 'universal_activityData_perCapita' | translate }})
+      </span>
+      <app-feature-noun-tips [tipsType]="'sportsTarget'"></app-feature-noun-tips>
     </h6>
     <div class="flexCol info-contentText">
-      <div class="flexRow advanced__target__option">
-        <span>{{ 'universal_app_advanced' | translate }}</span>
-        <button
-          class="rod__bar"
-          [class.rod__bar--active]="advancedSportsTarget.professional"
-          (click)="changeAdvancedTargetStatus()"
-        ></button>
-      </div>
       <div
         class="target__inherit"
         *ngIf="
@@ -256,7 +288,7 @@
             [class.fold__icon]="uiFlag.showInheritList"
           ></i>
         </span>
-        <ul class="target__inherit__list" *ngIf="uiFlag.showInheritList">
+        <ul class="setting__drop__list" *ngIf="uiFlag.showInheritList">
           <li
             class="list__item"
             (click)="setTargetReference(_list.level)"
@@ -275,7 +307,6 @@
           [condition]="cycleCondition.day"
           [isEditMode]="uiFlag.editMode !== 'close'"
           (changeCondition)="changeCondition($event, DateUnit.day)"
-          *ngIf="advancedSportsTarget.professional"
         ></app-sport-target-setting>
         <app-sport-target-setting
           [cycle]="DateUnit.week"
@@ -288,21 +319,18 @@
           [condition]="cycleCondition.month"
           [isEditMode]="uiFlag.editMode !== 'close'"
           (changeCondition)="changeCondition($event, DateUnit.month)"
-          *ngIf="advancedSportsTarget.professional"
         ></app-sport-target-setting>
         <app-sport-target-setting
           [cycle]="DateUnit.season"
           [condition]="cycleCondition.season"
           [isEditMode]="uiFlag.editMode !== 'close'"
           (changeCondition)="changeCondition($event, DateUnit.season)"
-          *ngIf="advancedSportsTarget.professional"
         ></app-sport-target-setting>
         <app-sport-target-setting
           [cycle]="DateUnit.year"
           [condition]="cycleCondition.year"
           [isEditMode]="uiFlag.editMode !== 'close'"
           (changeCondition)="changeCondition($event, DateUnit.year)"
-          *ngIf="advancedSportsTarget.professional"
         ></app-sport-target-setting>
       </div>
     </div>

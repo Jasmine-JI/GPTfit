@@ -6,6 +6,7 @@ import { MuscleCode, MuscleGroup, WeightTrainingLevel } from '../enum/weight-tra
 import { asept, metacarpus, novice } from '../models/weight-train';
 import { HrBase } from '../enum/personal';
 import { HrZoneRange } from '../models/chart-data';
+import { BenefitTimeStartZone } from '../../core/enums/common';
 
 /**
  * 根據運動類型將速度轉成配速(若為bs英制則公里配速轉英哩配速)
@@ -352,4 +353,16 @@ export function getUserFtpZone(ftp: number) {
   };
 
   return userFtpZone;
+}
+
+/**
+ * 依使用者設定之有效心率區間計算效益時間
+ * @param hrZoneTime {hrZoneTime: Array<number>}-心率區間
+ * @param startZone {BenefitTimeStartZone}-開始統計的區間
+ */
+export function countBenefitTime(hrZoneTime: Array<number>, startZone: BenefitTimeStartZone) {
+  return hrZoneTime.reduce((_previousValue, _currentValue, _index) => {
+    if (_currentValue && _index >= startZone) return _previousValue + _currentValue;
+    return _previousValue;
+  }, 0);
 }

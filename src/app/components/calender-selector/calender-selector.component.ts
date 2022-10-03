@@ -14,11 +14,11 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { DateUnit } from '../../core/enums/common';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { TimeFormatModule } from '../../core/pipes';
-import { DayType, weekDayLock, CalenderDayInfo } from '../../core/models/compo';
+import { DayType, WeekDayLock, CalenderDayInfo } from '../../core/models/compo';
 import { GlobalEventsService } from '../../core/services';
 
 dayjs.extend(isoWeek);
@@ -32,7 +32,7 @@ dayjs.extend(isoWeek);
 export class CalenderSelectorComponent implements OnInit, OnChanges, OnDestroy {
   @Input() calenderType: DateUnit = DateUnit.day;
   @Input() dayType: DayType;
-  @Input() weekDayLock: weekDayLock = [false, false, false, false, false, false, false];
+  @Input() weekDayLock: WeekDayLock = [false, false, false, false, false, false, false];
   @Input() minDay: number = dayjs('2010-01-01', 'YYYY-MM-DD').valueOf(); // timestamp
   @Input() maxDay: number = dayjs().endOf('day').valueOf(); // timestamp
   @Input() assignTimestamp: number | null = dayjs().valueOf();
@@ -111,14 +111,8 @@ export class CalenderSelectorComponent implements OnInit, OnChanges, OnDestroy {
    * 是否開放點擊"今天"按鈕
    */
   checkTodayButtonDisable() {
-    const { maxDay, minDay, weekDayLock } = this;
-    const dayjsObj = dayjs();
-    const timestamp = dayjsObj.valueOf();
-    const weekDay = dayjsObj.isoWeekday();
-    const isWeekDayLock = weekDayLock[weekDay === 7 ? 0 : weekDay];
-    const isOverMax = maxDay && timestamp >= maxDay;
-    const isLessThenMin = minDay && timestamp < minDay;
-    return isWeekDayLock || isOverMax || isLessThenMin;
+    const today = dayjs().valueOf();
+    return this.checkDateDisabled(today);
   }
 
   /**
@@ -180,22 +174,43 @@ export class CalenderSelectorComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
-   * 確認月份切換按鈕是否開放點擊
+   * 確認下一個月份切換按鈕是否開放點擊
    */
-  checkMonthSwitchButton() {
-    const { dayList } = this;
-    const { timestamp: startTimestamp } = dayList[0][0];
+  checkMonthNextButton() {
+    const { dayList, calenderType } = this;
     const { timestamp: endTimestamp } = dayList[dayList.length - 1][6];
-    this.canSwitchPreviousMonth = startTimestamp > this.minDay;
     this.canSwitchNextMonth = endTimestamp < this.maxDay;
+
+    if (calenderType > DateUnit.month) {
+      const { calenderYear, calenderMonth } = this.getNextYearMonth();
+      const yearMonth = `${calenderYear}${calenderMonth.toString().padStart(2, '0')}`;
+      const nextEndDate = dayjs(yearMonth, 'YYYYMM').endOf('month').valueOf();
+      this.canSwitchNextMonth = nextEndDate < this.maxDay;
+    }
   }
 
   /**
-   * 切換日曆
+   * 確認上一個月份切換按鈕是否開放點擊
    */
-  switchCalender() {
-    this.getDayList();
-    this.checkMonthSwitchButton();
+  checkMonthPreviousButton() {
+    const { dayList, calenderType } = this;
+    const { timestamp: startTimestamp } = dayList[0][0];
+    this.canSwitchPreviousMonth = startTimestamp > this.minDay;
+
+    if (calenderType > DateUnit.month) {
+      const { calenderYear, calenderMonth } = this.getPreviousYearMonth();
+      const yearMonth = `${calenderYear}${calenderMonth.toString().padStart(2, '0')}`;
+      const previousStartDate = dayjs(yearMonth, 'YYYYMM').endOf('month').valueOf();
+      this.canSwitchPreviousMonth = previousStartDate > this.minDay;
+    }
+  }
+
+  /**
+   * 確認月份切換按鈕是否皆開放點擊
+   */
+  checkMonthSwitchButton() {
+    this.checkMonthNextButton();
+    this.checkMonthPreviousButton();
   }
 
   /**
@@ -251,15 +266,12 @@ export class CalenderSelectorComponent implements OnInit, OnChanges, OnDestroy {
    */
   switchNextMonth() {
     if (this.canSwitchNextMonth) {
-      const nextMonth = this.calenderMonth + this.getOffsetMonth();
-      if (nextMonth > 12) {
-        this.calenderMonth = nextMonth - 12;
-        this.calenderYear++;
-      } else {
-        this.calenderMonth = nextMonth;
-      }
-
-      this.switchCalender();
+      const { calenderYear, calenderMonth } = this.getNextYearMonth();
+      this.calenderMonth = calenderMonth;
+      this.calenderYear = calenderYear;
+      this.getDayList();
+      this.checkMonthNextButton();
+      this.canSwitchPreviousMonth = true;
     }
   }
 
@@ -268,16 +280,45 @@ export class CalenderSelectorComponent implements OnInit, OnChanges, OnDestroy {
    */
   switchPreviousMonth() {
     if (this.canSwitchPreviousMonth) {
-      const previousMonth = this.calenderMonth - this.getOffsetMonth();
-      if (previousMonth < 1) {
-        this.calenderMonth = previousMonth + 12;
-        this.calenderYear--;
-      } else {
-        this.calenderMonth = previousMonth;
-      }
-
-      this.switchCalender();
+      const { calenderYear, calenderMonth } = this.getPreviousYearMonth();
+      this.calenderMonth = calenderMonth;
+      this.calenderYear = calenderYear;
+      this.getDayList();
+      this.checkMonthPreviousButton();
+      this.canSwitchNextMonth = true;
     }
+  }
+
+  /**
+   * 取得切換日曆時的下一個年份與月份
+   */
+  getNextYearMonth() {
+    let { calenderYear, calenderMonth } = this;
+    const nextMonth = this.calenderMonth + this.getOffsetMonth();
+    if (nextMonth > 12) {
+      calenderMonth = nextMonth - 12;
+      calenderYear++;
+    } else {
+      calenderMonth = nextMonth;
+    }
+
+    return { calenderYear, calenderMonth };
+  }
+
+  /**
+   * 取得切換日曆時的上一個年份與月份
+   */
+  getPreviousYearMonth() {
+    let { calenderYear, calenderMonth } = this;
+    const previousMonth = calenderMonth - this.getOffsetMonth();
+    if (previousMonth < 1) {
+      calenderMonth = previousMonth + 12;
+      calenderYear--;
+    } else {
+      calenderMonth = previousMonth;
+    }
+
+    return { calenderYear, calenderMonth };
   }
 
   /**
@@ -301,7 +342,8 @@ export class CalenderSelectorComponent implements OnInit, OnChanges, OnDestroy {
    */
   selectCalenderYear(year: number) {
     this.calenderYear = year;
-    this.switchCalender();
+    this.getDayList();
+    this.checkMonthSwitchButton();
   }
 
   /**
@@ -319,7 +361,8 @@ export class CalenderSelectorComponent implements OnInit, OnChanges, OnDestroy {
   showCalenderDropList() {
     this.globalEventsService.setRxCloseDropList(this.componentId);
     this.saveCalenderVariable(this.assignTimestamp);
-    this.switchCalender();
+    this.getDayList();
+    this.checkMonthSwitchButton();
     this.showCalender = true;
     this.subscribePluralEvent();
   }
@@ -414,10 +457,10 @@ export class CalenderSelectorComponent implements OnInit, OnChanges, OnDestroy {
    * 確認該日期是否可以選擇
    * @param timestamp {number}-時間戳(ms)
    */
-  checkDateDisabled(timestamp: number, index: number) {
+  checkDateDisabled(timestamp: number, index: number | null = null): boolean {
     const { calenderType, dayType, minDay, maxDay, weekDayLock } = this;
     const lessthenMinDay = minDay && timestamp < minDay;
-    const overMaxDay = maxDay && timestamp > maxDay;
+    const overMaxDay = (maxDay && timestamp > maxDay) as boolean;
     const compareFormat = 'MMDD';
     switch (calenderType) {
       case DateUnit.year: {
@@ -442,7 +485,14 @@ export class CalenderSelectorComponent implements OnInit, OnChanges, OnDestroy {
         return lessthenMinDay || overMaxDay || invalid;
       }
       case DateUnit.week: {
-        const weekDay = index % 7;
+        let weekDay: number;
+        if (index !== null) {
+          weekDay = index % 7;
+        } else {
+          const isoWeekDay = dayjs(timestamp).isoWeekday();
+          weekDay = isoWeekDay === 7 ? 0 : isoWeekDay;
+        }
+
         return lessthenMinDay || overMaxDay || weekDayLock[weekDay];
       }
       default:

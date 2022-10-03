@@ -1,6 +1,6 @@
 import { TargetConditionMap } from '../../../core/models/api/api-common/sport-target.model';
 import { DateUnit } from '../../enum/report';
-import { mathRounding, countPercentage } from '../../utils/index';
+import { mathRounding, countPercentage, countBenefitTime } from '../../utils';
 import { ReportCondition } from '../../models/report-condition';
 import { PAI_COFFICIENT } from '../../models/sports-report';
 import { SportType } from '../../enum/sports';
@@ -16,6 +16,7 @@ import { HrZoneTrendChartData } from '../sports-report/hrzone-trend-chart-data';
 import { HrZoneChartData } from '../sports-report/hrzone-chart-data';
 import { TypeAllChart } from '../sports-report/type-all-chart';
 import { TemporaryCount } from '../sports-report/temporary-count';
+import { BenefitTimeStartZone } from '../../../core/enums/common';
 
 dayjs.extend(isoWeek);
 
@@ -51,7 +52,9 @@ export class GroupSportsChartData {
     baseData: Array<any>,
     compareData: Array<any>,
     sportTargetCondition: TargetConditionMap,
-    totalPeople: number
+    totalPeople: number,
+    isMondayFirst: boolean,
+    benefitTimeStartZone: BenefitTimeStartZone
   ) {
     const isCompareMode = compareData !== undefined;
     this._hrZoneTrend = new HrZoneTrendChartData(isCompareMode);
@@ -60,12 +63,14 @@ export class GroupSportsChartData {
     this._achievementRate = new CompareTrendData(isCompareMode, trendChartColor.achieveRate);
 
     const { sportType, dateUnit, baseTime, compareTime } = condition;
-    const allDateList = this.createCompleteDate(dateUnit!, baseTime, compareTime!);
+    const allDateList = this.createCompleteDate(dateUnit, isMondayFirst, baseTime, compareTime);
     of([baseData, compareData])
       .pipe(
         map((data) => this.filterPersonalData(data, dateUnit!, sportType!)),
         map((filterData) => this.mergePersonalData(filterData, dateUnit!)),
-        map((personalData) => this.postProcessingPerosnalData(personalData, sportTargetCondition)),
+        map((personalData) =>
+          this.postProcessingPerosnalData(personalData, sportTargetCondition, benefitTimeStartZone)
+        ),
         map((completeData) => this.concatPersonalData(completeData)),
         map((concatData) => this.sortData(concatData)),
         map((sortData) => this.mergeGroupData(sortData, dateUnit!)),
@@ -180,8 +185,13 @@ export class GroupSportsChartData {
    * 計算各日期範圍目標達成與否，同時將所有成員數據合併唯一陣列，以便計算群組圖表數據
    * @param allData {Array<any>}-基準數據與比較數據
    * @param targetCondition {TargetConditionMap}-依報告時間單位轉換的個人目標內容
+   * @param benefitTimeStartZone {BenefitTimeStartZone}-效益時間有效開始區間
    */
-  postProcessingPerosnalData(allData: Array<any>, targetCondition: TargetConditionMap) {
+  postProcessingPerosnalData(
+    allData: Array<any>,
+    targetCondition: TargetConditionMap,
+    benefitTimeStartZone: BenefitTimeStartZone
+  ) {
     const [baseData, compareData] = allData;
     const achievementData = (data: Array<any>) => {
       return data.map((_data) => {
@@ -211,7 +221,8 @@ export class GroupSportsChartData {
                 break;
               }
               case 'benefitTime': {
-                const benefitTime = zone2 + zone3 + zone4 + zone5;
+                const hrZone = [zone0, zone1, zone2, zone3, zone4, zone5];
+                const benefitTime = countBenefitTime(hrZone, benefitTimeStartZone);
                 if (benefitTime < _filedValue) achieve = 0;
                 break;
               }
@@ -378,7 +389,7 @@ export class GroupSportsChartData {
       this._totalSecondTrend.addBaseData(_totalSecond, dateRange);
       this._caloriesTrend.addBaseData(_calories, dateRange);
 
-      const _achieveRate = mathRounding(countPercentage(_achieve, totalPeople), 1);
+      const _achieveRate = mathRounding(countPercentage(_achieve, totalPeople, 1), 1);
       this._achievementRate.addBaseData(_achieveRate, dateRange);
     });
   }
@@ -454,8 +465,8 @@ export class GroupSportsChartData {
         _compareDateRange
       );
 
-      const _baseAchieveRate = mathRounding(countPercentage(_baseAchieve, totalPeople), 1);
-      const _compareAchieveRate = mathRounding(countPercentage(_compareAchieve, totalPeople), 1);
+      const _baseAchieveRate = mathRounding(countPercentage(_baseAchieve, totalPeople, 1), 1);
+      const _compareAchieveRate = mathRounding(countPercentage(_compareAchieve, totalPeople, 1), 1);
       this._achievementRate.addMixData(
         _baseAchieveRate,
         _baseDateRange,
@@ -572,13 +583,17 @@ export class GroupSportsChartData {
    * @param baseTime {DateRange}-報告基準日期
    * @param compareTime {DateRange}-報告比較日期
    */
-  createCompleteDate(dateUnit: ReportDateUnit, baseTime: DateRange, compareTime: DateRange) {
+  createCompleteDate(
+    dateUnit: ReportDateUnit,
+    isMondayFirst: boolean,
+    baseTime: DateRange,
+    compareTime: DateRange
+  ) {
     // 若有比較時間，則先確認基準與比較日期何者較長，以較長的日期作為日期範圍長度
     let baseDateList = [];
     let compareDateList = [];
     const unitString = dateUnit.getUnitString();
     const { startTimestamp: baseStart, endTimestamp: baseEnd } = baseTime;
-    const isMondayFirst = dayjs(baseStart).isoWeekday() === 1;
     const referenceUnitString = isMondayFirst ? 'isoWeek' : unitString;
     const baseDiffTime = baseTime.getCrossRange(unitString, referenceUnitString);
     const compareDiffTime = compareTime

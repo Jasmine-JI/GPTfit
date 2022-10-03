@@ -21,16 +21,12 @@ import {
 import { QueryString } from '../../../../../shared/enum/query-string';
 import { DateRange } from '../../../../../shared/classes/date-range';
 import { BrandType, GroupLevel } from '../../../../../shared/enum/professional';
-import { UserService } from '../../../../../core/services/user.service';
 import { DateUnit } from '../../../../../shared/enum/report';
 import { ReportDateUnit } from '../../../../../shared/classes/report-date-unit';
-import { Api21xxService } from '../../../../../core/services/api-21xx.service';
 import { GroupSportsChartData } from '../../../../../shared/classes/sports-report/group-sports-chart-data';
-import { SameWeekSportsData } from '../../../../../shared/classes/sports-report/same-week-sports-data';
 import { GroupSportsReport } from '../../../../../shared/classes/sports-report/sports-report';
 import { GroupSportsReportInfo } from '../../../../../shared/classes/sports-report/group-sports-report-info';
 import { AllGroupMember } from '../../../../../shared/classes/all-group-member';
-import { ReportService } from '../../../../../core/services/report.service';
 import { SportsParameter } from '../../../../../shared/models/sports-report';
 import { mi, ft, lb } from '../../../../../shared/models/bs-constant';
 import { Unit } from '../../../../../shared/enum/value-conversion';
@@ -40,22 +36,25 @@ import { ProfessionalAnalysisOption } from '../../../../professional/classes/pro
 import { AnalysisSportsColumn } from '../../../../professional/enum/report-analysis';
 import { AnalysisAssignMenu } from '../../../../professional/models/report-analysis';
 import { SPORT_TYPE_COLOR, trendChartColor } from '../../../../../shared/models/chart-data';
-import {
-  TargetField,
-  TargetConditionMap,
-} from '../../../../../core/models/api/api-common/sport-target.model';
+import { TargetField, TargetConditionMap } from '../../../../../core/models/api/api-common';
 import { MuscleGroup } from '../../../../../shared/enum/weight-train';
 import { REGEX_GROUP_ID } from '../../../../../shared/models/utils-constant';
-import { GlobalEventsService } from '../../../../../core/services/global-events.service';
 import { DefaultDateRange } from '../../../../../shared/classes/default-date-range';
-import { AuthService } from '../../../../../core/services/auth.service';
+import {
+  AuthService,
+  LocalstorageService,
+  GlobalEventsService,
+  UserService,
+  Api21xxService,
+  ReportService,
+} from '../../../../../core/services';
+import { BenefitTimeStartZone } from '../../../../../core/enums/common';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 
 dayjs.extend(isoWeek);
 
 const ERROR_MESSAGE = 'Error! Please try again later.';
-const thisWeek = DefaultDateRange.getThisWeek(false);
 
 @Component({
   selector: 'app-sports-report',
@@ -89,10 +88,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   initReportCondition: ReportCondition = {
     moduleType: 'professional',
     pageType: 'sportsReport',
-    baseTime: new DateRange(thisWeek.startTime, thisWeek.endTime),
+    baseTime: new DateRange(),
     compareTime: null,
     dateUnit: new ReportDateUnit(DateUnit.week),
-    targetUnit: new ReportDateUnit(DateUnit.week),
     group: {
       brandType: BrandType.brand,
       currentLevel: GroupLevel.class,
@@ -211,7 +209,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     private api21xxService: Api21xxService,
     private reportService: ReportService,
     private globalEventsService: GlobalEventsService,
-    private authService: AuthService
+    private authService: AuthService,
+    private localStorageService: LocalstorageService
   ) {}
 
   ngOnInit(): void {
@@ -273,10 +272,22 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   initialReportCondition() {
     of([])
       .pipe(
+        tap(() => this.getDefaultDate()),
         tap(() => this.getAllGroupLayer()),
         tap(() => this.checkQueryString())
       )
       .subscribe();
+  }
+
+  /**
+   * 取得預設時間
+   */
+  getDefaultDate() {
+    const isMondayFirst = this.localStorageService.getIsoWeekStatus();
+    const { startTime, endTime } = DefaultDateRange.getThisWeek(isMondayFirst);
+    this.initReportCondition.baseTime.startTimestamp = startTime;
+    this.initReportCondition.baseTime.endTimestamp = endTime;
+    return;
   }
 
   /**
@@ -329,22 +340,26 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           break;
         case QueryString.baseStartTime:
           this.initReportCondition.baseTime.startTimestamp = +value;
+          this.initReportCondition.baseTime.dateRange = 'custom';
           break;
         case QueryString.baseEndTime:
           this.initReportCondition.baseTime.endTimestamp = +value;
+          this.initReportCondition.baseTime.dateRange = 'custom';
           break;
         case QueryString.compareStartTime:
           if (!this.initReportCondition.compareTime)
             this.initReportCondition.compareTime = new DateRange();
           this.initReportCondition.compareTime.startTimestamp = +value;
+          this.initReportCondition.compareTime.dateRange = 'custom';
           break;
         case QueryString.compareEndTime:
           if (!this.initReportCondition.compareTime)
             this.initReportCondition.compareTime = new DateRange();
           this.initReportCondition.compareTime.endTimestamp = +value;
+          this.initReportCondition.compareTime.dateRange = 'custom';
           break;
         case QueryString.dateRangeUnit:
-          this.initReportCondition.dateUnit.unit = +value;
+          (this.initReportCondition.dateUnit as ReportDateUnit).unit = +value;
           break;
         case QueryString.sportType:
           this.initReportCondition.sportType = +value;
@@ -368,12 +383,10 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     if (this.uiFlag.progress === 100) {
       this.uiFlag.progress = 30;
       this.reportCondition = deepCopy(condition);
-      const { group, sportType, baseTime, compareTime, dateUnit, targetUnit, needRefreshData } =
-        condition;
-      const targetUnitString = targetUnit.getUnitString();
-      this.diffTime = this.getDiffTime(targetUnitString, baseTime, compareTime);
+      const { group, sportType, baseTime, compareTime, dateUnit, needRefreshData } = condition;
+      this.diffTime = this.getDiffTime(condition);
       const { id, level } = group.focusGroup;
-      const reportDayType = dateUnit.getReportDateType(baseTime.startTimestamp);
+      const reportDayType = (dateUnit as ReportDateUnit).getReportDateType();
 
       this.groupService
         .getAllGroupMemberList(id as string)
@@ -392,12 +405,14 @@ export class SportsReportComponent implements OnInit, OnDestroy {
             } else {
               const targetUserId = res.getNoRepeatMemberId(id as string);
               const { utcStartTime, utcEndTime } = baseTime;
+              const firstDayOfWeek = this.localStorageService.getIsoWeekStatus() ? 2 : 1;
               const baseBody = {
                 token: this.authService.token,
                 targetUserId,
                 filterStartTime: utcStartTime,
                 filterEndTime: utcEndTime,
                 type: reportDayType,
+                firstDayOfWeek,
               };
 
               const request = [this.api21xxService.fetchSportSummaryArray(baseBody)];
@@ -419,11 +434,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
               return combineLatest(request).pipe(map((responseArray) => [res, ...responseArray]));
             }
           }),
-          map((resArray) =>
-            reportDayType === DateUnit.day && dateUnit.unit === DateUnit.week
-              ? this.handleDayData(resArray)
-              : resArray
-          ),
           takeUntil(this.ngUnsubscribe)
         )
         .subscribe((resultArray) => {
@@ -440,66 +450,18 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
   /**
    * 取得橫跨時間範圍
-   * @param unit {string}-目標單位
-   * @param baseTime {DateRange}-基準時間
-   * @param compareTime {DateRange}-比較時間
+   * @param condition {ReportCondition}-報告條件
    */
-  getDiffTime(unit: string, baseTime: DateRange, compareTime: DateRange) {
-    const baseDiffRange = baseTime.getDiffRange(unit);
-    const compareDiffRange = compareTime ? compareTime.getDiffRange(unit) : null;
+  getDiffTime(condition: ReportCondition) {
+    const { baseTime, compareTime, dateUnit } = condition;
+    const baseOnMonth = (dateUnit as ReportDateUnit).unit >= DateUnit.month;
+    const unit = (dateUnit as ReportDateUnit).getUnitString();
+    const baseDiffRange = baseTime.getDiffRange(unit, baseOnMonth);
+    const compareDiffRange = compareTime ? compareTime.getDiffRange(unit, baseOnMonth) : null;
     return {
       base: baseDiffRange,
       compare: compareDiffRange,
     };
-  }
-
-  /**
-   * 將基準與比較日報告合併成週報告
-   * @param allData {Array<any>}-api回傳資料
-   */
-  handleDayData(allData: Array<any>) {
-    const [allGroupMemberList, baseSportSummary, compareSportSummary] = allData;
-    const baseWeekData = this.mergeDayDataToWeek(baseSportSummary);
-    const compareWeekData = this.mergeDayDataToWeek(compareSportSummary);
-    return [allGroupMemberList, baseWeekData, compareWeekData];
-  }
-
-  /**
-   * 將日報告合併成周報告
-   * @param data {any}-api 2104回覆內容
-   */
-  mergeDayDataToWeek(data: Array<any>) {
-    // 若無資料或已轉成週報告數據，則直接return
-    if (!data || data[0].reportActivityWeeks) return data;
-    const sameWeekData = new SameWeekSportsData();
-    data = data.map((_data) => {
-      sameWeekData.init();
-      const { reportActivityDays } = _data;
-      const reportActivityWeeks: Array<any> = [];
-      reportActivityDays.forEach((_reportActivityDay) => {
-        const { activities, startTime } = _reportActivityDay;
-        activities.forEach((_activities) => {
-          const weekTime = this.getWeekRangeTime(startTime);
-          if (!sameWeekData.startTime) {
-            sameWeekData.next({ activities: _activities, ...weekTime });
-          } else {
-            if (weekTime.startTime !== sameWeekData.startTime) {
-              reportActivityWeeks.push(sameWeekData.result);
-              sameWeekData.next({ activities: _activities, ...weekTime });
-            } else {
-              sameWeekData.mergeData(_activities);
-            }
-          }
-        });
-      });
-
-      if (sameWeekData.size > 0) reportActivityWeeks.push(sameWeekData.result);
-      delete _data.reportActivityDays;
-      _data.reportActivityWeeks = reportActivityWeeks;
-      return _data;
-    });
-
-    return data;
   }
 
   /**
@@ -542,7 +504,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     const { groupDetail } = this.getGroupInfo();
     this.sportsTargetCondition = this.groupService
       .getSportsTarget(groupDetail)
-      .getArrangeCondition(condition.targetUnit.unit);
+      .getArrangeCondition((condition.dateUnit as ReportDateUnit).unit);
     this.handlePersonalData(
       'base',
       condition,
@@ -585,6 +547,10 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       ? this.reportService.saveBaseActivitiesData(dataArray)
       : this.reportService.saveCompareActivitiesData(dataArray);
     const dateUnit = condition.dateUnit as ReportDateUnit;
+    const {
+      groupDetail: { customField },
+    } = this.getGroupInfo();
+    const benefitTimeStartZone = customField?.activityTimeHRZ;
     dataArray.forEach((_data) => {
       const { userId: _userId, resultCode } = _data;
       let parameter: SportsParameter;
@@ -598,6 +564,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           condition,
           data: _dataArray,
           timeType,
+          benefitTimeStartZone,
         };
       }
 
@@ -608,7 +575,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     this.memberSportsInfo = allGroupList;
     this.personAnalysis = new SportAnalysisSort(
       Object.values(allGroupList.memberList),
-      'memberName'
+      'targetAchievedPeople',
+      false
     );
   }
 
@@ -622,7 +590,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     this.groupSportsInfo = new GroupSportsReportInfo(rootGroupInfo, allGroupList);
     this.groupAnalysis = new SportAnalysisSort(
       Object.values(this.groupSportsInfo.groupSportInfo),
-      'targetAchievedPeople'
+      'targetAchievedPeople',
+      true
     );
   }
 
@@ -663,6 +632,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * @author kidin-1110322
    */
   handleGroupChartData(condition: ReportCondition, baseData: Array<any>, compareData: Array<any>) {
+    const {
+      groupDetail: { customField },
+    } = this.getGroupInfo();
+    const benefitTimeStartZone = customField?.activityTimeHRZ;
+    const isMondayFirst = this.localStorageService.getIsoWeekStatus();
     const totalPeople = this.groupSportsInfo.getAssignGroupInfo(
       this.getFocusGroupId() as string,
       'totalPeople'
@@ -673,7 +647,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       baseData,
       compareData,
       this.sportsTargetCondition,
-      totalPeople
+      totalPeople,
+      isMondayFirst,
+      benefitTimeStartZone as BenefitTimeStartZone
     );
   }
 
@@ -810,6 +786,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         case 'totalWeightKg':
           result = isMetric ? value : mathRounding(value / lb, 1);
           break;
+        case 'targetAchieveRate':
+          result = `${mathRounding(value * 100, 1)}%`;
+          break;
         default:
           result = Math.round(value);
           break;
@@ -821,9 +800,20 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
   /**
    * 取得目標達成率
+   * @param isBaseData {number}-是否為基準類型數據
+   */
+  getTotalAchievedNumber(isBaseData: boolean) {
+    const { baseDataAvg, compareDataAvg } = this.groupChartData.achievementRate;
+    return {
+      value: `${isBaseData ? baseDataAvg : compareDataAvg}%`,
+      unit: '',
+    };
+  }
+
+  /**
+   * 取得目標達成率
    * @param totalPeople {number}-總人數
    * @param statistics {number}-統計人數
-   * @author kidin-1110329
    */
   getAchievedNumber(totalPeople: number, statistics: number) {
     const numerator = statistics ?? 0;
@@ -837,12 +827,22 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 取得人數相關統計數據
    * @param denominator {number}-總人數
    * @param statistics {number}-統計人數
-   * @author kidin-1110325
    */
   getPeopleNumber(denominator: number, statistics: number) {
     const numerator = statistics ?? 0;
     return {
       value: denominator ? `${numerator}/${denominator}` : '0/0',
+      unit: '',
+    };
+  }
+
+  /**
+   * 取得已達標人數
+   * @param statistics {number}-統計人數
+   */
+  getAchievedPeople(statistics: number) {
+    return {
+      value: statistics,
       unit: '',
     };
   }

@@ -81,9 +81,13 @@ import { SharedComponentsModule as ProfessionalSharedModule } from '../professio
 import { StationMailModule } from '../station-mail/station-mail.module';
 import { GsensorComponent } from './components/gsensor/gsensor.component';
 import { SportTargetSettingModule } from '../../components/sport-target-setting/sport-target-setting.component';
-import { DateUnitKeyModule } from '../../core/pipes/date-unit-key.pipe';
-import { TranslateKeyModule } from '../../core/pipes/translate-key.pipe';
-import { TranslateUnitKeyModule } from '../../core/pipes/translate-unit-key.pipe';
+import {
+  DateUnitKeyModule,
+  TranslateKeyModule,
+  TranslateUnitKeyModule,
+  ReferenceHrZoneModule,
+} from '../../core/pipes';
+import { FeatureNounTipsModule } from '../../components';
 
 @NgModule({
   imports: [
@@ -104,6 +108,8 @@ import { TranslateUnitKeyModule } from '../../core/pipes/translate-unit-key.pipe
     DateUnitKeyModule,
     TranslateKeyModule,
     TranslateUnitKeyModule,
+    FeatureNounTipsModule,
+    ReferenceHrZoneModule,
   ],
   providers: [
     MapService,
