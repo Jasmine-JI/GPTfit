@@ -1,4 +1,5 @@
 @import 'transition.scss';
+@import 'z-index.scss';
 
 .weight__train__setting {
   position: absolute;
@@ -7,7 +8,7 @@
   width: 260px;
   padding: 15px;
   background-color: white;
-  z-index: 1;
+  z-index: $drop-menu;
   border: 1px solid black;
 }
 
@@ -17,7 +18,7 @@
   width: 100%;
   border: 1px solid black;
   padding: 5px;
-  z-index: 2;
+  z-index: calc(#{$drop-menu} + 1);
   background-color: white;
   top: 34px;
 }

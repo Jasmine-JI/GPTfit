@@ -15,9 +15,9 @@
           <span class="radioBtn" [class.radioBtn--active]="mapOpt.mapSource === 'google'"></span>
           Google
         </span>
-        <span class="flexRow radioSelector" (click)="changeMapSource('baidu')">
-          <span class="radioBtn" [class.radioBtn--active]="mapOpt.mapSource === 'baidu'"></span>
-          Baidu
+        <span class="flexRow radioSelector" (click)="changeMapSource('OSM')">
+          <span class="radioBtn" [class.radioBtn--active]="mapOpt.mapSource === 'OSM'"></span>
+          OSM
         </span>
       </div>
       <div class="flexRow selector__section" *ngIf="sysAccessRight <= 20 && uiFlag.showMap">
@@ -163,20 +163,24 @@
       </div>
     </div>
   </div>
-  <div
-    #gMap
+  <app-google-map
     class="map__style"
-    [class.hide__map]="!uiFlag.showMap"
-    *ngIf="mapOpt.mapSource === 'google'"
-  ></div>
-  <div
-    #bMap
+    [usePage]="'sportsFile'"
+    [mapType]="mapOpt.mapKind"
+    [path]="userPoint[0].latLngPath"
+    [currentMarkPosition]="focusPosition"
+    *ngIf="uiFlag.showMap && mapOpt.mapSource === 'google'"
+  ></app-google-map>
+  <app-leaflet-map
     class="map__style"
-    [class.hide__map]="!uiFlag.showMap"
-    *ngIf="mapOpt.mapSource === 'baidu'"
-  ></div>
+    [usePage]="'sportsFile'"
+    [mapType]="mapOpt.mapKind"
+    [path]="userPoint[0].latLngPath"
+    [currentMarkPosition]="focusPosition"
+    *ngIf="uiFlag.showMap && mapOpt.mapSource === 'OSM'"
+  ></app-leaflet-map>
   <app-trinomial-chart
-    style="position: absolute; bottom: 5px; width: 100%"
+    [class.chart__insert__map]="uiFlag.showMap"
     [compareA]="mapOpt.compareA"
     [compareB]="mapOpt.compareB"
     [terrain]="mapOpt.terrain"

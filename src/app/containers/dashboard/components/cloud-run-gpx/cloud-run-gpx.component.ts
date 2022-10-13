@@ -1,9 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { InnerAdminService } from '../../services/inner-admin.service';
 import { saveAs } from 'file-saver'; // 引入前記得要裝： npm install file-saver
-import { transform, WGS84, BD09, GCJ02 } from 'gcoord';
-import { chinaAndTaiwanBorder } from '../../../../shared/models/china-border-data';
-import { taiwanBorder } from '../../../../shared/models/taiwan-border-data';
+import { transform, WGS84, GCJ02 } from 'gcoord';
+import { chinaBorder, taiwanBorder } from '../../../../core/models/const';
 
 export interface PeriodicElement {
   crs: string;
@@ -29,7 +28,6 @@ const ELEMENT_DATA: PeriodicElement[] = [
   },
 ];
 declare let google: any;
-declare let BMap: any;
 
 @Component({
   selector: 'app-cloud-run-gpx',
@@ -52,10 +50,7 @@ export class CloudRunGpxComponent implements OnInit {
   isShowMap = true;
   @ViewChild('gmap') gmapElement: ElementRef;
   map: any;
-  @ViewChild('bmap') bmapElement: ElementRef;
-  bmap: any;
   mapDatas: any;
-  gpxBmapPoints = [];
   isInChinaArea: boolean;
   gpxPoints = [];
   startMark: any;
@@ -71,10 +66,12 @@ export class CloudRunGpxComponent implements OnInit {
       this.file = value;
     }
   }
+
   downloadOriginalFile(e) {
     e.preventDefault();
     location.href = this.fileLink;
   }
+
   uploadFile() {
     if (this.fileLink && this.fromFormat && this.toFormat) {
       const formData = new FormData();
@@ -101,7 +98,7 @@ export class CloudRunGpxComponent implements OnInit {
             if (
               this.handleBorderData(
                 [+_point.longitudeDegrees, +_point.latitudeDegrees],
-                chinaAndTaiwanBorder
+                chinaBorder
               )
             ) {
               this.isInChinaArea = true;
@@ -122,7 +119,6 @@ export class CloudRunGpxComponent implements OnInit {
           }
           if (this.isShowMap) {
             this.handleGoogleMap(isInTaiwan);
-            this.handleBMap();
           }
         } else {
           this.isShowDownloadBtn = false;
@@ -130,76 +126,14 @@ export class CloudRunGpxComponent implements OnInit {
       });
     }
   }
+
   downloadGPXFile() {
     this.innerAdminService.downloadGpxFile().subscribe((res) => {
       const blob = new Blob([res], { type: 'application/xml' }); // 檔案類型 file type
       saveAs(blob, this.transformFileName);
     });
   }
-  handleBMap() {
-    this.bmap = new BMap.Map(this.bmapElement.nativeElement);
-    let isNormalPoint = false;
-    const originRealIdx = [];
-    this.mapDatas.forEach((_point, idx) => {
-      if (+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100) {
-        isNormalPoint = false;
-        this.gpxBmapPoints.push(null);
-      } else {
-        if (!isNormalPoint) {
-          isNormalPoint = true;
-          originRealIdx.push(idx);
-        }
-        let p;
-        if (this.isInChinaArea) {
-          const transformPoint = transform(
-            [parseFloat(_point.longitudeDegrees), parseFloat(_point.latitudeDegrees)],
-            WGS84,
-            BD09
-          );
-          p = new BMap.Point(transformPoint[0], transformPoint[1]);
-        } else {
-          p = new BMap.Point(
-            parseFloat(_point.longitudeDegrees),
-            parseFloat(_point.latitudeDegrees)
-          );
-        }
-        this.gpxBmapPoints.push(p);
-      }
-    });
-    this.gpxBmapPoints = this.gpxBmapPoints.map((_gpxPoint, idx) => {
-      if (!_gpxPoint) {
-        const index = originRealIdx.findIndex((_tip) => _tip > idx);
-        if (index === -1) {
-          return this.gpxBmapPoints[originRealIdx[originRealIdx.length - 1]];
-        }
-        return this.gpxBmapPoints[originRealIdx[index]];
-      }
-      return _gpxPoint;
-    });
-    const polyline = new BMap.Polyline(this.gpxBmapPoints); // 创建折线
-    this.bmap.centerAndZoom(this.gpxBmapPoints[this.gpxBmapPoints.length - 1], 16);
 
-    this.bmap.enableScrollWheelZoom(true);
-    const startIcon = new BMap.Icon('/assets/map_marker_start.svg', new BMap.Size(33, 50), {
-      anchor: new BMap.Size(16, 50),
-    });
-    const startBMK = new BMap.Marker(this.gpxBmapPoints[0], {
-      icon: startIcon,
-    });
-    const endIcon = new BMap.Icon('/assets/map_marker_end.svg', new BMap.Size(33, 50), {
-      anchor: new BMap.Size(16, 50),
-    });
-    const endBMK = new BMap.Marker(this.gpxBmapPoints[this.gpxBmapPoints.length - 1], {
-      icon: endIcon,
-    });
-    const playIcon = new BMap.Icon('/assets/map_marker_player.svg', new BMap.Size(12, 12), {
-      anchor: new BMap.Size(6, 12),
-    });
-    this.bmap.addOverlay(startBMK);
-    this.bmap.addOverlay(endBMK);
-
-    this.bmap.addOverlay(polyline); // 将折线覆盖到地图上
-  }
   handleBorderData(point, vs) {
     const x = point[0],
       y = point[1];
@@ -218,6 +152,7 @@ export class CloudRunGpxComponent implements OnInit {
     }
     return inside;
   }
+
   handleGoogleMap(isInTaiwan) {
     const mapProp = {
       center: new google.maps.LatLng(24.123499, 120.66014),

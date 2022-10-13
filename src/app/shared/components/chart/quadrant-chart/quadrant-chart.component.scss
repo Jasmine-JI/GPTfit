@@ -1,4 +1,5 @@
 @import 'transition.scss';
+@import 'z-index.scss';
 
 $data-color: rgba(100, 100, 100, 1);
 $axis-type-width: 160px;
@@ -35,7 +36,7 @@ $btn-height: 40px;
 #opt__setting__menu {
   position: absolute;
   background-color: white;
-  z-index: 2;
+  z-index: $drop-menu;
   padding: 10px;
   border: 1px solid black;
   top: 28px;
@@ -68,7 +69,7 @@ $btn-height: 40px;
 .axis__selector__list {
   padding: 5px;
   background-color: white;
-  z-index: 5;
+  z-index: $drop-menu;
   position: absolute;
   border: 1px solid black;
   width: $axis-type-width;

@@ -393,3 +393,24 @@ export function getCurrentTimestamp(timeUnit: 's' | 'ms' = 's') {
       return currentTimeStamp;
   }
 }
+
+/**
+ * 確認該點是否在該範圍內
+ * @param point {[number, number]}-座標
+ * @param borderArr {Array<[number, number]>}-地區邊界座標
+ */
+export function handleBorderData(point: [number, number], borderArr: Array<[number, number]>) {
+  const [x, y] = point;
+  const borderArrLength = borderArr.length;
+  let inside = false;
+  for (let i = 0, j = borderArrLength - 1; i < borderArrLength; j = i++) {
+    const [[xi, yi], [xj, yj]] = borderArr;
+    const intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+
+    if (intersect) {
+      inside = !inside;
+    }
+  }
+
+  return inside;
+}

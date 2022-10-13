@@ -1,10 +1,11 @@
 @import 'color.scss';
 @import 'font.scss';
 @import 'overflow-scroll.scss';
+@import 'z-index.scss';
 
 .analysis__assign__menu {
   position: fixed;
-  z-index: 5;
+  z-index: $drop-menu;
   background-color: white;
   border: 1px solid rgba(225, 225, 225, 1);
   box-shadow: 3px 3px rgba(125, 125, 125, 1);

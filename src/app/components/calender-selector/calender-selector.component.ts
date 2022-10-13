@@ -177,10 +177,10 @@ export class CalenderSelectorComponent implements OnInit, OnChanges, OnDestroy {
    * 確認下一個月份切換按鈕是否開放點擊
    */
   checkMonthNextButton() {
-    const { dayList, calenderType } = this;
-    const { timestamp: endTimestamp } = dayList[dayList.length - 1][6];
+    const { calenderYear, calenderMonth, calenderType } = this;
+    const monthString = calenderMonth.toString().padStart(2, '0');
+    const endTimestamp = dayjs(`${calenderYear}${monthString}`, 'YYYYMM').endOf('month').valueOf();
     this.canSwitchNextMonth = endTimestamp < this.maxDay;
-
     if (calenderType > DateUnit.month) {
       const { calenderYear, calenderMonth } = this.getNextYearMonth();
       const yearMonth = `${calenderYear}${calenderMonth.toString().padStart(2, '0')}`;
@@ -193,15 +193,17 @@ export class CalenderSelectorComponent implements OnInit, OnChanges, OnDestroy {
    * 確認上一個月份切換按鈕是否開放點擊
    */
   checkMonthPreviousButton() {
-    const { dayList, calenderType } = this;
-    const { timestamp: startTimestamp } = dayList[0][0];
+    const { calenderYear, calenderMonth, calenderType } = this;
+    const monthString = calenderMonth.toString().padStart(2, '0');
+    const startTimestamp = dayjs(`${calenderYear}${monthString}`, 'YYYYMM')
+      .startOf('month')
+      .valueOf();
     this.canSwitchPreviousMonth = startTimestamp > this.minDay;
-
     if (calenderType > DateUnit.month) {
       const { calenderYear, calenderMonth } = this.getPreviousYearMonth();
       const yearMonth = `${calenderYear}${calenderMonth.toString().padStart(2, '0')}`;
-      const previousStartDate = dayjs(yearMonth, 'YYYYMM').endOf('month').valueOf();
-      this.canSwitchPreviousMonth = previousStartDate > this.minDay;
+      const previousEndDate = dayjs(yearMonth, 'YYYYMM').endOf('month').valueOf();
+      this.canSwitchPreviousMonth = previousEndDate > this.minDay;
     }
   }
 

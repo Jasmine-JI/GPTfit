@@ -1,5 +1,6 @@
 @import 'transition.scss';
 @import 'overflow-scroll';
+@import 'z-index.scss';
 
 $alert-icon-color: rgba(255, 56, 56, 1);
 
@@ -37,10 +38,12 @@ $alert-icon-color: rgba(255, 56, 56, 1);
 
 .expand__mask {
   position: fixed;
+  top: 0;
+  left: 0;
   background-color: rgba(0, 0, 0, 0.3);
   width: 100vw;
   height: 100vh;
-  z-index: 998;
+  z-index: $mask-sidebar-outside;
   overflow: hidden;
 }
 
@@ -156,7 +159,7 @@ $alert-icon-color: rgba(255, 56, 56, 1);
   -ms-flex-align: center;
   align-items: center;
   width: 100%;
-  z-index: 6 !important;
+  z-index: $navbar !important;
 }
 .mat-drawer {
   background-color: #1f2626;
@@ -180,7 +183,7 @@ $alert-icon-color: rgba(255, 56, 56, 1);
   flex-shrink: 0;
   flex-basis: auto;
   position: initial;
-  z-index: 3;
+  z-index: index($normal-index, 3);
 }
 
 ::ng-deep .mat-expansion-panel-content .mat-expansion-panel-body {
@@ -265,7 +268,7 @@ $alert-icon-color: rgba(255, 56, 56, 1);
   overflow: visible !important;
 }
 ::ng-deep mat-drawer.mat-drawer.mat-drawer-side {
-  z-index: 3;
+  z-index: index($normal-index, 3);
 }
 .minimize-main-nav .ala-dashboard-nav .ala-dashboard-header {
   width: 100%;
@@ -331,7 +334,6 @@ $alert-icon-color: rgba(255, 56, 56, 1);
   flex-wrap: nowrap;
   white-space: nowrap;
   overflow: hidden;
-  z-index: 10;
 
   & span {
     white-space: normal;
@@ -360,7 +362,7 @@ $alert-icon-color: rgba(255, 56, 56, 1);
 .expand__navbar {
   display: flex;
   background-color: rgba(31, 38, 38, 1);
-  z-index: 999;
+  z-index: $sidebar;
   width: 270px;
   height: 100vh;
   @include transition(width);
@@ -435,7 +437,7 @@ $alert-icon-color: rgba(255, 56, 56, 1);
   top: 30px;
   background-color: white;
   color: black;
-  z-index: 10;
+  z-index: $navbar-drop-list;
   padding: 5px;
   width: $width;
   min-width: $width;

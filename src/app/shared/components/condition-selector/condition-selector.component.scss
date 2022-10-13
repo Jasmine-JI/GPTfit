@@ -6,6 +6,7 @@
 @import 'transform.scss';
 @import 'rod-bar.scss';
 @import 'overflow-scroll.scss';
+@import 'z-index.scss';
 
 $selector-section-padding: 10px;
 
@@ -64,7 +65,7 @@ $selector-section-padding: 10px;
 .unordered__list {
   position: absolute;
   left: 30px;
-  z-index: 5;
+  z-index: $drop-menu;
   background-color: white;
   list-style: none;
   margin: 0;
