@@ -22,27 +22,41 @@
           <span class="radioBtn" [class.radioBtn--active]="mapOpt.mapSource === 'google'"></span>
           Google
         </span>
-        <span class="flexRow radioSelector" (click)="changeMapSource('baidu')">
-          <span class="radioBtn" [class.radioBtn--active]="mapOpt.mapSource === 'baidu'"></span>
-          Baidu
+        <span class="flexRow radioSelector" (click)="changeMapSource('OSM')">
+          <span class="radioBtn" [class.radioBtn--active]="mapOpt.mapSource === 'OSM'"></span>
+          OSM
         </span>
       </div>
     </div>
   </div>
   <div id="map__list__section" class="flexRow">
     <div id="map__section" [style.width]="!uiFlag.showMap ? '0' : 'none'">
-      <div
-        #gMap
+      <app-google-map
         class="map__style"
         [class.hide__map]="!uiFlag.showMap"
+        [usePage]="'cloudrunReport'"
+        [path]="mapGpx"
+        [currentRacerPosition]="racerPositionList"
+        [newRacer]="lastLoadedRacer"
+        [delRacer]="lastUnloadRacer"
+        [playSecond]="mapPlay.truthSecond"
+        [currentFocusRacer]="currentFocusRacer"
+        [removeAllRacer]="uiFlag.removeAllRacer"
         *ngIf="mapOpt.mapSource === 'google'"
-      ></div>
-      <div
-        #bMap
+      ></app-google-map>
+      <app-leaflet-map
         class="map__style"
         [class.hide__map]="!uiFlag.showMap"
-        *ngIf="mapOpt.mapSource === 'baidu'"
-      ></div>
+        [usePage]="'cloudrunReport'"
+        [path]="mapGpx"
+        [currentRacerPosition]="racerPositionList"
+        [newRacer]="lastLoadedRacer"
+        [delRacer]="lastUnloadRacer"
+        [playSecond]="mapPlay.truthSecond"
+        [currentFocusRacer]="currentFocusRacer"
+        [removeAllRacer]="uiFlag.removeAllRacer"
+        *ngIf="mapOpt.mapSource === 'OSM'"
+      ></app-leaflet-map>
       <div id="play__bar" class="flexRow" *ngIf="uiFlag.showMap && !isPreviewMode">
         <div id="play__btn__section" class="flexRow">
           <button class="play__btn" (click)="handlePlaying()">
@@ -126,7 +140,7 @@
           <ng-container *ngIf="playerList && playerList.length > 0">
             <tr
               class="table__row"
-              [class.loaded__player]="loadedList[_player.fileId]"
+              [class.loaded__player]="loadedList.get(_player.fileId)"
               (mouseenter)="focusPlayer(_index)"
               (mouseleave)="blurPlayer(_index)"
               (click)="clickPlayer(_index)"
@@ -135,7 +149,9 @@
               <td
                 class="mark__col"
                 [style.color]="
-                  loadedList[_player.fileId] ? loadedList[_player.fileId].color : 'transparent'
+                  loadedList.get(_player.fileId)
+                    ? loadedList.get(_player.fileId).color
+                    : 'transparent'
                 "
               >
                 ●
@@ -146,7 +162,7 @@
               <td
                 class="name__col"
                 [style.color]="
-                  userId == _player.userId ? 'rgba(73, 161, 255, 1)' : 'var(--scale-100-230)'
+                  +userId === +_player.userId ? 'rgba(73, 161, 255, 1)' : 'var(--scale-100-230)'
                 "
               >
                 <ng-container *ngIf="page === 'group'">
@@ -191,6 +207,8 @@
   </div>
   <app-equidistant-chart
     style="min-height: 180px"
+    [racerChange]="lastLoadedRacer"
+    [removeAllRacer]="uiFlag.removeAllRacer"
     [loadedList]="loadedList"
     [altitude]="altitude"
     [gpx]="mapGpx"
@@ -198,6 +216,5 @@
     [unit]="unit"
     [page]="'group'"
     [isPreviewMode]="isPreviewMode"
-    (onHover)="movePoint($event)"
   ></app-equidistant-chart>
 </section>

@@ -1,4 +1,4 @@
-export const chinaAndTaiwanBorder = [
+export const chinaBorder = [
   [88.91693, 27.32083],
   [88.76464, 27.54243],
   [88.83575, 28.00805],
@@ -558,6 +558,7 @@ export const chinaAndTaiwanBorder = [
   [121.2039, 31.80054],
 
   // 台灣
+  /*
   [121.5632, 25.38361],
   [122.1004, 25.00722],
   [121.8397, 24.47638],
@@ -568,4 +569,5 @@ export const chinaAndTaiwanBorder = [
   [119.4941, 23.7894],
   [121.0017, 25.00166],
   [121.5632, 25.38361],
+  */
 ];

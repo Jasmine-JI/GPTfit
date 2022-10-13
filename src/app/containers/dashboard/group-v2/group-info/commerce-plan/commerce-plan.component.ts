@@ -63,6 +63,9 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
     groupMemberSetting: {
       maxGroupMembers: 20,
     },
+    groupAllMemberSetting: {
+      maxAllGroupMembers: 100,
+    },
   };
 
   constructor(private groupService: GroupService, private utils: UtilsService) {}
@@ -152,6 +155,9 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
       groupMemberSetting: {
         maxGroupMembers: this.commerceInfo.groupMemberStatus.maxGroupMembers,
       },
+      groupAllMemberSetting: {
+        maxAllGroupMembers: this.commerceInfo.groupAllMemberSetting?.maxAllGroupMembers || 100,
+      },
     };
   }
 
@@ -237,9 +243,9 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
         break;
       case 'memberNum':
         if (num < 20 || num > 100000) {
-          this.editBody.groupMemberSetting.maxGroupMembers = 20;
+          this.editBody.groupAllMemberSetting.maxAllGroupMembers = 100;
         } else {
-          this.editBody.groupMemberSetting.maxGroupMembers = num;
+          this.editBody.groupAllMemberSetting.maxAllGroupMembers = num;
         }
         break;
       case 'branchNum':

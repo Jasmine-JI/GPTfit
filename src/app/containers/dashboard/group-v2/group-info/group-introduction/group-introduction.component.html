@@ -208,7 +208,10 @@
       (change)="saveVedioUrl($event)"
     />
   </section>
-  <section class="flexCol info__section" *ngIf="groupDetail && groupDetail.brandType === 2">
+  <section
+    class="flexCol info__section"
+    *ngIf="groupDetail?.customField && uiFlag.editMode !== 'create'"
+  >
     <h6 class="info-contentTitle">
       {{ 'universal_system_reportSetting' | translate }}
     </h6>
@@ -220,7 +223,7 @@
             <ng-container *ngIf="uiFlag.editMode === 'close'">
               {{ groupDetail.customField.activityTimeHRZ | referenceHrZone | translate }}
             </ng-container>
-            <ng-container *ngIf="uiFlag.editMode !== 'close'">
+            <ng-container *ngIf="uiFlag.editMode !== 'close' && uiFlag.editMode !== 'create'">
               {{ editBody.customField.activityTimeHRZ | referenceHrZone | translate }}
             </ng-container>
             <i
@@ -248,7 +251,7 @@
       </div>
     </div>
   </section>
-  <section class="flexCol info__section" *ngIf="groupDetail && groupDetail.brandType === 2">
+  <section class="flexCol info__section" *ngIf="groupDetail">
     <h6 class="flexRow info-contentTitle">
       {{ 'universal_lifeTracking_target' | translate }}
       <span class="target__description">
@@ -301,7 +304,10 @@
           </li>
         </ul>
       </div>
-      <div class="flexRow target__card__section" *ngIf="sportsTarget">
+      <div
+        class="flexRow target__card__section"
+        *ngIf="sportsTarget && uiFlag.editMode !== 'create'"
+      >
         <app-sport-target-setting
           [cycle]="DateUnit.day"
           [condition]="cycleCondition.day"
@@ -444,38 +450,18 @@
           class="ala-form__label"
           [class.form__label--required]="createBody.commercePlan === 99"
         >
-          可入會成員：
+          會員數：
         </label>
         <span *ngIf="createBody.commercePlan !== 99">
-          {{ createBody.groupMemberSetting.maxGroupMembers }}
+          {{ createBody.groupAllMemberSetting.maxAllGroupMembers }}
         </span>
         <input
           type="number"
           class="create__brand__input"
           [min]="20"
           [max]="100000"
-          [value]="createBody.groupMemberSetting.maxGroupMembers"
+          [value]="createBody.groupAllMemberSetting.maxAllGroupMembers"
           (change)="savePlanSetting($event, 'member')"
-          *ngIf="createBody.commercePlan === 99"
-        />
-      </div>
-      <div class="ala-list__item" style="margin-top: 20px">
-        <label
-          class="ala-form__label"
-          [class.form__label--required]="createBody.commercePlan === 99"
-        >
-          可建立管理員：
-        </label>
-        <span *ngIf="createBody.commercePlan !== 99">
-          {{ createBody.groupManagerSetting.maxGroupManagers }}
-        </span>
-        <input
-          type="number"
-          class="create__brand__input"
-          [min]="4"
-          [max]="1000"
-          [value]="createBody.groupManagerSetting.maxGroupManagers"
-          (change)="savePlanSetting($event, 'admin')"
           *ngIf="createBody.commercePlan === 99"
         />
       </div>

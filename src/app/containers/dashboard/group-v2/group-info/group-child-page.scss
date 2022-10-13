@@ -5,6 +5,7 @@
 @import 'font.scss';
 @import 'transition.scss';
 @import 'overflow-scroll';
+@import 'z-index.scss';
 
 $warn-color: rgba(255, 75, 75, 1);
 $group-btn-blue: rgba(0, 183, 238, 1);
@@ -116,7 +117,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 
 .whiteMask {
   background-color: rgba(255, 255, 255, 0.6);
-  z-index: 2;
+  z-index: $mask-content;
   width: 100%;
   height: 100%;
   position: absolute;
@@ -285,7 +286,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   .setIn {
     display: flex;
     margin: 0 auto;
-    z-index: 3;
+    z-index: index($normal-index, 3);
   }
 }
 
@@ -360,7 +361,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 
 .tableMenu {
   position: fixed;
-  z-index: 5;
+  z-index: $drop-menu;
   background-color: var(--scale-255-60);
   box-shadow: grey;
   width: fit-content;

@@ -9,26 +9,24 @@ import {
   Output,
   EventEmitter,
   ChangeDetectorRef,
+  SimpleChanges,
 } from '@angular/core';
-import { transform, WGS84, BD09 } from 'gcoord';
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UtilsService } from '../../services/utils.service';
-import { chinaAndTaiwanBorder } from '../../models/china-border-data';
 import { Unit } from '../../enum/value-conversion';
 import { ActivityService } from '../../services/activity.service';
 import { mi } from '../../models/bs-constant';
 import { GroupService } from '../../services/group.service';
 import { SelectDate } from '../../models/utils-type';
-import { deepCopy } from '../../utils/index';
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService } from '../../../core/services';
+import { RacerInfo, RacerPositionList } from '../../../core/models/compo';
 
-// 若google api或baidu api掛掉則建物件代替，避免造成gptfit卡住。
+// 若google api掛掉則建物件代替，避免造成gptfit卡住。
 const google: any = (window as any).google || { maps: { OverlayView: null } };
-const BMap: any = (window as any).BMap || { Overlay: null };
-declare const BMAP_SATELLITE_MAP: any;
+const leaflet: any = (window as any).L;
 
-type MapSource = 'google' | 'baidu';
+type MapSource = 'google' | 'OSM';
 type PlaySpeed = 1 | 5 | 10 | 20 | 50 | 100;
 
 @Component({
@@ -38,7 +36,6 @@ type PlaySpeed = 1 | 5 | 10 | 20 | 50 | 100;
 })
 export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('gMap') gMap: ElementRef;
-  @ViewChild('bMap') bMap: ElementRef;
   @Input() mapGpx: Array<Array<number>>;
   @Input() mapDistance: number;
   @Input() altitude: Array<number>;
@@ -61,10 +58,10 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    * ui會用到的各種flag
    */
   uiFlag = {
-    userInChina: false,
     showMap: false,
     showMapOpt: false,
     changeMapSource: false,
+    removeAllRacer: true,
   };
 
   /**
@@ -76,28 +73,6 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   };
 
   /**
-   * google map 用參數
-   */
-  googleObj = {
-    gMapPlayMark: [],
-    map: null,
-    path: null,
-    displayMap: null,
-    mapIdListener: null,
-    zoomListener: null,
-  };
-
-  /**
-   * baidu map 用參數
-   */
-  baiduObj = {
-    bMapPlayMark: [],
-    map: null,
-    path: null,
-    displayMap: null,
-  };
-
-  /**
    * 地圖播放相關flag
    */
   mapPlay = {
@@ -105,7 +80,6 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
     startPlaying: false,
     pause: false,
     playSpeed: <PlaySpeed>10,
-    playSecond: 0,
     truthSecond: 0,
     zoom: {
       normal: null,
@@ -118,10 +92,14 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   groupLevel: number;
   clickEvent: Subscription;
   playInterval: any;
-  playerList: any; // 所有玩家列表
-  loadedList = {}; // 使用者選擇載入的列表
+  playerList: Array<any>; // 所有玩家列表
+  loadedList = new Map(); // 使用者選擇載入的列表
   chartData = [];
   dataStore = {}; // 將已載入過得使用者point資料暫存起來
+  lastLoadedRacer: RacerInfo | null = null;
+  lastUnloadRacer: number | null = null;
+  currentFocusRacer: number;
+  racerPositionList: RacerPositionList = new Map();
 
   constructor(
     private utils: UtilsService,
@@ -133,7 +111,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit(): void {}
 
-  ngOnChanges(e: any): void {
+  ngOnChanges(e: SimpleChanges): void {
     if (e.mapGpx) {
       this.initVar();
       this.checkMapLoaded(this.mapGpx);
@@ -144,9 +122,6 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
       this.createPlayerList(this.userList);
       if (this.isPreviewMode) {
         this.mapOpt.mapSource = this.mapSource;
-        this.mapOpt.mapSource === 'google'
-          ? this.handleGoogleMap(this.mapGpx)
-          : this.handleBaiduMap(this.mapGpx);
 
         if (this.compareList && this.compareList.length > 0) {
           this.loadPlayerData(this.compareList.map((_list) => +_list));
@@ -163,20 +138,19 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   checkMapLoaded(gpx: Array<Array<number>>) {
     if (!this.isPreviewMode) {
       // 判斷bidu map是否可以載入
-      if ('BMAP_NORMAL_MAP' in window) {
+      if (leaflet) {
         this.uiFlag.showMap = true;
-        if (!this.uiFlag.changeMapSource) this.mapOpt.mapSource = 'baidu';
+        if (!this.uiFlag.changeMapSource) this.mapOpt.mapSource = 'OSM';
       } else {
         this.mapOpt.showMapSourceSelector = false;
       }
 
       // 判斷google map是否可以載入
-      if ('google' in window && typeof google === 'object' && typeof google.maps === 'object') {
+      if (google && typeof google === 'object' && typeof google.maps === 'object') {
         this.uiFlag.showMap = true;
         if (!this.uiFlag.changeMapSource) this.mapOpt.mapSource = 'google';
       } else {
         this.mapOpt.showMapSourceSelector = false;
-        this.uiFlag.userInChina = true; // 暫以無法載入google map當作使用者位於中國的依據
       }
     } else {
       this.uiFlag.showMap = true;
@@ -184,159 +158,6 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     this.uiFlag.changeMapSource = true;
-    this.mapOpt.mapSource === 'google' ? this.handleGoogleMap(gpx) : this.handleBaiduMap(gpx);
-  }
-
-  /**
-   * 處理google map顯示
-   * @param gpx {Array<number>}-地圖gpx
-   * @author kidin-1100113
-   */
-  handleGoogleMap(gpx: Array<any>) {
-    setTimeout(() => {
-      const googleMapEle = this.gMap.nativeElement,
-        bounds = new google.maps.LatLngBounds();
-
-      // 使用套件將大地座標轉為GCJ02-1100323
-      this.googleObj.path = gpx.map((_gpx, _idx) => {
-        const [_lan, _lng] = [..._gpx],
-          _mapPoint = new google.maps.LatLng(_lan, _lng); // google map座標為(緯度, 經度)
-        if (_lan && _lng) {
-          bounds.extend(_mapPoint);
-        }
-
-        return _mapPoint;
-      });
-
-      const startMark = new google.maps.Marker({
-          // 路線起始點
-          position: this.googleObj.path[0],
-          title: 'Start point',
-          icon: '/assets/map_marker_start.svg',
-        }),
-        endMark = new google.maps.Marker({
-          // 路線終點
-          position: this.googleObj.path[this.googleObj.path.length - 1],
-          title: 'End point',
-          icon: '/assets/map_marker_end.svg',
-        }),
-        mapSetting = {
-          // 地圖設定
-          zoom: 15,
-          center: new google.maps.LatLng(24.123499, 120.66014),
-          mapTypeId: 'satellite',
-          streetViewControl: false,
-          rotateControl: false,
-          mapTypeControl: false,
-          gestureHandling: 'cooperative', // 讓使用者在手機環境下使用單止滑頁面，雙指滑地圖
-          zoomControlOptions: {
-            position: google.maps.ControlPosition.RIGHT_TOP,
-          },
-        };
-
-      this.googleObj.map = new google.maps.Map(googleMapEle, mapSetting);
-      startMark.setMap(this.googleObj.map);
-      endMark.setMap(this.googleObj.map);
-
-      this.googleObj.displayMap = new google.maps.Polyline({
-        path: this.googleObj.path,
-        geodesic: true,
-        strokeColor: '#FF00AA',
-        strokeOpacity: 0.7,
-        strokeWeight: 4,
-      });
-
-      this.googleObj.displayMap.setMap(this.googleObj.map);
-      this.googleObj.map.fitBounds(bounds); // 將地圖縮放至可看到整個路線
-      this.mapPlay.zoom.normal = this.googleObj.map.getZoom();
-
-      // 監聽縮放大小
-      this.googleObj.zoomListener = google.maps.event.addListener(
-        this.googleObj.map,
-        'zoom_changed',
-        () => {
-          const { current } = this.mapPlay.zoom,
-            newZoom = this.googleObj.map.getZoom();
-
-          if (newZoom !== current) {
-            this.mapPlay.zoom.current = newZoom;
-            this.adjustMapIconSize();
-          }
-        }
-      );
-    });
-  }
-
-  /**
-   * 處理baidu map顯示
-   * @param gpx {Array<number>}-地圖gpx
-   * @author kidin-1100113
-   */
-  handleBaiduMap(gpx: Array<any>) {
-    setTimeout(() => {
-      const baiduMapEle = this.bMap.nativeElement,
-        needConverse = this.handleBorderData([gpx[0][1], gpx[0][0]], chinaAndTaiwanBorder);
-
-      this.baiduObj.map = new BMap.Map(baiduMapEle, { mapType: BMAP_SATELLITE_MAP });
-      this.baiduObj.path = gpx.map((_gpx, _idx) => {
-        const [_lan, _lng] = [..._gpx];
-
-        // 使用套件將大地座標轉為百度座標（勿使用baidu官方轉換座標的api）-1100322
-        let _bd09Point;
-        if (this.uiFlag.userInChina || needConverse) {
-          _bd09Point = transform([_lng, _lan], WGS84, BD09);
-        } else {
-          _bd09Point = transform([_lng, _lan], WGS84, WGS84);
-        }
-
-        return new BMap.Point(_bd09Point[0], _bd09Point[1]);
-      });
-
-      const startMark = new BMap.Marker(this.baiduObj.path[0], {
-          // 路線起始點
-          icon: new BMap.Icon('/assets/map_marker_start.svg', new BMap.Size(33, 50), {
-            anchor: new BMap.Size(16, 50),
-            imageOffset: new BMap.Size(0, 0),
-          }),
-        }),
-        endMark = new BMap.Marker(this.baiduObj.path[this.baiduObj.path.length - 1], {
-          // 路線終點
-          icon: new BMap.Icon('/assets/map_marker_end.svg', new BMap.Size(33, 50), {
-            anchor: new BMap.Size(16, 50),
-            imageOffset: new BMap.Size(0, 0),
-          }),
-        });
-
-      const boundPath = this.baiduObj.path.slice(),
-        { zoom, center } = this.baiduObj.map.getViewport(boundPath); // 取得視圖縮放大小與中心點
-
-      this.baiduObj.map.centerAndZoom(center, zoom); // 初始化地圖
-      this.baiduObj.map.addOverlay(startMark);
-      this.baiduObj.map.setCenter(startMark);
-      this.baiduObj.map.addOverlay(endMark);
-      this.baiduObj.map.setCenter(endMark);
-      this.baiduObj.map.disableScrollWheelZoom(); // 關閉滑鼠滾輪縮放，避免手機頁面無法滑動頁面
-      this.baiduObj.map.addControl(new BMap.NavigationControl({ anchor: 'BMAP_ANCHOR_TOP_RIGHT' })); // 平移縮放按鈕
-
-      const polyline = new BMap.Polyline(this.baiduObj.path, {
-        // 路線聚合線
-        strokeColor: 'rgba(232, 62, 140, 1)',
-        strokeWeight: 6,
-        strokeOpacity: 0.5,
-      });
-
-      this.baiduObj.map.addOverlay(polyline);
-
-      this.baiduObj.map.addEventListener('zoomend', () => {
-        const { current } = this.mapPlay.zoom,
-          newZoom = this.baiduObj.map.getZoom();
-
-        if (newZoom !== current) {
-          this.mapPlay.zoom.current = newZoom;
-          this.adjustMapIconSize();
-        }
-      });
-    });
   }
 
   /**
@@ -345,7 +166,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    */
   initVar() {
     this.dataStore = {};
-    this.loadedList = {};
+    this.loadedList.clear();
   }
 
   /**
@@ -365,10 +186,8 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100114
    */
   changeMapSource(source: MapSource) {
+    this.removeAllPlayerMark();
     this.mapOpt.mapSource = source;
-    this.mapOpt.mapSource === 'google'
-      ? this.handleGoogleMap(this.mapGpx)
-      : this.handleBaiduMap(this.mapGpx);
     this.mapSourceChange.emit(source);
     this.uiFlag.showMapOpt = false;
     this.ngUnsubscribeClick();
@@ -393,19 +212,6 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    */
   ngUnsubscribeClick() {
     if (this.clickEvent) this.clickEvent.unsubscribe();
-  }
-
-  /**
-   * 根據使用者滑鼠在圖表的位置，移動地圖的記號
-   * @param e {number}-point位置
-   * @author kidin-1100121
-   */
-  movePoint(e: number) {
-    if (this.mapOpt.mapSource === 'google') {
-      this.googleObj.gMapPlayMark.forEach((_mark) => _mark.setPosition(this.googleObj.path[e]));
-    } else {
-      this.baiduObj.bMapPlayMark.forEach((_mark) => _mark.setPosition(this.baiduObj.path[e]));
-    }
   }
 
   /**
@@ -601,7 +407,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    */
   clickPlayer(index: number) {
     const { fileId } = this.playerList[index];
-    if (this.loadedList[fileId]) {
+    if (this.loadedList.get(fileId)) {
       this.removePlayer(fileId);
       this.comparePlayer.emit(index);
     } else {
@@ -619,10 +425,9 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100412
    */
   focusPlayer(index: number) {
-    const { fileId } = this.playerList[index],
-      iconSize = this.getMapIconSize() + 20;
-    if (this.loadedList[fileId]) {
-      this.mapPlay.playerMark[fileId].adjustIconSize(iconSize);
+    const { fileId } = this.playerList[index];
+    if (this.loadedList.get(fileId)) {
+      this.currentFocusRacer = fileId;
     }
   }
 
@@ -632,10 +437,9 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100412
    */
   blurPlayer(index: number) {
-    const { fileId } = this.playerList[index],
-      iconSize = this.getMapIconSize();
-    if (this.loadedList[fileId]) {
-      this.mapPlay.playerMark[fileId].adjustIconSize(iconSize);
+    const { fileId } = this.playerList[index];
+    if (this.loadedList.get(fileId)) {
+      this.currentFocusRacer = null;
     }
   }
 
@@ -645,11 +449,9 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100326
    */
   removePlayer(fileId: number) {
-    const obj = deepCopy(this.loadedList);
-    delete obj[fileId];
-    this.loadedList = obj; // 變更loadedList記憶體位置以觸發子組件change事件
-    this.mapPlay.playerMark[fileId].onRemove();
-    delete this.mapPlay.playerMark[fileId];
+    this.loadedList.delete(fileId);
+    this.lastUnloadRacer = fileId;
+    this.lastLoadedRacer = null;
   }
 
   /**
@@ -657,13 +459,11 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100329
    */
   removeAllPlayerMark() {
-    for (const _playerId in this.mapPlay.playerMark) {
-      if (Object.prototype.hasOwnProperty.call(this.mapPlay.playerMark, _playerId)) {
-        this.mapPlay.playerMark[_playerId].onRemove();
-      }
-    }
-
-    this.loadedList = {};
+    this.loadedList.clear();
+    this.racerPositionList.clear();
+    this.uiFlag.removeAllRacer = true;
+    this.lastLoadedRacer = null;
+    this.lastUnloadRacer = null;
     this.mapPlay.playerMark = {};
     this.initMapPlay();
     this.comparePlayer.emit(-1);
@@ -676,147 +476,43 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    */
   addPlayer(index: number) {
     this.comparePlayer.emit(index);
-    const random = (Math.random() * 300).toFixed(0),
-      { fileId, name, icon } = this.playerList[index],
-      { distanceBase, secondBase } = this.dataStore[fileId],
-      obj = deepCopy(this.loadedList);
+    const random = (Math.random() * 300).toFixed(0);
+    const { fileId, name, icon } = this.playerList[index];
+    const { distanceBase, secondBase } = this.dataStore[fileId];
+    const representColor = `hsla(${random}, 70%, 50%, 1)`;
+    const racerInfo = {
+      name,
+      icon,
+      distanceBase,
+      secondBase,
+      color: representColor,
+    };
 
-    Object.assign(obj, {
-      [fileId]: {
-        name,
-        icon,
-        distanceBase,
-        secondBase,
-        color: `hsla(${random}, 70%, 50%, 1)`,
-      },
-    });
+    const racerMarkInfo: RacerInfo = {
+      name,
+      imgUrl: icon,
+      fileId,
+      color: representColor,
+    };
 
-    this.loadedList = obj; // 變更loadedList記憶體位置以觸發子組件change事件
-    if (this.mapOpt.mapSource === 'google') {
-      this.createGMapPlayerMark(fileId);
-    } else {
-      this.createBMapPlayerMark(fileId);
-    }
+    this.loadedList.set(fileId, racerInfo);
+    this.lastLoadedRacer = racerMarkInfo;
+    this.lastUnloadRacer = null;
+    this.uiFlag.removeAllRacer = false;
   }
 
   /**
-   * 建立玩家在google map的起始位置mark
-   * @param fileId {number}
-   * @author kidin-1100326
-   */
-  createGMapPlayerMark(fileId: number) {
-    const { name, color, secondBase, icon } = this.loadedList[fileId],
-      lat = +secondBase[0].latitudeDegrees,
-      lng = +secondBase[0].longitudeDegrees,
-      position = new google.maps.LatLng(lat, lng), // google map座標為(緯度, 經度)
-      iconSize = this.getMapIconSize();
-    Object.assign(this.mapPlay.playerMark, {
-      [fileId]: new CustomGMapIcon(iconSize, position, name, icon, color),
-    });
-
-    this.mapPlay.playerMark[fileId].setMap(this.googleObj.map);
-  }
-
-  /**
-   * 調整玩家icon的大小
-   * @author kidin-1100329
-   */
-  adjustMapIconSize() {
-    const iconSize = this.getMapIconSize();
-    for (const _playerId in this.mapPlay.playerMark) {
-      if (Object.prototype.hasOwnProperty.call(this.mapPlay.playerMark, _playerId)) {
-        this.mapPlay.playerMark[_playerId].adjustIconSize(iconSize);
-      }
-    }
-  }
-
-  /**
-   * 根據google map縮放大小調整icon size
-   * @author kidin-1100329
-   */
-  getMapIconSize() {
-    const { normal, current } = this.mapPlay.zoom;
-    let iconSize = 30;
-    if (current > normal) {
-      iconSize += (current - normal) * 10;
-    }
-
-    return iconSize;
-  }
-
-  /**
-   * 建立玩家在baidu map的起始位置mark
-   * @param fileId {number}
-   * @author kidin-1100326
-   */
-  createBMapPlayerMark(fileId: number) {
-    const { name, color, secondBase, icon } = this.loadedList[fileId],
-      lat = +secondBase[0].latitudeDegrees,
-      lng = +secondBase[0].longitudeDegrees,
-      needConverse = this.handleBorderData([lng, lat], chinaAndTaiwanBorder),
-      iconSize = this.getMapIconSize();
-
-    // 使用套件將大地座標轉為百度座標（勿使用baidu官方轉換座標的api）-1100330
-    let bd09Point;
-    if (this.uiFlag.userInChina || needConverse) {
-      bd09Point = transform([lng, lat], WGS84, BD09);
-    } else {
-      bd09Point = transform([lng, lat], WGS84, WGS84);
-    }
-
-    const position = new BMap.Point(bd09Point[0], bd09Point[1]);
-    Object.assign(this.mapPlay.playerMark, {
-      [fileId]: new CustomBMapIcon(iconSize, position, name, icon, color),
-    });
-
-    this.baiduObj.map.addOverlay(this.mapPlay.playerMark[fileId]);
-  }
-
-  /**
-   * 設定玩家在google map的位置
+   * 設定玩家在map的位置
    * @param fileId {number}
    * @param index {number}-路徑索引值
-   * @author kidin-1100326
    */
-  setGMapMark(fileId: number, index: number) {
-    const { secondBase } = this.loadedList[fileId];
+  getPosition(fileId: number, index: number): [number, number] | null {
+    const { secondBase } = this.loadedList.get(fileId);
     if (secondBase[index]) {
-      const lat = +secondBase[index].latitudeDegrees,
-        lng = +secondBase[index].longitudeDegrees,
-        position = new google.maps.LatLng(lat, lng);
-      this.mapPlay.playerMark[fileId].onMove(position);
-      return false;
+      const { latitudeDegrees, longitudeDegrees } = secondBase[index];
+      return [+latitudeDegrees, +longitudeDegrees];
     } else {
-      return true;
-    }
-  }
-
-  /**
-   * 設定玩家在baidu map的位置
-   * @param fileId {number}
-   * @param index {number}-路徑索引值
-   * @author kidin-1100326
-   */
-  setBMapMark(fileId: number, index: number) {
-    const { secondBase } = this.loadedList[fileId];
-    if (secondBase[index]) {
-      const lat = +secondBase[index].latitudeDegrees,
-        lng = +secondBase[index].longitudeDegrees,
-        needConverse = this.handleBorderData([lng, lat], chinaAndTaiwanBorder);
-
-      // 使用套件將大地座標轉為百度座標（勿使用baidu官方轉換座標的api）-1100330
-      let bd09Point;
-      if (this.uiFlag.userInChina || needConverse) {
-        bd09Point = transform([lng, lat], WGS84, BD09);
-      } else {
-        bd09Point = transform([lng, lat], WGS84, WGS84);
-      }
-
-      const position = new BMap.Point(bd09Point[0], bd09Point[1]);
-      this.mapPlay.playerMark[fileId].onMove(position);
-      return false;
-    } else {
-      return true;
+      return null;
     }
   }
 
@@ -885,7 +581,6 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * 點擊停止或賽事重新開始時，將狀態初始化
-   * @author kidin-1100326
    */
   initMapPlay() {
     if (this.playInterval) clearInterval(this.playInterval);
@@ -893,15 +588,13 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
     this.mapPlay.pause = false;
     this.mapPlay.truthSecond = 0;
     // 將所有參賽者回歸原點
-    for (const _playerId in this.loadedList) {
-      if (Object.prototype.hasOwnProperty.call(this.loadedList, _playerId)) {
-        if (this.mapOpt.mapSource === 'google') {
-          this.setGMapMark(+_playerId, 0);
-        } else {
-          this.setBMapMark(+_playerId, 0);
-        }
+    this.loadedList.forEach((_value, _key) => {
+      const fileId = +_key;
+      const position = this.getPosition(fileId, 0);
+      if (position) {
+        this.racerPositionList.set(fileId, position);
       }
-    }
+    });
 
     this.mapPlay.init = true;
     this.changeDetectorRef.markForCheck();
@@ -928,15 +621,14 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
       if (!this.mapPlay.pause) {
         this.mapPlay.truthSecond++;
         let raceCompleted = true;
-        for (const _playerId in this.loadedList) {
-          if (Object.prototype.hasOwnProperty.call(this.loadedList, _playerId)) {
-            if (this.mapOpt.mapSource === 'google') {
-              if (!this.setGMapMark(+_playerId, this.mapPlay.truthSecond)) raceCompleted = false;
-            } else {
-              if (!this.setBMapMark(+_playerId, this.mapPlay.truthSecond)) raceCompleted = false;
-            }
+        this.loadedList.forEach((_value, _key) => {
+          const fileId = +_key;
+          const position = this.getPosition(fileId, this.mapPlay.truthSecond);
+          if (position) {
+            raceCompleted = false;
+            this.racerPositionList.set(fileId, position);
           }
-        }
+        });
 
         if (raceCompleted) {
           this.handleRaceCompleted();
@@ -973,189 +665,11 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
-   * 取消訂閱rxjs及移除google map 監聽
+   * 取消訂閱rxjs
    */
   ngOnDestroy(): void {
     if (this.playInterval) clearInterval(this.playInterval);
-    if (this.googleObj.zoomListener) google.maps.event.removeListener(this.googleObj.zoomListener);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-  }
-}
-
-/**
- * 自定義google map mark
- * @author kidin-1100329
- * @refrence https://developers.google.com/maps/documentation/javascript/examples/overlay-popup
- */
-class CustomGMapIcon extends google.maps.OverlayView {
-  position: any; // 該mark gpx位置
-  containerDiv: HTMLDivElement;
-  icon: HTMLDivElement;
-  offset = 15;
-  img: any;
-
-  constructor(iconSize: number, position: any, name: string, imgUrl: string, color: string) {
-    super();
-    this.position = position;
-    this.containerDiv = document.createElement('div');
-    this.containerDiv.className = 'custom__mark';
-
-    this.img = document.createElement('img');
-    this.img.src = imgUrl;
-    this.img.title = name;
-    this.img.style.border = `3px solid ${color}`;
-    this.img.style.height = `${iconSize}px`;
-    this.img.style.width = `${iconSize}px`;
-    this.img.onerror = () => {
-      this.img.src = '/assets/images/user2.png';
-    };
-
-    this.containerDiv.appendChild(this.img);
-
-    // Optionally stop clicks, etc., from bubbling up to the map.
-    CustomGMapIcon.preventMapHitsAndGesturesFrom(this.containerDiv);
-  }
-
-  /**
-   * Called when the CustomIcon is added to the map.
-   */
-  onAdd() {
-    this.getPanes().floatPane.appendChild(this.containerDiv);
-  }
-
-  /**
-   * Called when the CustomIcon is removed from the map.
-   */
-  onRemove() {
-    if (this.containerDiv.parentElement) {
-      this.containerDiv.parentElement.removeChild(this.containerDiv);
-    }
-  }
-
-  /**
-   * 移動mark至指定位置
-   * @param next {google.maps.LatLng}-欲移動之座標
-   * @author kidin-1100329
-   *
-   */
-  onMove(next: any) {
-    this.position = next;
-    this.draw();
-  }
-
-  /**
-   * 調整icon大小
-   * @param size {number}
-   * @author kidin-1100329
-   */
-  adjustIconSize(size: number) {
-    this.img.style.height = `${size}px`;
-    this.img.style.width = `${size}px`;
-    this.offset = size / 2;
-    this.draw();
-  }
-
-  /**
-   * Called each frame when the CustomIcon needs to draw itself.
-   */
-  draw() {
-    const divPosition = this.getProjection().fromLatLngToDivPixel(this.position);
-
-    // Hide the CustomIcon when it is far out of view.
-    const display =
-      Math.abs(divPosition.x) < 4000 && Math.abs(divPosition.y) < 4000 ? 'block' : 'none';
-
-    if (display === 'block') {
-      this.containerDiv.style.left = `${divPosition.x - this.offset}px`;
-      this.containerDiv.style.top = `${divPosition.y - this.offset}px`;
-    }
-
-    if (this.containerDiv.style.display !== display) {
-      this.containerDiv.style.display = display;
-    }
-  }
-}
-
-/**
- * 自定義baidu map mark
- * @author kidin-1100329
- * @refrence http://lbsyun.baidu.com/index.php?title=jspopular3.0/guide/custom-markers
- */
-class CustomBMapIcon extends BMap.Overlay {
-  position: any; // 該mark gpx位置
-  containerDiv: HTMLDivElement;
-  icon: HTMLDivElement;
-  offset = 15;
-  img: any;
-  map: any;
-
-  constructor(iconSize: number, position: any, name: string, imgUrl: string, color: string) {
-    super();
-    this.position = position;
-    this.containerDiv = document.createElement('div');
-    this.containerDiv.className = 'custom__mark';
-
-    this.img = document.createElement('img');
-    this.img.src = imgUrl;
-    this.img.title = name;
-    this.img.style.border = `3px solid ${color}`;
-    this.img.style.height = `${iconSize}px`;
-    this.img.style.width = `${iconSize}px`;
-    this.img.onerror = () => {
-      this.img.src = '/assets/images/user2.png';
-    };
-
-    this.containerDiv.appendChild(this.img);
-  }
-
-  /**
-   * 初始化自定義mark
-   */
-  initialize(map: any) {
-    this.map = map;
-    map.getPanes().markerPane.appendChild(this.containerDiv);
-  }
-
-  /**
-   * 移除自定義mark
-   */
-  onRemove() {
-    if (this.containerDiv.parentElement) {
-      this.containerDiv.parentElement.removeChild(this.containerDiv);
-    }
-  }
-
-  /**
-   * 移動mark至指定位置
-   * @param next {google.maps.LatLng}-欲移動之座標
-   * @author kidin-1100329
-   *
-   */
-  onMove(next: any) {
-    this.position = next;
-    this.draw();
-  }
-
-  /**
-   * 調整icon大小
-   * @param size {number}
-   * @author kidin-1100329
-   */
-  adjustIconSize(size: number) {
-    this.img.style.height = `${size}px`;
-    this.img.style.width = `${size}px`;
-    this.offset = size / 2;
-    this.draw();
-  }
-
-  /**
-   * 繪製mark
-   */
-  draw() {
-    const divPosition = this.map.pointToOverlayPixel(this.position);
-
-    this.containerDiv.style.left = `${divPosition.x - this.offset}px`;
-    this.containerDiv.style.top = `${divPosition.y - this.offset}px`;
   }
 }

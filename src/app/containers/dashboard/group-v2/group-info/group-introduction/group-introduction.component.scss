@@ -4,6 +4,7 @@
 @import 'transform.scss';
 @import 'drop-triangle.scss';
 @import 'rod-bar.scss';
+@import 'z-index.scss';
 
 $input-border-color: rgba(120, 120, 120, 1);
 $group-btn-blue: rgba(0, 183, 238, 1);
@@ -54,7 +55,7 @@ $rod-track-width: 28px;
 
 #status__selector__list {
   position: absolute;
-  z-index: 1;
+  z-index: $drop-menu;
   top: 24px;
   left: -1px;
   width: 200px;
@@ -105,7 +106,7 @@ $rod-track-width: 28px;
 .setting__drop__list {
   $shadow: 4px rgba(0, 0, 0, 0.3);
   position: absolute;
-  z-index: 1;
+  z-index: $drop-menu;
   background-color: white;
   cursor: pointer;
   list-style: none;

@@ -1,3 +1,5 @@
+@import 'z-index.scss';
+
 .target__hint__area {
   position: relative;
 }
@@ -19,7 +21,7 @@
   position: absolute;
   bottom: 35px;
   left: 20px;
-  z-index: 1;
+  z-index: $float-tips;
   width: $width;
   min-width: $width;
   padding: 15px;

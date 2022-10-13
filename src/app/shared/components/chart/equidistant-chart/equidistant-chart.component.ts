@@ -9,6 +9,7 @@ import {
   Renderer2,
   Output,
   EventEmitter,
+  SimpleChanges,
 } from '@angular/core';
 import { chart, charts } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
@@ -99,6 +100,8 @@ class ChartOptions {
 export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject();
 
+  @Input() racerChange: number | null;
+  @Input() removeAllRacer = true;
   @Input() unit: Unit;
   @Input() loadedList: any;
   @Input() altitude: number[];
@@ -107,7 +110,6 @@ export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() page: 'group' | 'person' = 'person';
   @Input() isPreviewMode = false;
   @ViewChild('container') container: ElementRef;
-  @Output() onHover: EventEmitter<any> = new EventEmitter();
 
   chartIndex = null; // 此圖表在詳細頁面所有的highchart的順位
   terrain: Array<Array<number>>;
@@ -120,8 +122,9 @@ export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit(): void {}
 
-  ngOnChanges(e: any): void {
-    if (e.gpx || e.loadedList) {
+  ngOnChanges(e: SimpleChanges): void {
+    const { gpx, racerChange, removeAllRacer } = e;
+    if (gpx || racerChange || (removeAllRacer && removeAllRacer.currentValue)) {
       if (e.gpx) this.terrain = this.createAltitudeDistance();
       this.initChart(this.loadedList, this.terrain);
     }
@@ -168,22 +171,20 @@ export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(() => {
         const dataSet = [];
-        for (const key in data) {
-          if (Object.prototype.hasOwnProperty.call(data, key)) {
-            const { name, distanceBase, color } = data[key];
-            dataSet.push({
-              name,
-              yAxis: 0,
-              data: distanceBase,
-              showInLegend: true, // 是否顯示數據類別
-              color,
-              type: 'spline',
-              tooltip: {
-                valueSuffix: ' ' + this.dataTypeUnitPipe.transform('pace', [1, this.unit]),
-              },
-            });
-          }
-        }
+        data.forEach((_value) => {
+          const { name, distanceBase, color } = _value;
+          dataSet.push({
+            name,
+            yAxis: 0,
+            data: distanceBase,
+            showInLegend: true, // 是否顯示數據類別
+            color,
+            type: 'spline',
+            tooltip: {
+              valueSuffix: ' ' + this.dataTypeUnitPipe.transform('pace', [1, this.unit]),
+            },
+          });
+        });
 
         if (terrain.length >= 0) {
           dataSet.push({
@@ -248,25 +249,7 @@ export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
       } else {
         this.chartIndex = chart(chartDiv, option).index; // 產生圖表同時紀錄此圖表的index
       }
-
-      this.renderer.listen(chartDiv, 'mousemove', (e) => this.handleSynchronizedPoint(e));
-      this.renderer.listen(chartDiv, 'touchmove', (e) => this.handleSynchronizedPoint(e));
-      this.renderer.listen(chartDiv, 'touchstart', (e) => this.handleSynchronizedPoint(e));
     }, 200);
-  }
-
-  /**
-   * 滑動Hchart時，使地圖的點跟著移動
-   * @param e {any}
-   * @author kidin-1100122
-   */
-  handleSynchronizedPoint(e: any) {
-    const compareChart: any = charts[this.chartIndex],
-      event = compareChart.pointer.normalize(e), // Find coordinates within the chart
-      point = compareChart.series[0].searchPoint(event, true); // Get the hovered point
-    if (point && point.index) {
-      this.onHover.emit(point.index);
-    }
   }
 
   /**
@@ -276,9 +259,7 @@ export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100121
    */
   convertData(data: number, type: string): number | string {
-    let costSecond: number;
-    costSecond = +(3600 / (this.unit === 0 ? data : data / mi)).toFixed(0); // 公里或英里配速
-
+    const costSecond = +(3600 / (this.unit === 0 ? data : data / mi)).toFixed(0); // 公里或英里配速
     return costSecond > 3600 ? 3600 : costSecond;
   }
 

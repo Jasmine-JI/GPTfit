@@ -80,14 +80,18 @@ import { GroupService } from '../../shared/services/group.service';
 import { SharedComponentsModule as ProfessionalSharedModule } from '../professional/shared/shared-components.module';
 import { StationMailModule } from '../station-mail/station-mail.module';
 import { GsensorComponent } from './components/gsensor/gsensor.component';
-import { SportTargetSettingModule } from '../../components/sport-target-setting/sport-target-setting.component';
+import {
+  SportTargetSettingModule,
+  FeatureNounTipsModule,
+  LeafletMapModule,
+  GoogleMapModule,
+} from '../../components';
 import {
   DateUnitKeyModule,
   TranslateKeyModule,
   TranslateUnitKeyModule,
   ReferenceHrZoneModule,
 } from '../../core/pipes';
-import { FeatureNounTipsModule } from '../../components';
 
 @NgModule({
   imports: [
@@ -110,6 +114,8 @@ import { FeatureNounTipsModule } from '../../components';
     TranslateUnitKeyModule,
     FeatureNounTipsModule,
     ReferenceHrZoneModule,
+    LeafletMapModule,
+    GoogleMapModule,
   ],
   providers: [
     MapService,

@@ -3,6 +3,7 @@
 @import 'font.scss';
 @import 'transform.scss';
 @import 'overflow-scroll';
+@import 'z-index.scss';
 
 $active-color: rgba(38, 171, 227, 1);
 $hover-bg-gray: rgba(240, 240, 240, 1);
@@ -107,7 +108,7 @@ $drop-list-width: 200px;
   cursor: pointer;
   position: absolute;
   top: 50px;
-  z-index: 1;
+  z-index: $drop-menu;
   background-color: var(--scale-255-60);
   color: var(--scale-0-255);
 }
@@ -243,7 +244,7 @@ $drop-list-width: 200px;
 #map__drop__list {
   @include overflow-y-scroll();
   position: absolute;
-  z-index: 10;
+  z-index: $drop-menu;
   background-color: var(--scale-255-60);
   border: 1px solid;
   padding: 5px 10px;
