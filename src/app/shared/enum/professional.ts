@@ -38,3 +38,20 @@ export enum GroupJoinStatus {
   blacklist,
   outOfJoin,
 }
+
+/**
+ * 群組子頁面
+ */
+export enum GroupChildPage {
+  groupIntroduction,
+  myclassReport,
+  classAnalysis,
+  sportsReport,
+  lifeTracking,
+  cloudrunReport,
+  groupArchitecture,
+  adminList,
+  memberList,
+  deviceList,
+  commercePlan,
+}

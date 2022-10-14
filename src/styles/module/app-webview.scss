@@ -4,6 +4,7 @@
 @import 'font.scss';
 @import 'keyframes.scss';
 @import 'overflow-scroll';
+@import 'z-index.scss';
 
 $border-style: 3px solid;
 $animation-setting: 0.5s $transition-effect;
@@ -40,7 +41,7 @@ $animation-setting: 0.5s $transition-effect;
   background-color: rgba(75, 75, 75, 1);
   top: $top;
   left: 0;
-  z-index: 1;
+  z-index: $drop-menu;
   padding: 0;
   width: 180px;
   max-height: 200px;

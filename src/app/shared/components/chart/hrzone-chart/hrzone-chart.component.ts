@@ -221,7 +221,7 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
 
           // 處理列印時highchart無法自適應造成跑版的問題-kidin-1090211
           if (location.search.indexOf('ipm=s') > -1) {
-            HRChartOptions['chart'].width = 540;
+            HRChartOptions['chart'].width = 420;
           }
 
           this.createChart(HRChartOptions);

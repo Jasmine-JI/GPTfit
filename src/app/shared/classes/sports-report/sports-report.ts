@@ -303,7 +303,7 @@ export class SportsReport {
       percentage = (value ?? 0) / conditionTarget;
     }
 
-    return mathRounding(percentage * conditionPercentage, 3);
+    return mathRounding(percentage * conditionPercentage, 4);
   }
 
   /**

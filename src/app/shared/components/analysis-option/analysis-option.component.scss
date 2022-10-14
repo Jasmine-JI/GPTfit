@@ -2,13 +2,14 @@
 @import 'check-box.scss';
 @import 'color.scss';
 @import 'overflow-scroll.scss';
+@import 'z-index.scss';
 
 .option__menu {
   $shadow-blur: 4px rgba(0, 0, 0, 0.5);
   $shadow-offset: 1px;
   position: absolute;
   right: 0;
-  z-index: 5;
+  z-index: $drop-menu;
   padding: 5px;
   max-height: 250px;
   background-color: white;

@@ -1,4 +1,5 @@
 @import 'transition.scss';
+@import 'z-index.scss';
 
 @mixin hover-bg($bgColor) {
   @include transition(background-color);
@@ -67,7 +68,7 @@
 
 #create__mode {
   position: fixed;
-  z-index: 1;
+  z-index: index($normal-index, 1);
   top: 0;
   left: 0;
   width: 100vw;

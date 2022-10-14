@@ -1,6 +1,7 @@
 @import 'transition.scss';
 @import 'transform.scss';
 @import 'font.scss';
+@import 'z-index.scss';
 
 @mixin btn-mobile() {
   width: 100%;
@@ -66,7 +67,7 @@ $date-picker-color: var(--scale-100-230);
   max-width: 500px;
   border-radius: 5px;
   background-color: var(--scale-255-90);
-  z-index: 12;
+  z-index: $important-dialog;
 }
 
 .btn__mobile {

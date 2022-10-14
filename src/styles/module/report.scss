@@ -9,6 +9,7 @@
 @import 'transform.scss';
 @import 'color.scss';
 @import 'flex-center.scss';
+@import 'z-index.scss';
 
 /**
  * 概要資訊各欄位顏色
@@ -242,7 +243,7 @@ $color-dot-hint-size: 20px;
   width: 260px;
   padding: 15px;
   background-color: white;
-  z-index: 1;
+  z-index: $drop-menu;
   border: 1px solid black;
 }
 
@@ -278,7 +279,7 @@ $color-dot-hint-size: 20px;
   width: 100%;
   border: 1px solid black;
   padding: 5px;
-  z-index: 2;
+  z-index: $drop-menu;
   background-color: white;
   top: 34px;
 

@@ -4,6 +4,7 @@
 @import 'transform.scss';
 @import 'drop-triangle.scss';
 @import 'overflow-scroll.scss';
+@import 'z-index.scss';
 
 @mixin list-grid() {
   display: grid;
@@ -96,7 +97,7 @@
   $shadow: 4px rgba(0, 0, 0, 0.3);
   position: absolute;
   right: 0;
-  z-index: 1;
+  z-index: $drop-menu;
   background-color: white;
   cursor: pointer;
   list-style: none;

@@ -8,6 +8,7 @@
 @import 'button.scss';
 @import 'check-box.scss';
 @import 'overflow-scroll';
+@import 'z-index.scss';
 
 $placeholder-color: rgba(190, 190, 190, 1);
 $placeholder-font-size: 24px;
@@ -186,7 +187,7 @@ $placeholder-img-max-size: 220px;
   left: 0;
   list-style: none;
   background-color: white;
-  z-index: 2;
+  z-index: $drop-menu;
   box-shadow: 1px 2px 4px $list-shadow-color, -1px -2px 4px $list-shadow-color;
   max-height: 350px;
   @include overflow-y-scroll();
@@ -263,7 +264,7 @@ $placeholder-img-max-size: 220px;
 
 .content__img {
   max-width: 60vw;
-  z-index: 1;
+  z-index: index($normal-index, 1);
 }
 
 .placeholder__icon {
@@ -321,7 +322,7 @@ $placeholder-img-max-size: 220px;
   list-style: none;
   box-shadow: 1px 2px 4px $list-shadow-color, -1px -2px 4px $list-shadow-color;
   background-color: white;
-  z-index: 2;
+  z-index: $drop-menu;
   max-height: 150px;
   @include overflow-y-scroll();
 
@@ -404,7 +405,7 @@ $placeholder-img-max-size: 220px;
   position: absolute;
   height: 50%;
   margin: 10px;
-  z-index: 1;
+  z-index: index($normal-index, 1);
 }
 
 .fee__img {

@@ -8,27 +8,19 @@ import {
   ElementRef,
   Output,
   EventEmitter,
+  ChangeDetectorRef,
 } from '@angular/core';
-import { transform, WGS84, GCJ02, BD09 } from 'gcoord';
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UtilsService } from '../../services/utils.service';
 import { SportType } from '../../enum/sports';
 import { TranslateService } from '@ngx-translate/core';
 import { DataTypeTranslatePipe } from '../../pipes/data-type-translate.pipe';
-import { chinaAndTaiwanBorder } from '../../models/china-border-data';
-import { taiwanBorder } from '../../models/taiwan-border-data';
 
-declare let google: any, BMap: any, BMapLib: any;
+declare let google: any;
 
-type MapSource = 'google' | 'baidu';
+type MapSource = 'google' | 'OSM';
 type MapKind = 'normal' | 'heat';
-type BoundaryCoordinate = {
-  top: number;
-  bottom: number;
-  left: number;
-  right: number;
-};
 type CompareDataOpt =
   | 'hr'
   | 'speed'
@@ -47,16 +39,12 @@ type CompareDataOpt =
 })
 export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
   @Input() userPoint: Array<any>;
-  @Input() userInfo: Array<any>;
   @Input() sportType: SportType;
   @Input() isNormalCoordinate: any;
   @Input() sysAccessRight: number;
   @Input() unit: number;
-  @Input() hideChart: boolean;
-  @Input() cloudrunMapId: number;
   @Output() chartSetting: EventEmitter<string> = new EventEmitter();
   @ViewChild('gMap') gMap: ElementRef;
-  @ViewChild('bMap') bMap: ElementRef;
 
   private ngUnsubscribe = new Subject();
 
@@ -64,7 +52,6 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
    * ui會用到的各種flag
    */
   uiFlag = {
-    userInChina: false,
     showMap: false,
     showMapOpt: false,
     showDataSelector: null,
@@ -94,34 +81,15 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
     second: [],
   };
 
-  /**
-   * google map 用參數
-   */
-  googleObj = {
-    gMapPlayMark: [],
-    map: null,
-    path: null,
-    displayMap: null,
-    mapKind: <'roadmap' | 'satellite' | 'hybrid'>'roadmap',
-    eventListener: null,
-  };
-
-  /**
-   * baidu map 用參數
-   */
-  baiduObj = {
-    bMapPlayMark: [],
-    map: null,
-    path: null,
-    displayMap: null,
-  };
-
   clickEvent: Subscription;
+
+  focusPosition = 0;
 
   constructor(
     private utils: UtilsService,
     private translate: TranslateService,
-    private dataTypeTranslatePipe: DataTypeTranslatePipe
+    private dataTypeTranslatePipe: DataTypeTranslatePipe,
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {}
@@ -130,7 +98,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
     // 經緯度座標皆為異常值，則不顯示地圖
     if (this.isNormalCoordinate || this.userPoint.length > 1) {
       this.mapOpt.mapKind = this.sportType === 7 ? 'heat' : 'normal'; // 僅球類運動顯示熱力圖
-      this.checkMapLoaded(this.userPoint);
+      this.checkMapLoaded();
     } else {
       this.uiFlag.showMap = false;
     }
@@ -144,14 +112,12 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * 確認各個地圖套件有載入，兩個都無法載入就隱藏地圖
-   * @param dataArr {Array<any>}-所有人的point資訊
-   * @author kidin-1100113
    */
-  checkMapLoaded(dataArr: Array<any>) {
-    // 判斷bidu map是否可以載入
-    if ('BMAP_NORMAL_MAP' in window) {
+  checkMapLoaded() {
+    // 判斷leaflet map是否可以載入
+    if ('L' in window) {
       this.uiFlag.showMap = true;
-      this.mapOpt.mapSource = 'baidu';
+      this.mapOpt.mapSource = 'OSM';
     } else {
       this.mapOpt.showMapSourceSelector = false;
     }
@@ -162,12 +128,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
       this.mapOpt.mapSource = 'google';
     } else {
       this.mapOpt.showMapSourceSelector = false;
-      this.uiFlag.userInChina = true; // 暫以無法載入google map當作使用者位於中國的依據
     }
-
-    this.mapOpt.mapSource === 'google'
-      ? this.handleGoogleMap(dataArr)
-      : this.handleBaiduMap(dataArr);
   }
 
   /**
@@ -217,295 +178,6 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
-   * 處理google map顯示
-   * @param dataArr {Array<number>}-所有人的point資訊
-   * @author kidin-1100113
-   */
-  handleGoogleMap(dataArr: Array<any>) {
-    setTimeout(() => {
-      const googleMapEle = this.gMap.nativeElement,
-        bounds = new google.maps.LatLngBounds(),
-        effectPointIdx = [],
-        reservedPoint = {
-          top: null,
-          bottom: null,
-          left: null,
-          right: null,
-        },
-        startPoint = [+dataArr[0].longitudeDegrees[0], +dataArr[0].latitudeDegrees[0]],
-        needConverse =
-          this.handleBorderData(startPoint, chinaAndTaiwanBorder) &&
-          !this.handleBorderData(startPoint, taiwanBorder);
-
-      this.googleObj.path = dataArr[0].latitudeDegrees.map((_lan, _idx) => {
-        const _lng = dataArr[0].longitudeDegrees[_idx];
-
-        let WGS84Point: any;
-        if (
-          (this.uiFlag.userInChina || needConverse) &&
-          !['satellite', 'hybrid'].includes(this.googleObj.mapKind)
-        ) {
-          WGS84Point = transform([_lng, _lan], WGS84, GCJ02);
-        } else {
-          WGS84Point = [_lng, _lan];
-        }
-
-        const _mapPoint = new google.maps.LatLng(WGS84Point[1], WGS84Point[0]), // google map座標為(緯度, 經度)
-          [_newLng, _newLan] = [...WGS84Point];
-        if (_lan && _lng) {
-          effectPointIdx.push(_idx); // 儲存有效點的位置方便補值
-          reservedPoint.top =
-            !reservedPoint.top || _newLan > reservedPoint.top ? _newLan : reservedPoint.top;
-          reservedPoint.bottom =
-            !reservedPoint.bottom || _newLan < reservedPoint.bottom
-              ? _newLan
-              : reservedPoint.bottom;
-          reservedPoint.left =
-            !reservedPoint.left || _newLng < reservedPoint.left ? _newLng : reservedPoint.left;
-          reservedPoint.right =
-            !reservedPoint.right || _newLng > reservedPoint.right ? _newLng : reservedPoint.right;
-          bounds.extend(_mapPoint);
-        }
-
-        return _mapPoint;
-      });
-
-      // 將整體路線在顯示中向上偏移，以留給圖表
-      bounds.extend(
-        new google.maps.LatLng(
-          reservedPoint.bottom - (reservedPoint.top - reservedPoint.bottom) * 0.2,
-          (reservedPoint.left + reservedPoint.right) / 2
-        )
-      );
-
-      // 將無效點以該點後面的有效點進行填補
-      let j = 0;
-      this.googleObj.path = this.googleObj.path.map((_path, _index) => {
-        if (_index != effectPointIdx[j]) {
-          return this.googleObj.path[effectPointIdx[j]];
-        } else {
-          j++;
-          return _path;
-        }
-      });
-
-      const startMark = new google.maps.Marker({
-          // 路線起始點
-          position: this.googleObj.path[0],
-          title: 'Start point',
-          icon: '/assets/map_marker_start.svg',
-        }),
-        endMark = new google.maps.Marker({
-          // 路線終點
-          position: this.googleObj.path[this.googleObj.path.length - 1],
-          title: 'End point',
-          icon: '/assets/map_marker_end.svg',
-        }),
-        mapSetting = {
-          // 地圖設定
-          zoom: 15,
-          center: new google.maps.LatLng(24.123499, 120.66014),
-          mapTypeId: this.googleObj.mapKind,
-          gestureHandling: 'cooperative', // 讓使用者在手機環境下使用單止滑頁面，雙指滑地圖
-          streetViewControlOptions: {
-            position: google.maps.ControlPosition.RIGHT_TOP,
-          },
-          zoomControlOptions: {
-            position: google.maps.ControlPosition.RIGHT_CENTER,
-          },
-        };
-
-      this.googleObj.map = new google.maps.Map(googleMapEle, mapSetting);
-      startMark.setMap(this.googleObj.map);
-      endMark.setMap(this.googleObj.map);
-
-      // 建立所有使用者的標記
-      dataArr.forEach((_data, _index) => {
-        const mark = new google.maps.Marker({
-          position: this.googleObj.path[0],
-          title: this.userInfo ? this.userInfo[_index].name : 'User',
-          icon: '/assets/map_marker_player.svg',
-        });
-
-        mark.setMap(this.googleObj.map);
-        this.googleObj.gMapPlayMark.push(mark);
-      });
-
-      // this.changeMapKind(this.mapOpt.mapKind);
-      if (this.mapOpt.mapKind === 'normal') {
-        this.googleObj.displayMap = new google.maps.Polyline({
-          path: this.googleObj.path,
-          geodesic: true,
-          strokeColor: '#FF00AA',
-          strokeOpacity: 0.7,
-          strokeWeight: 4,
-        });
-      } else {
-        this.googleObj.displayMap = new google.maps.visualization.HeatmapLayer({
-          data: this.googleObj.path,
-          radius: 20,
-          opacity: 1,
-        });
-      }
-
-      this.googleObj.displayMap.setMap(this.googleObj.map);
-      this.googleObj.map.fitBounds(bounds); // 將地圖縮放至可看到整個路線
-
-      this.googleObj.eventListener = google.maps.event.addListener(
-        this.googleObj.map,
-        'maptypeid_changed',
-        () => {
-          if (this.googleObj.mapKind !== this.googleObj.map.getMapTypeId()) {
-            this.googleObj.mapKind = this.googleObj.map.getMapTypeId();
-            google.maps.event.removeListener(this.googleObj.eventListener);
-            this.handleGoogleMap(dataArr);
-          }
-        }
-      );
-    });
-  }
-
-  /**
-   * 處理baidu map顯示
-   * @param dataArr {Array<number>}-所有人的point資訊
-   * @author kidin-1100113
-   */
-  handleBaiduMap(dataArr: Array<any>) {
-    setTimeout(() => {
-      const lngArr = dataArr[0].longitudeDegrees,
-        latArr = dataArr[0].latitudeDegrees,
-        baiduMapEle = this.bMap.nativeElement,
-        effectPointIdx = [],
-        reservedPoint: BoundaryCoordinate = {
-          top: null,
-          bottom: null,
-          left: null,
-          right: null,
-        },
-        effectIndex = this.findEffectIndex(dataArr[0].longitudeDegrees);
-
-      const needConverse = this.handleBorderData(
-        [+lngArr[effectIndex], +latArr[effectIndex]],
-        chinaAndTaiwanBorder
-      );
-      this.baiduObj.map = new BMap.Map(baiduMapEle);
-      this.baiduObj.path = dataArr[0].latitudeDegrees.map((_lan, _idx) => {
-        const _lng = dataArr[0].longitudeDegrees[_idx];
-        if (_lan && _lng) {
-          effectPointIdx.push(_idx); // 儲存有效點的位置方便補值
-          reservedPoint.top =
-            !reservedPoint.top || _lan > reservedPoint.top ? _lan : reservedPoint.top;
-          reservedPoint.bottom =
-            !reservedPoint.bottom || _lan < reservedPoint.bottom ? _lan : reservedPoint.bottom;
-          reservedPoint.left =
-            !reservedPoint.left || _lng < reservedPoint.left ? _lng : reservedPoint.left;
-          reservedPoint.right =
-            !reservedPoint.right || _lng > reservedPoint.right ? _lng : reservedPoint.right;
-        }
-
-        return [_lng, _lan]; // 百度地圖座標是（經度, 緯度）
-      });
-
-      // 將無效點以該點後面的有效點進行填補，並使用套件將大地座標轉為百度座標（勿使用baidu官方轉換座標的api）-1100118
-      let j = 0;
-      this.baiduObj.path = this.baiduObj.path.map((_path, _index) => {
-        let _bd09Point;
-        if (this.uiFlag.userInChina || needConverse) {
-          if (_index != effectPointIdx[j]) {
-            _bd09Point = transform(
-              [this.baiduObj.path[effectPointIdx[j]][0], this.baiduObj.path[effectPointIdx[j]][1]],
-              WGS84,
-              BD09
-            );
-          } else {
-            j++;
-            _bd09Point = transform([_path[0], _path[1]], WGS84, BD09);
-          }
-        } else {
-          if (_index != effectPointIdx[j]) {
-            _bd09Point = transform(
-              [this.baiduObj.path[effectPointIdx[j]][0], this.baiduObj.path[effectPointIdx[j]][1]],
-              WGS84,
-              WGS84
-            );
-          } else {
-            j++;
-            _bd09Point = transform([_path[0], _path[1]], WGS84, WGS84);
-          }
-        }
-
-        return new BMap.Point(_bd09Point[0], _bd09Point[1]);
-      });
-
-      const startMark = new BMap.Marker(this.baiduObj.path[0], {
-          // 路線起始點
-          icon: new BMap.Icon('/assets/map_marker_start.svg', new BMap.Size(33, 50), {
-            anchor: new BMap.Size(16, 50),
-            imageOffset: new BMap.Size(0, 0),
-          }),
-        }),
-        endMark = new BMap.Marker(this.baiduObj.path[this.baiduObj.path.length - 1], {
-          // 路線終點
-          icon: new BMap.Icon('/assets/map_marker_end.svg', new BMap.Size(33, 50), {
-            anchor: new BMap.Size(16, 50),
-            imageOffset: new BMap.Size(0, 0),
-          }),
-        });
-
-      const pathHorizonCenter = (reservedPoint.left + reservedPoint.right) / 2,
-        pathVerticalCenter =
-          reservedPoint.bottom - (reservedPoint.top - reservedPoint.bottom) * 0.2, // 將整體路線在顯示中向上偏移，以留給圖表
-        bd09Center =
-          this.uiFlag.userInChina || needConverse
-            ? transform([pathHorizonCenter, pathVerticalCenter], WGS84, BD09)
-            : [pathHorizonCenter, pathVerticalCenter],
-        bdCenterPoint = new BMap.Point(bd09Center[0], bd09Center[1]),
-        boundPath = this.baiduObj.path.slice();
-
-      boundPath.push(bdCenterPoint);
-      const { zoom, center } = this.baiduObj.map.getViewport(boundPath); // 取得視圖縮放大小與中心點
-
-      this.baiduObj.map.centerAndZoom(center, zoom); // 初始化地圖
-      this.baiduObj.map.addOverlay(startMark);
-      this.baiduObj.map.setCenter(startMark);
-      this.baiduObj.map.addOverlay(endMark);
-      this.baiduObj.map.setCenter(endMark);
-      this.baiduObj.map.disableScrollWheelZoom(); // 關閉滑鼠滾輪縮放，避免手機頁面無法滑動頁面
-      this.baiduObj.map.addControl(new BMap.NavigationControl({ anchor: 'BMAP_ANCHOR_TOP_RIGHT' })); // 平移縮放按鈕
-      this.baiduObj.map.addControl(new BMap.MapTypeControl({ anchor: 'BMAP_ANCHOR_TOP_LEFT' })); // 地圖類型按鈕
-      // 建立所有使用者的標記
-      dataArr.forEach((_data, _index) => {
-        const playerMark = new BMap.Marker(this.baiduObj.path[0], {
-          // 路線起始點
-          icon: new BMap.Icon('/assets/map_marker_player.svg', new BMap.Size(12, 12), {
-            anchor: new BMap.Size(6, 12),
-            imageOffset: new BMap.Size(0, 0),
-          }),
-        });
-
-        this.baiduObj.map.addOverlay(playerMark);
-        this.baiduObj.map.setCenter(playerMark);
-        this.baiduObj.bMapPlayMark.push(playerMark);
-      });
-
-      if (this.mapOpt.mapKind === 'heat' && this.checkCanvasSupport()) {
-        const heatmapOverlay = new BMapLib.HeatmapOverlay({ radius: 20 });
-        this.baiduObj.map.addOverlay(heatmapOverlay);
-        heatmapOverlay.setDataSet({ data: this.baiduObj.path, max: 100 });
-      } else {
-        const polyline = new BMap.Polyline(this.baiduObj.path, {
-          // 路線聚合線
-          strokeColor: 'rgba(232, 62, 140, 1)',
-          strokeWeight: 6,
-          strokeOpacity: 0.5,
-        });
-
-        this.baiduObj.map.addOverlay(polyline);
-      }
-    });
-  }
-
-  /**
    * 判斷是否支援canvas
    * @author kidin-1100118
    */
@@ -514,7 +186,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
     if (testArea.getContext && testArea.getContext('2d')) {
       return true;
     } else {
-      const msg = 'Browser not support baidu heat map!';
+      const msg = 'Browser not support heat map!';
       this.utils.openAlert(msg);
       return false;
     }
@@ -609,9 +281,6 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
    */
   changeMapSource(source: MapSource) {
     this.mapOpt.mapSource = source;
-    this.mapOpt.mapSource === 'google'
-      ? this.handleGoogleMap(this.userPoint)
-      : this.handleBaiduMap(this.userPoint);
     this.uiFlag.showDataSelector = null;
     this.chartSettingEmit();
   }
@@ -623,9 +292,6 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
    */
   changeMapKind(kind: MapKind) {
     this.mapOpt.mapKind = kind;
-    this.mapOpt.mapSource === 'google'
-      ? this.handleGoogleMap(this.userPoint)
-      : this.handleBaiduMap(this.userPoint);
     this.uiFlag.showDataSelector = null;
   }
 
@@ -661,8 +327,15 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
    */
   handleShowOptMenu(e: MouseEvent) {
     e.stopPropagation();
-    this.uiFlag.showMapOpt = !this.uiFlag.showMapOpt;
-    this.uiFlag.showMapOpt ? this.subscribeClick() : this.ngUnsubscribeClick();
+    const { showMapOpt } = this.uiFlag;
+    if (showMapOpt) {
+      this.uiFlag.showMapOpt = false;
+      this.ngUnsubscribeClick();
+    } else {
+      this.uiFlag.showMapOpt = true;
+      this.subscribeClick();
+    }
+
     this.uiFlag.showDataSelector = null;
   }
 
@@ -675,6 +348,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
     this.clickEvent = click.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.uiFlag.showMapOpt = false;
       this.ngUnsubscribeClick();
+      this.changeDetectorRef.markForCheck();
     });
   }
 
@@ -683,7 +357,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100114
    */
   ngUnsubscribeClick() {
-    this.clickEvent.unsubscribe();
+    if (this.clickEvent) this.clickEvent.unsubscribe();
   }
 
   /**
@@ -721,6 +395,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
           case SportType.row:
             return 'rowingCadence';
         }
+        break;
       case 'power':
         return sportType === SportType.cycle ? 'cycleWatt' : 'rowingWatt';
       case 'temperature':
@@ -740,11 +415,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100121
    */
   movePoint(e: number) {
-    if (this.mapOpt.mapSource === 'google') {
-      this.googleObj.gMapPlayMark.forEach((_mark) => _mark.setPosition(this.googleObj.path[e]));
-    } else {
-      this.baiduObj.bMapPlayMark.forEach((_mark) => _mark.setPosition(this.baiduObj.path[e]));
-    }
+    this.focusPosition = e;
   }
 
   /**
@@ -758,13 +429,14 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * 找出路線中有效的起始座標
-   * @param coordinate {Array<number>}-經度或緯度陣列
+   * @param coordinate {Array<[number, number]>}-經度緯度陣列
    * @author kidin-1100226
    */
-  findEffectIndex(coordinate: Array<number>) {
+  findEffectIndex(coordinate: Array<[number, number]>) {
     let index: number = null;
     for (let i = 0, len = coordinate.length; i < len; i++) {
-      if (coordinate[i] !== null && coordinate[i] !== 100) {
+      const [_lon, _lat] = coordinate[i];
+      if (_lon !== null && _lon !== 100 && _lat !== null && _lat !== 100) {
         index = i;
         break;
       }
@@ -777,18 +449,17 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
    * 確認該點是否在該範圍內
    * @param point {Array<number>}-座標
    * @param borderArr {Array<Array<number>>}-地區邊界座標
-   * @author kidin-1100225
    */
   handleBorderData(point: Array<number>, borderArr: Array<Array<number>>) {
     const x = point[0],
       y = point[1];
     let inside = false;
     for (let i = 0, j = borderArr.length - 1; i < borderArr.length; j = i++) {
-      const xi = borderArr[i][0],
-        yi = borderArr[i][1],
-        xj = borderArr[j][0],
-        yj = borderArr[j][1],
-        intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+      const xi = borderArr[i][0];
+      const yi = borderArr[i][1];
+      const xj = borderArr[j][0];
+      const yj = borderArr[j][1];
+      const intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
 
       if (intersect) {
         inside = !inside;
@@ -799,11 +470,9 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
-   * 取消訂閱rxjs及移除google map事件監聽
+   * 取消訂閱rxjs
    */
   ngOnDestroy(): void {
-    if (this.googleObj.eventListener)
-      google.maps.event.removeListener(this.googleObj.eventListener);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }

@@ -1,5 +1,6 @@
 @import 'transition.scss';
 @import 'transform.scss';
+@import 'z-index.scss';
 
 $title-color: rgba(21, 127, 204, 1);
 $drop-menu-width: 120px;
@@ -72,7 +73,7 @@ section {
 
   div {
     position: absolute;
-    z-index: 1;
+    z-index: index($normal-index, 1);
     top: 28px;
     right: -1px;
     border: 1px solid black;

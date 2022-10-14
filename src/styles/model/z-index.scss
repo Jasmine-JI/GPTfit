@@ -1,0 +1,21 @@
+/**
+ * 將z-index集中管理，
+ * 避免如leaflet套件z-index設定過高需要一個一個更改其他z-index
+ */
+
+$important-dialog: 9999;
+$loading-spinner: 9995;
+$loading-bar: 9994;
+$text-full-screen: 9991;
+$mask-full-screen: 9989;
+$sidebar: 9979;
+$mask-sidebar-outside: 9969;
+$navbar-drop-list: 9959;
+$navbar: 9949;
+$mask-content: 9939;
+$content-navbar: 9929;
+$drop-menu: 1005;
+$float-tips: 1004;
+$under-map-element: 1001;
+$normal-index: 1, 2, 3, 4, 5;
+$minus-index: -1, -2, -3, -4, -5;

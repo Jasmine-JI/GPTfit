@@ -1,6 +1,7 @@
 @import 'flex-center.scss';
 @import 'font.scss';
 @import 'button.scss';
+@import 'z-index.scss';
 
 $carousel-width: 50%;
 $img-placeholder-color: rgba(175, 175, 175, 1);
@@ -47,7 +48,7 @@ $drag-button-size: 30px;
 
   > div {
     position: absolute;
-    z-index: -1;
+    z-index: index($minus-index, 1);
   }
 
   > img {

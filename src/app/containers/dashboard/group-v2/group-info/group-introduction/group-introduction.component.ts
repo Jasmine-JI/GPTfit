@@ -116,6 +116,9 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     groupMemberSetting: {
       maxGroupMembers: <number | null>null,
     },
+    groupAllMemberSetting: {
+      maxAllGroupMembers: <number | null>null,
+    },
     commercePlanExpired: '',
     shareAvatarToMember: {
       switch: 1,
@@ -209,14 +212,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       )
       .subscribe((res) => {
         this.groupDetail = deepCopy(res);
-        const {
-          groupName,
-          groupId,
-          groupDesc,
-          groupVideoUrl,
-          groupStatus,
-          customField: { activityTimeHRZ },
-        } = res;
+        const { groupName, groupId, groupDesc, groupVideoUrl, groupStatus, customField } = res;
         this.editBody = {
           token: this.authService.token,
           groupName,
@@ -226,7 +222,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
           groupVideoUrl,
           changeStatus: groupStatus,
           customField: {
-            activityTimeHRZ,
+            activityTimeHRZ: customField?.activityTimeHRZ,
           },
         };
 
@@ -693,12 +689,15 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       this.createBody.groupSetting.maxClasses = planDatas[plan - 1].maxClasses;
       this.createBody.groupManagerSetting.maxGroupManagers = planDatas[plan - 1].maxGroupManagers;
       this.createBody.groupMemberSetting.maxGroupMembers = planDatas[plan - 1].maxGroupMembers;
+      this.createBody.groupAllMemberSetting.maxAllGroupMembers =
+        planDatas[plan - 1].allNotRepeatingMember;
     } else {
       // 客製群組暫時預設同中小企業方案
       this.createBody.groupSetting.maxBranches = planDatas[2].maxBranches;
       this.createBody.groupSetting.maxClasses = planDatas[2].maxClasses;
       this.createBody.groupManagerSetting.maxGroupManagers = planDatas[2].maxGroupManagers;
       this.createBody.groupMemberSetting.maxGroupMembers = planDatas[2].maxGroupMembers;
+      this.createBody.groupAllMemberSetting.maxAllGroupMembers = planDatas[2].allNotRepeatingMember;
     }
   }
 
@@ -770,9 +769,9 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         break;
       case 'member':
         if (numReg.test(num) && num >= 1 && num <= 1000000) {
-          this.createBody.groupMemberSetting.maxGroupMembers = +num;
+          this.createBody.groupAllMemberSetting.maxAllGroupMembers = +num;
         } else {
-          this.createBody.groupMemberSetting.maxGroupMembers = 10000;
+          this.createBody.groupAllMemberSetting.maxAllGroupMembers = 10000;
         }
 
         break;
@@ -1078,7 +1077,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @param zone {BenefitTimeStartZone}-起始心率區間
    */
   changeBenefitTimeStartZone(zone: BenefitTimeStartZone) {
-    const { activityTimeHRZ } = this.groupDetail.customField!;
+    const { activityTimeHRZ } = this.groupDetail.customField;
     if (activityTimeHRZ !== zone) {
       this.editBody.customField.activityTimeHRZ = zone;
       this.uiFlag.contentChange = true;
