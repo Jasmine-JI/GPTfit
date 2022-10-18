@@ -2700,4 +2700,7 @@
  "universal_system_aboveZone1": "心率区间一以上",
  "universal_system_zoneInfo": "效益时间为依据心率区间统计有效的运动时间，可自行设定有效的心率区间范围。",
  "universal_system_startDate": "起始日",
- "universal_system_reportSetting": "报告设定"}
+ "universal_system_reportSetting": "报告设定",
+ "universal_vocabulary_selectEventGroup": "请选择您想要参加的组别",
+ "universal_vocabulary_totalLimit": "总人数限制"
+}

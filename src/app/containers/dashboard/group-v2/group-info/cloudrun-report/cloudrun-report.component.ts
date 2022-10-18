@@ -349,27 +349,27 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       ],
       column: [
         {
-          rowType: this.memberHeaderRowDef[GroupTableCol.name],
+          rowType: GroupTableCol.name,
           i18n: this.translate.instant('universal_activityData_name'),
         },
         {
-          rowType: this.groupHeaderRowDef[GroupTableCol.completeNum],
+          rowType: GroupTableCol.completeNum,
           i18n: `${this.translate.instant('universal_operating_finished')} ${this.translate.instant(
             'universal_activityData_people'
           )}`,
         },
         {
-          rowType: this.groupHeaderRowDef[GroupTableCol.avgTime],
+          rowType: GroupTableCol.avgTime,
           i18n: `${this.translate.instant('universal_adjective_avg')} ${this.translate.instant(
             'universal_activityData_timing'
           )}`,
         },
         {
-          rowType: this.groupHeaderRowDef[GroupTableCol.totalTime],
+          rowType: GroupTableCol.totalTime,
           i18n: this.translate.instant('universal_activityData_limit_totalTime'),
         },
         {
-          rowType: this.groupHeaderRowDef[GroupTableCol.avgPace],
+          rowType: GroupTableCol.avgPace,
           i18n: this.translate.instant(
             this.unit === 0
               ? 'universal_activityData_limit_avgKilometerPace'
@@ -377,21 +377,21 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           ),
         },
         {
-          rowType: this.groupHeaderRowDef[GroupTableCol.avgHr],
+          rowType: GroupTableCol.avgHr,
           i18n: this.translate.instant('universal_activityData_limit_avgHr'),
         },
         {
-          rowType: this.groupHeaderRowDef[GroupTableCol.avgCalories],
+          rowType: GroupTableCol.avgCalories,
           i18n: `${this.translate.instant('universal_adjective_avg')} ${this.translate.instant(
             'universal_userProfile_calories'
           )}`,
         },
         {
-          rowType: this.groupHeaderRowDef[GroupTableCol.avgCadence],
+          rowType: GroupTableCol.avgCadence,
           i18n: this.translate.instant('universal_activityData_limit_avgStepCadence'),
         },
         {
-          rowType: this.groupHeaderRowDef[GroupTableCol.hrZone],
+          rowType: GroupTableCol.hrZone,
           i18n: this.translate.instant('universal_activityData_hrZone'),
         },
       ],
@@ -414,39 +414,39 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       ],
       column: [
         {
-          rowType: this.memberHeaderRowDef[MemberTableCol.name],
+          rowType: MemberTableCol.name,
           i18n: this.translate.instant('universal_activityData_name'),
         },
         {
-          rowType: this.memberHeaderRowDef[MemberTableCol.gender],
+          rowType: MemberTableCol.gender,
           i18n: this.translate.instant('universal_userProfile_gender'),
         },
         {
-          rowType: this.memberHeaderRowDef[MemberTableCol.age],
+          rowType: MemberTableCol.age,
           i18n: this.translate.instant('universal_userProfile_age'),
         },
         {
-          rowType: this.memberHeaderRowDef[MemberTableCol.runTimes],
+          rowType: MemberTableCol.runTimes,
           i18n: this.translate.instant('universal_activityData_totalActivity'),
         },
         {
-          rowType: this.memberHeaderRowDef[MemberTableCol.bestTime],
+          rowType: MemberTableCol.bestTime,
           i18n: `${this.translate.instant('universal_adjective_maxBest')} ${this.translate.instant(
             'universal_activityData_timing'
           )}`,
         },
         {
-          rowType: this.memberHeaderRowDef[MemberTableCol.avgTime],
+          rowType: MemberTableCol.avgTime,
           i18n: `${this.translate.instant('universal_adjective_avg')} ${this.translate.instant(
             'universal_activityData_timing'
           )}`,
         },
         {
-          rowType: this.memberHeaderRowDef[MemberTableCol.totalTime],
+          rowType: MemberTableCol.totalTime,
           i18n: this.translate.instant('universal_activityData_limit_totalTime'),
         },
         {
-          rowType: this.memberHeaderRowDef[MemberTableCol.avgPace],
+          rowType: MemberTableCol.avgPace,
           i18n: this.translate.instant(
             this.unit === 0
               ? 'universal_activityData_limit_avgKilometerPace'
@@ -454,19 +454,19 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           ),
         },
         {
-          rowType: this.memberHeaderRowDef[MemberTableCol.avgHr],
+          rowType: MemberTableCol.avgHr,
           i18n: this.translate.instant('universal_activityData_limit_avgHr'),
         },
         {
-          rowType: this.memberHeaderRowDef[MemberTableCol.totalCalories],
+          rowType: MemberTableCol.totalCalories,
           i18n: this.translate.instant('universal_activityData_totalCalories'),
         },
         {
-          rowType: this.memberHeaderRowDef[MemberTableCol.avgCadence],
+          rowType: MemberTableCol.avgCadence,
           i18n: this.translate.instant('universal_activityData_limit_avgStepCadence'),
         },
         {
-          rowType: this.memberHeaderRowDef[MemberTableCol.hrZone],
+          rowType: MemberTableCol.hrZone,
           i18n: this.translate.instant('universal_activityData_hrZone'),
         },
       ],
@@ -1577,9 +1577,11 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100319
    */
   setDefaultOpt(num: number) {
+    let groupShowDataType: Array<GroupTableCol>;
+    let memberShowDataType: Array<MemberTableCol>;
     switch (num) {
       case 6:
-        this.groupTable.showDataType = [
+        groupShowDataType = [
           GroupTableCol.name,
           GroupTableCol.completeNum,
           GroupTableCol.avgTime,
@@ -1587,7 +1589,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           GroupTableCol.avgCadence,
           GroupTableCol.avgHr,
         ];
-        this.memberTable.showDataType = [
+        memberShowDataType = [
           MemberTableCol.name,
           MemberTableCol.runTimes,
           MemberTableCol.bestTime,
@@ -1597,14 +1599,14 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         ];
         break;
       case 5:
-        this.groupTable.showDataType = [
+        groupShowDataType = [
           GroupTableCol.name,
           GroupTableCol.completeNum,
           GroupTableCol.avgTime,
           GroupTableCol.avgPace,
           GroupTableCol.avgCadence,
         ];
-        this.memberTable.showDataType = [
+        memberShowDataType = [
           MemberTableCol.name,
           MemberTableCol.runTimes,
           MemberTableCol.bestTime,
@@ -1613,13 +1615,13 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         ];
         break;
       case 4:
-        this.groupTable.showDataType = [
+        groupShowDataType = [
           GroupTableCol.name,
           GroupTableCol.completeNum,
           GroupTableCol.avgTime,
           GroupTableCol.avgPace,
         ];
-        this.memberTable.showDataType = [
+        memberShowDataType = [
           MemberTableCol.name,
           MemberTableCol.runTimes,
           MemberTableCol.bestTime,
@@ -1627,19 +1629,13 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         ];
         break;
       case 3:
-        this.groupTable.showDataType = [
-          GroupTableCol.name,
-          GroupTableCol.completeNum,
-          GroupTableCol.avgTime,
-        ];
-        this.memberTable.showDataType = [
-          MemberTableCol.name,
-          MemberTableCol.bestTime,
-          MemberTableCol.avgPace,
-        ];
+        groupShowDataType = [GroupTableCol.name, GroupTableCol.completeNum, GroupTableCol.avgTime];
+        memberShowDataType = [MemberTableCol.name, MemberTableCol.bestTime, MemberTableCol.avgPace];
         break;
     }
 
+    this.groupTable.showDataType = groupShowDataType;
+    this.memberTable.showDataType = memberShowDataType;
     this.setAnalysisOpt();
   }
 

@@ -286,6 +286,9 @@
     >
       <i class="icon-svg_web-icon_p1_008-edit"></i>
     </button>
+    <button class="navigate__page" [title]="'編輯賽事' | translate" (click)="navigatorEditEvent()">
+      {{ '編輯賽事' | translate }}
+    </button>
   </div>
 
   <div class="flexRow tab__section">
@@ -944,12 +947,12 @@
       }"
       *ngIf="!canEdit || !uiFlag.detailEditable"
     >
-      {{ type === 'mobileNumber' && value == 0 ? '' : value }}
+      {{ type === 'mobileNumber' && +value === 0 ? '' : value }}
     </p>
     <input
       type="text"
       class="detail__input"
-      [value]="type === 'mobileNumber' && value == 0 ? '' : value"
+      [value]="type === 'mobileNumber' && +value === 0 ? '' : value"
       (focus)="focusInput()"
       (focusout)="handleEditDetail($event, type, index)"
       *ngIf="canEdit && uiFlag.detailEditable"
@@ -962,7 +965,7 @@
     <li *ngFor="let _group of groupList">
       <ng-container
         *ngIf="
-          (_group.gender === 2 || _group.gender == gender) &&
+          (_group.gender === 2 || _group.gender === +gender) &&
           (!_group.age || (age >= _group.age.min && age <= _group.age.max))
         "
       >

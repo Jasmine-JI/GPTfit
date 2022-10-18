@@ -17,7 +17,13 @@ import { Api10xxService } from '../../../../core/services/api-10xx.service';
 import { UserProfileInfo } from '../../../../shared/models/user-profile-info';
 import { AccountTypeEnum, AccountStatusEnum } from '../../../../shared/enum/account';
 import { GetClientIpService } from '../../../../shared/services/get-client-ip.service';
-import { Nationality, ApplyStatus, EventStatus } from '../../models/activity-content';
+import {
+  Nationality,
+  ApplyStatus,
+  EventStatus,
+  EventDetail,
+  EventInfo,
+} from '../../models/activity-content';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
@@ -27,6 +33,8 @@ import { EnableAccountFlow } from '../../../../shared/models/signup-response';
 import { LockCaptcha } from '../../../../shared/classes/lock-captcha';
 import { checkResponse, getCurrentTimestamp } from '../../../../shared/utils/index';
 import { NodejsApiService } from '../../../../core/services/nodejs-api.service';
+import { QueryString } from '../../../../shared/enum/query-string';
+import { getUrlQueryStrings } from '../../../../shared/utils';
 
 const stageHeight = 90;
 type InputAlert = 'format' | 'empty' | 'repeat' | 'login';
@@ -73,8 +81,8 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     displayPW: false,
   };
 
-  eventInfo: any;
-  eventDetail: any;
+  eventInfo: EventInfo;
+  eventDetail: EventDetail;
 
   /**
    * 表單完成階段的提示
@@ -389,6 +397,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         if (canApply) {
           this.eventInfo = eventInfo;
           this.eventDetail = eventDetail;
+          this.changeDefaultProfile();
           this.filterGroupList();
           this.handleDefaultApplyFee(eventDetail);
           return true;
@@ -530,8 +539,11 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       if (firstAlertElement) {
         this.uiFlag.currentFocusInput = '.alert__text';
       } else {
-        const targetId = (e as any).currentTarget.id;
-        this.uiFlag.currentFocusInput = `#${targetId}`;
+        const { currentTarget } = e as any;
+        if (currentTarget) {
+          const targetId = currentTarget.id;
+          this.uiFlag.currentFocusInput = `#${targetId}`;
+        }
       }
 
       this.checkStagePosition();
@@ -1086,6 +1098,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
 
     this.auth.accountLogin(body).subscribe((res) => {
       if (checkResponse(res)) {
+        this.auth.tokenLogin(); // 用來更新userProfile
         const {
           signIn: { accountStatus, accountType },
           userProfile: { userId },
@@ -1236,30 +1249,66 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   /**
+   * 如果分組有條件，則根據欲選擇的分組調整預設使用者資訊
+   */
+  changeDefaultProfile() {
+    const { group } = this.eventDetail;
+    const targetGroup = +this.getTargetGroup();
+    const { age, gender } = group[targetGroup];
+    if (age) {
+      const { min, max } = age;
+      const { birthday } = this.applyInfo.userProfile;
+      const birthDayjs = dayjs(birthday, 'YYYYMMDD');
+      const userAge = dayjs().diff(birthDayjs, 'year');
+      if (userAge < min || userAge > max) {
+        this.applyInfo.userProfile.birthday = dayjs().subtract(min, 'year');
+      }
+    }
+
+    if (gender !== Sex.unlimit) {
+      this.applyInfo.userProfile.gender = gender;
+    }
+  }
+
+  /**
    * 根據使用者之年齡與性別，篩選使用者可選擇之分組清單
    * @author kidin-1101222
    */
   filterGroupList() {
     if (this.eventDetail) {
+      let targetGroupId: number;
+      const targetGroup = +this.getTargetGroup();
+      const { numberLimit } = this.eventInfo;
       const { gender, birthday } = this.applyInfo.userProfile;
-      const momentBirthday = birthday ? dayjs(birthday, 'YYYYMMDD') : this.defaultBirthday;
+      const momentBirthday = birthday ? dayjs(`${birthday}`, 'YYYYMMDD') : this.defaultBirthday;
       const age = dayjs().diff(momentBirthday, 'year');
-      this.groupList = this.eventDetail.group.filter((_list) => {
-        const { gender: groupGender, age: groupAge } = _list;
+      this.groupList = this.eventDetail.group.filter((_list, _index) => {
+        const { gender: groupGender, age: groupAge, currentApplyNumber, id } = _list;
+        if (numberLimit && currentApplyNumber >= numberLimit) return false;
         const { max, min } = groupAge || { max: 100, min: 0 };
         const fitGender = groupGender === Sex.unlimit || gender === groupGender;
         const fitAge = !groupAge || (age >= min && age <= max);
+        if (targetGroup === _index && fitGender && fitAge) targetGroupId = id;
         return fitGender && fitAge;
       });
 
       if (this.groupList.length > 0) {
-        this.applyInfo.targetGroupId = this.groupList[0].id;
+        this.applyInfo.targetGroupId = targetGroupId || this.groupList[0].id;
         this.uiFlag.notQualified = false;
       } else {
         this.showGroupAlert();
         this.uiFlag.notQualified = true;
       }
     }
+  }
+
+  /**
+   * 取得欲報名的分組
+   */
+  getTargetGroup() {
+    const queryString = getUrlQueryStrings(location.search);
+    const targetParam = QueryString.applyGroup;
+    return queryString[targetParam] || null;
   }
 
   /**
@@ -1349,7 +1398,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
                 const { apiReturnMessage } = processResult;
                 switch (apiReturnMessage) {
                   case 'Found attack, update status to lock!':
-                  case 'Found lock!':
+                  case 'Found lock!': {
                     const { imgLockCode } = processResult;
                     this.imgLock = new LockCaptcha(
                       imgLockCode,
@@ -1357,6 +1406,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
                       this.getClientIp
                     );
                     break;
+                  }
                 }
               }
             } else {
@@ -1426,7 +1476,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @param callback {any}-callback function
    * @author kidin-1101206
    */
-  handleCaptchaUnlock(callback: Function = null) {
+  handleCaptchaUnlock(callback = null) {
     this.imgLock
       .requestUnlock()
       .pipe(takeUntil(this.ngUnsubscribe))

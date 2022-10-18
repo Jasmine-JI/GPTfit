@@ -48,7 +48,7 @@ $drag-button-size: 30px;
 
   > div {
     position: absolute;
-    z-index: index($minus-index, 1);
+    z-index: nth($minus-index, 1);
   }
 
   > img {

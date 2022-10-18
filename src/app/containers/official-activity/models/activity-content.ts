@@ -54,6 +54,7 @@ export interface DetailGroup {
     max: number;
     min: number;
   };
+  currentApplyNumber?: number;
 }
 
 export enum CardTypeEnum {

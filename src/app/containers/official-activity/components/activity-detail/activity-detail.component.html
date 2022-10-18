@@ -51,7 +51,7 @@
               "
             ></button>
           </ng-container>
-          <button id="apply__button" (click)="navigateApplyPage()">
+          <button id="apply__button" (click)="navigateApplySection()">
             <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.canApply">
               {{ 'universal_vocabulary_apply' | translate }}
             </ng-container>
@@ -163,11 +163,98 @@
     </ng-container>
   </main>
 </section>
+<section class="apply__section" *ngIf="eventInfo && eventDetail">
+  <h5 class="apply__section__title">{{ 'universal_vocabulary_signUp' | translate }}</h5>
+  <hr style="margin: 0" />
+  <p class="apply__description">{{ 'universal_vocabulary_selectEventGroup' | translate }}</p>
+  <div class="flexCol apply__section__content">
+    <div class="flexRow group__button__area">
+      <ng-container *ngFor="let _group of eventDetail.group; let _index = index">
+        <button
+          *ngTemplateOutlet="
+            groupApplySelector;
+            context: {
+              groupIndex: _index,
+              title: _group.name,
+              gender: _group.gender,
+              age: _group.age,
+              isFull: groupApplyCheck[_index].isFull,
+              eligible: groupApplyCheck[_index].qualified,
+              selected: currentSelectedGroup === _index
+            }
+          "
+        ></button>
+      </ng-container>
+    </div>
+    <button id="apply__button" style="max-width: 150px" (click)="navigateApplyPage()">
+      <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.canApply">
+        {{ 'universal_vocabulary_apply' | translate }}
+      </ng-container>
+      <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.applied">
+        {{ 'universal_vocabulary_signed' | translate }}
+      </ng-container>
+      <ng-container
+        *ngIf="
+          [ApplyButtonStatus.applyFull, ApplyButtonStatus.cutOff].includes(uiFlag.applyButtonStatus)
+        "
+      >
+        {{ 'universal_vocabulary_signEnd' | translate }}
+      </ng-container>
+      <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.eventCancelled">
+        {{ 'universal_vocabulary_raceCancel' | translate }}
+      </ng-container>
+      <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.applyCancelled">
+        {{ 'universal_vocabulary_signCanceled' | translate }}
+      </ng-container>
+      <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.applyCancelling">
+        {{ 'universal_system_leaving' | translate }}
+      </ng-container>
+    </button>
+  </div>
+</section>
 
 <ng-template #editButton let-eventId="eventId" let-eventCancel="eventCancel">
   <button class="edit__button" *ngIf="uiFlag.isAdmin && !eventCancel">
     <a class="flexCenter" [href]="'/official-activity/edit-activity/' + eventInfo.eventId">
       <i class="icon-svg_web-icon_p1_008-edit"></i>
     </a>
+  </button>
+</ng-template>
+
+<ng-template
+  #groupApplySelector
+  let-groupIndex="groupIndex"
+  let-title="title"
+  let-gender="gender"
+  let-age="age"
+  let-isFull="isFull"
+  let-eligible="eligible"
+  let-selected="selected"
+>
+  <button
+    [ngClass]="{
+      flexCol: true,
+      group__select__button: true,
+      apply__disable: isFull || !eligible,
+      button__selected: selected
+    }"
+    (click)="selectGroup(groupIndex)"
+  >
+    <div class="flexRow group__apply__status">
+      <span class="status__hint" *ngIf="!eligible">{{
+        'universal_vocabulary_notQualified' | translate
+      }}</span>
+      <span class="status__hint" *ngIf="eligible && isFull">{{
+        'universal_vocabulary_full' | translate
+      }}</span>
+    </div>
+    <div class="apply__button__title">{{ title }}</div>
+    <div class="apply__condition">
+      <span *ngIf="gender !== null && gender !== undefined">
+        <ng-container *ngIf="gender === 0">♂</ng-container>
+        <ng-container *ngIf="gender === 1">♀</ng-container>
+      </span>
+      <span *ngIf="age">{{ age.min }}-{{ age.max }} yr</span>
+    </div>
   </button>
 </ng-template>

@@ -188,6 +188,16 @@ export class User {
   }
 
   /**
+   * 根據生日取得年齡
+   */
+  get age() {
+    const currentDay = dayjs();
+    const birthDay = dayjs(this._userProfile.birthday, 'YYYYMMDD');
+    const age = currentDay.diff(birthDay, 'year');
+    return age;
+  }
+
+  /**
    * 更新userProfile資訊
    * @param content {any}-更新內容
    */

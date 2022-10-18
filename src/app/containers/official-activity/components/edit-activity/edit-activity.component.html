@@ -259,50 +259,6 @@
           </tbody>
         </table>
       </div>
-      <div>
-        <legend class="edit__section__title">
-          {{ '人數限制' }}
-        </legend>
-        <div>
-          <input
-            type="radio"
-            id="peopel__limit__none"
-            name="peopelLimit"
-            class="radio__input"
-            [checked]="uiFlag.numberLimit === HaveNumberLimit.no"
-            [value]="HaveNumberLimit.no"
-            (click)="selectPeopleLimit($event)"
-          />
-          <label for="peopel__limit__none">
-            {{ '無限制' }}
-          </label>
-        </div>
-        <div>
-          <input
-            id="peopel__limit"
-            type="radio"
-            name="peopelLimit"
-            class="radio__input"
-            [checked]="uiFlag.numberLimit === HaveNumberLimit.yes"
-            [value]="HaveNumberLimit.yes"
-            (click)="selectPeopleLimit($event)"
-          />
-          <input
-            type="number"
-            class="people__limit__input"
-            [class.empty__warn]="
-              uiFlag.numberLimit === HaveNumberLimit.yes && !eventInfo.numberLimit
-            "
-            [value]="
-              eventInfo.numberLimit && eventInfo.numberLimit > 0
-                ? eventInfo.numberLimit
-                : defaultNumberLimit
-            "
-            (focusout)="handlePeopleLimitInput($event)"
-          />
-          <span>{{ 'universal_unit_members' | translate }}</span>
-        </div>
-      </div>
       <div
         class="flexRow cloudrun__map"
         [class.map__selector]="
@@ -468,6 +424,50 @@
     </article>
     <section class="flexCol group__section">
       <h5 class="edit__section__title">分組</h5>
+      <div class="group__number__limit">
+        <h6 class="number__limit__title">
+          {{ '各組人數限制' }}
+        </h6>
+        <div>
+          <input
+            type="radio"
+            id="peopel__limit__none"
+            name="peopelLimit"
+            class="radio__input"
+            [checked]="uiFlag.numberLimit === HaveNumberLimit.no"
+            [value]="HaveNumberLimit.no"
+            (click)="selectPeopleLimit($event)"
+          />
+          <label for="peopel__limit__none">
+            {{ '無限制' }}
+          </label>
+        </div>
+        <div>
+          <input
+            id="peopel__limit"
+            type="radio"
+            name="peopelLimit"
+            class="radio__input"
+            [checked]="uiFlag.numberLimit === HaveNumberLimit.yes"
+            [value]="HaveNumberLimit.yes"
+            (click)="selectPeopleLimit($event)"
+          />
+          <input
+            type="number"
+            class="people__limit__input"
+            [class.empty__warn]="
+              uiFlag.numberLimit === HaveNumberLimit.yes && !eventInfo.numberLimit
+            "
+            [value]="
+              eventInfo.numberLimit && eventInfo.numberLimit > 0
+                ? eventInfo.numberLimit
+                : defaultNumberLimit
+            "
+            (focusout)="handlePeopleLimitInput($event)"
+          />
+          <span>{{ 'universal_unit_members' | translate }}</span>
+        </div>
+      </div>
       <div class="flexRow">
         <ng-container *ngFor="let _group of eventDetail.group; let _groupIndex = index">
           <div class="flexRow">

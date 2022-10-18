@@ -1276,12 +1276,13 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
                 if (!excludeKey.includes(key) && !isEffectCountKey) {
                   let addKey: string, addValue: number;
                   switch (key) {
-                    case 'birthYear':
+                    case 'birthYear': {
                       // 統一使用1月1日當生日計算年齡
                       const birthday = `${personData[_id][key]}0101`;
                       addKey = 'age';
                       addValue = this.reportService.countAge(birthday);
                       break;
+                    }
                     case 'totalSleepSecond':
                       addKey = 'totalSleepSecond';
                       addValue =

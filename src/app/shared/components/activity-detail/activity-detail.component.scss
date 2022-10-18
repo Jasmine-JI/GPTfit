@@ -154,7 +154,7 @@ $info-height: 340px;
   width: 100%;
   height: 50px;
   position: absolute;
-  z-index: index($normal-index, 1);
+  z-index: nth($normal-index, 1);
   bottom: 0px;
   justify-content: space-around;
   background-color: rgba(0, 0, 0, 0.7);
@@ -349,7 +349,7 @@ $info-height: 340px;
     content: '...';
     width: 60px;
     position: relative;
-    z-index: index($normal-index, 1);
+    z-index: nth($normal-index, 1);
   }
 }
 

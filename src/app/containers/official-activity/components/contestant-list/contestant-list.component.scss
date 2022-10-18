@@ -441,6 +441,15 @@ $edit-button-size: 30px;
   cursor: pointer;
 }
 
+.navigate__page {
+  $color: rgba(100, 100, 100, 1);
+  border: 1px solid $color;
+  padding: 0 5px;
+  font-size: 14px;
+  border-radius: 5px;
+  color: $color;
+}
+
 /************************************************* media ******************************************/
 
 @media (max-width: 1150px) {

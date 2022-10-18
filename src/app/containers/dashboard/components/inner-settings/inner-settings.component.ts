@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../people-selector-win/people-selector-win.component';
 import { GroupService } from '../../../../shared/services/group.service';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 import { UserService } from '../../../../core/services/user.service';
 import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
 import { Router } from '@angular/router';

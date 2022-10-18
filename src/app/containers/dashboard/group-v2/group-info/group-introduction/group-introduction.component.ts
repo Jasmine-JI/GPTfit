@@ -740,30 +740,31 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091110
    */
   savePlanSetting(e: Event, formItem: 'branch' | 'class' | 'admin' | 'member') {
-    const num = (e as any).target.value,
-      numReg = /\d+/;
+    const num = (e as any).target.value;
+    const numReg = /\d+/;
+    const { maxBranches, maxClasses, maxGroupManagers, allNotRepeatingMember } = planDatas[3];
     switch (formItem) {
       case 'branch':
-        if (numReg.test(num) && num >= 1 && num <= 1000) {
+        if (numReg.test(num) && num >= 1 && num <= maxBranches) {
           this.createBody.groupSetting.maxBranches = +num;
         } else {
-          this.createBody.groupSetting.maxBranches = 10;
+          this.createBody.groupSetting.maxBranches = maxBranches;
         }
 
         break;
       case 'class':
-        if (numReg.test(num) && num >= 1 && num <= 50000) {
+        if (numReg.test(num) && num >= 1 && num <= maxClasses) {
           this.createBody.groupSetting.maxClasses = +num;
         } else {
-          this.createBody.groupSetting.maxClasses = 80;
+          this.createBody.groupSetting.maxClasses = maxClasses;
         }
 
         break;
       case 'admin':
-        if (numReg.test(num) && num >= 1 && num <= 100000) {
+        if (numReg.test(num) && num >= 1 && num <= maxGroupManagers) {
           this.createBody.groupManagerSetting.maxGroupManagers = +num;
         } else {
-          this.createBody.groupManagerSetting.maxGroupManagers = 200;
+          this.createBody.groupManagerSetting.maxGroupManagers = maxGroupManagers;
         }
 
         break;
@@ -771,7 +772,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         if (numReg.test(num) && num >= 1 && num <= 1000000) {
           this.createBody.groupAllMemberSetting.maxAllGroupMembers = +num;
         } else {
-          this.createBody.groupAllMemberSetting.maxAllGroupMembers = 10000;
+          this.createBody.groupAllMemberSetting.maxAllGroupMembers = allNotRepeatingMember;
         }
 
         break;
@@ -786,7 +787,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     this.uiFlag.isLoading = true;
     const target = this.sportsTarget.getReductionTarget();
     Object.assign(this.createBody, { target });
-
     this.groupService.createGroup(this.createBody).subscribe((res) => {
       const { resultCode } = res;
       if (resultCode !== 200) {

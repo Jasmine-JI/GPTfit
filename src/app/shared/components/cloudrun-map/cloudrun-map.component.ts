@@ -23,7 +23,7 @@ import { AuthService } from '../../../core/services';
 import { RacerInfo, RacerPositionList } from '../../../core/models/compo';
 
 // 若google api掛掉則建物件代替，避免造成gptfit卡住。
-const google: any = (window as any).google || { maps: { OverlayView: null } };
+const google: any = (window as any).google;
 const leaflet: any = (window as any).L;
 
 type MapSource = 'google' | 'OSM';
@@ -138,7 +138,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   checkMapLoaded(gpx: Array<Array<number>>) {
     if (!this.isPreviewMode) {
       // 判斷bidu map是否可以載入
-      if (leaflet) {
+      if ('L' in window) {
         this.uiFlag.showMap = true;
         if (!this.uiFlag.changeMapSource) this.mapOpt.mapSource = 'OSM';
       } else {
@@ -146,7 +146,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
       }
 
       // 判斷google map是否可以載入
-      if (google && typeof google === 'object' && typeof google.maps === 'object') {
+      if (google && typeof google.maps === 'object') {
         this.uiFlag.showMap = true;
         if (!this.uiFlag.changeMapSource) this.mapOpt.mapSource = 'google';
       } else {

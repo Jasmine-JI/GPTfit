@@ -68,7 +68,7 @@ $expand-button-height: 30px;
 .expand__btn {
   position: absolute;
   bottom: calc(-#{$expand-button-height} / 2);
-  z-index: index($normal-index, 1);
+  z-index: nth($normal-index, 1);
   background: var(--scale-255-200);
   border: 1px solid rgba(100, 100, 100, 1);
   border-radius: 10px;

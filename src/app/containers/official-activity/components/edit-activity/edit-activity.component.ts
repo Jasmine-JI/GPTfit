@@ -394,7 +394,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           // 取消賽事則該賽事凍結不得編輯
           this.router.navigateByUrl('/official-activity/activity-list');
         } else {
-          this.eventDetail = eventDetail;
+          this.eventDetail = this.filterVarible(eventDetail);
           this.compareContent = deepCopy({
             eventInfo,
             eventDetail,
@@ -407,6 +407,19 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       this.subscribeBeforeUnloadEvent();
       this.uiFlag.progress = 100;
     });
+  }
+
+  /**
+   * 將不必要的變數移除
+   * @param eventDetail {EventDetail}-活動詳細資訊
+   */
+  filterVarible(eventDetail: EventDetail) {
+    eventDetail.group = eventDetail.group.map((_group) => {
+      delete _group.currentApplyNumber;
+      return _group;
+    });
+
+    return eventDetail;
   }
 
   /**
@@ -1194,7 +1207,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    */
   getSelectMapName(mapId: number = null) {
     const { mapList, eventInfo, language } = this;
-    if (eventInfo && mapList && mapId && mapId > 0) {
+    if (eventInfo && mapList) {
       const { cloudrunMapId } = eventInfo;
       const id = mapId ?? cloudrunMapId;
       const index = mapList.findIndex((_map) => _map.mapId == id);
