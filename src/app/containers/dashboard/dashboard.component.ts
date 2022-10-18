@@ -552,9 +552,11 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * 定時call api確認是否有最新郵件
    */
   pollingNewMail() {
-    this.mailNotify = setInterval(() => {
-      this.checkNewMail();
-    }, 30000);
+    if (!this.mailNotify) {
+      this.mailNotify = setInterval(() => {
+        this.checkNewMail();
+      }, 30000);
+    }
   }
 
   /**

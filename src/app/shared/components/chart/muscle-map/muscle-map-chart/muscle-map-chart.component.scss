@@ -93,7 +93,7 @@ $rod-color: rgba(209, 66, 122, 1);
 
 .slider__over__yet {
   position: absolute;
-  z-index: index($normal-index, 1);
+  z-index: nth($normal-index, 1);
   background-color: $slider-yet-color;
   height: $slider-bar-height;
   width: $slider-bar-width;
@@ -103,7 +103,7 @@ $rod-color: rgba(209, 66, 122, 1);
 .date__slider__rod {
   $size: 20px;
   position: absolute;
-  z-index: index($normal-index, 2);
+  z-index: nth($normal-index, 2);
   height: $size;
   width: $size;
   border-radius: $size;

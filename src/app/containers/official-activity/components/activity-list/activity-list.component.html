@@ -298,10 +298,7 @@
                                   startDate: _eventList.applyDate.startDate,
                                   endDate: _eventList.applyDate.endDate,
                                   eventCancel: _eventList.eventStatus === EventStatus.cancel,
-                                  applyFull:
-                                    _eventList.numberLimit &&
-                                    _eventList.numberLimit > 0 &&
-                                    _eventList.currentApplyNumber >= _eventList.numberLimit
+                                  eventAudit: _eventList.eventStatus !== EventStatus.notAudit
                                 }
                               "
                             ></span>
@@ -383,10 +380,6 @@
                               paidStatus: _eventList.paidStatus,
                               endDate: _eventList.applyDate.endDate,
                               eventCancel: _eventList.eventStatus === EventStatus.cancel,
-                              applyFull:
-                                _eventList.numberLimit &&
-                                _eventList.numberLimit > 0 &&
-                                _eventList.currentApplyNumber >= _eventList.numberLimit,
                               record: _eventList.record
                             }
                           "
@@ -414,10 +407,6 @@
                         paidStatus: _eventList.paidStatus,
                         endDate: _eventList.applyDate.endDate,
                         eventCancel: _eventList.eventStatus === EventStatus.cancel,
-                        applyFull:
-                          _eventList.numberLimit &&
-                          _eventList.numberLimit > 0 &&
-                          _eventList.currentApplyNumber >= _eventList.numberLimit,
                         record: _eventList.record
                       }
                     "
@@ -435,10 +424,7 @@
                       startDate: _eventList.applyDate.startDate,
                       endDate: _eventList.applyDate.endDate,
                       eventCancel: _eventList.eventStatus === EventStatus.cancel,
-                      applyFull:
-                        _eventList.numberLimit &&
-                        _eventList.numberLimit > 0 &&
-                        _eventList.currentApplyNumber >= _eventList.numberLimit
+                      eventAudit: _eventList.eventStatus !== EventStatus.notAudit
                     }
                   "
                 ></span>
@@ -539,10 +525,6 @@
                         paidStatus: _eventList.paidStatus,
                         endDate: _eventList.applyDate.endDate,
                         eventCancel: _eventList.eventStatus === EventStatus.cancel,
-                        applyFull:
-                          _eventList.numberLimit &&
-                          _eventList.numberLimit > 0 &&
-                          _eventList.currentApplyNumber >= _eventList.numberLimit,
                         record: _eventList.record
                       }
                     "
@@ -692,33 +674,33 @@
   let-startDate="startDate"
   let-endDate="endDate"
   let-eventCancel="eventCancel"
-  let-applyFull="applyFull"
+  let-eventAudit="eventAudit"
 >
   <span
-    [class.apply__open__yet]="!eventCancel && !applyFull && serverTimestamp < startDate"
+    [class.apply__open__yet]="!eventCancel && serverTimestamp < startDate"
     [class.apply__opening]="
-      !eventCancel && !applyFull && serverTimestamp > startDate && serverTimestamp < endDate
+      !eventCancel && serverTimestamp > startDate && serverTimestamp < endDate
     "
-    [class.apply__close]="eventCancel || applyFull || serverTimestamp > endDate"
+    [class.apply__close]="eventCancel || serverTimestamp > endDate"
   >
-    <ng-container *ngIf="!eventCancel && !applyFull && serverTimestamp < startDate">
+    <ng-container *ngIf="!eventAudit">
+      {{ '未審核' | translate }}
+    </ng-container>
+    <ng-container *ngIf="eventAudit && !eventCancel && serverTimestamp < startDate">
       {{ 'universal_race_notYetOpen' | translate }}
     </ng-container>
     <ng-container
-      *ngIf="!eventCancel && !applyFull && serverTimestamp > startDate && serverTimestamp < endDate"
+      *ngIf="eventAudit && !eventCancel && serverTimestamp > startDate && serverTimestamp < endDate"
     >
       {{ 'universal_vocabulary_signOpen' | translate }}
     </ng-container>
-    <ng-container *ngIf="!eventCancel && !applyFull && serverTimestamp > endDate">
+    <ng-container *ngIf="eventAudit && !eventCancel && serverTimestamp > endDate">
       {{ 'universal_vocabulary_signEnd' | translate }}
-    </ng-container>
-    <ng-container *ngIf="!eventCancel && applyFull">
-      {{ 'universal_vocabulary_full' | translate }}
     </ng-container>
     <ng-container *ngIf="eventCancel">
       {{ 'universal_vocabulary_raceCancel' | translate }}
     </ng-container>
-    <ng-container *ngIf="!eventCancel && !applyFull && uiFlag.currentPage !== 'my-activity'">
+    <ng-container *ngIf="!eventCancel && uiFlag.currentPage !== 'my-activity'">
       {{ startDate * 1000 | timeFormat: 'MM/DD' }}~{{ endDate * 1000 | timeFormat: 'MM/DD' }}
     </ng-container>
   </span>
@@ -815,7 +797,6 @@
   let-paidStatus="paidStatus"
   let-endDate="endDate"
   let-eventCancel="eventCancel"
-  let-applyFull="applyFull"
   let-record="record"
 >
   <div class="flexCol apply__info">

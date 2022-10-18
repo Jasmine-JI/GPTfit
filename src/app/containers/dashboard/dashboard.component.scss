@@ -183,7 +183,7 @@ $alert-icon-color: rgba(255, 56, 56, 1);
   flex-shrink: 0;
   flex-basis: auto;
   position: initial;
-  z-index: index($normal-index, 3);
+  z-index: nth($normal-index, 3);
 }
 
 ::ng-deep .mat-expansion-panel-content .mat-expansion-panel-body {
@@ -268,7 +268,7 @@ $alert-icon-color: rgba(255, 56, 56, 1);
   overflow: visible !important;
 }
 ::ng-deep mat-drawer.mat-drawer.mat-drawer-side {
-  z-index: index($normal-index, 3);
+  z-index: nth($normal-index, 3);
 }
 .minimize-main-nav .ala-dashboard-nav .ala-dashboard-header {
   width: 100%;

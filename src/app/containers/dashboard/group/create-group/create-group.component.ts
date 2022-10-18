@@ -8,7 +8,7 @@ import { UserService } from '../../../../core/services/user.service';
 import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { planDatas } from '../desc';
 import dayjs from 'dayjs';

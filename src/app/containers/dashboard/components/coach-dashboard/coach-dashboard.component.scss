@@ -55,12 +55,12 @@
   background-repeat: no-repeat;
   background-size: cover;
   position: absolute;
-  z-index: index($minus-index, 1);
+  z-index: nth($minus-index, 1);
 }
 
 .card-body--bg {
   position: absolute;
-  z-index: index($minus-index, 1);
+  z-index: nth($minus-index, 1);
   background-color: #f0f0f0;
   width: 100%;
   height: 100%;
@@ -128,7 +128,7 @@
 
 .color-mask {
   position: absolute;
-  z-index: index($normal-index, 1);
+  z-index: nth($normal-index, 1);
   width: 100%;
   height: 45px;
   background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.3), transparent);

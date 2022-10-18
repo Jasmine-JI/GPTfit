@@ -63,61 +63,6 @@
     </section>
     <section class="plan__section">
       <span class="contentSubtitle">
-        {{ 'universal_group_totalMember' | translate }}
-      </span>
-      <div class="group-list">
-        <div class="group-list-item" *ngIf="!uiFlag.editMode">
-          {{ 'universal_group_numberOfAdministrators' | translate }}：
-          <span *ngIf="!uiFlag.editMode">
-            {{ totalAdmin }}
-          </span>
-        </div>
-        <div class="group-list-item" *ngIf="!uiFlag.editMode">
-          {{ 'universal_group_totalNumberPeople' | translate }}：
-          <span *ngIf="!uiFlag.editMode">
-            {{ +commerceInfo.groupMemberStatus.currentGroupMembers }}
-          </span>
-        </div>
-        <div
-          class="group-list-item"
-          [class.full]="
-            +commerceInfo.groupAllMemberStatus.currentAllGroupMembers >=
-              +commerceInfo.groupAllMemberStatus.maxAllGroupMembers && !uiFlag.editMode
-          "
-          *ngIf="commerceInfo.groupAllMemberStatus"
-        >
-          {{ 'universal_group_totalNumberPeople' | translate }}：
-          <span *ngIf="!uiFlag.editMode">
-            {{ +commerceInfo.groupAllMemberStatus?.currentAllGroupMembers || '--' }}/{{
-              +commerceInfo.groupAllMemberStatus?.maxAllGroupMembers || 100
-            }}
-          </span>
-
-          <span
-            *ngIf="
-              +commerceInfo.groupAllMemberStatus.currentAllGroupMembers >=
-                +commerceInfo.groupAllMemberStatus.maxAllGroupMembers && !uiFlag.editMode
-            "
-          >
-            ({{ 'universal_status_groupFull' | translate }})
-          </span>
-          <span *ngIf="uiFlag.editMode">
-            <mat-form-field class="editManageInput">
-              <input
-                matInput
-                [(ngModel)]="editBody.groupMemberSetting.maxAllGroupMembers"
-                [maxlength]="6"
-                name="memberNum"
-                required
-                (change)="saveNumSetting($event, 'memberNum')"
-              />
-            </mat-form-field>
-          </span>
-        </div>
-      </div>
-    </section>
-    <section class="plan__section">
-      <span class="contentSubtitle">
         {{ 'universal_group_currentPlan' | translate }}
       </span>
       <div class="group-list">
@@ -152,6 +97,12 @@
           </span>
         </div>
         <div class="group-list-item">
+          {{ 'universal_vocabulary_totalLimit' | translate }}：
+          <span *ngIf="!uiFlag.editMode">
+            {{ +commerceInfo.groupAllMemberStatus?.maxAllGroupMembers || 100 }}
+          </span>
+        </div>
+        <div class="group-list-item">
           {{ 'universal_group_authorizationDueDate' | translate }}：
           <span *ngIf="!uiFlag.editMode">
             {{ commerceInfo.commercePlanExpired | date: 'y-MM-dd' }}
@@ -163,6 +114,55 @@
               [refStartDate]="commerceInfo.commercePlanExpired"
               [default]="commerceInfo.commercePlanExpired"
             ></app-date-range-picker>
+          </span>
+        </div>
+      </div>
+    </section>
+    <section class="plan__section">
+      <span class="contentSubtitle">
+        {{ 'universal_group_totalMember' | translate }}
+      </span>
+      <div class="group-list">
+        <div class="group-list-item" *ngIf="!uiFlag.editMode">
+          {{ 'universal_group_numberOfAdministrators' | translate }}：
+          <span *ngIf="!uiFlag.editMode">
+            {{ totalAdmin }}
+          </span>
+        </div>
+        <div
+          class="group-list-item"
+          [class.full]="
+            +commerceInfo.groupAllMemberStatus.currentAllGroupMembers >=
+              +commerceInfo.groupAllMemberStatus.maxAllGroupMembers && !uiFlag.editMode
+          "
+          *ngIf="commerceInfo.groupAllMemberStatus"
+        >
+          {{ 'universal_group_totalNumberPeople' | translate }}：
+          <span *ngIf="!uiFlag.editMode">
+            {{ +commerceInfo.groupAllMemberStatus?.currentAllGroupMembers || '--' }}/{{
+              +commerceInfo.groupAllMemberStatus?.maxAllGroupMembers || 100
+            }}
+          </span>
+
+          <span
+            *ngIf="
+              +commerceInfo.groupAllMemberStatus.currentAllGroupMembers >=
+                +commerceInfo.groupAllMemberStatus.maxAllGroupMembers && !uiFlag.editMode
+            "
+          >
+            ({{ 'universal_status_groupFull' | translate }})
+          </span>
+          <span *ngIf="uiFlag.editMode">
+            <mat-form-field class="editManageInput">
+              <input
+                matInput
+                [(ngModel)]="editBody.groupAllMemberSetting.maxAllGroupMembers"
+                [maxlength]="6"
+                name="memberNum"
+                required
+                (change)="saveNumSetting($event, 'memberNum')"
+              />
+            </mat-form-field>
           </span>
         </div>
       </div>
@@ -186,9 +186,7 @@
             >{{ 'universal_group_branches' | translate }}：</span
           >
           <span *ngIf="!uiFlag.editMode">
-            {{ commerceInfo.groupStatus.currentBranches }}/{{
-              commerceInfo.groupStatus.maxBranches
-            }}
+            {{ commerceInfo.groupStatus.currentBranches }}
           </span>
           <span
             *ngIf="
@@ -225,7 +223,7 @@
             >{{ 'universal_group_numberOfDepartments' | translate }}：</span
           >
           <span *ngIf="!uiFlag.editMode">
-            {{ commerceInfo.groupStatus.currentClasses }}/{{ commerceInfo.groupStatus.maxClasses }}
+            {{ commerceInfo.groupStatus.currentClasses }}
           </span>
           <span
             *ngIf="+commerceInfo.groupStatus.currentClasses >= +commerceInfo.groupStatus.maxClasses"

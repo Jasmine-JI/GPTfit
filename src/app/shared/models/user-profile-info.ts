@@ -20,7 +20,7 @@ export interface UserProfileInfo {
   countryCode?: number;
   mobileNumber?: number;
   fatRate?: number;
-  gender?: Sex;
+  gender?: Sex; // 先相容，之後皆轉為Gender
   groupAccessRightList?: Array<any>;
   handedness?: number | string;
   heartRateBase?: HrBase;

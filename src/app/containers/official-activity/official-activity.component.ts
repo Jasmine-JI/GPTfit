@@ -1715,7 +1715,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    */
   pollingNewMail() {
     this.checkNewMail();
-    if (this.auth.token) {
+    if (this.auth.token && !this.mailNotify) {
       this.mailNotify = setInterval(() => {
         this.checkNewMail();
       }, 30000);
