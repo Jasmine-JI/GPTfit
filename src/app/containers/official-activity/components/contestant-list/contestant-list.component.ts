@@ -808,31 +808,37 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    */
   changeGroup(e: MouseEvent, group: any, index: number) {
     e.stopPropagation();
-    const { id: groupId, name: groupName } = group;
-    const {
-      groupId: oldGroupId,
-      groupName: oldGroupName,
-      userId: targetUserId,
-    } = this.reArrangeList[index];
-    if (oldGroupId !== groupId) {
-      this.reArrangeList[index].groupId = groupId;
-      this.reArrangeList[index].groupName = groupName;
-      const update = [
-        {
-          targetUserId,
-          groupId,
-        },
-      ];
+    const { numberLimit } = this.eventInfo;
+    const { id: groupId, name: groupName, currentApplyNumber } = group;
+    if (numberLimit && currentApplyNumber >= numberLimit) {
+      const msg = '該分組已滿員';
+      this.snackbar.open(msg, 'OK', { duration: 2000 });
+    } else {
+      const {
+        groupId: oldGroupId,
+        groupName: oldGroupName,
+        userId: targetUserId,
+      } = this.reArrangeList[index];
+      if (oldGroupId !== groupId) {
+        this.reArrangeList[index].groupId = groupId;
+        this.reArrangeList[index].groupName = groupName;
+        const update = [
+          {
+            targetUserId,
+            groupId,
+          },
+        ];
 
-      this.updateUserEventProfile(update).subscribe((success) => {
-        if (success) {
-          const replace = { groupId, groupName };
-          this.updateOriginProfile(targetUserId, replace);
-        } else {
-          this.reArrangeList[index].groupId = oldGroupId;
-          this.reArrangeList[index].groupName = oldGroupName;
-        }
-      });
+        this.updateUserEventProfile(update).subscribe((success) => {
+          if (success) {
+            const replace = { groupId, groupName };
+            this.updateOriginProfile(targetUserId, replace);
+          } else {
+            this.reArrangeList[index].groupId = oldGroupId;
+            this.reArrangeList[index].groupName = oldGroupName;
+          }
+        });
+      }
     }
 
     this.unsubscribePluralEvent();
@@ -1063,7 +1069,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
       case ProductShipped.shipped:
         ServerCurrentTimeStamp = getCurrentTimestamp() + this.serverTimeDiff;
         break;
-      case ProductShipped.unShip:
+      default:
         return {};
     }
 
@@ -1316,7 +1322,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     /*************************
      * 暫不將確認退賽資訊列入csv
      * 方便使用者使用excel篩選功能
-    
+
     const blank = ',,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n';
     csvData += `\n\n${blank}`;
     leaveList.forEach(_list => {
@@ -1448,6 +1454,14 @@ export class ContestantListComponent implements OnInit, OnDestroy {
   switchList(type: ListType) {
     this.uiFlag.listType = type;
     this.unsubscribePluralEvent();
+  }
+
+  /**
+   * 開啟編輯賽事新視窗
+   */
+  navigatorEditEvent() {
+    const url = `/official-activity/edit-activity/${this.eventId}`;
+    window.open(url, '_blank', 'noopener=yes,noreferrer=yes');
   }
 
   /**

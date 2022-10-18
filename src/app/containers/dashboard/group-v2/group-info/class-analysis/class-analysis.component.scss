@@ -94,7 +94,7 @@ $calender-pot-size: 3px;
 
 .item__bar {
   position: relative;
-  z-index: index($normal-index, 1);
+  z-index: nth($normal-index, 1);
   width: 5px;
   height: 40px;
   background-color: $calender-default-red;

@@ -149,15 +149,15 @@
               <div class="flexRow report-infoHeader">
                 <div class="flexCol">
                   <span class="report-summaryData">
-                    {{ chart.stepTrend.totalStep | thousandConversion: ' ' }}
+                    {{ chart.stepTrend.totalStep || 0 | thousandConversion: ' ' }}
                   </span>
                   <span class="report-summaryDescription">
-                    {{ 'universal_activityData_activityTotalSteps' | translate }}
+                    {{ 'universal_activityData_activityTotalSteps' || 0 | translate }}
                   </span>
                 </div>
                 <div class="flexCol" style="margin-left: 10px">
                   <span class="report-summaryData">
-                    {{ chart.stepTrend.totalDistance | distanceSibs: [userInfo.unit, true] }}
+                    {{ chart.stepTrend.totalDistance || 0 | distanceSibs: [userInfo.unit, true] }}
                   </span>
                   <span class="report-summaryDescription">
                     {{ 'universal_activityData_totalDistance' | translate }}

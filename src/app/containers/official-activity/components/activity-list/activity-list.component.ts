@@ -820,9 +820,9 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     const query = getUrlQueryStrings(search);
     Object.assign(query, { p: index + 1 });
     const newSearch = setUrlQueryString(query);
-    if (newSearch !== search && history.pushState) {
+    if (newSearch !== search && history.replaceState) {
       const newUrl = `${origin}${pathname}${newSearch}`;
-      window.history.pushState({ path: newUrl }, '', newUrl);
+      window.history.replaceState({ path: newUrl }, '', newUrl);
     }
   }
 

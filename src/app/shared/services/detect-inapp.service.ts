@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { findKey } from 'lodash';
+import findKey from 'lodash/findKey';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { MessageBoxComponent } from '../components/message-box/message-box.component';
@@ -67,7 +67,7 @@ export class DetectInappService {
             body: this.translate.instant('universal_popUpMessage_browserError'),
             confirmText: this.translate.instant('universal_operating_confirm')
           }
-          
+
         });
 
       }*/

@@ -552,7 +552,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   closeCreateMode() {
     // 移除query string，避免create mode被重複開啟
     const newUrl = `${location.origin}${location.pathname}`;
-    window.history.pushState({ path: newUrl }, '', newUrl);
+    window.history.replaceState({ path: newUrl }, '', newUrl);
     this.groupService.setEditMode('close');
   }
 

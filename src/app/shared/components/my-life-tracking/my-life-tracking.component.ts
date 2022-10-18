@@ -602,7 +602,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
 
     let age: number;
     if (birthYear) {
-      age = this.reportService.countAge(birthYear);
+      age = this.reportService.countAge(`${birthYear}0101`);
       this.info['age'] = age;
     }
 

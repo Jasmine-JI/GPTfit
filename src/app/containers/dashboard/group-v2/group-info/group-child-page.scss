@@ -286,7 +286,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   .setIn {
     display: flex;
     margin: 0 auto;
-    z-index: index($normal-index, 3);
+    z-index: nth($normal-index, 3);
   }
 }
 
