@@ -168,11 +168,18 @@
   <hr style="margin: 0" />
   <p class="apply__description">{{ 'universal_vocabulary_selectEventGroup' | translate }}</p>
   <div class="flexCol apply__section__content">
-    <div class="flexRow group__button__area">
+    <div class="group__list__header">
+      <span class="group__title">{{ 'universal_activityData_name' | translate }}</span>
+      <span class="group__condition">{{ 'universal_vocabulary_limit' | translate }}</span>
+      <span class="group__status group__status__title">{{
+        'universal_group_status' | translate
+      }}</span>
+    </div>
+    <ul class="group__list">
       <ng-container *ngFor="let _group of eventDetail.group; let _index = index">
-        <button
+        <li
           *ngTemplateOutlet="
-            groupApplySelector;
+            groupApplyList;
             context: {
               groupIndex: _index,
               title: _group.name,
@@ -183,12 +190,12 @@
               selected: currentSelectedGroup === _index
             }
           "
-        ></button>
+        ></li>
       </ng-container>
-    </div>
+    </ul>
     <button id="apply__button" style="max-width: 150px" (click)="navigateApplyPage()">
       <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.canApply">
-        {{ 'universal_vocabulary_apply' | translate }}
+        {{ 'universal_vocabulary_signUp' | translate }}
       </ng-container>
       <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.applied">
         {{ 'universal_vocabulary_signed' | translate }}
@@ -222,7 +229,7 @@
 </ng-template>
 
 <ng-template
-  #groupApplySelector
+  #groupApplyList
   let-groupIndex="groupIndex"
   let-title="title"
   let-gender="gender"
@@ -231,30 +238,47 @@
   let-eligible="eligible"
   let-selected="selected"
 >
-  <button
+  <li
     [ngClass]="{
-      flexCol: true,
-      group__select__button: true,
-      apply__disable: isFull || !eligible,
-      button__selected: selected
+      group__list__item: true,
+      'group__list__item--selected': selected,
+      'group__list__item--forbidden': isFull || !eligible,
+      group__list__open: eligible && !isFull,
+      group__list__close: !eligible || isFull
     }"
     (click)="selectGroup(groupIndex)"
   >
-    <div class="flexRow group__apply__status">
-      <span class="status__hint" *ngIf="!eligible">{{
-        'universal_vocabulary_notQualified' | translate
-      }}</span>
-      <span class="status__hint" *ngIf="eligible && isFull">{{
-        'universal_vocabulary_full' | translate
-      }}</span>
-    </div>
-    <div class="apply__button__title">{{ title }}</div>
-    <div class="apply__condition">
-      <span *ngIf="gender !== null && gender !== undefined">
+    <span class="group__title">{{ title }}</span>
+    <span class="group__condition">
+      <span class="mobile__titile"> {{ 'universal_vocabulary_limit' | translate }}： </span>
+      <ng-container *ngIf="gender !== null && gender !== undefined">
         <ng-container *ngIf="gender === 0">♂</ng-container>
         <ng-container *ngIf="gender === 1">♀</ng-container>
-      </span>
-      <span *ngIf="age">{{ age.min }}-{{ age.max }} yr</span>
-    </div>
-  </button>
+      </ng-container>
+      <ng-container *ngIf="age">{{ age.min }}-{{ age.max }} yr</ng-container>
+      <ng-container
+        *ngIf="!age && (gender === null || gender === undefined || gender === Gender.unlimit)"
+      >
+        {{ 'universal_system_none' | translate }}
+      </ng-container>
+    </span>
+    <span
+      [ngClass]="{
+        group__status: true,
+        group__status__open: eligible && !isFull,
+        group__status__close: !eligible || isFull
+      }"
+    >
+      <span class="mobile__titile"> {{ 'universal_group_status' | translate }}： </span>
+      <ng-container *ngIf="eligible && !isFull">
+        {{ 'universal_vocabulary_avaliable' | translate }}
+      </ng-container>
+      <ng-container *ngIf="!eligible">
+        {{ 'universal_vocabulary_notQualified' | translate }}
+      </ng-container>
+      <ng-container *ngIf="eligible && isFull">
+        {{ 'universal_vocabulary_full' | translate }}
+      </ng-container>
+    </span>
+  </li>
 </ng-template>
