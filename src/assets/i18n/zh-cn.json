@@ -2702,5 +2702,7 @@
  "universal_system_startDate": "起始日",
  "universal_system_reportSetting": "报告设定",
  "universal_vocabulary_selectEventGroup": "请选择您想要参加的组别",
- "universal_vocabulary_totalLimit": "总人数限制"
+ "universal_vocabulary_totalLimit": "总人数限制",
+ "universal_vocabulary_limit": "限制",
+ "universal_vocabulary_avaliable": "可报名"
 }

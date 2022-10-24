@@ -28,26 +28,14 @@
   <div id="main__content" class="flexRow">
     <ng-container *ngIf="!uiFlag.applyComplish">
       <div class="flexCol" id="progress__hint" *ngIf="uiFlag.showAside">
-        <div class="apply__stage">
-          {{ 'universal_operating_start' | translate }}
-        </div>
-        <div
-          class="apply__progress progress__bar__thick"
-          [style.top]="progressLine.start.top | patchUnit: 'px'"
-          [style.height]="progressLine.start.height | patchUnit: 'px'"
-        ></div>
-        <div
-          id="first__step"
-          class="flexCol apply__stage"
-          [style.top]="stageTop.start | patchUnit: 'px'"
-        >
+        <div id="first__step" class="flexCol apply__stage">
           <span class="step__index"> 1 </span>
           <span>{{ 'universal_vocabulary_fillIn' | translate }}</span>
         </div>
         <div
           class="apply__progress progress__bar__thick"
-          [style.top]="progressLine.finished.top | patchUnit: 'px'"
-          [style.height]="progressLine.finished.height | patchUnit: 'px'"
+          [style.top]="progressLine.start.top | patchUnit: 'px'"
+          [style.height]="progressLine.start.height | patchUnit: 'px'"
         ></div>
         <div
           id="second__step"
