@@ -70,6 +70,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
 
   readonly EventStatus = EventStatus;
   readonly ApplyButtonStatus = ApplyButtonStatus;
+  readonly Gender = Gender;
 
   constructor(
     private officialActivityService: OfficialActivityService,

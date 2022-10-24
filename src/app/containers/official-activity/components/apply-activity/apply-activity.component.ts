@@ -88,7 +88,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * 表單完成階段的提示
    */
   stageTop = {
-    start: 0,
     edit: 0,
     final: 0,
   };
@@ -98,10 +97,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   progressLine = {
     start: {
-      top: 0,
-      height: 0,
-    },
-    finished: {
       top: 0,
       height: 0,
     },
@@ -481,12 +476,10 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         const submitElement = document.querySelector('.submit__button');
         const originElement = document.querySelector('.apply__stage');
         if (phoneInputElement && submitElement && originElement) {
-          const phoneInputTop = phoneInputElement.getBoundingClientRect().top - stageHalfHeight;
           const focusInputTop = focusInputElement.getBoundingClientRect().top - stageHalfHeight;
           const submitTop = submitElement.getBoundingClientRect().top;
           const originTop = originElement.getBoundingClientRect().top;
           this.stageTop = {
-            start: phoneInputTop - originTop,
             edit: focusInputTop - originTop,
             final: submitTop - originTop,
           };
@@ -494,7 +487,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
           this.checkProgressPosition();
         }
       }
-    });
+    }, 200);
   }
 
   /**
@@ -502,22 +495,16 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101104
    */
   checkProgressPosition() {
-    const { start, edit, final } = this.stageTop;
+    const { edit, final } = this.stageTop;
     const originElement = document.querySelector('.apply__stage');
     if (originElement) {
       const originElementInfo = originElement.getBoundingClientRect();
-      const originElementTop = originElementInfo.top;
-      const originElementBottom = originElementInfo.bottom;
-      const startBottom = start + stageHeight;
+      const originElementHeight = originElementInfo.height;
       const editBottom = edit + stageHeight;
       this.progressLine = {
         start: {
-          top: originElementBottom - originElementTop,
-          height: start - (originElementBottom - originElementTop),
-        },
-        finished: {
-          top: startBottom,
-          height: edit - startBottom < 0 ? 0 : edit - startBottom,
+          top: originElementHeight,
+          height: edit - originElementHeight < 0 ? 0 : edit - originElementHeight,
         },
         edit: {
           top: editBottom,
