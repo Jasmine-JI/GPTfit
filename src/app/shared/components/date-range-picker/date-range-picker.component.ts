@@ -34,6 +34,7 @@ export class DateRangePickerComponent implements OnInit, OnChanges, OnDestroy {
   @Input() limitMaxCurrent: boolean;
   @Input() selectBirthday = false;
   @Input() serialId = '';
+  @Input() zIndex: string;
 
   // 預設上週-kidin-1090330
   defaultDate = {
@@ -215,6 +216,14 @@ export class DateRangePickerComponent implements OnInit, OnChanges, OnDestroy {
           'apply.daterangepicker',
           this.emitDateRange.bind(this)
         );
+
+        if (this.zIndex) {
+          jquery(`#picker${this.serialId}`).on(
+            'showCalendar.daterangepicker',
+            this.handleCalenderZIndex.bind(this)
+          );
+        }
+
         if (this.openPicker) {
           const id = this.serialId ? `picker${this.serialId}` : 'picker';
           const picker = document.getElementById(id);
@@ -309,6 +318,18 @@ export class DateRangePickerComponent implements OnInit, OnChanges, OnDestroy {
 
       this.selectDateRange.emit(dateRange);
     }
+  }
+
+  /**
+   * 因日期選擇器套件圖層設定過低，故調整該套件圖層
+   */
+  handleCalenderZIndex() {
+    setTimeout(() => {
+      const target = document.querySelectorAll('.daterangepicker');
+      target.forEach((_target: HTMLElement) => {
+        _target.style.zIndex = this.zIndex;
+      });
+    });
   }
 
   /**

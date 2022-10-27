@@ -37,6 +37,7 @@ import { QueryString } from '../../../../shared/enum/query-string';
 import { getUrlQueryStrings } from '../../../../shared/utils';
 
 const stageHeight = 90;
+const fullMsg = 'Apply group full.';
 type InputAlert = 'format' | 'empty' | 'repeat' | 'login';
 interface NewRegister {
   token: string;
@@ -640,7 +641,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       this.alert.emergencyContact.mobileNumber = 'format';
     } else {
       this.alert.emergencyContact.mobileNumber = null;
-      this.applyInfo.userProfile.emergencyContact.mobileNumber = +newPhone || '';
+      this.applyInfo.userProfile.emergencyContact.mobileNumber = +newPhone || null;
       this.checkPhoneAccount();
     }
   }
@@ -1040,20 +1041,55 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       this.uiFlag.progress = 30;
 
       if (token) Object.assign(this.applyInfo, { token });
+      const eventId = +this.route.snapshot.paramMap.get('eventId');
+      this.officialActivityService
+        .getEventDetail({ eventId })
+        .pipe(
+          switchMap((detail) => {
+            let groupFull = false;
+            const { targetGroupId } = this.applyInfo;
+            const { group } = detail.eventDetail;
+            const index = group.findIndex((_group) => _group.id === targetGroupId);
+            const { numberLimit } = detail.eventInfo;
+            if (index > -1)
+              groupFull = numberLimit > 0 && group[index].currentApplyNumber >= numberLimit;
+            if (groupFull) {
+              this.eventDetail = detail.eventDetail;
+              const fakeProcessResult = { resultCode: 400, apiReturnMessage: fullMsg };
+              const result = { processResult: fakeProcessResult };
+              return of(result);
+            }
 
-      this.officialActivityService.applyEvent(this.applyInfo).subscribe((res) => {
-        this.uiFlag.progress = 100;
-        if (this.utils.checkRes(res)) {
-          const { register } = res;
-          if (!token) {
-            this.handleNewAccount(register);
-          } else if (!enableAccount) {
-            this.getVerification();
+            return this.officialActivityService.applyEvent(this.applyInfo);
+          })
+        )
+        .subscribe((res) => {
+          this.uiFlag.progress = 100;
+          if (this.utils.checkRes(res, false)) {
+            const { register } = res;
+            if (!token) {
+              this.handleNewAccount(register);
+            } else if (!enableAccount) {
+              this.getVerification();
+            }
+
+            this.uiFlag.applyComplish = true;
+          } else {
+            if (res.processResult?.apiReturnMessage === fullMsg) {
+              const eventId = this.applyInfo.targetEventId;
+              const backPath = `official-activity/activity-detail/${eventId}`;
+              this.dialog.open(MessageBoxComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'Message',
+                  body: this.translate.instant('universal_vocabulary_full'),
+                  confirmText: this.translate.instant('universal_operating_confirm'),
+                  onConfirm: () => this.router.navigateByUrl(backPath),
+                },
+              });
+            }
           }
-
-          this.uiFlag.applyComplish = true;
-        }
-      });
+        });
     }
   }
 
@@ -1245,10 +1281,12 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     if (age) {
       const { min, max } = age;
       const { birthday } = this.applyInfo.userProfile;
-      const birthDayjs = dayjs(birthday, 'YYYYMMDD');
+      const birthDayjs = dayjs(`${birthday}`, 'YYYYMMDD');
       const userAge = dayjs().diff(birthDayjs, 'year');
       if (userAge < min || userAge > max) {
-        this.applyInfo.userProfile.birthday = dayjs().subtract(min, 'year');
+        const defaultBirthday = dayjs().subtract(min, 'year');
+        this.defaultBirthday = defaultBirthday;
+        this.applyInfo.userProfile.birthday = defaultBirthday.format('YYYYMMDD');
       }
     }
 
@@ -1271,7 +1309,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       const age = dayjs().diff(momentBirthday, 'year');
       this.groupList = this.eventDetail.group.filter((_list, _index) => {
         const { gender: groupGender, age: groupAge, currentApplyNumber, id } = _list;
-        if (numberLimit && currentApplyNumber >= numberLimit) return false;
+        if (numberLimit > 0 && currentApplyNumber >= numberLimit) return false;
         const { max, min } = groupAge || { max: 100, min: 0 };
         const fitGender = groupGender === Sex.unlimit || gender === groupGender;
         const fitAge = !groupAge || (age >= min && age <= max);

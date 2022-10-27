@@ -18,7 +18,7 @@ export class AgePipe implements PipeTransform {
    */
   transform(value: DateValue): number {
     const { birth, birthFormat, baseDate, baseFormat } = value;
-    const birthMoment = birthFormat ? dayjs(birth, birthFormat) : dayjs(birth);
+    const birthMoment = birthFormat ? dayjs(`${birth}`, birthFormat) : dayjs(`${birth}`);
     let baseDateMoment: any;
     if (baseDate) {
       baseDateMoment = baseFormat ? dayjs(baseDate, baseFormat) : dayjs(baseDate);

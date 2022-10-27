@@ -1150,7 +1150,8 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     } = this;
     const isCreateMode = editMode === 'create';
     const beforeEventApplyStart = currentTimestamp < eventInfo.applyDate.startDate;
-    return isCreateMode || beforeEventApplyStart;
+    const notAudit = this.originEventStatus === EventStatus.notAudit;
+    return isCreateMode || beforeEventApplyStart || notAudit;
   }
 
   /**

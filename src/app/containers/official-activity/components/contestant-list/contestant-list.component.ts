@@ -810,7 +810,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
     e.stopPropagation();
     const { numberLimit } = this.eventInfo;
     const { id: groupId, name: groupName, currentApplyNumber } = group;
-    if (numberLimit && currentApplyNumber >= numberLimit) {
+    if (numberLimit > 0 && currentApplyNumber >= numberLimit) {
       const msg = '該分組已滿員';
       this.snackbar.open(msg, 'OK', { duration: 2000 });
     } else {

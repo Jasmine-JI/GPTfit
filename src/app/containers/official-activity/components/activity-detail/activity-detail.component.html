@@ -222,7 +222,7 @@
 
 <ng-template #editButton let-eventId="eventId" let-eventCancel="eventCancel">
   <button class="edit__button" *ngIf="uiFlag.isAdmin && !eventCancel">
-    <a class="flexCenter" [href]="'/official-activity/edit-activity/' + eventInfo.eventId">
+    <a class="flexCenter" href="#" (click)="navigateEditPage($event)">
       <i class="icon-svg_web-icon_p1_008-edit"></i>
     </a>
   </button>
