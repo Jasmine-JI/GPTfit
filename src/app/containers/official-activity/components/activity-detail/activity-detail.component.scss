@@ -284,6 +284,7 @@ $list-padding: 5px;
 
 .content__text {
   margin: 2vw 5vw;
+  overflow-x: scroll;
 }
 
 ::ng-deep .table {

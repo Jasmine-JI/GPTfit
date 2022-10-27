@@ -580,11 +580,12 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     const body = {
       token: this.authService.token,
       searchTime: {
-        type: '2',
-        fuzzyTime: [this.focusDayActivities[index].fileInfo.creationDate],
+        type: '3',
+        fuzzyTime: [],
         filterStartTime: '',
         filterEndTime: '',
         filterSameTime: '1',
+        specifyTime: this.focusDayActivities[index].fileInfo.creationDate,
       },
       searchRule: {
         activity: this.focusDayActivities[index].activityInfoLayer.type,

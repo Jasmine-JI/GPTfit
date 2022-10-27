@@ -125,7 +125,6 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   eventList = [];
   effectEventList = [];
   serverTimestamp: number;
-  token = this.authService.token;
   userProfile: UserProfileInfo;
   systemAccessright = AccessRight.guest;
   timeInterval: any;
@@ -308,7 +307,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     const { progress } = this.uiFlag;
     if (progress === 100) {
       this.uiFlag.progress = 30;
-      this.eventListCondition.token = this.token;
+      const { token } = this.authService;
+      this.eventListCondition.token = token;
       this.officialActivityService
         .getEventList(this.eventListCondition)
         .pipe(
@@ -366,7 +366,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1101006
    */
   getUserHistory() {
-    const { token } = this;
+    const { token } = this.authService;
     if (token) {
       const { progress } = this.uiFlag;
       if (progress === 100) {
@@ -561,8 +561,9 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   ) {
     e.stopPropagation();
     e.preventDefault();
+    const { token } = this.authService;
     const body = {
-      token: this.token,
+      token,
       eventId,
       feeId,
       productName,
@@ -591,13 +592,14 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   showCreateScheduleBox(e: MouseEvent, eventName: string, mapId: number, canEdit: boolean) {
     e.preventDefault();
     if (canEdit) {
+      const { token } = this.authService;
       const defaultSchedule = dayjs().add(3, 'day').unix();
       const defaultDate = dayjs(defaultSchedule * 1000)
         .startOf('day')
         .unix();
       const defaultTime = defaultSchedule - defaultDate;
       this.uiFlag.showCreateScheduleBox = true;
-      this.scheduleRace.token = this.token;
+      this.scheduleRace.token = token;
       this.scheduleRace.mapIndex = mapId;
       this.scheduleRace.raceName = eventName;
       this.scheduleRace.schedTimestamp = defaultSchedule;
@@ -932,7 +934,6 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1110216
    */
   updateEmail(e: Event, index: number) {
-    const { accountType } = this.userService.getUser().signInfo;
     if (this.checkCanEdit(index)) {
       const email = (e as any).target.value.trim();
       if (!formTest.email.test(email)) {
@@ -1019,9 +1020,10 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     const { progress } = this.uiFlag;
     if (progress === 100) {
       this.uiFlag.progress = 30;
+      const { token } = this.authService;
       const { eventId, eventName } = this.effectEventList[index];
       const body = {
-        token: this.token,
+        token,
         targetEventId: eventId,
         ...update,
       };
@@ -1064,8 +1066,9 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    * @author kidin-1110302
    */
   notifyAdmin(applyStatus: ApplyStatus, eventId: number, eventName: string) {
+    const { token } = this.authService;
     const body = {
-      token: this.token,
+      token: token,
       applyStatus,
       eventId,
       eventName,
@@ -1093,7 +1096,9 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     if (serverTimestamp > endDate) return AllStatus.eventCutoff;
     if (applyStatus === ApplyStatus.cancel) return AllStatus.personCancelled;
 
-    const { accountStatus } = this.userService.getUser().signInfo;
+    const { accountStatus } = this.userService.getUser().signInfo ?? {
+      accountStatus: AllStatus.notEnable,
+    };
     const accountEnable = userProfile && accountStatus === AccountStatusEnum.enabled;
     if (fee > 0 && !accountEnable) return AllStatus.notEnable;
     if (applyStatus === ApplyStatus.applyingQuit) return AllStatus.personCanceling;
