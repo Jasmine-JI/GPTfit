@@ -106,7 +106,9 @@
               <time
                 class="info__cannot__edit"
                 *ngIf="
-                  currentTimestamp >= eventInfo.applyDate.startDate && uiFlag.editMode !== 'create'
+                  currentTimestamp >= eventInfo.applyDate.startDate &&
+                  uiFlag.editMode !== 'create' &&
+                  originEventStatus !== EventStatus.notAudit
                 "
               >
                 {{ eventInfo.applyDate.startDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
@@ -132,7 +134,9 @@
                 '
                 "
                 *ngIf="
-                  currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create'
+                  currentTimestamp < eventInfo.applyDate.startDate ||
+                  uiFlag.editMode === 'create' ||
+                  originEventStatus === EventStatus.notAudit
                 "
               ></app-date-range-picker>
             </td>
@@ -143,7 +147,9 @@
               <time
                 class="info__cannot__edit"
                 *ngIf="
-                  currentTimestamp >= eventInfo.applyDate.endDate && uiFlag.editMode !== 'create'
+                  currentTimestamp >= eventInfo.applyDate.endDate &&
+                  uiFlag.editMode !== 'create' &&
+                  originEventStatus !== EventStatus.notAudit
                 "
               >
                 {{ eventInfo.applyDate.endDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
@@ -160,7 +166,9 @@
                 [serialId]="'2'"
                 [limitMin]="eventInfo.applyDate.startDate * 1000"
                 [limitMax]="
-                  currentTimestamp >= eventInfo.raceDate.startDate && uiFlag.editMode !== 'create'
+                  currentTimestamp >= eventInfo.raceDate.startDate &&
+                  uiFlag.editMode !== 'create' &&
+                  originEventStatus !== EventStatus.notAudit
                     ? eventInfo.raceDate.endDate * 1000
                     : undefined
                 "
@@ -174,7 +182,9 @@
                 '
                 "
                 *ngIf="
-                  currentTimestamp < eventInfo.applyDate.endDate || uiFlag.editMode === 'create'
+                  currentTimestamp < eventInfo.applyDate.endDate ||
+                  uiFlag.editMode === 'create' ||
+                  originEventStatus === EventStatus.notAudit
                 "
               ></app-date-range-picker>
             </td>
@@ -188,7 +198,9 @@
                 <time
                   class="info__cannot__edit"
                   *ngIf="
-                    currentTimestamp >= eventInfo.raceDate.startDate && uiFlag.editMode !== 'create'
+                    currentTimestamp >= eventInfo.raceDate.startDate &&
+                    uiFlag.editMode !== 'create' &&
+                    originEventStatus !== EventStatus.notAudit
                   "
                 >
                   {{ eventInfo.raceDate.startDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
@@ -214,7 +226,9 @@
                   '
                   "
                   *ngIf="
-                    currentTimestamp < eventInfo.raceDate.startDate || uiFlag.editMode === 'create'
+                    currentTimestamp < eventInfo.raceDate.startDate ||
+                    uiFlag.editMode === 'create' ||
+                    originEventStatus === EventStatus.notAudit
                   "
                 ></app-date-range-picker>
               </td>
@@ -225,7 +239,9 @@
                 <time
                   class="info__cannot__edit"
                   *ngIf="
-                    currentTimestamp >= eventInfo.raceDate.startDate && uiFlag.editMode !== 'create'
+                    currentTimestamp >= eventInfo.raceDate.startDate &&
+                    uiFlag.editMode !== 'create' &&
+                    originEventStatus !== EventStatus.notAudit
                   "
                 >
                   {{ eventInfo.raceDate.endDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
@@ -251,7 +267,9 @@
                   '
                   "
                   *ngIf="
-                    currentTimestamp < eventInfo.raceDate.startDate || uiFlag.editMode === 'create'
+                    currentTimestamp < eventInfo.raceDate.startDate ||
+                    uiFlag.editMode === 'create' ||
+                    originEventStatus === EventStatus.notAudit
                   "
                 ></app-date-range-picker>
               </td>
@@ -262,7 +280,9 @@
       <div
         class="flexRow cloudrun__map"
         [class.map__selector]="
-          currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create'
+          currentTimestamp < eventInfo.applyDate.startDate ||
+          uiFlag.editMode === 'create' ||
+          originEventStatus === EventStatus.notAudit
         "
         [class.empty__warn]="eventInfo.cloudrunMapId < 0"
         (click)="showMapList($event)"
@@ -525,7 +545,9 @@
               (click)="showDeleteAlert('group', _group.id)"
               *ngIf="
                 eventDetail.group.length > 1 &&
-                (currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create')
+                (currentTimestamp < eventInfo.applyDate.startDate ||
+                  uiFlag.editMode === 'create' ||
+                  originEventStatus === EventStatus.notAudit)
               "
             >
               <i class="icon-svg_web-icon_p1_012-close"></i>
@@ -533,7 +555,11 @@
           </div>
         </ng-container>
         <ng-container
-          *ngIf="currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create'"
+          *ngIf="
+            currentTimestamp < eventInfo.applyDate.startDate ||
+            uiFlag.editMode === 'create' ||
+            originEventStatus === EventStatus.notAudit
+          "
         >
           <div
             *ngTemplateOutlet="
@@ -583,7 +609,8 @@
                   [value]="_applyFee.fee"
                   [attr.disabled]="
                     uiFlag.editMode !== 'create' &&
-                    currentTimestamp >= eventInfo.applyDate.startDate
+                    currentTimestamp >= eventInfo.applyDate.startDate &&
+                    originEventStatus !== EventStatus.notAudit
                       ? true
                       : null
                   "
@@ -610,7 +637,9 @@
                 (click)="showDeleteAlert('applyFee', _applyFee.feeId)"
                 *ngIf="
                   eventDetail.applyFee.length > 1 &&
-                  (currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create')
+                  (currentTimestamp < eventInfo.applyDate.startDate ||
+                    uiFlag.editMode === 'create' ||
+                    originEventStatus === EventStatus.notAudit)
                 "
               >
                 <i class="icon-svg_web-icon_p1_012-close"></i>
@@ -637,7 +666,11 @@
           </div>
         </ng-container>
         <ng-container
-          *ngIf="currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create'"
+          *ngIf="
+            currentTimestamp < eventInfo.applyDate.startDate ||
+            uiFlag.editMode === 'create' ||
+            originEventStatus === EventStatus.notAudit
+          "
         >
           <div
             *ngTemplateOutlet="
@@ -709,7 +742,11 @@
     <i
       class="icon-svg_web-icon_p1_006-unfold icon--unfold"
       [class.icon--fold]="uiFlag.showAgeSelector === type + '-' + group.id"
-      *ngIf="currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create'"
+      *ngIf="
+        currentTimestamp < eventInfo.applyDate.startDate ||
+        uiFlag.editMode === 'create' ||
+        originEventStatus === EventStatus.notAudit
+      "
     ></i>
   </div>
 </ng-template>
@@ -731,7 +768,11 @@
     <i
       class="icon-svg_web-icon_p1_006-unfold icon--unfold"
       [class.icon--fold]="uiFlag.showGenderSelector === groupId"
-      *ngIf="currentTimestamp < eventInfo.applyDate.startDate || uiFlag.editMode === 'create'"
+      *ngIf="
+        currentTimestamp < eventInfo.applyDate.startDate ||
+        uiFlag.editMode === 'create' ||
+        originEventStatus === EventStatus.notAudit
+      "
     ></i>
   </div>
 </ng-template>

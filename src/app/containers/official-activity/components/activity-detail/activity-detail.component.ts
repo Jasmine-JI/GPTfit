@@ -14,6 +14,7 @@ import { UserProfileInfo } from '../../../../shared/models/user-profile-info';
 import { QueryString } from '../../../../shared/enum/query-string';
 
 const switchButtonWidth = 40;
+const navHeight = 60;
 enum ApplyButtonStatus {
   canApply = 1,
   applied,
@@ -245,7 +246,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     const { gender } = userProfile;
     this.groupApplyCheck = group.map((_group) => {
       const { gender: _gender, age: _age, currentApplyNumber } = _group;
-      const isFull = numberLimit && currentApplyNumber >= numberLimit;
+      const isFull = numberLimit > 0 && currentApplyNumber >= numberLimit;
       const sameGender = _gender === Gender.unlimit || _gender === gender;
       const inAgeRange = !_age || (age >= _age.min && age <= _age.max);
       return {
@@ -399,7 +400,6 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     const scrollElement = document.querySelector('.main__page');
     const targetId = `content__${id}`;
     const targetElementTop = document.getElementById(targetId).offsetTop;
-    const navHeight = 60;
     scrollElement.scrollTo({
       top: targetElementTop - navHeight,
       behavior: 'smooth',
@@ -511,7 +511,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     const targetTop = targetSection.offsetTop;
     const scrollElement = document.querySelector('.main__page');
     scrollElement.scrollTo({
-      top: targetTop,
+      top: targetTop - navHeight,
       behavior: 'smooth',
     });
   }
@@ -539,6 +539,15 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl(url);
       }
     }
+  }
+
+  /**
+   * 轉導至活動編輯頁面
+   * @param e {MouseEvent}
+   */
+  navigateEditPage(e: MouseEvent) {
+    e.preventDefault();
+    this.router.navigateByUrl(`/official-activity/edit-activity/${this.eventInfo.eventId}`);
   }
 
   /**
