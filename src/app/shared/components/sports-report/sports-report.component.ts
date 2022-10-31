@@ -42,7 +42,7 @@ import { AccessRight } from '../../enum/accessright';
 import { MuscleGroup, MuscleAnalysisColumn } from '../../enum/weight-train';
 import { zoneColor } from '../../models/chart-data';
 import { WeightTrainingAnalysis } from '../../classes/sports-report/weight-train-anaysis';
-import { AnalysisOption } from '../../classes/analysis-option';
+import { WeightTrainAnalysisOption } from '../../classes/weight-train-analysis-option';
 import { TranslateService } from '@ngx-translate/core';
 import { WeightTrainingAnalysisSort } from '../../classes/sports-report/weight-training-analysis-sort';
 import {
@@ -64,12 +64,9 @@ import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { SameWeekLifeTrackingData } from '../../classes/same-week-lifetracking-data';
 import { BenefitTimeStartZone } from '../../../core/enums/common';
+import { PersonalChartAnalysisOption } from '../../../containers/personal/classes/personal-chart-analysis-option';
 
 dayjs.extend(isoWeek);
-
-const muscleAnalysisColumnList = Object.values(MuscleAnalysisColumn).filter(
-  (value) => typeof value === 'number'
-);
 
 @Component({
   selector: 'app-sports-reports',
@@ -155,12 +152,21 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   musclePartTrendData: any = {};
 
   /**
+   * 圖表數據分析列表顯示欄位設定
+   */
+  chartAnalysisOption = new PersonalChartAnalysisOption({
+    analysisType: 'normal',
+    sportType: SportType.all,
+    object: 'list',
+  });
+
+  /**
    * 重訓動作分析列表欄位篩選設定（因欄位數不多，故預設欄位同欄位清單）
    */
-  weightTrainingAnalysisOption = new AnalysisOption(
-    muscleAnalysisColumnList,
-    muscleAnalysisColumnList
-  );
+  weightTrainingAnalysisOption = new WeightTrainAnalysisOption({
+    analysisType: 'weightTrainMenu',
+    object: 'list',
+  });
 
   /**
    * 重訓動作分析
@@ -233,10 +239,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     this.resizeEvent = merge(resize, this.globalEventsService.getRxSideBarMode())
       .pipe(debounceTime(500), takeUntil(this.ngUnsubscribe))
       .subscribe((e) => {
-        const element = document.querySelector('.main__container') as HTMLElement;
-        const containerWidth = element.getBoundingClientRect().width;
-        this.weightTrainingAnalysisOption.checkOverLimit(containerWidth);
-        this.weightTrainingAnalysisOption.fillItem();
+        this.handleTableResize();
         this.changeDetectorRef.markForCheck();
       });
   }
@@ -248,6 +251,16 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     this.translateService.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe((res) => {
       this.currentLang = res.lang;
     });
+  }
+
+  /**
+   * 視窗寬度變更時，調整表格欄位顯示數目
+   */
+  handleTableResize() {
+    const element = document.querySelector('.main__container') as HTMLElement;
+    const containerWidth = element.getBoundingClientRect().width;
+    this.weightTrainingAnalysisOption.checkOverLimit(containerWidth);
+    this.weightTrainingAnalysisOption.fillItem();
   }
 
   /**
@@ -361,6 +374,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           : this.userService.getTargetUserInfo(this.targetUserId);
       const { baseTime, compareTime, dateUnit, needRefreshData } = condition;
       this.reportCondition = deepCopy(condition);
+      this.chartAnalysisOption.changeOption(condition.sportType);
       this.uiFlag.isCompareMode = compareTime ? true : false;
       const { isCompareMode } = this.uiFlag;
       const isMondayFirst = dayjs(baseTime.startTimestamp).isoWeekday() === 1;

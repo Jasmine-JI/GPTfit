@@ -1,5 +1,5 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { speedToPace } from '../utils/sports';
+import { NgModule, Pipe, PipeTransform } from '@angular/core';
+import { speedToPace } from '../../shared/utils/sports';
 
 @Pipe({ name: 'sportPaceSibs' })
 export class SportPaceSibsPipe implements PipeTransform {
@@ -12,6 +12,11 @@ export class SportPaceSibsPipe implements PipeTransform {
   transform(value: number, args: number[]): string | number {
     const [sportType, unit, showUnit] = args;
     const { value: pace, unit: paceUnit } = speedToPace(value, sportType, unit);
-    return showUnit ? `${pace} ${paceUnit}` : pace;
+    return +showUnit === 0 ? `${pace} ${paceUnit}` : pace;
   }
 }
+@NgModule({
+  declarations: [SportPaceSibsPipe],
+  exports: [SportPaceSibsPipe],
+})
+export class SportPaceSibsModule {}

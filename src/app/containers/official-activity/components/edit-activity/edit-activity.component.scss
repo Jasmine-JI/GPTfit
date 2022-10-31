@@ -15,7 +15,7 @@ $placeholder-font-size: 24px;
 $edit-nav-height: 60px;
 $list-shadow-color: rgba(150, 150, 150, 1);
 $edit-block-width: 70vw;
-$content-title-height: 20px;
+$content-title-height: 26px;
 $age-selector-height: 30px;
 $drag-button-size: 30px;
 $video-input-height: 30px;
@@ -159,8 +159,12 @@ $placeholder-img-max-size: 220px;
 
   > span {
     @include placeholder-text(20px);
-    min-width: 300px;
+    min-width: 250px;
   }
+}
+
+::ng-deep [contenteditable] {
+  user-select: text;
 }
 
 .map__selector {
@@ -244,6 +248,7 @@ $placeholder-img-max-size: 220px;
   padding: 2px 10px;
   margin: 10px 0;
   height: $content-title-height;
+  min-height: $content-title-height;
   border-radius: $content-title-height;
   width: 150px;
 }

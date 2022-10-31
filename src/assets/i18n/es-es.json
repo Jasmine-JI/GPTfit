@@ -2704,5 +2704,8 @@
  "universal_vocabulary_selectEventGroup": "Please select a group you'd like to join",
  "universal_vocabulary_totalLimit": "Total racer limitation",
  "universal_vocabulary_limit": "Limitation",
- "universal_vocabulary_avaliable": "Avaliable"
+ "universal_vocabulary_avaliable": "Avaliable",
+ "universal_activityData_muscleRatio": "Muscle group ratio",
+ "universal_activityData_chartAnalysis": "Chart and analysis",
+ "universal_class_classDuration": "Class duration"
 }

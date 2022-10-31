@@ -1,0 +1,89 @@
+@import 'flex-center.scss';
+
+@mixin analysis-column($width) {
+  @include center();
+  white-space: pre-wrap;
+  margin: 0 5px;
+  min-width: $width;
+  max-width: $width;
+}
+
+.analysis__name {
+  @include analysis-column(120px);
+}
+
+.analysis__activity__people {
+  @include analysis-column(120px);
+}
+
+.analysis__achieved__people {
+  @include analysis-column(120px);
+}
+
+.analysis__total__activities {
+  @include analysis-column(120px);
+}
+
+.analysis__total__second {
+  @include analysis-column(120px);
+}
+
+.analysis__benefit__time {
+  @include analysis-column(120px);
+}
+
+.analysis__pai {
+  @include analysis-column(120px);
+}
+
+.analysis__calories {
+  @include analysis-column(120px);
+}
+
+.analysis__avg__hr {
+  @include analysis-column(120px);
+}
+
+.analysis__distance {
+  @include analysis-column(120px);
+}
+
+.analysis__pace {
+  @include analysis-column(120px);
+}
+
+.analysis__cadence {
+  @include analysis-column(120px);
+}
+
+.analysis__power {
+  @include analysis-column(120px);
+}
+
+.analysis__activity__second {
+  @include analysis-column(120px);
+}
+
+.analysis__prefer__sports {
+  @include analysis-column(120px);
+}
+
+.analysis__prefer__muscle {
+  @include analysis-column(120px);
+}
+
+.analysis__muscle__group {
+  @include analysis-column(120px);
+}
+
+.analysis__body__weight {
+  @include analysis-column(120px);
+}
+
+.analysis__fat__rate {
+  @include analysis-column(120px);
+}
+
+.analysis__hr__chart {
+  @include analysis-column(180px);
+}

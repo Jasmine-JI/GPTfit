@@ -289,7 +289,7 @@
   <section class="report-section" *ngIf="reportCondition.sportType === SportType.weightTrain">
     <div class="flexRow cardTitle">
       <h6 class="cardSubtitle">
-        {{ '肌群訓練次數佔比' | translate }}
+        {{ 'universal_activityData_muscleRatio' | translate }}
       </h6>
     </div>
     <div class="flexRow report-zoneChartInfo">
@@ -1918,6 +1918,17 @@
       </div>
     </div>
   </section>
+
+  <app-sports-data-table
+    [tableTitleKey]="'universal_activityData_chartAnalysis'"
+    [isCompareMode]="uiFlag.isCompareMode"
+    [tableData]="chartData.sportsTableData"
+    [baseReportRange]="reportCondition.baseTime"
+    [compareReportRange]="reportCondition.compareTime"
+    [chartAnalysisOption]="chartAnalysisOption"
+    [userUnit]="getUserUnit()"
+    [sportType]="reportCondition.sportType"
+  ></app-sports-data-table>
 
   <section
     class="report-section"
