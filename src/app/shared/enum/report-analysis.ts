@@ -2,7 +2,8 @@
  * 運動報告分析的欄位
  */
 export enum AnalysisSportsColumn {
-  targetAchievedRate = 1,
+  dateRange,
+  targetAchievedRate,
   activityPeople,
   activities,
   totalSecond,
@@ -25,5 +26,7 @@ export enum AnalysisSportsColumn {
   totalWeight,
   power,
   preferSports,
+  bodyWeight,
+  fatRate,
   hrChart,
 }

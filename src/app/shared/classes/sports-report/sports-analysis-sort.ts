@@ -3,7 +3,7 @@ import { MuscleGroup } from '../../enum/weight-train';
 /**
  * 處理Array<Object>數據排序相關
  */
-export class SportAnalysisSort {
+export class SportsAnalysisSort {
   /**
    * 是否為群組分析資料
    */

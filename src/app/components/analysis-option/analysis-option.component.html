@@ -63,10 +63,10 @@
         [attr.aria-disabled]="
           (_column.selected && !_column.canCancel) || (!_column.selected && !_column.canSelect)
         "
-        [ngSwitch]="analysisOption.optionInfo?.reportType"
+        [ngSwitch]="analysisOption.optionInfo?.analysisType"
         (click)="changeColumnSelectedStatus(_column)"
       >
-        <ng-container *ngSwitchCase="'sports'">
+        <ng-container *ngSwitchCase="'normal'">
           <ng-container [ngSwitch]="_column.info.item">
             <ng-container *ngSwitchCase="AnalysisSportsColumn.targetAchievedRate">
               {{ 'universal_lifeTracking_achievementRate' | translate }}
@@ -120,7 +120,7 @@
               </ng-container>
             </ng-container>
             <ng-container *ngSwitchCase="AnalysisSportsColumn.totalActivitySecond">
-              {{ '總活動時間' | translate }}
+              {{ 'universal_activityData_activityTime' | translate }}
             </ng-container>
             <ng-container *ngSwitchCase="AnalysisSportsColumn.preferMuscle">
               {{ 'universal_muscleName_preferredMuscleGroup' | translate }}
@@ -152,13 +152,19 @@
             <ng-container *ngSwitchCase="AnalysisSportsColumn.preferSports">
               {{ 'universal_activityData_activityPreferences' | translate }}
             </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.bodyWeight">
+              {{ 'universal_userProfile_bodyWeight' | translate }}
+            </ng-container>
+            <ng-container *ngSwitchCase="AnalysisSportsColumn.fatRate">
+              {{ 'universal_lifeTracking_fatRate' | translate }}
+            </ng-container>
             <ng-container *ngSwitchCase="AnalysisSportsColumn.hrChart">
               {{ 'universal_activityData_hrZone' | translate }}
             </ng-container>
           </ng-container>
         </ng-container>
 
-        <ng-container *ngSwitchDefault>
+        <ng-container *ngSwitchCase="'weightTrainMenu'">
           <ng-container [ngSwitch]="_column.info.item">
             <ng-container *ngSwitchCase="MuscleAnalysisColumn.oneRepMax">
               {{ 'universal_activityData_max1Rm' | translate }}
@@ -176,7 +182,7 @@
               {{ 'universal_activityData_weightTrainingExtent' | translate }}
             </ng-container>
             <ng-container *ngSwitchCase="MuscleAnalysisColumn.belongMuscleGroup">
-              {{ '肌群' | translate }}
+              {{ 'universal_activityData_muscleGroup' | translate }}
             </ng-container>
           </ng-container>
         </ng-container>

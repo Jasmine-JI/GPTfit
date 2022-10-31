@@ -286,8 +286,8 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
       .get('hellow world')
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(() => {
-        const navSection = this.navSection.nativeElement,
-          navSectionWidth = navSection.clientWidth;
+        const navSection = this.navSection.nativeElement;
+        const navSectionWidth = navSection.clientWidth;
         let reservedSpace = 0;
         this.uiFlag.windowInnerWidth = window.innerWidth;
         const haveExpandSidebar = window.innerWidth >= 1000 && window.innerWidth <= 1390;
@@ -422,13 +422,15 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
       setTimeout(() => {
         this.initPageOptSize();
         const menuList = document.querySelectorAll('.main__page__list');
-        this.uiFlag.barWidth = menuList[0].clientWidth;
-        menuList.forEach((_menu) => {
-          this.perPageOptSize.perSize.push(_menu.clientWidth);
-          this.perPageOptSize.total += _menu.clientWidth;
-        });
+        if (menuList[0]) {
+          this.uiFlag.barWidth = menuList[0].clientWidth;
+          menuList.forEach((_menu) => {
+            this.perPageOptSize.perSize.push(_menu.clientWidth);
+            this.perPageOptSize.total += _menu.clientWidth;
+          });
 
-        this.checkScreenSize();
+          this.checkScreenSize();
+        }
       });
     }
   }
@@ -714,11 +716,13 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
    */
   getSeeMorePosition() {
     setTimeout(() => {
-      const pageListBar = this.pageListBar.nativeElement,
-        seeMoreTag = this.seeMore.nativeElement;
-      this.uiFlag.barWidth = seeMoreTag.clientWidth;
-      this.uiFlag.barPosition =
-        seeMoreTag.getBoundingClientRect().left - pageListBar.getBoundingClientRect().left;
+      const pageListBar = this.pageListBar?.nativeElement;
+      const seeMoreTag = this.seeMore?.nativeElement;
+      if (pageListBar && seeMoreTag) {
+        this.uiFlag.barWidth = seeMoreTag.clientWidth;
+        this.uiFlag.barPosition =
+          seeMoreTag.getBoundingClientRect().left - pageListBar.getBoundingClientRect().left;
+      }
     });
   }
 

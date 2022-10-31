@@ -978,6 +978,14 @@ a.ban-send:hover {
 
 /* about print */
 @media print {
+  /**
+  * 處理圖表列印跑版問題
+  */
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+
   .alatech-btn {
     display: none;
   }
@@ -1005,13 +1013,20 @@ a.ban-send:hover {
   }
 
   /*使css屬性background color可以列印出來*/
+  html,
   body {
+    max-width: 210mm;
+    position: relative;
     -webkit-print-color-adjust: exact;
-    overflow: visible;
+    overflow-y: visible;
   }
 
   .pageBreak {
     min-height: 1px;
     page-break-before: avoid;
+  }
+
+  .mobileFiller {
+    display: none;
   }
 }

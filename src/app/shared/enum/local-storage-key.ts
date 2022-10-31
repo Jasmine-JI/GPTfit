@@ -14,4 +14,6 @@ export enum LocalStorageKey {
   eventDraft = 'eventDraft', // 活動內容草稿
   token = 'ala_token', // 登入權杖
   useIsoWeek = 'uiw', // 使用是否使用isoWeek（週一為一週的第一天）
+  sportsReportTableData = 'srtd',
+  weightTrainAnalysis = 'wta',
 }

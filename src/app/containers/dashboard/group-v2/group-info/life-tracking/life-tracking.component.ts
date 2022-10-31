@@ -862,17 +862,17 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     },
     type: number
   ) {
-    const { startTimestamp, endTimestamp } = date,
-      result = [];
-    let dateRange: number,
-      reportStartDate = startTimestamp,
-      reportEndDate = endTimestamp;
+    const { startTimestamp, endTimestamp } = date;
+    const result = [];
+    let dateRange: number;
+    let reportStartDate = startTimestamp;
+    let reportEndDate = endTimestamp;
     if (type === 1) {
       this.dateLen = dayjs(endTimestamp).diff(dayjs(startTimestamp), 'day') + 1;
       dateRange = 86400000; // 間隔1天(ms)
     } else {
-      (reportStartDate = dayjs(startTimestamp).startOf('week').valueOf()),
-        (reportEndDate = dayjs(endTimestamp).startOf('week').valueOf());
+      reportStartDate = dayjs(startTimestamp).startOf('week').valueOf();
+      reportEndDate = dayjs(endTimestamp).startOf('week').valueOf();
       this.dateLen = dayjs(reportEndDate).diff(dayjs(reportStartDate), 'week') + 1;
       dateRange = 604800000; // 間隔7天(ms)
     }
@@ -1141,28 +1141,28 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    */
   handleMixData(mixData: Array<any>) {
     mixData.sort((a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf());
-    const dateArr = this.createChartXaxis(this.reportConditionOpt.date, this.reportTime.type),
-      noRepeatDateData = this.mergeSameDateData(mixData),
-      needKey = this.getNeedKey();
+    const dateArr = this.createChartXaxis(this.reportConditionOpt.date, this.reportTime.type);
+    const noRepeatDateData = this.mergeSameDateData(mixData);
+    const needKey = this.getNeedKey();
     let dataIdx = 0;
     for (let i = 0, len = dateArr.length; i < len; i++) {
       // 若無該日數據，則以補0方式呈現圖表數據。
-      const xAxisTimestamp = dateArr[i],
-        { startTimestamp, tracking } = noRepeatDateData[dataIdx] || {
-          startTimestamp: undefined,
-          tracking: undefined,
-        };
+      const xAxisTimestamp = dateArr[i];
+      const { startTimestamp, tracking } = noRepeatDateData[dataIdx] || {
+        startTimestamp: undefined,
+        tracking: undefined,
+      };
+
       if (xAxisTimestamp === startTimestamp) {
         let sameDateData = {};
         const trackingLen = tracking.length;
         for (let j = 0; j < trackingLen; j++) {
           const _tracking = tracking[j];
           for (let k = 0, keyLen = needKey.length; k < keyLen; k++) {
-            const key = needKey[k],
-              excludeKey = ['birthYear', 'gender'];
-            if (Object.prototype.hasOwnProperty.call(key) && !excludeKey.includes(key)) {
-              let value: number;
-              value = +_tracking[key];
+            const key = needKey[k];
+            const excludeKey = ['birthYear', 'gender'];
+            if (Object.prototype.hasOwnProperty.call(_tracking, key) && !excludeKey.includes(key)) {
+              const value = +_tracking[key];
 
               // 將各數據加總，之後均化產生趨勢圖表
               if (sameDateData[key] !== undefined) {
@@ -1583,8 +1583,8 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    * @author kidin-1100621
    */
   createStepTrendChart(strokeData: any, startTimestamp: number) {
-    const { totalStep, targetStep, totalDistanceMeters } = strokeData,
-      { stepTrend } = this.chart;
+    const { totalStep, targetStep, totalDistanceMeters } = strokeData;
+    const { stepTrend } = this.chart;
     stepTrend.totalDistance += totalDistanceMeters;
     stepTrend.totalStep += totalStep;
     if (targetStep) {

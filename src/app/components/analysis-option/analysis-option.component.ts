@@ -1,16 +1,30 @@
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
-import { AnalysisOneOption } from '../../classes/analysis-one-option';
-import { SportType } from '../../enum/sports';
-import { BrandType, GroupLevel } from '../../enum/professional';
-import { AnalysisSportsColumn } from '../../../containers/professional/enum/report-analysis';
-import { MuscleAnalysisColumn } from '../../enum/weight-train';
+import {
+  Component,
+  OnInit,
+  OnChanges,
+  OnDestroy,
+  NgModule,
+  Input,
+  Output,
+  EventEmitter,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
+import { AnalysisOneOption } from '../../shared/classes/analysis-one-option';
+import { SportType } from '../../shared/enum/sports';
+import { BrandType, GroupLevel } from '../../shared/enum/professional';
+import { AnalysisSportsColumn } from '../../shared/enum/report-analysis';
+import { MuscleAnalysisColumn } from '../../shared/enum/weight-train';
 
 @Component({
   selector: 'app-analysis-option',
   templateUrl: './analysis-option.component.html',
   styleUrls: ['./analysis-option.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AnalysisOptionComponent implements OnInit, OnDestroy {
+export class AnalysisOptionComponent implements OnInit, OnChanges, OnDestroy {
   @Input() analysisOption: any;
   @Output() optionChange = new EventEmitter();
 
@@ -23,6 +37,8 @@ export class AnalysisOptionComponent implements OnInit, OnDestroy {
   constructor() {}
 
   ngOnInit(): void {}
+
+  ngOnChanges() {}
 
   /**
    * 變更單一階層項目選擇狀態
@@ -47,3 +63,9 @@ export class AnalysisOptionComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {}
 }
+@NgModule({
+  declarations: [AnalysisOptionComponent],
+  exports: [AnalysisOptionComponent],
+  imports: [CommonModule, TranslateModule],
+})
+export class AnalysisOptionModule {}
