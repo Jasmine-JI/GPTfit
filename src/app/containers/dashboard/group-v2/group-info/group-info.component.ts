@@ -33,6 +33,7 @@ import { ProfessionalService } from '../../../professional/services/professional
 import { AccessRight } from '../../../../shared/enum/accessright';
 import { appPath } from '../../../../app-path.const';
 import { QueryString } from '../../../../shared/enum/query-string';
+import { GroupChildPage } from '../../../../shared/enum/professional';
 
 const errMsg = `Error.<br />Please try again later.`;
 const replaceResult = {
@@ -107,7 +108,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     windowInnerWidth: null,
     showMorePageOpt: false,
     divideIndex: 99,
-    currentPage: 'group-introduction',
+    currentPage: GroupChildPage.groupIntroduction,
     currentTagIndex: 0,
     barPosition: 0,
     barWidth: 0,
@@ -139,7 +140,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   /**
    * 群組子頁面清單
    */
-  childPageList: Array<string> = [];
+  childPageList: Array<GroupChildPage> = [];
 
   /**
    * 儲存子頁面清單各選項按鈕寬度
@@ -167,6 +168,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   newGroupId: string;
 
   readonly AccessRight = AccessRight;
+  readonly GroupChildPage = GroupChildPage;
 
   constructor(
     private translate: TranslateService,
@@ -394,7 +396,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   sendImgUploadReq(formData: FormData, groupId: string) {
     this.imageUploadService.addImg(formData).subscribe((res) => {
       if (res.processResult.resultCode !== 200) {
-        this.utils.openAlert('Image upload error.');
+        this.utils.openAlert('Image upload error.<br>Please change image and try again.');
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.initImgSetting();
@@ -550,7 +552,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   closeCreateMode() {
     // 移除query string，避免create mode被重複開啟
     const newUrl = `${location.origin}${location.pathname}`;
-    window.history.pushState({ path: newUrl }, '', newUrl);
+    window.history.replaceState({ path: newUrl }, '', newUrl);
     this.groupService.setEditMode('close');
   }
 
@@ -1007,11 +1009,12 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     if (urlArr.indexOf('group-info') > -1) {
       if (this.uiFlag.portalMode) {
-        this.uiFlag.currentPage = 'group-introduction';
+        this.uiFlag.currentPage = GroupChildPage.groupIntroduction;
         this.uiFlag.currentTagIndex = 0;
         this.handleNavigation(this.currentGroupInfo.groupId);
       } else if (urlArr.length === 5) {
-        this.uiFlag.currentPage = urlArr[urlArr.length - 1].split('?')[0];
+        const pageString = urlArr[urlArr.length - 1].split('?')[0];
+        this.uiFlag.currentPage = this.getGroupPageCode(pageString);
         this.uiFlag.currentTagIndex = this.childPageList.indexOf(this.uiFlag.currentPage);
       } else {
         this.handleNavigation(this.currentGroupInfo.groupId);
@@ -1069,7 +1072,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * 根據群組類別、群組階層、群組經營狀態、使用者權限等，顯示可點選的頁面
    * @author kidin-1091104
    */
-  initChildPageList(): Array<string> {
+  initChildPageList(): Array<GroupChildPage> {
     const { accessRight } = this.user;
     const groupDetail = this.currentGroupInfo.groupDetail;
     const commerceInfo = this.currentGroupInfo.commerceInfo;
@@ -1079,33 +1082,41 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     const inOperation = !commerceInfo.expired && +commerceInfo.commerceStatus === 1;
     const notLock = this.currentGroupInfo.groupDetail.groupStatus !== 6;
     const upperClassAdmin = accessRight <= AccessRight.coachAdmin;
+    const isGroupMember = accessRight <= AccessRight.member;
     const upperMarktingManage = accessRight <= AccessRight.marketing;
-    let childPageList = ['group-introduction'];
+    let childPageList = [GroupChildPage.groupIntroduction];
     if (!this.uiFlag.portalMode) {
-      if (!isEnterpriseType && inClassLevel && inOperation && notLock && upperClassAdmin) {
+      childPageList = childPageList.concat([
+        GroupChildPage.groupArchitecture,
+        GroupChildPage.adminList,
+      ]);
+
+      if (inBrandLevel && (upperMarktingManage || this.user.isGroupAdmin))
+        childPageList.push(GroupChildPage.commercePlan);
+
+      if (upperClassAdmin)
         childPageList = childPageList.concat([
-          'myclass-report',
-          'class-analysis',
-          'cloudrun-report',
+          GroupChildPage.memberList,
+          GroupChildPage.deviceList,
         ]);
-      } else if (!isEnterpriseType && inClassLevel && inOperation && notLock) {
-        childPageList = childPageList.concat(['myclass-report', 'cloudrun-report']);
-      } else if (isEnterpriseType && inOperation && notLock) {
-        childPageList = childPageList.concat(['sports-report', 'life-tracking', 'cloudrun-report']);
-      }
 
-      if (!this.uiFlag.portalMode) {
-        childPageList = childPageList.concat(['group-architecture', 'member-list', 'admin-list']);
+      if (isGroupMember && inOperation && notLock) {
+        childPageList = childPageList.concat([
+          GroupChildPage.sportsReport,
+          GroupChildPage.cloudrunReport,
+        ]);
 
-        if (upperClassAdmin) childPageList = childPageList.concat(['device-list']);
-      }
+        if (isEnterpriseType) childPageList.push(GroupChildPage.lifeTracking);
 
-      if (inBrandLevel && (upperMarktingManage || this.user.isGroupAdmin)) {
-        childPageList.push('commerce-plan');
+        if (inClassLevel && !isEnterpriseType) {
+          childPageList.push(GroupChildPage.myclassReport);
+
+          if (upperClassAdmin) childPageList.push(GroupChildPage.classAnalysis);
+        }
       }
     }
 
-    return childPageList;
+    return childPageList.sort((_a, _b) => _a - _b);
   }
 
   /**
@@ -1282,13 +1293,16 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   /**
    * 根據使用者點選的頁面顯示內容
    * @param e {MouseEvent}
-   * @param page {string}-子頁面
+   * @param page {GroupChildPage}-子頁面
    * @param tagIdx {number}-tag的顯示序
    * @author kidin-1090811
    */
-  handleShowContent(e: MouseEvent, page: string, tagIdx: number) {
+  handleShowContent(e: MouseEvent, page: GroupChildPage, tagIdx: number) {
     e.stopPropagation();
-    this.router.navigateByUrl(`/dashboard/group-info/${this.currentGroupInfo.hashGroupId}/${page}`);
+    const pageString = this.getGroupPageString(page);
+    this.router.navigateByUrl(
+      `/dashboard/group-info/${this.currentGroupInfo.hashGroupId}/${pageString}`
+    );
     this.uiFlag.currentPage = page;
     this.uiFlag.currentTagIndex = tagIdx;
     this.uiFlag.showMorePageOpt = false;
@@ -1325,13 +1339,13 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @param page {string}-子頁面
    * @author kidin-1100226
    */
-  scrollPage(page: string) {
+  scrollPage(page: GroupChildPage) {
     const mainBodyEle = document.querySelector('.main-body');
-    if (page === 'group-introduction') {
+    if (page === GroupChildPage.groupIntroduction) {
       mainBodyEle.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as HTMLElement,
-        pageListBarTop = pageListBar.offsetTop;
+      const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as HTMLElement;
+      const pageListBarTop = pageListBar.offsetTop;
       mainBodyEle.scrollTo({ top: pageListBarTop, behavior: 'smooth' });
     }
   }
@@ -1449,6 +1463,70 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.router.navigateByUrl(
       `/dashboard/${home}/${newMail}?${messageReceiverId}=${groupId}&${messageReceiverType}=g`
     );
+  }
+
+  /**
+   * 取得頁面字串對應的enum code
+   */
+  getGroupPageCode(pageString: string) {
+    switch (pageString) {
+      case 'group-introduction':
+        return GroupChildPage.groupIntroduction;
+      case 'myclass-report':
+        return GroupChildPage.myclassReport;
+      case 'class-analysis':
+        return GroupChildPage.classAnalysis;
+      case 'sports-report':
+        return GroupChildPage.sportsReport;
+      case 'life-tracking':
+        return GroupChildPage.lifeTracking;
+      case 'cloudrun-report':
+        return GroupChildPage.cloudrunReport;
+      case 'group-architecture':
+        return GroupChildPage.groupArchitecture;
+      case 'admin-list':
+        return GroupChildPage.adminList;
+      case 'member-list':
+        return GroupChildPage.memberList;
+      case 'device-list':
+        return GroupChildPage.deviceList;
+      case 'commerce-plan':
+        return GroupChildPage.commercePlan;
+      default:
+        return GroupChildPage.groupIntroduction;
+    }
+  }
+
+  /**
+   * 取得頁面字串對應的enum code
+   */
+  getGroupPageString(pageCode: GroupChildPage): string {
+    switch (pageCode) {
+      case GroupChildPage.groupIntroduction:
+        return 'group-introduction';
+      case GroupChildPage.myclassReport:
+        return 'myclass-report';
+      case GroupChildPage.classAnalysis:
+        return 'class-analysis';
+      case GroupChildPage.sportsReport:
+        return 'sports-report';
+      case GroupChildPage.lifeTracking:
+        return 'life-tracking';
+      case GroupChildPage.cloudrunReport:
+        return 'cloudrun-report';
+      case GroupChildPage.groupArchitecture:
+        return 'group-architecture';
+      case GroupChildPage.adminList:
+        return 'admin-list';
+      case GroupChildPage.memberList:
+        return 'member-list';
+      case GroupChildPage.deviceList:
+        return 'device-list';
+      case GroupChildPage.commercePlan:
+        return 'commerce-plan';
+      default:
+        return 'group-introduction';
+    }
   }
 
   /**

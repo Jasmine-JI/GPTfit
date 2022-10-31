@@ -2700,4 +2700,9 @@
  "universal_system_aboveZone1": "Above Zone 1",
  "universal_system_zoneInfo": "Effective time base on HR zone, you can set effective zones here",
  "universal_system_startDate": "Start date",
- "universal_system_reportSetting": "Report settings"}
+ "universal_system_reportSetting": "Report settings",
+ "universal_vocabulary_selectEventGroup": "Please select a group you'd like to join",
+ "universal_vocabulary_totalLimit": "Total racer limitation",
+ "universal_vocabulary_limit": "Limitation",
+ "universal_vocabulary_avaliable": "Avaliable"
+}

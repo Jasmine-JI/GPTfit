@@ -1,6 +1,7 @@
 @import 'flex-center.scss';
 @import 'transition.scss';
 @import 'transform.scss';
+@import 'z-index.scss';
 
 .map__style {
   height: 500px;
@@ -12,7 +13,7 @@
 
 #map__opt__menu {
   position: absolute;
-  z-index: 1;
+  z-index: $drop-menu;
   width: 220px;
   background-color: white;
   border: 1px solid rgba(150, 150, 150, 1);
@@ -59,7 +60,7 @@
   width: 100%;
   border: 1px solid black;
   padding: 5px;
-  z-index: 2;
+  z-index: $drop-menu;
   background-color: white;
   top: 58px;
 
@@ -72,6 +73,13 @@
       @include transition(background-color);
     }
   }
+}
+
+.chart__insert__map {
+  position: absolute;
+  bottom: 5px;
+  width: 100%;
+  z-index: $under-map-element;
 }
 
 /************************ media ************************************/

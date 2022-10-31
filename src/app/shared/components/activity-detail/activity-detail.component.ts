@@ -911,45 +911,35 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     // 距離為0或第一點的距離為null則趨勢圖表設定框分段解析不顯示距離選項
     this.trendChartOpt.haveDistanceChoice =
       this.activityInfoLayer.totalDistanceMeters && point[0]['distanceMeters'] ? true : false;
-    let haveEffectiveCoordinates = false,
-      effectiveDegree = {
-        // 補斷點用
-        latitudeDegrees: null,
-        longitudeDegrees: null,
-      },
-      convertDegree = {
-        // 儲存整理過後的gps座標
-        latitudeDegrees: [],
-        longitudeDegrees: [],
-      };
+    let haveEffectiveCoordinates = false;
+
+    // 補斷點用
+    let effectiveDegree = {
+      latitudeDegrees: null,
+      longitudeDegrees: null,
+    };
+    const convertDegree: Array<[number, number]> = [];
 
     point.forEach((_point, _index) => {
       // point解析度調整(預埋)
       if (_index % this.uiFlag.resolution === 0) {
         // 處理gps座標
-        if (_point['latitudeDegrees']) {
+        const { latitudeDegrees: lat, longitudeDegrees: lon } = _point;
+        if (lat) {
           // 當座標為null或(100, 100)時，視為未移動或無效點
-          if (
-            _point['latitudeDegrees'] === null ||
-            _point['longitudeDegrees'] === null ||
-            (_point['latitudeDegrees'] == 100 && _point['longitudeDegrees'] == 100)
-          ) {
+          if (lat === null || lon === null || (lat == 100 && lon == 100)) {
             if (effectiveDegree.latitudeDegrees) {
-              convertDegree.latitudeDegrees.push(effectiveDegree.latitudeDegrees);
-              convertDegree.longitudeDegrees.push(effectiveDegree.longitudeDegrees);
+              const { longitudeDegrees, latitudeDegrees } = effectiveDegree;
+              convertDegree.push([latitudeDegrees, longitudeDegrees]);
             } else {
-              convertDegree.latitudeDegrees.push(null);
-              convertDegree.longitudeDegrees.push(null);
+              convertDegree.push([null, null]);
             }
           } else {
             haveEffectiveCoordinates = true;
-            effectiveDegree = {
-              latitudeDegrees: +_point['latitudeDegrees'],
-              longitudeDegrees: +_point['longitudeDegrees'],
-            };
-
-            convertDegree.latitudeDegrees.push(effectiveDegree.latitudeDegrees);
-            convertDegree.longitudeDegrees.push(effectiveDegree.longitudeDegrees);
+            const longitudeDegrees = +lon;
+            const latitudeDegrees = +lat;
+            effectiveDegree = { longitudeDegrees, latitudeDegrees };
+            convertDegree.push([latitudeDegrees, longitudeDegrees]);
           }
         }
 
@@ -979,8 +969,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     if (!haveEffectiveCoordinates) {
       this.uiFlag.isNormalCoordinate = false;
     } else {
-      Object.assign(this.activityPointLayer, { latitudeDegrees: convertDegree.latitudeDegrees });
-      Object.assign(this.activityPointLayer, { longitudeDegrees: convertDegree.longitudeDegrees });
+      Object.assign(this.activityPointLayer, { latLngPath: convertDegree });
       this.uiFlag.isNormalCoordinate = true;
     }
   }
@@ -1283,8 +1272,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ? this.activityPointLayer
           : this.trendChartData.yAxis;
 
-    let divideIndex = 1,
-      segmentTotal = {};
+    let divideIndex = 1;
+    const segmentTotal = {};
     for (let i = 0, dataLength = refXAxisData.length; i < dataLength; i++) {
       // 將分段範圍內的數據進行均化
       if (refXAxisData[i] < range * divideIndex) {
@@ -1993,10 +1982,12 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           cadence = rowingCadence;
       }
 
-      const checkLat = latitudeDegrees && parseFloat(latitudeDegrees) !== 100,
-        checkLng = longitudeDegrees && parseFloat(longitudeDegrees) !== 100,
-        alt = altitudeMeters || 0,
-        pointTime = dayjs(startTimestamp + pointSecond * 1000).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+      const checkLat = latitudeDegrees && parseFloat(latitudeDegrees) !== 100;
+      const checkLng = longitudeDegrees && parseFloat(longitudeDegrees) !== 100;
+      const alt = altitudeMeters || 0;
+      const pointTime = dayjs(startTimestamp + pointSecond * 1000).format(
+        'YYYY-MM-DDTHH:mm:ss.SSSZ'
+      );
       // if (checkLat && checkLng) {  // 暫不做座標是否有效的判斷
       content += `<trkpt lat="${latitudeDegrees}" lon="${longitudeDegrees}">
             <ele>${alt}</ele>
@@ -2256,8 +2247,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       xAxis: [],
       yAxis: {},
     };
-    let repeatTotal = {},
-      repeatLen = 0;
+    const repeatTotal = {};
+    let repeatLen = 0;
 
     for (let i = 0, xAxisLen = xData.length; i < xAxisLen; i++) {
       // 當前x軸數據與前一項x軸數據相同時，將y軸數據相加

@@ -7,6 +7,7 @@
 @import 'flex-center.scss';
 @import 'transition.scss';
 @import 'transform.scss';
+@import 'z-index.scss';
 
 $primary-btn-blue: rgba(0, 183, 238, 1);
 $warn-color: rgba(255, 75, 75, 1);
@@ -58,7 +59,7 @@ $edit-icon-size: 30px;
   position: absolute;
   width: $avatar-normal-size;
   height: $avatar-normal-size;
-  z-index: 2;
+  z-index: nth($normal-index, 2);
   top: 150px;
   left: 50px;
   background: #ffffff;
@@ -106,7 +107,7 @@ $edit-icon-size: 30px;
     position: absolute;
     right: 0;
     top: 21px;
-    z-index: 1;
+    z-index: nth($normal-index, 1);
     background-color: var(--scale-255-0);
     padding: 0 20px;
   }
@@ -239,7 +240,7 @@ $edit-icon-size: 30px;
   position: fixed;
   top: 50px;
   background-color: var(--scale-255-0);
-  z-index: 5;
+  z-index: $content-navbar;
   box-shadow: 1px 2px 4px rgba(150, 150, 150, 1);
 }
 
@@ -282,7 +283,7 @@ $edit-icon-size: 30px;
   position: absolute;
   top: 44px;
   background-color: var(--scale-255-60);
-  z-index: 3;
+  z-index: calc(#{$content-navbar} + 1);
   padding: 0 10px;
   border: 1px solid gray;
 }
@@ -342,7 +343,7 @@ $edit-icon-size: 30px;
   height: 110vh;
   top: -5vh;
   left: -5vw;
-  z-index: 1000;
+  z-index: $mask-content;
 }
 
 .info-imgSelector {

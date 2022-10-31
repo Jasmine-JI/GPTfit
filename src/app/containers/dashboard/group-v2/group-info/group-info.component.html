@@ -111,8 +111,8 @@
                 (currentGroupInfo.groupDetail.groupStatus === 1 ||
                   currentGroupInfo.groupDetail.groupStatus === 2) &&
                 !currentGroupInfo.commerceInfo.expired &&
-                +currentGroupInfo.commerceInfo.groupMemberStatus.currentGroupMembers <
-                  +currentGroupInfo.commerceInfo.groupMemberStatus.maxGroupMembers
+                +currentGroupInfo.commerceInfo.groupAllMemberStatus?.currentAllGroupMembers <
+                  +currentGroupInfo.commerceInfo.groupAllMemberStatus?.maxAllGroupMembers
               "
             >
               <span
@@ -217,7 +217,7 @@
             <ng-container
               *ngIf="
                 uiFlag.editMode !== 'create' ||
-                (uiFlag.editMode === 'create' && _page === 'group-introduction')
+                (uiFlag.editMode === 'create' && _page === GroupChildPage.groupIntroduction)
               "
             >
               <span
@@ -226,43 +226,45 @@
                 (click)="handleShowContent($event, _page, _idx)"
                 *ngIf="uiFlag.divideIndex === null || _idx < uiFlag.divideIndex"
               >
-                <ng-container *ngIf="_page === 'group-introduction'">
+                <ng-container *ngIf="_page === GroupChildPage.groupIntroduction">
                   {{ 'universal_deviceSetting_adout' | translate }}
                 </ng-container>
-                <ng-container *ngIf="_page === 'myclass-report'">
+                <ng-container *ngIf="_page === GroupChildPage.myclassReport">
                   {{ 'universal_userProfile_personal' | translate }}
                   {{ 'universal_group_classReport' | translate }}
                 </ng-container>
-                <ng-container *ngIf="_page === 'class-analysis'">
+                <ng-container *ngIf="_page === GroupChildPage.classAnalysis">
                   {{ 'universal_group_group' | translate }}
                   {{ 'universal_group_classReport' | translate }}
                 </ng-container>
-                <ng-container *ngIf="_page === 'sports-report'">
+                <ng-container *ngIf="_page === GroupChildPage.sportsReport">
                   {{ 'universal_activityData_sportReport' | translate }}
                 </ng-container>
-                <ng-container *ngIf="_page === 'life-tracking'">
+                <ng-container *ngIf="_page === GroupChildPage.lifeTracking">
                   {{ 'universal_lifeTracking_lifeTracking' | translate }}
                 </ng-container>
-                <ng-container *ngIf="_page === 'cloudrun-report'"> Cloud run </ng-container>
-                <ng-container *ngIf="_page === 'member-list'">
+                <ng-container *ngIf="_page === GroupChildPage.cloudrunReport">
+                  Cloud run
+                </ng-container>
+                <ng-container *ngIf="_page === GroupChildPage.memberList">
                   {{ 'universal_group_member' | translate }}
                 </ng-container>
-                <ng-container *ngIf="_page === 'group-architecture'">
+                <ng-container *ngIf="_page === GroupChildPage.groupArchitecture">
                   {{ 'universal_group_layer' | translate }}
                 </ng-container>
-                <ng-container *ngIf="_page === 'commerce-plan'">
+                <ng-container *ngIf="_page === GroupChildPage.commercePlan">
                   {{ 'universal_group_program' | translate }}
                 </ng-container>
-                <ng-container *ngIf="_page === 'admin-list'">
+                <ng-container *ngIf="_page === GroupChildPage.adminList">
                   {{ 'universal_group_administrator' | translate }}
                 </ng-container>
-                <ng-container *ngIf="_page === 'device-list'">
+                <ng-container *ngIf="_page === GroupChildPage.deviceList">
                   {{ 'universal_deviceSetting_deviceManagement' | translate }}
                 </ng-container>
                 <i
                   class="icon-svg_web-icon_p1_069-about warn__icon"
                   *ngIf="
-                    _page === 'commerce-plan' &&
+                    _page === GroupChildPage.commercePlan &&
                     (currentGroupInfo.groupDetail.expired ||
                       +currentGroupInfo.commerceInfo.commerceStatus !== 1)
                   "
@@ -309,37 +311,39 @@
                   [class.info-active--color]="uiFlag.currentTagIndex === _fIdx"
                   (click)="handleShowContent($event, _foldItem, _fIdx)"
                 >
-                  <ng-container *ngIf="_foldItem === 'group-introduction'">
+                  <ng-container *ngIf="_foldItem === GroupChildPage.groupIntroduction">
                     {{ 'universal_deviceSetting_adout' | translate }}
                   </ng-container>
-                  <ng-container *ngIf="_foldItem === 'myclass-report'">
+                  <ng-container *ngIf="_foldItem === GroupChildPage.myclassReport">
                     {{ 'universal_userProfile_personal' | translate }}
                     {{ 'universal_group_classReport' | translate }}
                   </ng-container>
-                  <ng-container *ngIf="_foldItem === 'class-analysis'">
+                  <ng-container *ngIf="_foldItem === GroupChildPage.classAnalysis">
                     {{ 'universal_group_group' | translate }}
                     {{ 'universal_group_classReport' | translate }}
                   </ng-container>
-                  <ng-container *ngIf="_foldItem === 'sports-report'">
+                  <ng-container *ngIf="_foldItem === GroupChildPage.sportsReport">
                     {{ 'universal_activityData_sportReport' | translate }}
                   </ng-container>
-                  <ng-container *ngIf="_foldItem === 'life-tracking'">
+                  <ng-container *ngIf="_foldItem === GroupChildPage.lifeTracking">
                     {{ 'universal_lifeTracking_lifeTracking' | translate }}
                   </ng-container>
-                  <ng-container *ngIf="_foldItem === 'cloudrun-report'"> Cloud run </ng-container>
-                  <ng-container *ngIf="_foldItem === 'member-list'">
+                  <ng-container *ngIf="_foldItem === GroupChildPage.cloudrunReport">
+                    Cloud run
+                  </ng-container>
+                  <ng-container *ngIf="_foldItem === GroupChildPage.memberList">
                     {{ 'universal_group_member' | translate }}
                   </ng-container>
-                  <ng-container *ngIf="_foldItem === 'group-architecture'">
+                  <ng-container *ngIf="_foldItem === GroupChildPage.groupArchitecture">
                     {{ 'universal_group_layer' | translate }}
                   </ng-container>
-                  <ng-container *ngIf="_foldItem === 'commerce-plan'">
+                  <ng-container *ngIf="_foldItem === GroupChildPage.commercePlan">
                     {{ 'universal_group_program' | translate }}
                   </ng-container>
-                  <ng-container *ngIf="_foldItem === 'admin-list'">
+                  <ng-container *ngIf="_foldItem === GroupChildPage.adminList">
                     {{ 'universal_group_administrator' | translate }}
                   </ng-container>
-                  <ng-container *ngIf="_foldItem === 'device-list'">
+                  <ng-container *ngIf="_foldItem === GroupChildPage.deviceList">
                     {{ 'universal_deviceSetting_deviceManagement' | translate }}
                   </ng-container>
                 </span>
@@ -354,9 +358,12 @@
     class="cardSection"
     [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
     *ngIf="
-      ['myclass-report', 'life-tracking', 'cloudrun-report', 'device-list'].includes(
-        uiFlag.currentPage
-      )
+      [
+        GroupChildPage.myclassReport,
+        GroupChildPage.lifeTracking,
+        GroupChildPage.cloudrunReport,
+        GroupChildPage.deviceList
+      ].includes(uiFlag.currentPage)
     "
   >
     <app-report-filter></app-report-filter>
@@ -365,7 +372,7 @@
     id="main__section"
     class="cardSection"
     [ngClass]="{
-      cardSection: uiFlag.currentPage !== 'sports-report',
+      cardSection: uiFlag.currentPage !== GroupChildPage.sportsReport,
       'info-portalMode': uiFlag.portalMode
     }"
   >

@@ -122,7 +122,7 @@ export class SportTargetSettingComponent implements OnInit, OnDestroy {
    */
   setNewConditionValue(e: MouseEvent) {
     const { value } = (e as any).target;
-    if (formTest.number.test(value)) {
+    if (formTest.number.test(value) && +value) {
       this.newFiledValue = +value;
       const { newFiledName, newFiledValue } = this;
       if (newFiledName) {

@@ -63,6 +63,9 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
     groupMemberSetting: {
       maxGroupMembers: 20,
     },
+    groupAllMemberSetting: {
+      maxAllGroupMembers: 100,
+    },
   };
 
   constructor(private groupService: GroupService, private utils: UtilsService) {}
@@ -135,22 +138,26 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
    * @author kidin-1091112
    */
   handleEditBody() {
+    const { commerceInfo } = this;
     this.editBody = {
       token: this.userSimpleInfo.token,
       groupId: this.groupInfo.groupId,
-      commercePlan: this.commerceInfo.commercePlan,
-      commercePlanExpired: this.commerceInfo.commercePlanExpired,
-      commerceStatus: this.commerceInfo.commerceStatus,
+      commercePlan: commerceInfo.commercePlan,
+      commercePlanExpired: commerceInfo.commercePlanExpired,
+      commerceStatus: commerceInfo.commerceStatus,
       groupSetting: {
-        maxBranches: this.commerceInfo.groupStatus.maxBranches,
-        maxClasses: this.commerceInfo.groupStatus.maxClasses,
+        maxBranches: commerceInfo.groupStatus.maxBranches,
+        maxClasses: commerceInfo.groupStatus.maxClasses,
         maxGeneralGroups: 0,
       },
       groupManagerSetting: {
-        maxGroupManagers: this.commerceInfo.groupManagerStatus.maxGroupManagers,
+        maxGroupManagers: commerceInfo.groupManagerStatus.maxGroupManagers,
       },
       groupMemberSetting: {
-        maxGroupMembers: this.commerceInfo.groupMemberStatus.maxGroupMembers,
+        maxGroupMembers: commerceInfo.groupMemberStatus.maxGroupMembers,
+      },
+      groupAllMemberSetting: {
+        maxAllGroupMembers: commerceInfo.groupAllMemberStatus?.maxAllGroupMembers || 100,
       },
     };
   }
@@ -237,9 +244,9 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
         break;
       case 'memberNum':
         if (num < 20 || num > 100000) {
-          this.editBody.groupMemberSetting.maxGroupMembers = 20;
+          this.editBody.groupAllMemberSetting.maxAllGroupMembers = 100;
         } else {
-          this.editBody.groupMemberSetting.maxGroupMembers = num;
+          this.editBody.groupAllMemberSetting.maxAllGroupMembers = num;
         }
         break;
       case 'branchNum':

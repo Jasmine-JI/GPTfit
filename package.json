@@ -71,6 +71,7 @@
     "font-awesome": "4.7.0",
     "gcoord": "^0.2.3",
     "hashids": "1.2.2",
+    "heatmap.js": "^2.0.5",
     "helmet": "^3.21.2",
     "highcharts": "^9.0.1",
     "highcharts-no-data-to-display": "0.1.7",

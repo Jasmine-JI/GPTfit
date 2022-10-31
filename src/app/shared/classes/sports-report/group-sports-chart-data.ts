@@ -2,7 +2,7 @@ import { TargetConditionMap } from '../../../core/models/api/api-common/sport-ta
 import { DateUnit } from '../../enum/report';
 import { mathRounding, countPercentage, countBenefitTime } from '../../utils';
 import { ReportCondition } from '../../models/report-condition';
-import { PAI_COFFICIENT } from '../../models/sports-report';
+import { PAI_COFFICIENT, DAY_PAI_TARGET } from '../../models/sports-report';
 import { SportType } from '../../enum/sports';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -17,6 +17,7 @@ import { HrZoneChartData } from '../sports-report/hrzone-chart-data';
 import { TypeAllChart } from '../sports-report/type-all-chart';
 import { TemporaryCount } from '../sports-report/temporary-count';
 import { BenefitTimeStartZone } from '../../../core/enums/common';
+import { DAY } from '../../models/utils-constant';
 
 dayjs.extend(isoWeek);
 
@@ -66,14 +67,19 @@ export class GroupSportsChartData {
     const allDateList = this.createCompleteDate(dateUnit, isMondayFirst, baseTime, compareTime);
     of([baseData, compareData])
       .pipe(
-        map((data) => this.filterPersonalData(data, dateUnit!, sportType!)),
-        map((filterData) => this.mergePersonalData(filterData, dateUnit!)),
+        map((data) => this.filterPersonalData(data, dateUnit, sportType)),
+        map((filterData) => this.mergePersonalData(filterData, dateUnit)),
         map((personalData) =>
-          this.postProcessingPerosnalData(personalData, sportTargetCondition, benefitTimeStartZone)
+          this.postProcessingPerosnalData(
+            personalData,
+            sportTargetCondition,
+            benefitTimeStartZone,
+            dateUnit
+          )
         ),
         map((completeData) => this.concatPersonalData(completeData)),
         map((concatData) => this.sortData(concatData)),
-        map((sortData) => this.mergeGroupData(sortData, dateUnit!)),
+        map((sortData) => this.mergeGroupData(sortData, dateUnit)),
         map((mergeData) => this.fillUpDate(mergeData, allDateList)),
         map((fillUpData) => this.handleChartData(fillUpData, totalPeople))
       )
@@ -186,11 +192,13 @@ export class GroupSportsChartData {
    * @param allData {Array<any>}-基準數據與比較數據
    * @param targetCondition {TargetConditionMap}-依報告時間單位轉換的個人目標內容
    * @param benefitTimeStartZone {BenefitTimeStartZone}-效益時間有效開始區間
+   * @param dateUnit {ReportDateUnit}-報告所選擇的時間單位
    */
   postProcessingPerosnalData(
     allData: Array<any>,
     targetCondition: TargetConditionMap,
-    benefitTimeStartZone: BenefitTimeStartZone
+    benefitTimeStartZone: BenefitTimeStartZone,
+    dateUnit: ReportDateUnit
   ) {
     const [baseData, compareData] = allData;
     const achievementData = (data: Array<any>) => {
@@ -216,8 +224,7 @@ export class GroupSportsChartData {
                 if (totalActivities < _filedValue) achieve = 0;
                 break;
               case 'totalTime': {
-                const targetSecond = _filedValue;
-                if (+totalSecond < targetSecond) achieve = 0;
+                if (+totalSecond < _filedValue) achieve = 0;
                 break;
               }
               case 'benefitTime': {
@@ -228,8 +235,10 @@ export class GroupSportsChartData {
               }
               case 'pai': {
                 const { z0, z1, z2, z3, z4, z5 } = PAI_COFFICIENT;
-                const pai =
+                const datePeroid = dateUnit.reportDatePeroid / DAY;
+                const weightedValue =
                   zone0 * z0 + zone1 * z1 + zone2 * z2 + zone3 * z3 + zone4 * z4 + zone5 * z5;
+                const pai = (weightedValue / DAY_PAI_TARGET / datePeroid) * 100;
                 if (pai < _filedValue) achieve = 0;
                 break;
               }

@@ -4,6 +4,7 @@
 @import 'transition.scss';
 @import 'filter.scss';
 @import 'overflow-scroll';
+@import 'z-index.scss';
 
 $map-icon-size: 10vw;
 $map-icon-max-size: 150px;
@@ -155,7 +156,7 @@ $edit-button-size: 30px;
   padding: 5px;
   position: absolute;
   background-color: white;
-  z-index: 1;
+  z-index: $drop-menu;
   max-height: 200px;
   top: 25px;
   left: 20px;
@@ -329,7 +330,7 @@ $edit-button-size: 30px;
   top: 35px;
   left: 5px;
   list-style: none;
-  z-index: 1;
+  z-index: $drop-menu;
   background-color: white;
   padding: 5px;
   border-radius: 10px;
@@ -405,7 +406,7 @@ $edit-button-size: 30px;
   @include overflow-y-scroll();
   position: absolute;
   top: 35px;
-  z-index: 1;
+  z-index: $drop-menu;
   background-color: white;
   width: 150px;
   max-height: 170px;
@@ -438,6 +439,15 @@ $edit-button-size: 30px;
   font-size: 15px;
   margin: 0 0 0 10px;
   cursor: pointer;
+}
+
+.navigate__page {
+  $color: rgba(100, 100, 100, 1);
+  border: 1px solid $color;
+  padding: 0 5px;
+  font-size: 14px;
+  border-radius: 5px;
+  color: $color;
 }
 
 /************************************************* media ******************************************/

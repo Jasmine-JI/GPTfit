@@ -1,6 +1,6 @@
 <div>
   <span
-    id="currentSelect"
+    id="current__select"
     [style.font-size]="fontOpt && fontOpt.size ? fontOpt.size : '16px'"
     [style.font-weight]="fontOpt && fontOpt.weight ? fontOpt.weight : 'bold'"
     [style.color]="fontOpt && fontOpt.color ? fontOpt.color : 'black'"
@@ -14,11 +14,11 @@
     >
   </span>
   <div
-    style="z-index: 101; position: relative"
+    class="selector__container"
     [style.bottom]="position && position.bottom ? position.bottom : '20px'"
   >
     <div
-      class="selectMenu"
+      class="select__menu"
       [style.min-width]="size ? size.minWidth : '150px'"
       [style.max-width]="size ? size.maxWidth : '200px'"
       [style.max-height]="size ? size.maxHeight : '200px'"

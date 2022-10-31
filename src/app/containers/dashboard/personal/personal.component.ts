@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  AfterContentInit,
+} from '@angular/core';
 import { UserProfileInfo } from '../../../shared/models/user-profile-info';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
@@ -28,7 +35,7 @@ type ImgType = 'icon' | 'scenery';
   templateUrl: './personal.component.html',
   styleUrls: ['./personal.component.scss'],
 })
-export class PersonalComponent implements OnInit, OnDestroy {
+export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
   private ngUnsubscribe = new Subject();
   pageResize: Subscription;
   clickEvent: Subscription;
@@ -116,6 +123,10 @@ export class PersonalComponent implements OnInit, OnDestroy {
     this.checkEditMode();
   }
 
+  ngAfterContentInit(): void {
+    this.checkScreenSize();
+  }
+
   /**
    * 確認是否為預覽列印頁面
    * @author kidin-1100812
@@ -124,17 +135,19 @@ export class PersonalComponent implements OnInit, OnDestroy {
     const { pathname, search } = location;
     const [origin, mainPath, secondPath, thirdPath] = pathname.split('/');
     switch (mainPath) {
-      case 'dashboard':
+      case 'dashboard': {
         const isSettingPath = secondPath === 'user-settings';
         const isStravaRedirectPath = `${secondPath}/${thirdPath}` === 'settings/account-info'; // strava轉導回GPTfit
         this.uiFlag.isSettingPage = isSettingPath || isStravaRedirectPath;
         this.uiFlag.isPortalMode = false;
         break;
-      case 'user-profile':
+      }
+      case 'user-profile': {
         const redirectPath = `/dashboard/${thirdPath}${search}`;
         this.handleNotDashBoardPage();
         this.checkPageOwner(redirectPath);
         break;
+      }
       default:
         this.handleNotDashBoardPage();
         break;

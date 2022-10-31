@@ -51,7 +51,7 @@
               "
             ></button>
           </ng-container>
-          <button id="apply__button" (click)="navigateApplyPage()">
+          <button id="apply__button" (click)="navigateApplySection()">
             <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.canApply">
               {{ 'universal_vocabulary_apply' | translate }}
             </ng-container>
@@ -163,11 +163,122 @@
     </ng-container>
   </main>
 </section>
+<section class="apply__section" *ngIf="eventInfo && eventDetail">
+  <h5 class="apply__section__title">{{ 'universal_vocabulary_signUp' | translate }}</h5>
+  <hr style="margin: 0" />
+  <p class="apply__description">{{ 'universal_vocabulary_selectEventGroup' | translate }}</p>
+  <div class="flexCol apply__section__content">
+    <div class="group__list__header">
+      <span class="group__title">{{ 'universal_activityData_name' | translate }}</span>
+      <span class="group__condition">{{ 'universal_vocabulary_limit' | translate }}</span>
+      <span class="group__status group__status__title">{{
+        'universal_group_status' | translate
+      }}</span>
+    </div>
+    <ul class="group__list">
+      <ng-container *ngFor="let _group of eventDetail.group; let _index = index">
+        <li
+          *ngTemplateOutlet="
+            groupApplyList;
+            context: {
+              groupIndex: _index,
+              title: _group.name,
+              gender: _group.gender,
+              age: _group.age,
+              isFull: groupApplyCheck[_index].isFull,
+              eligible: groupApplyCheck[_index].qualified,
+              selected: currentSelectedGroup === _index
+            }
+          "
+        ></li>
+      </ng-container>
+    </ul>
+    <button id="apply__button" style="max-width: 150px" (click)="navigateApplyPage()">
+      <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.canApply">
+        {{ 'universal_vocabulary_signUp' | translate }}
+      </ng-container>
+      <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.applied">
+        {{ 'universal_vocabulary_signed' | translate }}
+      </ng-container>
+      <ng-container
+        *ngIf="
+          [ApplyButtonStatus.applyFull, ApplyButtonStatus.cutOff].includes(uiFlag.applyButtonStatus)
+        "
+      >
+        {{ 'universal_vocabulary_signEnd' | translate }}
+      </ng-container>
+      <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.eventCancelled">
+        {{ 'universal_vocabulary_raceCancel' | translate }}
+      </ng-container>
+      <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.applyCancelled">
+        {{ 'universal_vocabulary_signCanceled' | translate }}
+      </ng-container>
+      <ng-container *ngIf="uiFlag.applyButtonStatus === ApplyButtonStatus.applyCancelling">
+        {{ 'universal_system_leaving' | translate }}
+      </ng-container>
+    </button>
+  </div>
+</section>
 
 <ng-template #editButton let-eventId="eventId" let-eventCancel="eventCancel">
   <button class="edit__button" *ngIf="uiFlag.isAdmin && !eventCancel">
-    <a class="flexCenter" [href]="'/official-activity/edit-activity/' + eventInfo.eventId">
+    <a class="flexCenter" href="#" (click)="navigateEditPage($event)">
       <i class="icon-svg_web-icon_p1_008-edit"></i>
     </a>
   </button>
+</ng-template>
+
+<ng-template
+  #groupApplyList
+  let-groupIndex="groupIndex"
+  let-title="title"
+  let-gender="gender"
+  let-age="age"
+  let-isFull="isFull"
+  let-eligible="eligible"
+  let-selected="selected"
+>
+  <li
+    [ngClass]="{
+      group__list__item: true,
+      'group__list__item--selected': selected,
+      'group__list__item--forbidden': isFull || !eligible,
+      group__list__open: eligible && !isFull,
+      group__list__close: !eligible || isFull
+    }"
+    (click)="selectGroup(groupIndex)"
+  >
+    <span class="group__title">{{ title }}</span>
+    <span class="group__condition">
+      <span class="mobile__titile"> {{ 'universal_vocabulary_limit' | translate }}： </span>
+      <ng-container *ngIf="gender !== null && gender !== undefined">
+        <ng-container *ngIf="gender === 0">♂</ng-container>
+        <ng-container *ngIf="gender === 1">♀</ng-container>
+      </ng-container>
+      <ng-container *ngIf="age">{{ age.min }}-{{ age.max }} yr</ng-container>
+      <ng-container
+        *ngIf="!age && (gender === null || gender === undefined || gender === Gender.unlimit)"
+      >
+        {{ 'universal_system_none' | translate }}
+      </ng-container>
+    </span>
+    <span
+      [ngClass]="{
+        group__status: true,
+        group__status__open: eligible && !isFull,
+        group__status__close: !eligible || isFull
+      }"
+    >
+      <span class="mobile__titile"> {{ 'universal_group_status' | translate }}： </span>
+      <ng-container *ngIf="eligible && !isFull">
+        {{ 'universal_vocabulary_avaliable' | translate }}
+      </ng-container>
+      <ng-container *ngIf="!eligible">
+        {{ 'universal_vocabulary_notQualified' | translate }}
+      </ng-container>
+      <ng-container *ngIf="eligible && isFull">
+        {{ 'universal_vocabulary_full' | translate }}
+      </ng-container>
+    </span>
+  </li>
 </ng-template>

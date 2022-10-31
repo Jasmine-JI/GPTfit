@@ -79,7 +79,7 @@ import { AnalysisOptionComponent } from './analysis-option/analysis-option.compo
 import { DateUnitKeyModule } from '../../core/pipes/date-unit-key.pipe';
 import { TranslateKeyModule } from '../../core/pipes/translate-key.pipe';
 import { TranslateUnitKeyModule } from '../../core/pipes/translate-unit-key.pipe';
-import { CalenderSelectorModule } from '../../components/calender-selector/calender-selector.component';
+import { CalenderSelectorModule, LeafletMapModule, GoogleMapModule } from '../../components/';
 
 @NgModule({
   imports: [
@@ -97,6 +97,8 @@ import { CalenderSelectorModule } from '../../components/calender-selector/calen
     TranslateKeyModule,
     TranslateUnitKeyModule,
     CalenderSelectorModule,
+    LeafletMapModule,
+    GoogleMapModule,
   ],
   declarations: [
     NavbarComponent,

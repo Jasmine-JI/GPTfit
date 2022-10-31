@@ -17,7 +17,13 @@ import { Api10xxService } from '../../../../core/services/api-10xx.service';
 import { UserProfileInfo } from '../../../../shared/models/user-profile-info';
 import { AccountTypeEnum, AccountStatusEnum } from '../../../../shared/enum/account';
 import { GetClientIpService } from '../../../../shared/services/get-client-ip.service';
-import { Nationality, ApplyStatus, EventStatus } from '../../models/activity-content';
+import {
+  Nationality,
+  ApplyStatus,
+  EventStatus,
+  EventDetail,
+  EventInfo,
+} from '../../models/activity-content';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
@@ -27,8 +33,11 @@ import { EnableAccountFlow } from '../../../../shared/models/signup-response';
 import { LockCaptcha } from '../../../../shared/classes/lock-captcha';
 import { checkResponse, getCurrentTimestamp } from '../../../../shared/utils/index';
 import { NodejsApiService } from '../../../../core/services/nodejs-api.service';
+import { QueryString } from '../../../../shared/enum/query-string';
+import { getUrlQueryStrings } from '../../../../shared/utils';
 
 const stageHeight = 90;
+const fullMsg = 'Apply group full.';
 type InputAlert = 'format' | 'empty' | 'repeat' | 'login';
 interface NewRegister {
   token: string;
@@ -73,14 +82,13 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     displayPW: false,
   };
 
-  eventInfo: any;
-  eventDetail: any;
+  eventInfo: EventInfo;
+  eventDetail: EventDetail;
 
   /**
    * 表單完成階段的提示
    */
   stageTop = {
-    start: 0,
     edit: 0,
     final: 0,
   };
@@ -90,10 +98,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   progressLine = {
     start: {
-      top: 0,
-      height: 0,
-    },
-    finished: {
       top: 0,
       height: 0,
     },
@@ -389,6 +393,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         if (canApply) {
           this.eventInfo = eventInfo;
           this.eventDetail = eventDetail;
+          this.changeDefaultProfile();
           this.filterGroupList();
           this.handleDefaultApplyFee(eventDetail);
           return true;
@@ -472,12 +477,10 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         const submitElement = document.querySelector('.submit__button');
         const originElement = document.querySelector('.apply__stage');
         if (phoneInputElement && submitElement && originElement) {
-          const phoneInputTop = phoneInputElement.getBoundingClientRect().top - stageHalfHeight;
           const focusInputTop = focusInputElement.getBoundingClientRect().top - stageHalfHeight;
           const submitTop = submitElement.getBoundingClientRect().top;
           const originTop = originElement.getBoundingClientRect().top;
           this.stageTop = {
-            start: phoneInputTop - originTop,
             edit: focusInputTop - originTop,
             final: submitTop - originTop,
           };
@@ -485,7 +488,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
           this.checkProgressPosition();
         }
       }
-    });
+    }, 200);
   }
 
   /**
@@ -493,22 +496,16 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101104
    */
   checkProgressPosition() {
-    const { start, edit, final } = this.stageTop;
+    const { edit, final } = this.stageTop;
     const originElement = document.querySelector('.apply__stage');
     if (originElement) {
       const originElementInfo = originElement.getBoundingClientRect();
-      const originElementTop = originElementInfo.top;
-      const originElementBottom = originElementInfo.bottom;
-      const startBottom = start + stageHeight;
+      const originElementHeight = originElementInfo.height;
       const editBottom = edit + stageHeight;
       this.progressLine = {
         start: {
-          top: originElementBottom - originElementTop,
-          height: start - (originElementBottom - originElementTop),
-        },
-        finished: {
-          top: startBottom,
-          height: edit - startBottom < 0 ? 0 : edit - startBottom,
+          top: originElementHeight,
+          height: edit - originElementHeight < 0 ? 0 : edit - originElementHeight,
         },
         edit: {
           top: editBottom,
@@ -530,8 +527,11 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       if (firstAlertElement) {
         this.uiFlag.currentFocusInput = '.alert__text';
       } else {
-        const targetId = (e as any).currentTarget.id;
-        this.uiFlag.currentFocusInput = `#${targetId}`;
+        const { currentTarget } = e as any;
+        if (currentTarget) {
+          const targetId = currentTarget.id;
+          this.uiFlag.currentFocusInput = `#${targetId}`;
+        }
       }
 
       this.checkStagePosition();
@@ -641,7 +641,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       this.alert.emergencyContact.mobileNumber = 'format';
     } else {
       this.alert.emergencyContact.mobileNumber = null;
-      this.applyInfo.userProfile.emergencyContact.mobileNumber = +newPhone || '';
+      this.applyInfo.userProfile.emergencyContact.mobileNumber = +newPhone || null;
       this.checkPhoneAccount();
     }
   }
@@ -1041,20 +1041,55 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       this.uiFlag.progress = 30;
 
       if (token) Object.assign(this.applyInfo, { token });
+      const eventId = +this.route.snapshot.paramMap.get('eventId');
+      this.officialActivityService
+        .getEventDetail({ eventId })
+        .pipe(
+          switchMap((detail) => {
+            let groupFull = false;
+            const { targetGroupId } = this.applyInfo;
+            const { group } = detail.eventDetail;
+            const index = group.findIndex((_group) => _group.id === targetGroupId);
+            const { numberLimit } = detail.eventInfo;
+            if (index > -1)
+              groupFull = numberLimit > 0 && group[index].currentApplyNumber >= numberLimit;
+            if (groupFull) {
+              this.eventDetail = detail.eventDetail;
+              const fakeProcessResult = { resultCode: 400, apiReturnMessage: fullMsg };
+              const result = { processResult: fakeProcessResult };
+              return of(result);
+            }
 
-      this.officialActivityService.applyEvent(this.applyInfo).subscribe((res) => {
-        this.uiFlag.progress = 100;
-        if (this.utils.checkRes(res)) {
-          const { register } = res;
-          if (!token) {
-            this.handleNewAccount(register);
-          } else if (!enableAccount) {
-            this.getVerification();
+            return this.officialActivityService.applyEvent(this.applyInfo);
+          })
+        )
+        .subscribe((res) => {
+          this.uiFlag.progress = 100;
+          if (this.utils.checkRes(res, false)) {
+            const { register } = res;
+            if (!token) {
+              this.handleNewAccount(register);
+            } else if (!enableAccount) {
+              this.getVerification();
+            }
+
+            this.uiFlag.applyComplish = true;
+          } else {
+            if (res.processResult?.apiReturnMessage === fullMsg) {
+              const eventId = this.applyInfo.targetEventId;
+              const backPath = `official-activity/activity-detail/${eventId}`;
+              this.dialog.open(MessageBoxComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'Message',
+                  body: this.translate.instant('universal_vocabulary_full'),
+                  confirmText: this.translate.instant('universal_operating_confirm'),
+                  onConfirm: () => this.router.navigateByUrl(backPath),
+                },
+              });
+            }
           }
-
-          this.uiFlag.applyComplish = true;
-        }
-      });
+        });
     }
   }
 
@@ -1086,6 +1121,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
 
     this.auth.accountLogin(body).subscribe((res) => {
       if (checkResponse(res)) {
+        this.auth.tokenLogin(); // 用來更新userProfile
         const {
           signIn: { accountStatus, accountType },
           userProfile: { userId },
@@ -1236,30 +1272,68 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   /**
+   * 如果分組有條件，則根據欲選擇的分組調整預設使用者資訊
+   */
+  changeDefaultProfile() {
+    const { group } = this.eventDetail;
+    const targetGroup = +this.getTargetGroup();
+    const { age, gender } = group[targetGroup];
+    if (age) {
+      const { min, max } = age;
+      const { birthday } = this.applyInfo.userProfile;
+      const birthDayjs = dayjs(`${birthday}`, 'YYYYMMDD');
+      const userAge = dayjs().diff(birthDayjs, 'year');
+      if (userAge < min || userAge > max) {
+        const defaultBirthday = dayjs().subtract(min, 'year');
+        this.defaultBirthday = defaultBirthday;
+        this.applyInfo.userProfile.birthday = defaultBirthday.format('YYYYMMDD');
+      }
+    }
+
+    if (gender !== Sex.unlimit) {
+      this.applyInfo.userProfile.gender = gender;
+    }
+  }
+
+  /**
    * 根據使用者之年齡與性別，篩選使用者可選擇之分組清單
    * @author kidin-1101222
    */
   filterGroupList() {
     if (this.eventDetail) {
+      let targetGroupId: number;
+      const targetGroup = +this.getTargetGroup();
+      const { numberLimit } = this.eventInfo;
       const { gender, birthday } = this.applyInfo.userProfile;
-      const momentBirthday = birthday ? dayjs(birthday, 'YYYYMMDD') : this.defaultBirthday;
+      const momentBirthday = birthday ? dayjs(`${birthday}`, 'YYYYMMDD') : this.defaultBirthday;
       const age = dayjs().diff(momentBirthday, 'year');
-      this.groupList = this.eventDetail.group.filter((_list) => {
-        const { gender: groupGender, age: groupAge } = _list;
+      this.groupList = this.eventDetail.group.filter((_list, _index) => {
+        const { gender: groupGender, age: groupAge, currentApplyNumber, id } = _list;
+        if (numberLimit > 0 && currentApplyNumber >= numberLimit) return false;
         const { max, min } = groupAge || { max: 100, min: 0 };
         const fitGender = groupGender === Sex.unlimit || gender === groupGender;
         const fitAge = !groupAge || (age >= min && age <= max);
+        if (targetGroup === _index && fitGender && fitAge) targetGroupId = id;
         return fitGender && fitAge;
       });
 
       if (this.groupList.length > 0) {
-        this.applyInfo.targetGroupId = this.groupList[0].id;
+        this.applyInfo.targetGroupId = targetGroupId || this.groupList[0].id;
         this.uiFlag.notQualified = false;
       } else {
         this.showGroupAlert();
         this.uiFlag.notQualified = true;
       }
     }
+  }
+
+  /**
+   * 取得欲報名的分組
+   */
+  getTargetGroup() {
+    const queryString = getUrlQueryStrings(location.search);
+    const targetParam = QueryString.applyGroup;
+    return queryString[targetParam] || null;
   }
 
   /**
@@ -1349,7 +1423,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
                 const { apiReturnMessage } = processResult;
                 switch (apiReturnMessage) {
                   case 'Found attack, update status to lock!':
-                  case 'Found lock!':
+                  case 'Found lock!': {
                     const { imgLockCode } = processResult;
                     this.imgLock = new LockCaptcha(
                       imgLockCode,
@@ -1357,6 +1431,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
                       this.getClientIp
                     );
                     break;
+                  }
                 }
               }
             } else {
@@ -1426,7 +1501,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @param callback {any}-callback function
    * @author kidin-1101206
    */
-  handleCaptchaUnlock(callback: Function = null) {
+  handleCaptchaUnlock(callback = null) {
     this.imgLock
       .requestUnlock()
       .pipe(takeUntil(this.ngUnsubscribe))

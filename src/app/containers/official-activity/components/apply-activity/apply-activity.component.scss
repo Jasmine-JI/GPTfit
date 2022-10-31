@@ -6,6 +6,7 @@
 @import 'color.scss';
 @import 'overflow-scroll.scss';
 @import 'drop-triangle.scss';
+@import 'z-index.scss';
 
 $app-icon-size: 80px;
 $aside-width: 200px;
@@ -53,7 +54,7 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
   background-color: white;
   top: $top;
   left: 0;
-  z-index: 1;
+  z-index: $drop-menu;
   box-shadow: 2px 2px 4px rgba(200, 200, 200, 1), -2px 2px 4px rgba(200, 200, 200, 1);
   padding: 0;
   width: 180px;
@@ -182,7 +183,7 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
 }
 
 #second__step {
-  z-index: 1;
+  z-index: nth($normal-index, 1);
 
   :first-child {
     @include step-index-mark(black, $border: true);
@@ -190,7 +191,7 @@ $aslide-bottom-color: rgba(190, 23, 40, 1);
 }
 
 #third__step {
-  z-index: 2;
+  z-index: nth($normal-index, 2);
 
   :first-child {
     @include step-index-mark(rgba(255, 190, 190, 1), $border: true);

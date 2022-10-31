@@ -50,7 +50,7 @@
           [class.active-right]="planIdx === 1"
           [class.active]="planIdx === 1"
         >
-          free
+          $ {{ planDatas[0].cost | number: '.' }}
           <div class="unit">1month</div>
         </td>
         <td
@@ -152,14 +152,14 @@
         </td>
       </tr>
       <tr class="custom">
-        <td class="plan">{{ 'universal_group_memberLimit' | translate }}</td>
+        <td class="plan">{{ '會員數' | translate }}</td>
         <td
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
           [class.active-right]="planIdx === 1"
           [class.active]="planIdx === 1"
         >
-          {{ planDatas[0].maxGroupMembers }}
+          {{ planDatas[0].allNotRepeatingMember }}
         </td>
         <td
           (click)="choosePlan(2)"
@@ -167,7 +167,7 @@
           [class.active-right]="planIdx === 2"
           [class.active]="planIdx === 2"
         >
-          {{ planDatas[1].maxGroupMembers }}
+          {{ planDatas[1].allNotRepeatingMember }}
         </td>
         <td
           (click)="choosePlan(3)"
@@ -175,42 +175,7 @@
           [class.active-right]="planIdx === 3"
           [class.active]="planIdx === 3"
         >
-          {{ planDatas[2].maxGroupMembers }}
-        </td>
-        <td
-          (click)="choosePlan(99)"
-          [class.active-left]="planIdx === 99"
-          [class.active-right]="planIdx === 99"
-          [class.active]="planIdx === 99"
-        >
-          **
-        </td>
-      </tr>
-      <tr>
-        <td class="plan">{{ 'universal_group_administratorLimit' | translate }}</td>
-        <td
-          (click)="choosePlan(1)"
-          [class.active-left]="planIdx === 1"
-          [class.active-right]="planIdx === 1"
-          [class.active]="planIdx === 1"
-        >
-          {{ planDatas[0].maxGroupManagers }}
-        </td>
-        <td
-          (click)="choosePlan(2)"
-          [class.active-left]="planIdx === 2"
-          [class.active-right]="planIdx === 2"
-          [class.active]="planIdx === 2"
-        >
-          {{ planDatas[1].maxGroupManagers }}
-        </td>
-        <td
-          (click)="choosePlan(3)"
-          [class.active-left]="planIdx === 3"
-          [class.active-right]="planIdx === 3"
-          [class.active]="planIdx === 3"
-        >
-          {{ planDatas[2].maxGroupManagers }}
+          {{ planDatas[2].allNotRepeatingMember }}
         </td>
         <td
           (click)="choosePlan(99)"
@@ -736,7 +701,7 @@
           [class.active-right]="planIdx === 1"
           [class.active]="planIdx === 1"
         >
-          $ ***,***
+          $ {{ planDatas[0].cost | number: '.' }}
           <div class="unit">1month</div>
         </td>
         <td
@@ -745,7 +710,7 @@
           [class.active-right]="planIdx === 2"
           [class.active]="planIdx === 2"
         >
-          $ ***,***
+          $ {{ planDatas[1].cost | number: '.' }}
           <div class="unit">1month</div>
         </td>
         <td
@@ -754,7 +719,7 @@
           [class.active-right]="planIdx === 3"
           [class.active]="planIdx === 3"
         >
-          $ ***,***
+          $ {{ planDatas[2].cost | number: '.' }}
           <div class="unit">1month</div>
         </td>
         <td
@@ -775,7 +740,7 @@
           [class.active-right]="planIdx === 1"
           [class.active]="planIdx === 1"
         >
-          **
+          {{ planDatas[0].maxBranches }}
         </td>
         <td
           (click)="choosePlan(2)"
@@ -783,7 +748,7 @@
           [class.active-right]="planIdx === 2"
           [class.active]="planIdx === 2"
         >
-          **
+          {{ planDatas[1].maxBranches }}
         </td>
         <td
           (click)="choosePlan(3)"
@@ -791,7 +756,7 @@
           [class.active-right]="planIdx === 3"
           [class.active]="planIdx === 3"
         >
-          **
+          {{ planDatas[2].maxBranches }}
         </td>
         <td
           (click)="choosePlan(99)"
@@ -810,7 +775,7 @@
           [class.active-right]="planIdx === 1"
           [class.active]="planIdx === 1"
         >
-          **
+          {{ planDatas[0].maxClasses }}
         </td>
         <td
           (click)="choosePlan(2)"
@@ -818,7 +783,7 @@
           [class.active-right]="planIdx === 2"
           [class.active]="planIdx === 2"
         >
-          **
+          {{ planDatas[1].maxClasses }}
         </td>
         <td
           (click)="choosePlan(3)"
@@ -826,42 +791,7 @@
           [class.active-right]="planIdx === 3"
           [class.active]="planIdx === 3"
         >
-          **
-        </td>
-        <td
-          (click)="choosePlan(99)"
-          [class.active-left]="planIdx === 99"
-          [class.active-right]="planIdx === 99"
-          [class.active]="planIdx === 99"
-        >
-          **
-        </td>
-      </tr>
-      <tr class="custom">
-        <td class="plan">{{ 'universal_group_memberLimit' | translate }}</td>
-        <td
-          (click)="choosePlan(1)"
-          [class.active-left]="planIdx === 1"
-          [class.active-right]="planIdx === 1"
-          [class.active]="planIdx === 1"
-        >
-          **
-        </td>
-        <td
-          (click)="choosePlan(2)"
-          [class.active-left]="planIdx === 2"
-          [class.active-right]="planIdx === 2"
-          [class.active]="planIdx === 2"
-        >
-          **
-        </td>
-        <td
-          (click)="choosePlan(3)"
-          [class.active-left]="planIdx === 3"
-          [class.active-right]="planIdx === 3"
-          [class.active]="planIdx === 3"
-        >
-          **
+          {{ planDatas[2].maxClasses }}
         </td>
         <td
           (click)="choosePlan(99)"
@@ -873,14 +803,14 @@
         </td>
       </tr>
       <tr>
-        <td class="plan">{{ 'universal_group_administratorLimit' | translate }}</td>
+        <td class="plan">{{ '會員數' | translate }}</td>
         <td
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
           [class.active-right]="planIdx === 1"
           [class.active]="planIdx === 1"
         >
-          **
+          {{ planDatas[0].allNotRepeatingMember }}
         </td>
         <td
           (click)="choosePlan(2)"
@@ -888,7 +818,7 @@
           [class.active-right]="planIdx === 2"
           [class.active]="planIdx === 2"
         >
-          **
+          {{ planDatas[1].allNotRepeatingMember }}
         </td>
         <td
           (click)="choosePlan(3)"
@@ -896,7 +826,7 @@
           [class.active-right]="planIdx === 3"
           [class.active]="planIdx === 3"
         >
-          **
+          {{ planDatas[2].allNotRepeatingMember }}
         </td>
         <td
           (click)="choosePlan(99)"
@@ -1221,36 +1151,28 @@
           [class.active-left]="planIdx === 1"
           [class.active-right]="planIdx === 1"
           [class.active]="planIdx === 1"
-        >
-          V
-        </td>
+        ></td>
         <td
           class="check"
           (click)="choosePlan(2)"
           [class.active-left]="planIdx === 2"
           [class.active-right]="planIdx === 2"
           [class.active]="planIdx === 2"
-        >
-          V
-        </td>
+        ></td>
         <td
           class="check"
           (click)="choosePlan(3)"
           [class.active-left]="planIdx === 3"
           [class.active-right]="planIdx === 3"
           [class.active]="planIdx === 3"
-        >
-          V
-        </td>
+        ></td>
         <td
           class="check"
           (click)="choosePlan(99)"
           [class.active-left]="planIdx === 99"
           [class.active-right]="planIdx === 99"
           [class.active]="planIdx === 99"
-        >
-          V
-        </td>
+        ></td>
       </tr>
       <tr>
         <td class="plan">Ala Fitness</td>

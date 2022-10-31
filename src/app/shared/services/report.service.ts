@@ -138,12 +138,12 @@ export class ReportService {
 
   /**
    * 計算年齡
-   * @param birthday {string}-YYYYMMDD
+   * @param birthday {string}-生日
    * @author kidin-1100618
    */
   countAge(birthday: string) {
-    const todayMoment = dayjs(),
-      birthMoment = dayjs(birthday, 'YYYYMMDD');
+    const todayMoment = dayjs();
+    const birthMoment = dayjs(birthday, 'YYYYMMDD');
     return todayMoment.diff(birthMoment, 'year');
   }
 

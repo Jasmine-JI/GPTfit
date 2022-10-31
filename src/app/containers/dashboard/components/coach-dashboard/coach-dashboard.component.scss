@@ -1,23 +1,27 @@
 @import 'filter.scss';
+@import 'z-index.scss';
 
 .lesson-section__hide {
   position: absolute;
   top: -500px;
   left: 0;
 }
+
 .blurred-mask {
   @include filter(blur(5px));
   width: 100%;
   height: 100vh;
   background: inherit;
   overflow: hidden;
-  z-index: 2;
+  z-index: $mask-content;
 }
+
 .lesson-info {
   display: flex;
   flex-direction: column;
   padding-right: 45px;
 }
+
 .lesson-title {
   font-size: 24px;
   color: #454545;
@@ -32,7 +36,7 @@
 }
 
 .end-text {
-  z-index: 1001;
+  z-index: calc(#{$mask-content} + 1);
   position: absolute;
   top: 50%;
   left: 50%;
@@ -51,12 +55,12 @@
   background-repeat: no-repeat;
   background-size: cover;
   position: absolute;
-  z-index: -1;
+  z-index: nth($minus-index, 1);
 }
 
 .card-body--bg {
   position: absolute;
-  z-index: -1;
+  z-index: nth($minus-index, 1);
   background-color: #f0f0f0;
   width: 100%;
   height: 100%;
@@ -124,7 +128,7 @@
 
 .color-mask {
   position: absolute;
-  z-index: 1;
+  z-index: nth($normal-index, 1);
   width: 100%;
   height: 45px;
   background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.3), transparent);

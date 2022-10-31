@@ -4,6 +4,7 @@
 @import 'transform.scss';
 @import 'keyframes.scss';
 @import 'overflow-scroll';
+@import 'z-index.scss';
 
 $sky-blue: rgba(17, 166, 235, 1);
 $table-fontsize: 14px;
@@ -153,7 +154,7 @@ $info-height: 340px;
   width: 100%;
   height: 50px;
   position: absolute;
-  z-index: 1;
+  z-index: nth($normal-index, 1);
   bottom: 0px;
   justify-content: space-around;
   background-color: rgba(0, 0, 0, 0.7);
@@ -273,7 +274,7 @@ $info-height: 340px;
 
 #map__opt__menu {
   position: absolute;
-  z-index: 1;
+  z-index: $drop-menu;
   width: fit-content;
   min-width: 220px;
   background-color: white;
@@ -348,7 +349,7 @@ $info-height: 340px;
     content: '...';
     width: 60px;
     position: relative;
-    z-index: 1;
+    z-index: nth($normal-index, 1);
   }
 }
 

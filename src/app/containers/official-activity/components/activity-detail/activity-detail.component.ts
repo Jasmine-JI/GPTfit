@@ -2,17 +2,19 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UtilsService } from '../../../../shared/services/utils.service';
-import { UserService } from '../../../../core/services/user.service';
+import { UserService, AuthService, NodejsApiService } from '../../../../core/services';
 import { formTest } from '../../../../shared/models/form-test';
 import { Subject, Subscription, fromEvent, of } from 'rxjs';
 import { takeUntil, switchMap, map, tap } from 'rxjs/operators';
 import { pageNotFoundPath } from '../../models/official-activity-const';
-import { EventStatus, ApplyStatus } from '../../models/activity-content';
+import { EventStatus, ApplyStatus, EventInfo, EventDetail } from '../../models/activity-content';
 import { AccessRight } from '../../../../shared/enum/accessright';
-import { NodejsApiService } from '../../../../core/services/nodejs-api.service';
-import { AuthService } from '../../../../core/services/auth.service';
+import { Gender } from '../../../../core/enums/personal';
+import { UserProfileInfo } from '../../../../shared/models/user-profile-info';
+import { QueryString } from '../../../../shared/enum/query-string';
 
 const switchButtonWidth = 40;
+const navHeight = 60;
 enum ApplyButtonStatus {
   canApply = 1,
   applied,
@@ -43,12 +45,21 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     isMobile: false,
     showSwitchButton: false,
     currentShortcutIndex: 0,
-    canBrowserPage: false,
   };
 
+  /**
+   * 如有登入則確認是否符合各分組報名資格
+   */
+  groupApplyCheck: Array<{ isFull: boolean; qualified: boolean }> = [];
+
+  /**
+   * 欲報名的分組
+   */
+  currentSelectedGroup: number | null = null;
+
   eventId: number;
-  eventInfo: any;
-  eventDetail: any;
+  eventInfo: EventInfo;
+  eventDetail: EventDetail;
   countdownInterval: any;
   currentTimestamp: number;
   raceEndCountdwon = {
@@ -60,6 +71,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
 
   readonly EventStatus = EventStatus;
   readonly ApplyButtonStatus = ApplyButtonStatus;
+  readonly Gender = Gender;
 
   constructor(
     private officialActivityService: OfficialActivityService,
@@ -72,132 +84,199 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.checkEventId();
-    this.getActivityDetail();
-    this.handlePageResize();
-  }
-
-  /**
-   * 確認eventId是否符合數字格式
-   * @author kidin-1101015
-   */
-  checkEventId() {
-    const eventId = this.activatedRoute.snapshot.paramMap.get('eventId');
-    if (formTest.number.test(eventId)) {
-      this.eventId = +eventId;
-    } else {
-      this.router.navigateByUrl(pageNotFoundPath);
-    }
-  }
-
-  /**
-   * 如為登入狀態，則取得個人權限
-   * @author kidin-1101015
-   */
-  getAccessRight() {
-    return this.userService.getUser().rxUserProfile.pipe(
-      switchMap((userProfile) => {
-        if (userProfile) {
-          const token = this.authService.token;
-          const { eventId } = this;
-          return this.checkApplied(token, eventId).pipe(
-            map((applyResult) => [userProfile, applyResult])
-          );
-        } else {
-          return of([userProfile]);
-        }
-      }),
-      tap((res) => {
-        const [userProfile, checkApplied] = res;
-        if (userProfile) {
-          const { systemAccessright } = this.userService.getUser();
-          const { applyStatus } = checkApplied.result[0] || { applyStatus: ApplyStatus.notYet };
-          const passAccessRight = [AccessRight.auditor, AccessRight.pusher];
-          this.uiFlag.isAdmin = passAccessRight.includes(systemAccessright);
-          this.uiFlag.canBrowserPage = systemAccessright <= AccessRight.marketing;
-          this.handleApplyStatus(applyStatus);
-        } else {
-          this.uiFlag.applyButtonStatus = ApplyButtonStatus.canApply;
-          this.uiFlag.isAdmin = false;
-          this.uiFlag.canBrowserPage = false;
-          if (this.eventInfo) this.checkApplyDate(this.currentTimestamp);
-        }
-      }),
-      takeUntil(this.ngUnsubscribe)
-    );
-  }
-
-  /**
-   * 根據報名狀態變更按鈕狀態
-   * @param status {ApplyStatus}-使用者報名狀態
-   * @author kidin-1110106
-   */
-  handleApplyStatus(status: ApplyStatus) {
-    switch (status) {
-      case ApplyStatus.applied:
-        this.uiFlag.applyButtonStatus = ApplyButtonStatus.applied;
-        break;
-      case ApplyStatus.cancel:
-        this.uiFlag.applyButtonStatus = ApplyButtonStatus.applyCancelled;
-        break;
-      case ApplyStatus.applyingQuit:
-        this.uiFlag.applyButtonStatus = ApplyButtonStatus.applyCancelling;
-        break;
-    }
-  }
-
-  /**
-   * 取得活動詳細資訊
-   * @author kidin-1101014
-   */
-  getActivityDetail() {
-    this.uiFlag.progress = 30;
-    this.eventId = +this.activatedRoute.snapshot.paramMap.get('eventId');
-    const body = { eventId: this.eventId };
-    this.officialActivityService
-      .getEventDetail(body)
+    of('')
       .pipe(
-        switchMap((res) => {
-          const token = this.authService.token;
-          if (token) {
-            return this.getAccessRight().pipe(map((accessRight) => res));
-          }
-
-          return of(res);
-        })
+        map(() => this.getEventId()),
+        switchMap((eventId) => this.getEventInfomation(eventId)),
+        switchMap((eventInfomation) =>
+          this.getUserProfile().pipe(
+            map((userProfile) => [eventInfomation, userProfile] as [any, UserProfileInfo])
+          )
+        ),
+        tap((res) => this.checkPagePermission(res)),
+        switchMap((res) => this.checkApplyStatus().pipe(map(() => res))),
+        tap((res) => this.checkApplyQualifications(res)),
+        tap((res) => this.getSelectedGroup(res)),
+        takeUntil(this.ngUnsubscribe)
       )
-      .subscribe((res) => {
-        if (this.utils.checkRes(res, false)) {
-          const { eventInfo, eventDetail, currentTimestamp } = res;
-          this.checkEventStatus(eventInfo.eventStatus);
-          this.eventInfo = eventInfo;
-          this.eventDetail = eventDetail;
-          if (!this.countdownInterval) this.currentTimestamp = currentTimestamp;
-          this.checkCanApply();
-        } else {
-          this.router.navigateByUrl(pageNotFoundPath);
-        }
-
+      .subscribe(([eventInfomation]) => {
+        const { eventInfo, eventDetail, currentTimestamp } = eventInfomation;
+        this.eventInfo = eventInfo;
+        this.eventDetail = eventDetail;
+        if (!this.countdownInterval) this.currentTimestamp = currentTimestamp;
+        this.setCountdown();
+        this.handlePageResize();
         this.uiFlag.progress = 100;
       });
   }
 
   /**
-   * 確認活動狀態是否為已審核，若非已審核，且非有權限之管理員，則轉跳404頁面
-   * @author kidin-1110210
+   * 確認eventId是否符合數字格式
    */
-  checkEventStatus(eventStatus: EventStatus) {
-    const { canBrowserPage } = this.uiFlag;
-    if (eventStatus === EventStatus.audit || canBrowserPage) {
-      return true;
+  getEventId() {
+    const eventId = this.activatedRoute.snapshot.paramMap.get('eventId');
+    if (formTest.number.test(eventId)) {
+      this.eventId = +eventId;
+    } else {
+      this.router.navigateByUrl(pageNotFoundPath, { replaceUrl: true });
     }
 
-    this.router.navigateByUrl(pageNotFoundPath);
+    return this.eventId;
+  }
+
+  /**
+   * 取得活動詳細資訊
+   * @param eventId {number}-活動編號
+   */
+  getEventInfomation(eventId: number) {
+    this.uiFlag.progress = 30;
+    return this.officialActivityService.getEventDetail({ eventId }).pipe(
+      map((res) => {
+        if (this.utils.checkRes(res, false)) return res;
+        this.router.navigateByUrl(pageNotFoundPath, { replaceUrl: true });
+        return false;
+      })
+    );
+  }
+
+  /**
+   * 取得個人資訊
+   */
+  getUserProfile() {
+    return this.userService.getUser().rxUserProfile;
+  }
+
+  /**
+   * 確認頁面是否為可瀏覽狀態
+   * @param pageData {[any, UserProfileInfo]}-[api 6002 response, 使用者資訊]
+   */
+  checkPagePermission(pageData: [any, UserProfileInfo]) {
+    const [eventInfomation] = pageData;
+    const { eventStatus } = eventInfomation.eventInfo;
+    const { systemAccessright } = this.userService.getUser();
+    const passAccessRight = [AccessRight.auditor, AccessRight.pusher]; // 可編輯活動的權限
+    const permit = systemAccessright <= AccessRight.marketing;
+    this.uiFlag.isAdmin = passAccessRight.includes(systemAccessright);
+    if (eventStatus === EventStatus.audit || permit) {
+      return pageData;
+    }
+
+    // 不符資格就跳404頁面
+    this.router.navigateByUrl(pageNotFoundPath, { replaceUrl: true });
+    return pageData;
+  }
+
+  /**
+   * 確認報名狀態
+   */
+  checkApplyStatus() {
+    const token = this.authService.token;
+    if (token) {
+      const { eventId } = this;
+      return this.checkApplied(token, eventId).pipe(
+        tap((res) => {
+          const { applyStatus } = res.result[0] || { applyStatus: ApplyStatus.notYet };
+          const nextStatus = this.handleApplyStatus(applyStatus);
+          this.uiFlag.applyButtonStatus = this.handleApplyButtonStatus(nextStatus);
+        })
+      );
+    }
+
+    this.uiFlag.applyButtonStatus = this.handleApplyButtonStatus(ApplyButtonStatus.canApply);
+    return of('');
+  }
+
+  /**
+   * 根據報名狀態變更按鈕狀態
+   * @param status {ApplyStatus}-使用者報名狀態
+   */
+  handleApplyStatus(status: ApplyStatus) {
+    switch (status) {
+      case ApplyStatus.applied:
+        return ApplyButtonStatus.applied;
+      case ApplyStatus.cancel:
+        return ApplyButtonStatus.applyCancelled;
+      case ApplyStatus.applyingQuit:
+        return ApplyButtonStatus.applyCancelling;
+      default:
+        return ApplyButtonStatus.canApply;
+    }
+  }
+
+  /**
+   * 處理報名按鈕狀態，依照狀態優先順序確認是否調整狀態
+   * @param next {ApplyButtonStatus}
+   */
+  handleApplyButtonStatus(next: ApplyButtonStatus) {
+    const { applyButtonStatus } = this.uiFlag;
+    const token = this.authService.token;
+    switch (applyButtonStatus) {
+      case ApplyButtonStatus.eventCancelled:
+        return applyButtonStatus;
+      case ApplyButtonStatus.applied:
+      case ApplyButtonStatus.applyCancelled:
+      case ApplyButtonStatus.applyCancelling:
+        switch (next) {
+          case ApplyButtonStatus.canApply:
+          case ApplyButtonStatus.applyFull:
+          case ApplyButtonStatus.cutOff:
+            // 若已登入，則已使用者報名狀態為主
+            if (token) return applyButtonStatus;
+            return next;
+          default:
+            return next;
+        }
+      default:
+        return next;
+    }
+  }
+
+  /**
+   * 確認各分組報名資格
+   * @param pageData {[any, UserProfileInfo]}-[api 6002 response, 使用者資訊]
+   */
+  checkApplyQualifications(pageData: [any, UserProfileInfo]) {
+    const [eventInfomation, userProfile] = pageData;
+    const {
+      eventInfo: { numberLimit },
+      eventDetail: { group },
+    } = eventInfomation;
+    const token = this.authService.token;
+    const { age } = this.userService.getUser();
+    const { gender } = userProfile;
+    this.groupApplyCheck = group.map((_group) => {
+      const { gender: _gender, age: _age, currentApplyNumber } = _group;
+      const isFull = numberLimit > 0 && currentApplyNumber >= numberLimit;
+      const sameGender = _gender === Gender.unlimit || _gender === gender;
+      const inAgeRange = !_age || (age >= _age.min && age <= _age.max);
+      return {
+        isFull,
+        qualified: !token || (sameGender && inAgeRange),
+      };
+    });
+
+    return pageData;
+  }
+
+  /**
+   * 確認各分組報名資格
+   * @param pageData {[any, UserProfileInfo]}-[api 6002 response, 使用者資訊]
+   */
+  getSelectedGroup(pageData: [any, UserProfileInfo]) {
+    const {
+      uiFlag: { applyButtonStatus },
+      groupApplyCheck,
+    } = this;
+    if (applyButtonStatus === ApplyButtonStatus.canApply) {
+      const index = groupApplyCheck.findIndex((_group) => !_group.isFull && _group.qualified);
+      if (index > -1) this.currentSelectedGroup = index;
+    }
+
+    return pageData;
   }
 
   /**
    * 設定倒數計時器，同時確認報名與競賽日期
-   * @author kidin-1101018
    */
   setCountdown() {
     if (!this.countdownInterval) {
@@ -222,30 +301,6 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 確認是否可報名
-   * @author kidin-1101018
-   */
-  checkCanApply() {
-    const {
-      eventInfo: { numberLimit, currentApplyNumber, eventStatus },
-      uiFlag: { applyButtonStatus },
-    } = this;
-
-    const eventCancelled = eventStatus === EventStatus.cancel;
-    if (eventCancelled) {
-      this.uiFlag.applyButtonStatus = ApplyButtonStatus.eventCancelled;
-    } else {
-      if (applyButtonStatus !== ApplyButtonStatus.applied) {
-        const applyFull =
-          numberLimit && numberLimit > 0 ? currentApplyNumber >= numberLimit : false;
-        if (applyFull) this.uiFlag.applyButtonStatus = ApplyButtonStatus.applyFull;
-      }
-
-      this.setCountdown();
-    }
-  }
-
-  /**
    * 確認是否在報名時間內
    * @param currentTimestamp {number}-伺服器現在時間(timestamp)
    * @author kidin-1101018
@@ -258,7 +313,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     const afterApplyEnd = currentTimestamp > endDate;
     const notAtApplyDate = beforeApplyStart || afterApplyEnd;
     if (notAtApplyDate) {
-      this.uiFlag.applyButtonStatus = ApplyButtonStatus.cutOff;
+      this.uiFlag.applyButtonStatus = this.handleApplyButtonStatus(ApplyButtonStatus.cutOff);
     }
   }
 
@@ -345,7 +400,6 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     const scrollElement = document.querySelector('.main__page');
     const targetId = `content__${id}`;
     const targetElementTop = document.getElementById(targetId).offsetTop;
-    const navHeight = 60;
     scrollElement.scrollTo({
       top: targetElementTop - navHeight,
       behavior: 'smooth',
@@ -450,15 +504,50 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 將頁面捲動至報名區塊
+   */
+  navigateApplySection() {
+    const targetSection = document.querySelector('.apply__section') as HTMLElement;
+    const targetTop = targetSection.offsetTop;
+    const scrollElement = document.querySelector('.main__page');
+    scrollElement.scrollTo({
+      top: targetTop - navHeight,
+      behavior: 'smooth',
+    });
+  }
+
+  /**
+   * 選擇分組
+   * @param index {number}-分組序列
+   */
+  selectGroup(index: number) {
+    if (this.groupApplyCheck[index]) {
+      this.currentSelectedGroup = index;
+    }
+  }
+
+  /**
    * 轉導至報名頁面
-   * @author kidin-1101116
    */
   navigateApplyPage() {
-    const { applyButtonStatus } = this.uiFlag;
-    if (applyButtonStatus === ApplyButtonStatus.canApply) {
-      const { eventId } = this.eventInfo;
-      this.router.navigateByUrl(`/official-activity/apply-activity/${eventId}`);
+    const index = this.currentSelectedGroup;
+    if (index !== null && this.groupApplyCheck[index]) {
+      const { applyButtonStatus } = this.uiFlag;
+      if (applyButtonStatus === ApplyButtonStatus.canApply) {
+        const { eventId } = this.eventInfo;
+        const url = `/official-activity/apply-activity/${eventId}?${QueryString.applyGroup}=${index}`;
+        this.router.navigateByUrl(url);
+      }
     }
+  }
+
+  /**
+   * 轉導至活動編輯頁面
+   * @param e {MouseEvent}
+   */
+  navigateEditPage(e: MouseEvent) {
+    e.preventDefault();
+    this.router.navigateByUrl(`/official-activity/edit-activity/${this.eventInfo.eventId}`);
   }
 
   /**

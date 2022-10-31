@@ -329,6 +329,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       .getUser()
       .rxUserProfile.pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((res) => {
+        this.token = this.auth.token;
         this.userInfo = res;
         this.pollingNewMail();
       });
@@ -384,7 +385,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    */
   getEventAdvertise() {
     const body = {
-      token: this.token,
+      token: this.auth.token,
     };
 
     this.officialActivityService
@@ -1317,7 +1318,8 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
   checkNickname(nickname: string) {
     const args = { nickname };
     const target = ['nickname'];
-    if (!this.token) {
+    const { token } = this.auth;
+    if (!token) {
       this.checkRepeat(args, target).subscribe((res) => {
         if (this.utils.checkRes(res)) {
           const { nickname } = res.result[0] ?? {};
@@ -1715,7 +1717,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    */
   pollingNewMail() {
     this.checkNewMail();
-    if (this.auth.token) {
+    if (this.auth.token && !this.mailNotify) {
       this.mailNotify = setInterval(() => {
         this.checkNewMail();
       }, 30000);

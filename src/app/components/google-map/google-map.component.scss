@@ -1,0 +1,14 @@
+.map__container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+::ng-deep .custom__mark {
+  position: absolute;
+
+  img {
+    border: 3px solid;
+    border-radius: 50%;
+  }
+}

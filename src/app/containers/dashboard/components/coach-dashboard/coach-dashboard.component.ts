@@ -15,7 +15,8 @@ import { setOptions } from 'highcharts';
 import { webSocket } from 'rxjs/webSocket';
 import dayjs from 'dayjs';
 import { stockChart } from 'highcharts/highstock';
-import { cloneDeep, keyBy } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
+import keyBy from 'lodash/keyBy';
 import { getUrlQueryStrings } from '../../../../shared/utils/index';
 import { AuthService } from '../../../../core/services/auth.service';
 
@@ -471,7 +472,6 @@ export class CoachDashboardComponent implements OnInit, AfterViewInit, OnDestroy
               this.chart.series[idx].addPoint([time, speed], true, false, 1000);
               sum += speed;
             }
-          } else {
           }
 
           return {
