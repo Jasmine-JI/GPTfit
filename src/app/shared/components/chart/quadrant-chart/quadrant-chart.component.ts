@@ -15,7 +15,7 @@ import { UtilsService } from '../../../services/utils.service';
 import { HrZoneRange } from '../../../models/chart-data';
 import { mi } from '../../../models/bs-constant';
 import { Unit } from '../../../enum/value-conversion';
-import { SportPaceSibsPipe } from '../../../pipes/sport-pace-sibs.pipe';
+import { SportPaceSibsPipe } from '../../../../core/pipes/sport-pace-sibs.pipe';
 import { setLocalStorageObject, getLocalStorageObject, deepCopy } from '../../../utils/index';
 
 type QuadrantDataOpt = 'hr' | 'speed' | 'pace' | 'cadence' | 'power';
@@ -638,6 +638,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
           case SportType.row:
             return 'rowingCadence';
         }
+        break;
       case 'power':
         return sportType === 2 ? 'cycleWatt' : 'rowingWatt';
     }
@@ -780,6 +781,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
           case SportType.row:
             return 40;
         }
+        break;
       case 'power':
         return sportType === 2 ? 350 : 400;
     }

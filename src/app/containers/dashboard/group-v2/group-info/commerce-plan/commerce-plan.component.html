@@ -101,6 +101,18 @@
           <span *ngIf="!uiFlag.editMode">
             {{ +commerceInfo.groupAllMemberStatus?.maxAllGroupMembers || 100 }}
           </span>
+          <span *ngIf="uiFlag.editMode">
+            <mat-form-field class="editManageInput">
+              <input
+                matInput
+                [(ngModel)]="editBody.groupAllMemberSetting.maxAllGroupMembers"
+                [maxlength]="6"
+                name="memberNum"
+                required
+                (change)="saveNumSetting($event, 'memberNum')"
+              />
+            </mat-form-field>
+          </span>
         </div>
         <div class="group-list-item">
           {{ 'universal_group_authorizationDueDate' | translate }}：
@@ -138,7 +150,7 @@
           *ngIf="commerceInfo.groupAllMemberStatus"
         >
           {{ 'universal_group_totalNumberPeople' | translate }}：
-          <span *ngIf="!uiFlag.editMode">
+          <span>
             {{ +commerceInfo.groupAllMemberStatus?.currentAllGroupMembers || '--' }}/{{
               +commerceInfo.groupAllMemberStatus?.maxAllGroupMembers || 100
             }}
@@ -151,18 +163,6 @@
             "
           >
             ({{ 'universal_status_groupFull' | translate }})
-          </span>
-          <span *ngIf="uiFlag.editMode">
-            <mat-form-field class="editManageInput">
-              <input
-                matInput
-                [(ngModel)]="editBody.groupAllMemberSetting.maxAllGroupMembers"
-                [maxlength]="6"
-                name="memberNum"
-                required
-                (change)="saveNumSetting($event, 'memberNum')"
-              />
-            </mat-form-field>
           </span>
         </div>
       </div>
@@ -197,7 +197,7 @@
             ({{ 'universal_status_groupFull' | translate }})
           </span>
           <span *ngIf="uiFlag.editMode">
-            <mat-form-field class="editManageInput">
+            <mat-form-field>
               <input
                 matInput
                 [(ngModel)]="editBody.groupSetting.maxBranches"
@@ -231,7 +231,7 @@
             ({{ 'universal_status_groupFull' | translate }})
           </span>
           <span *ngIf="uiFlag.editMode">
-            <mat-form-field class="editManageInput">
+            <mat-form-field>
               <input
                 matInput
                 [(ngModel)]="editBody.groupSetting.maxClasses"

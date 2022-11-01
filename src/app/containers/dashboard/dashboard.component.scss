@@ -52,10 +52,6 @@ $alert-icon-color: rgba(255, 56, 56, 1);
   min-height: calc(100vh - 60px);
 }
 
-.containerPrint {
-  padding: 0px;
-}
-
 .header-nav-menu-section {
   border-bottom: 1px solid #e5e5e5;
 }
@@ -404,8 +400,13 @@ $alert-icon-color: rgba(255, 56, 56, 1);
   padding: 1vh 7vw;
 }
 
+.containerPrint {
+  padding: 0 2vw;
+}
+
 .mail__button__section {
   position: relative;
+  max-width: 40px;
 }
 
 .mail__button {
@@ -516,5 +517,9 @@ $alert-icon-color: rgba(255, 56, 56, 1);
   .main-body.preview {
     overflow: visible;
     height: fit-content;
+  }
+
+  .dashboard__container {
+    padding: 0 2vw;
   }
 }

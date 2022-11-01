@@ -66,7 +66,6 @@ import { ConditionSelectorComponent } from './condition-selector/condition-selec
 import { CompareHrzoneTrendComponent } from './chart/compare-hrzone-trend/compare-hrzone-trend.component';
 import { CompareColumnTrendComponent } from './chart/compare-column-trend/compare-column-trend.component';
 import { TreeMapChartComponent } from './chart/tree-map-chart/tree-map-chart.component';
-import { SmallHrzoneChartComponent } from './chart/small-hrzone-chart/small-hrzone-chart.component';
 import { DistributionCanvasChartComponent } from './chart/distribution-canvas-chart/distribution-canvas-chart.component';
 import { SportsTargetTipComponent } from './tooltips/sports-target-tip/sports-target-tip.component';
 import { TargetAchieveChartComponent } from './chart/target-achieve-chart/target-achieve-chart.component';
@@ -75,11 +74,23 @@ import { CompareBodyWeightChartComponent } from './chart/compare-body-weight-cha
 import { ComparePaceChartComponent } from './chart/compare-pace-chart/compare-pace-chart.component';
 import { CompareExtremeGforceChartComponent } from './chart/compare-extreme-gforce-chart/compare-extreme-gforce-chart.component';
 import { WeightTrainLevelSelectorComponent } from './weight-train-level-selector/weight-train-level-selector.component';
-import { AnalysisOptionComponent } from './analysis-option/analysis-option.component';
-import { DateUnitKeyModule } from '../../core/pipes/date-unit-key.pipe';
-import { TranslateKeyModule } from '../../core/pipes/translate-key.pipe';
-import { TranslateUnitKeyModule } from '../../core/pipes/translate-unit-key.pipe';
-import { CalenderSelectorModule, LeafletMapModule, GoogleMapModule } from '../../components/';
+import {
+  DateUnitKeyModule,
+  TranslateKeyModule,
+  TranslateUnitKeyModule,
+  DistanceSibsModule,
+  SportPaceSibsModule,
+  SportPaceSibsPipe,
+  WeightSibsModule,
+  WeightSibsPipe,
+} from '../../core/pipes';
+import {
+  CalenderSelectorModule,
+  LeafletMapModule,
+  GoogleMapModule,
+  AnalysisOptionModule,
+  SportsDataTableModule,
+} from '../../components';
 
 @NgModule({
   imports: [
@@ -96,9 +107,14 @@ import { CalenderSelectorModule, LeafletMapModule, GoogleMapModule } from '../..
     DateUnitKeyModule,
     TranslateKeyModule,
     TranslateUnitKeyModule,
+    DistanceSibsModule,
+    SportPaceSibsModule,
+    WeightSibsModule,
     CalenderSelectorModule,
     LeafletMapModule,
     GoogleMapModule,
+    AnalysisOptionModule,
+    SportsDataTableModule,
   ],
   declarations: [
     NavbarComponent,
@@ -158,7 +174,6 @@ import { CalenderSelectorModule, LeafletMapModule, GoogleMapModule } from '../..
     CompareHrzoneTrendComponent,
     CompareColumnTrendComponent,
     TreeMapChartComponent,
-    SmallHrzoneChartComponent,
     DistributionCanvasChartComponent,
     SportsTargetTipComponent,
     TargetAchieveChartComponent,
@@ -167,7 +182,6 @@ import { CalenderSelectorModule, LeafletMapModule, GoogleMapModule } from '../..
     ComparePaceChartComponent,
     CompareExtremeGforceChartComponent,
     WeightTrainLevelSelectorComponent,
-    AnalysisOptionComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -222,7 +236,6 @@ import { CalenderSelectorModule, LeafletMapModule, GoogleMapModule } from '../..
     CompareHrzoneTrendComponent,
     CompareColumnTrendComponent,
     TreeMapChartComponent,
-    SmallHrzoneChartComponent,
     DistributionCanvasChartComponent,
     SportsTargetTipComponent,
     TargetAchieveChartComponent,
@@ -231,7 +244,8 @@ import { CalenderSelectorModule, LeafletMapModule, GoogleMapModule } from '../..
     ComparePaceChartComponent,
     CompareExtremeGforceChartComponent,
     WeightTrainLevelSelectorComponent,
-    AnalysisOptionComponent,
+    SportPaceSibsPipe,
+    WeightSibsPipe,
   ],
 })
 export class SharedComponentsModule {}

@@ -485,6 +485,17 @@
     </div>
   </section>
 
+  <app-sports-data-table
+    [tableTitleKey]="'universal_activityData_chartAnalysis'"
+    [isCompareMode]="uiFlag.isCompareMode"
+    [tableData]="groupChartData.sportsTableData"
+    [baseReportRange]="reportCondition.baseTime"
+    [compareReportRange]="reportCondition.compareTime"
+    [chartAnalysisOption]="chartAnalysisOption"
+    [userUnit]="userUnit"
+    [sportType]="reportCondition.sportType"
+  ></app-sports-data-table>
+
   <section class="report-section" *ngIf="groupAnalysis">
     <div class="flexRow cardTitle">
       <h6 class="cardSubtitle">{{ 'universal_group_groupAnalysis' | translate }}</h6>
@@ -751,7 +762,7 @@
             context: {
               isGroupAnalysis: true,
               columnType: 'totalActivitySecond',
-              title: '總活動時間' | translate,
+              title: 'universal_activityData_activityTime' | translate,
               dataUnit: 'time/per',
               isPersonAvgData: true,
               className: 'analysis__activity__second',
@@ -1614,7 +1625,7 @@
               context: {
                 isGroupAnalysis: false,
                 columnType: 'totalActivitySecond',
-                title: '總活動時間' | translate,
+                title: 'universal_activityData_activityTime' | translate,
                 dataUnit: 'time',
                 className: 'analysis__activity__second',
                 showHeader: personalAnalysisOption.getItemSelectStatus(

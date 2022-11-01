@@ -175,7 +175,7 @@ export function getMaxCadenceI18nKey(sportType: SportType) {
  * @param distance {number}-距離
  * @param unit {Unit}-使用者使用單位（公制/英制）
  */
-export function transformDistance(distance: number, unit: Unit) {
+export function transformDistance(distance: number, unit: Unit, converseKiloAlways = false) {
   const checkDistance = +(distance ?? 0);
   const transfrom = {
     value: null,
@@ -190,12 +190,12 @@ export function transformDistance(distance: number, unit: Unit) {
   };
 
   if (unit === Unit.metric) {
-    Math.abs(distance) >= 1000
+    Math.abs(distance) >= 1000 || converseKiloAlways
       ? transfrom.update(checkDistance / 1000, 'km')
       : transfrom.update(checkDistance, 'm');
   } else {
     const bsValue = checkDistance / ft;
-    Math.abs(bsValue) >= 1000
+    Math.abs(bsValue) >= 1000 || converseKiloAlways
       ? transfrom.update(checkDistance / mi / 1000, 'mi')
       : transfrom.update(bsValue, 'ft');
   }

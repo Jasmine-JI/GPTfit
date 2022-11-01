@@ -1,6 +1,6 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { lb } from '../models/bs-constant';
-import { Unit } from '../enum/value-conversion';
+import { NgModule, Pipe, PipeTransform } from '@angular/core';
+import { lb } from '../../shared/models/bs-constant';
+import { Unit } from '../../shared/enum/value-conversion';
 
 @Pipe({ name: 'weightSibs' })
 export class WeightSibsPipe implements PipeTransform {
@@ -8,7 +8,6 @@ export class WeightSibsPipe implements PipeTransform {
    * 依公英制轉換重量單位。
    * @param value {number}-重量
    * @param args {number[]}-[公英制, 是否回傳單位（0. 是, 1. 否）]
-   * @author kidin-1100106
    */
   transform(value: number, args: number[] = [Unit.metric, 1]): string {
     const [unitType, showUnit] = args;
@@ -22,6 +21,11 @@ export class WeightSibsPipe implements PipeTransform {
     }
 
     const fixedValue = parseFloat(finalValue.toFixed(0));
-    return !showUnit ? `${fixedValue} ${unit}` : `${fixedValue}`;
+    return showUnit === 0 ? `${fixedValue} ${unit}` : `${fixedValue}`;
   }
 }
+@NgModule({
+  declarations: [WeightSibsPipe],
+  exports: [WeightSibsPipe],
+})
+export class WeightSibsModule {}

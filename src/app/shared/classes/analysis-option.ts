@@ -1,40 +1,65 @@
+import { AnalysisOptionInfo } from '../models/report-analysis';
+import { GroupLevel } from '../enum/professional';
+import { SportType } from '../enum/sports';
+import { AnalysisSportsColumn } from '../enum/report-analysis';
+import { setLocalStorageObject, getLocalStorageObject } from '../utils/index';
 import { of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { AnalysisOneOption } from './analysis-one-option';
 
 /**
- * 報告內分析項目可設定的選項
+ * 用來辨認儲存於localStorage的項目是否符合目前版本
+ * 版本號與GPTfit切開，群組報告重構則自行評估是否進版
  */
+const storageVersion = '3';
+
 export class AnalysisOption {
+  optionInfo: AnalysisOptionInfo;
+
   /**
    * 顯示欄位篩選項目清單
    */
-  private _itemList: Array<AnalysisOneOption> = [];
+  itemList: Array<AnalysisOneOption> = [];
 
   /**
    * 最多可選擇項目
    */
-  private _maxSelected = 5;
+  maxSelected = 5;
 
   /**
    * 最少可選擇項目
    */
-  private _minSelected = 2;
+  minSelected = 2;
 
-  constructor(columnList: Array<any>, defaultList: Array<any>) {
-    this.createOptionList(columnList, defaultList);
+  /**
+   * 存於localStorage使用的key
+   */
+  storageKey: string;
+
+  constructor(optionInfo: AnalysisOptionInfo) {
+    this.optionInfo = optionInfo;
+    this.createOptionList();
+  }
+
+  /**
+   * 依使用者選擇之運動類別與群組階層，變更可選擇的選項
+   * @param sportType {SportType}-運動類別
+   * @param groupLevel {GroupLevel}-目前選擇的群組階層
+   */
+  changeOption(sportType: SportType, groupLevel: GroupLevel = undefined) {
+    this.optionInfo.sportType = sportType;
+    if (groupLevel) this.optionInfo.currentGroupLevel = groupLevel;
+    this.createOptionList();
   }
 
   /**
    * 根據頁面與區塊，建立可選擇的選項清單
-   * @param columnList {Array<any>}-欄位清單
-   * @param defaultList {Array<any>}-預設顯示欄位
    */
-  createOptionList(columnList: Array<any>, defaultList: Array<any>) {
-    of(columnList)
+  createOptionList() {
+    of('')
       .pipe(
-        tap((list) => this.createOption(list)),
-        tap(() => this.setDefaultOption(defaultList)),
+        tap(() => this.createOption()),
+        tap(() => this.checkStorage()),
         tap(() => this.checkOverLimit()),
         tap(() => this.fillItem())
       )
@@ -42,28 +67,71 @@ export class AnalysisOption {
   }
 
   /**
-   * 建立分析可選擇的欄位選項清單
-   * @param list {Array<any>}-可篩選之欄位清單
+   * 建立選項
    */
-  createOption(list: Array<any>) {
-    this._itemList = list
-      .sort((a, b) => a - b)
-      .map((_item) => new AnalysisOneOption({ item: _item }));
-    return;
+  createOption() {}
+
+  /**
+   * 確認localStorage是否有儲存的設定
+   */
+  checkStorage() {
+    const { storageKey } = this;
+    const storage = getLocalStorageObject(storageKey);
+    const { ver } = storage ?? '';
+    if (this.checkStorageVersion(ver)) {
+      return this.loadStorageOption(storage);
+    }
+
+    return this.setDefaultOption();
+  }
+
+  /**
+   * 確認localStorage內儲存內容的版本，若為過往版本則不予使用
+   * @param version {string}版本
+   */
+  checkStorageVersion(version: string) {
+    return version === storageVersion;
+  }
+
+  /**
+   * 載入已儲存於localStorage的設定
+   * @param StorageOption {any}-儲存於localStorage的設定
+   */
+  loadStorageOption(StorageOption: any) {
+    const { object } = this.optionInfo;
+    const storage = StorageOption[object];
+    if (storage) {
+      storage.forEach((_item) => {
+        const _itemValue = +_item;
+        const index = this.itemList.findIndex((_list) => _list.info.item === _itemValue);
+        if (index > -1) this.itemList[index].toggleSelected();
+      });
+
+      return;
+    }
+
+    return this.setDefaultOption();
   }
 
   /**
    * 設定預設選擇的項目
-   * @param defaultList {Array<any>}-預設顯示的欄位清單
    */
-  setDefaultOption(defaultList: Array<any>) {
-    defaultList.forEach((_list) => {
+  setDefaultOption() {
+    const list = this.getDefaultOption();
+    list.forEach((_list) => {
       const _itemValue = _list;
-      const index = this._itemList.findIndex((_list) => _list.info.item === _itemValue);
-      this._itemList[index].toggleSelected();
+      const index = this.itemList.findIndex((_list) => _list.info.item === _itemValue);
+      this.itemList[index].toggleSelected();
     });
 
-    return;
+    return this.saveOption();
+  }
+
+  /**
+   * 取得預設選項
+   */
+  getDefaultOption() {
+    return [];
   }
 
   /**
@@ -72,20 +140,20 @@ export class AnalysisOption {
    */
   checkOverLimit(width: number = window.innerWidth) {
     this.checkSelectNumberLimit(width);
-    const { _maxSelected, _minSelected } = this;
+    const { maxSelected, minSelected } = this;
     let selectedNumber = 0;
-    this._itemList = this._itemList.map((_list) => {
+    this.itemList = this.itemList.map((_list) => {
       const { selected } = _list;
       if (selected) selectedNumber++;
 
       // 若超出可選擇數目，由後往前開始取消選擇
-      if (selectedNumber > _maxSelected) _list.selected = false;
+      if (selectedNumber > maxSelected) _list.selected = false;
       return _list;
     });
 
-    this.setCanSelectStatus(selectedNumber < _maxSelected);
-    this.setCanCancelStatus(selectedNumber > _minSelected);
-    return;
+    this.setCanSelectStatus(selectedNumber < maxSelected);
+    this.setCanCancelStatus(selectedNumber > minSelected);
+    return this.saveOption();
   }
 
   /**
@@ -94,10 +162,10 @@ export class AnalysisOption {
    */
   fillItem() {
     let selectedNumber = this.getSelectedList().length;
-    const { _maxSelected } = this;
-    if (selectedNumber < _maxSelected) {
-      this._itemList = this._itemList.map((_list) => {
-        if (selectedNumber < _maxSelected && !_list.selected) {
+    const { maxSelected } = this;
+    if (selectedNumber < maxSelected) {
+      this.itemList = this.itemList.map((_list) => {
+        if (selectedNumber < maxSelected && !_list.selected) {
           _list.selected = true;
           selectedNumber++;
         }
@@ -107,7 +175,7 @@ export class AnalysisOption {
     }
 
     this.setCanSelectStatus(false);
-    return;
+    return this.saveOption();
   }
 
   /**
@@ -116,23 +184,23 @@ export class AnalysisOption {
    */
   checkSelectNumberLimit(width: number) {
     if (width < 500) {
-      this._maxSelected = 1;
-      this._minSelected = 0;
+      this.maxSelected = 1;
+      this.minSelected = 0;
     } else if (width < 550) {
-      this._maxSelected = 2;
-      this._minSelected = 1;
+      this.maxSelected = 2;
+      this.minSelected = 1;
     } else if (width < 680) {
-      this._maxSelected = 3;
-      this._minSelected = 1;
+      this.maxSelected = 3;
+      this.minSelected = 1;
     } else if (width < 950) {
-      this._maxSelected = 4;
-      this._minSelected = 1;
+      this.maxSelected = 4;
+      this.minSelected = 1;
     } else if (width < 1200) {
-      this._maxSelected = 5;
-      this._minSelected = 2;
+      this.maxSelected = 5;
+      this.minSelected = 2;
     } else {
-      this._maxSelected = 6;
-      this._minSelected = 2;
+      this.maxSelected = 6;
+      this.minSelected = 2;
     }
   }
 
@@ -141,7 +209,7 @@ export class AnalysisOption {
    * @param status {boolean}-是否可點擊的狀態
    */
   setCanSelectStatus(status: boolean) {
-    this._itemList = this._itemList.map((_list) => {
+    this.itemList = this.itemList.map((_list) => {
       _list.canSelect = status;
       return _list;
     });
@@ -152,17 +220,36 @@ export class AnalysisOption {
    * @param status {boolean}-是否可點擊的狀態
    */
   setCanCancelStatus(status: boolean) {
-    this._itemList = this._itemList.map((_list) => {
+    this.itemList = this.itemList.map((_list) => {
       _list.canCancel = status;
       return _list;
     });
   }
 
   /**
+   * 依分析類別將分析欄位設定儲存於localStorage中
+   */
+  saveOption() {
+    const {
+      storageKey,
+      optionInfo: { object },
+    } = this;
+    const selectedList = this.getSelectedList();
+    const storage = getLocalStorageObject(storageKey);
+    const { ver } = storage ?? '';
+    const newOption = this.checkStorageVersion(ver)
+      ? { ...storage, [object]: selectedList }
+      : { [object]: selectedList, ver: storageVersion };
+
+    setLocalStorageObject(storageKey, newOption);
+    return;
+  }
+
+  /**
    * 取得已選擇的項目
    */
   getSelectedList() {
-    return this._itemList.filter((_item) => _item.selected).map((_item) => _item.info.item);
+    return this.itemList.filter((_item) => _item.selected).map((_item) => _item.info.item);
   }
 
   /**
@@ -173,19 +260,11 @@ export class AnalysisOption {
   }
 
   /**
-   * 取得欄位項目清單
-   */
-  get itemList() {
-    return this._itemList;
-  }
-
-  /**
    * 取得特定欄位項目的選擇狀態
-   * @param item {string}-重訓動作分析欄位
    */
-  getItemSelectStatus(item: string) {
-    const index = this._itemList.findIndex((_item) => _item.info.item === item);
-    const assignItem = this._itemList[index];
+  getItemSelectStatus(item: AnalysisSportsColumn) {
+    const index = this.itemList.findIndex((_item) => _item.info.item === item);
+    const assignItem = this.itemList[index];
     return assignItem ? assignItem.selected : false;
   }
 
@@ -193,13 +272,13 @@ export class AnalysisOption {
    * 取得最多可選擇的數目
    */
   get maxSelectedNumber() {
-    return this._maxSelected;
+    return this.maxSelected;
   }
 
   /**
    * 取得最少可選擇的數目
    */
   get minSelectedNumber() {
-    return this._minSelected;
+    return this.minSelected;
   }
 }

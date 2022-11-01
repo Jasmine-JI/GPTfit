@@ -5,3 +5,8 @@ export * from './time-format.pipe';
 export * from './translate-key.pipe';
 export * from './translate-unit-key.pipe';
 export * from './reference-hr-zone.pipe';
+export * from './speed-pace-unit.pipe';
+export * from './sport-time.pipe';
+export * from './distance-sibs.pipe';
+export * from './sport-pace-sibs.pipe';
+export * from './weight-sibs.pipe';

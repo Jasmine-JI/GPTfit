@@ -486,43 +486,57 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     const startTime = dayjs(this.date.startTimestamp);
     switch (this.date.type) {
       case 'sevenDay':
-      case 'thisWeek':
-        this.date.startTimestamp = startTime.subtract(7, 'day').valueOf();
-        this.date.endTimestamp = startTime.add(6, 'day').endOf('day').valueOf();
+      case 'thisWeek': {
+        const newStartTimestamp = startTime.subtract(7, 'day');
+        this.date.startTimestamp = newStartTimestamp.valueOf();
+        this.date.endTimestamp = newStartTimestamp.add(6, 'day').endOf('day').valueOf();
         break;
-      case 'thirtyDay':
-        this.date.startTimestamp = startTime.subtract(30, 'day').valueOf();
-        this.date.endTimestamp = startTime.add(29, 'day').endOf('day').valueOf();
+      }
+      case 'thirtyDay': {
+        const newStartTimestamp = startTime.subtract(30, 'day');
+        this.date.startTimestamp = newStartTimestamp.valueOf();
+        this.date.endTimestamp = newStartTimestamp.add(29, 'day').endOf('day').valueOf();
         break;
-      case 'sixMonth':
-        this.date.startTimestamp = startTime.subtract(6, 'month').valueOf();
-        this.date.endTimestamp = startTime
+      }
+      case 'sixMonth': {
+        const newStartTimestamp = startTime.subtract(6, 'month');
+        this.date.startTimestamp = newStartTimestamp.valueOf();
+        this.date.endTimestamp = newStartTimestamp
           .add(6, 'month')
           .subtract(1, 'day')
           .endOf('day')
           .valueOf();
         break;
-      case 'today':
-        this.date.startTimestamp = startTime.subtract(1, 'day').valueOf();
-        this.date.endTimestamp = startTime.endOf('day').valueOf();
+      }
+      case 'today': {
+        const newStartTimestamp = startTime.subtract(1, 'day');
+        this.date.startTimestamp = newStartTimestamp.valueOf();
+        this.date.endTimestamp = newStartTimestamp.endOf('day').valueOf();
         break;
-      case 'thisMonth':
-        this.date.startTimestamp = startTime.subtract(1, 'month').startOf('month').valueOf();
-        this.date.endTimestamp = startTime.endOf('month').valueOf();
+      }
+      case 'thisMonth': {
+        const newStartTimestamp = startTime.subtract(1, 'month').startOf('month');
+        this.date.startTimestamp = newStartTimestamp.valueOf();
+        this.date.endTimestamp = newStartTimestamp.endOf('month').valueOf();
         break;
-      case 'thisYear':
-        this.date.startTimestamp = startTime.subtract(1, 'year').startOf('year').valueOf();
-        this.date.endTimestamp = startTime.endOf('year').valueOf();
+      }
+      case 'thisYear': {
+        const newStartTimestamp = startTime.subtract(1, 'year').startOf('year');
+        this.date.startTimestamp = newStartTimestamp.valueOf();
+        this.date.endTimestamp = newStartTimestamp.endOf('year').valueOf();
         break;
-      case 'custom':
+      }
+      case 'custom': {
         const range = dayjs(this.date.endTimestamp).diff(startTime);
-        this.date.startTimestamp = dayjs(this.date.startTimestamp - range - 1)
+        const newStartTimestamp = dayjs(this.date.startTimestamp - range - 1)
           .startOf('day')
           .valueOf();
-        this.date.endTimestamp = dayjs(this.date.startTimestamp + range)
+        this.date.startTimestamp = newStartTimestamp;
+        this.date.endTimestamp = dayjs(newStartTimestamp + range)
           .endOf('day')
           .valueOf();
         break;
+      }
     }
 
     // 設置debounce避免使用者快速點擊而大量呼叫api
@@ -547,43 +561,57 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     const startTime = dayjs(this.date.startTimestamp);
     switch (this.date.type) {
       case 'sevenDay':
-      case 'thisWeek':
-        this.date.startTimestamp = startTime.add(7, 'day').valueOf();
-        this.date.endTimestamp = startTime.add(6, 'day').endOf('day').valueOf();
+      case 'thisWeek': {
+        const newStartTimestamp = startTime.add(7, 'day');
+        this.date.startTimestamp = newStartTimestamp.valueOf();
+        this.date.endTimestamp = newStartTimestamp.add(6, 'day').endOf('day').valueOf();
         break;
-      case 'thirtyDay':
-        this.date.startTimestamp = startTime.add(30, 'day').valueOf();
+      }
+      case 'thirtyDay': {
+        const newStartTimestamp = startTime.add(30, 'day');
+        this.date.startTimestamp = newStartTimestamp.valueOf();
         this.date.endTimestamp = startTime.add(29, 'day').endOf('day').valueOf();
         break;
-      case 'sixMonth':
-        this.date.startTimestamp = startTime.add(6, 'month').valueOf();
+      }
+      case 'sixMonth': {
+        const newStartTimestamp = startTime.add(6, 'month');
+        this.date.startTimestamp = newStartTimestamp.valueOf();
         this.date.endTimestamp = startTime
           .add(6, 'month')
           .subtract(1, 'day')
           .endOf('day')
           .valueOf();
         break;
-      case 'today':
-        this.date.startTimestamp = startTime.add(1, 'day').valueOf();
-        this.date.endTimestamp = startTime.endOf('day').valueOf();
+      }
+      case 'today': {
+        const newStartTimestamp = startTime.add(1, 'day');
+        this.date.startTimestamp = newStartTimestamp.valueOf();
+        this.date.endTimestamp = newStartTimestamp.endOf('day').valueOf();
         break;
-      case 'thisMonth':
-        this.date.startTimestamp = startTime.add(1, 'month').startOf('month').valueOf();
-        this.date.endTimestamp = startTime.endOf('month').valueOf();
+      }
+      case 'thisMonth': {
+        const newStartTimestamp = startTime.add(1, 'month').startOf('month');
+        this.date.startTimestamp = newStartTimestamp.valueOf();
+        this.date.endTimestamp = newStartTimestamp.endOf('month').valueOf();
         break;
-      case 'thisYear':
-        this.date.startTimestamp = startTime.add(1, 'year').startOf('year').valueOf();
-        this.date.endTimestamp = startTime.endOf('year').valueOf();
+      }
+      case 'thisYear': {
+        const newStartTimestamp = startTime.add(1, 'year').startOf('year');
+        this.date.startTimestamp = newStartTimestamp.valueOf();
+        this.date.endTimestamp = newStartTimestamp.endOf('year').valueOf();
         break;
-      case 'custom':
+      }
+      case 'custom': {
         const range = dayjs(this.date.endTimestamp).diff(startTime);
-        this.date.startTimestamp = dayjs(this.date.startTimestamp + range + 1)
+        const newStartTimestamp = dayjs(this.date.startTimestamp + range + 1)
           .startOf('day')
           .valueOf();
-        this.date.endTimestamp = dayjs(this.date.startTimestamp + range)
+        this.date.startTimestamp = newStartTimestamp;
+        this.date.endTimestamp = dayjs(newStartTimestamp + range)
           .endOf('day')
           .valueOf();
         break;
+      }
     }
 
     // 設置debounce避免使用者快速點擊而大量呼叫api

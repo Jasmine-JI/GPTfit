@@ -31,10 +31,11 @@ import { SportsParameter } from '../../../../../shared/models/sports-report';
 import { mi, ft, lb } from '../../../../../shared/models/bs-constant';
 import { Unit } from '../../../../../shared/enum/value-conversion';
 import { speedToPace } from '../../../../../shared/utils/sports';
-import { SportAnalysisSort } from '../../../../../shared/classes/sports-report/sport-analysis-sort';
+import { SportsAnalysisSort } from '../../../../../shared/classes/sports-report/sports-analysis-sort';
 import { ProfessionalAnalysisOption } from '../../../../professional/classes/professional-analysis-option';
-import { AnalysisSportsColumn } from '../../../../professional/enum/report-analysis';
-import { AnalysisAssignMenu } from '../../../../professional/models/report-analysis';
+import { ProfessionalChartAnalysisOption } from '../../../../professional/classes/professional-chart-analysis-option';
+import { AnalysisSportsColumn } from '../../../../../shared/enum/report-analysis';
+import { AnalysisAssignMenu } from '../../../../../shared/models/report-analysis';
 import { SPORT_TYPE_COLOR, trendChartColor } from '../../../../../shared/models/chart-data';
 import { TargetField, TargetConditionMap } from '../../../../../core/models/api/api-common';
 import { MuscleGroup } from '../../../../../shared/enum/weight-train';
@@ -135,18 +136,27 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   /**
    * 團體分析排序相關
    */
-  groupAnalysis: SportAnalysisSort;
+  groupAnalysis: SportsAnalysisSort;
 
   /**
    * 個人分析排序相關
    */
-  personAnalysis: SportAnalysisSort;
+  personAnalysis: SportsAnalysisSort;
 
   /**
-   * 分析列表篩選群組皆設定
+   * 圖表數據分析列表顯示欄位設定
+   */
+  chartAnalysisOption = new ProfessionalChartAnalysisOption({
+    analysisType: 'normal',
+    sportType: SportType.all,
+    object: 'list',
+  });
+
+  /**
+   * 分析列表篩選群組階層設定
    */
   groupAnalysisOption = new ProfessionalAnalysisOption({
-    reportType: 'sports',
+    analysisType: 'normal',
     sportType: SportType.all,
     object: 'group',
     brandType: BrandType.enterprise,
@@ -157,7 +167,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 分析列表篩選顯示欄位設定
    */
   personalAnalysisOption = new ProfessionalAnalysisOption({
-    reportType: 'sports',
+    analysisType: 'normal',
     sportType: SportType.all,
     object: 'person',
     brandType: BrandType.enterprise,
@@ -573,7 +583,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     });
 
     this.memberSportsInfo = allGroupList;
-    this.personAnalysis = new SportAnalysisSort(
+    this.personAnalysis = new SportsAnalysisSort(
       Object.values(allGroupList.memberList),
       'targetAchievedPeople',
       false
@@ -588,7 +598,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   handleGroupInfoData(allGroupList: AllGroupMember) {
     const rootGroupInfo = this.getBelongGroupObj();
     this.groupSportsInfo = new GroupSportsReportInfo(rootGroupInfo, allGroupList);
-    this.groupAnalysis = new SportAnalysisSort(
+    this.groupAnalysis = new SportsAnalysisSort(
       Object.values(this.groupSportsInfo.groupSportInfo),
       'targetAchievedPeople',
       true

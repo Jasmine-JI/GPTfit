@@ -1,16 +1,16 @@
-import { GroupLevel, BrandType } from '../../../shared/enum/professional';
+import { GroupLevel, BrandType } from '../enum/professional';
 import { AnalysisSportsColumn } from '../enum/report-analysis';
-import { SportType } from '../../../shared/enum/sports';
+import { SportType } from '../enum/sports';
 
 /**
  * 報告團體分析/個人分析，群組與欄位設定相關界面
  */
 export interface AnalysisOptionInfo {
-  reportType: ReportType;
+  analysisType: 'normal' | 'weightTrainMenu';
   sportType?: SportType;
   object: AnalysisObject;
-  brandType: BrandType;
-  currentGroupLevel: GroupLevel;
+  brandType?: BrandType;
+  currentGroupLevel?: GroupLevel;
 }
 
 /**
@@ -36,7 +36,7 @@ export type ReportType = 'sports' | 'lifeTracking' | 'cloudrun';
 /**
  * 分析列表的對象（團體/個人）
  */
-export type AnalysisObject = 'group' | 'person';
+export type AnalysisObject = 'group' | 'person' | 'list';
 
 /**
  *

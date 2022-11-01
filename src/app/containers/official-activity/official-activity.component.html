@@ -3,21 +3,24 @@
   <nav
     id="nav"
     class="flexRow"
+    style="max-height: 60px"
     *ngIf="!['edit-activity', 'apply-activity'].includes(uiFlag.currentPage)"
   >
-    <h1 id="nav__title" class="flexRow">
-      <a
-        href="/official-activity/activity-list"
-        class="flexRow page__link"
-        (click)="navigate($event, '/official-activity/activity-list')"
-      >
-        <img src="/assets/icons/logo.svg" alt="GPTfit" class="webLogo" />
-        <img src="/assets/icons/event.svg" alt="Event" class="webSubLogo sub__logo" />
-      </a>
-      <button (click)="showEntryMenu($event)">
+    <div class="flexRow" style="max-height: 60px">
+      <h1 id="nav__title" class="flexRow">
+        <a
+          href="/official-activity/activity-list"
+          class="flexRow page__link"
+          (click)="navigate($event, '/official-activity/activity-list')"
+        >
+          <img src="/assets/icons/logo.svg" alt="GPTfit" class="webLogo" />
+          <img src="/assets/icons/event.svg" alt="Event" class="webSubLogo sub__logo" />
+        </a>
+      </h1>
+      <button class="mobile__page__button" (click)="showEntryMenu($event)">
         <i class="icon-svg_web-icon_p1_005-menu" *ngIf="uiFlag.isMobile"></i>
       </button>
-    </h1>
+    </div>
     <div class="flexCol">
       <div class="flexRow child__page__entry" *ngIf="!uiFlag.isMobile">
         <a
@@ -67,7 +70,7 @@
       </div>
     </div>
     <div class="flexRow">
-      <div class="flexCenter mail__button__section">
+      <div class="flexCenter mail__button__section" *ngIf="userInfo">
         <button class="mail__button" (click)="showStationMailList($event)">
           <i class="icon-svg_web-icon_p4_012-message"></i>
           <i
@@ -544,6 +547,7 @@
           [class.checkbox__alert]="uiFlag.clickSubmit && !agreeDeclaration"
           [value]="true"
           [(ngModel)]="agreeDeclaration"
+          style="-webkit-transform: scale(2.2, 2.2)"
         />
         <label for="declaration">
           {{ 'universal_userAccount_clauseContentPage1' | translate }}
