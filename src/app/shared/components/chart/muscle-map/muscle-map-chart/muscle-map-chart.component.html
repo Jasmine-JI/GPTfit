@@ -1165,7 +1165,7 @@
         </g>
         <g>
           <text transform="matrix(1 0 0 1 300 620)" font-size="16">
-            Body weight {{ bodyWeight }} kg
+            Body weight {{ bodyWeight | weightSibs: [userUnit, 0] }}
           </text>
         </g>
       </g>

@@ -86,6 +86,16 @@
           </ul>
         </div>
       </div>
+      <div class="admin__option" *ngIf="reportCondition.includeAdmin !== undefined">
+        <span
+          role="checkbox"
+          class="exclude__admin__checkbox"
+          [attr.aria-checked]="!reportCondition.includeAdmin"
+          (click)="toggleAdminExclusion()"
+        >
+          {{ 'universal_system_excludeAdmin' | translate }}
+        </span>
+      </div>
       <div class="flexRowWrap isoweek__switch">
         <span class="isoweek__switch__title">{{ 'universal_system_startDate' | translate }}</span>
         <div class="flexRow rod__bar__option">

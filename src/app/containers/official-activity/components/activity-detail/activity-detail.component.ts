@@ -41,6 +41,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     progress: 100,
     isAdmin: false,
     applyButtonStatus: ApplyButtonStatus.canApply,
+    groupApply: true,
     raceEnd: false,
     isMobile: false,
     showSwitchButton: false,
@@ -156,8 +157,14 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     const { systemAccessright } = this.userService.getUser();
     const passAccessRight = [AccessRight.auditor, AccessRight.pusher]; // 可編輯活動的權限
     const permit = systemAccessright <= AccessRight.marketing;
+    const eventCancel = eventStatus === EventStatus.cancel;
+    const eventAudit = eventStatus === EventStatus.audit;
     this.uiFlag.isAdmin = passAccessRight.includes(systemAccessright);
-    if (eventStatus === EventStatus.audit || permit) {
+    if (eventAudit || eventCancel || permit) {
+      if (eventCancel)
+        this.uiFlag.applyButtonStatus = this.handleApplyButtonStatus(
+          ApplyButtonStatus.eventCancelled
+        );
       return pageData;
     }
 
@@ -281,15 +288,13 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
   setCountdown() {
     if (!this.countdownInterval) {
       this.countdownInterval = setInterval(() => {
-        const { raceEnd, applyButtonStatus } = this.uiFlag;
+        const { raceEnd } = this.uiFlag;
         const { eventStatus } = this.eventInfo;
         const eventCancel = eventStatus === EventStatus.cancel;
         if (!raceEnd && !eventCancel) {
           this.currentTimestamp++;
           this.checkRaceDate(this.currentTimestamp);
-          if (applyButtonStatus === ApplyButtonStatus.canApply) {
-            this.checkApplyDate(this.currentTimestamp);
-          }
+          this.checkApplyDate(this.currentTimestamp);
         } else {
           if (this.countdownInterval) {
             clearInterval(this.countdownInterval);
@@ -314,6 +319,9 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     const notAtApplyDate = beforeApplyStart || afterApplyEnd;
     if (notAtApplyDate) {
       this.uiFlag.applyButtonStatus = this.handleApplyButtonStatus(ApplyButtonStatus.cutOff);
+      if (afterApplyEnd) {
+        this.uiFlag.groupApply = false;
+      }
     }
   }
 

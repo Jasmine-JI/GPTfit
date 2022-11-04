@@ -5,6 +5,7 @@ import { UtilsService } from '../../../../../shared/services/utils.service';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SelectDate } from '../../../../../shared/models/utils-type';
+import { planDatas } from '../../../group/desc';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -182,29 +183,16 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
 
   // 若為客製方案，則允許編輯其他欄位，其他方案則固定內容-kidin-1090409
   editManageContent(e) {
-    switch (e.value) {
-      case '1':
-        this.editBody.groupSetting.maxBranches = 1;
-        this.editBody.groupSetting.maxClasses = 2;
-        this.editBody.groupManagerSetting.maxGroupManagers = 4;
-        this.editBody.groupMemberSetting.maxGroupMembers = 20;
+    const plan = +e.value;
+    switch (plan) {
+      case 1:
+      case 2:
+      case 3:
+        this.editBody.groupAllMemberSetting.maxAllGroupMembers =
+          planDatas[plan - 1].allNotRepeatingMember;
         this.setReadonly(true);
         break;
-      case '2':
-        this.editBody.groupSetting.maxBranches = 3;
-        this.editBody.groupSetting.maxClasses = 10;
-        this.editBody.groupManagerSetting.maxGroupManagers = 25;
-        this.editBody.groupMemberSetting.maxGroupMembers = 1000;
-        this.setReadonly(true);
-        break;
-      case '3':
-        this.editBody.groupSetting.maxBranches = 10;
-        this.editBody.groupSetting.maxClasses = 80;
-        this.editBody.groupManagerSetting.maxGroupManagers = 200;
-        this.editBody.groupMemberSetting.maxGroupMembers = 10000;
-        this.setReadonly(true);
-        break;
-      case '99':
+      case 99:
         this.setReadonly(false);
         break;
     }
@@ -249,20 +237,24 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
           this.editBody.groupAllMemberSetting.maxAllGroupMembers = num;
         }
         break;
-      case 'branchNum':
-        if (num < 1 || num > 100) {
+      case 'branchNum': {
+        const { maxBranches } = planDatas[0];
+        if (num < 1 || num > maxBranches) {
           this.editBody.groupSetting.maxBranches = 1;
         } else {
           this.editBody.groupSetting.maxBranches = num;
         }
         break;
-      case 'classNum':
-        if (num < 2 || num > 500) {
+      }
+      case 'classNum': {
+        const { maxClasses } = planDatas[0];
+        if (num < 2 || num > maxClasses) {
           this.editBody.groupSetting.maxClasses = 2;
         } else {
           this.editBody.groupSetting.maxClasses = num;
         }
         break;
+      }
     }
   }
 

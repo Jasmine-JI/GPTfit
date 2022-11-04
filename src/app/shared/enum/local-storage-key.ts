@@ -16,4 +16,5 @@ export enum LocalStorageKey {
   useIsoWeek = 'uiw', // 使用是否使用isoWeek（週一為一週的第一天）
   sportsReportTableData = 'srtd',
   weightTrainAnalysis = 'wta',
+  includeAdmin = 'ica', // 是否包含管理員
 }

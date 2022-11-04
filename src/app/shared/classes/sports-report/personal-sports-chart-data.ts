@@ -55,7 +55,8 @@ export class PersonalSportsChartData {
   /**
    * @param condition {ReportCondition}-報告條件
    * @param dataObj {Array<any>}-基準與比較之運動/生活追蹤數據
-   * @param perTransformTarget {Array<TargetCondition>}-依報告時間單位轉換的個人目標條件
+   * @param sportTargetCondition {Array<TargetCondition>}-依報告時間單位轉換的個人目標條件
+   * @param isMondayFirst {boolean}-是否週一為第一天
    * @param benefitTimeStartZone {BenefitTimeStartZone}-效益時間有效開始區間
    */
   constructor(
@@ -106,10 +107,11 @@ export class PersonalSportsChartData {
         this._powerTrend = new ComplexTrend(sportType, 'power', isCompareMode);
         break;
       case SportType.weightTrain: {
-        const { weightTrainingStrengthLevel, bodyWeight } = userInfo;
+        const { weightTrainingStrengthLevel, bodyWeight, unit } = userInfo;
         this._weightTrainingTrend = new WeightTrainingTrend(
           weightTrainingStrengthLevel,
-          bodyWeight
+          bodyWeight,
+          unit
         );
         break;
       }
@@ -146,12 +148,19 @@ export class PersonalSportsChartData {
     of([baseActivitiesData, compareActivitiesData])
       .pipe(
         map((data) => this.filterPersonalData(data, dateUnit!, sportType!)),
-        map((filterData) =>
-          this.postProcessingPerosnalData(filterData, sportTargetCondition, benefitTimeStartZone)
-        ),
-        map((completeData) => this.mergeSameDateData(completeData, dateUnit!)),
+
+        map((filterData) => this.mergeSameDateData(filterData, dateUnit!)),
         map((mergeData) =>
-          this.fillUpDate(condition, mergeData, allDateList, baseLifeTracking, compareLifeTracking)
+          this.postProcessingPerosnalData(mergeData, sportTargetCondition, benefitTimeStartZone)
+        ),
+        map((completeData) =>
+          this.fillUpDate(
+            condition,
+            completeData,
+            allDateList,
+            baseLifeTracking,
+            compareLifeTracking
+          )
         ),
         map((fillUpData) => this.handleChartData(fillUpData, sportType!))
       )
@@ -308,7 +317,7 @@ export class PersonalSportsChartData {
   };
 
   /**
-   * 計算各日期範圍之效益時間、pai、目標達成與否，同時將數據合併唯一陣列，以便計算圖表數據
+   * 計算各日期範圍之效益時間、pai、目標達成與否，同時將數據合併為一陣列，以便計算圖表數據
    * @param allData {Array<any>}-基準數據與比較數據
    * @param targetCondition {TargetConditionMap}-依報告時間單位轉換的個人目標條件
    * @param benefitTimeStartZone {BenefitTimeStartZone}-效益時間有效開始區間
@@ -321,95 +330,93 @@ export class PersonalSportsChartData {
     const [baseData, compareData] = allData;
     const achievementData = (data: Array<any>) => {
       return data.map((_data) => {
-        return _data.map((_dataRow) => {
-          const {
-            activities: {
-              totalHrZone0Second: zone0,
-              totalHrZone1Second: zone1,
-              totalHrZone2Second: zone2,
-              totalHrZone3Second: zone3,
-              totalHrZone4Second: zone4,
-              totalHrZone5Second: zone5,
-              totalSecond,
-              calories,
-              totalActivities,
-              avgHeartRate,
-            },
-            startTime,
-            endTime,
-          } = _dataRow;
+        const {
+          activities: {
+            totalHrZone0Second: zone0,
+            totalHrZone1Second: zone1,
+            totalHrZone2Second: zone2,
+            totalHrZone3Second: zone3,
+            totalHrZone4Second: zone4,
+            totalHrZone5Second: zone5,
+            totalSecond,
+            calories,
+            totalActivities,
+            avgHeartRate,
+          },
+          startTime,
+          endTime,
+        } = _data;
 
-          const hrZone = [zone0, zone1, zone2, zone3, zone4, zone5];
-          // 計算效益時間並寫回activities
-          const benefitTime = countBenefitTime(hrZone, benefitTimeStartZone);
-          _dataRow.activities.benefitTime = benefitTime;
+        const hrZone = [zone0, zone1, zone2, zone3, zone4, zone5];
+        // 計算效益時間並寫回activities
+        const benefitTime = countBenefitTime(hrZone, benefitTimeStartZone);
+        _data.activities.benefitTime = benefitTime;
 
-          // 計算pai並寫回activities
-          const rowPeriodDay = Math.round((endTime - startTime) / DAY);
-          const { pai } = SportsReport.countPai(hrZone, rowPeriodDay);
-          _dataRow.activities.pai = pai;
+        // 計算pai並寫回activities
+        const rowPeriodDay = Math.round((endTime - startTime) / DAY);
+        const { pai } = SportsReport.countPai(hrZone, rowPeriodDay);
+        _data.activities.pai = pai;
 
-          // 確認達成運動目標與否
-          const conditionPercentage = this.getConditionPercentage(targetCondition);
-          let achieve = 1;
-          let achieveRate = 0;
-          targetCondition.forEach((_value, _filedName) => {
-            const _filedValue = +_value.filedValue;
-            switch (_filedName) {
-              case 'totalActivities':
-                if (totalActivities < _filedValue) achieve = 0;
-                achieveRate += this.getConditionAchieveRate(
-                  totalActivities,
-                  _filedValue,
-                  conditionPercentage
-                );
-                break;
-              case 'totalTime': {
-                const targetSecond = _filedValue;
-                if (!totalSecond || +totalSecond < targetSecond) achieve = 0;
-                achieveRate += this.getConditionAchieveRate(
-                  +totalSecond,
-                  _filedValue,
-                  conditionPercentage
-                );
-                break;
-              }
-              case 'benefitTime':
-                if (benefitTime < _filedValue) achieve = 0;
-                achieveRate += this.getConditionAchieveRate(
-                  benefitTime,
-                  _filedValue,
-                  conditionPercentage
-                );
-                break;
-              case 'pai':
-                if (pai < _filedValue) achieve = 0;
-                achieveRate += this.getConditionAchieveRate(pai, _filedValue, conditionPercentage);
-                break;
-              case 'calories':
-                if (calories < _filedValue) achieve = 0;
-                achieveRate += this.getConditionAchieveRate(
-                  calories,
-                  _filedValue,
-                  conditionPercentage
-                );
-                break;
-              case 'avgHeartRate':
-                if (avgHeartRate < _filedValue) achieve = 0;
-                achieveRate += this.getConditionAchieveRate(
-                  avgHeartRate,
-                  _filedValue,
-                  conditionPercentage
-                );
-                break;
+        // 確認達成運動目標與否
+        const conditionPercentage = this.getConditionPercentage(targetCondition);
+        let achieve = 1;
+        let achieveRate = 0;
+        targetCondition.forEach((_value, _filedName) => {
+          const _filedValue = +_value.filedValue;
+          switch (_filedName) {
+            case 'totalActivities':
+              if (totalActivities < _filedValue) achieve = 0;
+              achieveRate += this.getConditionAchieveRate(
+                totalActivities,
+                _filedValue,
+                conditionPercentage
+              );
+              break;
+            case 'totalTime': {
+              const targetSecond = _filedValue;
+              if (!totalSecond || +totalSecond < targetSecond) achieve = 0;
+              achieveRate += this.getConditionAchieveRate(
+                +totalSecond,
+                _filedValue,
+                conditionPercentage
+              );
+              break;
             }
-          });
-
-          // 將目標達成數寫回activities，以便之後產生達成率圖表
-          _dataRow.activities.achieve = achieve;
-          _dataRow.activities.achieveRate = mathRounding(achieveRate * 100, 1);
-          return _dataRow;
+            case 'benefitTime':
+              if (benefitTime < _filedValue) achieve = 0;
+              achieveRate += this.getConditionAchieveRate(
+                benefitTime,
+                _filedValue,
+                conditionPercentage
+              );
+              break;
+            case 'pai':
+              if (pai < _filedValue) achieve = 0;
+              achieveRate += this.getConditionAchieveRate(pai, _filedValue, conditionPercentage);
+              break;
+            case 'calories':
+              if (calories < _filedValue) achieve = 0;
+              achieveRate += this.getConditionAchieveRate(
+                calories,
+                _filedValue,
+                conditionPercentage
+              );
+              break;
+            case 'avgHeartRate':
+              if (avgHeartRate < _filedValue) achieve = 0;
+              achieveRate += this.getConditionAchieveRate(
+                avgHeartRate,
+                _filedValue,
+                conditionPercentage
+              );
+              break;
+          }
         });
+
+        // 將目標達成數寫回activities，以便之後產生達成率圖表
+        _data.activities.achieve = achieve;
+        _data.activities.achieveRate = mathRounding(achieveRate * 100, 1);
+        return _data;
       });
     };
 
@@ -462,7 +469,6 @@ export class PersonalSportsChartData {
         if (isLastData) result.push(temporaryCount.result);
       }
     });
-
     return result;
   }
 
@@ -695,11 +701,11 @@ export class PersonalSportsChartData {
         case SportType.swim:
           this._totalDistanceMetersTrend.addBaseData(_totalDistanceMeters, dateRange);
           this._speedPaceTrend.addBaseData(_avgMaxSpeed, _avgSpeed, dateRange);
-          this._cadenceTrend.addBaseData(_avgRowingMaxCadence, _swimAvgCadence, dateRange);
+          this._cadenceTrend.addBaseData(_avgSwimMaxCadence, _swimAvgCadence, dateRange);
           tableData.totalDistanceMeters = _totalDistanceMeters;
           tableData.avgMaxSpeed = _avgMaxSpeed;
           tableData.avgSpeed = _avgSpeed;
-          tableData.avgMaxCadence = _avgRowingMaxCadence;
+          tableData.avgMaxCadence = _avgSwimMaxCadence;
           tableData.avgCadence = _swimAvgCadence;
           break;
         case SportType.row:
@@ -1314,6 +1320,7 @@ export class PersonalSportsChartData {
       percentage = (value ?? 0) / conditionTarget;
     }
 
+    if (percentage > 1) percentage = 1;
     return mathRounding(percentage * conditionPercentage, 4);
   }
 

@@ -520,7 +520,6 @@ export class GroupService {
   /**
    * 取得目前所有成員清單
    * @param groupId {string}-群組編號
-   * @author kidin-1110317
    */
   getAllGroupMemberList(groupId: string) {
     // 確認先前所存之成員清單是否為此群組所屬，若非則重新取得成員清單

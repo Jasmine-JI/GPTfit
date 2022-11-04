@@ -7,6 +7,8 @@ import { WEIGHT_TRAIN_COLOR } from '../../models/chart-data';
 import { deepCopy } from '../../utils/index';
 import { getCorrespondingMuscleGroup } from '../../utils/sports';
 import { ReportDateType } from '../../models/report-condition';
+import { lb } from '../../models/bs-constant';
+import { Unit } from '../../enum/value-conversion';
 
 dayjs.extend(quarterOfYear);
 
@@ -78,9 +80,19 @@ export class WeightTrainingTrend {
    */
   private _sameGroupData = {};
 
-  constructor(level: WeightTrainingLevel = WeightTrainingLevel.metacarpus, bodyWeight = 60) {
+  /**
+   * 使用者使用單位
+   */
+  private _userUnit: Unit = Unit.metric;
+
+  constructor(
+    level: WeightTrainingLevel = WeightTrainingLevel.metacarpus,
+    bodyWeight = 60,
+    unit: Unit
+  ) {
     this._proficiency = this.getProficiency(level);
     this._bodyWeight = bodyWeight;
+    this._userUnit = unit;
   }
 
   /**
@@ -182,7 +194,7 @@ export class WeightTrainingTrend {
    * @param dateRange {Array<number>}-該數據日期範圍
    */
   handleGroupTrainingData(dateRange: Array<number>) {
-    const { _sameGroupData } = this;
+    const { _sameGroupData, _userUnit } = this;
     const [startDate, ...rest] = dateRange;
     Object.entries(_sameGroupData).forEach((_muscleGroupData) => {
       const [_muscleCode, _data] = _muscleGroupData;
@@ -193,15 +205,16 @@ export class WeightTrainingTrend {
 
       const [max1RMData, avgWeightData] = this._groupTrainingData[_muscleCode];
       const { max1RMColor, avgWeightColor } = this.setColor(max1RM, false);
+      const denominator = _userUnit === Unit.metric ? 1 : lb;
       max1RMData.data.push({
         x: startDate,
-        y: max1RM,
+        y: max1RM / denominator,
         color: max1RMColor,
         additionalInfo: dateRange,
       });
       avgWeightData.data.push({
         x: startDate,
-        y: avgWeight,
+        y: avgWeight / denominator,
         color: avgWeightColor,
         additionalInfo: dateRange,
       });

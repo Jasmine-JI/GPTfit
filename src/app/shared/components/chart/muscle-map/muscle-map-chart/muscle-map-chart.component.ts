@@ -18,6 +18,7 @@ import { UserService } from '../../../../../core/services/user.service';
 import { ReportDateType, ReportCondition } from '../../../../models/report-condition';
 import { mathRounding } from '../../../../utils/index';
 import { getWeightTrainingLevelText } from '../../../../utils/sports';
+import { Unit } from '../../../../enum/value-conversion';
 
 @Component({
   selector: 'app-muscle-map-chart',
@@ -46,6 +47,7 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
   levelText: any = metacarpus;
   bodyWeight = 60;
   dataIndex = 0;
+  userUnit: Unit = Unit.metric;
 
   constructor(
     private translate: TranslateService,
@@ -108,8 +110,9 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
       .getUser()
       .rxUserProfile.pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((userProfile) => {
-        const { weightTrainingStrengthLevel, bodyWeight } = userProfile;
+        const { weightTrainingStrengthLevel, bodyWeight, unit } = userProfile;
         this.bodyWeight = bodyWeight;
+        this.userUnit = unit;
         this.levelText = getWeightTrainingLevelText(weightTrainingStrengthLevel);
       });
   }

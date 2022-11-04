@@ -330,6 +330,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    * @author kidin-1091111
    */
   getMemberList() {
+    const { token } = this.authService;
     this.groupService
       .getRXClassMemberList()
       .pipe(
@@ -337,7 +338,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         switchMap((res) => {
           if (res.length === 0) {
             const body = {
-              token: this.userSimpleInfo.token,
+              token,
               groupId: this.groupInfo.groupId,
               groupLevel: this.utils.displayGroupLevel(this.groupInfo.groupId),
               infoType: 3,
@@ -363,8 +364,10 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         takeUntil(this.ngUnsubscribe)
       )
       .subscribe((response) => {
-        this.memberList = (response as Array<any>).map((_res) => _res.memberId);
-        this.createCalender();
+        if (token) {
+          this.memberList = (response as Array<any>).map((_res) => _res.memberId);
+          this.createCalender();
+        }
       });
   }
 
@@ -617,6 +620,8 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   // 取得多筆活動資料並處理-kidin-1081211
   sendRequest(body) {
     this.uiFlag.isLoading = true;
+    this.memberHRZoneList.length = 0;
+    this.caloriesSet.length = 0;
     this.activityService.fetchMultiActivityData(body).subscribe((res) => {
       this.uiFlag.isLoading = false;
       this.activityDetail = res.info.activities;
@@ -897,9 +902,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   // 取得真實的上課時間（取資料第一位的時間）-kidin-1081223
   getClassRealDateTime() {
     const date = this.fileInfo.creationDate.split('T')[0].replace(/-/g, '/');
-
     const time = this.fileInfo.creationDate.split('T')[1].substr(0, 5);
-
     return `${date} ${time}`;
   }
 
@@ -1004,6 +1007,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   // 初始化highChart-kidin-1081211
   initInfoHighChart() {
+    this.destroyChart();
     charts.length = 0; // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
     this.chartDatas.length = 0;
     this.chartTargetList.length = 0;
@@ -1191,6 +1195,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   // 顯示各個學員心率區間圖表-kidin-1090106
   initMemberHRZoneChart() {
+    this.memberHRZoneOptions.length = 0;
     for (let i = 0; i < this.memberHRZoneList.length; i++) {
       const memberHRZoneDataset = {
         name: '',
@@ -1258,10 +1263,9 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   // 將成員心率圖表依序顯示出來-kidin-1090106
   showMemberHRZone(datas, list) {
-    const HRZoneChartTargetList = list,
-      nextIdx = this.chartTargetList.length,
-      memberDiv = document.querySelectorAll('.memberHRZoneChart') as NodeListOf<HTMLElement>;
-
+    const HRZoneChartTargetList = list;
+    const nextIdx = this.chartTargetList.length;
+    const memberDiv = document.querySelectorAll('.memberHRZoneChart') as NodeListOf<HTMLElement>;
     datas.forEach((_option, idx) => {
       this.charts[idx + nextIdx] = chart(memberDiv[idx], _option[HRZoneChartTargetList[idx]]);
     });
@@ -1435,19 +1439,26 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     window.print();
   }
 
+  /**
+   * 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
+   */
+  destroyChart() {
+    if (charts && charts.length > 0) {
+      charts.forEach((_highChart, idx) => {
+        if (_highChart !== undefined) {
+          _highChart.destroy();
+        }
+      });
+    }
+  }
+
   /********************************************************************************************/
 
   /**
    * 取消rxjs訂閱和卸除highchart
    */
   ngOnDestroy() {
-    // 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
-    charts.forEach((_highChart, idx) => {
-      if (_highChart !== undefined) {
-        _highChart.destroy();
-      }
-    });
-
+    this.destroyChart();
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }

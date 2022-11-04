@@ -1,7 +1,5 @@
 import { GroupMemberInfo } from '../models/group';
 import { REGEX_GROUP_ID } from '../models/utils-constant';
-import { GroupInfo } from './group-info';
-import { GroupLevel } from '../enum/professional';
 import { MuscleGroup } from '../enum/weight-train';
 import { ReportDateType } from '../models/report-condition';
 
@@ -11,7 +9,6 @@ import { ReportDateType } from '../models/report-condition';
 export class AllGroupMember {
   private _belongGroupId: string;
   private _originMemberList: Array<GroupMemberInfo>;
-  private _groupListObj: any;
   private _memberListObj: any;
 
   constructor() {}
@@ -22,7 +19,6 @@ export class AllGroupMember {
   clearMemberList() {
     this._belongGroupId = undefined;
     this._originMemberList = undefined;
-    this._groupListObj = undefined;
     this._memberListObj = undefined;
   }
 
@@ -46,7 +42,7 @@ export class AllGroupMember {
    * 同時整理成員清單為一物件方便後續產出團體分析與個人分析
    * @param groupId {groupId}-群組id
    */
-  getNoRepeatMemberId(groupId: string): Array<number> {
+  getNoRepeatMemberId(groupId: string, excludeSet: Set<number> = undefined): Array<number> {
     const {
       groups: { branchId, classId },
     } = REGEX_GROUP_ID.exec(groupId);
@@ -60,10 +56,10 @@ export class AllGroupMember {
       const isSamgeGroup = groupId === _groupId;
       const isBrandLevel = branchId === '0';
       const branchLevelSameBranch = classId === '0' && branchId === _branchId;
-
+      const notExclude = !excludeSet || !excludeSet.has(_memberId);
       // 篩選此群組階層以下（含）不重複的成員id
-      if (isSamgeGroup || isBrandLevel || branchLevelSameBranch) {
-        idSet.add(_list.memberId);
+      if ((isSamgeGroup || isBrandLevel || branchLevelSameBranch) && notExclude) {
+        idSet.add(_memberId);
 
         if (!memberListObj[_memberId]) {
           memberListObj = {
@@ -78,16 +74,6 @@ export class AllGroupMember {
 
     this._memberListObj = memberListObj;
     return Array.from(idSet).sort((a, b) => a - b);
-  }
-
-  /**
-   * 取得群組清單陣列
-   * （內含各群組成員清單，品牌群組成員清單為該品牌以下（含）所有成員，以此類推）
-   * @param groupId {groupId}-群組id
-   */
-  getGroupList(groupId: string) {
-    const groupLevel = GroupInfo.getGroupLevel(groupId);
-    const groupListObj = { [groupId]: [] };
   }
 
   /**
