@@ -40,4 +40,20 @@ export class LocalstorageService {
   setReportTableDataOption(option: any) {
     localStorage.setItem(LocalStorageKey.sportsReportTableData, JSON.stringify(option));
   }
+
+  /**
+   * 取得是否包含管理員的設定
+   */
+  getAdminInclusion() {
+    const stringResult = localStorage.getItem(LocalStorageKey.includeAdmin) as string;
+    return stringResult ? stringResult === 'true' : true;
+  }
+
+  /**
+   * 儲存是否包含管理員的設定
+   * @param option {boolean}-是否包含管理員
+   */
+  setAdminInclusion(option: boolean) {
+    localStorage.setItem(LocalStorageKey.includeAdmin, JSON.stringify(option));
+  }
 }

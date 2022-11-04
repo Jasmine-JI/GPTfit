@@ -582,6 +582,12 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   openSelectorWin(_type: number, e) {
     e.preventDefault();
     const adminLists = this.chooseLabels.slice();
+    const {
+      uiFlag: { editMode },
+      editBody,
+      createBody,
+    } = this;
+    const { groupId } = editMode === 'edit' ? editBody : createBody;
     this.dialog.open(PeopleSelectorWinComponent, {
       hasBackdrop: true,
       data: {
@@ -589,6 +595,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         adminLevel: `${_type}`,
         adminLists,
         type: 1,
+        groupId,
         onConfirm: this.handleConfirm.bind(this),
         isInnerAdmin: this.uiFlag.createLevel === 30 && this.userSimpleInfo.accessRight < 30,
       },

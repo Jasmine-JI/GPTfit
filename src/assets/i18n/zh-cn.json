@@ -2707,5 +2707,6 @@
  "universal_vocabulary_avaliable": "可报名",
  "universal_activityData_muscleRatio": "肌群训练次数占比",
  "universal_activityData_chartAnalysis": "图表数据分析",
- "universal_class_classDuration": "课程时间"
+ "universal_class_classDuration": "课程时间",
+ "universal_system_excludeAdmin": "排除管理员"
 }

@@ -70,6 +70,14 @@
   font-weight: bold;
 }
 
+.hrzone__chart__preview {
+  max-width: 120mm;
+}
+
+.line__chart__preview {
+  max-width: 210mm;
+}
+
 @media (max-width: 1200px) {
   .searchInput {
     flex-direction: column;

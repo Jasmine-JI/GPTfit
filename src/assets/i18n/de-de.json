@@ -2707,5 +2707,6 @@
  "universal_vocabulary_avaliable": "Avaliable",
  "universal_activityData_muscleRatio": "Muscle group ratio",
  "universal_activityData_chartAnalysis": "Chart and analysis",
- "universal_class_classDuration": "Class duration"
+ "universal_class_classDuration": "Class duration",
+ "universal_system_excludeAdmin": "Exclude Administrators"
 }

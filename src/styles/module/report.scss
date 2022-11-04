@@ -514,14 +514,15 @@ $color-dot-hint-size: 20px;
 .report-infoRow {
   display: grid;
   grid-gap: 10px;
-  grid-template-columns: repeat(auto-fill, 120px);
+  grid-template-columns: repeat(auto-fill, 130px);
 }
 
 .report-infoItem {
   flex-grow: 1;
   align-items: center;
   justify-content: space-between;
-  min-width: 120px;
+  text-align: center;
+  min-width: 130px;
   background-color: rgba(200, 200, 200, 0.1);
 
   &:before {

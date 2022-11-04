@@ -77,13 +77,16 @@ export class AdminListComponent implements OnInit, OnDestroy {
     ])
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((resArr) => {
-        Object.assign(resArr[0], { groupLevel: this.utils.displayGroupLevel(resArr[0].groupId) });
-        Object.assign(resArr[0], { expired: resArr[1].expired });
-        Object.assign(resArr[0], { commerceStatus: resArr[1].commerceStatus });
-        this.groupInfo = resArr[0];
-        this.userSimpleInfo = resArr[2];
-        this.groupArchitecture = resArr[3];
-        this.sortMember(resArr[4], this.groupArchitecture);
+        const [groupDetail, commerceInfo, userSimpleInfo, allLevelGroupData, adminList] = resArr;
+        Object.assign(groupDetail, {
+          groupLevel: this.utils.displayGroupLevel(groupDetail.groupId),
+        });
+        Object.assign(groupDetail, { expired: commerceInfo.expired });
+        Object.assign(groupDetail, { commerceStatus: commerceInfo.commerceStatus });
+        this.groupInfo = groupDetail;
+        this.userSimpleInfo = userSimpleInfo;
+        this.groupArchitecture = allLevelGroupData;
+        this.sortMember(adminList, this.groupArchitecture);
       });
   }
 

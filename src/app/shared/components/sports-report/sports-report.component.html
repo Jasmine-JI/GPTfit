@@ -1019,7 +1019,7 @@
                   key: 'universal_activityData_totalDistance',
                   valueUnit: transformDistance(
                     sportInfoData.base.infoData.totalDistanceMeters,
-                    getUserUnit()
+                    userUnit
                   )
                 }
               "
@@ -1032,7 +1032,7 @@
                   valueUnit: transformDistance(
                     (sportInfoData.base.infoData.totalDistanceMeters || 0) /
                       (chartData.totalSecondTrend.baseDataLength || Infinity),
-                    getUserUnit()
+                    userUnit
                   ),
                   dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
                 }
@@ -1047,7 +1047,7 @@
                   timeRange: reportCondition.baseTime,
                   valueUnit: transformDistance(
                     sportInfoData.base.infoData.totalDistanceMeters,
-                    getUserUnit()
+                    userUnit
                   ),
                   color: trendChartColor.distance.base
                 }
@@ -1060,7 +1060,7 @@
                   timeRange: reportCondition.compareTime,
                   valueUnit: transformDistance(
                     sportInfoData.compare?.infoData.totalDistanceMeters,
-                    getUserUnit()
+                    userUnit
                   ),
                   color: trendChartColor.distance.compare
                 }
@@ -1070,14 +1070,10 @@
               *ngTemplateOutlet="
                 chartInfoDiff;
                 context: {
-                  originValue: transformDistance(
-                    sportInfoData.diff?.totalDistanceMeters,
-                    getUserUnit()
-                  ).value,
-                  value: transformDistance(sportInfoData.diff?.totalDistanceMeters, getUserUnit())
+                  originValue: transformDistance(sportInfoData.diff?.totalDistanceMeters, userUnit)
                     .value,
-                  unit: transformDistance(sportInfoData.diff?.totalDistanceMeters, getUserUnit())
-                    .unit
+                  value: transformDistance(sportInfoData.diff?.totalDistanceMeters, userUnit).value,
+                  unit: transformDistance(sportInfoData.diff?.totalDistanceMeters, userUnit).unit
                 }
               "
             ></div>
@@ -1117,7 +1113,7 @@
                   subTitleKey: 'universal_activityData_maxSpeed',
                   valueUnit: {
                     value: sportInfoData.base.infoData.avgMaxSpeed || 0 | number: '1.0-0',
-                    unit: 'speed' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                    unit: 'speed' | dataTypeUnit: [reportCondition.sportType, userUnit]
                   },
                   color: trendChartColor.speedPaceTrend.base.max
                 }
@@ -1130,7 +1126,7 @@
                   subTitleKey: 'universal_activityData_avgSpeed',
                   valueUnit: {
                     value: sportInfoData.base.infoData.avgSpeed || 0 | number: '1.0-0',
-                    unit: 'speed' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                    unit: 'speed' | dataTypeUnit: [reportCondition.sportType, userUnit]
                   },
                   color: trendChartColor.speedPaceTrend.base.avg
                 }
@@ -1147,7 +1143,7 @@
                     titleKey: 'universal_activityData_maxSpeed',
                     valueUnit: {
                       value: sportInfoData.base.infoData.avgMaxSpeed || 0 | number: '1.0-0',
-                      unit: 'speed' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                      unit: 'speed' | dataTypeUnit: [reportCondition.sportType, userUnit]
                     },
                     color: trendChartColor.speedPaceTrend.base.max
                   },
@@ -1155,7 +1151,7 @@
                     titleKey: 'universal_activityData_avgSpeed',
                     valueUnit: {
                       value: sportInfoData.base.infoData.avgSpeed || 0 | number: '1.0-0',
-                      unit: 'speed' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                      unit: 'speed' | dataTypeUnit: [reportCondition.sportType, userUnit]
                     },
                     color: trendChartColor.speedPaceTrend.base.avg
                   }
@@ -1171,7 +1167,7 @@
                     titleKey: 'universal_activityData_maxSpeed',
                     valueUnit: {
                       value: sportInfoData.compare?.infoData.avgMaxSpeed || 0 | number: '1.0-0',
-                      unit: 'speed' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                      unit: 'speed' | dataTypeUnit: [reportCondition.sportType, userUnit]
                     },
                     color: trendChartColor.speedPaceTrend.compare.max
                   },
@@ -1179,7 +1175,7 @@
                     titleKey: 'universal_activityData_avgSpeed',
                     valueUnit: {
                       value: sportInfoData.compare?.infoData.avgSpeed || 0 | number: '1.0-0',
-                      unit: 'speed' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                      unit: 'speed' | dataTypeUnit: [reportCondition.sportType, userUnit]
                     },
                     color: trendChartColor.speedPaceTrend.compare.avg
                   }
@@ -1192,7 +1188,7 @@
           <app-compare-overlay-column-chart
             [data]="chartData.speedPaceTrend.chartData"
             [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
-            [chartUnit]="getUserUnit() === Unit.metric ? 'km/h' : 'mi/h'"
+            [chartUnit]="userUnit === Unit.metric ? 'km/h' : 'mi/h'"
             *ngIf="chartData.speedPaceTrend?.chartData"
           ></app-compare-overlay-column-chart>
         </div>
@@ -1223,8 +1219,8 @@
                   valueUnit: {
                     value:
                       sportInfoData.base.infoData.avgMaxSpeed || 0
-                      | sportPaceSibs: [reportCondition.sportType, getUserUnit(), false],
-                    unit: getPaceUnit(reportCondition.sportType, getUserUnit())
+                      | sportPaceSibs: [reportCondition.sportType, userUnit, false],
+                    unit: getPaceUnit(reportCondition.sportType, userUnit)
                   },
                   color: trendChartColor.speedPaceTrend.base.max,
                   fontSize: '18px'
@@ -1239,8 +1235,8 @@
                   valueUnit: {
                     value:
                       sportInfoData.base.infoData.avgSpeed || 0
-                      | sportPaceSibs: [reportCondition.sportType, getUserUnit(), false],
-                    unit: getPaceUnit(reportCondition.sportType, getUserUnit())
+                      | sportPaceSibs: [reportCondition.sportType, userUnit, false],
+                    unit: getPaceUnit(reportCondition.sportType, userUnit)
                   },
                   color: trendChartColor.speedPaceTrend.base.avg,
                   fontSize: '18px'
@@ -1259,8 +1255,8 @@
                     valueUnit: {
                       value:
                         sportInfoData.base.infoData.avgMaxSpeed || 0
-                        | sportPaceSibs: [reportCondition.sportType, getUserUnit(), false],
-                      unit: getPaceUnit(reportCondition.sportType, getUserUnit())
+                        | sportPaceSibs: [reportCondition.sportType, userUnit, false],
+                      unit: getPaceUnit(reportCondition.sportType, userUnit)
                     },
                     color: trendChartColor.speedPaceTrend.base.max
                   },
@@ -1269,8 +1265,8 @@
                     valueUnit: {
                       value:
                         sportInfoData.base.infoData.avgSpeed || 0
-                        | sportPaceSibs: [reportCondition.sportType, getUserUnit(), false],
-                      unit: getPaceUnit(reportCondition.sportType, getUserUnit())
+                        | sportPaceSibs: [reportCondition.sportType, userUnit, false],
+                      unit: getPaceUnit(reportCondition.sportType, userUnit)
                     },
                     color: trendChartColor.speedPaceTrend.base.avg
                   }
@@ -1287,8 +1283,8 @@
                     valueUnit: {
                       value:
                         sportInfoData.compare?.infoData.avgMaxSpeed || 0
-                        | sportPaceSibs: [reportCondition.sportType, getUserUnit(), false],
-                      unit: getPaceUnit(reportCondition.sportType, getUserUnit())
+                        | sportPaceSibs: [reportCondition.sportType, userUnit, false],
+                      unit: getPaceUnit(reportCondition.sportType, userUnit)
                     },
                     color: trendChartColor.speedPaceTrend.compare.max
                   },
@@ -1297,8 +1293,8 @@
                     valueUnit: {
                       value:
                         sportInfoData.compare?.infoData.avgSpeed || 0
-                        | sportPaceSibs: [reportCondition.sportType, getUserUnit(), false],
-                      unit: getPaceUnit(reportCondition.sportType, getUserUnit())
+                        | sportPaceSibs: [reportCondition.sportType, userUnit, false],
+                      unit: getPaceUnit(reportCondition.sportType, userUnit)
                     },
                     color: trendChartColor.speedPaceTrend.compare.avg
                   }
@@ -1311,9 +1307,9 @@
           <app-compare-pace-chart
             [data]="chartData.speedPaceTrend.chartData"
             [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
-            [chartUnit]="getPaceUnit(reportCondition.sportType, getUserUnit())"
+            [chartUnit]="getPaceUnit(reportCondition.sportType, userUnit)"
             [sportType]="reportCondition.sportType"
-            [unit]="getUserUnit()"
+            [unit]="userUnit"
             *ngIf="chartData.speedPaceTrend?.chartData"
           ></app-compare-pace-chart>
         </div>
@@ -1343,7 +1339,7 @@
                     value:
                       getCadenceInfo(reportCondition.sportType, 'base', true) || 0
                       | number: '1.0-0',
-                    unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                    unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, userUnit]
                   },
                   color: trendChartColor.cadenceTrend.base.max
                 }
@@ -1357,7 +1353,7 @@
                   valueUnit: {
                     value:
                       getCadenceInfo(reportCondition.sportType, 'base', false) | number: '1.0-0',
-                    unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                    unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, userUnit]
                   },
                   color: trendChartColor.cadenceTrend.base.avg
                 }
@@ -1376,7 +1372,7 @@
                       value:
                         getCadenceInfo(reportCondition.sportType, 'base', true) || 0
                         | number: '1.0-0',
-                      unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                      unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, userUnit]
                     },
                     color: trendChartColor.cadenceTrend.base.max
                   },
@@ -1385,7 +1381,7 @@
                     valueUnit: {
                       value:
                         getCadenceInfo(reportCondition.sportType, 'base', false) | number: '1.0-0',
-                      unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                      unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, userUnit]
                     },
                     color: trendChartColor.cadenceTrend.base.avg
                   }
@@ -1403,7 +1399,7 @@
                       value:
                         getCadenceInfo(reportCondition.sportType, 'compare', true) || 0
                         | number: '1.0-0',
-                      unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                      unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, userUnit]
                     },
                     color: trendChartColor.cadenceTrend.compare.max
                   },
@@ -1413,7 +1409,7 @@
                       value:
                         getCadenceInfo(reportCondition.sportType, 'compare', false) || 0
                         | number: '1.0-0',
-                      unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]
+                      unit: 'cadence' | dataTypeUnit: [reportCondition.sportType, userUnit]
                     },
                     color: trendChartColor.cadenceTrend.compare.avg
                   }
@@ -1911,7 +1907,7 @@
           <app-compare-body-weight-chart
             [data]="chartData.bodyWeightTrend.chartData"
             [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
-            [isMetric]="getUserUnit() === Unit.metric"
+            [isMetric]="userUnit === Unit.metric"
             *ngIf="chartData.bodyWeightTrend?.chartData"
           ></app-compare-body-weight-chart>
         </div>
@@ -1926,7 +1922,7 @@
     [baseReportRange]="reportCondition.baseTime"
     [compareReportRange]="reportCondition.compareTime"
     [chartAnalysisOption]="chartAnalysisOption"
-    [userUnit]="getUserUnit()"
+    [userUnit]="userUnit"
     [sportType]="reportCondition.sportType"
   ></app-sports-data-table>
 
@@ -1994,7 +1990,7 @@
             context: {
               columnType: 'oneRepMax',
               title: 'universal_activityData_max1Rm' | translate,
-              dataUnit: getUserUnit() === Unit.metric ? 'kg' : 'lb',
+              dataUnit: userUnit === Unit.metric ? 'kg' : 'lb',
               className: 'analysis__rep__max',
               showHeader: weightTrainingAnalysisOption.getItemSelectStatus(
                 MuscleAnalysisColumn.oneRepMax
@@ -2036,7 +2032,7 @@
             context: {
               columnType: 'avgWeightKg',
               title: 'universal_activityData_avgWeight' | translate,
-              dataUnit: getUserUnit() === Unit.metric ? 'kg' : 'lb',
+              dataUnit: userUnit === Unit.metric ? 'kg' : 'lb',
               className: 'analysis__avg__weight',
               showHeader: weightTrainingAnalysisOption.getItemSelectStatus(
                 MuscleAnalysisColumn.avgWeightKg
@@ -2091,7 +2087,7 @@
                 *ngTemplateOutlet="
                   analysisData;
                   context: {
-                    data: _analysis[1].base.oneRepMax | weightSibs | number: '1.0-1',
+                    data: _analysis[1].base.oneRepMax | weightSibs: [userUnit, 1] | number: '1.0-1',
                     diff: checkProgressive(_analysis, 'oneRepMax'),
                     className: 'analysis__rep__max',
                     showData: weightTrainingAnalysisOption.getItemSelectStatus(
@@ -2130,7 +2126,8 @@
                 *ngTemplateOutlet="
                   analysisData;
                   context: {
-                    data: _analysis[1].base.avgWeightKg | weightSibs | number: '1.0-1',
+                    data:
+                      _analysis[1].base.avgWeightKg | weightSibs: [userUnit, 1] | number: '1.0-1',
                     diff: checkProgressive(_analysis, 'avgWeightKg'),
                     className: 'analysis__avg__weight',
                     showData: weightTrainingAnalysisOption.getItemSelectStatus(
@@ -2181,7 +2178,8 @@
                 *ngTemplateOutlet="
                   analysisData;
                   context: {
-                    data: _analysis[1].compare.oneRepMax | weightSibs | number: '1.0-1',
+                    data:
+                      _analysis[1].compare.oneRepMax | weightSibs: [userUnit, 1] | number: '1.0-1',
                     className: 'analysis__rep__max',
                     showData: weightTrainingAnalysisOption.getItemSelectStatus(
                       MuscleAnalysisColumn.oneRepMax
@@ -2217,7 +2215,10 @@
                 *ngTemplateOutlet="
                   analysisData;
                   context: {
-                    data: _analysis[1].compare.avgWeightKg | weightSibs | number: '1.0-1',
+                    data:
+                      _analysis[1].compare.avgWeightKg
+                      | weightSibs: [userUnit, 1]
+                      | number: '1.0-1',
                     className: 'analysis__avg__weight',
                     showData: weightTrainingAnalysisOption.getItemSelectStatus(
                       MuscleAnalysisColumn.avgWeightKg
@@ -2408,7 +2409,7 @@
               oneInfoData;
               context: {
                 data: getInfoData(infoData, 'avgSpeed'),
-                type: getUserUnit() === Unit.metric ? 'kmPace' : 'miPace',
+                type: userUnit === Unit.metric ? 'kmPace' : 'miPace',
                 infoType
               }
             "
@@ -2420,7 +2421,7 @@
               oneInfoData;
               context: {
                 data: getInfoData(infoData, 'paceSecond'),
-                type: getUserUnit() === Unit.metric ? 'kmPace' : 'miPace',
+                type: userUnit === Unit.metric ? 'kmPace' : 'miPace',
                 infoType,
                 compareReverse: true
               }
@@ -2992,7 +2993,7 @@
       <app-compare-overlay-column-chart
         [data]="data"
         [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
-        [chartUnit]="'bodyWeight' | dataTypeUnit: [reportCondition.sportType, getUserUnit()]"
+        [chartUnit]="'bodyWeight' | dataTypeUnit: [reportCondition.sportType, userUnit]"
         [conditionValue]="getAssignCondition('avgHeartRate')"
         *ngIf="data"
       ></app-compare-overlay-column-chart>

@@ -21,4 +21,5 @@ export enum QueryString {
   messageReceiverId = 'mri', // 信件收件人
   messageReceiverType = 'mrt', // 站內信類別(個人/群組)
   applyGroup = 'apg', // 報名分組
+  includeAdmin = 'ia', // 是否包含管理員
 }
