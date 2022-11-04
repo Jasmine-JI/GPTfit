@@ -68,6 +68,10 @@ export class PeopleSelectorWinComponent implements OnInit {
     return this.data.notAssignCondition;
   }
 
+  get groupId() {
+    return this.data.groupId;
+  }
+
   areaType: number;
   constructor(
     private dialog: MatDialog,
@@ -283,7 +287,15 @@ export class PeopleSelectorWinComponent implements OnInit {
   }
 
   handleGroupOptions() {
-    this.groupService.getGroupList().subscribe((_res) => (this.groupLists = _res));
+    this.groupService.getGroupList().subscribe((list) => {
+      const brandCode = this.groupId?.split('-')[2];
+      this.groupLists = list
+        .filter((_list) => {
+          const _brandCode = _list.groupId.split('-')[2];
+          return !brandCode || brandCode === _brandCode;
+        })
+        .reverse();
+    });
   }
 
   /**

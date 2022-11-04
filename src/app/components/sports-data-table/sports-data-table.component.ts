@@ -13,7 +13,6 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { LocalstorageService } from '../../core/services';
 // 這邊無法使用index統一引入  https://github.com/ng-packagr/ng-packagr/issues/1173
 import { AnalysisOptionModule } from '../analysis-option/analysis-option.component';
 import { SmallHrzoneChartModule } from '../small-hrzone-chart/small-hrzone-chart.component';
@@ -62,10 +61,7 @@ export class SportsDataTableComponent implements OnInit, OnChanges, OnDestroy {
   sortType = 'dateRange';
   isAscending = true;
 
-  constructor(
-    private changeDetectorRef: ChangeDetectorRef,
-    private localstorageService: LocalstorageService
-  ) {}
+  constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.subscribeResizeEvent();

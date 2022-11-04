@@ -224,6 +224,13 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     private localStorageService: LocalstorageService
   ) {}
 
+  /**
+   * 取得使用者
+   */
+  get userUnit() {
+    return this.userService.getUser().userProfile.unit;
+  }
+
   ngOnInit(): void {
     this.subscribeLangChange();
     this.subscribeWindowSize();
@@ -811,7 +818,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   getInfoData(infoData: any, key: string) {
     const { sportType } = this.reportCondition;
-    const isMetric = this.getUserUnit() === Unit.metric;
+    const isMetric = this.userUnit === Unit.metric;
     const result = {
       value: 0,
       unit: '',
@@ -862,11 +869,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         case 'avgSpeed': {
           const paceList = [SportType.run, SportType.swim, SportType.row];
           if (paceList.includes(sportType) && this.showPace()) {
-            const { value: pace, unit: paceUnit } = speedToPace(
-              value,
-              sportType,
-              this.getUserUnit()
-            );
+            const { value: pace, unit: paceUnit } = speedToPace(value, sportType, this.userUnit);
             result.update(pace, paceUnit);
           } else {
             isMetric
@@ -892,7 +895,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           result.update(Math.round(value), 'watt');
           break;
         case 'paceSecond':
-          result.update(Math.round(value), getPaceUnit(sportType, this.getUserUnit()));
+          result.update(Math.round(value), getPaceUnit(sportType, this.userUnit));
           break;
         case 'targetAchieveRate': {
           const percentage = mathRounding(value * 100, 1);
@@ -926,13 +929,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   getAssignCondition(type: TargetField) {
     const assignCondition = this.sportsTargetCondition.get(type);
     return assignCondition ? +assignCondition.filedValue : null;
-  }
-
-  /**
-   * 取得使用者
-   */
-  getUserUnit() {
-    return this.userService.getUser().userProfile.unit;
   }
 
   /**
@@ -1153,7 +1149,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         // 另外追加配速差值，針對配速先轉配速秒再相減
         if (key === 'avgSpeed') {
           const { sportType } = this.reportCondition;
-          const unit = this.getUserUnit();
+          const unit = this.userUnit;
           const basePaceSecond = speedToPaceSecond(baseValue ?? 0, sportType, unit);
           const comparePaceSecond = speedToPaceSecond(compareValue ?? 0, sportType, unit);
           result = {

@@ -305,9 +305,9 @@
                           'universal_userProfile_bodyWeight' | translate
                         }}</span
                         ><br />
-                        <span class="report-summaryData"
-                          >{{ info.bodyWeight || 0 | number: '1.0-1' }}Kg</span
-                        >
+                        <span class="report-summaryData">{{
+                          info.bodyWeight || 0 | weightSibs: [userInfo.unit, 0]
+                        }}</span>
                       </tr>
                       <tr>
                         <span style="color: #ffba4e">●</span>

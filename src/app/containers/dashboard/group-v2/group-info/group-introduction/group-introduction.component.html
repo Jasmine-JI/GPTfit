@@ -251,7 +251,7 @@
       </div>
     </div>
   </section>
-  <section class="flexCol info__section" *ngIf="groupDetail">
+  <section class="flexCol info__section" *ngIf="groupDetail && uiFlag.editMode !== 'create'">
     <h6 class="flexRow info-contentTitle">
       {{ 'universal_lifeTracking_target' | translate }}
       <span class="target__description">
@@ -304,10 +304,7 @@
           </li>
         </ul>
       </div>
-      <div
-        class="flexRow target__card__section"
-        *ngIf="sportsTarget && uiFlag.editMode !== 'create'"
-      >
+      <div class="flexRow target__card__section" *ngIf="sportsTarget">
         <app-sport-target-setting
           [cycle]="DateUnit.day"
           [condition]="cycleCondition.day"
