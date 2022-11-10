@@ -31,10 +31,11 @@ import { SportsParameter } from '../../../../../shared/models/sports-report';
 import { mi, ft, lb } from '../../../../../shared/models/bs-constant';
 import { Unit } from '../../../../../shared/enum/value-conversion';
 import { speedToPace } from '../../../../../shared/utils/sports';
-import { SportAnalysisSort } from '../../../../../shared/classes/sports-report/sport-analysis-sort';
+import { SportsAnalysisSort } from '../../../../../shared/classes/sports-report/sports-analysis-sort';
 import { ProfessionalAnalysisOption } from '../../../../professional/classes/professional-analysis-option';
-import { AnalysisSportsColumn } from '../../../../professional/enum/report-analysis';
-import { AnalysisAssignMenu } from '../../../../professional/models/report-analysis';
+import { ProfessionalChartAnalysisOption } from '../../../../professional/classes/professional-chart-analysis-option';
+import { AnalysisSportsColumn } from '../../../../../shared/enum/report-analysis';
+import { AnalysisAssignMenu } from '../../../../../shared/models/report-analysis';
 import { SPORT_TYPE_COLOR, trendChartColor } from '../../../../../shared/models/chart-data';
 import { TargetField, TargetConditionMap } from '../../../../../core/models/api/api-common';
 import { MuscleGroup } from '../../../../../shared/enum/weight-train';
@@ -91,6 +92,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     baseTime: new DateRange(),
     compareTime: null,
     dateUnit: new ReportDateUnit(DateUnit.week),
+    includeAdmin: this.localStorageService.getAdminInclusion(),
     group: {
       brandType: BrandType.brand,
       currentLevel: GroupLevel.class,
@@ -135,18 +137,27 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   /**
    * 團體分析排序相關
    */
-  groupAnalysis: SportAnalysisSort;
+  groupAnalysis: SportsAnalysisSort;
 
   /**
    * 個人分析排序相關
    */
-  personAnalysis: SportAnalysisSort;
+  personAnalysis: SportsAnalysisSort;
 
   /**
-   * 分析列表篩選群組皆設定
+   * 圖表數據分析列表顯示欄位設定
+   */
+  chartAnalysisOption = new ProfessionalChartAnalysisOption({
+    analysisType: 'normal',
+    sportType: SportType.all,
+    object: 'list',
+  });
+
+  /**
+   * 分析列表篩選群組階層設定
    */
   groupAnalysisOption = new ProfessionalAnalysisOption({
-    reportType: 'sports',
+    analysisType: 'normal',
     sportType: SportType.all,
     object: 'group',
     brandType: BrandType.enterprise,
@@ -157,7 +168,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 分析列表篩選顯示欄位設定
    */
   personalAnalysisOption = new ProfessionalAnalysisOption({
-    reportType: 'sports',
+    analysisType: 'normal',
     sportType: SportType.all,
     object: 'person',
     brandType: BrandType.enterprise,
@@ -189,6 +200,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     compare: <number | null>null,
   };
 
+  /**
+   * 不重複的管理員userId清單
+   */
+  adminSet: Set<number> = new Set();
+
   readonly SportType = SportType;
   readonly GroupLevel = GroupLevel;
   readonly Unit = Unit;
@@ -216,6 +232,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.checkWindowSize(window.innerWidth);
     this.subscribeWindowSize();
+    this.getAdminList();
     this.initialReportCondition();
   }
 
@@ -263,6 +280,21 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   checkPersonalAnalysisOption(width: number) {
     this.personalAnalysisOption.checkOverLimit(width);
     this.personalAnalysisOption.fillItem();
+  }
+
+  /**
+   * 取得管理員清單，用於篩選管理員數據的功能
+   */
+  getAdminList() {
+    this.groupService
+      .getRXAdminList()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((list) => {
+        this.adminSet.clear();
+        list.forEach((_list) => {
+          this.adminSet.add(_list.memberId);
+        });
+      });
   }
 
   /**
@@ -327,7 +359,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
   /**
    * 確認query string
-   * @author kidin-1110315
    */
   checkQueryString() {
     const query = getUrlQueryStrings(location.search);
@@ -370,6 +401,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         case QueryString.printMode:
           this.uiFlag.printMode = false;
           break;
+        case QueryString.includeAdmin:
+          this.initReportCondition.includeAdmin = value === 'true';
+          break;
       }
     }
   }
@@ -403,35 +437,42 @@ export class SportsReportComponent implements OnInit, OnDestroy {
                 result.push(this.reportService.getCompareActivitiesData());
               return of(result);
             } else {
-              const targetUserId = res.getNoRepeatMemberId(id as string);
-              const { utcStartTime, utcEndTime } = baseTime;
-              const firstDayOfWeek = this.localStorageService.getIsoWeekStatus() ? 2 : 1;
-              const baseBody = {
-                token: this.authService.token,
-                targetUserId,
-                filterStartTime: utcStartTime,
-                filterEndTime: utcEndTime,
-                type: reportDayType,
-                firstDayOfWeek,
-              };
-
-              const request = [this.api21xxService.fetchSportSummaryArray(baseBody)];
-              // 確認是否需要進行數據比較
-              if (!compareTime) {
-                this.uiFlag.isCompareMode = false;
-              } else {
-                this.uiFlag.isCompareMode = true;
-                const { utcStartTime: compareUtcStartTime, utcEndTime: compareUtcEndTime } =
-                  compareTime;
-                const compareBody = {
-                  ...baseBody,
-                  filterStartTime: compareUtcStartTime,
-                  filterEndTime: compareUtcEndTime,
+              const excludeSet = condition.includeAdmin ? undefined : this.adminSet;
+              const targetUserId = res.getNoRepeatMemberId(id as string, excludeSet);
+              if (targetUserId.length > 0) {
+                const { utcStartTime, utcEndTime } = baseTime;
+                const firstDayOfWeek = this.localStorageService.getIsoWeekStatus() ? 2 : 1;
+                const baseBody = {
+                  token: this.authService.token,
+                  targetUserId,
+                  filterStartTime: utcStartTime,
+                  filterEndTime: utcEndTime,
+                  type: reportDayType,
+                  firstDayOfWeek,
                 };
-                request.push(this.api21xxService.fetchSportSummaryArray(compareBody));
+
+                const request = [this.api21xxService.fetchSportSummaryArray(baseBody)];
+                // 確認是否需要進行數據比較
+                if (!compareTime) {
+                  this.uiFlag.isCompareMode = false;
+                } else {
+                  this.uiFlag.isCompareMode = true;
+                  const { utcStartTime: compareUtcStartTime, utcEndTime: compareUtcEndTime } =
+                    compareTime;
+                  const compareBody = {
+                    ...baseBody,
+                    filterStartTime: compareUtcStartTime,
+                    filterEndTime: compareUtcEndTime,
+                  };
+                  request.push(this.api21xxService.fetchSportSummaryArray(compareBody));
+                }
+
+                return combineLatest(request).pipe(map((responseArray) => [res, ...responseArray]));
               }
 
-              return combineLatest(request).pipe(map((responseArray) => [res, ...responseArray]));
+              const emptyDataResult = [res, []];
+              if (compareTime) emptyDataResult.push([]);
+              return of(emptyDataResult);
             }
           }),
           takeUntil(this.ngUnsubscribe)
@@ -478,7 +519,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 變更分析可選擇的選項
    * @param sportType {SportType}-運動類別
    * @param level {GroupLevel}-群組階層
-   * @author kidin-1110331
    */
   changeColumnOption(sportType: SportType, level: GroupLevel) {
     this.groupAnalysisOption.changeOption(sportType, level);
@@ -497,7 +537,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 建立報告內容
    * @param condition {ReportCondition}-報告條件
    * @param data {Array<any>}
-   * @author kidin-1110321
    */
   createReport(condition: ReportCondition, data: Array<any>) {
     const [allGroupMemberList, baseSportSummary, compareSportSummary] = data;
@@ -534,7 +573,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * @param condition {ReportCondition}-報告篩選條件
    * @param allGroupList {AllGroupMember}-群組內所有成員清單
    * @param dataArray {Array<any>}-多人的運動數據陣列
-   * @author kidin-1110318
    */
   handlePersonalData(
     timeType: ReportDateType,
@@ -573,7 +611,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     });
 
     this.memberSportsInfo = allGroupList;
-    this.personAnalysis = new SportAnalysisSort(
+    this.personAnalysis = new SportsAnalysisSort(
       Object.values(allGroupList.memberList),
       'targetAchievedPeople',
       false
@@ -588,7 +626,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   handleGroupInfoData(allGroupList: AllGroupMember) {
     const rootGroupInfo = this.getBelongGroupObj();
     this.groupSportsInfo = new GroupSportsReportInfo(rootGroupInfo, allGroupList);
-    this.groupAnalysis = new SportAnalysisSort(
+    this.groupAnalysis = new SportsAnalysisSort(
       Object.values(this.groupSportsInfo.groupSportInfo),
       'targetAchievedPeople',
       true
@@ -682,10 +720,10 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       },
     };
 
-    if (infoData[key]) {
-      const value = Math.round(
-        infoData.activityPeople ? infoData[key] / infoData.activityPeople : 0
-      );
+    const data = infoData[key];
+    if (data) {
+      const { activityPeople } = infoData;
+      const value = mathRounding(activityPeople ? data / activityPeople : 0, 2);
       switch (key) {
         case 'calories':
           result.update(value, 'cal');
@@ -842,7 +880,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   getAchievedPeople(statistics: number) {
     return {
-      value: statistics,
+      value: statistics ?? 0,
       unit: '',
     };
   }

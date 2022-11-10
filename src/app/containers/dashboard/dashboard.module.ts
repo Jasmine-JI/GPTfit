@@ -85,12 +85,18 @@ import {
   FeatureNounTipsModule,
   LeafletMapModule,
   GoogleMapModule,
+  SportsDataTableModule,
+  AnalysisOptionModule,
+  SmallHrzoneChartModule,
 } from '../../components';
 import {
   DateUnitKeyModule,
   TranslateKeyModule,
   TranslateUnitKeyModule,
   ReferenceHrZoneModule,
+  DistanceSibsModule,
+  SportPaceSibsModule,
+  WeightSibsModule,
 } from '../../core/pipes';
 
 @NgModule({
@@ -114,8 +120,14 @@ import {
     TranslateUnitKeyModule,
     FeatureNounTipsModule,
     ReferenceHrZoneModule,
+    DistanceSibsModule,
+    SportPaceSibsModule,
+    WeightSibsModule,
     LeafletMapModule,
     GoogleMapModule,
+    SportsDataTableModule,
+    AnalysisOptionModule,
+    SmallHrzoneChartModule,
   ],
   providers: [
     MapService,

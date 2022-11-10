@@ -158,8 +158,18 @@ mat-footer-cell:last-child {
   color: #919191;
 }
 
+.hr__chart__container {
+  display: flex;
+  justify-content: center;
+}
+
 .memberHRZoneChart {
   width: 100%;
+  text-align: center;
+}
+
+.hr__chart__preview {
+  max-width: 150px;
 }
 
 .activeItem {
@@ -176,6 +186,10 @@ mat-footer-cell:last-child {
     cursor: pointer;
     text-decoration: underline;
   }
+}
+
+.chart__preview {
+  max-width: 105mm;
 }
 
 @media (max-width: 1200px) {

@@ -42,7 +42,7 @@ import { AccessRight } from '../../enum/accessright';
 import { MuscleGroup, MuscleAnalysisColumn } from '../../enum/weight-train';
 import { zoneColor } from '../../models/chart-data';
 import { WeightTrainingAnalysis } from '../../classes/sports-report/weight-train-anaysis';
-import { AnalysisOption } from '../../classes/analysis-option';
+import { WeightTrainAnalysisOption } from '../../classes/weight-train-analysis-option';
 import { TranslateService } from '@ngx-translate/core';
 import { WeightTrainingAnalysisSort } from '../../classes/sports-report/weight-training-analysis-sort';
 import {
@@ -64,12 +64,9 @@ import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { SameWeekLifeTrackingData } from '../../classes/same-week-lifetracking-data';
 import { BenefitTimeStartZone } from '../../../core/enums/common';
+import { PersonalChartAnalysisOption } from '../../../containers/personal/classes/personal-chart-analysis-option';
 
 dayjs.extend(isoWeek);
-
-const muscleAnalysisColumnList = Object.values(MuscleAnalysisColumn).filter(
-  (value) => typeof value === 'number'
-);
 
 @Component({
   selector: 'app-sports-reports',
@@ -155,12 +152,21 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   musclePartTrendData: any = {};
 
   /**
+   * 圖表數據分析列表顯示欄位設定
+   */
+  chartAnalysisOption = new PersonalChartAnalysisOption({
+    analysisType: 'normal',
+    sportType: SportType.all,
+    object: 'list',
+  });
+
+  /**
    * 重訓動作分析列表欄位篩選設定（因欄位數不多，故預設欄位同欄位清單）
    */
-  weightTrainingAnalysisOption = new AnalysisOption(
-    muscleAnalysisColumnList,
-    muscleAnalysisColumnList
-  );
+  weightTrainingAnalysisOption = new WeightTrainAnalysisOption({
+    analysisType: 'weightTrainMenu',
+    object: 'list',
+  });
 
   /**
    * 重訓動作分析
@@ -218,6 +224,13 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     private localStorageService: LocalstorageService
   ) {}
 
+  /**
+   * 取得使用者
+   */
+  get userUnit() {
+    return this.userService.getUser().userProfile.unit;
+  }
+
   ngOnInit(): void {
     this.subscribeLangChange();
     this.subscribeWindowSize();
@@ -233,10 +246,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     this.resizeEvent = merge(resize, this.globalEventsService.getRxSideBarMode())
       .pipe(debounceTime(500), takeUntil(this.ngUnsubscribe))
       .subscribe((e) => {
-        const element = document.querySelector('.main__container') as HTMLElement;
-        const containerWidth = element.getBoundingClientRect().width;
-        this.weightTrainingAnalysisOption.checkOverLimit(containerWidth);
-        this.weightTrainingAnalysisOption.fillItem();
+        this.handleTableResize();
         this.changeDetectorRef.markForCheck();
       });
   }
@@ -248,6 +258,16 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     this.translateService.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe((res) => {
       this.currentLang = res.lang;
     });
+  }
+
+  /**
+   * 視窗寬度變更時，調整表格欄位顯示數目
+   */
+  handleTableResize() {
+    const element = document.querySelector('.main__container') as HTMLElement;
+    const containerWidth = element.getBoundingClientRect().width;
+    this.weightTrainingAnalysisOption.checkOverLimit(containerWidth);
+    this.weightTrainingAnalysisOption.fillItem();
   }
 
   /**
@@ -361,6 +381,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           : this.userService.getTargetUserInfo(this.targetUserId);
       const { baseTime, compareTime, dateUnit, needRefreshData } = condition;
       this.reportCondition = deepCopy(condition);
+      this.chartAnalysisOption.changeOption(condition.sportType);
       this.uiFlag.isCompareMode = compareTime ? true : false;
       const { isCompareMode } = this.uiFlag;
       const isMondayFirst = dayjs(baseTime.startTimestamp).isoWeekday() === 1;
@@ -797,7 +818,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   getInfoData(infoData: any, key: string) {
     const { sportType } = this.reportCondition;
-    const isMetric = this.getUserUnit() === Unit.metric;
+    const isMetric = this.userUnit === Unit.metric;
     const result = {
       value: 0,
       unit: '',
@@ -848,11 +869,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         case 'avgSpeed': {
           const paceList = [SportType.run, SportType.swim, SportType.row];
           if (paceList.includes(sportType) && this.showPace()) {
-            const { value: pace, unit: paceUnit } = speedToPace(
-              value,
-              sportType,
-              this.getUserUnit()
-            );
+            const { value: pace, unit: paceUnit } = speedToPace(value, sportType, this.userUnit);
             result.update(pace, paceUnit);
           } else {
             isMetric
@@ -878,7 +895,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           result.update(Math.round(value), 'watt');
           break;
         case 'paceSecond':
-          result.update(Math.round(value), getPaceUnit(sportType, this.getUserUnit()));
+          result.update(Math.round(value), getPaceUnit(sportType, this.userUnit));
           break;
         case 'targetAchieveRate': {
           const percentage = mathRounding(value * 100, 1);
@@ -912,13 +929,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   getAssignCondition(type: TargetField) {
     const assignCondition = this.sportsTargetCondition.get(type);
     return assignCondition ? +assignCondition.filedValue : null;
-  }
-
-  /**
-   * 取得使用者
-   */
-  getUserUnit() {
-    return this.userService.getUser().userProfile.unit;
   }
 
   /**
@@ -1139,7 +1149,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         // 另外追加配速差值，針對配速先轉配速秒再相減
         if (key === 'avgSpeed') {
           const { sportType } = this.reportCondition;
-          const unit = this.getUserUnit();
+          const unit = this.userUnit;
           const basePaceSecond = speedToPaceSecond(baseValue ?? 0, sportType, unit);
           const comparePaceSecond = speedToPaceSecond(compareValue ?? 0, sportType, unit);
           result = {

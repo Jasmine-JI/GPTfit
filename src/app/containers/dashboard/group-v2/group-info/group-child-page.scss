@@ -380,9 +380,9 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 .analysisMenu {
   position: absolute;
   right: 0px;
-  top: 40px;
+  top: 25px;
   padding: 10px;
-  max-height: 300px;
+  max-height: 250px;
   overflow-y: auto;
 }
 
@@ -485,6 +485,12 @@ mat-footer-cell:last-child {
 @media (max-width: 340px) {
   .childPageCard {
     padding: 10px 2px;
+  }
+}
+
+@media print {
+  .class__analysis__footer {
+    flex-wrap: nowrap;
   }
 }
 

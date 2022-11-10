@@ -41,6 +41,8 @@ export class GroupSportsChartData {
 
   private _achievementRate: CompareTrendData;
 
+  private _sportsTableData: Array<any> = [];
+
   /**
    * @param condition {ReportCondition}-報告條件
    * @param baseData {Array<any>}-基準數據
@@ -400,6 +402,15 @@ export class GroupSportsChartData {
 
       const _achieveRate = mathRounding(countPercentage(_achieve, totalPeople, 1), 1);
       this._achievementRate.addBaseData(_achieveRate, dateRange);
+      this._sportsTableData.push([
+        {
+          dateRange,
+          hrZone,
+          totalSecond: _totalSecond || 0,
+          calories: _calories || 0,
+          achieveRate: _achieveRate,
+        },
+      ]);
     });
   }
 
@@ -482,6 +493,23 @@ export class GroupSportsChartData {
         _compareAchieveRate,
         _compareDateRange
       );
+
+      this._sportsTableData.push([
+        {
+          dateRange: _baseDateRange,
+          hrZone: _baseHrZone,
+          totalSecond: _baseTotalSecond || 0,
+          calories: _baseCalories || 0,
+          achieveRate: _baseAchieve,
+        },
+        {
+          dateRange: _compareDateRange,
+          hrZone: _compareHrZone,
+          totalSecond: _compareTotalSecond || 0,
+          calories: _compareCalories || 0,
+          achieveRate: _compareAchieve,
+        },
+      ]);
     });
   }
 
@@ -741,5 +769,12 @@ export class GroupSportsChartData {
    */
   get achievementRate() {
     return this._achievementRate;
+  }
+
+  /**
+   * 取得運動表格數據
+   */
+  get sportsTableData() {
+    return this._sportsTableData;
   }
 }

@@ -638,6 +638,17 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   /**
+   * 排除管理員與否
+   */
+  toggleAdminExclusion() {
+    const { includeAdmin } = this.reportCondition;
+    this.reportCondition.includeAdmin = !includeAdmin;
+    this.localstorageService.setAdminInclusion(!includeAdmin);
+    this.reportCondition.needRefreshData = true;
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /**
    * 解除rxjs訂閱
    */
   ngOnDestroy(): void {

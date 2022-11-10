@@ -1,6 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { UtilsService } from '../services/utils.service';
 import { Unit } from '../enum/value-conversion';
+import { mathRounding } from '../../shared/utils';
 
 @Pipe({ name: 'bodyHeightSibs' })
 export class BodyHeightSibsPipe implements PipeTransform {
@@ -16,6 +17,7 @@ export class BodyHeightSibsPipe implements PipeTransform {
   transform(value: number, args: [number, boolean]): string {
     const [unitType, showUnit] = [...args];
     const result = this.utils.bodyHeightTransfer(value, unitType === Unit.imperial, true);
+    const bodyHeight = typeof result === 'number' ? mathRounding(result as number, 1) : result;
     let unitStr: string;
     if (unitType === Unit.imperial) {
       unitStr = 'inch';
@@ -23,6 +25,6 @@ export class BodyHeightSibsPipe implements PipeTransform {
       unitStr = 'cm';
     }
 
-    return showUnit || showUnit === undefined ? `${result} ${unitStr}` : `${result}`;
+    return showUnit || showUnit === undefined ? `${bodyHeight} ${unitStr}` : `${bodyHeight}`;
   }
 }

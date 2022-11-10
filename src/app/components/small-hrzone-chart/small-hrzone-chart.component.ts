@@ -6,8 +6,9 @@ import {
   ViewChild,
   ElementRef,
   Input,
+  NgModule,
 } from '@angular/core';
-import { zoneColor } from '../../../models/chart-data';
+import { zoneColor } from '../../shared/models/chart-data';
 
 @Component({
   selector: 'app-small-hrzone-chart',
@@ -65,3 +66,8 @@ export class SmallHrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy() {}
 }
+@NgModule({
+  declarations: [SmallHrzoneChartComponent],
+  exports: [SmallHrzoneChartComponent],
+})
+export class SmallHrzoneChartModule {}

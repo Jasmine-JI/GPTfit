@@ -20,7 +20,7 @@ const guestProfile: UserProfileInfo = {
   heartRateResting: 60,
   nickname: 'Guest',
   unit: Unit.metric,
-  userId: -1, // 複數表示未登入
+  userId: -1, // 負數表示未登入
   themeImgUrl: null,
   weightTrainingStrengthLevel: 100,
 };

@@ -444,6 +444,7 @@ $alert-icon-color: rgba(255, 56, 56, 1);
 .mail__button__section {
   position: relative;
   margin-right: 5px;
+  max-width: 40px;
 }
 
 .mail__button {
@@ -494,6 +495,13 @@ $alert-icon-color: rgba(255, 56, 56, 1);
 
 .create__message__button {
   font-size: 24px;
+}
+
+.mobile__page__button {
+  color: white;
+  font-size: 28px;
+  margin: 0;
+  padding: 0;
 }
 
 /************************************************* media ****************************************/

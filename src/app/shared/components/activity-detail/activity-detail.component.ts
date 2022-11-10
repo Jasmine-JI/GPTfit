@@ -301,7 +301,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   /**
-   * 取得userProfile
+   * 確認頁面路徑
    */
   checkUrlPath() {
     this.uiFlag.isPortal = location.pathname.indexOf('dashboard') < 0;

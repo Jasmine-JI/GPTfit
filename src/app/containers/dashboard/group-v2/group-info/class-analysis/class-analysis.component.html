@@ -172,10 +172,9 @@
           </div>
           <div class="report-summaryArea">
             <div>
-              <span class="report-summaryData">{{ avgActivityTime }}</span>
+              <span class="report-summaryData">{{ classTime | sportTime: [false, flase] }}</span>
               <p class="report-summaryDescription">
-                {{ 'universal_adjective_avg' | translate }}
-                {{ 'universal_activityData_time' | translate }}
+                {{ 'universal_class_classDuration' | translate }}
               </p>
             </div>
             <div *ngIf="activityDetail[0].activityInfoLayer.type !== '5'">
@@ -226,7 +225,13 @@
                   {{ 'universal_activityData_enduranceZone' | translate }} {{ HRZoneThree }}%
                 </p>
               </div>
-              <div #classHRZoneChartTarget class="chart">chart target</div>
+              <div
+                #classHRZoneChartTarget
+                class="chart"
+                [class.chart__preview]="uiFlag.isPreviewMode"
+              >
+                chart target
+              </div>
             </div>
             <div class="bodyQuality">
               <div class="sportEfficiency">
@@ -236,7 +241,13 @@
                   {{ 'universal_activityData_totalCalorie' | translate }}
                 </p>
               </div>
-              <div #classCaloriesChartTarget class="chart">chart target</div>
+              <div
+                #classCaloriesChartTarget
+                class="chart"
+                [class.chart__preview]="uiFlag.isPreviewMode"
+              >
+                chart target
+              </div>
             </div>
           </div>
         </div>
@@ -409,8 +420,13 @@
                   }}</span>
                 </div>
               </mat-header-cell>
-              <mat-cell *matCellDef="let row; let i = index">
-                <div class="memberHRZoneChart">Chart error</div>
+              <mat-cell
+                *matCellDef="let row; let i = index"
+                [class.hr__chart__container]="uiFlag.isPreviewMode"
+              >
+                <div class="memberHRZoneChart" [class.hr__chart__preview]="uiFlag.isPreviewMode">
+                  Chart
+                </div>
               </mat-cell>
             </ng-container>
             <ng-container>

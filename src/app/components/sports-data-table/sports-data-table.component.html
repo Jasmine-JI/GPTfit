@@ -1,0 +1,864 @@
+<section class="report-section">
+  <div class="flexRow cardTitle">
+    <h6 class="cardSubtitle">{{ tableTitleKey | translate }}</h6>
+    <div class="report-optionSection">
+      <button (click)="showAnalysisOption($event)">
+        <i class="icon-svg_web-icon_p1_001-setting report-settingIcon"></i>
+      </button>
+      <app-analysis-option
+        [analysisOption]="chartAnalysisOption"
+        (optionChange)="optionChange($event)"
+        *ngIf="showFilterList && chartAnalysisOption"
+      ></app-analysis-option>
+    </div>
+  </div>
+  <div class="flexRow report-analysisHintArea" *ngIf="isCompareMode">
+    <span
+      *ngTemplateOutlet="
+        analysisDateHint;
+        context: {
+          isBaseData: true,
+          startDate: baseReportRange.getStartTimeFormat('YYYY-MM-DD'),
+          endDate: baseReportRange.getEndTimeFormat('YYYY-MM-DD')
+        }
+      "
+    ></span>
+    <span
+      *ngTemplateOutlet="
+        analysisDateHint;
+        context: {
+          isBaseData: false,
+          startDate: compareReportRange.getStartTimeFormat('YYYY-MM-DD'),
+          endDate: compareReportRange.getEndTimeFormat('YYYY-MM-DD')
+        }
+      "
+    ></span>
+  </div>
+
+  <div class="flexRow report-analysisHeaderRow" style="pointer-events: none">
+    <div class="flexRow report-analysisDataRow">
+      <div
+        *ngTemplateOutlet="
+          analysisHeader;
+          context: {
+            columnType: 'dateRange',
+            title: 'universal_time_date' | translate,
+            className: 'analysis__name',
+            showHeader: true
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          analysisHeader;
+          context: {
+            columnType: 'targetAchievedRate',
+            title: 'universal_lifeTracking_achievementRate' | translate,
+            className: 'analysis__achieved__people',
+            showHeader: chartAnalysisOption.getItemSelectStatus(
+              AnalysisSportsColumn.targetAchievedRate
+            )
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          analysisHeader;
+          context: {
+            columnType: 'totalActivities',
+            title: 'universal_activityData_numberOfActivity' | translate,
+            dataUnit: 'times',
+            className: 'analysis__total__activities',
+            showHeader: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.activities)
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          analysisHeader;
+          context: {
+            columnType: 'totalSecond',
+            title: 'universal_activityData_totalTime' | translate,
+            dataUnit: 'time',
+            className: 'analysis__total__second',
+            showHeader: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.totalSecond)
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          analysisHeader;
+          context: {
+            columnType: 'benefitTime',
+            title: 'universal_activityData_benefitime' | translate,
+            dataUnit: 'time',
+            className: 'analysis__benefit__time',
+            showHeader: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.benefitTime)
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          analysisHeader;
+          context: {
+            columnType: 'pai',
+            title: 'universal_activityData_pai' | translate,
+            dataUnit: 'PAI',
+            className: 'analysis__pai',
+            showHeader: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.pai)
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          analysisHeader;
+          context: {
+            columnType: 'calories',
+            title: 'universal_activityData_totalCalories' | translate,
+            dataUnit: 'calories',
+            className: 'analysis__calories',
+            showHeader: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.calories)
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          analysisHeader;
+          context: {
+            columnType: 'avgHeartRateBpm',
+            title: 'universal_activityData_avgHr' | translate,
+            dataUnit: 'bpm',
+            className: 'analysis__avg__hr',
+            showHeader: chartAnalysisOption.getItemSelectStatus(
+              AnalysisSportsColumn.averageHeartRate
+            )
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          analysisHeader;
+          context: {
+            columnType: 'totalDistanceMeters',
+            title: 'universal_activityData_totalDistance' | translate,
+            dataUnit: userUnit === Unit.metric ? 'km' : 'mi',
+            className: 'analysis__distance',
+            showHeader:
+              [
+                SportType.run,
+                SportType.cycle,
+                SportType.swim,
+                SportType.row,
+                SportType.ball
+              ].includes(sportType) &&
+              chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.distance)
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          analysisHeader;
+          context: {
+            columnType: 'avgSpeed',
+            title:
+              (sportType === SportType.cycle
+                ? 'universal_activityData_avgSpeed'
+                : 'universal_activityData_avgPace'
+              ) | translate,
+            dataUnit: (sportType | speedPaceUnit: userUnit),
+            className: 'analysis__pace',
+            showHeader:
+              [SportType.run, SportType.cycle, SportType.swim, SportType.row].includes(sportType) &&
+              chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.speedOrPace)
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          analysisHeader;
+          context: {
+            columnType: 'runAvgCadence',
+            title: 'universal_activityData_avgStepCadence' | translate,
+            dataUnit: 'spm',
+            className: 'analysis__cadence',
+            showHeader:
+              sportType === SportType.run &&
+              chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.cadence)
+          }
+        "
+      ></div>
+      <ng-container *ngIf="sportType === SportType.cycle">
+        <div
+          *ngTemplateOutlet="
+            analysisHeader;
+            context: {
+              columnType: 'cycleAvgCadence',
+              title: 'universal_activityData_avgCyclingCadence' | translate,
+              dataUnit: 'rpm',
+              className: 'analysis__cadence',
+              showHeader: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.cadence)
+            }
+          "
+        ></div>
+
+        <div
+          *ngTemplateOutlet="
+            analysisHeader;
+            context: {
+              columnType: 'cycleAvgWatt',
+              title: 'universal_activityData_avgPower' | translate,
+              dataUnit: 'w',
+              className: 'analysis__power',
+              showHeader: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.power)
+            }
+          "
+        ></div>
+      </ng-container>
+      <div
+        *ngTemplateOutlet="
+          analysisHeader;
+          context: {
+            columnType: 'totalActivitySecond',
+            title: 'universal_activityData_activityTime' | translate,
+            dataUnit: 'time',
+            className: 'analysis__activity__second',
+            showHeader:
+              sportType === SportType.weightTrain &&
+              chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.totalActivitySecond)
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          analysisHeader;
+          context: {
+            columnType: 'swimAvgCadence',
+            title: 'universal_activityData_avgSwimReps' | translate,
+            dataUnit: 'rpm',
+            className: 'analysis__cadence',
+            showHeader:
+              sportType === SportType.swim &&
+              chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.cadence)
+          }
+        "
+      ></div>
+      <ng-container *ngIf="sportType === SportType.row">
+        <div
+          *ngTemplateOutlet="
+            analysisHeader;
+            context: {
+              columnType: 'rowingAvgCadence',
+              title: 'universal_activityData_avgRowCadence' | translate,
+              dataUnit: 'rpm',
+              className: 'analysis__cadence',
+              showHeader: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.cadence)
+            }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            analysisHeader;
+            context: {
+              columnType: 'rowingAvgWatt',
+              title: 'universal_activityData_avgPower' | translate,
+              dataUnit: 'w',
+              className: 'analysis__power',
+              showHeader: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.power)
+            }
+          "
+        ></div>
+      </ng-container>
+      <div
+        *ngTemplateOutlet="
+          analysisHeader;
+          context: {
+            columnType: 'rowingAvgWatt',
+            title: 'universal_userProfile_bodyWeight' | translate,
+            dataUnit: userUnit === Unit.metric ? 'kg' : 'lb',
+            className: 'analysis__body__weight',
+            showHeader: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.bodyWeight)
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          analysisHeader;
+          context: {
+            columnType: 'rowingAvgWatt',
+            title: 'universal_lifeTracking_fatRate' | translate,
+            className: 'analysis__fat__rate',
+            showHeader: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.fatRate)
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          analysisHeader;
+          context: {
+            title: 'universal_activityData_hrZone' | translate,
+            className: 'analysis__hr__chart',
+            showHeader: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.hrChart)
+          }
+        "
+      ></div>
+    </div>
+  </div>
+
+  <ul class="flexCol report-analysisRowData" style="pointer-events: none">
+    <ng-container *ngFor="let _data of tableData; let index = index">
+      <li class="flexRow report-analysisRow" *ngIf="index < 10 || seeMore">
+        <div class="flexCol report-analysisDataSection">
+          <div
+            class="flexRow report-analysisDataRow"
+            [class.report-analysisBaseRow]="isCompareMode"
+          >
+            <span class="flexCol report-analysisRowTitle analysis__name">
+              <span>{{ _data[0].dateRange[0] | timeFormat: 'YYYY-MM-DD' }}</span>
+              <span>{{ _data[0].dateRange[1] | timeFormat: 'YYYY-MM-DD' }}</span>
+            </span>
+            <span
+              *ngTemplateOutlet="
+                analysisData;
+                context: {
+                  data: (_data[0].achieveRate ?? 0) + '%',
+                  diff: checkProgressive(index, 'achieveRate'),
+                  className: 'analysis__achieved__people',
+                  showData: chartAnalysisOption.getItemSelectStatus(
+                    AnalysisSportsColumn.targetAchievedRate
+                  )
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                analysisData;
+                context: {
+                  data: _data[0].totalActivities ?? 0,
+                  diff: checkProgressive(index, 'totalActivities'),
+                  className: 'analysis__total__activities',
+                  showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.activities)
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                analysisData;
+                context: {
+                  data: _data[0].totalSecond ?? 0 | sportTime,
+                  diff: checkProgressive(index, 'totalSecond'),
+                  className: 'analysis__total__second',
+                  showData: chartAnalysisOption.getItemSelectStatus(
+                    AnalysisSportsColumn.totalSecond
+                  )
+                }
+              "
+            ></span>
+            <ng-container *ngIf="sportType === SportType.all">
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[0].benefitTime ?? 0 | sportTime,
+                    diff: checkProgressive(index, 'benefitTime'),
+                    className: 'analysis__benefit__time',
+                    showData: chartAnalysisOption.getItemSelectStatus(
+                      AnalysisSportsColumn.benefitTime
+                    )
+                  }
+                "
+              ></span>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[0].pai ?? 0,
+                    diff: checkProgressive(index, 'pai'),
+                    className: 'analysis__pai',
+                    showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.pai)
+                  }
+                "
+              ></span>
+            </ng-container>
+            <span
+              *ngTemplateOutlet="
+                analysisData;
+                context: {
+                  data: _data[0].calories ?? 0,
+                  diff: checkProgressive(index, 'calories'),
+                  className: 'analysis__calories',
+                  showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.calories)
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                analysisData;
+                context: {
+                  data: _data[0].avgHeartRateBpm ?? 0,
+                  diff: checkProgressive(index, 'avgHeartRateBpm'),
+                  className: 'analysis__avg__hr',
+                  showData: chartAnalysisOption.getItemSelectStatus(
+                    AnalysisSportsColumn.averageHeartRate
+                  )
+                }
+              "
+            ></span>
+            <ng-container
+              *ngIf="
+                [
+                  SportType.run,
+                  SportType.cycle,
+                  SportType.swim,
+                  SportType.row,
+                  SportType.ball
+                ].includes(sportType)
+              "
+            >
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[0].totalDistanceMeters ?? 0 | distanceSibs: [userUnit, false, true],
+                    diff: checkProgressive(index, 'totalDistanceMeters'),
+                    className: 'analysis__distance',
+                    showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.distance)
+                  }
+                "
+              ></span>
+            </ng-container>
+            <ng-container
+              *ngIf="
+                [SportType.run, SportType.cycle, SportType.swim, SportType.row].includes(sportType)
+              "
+            >
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[0].avgSpeed ?? 0 | sportPaceSibs: [sportType, userUnit, 1],
+                    diff: checkProgressive(index, 'avgSpeed'),
+                    className: 'analysis__pace',
+                    showData: chartAnalysisOption.getItemSelectStatus(
+                      AnalysisSportsColumn.speedOrPace
+                    )
+                  }
+                "
+              ></span>
+            </ng-container>
+            <ng-container *ngIf="sportType === SportType.run">
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[0].avgCadence ?? 0,
+                    diff: checkProgressive(index, 'runAvgCadence'),
+                    className: 'analysis__cadence',
+                    showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.cadence)
+                  }
+                "
+              ></span>
+            </ng-container>
+            <ng-container *ngIf="sportType === SportType.cycle">
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[0].avgCadence ?? 0,
+                    diff: checkProgressive(index, 'cycleAvgCadence'),
+                    className: 'analysis__cadence',
+                    showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.cadence)
+                  }
+                "
+              ></span>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[0].avgWatt ?? 0,
+                    diff: checkProgressive(index, 'cycleAvgWatt'),
+                    className: 'analysis__power',
+                    showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.power)
+                  }
+                "
+              ></span>
+            </ng-container>
+            <ng-container *ngIf="sportType === SportType.swim">
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[0].avgCadence ?? 0,
+                    diff: checkProgressive(index, 'swimAvgCadence'),
+                    className: 'analysis__cadence',
+                    showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.cadence)
+                  }
+                "
+              ></span>
+            </ng-container>
+            <ng-container *ngIf="sportType === SportType.row">
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[0].avgCadence ?? 0,
+                    diff: checkProgressive(index, 'rowingAvgCadence'),
+                    className: 'analysis__cadence',
+                    showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.cadence)
+                  }
+                "
+              ></span>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[0].avgWatt ?? 0,
+                    diff: checkProgressive(index, 'rowingAvgWatt'),
+                    className: 'analysis__power',
+                    showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.power)
+                  }
+                "
+              ></span>
+            </ng-container>
+            <div
+              *ngTemplateOutlet="
+                analysisData;
+                context: {
+                  data: _data[0].bodyWeight
+                    ? (_data[0].bodyWeight | weightSibs: [userUnit, 1])
+                    : '-',
+                  diff: checkProgressive(index, 'bodyWeight'),
+                  className: 'analysis__body__weight',
+                  showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.bodyWeight)
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                analysisData;
+                context: {
+                  data: (_data[0].fatRate ? _data[0].fatRate : '-') + '%',
+                  diff: checkProgressive(index, 'fatRate'),
+                  className: 'analysis__fat__rate',
+                  showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.fatRate)
+                }
+              "
+            ></div>
+            <div
+              class="analysis__hr__chart"
+              *ngIf="chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.hrChart)"
+            >
+              <app-small-hrzone-chart [data]="_data[0].hrZone"></app-small-hrzone-chart>
+            </div>
+          </div>
+          <div
+            class="flexRow report-analysisDataRow"
+            [class.report-analysisCompareRow]="isCompareMode"
+            *ngIf="isCompareMode && _data[1]"
+          >
+            <span class="flexCol report-analysisRowTitle analysis__name">
+              <span>{{ _data[1].dateRange[0] | timeFormat: 'YYYY-MM-DD' }}</span>
+              <span>{{ _data[1].dateRange[1] | timeFormat: 'YYYY-MM-DD' }}</span>
+            </span>
+            <span
+              *ngTemplateOutlet="
+                analysisData;
+                context: {
+                  data: (_data[1].achieveRate ?? 0) + '%',
+                  className: 'analysis__achieved__people',
+                  showData: chartAnalysisOption.getItemSelectStatus(
+                    AnalysisSportsColumn.targetAchievedRate
+                  )
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                analysisData;
+                context: {
+                  data: _data[1].totalActivities ?? 0,
+                  className: 'analysis__total__activities',
+                  showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.activities)
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                analysisData;
+                context: {
+                  data: _data[1].totalSecond ?? 0 | sportTime,
+                  className: 'analysis__total__second',
+                  showData: chartAnalysisOption.getItemSelectStatus(
+                    AnalysisSportsColumn.totalSecond
+                  )
+                }
+              "
+            ></span>
+            <ng-container *ngIf="sportType === SportType.all">
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[1].benefitTime ?? 0 | sportTime,
+                    className: 'analysis__benefit__time',
+                    showData: chartAnalysisOption.getItemSelectStatus(
+                      AnalysisSportsColumn.benefitTime
+                    )
+                  }
+                "
+              ></span>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[1].pai ?? 0,
+                    className: 'analysis__pai',
+                    showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.pai)
+                  }
+                "
+              ></span>
+            </ng-container>
+            <span
+              *ngTemplateOutlet="
+                analysisData;
+                context: {
+                  data: _data[1].calories ?? 0,
+                  className: 'analysis__calories',
+                  showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.calories)
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                analysisData;
+                context: {
+                  data: _data[1].avgHeartRateBpm ?? 0,
+                  className: 'analysis__avg__hr',
+                  showData: chartAnalysisOption.getItemSelectStatus(
+                    AnalysisSportsColumn.averageHeartRate
+                  )
+                }
+              "
+            ></span>
+            <ng-container
+              *ngIf="
+                [
+                  SportType.run,
+                  SportType.cycle,
+                  SportType.swim,
+                  SportType.row,
+                  SportType.ball
+                ].includes(sportType)
+              "
+            >
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[1].totalDistanceMeters ?? 0 | distanceSibs: [userUnit, false, true],
+                    className: 'analysis__distance',
+                    showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.distance)
+                  }
+                "
+              ></span>
+            </ng-container>
+            <ng-container
+              *ngIf="
+                [SportType.run, SportType.cycle, SportType.swim, SportType.row].includes(sportType)
+              "
+            >
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[1].avgSpeed ?? 0 | sportPaceSibs: [sportType, userUnit, 1],
+                    className: 'analysis__pace',
+                    showData: chartAnalysisOption.getItemSelectStatus(
+                      AnalysisSportsColumn.speedOrPace
+                    )
+                  }
+                "
+              ></span>
+            </ng-container>
+            <ng-container *ngIf="sportType === SportType.run">
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[1].avgCadence ?? 0,
+                    className: 'analysis__cadence',
+                    showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.cadence)
+                  }
+                "
+              ></span>
+            </ng-container>
+            <ng-container *ngIf="sportType === SportType.cycle">
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[1].avgCadence ?? 0,
+                    className: 'analysis__cadence',
+                    showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.cadence)
+                  }
+                "
+              ></span>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[1].avgWatt ?? 0,
+                    className: 'analysis__power',
+                    showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.power)
+                  }
+                "
+              ></span>
+            </ng-container>
+            <ng-container *ngIf="sportType === SportType.swim">
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[1].avgCadence ?? 0,
+                    className: 'analysis__cadence',
+                    showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.cadence)
+                  }
+                "
+              ></span>
+            </ng-container>
+            <ng-container *ngIf="sportType === SportType.row">
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[1].avgCadence ?? 0,
+                    className: 'analysis__cadence',
+                    showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.cadence)
+                  }
+                "
+              ></span>
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[1].avgWatt ?? 0,
+                    className: 'analysis__power',
+                    showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.power)
+                  }
+                "
+              ></span>
+            </ng-container>
+            <div
+              *ngTemplateOutlet="
+                analysisData;
+                context: {
+                  data: _data[1].bodyWeight
+                    ? (_data[1].bodyWeight | weightSibs: [userUnit, 1])
+                    : '-',
+                  className: 'analysis__body__weight',
+                  showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.bodyWeight)
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                analysisData;
+                context: {
+                  data: (_data[1].fatRate ? _data[1].fatRate : '-') + '%',
+                  className: 'analysis__fat__rate',
+                  showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.fatRate)
+                }
+              "
+            ></div>
+            <div
+              class="analysis__hr__chart"
+              *ngIf="chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.hrChart)"
+            >
+              <app-small-hrzone-chart [data]="_data[1].hrZone"></app-small-hrzone-chart>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ng-container>
+  </ul>
+
+  <div class="flexCenter report-seeMore">
+    <button
+      class="report-seeMoreButton"
+      (click)="seeMoreTable()"
+      *ngIf="tableData.length > 10 && !seeMore"
+    >
+      {{ 'universal_operating_more' | translate }}
+    </button>
+  </div>
+</section>
+
+<ng-template
+  #analysisDateHint
+  let-isBaseData="isBaseData"
+  let-startDate="startDate"
+  let-endDate="endDate"
+>
+  <span class="flexRow report-analysisHintRow">
+    <span [class]="isBaseData ? 'report-baseHint' : 'report-compareHint'"></span>
+    <span class="report-analysisDateHint"> {{ startDate }} ~ {{ endDate }} </span>
+  </span>
+</ng-template>
+
+<ng-template
+  #analysisHeader
+  let-columnType="columnType"
+  let-title="title"
+  let-dataUnit="dataUnit"
+  let-isPersonAvgData="isPersonAvgData"
+  let-className="className"
+  let-showHeader="showHeader"
+>
+  <div
+    [class]="className"
+    [ngClass]="{
+      flexRow: true,
+      'report-analysisHeader': true,
+      'report-headerCorrection': !isCompareMode
+    }"
+    (click)="changeSort(columnType)"
+    *ngIf="showHeader"
+  >
+    <div class="flexCol report-analysisHeaderText">
+      <h6 class="report-analysisTitle">
+        <span>
+          {{ title }}
+        </span>
+        <span class="report-analysisUnit" *ngIf="isPersonAvgData">
+          /{{ 'universal_system_limitPerPerson' | translate }}
+        </span>
+      </h6>
+      <span class="report-analysisUnit" *ngIf="dataUnit">
+        {{ dataUnit }}
+      </span>
+    </div>
+    <ng-container *ngIf="columnType">
+      <div class="report-sortArrow">
+        <ng-container *ngIf="sortType === columnType">
+          <mat-icon class="report-sortArrowIcon" *ngIf="!isAscending"> arrow_upward </mat-icon>
+          <mat-icon class="report-sortArrowIcon" *ngIf="isAscending"> arrow_downward </mat-icon>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+</ng-template>
+
+<ng-template
+  #analysisData
+  let-data="data"
+  let-diff="diff"
+  let-className="className"
+  let-showData="showData"
+>
+  <span [class]="className" *ngIf="showData">
+    <span class="report-analysisColumnData">{{ data }}</span>
+    <span class="report-progressiveHint" *ngIf="isCompareMode">
+      <i class="icon-svg_web-icon_p3_017-up report-progressiveIcon" *ngIf="diff && diff > 0"></i>
+      <i class="icon-svg_web-icon_p3_018-down report-regressiveIcon" *ngIf="diff && diff < 0"></i>
+    </span>
+  </span>
+</ng-template>

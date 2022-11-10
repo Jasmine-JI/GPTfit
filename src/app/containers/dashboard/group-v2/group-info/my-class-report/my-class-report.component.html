@@ -126,7 +126,14 @@
                 </p>
                 <p class="report-chartTitle">{{ avgHRZone }}</p>
               </div>
-              <div #HRZoneChartTarget class="chart" style="margin-right: 10px">chart target</div>
+              <div
+                #HRZoneChartTarget
+                class="chart"
+                [class.hrzone__chart__preview]="isPreviewMode"
+                style="margin-right: 10px"
+              >
+                chart target
+              </div>
             </div>
             <div style="width: 45%; height: 100%">
               <app-hrzone-info [hrZoneRange]="hrZoneRange"></app-hrzone-info>
@@ -147,7 +154,9 @@
             <p class="report-chartTitle">{{ 'universal_activityData_avgHr' | translate }}</p>
             <p class="report-chartTitle">{{ avgHR | number: '1.0-2' }}bpm</p>
           </div>
-          <div #avgHRChartTarget class="chart">chart target</div>
+          <div #avgHRChartTarget class="chart" [class.line__chart__preview]="isPreviewMode">
+            chart target
+          </div>
         </div>
         <div
           class="trendChart"
@@ -158,7 +167,9 @@
             <p class="report-chartTitle">{{ 'universal_activityData_totalCalorie' | translate }}</p>
             <p class="report-chartTitle">{{ totalCalories | number: '1.0-2' }}cal</p>
           </div>
-          <div #caloriesChartTarget class="chart">chart target</div>
+          <div #caloriesChartTarget class="chart" [class.line__chart__preview]="isPreviewMode">
+            chart target
+          </div>
         </div>
       </div>
     </section>

@@ -286,40 +286,42 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
       .get('hellow world')
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(() => {
-        const navSection = this.navSection.nativeElement,
-          navSectionWidth = navSection.clientWidth;
-        let reservedSpace = 0;
-        this.uiFlag.windowInnerWidth = window.innerWidth;
-        const haveExpandSidebar = window.innerWidth >= 1000 && window.innerWidth <= 1390;
-        if (haveExpandSidebar && !this.uiFlag.isPortalMode) {
-          reservedSpace = 270; // sidebar展開所需的空間
-        }
+        const navSection = this.navSection?.nativeElement;
+        if (navSection) {
+          const navSectionWidth = navSection.clientWidth;
+          let reservedSpace = 0;
+          this.uiFlag.windowInnerWidth = window.innerWidth;
+          const haveExpandSidebar = window.innerWidth >= 1000 && window.innerWidth <= 1390;
+          if (haveExpandSidebar && !this.uiFlag.isPortalMode) {
+            reservedSpace = 270; // sidebar展開所需的空間
+          }
 
-        const { total, perSize } = this.perPageOptSize;
-        if (navSectionWidth < total + reservedSpace) {
-          const titleSizeList = perSize;
-          let total = 0;
-          for (let i = 0, sizeArrLen = titleSizeList.length; i < sizeArrLen; i++) {
-            total += titleSizeList[i];
-            if (total + reservedSpace + 130 >= navSectionWidth) {
-              // 130為"更多"按鈕的空間
-              this.uiFlag.divideIndex = i;
-              break;
+          const { total, perSize } = this.perPageOptSize;
+          if (navSectionWidth < total + reservedSpace) {
+            const titleSizeList = perSize;
+            let total = 0;
+            for (let i = 0, sizeArrLen = titleSizeList.length; i < sizeArrLen; i++) {
+              total += titleSizeList[i];
+              if (total + reservedSpace + 130 >= navSectionWidth) {
+                // 130為"更多"按鈕的空間
+                this.uiFlag.divideIndex = i;
+                break;
+              }
+            }
+
+            this.handleGlobalClick();
+          } else {
+            this.uiFlag.divideIndex = null;
+            if (this.clickEvent) {
+              this.clickEvent.unsubscribe();
             }
           }
 
-          this.handleGlobalClick();
-        } else {
-          this.uiFlag.divideIndex = null;
-          if (this.clickEvent) {
-            this.clickEvent.unsubscribe();
-          }
+          setTimeout(() => {
+            this.getBtnPosition(this.uiFlag.currentTagIndex);
+            this.checkPageListBarPosition();
+          }, 250); // 待sidebar動畫結束再計算位置
         }
-
-        setTimeout(() => {
-          this.getBtnPosition(this.uiFlag.currentTagIndex);
-          this.checkPageListBarPosition();
-        }, 250); // 待sidebar動畫結束再計算位置
       });
   }
 
@@ -422,13 +424,15 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
       setTimeout(() => {
         this.initPageOptSize();
         const menuList = document.querySelectorAll('.main__page__list');
-        this.uiFlag.barWidth = menuList[0].clientWidth;
-        menuList.forEach((_menu) => {
-          this.perPageOptSize.perSize.push(_menu.clientWidth);
-          this.perPageOptSize.total += _menu.clientWidth;
-        });
+        if (menuList[0]) {
+          this.uiFlag.barWidth = menuList[0].clientWidth;
+          menuList.forEach((_menu) => {
+            this.perPageOptSize.perSize.push(_menu.clientWidth);
+            this.perPageOptSize.total += _menu.clientWidth;
+          });
 
-        this.checkScreenSize();
+          this.checkScreenSize();
+        }
       });
     }
   }
@@ -714,11 +718,13 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
    */
   getSeeMorePosition() {
     setTimeout(() => {
-      const pageListBar = this.pageListBar.nativeElement,
-        seeMoreTag = this.seeMore.nativeElement;
-      this.uiFlag.barWidth = seeMoreTag.clientWidth;
-      this.uiFlag.barPosition =
-        seeMoreTag.getBoundingClientRect().left - pageListBar.getBoundingClientRect().left;
+      const pageListBar = this.pageListBar?.nativeElement;
+      const seeMoreTag = this.seeMore?.nativeElement;
+      if (pageListBar && seeMoreTag) {
+        this.uiFlag.barWidth = seeMoreTag.clientWidth;
+        this.uiFlag.barPosition =
+          seeMoreTag.getBoundingClientRect().left - pageListBar.getBoundingClientRect().left;
+      }
     });
   }
 

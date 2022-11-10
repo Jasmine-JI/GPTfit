@@ -187,6 +187,8 @@
               age: _group.age,
               isFull: groupApplyCheck[_index].isFull,
               eligible: groupApplyCheck[_index].qualified,
+              eventCutoff:
+                uiFlag.applyButtonStatus === ApplyButtonStatus.eventCancelled || !uiFlag.groupApply,
               selected: currentSelectedGroup === _index
             }
           "
@@ -237,14 +239,15 @@
   let-isFull="isFull"
   let-eligible="eligible"
   let-selected="selected"
+  let-eventCutoff="eventCutoff"
 >
   <li
     [ngClass]="{
       group__list__item: true,
       'group__list__item--selected': selected,
-      'group__list__item--forbidden': isFull || !eligible,
-      group__list__open: eligible && !isFull,
-      group__list__close: !eligible || isFull
+      'group__list__item--forbidden': eventCutoff || isFull || !eligible,
+      group__list__open: !eventCutoff && eligible && !isFull,
+      group__list__close: eventCutoff || !eligible || isFull
     }"
     (click)="selectGroup(groupIndex)"
   >
@@ -265,19 +268,22 @@
     <span
       [ngClass]="{
         group__status: true,
-        group__status__open: eligible && !isFull,
-        group__status__close: !eligible || isFull
+        group__status__open: !eventCutoff && eligible && !isFull,
+        group__status__close: eventCutoff || !eligible || isFull
       }"
     >
       <span class="mobile__titile"> {{ 'universal_group_status' | translate }}： </span>
-      <ng-container *ngIf="eligible && !isFull">
+      <ng-container *ngIf="!eventCutoff && eligible && !isFull">
         {{ 'universal_vocabulary_avaliable' | translate }}
       </ng-container>
-      <ng-container *ngIf="!eligible">
+      <ng-container *ngIf="!eventCutoff && !eligible">
         {{ 'universal_vocabulary_notQualified' | translate }}
       </ng-container>
-      <ng-container *ngIf="eligible && isFull">
+      <ng-container *ngIf="!eventCutoff && eligible && isFull">
         {{ 'universal_vocabulary_full' | translate }}
+      </ng-container>
+      <ng-container *ngIf="eventCutoff">
+        {{ 'universal_vocabulary_expired' | translate }}
       </ng-container>
     </span>
   </li>

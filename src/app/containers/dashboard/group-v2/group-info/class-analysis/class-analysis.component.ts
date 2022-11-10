@@ -183,7 +183,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   memberHRZoneList: any = [];
   avgSpeed: any;
   avgDistance: any;
-  avgActivityTime: any;
+  classTime = 0;
   avgHR: any;
   totalCalories: any;
   avgCalories: any;
@@ -201,7 +201,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   previewUrl: any;
   tableData = new MatTableDataSource<any>();
   showLength: any;
-  showMore: any;
+  showMore = false;
   caloriesSet: any = [];
   focusMember: any;
 
@@ -330,6 +330,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    * @author kidin-1091111
    */
   getMemberList() {
+    const { token } = this.authService;
     this.groupService
       .getRXClassMemberList()
       .pipe(
@@ -337,7 +338,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         switchMap((res) => {
           if (res.length === 0) {
             const body = {
-              token: this.userSimpleInfo.token,
+              token,
               groupId: this.groupInfo.groupId,
               groupLevel: this.utils.displayGroupLevel(this.groupInfo.groupId),
               infoType: 3,
@@ -363,8 +364,10 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         takeUntil(this.ngUnsubscribe)
       )
       .subscribe((response) => {
-        this.memberList = (response as Array<any>).map((_res) => _res.memberId);
-        this.createCalender();
+        if (token) {
+          this.memberList = (response as Array<any>).map((_res) => _res.memberId);
+          this.createCalender();
+        }
       });
   }
 
@@ -617,6 +620,8 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   // 取得多筆活動資料並處理-kidin-1081211
   sendRequest(body) {
     this.uiFlag.isLoading = true;
+    this.memberHRZoneList.length = 0;
+    this.caloriesSet.length = 0;
     this.activityService.fetchMultiActivityData(body).subscribe((res) => {
       this.uiFlag.isLoading = false;
       this.activityDetail = res.info.activities;
@@ -632,28 +637,40 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           this.updateUrl(false);
         } else {
           this.uiFlag.noData = false;
+          this.showMore = false;
           this.reportCreatedTime = dayjs().format('YYYY-MM-DD HH:mm');
           this.handleTableData('showPart');
           const infoData = this.activityDetail[0];
           this.fileInfo = infoData.fileInfo;
+          this.classTime = 0;
 
-          let timeCount = 0,
-            HRCount = 0,
-            caloriesCount = 0,
-            distanceCount = 0,
-            avgSpeedCount = 0,
-            HRZoneZero = 0,
-            HRZoneOne = 0,
-            HRZoneTwo = 0,
-            HRZoneThree = 0,
-            HRZoneFour = 0,
-            HRZoneFive = 0;
+          let HRCount = 0;
+          let caloriesCount = 0;
+          let distanceCount = 0;
+          let avgSpeedCount = 0;
+          let HRZoneZero = 0;
+          let HRZoneOne = 0;
+          let HRZoneTwo = 0;
+          let HRZoneThree = 0;
+          let HRZoneFour = 0;
+          let HRZoneFive = 0;
 
           for (let i = 0; i < this.activityLength; i++) {
             const activityItem = this.activityDetail[i].activityInfoLayer;
-            timeCount += activityItem.totalSecond;
-            HRCount += activityItem.avgHeartRateBpm;
-            caloriesCount += activityItem.calories;
+            const {
+              totalSecond,
+              avgHeartRateBpm,
+              calories,
+              totalHrZone0Second,
+              totalHrZone1Second,
+              totalHrZone2Second,
+              totalHrZone3Second,
+              totalHrZone4Second,
+              totalHrZone5Second,
+            } = activityItem;
+            if (totalSecond > this.classTime) this.classTime = totalSecond;
+            HRCount += avgHeartRateBpm;
+            caloriesCount += calories;
             let memberHRZoneZero = 0,
               memberHRZoneOne = 0,
               memberHRZoneTwo = 0,
@@ -662,32 +679,20 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
               memberHRZoneFive = 0;
 
             // 取得心率區間-kidin-1081213
-            if (activityItem.totalHrZone0Second !== null) {
-              HRZoneZero +=
-                activityItem.totalHrZone0Second > 0 ? activityItem.totalHrZone0Second : 0;
-              HRZoneOne +=
-                activityItem.totalHrZone1Second > 0 ? activityItem.totalHrZone1Second : 0;
-              HRZoneTwo +=
-                activityItem.totalHrZone2Second > 0 ? activityItem.totalHrZone2Second : 0;
-              HRZoneThree +=
-                activityItem.totalHrZone3Second > 0 ? activityItem.totalHrZone3Second : 0;
-              HRZoneFour +=
-                activityItem.totalHrZone4Second > 0 ? activityItem.totalHrZone4Second : 0;
-              HRZoneFive +=
-                activityItem.totalHrZone5Second > 0 ? activityItem.totalHrZone5Second : 0;
+            if (totalHrZone0Second !== null) {
+              HRZoneZero += totalHrZone0Second > 0 ? totalHrZone0Second : 0;
+              HRZoneOne += totalHrZone1Second > 0 ? totalHrZone1Second : 0;
+              HRZoneTwo += totalHrZone2Second > 0 ? totalHrZone2Second : 0;
+              HRZoneThree += totalHrZone3Second > 0 ? totalHrZone3Second : 0;
+              HRZoneFour += totalHrZone4Second > 0 ? totalHrZone4Second : 0;
+              HRZoneFive += totalHrZone5Second > 0 ? totalHrZone5Second : 0;
 
-              memberHRZoneZero =
-                activityItem.totalHrZone0Second > 0 ? activityItem.totalHrZone0Second : 0;
-              memberHRZoneOne =
-                activityItem.totalHrZone1Second > 0 ? activityItem.totalHrZone1Second : 0;
-              memberHRZoneTwo =
-                activityItem.totalHrZone2Second > 0 ? activityItem.totalHrZone2Second : 0;
-              memberHRZoneThree =
-                activityItem.totalHrZone3Second > 0 ? activityItem.totalHrZone3Second : 0;
-              memberHRZoneFour =
-                activityItem.totalHrZone4Second > 0 ? activityItem.totalHrZone4Second : 0;
-              memberHRZoneFive =
-                activityItem.totalHrZone5Second > 0 ? activityItem.totalHrZone5Second : 0;
+              memberHRZoneZero = totalHrZone0Second > 0 ? totalHrZone0Second : 0;
+              memberHRZoneOne = totalHrZone1Second > 0 ? totalHrZone1Second : 0;
+              memberHRZoneTwo = totalHrZone2Second > 0 ? totalHrZone2Second : 0;
+              memberHRZoneThree = totalHrZone3Second > 0 ? totalHrZone3Second : 0;
+              memberHRZoneFour = totalHrZone4Second > 0 ? totalHrZone4Second : 0;
+              memberHRZoneFive = totalHrZone5Second > 0 ? totalHrZone5Second : 0;
 
               const memberTotalHRSecond =
                 memberHRZoneZero +
@@ -739,8 +744,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
             this.avgDistance = distanceCount / this.activityLength;
           }
 
-          const avgTime = Math.round(timeCount / this.activityLength);
-          this.avgActivityTime = this.formatTime(avgTime, '1');
           this.avgHR = HRCount / this.activityLength;
           this.totalCalories = caloriesCount;
           this.avgCalories = this.totalCalories / this.activityLength;
@@ -899,9 +902,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   // 取得真實的上課時間（取資料第一位的時間）-kidin-1081223
   getClassRealDateTime() {
     const date = this.fileInfo.creationDate.split('T')[0].replace(/-/g, '/');
-
     const time = this.fileInfo.creationDate.split('T')[1].substr(0, 5);
-
     return `${date} ${time}`;
   }
 
@@ -1006,6 +1007,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   // 初始化highChart-kidin-1081211
   initInfoHighChart() {
+    this.destroyChart();
     charts.length = 0; // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
     this.chartDatas.length = 0;
     this.chartTargetList.length = 0;
@@ -1193,6 +1195,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   // 顯示各個學員心率區間圖表-kidin-1090106
   initMemberHRZoneChart() {
+    this.memberHRZoneOptions.length = 0;
     for (let i = 0; i < this.memberHRZoneList.length; i++) {
       const memberHRZoneDataset = {
         name: '',
@@ -1260,10 +1263,9 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   // 將成員心率圖表依序顯示出來-kidin-1090106
   showMemberHRZone(datas, list) {
-    const HRZoneChartTargetList = list,
-      nextIdx = this.chartTargetList.length,
-      memberDiv = document.querySelectorAll('.memberHRZoneChart') as NodeListOf<HTMLElement>;
-
+    const HRZoneChartTargetList = list;
+    const nextIdx = this.chartTargetList.length;
+    const memberDiv = document.querySelectorAll('.memberHRZoneChart') as NodeListOf<HTMLElement>;
     datas.forEach((_option, idx) => {
       this.charts[idx + nextIdx] = chart(memberDiv[idx], _option[HRZoneChartTargetList[idx]]);
     });
@@ -1437,19 +1439,26 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     window.print();
   }
 
+  /**
+   * 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
+   */
+  destroyChart() {
+    if (charts && charts.length > 0) {
+      charts.forEach((_highChart, idx) => {
+        if (_highChart !== undefined) {
+          _highChart.destroy();
+        }
+      });
+    }
+  }
+
   /********************************************************************************************/
 
   /**
    * 取消rxjs訂閱和卸除highchart
    */
   ngOnDestroy() {
-    // 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
-    charts.forEach((_highChart, idx) => {
-      if (_highChart !== undefined) {
-        _highChart.destroy();
-      }
-    });
-
+    this.destroyChart();
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
