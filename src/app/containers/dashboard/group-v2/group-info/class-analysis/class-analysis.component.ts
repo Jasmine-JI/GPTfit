@@ -21,6 +21,7 @@ import {
 } from '../../../../../core/services';
 import { ProfessionalService } from '../../../../professional/services/professional.service';
 import { displayGroupLevel } from '../../../../../core/utils';
+import { FileFooterInfo } from '../../../../../core/models/compo';
 
 dayjs.extend(weekday);
 
@@ -28,15 +29,12 @@ const errMsg = `Error.<br />Please try again later.`;
 
 /**
  * 建立highchart 圖表用
- * @author kidin-1091116
  */
 class ChartOptions {
   constructor(dataset) {
     return {
       chart: {
         height: 300,
-        spacingTop: 20,
-        spacingBottom: 20,
       },
       title: {
         text: dataset.name,
@@ -231,6 +229,8 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   coachPartInfo: any;
   showAllCoachInfo: any;
 
+  footerInfo: FileFooterInfo;
+
   /**************************************************************/
 
   constructor(
@@ -248,13 +248,12 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initPage();
-    charts.length = 0; // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
+    charts.length = 0; // 初始化global highchart物件，可避免HighCharts.Charts為 undefined
     this.tableData.sort = this.sortTable;
   }
 
   /**
    * 取得已儲存的群組詳細資訊、階層群組資訊、使用者資訊
-   * @author kidin-1091020
    */
   initPage() {
     combineLatest([
@@ -278,7 +277,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   /**
    * 根據url帶的不同query string進行處理
    * @param query {string}-query string
-   * @author kidin-1091118
    */
   checkQueryString(query: string) {
     if (query.indexOf('?') > -1) {
@@ -311,7 +309,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   /**
    * 根據url帶的classTime找出該時間課程
    * @param classTime {number}-url query string所帶的課程時間
-   * @author kidin-1091118
    */
   showFocusActivity(classTime: number) {
     let idx: number;
@@ -332,7 +329,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   /**
    * 藉由rx取得已儲存之成員名單，若取不到則call api並儲存
-   * @author kidin-1091111
    */
   getMemberList() {
     const { token } = this.authService;
@@ -379,7 +375,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   /**
    * 將成員依加入狀態分類
    * @param memArr {Array<MemberInfo>}-api 1103回應的groupMemberInfo內容
-   * @author kidin-1091111
    */
   sortMember(memArr: Array<MemberInfo>) {
     const list = [];
@@ -394,7 +389,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   /**
    * 產生行事曆
-   * @author kidin-1091113
    */
   createCalender() {
     this.calender.weekOne.length = 0;
@@ -419,40 +413,59 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 取得兩週課程列表
+   * 根據不同使用方式取得Api 2111 Request Body
+   * @param searchTimeOption {number}-要覆蓋 api 2111 searchTime 的設定
    */
-  getClassList() {
-    const body = {
+  getApi2011RequestBody(searchTimeOption: any) {
+    const {
+      uiFlag: { isDebugMode },
+      groupInfo: { groupId },
+    } = this;
+    return {
       token: this.authService.token,
       searchTime: {
-        type: '1',
+        type: 1,
         fuzzyTime: '',
-        filterStartTime: dayjs(this.calender.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-        filterEndTime: dayjs(this.calender.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-        filterSameTime: this.uiFlag.isDebugMode ? '1' : '2',
+        filterStartTime: '',
+        filterEndTime: '',
+        filterSameTime: isDebugMode ? 1 : 2,
+        ...searchTimeOption,
       },
       searchRule: {
-        activity: '99',
-        targetUser: this.uiFlag.isDebugMode ? '99' : '2',
+        activity: 99,
+        targetUser: isDebugMode ? 99 : 2,
         fileInfo: {
           author: '',
           dispName: '',
           equipmentSN: '',
-          class: this.groupInfo.groupId,
+          class: groupId,
           teacher: '',
           tag: '',
         },
       },
       display: {
-        activityLapLayerDisplay: '3',
+        activityLapLayerDisplay: 3,
         activityLapLayerDataField: [],
-        activityPointLayerDisplay: '3',
+        activityPointLayerDisplay: 3,
         activityPointLayerDataField: [],
       },
       page: '0',
       pageCounts: '1000',
     };
+  }
 
+  /**
+   * 取得兩週課程列表
+   */
+  getClassList() {
+    const { startTimestamp, endTimestamp } = this.calender;
+    const timeFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
+    const timeOption = {
+      type: 1,
+      filterStartTime: dayjs(startTimestamp).format(timeFormat),
+      filterEndTime: dayjs(endTimestamp).format(timeFormat),
+    };
+    const body = this.getApi2011RequestBody(timeOption);
     this.api21xxService.fetchMultiActivityData(body).subscribe((res) => {
       if (res.resultCode !== 200) {
         this.hintDialogService.openAlert(errMsg);
@@ -467,7 +480,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   /**
    * 將搜尋期間內的課程時間依日期顯示在日曆上
    * @param activities {Array<any>}
-   * @author kidin-1091116
    */
   handleCalenderActivity(activities: Array<any>) {
     this.initCalender();
@@ -498,7 +510,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   /**
    * 將行事曆初始化
-   * @author kidin-1091116
    */
   initCalender() {
     this.calender.weekOne = this.calender.weekOne.map((_day) => {
@@ -515,7 +526,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   /**
    * 往前或往後切換日曆
    * @param action {'pre' | 'next'}-切換日曆的動作
-   * @author kidin-1091113
    */
   switchCalender(action: 'pre' | 'next') {
     this.uiFlag.focusActivity = null;
@@ -534,7 +544,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   /**
    * 連續切換行事曆時，給予debounce time避免呼叫太多api
-   * @author kidin-1091116
    */
   debounceCreateCalender() {
     if (this.debounce) {
@@ -550,7 +559,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    * 使用者點擊行事曆的日期後顯示當天已舉行的課程
    * @param weekIdx {'weekOne' | 'weekTwo'}-行事曆的第一列還是第二列
    * @param dayIdx {number}-該列第幾個
-   * @author kidin-1091113
    */
   focusOneDay(week: 'weekOne' | 'weekTwo', dayIdx: number) {
     this.uiFlag.focusActivity = null;
@@ -563,7 +571,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    * 顯示使用者所點選的日期其當天已舉行的課程
    * @param weekIdx {'weekOne' | 'weekTwo'}-行事曆的第一列還是第二列
    * @param dayIdx {number}-該列第幾個
-   * @author kidin-1091116
    */
   showSelectDayActivities(week: 'weekOne' | 'weekTwo', dayIdx: number) {
     this.focusDayActivities.length = 0;
@@ -579,44 +586,16 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   /**
    * 使用者點選活動後顯示報告
-   * @param index {number}-使用者選擇的課程序
-   * @author kidin-1091117
+   * @param index {number}-使用者選擇的課程序列
    */
   selectActivity(index: number) {
     this.uiFlag.focusActivity = index;
-
-    const body = {
-      token: this.authService.token,
-      searchTime: {
-        type: '3',
-        fuzzyTime: [],
-        filterStartTime: '',
-        filterEndTime: '',
-        filterSameTime: '1',
-        specifyTime: this.focusDayActivities[index].fileInfo.creationDate,
-      },
-      searchRule: {
-        activity: this.focusDayActivities[index].activityInfoLayer.type,
-        targetUser: this.uiFlag.isDebugMode ? '99' : '2',
-        fileInfo: {
-          author: '',
-          dispName: '',
-          equipmentSN: '',
-          class: this.groupInfo.groupId,
-          teacher: '',
-          tag: '',
-        },
-      },
-      display: {
-        activityLapLayerDisplay: '3',
-        activityLapLayerDataField: [],
-        activityPointLayerDisplay: '3',
-        activityPointLayerDataField: [],
-      },
-      page: '0',
-      pageCounts: '1000',
+    const timeOption = {
+      type: 3,
+      filterSameTime: 1,
+      specifyTime: this.focusDayActivities[index].fileInfo.creationDate,
     };
-
+    const body = this.getApi2011RequestBody(timeOption);
     this.sendRequest(body);
   }
 
@@ -907,7 +886,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   // 取得真實的上課時間（取資料第一位的時間）-kidin-1081223
   getClassRealDateTime() {
     const date = this.fileInfo.creationDate.split('T')[0].replace(/-/g, '/');
-    const time = this.fileInfo.creationDate.split('T')[1].substr(0, 5);
+    const time = this.fileInfo.creationDate.split('T')[1].slice(0, 5);
     return `${date} ${time}`;
   }
 
@@ -949,7 +928,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   // 時間補零-kidin-1081211
   fillTwoDigits(num) {
     const timeStr = '0' + Math.floor(num);
-    return timeStr.substr(-2);
+    return timeStr.slice(-2);
   }
 
   // 使檔案創建日期符合格式-kidin-1081211
@@ -1018,23 +997,23 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.chartTargetList.length = 0;
     this.HRZoneChartDatas.length = 0;
     this.HRZoneChartTargetList.length = 0;
-
+    console.log('memberHRZone', this.memberHRZoneList);
     // 全體心率區間落點圖表-kidin-1081212
     // 顯示聚焦成員的心率區間時，全體區間顏色變淺-kidin-1090102
     if (this.memberSection !== null && this.memberHRZoneList[this.focusMember] !== undefined) {
-      this.HRZoneColorSet[0].color = '#a6cef7';
-      this.HRZoneColorSet[1].color = '#9af1f9';
-      this.HRZoneColorSet[2].color = '#c4f3ad';
-      this.HRZoneColorSet[3].color = '#f9f6a1';
-      this.HRZoneColorSet[4].color = '#f1d3a6';
-      this.HRZoneColorSet[5].color = '#f9aca0';
+      this.HRZoneColorSet[0].color = 'rgba(166, 206, 247, 1)';
+      this.HRZoneColorSet[1].color = 'rgba(154, 241, 249, 1)';
+      this.HRZoneColorSet[2].color = 'rgba(196, 243, 173, 1)';
+      this.HRZoneColorSet[3].color = 'rgba(249, 246, 161, 1)';
+      this.HRZoneColorSet[4].color = 'rgba(241, 211, 166, 1)';
+      this.HRZoneColorSet[5].color = 'rgba(249, 172, 160, 1)';
     } else {
-      this.HRZoneColorSet[0].color = '#70b1f3';
-      this.HRZoneColorSet[1].color = '#64e0ec';
-      this.HRZoneColorSet[2].color = '#abf784';
-      this.HRZoneColorSet[3].color = '#f7f25b';
-      this.HRZoneColorSet[4].color = '#f3b353';
-      this.HRZoneColorSet[5].color = '#f36953';
+      this.HRZoneColorSet[0].color = 'rgba(112, 177, 243, 1)';
+      this.HRZoneColorSet[1].color = 'rgba(100, 224, 236, 1)';
+      this.HRZoneColorSet[2].color = 'rgba(171, 247, 132, 1)';
+      this.HRZoneColorSet[3].color = 'rgba(247, 242, 91, 1)';
+      this.HRZoneColorSet[4].color = 'rgba(243, 179, 83, 1)';
+      this.HRZoneColorSet[5].color = 'rgba(243, 105, 83, 1)';
     }
 
     const HRZoneDataset = {
@@ -1143,7 +1122,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     }
 
     const classCaloriesDataset = {
-      name: `課程學員共${this.activityLength}人`,
+      name: '',
       data: finalCaloriesSet,
       unit: '',
       type: 'pie',
@@ -1153,13 +1132,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     classCaloriesOptions['tooltip'] = {
       pointFormat: `${this.translate.instant('universal_activityData_people')} {point.y}`,
     };
-    classCaloriesOptions['title'].align = 'center';
-    classCaloriesOptions['title'].x = 0;
-    classCaloriesOptions['title'].y = 320;
-    classCaloriesOptions['title'].style = {
-      color: 'gray',
-      fontSize: 12,
-    };
+
     classCaloriesOptions['plotOptions'] = {
       pie: {
         center: ['50%', '30%'],
@@ -1174,7 +1147,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       dataLabels: {
         formatter: function () {
           let percent = ((this.point.y / this.point.total) * 100).toFixed(1);
-          if (percent.substr(-1) === '0') {
+          if (percent.slice(-1) === '0') {
             percent = '' + (this.point.y / this.point.total) * 100;
           }
           return `${this.key}<br> ${percent}%`;

@@ -82,6 +82,7 @@ import {
   WeightSibsModule,
   WeightSibsPipe,
   SportTypeIconModule,
+  ProductTypeModule,
 } from '../../core/pipes';
 import {
   CalenderSelectorModule,
@@ -90,6 +91,7 @@ import {
   AnalysisOptionModule,
   SportsDataTableModule,
   SportsFileRoadModule,
+  SportFileFooterModule,
 } from '../../components';
 
 @NgModule({
@@ -110,6 +112,7 @@ import {
     DistanceSibsModule,
     SportPaceSibsModule,
     WeightSibsModule,
+    ProductTypeModule,
     CalenderSelectorModule,
     LeafletMapModule,
     GoogleMapModule,
@@ -117,6 +120,7 @@ import {
     SportsDataTableModule,
     SportTypeIconModule,
     SportsFileRoadModule,
+    SportFileFooterModule,
   ],
   declarations: [
     NavbarComponent,

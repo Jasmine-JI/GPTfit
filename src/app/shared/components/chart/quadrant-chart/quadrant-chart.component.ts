@@ -14,13 +14,13 @@ import { TranslateService } from '@ngx-translate/core';
 import { HrZoneRange } from '../../../models/chart-data';
 import { mi } from '../../../models/bs-constant';
 import { Unit } from '../../../enum/value-conversion';
-import { SportPaceSibsPipe } from '../../../../core/pipes/sport-pace-sibs.pipe';
 import {
   setLocalStorageObject,
   getLocalStorageObject,
   deepCopy,
   simplify,
 } from '../../../../core/utils';
+import { SportPaceSibsPipe } from '../../../../core/pipes';
 
 type QuadrantDataOpt = 'hr' | 'speed' | 'pace' | 'cadence' | 'power';
 type Axis = 'xAxis' | 'yAxis';

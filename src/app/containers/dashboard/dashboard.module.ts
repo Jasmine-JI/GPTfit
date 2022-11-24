@@ -78,6 +78,7 @@ import {
   AnalysisOptionModule,
   SmallHrzoneChartModule,
   AnalysisInfoMenuModule,
+  SportFileFooterModule,
 } from '../../components';
 import {
   DateUnitKeyModule,
@@ -86,8 +87,10 @@ import {
   ReferenceHrZoneModule,
   DistanceSibsModule,
   SportPaceSibsModule,
+  SportPaceSibsPipe,
   WeightSibsModule,
   SportTypeIconModule,
+  ProductTypeModule,
 } from '../../core/pipes';
 
 @NgModule({
@@ -113,6 +116,7 @@ import {
     DistanceSibsModule,
     SportPaceSibsModule,
     WeightSibsModule,
+    ProductTypeModule,
     LeafletMapModule,
     GoogleMapModule,
     SportsDataTableModule,
@@ -120,6 +124,7 @@ import {
     SmallHrzoneChartModule,
     AnalysisInfoMenuModule,
     SportTypeIconModule,
+    SportFileFooterModule,
   ],
   providers: [
     GpxService,
@@ -131,6 +136,7 @@ import {
     DetectInappService,
     LifeTrackingService,
     PersonCloudrunReport,
+    SportPaceSibsPipe,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
