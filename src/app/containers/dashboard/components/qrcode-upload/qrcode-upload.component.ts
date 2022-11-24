@@ -255,7 +255,7 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
   // 時間補零-kidin-1081211
   fillTwoDigits(num) {
     const timeStr = '0' + Math.floor(num);
-    return timeStr.substr(-2);
+    return timeStr.slice(-2);
   }
 
   ngOnDestroy(): void {

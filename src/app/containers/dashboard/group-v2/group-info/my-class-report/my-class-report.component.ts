@@ -848,7 +848,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   // 時間補零-kidin-1081211
   fillTwoDigits(num: number) {
     const timeStr = '0' + Math.floor(num);
-    return timeStr.substr(-2);
+    return timeStr.slice(-2);
   }
 
   // 使檔案創建日期符合格式-kidin-1081211

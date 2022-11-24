@@ -1,0 +1,171 @@
+<article class="footer__grid" *ngIf="footerInfo">
+  <ng-container *ngIf="footerInfo.deviceInfo?.length > 0">
+    <section
+      *ngTemplate="
+        footerInfoSection;
+        context: {
+          infoType: 'normal',
+          title: 'universal_deviceSetting_device',
+          substituteImgUrl: UNKNOWN_DEVICE_IMAGE_PATH,
+          info: footerInfo.deviceInfo,
+          currentFocusIndex: currentDeviceIndex,
+          switchAssignFunction: switchAssignDevice
+        }
+      "
+    ></section>
+  </ng-container>
+  <ng-container>
+    <section
+      *ngTemplate="
+        footerInfoSection;
+        context: {
+          infoType: 'normal',
+          title: 'universal_group_courseIntroduction',
+          substituteImgUrl: PROFESSIONAL_ICON_SUBSTITUDE_PATH,
+          clipCircle: true,
+          info: footerInfo.classInfo,
+          showMore: showMoreClassInfo,
+          showMoreFunction: showFullClassInfo,
+          currentFocusIndex: 0
+        }
+      "
+    ></section>
+  </ng-container>
+  <ng-container>
+    <section
+      *ngTemplate="
+        footerInfoSection;
+        context: {
+          infoType: 'normal',
+          title: 'universal_group_coachIntroduction',
+          substituteImgUrl: PERSONAL_ICON_SUBSTITUDE_PATH,
+          info: footerInfo.coachInfo,
+          showMore: showMoreCoachInfo,
+          showMoreFunction: showFullCoachInfo,
+          currentFocusIndex: 0
+        }
+      "
+    ></section>
+  </ng-container>
+  <ng-container>
+    <section
+      *ngTemplate="
+        footerInfoSection;
+        context: {
+          infoType: 'fileInfo',
+          title: 'universal_activityData_fileInfo',
+          info: footerInfo.fileInfo
+        }
+      "
+    ></section>
+  </ng-container>
+  <ng-container>
+    <section
+      *ngTemplate="
+        footerInfoSection;
+        context: {
+          infoType: 'tag',
+          title: 'universal_activityData_tag',
+          info: footerInfo.tag
+        }
+      "
+    ></section>
+  </ng-container>
+</article>
+
+<ng-template
+  #footerInfoSection
+  let-infoType="infoType"
+  let-title="title"
+  let-clipCircle="clipCircle"
+  let-substituteImgUrl="substituteImgUrl"
+  let-info="info"
+  let-showMore="showMore"
+  let-showMoreFunction="showMoreFunction"
+  let-currentFocusIndex="currentFocusIndex"
+  let-switchAssignFunction="switchAssignFunction"
+>
+  <section class="flexCol" [ngSwitch]="infoType">
+    <h6 class="footer__card__title">{{ title | translate }}</h6>
+    <p
+      class="group__uplayer__name"
+      *ngIf="info[currentFocusIndex].brandName && info[currentFocusIndex].branchName"
+    >
+      {{ info[currentFocusIndex].brandName }}/{{ info[currentFocusIndex].branchName }}
+    </p>
+    <hr class="title__break__line" />
+    <ng-container *ngSwitchCase="'normal'">
+      <div class="flexRow">
+        <ng-container *ngIf="info.length > 1">
+          <button
+            class="switch__button"
+            [class.switch__button--disable]="currentFocusIndex === 0"
+            (click)="switchPreviewFunction.bind(this)"
+          ></button>
+        </ng-container>
+        <figure class="image__container" [class.circle__image]="clipCircle">
+          <img
+            [src]="info[currentFocusIndex].imgUrl"
+            [alt]="name"
+            (error)="info[currentFocusIndex].imgUrl = substituteImgUrl"
+          />
+        </figure>
+        <p class="info__subtitle">{{ info[currentFocusIndex].name }}</p>
+        <p class="info__description" *ngIf="info[currentFocusIndex].description">
+          {{ info[currentFocusIndex].description }}
+        </p>
+        <p *ngIf="info[currentFocusIndex].description">
+          {{ 'universal_deviceSetting_modeType' | translate }}：{{
+            info[currentFocusIndex].modelTypeID | productType | translate
+          }}
+        </p>
+        <div class="flexRow show__more__container" *ngIf="!showMore">
+          <button class="show__more__button" (click)="showMoreFunction.bind(this)">
+            ...{{ 'universal_operating_more' | translate }}
+          </button>
+        </div>
+        <ng-container *ngIf="info.length > 1">
+          <button
+            class="switch__button"
+            [class.switch__button--disable]="currentFocusIndex >= info.length - 1"
+            (click)="switchNextFunction.bind(this)"
+          ></button>
+        </ng-container>
+      </div>
+      <ng-container *ngIf="info.length > 1">
+        <div class="flexCenter" *ngIf="info.length > 1">
+          <button
+            class="switch__dot"
+            [class.switch__dot--active]="_index === currentFocusIndex"
+            (click)="switchAssignFunction.bind(this, _index)"
+            *ngFor="let _info of info; let _index = index"
+          ></button>
+        </div>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngSwitchCase="'fileInfo'">
+      <div class="flexCol file__info__text">
+        <span>
+          {{ 'universal_activityData_dataFormatVersion' | translate }}：{{
+            info[0].versionName || '--'
+          }}
+        </span>
+        <span>Fw Code：{{ info[0].equipmentFwCode || '--' }}</span>
+        <div [class.flexCol]="info[0].syncDate">
+          {{ 'universal_activityData_syncDate' | translate }}：
+          <span [class.text__align__right]="info[0].syncDate">{{ info[0].syncDate || '--' }}</span>
+        </div>
+        <div [class.flexCol]="info[0].editDate">
+          {{ 'universal_vocabulary_editDate' | translate }}：
+          <span [class.text__align__right]="info[0].editDate">{{ info[0].editDate || '--' }}</span>
+        </div>
+        <span *ngIf="info[0].createFrom">
+          Create From：{{ info[0].createFrom.split('?')[0] || '--' }}
+        </span>
+      </div>
+    </ng-container>
+    <ng-container *ngSwitchCase="'tag'">
+      <span *ngFor="let _tag of info"> #{{ _tag }} </span>
+    </ng-container>
+  </section>
+</ng-template>

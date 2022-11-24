@@ -12,3 +12,4 @@ export * from './sport-pace-sibs.pipe';
 export * from './weight-sibs.pipe';
 export * from './sport-type-icon.pipe';
 export * from './get-split-string.pipe';
+export * from './product-type.pipe';

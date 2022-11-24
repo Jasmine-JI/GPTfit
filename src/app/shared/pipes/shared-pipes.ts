@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { SexPipe } from './sex.pipe';
 import { SafeHtmlPipe } from './safe-html.pipe';
-import { ProductTypePipe } from './product-type.pipe';
 import { LineBreakPipe } from './line-break.pipe';
 import { GroupStatusPipe } from './group-status.pipe';
 import { GroupLevelNamePipe } from './group-level-name.pipe';
@@ -51,7 +50,6 @@ import { MusclePartIconPipe } from './muscle-part-icon.pipe';
   declarations: [
     SexPipe,
     SafeHtmlPipe,
-    ProductTypePipe,
     LineBreakPipe,
     GroupStatusPipe,
     GroupLevelNamePipe,
@@ -97,7 +95,6 @@ import { MusclePartIconPipe } from './muscle-part-icon.pipe';
   exports: [
     SexPipe,
     SafeHtmlPipe,
-    ProductTypePipe,
     LineBreakPipe,
     GroupStatusPipe,
     GroupLevelNamePipe,

@@ -1,0 +1,117 @@
+@import 'font.scss';
+
+$image-size: 150px;
+
+@mixin switch-triangle($isLeftTriangle) {
+  $triangle-height: 8px;
+  $triangle-width: 5px;
+  $triangle-color: black;
+  @if $isLeftTriangle {
+    border-width: $triangle-height $triangle-width $triangle-height 0px;
+    border-color: transparent $triangle-color transparent transparent;
+  } @else {
+    border-width: $triangle-height 0px $triangle-height $triangle-width;
+    border-color: transparent transparent transparent $triangle-color;
+  }
+}
+
+.footer__grid {
+  display: grid;
+  grid-gap: 10px;
+  grid-template-columns: repeat(auto-fill, 280px);
+  align-items: center;
+  background-color: rgba(240, 240, 240, 1);
+}
+
+.footer__card__title {
+  color: rgba(21, 127, 204, 1);
+  font-weight: bold;
+  margin: 0;
+}
+
+.group__uplayer__name {
+  text-align: right;
+  font-size: 12px;
+}
+
+.title__break__line {
+  color: rgba(230, 230, 230, 1);
+}
+
+.switch__button {
+  width: 10px;
+  height: 10px;
+  margin: 0 5px;
+  border-style: solid;
+  width: 10px;
+}
+
+.switch__button__preview {
+  @include switch-triangle(true);
+}
+
+.switch__button__next {
+  @include switch-triangle(false);
+}
+
+.switch__button--disable {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.image__container {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+  max-height: $image-size;
+}
+
+.circle__image {
+  width: $image-size;
+  height: $image-size;
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.info__subtitle {
+  color: black;
+  @include bold-font(24px);
+}
+
+.info__description {
+  font-size: 1rem;
+}
+
+.show__more__container {
+  justify-content: flex-end;
+}
+
+.show__more__button {
+  color: rgba(95, 186, 227, 1);
+  cursor: pointer;
+  text-align: right;
+}
+
+.switch__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid black;
+  padding: 0;
+  padding: initial;
+  margin: 5px;
+}
+
+.switch__dot--active {
+  background-color: black;
+}
+
+.file__info__text {
+  font-weight: bold;
+  color: rgba(150, 150, 150, 1);
+}
+
+.text__align__right {
+  text-align: right;
+}
