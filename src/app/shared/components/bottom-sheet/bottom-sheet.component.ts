@@ -2,7 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MessageBoxComponent } from '../message-box/message-box.component';
 import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
 import { TranslateService } from '@ngx-translate/core';
-import { HashIdService } from '../../services/hash-id.service';
+import { HashIdService } from '../../../core/services';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 

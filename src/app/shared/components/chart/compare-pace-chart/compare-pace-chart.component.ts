@@ -12,13 +12,13 @@ import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs';
-import { GlobalEventsService } from '../../../../core/services/global-events.service';
-import { deepCopy } from '../../../utils/index';
+import { GlobalEventsService } from '../../../../core/services';
+import { deepCopy } from '../../../../core/utils/index';
 import { compareChartDefault } from '../../../models/chart-data';
-import { speedToPace, speedToPaceSecond } from '../../../utils/sports';
+import { speedToPace, speedToPaceSecond } from '../../../../core/utils/sports';
 import { SportType } from '../../../enum/sports';
 import { Unit } from '../../../enum/value-conversion';
-import { paceTooltipFormatter, paceYAxisFormatter } from '../../../utils/chart-formatter';
+import { paceTooltipFormatter, paceYAxisFormatter } from '../../../../core/utils/chart-formatter';
 
 @Component({
   selector: 'app-compare-pace-chart',

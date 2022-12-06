@@ -12,7 +12,8 @@ export enum GroupLevel {
  * 群組類別：品牌/企業
  */
 export enum BrandType {
-  brand = 1,
+  all,
+  brand,
   enterprise,
 }
 

@@ -11,12 +11,16 @@ import { SportType } from '../../../enum/sports';
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-import { UtilsService } from '../../../services/utils.service';
 import { HrZoneRange } from '../../../models/chart-data';
 import { mi } from '../../../models/bs-constant';
 import { Unit } from '../../../enum/value-conversion';
 import { SportPaceSibsPipe } from '../../../../core/pipes/sport-pace-sibs.pipe';
-import { setLocalStorageObject, getLocalStorageObject, deepCopy } from '../../../utils/index';
+import {
+  setLocalStorageObject,
+  getLocalStorageObject,
+  deepCopy,
+  simplify,
+} from '../../../../core/utils';
 
 type QuadrantDataOpt = 'hr' | 'speed' | 'pace' | 'cadence' | 'power';
 type Axis = 'xAxis' | 'yAxis';
@@ -202,7 +206,6 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private translate: TranslateService,
-    private utils: UtilsService,
     private sportPaceSibsPipe: SportPaceSibsPipe,
     private changeDetectorRef: ChangeDetectorRef
   ) {}
@@ -582,7 +585,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
     });
 
     // 降噪
-    this.chart.displayPoint = this.utils.simplify(
+    this.chart.displayPoint = simplify(
       this.chart.displayPoint,
       this.getCoefficient(this.chart.displayPoint.length)
     );

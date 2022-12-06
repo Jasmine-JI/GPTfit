@@ -2,7 +2,7 @@ import { UserProfileInfo, SignInfo } from '../models/user-profile-info';
 import dayjs from 'dayjs';
 import { Unit } from '../enum/value-conversion';
 import { HrBase } from '../enum/personal';
-import { deepCopy } from '../utils/index';
+import { deepCopy } from '../../core/utils/index';
 import { AccessRight } from '../enum/accessright';
 import { WeightTrainingLevel } from '../enum/weight-train';
 import { BehaviorSubject } from 'rxjs';

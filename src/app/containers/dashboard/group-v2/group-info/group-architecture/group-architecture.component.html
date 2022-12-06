@@ -103,7 +103,7 @@
           [isHadMenu]="uiFlag.editMode === 'edit' && userSimpleInfo.accessRight <= 30"
           [canDisband]="userSimpleInfo.accessRight <= 30"
           [isLocked]="_branch.groupStatus === 6"
-          (onRemoveGroup)="disbandGroup($event)"
+          (removeGroup)="disbandGroup($event)"
           *ngIf="groupArchitecture.brands && groupInfo.brandType"
         >
         </app-member-capsule>
@@ -139,7 +139,7 @@
           [canDisband]="userSimpleInfo.accessRight <= 40"
           [parentsName]="_coach.branchName"
           [isLocked]="_coach.groupStatus === 6"
-          (onRemoveGroup)="disbandGroup($event)"
+          (removeGroup)="disbandGroup($event)"
           *ngIf="groupArchitecture.brands && groupInfo.brandType"
         >
         </app-member-capsule>

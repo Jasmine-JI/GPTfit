@@ -4,19 +4,23 @@ import { OfficialActivityService } from '../../services/official-activity.servic
 import { formTest } from '../../../../shared/models/form-test';
 import { fromEvent, Subject, Subscription, merge, of, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map, tap } from 'rxjs/operators';
-import { UtilsService } from '../../../../shared/services/utils.service';
 import { codes } from '../../../../shared/models/countryCode';
 import { Sex } from '../../../../shared/enum/personal';
 import { nicknameDefaultList } from '../../../../shared/models/nickname-list';
 import { SelectDate } from '../../../../shared/models/utils-type';
 import { SignTypeEnum } from '../../../../shared/enum/account';
 import dayjs from 'dayjs';
-import { AuthService } from '../../../../core/services/auth.service';
+import {
+  AuthService,
+  NodejsApiService,
+  Api10xxService,
+  GetClientIpService,
+  HintDialogService,
+  ApiCommonService,
+} from '../../../../core/services';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Api10xxService } from '../../../../core/services/api-10xx.service';
 import { UserProfileInfo } from '../../../../shared/models/user-profile-info';
 import { AccountTypeEnum, AccountStatusEnum } from '../../../../shared/enum/account';
-import { GetClientIpService } from '../../../../shared/services/get-client-ip.service';
 import {
   Nationality,
   ApplyStatus,
@@ -27,14 +31,11 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
-import { SignupService } from '../../../../shared/services/signup.service';
 import { AlaApp } from '../../../../shared/models/app-id';
 import { EnableAccountFlow } from '../../../../shared/models/signup-response';
 import { LockCaptcha } from '../../../../shared/classes/lock-captcha';
-import { checkResponse, getCurrentTimestamp } from '../../../../shared/utils/index';
-import { NodejsApiService } from '../../../../core/services/nodejs-api.service';
+import { checkResponse, getCurrentTimestamp, getUrlQueryStrings } from '../../../../core/utils';
 import { QueryString } from '../../../../shared/enum/query-string';
-import { getUrlQueryStrings } from '../../../../shared/utils';
 
 const stageHeight = 90;
 const fullMsg = 'Apply group full.';
@@ -199,15 +200,15 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     private route: ActivatedRoute,
     private router: Router,
     private officialActivityService: OfficialActivityService,
-    private utils: UtilsService,
     private auth: AuthService,
     private snackbar: MatSnackBar,
     private api10xxService: Api10xxService,
     private getClientIp: GetClientIpService,
     private dialog: MatDialog,
     private translate: TranslateService,
-    private signupService: SignupService,
-    private nodejsApiService: NodejsApiService
+    private nodejsApiService: NodejsApiService,
+    private hintDialogService: HintDialogService,
+    private apiCommonService: ApiCommonService
   ) {}
 
   ngOnInit(): void {
@@ -262,7 +263,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     this.nodejsApiService.getAssignInfo(body).subscribe((res) => {
-      if (this.utils.checkRes(res)) {
+      if (this.apiCommonService.checkRes(res)) {
         const { applyStatus } = res.result[0] ?? { applyStatus: ApplyStatus.notYet };
         if (applyStatus !== ApplyStatus.notYet) {
           this.navigateMyActivityPage();
@@ -294,12 +295,12 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       .pipe(
         tap((result) => {
           const [eventUserProfileResult, userProfileResult] = result;
-          if (this.utils.checkRes(eventUserProfileResult)) {
+          if (this.apiCommonService.checkRes(eventUserProfileResult)) {
             const { userProfile: eventUserProfile } = eventUserProfileResult;
             this.handleEventUserProfile(eventUserProfile);
           }
 
-          if (this.utils.checkRes(userProfileResult)) {
+          if (this.apiCommonService.checkRes(userProfileResult)) {
             const {
               signIn: { accountStatus, accountType },
               userProfile,
@@ -852,7 +853,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     const target = ['nickname'];
     if (!this.token) {
       this.checkRepeat(args, target).subscribe((res) => {
-        if (this.utils.checkRes(res)) {
+        if (this.apiCommonService.checkRes(res)) {
           const { nickname } = res.result[0] ?? {};
           this.alert.nickname = nickname ? 'repeat' : null;
         }
@@ -1065,7 +1066,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         )
         .subscribe((res) => {
           this.uiFlag.progress = 100;
-          if (this.utils.checkRes(res, false)) {
+          if (this.apiCommonService.checkRes(res, false)) {
             const { register } = res;
             if (!token) {
               this.handleNewAccount(register);
@@ -1207,13 +1208,13 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         .pipe(
           switchMap((ipResult) => {
             const header = { ip: (ipResult as any).ip };
-            return this.signupService
+            return this.api10xxService
               .fetchEditAccountInfo(this.editAccountBody, header)
               .pipe(map((editResult) => editResult));
           })
         )
         .subscribe((res) => {
-          if (this.utils.checkRes(res)) {
+          if (this.apiCommonService.checkRes(res)) {
             const { newToken } = res.editAccount;
             this.token = newToken;
             this.auth.setToken(newToken);
@@ -1346,7 +1347,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(() => {
         const msg = this.translate.instant('universal_vocabulary_notQualifiedWarning');
-        this.utils.openAlert(msg);
+        this.hintDialogService.openAlert(msg);
       });
   }
 
@@ -1413,7 +1414,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
           .pipe(
             switchMap((ipResult: any) => {
               const header = { remoteAddr: ipResult.ip };
-              return this.signupService.fetchEnableAccount(enableBody, header);
+              return this.api10xxService.fetchEnableAccount(enableBody, header);
             })
           )
           .subscribe((res: any) => {
@@ -1427,7 +1428,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
                     const { imgLockCode } = processResult;
                     this.imgLock = new LockCaptcha(
                       imgLockCode,
-                      this.signupService,
+                      this.api10xxService,
                       this.getClientIp
                     );
                     break;
@@ -1436,7 +1437,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
               }
             } else {
               const msg = this.translate.instant(msgKey);
-              this.utils.showSnackBar(msg);
+              this.hintDialogService.showSnackBar(msg);
               this.enableBody.enableAccountFlow = EnableAccountFlow.verify;
               if (signInType === SignTypeEnum.phone) this.reciprocal();
             }
@@ -1480,7 +1481,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
           .pipe(
             switchMap((ipResult: any) => {
               const header = { remoteAddr: ipResult.ip };
-              return this.signupService.fetchEnableAccount(this.enableBody, header);
+              return this.api10xxService.fetchEnableAccount(this.enableBody, header);
             })
           )
           .subscribe((res: any) => {

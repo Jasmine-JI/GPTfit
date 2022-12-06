@@ -1,8 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UtilsService } from '../../../../shared/services/utils.service';
-import { UserService, AuthService, NodejsApiService } from '../../../../core/services';
+import {
+  UserService,
+  AuthService,
+  NodejsApiService,
+  ApiCommonService,
+} from '../../../../core/services';
 import { formTest } from '../../../../shared/models/form-test';
 import { Subject, Subscription, fromEvent, of } from 'rxjs';
 import { takeUntil, switchMap, map, tap } from 'rxjs/operators';
@@ -77,7 +81,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
   constructor(
     private officialActivityService: OfficialActivityService,
     private activatedRoute: ActivatedRoute,
-    private utils: UtilsService,
+    private apiCommonService: ApiCommonService,
     private router: Router,
     private userService: UserService,
     private nodejsApiService: NodejsApiService,
@@ -133,7 +137,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     this.uiFlag.progress = 30;
     return this.officialActivityService.getEventDetail({ eventId }).pipe(
       map((res) => {
-        if (this.utils.checkRes(res, false)) return res;
+        if (this.apiCommonService.checkRes(res, false)) return res;
         this.router.navigateByUrl(pageNotFoundPath, { replaceUrl: true });
         return false;
       })

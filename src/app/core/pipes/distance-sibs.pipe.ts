@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform, NgModule } from '@angular/core';
-import { transformDistance } from '../../shared/utils/sports';
+import { transformDistance } from '../utils/sports';
 import { Unit } from '../../shared/enum/value-conversion';
 
 @Pipe({ name: 'distanceSibs' })

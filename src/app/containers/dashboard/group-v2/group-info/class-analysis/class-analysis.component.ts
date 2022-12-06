@@ -3,20 +3,24 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { GroupDetailInfo, UserSimpleInfo, MemberInfo } from '../../../models/group-detail';
 import { CalenderDay } from '../../../models/report';
-import { GroupService } from '../../../../../shared/services/group.service';
-import { UtilsService } from '../../../../../shared/services/utils.service';
 import { Subject, combineLatest, of } from 'rxjs';
 import { takeUntil, map, switchMap, first } from 'rxjs/operators';
 import dayjs from 'dayjs';
 import weekday from 'dayjs/plugin/weekday';
-import { ActivityService } from '../../../../../shared/services/activity.service';
-import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { chart, charts } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
-import { Api10xxService } from '../../../../../core/services/api-10xx.service';
 import { Router } from '@angular/router';
-import { HashIdService } from '../../../../../shared/services/hash-id.service';
-import { AuthService } from '../../../../../core/services/auth.service';
+import {
+  HashIdService,
+  AuthService,
+  Api10xxService,
+  Api11xxService,
+  Api21xxService,
+  Api70xxService,
+  HintDialogService,
+} from '../../../../../core/services';
+import { ProfessionalService } from '../../../../professional/services/professional.service';
+import { displayGroupLevel } from '../../../../../core/utils';
 
 dayjs.extend(weekday);
 
@@ -230,15 +234,16 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   /**************************************************************/
 
   constructor(
-    private groupService: GroupService,
-    private utils: UtilsService,
-    private activityService: ActivityService,
+    private api11xxService: Api11xxService,
+    private hintDialogService: HintDialogService,
+    private api21xxService: Api21xxService,
     private translate: TranslateService,
     private api10xxService: Api10xxService,
     private hashIdService: HashIdService,
     private router: Router,
-    private qrcodeService: QrcodeService,
-    private authService: AuthService
+    private api70xxService: Api70xxService,
+    private authService: AuthService,
+    private professionalService: ProfessionalService
   ) {}
 
   ngOnInit(): void {
@@ -253,14 +258,14 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    */
   initPage() {
     combineLatest([
-      this.groupService.getRxGroupDetail(),
-      this.groupService.getRxCommerceInfo(),
-      this.groupService.getUserSimpleInfo(),
+      this.professionalService.getRxGroupDetail(),
+      this.professionalService.getRxCommerceInfo(),
+      this.professionalService.getUserSimpleInfo(),
     ])
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((resArr) => {
         this.groupInfo = resArr[0];
-        Object.assign(resArr[0], { groupLevel: this.utils.displayGroupLevel(resArr[0].groupId) });
+        Object.assign(resArr[0], { groupLevel: displayGroupLevel(resArr[0].groupId) });
         Object.assign(resArr[0], { expired: resArr[1].expired });
         Object.assign(resArr[0], { commerceStatus: resArr[1].commerceStatus });
         this.userSimpleInfo = resArr[2];
@@ -331,7 +336,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    */
   getMemberList() {
     const { token } = this.authService;
-    this.groupService
+    this.professionalService
       .getRXClassMemberList()
       .pipe(
         first(),
@@ -340,19 +345,19 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
             const body = {
               token,
               groupId: this.groupInfo.groupId,
-              groupLevel: this.utils.displayGroupLevel(this.groupInfo.groupId),
+              groupLevel: displayGroupLevel(this.groupInfo.groupId),
               infoType: 3,
               avatarType: 3,
             };
 
-            return this.groupService.fetchGroupMemberList(body).pipe(
+            return this.api11xxService.fetchGroupMemberList(body).pipe(
               map((resp) => {
                 if (resp.resultCode !== 200) {
                   console.error(`${resp.resultCode}: Api ${resp.apiCode} ${resp.resultMessage}`);
                   return [];
                 } else {
                   const list = this.sortMember(resp.info.groupMemberInfo);
-                  this.groupService.setClassMemberList(list);
+                  this.professionalService.setClassMemberList(list);
                   return list;
                 }
               })
@@ -448,9 +453,9 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       pageCounts: '1000',
     };
 
-    this.activityService.fetchMultiActivityData(body).subscribe((res) => {
+    this.api21xxService.fetchMultiActivityData(body).subscribe((res) => {
       if (res.resultCode !== 200) {
-        this.utils.openAlert(errMsg);
+        this.hintDialogService.openAlert(errMsg);
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.calenderActivities = res.info.activities;
@@ -622,13 +627,13 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.uiFlag.isLoading = true;
     this.memberHRZoneList.length = 0;
     this.caloriesSet.length = 0;
-    this.activityService.fetchMultiActivityData(body).subscribe((res) => {
+    this.api21xxService.fetchMultiActivityData(body).subscribe((res) => {
       this.uiFlag.isLoading = false;
       this.activityDetail = res.info.activities;
       if (res.resultCode !== 200) {
         this.uiFlag.noData = true;
         this.updateUrl(false);
-        this.utils.openAlert(errMsg);
+        this.hintDialogService.openAlert(errMsg);
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.activityLength = this.activityDetail.length;
@@ -1278,7 +1283,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       queryType: '1',
       queryArray: SN,
     };
-    this.qrcodeService.getProductInfo(deviceDody).subscribe((res) => {
+    this.api70xxService.fetchGetProductInfo(deviceDody).subscribe((res) => {
       if (res) {
         this.deviceInfo = res.info.productInfo[0];
         if (location.hostname === '192.168.1.235') {

@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import { formTest } from '../../../../shared/models/form-test';
-import { UtilsService } from '../../../../shared/services/utils.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Location } from '@angular/common';
+import { HintDialogService, ApiCommonService } from '../../../../core/services';
 
 enum ContentType {
   operation = 1,
@@ -62,9 +62,10 @@ export class ContactUsComponent implements OnInit, OnDestroy {
 
   constructor(
     private officialActivityService: OfficialActivityService,
-    private utils: UtilsService,
     private translate: TranslateService,
-    private ngLocation: Location
+    private ngLocation: Location,
+    private hintDialogService: HintDialogService,
+    private apiCommonService: ApiCommonService
   ) {}
 
   ngOnInit(): void {
@@ -233,7 +234,7 @@ export class ContactUsComponent implements OnInit, OnDestroy {
           .pipe(takeUntil(this.ngUnsubscribe))
           .subscribe((res) => {
             const result = res[0];
-            const succeeded = this.utils.checkRes(result);
+            const succeeded = this.apiCommonService.checkRes(result);
             let msg = this.translate.instant('universal_operating_send');
             if (succeeded) {
               msg = `${msg} ${this.translate.instant('universal_status_success')}`;
@@ -241,7 +242,7 @@ export class ContactUsComponent implements OnInit, OnDestroy {
               msg = `${msg} ${this.translate.instant('universal_status_failure')}`;
             }
 
-            this.utils.showSnackBar(msg);
+            this.hintDialogService.showSnackBar(msg);
             this.uiFlag.progress = 100;
             if (succeeded) this.back();
           });

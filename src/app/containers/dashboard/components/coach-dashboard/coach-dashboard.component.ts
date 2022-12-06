@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { demoCoachInfo, demoLessonInfo } from './fakeUsers';
-import { CoachService } from '../../../../shared/services/coach.service';
 import { ActivatedRoute } from '@angular/router';
 import { setOptions } from 'highcharts';
 import { webSocket } from 'rxjs/webSocket';
@@ -17,8 +16,8 @@ import dayjs from 'dayjs';
 import { stockChart } from 'highcharts/highstock';
 import cloneDeep from 'lodash/cloneDeep';
 import keyBy from 'lodash/keyBy';
-import { getUrlQueryStrings } from '../../../../shared/utils/index';
-import { AuthService } from '../../../../core/services/auth.service';
+import { getUrlQueryStrings } from '../../../../core/utils/index';
+import { AuthService, Api20xxService, Api70xxService } from '../../../../core/services';
 
 export class Message {
   constructor(public classMemberDataField: any, public classMemberDataFieldValue: any) {}
@@ -212,7 +211,8 @@ export class CoachDashboardComponent implements OnInit, AfterViewInit, OnDestroy
   public serverMessages: Message;
   userInfos: any = [];
   constructor(
-    private coachService: CoachService,
+    private api20xxService: Api20xxService,
+    private api70xxService: Api70xxService,
     private route: ActivatedRoute,
     elementRef: ElementRef,
     private authService: AuthService
@@ -245,7 +245,7 @@ export class CoachDashboardComponent implements OnInit, AfterViewInit, OnDestroy
       avatarType: '2',
     };
     if (!(this.classId === '99999' && this.isDemoMode)) {
-      this.coachService.fetchClassRoomDetail(body).subscribe((res) => {
+      this.api20xxService.fetchClassRoomDetail(body).subscribe((res) => {
         this.classInfo = res.info;
         this.classInfo.groupIcon =
           this.classInfo.groupIcon && this.classInfo.groupIcon.length > 0
@@ -509,7 +509,7 @@ export class CoachDashboardComponent implements OnInit, AfterViewInit, OnDestroy
       avatarType: '2',
       pairEquipmentSN: snDatas,
     };
-    this.coachService.fetchFitPairInfo(body).subscribe((res) => {
+    this.api70xxService.fetchFitPairInfo(body).subscribe((res) => {
       const datas = res.info.deviceInfo;
       const series = [];
       this.series1 = [];

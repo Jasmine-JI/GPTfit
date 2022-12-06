@@ -13,7 +13,7 @@ import { EditGuard } from './guards/edit.guard';
 import { AdminGuard } from './guards/admin.guard';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 import { SharedPipes } from '../../shared/pipes/shared-pipes';
-import { CustomMaterialModule } from '../../shared/custom-material.module';
+import { CustomMaterialModule } from '../../core/custom-material.module';
 import { SharedModule } from '../../shared/shared.module';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { OfficialActivityService } from './services/official-activity.service';
@@ -23,7 +23,6 @@ import { ShippedStatusPipe } from './pipes/shipped-status.pipe';
 import { QRCodeModule } from 'angularx-qrcode';
 import { EditCarouselComponent } from './components/edit-carousel/edit-carousel.component';
 import { ContactUsComponent } from './components/contact-us/contact-us.component';
-import { GroupService } from '../../shared/services/group.service';
 import { ListStatusPipe } from './pipes/list-status.pipe';
 import { AboutCloudrunComponent } from './components/about-cloudrun/about-cloudrun.component';
 import { SportTimePipe } from '../../shared/pipes/sport-time.pipe';
@@ -65,7 +64,6 @@ import { StationMailModule } from '../station-mail/station-mail.module';
     ShippedStatusPipe,
     SportTimePipe,
     AdminGuard,
-    GroupService,
   ],
 })
 export class OfficialActivityModule {}

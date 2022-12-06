@@ -1,18 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { GroupService } from '../../../../shared/services/group.service';
-import { UtilsService } from '../../../../shared/services/utils.service';
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
-import { HashIdService } from '../../../../shared/services/hash-id.service';
-import { debounce, buildBase64ImgString } from '../../../../shared/utils/index';
-import { Api10xxService } from '../../../../core/services/api-10xx.service';
+import {
+  HashIdService,
+  Api10xxService,
+  AuthService,
+  Api11xxService,
+  NodejsApiService,
+} from '../../../../core/services';
+import { debounce, buildBase64ImgString, displayGroupLevel } from '../../../../core/utils';
 import { Router } from '@angular/router';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { last } from 'rxjs/operators';
 import dayjs from 'dayjs';
 import { AccountTypeEnum } from '../../../../shared/enum/account';
-import { AuthService } from '../../../../core/services/auth.service';
 
 interface UserInfo {
   userName: string;
@@ -78,8 +80,8 @@ export class InnerTestComponent implements OnInit {
   readonly accountType = AccountTypeEnum;
 
   constructor(
-    private groupService: GroupService,
-    private utils: UtilsService,
+    private api11xxService: Api11xxService,
+    private nodejsApiService: NodejsApiService,
     public dialog: MatDialog,
     private hashIdService: HashIdService,
     private api10xxService: Api10xxService,
@@ -104,7 +106,7 @@ export class InnerTestComponent implements OnInit {
       userId: userId,
     };
 
-    this.groupService.fetchUserAvartar(body).subscribe((res) => {
+    this.nodejsApiService.fetchUserAvartar(body).subscribe((res) => {
       const {
         resultCode,
         lastResetPwd,
@@ -227,10 +229,10 @@ export class InnerTestComponent implements OnInit {
         token: this.authService.token,
         avatarType: 2,
       };
-      this.groupService.fetchGroupListDetail(body).subscribe((res) => {
+      this.api11xxService.fetchGroupListDetail(body).subscribe((res) => {
         this.groupInfo = res.info;
         const { groupIcon, groupId } = this.groupInfo;
-        this.groupLevel = this.utils.displayGroupLevel(groupId);
+        this.groupLevel = displayGroupLevel(groupId);
         this.groupImg =
           groupIcon && groupIcon.length > 0 ? groupIcon : '/assets/images/group-default.svg';
       });

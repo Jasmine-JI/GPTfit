@@ -12,10 +12,10 @@ import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs';
-import { GlobalEventsService } from '../../../../core/services/global-events.service';
-import { deepCopy, mathRounding } from '../../../utils/index';
+import { GlobalEventsService } from '../../../../core/services';
+import { deepCopy, mathRounding } from '../../../../core/utils/index';
 import { compareChartDefault } from '../../../models/chart-data';
-import { bodyWeightTooltip } from '../../../utils/chart-formatter';
+import { bodyWeightTooltip } from '../../../../core/utils/chart-formatter';
 import { lb } from '../../../models/bs-constant';
 
 @Component({

@@ -5,11 +5,9 @@ import { MessageBoxComponent } from '../../../../shared/components/message-box/m
 import { TranslateService } from '@ngx-translate/core';
 import { AccountTypeEnum, AccountStatusEnum } from '../../../../shared/enum/account';
 import { Domain, WebIp, WebPort } from '../../../../shared/enum/domain';
-import { UserService } from '../../../../core/services/user.service';
-import { getUrlQueryStrings, checkResponse } from '../../../../shared/utils/index';
-import { Api10xxService } from '../../../../core/services/api-10xx.service';
+import { UserService, AuthService, Api10xxService } from '../../../../core/services';
+import { getUrlQueryStrings, checkResponse } from '../../../../core/utils/index';
 import { ThirdParty } from '../../../../shared/enum/thirdParty';
-import { AuthService } from '../../../../core/services/auth.service';
 
 /**
  * 測試環境與正式環境 strava 的 clientId

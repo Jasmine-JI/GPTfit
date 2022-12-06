@@ -5,15 +5,19 @@ import { GroupDetailInfo, UserSimpleInfo } from '../../../models/group-detail';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
-import { GroupService } from '../../../../../shared/services/group.service';
-import { UtilsService } from '../../../../../shared/services/utils.service';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
-import { Api10xxService } from '../../../../../core/services/api-10xx.service';
+import {
+  Api10xxService,
+  Api70xxService,
+  AuthService,
+  ReportService,
+  HintDialogService,
+  ApiCommonService,
+} from '../../../../../core/services';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
-import { ReportService } from '../../../../../shared/services/report.service';
 import { GroupLevel } from '../../../../dashboard/models/group-detail';
-import { deepCopy } from '../../../../../shared/utils/index';
-import { AuthService } from '../../../../../core/services/auth.service';
+import { deepCopy, displayGroupLevel } from '../../../../../core/utils';
+import { ProfessionalService } from '../../../../professional/services/professional.service';
 
 type EditMode = 'add' | 'del';
 
@@ -79,14 +83,16 @@ export class DeviceListComponent implements OnInit, OnDestroy {
   }/app/public_html/products`;
 
   constructor(
-    private groupService: GroupService,
-    private utils: UtilsService,
     private dialog: MatDialog,
     private translateService: TranslateService,
     private qrcodeService: QrcodeService,
     private api10xxService: Api10xxService,
+    private api70xxService: Api70xxService,
     private reportService: ReportService,
-    private authService: AuthService
+    private authService: AuthService,
+    private professionalService: ProfessionalService,
+    private hintDialogService: HintDialogService,
+    private apiCommonService: ApiCommonService
   ) {}
 
   ngOnInit(): void {
@@ -122,15 +128,15 @@ export class DeviceListComponent implements OnInit, OnDestroy {
    */
   getNeedInfo() {
     combineLatest([
-      this.groupService.getUserSimpleInfo(),
-      this.groupService.getAllLevelGroupData(),
-      this.groupService.getRxGroupDetail(),
+      this.professionalService.getUserSimpleInfo(),
+      this.professionalService.getAllLevelGroupData(),
+      this.professionalService.getRxGroupDetail(),
     ])
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((resArr) => {
         const [userSimpleInfo, allLevelGroupData, groupDetail] = resArr,
           { groupId, brands, branches } = allLevelGroupData as any,
-          groupLevel = this.utils.displayGroupLevel(groupId),
+          groupLevel = displayGroupLevel(groupId),
           group = this.reportConditionOpt.group;
         Object.assign(groupDetail, { groupLevel });
         this.userSimpleInfo = userSimpleInfo;
@@ -160,10 +166,10 @@ export class DeviceListComponent implements OnInit, OnDestroy {
         const { selectGroup } = this.reportConditionOpt.group;
         let targetGroupId: string;
         if (selectGroup) {
-          targetGroupId = this.groupService.getCompleteGroupId(selectGroup.split('-'));
+          targetGroupId = this.professionalService.getCompleteGroupId(selectGroup.split('-'));
         } else {
           const { groupId } = this.groupInfo;
-          targetGroupId = `${this.groupService.getPartGroupId(groupId, 4)}-0-0`;
+          targetGroupId = `${this.professionalService.getPartGroupId(groupId, 4)}-0-0`;
         }
 
         if (!this.uiFlag.editMode) this.getDeviceList(targetGroupId);
@@ -187,11 +193,11 @@ export class DeviceListComponent implements OnInit, OnDestroy {
     }
 
     this.uiFlag.progress = 20;
-    this.qrcodeService.getDeviceList(body).subscribe((res) => {
+    this.api70xxService.fetchGetDeviceList(body).subscribe((res) => {
       this.uiFlag.progress = 40;
       const { apiCode, resultCode, resultMessage, info } = res;
       if (resultCode !== 200) {
-        this.utils.handleError(resultCode, apiCode, resultMessage);
+        this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
         this.uiFlag.progress = 100;
       } else {
         let { deviceList } = info;
@@ -201,7 +207,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
             const { selectGroup } = this.reportConditionOpt.group;
             let targetGroup: string;
             if (!selectGroup) {
-              targetGroup = this.groupService.getPartGroupId(targetGroupId, 4);
+              targetGroup = this.professionalService.getPartGroupId(targetGroupId, 4);
             } else {
               targetGroup = selectGroup;
             }
@@ -256,7 +262,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
       queryType: 1,
       queryArray: snList,
     };
-    const querry = [this.qrcodeService.getProductInfo(productInfoBody)];
+    const querry = [this.api70xxService.fetchGetProductInfo(productInfoBody)];
     if (idSet.size > 0) {
       const idList = Array.from(idSet),
         body = {
@@ -363,7 +369,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
     const { selectGroup } = this.reportConditionOpt.group;
     let targetGroupId: string;
     if (selectGroup) {
-      targetGroupId = this.groupService.getCompleteGroupId(selectGroup.split('-'));
+      targetGroupId = this.professionalService.getCompleteGroupId(selectGroup.split('-'));
     } else {
       const { groupId } = this.groupInfo;
       targetGroupId = groupId;
@@ -562,7 +568,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
       action: 1,
     };
 
-    this.qrcodeService.updateGroupDeviceList(body).subscribe((res) => {
+    this.api70xxService.fetchUpdateGroupDeviceList(body).subscribe((res) => {
       const { resultCode, apiCode, resultMessage } = res;
       if (resultCode !== 200) {
         if (resultMessage === 'Execute access right is not enough.') {
@@ -571,10 +577,10 @@ export class DeviceListComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.ngUnsubscribe))
             .subscribe(() => {
               const msg = this.translateService.instant('universal_group_notGroupMember');
-              this.utils.openAlert(msg);
+              this.hintDialogService.openAlert(msg);
             });
         } else {
-          this.utils.handleError(resultCode, apiCode, resultMessage);
+          this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
         }
       } else {
         this.returnNormalMode();
@@ -601,10 +607,10 @@ export class DeviceListComponent implements OnInit, OnDestroy {
         action: 2,
       };
 
-      this.qrcodeService.updateGroupDeviceList(body).subscribe((res) => {
+      this.api70xxService.fetchUpdateGroupDeviceList(body).subscribe((res) => {
         const { resultCode, apiCode, resultMessage } = res;
         if (resultCode !== 200) {
-          this.utils.handleError(resultCode, apiCode, resultMessage);
+          this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
         } else {
           this.deviceList = this.deviceList.filter((_list) => {
             return !_list.delSelected;

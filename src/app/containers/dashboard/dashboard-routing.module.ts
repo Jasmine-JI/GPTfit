@@ -4,7 +4,7 @@ import { DashboardComponent } from './dashboard.component';
 import { DeviceLogComponent } from './components/device-log/device-log.component';
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
-import { AuthGuard } from '../../shared/guards/auth/auth.guard';
+import { AuthGuard } from '../../core/guard/auth/auth.guard';
 import { GroupSearchComponent } from './group/group-search/group-search.component';
 import { AllGroupListComponent } from './group/all-group-list/all-group-list.component';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';

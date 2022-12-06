@@ -11,13 +11,13 @@ import {
 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { SportType } from '../../../enum/sports';
-import { changeOpacity, mathRounding } from '../../../utils/index';
+import { changeOpacity, mathRounding } from '../../../../core/utils/index';
 import { of, fromEvent, Subject, Subscription, merge } from 'rxjs';
 import { map, debounceTime, takeUntil, tap } from 'rxjs/operators';
 import { ChartBlock } from '../../../enum/chart';
 import { Percentage } from '../../../classes/percentage';
 import { DISTRIBUTION_CHART_COLOR } from '../../../models/chart-data';
-import { GlobalEventsService } from '../../../../core/services/global-events.service';
+import { GlobalEventsService } from '../../../../core/services';
 
 @Component({
   selector: 'app-distribution-canvas-chart',

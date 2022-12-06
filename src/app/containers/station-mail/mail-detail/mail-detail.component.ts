@@ -1,12 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { StationMailService } from '../services/station-mail.service';
-import { Api50xxService } from '../../../core/services/api-50xx.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { checkResponse, getUrlQueryStrings, deepCopy } from '../../../shared/utils/index';
+import { Api50xxService, HashIdService, AuthService } from '../../../core/services';
+import { checkResponse, getUrlQueryStrings, deepCopy } from '../../../core/utils/index';
 import { Router, NavigationEnd } from '@angular/router';
 import { appPath } from '../../../app-path.const';
 import { QueryString } from '../../../shared/enum/query-string';
-import { HashIdService } from '../../../shared/services/hash-id.service';
 import { Subject, fromEvent, Subscription, merge, combineLatest, Observable } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
 import { MessageType } from '../enum/station-mail';

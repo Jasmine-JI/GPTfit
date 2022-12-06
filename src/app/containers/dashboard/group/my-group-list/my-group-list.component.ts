@@ -1,12 +1,10 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { GroupService } from '../../../../shared/services/group.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../../core/services/auth.service';
-import { HashIdService } from '../../../../shared/services/hash-id.service';
-import { getUrlQueryStrings } from '../../../../shared/utils/index';
+import { AuthService, HashIdService, Api11xxService } from '../../../../core/services';
+import { getUrlQueryStrings } from '../../../../core/utils/index';
 
 @Component({
   selector: 'app-my-group-list',
@@ -30,7 +28,7 @@ export class MyGroupListComponent implements OnInit {
   @ViewChild('filter', { static: false }) filter: ElementRef;
 
   constructor(
-    private groupService: GroupService,
+    private api11xxService: Api11xxService,
     private router: Router,
     private hashIdService: HashIdService,
     private authService: AuthService
@@ -81,7 +79,7 @@ export class MyGroupListComponent implements OnInit {
       page: (this.currentPage && this.currentPage.pageIndex.toString()) || '0',
       pageCounts: (this.currentPage && this.currentPage.pageSize.toString()) || '10',
     };
-    this.groupService.fetchGroupList(body).subscribe((res) => {
+    this.api11xxService.fetchGroupList(body).subscribe((res) => {
       this.isLoading = false;
       this.logSource.data = res.info.groupList.filter(
         (_group) => _group.groupStatus !== 4 && _group.joinStatus === 2

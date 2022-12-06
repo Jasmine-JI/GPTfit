@@ -5,10 +5,8 @@ import { PrivacyObj, allPrivacyItem, PrivacyEditObj } from '../../../../shared/m
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { SelectDate } from '../../../../shared/models/utils-type';
-import { ActivityService } from '../../../../shared/services/activity.service';
-import { UserService } from '../../../../core/services/user.service';
-import { checkResponse, deepCopy } from '../../../../shared/utils/index';
-import { AuthService } from '../../../../core/services/auth.service';
+import { UserService, AuthService, Api21xxService } from '../../../../core/services';
+import { checkResponse, deepCopy } from '../../../../core/utils/index';
 
 enum RangeType {
   date = 1,
@@ -60,7 +58,7 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private translate: TranslateService,
     private userService: UserService,
-    private activityService: ActivityService,
+    private api21xxService: Api21xxService,
     private authService: AuthService
   ) {}
 
@@ -300,7 +298,7 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
         };
       }
 
-      this.activityService.editPrivacy(body).subscribe((res) => {
+      this.api21xxService.fetchEditPrivacy(body).subscribe((res) => {
         let msg: string;
         if (res.resultCode === 200) {
           msg = this.translate.instant('universal_operating_finishEdit');

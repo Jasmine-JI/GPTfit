@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { ft, inch } from '../models/bs-constant';
 import { Unit } from '../enum/value-conversion';
-import { mathRounding } from '../utils/index';
+import { mathRounding } from '../../core/utils/index';
 
 type MetricLenUnit = 'cm' | 'mm';
 type ImperialLenUnit = 'ft' | 'inch';

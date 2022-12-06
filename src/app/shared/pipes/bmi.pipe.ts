@@ -1,9 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { ReportService } from '../services/report.service';
+import { countBMI } from '../../core/utils';
 
 @Pipe({ name: 'bmi' })
 export class BMIPipe implements PipeTransform {
-  constructor(private reportService: ReportService) {}
+  constructor() {}
 
   /**
    * 依公英制轉換身高單位。
@@ -13,6 +13,6 @@ export class BMIPipe implements PipeTransform {
    */
   transform(value: Array<number>): number {
     const [height, weight] = value;
-    return this.reportService.countBMI(height, weight);
+    return countBMI(height, weight);
   }
 }

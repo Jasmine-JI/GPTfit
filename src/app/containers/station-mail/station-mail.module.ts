@@ -8,7 +8,7 @@ import { MailDetailComponent } from './mail-detail/mail-detail.component';
 import { StationMailRoutingModule } from './station-mail-routing.module';
 import { SharedModule } from '../../shared/shared.module';
 import { SharedPipes } from '../../shared/pipes/shared-pipes';
-import { CustomMaterialModule } from '../../shared/custom-material.module';
+import { CustomMaterialModule } from '../../core/custom-material.module';
 
 @NgModule({
   imports: [

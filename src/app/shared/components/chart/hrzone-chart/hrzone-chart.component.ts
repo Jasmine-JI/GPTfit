@@ -12,7 +12,7 @@ import { chart } from 'highcharts';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { zoneColor } from '../../../models/chart-data';
-import { GlobalEventsService } from '../../../../core/services/global-events.service';
+import { GlobalEventsService } from '../../../../core/services';
 
 /**
  * 建立圖表用

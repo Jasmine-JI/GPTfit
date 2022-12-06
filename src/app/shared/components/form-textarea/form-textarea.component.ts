@@ -7,7 +7,7 @@ import {
   OnChanges,
   SimpleChanges,
 } from '@angular/core';
-import { DEFAULT_MAXLENGTH } from '../../utils/index';
+import { DEFAULT_MAXLENGTH } from '../../../core/utils/index';
 import { UntypedFormGroup } from '@angular/forms';
 
 @Component({

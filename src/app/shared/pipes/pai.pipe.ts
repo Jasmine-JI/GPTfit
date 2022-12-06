@@ -1,9 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { ReportService } from '../services/report.service';
+import { countPai } from '../../core/utils';
 
 @Pipe({ name: 'pai' })
 export class PaiPipe implements PipeTransform {
-  constructor(private reportService: ReportService) {}
+  constructor() {}
 
   /**
    * 根據心率區間秒數與報告選擇時間範圍，計算pai
@@ -12,6 +12,6 @@ export class PaiPipe implements PipeTransform {
    * @returns {number}-pai
    */
   transform(value: Array<number>, args: number): number {
-    return this.reportService.countPai(value, args);
+    return countPai(value, args);
   }
 }

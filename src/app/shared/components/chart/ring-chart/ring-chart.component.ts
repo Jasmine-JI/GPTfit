@@ -13,7 +13,7 @@ import { chart } from 'highcharts';
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
 import { SPORT_TYPE_COLOR } from '../../../models/chart-data';
-import { GlobalEventsService } from '../../../../core/services/global-events.service';
+import { GlobalEventsService } from '../../../../core/services';
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {

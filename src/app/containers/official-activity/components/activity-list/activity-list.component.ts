@@ -1,9 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { OfficialActivityService } from '../../services/official-activity.service';
-import { UtilsService } from '../../../../shared/services/utils.service';
-import { UserService } from '../../../../core/services/user.service';
-import { Subject, Subscription, fromEvent, merge, of, combineLatest } from 'rxjs';
+import {
+  UserService,
+  AuthService,
+  Api20xxService,
+  HintDialogService,
+  ApiCommonService,
+} from '../../../../core/services';
+import { Subject, Subscription, fromEvent, merge, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { UserProfileInfo } from '../../../../shared/models/user-profile-info';
 import { AccountTypeEnum, AccountStatusEnum } from '../../../../shared/enum/account';
@@ -12,7 +17,6 @@ import { MapLanguageEnum } from '../../../../shared/models/i18n';
 import { SelectDate } from '../../../../shared/models/utils-type';
 import { DomSanitizer } from '@angular/platform-browser';
 import { EventStatus } from '../../models/activity-content';
-import { CloudrunService } from '../../../../shared/services/cloudrun.service';
 import { formTest } from '../../../../shared/models/form-test';
 import {
   PaidStatusEnum,
@@ -28,8 +32,7 @@ import {
   getLocalStorageObject,
   setUrlQueryString,
   getUrlQueryStrings,
-} from '../../../../shared/utils/index';
-import { AuthService } from '../../../../core/services/auth.service';
+} from '../../../../core/utils';
 
 type Page = 'activity-list' | 'my-activity';
 
@@ -145,13 +148,14 @@ export class ActivityListComponent implements OnInit, OnDestroy {
 
   constructor(
     private officialActivityService: OfficialActivityService,
-    private utils: UtilsService,
     private userService: UserService,
     private router: Router,
     private sanitizer: DomSanitizer,
-    private cloudrunService: CloudrunService,
+    private api20xxService: Api20xxService,
     private translate: TranslateService,
-    private authService: AuthService
+    private authService: AuthService,
+    private hintDialogService: HintDialogService,
+    private apiCommonService: ApiCommonService
   ) {}
 
   ngOnInit(): void {
@@ -322,7 +326,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
         .subscribe((resArr) => {
           const [eventListRes, mapInfoRes] = resArr;
           this.allMapInfo = mapInfoRes;
-          if (this.utils.checkRes(eventListRes)) {
+          if (this.apiCommonService.checkRes(eventListRes)) {
             const { eventList, currentTimestamp, totalCounts } = eventListRes;
             this.eventList = eventList;
             this.serverTimestamp = currentTimestamp;
@@ -372,7 +376,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       if (progress === 100) {
         this.uiFlag.progress = 30;
         this.officialActivityService.getParticipantHistory({ token }).subscribe((res) => {
-          if (this.utils.checkRes(res)) {
+          if (this.apiCommonService.checkRes(res)) {
             const {
               info: { history },
               currentTimestamp,
@@ -571,7 +575,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     };
 
     this.officialActivityService.createProductOrder(body).subscribe((res) => {
-      if (this.utils.checkRes(res)) {
+      if (this.apiCommonService.checkRes(res)) {
         const { responseHtml } = res;
         const newElement = document.createElement('div');
         const target = document.querySelector('.main__page');
@@ -702,9 +706,9 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       this.uiFlag.progress = 30;
       const { date, time } = this.scheduleTime;
       this.scheduleRace.schedTimestamp = date + time;
-      this.cloudrunService.createRace(this.scheduleRace).subscribe((res) => {
+      this.api20xxService.createRace(this.scheduleRace).subscribe((res) => {
         let msg: string;
-        if (this.utils.checkRes(res, false)) {
+        if (this.apiCommonService.checkRes(res, false)) {
           msg = '建立成功';
           this.closeCreateScheduleBox();
         } else {
@@ -716,7 +720,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
           }
         }
 
-        this.utils.showSnackBar(msg);
+        this.hintDialogService.showSnackBar(msg);
         this.uiFlag.progress = 100;
       });
     }
@@ -918,7 +922,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
           .pipe(takeUntil(this.ngUnsubscribe))
           .subscribe((res) => {
             const msg = this.translate.instant('universal_status_wrongFormat');
-            this.utils.showSnackBar(msg);
+            this.hintDialogService.showSnackBar(msg);
           });
       } else {
         const userProfile = { mobileNumber };
@@ -942,7 +946,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
           .pipe(takeUntil(this.ngUnsubscribe))
           .subscribe((res) => {
             const msg = this.translate.instant('universal_status_wrongFormat');
-            this.utils.showSnackBar(msg);
+            this.hintDialogService.showSnackBar(msg);
           });
       } else {
         const userProfile = { email };
@@ -966,7 +970,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
           .pipe(takeUntil(this.ngUnsubscribe))
           .subscribe((res) => {
             const msg = this.translate.instant('universal_status_wrongFormat');
-            this.utils.showSnackBar(msg);
+            this.hintDialogService.showSnackBar(msg);
           });
       } else {
         const userProfile = { address };
@@ -1034,7 +1038,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
       ]).subscribe((resArray) => {
         const [translateResult, updateResult] = resArray;
         let msg: string;
-        if (this.utils.checkRes(updateResult)) {
+        if (this.apiCommonService.checkRes(updateResult)) {
           msg = this.translate.instant('universal_status_updateCompleted');
           const { userProfile: newUserProfle } = update;
           const { applyStatus } = newUserProfle;
@@ -1052,7 +1056,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
           msg = this.translate.instant('universal_popUpMessage_updateFailed');
         }
 
-        this.utils.showSnackBar(msg);
+        this.hintDialogService.showSnackBar(msg);
         this.uiFlag.progress = 100;
       });
     }

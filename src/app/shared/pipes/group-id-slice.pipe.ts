@@ -1,9 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { GroupService } from '../services/group.service';
+import { ProfessionalService } from '../../containers/professional/services/professional.service';
 
 @Pipe({ name: 'groupIdSlice' })
 export class GroupIdSlicePipe implements PipeTransform {
-  constructor(private groupService: GroupService) {}
+  constructor(private professionalService: ProfessionalService) {}
 
   /**
    * 取得指定長度的groupid
@@ -13,6 +13,6 @@ export class GroupIdSlicePipe implements PipeTransform {
    * @author kidin-1090728
    */
   transform(groupId: string, length: number): string {
-    return this.groupService.getPartGroupId(groupId, length);
+    return this.professionalService.getPartGroupId(groupId, length);
   }
 }

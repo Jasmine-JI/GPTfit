@@ -1,10 +1,12 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
-import { AuthService } from '../../../../../core/services/auth.service';
-import { UtilsService } from '../../../../../shared/services/utils.service';
-import { SignupService } from '../../../../../shared/services/signup.service';
-import { Api10xxService } from '../../../../../core/services/api-10xx.service';
+import {
+  AuthService,
+  Api10xxService,
+  GetClientIpService,
+  GlobalEventsService,
+  HintDialogService,
+} from '../../../../../core/services';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
-import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 import { Subject, Subscription, fromEvent, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
@@ -18,7 +20,7 @@ import {
   getUrlQueryStrings,
   setLocalStorageObject,
   getLocalStorageObject,
-} from '../../../../../shared/utils/index';
+} from '../../../../../core/utils';
 
 enum QrSignInFlow {
   submitGuid = 1,
@@ -65,13 +67,13 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
 
   constructor(
     private translate: TranslateService,
-    private utils: UtilsService,
-    private signupService: SignupService,
+    private hintDialogService: HintDialogService,
     private api10xxService: Api10xxService,
     private auth: AuthService,
     private dialog: MatDialog,
     private router: Router,
-    private getClientIp: GetClientIpService
+    private getClientIp: GetClientIpService,
+    private globalEventsService: GlobalEventsService
   ) {}
 
   ngOnInit() {
@@ -172,8 +174,8 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1110113
    */
   setPageStyle(isPcView: boolean) {
-    this.utils.setHideNavbarStatus(isPcView);
-    this.utils.setDarkModeStatus(isPcView);
+    this.globalEventsService.setHideNavbarStatus(isPcView);
+    this.globalEventsService.setDarkModeStatus(isPcView);
   }
 
   // 取得註冊來源平台、類型和ID-kidin-1090512
@@ -264,7 +266,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
     };
 
     this.getClientIpaddress()
-      .pipe(switchMap((ipResult) => this.signupService.fetchQrcodeLogin(body, this.requestHeader)))
+      .pipe(switchMap((ipResult) => this.api10xxService.fetchQrcodeLogin(body, this.requestHeader)))
       .subscribe((res: any) => {
         if (res.processResult.resultCode !== 200) {
           switch (
@@ -286,7 +288,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
           this.getClientIpaddress()
             .pipe(
               switchMap((ipResult) =>
-                this.signupService.fetchQrcodeLogin(waitBody, this.requestHeader)
+                this.api10xxService.fetchQrcodeLogin(waitBody, this.requestHeader)
               )
             )
             .subscribe((response: any) => {
@@ -361,16 +363,17 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
       this.getClientIpaddress()
         .pipe(
           switchMap((ipResult) =>
-            this.signupService.fetchQrcodeLogin(this.loginBody, this.requestHeader)
+            this.api10xxService.fetchQrcodeLogin(this.loginBody, this.requestHeader)
           )
         )
         .subscribe((res: any) => {
           if (res.processResult.resultCode !== 200) {
             switch (res.processResult.apiReturnMessage) {
-              case `Post fail, found parameter 'guid' error.`:
+              case `Post fail, found parameter 'guid' error.`: {
                 const msg = this.translate.instant('universal_userAccount_linkHasExpired');
                 this.showMsg(msg);
                 break;
+              }
               default:
                 this.showMsg(errorMsg);
                 console.error(
@@ -406,7 +409,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
 
       this.dialog.open(MessageBoxComponent, { hasBackdrop: true, data });
     } else {
-      this.utils.showSnackBar(msg);
+      this.hintDialogService.showSnackBar(msg);
       if (leavePage) {
         setTimeout(this.turnBack.bind(this), 2000);
       }

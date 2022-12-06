@@ -18,7 +18,7 @@ import { takeUntil } from 'rxjs/operators';
 import { DataTypeUnitPipe } from '../../../pipes/data-type-unit.pipe';
 import { mi } from '../../../models/bs-constant';
 import { Unit } from '../../../enum/value-conversion';
-import { countDistance } from '../../../utils/index';
+import { countDistance } from '../../../../core/utils/index';
 
 /**
  * 建立圖表用

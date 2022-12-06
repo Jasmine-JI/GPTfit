@@ -10,7 +10,7 @@ import {
 import { fromEvent, Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PaginationSetting } from '../../models/pagination';
-import { deepCopy } from '../../utils/index';
+import { deepCopy } from '../../../core/utils/index';
 
 @Component({
   selector: 'app-pagination',

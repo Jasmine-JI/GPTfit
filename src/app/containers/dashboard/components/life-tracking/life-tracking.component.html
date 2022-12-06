@@ -58,7 +58,7 @@
   <div class="ala-dashboard-title activty-title">
     檔案資訊<span class="life-tracking-tip">fileInfo</span>
   </div>
-  <ng-container *ngIf="!utils.isObjectEmpty(fileInfo)">
+  <ng-container *ngIf="fileInfo">
     <div class="activity-block">
       <p style="color: #919191">
         {{ fileInfo?.dispName }} {{ 'universal_activityData_by' | translate }}
@@ -130,7 +130,7 @@
   <div class="ala-dashboard-title activty-title">
     概要資訊<span class="life-tracking-tip">lifeTrackingDayLayer</span>
   </div>
-  <ng-container *ngIf="!utils.isObjectEmpty(lifeTrackingDayLayer)">
+  <ng-container *ngIf="lifeTrackingDayLayer">
     <div class="fileInfo">
       <div class="fileInfo-item">
         <span class="life-tracking-data-name">actualSleepTime：</span>

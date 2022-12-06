@@ -1,14 +1,18 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { OfficialActivityService } from '../../services/official-activity.service';
-import { UtilsService } from '../../../../shared/services/utils.service';
 import { Subject, combineLatest, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { AlbumType } from '../../../../shared/models/image';
 import { ImageUploadService } from '../../../dashboard/services/image-upload.service';
-import { getCurrentTimestamp, deepCopy } from '../../../../shared/utils/index';
-import { AuthService } from '../../../../core/services/auth.service';
+import {
+  getCurrentTimestamp,
+  deepCopy,
+  createImgFileName,
+  base64ToFile,
+} from '../../../../core/utils';
+import { AuthService, HintDialogService, ApiCommonService } from '../../../../core/services';
 
 @Component({
   selector: 'app-edit-carousel',
@@ -43,11 +47,12 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
 
   constructor(
     private officialActivityService: OfficialActivityService,
-    private utils: UtilsService,
     private translateService: TranslateService,
     private router: Router,
     private imageUploadService: ImageUploadService,
-    private authService: AuthService
+    private authService: AuthService,
+    private hintDialogService: HintDialogService,
+    private apiCommonService: ApiCommonService
   ) {}
 
   ngOnInit(): void {
@@ -64,7 +69,7 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
       officialActivityService: { filterInvalidCarousel },
     } = this;
     this.officialActivityService.getEventAdvertise({ token }).subscribe((res) => {
-      if (this.utils.checkRes(res)) {
+      if (this.apiCommonService.checkRes(res)) {
         this.originCarouselList = res.advertise;
         // 移除時間過期之輪播內容
         this.carouselList = res.advertise
@@ -177,9 +182,9 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
     id: number = null
   ) {
     const index = imgArray.length;
-    const fileName = this.utils.createImgFileName(index, 0);
+    const fileName = createImgFileName(index, 0);
     const fileNameFull = `${fileName}.jpg`;
-    const newFile = this.utils.base64ToFile(newImg as string, fileName);
+    const newFile = base64ToFile(newImg as string, fileName);
     imgArray.push({
       albumType: type,
       fileNameFull: fileNameFull,
@@ -254,7 +259,7 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
             const updateResult = result[0];
             const imgChange = Object.keys(this.imgUpload).length > 0;
             if (imgChange) {
-              if (this.utils.checkRes(updateResult)) {
+              if (this.apiCommonService.checkRes(updateResult)) {
                 return this.uploadImg();
               } else {
                 return of(updateResult);
@@ -265,15 +270,15 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
           })
         )
         .subscribe((res) => {
-          if (this.utils.checkRes(res)) {
+          if (this.apiCommonService.checkRes(res)) {
             const currentTimeStamp = getCurrentTimestamp('ms');
             this.officialActivityService.setCarouselTime(currentTimeStamp);
             const msg = this.translateService.instant('universal_status_updateCompleted');
-            this.utils.showSnackBar(msg);
+            this.hintDialogService.showSnackBar(msg);
             this.navigateHomePage();
           } else {
             const msg = this.translateService.instant('universal_popUpMessage_updateFailed');
-            this.utils.showSnackBar(msg);
+            this.hintDialogService.showSnackBar(msg);
           }
 
           this.uiFlag.progress = 100;

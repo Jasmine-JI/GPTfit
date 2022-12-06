@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { UtilsService } from '../../../../shared/services/utils.service';
 import dayjs from 'dayjs';
 import { AlaApp } from '../../../../shared/models/app-id';
 import { InnerSystemService } from '../../services/inner-system.service';
@@ -7,10 +6,9 @@ import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import { MatDialog } from '@angular/material/dialog';
-import { Api10xxService } from '../../../../core/services/api-10xx.service';
+import { Api10xxService, AuthService, ApiCommonService } from '../../../../core/services';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { SelectDate } from '../../../../shared/models/utils-type';
-import { AuthService } from '../../../../core/services/auth.service';
 
 type Serverity = 'INFO' | 'WARN' | 'ERROR' | 'DEBUG';
 type TargetType = 'user' | 'equipment';
@@ -81,7 +79,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   readonly AlaApp = AlaApp;
 
   constructor(
-    private utils: UtilsService,
+    private apiCommonService: ApiCommonService,
     private innerSystemService: InnerSystemService,
     private dialog: MatDialog,
     private api10xxService: Api10xxService,
@@ -150,7 +148,11 @@ export class SystemLogComponent implements OnInit, OnDestroy {
           this.targetUser.account = null;
         } else {
           const result = res.processResult ?? res;
-          this.utils.handleError(result.resultCode, result.apiCode, result.resultMessage);
+          this.apiCommonService.handleError(
+            result.resultCode,
+            result.apiCode,
+            result.resultMessage
+          );
         }
       });
     } else {
@@ -320,7 +322,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
           this.uiFlag.currentTargetType = this.uiFlag.targetType;
         } else {
           this.totalCounts = 0;
-          this.utils.handleError(res.resultCode, res.apiCode, res.resultMessage);
+          this.apiCommonService.handleError(res.resultCode, res.apiCode, res.resultMessage);
         }
 
         this.progress = 100;

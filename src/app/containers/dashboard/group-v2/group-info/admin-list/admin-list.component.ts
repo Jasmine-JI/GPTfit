@@ -5,11 +5,11 @@ import {
   MemberInfo,
   GroupArchitecture,
 } from '../../../models/group-detail';
-import { GroupService } from '../../../../../shared/services/group.service';
-import { UtilsService } from '../../../../../shared/services/utils.service';
+import { Api11xxService, HintDialogService } from '../../../../../core/services';
 import { Subject, combineLatest, forkJoin } from 'rxjs';
-import { takeUntil, first } from 'rxjs/operators';
-import { GroupIdSlicePipe } from '../../../../../shared/pipes/group-id-slice.pipe';
+import { takeUntil } from 'rxjs/operators';
+import { ProfessionalService } from '../../../../professional/services/professional.service';
+import { displayGroupLevel } from '../../../../../core/utils';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -54,9 +54,9 @@ export class AdminListComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    private groupService: GroupService,
-    private utils: UtilsService,
-    private groupIdSlicePipe: GroupIdSlicePipe
+    private api11xxService: Api11xxService,
+    private hintDialogService: HintDialogService,
+    private professionalService: ProfessionalService
   ) {}
 
   ngOnInit(): void {
@@ -69,17 +69,17 @@ export class AdminListComponent implements OnInit, OnDestroy {
    */
   initPage() {
     combineLatest([
-      this.groupService.getRxGroupDetail(),
-      this.groupService.getRxCommerceInfo(),
-      this.groupService.getUserSimpleInfo(),
-      this.groupService.getAllLevelGroupData(),
-      this.groupService.getRXAdminList(),
+      this.professionalService.getRxGroupDetail(),
+      this.professionalService.getRxCommerceInfo(),
+      this.professionalService.getUserSimpleInfo(),
+      this.professionalService.getAllLevelGroupData(),
+      this.professionalService.getRXAdminList(),
     ])
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((resArr) => {
         const [groupDetail, commerceInfo, userSimpleInfo, allLevelGroupData, adminList] = resArr;
         Object.assign(groupDetail, {
-          groupLevel: this.utils.displayGroupLevel(groupDetail.groupId),
+          groupLevel: displayGroupLevel(groupDetail.groupId),
         });
         Object.assign(groupDetail, { expired: commerceInfo.expired });
         Object.assign(groupDetail, { commerceStatus: commerceInfo.commerceStatus });
@@ -99,7 +99,7 @@ export class AdminListComponent implements OnInit, OnDestroy {
     const adminBody = {
       token: this.userSimpleInfo.token,
       groupId: this.groupInfo.groupId,
-      groupLevel: this.utils.displayGroupLevel(this.groupInfo.groupId),
+      groupLevel: displayGroupLevel(this.groupInfo.groupId),
       infoType: 2,
       avatarType: 3,
     };
@@ -107,17 +107,17 @@ export class AdminListComponent implements OnInit, OnDestroy {
     const memberBody = {
       token: this.userSimpleInfo.token,
       groupId: this.groupInfo.groupId,
-      groupLevel: this.utils.displayGroupLevel(this.groupInfo.groupId),
+      groupLevel: displayGroupLevel(this.groupInfo.groupId),
       infoType: 3,
       avatarType: 3,
     };
 
     forkJoin([
-      this.groupService.fetchGroupMemberList(adminBody),
-      this.groupService.fetchGroupMemberList(memberBody),
+      this.api11xxService.fetchGroupMemberList(adminBody),
+      this.api11xxService.fetchGroupMemberList(memberBody),
     ]).subscribe((resArr) => {
       if (resArr[0].resultCode !== 200 || resArr[1].resultCode !== 200) {
-        this.utils.openAlert(errMsg);
+        this.hintDialogService.openAlert(errMsg);
         console.error(
           `${resArr[0].resultCode}: Api ${resArr[0].apiCode} ${resArr[0].resultMessage}`
         );
@@ -125,8 +125,8 @@ export class AdminListComponent implements OnInit, OnDestroy {
           `${resArr[1].resultCode}: Api ${resArr[1].apiCode} ${resArr[1].resultMessage}`
         );
       } else {
-        this.groupService.setAdminList(resArr[0].info.groupMemberInfo);
-        this.groupService.setNormalMemberList(resArr[1].info.groupMemberInfo);
+        this.professionalService.setAdminList(resArr[0].info.groupMemberInfo);
+        this.professionalService.setNormalMemberList(resArr[1].info.groupMemberInfo);
       }
     });
   }
@@ -213,8 +213,8 @@ export class AdminListComponent implements OnInit, OnDestroy {
 
           for (let j = 0; j < branchesLength; j++) {
             if (
-              this.groupIdSlicePipe.transform(member.groupId, 4) ===
-              this.groupIdSlicePipe.transform(branches[j].groupId, 4)
+              this.professionalService.getPartGroupId(member.groupId, 4) ===
+              this.professionalService.getPartGroupId(branches[j].groupId, 4)
             ) {
               Object.assign(member, { branchName: branches[j].groupName });
               break;
@@ -238,10 +238,10 @@ export class AdminListComponent implements OnInit, OnDestroy {
   handleEdit() {
     if (this.uiFlag.editMode === 'complete') {
       this.uiFlag.editMode = 'edit';
-      this.groupService.setEditMode('edit');
+      this.professionalService.setEditMode('edit');
     } else {
       this.uiFlag.editMode = 'complete';
-      this.groupService.setEditMode('complete');
+      this.professionalService.setEditMode('complete');
     }
   }
 
