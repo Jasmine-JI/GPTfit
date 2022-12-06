@@ -15,9 +15,8 @@ import { MessageType, ReadStatus } from '../enum/station-mail';
 import { appPath } from '../../../app-path.const';
 import { Router, NavigationEnd } from '@angular/router';
 import { QueryString } from '../../../shared/enum/query-string';
-import { Api50xxService } from '../../../core/services/api-50xx.service';
-import { checkResponse, deepCopy } from '../../../shared/utils/index';
-import { AuthService } from '../../../core/services/auth.service';
+import { Api50xxService, AuthService } from '../../../core/services';
+import { checkResponse, deepCopy } from '../../../core/utils/index';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({

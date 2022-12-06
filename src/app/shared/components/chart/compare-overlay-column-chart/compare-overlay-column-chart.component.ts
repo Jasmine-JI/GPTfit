@@ -12,9 +12,9 @@ import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs';
-import { GlobalEventsService } from '../../../../core/services/global-events.service';
-import { complexTrendTooltip } from '../../../utils/chart-formatter';
-import { deepCopy } from '../../../utils/index';
+import { GlobalEventsService } from '../../../../core/services';
+import { complexTrendTooltip } from '../../../../core/utils/chart-formatter';
+import { deepCopy } from '../../../../core/utils/index';
 import { compareChartDefault, TARGET_LINE_COLOR } from '../../../models/chart-data';
 
 @Component({

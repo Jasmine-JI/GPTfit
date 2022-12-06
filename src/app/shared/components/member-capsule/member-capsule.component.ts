@@ -9,13 +9,11 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import { GroupService } from '../../services/group.service';
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService, HashIdService, Api11xxService } from '../../../core/services';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MessageBoxComponent } from '../message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
-import { HashIdService } from '../../services/hash-id.service';
 import { LongTextPipe } from '../../pipes/long-text.pipe';
 import { ProfessionalService } from '../../../containers/professional/services/professional.service';
 
@@ -46,10 +44,10 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
   @Input() isLocked: boolean;
   @Input() adminList: Array<any>;
 
-  @Output() onWaittingMemberInfoChange = new EventEmitter();
-  @Output() onRemoveAdmin = new EventEmitter();
-  @Output() onRemoveGroup = new EventEmitter();
-  @Output() onAssignAdmin = new EventEmitter();
+  @Output() waittingMemberInfoChange = new EventEmitter();
+  @Output() removeAdmin = new EventEmitter();
+  @Output() removeGroup = new EventEmitter();
+  @Output() assignAdmin = new EventEmitter();
 
   i18n = {
     teacher: '',
@@ -69,7 +67,7 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
 
   constructor(
     myElement: ElementRef,
-    private groupService: GroupService,
+    private api11xxService: Api11xxService,
     private professionalService: ProfessionalService,
     private router: Router,
     public dialog: MatDialog,
@@ -83,10 +81,7 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
 
   @HostListener('document:click', ['$event'])
   clickout(event) {
-    if (this.elementRef.nativeElement.contains(event.target)) {
-    } else {
-      this.active = false;
-    }
+    if (!this.elementRef.nativeElement.contains(event.target)) this.active = false;
   }
 
   handleClick() {}
@@ -167,9 +162,9 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
       brandType: this.brandType,
     };
 
-    this.groupService.updateJoinStatus(body).subscribe((res) => {
+    this.api11xxService.fetchUpdateJoinStatus(body).subscribe((res) => {
       if (res.resultCode === 200) {
-        return this.onWaittingMemberInfoChange.emit(this.userId);
+        return this.waittingMemberInfoChange.emit(this.userId);
       }
     });
   }
@@ -185,10 +180,10 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
       accessRight: '90',
     };
 
-    this.groupService.editGroupMember(body).subscribe((res) => {
+    this.api11xxService.fetchEditGroupMember(body).subscribe((res) => {
       if (res.resultCode === 200) {
         this.professionalService.refreshAllGroupAccessright();
-        return this.onRemoveAdmin.emit(this.userId);
+        return this.removeAdmin.emit(this.userId);
       }
 
       if (res.resultCode === 400) {
@@ -252,10 +247,10 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
       accessRight,
     };
 
-    this.groupService.editGroupMember(body).subscribe((res) => {
+    this.api11xxService.fetchEditGroupMember(body).subscribe((res) => {
       if (res.resultCode === 200) {
         this.professionalService.refreshAllGroupAccessright();
-        this.onAssignAdmin.emit(this.userId);
+        this.assignAdmin.emit(this.userId);
         this.dialog.closeAll();
       }
 
@@ -281,9 +276,9 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
       userId: this.userId,
       groupLevel: this.groupLevel,
     };
-    this.groupService.deleteGroupMember(body).subscribe((res) => {
+    this.api11xxService.fetchDeleteGroupMember(body).subscribe((res) => {
       if (res.resultCode === 200) {
-        return this.onRemoveAdmin.emit(this.userId);
+        return this.removeAdmin.emit(this.userId);
       }
     });
   }
@@ -314,9 +309,9 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
       changeStatus: '4',
       groupLevel: this.groupLevel,
     };
-    this.groupService.changeGroupStatus(body).subscribe((res) => {
+    this.api11xxService.fetchChangeGroupStatus(body).subscribe((res) => {
       if (res.resultCode === 200) {
-        return this.onRemoveGroup.emit(this.groupId);
+        return this.removeGroup.emit(this.groupId);
       }
     });
   }

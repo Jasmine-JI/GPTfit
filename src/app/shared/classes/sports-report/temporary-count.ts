@@ -1,5 +1,5 @@
-import { mathRounding } from '../../utils/index';
-import { isAvgData } from '../../utils/sports';
+import { mathRounding } from '../../../core/utils/index';
+import { isAvgData } from '../../../core/utils/sports';
 
 /**
  * 計算同一時間範圍數據用

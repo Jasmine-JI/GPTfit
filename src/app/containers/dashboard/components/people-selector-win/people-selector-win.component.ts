@@ -1,10 +1,13 @@
-import { HashIdService } from '../../../../shared/services/hash-id.service';
+import {
+  HashIdService,
+  AuthService,
+  Api11xxService,
+  NodejsApiService,
+} from '../../../../core/services';
 import { Component, OnInit, Inject, HostListener } from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { GroupService } from './../../../../shared/services/group.service';
 import { HttpParams } from '@angular/common/http';
-import { deepCopy } from '../../../../shared/utils/index';
-import { AuthService } from '../../../../core/services/auth.service';
+import { deepCopy } from '../../../../core/utils/index';
 
 @Component({
   selector: 'app-people-selector-win',
@@ -75,9 +78,10 @@ export class PeopleSelectorWinComponent implements OnInit {
   areaType: number;
   constructor(
     private dialog: MatDialog,
-    private groupService: GroupService,
+    private api11xxService: Api11xxService,
     private hashids: HashIdService,
     private authService: AuthService,
+    private nodejsApiService: NodejsApiService,
     @Inject(MAT_DIALOG_DATA) private data: any
   ) {}
 
@@ -287,7 +291,7 @@ export class PeopleSelectorWinComponent implements OnInit {
   }
 
   handleGroupOptions() {
-    this.groupService.getGroupList().subscribe((list) => {
+    this.nodejsApiService.getGroupList().subscribe((list) => {
       const brandCode = this.groupId?.split('-')[2];
       this.groupLists = list
         .filter((_list) => {
@@ -311,7 +315,7 @@ export class PeopleSelectorWinComponent implements OnInit {
           findRoot: 1,
           avatarType: 2,
         };
-      this.groupService.fetchGroupListDetail(body).subscribe((res) => {
+      this.api11xxService.fetchGroupListDetail(body).subscribe((res) => {
         if (res.resultCode === 200) {
           this.fakeDatas = [
             {
@@ -338,7 +342,7 @@ export class PeopleSelectorWinComponent implements OnInit {
           params = params.set('groupId', this.chooseGroupId);
         }
 
-        this.groupService.searchMember(params).subscribe((_result) => {
+        this.nodejsApiService.searchMember(params).subscribe((_result) => {
           this.fakeDatas = _result;
           this.fakeDatas = this.fakeDatas.filter((_data) => {
             return (

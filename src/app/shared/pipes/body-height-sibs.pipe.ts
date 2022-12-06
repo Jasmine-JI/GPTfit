@@ -1,11 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { UtilsService } from '../services/utils.service';
+import { bodyHeightTransfer } from '../../core/utils';
 import { Unit } from '../enum/value-conversion';
-import { mathRounding } from '../../shared/utils';
+import { mathRounding } from '../../core/utils';
 
 @Pipe({ name: 'bodyHeightSibs' })
 export class BodyHeightSibsPipe implements PipeTransform {
-  constructor(private utils: UtilsService) {}
+  constructor() {}
 
   /**
    * 依公英制轉換身高單位。
@@ -16,7 +16,7 @@ export class BodyHeightSibsPipe implements PipeTransform {
    */
   transform(value: number, args: [number, boolean]): string {
     const [unitType, showUnit] = [...args];
-    const result = this.utils.bodyHeightTransfer(value, unitType === Unit.imperial, true);
+    const result = bodyHeightTransfer(value, unitType === Unit.imperial, true);
     const bodyHeight = typeof result === 'number' ? mathRounding(result as number, 1) : result;
     let unitStr: string;
     if (unitType === Unit.imperial) {

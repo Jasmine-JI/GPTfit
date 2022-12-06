@@ -1,10 +1,12 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { AuthService } from '../../../../../core/services/auth.service';
-import { SignupService } from '../../../../../shared/services/signup.service';
-import { UtilsService } from '../../../../../shared/services/utils.service';
+import {
+  AuthService,
+  GetClientIpService,
+  Api10xxService,
+  GlobalEventsService,
+} from '../../../../../core/services';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
-import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 import { fromEvent, Subscription, Subject, merge, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -14,7 +16,7 @@ import { Lang } from '../../../../../shared/models/i18n';
 import { codes } from '../../../../../shared/models/countryCode';
 import { SignTypeEnum } from '../../../../../shared/enum/account';
 import { TFTViewMinWidth } from '../../../models/app-webview';
-import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../shared/utils/index';
+import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/utils';
 
 interface RegCheck {
   email: RegExp;
@@ -105,12 +107,12 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private translate: TranslateService,
-    private signupService: SignupService,
-    private utils: UtilsService,
+    private api10xxService: Api10xxService,
     private dialog: MatDialog,
     private router: Router,
     public getClientIp: GetClientIpService,
-    private authService: AuthService
+    private authService: AuthService,
+    private globalEventsService: GlobalEventsService
   ) {}
 
   ngOnInit(): void {
@@ -143,8 +145,8 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1110113
    */
   setPageStyle(isPcView: boolean) {
-    this.utils.setHideNavbarStatus(isPcView);
-    this.utils.setDarkModeStatus(isPcView);
+    this.globalEventsService.setHideNavbarStatus(isPcView);
+    this.globalEventsService.setDarkModeStatus(isPcView);
   }
 
   /**
@@ -505,7 +507,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.getClientIpaddress()
         .pipe(
-          switchMap((ipResult) => this.signupService.fetchCaptcha(releaseBody, this.requestHeader))
+          switchMap((ipResult) => this.api10xxService.fetchCaptcha(releaseBody, this.requestHeader))
         )
         .subscribe((res: any) => {
           if (res.processResult && res.processResult.resultCode === 200) {
@@ -575,7 +577,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.getClientIpaddress()
-      .pipe(switchMap((ipResult) => this.signupService.fetchRegister(body, this.requestHeader)))
+      .pipe(switchMap((ipResult) => this.api10xxService.fetchRegister(body, this.requestHeader)))
       .subscribe((res: any) => {
         if (res.processResult && res.processResult.resultCode !== 200) {
           switch (res.processResult.apiReturnMessage) {
@@ -586,13 +588,13 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
               this.signupCue.nickname = 'nicknameRepeat';
               break;
             case 'Found attack, update status to lock!':
-            case 'Found lock!':
+            case 'Found lock!': {
               const captchaBody = {
                 unlockFlow: 1,
                 imgLockCode: res.processResult.imgLockCode,
               };
 
-              this.signupService
+              this.api10xxService
                 .fetchCaptcha(captchaBody, this.requestHeader)
                 .subscribe((captchaRes: any) => {
                   this.imgCaptcha = {
@@ -602,6 +604,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
 
               break;
+            }
             default:
               this.dialog.open(MessageBoxComponent, {
                 hasBackdrop: true,
@@ -693,7 +696,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090513
    */
   toEnableAccount(): void {
-    this.utils.setHideNavbarStatus(false);
+    this.globalEventsService.setHideNavbarStatus(false);
     if (this.pcView === true) {
       this.router.navigate(['/enableAccount-web'], { queryParamsHandling: 'preserve' });
     } else {

@@ -1,5 +1,5 @@
 import { SportType } from '../../enum/sports';
-import { mathRounding } from '../../utils/index';
+import { mathRounding } from '../../../core/utils/index';
 
 /**
  * 不分運動類別時處理佔比圖表數據與成效分佈圖

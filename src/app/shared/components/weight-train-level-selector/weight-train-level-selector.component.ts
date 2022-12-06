@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { UserService } from '../../../core/services/user.service';
+import { UserService } from '../../../core/services';
 import { WeightTrainingLevel } from '../../enum/weight-train';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';

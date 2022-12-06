@@ -1,33 +1,36 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { UtilsService } from '../../shared/services/utils.service';
-import { UserService } from '../../core/services/user.service';
 import { Subject, Subscription, fromEvent, merge, combineLatest, of } from 'rxjs';
 import { takeUntil, switchMap, tap, debounceTime } from 'rxjs/operators';
 import { UserProfileInfo } from '../../shared/models/user-profile-info';
 import { OfficialActivityService } from './services/official-activity.service';
-import { DetectInappService } from '../../shared/services/detect-inapp.service';
 import { TranslateService } from '@ngx-translate/core';
-import { CloudrunService } from '../../shared/services/cloudrun.service';
 import { SignTypeEnum } from '../../shared/enum/account';
 import { codes } from '../../shared/models/countryCode';
 import { formTest } from '../../shared/models/form-test';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { KeyCode } from '../../shared/models/key-code';
-import { GetClientIpService } from '../../shared/services/get-client-ip.service';
-import { SignupService } from '../../shared/services/signup.service';
 import { ResetPasswordFlow, UnlockFlow, QrSignInFlow } from '../../shared/models/signup-response';
 import { AlaApp } from '../../shared/models/app-id';
-import { NodejsApiService } from '../../core/services/nodejs-api.service';
-import { AuthService } from '../../core/services/auth.service';
+import {
+  NodejsApiService,
+  AuthService,
+  Api50xxService,
+  UserService,
+  GetClientIpService,
+  DetectInappService,
+  Api10xxService,
+  EnvironmentCheckService,
+  HintDialogService,
+  ApiCommonService,
+} from '../../core/services';
 import {
   setLocalStorageObject,
   getLocalStorageObject,
   getCurrentTimestamp,
   deepCopy,
   checkResponse,
-} from '../../shared/utils/index';
-import { Api50xxService } from '../../core/services/api-50xx.service';
+} from '../../core/utils';
 import { StationMailService } from '../station-mail/services/station-mail.service';
 import { appPath } from '../../app-path.const';
 
@@ -150,24 +153,25 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
   readonly countryCodeList = codes;
 
   constructor(
-    private utils: UtilsService,
     private userService: UserService,
     private router: Router,
     private officialActivityService: OfficialActivityService,
     private auth: AuthService,
     private detectInappService: DetectInappService,
     private translate: TranslateService,
-    private cloudrunService: CloudrunService,
     private snackbar: MatSnackBar,
     private getClientIp: GetClientIpService,
-    private signupService: SignupService,
+    private api10xxService: Api10xxService,
     private nodejsApiService: NodejsApiService,
     private api50xxService: Api50xxService,
-    private stationMailService: StationMailService
+    private stationMailService: StationMailService,
+    private environmentCheckService: EnvironmentCheckService,
+    private hintDialogService: HintDialogService,
+    private apiCommonService: ApiCommonService
   ) {}
 
   ngOnInit(): void {
-    this.utils.checkBrowserLang();
+    this.environmentCheckService.checkBrowserLang();
     this.detectParamChange();
     this.checkScreenSize();
     this.handlePageResize();
@@ -392,7 +396,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       .getCarouselTime()
       .pipe(switchMap((time) => this.officialActivityService.getEventAdvertise(body)))
       .subscribe((res) => {
-        if (this.utils.checkRes(res)) {
+        if (this.apiCommonService.checkRes(res)) {
           const { advertise } = res;
           this.advertise = advertise
             .filter((_ad) => this.officialActivityService.filterInvalidCarousel(_ad))
@@ -539,12 +543,10 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin-1101007
    */
   getCloudrunMapInfo() {
-    this.cloudrunService.getAllMapInfo().subscribe((res) => {
-      if (this.utils.checkRes) {
-        const { list, leaderboard } = res;
-        this.officialActivityService.saveAllMapInfo(list);
-        this.officialActivityService.saveRoutine(leaderboard);
-      }
+    this.nodejsApiService.getAllMapInfo().subscribe((res) => {
+      const { list, leaderboard } = res;
+      this.officialActivityService.saveAllMapInfo(list);
+      this.officialActivityService.saveRoutine(leaderboard);
     });
   }
 
@@ -931,7 +933,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
         this.translate.get('hellow world'), // 確保翻譯載入完成
       ]).subscribe((result) => {
         const loginResult = result[0];
-        if (this.utils.checkRes(loginResult, false)) {
+        if (this.apiCommonService.checkRes(loginResult, false)) {
           this.handleLoginSuccess(loginResult.signIn.token);
         } else {
           this.handleLoginError(loginResult);
@@ -969,10 +971,10 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       if (accountPasswordError.includes(apiReturnCode)) {
         this.authAlert.account = 'mistake';
       } else {
-        this.utils.showSnackBar(errorMsg);
+        this.hintDialogService.showSnackBar(errorMsg);
       }
     } else {
-      this.utils.showSnackBar(errorMsg);
+      this.hintDialogService.showSnackBar(errorMsg);
     }
   }
 
@@ -1028,18 +1030,18 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
                 };
 
                 return combineLatest([
-                  this.signupService.fetchRegister(body, this.requestHeader),
+                  this.api10xxService.fetchRegister(body, this.requestHeader),
                   this.translate.get('hellow world'), // 確保翻譯載入完成
                 ]);
               } else {
-                this.utils.showSnackBar(errorMsg);
+                this.hintDialogService.showSnackBar(errorMsg);
                 return of(false);
               }
             })
           )
           .subscribe((result) => {
             const registerResult = result[0];
-            if (this.utils.checkRes(registerResult, false)) {
+            if (this.apiCommonService.checkRes(registerResult, false)) {
               this.handleRegisterSuccess(registerResult);
             } else {
               this.handleRegisterError(registerResult);
@@ -1089,7 +1091,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
         if (nicknameRepeat) this.authAlert.nickname = 'repeat';
       }
     } else {
-      this.utils.showSnackBar(errorMsg);
+      this.hintDialogService.showSnackBar(errorMsg);
     }
   }
 
@@ -1121,13 +1123,13 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
           this.translate.get('hellow world'), // 確保翻譯載入完成
         ]).subscribe((result) => {
           const requestResult = result[0];
-          if (this.utils.checkRes(requestResult, false)) {
+          if (this.apiCommonService.checkRes(requestResult, false)) {
             if (accountType === SignTypeEnum.email) {
               this.uiFlag.authBox = 'sendVerifySuccess';
             } else {
               this.reciprocal();
               const msg = this.translate.instant('universal_userAccount_sendSmsSuccess');
-              this.utils.showSnackBar(msg);
+              this.hintDialogService.showSnackBar(msg);
             }
           } else {
             this.handleSendVerifyError(requestResult);
@@ -1151,10 +1153,10 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       if (imgLockCode) {
         this.handleCaptchaUnlock(UnlockFlow.requestUnlockImage, imgLockCode);
       } else {
-        this.utils.showSnackBar(errorMsg);
+        this.hintDialogService.showSnackBar(errorMsg);
       }
     } else {
-      this.utils.showSnackBar(errorMsg);
+      this.hintDialogService.showSnackBar(errorMsg);
     }
   }
 
@@ -1180,7 +1182,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
             this.translate.get('hellow world'), // 確保翻譯載入完成
           ]).subscribe((result) => {
             const verifyResult = result[0];
-            if (this.utils.checkRes(verifyResult)) {
+            if (this.apiCommonService.checkRes(verifyResult)) {
               this.uiFlag.authBox = 'resetPassword';
             } else {
               this.handleSubmitVerifyError(verifyResult);
@@ -1214,12 +1216,12 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
             this.authAlert.sms = 'notExist';
             break;
           default:
-            this.utils.showSnackBar(errorMsg);
+            this.hintDialogService.showSnackBar(errorMsg);
             break;
         }
       }
     } else {
-      this.utils.showSnackBar(errorMsg);
+      this.hintDialogService.showSnackBar(errorMsg);
     }
   }
 
@@ -1236,10 +1238,10 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
         this.translate.get('hellow world'), // 確保翻譯載入完成
       ]).subscribe((result) => {
         const resetResult = result[0];
-        if (this.utils.checkRes(resetResult, false)) {
+        if (this.apiCommonService.checkRes(resetResult, false)) {
           this.handleResetPwdSuccess(resetResult);
         } else {
-          this.utils.showSnackBar(errorMsg);
+          this.hintDialogService.showSnackBar(errorMsg);
         }
 
         this.uiFlag.progress = 100;
@@ -1302,7 +1304,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
         const { ip } = ipResult;
         if (ip) {
           this.requestHeader = { remoteAddr: ip };
-          return this.signupService.fetchForgetpwd(body, this.requestHeader);
+          return this.api10xxService.fetchForgetpwd(body, this.requestHeader);
         } else {
           return of(false);
         }
@@ -1321,7 +1323,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     const { token } = this.auth;
     if (!token) {
       this.checkRepeat(args, target).subscribe((res) => {
-        if (this.utils.checkRes(res)) {
+        if (this.apiCommonService.checkRes(res)) {
           const { nickname } = res.result[0] ?? {};
           this.authAlert.nickname = nickname ? 'repeat' : null;
         }
@@ -1533,25 +1535,25 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
           const { ip } = ipResult;
           if (ip) {
             this.requestHeader = { remoteAddr: ip };
-            return this.signupService.fetchQrcodeLogin(firstFlowBody, this.requestHeader).pipe(
+            return this.api10xxService.fetchQrcodeLogin(firstFlowBody, this.requestHeader).pipe(
               switchMap((firstFlowResult) => {
-                if (this.utils.checkRes(firstFlowResult)) {
+                if (this.apiCommonService.checkRes(firstFlowResult)) {
                   const secondFlowBody = { qrSignInFlow: QrSignInFlow.longPolling, guid };
-                  return this.signupService.fetchQrcodeLogin(secondFlowBody, this.requestHeader);
+                  return this.api10xxService.fetchQrcodeLogin(secondFlowBody, this.requestHeader);
                 } else {
                   return of(firstFlowResult);
                 }
               })
             );
           } else {
-            this.utils.showSnackBar(errorMsg);
+            this.hintDialogService.showSnackBar(errorMsg);
             return of(false);
           }
         })
       )
       .subscribe((res: any) => {
         const { processResult, qrSignIn } = res;
-        if (this.utils.checkRes(res, false)) {
+        if (this.apiCommonService.checkRes(res, false)) {
           this.handleLoginSuccess(qrSignIn.token);
         } else {
           const { apiReturnCode } = processResult;
@@ -1608,14 +1610,14 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
           const { ip } = ipResult;
           if (ip) {
             this.requestHeader = { remoteAddr: ip };
-            return this.signupService.fetchCaptcha(this.imgCaptcha, this.requestHeader);
+            return this.api10xxService.fetchCaptcha(this.imgCaptcha, this.requestHeader);
           } else {
             return of(false);
           }
         })
       )
       .subscribe((res: any) => {
-        if (this.utils.checkRes(res, false)) {
+        if (this.apiCommonService.checkRes(res, false)) {
           switch (unlockFlow) {
             case UnlockFlow.requestUnlockImage:
               this.captchaImg = res.captcha.randomCodeImg;
@@ -1635,11 +1637,11 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
                 this.authAlert.captcha = 'mistake';
                 break;
               default:
-                this.utils.showSnackBar(errorMsg);
+                this.hintDialogService.showSnackBar(errorMsg);
                 break;
             }
           } else {
-            this.utils.showSnackBar(errorMsg);
+            this.hintDialogService.showSnackBar(errorMsg);
           }
         }
       });
@@ -1735,19 +1737,21 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * 確認是否有無最新信件
    */
   checkNewMail() {
-    const body = { token: this.auth.token };
-    this.api50xxService.fetchMessageNotifyFlagStatus(body).subscribe((res) => {
-      if (checkResponse(res, false)) {
-        const { status, updateTime } = res.flag;
-        const haveNewMail = status === 2;
-        if (haveNewMail && updateTime !== this.notifyUpdateTime) {
-          this.uiFlag.haveNewMail = true;
-          this.stationMailService.setNewMailNotify(true);
+    const { token } = this.auth;
+    if (token) {
+      this.api50xxService.fetchMessageNotifyFlagStatus({ token }).subscribe((res) => {
+        if (checkResponse(res, false)) {
+          const { status, updateTime } = res.flag;
+          const haveNewMail = status === 2;
+          if (haveNewMail && updateTime !== this.notifyUpdateTime) {
+            this.uiFlag.haveNewMail = true;
+            this.stationMailService.setNewMailNotify(true);
+          }
+        } else {
+          this.uiFlag.haveNewMail = false;
         }
-      } else {
-        this.uiFlag.haveNewMail = false;
-      }
-    });
+      });
+    }
   }
 
   /**

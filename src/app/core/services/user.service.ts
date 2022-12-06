@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { User } from '../../shared/classes/user-profile';
 import { Api10xxService } from './api-10xx.service';
-import { checkResponse } from '../../shared/utils/index';
+import { checkResponse } from '../utils/index';
 import { of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { LocalStorageKey } from '../../shared/enum/local-storage-key';

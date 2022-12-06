@@ -18,7 +18,7 @@ import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TranslateModule } from '@ngx-translate/core';
 import { MapReservedSpace, RacerMarkInLeafletMap } from '../../core/classes';
-import { deepCopy } from '../../shared/utils';
+import { deepCopy } from '../../core/utils';
 import {
   TAIWAN_CENTER_LATLNG,
   MAP_START_ICON_PATH,

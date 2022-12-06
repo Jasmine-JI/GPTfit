@@ -22,13 +22,12 @@ import {
   distanceAxisFormat,
   distanceTooltipFormat,
   dataLabelsFormatter,
-} from '../../../utils/chart-formatter';
+} from '../../../../core/utils/chart-formatter';
 import { TargetFieldNamePipe } from '../../../pipes/target-field-name.pipe';
 import dayjs from 'dayjs';
-import { GlobalEventsService } from '../../../../core/services/global-events.service';
-import { UserService } from '../../../../core/services/user.service';
+import { GlobalEventsService, UserService } from '../../../../core/services';
 import { Unit } from '../../../enum/value-conversion';
-import { deepCopy } from '../../../utils/index';
+import { deepCopy } from '../../../../core/utils/index';
 
 @Component({
   selector: 'app-compare-column-trend',

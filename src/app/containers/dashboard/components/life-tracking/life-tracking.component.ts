@@ -8,16 +8,14 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { LifeTrackingService } from '../../services/life-tracking.service';
-import { UtilsService } from '../../../../shared/services/utils.service';
 import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
 import { Router } from '@angular/router';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
-import { HashIdService } from '../../../../shared/services/hash-id.service';
+import { HashIdService, AuthService } from '../../../../core/services';
 import dayjs, { Dayjs } from 'dayjs';
 import { chart, charts, each } from 'highcharts';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import { MatDialog } from '@angular/material/dialog';
-import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-life-tracking',
@@ -120,9 +118,9 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   chartTargets: any;
   targetUserId = '';
   targetUserName = '';
+
   constructor(
     private lifeTrackingService: LifeTrackingService,
-    private utils: UtilsService,
     private ngProgress: NgProgress,
     private hashIdService: HashIdService,
     private router: Router,
@@ -186,7 +184,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
 
       this.fileInfo = res['trackingData'][0]['fileInfo'];
       this.lifeTrackingDayLayer = res['trackingData'][0]['lifeTrackingDayLayer'];
-      if (!this.utils.isObjectEmpty(this.fileInfo)) {
+      if (this.fileInfo) {
         if (this.fileInfo.author.indexOf('?') > -1) {
           // 防止後續author會帶更多參數，先不寫死
           this.userLink.userName = this.fileInfo.author.split('?')[0];
@@ -242,32 +240,6 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     return date;
   }
 
-  handleSynchronizedPoint(e, finalDatas) {
-    // Do something with 'event'
-    for (let i = 0; i < charts.length; i = i + 1) {
-      const _chart: any = charts[i];
-      if (_chart !== undefined) {
-        if (charts.length !== finalDatas.length) {
-          if (finalDatas[i - (charts.length - finalDatas.length)].isSyncExtremes) {
-            const event = _chart.pointer.normalize(e); // Find coordinates within the chart
-            const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
-            if (point && point.index) {
-              point.highlight(e);
-            }
-          }
-        } else {
-          if (finalDatas[i].isSyncExtremes) {
-            const event = _chart.pointer.normalize(e); // Find coordinates within the chart
-            const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
-            if (point && point.index) {
-              point.highlight(e);
-            }
-          }
-        }
-      }
-    }
-  }
-
   initHchart() {
     const { finalDatas, chartTargets } = this.lifeTrackingService.handlePoints(
       this.lifeTrackingPoints,
@@ -287,18 +259,6 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       this.charts[idx] = chart(this[chartTargets[idx]].nativeElement, _option[chartTargets[idx]]);
     });
     this.isInitialChartDone = true;
-
-    this.renderer.listen(this.container.nativeElement, 'mousemove', (e) =>
-      this.handleSynchronizedPoint(e, finalDatas)
-    );
-
-    this.renderer.listen(this.container.nativeElement, 'touchmove', (e) =>
-      this.handleSynchronizedPoint(e, finalDatas)
-    );
-
-    this.renderer.listen(this.container.nativeElement, 'touchstart', (e) =>
-      this.handleSynchronizedPoint(e, finalDatas)
-    );
   }
 
   syncExtremes(num, finalDatas, e) {

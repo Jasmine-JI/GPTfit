@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { UtilsService } from '../../services/utils.service';
+import { HintDialogService } from '../../../core/services';
 import { SportType } from '../../enum/sports';
 import { TranslateService } from '@ngx-translate/core';
 import { DataTypeTranslatePipe } from '../../pipes/data-type-translate.pipe';
@@ -86,7 +86,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
   focusPosition = 0;
 
   constructor(
-    private utils: UtilsService,
+    private hintDialogService: HintDialogService,
     private translate: TranslateService,
     private dataTypeTranslatePipe: DataTypeTranslatePipe,
     private changeDetectorRef: ChangeDetectorRef
@@ -187,7 +187,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
       return true;
     } else {
       const msg = 'Browser not support heat map!';
-      this.utils.openAlert(msg);
+      this.hintDialogService.openAlert(msg);
       return false;
     }
   }

@@ -1,10 +1,13 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { AuthService } from '../../../../../core/services/auth.service';
-import { UtilsService } from '../../../../../shared/services/utils.service';
-import { SignupService } from '../../../../../shared/services/signup.service';
-import { Api10xxService } from '../../../../../core/services/api-10xx.service';
-import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
+import {
+  AuthService,
+  Api10xxService,
+  GetClientIpService,
+  GlobalEventsService,
+  HintDialogService,
+  ApiCommonService,
+} from '../../../../../core/services';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -15,7 +18,7 @@ import { SignTypeEnum } from '../../../../../shared/enum/account';
 import { TFTViewMinWidth } from '../../../models/app-webview';
 import { Subject, Subscription, fromEvent, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
-import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../shared/utils/index';
+import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/utils';
 
 type InputType = 'oldPassword' | 'newPassword';
 
@@ -70,14 +73,15 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private translate: TranslateService,
-    private utils: UtilsService,
     private authService: AuthService,
-    private signupService: SignupService,
     private api10xxService: Api10xxService,
     private router: Router,
     private snackbar: MatSnackBar,
     private getClientIp: GetClientIpService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private globalEventsService: GlobalEventsService,
+    private hintDialogService: HintDialogService,
+    private apiCommonService: ApiCommonService
   ) {}
 
   ngOnInit() {
@@ -117,8 +121,8 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1110113
    */
   setPageStyle(isPcView: boolean) {
-    this.utils.setHideNavbarStatus(isPcView);
-    this.utils.setDarkModeStatus(isPcView);
+    this.globalEventsService.setHideNavbarStatus(isPcView);
+    this.globalEventsService.setDarkModeStatus(isPcView);
   }
 
   /**
@@ -189,7 +193,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     this.api10xxService.fetchGetUserProfile(body).subscribe((res) => {
-      if (this.utils.checkRes(res)) {
+      if (this.apiCommonService.checkRes(res)) {
         const {
           userProfile,
           signIn: { accountType },
@@ -276,7 +280,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.getClientIpaddress()
         .pipe(
-          switchMap((ipResult) => this.signupService.fetchCaptcha(releaseBody, this.requestHeader))
+          switchMap((ipResult) => this.api10xxService.fetchCaptcha(releaseBody, this.requestHeader))
         )
         .subscribe((res: any) => {
           if (res.processResult.resultCode === 200) {
@@ -308,7 +312,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getClientIpaddress()
       .pipe(
         switchMap((ipResult) =>
-          this.signupService.fetchEditAccountInfo(this.editBody, this.requestHeader)
+          this.api10xxService.fetchEditAccountInfo(this.editBody, this.requestHeader)
         )
       )
       .subscribe((res: any) => {
@@ -318,13 +322,13 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
               this.cue.oldPassword = 'universal_userAccount_notSamePassword';
               break;
             case 'Found attack, update status to lock!':
-            case 'Found lock!':
+            case 'Found lock!': {
               const captchaBody = {
                 unlockFlow: 1,
                 imgLockCode: res.processResult.imgLockCode,
               };
 
-              this.signupService
+              this.api10xxService
                 .fetchCaptcha(captchaBody, this.requestHeader)
                 .subscribe((captchaRes) => {
                   this.imgCaptcha.show = true;
@@ -332,6 +336,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
 
               break;
+            }
             default:
               this.showErrorMsg();
               console.error(
@@ -385,7 +390,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1110117
    */
   debounceTurnBack(msg: string) {
-    this.utils.showSnackBar(msg);
+    this.hintDialogService.showSnackBar(msg);
     this.progress = 30;
     setTimeout(() => {
       this.progress = 30;

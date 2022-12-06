@@ -1,6 +1,10 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { UtilsService } from '../../../../shared/services/utils.service';
-import { UserService } from '../../../../core/services/user.service';
+import {
+  UserService,
+  AuthService,
+  HintDialogService,
+  ApiCommonService,
+} from '../../../../core/services';
 import { Subject, Subscription, fromEvent, merge, of } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -23,13 +27,15 @@ import {
   EventStatus,
 } from '../../models/activity-content';
 import { AccessRight } from '../../../../shared/enum/accessright';
-import { deepCopy } from '../../../../shared/utils/index';
 import {
   setLocalStorageObject,
   getLocalStorageObject,
   removeLocalStorageObject,
-} from '../../../../shared/utils/index';
-import { AuthService } from '../../../../core/services/auth.service';
+  createImgFileName,
+  checkImgFormat,
+  base64ToFile,
+  deepCopy,
+} from '../../../../core/utils';
 import { DAY } from '../../../../shared/models/utils-constant';
 
 const leaveMessage = '尚未儲存，是否仍要離開此頁面？';
@@ -142,14 +148,15 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   public editor = DecoupledEditor;
 
   constructor(
-    private utils: UtilsService,
     private userService: UserService,
     private router: Router,
     private route: ActivatedRoute,
     private officialActivityService: OfficialActivityService,
     private dialog: MatDialog,
     private imageUploadService: ImageUploadService,
-    private authService: AuthService
+    private authService: AuthService,
+    private hintDialogService: HintDialogService,
+    private apiCommonService: ApiCommonService
   ) {}
 
   ngOnInit(): void {
@@ -383,7 +390,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   getEventDetail(eventId: number) {
     this.uiFlag.progress = 30;
     this.officialActivityService.getEventDetail({ eventId }).subscribe((res) => {
-      if (this.utils.checkRes(res)) {
+      if (this.apiCommonService.checkRes(res)) {
         const { eventInfo, eventDetail } = res;
         this.eventInfo = eventInfo;
         this.originEventStatus = eventInfo.eventStatus;
@@ -431,10 +438,10 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     const { content } = this.eventDetail;
     if (emptyElement.length) {
       const message = '尚有必填欄位未完成';
-      this.utils.openAlert(message);
+      this.hintDialogService.openAlert(message);
     } else if (content.length === 0) {
       const message = '請新增活動詳細內容';
-      this.utils.openAlert(message);
+      this.hintDialogService.openAlert(message);
     } else {
       const { editMode } = this.uiFlag;
       if (editMode === 'create') {
@@ -497,7 +504,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         .createEvent(body)
         .pipe(
           switchMap((createRes) => {
-            if (this.utils.checkRes(createRes)) {
+            if (this.apiCommonService.checkRes(createRes)) {
               const { eventId } = createRes;
               return this.uploadImg(eventId).pipe(
                 map((uploadRes) => {
@@ -513,7 +520,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           })
         )
         .subscribe((result) => {
-          if (this.utils.checkRes(result)) {
+          if (this.apiCommonService.checkRes(result)) {
             this.saveSuccess();
             const newEventId = result.eventId;
             this.router.navigateByUrl(`/official-activity/activity-detail/${newEventId}`);
@@ -596,9 +603,9 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     id: number = null
   ) {
     const index = imgArray.length;
-    const fileName = this.utils.createImgFileName(index, eventId);
+    const fileName = createImgFileName(index, eventId);
     const fileNameFull = `${fileName}.jpg`;
-    const newFile = this.utils.base64ToFile(newImg as string, fileName);
+    const newFile = base64ToFile(newImg as string, fileName);
     switch (type) {
       case AlbumType.eventTheme:
         imgArray.push({
@@ -646,7 +653,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         .editEventDetail(body)
         .pipe(
           switchMap((editRes) => {
-            if (this.utils.checkRes(editRes)) {
+            if (this.apiCommonService.checkRes(editRes)) {
               if (this.checkImgChange()) {
                 return this.uploadImg(targetEventId);
               } else {
@@ -656,7 +663,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           })
         )
         .subscribe((result) => {
-          if (this.utils.checkRes(result)) {
+          if (this.apiCommonService.checkRes(result)) {
             this.saveSuccess();
             this.router.navigateByUrl(`/official-activity/activity-detail/${targetEventId}`);
           }
@@ -704,7 +711,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       const newValue = newObj[_key];
       switch (_key) {
         case 'eventInfo':
-        case 'eventDetail':
+        case 'eventDetail': {
           const editedObj = this.getEditContent(compareValue, newValue);
           const editedObjSize = Object.keys(editedObj).length;
           if (editedObjSize > 0) {
@@ -721,6 +728,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           }
 
           break;
+        }
         case 'applyDate':
         case 'raceDate':
           if (this.isDifferentObject(newValue, compareValue)) {
@@ -1212,7 +1220,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       const { cloudrunMapId } = eventInfo;
       const id = mapId ?? cloudrunMapId;
       const index = mapList.findIndex((_map) => _map.mapId == id);
-      this.selectedMap = mapList[index].info[language].mapName;
+      this.selectedMap = mapList[index > -1 ? index : 0].info[language].mapName;
     }
   }
 
@@ -1258,7 +1266,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     if (innerHtmlLengthOver || textLengthOver) {
       const { text } = this.eventDetail.content[id - 1];
       e.editor.setData(text);
-      this.utils.showSnackBar('HTML或字數超出限制');
+      this.hintDialogService.showSnackBar('HTML或字數超出限制');
     } else {
       this.eventDetail.content[id - 1].text = newText;
     }
@@ -1437,7 +1445,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     });
 
     if (repeat > -1) {
-      this.utils.showSnackBar('分組名稱重複');
+      this.hintDialogService.showSnackBar('分組名稱重複');
       this.eventDetail.group[targetIndex].name = '';
     } else if (name !== oldName) {
       this.eventDetail.group[targetIndex].name = name;
@@ -1460,7 +1468,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     });
 
     if (repeat > -1) {
-      this.utils.showSnackBar('報名組合名稱重複');
+      this.hintDialogService.showSnackBar('報名組合名稱重複');
       this.eventDetail.applyFee[targetIndex].title = '';
     } else if (title !== oldTitle) {
       this.eventDetail.applyFee[targetIndex].title = title;
@@ -1685,7 +1693,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           this.imgUpload.theme.origin = origin;
           this.imgUpload.theme.crop = base64;
           break;
-        case AlbumType.eventApplyFee:
+        case AlbumType.eventApplyFee: {
           const targetId = `${imgCurrentEditId}`;
           Object.assign(this.imgUpload.applyFee, {
             [targetId]: {
@@ -1696,6 +1704,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
 
           this.uiFlag.imgCurrentEditId = null;
           break;
+        }
       }
     }
 
@@ -1748,14 +1757,13 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   handleContentImgSelected(e: Event) {
     const img = (e as any).target.files[0];
     if (img) {
-      this.utils
-        .getBase64(img)
+      this.getBase64(img)
         .pipe(
           switchMap((e) => {
             const { currentTarget, type } = e;
             if (type === 'load') {
               const { result } = currentTarget as any;
-              return this.utils.checkImgFormat(result);
+              return checkImgFormat(result);
             } else {
               const message = '載入圖片失敗<br>請重新選擇圖片';
               this.dialog.open(MessageBoxComponent, {
@@ -1837,6 +1845,18 @@ export class EditActivityComponent implements OnInit, OnDestroy {
 
     const eventDraft = JSON.stringify(draft);
     setLocalStorageObject('eventDraft', eventDraft);
+  }
+
+  /**
+   * 取得base64圖片
+   * @param file {Blob}-圖片檔案
+   */
+  getBase64(file: Blob) {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    const base64OnLoad = fromEvent(reader, 'load');
+    const base64OnError = fromEvent(reader, 'error');
+    return merge(base64OnLoad, base64OnError);
   }
 
   /**

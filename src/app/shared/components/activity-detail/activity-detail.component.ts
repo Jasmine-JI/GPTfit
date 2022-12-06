@@ -10,14 +10,18 @@ import {
 } from '@angular/core';
 import { Subject, fromEvent, Subscription, of, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { UserService } from '../../../core/services/user.service';
+import {
+  UserService,
+  AuthService,
+  Api10xxService,
+  Api21xxService,
+  Api11xxService,
+  Api70xxService,
+  HintDialogService,
+} from '../../../core/services';
 import { UserProfileInfo } from '../../models/user-profile-info';
 import { HrBase } from '../../enum/personal';
-import { UtilsService } from '../../services/utils.service';
-import { ActivityService } from '../../services/activity.service';
 import { Router } from '@angular/router';
-import { QrcodeService } from '../../../containers/portal/services/qrcode.service';
-import { GroupService } from '../../services/group.service';
 import dayjs from 'dayjs';
 import weekday from 'dayjs/plugin/weekday';
 import { TranslateService } from '@ngx-translate/core';
@@ -36,11 +40,14 @@ import { EditIndividualPrivacyComponent } from '../edit-individual-privacy/edit-
 import { AlbumType } from '../../models/image';
 import { v5 as uuidv5 } from 'uuid';
 import { ImageUploadService } from '../../../containers/dashboard/services/image-upload.service';
-import { getPaceUnit, getUserHrRange } from '../../utils/sports';
-import { getFileInfoParam } from '../../utils/index';
-import { AuthService } from '../../../core/services/auth.service';
+import {
+  getFileInfoParam,
+  handleSceneryImg,
+  base64ToFile,
+  getPaceUnit,
+  getUserHrRange,
+} from '../../../core/utils';
 import { AccessRight } from '../../enum/accessright';
-import { Api10xxService } from '../../../core/services/api-10xx.service';
 
 dayjs.extend(weekday);
 
@@ -272,11 +279,11 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   constructor(
     private userService: UserService,
-    private utils: UtilsService,
-    private activityService: ActivityService,
+    private hintDialogService: HintDialogService,
+    private api21xxService: Api21xxService,
     private router: Router,
-    private qrcodeService: QrcodeService,
-    private groupService: GroupService,
+    private api70xxService: Api70xxService,
+    private api11xxService: Api11xxService,
     private translate: TranslateService,
     private muscleName: MuscleNamePipe,
     private dialog: MatDialog,
@@ -448,7 +455,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
     combineLatest([
       this.getRxUserProfile(),
-      this.activityService.fetchSportListDetail(body),
+      this.api21xxService.fetchSportListDetail(body),
     ]).subscribe((resArr) => {
       const [userProfile, activityDetail] = resArr;
       this.userProfile = userProfile;
@@ -470,7 +477,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         default:
           this.progress = 100;
           console.error(`${resultCode}: Api ${apiCode} ${resultMessage}`);
-          this.utils.openAlert(errMsg);
+          this.hintDialogService.openAlert(errMsg);
           break;
       }
 
@@ -519,7 +526,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     if (photo) {
       return photo;
     } else {
-      return this.activityService.handleSceneryImg(type, subType);
+      return handleSceneryImg(type, subType);
     }
   }
 
@@ -739,7 +746,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       findRoot: 1,
     };
 
-    this.groupService.fetchGroupListDetail(body).subscribe((res) => {
+    this.api11xxService.fetchGroupListDetail(body).subscribe((res) => {
       if (res.resultCode !== 200) {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
@@ -805,7 +812,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       queryArray: equipmentList,
     };
 
-    this.qrcodeService.getProductInfo(body).subscribe((res) => {
+    this.api70xxService.fetchGetProductInfo(body).subscribe((res) => {
       if (res.resultCode !== 200) {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
@@ -1510,7 +1517,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       },
     };
 
-    this.activityService.fetchEditActivityProfile(body).subscribe((res) => {
+    this.api21xxService.fetchEditActivityProfile(body).subscribe((res) => {
       if (res.resultCode === 200) {
         if (willShare) {
           this.showShareBox();
@@ -1523,7 +1530,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           );
         }
       } else {
-        this.utils.openAlert(errMsg);
+        this.hintDialogService.openAlert(errMsg);
       }
 
       this.changeDetectorRef.markForCheck();
@@ -1757,7 +1764,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       fileId: [this.fileInfo.fileId],
     };
 
-    this.activityService.deleteActivityData(body).subscribe((res) => {
+    this.api21xxService.fetchDeleteActivityData(body).subscribe((res) => {
       if (+res.resultCode === 200) {
         this.snackBar.open(
           `${this.translate.instant('universal_operating_delete')}
@@ -1857,12 +1864,12 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       },
     };
 
-    this.activityService.fetchEditActivityProfile(body).subscribe((res) => {
+    this.api21xxService.fetchEditActivityProfile(body).subscribe((res) => {
       if (res.resultCode === 200) {
         this.uiFlag.editNameMode = false;
         this.fileInfo.dispName = this.newFileName;
       } else {
-        this.utils.openAlert(errMsg);
+        this.hintDialogService.openAlert(errMsg);
       }
 
       this.changeDetectorRef.markForCheck();
@@ -2065,7 +2072,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           activityFileId: this.fileInfo.fileId,
         });
 
-        formData.append('file', this.utils.base64ToFile(base64, fileName));
+        formData.append('file', base64ToFile(base64, fileName));
       }
 
       formData.set('img', JSON.stringify(imgArr));

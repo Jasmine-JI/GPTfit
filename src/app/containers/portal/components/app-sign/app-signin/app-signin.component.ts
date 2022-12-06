@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { UtilsService } from '../../../../../shared/services/utils.service';
-import { AuthService } from '../../../../../core/services/auth.service';
+import { AuthService, GlobalEventsService } from '../../../../../core/services';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -9,7 +8,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { formTest } from '../../../../../shared/models/form-test';
 import { SignTypeEnum } from '../../../../../shared/enum/account';
-import { getLocalStorageObject } from '../../../../../shared/utils/index';
+import { getLocalStorageObject } from '../../../../../core/utils';
 
 @Component({
   selector: 'app-app-signin',
@@ -64,10 +63,10 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private translate: TranslateService,
-    private utils: UtilsService,
     private authService: AuthService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private globalEventsService: GlobalEventsService
   ) {
     // 當語系變換就重新取得翻譯-kidin-1090720
     this.translate.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
@@ -100,8 +99,8 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1110113
    */
   setPageStyle(isPcView: boolean) {
-    this.utils.setHideNavbarStatus(isPcView);
-    this.utils.setDarkModeStatus(isPcView);
+    this.globalEventsService.setHideNavbarStatus(isPcView);
+    this.globalEventsService.setDarkModeStatus(isPcView);
   }
 
   // 取得多國語系翻譯-kidin-1090620

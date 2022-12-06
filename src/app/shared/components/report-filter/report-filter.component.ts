@@ -6,18 +6,16 @@ import {
   ElementRef,
   ChangeDetectorRef,
 } from '@angular/core';
-import { ReportService } from '../../services/report.service';
 import dayjs from 'dayjs';
 import { ReportConditionOpt } from '../../models/report-condition';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { CloudrunService } from '../../services/cloudrun.service';
 import { Lang } from '../../models/i18n';
 import { Sex } from '../../enum/personal';
-import { GlobalEventsService } from '../../../core/services/global-events.service';
+import { GlobalEventsService, NodejsApiService, ReportService } from '../../../core/services';
 import { SelectDate } from '../../models/utils-type';
 import { SportType } from '../../enum/sports';
-import { getLocalStorageObject } from '../../utils/index';
+import { getLocalStorageObject } from '../../../core/utils/index';
 
 interface DateCondition {
   type:
@@ -120,9 +118,9 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   readonly Sex = Sex;
   constructor(
     private reportService: ReportService,
-    private cloudrunService: CloudrunService,
     private changeDetectorRef: ChangeDetectorRef,
-    private globalEventsService: GlobalEventsService
+    private globalEventsService: GlobalEventsService,
+    private nodejsApiService: NodejsApiService
   ) {}
 
   ngOnInit(): void {
@@ -256,7 +254,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1091029
    */
   getMapList() {
-    this.cloudrunService.getAllMapInfo().subscribe((res) => {
+    this.nodejsApiService.getAllMapInfo().subscribe((res) => {
       const { list, leaderboard } = res;
       this.mapList = list;
       this.routineRaceList = leaderboard;

@@ -2,11 +2,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { EditMode } from '../../models/personal';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { UserService } from '../../../../core/services/user.service';
+import { UserService, HashIdService, AuthService } from '../../../../core/services';
 import { DashboardService } from '../../services/dashboard.service';
-import { checkResponse } from '../../../../shared/utils/index';
-import { HashIdService } from '../../../../shared/services/hash-id.service';
-import { AuthService } from '../../../../core/services/auth.service';
+import { checkResponse } from '../../../../core/utils/index';
 
 @Component({
   selector: 'app-info',

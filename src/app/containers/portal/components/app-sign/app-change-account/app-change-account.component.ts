@@ -1,9 +1,13 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { UtilsService } from '../../../../../shared/services/utils.service';
-import { AuthService } from '../../../../../core/services/auth.service';
-import { Api10xxService } from '../../../../../core/services/api-10xx.service';
-import { SignupService } from '../../../../../shared/services/signup.service';
+import {
+  AuthService,
+  Api10xxService,
+  GetClientIpService,
+  GlobalEventsService,
+  HintDialogService,
+  ApiCommonService,
+} from '../../../../../core/services';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { Subject, Subscription, fromEvent, merge, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
@@ -11,7 +15,6 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { formTest } from '../../../../../shared/models/form-test';
 import { AccountTypeEnum } from '../../../../../shared/enum/account';
-import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 import { SignTypeEnum } from '../../../../../shared/enum/account';
 import { codes } from '../../../../../shared/models/countryCode';
 import { TFTViewMinWidth } from '../../../models/app-webview';
@@ -19,7 +22,7 @@ import {
   headerKeyTranslate,
   getUrlQueryStrings,
   getLocalStorageObject,
-} from '../../../../../shared/utils/index';
+} from '../../../../../core/utils';
 
 @Component({
   selector: 'app-app-change-account',
@@ -87,13 +90,14 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
   accountType = AccountTypeEnum.email;
   constructor(
     private translate: TranslateService,
-    private utils: UtilsService,
     private authService: AuthService,
-    private signupService: SignupService,
     private api10xxService: Api10xxService,
     private dialog: MatDialog,
     private router: Router,
-    private getClientIp: GetClientIpService
+    private getClientIp: GetClientIpService,
+    private globalEventsService: GlobalEventsService,
+    private hintDialogService: HintDialogService,
+    private apiCommonService: ApiCommonService
   ) {
     translate.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.getTranslate();
@@ -130,8 +134,8 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin-1110113
    */
   setPageStyle(isPcView: boolean) {
-    this.utils.setHideNavbarStatus(isPcView);
-    this.utils.setDarkModeStatus(isPcView);
+    this.globalEventsService.setHideNavbarStatus(isPcView);
+    this.globalEventsService.setDarkModeStatus(isPcView);
   }
 
   /**
@@ -215,7 +219,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     };
 
     this.api10xxService.fetchGetUserProfile(body).subscribe((res) => {
-      if (this.utils.checkRes(res)) {
+      if (this.apiCommonService.checkRes(res)) {
         const {
           signIn: { accountType },
           userProfile,
@@ -420,7 +424,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
       this.getClientIpaddress()
         .pipe(
-          switchMap((ipResult) => this.signupService.fetchCaptcha(releaseBody, this.requestHeader))
+          switchMap((ipResult) => this.api10xxService.fetchCaptcha(releaseBody, this.requestHeader))
         )
         .subscribe((res: any) => {
           const {
@@ -430,7 +434,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
             resultMessage: resMsg,
           } = res as any;
           if (!processResult) {
-            this.utils.handleError(resCode, resApiCode, resMsg);
+            this.apiCommonService.handleError(resCode, resApiCode, resMsg);
           } else {
             const { resultCode, apiReturnMessage } = processResult;
             if (resultCode === 200) {
@@ -461,7 +465,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     this.getClientIpaddress()
       .pipe(
         switchMap((ipResult) =>
-          this.signupService.fetchEditAccountInfo(this.editBody, this.requestHeader)
+          this.api10xxService.fetchEditAccountInfo(this.editBody, this.requestHeader)
         )
       )
       .subscribe((res: any) => {
@@ -472,7 +476,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
           resultMessage: resMsg,
         } = res as any;
         if (!processResult) {
-          this.utils.handleError(resCode, resApiCode, resMsg);
+          this.apiCommonService.handleError(resCode, resApiCode, resMsg);
         } else {
           const { resultCode, apiReturnMessage, imgLockCode } = processResult;
           if (resultCode !== 200) {
@@ -484,13 +488,13 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
                 this.cue.password = 'universal_userAccount_notSamePassword';
                 break;
               case 'Found attack, update status to lock!':
-              case 'Found lock!':
+              case 'Found lock!': {
                 const captchaBody = {
                   unlockFlow: 1,
                   imgLockCode: imgLockCode,
                 };
 
-                this.signupService
+                this.api10xxService
                   .fetchCaptcha(captchaBody, this.requestHeader)
                   .subscribe((captchaRes: any) => {
                     this.imgCaptcha.show = true;
@@ -498,6 +502,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
                   });
 
                 break;
+              }
               default:
                 this.showErrorMsg();
                 console.error(`${resultCode}: ${apiReturnMessage}`);
@@ -516,7 +521,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
             const modifyI18n = this.translate.instant('universal_operating_modify');
             const successI18n = this.translate.instant('universal_status_success');
             const msg = `${modifyI18n} ${successI18n}`;
-            this.utils.showSnackBar(msg);
+            this.hintDialogService.showSnackBar(msg);
             this.toEnableAccount();
           }
         }
@@ -527,7 +532,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
   // 轉導至啟用帳號頁面-kidin-1090513
   toEnableAccount() {
-    this.utils.setHideNavbarStatus(false);
+    this.globalEventsService.setHideNavbarStatus(false);
     this.router.navigateByUrl(`/enableAccount`);
   }
 
@@ -559,7 +564,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin-1110117
    */
   debounceTurnBack(msg: string) {
-    this.utils.showSnackBar(msg);
+    this.hintDialogService.showSnackBar(msg);
     this.progress = 30;
     setTimeout(() => {
       this.progress = 30;

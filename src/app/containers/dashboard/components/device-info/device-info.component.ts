@@ -1,19 +1,22 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { QrcodeService } from '../../../portal/services/qrcode.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UtilsService } from '../../../../shared/services/utils.service';
-import { CoachService } from '../../../../shared/services/coach.service';
 import { combineLatest, Subject, fromEvent, Subscription } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import dayjs, { Dayjs } from 'dayjs';
-import { UserService } from '../../../../core/services/user.service';
+import {
+  UserService,
+  GlobalEventsService,
+  AuthService,
+  Api70xxService,
+  HintDialogService,
+  ApiCommonService,
+} from '../../../../core/services';
 import { TranslateService } from '@ngx-translate/core';
 import { langList } from '../../../../shared/models/i18n';
-import { GlobalEventsService } from '../../../../core/services/global-events.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
-import { AuthService } from '../../../../core/services/auth.service';
 import { UserProfileInfo } from '../../../../shared/models/user-profile-info';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { PaginationSetting } from '../../../../shared/models/pagination';
@@ -21,7 +24,7 @@ import {
   setLocalStorageObject,
   getLocalStorageObject,
   removeLocalStorageObject,
-} from '../../../../shared/utils/index';
+} from '../../../../core/utils';
 import { AccessRight } from '../../../../shared/enum/accessright';
 
 type DisplayPage = 'fitPair' | 'system' | 'myDevice';
@@ -154,15 +157,16 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private qrcodeService: QrcodeService,
-    private utils: UtilsService,
-    private coachService: CoachService,
+    private api70xxService: Api70xxService,
     private userService: UserService,
     private translateService: TranslateService,
     private snackbar: MatSnackBar,
     private dialog: MatDialog,
     private router: Router,
     private auth: AuthService,
-    private globalEventsService: GlobalEventsService
+    private globalEventsService: GlobalEventsService,
+    private hintDialogService: HintDialogService,
+    private apiCommonService: ApiCommonService
   ) {}
 
   ngOnInit(): void {
@@ -407,10 +411,11 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     this.uiFlag.showMorePageOpt = false;
     this.getBtnPosition(tagIdx);
     switch (page) {
-      case 'info':
+      case 'info': {
         const mainBodyEle = document.querySelector('.main__container');
         mainBodyEle.scrollTo({ top: 0, behavior: 'smooth' });
         break;
+      }
       case 'log':
         this.getProductLog();
         break;
@@ -468,7 +473,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
       token,
     };
     let apiList = [
-      this.qrcodeService.getProductInfo(productInfoBody),
+      this.api70xxService.fetchGetProductInfo(productInfoBody),
       this.userService.getUser().rxUserProfile,
     ];
     switch (displayPage) {
@@ -486,7 +491,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
           this.uiFlag.overManufactureDate = this.checkUpload(sn);
           if (this.uiFlag.overManufactureDate) {
             apiList = apiList.concat([
-              this.qrcodeService.uploadDeviceInfo(uploadDeviceInfoBody, sn),
+              this.api70xxService.fetchUploadDeviceInfo(uploadDeviceInfoBody, sn),
             ]);
           } else {
             this.snackbar.open('尚未出廠（Shipped not yet.）', 'OK', { duration: 3000 });
@@ -523,9 +528,13 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
         };
 
         apiList = apiList.concat([
-          this.qrcodeService.getDeviceDetail(getRelativeBody(token as string, 'myEquipmentSN', sn)),
-          this.qrcodeService.getQRFitPairURL(getRelativeBody(token as string, 'equipmentSN', sn)),
-          this.coachService.fetchFitPairInfo(getFitPairInfoBody),
+          this.api70xxService.fetchGetDeviceDetail(
+            getRelativeBody(token as string, 'myEquipmentSN', sn)
+          ),
+          this.api70xxService.fetchGetQRFitPairURL(
+            getRelativeBody(token as string, 'equipmentSN', sn)
+          ),
+          this.api70xxService.fetchFitPairInfo(getFitPairInfoBody),
         ]);
 
         this.uiFlag.progress = 30;
@@ -622,7 +631,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
       }
     });
 
-    if (!passCheck) this.utils.openAlert(errorMsg);
+    if (!passCheck) this.hintDialogService.openAlert(errorMsg);
     return passCheck;
   }
 
@@ -653,7 +662,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
 
     if (!modelTypeName) {
       const qrErrMsg = `Can't find this device.<br>Please check sn number.`;
-      this.utils.openAlert(qrErrMsg);
+      this.hintDialogService.openAlert(qrErrMsg);
     } else {
       const { sn, cs } = this.deviceInfo;
       this.deviceInfo = {
@@ -840,8 +849,8 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
       token: this.auth.token,
     };
 
-    this.qrcodeService
-      .editDeviceInfo(body)
+    this.api70xxService
+      .fetchEditDeviceInfo(body)
       .pipe(
         switchMap((res) =>
           this.translateService.get('hellow world').pipe(
@@ -897,11 +906,11 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
         targetUserId: bondStatus === 2 ? this.fitPairInfo.deviceBond.id : '',
       };
 
-      this.qrcodeService.updateDeviceBonding(body).subscribe((res) => {
+      this.api70xxService.fetchUpdateDeviceBonding(body).subscribe((res) => {
         const { resultCode, resultMessage } = res;
         if (resultCode !== 200) {
           const errorMsg = bondStatus === 2 ? resultMessage : errMsg;
-          this.utils.openAlert(errorMsg);
+          this.hintDialogService.openAlert(errorMsg);
         } else {
           if (bondStatus === 2) {
             this.snackbar.open('解綁成功', 'OK', { duration: 3000 });
@@ -960,7 +969,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
           fitPairType: type,
         };
 
-        return this.qrcodeService.fitPairSetting(fitPairBody);
+        return this.api70xxService.fetchFitPairSetting(fitPairBody);
       };
 
       // call api 7007
@@ -974,7 +983,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
           deviceRFVer: '',
         };
 
-        return this.qrcodeService.uploadDeviceInfo(uploadDeviceInfoBody, sn);
+        return this.api70xxService.fetchUploadDeviceInfo(uploadDeviceInfoBody, sn);
       };
 
       fetchFitPairSetting(token, sn, fitPairType)
@@ -982,7 +991,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
           switchMap((res) => {
             const { apiCode, resultCode, resultMessage } = res;
             if (resultCode !== 200) {
-              this.utils.handleError(resultCode, apiCode, resultMessage);
+              this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
               return res;
             } else {
               // 覆蓋先前的fitpair對象
@@ -991,7 +1000,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
                   switchMap((pairRes) => {
                     const { apiCode, resultCode, resultMessage } = pairRes;
                     if (resultCode !== 200) {
-                      this.utils.handleError(resultCode, apiCode, resultMessage);
+                      this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
                       return pairRes;
                     } else {
                       // 再次call api 7007確認doulble check fitpair
@@ -1009,7 +1018,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
         .subscribe((response) => {
           const { apiCode, resultCode, resultMessage } = response as any;
           if (resultCode !== 200) {
-            this.utils.handleError(resultCode, apiCode, resultMessage);
+            this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
           } else {
             this.translateService
               .get('hellow world')
@@ -1151,10 +1160,10 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
       pageCounts: this.pageSetting.onePageSize,
     };
 
-    this.qrcodeService.getEquipmentLog(body).subscribe((res) => {
+    this.api70xxService.fetchGetEquipmentLog(body).subscribe((res) => {
       const { apiCode, resultCode, resultMessage, info } = res;
       if (resultCode !== 200) {
-        this.utils.handleError(resultCode, apiCode, resultMessage);
+        this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
       } else {
         const { totalCounts, equipmentErrorLog } = info,
           { pageIndex, onePageSize } = this.pageSetting;

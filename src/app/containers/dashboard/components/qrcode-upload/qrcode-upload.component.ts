@@ -1,11 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserService } from '../../../../core/services/user.service';
-import { UtilsService } from '../../../../shared/services/utils.service';
-import { ActivityService } from '../../../../shared/services/activity.service';
+import {
+  UserService,
+  AuthService,
+  NodejsApiService,
+  HintDialogService,
+} from '../../../../core/services';
 import { A3FormatPipe } from '../../../../shared/pipes/a3-format.pipe';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AuthService } from '../../../../core/services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -42,8 +44,8 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private userService: UserService,
-    private utils: UtilsService,
-    private activityService: ActivityService,
+    private hintDialogService: HintDialogService,
+    private nodejsApiService: NodejsApiService,
     private auth: AuthService,
     private snackbar: MatSnackBar,
     private translate: TranslateService,
@@ -100,7 +102,7 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
       );
     } catch {
       const msg = 'Data broken!';
-      this.utils.openAlert(msg);
+      this.hintDialogService.openAlert(msg);
       this.dataBroken = true;
       return false;
     }
@@ -207,7 +209,7 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
       hostname: location.hostname,
     };
 
-    this.activityService.uploadSportFile(body).subscribe((res) => {
+    this.nodejsApiService.uploadSportFile(body).subscribe((res) => {
       const { errMsg, resultCode, nodejsApiCode } = res;
       if (res.resultCode == 200) {
         this.snackbar.open(this.translate.instant('universal_popUpMessage_uploadSuccess'), 'OK', {

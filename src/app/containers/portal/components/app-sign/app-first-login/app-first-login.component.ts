@@ -5,10 +5,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { AuthService } from '../../../../../core/services/auth.service';
-import { Api10xxService } from '../../../../../core/services/api-10xx.service';
+import { AuthService, Api10xxService, GlobalEventsService } from '../../../../../core/services';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
-import { UtilsService } from '../../../../../shared/services/utils.service';
+import { imageToDataUri } from '../../../../../core/utils';
 
 @Component({
   selector: 'app-app-first-login',
@@ -54,11 +53,11 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
 
   constructor(
     private translate: TranslateService,
-    private utils: UtilsService,
     private dialog: MatDialog,
     private router: Router,
     private authService: AuthService,
-    private api10xxService: Api10xxService
+    private api10xxService: Api10xxService,
+    private globalEventsService: GlobalEventsService
   ) {
     translate.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.getTranslate();
@@ -70,10 +69,10 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
 
     if (location.pathname.indexOf('web') > 0) {
       this.pcView = true;
-      this.utils.setHideNavbarStatus(false);
+      this.globalEventsService.setHideNavbarStatus(false);
     } else {
       this.pcView = false;
-      this.utils.setHideNavbarStatus(true);
+      this.globalEventsService.setHideNavbarStatus(true);
     }
 
     this.getDefaultBirthday();
@@ -107,7 +106,7 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
   // 取得使用者選擇的照片-kidin-1090526
   handleAttachmentChange(file) {
     if (file) {
-      const { isTypeCorrect, errorMsg, link } = file;
+      const { isTypeCorrect, link } = file;
       if (!isTypeCorrect) {
       } else {
         this.finalImageLink = link;
@@ -252,9 +251,9 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
 
     const image = new Image();
     image.src = this.finalImageLink || '/assets/images/user2.png';
-    this.editBody.userProfile.avatar.large = this.imageToDataUri(image, 256, 256);
-    this.editBody.userProfile.avatar.mid = this.imageToDataUri(image, 128, 128);
-    this.editBody.userProfile.avatar.small = this.imageToDataUri(image, 64, 64);
+    this.editBody.userProfile.avatar.large = imageToDataUri(image, 256, 256);
+    this.editBody.userProfile.avatar.mid = imageToDataUri(image, 128, 128);
+    this.editBody.userProfile.avatar.small = imageToDataUri(image, 64, 64);
 
     this.api10xxService.fetchEditUserProfile(this.editBody).subscribe((res) => {
       if (res.processResult.resultCode !== 200) {
@@ -286,23 +285,6 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
         });
       }
     });
-  }
-
-  // 將圖片轉為base64格式-kidin-1090526
-  imageToDataUri(img, width, height) {
-    // create an off-screen canvas
-    const canvas = document.createElement('canvas'),
-      ctx = canvas.getContext('2d');
-
-    // set its dimension to target size
-    canvas.width = width;
-    canvas.height = height;
-
-    // draw source image into the off-screen canvas:
-    ctx.drawImage(img, 0, 0, width, height);
-
-    // encode image to data-uri with base64 version of compressed image
-    return canvas.toDataURL().replace('data:image/png;base64,', '');
   }
 
   // 轉導至目標頁或dashboard-kidin-1090526

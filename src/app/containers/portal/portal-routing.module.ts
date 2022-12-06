@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { PortalComponent } from './portal.component';
-import { SigninGuard } from '../../shared/guards/signin/signin.guard';
+import { SigninGuard } from '../../core/guard/signin/signin.guard';
 import { SportsReportComponent } from '../../shared/components/sports-report/sports-report.component';
 import { Page404Component } from '../../shared/components/page404/page404.component';
 import { Page403Component } from '../../shared/components/page403/page403.component';

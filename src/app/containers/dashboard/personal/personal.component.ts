@@ -9,22 +9,24 @@ import {
 import { UserProfileInfo } from '../../../shared/models/user-profile-info';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { UtilsService } from '../../../shared/services/utils.service';
-import { HashIdService } from '../../../shared/services/hash-id.service';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { EditMode } from '../models/personal';
 import { AlbumType } from '../../../shared/models/image';
 import { DashboardService } from '../services/dashboard.service';
-import { GlobalEventsService } from '../../../core/services/global-events.service';
+import {
+  GlobalEventsService,
+  HashIdService,
+  UserService,
+  AuthService,
+  HintDialogService,
+} from '../../../core/services';
 import { v5 as uuidv5 } from 'uuid';
 import dayjs from 'dayjs';
 import { ImageUploadService } from '../services/image-upload.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ShareGroupInfoDialogComponent } from '../../../shared/components/share-group-info-dialog/share-group-info-dialog.component';
 import { TranslateService } from '@ngx-translate/core';
-import { UserService } from '../../../core/services/user.service';
-import { getUrlQueryStrings } from '../../../shared/utils/index';
-import { AuthService } from '../../../core/services/auth.service';
+import { getUrlQueryStrings, base64ToFile } from '../../../core/utils';
 import { appPath } from '../../../app-path.const';
 import { QueryString } from '../../../shared/enum/query-string';
 
@@ -99,7 +101,7 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
   childPageList: Array<string> = [];
 
   constructor(
-    private utils: UtilsService,
+    private hintDialogService: HintDialogService,
     private route: ActivatedRoute,
     private router: Router,
     private hashIdService: HashIdService,
@@ -561,14 +563,14 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
       if (icon.base64 !== null) {
         const fileName = this.createFileName(imgArr.length, `${userId}`);
         imgArr.unshift({ albumType: AlbumType.personalIcon, fileNameFull: `${fileName}.jpg` });
-        formData.append('file', this.utils.base64ToFile(icon.base64, fileName));
+        formData.append('file', base64ToFile(icon.base64, fileName));
       }
 
       // 個人佈景
       if (scenery.base64 !== null) {
         const fileName = this.createFileName(imgArr.length, `${userId}`);
         imgArr.unshift({ albumType: AlbumType.personalScenery, fileNameFull: `${fileName}.jpg` });
-        formData.append('file', this.utils.base64ToFile(scenery.base64, fileName));
+        formData.append('file', base64ToFile(scenery.base64, fileName));
       }
 
       formData.set('img', JSON.stringify(imgArr));
@@ -593,7 +595,7 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
       if (resultCode !== 200) {
         this.editImage.icon.base64 = null;
         this.editImage.scenery.base64 = null;
-        this.utils.openAlert('Image upload error.<br>Please change image.');
+        this.hintDialogService.openAlert('Image upload error.<br>Please change image.');
       } else {
         this.initImgSetting();
         this.usreService.refreshUserProfile();

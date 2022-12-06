@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LocalStorageKey } from '../../shared/enum/local-storage-key';
 import { Api10xxService } from './api-10xx.service';
-import { setLocalStorageObject, getLocalStorageObject } from '../../shared/utils/index';
+import { setLocalStorageObject, getLocalStorageObject } from '../utils/index';
 import { combineLatest, Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { SignTypeEnum } from '../../shared/enum/account';

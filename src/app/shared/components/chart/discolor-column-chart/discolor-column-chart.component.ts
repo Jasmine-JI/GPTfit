@@ -22,7 +22,7 @@ import { Unit } from '../../../enum/value-conversion';
 import { SportType } from '../../../enum/sports';
 import { DataTypeTranslatePipe } from '../../../pipes/data-type-translate.pipe';
 import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
-import { speedToPaceSecond } from '../../../utils/sports';
+import { speedToPaceSecond } from '../../../../core/utils/sports';
 import isoWeek from 'dayjs/plugin/isoWeek';
 
 dayjs.extend(isoWeek);

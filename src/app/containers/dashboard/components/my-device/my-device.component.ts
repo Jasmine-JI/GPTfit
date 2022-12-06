@@ -1,15 +1,18 @@
 import { Component, OnInit, OnChanges, OnDestroy, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { QrcodeService } from '../../../portal/services/qrcode.service';
-import { UtilsService } from '../../../../shared/services/utils.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Api10xxService } from '../../../../core/services/api-10xx.service';
+import {
+  Api10xxService,
+  AuthService,
+  ApiCommonService,
+  Api70xxService,
+} from '../../../../core/services';
 import { PaginationSetting } from '../../../../shared/models/pagination';
 import { Subject, fromEvent, Subscription, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-my-device',
@@ -49,12 +52,13 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private router: Router,
     private qrcodeService: QrcodeService,
-    private utils: UtilsService,
     public dialog: MatDialog,
     private translateService: TranslateService,
     private snackbar: MatSnackBar,
     private api10xxService: Api10xxService,
-    private authService: AuthService
+    private authService: AuthService,
+    private apiCommonService: ApiCommonService,
+    private api70xxService: Api70xxService
   ) {}
 
   ngOnInit() {
@@ -84,11 +88,11 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
 
     this.uiFlag.progress = 20;
     if (targetUserId) Object.assign(body, { targetUserId });
-    this.qrcodeService.getDeviceList(body).subscribe((res) => {
+    this.api70xxService.fetchGetDeviceList(body).subscribe((res) => {
       this.uiFlag.progress = 40;
       const { apiCode, resultCode, resultMessage, info } = res;
       if (resultCode !== 200) {
-        this.utils.handleError(resultCode, apiCode, resultMessage);
+        this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
         this.uiFlag.progress = 100;
       } else {
         const { totalCounts, deviceList } = info,
@@ -130,7 +134,7 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
       queryType: 1,
       queryArray: snList,
     };
-    const querry = [this.qrcodeService.getProductInfo(productInfoBody)];
+    const querry = [this.api70xxService.fetchGetProductInfo(productInfoBody)];
     if (idSet.size > 0) {
       const idList = Array.from(idSet),
         body = {
@@ -214,8 +218,8 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
       token: this.token,
     };
 
-    this.qrcodeService
-      .editDeviceInfo(body)
+    this.api70xxService
+      .fetchEditDeviceInfo(body)
       .pipe(
         switchMap((res) =>
           this.translateService.get('hellow world').pipe(

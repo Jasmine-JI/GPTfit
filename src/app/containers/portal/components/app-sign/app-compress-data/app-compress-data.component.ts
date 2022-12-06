@@ -1,15 +1,13 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { AppCode } from '../../../models/app-webview';
 import { Router } from '@angular/router';
-import { UtilsService } from '../../../../../shared/services/utils.service';
-import { SignupService } from '../../../../../shared/services/signup.service';
 import dayjs from 'dayjs';
-import { AuthService } from '../../../../../core/services/auth.service';
+import { AuthService, Api10xxService, GlobalEventsService } from '../../../../../core/services';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TFTViewMinWidth } from '../../../models/app-webview';
 import { AlaApp } from '../../../../../shared/models/app-id';
-import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../shared/utils/index';
+import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/utils';
 
 enum CompressStatus {
   request,
@@ -56,9 +54,9 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
 
   constructor(
     private router: Router,
-    private utils: UtilsService,
-    private signupService: SignupService,
-    private auth: AuthService
+    private api10xxService: Api10xxService,
+    private auth: AuthService,
+    private globalEventsService: GlobalEventsService
   ) {}
 
   ngOnInit(): void {
@@ -132,8 +130,8 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
    * @author kidin-1110113
    */
   setPageStyle(isPcView: boolean) {
-    this.utils.setHideNavbarStatus(isPcView);
-    this.utils.setDarkModeStatus(isPcView);
+    this.globalEventsService.setHideNavbarStatus(isPcView);
+    this.globalEventsService.setDarkModeStatus(isPcView);
   }
 
   /**
@@ -181,9 +179,8 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
       const msg = `${this.translate.instant('universal_userAccount_copyLink')} ${this.translate.instant('universal_status_success')}`
-      this.utils.openAlert(msg);
     });
-    
+
   }
   */
 
@@ -201,7 +198,7 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
       };
 
       this.uiFlag.progress = 30;
-      this.signupService.fetchCompressData(body, this.requestHeader).subscribe((res) => {
+      this.api10xxService.fetchCompressData(body, this.requestHeader).subscribe((res) => {
         this.uiFlag.progress = 100;
         const processResult = res.processResult;
         if (processResult.resultCode !== 200) {
@@ -248,7 +245,7 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
     };
 
     this.uiFlag.progress = 30;
-    this.signupService.fetchCompressData(body, this.requestHeader).subscribe((res) => {
+    this.api10xxService.fetchCompressData(body, this.requestHeader).subscribe((res) => {
       this.uiFlag.progress = 100;
       const processResult = res.processResult;
       if (processResult.resultCode !== 200) {

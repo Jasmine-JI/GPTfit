@@ -2,18 +2,16 @@ import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { UtilsService } from '../../../shared/services/utils.service';
-import { HashIdService } from '../../../shared/services/hash-id.service';
 import { ProfessionalService } from '../../professional/services/professional.service';
 import { AccessRight } from '../../../shared/enum/accessright';
-import { UserService } from '../../../core/services/user.service';
+import { UserService, HashIdService } from '../../../core/services';
+import { displayGroupLevel } from '../../../core/utils';
 
 @Injectable()
 export class EditGroupGuard implements CanActivate {
   visittingId = '';
 
   constructor(
-    private utils: UtilsService,
     private router: Router,
     private hashIdService: HashIdService,
     private professoinalService: ProfessionalService,
@@ -30,7 +28,7 @@ export class EditGroupGuard implements CanActivate {
       return false;
     }
 
-    const groupLevel = +this.utils.displayGroupLevel(this.visittingId);
+    const groupLevel = +displayGroupLevel(this.visittingId);
     return this.professoinalService.groupAccessright.pipe(
       map((groupAccessright) => {
         const { systemAccessright } = this.userService.getUser();

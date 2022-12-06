@@ -4,21 +4,17 @@ import { MatInput } from '@angular/material/input';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ActivityService } from '../../services/activity.service';
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService, HashIdService, UserService, Api21xxService } from '../../../core/services';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
-import { HashIdService } from '../../services/hash-id.service';
 import dayjs, { Dayjs } from 'dayjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { UserService } from '../../../core/services/user.service';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { Unit } from '../../enum/value-conversion';
-import { getUrlQueryStrings } from '../../utils/index';
+import { getUrlQueryStrings } from '../../../core/utils/index';
 
 @Component({
   selector: 'app-my-activity',
@@ -48,7 +44,7 @@ export class MyActivityComponent implements OnInit, OnDestroy {
   @ViewChild('paginator', { static: true })
   paginator: MatPaginator;
   constructor(
-    private activityService: ActivityService,
+    private api21xxService: Api21xxService,
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
@@ -182,7 +178,7 @@ export class MyActivityComponent implements OnInit, OnDestroy {
     if (this.targetUserId) {
       body.targetUserId = this.targetUserId;
     }
-    this.activityService.fetchSportList(body).subscribe((res) => {
+    this.api21xxService.fetchSportList(body).subscribe((res) => {
       this.isLoading = false;
 
       if (res.resultCode === 200) {

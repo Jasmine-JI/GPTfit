@@ -1,24 +1,27 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Renderer2 } from '@angular/core';
 import { GroupDetailInfo, UserSimpleInfo } from '../../../models/group-detail';
-import { GroupService } from '../../../../../shared/services/group.service';
-import { UtilsService } from '../../../../../shared/services/utils.service';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import dayjs from 'dayjs';
-import { ActivityService } from '../../../../../shared/services/activity.service';
-import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { getOptions } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
-import { UserService } from '../../../../../core/services/user.service';
+import {
+  UserService,
+  HashIdService,
+  AuthService,
+  Api10xxService,
+  Api11xxService,
+  Api21xxService,
+  Api70xxService,
+  ReportService,
+} from '../../../../../core/services';
 import { Router } from '@angular/router';
-import { HashIdService } from '../../../../../shared/services/hash-id.service';
 import { chart, charts, color, each } from 'highcharts';
-import { ReportService } from '../../../../../shared/services/report.service';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
 import { HrZoneRange } from '../../../../../shared/models/chart-data';
 import { HrBase } from '../../../../../shared/enum/personal';
-import { AuthService } from '../../../../../core/services/auth.service';
-import { Api10xxService } from '../../../../../core/services/api-10xx.service';
+import { ProfessionalService } from '../../../../professional/services/professional.service';
+import { displayGroupLevel } from '../../../../../core/utils';
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -261,18 +264,18 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   caloriesChartTarget: ElementRef;
 
   constructor(
-    private groupService: GroupService,
-    private utils: UtilsService,
-    private activityService: ActivityService,
+    private api11xxService: Api11xxService,
+    private api21xxService: Api21xxService,
     private userService: UserService,
     private hashIdService: HashIdService,
     private router: Router,
-    private qrcodeService: QrcodeService,
+    private api70xxService: Api70xxService,
     private renderer: Renderer2,
     private translateService: TranslateService,
     private reportService: ReportService,
     private authService: AuthService,
-    private api10xxService: Api10xxService
+    private api10xxService: Api10xxService,
+    private professionalService: ProfessionalService
   ) {}
 
   ngOnInit(): void {
@@ -308,14 +311,14 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
    */
   initPage() {
     combineLatest([
-      this.groupService.getRxGroupDetail(),
-      this.groupService.getRxCommerceInfo(),
-      this.groupService.getUserSimpleInfo(),
+      this.professionalService.getRxGroupDetail(),
+      this.professionalService.getRxCommerceInfo(),
+      this.professionalService.getUserSimpleInfo(),
     ])
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((resArr) => {
         this.groupInfo = resArr[0];
-        Object.assign(resArr[0], { groupLevel: this.utils.displayGroupLevel(resArr[0].groupId) });
+        Object.assign(resArr[0], { groupLevel: displayGroupLevel(resArr[0].groupId) });
         Object.assign(resArr[0], { expired: resArr[1].expired });
         Object.assign(resArr[0], { commerceStatus: resArr[1].commerceStatus });
         this.userSimpleInfo = resArr[2];
@@ -436,7 +439,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   // 取得群組資訊-kidin-1090326
   getGroupInfo() {
     // 先從service取得群組資訊，若取不到再call api-kidin-1081210
-    this.groupService
+    this.professionalService
       .getGroupInfo()
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((res) => {
@@ -457,9 +460,9 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
             avatarType: '2',
           };
 
-          this.groupService.fetchGroupListDetail(groupBody).subscribe((result) => {
+          this.api11xxService.fetchGroupListDetail(groupBody).subscribe((result) => {
             this.groupData = result.info;
-            this.groupService.saveGroupInfo(this.groupData);
+            this.professionalService.saveGroupInfo(this.groupData);
             this.showGroupInfo();
           });
         }
@@ -583,7 +586,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   // 取得多筆活動資料並處理-kidin-1081211
   sendRequest(body) {
     this.changeLoadingStatus(true);
-    this.activityService.fetchMultiActivityData(body).subscribe((res) => {
+    this.api21xxService.fetchMultiActivityData(body).subscribe((res) => {
       const activity = res.info.activities;
       if (res.resultCode !== 200) {
         this.hasResData = false;
@@ -775,10 +778,8 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   updateUrl(str) {
     let newUrl;
     if (str === 'true') {
-      const startDateString = this.selectDate.startDate.split('T')[0],
-        endDateString = this.selectDate.endDate.split('T')[0];
-      let searchString;
-
+      const startDateString = this.selectDate.startDate.split('T')[0];
+      const endDateString = this.selectDate.endDate.split('T')[0];
       let userId: string;
       if (this.fileInfo.author.indexOf('?') > 0) {
         userId = this.hashIdService.handleUserIdEncode(
@@ -788,8 +789,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
         userId = this.hashIdService.handleUserIdEncode(this.fileInfo.author.replace(')', ''));
       }
 
-      searchString = `startdate=${startDateString}&enddate=${endDateString}&sportType=${this.sportType}&id=${userId}`;
-
+      const searchString = `startdate=${startDateString}&enddate=${endDateString}&sportType=${this.sportType}&id=${userId}`;
       if (location.search.indexOf('?') > -1) {
         if (
           location.search.indexOf('startdate=') > -1 &&
@@ -1068,7 +1068,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       queryType: '1',
       queryArray: SN,
     };
-    this.qrcodeService.getProductInfo(deviceDody).subscribe((res) => {
+    this.api70xxService.fetchGetProductInfo(deviceDody).subscribe((res) => {
       if (res) {
         this.deviceInfo = res.info.productInfo[0];
         if (location.hostname === '192.168.1.235') {

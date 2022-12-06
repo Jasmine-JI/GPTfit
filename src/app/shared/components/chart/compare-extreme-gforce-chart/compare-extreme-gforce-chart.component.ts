@@ -12,10 +12,10 @@ import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs';
-import { GlobalEventsService } from '../../../../core/services/global-events.service';
-import { deepCopy } from '../../../utils/index';
+import { GlobalEventsService } from '../../../../core/services';
+import { deepCopy } from '../../../../core/utils/index';
 import { compareChartDefault } from '../../../models/chart-data';
-import { complexTrendTooltip } from '../../../utils/chart-formatter';
+import { complexTrendTooltip } from '../../../../core/utils/chart-formatter';
 
 @Component({
   selector: 'app-compare-extreme-gforce-chart',

@@ -1,8 +1,7 @@
-import { SignupService } from '../services/signup.service';
-import { GetClientIpService } from '../services/get-client-ip.service';
+import { GetClientIpService, Api10xxService } from '../../core/services';
 import { of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { checkResponse } from '../utils/index';
+import { checkResponse } from '../../core/utils/index';
 
 enum UnlockFlow {
   requestImg = 1,
@@ -21,7 +20,7 @@ export class LockCaptcha {
 
   constructor(
     private imgLockCode: string,
-    private signupService: SignupService,
+    private api10xxService: Api10xxService,
     private getClientIpService: GetClientIpService
   ) {
     this.requestLockImg();
@@ -39,7 +38,7 @@ export class LockCaptcha {
       .pipe(
         switchMap((ipResult) => {
           this.header = { remoteAddr: (ipResult as any).ip };
-          return this.signupService.fetchCaptcha(body, this.header);
+          return this.api10xxService.fetchCaptcha(body, this.header);
         })
       )
       .subscribe((res: any) => {
@@ -87,7 +86,7 @@ export class LockCaptcha {
   requestUnlock() {
     const { unlockFlow, unlockKey } = this;
     const body = { unlockFlow, unlockKey };
-    return this.signupService.fetchCaptcha(body, this.header).pipe(
+    return this.api10xxService.fetchCaptcha(body, this.header).pipe(
       switchMap((res: any) => {
         if (!checkResponse(res)) {
           const { processResult } = res;
