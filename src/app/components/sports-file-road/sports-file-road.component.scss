@@ -1,0 +1,109 @@
+@import 'text-gradient-color.scss';
+@import 'font.scss';
+
+$focus-color: linear-gradient(180deg, rgb(223, 58, 58) 0%, rgb(197, 73, 184) 100%);
+
+.list__container {
+  overflow-x: scroll;
+  overflow-x: -moz-scrollbars-none;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.switch__button {
+  width: 36px;
+  font-size: 24px;
+  background-color: rgba(200, 200, 200, 0.1);
+
+  &:first-child {
+    margin-right: 10px;
+  }
+
+  &:last-child {
+    margin-left: 10px;
+  }
+}
+
+.switch__button--disabled {
+  color: rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+.list__button {
+  padding: 5px 10px;
+
+  &:after {
+    $height: 4px;
+    content: '';
+    display: block;
+    height: $height;
+    width: 100%;
+    border-radius: $height;
+    background-color: transparent;
+    margin: 2px 0;
+  }
+
+  &:not(:last-child) {
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
+  }
+}
+
+.list__button--focus {
+  > .file__name,
+  .sport__type__icon,
+  .info__data__row {
+    @include text-gradient-color($focus-color);
+  }
+
+  &:after {
+    background: $focus-color;
+  }
+}
+
+.sport__type__icon {
+  font-size: 36px;
+}
+
+.one__file__info {
+  align-items: center;
+  width: 100%;
+}
+
+.file__info__content {
+  text-align: left;
+}
+
+.file__name {
+  @include bold-font(12px);
+  display: inline-block;
+  width: 100%;
+  text-align: left;
+}
+
+.total__second__icon {
+  font-size: 20px;
+}
+
+.heartrate__icon {
+  font-size: 16px;
+  padding: 0 1px;
+}
+
+.speed__icon {
+  font-size: 16px;
+  padding: 0 2px;
+}
+
+.info__data__row {
+  line-height: 0.5;
+  white-space: nowrap;
+}
+
+.data__unit {
+  font-size: 12px;
+  color: rgba(128, 128, 128, 1);
+}

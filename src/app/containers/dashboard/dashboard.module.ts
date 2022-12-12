@@ -87,6 +87,7 @@ import {
   DistanceSibsModule,
   SportPaceSibsModule,
   WeightSibsModule,
+  SportTypeIconModule,
 } from '../../core/pipes';
 
 @NgModule({
@@ -118,6 +119,7 @@ import {
     AnalysisOptionModule,
     SmallHrzoneChartModule,
     AnalysisInfoMenuModule,
+    SportTypeIconModule,
   ],
   providers: [
     GpxService,

@@ -396,6 +396,12 @@ export function handleSceneryImg(type: number, subtype = 0) {
     case SportType.ball:
       sportType = 'ball';
       break;
+    case SportType.complex:
+      sportType = 'combined';
+      break;
+    case SportType.rest:
+      sportType = 'rest';
+      break;
   }
 
   return `/app/public_html/img/${sportType}_${subtype}.jpg`;

@@ -97,6 +97,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     SportType.aerobic,
     SportType.row,
     SportType.ball,
+    SportType.complex,
   ];
 
   /**

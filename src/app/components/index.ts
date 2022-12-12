@@ -7,3 +7,4 @@ export * from './sports-data-table/sports-data-table.component';
 export * from './analysis-option/analysis-option.component';
 export * from './small-hrzone-chart/small-hrzone-chart.component';
 export * from './analysis-info-menu/analysis-info-menu.component';
+export * from './sports-file-road/sports-file-road.component';

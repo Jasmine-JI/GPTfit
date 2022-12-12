@@ -1,5 +1,5 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { SportType } from '../enum/sports';
+import { Pipe, PipeTransform, NgModule } from '@angular/core';
+import { SportType } from '../enums/sports';
 
 @Pipe({ name: 'sportTypeIcon' })
 export class SportTypeIconPipe implements PipeTransform {
@@ -27,8 +27,15 @@ export class SportTypeIconPipe implements PipeTransform {
         return 'icon-svg_web-icon_p3_056-ball';
       case SportType.all:
         return 'icon-svg_web-icon_p2_038-complex';
+      case SportType.rest:
+        return 'icon-svg_web-icon_p2_039-rest';
       default:
         return 'icon-svg_web-icon_p2_038-complex';
     }
   }
 }
+@NgModule({
+  declarations: [SportTypeIconPipe],
+  exports: [SportTypeIconPipe],
+})
+export class SportTypeIconModule {}
