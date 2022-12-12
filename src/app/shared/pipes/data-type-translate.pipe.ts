@@ -28,8 +28,9 @@ export class DataTypeTranslatePipe implements PipeTransform {
             return 'universal_activityData_100mPace';
           case SportType.row:
             return 'universal_activityData_500mPace';
+          default:
+            return '配速';
         }
-
       case 'cadence':
         switch (sportType) {
           case SportType.run:
@@ -42,8 +43,9 @@ export class DataTypeTranslatePipe implements PipeTransform {
             return 'universal_activityData_swimCadence';
           case SportType.row:
             return 'universal_activityData_rowCadence';
+          default:
+            return '頻率';
         }
-
       case 'power':
         return 'universal_activityData_power';
       case 'swolf':

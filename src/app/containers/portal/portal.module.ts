@@ -26,7 +26,7 @@ import { QRCodeModule } from 'angularx-qrcode';
 import { AppCompressDataComponent } from './components/app-sign/app-compress-data/app-compress-data.component';
 import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-account/app-destroy-account.component';
 import { HashIdService, DetectInappService } from '../../core/services';
-import { SportPaceSibsModule, SportPaceSibsPipe } from '../../core/pipes';
+import { SportPaceSibsModule, SportPaceSibsPipe, SportTypeIconModule } from '../../core/pipes';
 
 @NgModule({
   imports: [
@@ -43,6 +43,7 @@ import { SportPaceSibsModule, SportPaceSibsPipe } from '../../core/pipes';
     CustomMaterialModule,
     QRCodeModule,
     SportPaceSibsModule,
+    SportTypeIconModule,
   ],
   providers: [
     QrcodeService,
