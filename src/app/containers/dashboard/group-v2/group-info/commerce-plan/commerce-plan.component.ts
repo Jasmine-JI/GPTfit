@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GroupDetailInfo, UserSimpleInfo } from '../../../models/group-detail';
-import { GroupService } from '../../../../../shared/services/group.service';
-import { UtilsService } from '../../../../../shared/services/utils.service';
+import { Api11xxService, HintDialogService } from '../../../../../core/services';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SelectDate } from '../../../../../shared/models/utils-type';
 import { planDatas } from '../../../group/desc';
+import { ProfessionalService } from '../../../../professional/services/professional.service';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -69,7 +69,11 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
     },
   };
 
-  constructor(private groupService: GroupService, private utils: UtilsService) {}
+  constructor(
+    private api11xxService: Api11xxService,
+    private hintDialogService: HintDialogService,
+    private professionalService: ProfessionalService
+  ) {}
 
   ngOnInit(): void {
     this.initPage();
@@ -81,9 +85,9 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
    */
   initPage() {
     combineLatest([
-      this.groupService.getRxGroupDetail(),
-      this.groupService.getRxCommerceInfo(),
-      this.groupService.getUserSimpleInfo(),
+      this.professionalService.getRxGroupDetail(),
+      this.professionalService.getRxCommerceInfo(),
+      this.professionalService.getUserSimpleInfo(),
     ])
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((resArr) => {
@@ -120,7 +124,7 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
       this.savePlanSetting();
     } else {
       this.uiFlag.editMode = true;
-      this.groupService.setEditMode('edit');
+      this.professionalService.setEditMode('edit');
       this.handleEditBody();
       if (+this.editBody.commercePlan === 99) {
         setTimeout(() => {
@@ -169,7 +173,7 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
    */
   handleCancelEdit() {
     this.uiFlag.editMode = false;
-    this.groupService.setEditMode('close');
+    this.professionalService.setEditMode('close');
   }
 
   /**
@@ -263,13 +267,13 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
    * @author kidin-1091112
    */
   savePlanSetting() {
-    this.groupService.editGroupManage(this.editBody).subscribe((res) => {
+    this.api11xxService.fetchEditCommerceInfo(this.editBody).subscribe((res) => {
       if (res.resultCode !== 200) {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
-        this.utils.openAlert(errMsg);
+        this.hintDialogService.openAlert(errMsg);
       } else {
         this.uiFlag.editMode = false;
-        this.groupService.setEditMode('complete');
+        this.professionalService.setEditMode('complete');
       }
     });
   }

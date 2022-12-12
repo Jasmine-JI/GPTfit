@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { GroupDetailInfo, UserSimpleInfo, MemberInfo } from '../../../models/group-detail';
-import { GroupService } from '../../../../../shared/services/group.service';
-import { UtilsService } from '../../../../../shared/services/utils.service';
+import { ProfessionalService } from '../../../../professional/services/professional.service';
+import { Api11xxService, HintDialogService } from '../../../../../core/services';
 import { Subject, combineLatest, forkJoin } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { displayGroupLevel } from '../../../../../core/utils';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -45,7 +46,11 @@ export class MemberListComponent implements OnInit, OnDestroy {
    */
   waitMemberList: Array<MemberInfo> = [];
 
-  constructor(private groupService: GroupService, private utils: UtilsService) {}
+  constructor(
+    private professionalService: ProfessionalService,
+    private hintDialogService: HintDialogService,
+    private api11xxService: Api11xxService
+  ) {}
 
   ngOnInit(): void {
     this.initPage();
@@ -57,14 +62,14 @@ export class MemberListComponent implements OnInit, OnDestroy {
    */
   initPage() {
     combineLatest([
-      this.groupService.getRxGroupDetail(),
-      this.groupService.getRxCommerceInfo(),
-      this.groupService.getUserSimpleInfo(),
-      this.groupService.getRXNormalMemberList(),
+      this.professionalService.getRxGroupDetail(),
+      this.professionalService.getRxCommerceInfo(),
+      this.professionalService.getUserSimpleInfo(),
+      this.professionalService.getRXNormalMemberList(),
     ])
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((resArr) => {
-        Object.assign(resArr[0], { groupLevel: this.utils.displayGroupLevel(resArr[0].groupId) });
+        Object.assign(resArr[0], { groupLevel: displayGroupLevel(resArr[0].groupId) });
         Object.assign(resArr[0], { expired: resArr[1].expired });
         Object.assign(resArr[0], { commerceStatus: resArr[1].commerceStatus });
         this.sortMember(resArr[3]);
@@ -82,7 +87,7 @@ export class MemberListComponent implements OnInit, OnDestroy {
     const adminBody = {
       token: this.userSimpleInfo.token,
       groupId: this.groupInfo.groupId,
-      groupLevel: this.utils.displayGroupLevel(this.groupInfo.groupId),
+      groupLevel: displayGroupLevel(this.groupInfo.groupId),
       infoType: 2,
       avatarType: 3,
     };
@@ -90,17 +95,17 @@ export class MemberListComponent implements OnInit, OnDestroy {
     const memberBody = {
       token: this.userSimpleInfo.token,
       groupId: this.groupInfo.groupId,
-      groupLevel: this.utils.displayGroupLevel(this.groupInfo.groupId),
+      groupLevel: displayGroupLevel(this.groupInfo.groupId),
       infoType: 3,
       avatarType: 3,
     };
 
     forkJoin([
-      this.groupService.fetchGroupMemberList(adminBody),
-      this.groupService.fetchGroupMemberList(memberBody),
+      this.api11xxService.fetchGroupMemberList(adminBody),
+      this.api11xxService.fetchGroupMemberList(memberBody),
     ]).subscribe((resArr) => {
       if (resArr[0].resultCode !== 200 || resArr[1].resultCode !== 200) {
-        this.utils.openAlert(errMsg);
+        this.hintDialogService.openAlert(errMsg);
         console.error(
           `${resArr[0].resultCode}: Api ${resArr[0].apiCode} ${resArr[0].resultMessage}`
         );
@@ -108,8 +113,8 @@ export class MemberListComponent implements OnInit, OnDestroy {
           `${resArr[1].resultCode}: Api ${resArr[1].apiCode} ${resArr[1].resultMessage}`
         );
       } else {
-        this.groupService.setAdminList(resArr[0].info.groupMemberInfo);
-        this.groupService.setNormalMemberList(resArr[1].info.groupMemberInfo);
+        this.professionalService.setAdminList(resArr[0].info.groupMemberInfo);
+        this.professionalService.setNormalMemberList(resArr[1].info.groupMemberInfo);
       }
     });
   }
@@ -146,10 +151,10 @@ export class MemberListComponent implements OnInit, OnDestroy {
   handleEdit() {
     if (this.uiFlag.editMode === 'complete') {
       this.uiFlag.editMode = 'edit';
-      this.groupService.setEditMode('edit');
+      this.professionalService.setEditMode('edit');
     } else {
       this.uiFlag.editMode = 'complete';
-      this.groupService.setEditMode('complete');
+      this.professionalService.setEditMode('complete');
     }
   }
 

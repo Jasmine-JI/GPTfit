@@ -5,9 +5,7 @@ import { DashboardRoutingModule } from './dashboard-routing.module';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 import { FormsModule } from '@angular/forms';
 import { MyDatePickerModule } from 'mydatepicker';
-import { MapService } from '../../shared/services/map.service';
-import { CustomMaterialModule } from '../../shared/custom-material.module';
-import { GlobalEventsManager } from '../../shared/global-events-manager';
+import { CustomMaterialModule } from '../../core/custom-material.module';
 import { GpxService } from './services/gpx.service';
 import { MsgDialogComponent } from './components/msg-dialog/msg-dialog.component';
 import { SharedPipes } from '../../shared/pipes/shared-pipes';
@@ -16,34 +14,27 @@ import { DeviceLogComponent } from './components/device-log/device-log.component
 import { DeviceLogService } from './services/device-log.service';
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
-import { CoachService } from '../../shared/services/coach.service';
-import { UtilsService } from '../../shared/services/utils.service';
 import { SharedModule } from '../../shared/shared.module';
 import { AccessNamePipe } from './pipes/access-name.pipe';
 import { EditGroupGuard } from './guards/edit-group-guard';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { PeopleSelectorWinComponent } from './components/people-selector-win/people-selector-win.component';
 import { DashboardGuard } from './guards/dashboard-guard';
-import { ActivityService } from '../../shared/services/activity.service';
 import { ProductErrorLogPipe } from './pipes/product-error-log.pipe';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { MyDeviceComponent } from './components/my-device/my-device.component';
-import { ReportService } from '../../shared/services/report.service';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { TokenInterceptor } from '../../shared/interceptors/token.interceptor';
+import { TokenInterceptor } from '../../core/interceptors/token.interceptor';
 import { InnerTestComponent } from './components/inner-test/inner-test.component';
-import { HashIdService } from '../../shared/services/hash-id.service';
+import { HashIdService, DetectInappService } from '../../core/services';
 import { CloudRunGpxComponent } from './components/cloud-run-gpx/cloud-run-gpx.component';
 import { InnerAdminService } from './services/inner-admin.service';
-import { ActivityOtherDetailsService } from '../../shared/services/activity-other-details.service';
-import { DetectInappService } from '../../shared/services/detect-inapp.service';
 import { QRCodeModule } from 'angularx-qrcode';
 import { InnerDevicePairComponent } from './components/inner-device-pair/inner-device-pair.component';
 import { LifeTrackingComponent } from './components/life-tracking/life-tracking.component';
 import { LifeTrackingService } from './services/life-tracking.service';
 import { QrcodeUploadComponent } from './components/qrcode-upload/qrcode-upload.component';
-import { OfficialActivityService } from '../../shared/services/official-activity.service';
 import { GroupSearchComponent } from './group/group-search/group-search.component';
 import { AllGroupListComponent } from './group/all-group-list/all-group-list.component';
 import { MyGroupListComponent } from './group/my-group-list/my-group-list.component';
@@ -76,8 +67,6 @@ import { SettingPreferComponent } from './personal/setting-prefer/setting-prefer
 import { SettingPrivacyComponent } from './personal/setting-privacy/setting-privacy.component';
 import { SettingAccountComponent } from './personal/setting-account/setting-account.component';
 import { ActivityListComponent } from './personal/activity-list/activity-list.component';
-import { GroupService } from '../../shared/services/group.service';
-import { SharedComponentsModule as ProfessionalSharedModule } from '../professional/shared/shared-components.module';
 import { StationMailModule } from '../station-mail/station-mail.module';
 import { GsensorComponent } from './components/gsensor/gsensor.component';
 import {
@@ -88,6 +77,7 @@ import {
   SportsDataTableModule,
   AnalysisOptionModule,
   SmallHrzoneChartModule,
+  AnalysisInfoMenuModule,
 } from '../../components';
 import {
   DateUnitKeyModule,
@@ -97,6 +87,7 @@ import {
   DistanceSibsModule,
   SportPaceSibsModule,
   WeightSibsModule,
+  SportTypeIconModule,
 } from '../../core/pipes';
 
 @NgModule({
@@ -112,7 +103,6 @@ import {
     SharedModule,
     NgProgressModule,
     QRCodeModule,
-    ProfessionalSharedModule,
     StationMailModule,
     SportTargetSettingModule,
     DateUnitKeyModule,
@@ -128,26 +118,19 @@ import {
     SportsDataTableModule,
     AnalysisOptionModule,
     SmallHrzoneChartModule,
+    AnalysisInfoMenuModule,
+    SportTypeIconModule,
   ],
   providers: [
-    MapService,
-    GlobalEventsManager,
     GpxService,
     DeviceLogService,
-    CoachService,
-    UtilsService,
     EditGroupGuard,
     DashboardGuard,
-    ActivityService,
-    ReportService,
     HashIdService,
     InnerAdminService,
-    ActivityOtherDetailsService,
     DetectInappService,
     LifeTrackingService,
-    OfficialActivityService,
     PersonCloudrunReport,
-    GroupService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

@@ -9,15 +9,13 @@ import dayjs from 'dayjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { AuthService } from '../../../core/services/auth.service';
-import { ReportService } from '../../services/report.service';
+import { AuthService, UserService, Api21xxService, ReportService } from '../../../core/services';
 import { ReportConditionOpt } from '../../models/report-condition';
 import { mi } from '../../models/bs-constant';
 import { Unit } from '../../enum/value-conversion';
-import { UserService } from '../../../core/services/user.service';
 import { stepColor } from '../../models/chart-data';
 import { Sex } from '../../enum/personal';
-import { deepCopy } from '../../utils/index';
+import { deepCopy, countAge, countFFMI, countBMI } from '../../../core/utils';
 
 type CommentType = 'fatRate' | 'muscleRate' | 'moistureRate';
 
@@ -160,11 +158,12 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
   xAxisArr = []; // 圖表x軸全部值
 
   constructor(
-    private reportService: ReportService,
+    private api21xxService: Api21xxService,
     private translate: TranslateService,
     private userService: UserService,
     private changeDetectorRef: ChangeDetectorRef,
-    private authService: AuthService
+    private authService: AuthService,
+    private reportService: ReportService
   ) {}
 
   ngOnInit() {
@@ -361,7 +360,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
       filterEndTime: dayjs(endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
     };
 
-    this.reportService.fetchTrackingSummaryArray(body).subscribe((res) => {
+    this.api21xxService.fetchTrackingSummaryArray(body).subscribe((res) => {
       if (res.length && res.length > 0) {
         this.uiFlag.noData = false;
         this.changeProgress(70);
@@ -541,8 +540,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
               isLatestKey = this.getLatestKey().includes(_key);
 
             if (Object.prototype.hasOwnProperty.call(_tracking, _key)) {
-              let value: number;
-              value = +_tracking[_key];
+              const value = +_tracking[_key];
 
               // 將各數據加總，之後均化產生趨勢圖表
               if (sameDateData[_key] !== undefined && !isLatestKey) {
@@ -602,14 +600,14 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
 
     let age: number;
     if (birthYear) {
-      age = this.reportService.countAge(`${birthYear}0101`);
+      age = countAge(`${birthYear}0101`);
       this.info['age'] = age;
     }
 
     if (bodyHeight && bodyWeight) {
-      this.info['BMI'] = this.reportService.countBMI(bodyHeight, bodyWeight);
+      this.info['BMI'] = countBMI(bodyHeight, bodyWeight);
       if (fatRate) {
-        this.info['FFMI'] = this.reportService.countFFMI(bodyHeight, bodyWeight, fatRate);
+        this.info['FFMI'] = countFFMI(bodyHeight, bodyWeight, fatRate);
       }
     }
 
@@ -933,7 +931,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
     if (bodyHeight && bodyWeight) {
       const weight = parseFloat(bodyWeight.toFixed(1)),
         height = parseFloat(bodyHeight.toFixed(1)),
-        BMI = this.reportService.countBMI(height, weight);
+        BMI = countBMI(height, weight);
       BMITrend.noData = false;
       // 將前面為0的數據用後面的值補值
       if (BMITrend.zeroDataBefore) {

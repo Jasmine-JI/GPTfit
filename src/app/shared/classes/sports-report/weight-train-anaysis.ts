@@ -1,6 +1,6 @@
 import { Lang } from '../../models/i18n';
 import { ReportDateType } from '../../models/report-condition';
-import { getCorrespondingMuscleGroup } from '../../utils/sports';
+import { getCorrespondingMuscleGroup } from '../../../core/utils/sports';
 import { MuscleCode } from '../../enum/weight-train';
 
 /**

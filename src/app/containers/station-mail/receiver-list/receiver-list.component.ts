@@ -9,10 +9,9 @@ import {
   ViewChild,
   ElementRef,
 } from '@angular/core';
-import { Api50xxService } from '../../../core/services/api-50xx.service';
-import { AuthService } from '../../../core/services/auth.service';
+import { Api50xxService, AuthService } from '../../../core/services';
 import { StationMailService } from '../services/station-mail.service';
-import { checkResponse } from '../../../shared/utils/index';
+import { checkResponse } from '../../../core/utils/index';
 import { Subject, Subscription, combineLatest, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 

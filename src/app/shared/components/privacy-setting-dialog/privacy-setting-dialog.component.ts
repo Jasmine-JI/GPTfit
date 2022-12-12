@@ -1,7 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
-import { UserService } from '../../../core/services/user.service';
+import { UserService } from '../../../core/services';
 
 @Component({
   selector: 'app-privacy-setting-dialog',

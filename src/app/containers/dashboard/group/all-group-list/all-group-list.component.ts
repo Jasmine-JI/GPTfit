@@ -1,13 +1,10 @@
 import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
-import { GroupService } from '../../../../shared/services/group.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../../core/services/auth.service';
-import { HashIdService } from '../../../../shared/services/hash-id.service';
-import { getUrlQueryStrings } from '../../../../shared/utils/index';
-import { UtilsService } from '../../../../shared/services/utils.service';
+import { AuthService, HashIdService, Api11xxService } from '../../../../core/services';
+import { getUrlQueryStrings, getPartGroupId } from '../../../../core/utils';
 
 @Component({
   selector: 'app-all-group-list',
@@ -32,11 +29,10 @@ export class AllGroupListComponent implements OnInit {
   @ViewChild('filter', { static: false }) filter: ElementRef;
 
   constructor(
-    private groupService: GroupService,
+    private api11xxService: Api11xxService,
     private router: Router,
     private hashIdService: HashIdService,
-    private authService: AuthService,
-    private utils: UtilsService
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -80,7 +76,7 @@ export class AllGroupListComponent implements OnInit {
     if (this.groupLevel !== '00' || this.searchWords.length > 0) {
       body.category = '3';
     }
-    this.groupService.fetchGroupList(body).subscribe((res) => {
+    this.api11xxService.fetchGroupList(body).subscribe((res) => {
       this.logSource.data = res.info.groupList;
       this.totalCount = res.info.totalCounts;
       this.isLoading = false;
@@ -98,6 +94,6 @@ export class AllGroupListComponent implements OnInit {
    * @param groupId {string}-群組id
    */
   displayGroupId(groupId: string) {
-    return this.utils.displayGroupId(groupId);
+    return getPartGroupId(groupId, { start: 2, end: 5 });
   }
 }

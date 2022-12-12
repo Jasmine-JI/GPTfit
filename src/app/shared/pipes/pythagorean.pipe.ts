@@ -1,9 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { ReportService } from '../services/report.service';
+import { pythagorean } from '../../core/utils';
 
 @Pipe({ name: 'pythagorean' })
 export class PythagoreanPipe implements PipeTransform {
-  constructor(private reportService: ReportService) {}
+  constructor() {}
 
   /**
    * 畢氏定理
@@ -11,6 +11,6 @@ export class PythagoreanPipe implements PipeTransform {
    * @returns 畢氏定理結果
    */
   transform(value: Array<number>): number {
-    return this.reportService.pythagorean(value);
+    return pythagorean(value);
   }
 }

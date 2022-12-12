@@ -5,25 +5,27 @@ import {
   setLocalStorageObject,
   getLocalStorageObject,
   removeLocalStorageObject,
-} from '../../../shared/utils/index';
+} from '../../../core/utils';
 import { StationMailService } from '../services/station-mail.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { Api10xxService } from '../../../core/services/api-10xx.service';
-import { Api11xxService } from '../../../core/services/api-11xx.service';
-import { Api50xxService } from '../../../core/services/api-50xx.service';
+import {
+  AuthService,
+  HashIdService,
+  Api10xxService,
+  Api11xxService,
+  Api50xxService,
+  NodejsApiService,
+  UserService,
+  HintDialogService,
+} from '../../../core/services';
 import { ReceiverType, MessageType } from '../enum/station-mail';
 import { Receiver } from '../models/station-mail';
-import { HashIdService } from '../../../shared/services/hash-id.service';
-import { NodejsApiService } from '../../../core/services/nodejs-api.service';
 import { Subject, Subscription, fromEvent, of, merge, combineLatest, Observable } from 'rxjs';
 import { takeUntil, debounceTime, switchMap, map } from 'rxjs/operators';
-import { UtilsService } from '../../../shared/services/utils.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { appPath } from '../../../app-path.const';
 import { QueryString } from '../../../shared/enum/query-string';
 import { KeyCode } from '../../../shared/models/key-code';
-import { UserService } from '../../../core/services/user.service';
 import { AccessRight } from '../../../shared/enum/accessright';
 import { REGEX_GROUP_ID } from '../../../shared/models/utils-constant';
 import { LocalStorageKey } from '../../../shared/enum/local-storage-key';
@@ -124,7 +126,7 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
     private api50xxService: Api50xxService,
     private hashIdService: HashIdService,
     private nodejsApiService: NodejsApiService,
-    private utilsService: UtilsService,
+    private hintDialogService: HintDialogService,
     private translateService: TranslateService,
     private router: Router,
     private userService: UserService,
@@ -560,7 +562,7 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(() => {
         const message = this.translateService.instant(msgKey);
-        this.utilsService.showSnackBar(message);
+        this.hintDialogService.showSnackBar(message);
       });
   }
 

@@ -11,8 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared.module';
 import { MessageBoxComponent } from './message-box/message-box.component';
-import { CustomMaterialModule } from '../custom-material.module';
-import { ConfirmButtonComponent } from './confirm-button/confirm-button.component';
+import { CustomMaterialModule } from '../../core/custom-material.module';
 import { FormTextComponent } from './form-text/form-text.component';
 import { FormRemindComponent } from './form-remind/form-remind.component';
 import { FormTextareaComponent } from './form-textarea/form-textarea.component';
@@ -40,7 +39,6 @@ import { HoverHintComponent } from './hover-hint/hover-hint.component';
 import { DateRangePickerComponent } from './date-range-picker/date-range-picker.component';
 import { MuscleMapChartComponent } from './chart/muscle-map/muscle-map-chart/muscle-map-chart.component';
 import { MuscleSvgIconComponent } from './chart/muscle-map/muscle-svg-icon/muscle-svg-icon.component';
-import { CustomSelectComponent } from './custom-material/custom-select/custom-select.component';
 import { ReportFilterComponent } from './report-filter/report-filter.component';
 import { BottomSheetComponent } from './bottom-sheet/bottom-sheet.component';
 import { SportsReportComponent } from './sports-report/sports-report.component';
@@ -83,6 +81,7 @@ import {
   SportPaceSibsPipe,
   WeightSibsModule,
   WeightSibsPipe,
+  SportTypeIconModule,
 } from '../../core/pipes';
 import {
   CalenderSelectorModule,
@@ -90,6 +89,7 @@ import {
   GoogleMapModule,
   AnalysisOptionModule,
   SportsDataTableModule,
+  SportsFileRoadModule,
 } from '../../components';
 
 @NgModule({
@@ -115,6 +115,8 @@ import {
     GoogleMapModule,
     AnalysisOptionModule,
     SportsDataTableModule,
+    SportTypeIconModule,
+    SportsFileRoadModule,
   ],
   declarations: [
     NavbarComponent,
@@ -124,7 +126,6 @@ import {
     UploadFileComponent,
     IntlPhoneInputComponent,
     MessageBoxComponent,
-    ConfirmButtonComponent,
     FormTextComponent,
     FormRemindComponent,
     FormTextareaComponent,
@@ -148,7 +149,6 @@ import {
     DateRangePickerComponent,
     MuscleMapChartComponent,
     MuscleSvgIconComponent,
-    CustomSelectComponent,
     ReportFilterComponent,
     BottomSheetComponent,
     SportsReportComponent,
@@ -193,7 +193,6 @@ import {
     UploadFileComponent,
     IntlPhoneInputComponent,
     MessageBoxComponent,
-    ConfirmButtonComponent,
     FormTextComponent,
     FormRemindComponent,
     FormTextareaComponent,
@@ -215,7 +214,6 @@ import {
     DateRangePickerComponent,
     MuscleMapChartComponent,
     MuscleSvgIconComponent,
-    CustomSelectComponent,
     ReportFilterComponent,
     SportsReportComponent,
     LoadingIconComponent,

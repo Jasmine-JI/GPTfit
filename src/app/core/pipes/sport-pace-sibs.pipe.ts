@@ -1,5 +1,5 @@
 import { NgModule, Pipe, PipeTransform } from '@angular/core';
-import { speedToPace } from '../../shared/utils/sports';
+import { speedToPace } from '../utils/sports';
 
 @Pipe({ name: 'sportPaceSibs' })
 export class SportPaceSibsPipe implements PipeTransform {

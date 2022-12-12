@@ -6,6 +6,9 @@ import {
   ViewChild,
   ElementRef,
   Input,
+  SimpleChanges,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { chart } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
@@ -104,6 +107,7 @@ class ChartOptions {
   selector: 'app-trend-info-chart',
   templateUrl: './trend-info-chart.component.html',
   styleUrls: ['./trend-info-chart.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject();
@@ -160,15 +164,17 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private translate: TranslateService,
-    private temperatureSibsPipe: TemperatureSibsPipe
+    private temperatureSibsPipe: TemperatureSibsPipe,
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {}
 
-  ngOnChanges() {
+  ngOnChanges(e: SimpleChanges) {
     // 避免previewMode頁面父組件過早變更input變數
     setTimeout(() => {
       this.initChart();
+      this.changeDetectorRef.markForCheck();
     });
   }
 
@@ -455,7 +461,7 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
 
             this.createChart(chartOptions);
             break;
-          case 'cadence':
+          case 'cadence': {
             type = 'scatter';
             this.yAxisData.forEach((_yAxis, _index) => {
               const _xAxis = this.xAxisData[_index];
@@ -514,6 +520,7 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
             Object.assign(chartOptions, { plotOptions: { scatter: { marker: { radius: 2 } } } });
             this.createChart(chartOptions);
             break;
+          }
           case 'power':
             this.yAxisData.forEach((_yAxis, _index) => {
               const _xAxis = this.xAxisData[_index];
@@ -569,7 +576,7 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
 
             this.createChart(chartOptions);
             break;
-          case 'temperature':
+          case 'temperature': {
             let maxTemp = 0;
             this.yAxisData.forEach((_yAxis, _index) => {
               const _xAxis = this.xAxisData[_index];
@@ -647,7 +654,8 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
             chartOptions.yAxis.min = null;
             this.createChart(chartOptions);
             break;
-          case 'gforce':
+          }
+          case 'gforce': {
             this.initGForceData();
             const xGForce = {
               ref: this.yAxisData[0],
@@ -759,7 +767,7 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
 
             /* 預埋此段避免圖表y軸線需對稱
           const chartBorder = chartMax * 1.2;
-          chartOptions['yAxis'].min = -chartBorder;  
+          chartOptions['yAxis'].min = -chartBorder;
           chartOptions['yAxis'].max = chartBorder;
           */
             chartOptions['yAxis'].min = null;
@@ -767,6 +775,7 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
             chartOptions['yAxis'].tickAmount = 3;
             this.createChart(chartOptions);
             break;
+          }
         }
       });
   }
@@ -808,7 +817,6 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
    * @param data {number}-y軸數據
    * @param type {ChartType}-數據類型
    * @param sportType {SportType}-運動類型
-   * @author kidin-1100208
    */
   getColor(data: number, type: ChartType, sportType = this.sportType): string {
     switch (type) {
@@ -838,14 +846,15 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
             // 超過30一律橙色
             return 30 - data < 0 ? `hsla(33, 70%, 65%, 1)` : `hsla(${220 - data}, 70%, 65%, 1)`;
           case SportType.swim:
-          case SportType.row:
+          case SportType.row: {
             // 超過60一律紅色
             const maxVal = 60;
             return maxVal - data < 0
               ? `hsla(0, 70%, 65%, 1)`
               : `hsla(${(maxVal - data) * (220 / maxVal)}, 70%, 65%, 1)`;
+          }
         }
-
+        break;
       case 'temperature':
         if (data <= 10) {
           return '#6e9bff';
@@ -861,7 +870,6 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
    * 取得對應的頻率多國語系
    * @param type {SportType}-運動類別
    * @returns string - i18n key
-   * @author kidin-1100209
    */
   getCadenceKey(type: SportType): string {
     switch (type) {
@@ -875,6 +883,10 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
         return 'universal_activityData_swimCadence';
       case SportType.row:
         return 'universal_activityData_rowCadence';
+      case SportType.complex:
+        return '頻率';
+      default:
+        return '頻率';
     }
   }
 

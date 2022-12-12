@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { SystemFolderPermissionService } from '../../services/system-folder-permission.service';
-import { UtilsService } from '../../../../shared/services/utils.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
-import { AuthService } from '../../../../core/services/auth.service';
+import { AuthService, HintDialogService } from '../../../../core/services';
 
 enum DevelopGroup {
   app = 1,
@@ -27,10 +26,10 @@ type ListEditMode = 'delUser' | 'addFolder' | 'delFolder';
 export class SystemFolderPermissionComponent implements OnInit {
   constructor(
     private systemFolderPermissionService: SystemFolderPermissionService,
-    private utils: UtilsService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private authService: AuthService
+    private authService: AuthService,
+    private hintDialogService: HintDialogService
   ) {}
 
   /**
@@ -100,7 +99,7 @@ export class SystemFolderPermissionComponent implements OnInit {
       const { apiCode, resultCode, resultMessage, info } = res;
       if (resultCode !== 200) {
         const msg = `${apiCode}: ${resultMessage}`;
-        this.utils.openAlert(msg);
+        this.hintDialogService.openAlert(msg);
       } else {
         this.userList = info.userList;
       }
@@ -125,7 +124,7 @@ export class SystemFolderPermissionComponent implements OnInit {
         const { apiCode, resultCode, resultMessage, info } = res;
         if (resultCode !== 200) {
           const msg = `${apiCode}: ${resultMessage}`;
-          this.utils.openAlert(msg);
+          this.hintDialogService.openAlert(msg);
         } else {
           const { accessFolderList, folderList } = info;
           this.folderList = accessFolderList ?? [];
@@ -369,7 +368,7 @@ export class SystemFolderPermissionComponent implements OnInit {
       const { apiCode, resultCode, resultMessage } = res;
       if (resultCode !== 200) {
         const msg = `${apiCode}: ${resultMessage}`;
-        this.utils.openAlert(msg);
+        this.hintDialogService.openAlert(msg);
       } else {
         this.userList.push(body.newAccount);
         this.snackBar.open('建立帳號成功', 'ok', { duration: 2000 });
@@ -389,7 +388,7 @@ export class SystemFolderPermissionComponent implements OnInit {
       const { apiCode, resultCode, resultMessage } = res;
       if (resultCode !== 200) {
         const msg = `${apiCode}: ${resultMessage}`;
-        this.utils.openAlert(msg);
+        this.hintDialogService.openAlert(msg);
       } else {
         this.snackBar.open('建立專案資料夾成功', 'ok', { duration: 2000 });
         this.initCheck();
@@ -455,7 +454,7 @@ export class SystemFolderPermissionComponent implements OnInit {
       const { apiCode, resultCode, resultMessage } = res;
       if (resultCode !== 200) {
         const msg = `${apiCode}: ${resultMessage}`;
-        this.utils.openAlert(msg);
+        this.hintDialogService.openAlert(msg);
       } else {
         this.userList = this.userList.filter((_user) => _user !== username);
         this.snackBar.open('刪除成功', 'ok', { duration: 2000 });
@@ -553,7 +552,7 @@ export class SystemFolderPermissionComponent implements OnInit {
         const { apiCode, resultCode, resultMessage } = res;
         if (resultCode !== 200) {
           const msg = `${apiCode}: ${resultMessage}`;
-          this.utils.openAlert(msg);
+          this.hintDialogService.openAlert(msg);
         } else {
           this.folderList = this.folderList.concat(allAddFolder);
           this.snackBar.open('新增權限成功', 'ok', { duration: 2000 });
@@ -626,7 +625,7 @@ export class SystemFolderPermissionComponent implements OnInit {
       const { apiCode, resultCode, resultMessage } = res;
       if (resultCode !== 200) {
         const msg = `${apiCode}: ${resultMessage}`;
-        this.utils.openAlert(msg);
+        this.hintDialogService.openAlert(msg);
       } else {
         this.folderList = this.folderList.filter((_list) => {
           let remain = true;

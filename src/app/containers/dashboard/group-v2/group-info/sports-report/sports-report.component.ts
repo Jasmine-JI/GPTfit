@@ -5,19 +5,18 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
-import { GroupService } from '../../../../../shared/services/group.service';
-import { UtilsService } from '../../../../../shared/services/utils.service';
+import { ProfessionalService } from '../../../../professional/services/professional.service';
 import { ReportCondition, ReportDateType } from '../../../../../shared/models/report-condition';
 import { Subject, of, combineLatest, fromEvent, Subscription, merge } from 'rxjs';
 import { takeUntil, switchMap, map, tap, debounceTime } from 'rxjs/operators';
-import { HashIdService } from '../../../../../shared/services/hash-id.service';
 import { SportType } from '../../../../../shared/enum/sports';
 import {
   getUrlQueryStrings,
   deepCopy,
   mathRounding,
   subscribePluralEvent,
-} from '../../../../../shared/utils/index';
+  speedToPace,
+} from '../../../../../core/utils';
 import { QueryString } from '../../../../../shared/enum/query-string';
 import { DateRange } from '../../../../../shared/classes/date-range';
 import { BrandType, GroupLevel } from '../../../../../shared/enum/professional';
@@ -30,7 +29,6 @@ import { AllGroupMember } from '../../../../../shared/classes/all-group-member';
 import { SportsParameter } from '../../../../../shared/models/sports-report';
 import { mi, ft, lb } from '../../../../../shared/models/bs-constant';
 import { Unit } from '../../../../../shared/enum/value-conversion';
-import { speedToPace } from '../../../../../shared/utils/sports';
 import { SportsAnalysisSort } from '../../../../../shared/classes/sports-report/sports-analysis-sort';
 import { ProfessionalAnalysisOption } from '../../../../professional/classes/professional-analysis-option';
 import { ProfessionalChartAnalysisOption } from '../../../../professional/classes/professional-chart-analysis-option';
@@ -48,6 +46,8 @@ import {
   UserService,
   Api21xxService,
   ReportService,
+  HashIdService,
+  HintDialogService,
 } from '../../../../../core/services';
 import { BenefitTimeStartZone } from '../../../../../core/enums/common';
 import dayjs from 'dayjs';
@@ -217,8 +217,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   readonly DateUnit = DateUnit;
 
   constructor(
-    private utils: UtilsService,
-    private groupService: GroupService,
+    private hintDialogService: HintDialogService,
+    private professionalService: ProfessionalService,
     private hashIdService: HashIdService,
     private changeDetectorRef: ChangeDetectorRef,
     private userService: UserService,
@@ -286,7 +286,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 取得管理員清單，用於篩選管理員數據的功能
    */
   getAdminList() {
-    this.groupService
+    this.professionalService
       .getRXAdminList()
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((list) => {
@@ -327,7 +327,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * @author kidin-1110315
    */
   getGroupInfo() {
-    return this.groupService.getCurrentGroupInfo();
+    return this.professionalService.getCurrentGroupInfo();
   }
 
   /**
@@ -422,7 +422,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       const { id, level } = group.focusGroup;
       const reportDayType = (dateUnit as ReportDateUnit).getReportDateType();
 
-      this.groupService
+      this.professionalService
         .getAllGroupMemberList(id as string)
         .pipe(
           switchMap((res) => {
@@ -479,7 +479,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         )
         .subscribe((resultArray) => {
           // 陣列為空則顯示錯誤訊息
-          if (resultArray.length === 0) return this.utils.openAlert(ERROR_MESSAGE);
+          if (resultArray.length === 0) return this.hintDialogService.openAlert(ERROR_MESSAGE);
           this.changeColumnOption(sportType as SportType, level as GroupLevel);
           this.initFlag();
           this.createReport(condition, resultArray);
@@ -541,7 +541,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   createReport(condition: ReportCondition, data: Array<any>) {
     const [allGroupMemberList, baseSportSummary, compareSportSummary] = data;
     const { groupDetail } = this.getGroupInfo();
-    this.sportsTargetCondition = this.groupService
+    this.sportsTargetCondition = this.professionalService
       .getSportsTarget(groupDetail)
       .getArrangeCondition((condition.dateUnit as ReportDateUnit).unit);
     this.handlePersonalData(
@@ -640,7 +640,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   getBelongGroupObj() {
     if (this.reportCondition.group) {
       const { id, level } = this.reportCondition.group.focusGroup;
-      const allGroupInfo = deepCopy(this.groupService.getCurrentGroupInfo().immediateGroupObj);
+      const allGroupInfo = deepCopy(
+        this.professionalService.getCurrentGroupInfo().immediateGroupObj
+      );
       if (level === GroupLevel.brand) return allGroupInfo;
 
       const {

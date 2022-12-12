@@ -20,7 +20,7 @@ import { HrZoneChartData } from '../sports-report/hrzone-chart-data';
 import { TypeAllChart } from '../sports-report/type-all-chart';
 import { TemporaryCount } from '../sports-report/temporary-count';
 import { SportsReport } from './sports-report';
-import { countBenefitTime, mathRounding } from '../../utils';
+import { countBenefitTime, mathRounding } from '../../../core/utils';
 import { BenefitTimeStartZone } from '../../../core/enums/common';
 
 dayjs.extend(isoWeek);

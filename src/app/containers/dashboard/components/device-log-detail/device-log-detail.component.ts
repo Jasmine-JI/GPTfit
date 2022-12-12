@@ -20,8 +20,8 @@ import dayjs, { Dayjs } from 'dayjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Location, DOCUMENT } from '@angular/common';
-import { WINDOW } from '../../../../shared/services/window.service';
-import { getUrlQueryStrings } from '../../../../shared/utils/index';
+import { WINDOW } from '../../../../core/services';
+import { getUrlQueryStrings } from '../../../../core/utils/index';
 
 @Component({
   selector: 'app-device-log-detail',

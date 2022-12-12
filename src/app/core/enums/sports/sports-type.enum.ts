@@ -2,8 +2,7 @@
  * 運動類別代碼清單
  */
 export enum SportType {
-  rest,
-  run,
+  run = 1,
   cycle,
   weightTrain,
   swim,
@@ -11,4 +10,6 @@ export enum SportType {
   row,
   ball,
   all = 99,
+  complex, // 複合式運動
+  rest,
 }

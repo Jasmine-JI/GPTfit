@@ -15,7 +15,7 @@ import { ReportCondition, DateRangeType, DateRangeInfo } from '../../models/repo
 import { DateUnit } from '../../enum/report';
 import dayjs from 'dayjs';
 import { SportType } from '../../enum/sports';
-import { deepCopy } from '../../utils/index';
+import { deepCopy } from '../../../core/utils/index';
 import { GroupLevel, BrandType } from '../../enum/professional';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';

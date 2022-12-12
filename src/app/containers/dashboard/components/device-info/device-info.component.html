@@ -2,7 +2,11 @@
 <div>
   <nav #navSection class="flexCol" style="position: relative">
     <section class="info-scenerySection">
-      <img class="info-imgAbs" [src]="deviceInfo.modelTypeName | productType: 'imgPath'" />
+      <img
+        class="info-imgAbs"
+        [src]="deviceInfo.modelTypeName | productType: 'imgPath'"
+        *ngIf="deviceInfo.modelTypeName"
+      />
     </section>
     <section class="info-header" [class.info-portalMode]="uiFlag.displayPage === 'fitPair'">
       <div

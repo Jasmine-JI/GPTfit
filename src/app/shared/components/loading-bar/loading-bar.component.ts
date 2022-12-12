@@ -1,16 +1,11 @@
-import { Component, OnInit, OnChanges, OnDestroy, Input, ChangeDetectorRef } from '@angular/core';
-import { Subscription, Subject, forkJoin } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { UtilsService } from '../../services/utils.service';
+import { Component, OnInit, OnChanges, Input, ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-loading-bar',
   templateUrl: './loading-bar.component.html',
   styleUrls: ['./loading-bar.component.scss'],
 })
-export class LoadingBarComponent implements OnInit, OnChanges, OnDestroy {
-  private ngUnsubscribe = new Subject();
-
+export class LoadingBarComponent implements OnInit, OnChanges {
   @Input() progress: number;
   @Input() isPreviewMode = false;
 
@@ -21,17 +16,9 @@ export class LoadingBarComponent implements OnInit, OnChanges, OnDestroy {
     pageComplete: true,
   };
 
-  constructor(private utils: UtilsService, private changeDetectorRef: ChangeDetectorRef) {}
+  constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
-  ngOnInit(): void {
-    this.utils
-      .getLoadingProgress()
-      .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe((res) => {
-        this.progress = res;
-        this.changeProgress();
-      });
-  }
+  ngOnInit(): void {}
 
   ngOnChanges(): void {
     this.changeProgress();
@@ -51,14 +38,5 @@ export class LoadingBarComponent implements OnInit, OnChanges, OnDestroy {
         this.changeDetectorRef.markForCheck();
       }, 1000);
     }
-  }
-
-  /**
-   * 移除訂閱
-   * @author kidin-1100302
-   */
-  ngOnDestroy() {
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
   }
 }

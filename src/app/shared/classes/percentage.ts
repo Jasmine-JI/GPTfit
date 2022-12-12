@@ -1,4 +1,4 @@
-import { countPercentage } from '../utils/index';
+import { countPercentage } from '../../core/utils/index';
 
 /**
  * 用來計算百分比

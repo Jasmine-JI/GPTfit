@@ -1,5 +1,5 @@
 import { trendChartColor } from '../../models/chart-data';
-import { deepCopy } from '../../utils/index';
+import { deepCopy } from '../../../core/utils/index';
 
 /**
  * 個人體重相關趨勢圖數據

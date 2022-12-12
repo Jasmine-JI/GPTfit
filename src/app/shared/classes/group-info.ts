@@ -2,7 +2,7 @@ import { GroupDetail } from '../models/group';
 import { REGEX_GROUP_ID } from '../models/utils-constant';
 import { GroupLevel } from '../enum/professional';
 import dayjs from 'dayjs';
-import { deepCopy } from '../utils/index';
+import { deepCopy } from '../../core/utils/index';
 
 export class GroupInfo {
   /**

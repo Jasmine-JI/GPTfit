@@ -14,10 +14,10 @@ import { chart } from 'highcharts';
 import Highcharts from 'highcharts';
 import heatmap from 'highcharts/modules/heatmap';
 import { ReportCondition } from '../../../models/report-condition';
-import { targetAchieveTooltip } from '../../../utils/chart-formatter';
+import { targetAchieveTooltip } from '../../../../core/utils/chart-formatter';
 import { compareChartDefault } from '../../../models/chart-data';
-import { deepCopy } from '../../../utils/index';
-import { GlobalEventsService } from '../../../../core/services/global-events.service';
+import { deepCopy } from '../../../../core/utils/index';
+import { GlobalEventsService } from '../../../../core/services';
 
 // highchart 引入 heatmap
 heatmap(Highcharts);

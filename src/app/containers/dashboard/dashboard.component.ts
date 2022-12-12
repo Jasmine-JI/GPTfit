@@ -1,25 +1,22 @@
 import { Component, OnInit, ChangeDetectorRef, AfterViewChecked, OnDestroy } from '@angular/core';
-import { GlobalEventsManager } from '../../shared/global-events-manager';
-import { AuthService } from '../../core/services/auth.service';
 import { Router } from '@angular/router';
-import { UtilsService } from '../../shared/services/utils.service';
 import { TranslateService } from '@ngx-translate/core';
 import { NavigationEnd } from '@angular/router';
-import { HashIdService } from '../../shared/services/hash-id.service';
-import { DetectInappService } from '../../shared/services/detect-inapp.service';
-import { Subject, Subscription, forkJoin, fromEvent, merge } from 'rxjs';
+import {
+  HashIdService,
+  GlobalEventsService,
+  UserService,
+  Api50xxService,
+  AuthService,
+  DetectInappService,
+  EnvironmentCheckService,
+} from '../../core/services';
+import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UserProfileInfo } from '../../shared/models/user-profile-info';
-import { GlobalEventsService } from '../../core/services/global-events.service';
 import { langData } from '../../shared/models/i18n';
-import { UserService } from '../../core/services/user.service';
 import { AccessRight } from '../../shared/enum/accessright';
-import {
-  setLocalStorageObject,
-  getLocalStorageObject,
-  checkResponse,
-} from '../../shared/utils/index';
-import { Api50xxService } from '../../core/services/api-50xx.service';
+import { setLocalStorageObject, getLocalStorageObject, checkResponse } from '../../core/utils';
 import { appPath } from '../../app-path.const';
 import { StationMailService } from '../station-mail/services/station-mail.service';
 
@@ -72,7 +69,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   langName: string;
   userProfile = <UserProfileInfo>{};
   isPreviewMode = false;
-  isMaskShow = false;
   isCollapseOpen = false;
   target: Dashboard | null = Dashboard.myActivity; // 目前預設是我的活動
   isUserMenuShow = false;
@@ -93,10 +89,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   readonly AccessRight = AccessRight;
 
   constructor(
-    private globalEventsManager: GlobalEventsManager,
     private authService: AuthService,
     private router: Router,
-    private utilsService: UtilsService,
     public translateService: TranslateService,
     private cdRef: ChangeDetectorRef,
     private hashIdService: HashIdService,
@@ -104,7 +98,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     private userService: UserService,
     private globalEventsService: GlobalEventsService,
     private api50xxService: Api50xxService,
-    private stationMailService: StationMailService
+    private stationMailService: StationMailService,
+    private environmentCheckService: EnvironmentCheckService
   ) {}
 
   ngOnInit() {
@@ -115,8 +110,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.subscribeRouter();
     this.subscribeLangChange();
     this.getWebVersion();
-    this.utilsService.checkBrowserLang();
-    this.handleGlobalEvent();
+    this.environmentCheckService.checkBrowserLang();
     this.onResize();
     this.checkNewMail();
     this.pollingNewMail();
@@ -297,23 +291,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin
    */
   getWebVersion() {
-    [this.isAlphaVersion, this.version] = this.utilsService.checkWebVersion();
-  }
-
-  handleGlobalEvent() {
-    this.globalEventsManager.showMask(false);
-    forkJoin([
-      this.globalEventsManager.showNavBarEmitter,
-      this.globalEventsManager.setFooterRWDEmitter,
-    ]).subscribe((resArr) => {
-      const [mode, _num] = resArr;
-      this.isMaskShow = mode as boolean;
-      if (_num > 0) {
-        this.footerAddClassName = `footer-rwd--${_num}`;
-      } else {
-        this.footerAddClassName = '';
-      }
-    });
+    [this.isAlphaVersion, this.version] = this.environmentCheckService.checkWebVersion();
   }
 
   /**
@@ -339,13 +317,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.uiFlag.mobileMode = false;
       this.shrinkSidebar();
     }
-  }
-
-  touchMask() {
-    this.isCollapseOpen = false;
-    this.globalEventsManager.openCollapse(this.isCollapseOpen);
-    this.isMaskShow = false;
-    this.globalEventsManager.closeCollapse(false);
   }
 
   goToUserProfile(userId) {

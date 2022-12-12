@@ -1,4 +1,4 @@
-import { mathRounding } from '../utils/index';
+import { mathRounding } from '../../core/utils/index';
 import {
   lastestTypeKey,
   avgTypeKey,

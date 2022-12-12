@@ -27,6 +27,10 @@ export class SportTypePipe implements PipeTransform {
         return 'universal_activityData_ballSports';
       case SportType.all:
         return 'universal_adjective_all';
+      case SportType.complex:
+        return 'universal_activityData_complex';
+      case SportType.rest:
+        return 'universal_activityData_restSection';
       default:
         return 'universal_userAccount_otherTypes';
     }

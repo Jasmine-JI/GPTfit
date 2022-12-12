@@ -1,7 +1,7 @@
 import { MuscleCode, MuscleGroup } from '../enum/weight-train';
 import { WeightTrainingInfo } from '../models/weight-train';
-import { mathRounding } from '../utils/index';
-import { getCorrespondingMuscleGroup } from '../utils/sports';
+import { mathRounding } from '../../core/utils/index';
+import { getCorrespondingMuscleGroup } from '../../core/utils/sports';
 
 /**
  * 統計個人重訓肌群數據

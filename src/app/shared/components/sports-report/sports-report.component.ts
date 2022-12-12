@@ -7,7 +7,6 @@ import {
   Output,
   EventEmitter,
 } from '@angular/core';
-import { UtilsService } from '../../services/utils.service';
 import { Subject, Subscription, of, merge, fromEvent, combineLatest } from 'rxjs';
 import { takeUntil, tap, map, switchMap, debounceTime } from 'rxjs/operators';
 import { SportType } from '../../enum/sports';
@@ -28,9 +27,9 @@ import {
   AuthService,
   LocalstorageService,
   Api21xxService,
+  HashIdService,
 } from '../../../core/services';
 import { ActivatedRoute } from '@angular/router';
-import { HashIdService } from '../../services/hash-id.service';
 import { SportsTarget } from '../../classes/sports-target';
 import { SportsReport } from '../../classes/sports-report/sports-report';
 import { PersonalSportsChartData } from '../../classes/sports-report/personal-sports-chart-data';
@@ -59,7 +58,7 @@ import {
   getUrlQueryStrings,
   checkResponse,
   mathRounding,
-} from '../../utils';
+} from '../../../core/utils';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { SameWeekLifeTrackingData } from '../../classes/same-week-lifetracking-data';
@@ -210,7 +209,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   readonly MuscleAnalysisColumn = MuscleAnalysisColumn;
 
   constructor(
-    private utils: UtilsService,
     private changeDetectorRef: ChangeDetectorRef,
     private userService: UserService,
     private api21xxService: Api21xxService,

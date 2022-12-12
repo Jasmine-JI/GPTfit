@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { UtilsService } from '../../../../shared/services/utils.service';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { ft, inch, lb } from '../../../../shared/models/bs-constant';
@@ -12,9 +11,14 @@ import { TranslateService } from '@ngx-translate/core';
 import { DashboardService } from '../../services/dashboard.service';
 import { TargetConditionMap } from '../../../../core/models/api/api-common/sport-target.model';
 import { DateUnit } from '../../../../shared/enum/report';
-import { checkResponse, mathRounding, valueConvert } from '../../../../shared/utils/index';
-import { UserService } from '../../../../core/services/user.service';
-import { getUserHrRange, getUserFtpZone } from '../../../../shared/utils/sports';
+import {
+  checkResponse,
+  mathRounding,
+  valueConvert,
+  getUserHrRange,
+  getUserFtpZone,
+} from '../../../../core/utils';
+import { UserService, HintDialogService } from '../../../../core/services';
 import { SportsTarget } from '../../../../shared/classes/sports-target';
 import { BenefitTimeStartZone } from '../../../../core/enums/common';
 
@@ -137,7 +141,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   readonly BenefitTimeStartZone = BenefitTimeStartZone;
 
   constructor(
-    private utils: UtilsService,
+    private hintDialogService: HintDialogService,
     private translate: TranslateService,
     private dashboardService: DashboardService,
     private userService: UserService
@@ -344,13 +348,13 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
         .subscribe((res) => {
           if (!checkResponse(res, false)) {
             const errorMsg = this.translate.instant('universal_popUpMessage_updateFailed');
-            this.utils.showSnackBar(errorMsg);
+            this.hintDialogService.showSnackBar(errorMsg);
             this.uiFlag.progress = 100;
           } else {
             this.uiFlag.progress = 100;
             this.closeDialog();
             const successMsg = this.translate.instant('universal_status_updateCompleted');
-            this.utils.showSnackBar(successMsg);
+            this.hintDialogService.showSnackBar(successMsg);
             this.dashboardService.setRxEditMode('complete');
           }
         });

@@ -1,6 +1,6 @@
 import { TargetConditionMap } from '../../../core/models/api/api-common/sport-target.model';
 import { DateUnit } from '../../enum/report';
-import { mathRounding, countPercentage, countBenefitTime } from '../../utils';
+import { mathRounding, countPercentage, countBenefitTime } from '../../../core/utils';
 import { ReportCondition } from '../../models/report-condition';
 import { PAI_COFFICIENT, DAY_PAI_TARGET } from '../../models/sports-report';
 import { SportType } from '../../enum/sports';

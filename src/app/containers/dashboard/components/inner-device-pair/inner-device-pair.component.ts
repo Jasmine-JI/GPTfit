@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import { Router } from '@angular/router';
-import { getUrlQueryStrings } from '../../../../shared/utils/index';
+import { getUrlQueryStrings } from '../../../../core/utils/index';
 
 @Component({
   selector: 'app-inner-device-pair',

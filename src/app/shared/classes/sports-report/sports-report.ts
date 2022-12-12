@@ -1,4 +1,4 @@
-import { mathRounding, isAvgData, countBenefitTime } from '../../utils';
+import { mathRounding, isAvgData, countBenefitTime } from '../../../core/utils';
 import {
   COMMON_DATA,
   RUN_DATA,

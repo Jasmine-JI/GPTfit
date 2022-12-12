@@ -12,8 +12,7 @@ import {
 import { ImageCroppedEvent } from 'ngx-image-cropper';
 import { ImageCropperComponent } from 'ngx-image-cropper';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { UtilsService } from '../../services/utils.service';
+import { HintDialogService } from '../../../core/services';
 import { AlbumType } from '../../models/image';
 import { advertiseRatio } from '../../../containers/official-activity/models/official-activity-const';
 
@@ -62,7 +61,7 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
     },
   };
 
-  constructor(private utils: UtilsService) {}
+  constructor(private hintDialogService: HintDialogService) {}
 
   ngOnInit(): void {}
 
@@ -159,7 +158,7 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
    * 圖片載入失敗
    */
   loadImageFailed() {
-    this.utils.openAlert('Image format error! Please try again');
+    this.hintDialogService.openAlert('Image format error! Please try again');
   }
 
   /**

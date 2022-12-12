@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { StationMailComponent } from './station-mail.component';
 import { Page404Component } from '../../shared/components/page404/page404.component';
-import { AuthGuard } from '../../shared/guards/auth/auth.guard';
+import { AuthGuard } from '../../core/guard/auth/auth.guard';
 import { appPath } from '../../app-path.const';
 import { CreateMailComponent } from './create-mail/create-mail.component';
 import { InboxComponent } from './inbox/inbox.component';

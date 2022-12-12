@@ -10,14 +10,18 @@ import {
 } from '@angular/core';
 import { Subject, fromEvent, Subscription, of, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { UserService } from '../../../core/services/user.service';
+import {
+  UserService,
+  AuthService,
+  Api10xxService,
+  Api21xxService,
+  Api11xxService,
+  Api70xxService,
+  HintDialogService,
+} from '../../../core/services';
 import { UserProfileInfo } from '../../models/user-profile-info';
 import { HrBase } from '../../enum/personal';
-import { UtilsService } from '../../services/utils.service';
-import { ActivityService } from '../../services/activity.service';
 import { Router } from '@angular/router';
-import { QrcodeService } from '../../../containers/portal/services/qrcode.service';
-import { GroupService } from '../../services/group.service';
 import dayjs from 'dayjs';
 import weekday from 'dayjs/plugin/weekday';
 import { TranslateService } from '@ngx-translate/core';
@@ -36,11 +40,16 @@ import { EditIndividualPrivacyComponent } from '../edit-individual-privacy/edit-
 import { AlbumType } from '../../models/image';
 import { v5 as uuidv5 } from 'uuid';
 import { ImageUploadService } from '../../../containers/dashboard/services/image-upload.service';
-import { getPaceUnit, getUserHrRange } from '../../utils/sports';
-import { getFileInfoParam } from '../../utils/index';
-import { AuthService } from '../../../core/services/auth.service';
+import {
+  getFileInfoParam,
+  handleSceneryImg,
+  base64ToFile,
+  getPaceUnit,
+  getUserHrRange,
+} from '../../../core/utils';
 import { AccessRight } from '../../enum/accessright';
-import { Api10xxService } from '../../../core/services/api-10xx.service';
+import { ComplexSportsHandler } from '../../classes/sports-report/complex-sports-handler';
+import { FileSimpleInfo } from '../../../core/models/compo';
 
 dayjs.extend(weekday);
 
@@ -95,6 +104,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     imageLoaded: false,
     openImgSelector: false,
     deviceIndex: 0,
+    currentIndex: 0,
   };
 
   /**
@@ -246,6 +256,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   filePrivacy: Array<PrivacyObj> = [1];
   cloudrunMapId: number;
   systemAccessright = AccessRight.guest;
+  complexFile: ComplexSportsHandler;
+  fileInfoList: Array<FileSimpleInfo>;
+  joinModeList: Array<number>;
 
   readonly AlbumType = AlbumType;
   readonly AccessRight = AccessRight;
@@ -268,15 +281,17 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     'gsensorZRawData',
     'moveRepetitions',
     'distanceMeters',
+    'complexCadence',
+    'complexWatt',
   ];
 
   constructor(
     private userService: UserService,
-    private utils: UtilsService,
-    private activityService: ActivityService,
+    private hintDialogService: HintDialogService,
+    private api21xxService: Api21xxService,
     private router: Router,
-    private qrcodeService: QrcodeService,
-    private groupService: GroupService,
+    private api70xxService: Api70xxService,
+    private api11xxService: Api11xxService,
     private translate: TranslateService,
     private muscleName: MuscleNamePipe,
     private dialog: MatDialog,
@@ -292,7 +307,11 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.checkQueryString(location.search);
     this.checkScreenSize();
     this.handlePageResize();
-    this.getActivityDetail();
+    if (this.authService.token && this.joinModeList) {
+      this.handleJoinMode();
+    } else {
+      this.getActivityDetail();
+    }
   }
 
   ngAfterViewInit() {
@@ -317,9 +336,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     if (queryString) {
       const queryArr = queryString.split('&');
       queryArr.forEach((_query) => {
-        const query = _query.split('='),
-          key = query[0],
-          value = query[1];
+        const [key, value] = _query.split('=');
         switch (key) {
           case 'debug':
             this.uiFlag.isDebug = true;
@@ -339,6 +356,14 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           case 'segmentRange':
             this.trendChartOpt.segmentRange = +value as SegmentSecond | SegmentMeter;
             break;
+          case 'join': {
+            const list = value
+              .split('-')
+              .map((_value) => +_value)
+              .filter((_value) => typeof _value === 'number');
+            this.joinModeList = list;
+            break;
+          }
         }
       });
     }
@@ -427,14 +452,75 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   /**
+   * 透過url取得fileId
+   */
+  getFileId() {
+    const { pathname } = location;
+    const pathArr = pathname.split('/');
+    return +pathArr[pathArr.length - 1];
+  }
+
+  /**
+   * 將多筆檔案組合為一複合式檔案
+   */
+  handleJoinMode() {
+    const mainFileId = this.getFileId();
+    this.joinModeList.unshift(mainFileId);
+    const body = {
+      token: this.authService.token,
+      searchTime: {
+        type: 1,
+        fuzzyTime: [],
+        filterStartTime: dayjs('20170101', 'YYYYMMDD').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+        filterEndTime: dayjs().format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+        specifyTime: '',
+        filterSameTime: 1,
+      },
+      searchRule: {
+        activity: 99,
+        targetUser: 1,
+        fileInfo: {
+          fileId: this.joinModeList,
+          author: this.userService.getUser().userId,
+          dispName: '',
+          equipmentSN: '',
+          class: '',
+          teacher: '',
+          tag: '',
+          cloudRunMapId: '',
+        },
+      },
+      display: {
+        activityLapLayerDisplay: 1,
+        activityPointLayerDisplay: 1,
+      },
+      page: 0,
+      pageCounts: 1000,
+    };
+
+    combineLatest([
+      this.getRxUserProfile(),
+      this.api21xxService.fetchMultiActivityData(body),
+    ]).subscribe((resArr) => {
+      const [userProfile, activityList] = resArr;
+      this.userProfile = userProfile;
+      const activitiesList = activityList.info.activities.filter(
+        (_activity) => +_activity.activityInfoLayer.type !== SportType.complex
+      );
+      this.complexFile = new ComplexSportsHandler(activitiesList);
+      this.fileInfoList = this.complexFile.getInfoList();
+      this.handleNormalSportsFile(this.complexFile.getAssignFile(0));
+      this.progress = 100;
+    });
+  }
+
+  /**
    * 取得運動詳細資料
    * @author kidin-1100104
    */
   getActivityDetail() {
     this.progress = 30;
-    const { pathname } = location;
-    const pathArr = pathname.split('/');
-    const fileId = pathArr[pathArr.length - 1];
+    const fileId = this.getFileId();
     this.fileInfo.fileId = fileId;
     let body: any = {
       token: this.authService.token,
@@ -448,7 +534,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
     combineLatest([
       this.getRxUserProfile(),
-      this.activityService.fetchSportListDetail(body),
+      this.api21xxService.fetchSportListDetail(body),
     ]).subscribe((resArr) => {
       const [userProfile, activityDetail] = resArr;
       this.userProfile = userProfile;
@@ -470,7 +556,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         default:
           this.progress = 100;
           console.error(`${resultCode}: Api ${apiCode} ${resultMessage}`);
-          this.utils.openAlert(errMsg);
+          this.hintDialogService.openAlert(errMsg);
           break;
       }
 
@@ -481,14 +567,51 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   /**
    * 處理運動詳細資料
    * @param data {any}-api 2103回傳的內容
-   * @author kidin-1100104
    */
   handleActivityDetail(data: any) {
+    const sportType = +data.activityInfoLayer.type as SportType;
+    switch (sportType) {
+      case SportType.complex:
+        this.handleComplexSportsFile(data);
+        break;
+      default:
+        this.handleNormalSportsFile(data);
+        break;
+    }
+
+    this.progress = 100;
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 處理複合式運動檔案
+   * @param data {any}-api 2103回傳的內容
+   */
+  handleComplexSportsFile(data: any) {
+    this.complexFile = new ComplexSportsHandler(data);
+    this.fileInfoList = this.complexFile.getInfoList();
+    this.handleNormalSportsFile(this.complexFile.getAssignFile(0));
+  }
+
+  /**
+   * 選擇顯示的複合式運動子檔案
+   * @param index {number}-指定的複合式檔案序列
+   */
+  selectFile(index: number) {
+    this.uiFlag.currentIndex = index;
+    this.handleNormalSportsFile(this.complexFile.getAssignFile(index));
+  }
+
+  /**
+   * 處理一般運動檔案
+   * @param data {any}-api 2103回傳的內容
+   */
+  handleNormalSportsFile(data: any) {
     this.rawData = data;
-    const { fileInfo, activityInfoLayer, activityLapLayer, activityPointLayer } = data,
-      { type, subtype } = activityInfoLayer;
+    const { fileInfo, activityInfoLayer, activityLapLayer, activityPointLayer } = data;
+    const { type, subtype } = activityInfoLayer;
     this.activityInfoLayer = activityInfoLayer;
-    this.sceneryImg = this.handleScenery(fileInfo.photo, +type, +subtype);
+    this.sceneryImg = this.handleScenery(fileInfo.photo, +type, +(subtype ?? 0));
     this.handleFileInfo(fileInfo);
     this.handleHrZoneData(activityInfoLayer);
     if (+type === 2) this.handleFtpZoneData(activityInfoLayer);
@@ -499,13 +622,10 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       this.handleActivityPoint(activityPointLayer);
     }
 
-    if (type == 3) {
+    if (+type === 3) {
       if (!this.uiFlag.isPreviewMode) this.getUserWeightTrainLevel();
       this.createMuscleTranslate();
     }
-
-    this.progress = 100;
-    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -519,14 +639,13 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     if (photo) {
       return photo;
     } else {
-      return this.activityService.handleSceneryImg(type, subType);
+      return handleSceneryImg(type, subType);
     }
   }
 
   /**
    * 確認運動檔案是否為使用者所持
    * @param fileInfo {any}-api 2103的fileInfo
-   * @author kiidn-1100104
    */
   handleFileInfo(fileInfo: any) {
     this.fileInfo = fileInfo;
@@ -739,7 +858,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       findRoot: 1,
     };
 
-    this.groupService.fetchGroupListDetail(body).subscribe((res) => {
+    this.api11xxService.fetchGroupListDetail(body).subscribe((res) => {
       if (res.resultCode !== 200) {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
@@ -805,7 +924,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       queryArray: equipmentList,
     };
 
-    this.qrcodeService.getProductInfo(body).subscribe((res) => {
+    this.api70xxService.fetchGetProductInfo(body).subscribe((res) => {
       if (res.resultCode !== 200) {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
@@ -1239,6 +1358,15 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['gforceZ', 'gsensorZRawData'],
         ];
         break;
+      case SportType.complex:
+        arr = [
+          ['hr', 'heartRateBpm'],
+          ['temperature', 'temp'],
+          ['speed', 'speed'],
+          ['cadence', 'complexCadence'],
+          ['power', 'complexWatt'],
+        ];
+        break;
       default:
         arr = [
           ['hr', 'heartRateBpm'],
@@ -1510,7 +1638,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       },
     };
 
-    this.activityService.fetchEditActivityProfile(body).subscribe((res) => {
+    this.api21xxService.fetchEditActivityProfile(body).subscribe((res) => {
       if (res.resultCode === 200) {
         if (willShare) {
           this.showShareBox();
@@ -1523,7 +1651,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           );
         }
       } else {
-        this.utils.openAlert(errMsg);
+        this.hintDialogService.openAlert(errMsg);
       }
 
       this.changeDetectorRef.markForCheck();
@@ -1580,7 +1708,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   /**
    * 將所需資料轉換為csv格式
    * @param rawData {any}-運動檔案內容
-   * @author kidin-1090928
    */
   switchCSVFile(rawData: any) {
     let csvData = '';
@@ -1757,7 +1884,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       fileId: [this.fileInfo.fileId],
     };
 
-    this.activityService.deleteActivityData(body).subscribe((res) => {
+    this.api21xxService.fetchDeleteActivityData(body).subscribe((res) => {
       if (+res.resultCode === 200) {
         this.snackBar.open(
           `${this.translate.instant('universal_operating_delete')}
@@ -1857,12 +1984,12 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       },
     };
 
-    this.activityService.fetchEditActivityProfile(body).subscribe((res) => {
+    this.api21xxService.fetchEditActivityProfile(body).subscribe((res) => {
       if (res.resultCode === 200) {
         this.uiFlag.editNameMode = false;
         this.fileInfo.dispName = this.newFileName;
       } else {
-        this.utils.openAlert(errMsg);
+        this.hintDialogService.openAlert(errMsg);
       }
 
       this.changeDetectorRef.markForCheck();
@@ -1964,8 +2091,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         distanceMeters,
         temp,
       } = _point;
-      let power = null,
-        cadence = null;
+      let power = null;
+      let cadence = null;
       switch (+this.activityInfoLayer.type) {
         case SportType.run:
           cadence = runCadence;
@@ -1980,6 +2107,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         case SportType.row:
           power = rowingWatt;
           cadence = rowingCadence;
+          break;
       }
 
       const checkLat = latitudeDegrees && parseFloat(latitudeDegrees) !== 100;
@@ -2065,7 +2193,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           activityFileId: this.fileInfo.fileId,
         });
 
-        formData.append('file', this.utils.base64ToFile(base64, fileName));
+        formData.append('file', base64ToFile(base64, fileName));
       }
 
       formData.set('img', JSON.stringify(imgArr));

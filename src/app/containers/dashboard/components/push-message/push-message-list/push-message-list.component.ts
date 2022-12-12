@@ -2,15 +2,13 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
-import { UserService } from '../../../../../core/services/user.service';
+import { UserService, NodejsApiService, AuthService } from '../../../../../core/services';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { PushMessageService } from '../../../services/push-message.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import dayjs from 'dayjs';
-import { NodejsApiService } from '../../../../../core/services/nodejs-api.service';
-import { AuthService } from '../../../../../core/services/auth.service';
 import { AccessRight } from '../../../../../shared/enum/accessright';
 
 @Component({

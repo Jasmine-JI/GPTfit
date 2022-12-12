@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Api50xxService } from '../../../core/services/api-50xx.service';
-import { AuthService } from '../../../core/services/auth.service';
+import { Api50xxService, AuthService } from '../../../core/services';
 import { of, Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
 import { switchMap, map, tap } from 'rxjs/operators';
-import { checkResponse } from '../../../shared/utils/index';
+import { checkResponse } from '../../../core/utils/index';
 import { TranslateService } from '@ngx-translate/core';
 import { ReadStatus } from '../enum/station-mail';
 

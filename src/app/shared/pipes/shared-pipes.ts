@@ -16,7 +16,6 @@ import { LanguageCodePipe } from './language-code.pipe';
 import { AppIdPipe } from './app-id.pipe';
 import { SystemIdPipe } from './system-id.pipe';
 import { SportTypePipe } from './sport-type.pipe';
-import { SportTypeIconPipe } from './sport-type-icon.pipe';
 import { LongTextPipe } from './long-text.pipe';
 import { GroupIdSlicePipe } from './group-id-slice.pipe';
 import { ThousandConversionPipe } from './thousand-conversion.pipe';
@@ -67,7 +66,6 @@ import { MusclePartIconPipe } from './muscle-part-icon.pipe';
     AppIdPipe,
     SystemIdPipe,
     SportTypePipe,
-    SportTypeIconPipe,
     LongTextPipe,
     GroupIdSlicePipe,
     ThousandConversionPipe,
@@ -114,7 +112,6 @@ import { MusclePartIconPipe } from './muscle-part-icon.pipe';
     AppIdPipe,
     SystemIdPipe,
     SportTypePipe,
-    SportTypeIconPipe,
     LongTextPipe,
     GroupIdSlicePipe,
     ThousandConversionPipe,

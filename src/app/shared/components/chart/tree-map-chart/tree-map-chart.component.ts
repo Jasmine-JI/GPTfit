@@ -18,8 +18,8 @@ import {
   getHrZoneTranslation,
   getFtpZoneTranslation,
   getMuscleGroupTranslation,
-} from '../../../utils/index';
-import { mathRounding } from '../../../utils/index';
+  mathRounding,
+} from '../../../../core/utils';
 
 // highchart 引入 tree map
 Treemap(Highcharts);

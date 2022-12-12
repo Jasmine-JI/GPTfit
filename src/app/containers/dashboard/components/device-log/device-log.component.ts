@@ -5,7 +5,7 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { debounce, getUrlQueryStrings } from '../../../../shared/utils/index';
+import { debounce, getUrlQueryStrings } from '../../../../core/utils/index';
 
 @Component({
   selector: 'app-device-log',

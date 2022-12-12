@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { CoachService } from '../../../../shared/services/coach.service';
 import { Router } from '@angular/router';
-import { buildBase64ImgString } from '../../../../shared/utils/index';
-import { AuthService } from '../../../../core/services/auth.service';
+import { buildBase64ImgString } from '../../../../core/utils/index';
+import { AuthService, Api20xxService } from '../../../../core/services';
 
 @Component({
   selector: 'app-train-live',
@@ -19,9 +18,9 @@ export class TrainLiveComponent implements OnInit, AfterViewInit {
   @ViewChild('desc') descElement: ElementRef;
 
   constructor(
-    private coachService: CoachService,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private api20xxService: Api20xxService
   ) {}
 
   ngOnInit() {
@@ -29,7 +28,7 @@ export class TrainLiveComponent implements OnInit, AfterViewInit {
       token: this.authService.token,
       classType: '7',
     };
-    this.coachService.fetchClassRoomList(body).subscribe((res) => {
+    this.api20xxService.fetchClassRoomList(body).subscribe((res) => {
       this.classLists = res.info.classList;
       this.classLists = this.classLists.map((_list) => {
         _list.coachAvatar =

@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
-import { getUserFtpZone } from '../../../utils/sports';
+import { getUserFtpZone } from '../../../../core/utils/sports';
 
 @Component({
   selector: 'app-threshold-info',
