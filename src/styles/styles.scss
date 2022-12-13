@@ -33,7 +33,7 @@ html {
   font-family: 'Microsoft JhengHei', sans-serif !important;
   margin: 0;
   width: 100vw;
-  overflow-y: hidden;
+  overflow: hidden;
   @include full-height();
 }
 

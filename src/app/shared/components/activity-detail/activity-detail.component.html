@@ -1579,11 +1579,14 @@
           "
           [xAxisData]="trendChartOpt.xAxisDataRef"
           [xAxisType]="trendChartOpt.xAxisType"
+          [infoData]="{
+            best: activityInfoLayer.maxHeartRateBpm,
+            avg: activityInfoLayer.avgHeartRateBpm
+          }"
           [sportType]="+activityInfoLayer.type"
           [unit]="userProfile.unit"
           [chartType]="'hr'"
           [hrRange]="chartData.hrInfo.z0 === 'Z0' ? chartData.defaultHrInfo : chartData.hrInfo"
-          [showInfo]="true"
           [page]="'detail'"
         >
         </app-trend-info-chart>
@@ -1591,10 +1594,10 @@
           [yAxisData]="trendChartOpt.yAxisDataRef.speed"
           [xAxisData]="trendChartOpt.xAxisDataRef"
           [xAxisType]="trendChartOpt.xAxisType"
+          [infoData]="{ best: activityInfoLayer.maxSpeed, avg: activityInfoLayer.avgSpeed }"
           [sportType]="+activityInfoLayer.type"
           [unit]="userProfile.unit"
           [chartType]="'pace'"
-          [showInfo]="true"
           [page]="'detail'"
           *ngIf="[1, 4, 6].includes(+activityInfoLayer.type) && activityPointLayer.speed"
         >
@@ -1610,7 +1613,6 @@
           [sportType]="+activityInfoLayer.type"
           [unit]="userProfile.unit"
           [chartType]="'altitude'"
-          [showInfo]="true"
           [page]="'detail'"
           *ngIf="
             [1, 2, 6, 7].includes(+activityInfoLayer.type) && activityPointLayer.altitudeMeters
@@ -1621,10 +1623,10 @@
           [yAxisData]="trendChartOpt.yAxisDataRef.speed"
           [xAxisData]="trendChartOpt.xAxisDataRef"
           [xAxisType]="trendChartOpt.xAxisType"
+          [infoData]="{ best: activityInfoLayer.maxSpeed, avg: activityInfoLayer.avgSpeed }"
           [sportType]="+activityInfoLayer.type"
           [unit]="userProfile.unit"
           [chartType]="'speed'"
-          [showInfo]="true"
           [page]="'detail'"
           *ngIf="[2, 7, 100].includes(+activityInfoLayer.type)"
         >
@@ -1637,10 +1639,13 @@
           "
           [xAxisData]="trendChartOpt.xAxisDataRef"
           [xAxisType]="trendChartOpt.xAxisType"
+          [infoData]="{
+            best: activityInfoLayer.runMaxCadence,
+            avg: activityInfoLayer.runAvgCadence
+          }"
           [sportType]="+activityInfoLayer.type"
           [unit]="userProfile.unit"
           [chartType]="'cadence'"
-          [showInfo]="true"
           [page]="'detail'"
           *ngIf="+activityInfoLayer.type === 1"
         >
@@ -1653,10 +1658,13 @@
           "
           [xAxisData]="trendChartOpt.xAxisDataRef"
           [xAxisType]="trendChartOpt.xAxisType"
+          [infoData]="{
+            best: activityInfoLayer.cycleMaxCadence,
+            avg: activityInfoLayer.cycleAvgCadence
+          }"
           [sportType]="+activityInfoLayer.type"
           [unit]="userProfile.unit"
           [chartType]="'cadence'"
-          [showInfo]="true"
           [page]="'detail'"
           *ngIf="+activityInfoLayer.type === 2"
         >
@@ -1672,7 +1680,6 @@
           [sportType]="+activityInfoLayer.type"
           [unit]="userProfile.unit"
           [chartType]="'cadence'"
-          [showInfo]="true"
           [page]="'detail'"
           *ngIf="+activityInfoLayer.type === 3 && activityPointLayer.moveRepetitions"
         >
@@ -1685,10 +1692,13 @@
           "
           [xAxisData]="trendChartOpt.xAxisDataRef"
           [xAxisType]="trendChartOpt.xAxisType"
+          [infoData]="{
+            best: activityInfoLayer.swimMaxCadence,
+            avg: activityInfoLayer.swimAvgCadence
+          }"
           [sportType]="+activityInfoLayer.type"
           [unit]="userProfile.unit"
           [chartType]="'cadence'"
-          [showInfo]="true"
           [page]="'detail'"
           *ngIf="+activityInfoLayer.type === 4"
         >
@@ -1701,10 +1711,13 @@
           "
           [xAxisData]="trendChartOpt.xAxisDataRef"
           [xAxisType]="trendChartOpt.xAxisType"
+          [infoData]="{
+            best: activityInfoLayer.rowingMaxCadence,
+            avg: activityInfoLayer.rowingAvgCadence
+          }"
           [sportType]="+activityInfoLayer.type"
           [unit]="userProfile.unit"
           [chartType]="'cadence'"
-          [showInfo]="true"
           [page]="'detail'"
           *ngIf="+activityInfoLayer.type === 6"
         >
@@ -1720,7 +1733,6 @@
           [sportType]="+activityInfoLayer.type"
           [unit]="userProfile.unit"
           [chartType]="'cadence'"
-          [showInfo]="true"
           [page]="'detail'"
           *ngIf="+activityInfoLayer.type === 100"
         >
@@ -1733,10 +1745,10 @@
           "
           [xAxisData]="trendChartOpt.xAxisDataRef"
           [xAxisType]="trendChartOpt.xAxisType"
+          [infoData]="{ best: activityInfoLayer.cycleMaxWatt, avg: activityInfoLayer.cycleAvgWatt }"
           [sportType]="+activityInfoLayer.type"
           [unit]="userProfile.unit"
           [chartType]="'power'"
-          [showInfo]="true"
           [page]="'detail'"
           *ngIf="+activityInfoLayer.type === 2"
         >
@@ -1749,10 +1761,13 @@
           "
           [xAxisData]="trendChartOpt.xAxisDataRef"
           [xAxisType]="trendChartOpt.xAxisType"
+          [infoData]="{
+            best: activityInfoLayer.rowingMaxWatt,
+            avg: activityInfoLayer.rowingAvgWatt
+          }"
           [sportType]="+activityInfoLayer.type"
           [unit]="userProfile.unit"
           [chartType]="'power'"
-          [showInfo]="true"
           [page]="'detail'"
           *ngIf="+activityInfoLayer.type === 6"
         >
@@ -1768,7 +1783,6 @@
           [sportType]="+activityInfoLayer.type"
           [unit]="userProfile.unit"
           [chartType]="'power'"
-          [showInfo]="true"
           [page]="'detail'"
           *ngIf="+activityInfoLayer.type === 100"
         >
@@ -1781,10 +1795,10 @@
           "
           [xAxisData]="trendChartOpt.xAxisDataRef"
           [xAxisType]="trendChartOpt.xAxisType"
+          [infoData]="{ best: activityInfoLayer.maxTemp, avg: activityInfoLayer.avgTemp }"
           [sportType]="+activityInfoLayer.type"
           [unit]="userProfile.unit"
           [chartType]="'temperature'"
-          [showInfo]="true"
           [page]="'detail'"
         >
         </app-trend-info-chart>
@@ -1804,10 +1818,14 @@
           "
           [xAxisData]="trendChartOpt.xAxisDataRef"
           [xAxisType]="trendChartOpt.xAxisType"
+          [infoData]="{
+            x: { max: activityInfoLayer.maxGforceX, min: activityInfoLayer.minGforceX },
+            y: { max: activityInfoLayer.maxGforceY, min: activityInfoLayer.minGforceY },
+            z: { max: activityInfoLayer.maxGforceZ, min: activityInfoLayer.minGforceZ }
+          }"
           [sportType]="+activityInfoLayer.type"
           [unit]="userProfile.unit"
           [chartType]="'gforce'"
-          [showInfo]="true"
           [page]="'detail'"
           *ngIf="+activityInfoLayer.type === 7"
         >

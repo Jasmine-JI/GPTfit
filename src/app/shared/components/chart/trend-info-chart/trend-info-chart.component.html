@@ -22,10 +22,10 @@
       <div class="flexCol info__section">
         <span class="data__number">
           <ng-container *ngIf="finalChartType === 'pace'">
-            {{ infoData.best | sportPaceSibs: [sportType, unit, 1] }}
+            {{ infoData.best || 0 | sportPaceSibs: [sportType, unit, 1] }}
           </ng-container>
           <ng-container *ngIf="finalChartType !== 'pace'">
-            {{ infoData.best }}
+            {{ infoData.best || 0 }}
             {{ finalChartType | dataTypeUnit: [sportType, unit] }}
           </ng-container>
         </span>
@@ -42,10 +42,10 @@
       <div class="flexCol info__section">
         <span class="data__number">
           <ng-container *ngIf="finalChartType === 'pace'">
-            {{ infoData.avg | sportPaceSibs: [sportType, unit, 1] }}
+            {{ infoData.avg || 0 | sportPaceSibs: [sportType, unit, 1] }}
           </ng-container>
           <ng-container *ngIf="finalChartType !== 'pace'">
-            {{ infoData.avg }}
+            {{ infoData.avg || 0 }}
             {{ finalChartType | dataTypeUnit: [sportType, unit] }}
           </ng-container>
         </span>
@@ -58,18 +58,14 @@
     <div class="flexCol info__block" *ngIf="finalChartType === 'gforce'">
       <div class="flexRow">
         <div class="flexCol info__section">
-          <span class="data__number gforce__x">
-            {{ gForceInfoData.x.max | number: '1.0-2' }}g
-          </span>
+          <span class="data__number gforce__x"> {{ infoData.x.max | number: '1.0-2' }}g </span>
           <span class="data__description">
             {{ 'universal_adjective_maxHight' | translate }}
             {{ 'universal_unit_gforce' | translate }}-X
           </span>
         </div>
         <div class="flexCol info__section">
-          <span class="data__number gforce__x">
-            {{ gForceInfoData.x.min | number: '1.0-2' }}g
-          </span>
+          <span class="data__number gforce__x"> {{ infoData.x.min | number: '1.0-2' }}g </span>
           <span class="data__description">
             {{ 'universal_adjective_maxSmall' | translate }}
             {{ 'universal_unit_gforce' | translate }}-X
@@ -78,18 +74,14 @@
       </div>
       <div class="flexRow">
         <div class="flexCol info__section">
-          <span class="data__number gforce__y">
-            {{ gForceInfoData.y.max | number: '1.0-2' }}g
-          </span>
+          <span class="data__number gforce__y"> {{ infoData.y.max | number: '1.0-2' }}g </span>
           <span class="data__description">
             {{ 'universal_adjective_maxHight' | translate }}
             {{ 'universal_unit_gforce' | translate }}-Y
           </span>
         </div>
         <div class="flexCol info__section">
-          <span class="data__number gforce__y">
-            {{ gForceInfoData.y.min | number: '1.0-2' }}g
-          </span>
+          <span class="data__number gforce__y"> {{ infoData.y.min | number: '1.0-2' }}g </span>
           <span class="data__description">
             {{ 'universal_adjective_maxSmall' | translate }}
             {{ 'universal_unit_gforce' | translate }}-Y
@@ -98,18 +90,14 @@
       </div>
       <div class="flexRow">
         <div class="flexCol info__section">
-          <span class="data__number gforce__z">
-            {{ gForceInfoData.z.max | number: '1.0-2' }}g
-          </span>
+          <span class="data__number gforce__z"> {{ infoData.z.max | number: '1.0-2' }}g </span>
           <span class="data__description">
             {{ 'universal_adjective_maxHight' | translate }}
             {{ 'universal_unit_gforce' | translate }}-Z
           </span>
         </div>
         <div class="flexCol info__section">
-          <span class="data__number gforce__z">
-            {{ gForceInfoData.z.min | number: '1.0-2' }}g
-          </span>
+          <span class="data__number gforce__z"> {{ infoData.z.min | number: '1.0-2' }}g </span>
           <span class="data__description">
             {{ 'universal_adjective_maxSmall' | translate }}
             {{ 'universal_unit_gforce' | translate }}-Z
