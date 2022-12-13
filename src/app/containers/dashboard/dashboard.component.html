@@ -1,7 +1,7 @@
 <div
   (window:resize)="onResize($event)"
   [class.minimize-main-nav]="uiFlag.sidebarMode === 'expand'"
-  style="display: flex; align-items: stretch; flex-shrink: 0"
+  style="display: flex; align-items: stretch; flex-shrink: 0; position: static"
   *ngIf="!isLoading"
 >
   <ng-container *ngIf="!isPreviewMode">
@@ -11,7 +11,7 @@
           <i class="icon-svg_web-icon_p1_005-menu main-nav-toggle-icon"></i>
         </div>
       </div>
-      <div style="display: flex; position: fixed; right: 20px; align-items: center">
+      <div style="display: flex; position: absolute; right: 20px; align-items: center">
         <div class="flexCenter" *ngIf="systemAccessright <= AccessRight.maintainer && false">
           <button style="border: none; background-color: transparent" (click)="changeTheme()">
             <span style="font-size: 22px" [style.color]="theme === 'light' ? 'black' : 'yellow'">

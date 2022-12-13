@@ -26,6 +26,8 @@ export class DataTypeUnitPipe implements PipeTransform {
             return 't/100m';
           case SportType.row:
             return 't/500m';
+          default:
+            return '';
         }
 
       case 'cadence':
@@ -37,8 +39,9 @@ export class DataTypeUnitPipe implements PipeTransform {
           case SportType.cycle:
           case SportType.row:
             return 'rpm';
+          default:
+            return '';
         }
-
       case 'power':
         return 'w';
       case 'temperature':

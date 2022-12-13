@@ -41,6 +41,8 @@ export class ComplexSportsHandler {
     let maxTemp = null;
     let minTemp = null;
     let totalSecond = 0;
+    let totalActivitySecond = 0;
+    let totalRestSecond = 0;
 
     file.forEach((_file, _index) => {
       const { activityInfoLayer, fileInfo } = _file;
@@ -59,6 +61,8 @@ export class ComplexSportsHandler {
         totalHrZone4Second: _totalHrZone4Second,
         totalHrZone5Second: _totalHrZone5Second,
         totalSecond: _totalSecond,
+        totalActivitySecond: _totalActivitySecond,
+        totalRestSecond: _totalRestSecond,
         avgTemp: _avgTemp,
         maxTemp: _maxTemp,
         minTemp: _minTemp,
@@ -92,9 +96,11 @@ export class ComplexSportsHandler {
       totalHrZone3Second += _totalHrZone3Second || 0;
       totalHrZone4Second += _totalHrZone4Second || 0;
       totalHrZone5Second += _totalHrZone5Second || 0;
+      totalSecond += _totalSecond || 0;
+      totalActivitySecond += _totalActivitySecond || 0;
+      totalRestSecond += _totalRestSecond || 0;
       if (_maxTemp && _maxTemp > maxTemp) maxTemp = _maxTemp;
       if (minTemp === null || (_minTemp && _minTemp < minTemp)) minTemp = _minTemp;
-      totalSecond += _totalSecond || 0;
     });
 
     const lapLength = file.length || Infinity;
@@ -114,6 +120,8 @@ export class ComplexSportsHandler {
       totalHrZone4Second,
       totalHrZone5Second,
       totalSecond,
+      totalActivitySecond,
+      totalRestSecond,
       avgTemp: mathRounding(avgTemp / (effectTempLength ?? Infinity), 2),
       maxTemp,
       minTemp,
