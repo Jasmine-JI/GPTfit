@@ -5,7 +5,10 @@ import {
   NodejsApiService,
 } from '../../../../core/services';
 import { Component, OnInit, Inject, HostListener } from '@angular/core';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatLegacyDialog as MatDialog,
+  MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA,
+} from '@angular/material/legacy-dialog';
 import { HttpParams } from '@angular/common/http';
 import { deepCopy } from '../../../../core/utils/index';
 

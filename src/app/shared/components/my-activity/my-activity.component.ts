@@ -1,14 +1,17 @@
 import { Component, OnInit, OnDestroy, ViewChild, Input } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
-import { MatInput } from '@angular/material/input';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatLegacyInput as MatInput } from '@angular/material/legacy-input';
+import {
+  MatLegacyPaginator as MatPaginator,
+  LegacyPageEvent as PageEvent,
+} from '@angular/material/legacy-paginator';
 import { Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
 import { AuthService, HashIdService, UserService, Api21xxService } from '../../../core/services';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import dayjs, { Dayjs } from 'dayjs';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { MessageBoxComponent } from '../../components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { BreakpointObserver } from '@angular/cdk/layout';

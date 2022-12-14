@@ -1,8 +1,11 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { DeviceLogService } from '../../services/device-log.service';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import {
+  MatLegacyPaginator as MatPaginator,
+  LegacyPageEvent as PageEvent,
+} from '@angular/material/legacy-paginator';
 import { MatSort, Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { debounce, getUrlQueryStrings } from '../../../../core/utils/index';

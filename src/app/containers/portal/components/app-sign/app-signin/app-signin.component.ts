@@ -5,7 +5,7 @@ import { MessageBoxComponent } from '../../../../../shared/components/message-bo
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { formTest } from '../../../../../shared/models/form-test';
 import { SignTypeEnum } from '../../../../../shared/enum/account';
 import { getLocalStorageObject } from '../../../../../core/utils';

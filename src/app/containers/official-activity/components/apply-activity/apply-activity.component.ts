@@ -18,7 +18,7 @@ import {
   HintDialogService,
   ApiCommonService,
 } from '../../../../core/services';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { UserProfileInfo } from '../../../../shared/models/user-profile-info';
 import { AccountTypeEnum, AccountStatusEnum } from '../../../../shared/enum/account';
 import {
@@ -28,7 +28,7 @@ import {
   EventDetail,
   EventInfo,
 } from '../../models/activity-content';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { AlaApp } from '../../../../shared/models/app-id';
