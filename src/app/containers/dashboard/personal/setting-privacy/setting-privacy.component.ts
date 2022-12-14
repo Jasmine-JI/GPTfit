@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/cor
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PrivacyObj, allPrivacyItem, PrivacyEditObj } from '../../../../shared/models/user-privacy';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { SelectDate } from '../../../../shared/models/utils-type';
 import { UserService, AuthService, Api21xxService } from '../../../../core/services';

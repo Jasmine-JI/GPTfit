@@ -13,7 +13,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { NgProgressModule } from '@ngx-progressbar/core';
-import { MatPaginatorIntl } from '@angular/material/paginator';
+import { MatLegacyPaginatorIntl as MatPaginatorIntl } from '@angular/material/legacy-paginator';
 import { CustomMatPaginatorIntl } from './core/classes/custom-mat-paginator-intl';
 // import { ServiceWorkerModule } from '@angular/service-worker';
 import { CommonModule } from '@angular/common';

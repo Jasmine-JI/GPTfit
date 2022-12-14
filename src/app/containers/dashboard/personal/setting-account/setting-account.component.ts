@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { AccountTypeEnum, AccountStatusEnum } from '../../../../shared/enum/account';

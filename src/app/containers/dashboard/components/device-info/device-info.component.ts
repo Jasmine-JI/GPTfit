@@ -14,9 +14,9 @@ import {
 } from '../../../../core/services';
 import { TranslateService } from '@ngx-translate/core';
 import { langList } from '../../../../shared/models/i18n';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { UserProfileInfo } from '../../../../shared/models/user-profile-info';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { PaginationSetting } from '../../../../shared/models/pagination';

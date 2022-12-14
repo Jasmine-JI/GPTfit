@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import {
   HashIdService,

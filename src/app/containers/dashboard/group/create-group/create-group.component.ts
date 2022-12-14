@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { UserService, HashIdService, AuthService, Api11xxService } from '../../../../core/services';
 import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import cloneDeep from 'lodash/cloneDeep';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';

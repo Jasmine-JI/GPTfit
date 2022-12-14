@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { MatSort, Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
 import { GroupDetailInfo, UserSimpleInfo, MemberInfo } from '../../../models/group-detail';
 import { CalenderDay } from '../../../models/report';
 import { Subject, combineLatest, of } from 'rxjs';

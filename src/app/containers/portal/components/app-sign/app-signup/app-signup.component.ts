@@ -10,7 +10,7 @@ import { MessageBoxComponent } from '../../../../../shared/components/message-bo
 import { fromEvent, Subscription, Subject, merge, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { formTest } from '../../../../../shared/models/form-test';
 import { Lang } from '../../../../../shared/models/i18n';
 import { codes } from '../../../../../shared/models/countryCode';

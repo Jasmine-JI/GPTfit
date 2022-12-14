@@ -5,9 +5,12 @@ import { InnerSystemService } from '../../services/inner-system.service';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { Api10xxService, AuthService, ApiCommonService } from '../../../../core/services';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import {
+  MatLegacyPaginator as MatPaginator,
+  LegacyPageEvent as PageEvent,
+} from '@angular/material/legacy-paginator';
 import { SelectDate } from '../../../../shared/models/utils-type';
 
 type Serverity = 'INFO' | 'WARN' | 'ERROR' | 'DEBUG';

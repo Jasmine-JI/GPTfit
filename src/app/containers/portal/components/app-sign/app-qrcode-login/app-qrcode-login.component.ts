@@ -10,7 +10,7 @@ import { MessageBoxComponent } from '../../../../../shared/components/message-bo
 import { Subject, Subscription, fromEvent, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { Router } from '@angular/router';
 import dayjs from 'dayjs';
 import { TFTViewMinWidth } from '../../../models/app-webview';

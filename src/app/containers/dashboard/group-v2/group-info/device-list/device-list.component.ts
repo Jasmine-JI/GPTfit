@@ -3,7 +3,7 @@ import { Subject, combineLatest, fromEvent, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { GroupDetailInfo, UserSimpleInfo } from '../../../models/group-detail';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import {

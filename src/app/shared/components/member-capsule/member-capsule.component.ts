@@ -10,7 +10,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { AuthService, HashIdService, Api11xxService } from '../../../core/services';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { Router } from '@angular/router';
 import { MessageBoxComponent } from '../message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';

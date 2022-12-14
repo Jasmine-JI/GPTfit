@@ -6,7 +6,7 @@ import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { GroupIdSlicePipe } from '../../../../../shared/pipes/group-id-slice.pipe';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { ProfessionalService } from '../../../../professional/services/professional.service';
 import { displayGroupLevel } from '../../../../../core/utils';
