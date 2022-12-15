@@ -1,16 +1,13 @@
 import { Router } from '@angular/router';
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { UserService, NodejsApiService, AuthService } from '../../../../../core/services';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { PushMessageService } from '../../../services/push-message.service';
-import {
-  MatLegacyPaginator as MatPaginator,
-  LegacyPageEvent as PageEvent,
-} from '@angular/material/legacy-paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import dayjs from 'dayjs';
 import { AccessRight } from '../../../../../shared/enum/accessright';
 

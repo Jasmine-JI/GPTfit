@@ -10,11 +10,11 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { AuthService, HashIdService, Api11xxService } from '../../../core/services';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MessageBoxComponent } from '../message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
-import { LongTextPipe } from '../../pipes/long-text.pipe';
+import { LongTextPipe } from '../../../core/pipes/long-text.pipe';
 import { ProfessionalService } from '../../../containers/professional/services/professional.service';
 
 @Component({

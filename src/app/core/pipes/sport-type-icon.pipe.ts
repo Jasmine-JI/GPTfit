@@ -1,13 +1,15 @@
-import { Pipe, PipeTransform, NgModule } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 import { SportType } from '../enums/sports';
 
-@Pipe({ name: 'sportTypeIcon' })
+@Pipe({
+  name: 'sportTypeIcon',
+  standalone: true,
+})
 export class SportTypeIconPipe implements PipeTransform {
   /**
    * 依據不同運動類型回傳該icon的class name（需隨類別增加而更新）
    * @param value {string | number}-運動類型
    * @return {string}-icon class name
-   * @author kidin
    */
   transform(value: string | number): any {
     switch (+value) {
@@ -34,8 +36,3 @@ export class SportTypeIconPipe implements PipeTransform {
     }
   }
 }
-@NgModule({
-  declarations: [SportTypeIconPipe],
-  exports: [SportTypeIconPipe],
-})
-export class SportTypeIconModule {}

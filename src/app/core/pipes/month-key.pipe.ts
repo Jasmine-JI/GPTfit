@@ -1,6 +1,9 @@
-import { Pipe, PipeTransform, NgModule } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({ name: 'monthKey' })
+@Pipe({
+  name: 'monthKey',
+  standalone: true,
+})
 export class MonthKeyPipe implements PipeTransform {
   constructor() {}
 
@@ -40,9 +43,3 @@ export class MonthKeyPipe implements PipeTransform {
     }
   }
 }
-
-@NgModule({
-  declarations: [MonthKeyPipe],
-  exports: [MonthKeyPipe],
-})
-export class MonthKeyModule {}

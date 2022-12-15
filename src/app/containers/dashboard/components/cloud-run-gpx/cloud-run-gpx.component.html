@@ -25,12 +25,7 @@
     (onChange)="handleAttachmentChange($event)"
   ></app-upload-file>
   <a href (click)="downloadOriginalFile($event)">{{ originalFileName }}</a>
-  <button
-    mat-raised-button
-    mat-icon-button
-    style="background-color: #26abe3; color: #fff"
-    (click)="uploadFile()"
-  >
+  <button mat-icon-button style="background-color: #26abe3; color: #fff" (click)="uploadFile()">
     <mat-icon>search</mat-icon>
   </button>
 </div>

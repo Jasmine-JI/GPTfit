@@ -22,7 +22,7 @@ import {
   ApiCommonService,
 } from '../../../../../core/services';
 import { MatSort } from '@angular/material/sort';
-import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
+import { MatTableDataSource } from '@angular/material/table';
 import { TranslateService } from '@ngx-translate/core';
 import { Unit } from '../../../../../shared/enum/value-conversion';
 import {

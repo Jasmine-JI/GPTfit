@@ -12,7 +12,7 @@ import {
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { Subject, fromEvent, Subscription, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AccountTypeEnum } from '../../../../../shared/enum/account';
 import { TFTViewMinWidth } from '../../../models/app-webview';

@@ -12,7 +12,7 @@ import { MessageBoxComponent } from '../../../../../shared/components/message-bo
 import { Subject, Subscription, fromEvent, merge, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { formTest } from '../../../../../shared/models/form-test';
 import { AccountTypeEnum } from '../../../../../shared/enum/account';
 import { SignTypeEnum } from '../../../../../shared/enum/account';

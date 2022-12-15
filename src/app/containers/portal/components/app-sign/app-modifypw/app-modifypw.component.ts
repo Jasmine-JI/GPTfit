@@ -8,9 +8,9 @@ import {
   HintDialogService,
   ApiCommonService,
 } from '../../../../../core/services';
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { formTest } from '../../../../../shared/models/form-test';
 import { AccountTypeEnum } from '../../../../../shared/enum/account';

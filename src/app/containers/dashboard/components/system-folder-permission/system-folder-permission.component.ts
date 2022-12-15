@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SystemFolderPermissionService } from '../../services/system-folder-permission.service';
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { AuthService, HintDialogService } from '../../../../core/services';
 

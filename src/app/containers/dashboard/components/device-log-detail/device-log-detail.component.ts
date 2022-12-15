@@ -10,12 +10,9 @@ import { ActivatedRoute } from '@angular/router';
 import { DeviceLogService } from '../../services/device-log.service';
 import { HttpParams } from '@angular/common/http';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
-import {
-  MatLegacyPaginator as MatPaginator,
-  LegacyPageEvent as PageEvent,
-} from '@angular/material/legacy-paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
-import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
+import { MatTableDataSource } from '@angular/material/table';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';

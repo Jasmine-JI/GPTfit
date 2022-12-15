@@ -1,5 +1,4 @@
 import {
-  NgModule,
   Component,
   OnInit,
   OnChanges,
@@ -23,6 +22,8 @@ import { takeUntil } from 'rxjs/operators';
   selector: 'app-pie-chart',
   templateUrl: './pie-chart.component.html',
   styleUrls: ['./pie-chart.component.scss'],
+  standalone: true,
+  imports: [CommonModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
@@ -113,9 +114,3 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 }
-@NgModule({
-  declarations: [PieChartComponent],
-  exports: [PieChartComponent],
-  imports: [CommonModule, TranslateModule],
-})
-export class PieChartModule {}

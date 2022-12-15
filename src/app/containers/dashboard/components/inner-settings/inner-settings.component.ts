@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../people-selector-win/people-selector-win.component';
 import cloneDeep from 'lodash/cloneDeep';
 import { UserService, NodejsApiService } from '../../../../core/services';

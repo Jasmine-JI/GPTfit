@@ -2,7 +2,6 @@ import {
   Component,
   OnInit,
   OnDestroy,
-  NgModule,
   Input,
   Output,
   EventEmitter,
@@ -17,12 +16,14 @@ import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SportTargetSymbols } from '../../core/enums/sports';
 import { formTest } from '../../shared/models/form-test';
-import { TranslateKeyModule, TranslateUnitKeyModule } from '../../core/pipes';
+import { TranslateKeyPipe, TranslateUnitKeyPipe } from '../../core/pipes';
 
 @Component({
   selector: 'app-sport-target-setting',
   templateUrl: './sport-target-setting.component.html',
   styleUrls: ['./sport-target-setting.component.scss'],
+  standalone: true,
+  imports: [CommonModule, TranslateModule, TranslateKeyPipe, TranslateUnitKeyPipe],
 })
 export class SportTargetSettingComponent implements OnInit, OnDestroy {
   @Input() cycle: DateUnit;
@@ -176,10 +177,3 @@ export class SportTargetSettingComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 }
-
-@NgModule({
-  declarations: [SportTargetSettingComponent],
-  exports: [SportTargetSettingComponent],
-  imports: [CommonModule, TranslateModule, TranslateKeyModule, TranslateUnitKeyModule],
-})
-export class SportTargetSettingModule {}

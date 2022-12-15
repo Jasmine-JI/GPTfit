@@ -1,7 +1,10 @@
-import { Pipe, PipeTransform, NgModule } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 import { BenefitTimeStartZone } from '../enums/common';
 
-@Pipe({ name: 'referenceHrZone' })
+@Pipe({
+  name: 'referenceHrZone',
+  standalone: true,
+})
 export class ReferenceHrZonePipe implements PipeTransform {
   constructor() {}
 
@@ -22,9 +25,3 @@ export class ReferenceHrZonePipe implements PipeTransform {
     }
   }
 }
-
-@NgModule({
-  declarations: [ReferenceHrZonePipe],
-  exports: [ReferenceHrZonePipe],
-})
-export class ReferenceHrZoneModule {}

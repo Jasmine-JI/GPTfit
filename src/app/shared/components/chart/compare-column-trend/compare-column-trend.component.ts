@@ -23,7 +23,7 @@ import {
   distanceTooltipFormat,
   dataLabelsFormatter,
 } from '../../../../core/utils/chart-formatter';
-import { TargetFieldNamePipe } from '../../../pipes/target-field-name.pipe';
+import { TargetFieldNamePipe } from '../../../../core/pipes/target-field-name.pipe';
 import dayjs from 'dayjs';
 import { GlobalEventsService, UserService } from '../../../../core/services';
 import { Unit } from '../../../enum/value-conversion';

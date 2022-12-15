@@ -15,7 +15,7 @@ import { chart, charts } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { DataTypeUnitPipe } from '../../../pipes/data-type-unit.pipe';
+import { DataTypeUnitPipe } from '../../../../core/pipes/data-type-unit.pipe';
 import { mi } from '../../../models/bs-constant';
 import { Unit } from '../../../enum/value-conversion';
 import { countDistance } from '../../../../core/utils/index';

@@ -20,7 +20,7 @@ import {
 } from '../../../models/chart-data';
 import { Unit } from '../../../enum/value-conversion';
 import { SportType } from '../../../enum/sports';
-import { DataTypeTranslatePipe } from '../../../pipes/data-type-translate.pipe';
+import { DataTypeTranslatePipe } from '../../../../core/pipes/data-type-translate.pipe';
 import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
 import { speedToPaceSecond } from '../../../../core/utils/sports';
 import isoWeek from 'dayjs/plugin/isoWeek';
