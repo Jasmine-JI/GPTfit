@@ -3,7 +3,6 @@ import {
   OnInit,
   OnChanges,
   OnDestroy,
-  NgModule,
   Input,
   Output,
   EventEmitter,
@@ -17,7 +16,7 @@ import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
-import { TimeFormatModule } from '../../core/pipes';
+import { TimeFormatPipe } from '../../core/pipes';
 import { DayType, WeekDayLock, CalenderDayInfo } from '../../core/models/compo';
 import { GlobalEventsService } from '../../core/services';
 
@@ -27,6 +26,8 @@ dayjs.extend(isoWeek);
   selector: 'app-calender-selector',
   templateUrl: './calender-selector.component.html',
   styleUrls: ['./calender-selector.component.scss'],
+  standalone: true,
+  imports: [CommonModule, TranslateModule, TimeFormatPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CalenderSelectorComponent implements OnInit, OnChanges, OnDestroy {
@@ -511,10 +512,3 @@ export class CalenderSelectorComponent implements OnInit, OnChanges, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 }
-
-@NgModule({
-  declarations: [CalenderSelectorComponent],
-  exports: [CalenderSelectorComponent],
-  imports: [CommonModule, TranslateModule, TimeFormatModule],
-})
-export class CalenderSelectorModule {}

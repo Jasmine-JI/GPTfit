@@ -6,7 +6,6 @@ import {
   ViewChild,
   ElementRef,
   Input,
-  NgModule,
 } from '@angular/core';
 import { zoneColor } from '../../shared/models/chart-data';
 
@@ -14,6 +13,7 @@ import { zoneColor } from '../../shared/models/chart-data';
   selector: 'app-small-hrzone-chart',
   templateUrl: './small-hrzone-chart.component.html',
   styleUrls: ['./small-hrzone-chart.component.scss'],
+  standalone: true,
 })
 export class SmallHrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: Array<number>; // 各心率區間總秒數，ex.[992, 123, 1534, 1234, 1231, 321]
@@ -66,8 +66,3 @@ export class SmallHrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy() {}
 }
-@NgModule({
-  declarations: [SmallHrzoneChartComponent],
-  exports: [SmallHrzoneChartComponent],
-})
-export class SmallHrzoneChartModule {}

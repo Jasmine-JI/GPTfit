@@ -1,6 +1,9 @@
-import { Pipe, PipeTransform, NgModule } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({ name: 'padStart' })
+@Pipe({
+  name: 'padStart',
+  standalone: true,
+})
 export class PadStartPipe implements PipeTransform {
   constructor() {}
 
@@ -14,9 +17,3 @@ export class PadStartPipe implements PipeTransform {
     return value.toString().padStart(length, filler);
   }
 }
-
-@NgModule({
-  declarations: [PadStartPipe],
-  exports: [PadStartPipe],
-})
-export class PadStartModule {}

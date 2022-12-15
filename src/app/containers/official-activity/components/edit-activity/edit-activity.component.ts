@@ -12,7 +12,7 @@ import { OfficialActivityService } from '../../services/official-activity.servic
 import dayjs from 'dayjs';
 import { Sex } from '../../../../shared/enum/personal';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MapLanguageEnum } from '../../../../shared/models/i18n';
 import * as DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
 import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';

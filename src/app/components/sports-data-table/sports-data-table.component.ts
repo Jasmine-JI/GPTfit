@@ -14,19 +14,19 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 // 這邊無法使用index統一引入  https://github.com/ng-packagr/ng-packagr/issues/1173
-import { AnalysisOptionModule } from '../analysis-option/analysis-option.component';
-import { SmallHrzoneChartModule } from '../small-hrzone-chart/small-hrzone-chart.component';
+import { AnalysisOptionComponent } from '../analysis-option/analysis-option.component';
+import { SmallHrzoneChartComponent } from '../small-hrzone-chart/small-hrzone-chart.component';
 import { ProfessionalChartAnalysisOption } from '../../containers/professional/classes/professional-chart-analysis-option';
 import { PersonalChartAnalysisOption } from '../../containers/personal/classes/personal-chart-analysis-option';
 import { Unit } from '../../shared/enum/value-conversion';
 import { SportType } from '../../core/enums/sports';
 import {
-  SpeedPaceUnitModule,
-  TimeFormatModule,
-  SportTimeModule,
-  DistanceSibsModule,
-  SportPaceSibsModule,
-  WeightSibsModule,
+  SpeedPaceUnitPipe,
+  TimeFormatPipe,
+  SportTimePipe,
+  DistanceSibsPipe,
+  SportPaceSibsPipe,
+  WeightSibsPipe,
 } from '../../core/pipes';
 import { AnalysisSportsColumn } from '../../shared/enum/report-analysis';
 import { MatIconModule } from '@angular/material/icon';
@@ -35,6 +35,20 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'app-sports-data-table',
   templateUrl: './sports-data-table.component.html',
   styleUrls: ['./sports-data-table.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    TranslateModule,
+    AnalysisOptionComponent,
+    SpeedPaceUnitPipe,
+    TimeFormatPipe,
+    SportTimePipe,
+    DistanceSibsPipe,
+    SportPaceSibsPipe,
+    WeightSibsPipe,
+    MatIconModule,
+    SmallHrzoneChartComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SportsDataTableComponent implements OnInit, OnChanges, OnDestroy {
@@ -193,21 +207,3 @@ export class SportsDataTableComponent implements OnInit, OnChanges, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 }
-@NgModule({
-  imports: [
-    CommonModule,
-    TranslateModule,
-    AnalysisOptionModule,
-    SpeedPaceUnitModule,
-    TimeFormatModule,
-    SportTimeModule,
-    DistanceSibsModule,
-    SportPaceSibsModule,
-    WeightSibsModule,
-    MatIconModule,
-    SmallHrzoneChartModule,
-  ],
-  declarations: [SportsDataTableComponent],
-  exports: [SportsDataTableComponent],
-})
-export class SportsDataTableModule {}

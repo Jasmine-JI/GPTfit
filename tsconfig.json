@@ -11,7 +11,7 @@
     "declaration": false,
     "moduleResolution": "node",
     "experimentalDecorators": true,
-    "target": "ES2022",
+    "target": "ES6",
     "typeRoots": ["node_modules/@types"],
     "lib": ["ES6", "dom", "esnext.asynciterable"],
     "module": "esnext",

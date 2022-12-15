@@ -287,11 +287,10 @@ button {
   background-color: var(--scale-255-60) !important;
 }
 
-.ala-dialog.mat-dialog-title {
-  margin: 0 -24px 20px;
+.ala-dialog.mat-mdc-dialog-title {
+  margin-bottom: 15px;
   background-color: #2f4349;
-  color: #fff;
-  padding: 8px 25px;
+  color: #fff !important;
   text-align: center;
 }
 

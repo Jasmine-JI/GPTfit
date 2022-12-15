@@ -1,6 +1,9 @@
-import { NgModule, Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({ name: 'getSplitString' })
+@Pipe({
+  name: 'getSplitString',
+  standalone: true,
+})
 export class GetSplitStringPipe implements PipeTransform {
   /**
    * 將字串依指定的符號切分後再取得指定位置的字串
@@ -12,8 +15,3 @@ export class GetSplitStringPipe implements PipeTransform {
     return str.split(splitSymbol)[targetIndex] ?? '';
   }
 }
-@NgModule({
-  declarations: [GetSplitStringPipe],
-  exports: [GetSplitStringPipe],
-})
-export class GetSplitStringModule {}

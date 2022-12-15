@@ -1,11 +1,9 @@
 import {
-  NgModule,
   Component,
   OnInit,
   OnChanges,
   OnDestroy,
   Input,
-  ChangeDetectionStrategy,
   SimpleChanges,
   ViewChild,
   ElementRef,
@@ -24,6 +22,8 @@ import { takeUntil } from 'rxjs/operators';
   selector: 'app-hr-zone-chart',
   templateUrl: './hr-zone-chart.component.html',
   styleUrls: ['./hr-zone-chart.component.scss'],
+  standalone: true,
+  imports: [CommonModule, TranslateModule],
 })
 export class HrZoneChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: Array<number>;
@@ -75,9 +75,3 @@ export class HrZoneChartComponent implements OnInit, OnChanges, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 }
-@NgModule({
-  declarations: [HrZoneChartComponent],
-  exports: [HrZoneChartComponent],
-  imports: [CommonModule, TranslateModule],
-})
-export class HrZoneChartModule {}

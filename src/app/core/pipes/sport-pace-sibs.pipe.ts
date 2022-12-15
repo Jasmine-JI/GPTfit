@@ -1,7 +1,10 @@
-import { NgModule, Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 import { speedToPace } from '../utils/sports';
 
-@Pipe({ name: 'sportPaceSibs' })
+@Pipe({
+  name: 'sportPaceSibs',
+  standalone: true,
+})
 export class SportPaceSibsPipe implements PipeTransform {
   /**
    * 根據運動類型將速度轉成配速(若為bs英制則公里配速轉英哩配速)
@@ -15,8 +18,3 @@ export class SportPaceSibsPipe implements PipeTransform {
     return +showUnit === 0 ? `${pace} ${paceUnit}` : pace;
   }
 }
-@NgModule({
-  declarations: [SportPaceSibsPipe],
-  exports: [SportPaceSibsPipe],
-})
-export class SportPaceSibsModule {}

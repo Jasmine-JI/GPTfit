@@ -15,7 +15,7 @@ import { takeUntil } from 'rxjs/operators';
 import { HintDialogService } from '../../../core/services';
 import { SportType } from '../../enum/sports';
 import { TranslateService } from '@ngx-translate/core';
-import { DataTypeTranslatePipe } from '../../pipes/data-type-translate.pipe';
+import { DataTypeTranslatePipe } from '../../../core/pipes/data-type-translate.pipe';
 
 declare let google: any;
 

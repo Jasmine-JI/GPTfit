@@ -9,7 +9,7 @@ import {
 import { fromEvent, Subscription, Subject, forkJoin } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { ShareGroupInfoDialogComponent } from '../../../../shared/components/share-group-info-dialog/share-group-info-dialog.component';
 import { GroupDetailInfo, UserSimpleInfo, EditMode } from '../../models/group-detail';

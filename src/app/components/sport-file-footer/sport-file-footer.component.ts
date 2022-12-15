@@ -1,4 +1,4 @@
-import { NgModule, Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import {
@@ -6,13 +6,15 @@ import {
   PROFESSIONAL_ICON_SUBSTITUDE_PATH,
   PERSONAL_ICON_SUBSTITUDE_PATH,
 } from '../../core/models/const';
-import { ProductTypeModule } from '../../core/pipes';
+import { ProductTypePipe } from '../../core/pipes';
 import { FileFooterInfo } from '../../core/models/compo';
 
 @Component({
   selector: 'app-sport-file-footer',
   templateUrl: './sport-file-footer.component.html',
   styleUrls: ['./sport-file-footer.component.scss'],
+  standalone: true,
+  imports: [CommonModule, TranslateModule, ProductTypePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SportFileFooterComponent implements OnInit {
@@ -91,9 +93,3 @@ export class SportFileFooterComponent implements OnInit {
     this.currentDeviceIndex = index;
   }
 }
-@NgModule({
-  declarations: [SportFileFooterComponent],
-  exports: [SportFileFooterComponent],
-  imports: [CommonModule, TranslateModule, ProductTypeModule],
-})
-export class SportFileFooterModule {}

@@ -1,8 +1,11 @@
-import { Pipe, PipeTransform, NgModule } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 import { transformDistance } from '../utils/sports';
 import { Unit } from '../../shared/enum/value-conversion';
 
-@Pipe({ name: 'distanceSibs' })
+@Pipe({
+  name: 'distanceSibs',
+  standalone: true,
+})
 export class DistanceSibsPipe implements PipeTransform {
   /**
    * 依公英制及距離長度轉換距離單位。
@@ -21,8 +24,3 @@ export class DistanceSibsPipe implements PipeTransform {
     return showUnit || showUnit === undefined ? `${distance} ${dataUnit}` : `${distance}`;
   }
 }
-@NgModule({
-  declarations: [DistanceSibsPipe],
-  exports: [DistanceSibsPipe],
-})
-export class DistanceSibsModule {}

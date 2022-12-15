@@ -30,7 +30,7 @@ import { AccessRight } from '../../../shared/enum/accessright';
 import { REGEX_GROUP_ID } from '../../../shared/models/utils-constant';
 import { LocalStorageKey } from '../../../shared/enum/local-storage-key';
 import { MessageBoxComponent } from '../../../shared/components/message-box/message-box.component';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-create-mail',

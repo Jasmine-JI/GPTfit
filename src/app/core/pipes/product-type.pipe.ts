@@ -1,4 +1,4 @@
-import { NgModule, Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 import {
   WEARABLE_BACKGROUND_IMAGE_PATH,
   TREADMILL_BACKGROUND_IMAGE_PATH,
@@ -8,7 +8,10 @@ import {
   UNKNOWN_DEVICE_IMAGE_PATH,
 } from '../models/const/image-path.model';
 
-@Pipe({ name: 'productType' })
+@Pipe({
+  name: 'productType',
+  standalone: true,
+})
 export class ProductTypePipe implements PipeTransform {
   /**
    * 根據裝置類型回傳對應多國語系的鍵或佈景圖片路徑
@@ -63,8 +66,3 @@ export class ProductTypePipe implements PipeTransform {
     }
   }
 }
-@NgModule({
-  declarations: [ProductTypePipe],
-  exports: [ProductTypePipe],
-})
-export class ProductTypeModule {}

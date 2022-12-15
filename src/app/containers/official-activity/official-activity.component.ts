@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { SignTypeEnum } from '../../shared/enum/account';
 import { codes } from '../../shared/models/countryCode';
 import { formTest } from '../../shared/models/form-test';
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { KeyCode } from '../../shared/models/key-code';
 import { ResetPasswordFlow, UnlockFlow, QrSignInFlow } from '../../shared/models/signup-response';
 import { AlaApp } from '../../shared/models/app-id';

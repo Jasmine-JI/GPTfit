@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { MatSort, Sort } from '@angular/material/sort';
-import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
+import { MatTableDataSource } from '@angular/material/table';
 import { GroupDetailInfo, UserSimpleInfo, MemberInfo } from '../../../models/group-detail';
 import { CalenderDay } from '../../../models/report';
 import { Subject, combineLatest, of } from 'rxjs';
@@ -997,7 +997,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.chartTargetList.length = 0;
     this.HRZoneChartDatas.length = 0;
     this.HRZoneChartTargetList.length = 0;
-    console.log('memberHRZone', this.memberHRZoneList);
     // 全體心率區間落點圖表-kidin-1081212
     // 顯示聚焦成員的心率區間時，全體區間顏色變淺-kidin-1090102
     if (this.memberSection !== null && this.memberHRZoneList[this.focusMember] !== undefined) {

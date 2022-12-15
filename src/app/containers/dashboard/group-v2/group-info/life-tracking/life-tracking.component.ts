@@ -7,7 +7,7 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { MatSort, Sort } from '@angular/material/sort';
-import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
+import { MatTableDataSource } from '@angular/material/table';
 import SimpleLinearRegression from 'ml-regression-simple-linear';
 import dayjs from 'dayjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
@@ -27,7 +27,7 @@ import { ReportConditionOpt } from '../../../../../shared/models/report-conditio
 import { mi } from '../../../../../shared/models/bs-constant';
 import { Unit } from '../../../../../shared/enum/value-conversion';
 import { GroupLevel, SettingObj } from '../../../../dashboard/models/group-detail';
-import { MatLegacyCheckboxChange as MatCheckboxChange } from '@angular/material/legacy-checkbox';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { stepColor } from '../../../../../shared/models/chart-data';
 import {
   setLocalStorageObject,

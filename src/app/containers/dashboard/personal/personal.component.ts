@@ -23,7 +23,7 @@ import {
 import { v5 as uuidv5 } from 'uuid';
 import dayjs from 'dayjs';
 import { ImageUploadService } from '../services/image-upload.service';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { ShareGroupInfoDialogComponent } from '../../../shared/components/share-group-info-dialog/share-group-info-dialog.component';
 import { TranslateService } from '@ngx-translate/core';
 import { getUrlQueryStrings, base64ToFile } from '../../../core/utils';

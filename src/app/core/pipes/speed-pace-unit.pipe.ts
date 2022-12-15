@@ -1,8 +1,11 @@
-import { Pipe, PipeTransform, NgModule } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 import { Unit } from '../../shared/enum/value-conversion';
 import { SportType } from '../enums/sports';
 
-@Pipe({ name: 'speedPaceUnit' })
+@Pipe({
+  name: 'speedPaceUnit',
+  standalone: true,
+})
 export class SpeedPaceUnitPipe implements PipeTransform {
   constructor() {}
 
@@ -27,8 +30,3 @@ export class SpeedPaceUnitPipe implements PipeTransform {
     }
   }
 }
-@NgModule({
-  declarations: [SpeedPaceUnitPipe],
-  exports: [SpeedPaceUnitPipe],
-})
-export class SpeedPaceUnitModule {}

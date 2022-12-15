@@ -12,38 +12,44 @@
     </button>
   </div>
 </div>
-<mat-form-field>
-  <mat-select [(value)]="groupLevel">
-    <!-- <mat-option value="90">{{ "universal_group_generalGroup" | translate}}</mat-option> -->
-    <mat-option value="130">{{ 'universal_group_gym' | translate }}</mat-option>
-    <mat-option value="230">{{ 'universal_group_enterprise' | translate }}</mat-option>
-  </mat-select>
-</mat-form-field>
-<mat-form-field>
-  <input
-    matInput
-    placeholder="{{ 'universal_group_enterGroupIdName' | translate }}"
-    [matAutocomplete]="auto"
-    [(ngModel)]="searchWords"
-    name="searchWords"
-  />
-</mat-form-field>
-<mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-  <mat-option *ngFor="let option of infoOptions" [value]="option" (click)="selectTarget(option)">
-    {{ option }}
-  </mat-option>
-</mat-autocomplete>
-<button
-  mat-raised-button
-  mat-icon-button
-  class="mat-icon__rwd"
-  style="background-color: #26abe3; color: #fff"
-  (click)="getLists('submit')"
-  [disabled]="searchWords && searchWords.length === 0"
->
-  <mat-icon>search</mat-icon>
-</button>
-
+<div class="flexRow" style="flex-wrap: wrap">
+  <mat-form-field>
+    <mat-select [(value)]="groupLevel">
+      <!-- <mat-option value="90">{{ "universal_group_generalGroup" | translate}}</mat-option> -->
+      <mat-option value="130">{{ 'universal_group_gym' | translate }}</mat-option>
+      <mat-option value="230">{{ 'universal_group_enterprise' | translate }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field>
+    <input
+      matInput
+      placeholder="{{ 'universal_group_enterGroupIdName' | translate }}"
+      [matAutocomplete]="auto"
+      [(ngModel)]="searchWords"
+      name="searchWords"
+    />
+  </mat-form-field>
+  <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+    <mat-option *ngFor="let option of infoOptions" [value]="option" (click)="selectTarget(option)">
+      {{ option }}
+    </mat-option>
+  </mat-autocomplete>
+  <button
+    mat-icon-button
+    class="mat-icon__rwd"
+    style="
+      background-color: #26abe3;
+      color: #fff;
+      transform: scale(0.85);
+      margin: 5px 0 0 5px;
+      padding: 9px;
+    "
+    (click)="getLists('submit')"
+    [disabled]="searchWords && searchWords.length === 0"
+  >
+    <mat-icon>search</mat-icon>
+  </button>
+</div>
 <mat-table [dataSource]="logSource" matSort #sortTable="matSort">
   <ng-container matColumnDef="info">
     <mat-header-cell *matHeaderCellDef>{{

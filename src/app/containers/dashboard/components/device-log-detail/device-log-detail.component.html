@@ -22,7 +22,6 @@
 <label>取得列表資料時間: </label>{{ getDataTime }}
 <button
   (click)="refreshLists($event)"
-  mat-raised-button
   mat-icon-button
   style="background-color: #26abe3; color: #fff"
 >
@@ -62,7 +61,7 @@
     <mat-datepicker #endDatePicker disabled="false" [touchUi]="isHandset$ | async"></mat-datepicker>
   </mat-form-field>
 
-  <button mat-raised-button mat-icon-button style="background-color: #26abe3; color: #fff">
+  <button mat-icon-button style="background-color: #26abe3; color: #fff">
     <mat-icon>search</mat-icon>
   </button>
 </form>

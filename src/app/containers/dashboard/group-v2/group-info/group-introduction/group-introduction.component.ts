@@ -14,7 +14,7 @@ import {
   Api11xxService,
   HintDialogService,
 } from '../../../../../core/services';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { PeopleSelectorWinComponent } from '../../../components/people-selector-win/people-selector-win.component';
 import { planDatas } from '../../../group/desc';

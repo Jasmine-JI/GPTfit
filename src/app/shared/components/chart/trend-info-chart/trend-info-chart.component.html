@@ -22,10 +22,10 @@
       <div class="flexCol info__section">
         <span class="data__number">
           <ng-container *ngIf="finalChartType === 'pace'">
-            {{ infoData.best || 0 | sportPaceSibs: [sportType, unit, 1] }}
+            {{ infoData?.best || 0 | sportPaceSibs: [sportType, unit, 1] }}
           </ng-container>
           <ng-container *ngIf="finalChartType !== 'pace'">
-            {{ infoData.best || 0 }}
+            {{ infoData?.best || 0 }}
             {{ finalChartType | dataTypeUnit: [sportType, unit] }}
           </ng-container>
         </span>
@@ -42,10 +42,10 @@
       <div class="flexCol info__section">
         <span class="data__number">
           <ng-container *ngIf="finalChartType === 'pace'">
-            {{ infoData.avg || 0 | sportPaceSibs: [sportType, unit, 1] }}
+            {{ infoData?.avg || 0 | sportPaceSibs: [sportType, unit, 1] }}
           </ng-container>
           <ng-container *ngIf="finalChartType !== 'pace'">
-            {{ infoData.avg || 0 }}
+            {{ infoData?.avg || 0 }}
             {{ finalChartType | dataTypeUnit: [sportType, unit] }}
           </ng-container>
         </span>

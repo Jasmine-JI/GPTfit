@@ -17,7 +17,7 @@ import { takeUntil } from 'rxjs/operators';
 import { HrZoneRange } from '../../../models/chart-data';
 import { mi, ft } from '../../../models/bs-constant';
 import { SportType } from '../../../enum/sports';
-import { TemperatureSibsPipe } from '../../../pipes/temperature-sibs.pipe';
+import { TemperatureSibsPipe } from '../../../../core/pipes/temperature-sibs.pipe';
 import { mathRounding } from '../../../../core/utils';
 
 type ChartType =

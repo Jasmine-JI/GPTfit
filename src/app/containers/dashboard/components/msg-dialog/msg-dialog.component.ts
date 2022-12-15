@@ -1,9 +1,6 @@
 import { Component, OnInit, Inject, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import {
-  MatLegacyDialog as MatDialog,
-  MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA,
-} from '@angular/material/legacy-dialog';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-msg',

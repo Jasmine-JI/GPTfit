@@ -1,6 +1,9 @@
-import { NgModule, Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({ name: 'sportTime' })
+@Pipe({
+  name: 'sportTime',
+  standalone: true,
+})
 export class SportTimePipe implements PipeTransform {
   /**
    * 將總秒數轉為時:分:秒或時:分
@@ -39,8 +42,3 @@ export class SportTimePipe implements PipeTransform {
     }
   }
 }
-@NgModule({
-  declarations: [SportTimePipe],
-  exports: [SportTimePipe],
-})
-export class SportTimeModule {}
