@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Unit } from '../../shared/enum/value-conversion';
-import { SportType } from '../../shared/enum/sports';
+import { DataUnitType } from '../enums/common';
+import { SportType } from '../enums/sports';
 
 @Pipe({
   name: 'dataTypeUnit',
@@ -10,28 +10,36 @@ export class DataTypeUnitPipe implements PipeTransform {
   /**
    * 根據運動資料數據類別及公英制回傳相對應的單位
    * @param value {string}-運動資料數據類別
-   * @param args {Array<number>}-[運動類別, 公制/英制]
+   * @param args {any}-[運動類別, 公制/英制]
    * @returns {any}-單位
    */
-  transform(value: string, args: number[] = []): any {
-    const [sportType, userUnit] = [...args];
+  transform(value: string, args: any = [SportType.all, DataUnitType.metric]): any {
+    let sportType: SportType;
+    let userUnit: DataUnitType;
+    if (!Array.isArray(args)) {
+      sportType = args.sportType || SportType.all;
+      userUnit = args.userUnit || DataUnitType.metric;
+    } else {
+      [sportType, userUnit] = args;
+    }
+
     switch (value) {
       case 'hr':
         return 'bpm';
       case 'speed':
-        return userUnit === Unit.metric ? 'km/h' : 'mi/h';
       case 'pace':
         switch (sportType) {
           case SportType.run:
-            return userUnit === Unit.metric ? 't/km' : 't/mi';
+            return userUnit === DataUnitType.metric ? 'min/km' : 'min/mi';
+          case SportType.cycle:
+            return userUnit === DataUnitType.metric ? 'km/h' : 'mi/h';
           case SportType.swim:
-            return 't/100m';
+            return 'min/100m';
           case SportType.row:
-            return 't/500m';
+            return 'min/500m';
           default:
             return '';
         }
-
       case 'cadence':
         switch (sportType) {
           case SportType.run:
@@ -47,9 +55,9 @@ export class DataTypeUnitPipe implements PipeTransform {
       case 'power':
         return 'w';
       case 'temperature':
-        return userUnit === Unit.metric ? '°C' : '°F';
+        return userUnit === DataUnitType.metric ? '°C' : '°F';
       case 'altitude':
-        return userUnit === Unit.metric ? 'm' : 'ft';
+        return userUnit === DataUnitType.metric ? 'm' : 'ft';
       case 'gforceX':
       case 'gforceY':
       case 'gforceZ':
@@ -58,15 +66,19 @@ export class DataTypeUnitPipe implements PipeTransform {
       case 'zMoveGForce':
         return 'g';
       case 'bodyHeight':
-        return userUnit === Unit.metric ? 'cm' : 'inch';
+        return userUnit === DataUnitType.metric ? 'cm' : 'inch';
       case 'bodyWeight':
-        return userUnit === Unit.metric ? 'kg' : 'lb';
+        return userUnit === DataUnitType.metric ? 'kg' : 'lb';
       case 'wheelSize':
-        return userUnit === Unit.metric ? 'mm' : 'inch';
+        return userUnit === DataUnitType.metric ? 'mm' : 'inch';
       case 'stepLength':
-        return userUnit === Unit.metric ? 'cm' : 'inch';
+        return userUnit === DataUnitType.metric ? 'cm' : 'inch';
       case 'targetDistance':
-        return userUnit === Unit.metric ? 'm' : 'ft';
+        return userUnit === DataUnitType.metric ? 'm' : 'ft';
+      case 'feedbackWatt':
+        return 'w';
+      case 'distanceKilo':
+        return userUnit === DataUnitType.metric ? 'km' : 'mi';
       default:
         return '';
     }

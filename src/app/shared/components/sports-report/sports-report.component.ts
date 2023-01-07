@@ -35,7 +35,7 @@ import { SportsReport } from '../../classes/sports-report/sports-report';
 import { PersonalSportsChartData } from '../../classes/sports-report/personal-sports-chart-data';
 import { SPORT_TYPE_COLOR, trendChartColor, HrZoneRange } from '../../models/chart-data';
 import { mi, ft, lb } from '../../models/bs-constant';
-import { Unit } from '../../enum/value-conversion';
+import { DataUnitType } from '../../../core/enums/common';
 import { DefaultDateRange } from '../../classes/default-date-range';
 import { AccessRight } from '../../enum/accessright';
 import { MuscleGroup, MuscleAnalysisColumn } from '../../enum/weight-train';
@@ -201,7 +201,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   hrZoneRange: HrZoneRange | null = null;
 
   readonly SportType = SportType;
-  readonly Unit = Unit;
+  readonly DataUnitType = DataUnitType;
   readonly SPORT_TYPE_COLOR = SPORT_TYPE_COLOR;
   readonly trendChartColor = trendChartColor;
   readonly DateUnit = DateUnit;
@@ -816,7 +816,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   getInfoData(infoData: any, key: string) {
     const { sportType } = this.reportCondition;
-    const isMetric = this.userUnit === Unit.metric;
+    const isMetric = this.userUnit === DataUnitType.metric;
     const result = {
       value: 0,
       unit: '',

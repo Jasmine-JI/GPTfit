@@ -1,0 +1,83 @@
+@import 'flex-center.scss';
+@import 'overflow-scroll.scss';
+@import 'font.scss';
+
+$row-height: 45px;
+$header-title-size: 0.8rem;
+
+.station__section {
+  margin: 1rem 0;
+}
+
+.station__title {
+  font-weight: bold;
+  border-bottom: 2px solid rgb(219 204 25);
+}
+
+.station__content__container {
+  @include overflow-x-scroll();
+}
+
+.station__content {
+  min-width: 1020px;
+}
+
+.nichname__header {
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.nickname__grid {
+  display: grid;
+  grid-auto-rows: minmax($row-height, $row-height);
+  grid-auto-columns: minmax(140px, 140px);
+  white-space: pre-wrap;
+  word-break: break-word;
+  text-align: center;
+}
+
+.list__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax($row-height, $row-height);
+}
+
+.one__grid {
+  @include center();
+}
+
+.data__column {
+  @include bold-font(1.1rem);
+}
+
+.list__header__title {
+  @include bold-font($header-title-size);
+  text-align: center;
+  color: rgba(115, 115, 115, 1);
+  cursor: pointer;
+}
+
+.list__header__unit {
+  font-size: 0.75rem;
+  color: rgba(145, 145, 145, 1);
+  text-align: center;
+}
+
+.header__divide__line {
+  border-color: rgba(0, 0, 0, 0.5);
+  margin: 5px 0;
+}
+
+.content__divide__line {
+  border-color: rgba(0, 0, 0, 0.1);
+  margin: 5px 0;
+}
+
+.hrzone__grid {
+  min-width: 185px;
+  position: relative;
+}
+
+.hrzone__grid--disabled {
+  pointer-events: none;
+}

@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { bodyHeightTransfer, mathRounding } from '../utils';
-import { Unit } from '../../shared/enum/value-conversion';
+import { DataUnitType } from '../enums/common';
 
 @Pipe({
   name: 'bodyHeightSibs',
@@ -17,10 +17,10 @@ export class BodyHeightSibsPipe implements PipeTransform {
    */
   transform(value: number, args: [number, boolean]): string {
     const [unitType, showUnit] = [...args];
-    const result = bodyHeightTransfer(value, unitType === Unit.imperial, true);
+    const result = bodyHeightTransfer(value, unitType === DataUnitType.imperial, true);
     const bodyHeight = typeof result === 'number' ? mathRounding(result as number, 1) : result;
     let unitStr: string;
-    if (unitType === Unit.imperial) {
+    if (unitType === DataUnitType.imperial) {
       unitStr = 'inch';
     } else {
       unitStr = 'cm';

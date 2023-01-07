@@ -23,7 +23,13 @@
 <button
   (click)="refreshLists($event)"
   mat-icon-button
-  style="background-color: #26abe3; color: #fff"
+  style="
+    background-color: #26abe3;
+    color: #fff;
+    transform: scale(0.85);
+    margin: 5px 0 0 5px;
+    padding: 9px;
+  "
 >
   <i class="fa fa-refresh" aria-hidden="true" style="font-size: 18px"></i>
 </button>
@@ -61,7 +67,16 @@
     <mat-datepicker #endDatePicker disabled="false" [touchUi]="isHandset$ | async"></mat-datepicker>
   </mat-form-field>
 
-  <button mat-icon-button style="background-color: #26abe3; color: #fff">
+  <button
+    mat-icon-button
+    style="
+      background-color: #26abe3;
+      color: #fff;
+      transform: scale(0.85);
+      margin: 5px 0 0 5px;
+      padding: 9px;
+    "
+  >
     <mat-icon>search</mat-icon>
   </button>
 </form>

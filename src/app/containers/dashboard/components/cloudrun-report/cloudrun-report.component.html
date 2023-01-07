@@ -85,7 +85,9 @@
           <div>
             <span class="report-summaryData">
               {{
-                infoData.totalSpeed / infoData.stroke || 0 | sportPaceSibs: [1, userInfo.unit, 1]
+                infoData.totalSpeed / infoData.stroke || 0
+                  | sportPaceSibs
+                    : { sportType: SportType.run, userUnit: userInfo.unit, showUnit: false }
               }}
             </span>
             <p class="report-summaryDescription">
@@ -198,7 +200,7 @@
         </p>
         <p class="report-mapInfo">
           <span>{{ 'universal_activityData_distance' | translate }}：</span>
-          {{ +mapInfo.distance * 1000 | distanceSibs: [userInfo.unit, true] }}
+          {{ +mapInfo.distance * 1000 | distanceSibs: { unitType: userInfo.unit, showUnit: true } }}
         </p>
         <p class="report-mapInfo">
           <span>{{ 'universal_activityData_avgIncline' | translate }}：</span>

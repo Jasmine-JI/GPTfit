@@ -2708,5 +2708,11 @@
  "universal_activityData_muscleRatio": "肌群訓練次數佔比",
  "universal_activityData_chartAnalysis": "圖表數據分析",
  "universal_class_classDuration": "課程時間",
- "universal_system_excludeAdmin": "排除管理員"
+ "universal_system_excludeAdmin": "排除管理員",
+ "universal_activityData_combinedFrequency": "頻率",
+ "universal_activityData_allLaps": "合計",
+ "universal_activityData_totalEnergyGen": "總發電量",
+ "universal_activityData_genPower": "發電功率",
+ "universal_class_singleClassReport": "單堂報告",
+ "universal_class_rangeClassReport": "範圍報告"
 }

@@ -18,7 +18,7 @@ import {
   swolfTrendColor,
   swingSpeedTrendColor,
 } from '../../../models/chart-data';
-import { Unit } from '../../../enum/value-conversion';
+import { DataUnitType } from '../../../../core/enums/common';
 import { SportType } from '../../../enum/sports';
 import { DataTypeTranslatePipe } from '../../../../core/pipes/data-type-translate.pipe';
 import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
@@ -101,7 +101,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
   @Input() proficiencyCoefficient: number;
   @Input() page: DisplayPage;
   @Input() sportType = <SportType>SportType.run;
-  @Input() unit: Unit;
+  @Input() unit: DataUnitType;
   @Input() isPreviewMode = false;
   @ViewChild('container', { static: true })
   container: ElementRef;

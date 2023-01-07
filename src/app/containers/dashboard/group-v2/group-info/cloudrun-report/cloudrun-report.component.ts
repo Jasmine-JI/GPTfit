@@ -24,13 +24,14 @@ import {
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { TranslateService } from '@ngx-translate/core';
-import { Unit } from '../../../../../shared/enum/value-conversion';
+import { DataUnitType } from '../../../../../core/enums/common';
 import {
   setLocalStorageObject,
   getLocalStorageObject,
   displayGroupLevel,
 } from '../../../../../core/utils';
 import { AccessRight } from '../../../../../shared/enum/accessright';
+import { SportType } from '../../../../../core/enums/sports';
 
 type AnalysisTable = 'group' | 'member';
 type AnalysisData =
@@ -271,7 +272,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   };
 
   userId: number;
-  unit = <Unit>0; // 使用者所使用的單位
+  unit = <DataUnitType>0; // 使用者所使用的單位
   systemAccessRight = AccessRight.guest;
   allMapList: any;
   mapInfo: any;
@@ -291,6 +292,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   };
   readonly GroupTableCol = GroupTableCol;
   readonly MemberTableCol = MemberTableCol;
+  readonly SportType = SportType;
+
   constructor(
     private reportService: ReportService,
     private professionalService: ProfessionalService,

@@ -2708,5 +2708,11 @@
  "universal_activityData_muscleRatio": "Muscle group ratio",
  "universal_activityData_chartAnalysis": "Chart and analysis",
  "universal_class_classDuration": "Class duration",
- "universal_system_excludeAdmin": "Exclude Administrators"
+ "universal_system_excludeAdmin": "Exclude Administrators",
+ "universal_activityData_combinedFrequency": "Combined tempo",
+ "universal_activityData_allLaps": "Combined",
+ "universal_activityData_totalEnergyGen": "Total Energy Generated",
+ "universal_activityData_genPower": "Generator power",
+ "universal_class_singleClassReport": "Single class report",
+ "universal_class_rangeClassReport": "Range class report"
 }

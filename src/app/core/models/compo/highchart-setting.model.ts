@@ -42,6 +42,9 @@ export interface HighchartSettingTitle {
 }
 
 export interface HighchartPlotOptions {
+  line?: {
+    pointPlacement?: PointPlacement;
+  };
   column?: {
     pointPlacement?: PointPlacement;
     stacking?: 'normal'; // 圖表是否堆疊，normal為開啟，undefined為關閉。
@@ -85,6 +88,7 @@ export interface HighchartPlotOptions {
     fillOpacity?: number; // 填充顏色的透明度，僅適用於區域圖(chart.type: 'area')
     dataLabels?: {
       enabled: boolean; // 於圖表上顯示數據標註與否
+      formatter?: CallBackFormatter;
     };
     showInLegend?: boolean; // 同 legend.enabled
     marker?: {
@@ -114,6 +118,7 @@ export interface HighchartSettingAxis {
       color?: string;
       fontSize?: string;
     };
+    align?: HorizonPosition;
     format?: string;
     formatter?: CallBackFormatter;
   };
@@ -137,6 +142,7 @@ export interface HighchartSettingAxis {
   tickPixelInterval?: number; // 根據設定的pixel值自動設定軸線標示的數據間距。
   tickPositions?: Array<number>; // 手動設定軸線上標示的數據。
   opposite?: boolean; // 軸線是否放置於另一邊
+  pointPlacement?: PointPlacement;
 }
 
 /**

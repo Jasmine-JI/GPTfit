@@ -174,10 +174,16 @@
               </td>
               <td class="pace__col">
                 <ng-container *ngIf="page === 'group'">
-                  {{ _player.bestSpeed | sportPaceSibs: [1, unit, 1] }}
+                  {{
+                    _player.bestSpeed
+                      | sportPaceSibs: { sportType: SportType.run, userUnit: unit, showUnit: false }
+                  }}
                 </ng-container>
                 <ng-container *ngIf="page === 'person'">
-                  {{ _player.avgSpeed | sportPaceSibs: [1, unit, 1] }}
+                  {{
+                    _player.avgSpeed
+                      | sportPaceSibs: { sportType: SportType.run, userUnit: unit, showUnit: false }
+                  }}
                 </ng-container>
               </td>
               <td class="time__col">

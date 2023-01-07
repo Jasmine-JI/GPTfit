@@ -11,7 +11,6 @@ import { chart } from 'highcharts';
 import dayjs from 'dayjs';
 import { TranslateService } from '@ngx-translate/core';
 import {
-  CompareLineTrendChart,
   DisplayPage,
   zoneColor,
   rightMoveColor,
@@ -22,7 +21,7 @@ import {
   landingColor,
   restHrColor,
 } from '../../../models/chart-data';
-import { Unit } from '../../../enum/value-conversion';
+import { DataUnitType } from '../../../../core/enums/common';
 import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -99,7 +98,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() searchDate: Array<number>;
   @Input() chartHeight = <number>110;
   @Input() page: DisplayPage;
-  @Input() unit = <Unit>Unit.metric;
+  @Input() unit = <DataUnitType>DataUnitType.metric;
   @Input() isPreviewMode = false;
   @ViewChild('container', { static: false })
   container: ElementRef;
@@ -124,7 +123,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
   initChart() {
     let trendDataset;
     switch (this.chartName) {
-      case 'HR':
+      case 'HR': {
         this.chartType = 'hr';
         const { maxHrArr, hrArr } = this.data;
         this.dataLength = hrArr.length;
@@ -150,7 +149,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
         ];
 
         break;
-      case 'Power':
+      }
+      case 'Power': {
         const powerTitle = this.translate.instant('universal_activityData_power');
         this.chartType = 'power';
         this.dataLength = this.data.powerArr.length;
@@ -178,7 +178,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
         ];
 
         break;
-      case 'ExtremeXGForce':
+      }
+      case 'ExtremeXGForce': {
         const extremeRightMoveTitle = this.translate.instant('universal_activityData_maxRight'),
           extremeLeftMoveTitle = this.translate.instant('universal_activityData_maxLeft');
         this.chartType = 'xMoveGForce';
@@ -204,7 +205,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           },
         ];
         break;
-      case 'ExtremeYGForce':
+      }
+      case 'ExtremeYGForce': {
         const extremeAccelateTitle = this.translate.instant(
             'universal_activityData_maxAcceleration'
           ),
@@ -232,7 +234,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           },
         ];
         break;
-      case 'ExtremeZGForce':
+      }
+      case 'ExtremeZGForce': {
         const extremeJumpTitle = this.translate.instant('universal_activityData_maxJump'),
           extremeLandingTitle = this.translate.instant('universal_activityData_maxFloorImpact');
         this.chartType = 'zMoveGForce';
@@ -258,6 +261,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           },
         ];
         break;
+      }
       case 'LifeHR':
         this.dataLength = this.data.restHr.length;
         trendDataset = [

@@ -33,8 +33,9 @@ export function getUrlQueryStrings(search: string = undefined) {
 export function setUrlQueryString(query: any) {
   let queryString = '';
   Object.entries(query).forEach(([key, value]) => {
-    queryString += `${key}=${value}`;
+    const newQuery = `${key}=${value}`;
+    queryString += queryString ? `&${newQuery}` : `?${newQuery}`;
   });
 
-  return queryString ? `?${queryString}` : queryString;
+  return queryString;
 }

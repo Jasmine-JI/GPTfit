@@ -25,6 +25,7 @@ import { SportsTarget } from '../../../../../shared/classes/sports-target';
 import { TargetConditionMap } from '../../../../../core/models/api/api-common';
 import { BenefitTimeStartZone } from '../../../../../core/enums/common';
 import { ProfessionalService } from '../../../../professional/services/professional.service';
+import { formTest } from '../../../../../shared/models/form-test';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -612,14 +613,15 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091103
    */
   saveGroupName(e: Event) {
-    if ((e as any).target.value.trim().length > 0) {
+    const name = (e as any).target.value.trim();
+    if (formTest.groupName.test(name)) {
       this.formCheck.name = true;
 
       if (this.uiFlag.editMode === 'create') {
-        this.createBody.levelName = (e as any).target.value.trim();
+        this.createBody.levelName = name;
       } else if (this.uiFlag.editMode === 'edit') {
         this.uiFlag.contentChange = true;
-        this.editBody.groupName = (e as any).target.value.trim();
+        this.editBody.groupName = name;
       }
     } else {
       this.formCheck.name = false;
@@ -632,14 +634,15 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091103
    */
   saveGroupDesc(e: Event) {
-    if ((e as any).target.value.trim().length > 0) {
+    const desc = (e as any).target.value.trim();
+    if (desc.length > 0) {
       this.formCheck.desc = true;
 
       if (this.uiFlag.editMode === 'create') {
-        this.createBody.levelDesc = (e as any).target.value;
+        this.createBody.levelDesc = desc;
       } else if (this.uiFlag.editMode === 'edit') {
         this.uiFlag.contentChange = true;
-        this.editBody.groupDesc = (e as any).target.value;
+        this.editBody.groupDesc = desc;
       }
     } else {
       this.formCheck.desc = false;

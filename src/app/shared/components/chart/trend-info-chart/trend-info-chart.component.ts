@@ -28,7 +28,8 @@ type ChartType =
   | 'cadence'
   | 'power'
   | 'temperature'
-  | 'gforce';
+  | 'gforce'
+  | 'feedbackWatt';
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -698,6 +699,60 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
             this.createChart(chartOptions);
             break;
           }
+          case 'feedbackWatt': {
+            let best = 0;
+            let totalCount = 0;
+            this.yAxisData.forEach((_yAxis, _index) => {
+              const _xAxis = this.xAxisData[_index];
+              const _yAxisAfterCheck = _xAxis === 0 ? 0 : _yAxis;
+              const _yAxisConvert =
+                this.unit === 0 ? _yAxisAfterCheck : +(_yAxisAfterCheck / ft).toFixed(1);
+              const chartData = {
+                x:
+                  this.page === 'detail' && this.xAxisType === 'pointSecond'
+                    ? _xAxis * 1000
+                    : _xAxis,
+                y: _yAxisConvert,
+              };
+
+              processedData.push(chartData);
+              totalCount += _yAxisConvert;
+              if (_yAxisConvert > best) {
+                best = _yAxisConvert;
+              }
+            });
+
+            if (processedData[0].x !== 0) {
+              processedData = [{ x: 0, y: 0 }, ...processedData];
+            }
+
+            const denominator =
+              processedData[0].x === 0 ? processedData.length - 1 : processedData.length;
+            this.infoData = { best, avg: mathRounding(totalCount / denominator, 1) };
+
+            seriesSet = [
+              {
+                name: this.translate.instant('發電功率'),
+                data: processedData,
+                turboThreshold: 100000,
+                showInLegend: false,
+                color: 'rgba(201, 189, 42, 1)',
+                tooltip: {
+                  valueSuffix: ` w`,
+                },
+              },
+            ];
+
+            chartOptions = new ChartOptions(
+              seriesSet,
+              type,
+              this.xAxisType === 'pointSecond' ? 'datetime' : 'linear'
+            );
+
+            chartOptions.yAxis.min = null;
+            this.createChart(chartOptions);
+            break;
+          }
         }
       });
   }
@@ -774,9 +829,9 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
       case SportType.row:
         return 'universal_activityData_rowCadence';
       case SportType.complex:
-        return '頻率';
+        return 'universal_activityData_combinedFrequency';
       default:
-        return '頻率';
+        return 'universal_activityData_combinedFrequency';
     }
   }
 

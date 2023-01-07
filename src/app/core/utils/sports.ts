@@ -1,22 +1,21 @@
 import { SportType } from '../../shared/enum/sports';
 import { mi, ft } from '../../shared/models/bs-constant';
-import { Unit } from '../../shared/enum/value-conversion';
 import { mathRounding } from './index';
 import { MuscleCode, MuscleGroup, WeightTrainingLevel } from '../../shared/enum/weight-train';
 import { asept, metacarpus, novice } from '../../shared/models/weight-train';
 import { HrBase } from '../../shared/enum/personal';
 import { HrZoneRange } from '../../shared/models/chart-data';
-import { BenefitTimeStartZone } from '../enums/common';
+import { BenefitTimeStartZone, DataUnitType } from '../enums/common';
 import { PAI_COFFICIENT, DAY_PAI_TARGET } from '../../shared/models/sports-report';
 
 /**
  * 根據運動類型將速度轉成配速(若為bs英制則公里配速轉英哩配速)
  * @param value {number}-速度
  * @param sportType {SportType}-運動類別
- * @param unit {Unit}-使用者所使用的單位
+ * @param unit {DataUnitType}-使用者所使用的單位
  */
-export function speedToPaceSecond(value: number, sportType: SportType, unit: Unit) {
-  const isMetric = unit === Unit.metric;
+export function speedToPaceSecond(value: number, sportType: SportType, unit: DataUnitType) {
+  const isMetric = unit === DataUnitType.metric;
   const isMinus = value < 0;
   let result = 0;
   switch (sportType) {
@@ -65,9 +64,9 @@ export function paceSecondTimeFormat(second: number) {
  * 根據運動類型將速度轉成配速(若為bs英制則公里配速轉英哩配速)
  * @param data {number | string}-速度
  * @param sportType {SportType}-運動類別
- * @param unit {Unit}-使用者所使用的單位
+ * @param unit {DataUnitType}-使用者所使用的單位
  */
-export function speedToPace(data: number | string, sportType: SportType, unit: Unit) {
+export function speedToPace(data: number | string, sportType: SportType, unit: DataUnitType) {
   const value = +data;
   const converseType = [SportType.run, SportType.swim, SportType.row];
   let result = { value: <number | string>value, unit: '' };
@@ -87,12 +86,12 @@ export function speedToPace(data: number | string, sportType: SportType, unit: U
 /**
  * 根據運動類別與使用者使用單位取得配速單位
  * @param sportType {SportType}-運動類別
- * @param unit {Unit}-使用者所使用的單位
+ * @param unit {DataUnitType}-使用者所使用的單位
  */
-export function getPaceUnit(sportType: SportType, unit: Unit) {
+export function getPaceUnit(sportType: SportType, unit: DataUnitType) {
   switch (sportType) {
     case SportType.run:
-      return unit === Unit.metric ? 'min/km' : 'min/mi';
+      return unit === DataUnitType.metric ? 'min/km' : 'min/mi';
     case SportType.swim:
       return 'min/100m';
     case SportType.row:
@@ -174,9 +173,9 @@ export function getMaxCadenceI18nKey(sportType: SportType) {
 /**
  * 將距離根據使用者使用單位進行轉換
  * @param distance {number}-距離
- * @param unit {Unit}-使用者使用單位（公制/英制）
+ * @param unit {DataUnitType}-使用者使用單位（公制/英制）
  */
-export function transformDistance(distance: number, unit: Unit, converseKiloAlways = false) {
+export function transformDistance(distance: number, unit: DataUnitType, convertKiloAlways = false) {
   const checkDistance = +(distance ?? 0);
   const transfrom = {
     value: null,
@@ -190,13 +189,13 @@ export function transformDistance(distance: number, unit: Unit, converseKiloAlwa
     },
   };
 
-  if (unit === Unit.metric) {
-    Math.abs(distance) >= 1000 || converseKiloAlways
+  if (unit === DataUnitType.metric) {
+    Math.abs(distance) >= 1000 || convertKiloAlways
       ? transfrom.update(checkDistance / 1000, 'km')
       : transfrom.update(checkDistance, 'm');
   } else {
     const bsValue = checkDistance / ft;
-    Math.abs(bsValue) >= 1000 || converseKiloAlways
+    Math.abs(bsValue) >= 1000 || convertKiloAlways
       ? transfrom.update(checkDistance / mi / 1000, 'mi')
       : transfrom.update(bsValue, 'ft');
   }

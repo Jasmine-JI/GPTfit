@@ -168,7 +168,9 @@
           <span *ngIf="row.activityInfoLayer.type !== '5' && row.activityInfoLayer.type !== '3'">
             {{
               (row.activityInfoLayer && row.activityInfoLayer?.avgSpeed
-                | sportPaceSibs: [+row.activityInfoLayer.type, unit, 0]) || ' -- '
+                | sportPaceSibs
+                  : { sportType: +row.activityInfoLayer.type, userUnit: unit, showUnit: true }) ||
+                ' -- '
             }}
           </span>
           <span *ngIf="row.activityInfoLayer.type === '5'">

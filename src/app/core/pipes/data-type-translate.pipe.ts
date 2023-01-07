@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Unit } from '../../shared/enum/value-conversion';
+import { DataUnitType } from '../enums/common';
 import { SportType } from '../../shared/enum/sports';
 
 @Pipe({
@@ -13,25 +13,34 @@ export class DataTypeTranslatePipe implements PipeTransform {
    * @param args {Array<number>}-[運動類別, 公制/英制]
    * @returns {any}-多國語系的鍵
    */
-  transform(value: string, args: Array<number>): string {
-    const [sportType, userUnit] = [...args];
+  transform(value: string, args: any = [SportType.all, DataUnitType.metric]): string {
+    let sportType: SportType;
+    let userUnit: DataUnitType;
+    if (!Array.isArray(args)) {
+      sportType = args.sportType || SportType.all;
+      userUnit = args.userUnit || DataUnitType.metric;
+    } else {
+      [sportType, userUnit] = args;
+    }
+
     switch (value) {
       case 'hr':
         return 'universal_activityData_hr';
       case 'speed':
-        return 'universal_activityData_speedPerHour';
       case 'pace':
         switch (sportType) {
           case SportType.run:
-            return userUnit === Unit.metric
+            return userUnit === DataUnitType.metric
               ? 'universal_activityData_kilometerPace'
               : 'universal_activityData_milePace';
+          case SportType.cycle:
+            return 'universal_activityData_speedPerHour';
           case SportType.swim:
             return 'universal_activityData_100mPace';
           case SportType.row:
             return 'universal_activityData_500mPace';
           default:
-            return '配速';
+            return 'universal_activityData_speed';
         }
       case 'cadence':
         switch (sportType) {
@@ -46,7 +55,7 @@ export class DataTypeTranslatePipe implements PipeTransform {
           case SportType.row:
             return 'universal_activityData_rowCadence';
           default:
-            return '頻率';
+            return 'universal_activityData_combinedFrequency';
         }
       case 'power':
         return 'universal_activityData_power';
@@ -95,6 +104,8 @@ export class DataTypeTranslatePipe implements PipeTransform {
         return 'universal_activityData_swingTypeRatio';
       case 'fitTime':
         return 'universal_userProfile_fitTime';
+      case 'feedbackWatt':
+        return '發電功率';
       default:
         return 'universal_vocabulary_other';
     }

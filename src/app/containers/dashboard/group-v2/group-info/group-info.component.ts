@@ -27,7 +27,7 @@ import { ImageUploadService } from '../../services/image-upload.service';
 import { AlbumType } from '../../../../shared/models/image';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { PrivacySettingDialogComponent } from '../../../../shared/components/privacy-setting-dialog/privacy-setting-dialog.component';
-import { Unit } from '../../../../shared/enum/value-conversion';
+import { DataUnitType } from '../../../../core/enums/common';
 import { DateUnit } from '../../../../shared/enum/report';
 import { GroupLevel } from '../../models/group-detail';
 import { deepCopy, base64ToFile, displayGroupLevel } from '../../../../core/utils';
@@ -91,7 +91,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   user = <UserSimpleInfo>{
     nickname: '',
     userId: null,
-    unit: Unit.metric,
+    unit: DataUnitType.metric,
     token: this.authService.token,
     accessRight: this.userService.getUser().systemAccessright,
     joinStatus: 2,

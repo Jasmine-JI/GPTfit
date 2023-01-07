@@ -419,17 +419,17 @@
           <div class="flexRowWrap childPageContent">
             <span class="itemTitle"> {{ 'universal_deviceSetting_unit' | translate }}： </span>
             <div class="flexRow radio__section">
-              <span class="flexRow radioSelector" (click)="changeUnit(Unit.metric)">
+              <span class="flexRow radioSelector" (click)="changeUnit(DataUnitType.metric)">
                 <span
                   class="radioBtn"
-                  [class.radioBtn--active]="setting.unit === Unit.metric"
+                  [class.radioBtn--active]="setting.unit === DataUnitType.metric"
                 ></span>
                 <span>{{ 'universal_userProfile_metric' | translate }}</span>
               </span>
-              <span class="flexRow radioSelector" (click)="changeUnit(Unit.imperial)">
+              <span class="flexRow radioSelector" (click)="changeUnit(DataUnitType.imperial)">
                 <span
                   class="radioBtn"
-                  [class.radioBtn--active]="setting.unit === Unit.imperial"
+                  [class.radioBtn--active]="setting.unit === DataUnitType.imperial"
                 ></span>
                 <span>{{ 'universal_userProfile_imperial' | translate }}</span>
               </span>

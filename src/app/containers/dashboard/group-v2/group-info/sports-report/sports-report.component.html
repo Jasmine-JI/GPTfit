@@ -673,7 +673,7 @@
               isGroupAnalysis: true,
               columnType: 'totalDistanceMeters',
               title: 'universal_activityData_totalDistance' | translate,
-              dataUnit: userUnit === Unit.metric ? 'km/per' : 'mi/per',
+              dataUnit: userUnit === DataUnitType.metric ? 'km/per' : 'mi/per',
               isPersonAvgData: true,
               className: 'analysis__distance',
               showHeader:
@@ -1540,7 +1540,7 @@
               isGroupAnalysis: false,
               columnType: 'totalDistanceMeters',
               title: 'universal_activityData_totalDistance' | translate,
-              dataUnit: userUnit === Unit.metric ? 'km' : 'mi',
+              dataUnit: userUnit === DataUnitType.metric ? 'km' : 'mi',
               className: 'analysis__distance',
               showHeader:
                 [
@@ -1655,7 +1655,7 @@
                 isGroupAnalysis: false,
                 columnType: 'armMuscle',
                 title: 'universal_muscleName_armMuscles' | translate,
-                dataUnit: userUnit === Unit.metric ? muscleMetricUnit : muscleImperialUnit,
+                dataUnit: userUnit === DataUnitType.metric ? muscleMetricUnit : muscleImperialUnit,
                 className: 'analysis__muscle__group',
                 showHeader: personalAnalysisOption.getItemSelectStatus(
                   AnalysisSportsColumn.armMuscle
@@ -1670,7 +1670,7 @@
                 isGroupAnalysis: false,
                 columnType: 'pectoralsMuscle',
                 title: 'universal_muscleName_pectoralsMuscle' | translate,
-                dataUnit: userUnit === Unit.metric ? muscleMetricUnit : muscleImperialUnit,
+                dataUnit: userUnit === DataUnitType.metric ? muscleMetricUnit : muscleImperialUnit,
                 className: 'analysis__muscle__group',
                 showHeader: personalAnalysisOption.getItemSelectStatus(
                   AnalysisSportsColumn.pectoralsMuscle
@@ -1685,7 +1685,7 @@
                 isGroupAnalysis: false,
                 columnType: 'shoulderMuscle',
                 title: 'universal_muscleName_shoulderMuscle' | translate,
-                dataUnit: userUnit === Unit.metric ? muscleMetricUnit : muscleImperialUnit,
+                dataUnit: userUnit === DataUnitType.metric ? muscleMetricUnit : muscleImperialUnit,
                 className: 'analysis__muscle__group',
                 showHeader: personalAnalysisOption.getItemSelectStatus(
                   AnalysisSportsColumn.shoulderMuscle
@@ -1700,7 +1700,7 @@
                 isGroupAnalysis: false,
                 columnType: 'backMuscle',
                 title: 'universal_muscleName_backMuscle' | translate,
-                dataUnit: userUnit === Unit.metric ? muscleMetricUnit : muscleImperialUnit,
+                dataUnit: userUnit === DataUnitType.metric ? muscleMetricUnit : muscleImperialUnit,
                 className: 'analysis__muscle__group',
                 showHeader: personalAnalysisOption.getItemSelectStatus(
                   AnalysisSportsColumn.backMuscle
@@ -1715,7 +1715,7 @@
                 isGroupAnalysis: false,
                 columnType: 'abdominalMuscle',
                 title: 'universal_muscleName_abdominalMuscle' | translate,
-                dataUnit: userUnit === Unit.metric ? muscleMetricUnit : muscleImperialUnit,
+                dataUnit: userUnit === DataUnitType.metric ? muscleMetricUnit : muscleImperialUnit,
                 className: 'analysis__muscle__group',
                 showHeader: personalAnalysisOption.getItemSelectStatus(
                   AnalysisSportsColumn.abdominalMuscle
@@ -1730,7 +1730,7 @@
                 isGroupAnalysis: false,
                 columnType: 'legMuscle',
                 title: 'universal_muscleName_legMuscle' | translate,
-                dataUnit: userUnit === Unit.metric ? muscleMetricUnit : muscleImperialUnit,
+                dataUnit: userUnit === DataUnitType.metric ? muscleMetricUnit : muscleImperialUnit,
                 className: 'analysis__muscle__group',
                 showHeader: personalAnalysisOption.getItemSelectStatus(
                   AnalysisSportsColumn.legMuscle
@@ -2834,7 +2834,7 @@
             oneInfoData;
             context: {
               data: getPerAvgData(infoData, 'avgSpeed'),
-              type: userUnit === Unit.metric ? 'perKmPace' : 'perMiPace',
+              type: userUnit === DataUnitType.metric ? 'perKmPace' : 'perMiPace',
               isBaseData
             }
           "

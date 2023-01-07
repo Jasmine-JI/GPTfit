@@ -1,5 +1,6 @@
 import { fromEvent, merge } from 'rxjs';
 import { QueryString } from '../../shared/enum/query-string';
+import { rgbaReg, hslaReg } from '../models/regex';
 
 export const DEFAULT_MAXLENGTH = {
   TEXT: 100,
@@ -127,24 +128,39 @@ export function subscribePluralEvent(className: string) {
 
 /**
  * 變更顏色透明度
- * @param color {string}-顏色，格式為rgba
+ * @param color {string}-顏色，格式為rgba或hsla
+ * @param opacity {number}-透明度
  */
-export function changeOpacity(color: string, newOpacity: string | number) {
-  const trimColor = color.replace(/\s/g, '');
-  const rgbaReg = /^(rgba\(\d+,\d+,\d+,)(\d+)(\))$/;
-  return trimColor.replace(rgbaReg, `$1${newOpacity}$3`);
+export function changeOpacity(color: string, opacity: number) {
+  if (color.includes('rgb')) {
+    const {
+      groups: { red, green, blue },
+    } = rgbaReg.exec(color);
+    return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
+  } else if (color.includes('hsl')) {
+    const {
+      groups: { hue, saturation, lightness },
+    } = hslaReg.exec(color);
+    return `hsla(${hue}, ${saturation}, ${lightness}, ${opacity})`;
+  }
+
+  return color;
 }
 
 /**
- * 根據fileInfo資訊之規則（以問號分隔參數）取得參數
+ * 根據fileInfo資訊之規則（以?或&分隔參數）取得參數
  * @param info {string}-運動檔案之fileInfo內的任一資訊
  */
 export function getFileInfoParam(info: string) {
   const [origin, ...rest] = info.split('?');
   let result: any = { origin };
-  rest.forEach((_param) => {
-    const [key, value] = _param.split('=');
-    result = { ...result, [key]: value };
+  // 兼容使用?或&分隔參數
+  rest.forEach((_params) => {
+    const _deepParams = _params.split('&');
+    _deepParams.forEach((_param) => {
+      const [key, value] = _param.split('=');
+      result = { ...result, [key]: value };
+    });
   });
 
   return result;

@@ -10,9 +10,9 @@ import {
   ElementRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { chart } from 'highcharts';
-import * as Highcharts from 'Highcharts';
+import * as Highcharts from 'highcharts';
 import { HighchartOption } from '../../core/classes';
 import { GlobalEventsService } from '../../core/services/global-events.service';
 import { Subject } from 'rxjs';
@@ -31,25 +31,29 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() type: string;
   @Input() data: any;
   @Input() chartHeight: number;
-  @Input() focusIndex: number | null;
+  @Input() focusData: number | null;
   @ViewChild('container') container: ElementRef;
 
   private ngUnsubscribe = new Subject();
   private _option: HighchartOption;
   private _chart: Highcharts.Chart;
 
-  nodata = true;
+  noData = true;
 
-  constructor(private globalEventsService: GlobalEventsService) {}
+  constructor(
+    private globalEventsService: GlobalEventsService,
+    private translate: TranslateService
+  ) {}
 
   ngOnInit(): void {
     this.subscribeGlobalEvents();
+    this.subscribeLangChange();
   }
 
   ngOnChanges(e: SimpleChanges): void {
-    const { data, focusIndex } = e;
-    if (data.firstChange) this.initChart(data.currentValue);
-    if (!focusIndex.firstChange) this.updateChart(focusIndex.currentValue);
+    const { data, focusData } = e;
+    if (data?.firstChange) this.initChart(data.currentValue);
+    if (focusData && !focusData.firstChange) this.updateChart(focusData.currentValue);
   }
 
   /**
@@ -59,7 +63,23 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
     this.globalEventsService
       .getRxSideBarMode()
       .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe(() => {});
+      .subscribe(() => {
+        setTimeout(() => {
+          if (this._chart) this._chart.reflow();
+        }, 300);
+      });
+  }
+
+  /**
+   * 處理語系變更事件
+   */
+  subscribeLangChange() {
+    this.translate.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
+      if (this._chart) {
+        this._option.tooltip = { pointFormat: this.getTooltipFormat() };
+        this._chart.update(this._option.option as any);
+      }
+    });
   }
 
   /**
@@ -67,8 +87,24 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
    * @param data {Array<any>}-圖表數據
    */
   initChart(data: Array<any>) {
-    this._option = new HighchartOption('pie', 300);
-    this._option.plotOptions = {
+    if (!data || data.length === 0) return (this.noData = true);
+    this.noData = false;
+    this._option = this.getChartOption(data);
+    setTimeout(() => {
+      const chartContainer = this.container.nativeElement;
+      if (chartContainer) {
+        this._chart = chart(chartContainer, this._option.option as any);
+      }
+    });
+  }
+
+  /**
+   * 取得圖表設定
+   * @param data {Array<any>}-圖表數據
+   */
+  getChartOption(data) {
+    const chartOption = new HighchartOption('pie', 300);
+    chartOption.plotOptions = {
       pie: {
         center: ['50%', '30%'],
         size: '60%',
@@ -86,23 +122,37 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
       },
     };
 
-    this._option.series = [{ data }];
-    setTimeout(() => {
-      const chartContainer = this.container.nativeElement;
-      if (chartContainer) {
-        this._chart = chart(chartContainer, this._option.option as any);
-      }
-    });
+    chartOption.tooltip = {
+      pointFormat: this.getTooltipFormat(),
+      valueDecimals: 0,
+    };
+
+    chartOption.series = [{ data }];
+    return chartOption;
+  }
+
+  /**
+   * 取得提示框格式
+   */
+  getTooltipFormat() {
+    const title = this.translate.instant('universal_activityData_people');
+    return `${title}: {point.y}`;
   }
 
   /**
    * 更新圖表數據
-   * @param index {number}-指定的序列
+   * @param focusCalories {number}-欲聚焦的卡路里
    */
-  updateChart(index: number | null) {
-    if (index === null) {
+  updateChart(focusCalories: number | null) {
+    if (this.noData) return false;
+    if (focusCalories === null) {
       this._option.cancelSliced();
     } else {
+      const index = this.data.findIndex((_data) => {
+        const startRange = +_data.name.split('~')[0];
+        return focusCalories >= startRange && focusCalories < startRange + 100;
+      });
+
       this._option.assignSliced(index);
     }
 

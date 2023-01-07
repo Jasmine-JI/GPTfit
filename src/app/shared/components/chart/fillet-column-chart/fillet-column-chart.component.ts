@@ -15,7 +15,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DisplayPage, planeGColor, planeMaxGColor, fitTimeColor } from '../../../models/chart-data';
 import { mi, ft } from '../../../models/bs-constant';
-import { Unit } from '../../../enum/value-conversion';
+import { DataUnitType } from '../../../../core/enums/common';
 import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
 import { SportType } from '../../../enum/sports';
 
@@ -95,7 +95,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
   @Input() chartName: string;
   @Input() searchDate: Array<number>;
   @Input() page: DisplayPage;
-  @Input() unit = <Unit>Unit.metric;
+  @Input() unit = <DataUnitType>DataUnitType.metric;
   @Input() sportType: SportType = SportType.all;
   @Input() isPreviewMode = false;
   @ViewChild('container', { static: false })
@@ -260,7 +260,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
           };
         } else if (this.chartType === 'distance') {
           // 處理公英制及顯示單位
-          if (this.unit === Unit.imperial) {
+          if (this.unit === DataUnitType.imperial) {
             trendChartOptions['yAxis'].labels = {
               formatter: function () {
                 if (this.value >= 1000) {

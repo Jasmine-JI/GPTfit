@@ -23,6 +23,7 @@ export class SportFileFooterComponent implements OnInit {
   readonly UNKNOWN_DEVICE_IMAGE_PATH = UNKNOWN_DEVICE_IMAGE_PATH;
   readonly PROFESSIONAL_ICON_SUBSTITUDE_PATH = PROFESSIONAL_ICON_SUBSTITUDE_PATH;
   readonly PERSONAL_ICON_SUBSTITUDE_PATH = PERSONAL_ICON_SUBSTITUDE_PATH;
+  readonly defaultDescriptionLength = 50;
 
   /**
    * 顯示完整課程介紹
