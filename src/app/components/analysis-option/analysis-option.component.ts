@@ -3,12 +3,10 @@ import {
   OnInit,
   OnChanges,
   OnDestroy,
-  NgModule,
   Input,
   Output,
   EventEmitter,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
@@ -22,6 +20,8 @@ import { MuscleAnalysisColumn } from '../../shared/enum/weight-train';
   selector: 'app-analysis-option',
   templateUrl: './analysis-option.component.html',
   styleUrls: ['./analysis-option.component.scss'],
+  standalone: true,
+  imports: [CommonModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AnalysisOptionComponent implements OnInit, OnChanges, OnDestroy {
@@ -63,9 +63,3 @@ export class AnalysisOptionComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy(): void {}
 }
-@NgModule({
-  declarations: [AnalysisOptionComponent],
-  exports: [AnalysisOptionComponent],
-  imports: [CommonModule, TranslateModule],
-})
-export class AnalysisOptionModule {}

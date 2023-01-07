@@ -33,7 +33,7 @@ html {
   font-family: 'Microsoft JhengHei', sans-serif !important;
   margin: 0;
   width: 100vw;
-  overflow-y: hidden;
+  overflow: hidden;
   @include full-height();
 }
 
@@ -253,7 +253,7 @@ button {
 /*定義滾動條高寬及背景 高寬分別對應橫豎滾動條的尺寸*/
 ::-webkit-scrollbar {
   width: 3px;
-  height: 16px;
+  height: 8px;
   background-color: rgba(255, 255, 255, 0);
 }
 
@@ -287,11 +287,10 @@ button {
   background-color: var(--scale-255-60) !important;
 }
 
-.ala-dialog.mat-dialog-title {
-  margin: 0 -24px 20px;
+.ala-dialog.mat-mdc-dialog-title {
+  margin-bottom: 15px;
   background-color: #2f4349;
-  color: #fff;
-  padding: 8px 25px;
+  color: #fff !important;
   text-align: center;
 }
 
@@ -711,6 +710,10 @@ a.ban-send:hover {
   align-items: center;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
 .cardTitle {
   border-bottom: 1px solid rgba(200, 200, 200, 1);
   width: 100%;
@@ -932,6 +935,11 @@ a.ban-send:hover {
 }
 
 @media (max-width: 767px) {
+  html,
+  body {
+    font-size: 14px;
+  }
+
   .access-header {
     height: 50px;
   }

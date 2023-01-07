@@ -7,7 +7,7 @@ import {
   muscleMapColorSetting,
 } from '../../../models/weight-train';
 import { MuscleCode, Proficiency } from '../../../enum/weight-train';
-import { Unit } from '../../../enum/value-conversion';
+import { DataUnitType } from '../../../../core/enums/common';
 
 @Component({
   selector: 'app-muscle-map-card',
@@ -27,7 +27,7 @@ export class MuscleMapCardComponent implements OnInit, OnChanges, OnDestroy {
   @Input() vicePartList: Array<number | string>;
   @Input() level: UserLevel;
   @Input() userWeight = 70; // 預設體重70kg;
-  @Input() userUnit = Unit.metric;
+  @Input() userUnit = DataUnitType.metric;
 
   /**
    * ui 用到的各個flag

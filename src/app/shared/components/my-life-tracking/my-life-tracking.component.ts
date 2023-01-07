@@ -12,7 +12,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { AuthService, UserService, Api21xxService, ReportService } from '../../../core/services';
 import { ReportConditionOpt } from '../../models/report-condition';
 import { mi } from '../../models/bs-constant';
-import { Unit } from '../../enum/value-conversion';
+import { DataUnitType } from '../../../core/enums/common';
 import { stepColor } from '../../models/chart-data';
 import { Sex } from '../../enum/personal';
 import { deepCopy, countAge, countFFMI, countBMI } from '../../../core/utils';
@@ -144,12 +144,12 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
     id: null,
     name: '',
     accessRight: null,
-    unit: <Unit>Unit.metric,
+    unit: <DataUnitType>DataUnitType.metric,
     icon: '',
   };
 
   readonly tableLength = 8; // 分析列表預設顯示長度
-  readonly unitEnum = Unit;
+  readonly unitEnum = DataUnitType;
   readonly mi = mi;
   dateLen = 0; // 報告橫跨天數/週數
   previewUrl: string;

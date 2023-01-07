@@ -14,8 +14,8 @@ import { chart, charts } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { DataTypeUnitPipe } from '../../../pipes/data-type-unit.pipe';
-import { TemperatureSibsPipe } from '../../../pipes/temperature-sibs.pipe';
+import { DataTypeUnitPipe } from '../../../../core/pipes/data-type-unit.pipe';
+import { TemperatureSibsPipe } from '../../../../core/pipes/temperature-sibs.pipe';
 import { mi, ft } from '../../../models/bs-constant';
 
 /**

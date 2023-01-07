@@ -1,8 +1,11 @@
-import { Pipe, PipeTransform, NgModule } from '@angular/core';
-import { Unit } from '../../shared/enum/value-conversion';
+import { Pipe, PipeTransform } from '@angular/core';
+import { DataUnitType } from '../enums/common';
 import { SportType } from '../enums/sports';
 
-@Pipe({ name: 'speedPaceUnit' })
+@Pipe({
+  name: 'speedPaceUnit',
+  standalone: true,
+})
 export class SpeedPaceUnitPipe implements PipeTransform {
   constructor() {}
 
@@ -11,8 +14,8 @@ export class SpeedPaceUnitPipe implements PipeTransform {
    * @param unit {DateUnit}-數據類別
    * @return {string}-多國語系鍵名
    */
-  transform(sportType: SportType, unit: Unit): string {
-    const isMetric = unit === Unit.metric;
+  transform(sportType: SportType, unit: DataUnitType): string {
+    const isMetric = unit === DataUnitType.metric;
     switch (sportType) {
       case SportType.run:
         return isMetric ? 'min/km' : 'min/mi';
@@ -27,8 +30,3 @@ export class SpeedPaceUnitPipe implements PipeTransform {
     }
   }
 }
-@NgModule({
-  declarations: [SpeedPaceUnitPipe],
-  exports: [SpeedPaceUnitPipe],
-})
-export class SpeedPaceUnitModule {}

@@ -88,7 +88,8 @@
           <span class="report-summaryData">
             {{
               groupDataObj[currentGroup.id].record.totalSpeed /
-                groupDataObj[currentGroup.id].record.completeNum || 0 | sportPaceSibs: [1, unit, 1]
+                groupDataObj[currentGroup.id].record.completeNum || 0
+                | sportPaceSibs: { sportType: SportType.run, userUnit: unit, showUnit: false }
             }}
           </span>
           <p class="report-summaryDescription">
@@ -416,7 +417,11 @@
                 <div class="setIn">
                   <span class="tableData regulate__col">
                     <ng-container *ngIf="row?.completeNum !== 0; else noTimeData">
-                      {{ row?.avgSpeed || 0 | sportPaceSibs: [1, unit, 1] }}
+                      {{
+                        row?.avgSpeed || 0
+                          | sportPaceSibs
+                            : { sportType: SportType.run, userUnit: unit, showUnit: false }
+                      }}
                     </ng-container>
                   </span>
                 </div>
@@ -1036,7 +1041,11 @@
                 <div class="setIn">
                   <span class="tableData regulate__col" *ngIf="row?.privacy; else privacyLock">
                     <ng-container *ngIf="row?.runTimes !== 0; else noTimeData">
-                      {{ row?.avgSpeed || 0 | sportPaceSibs: [1, unit, 1] }}
+                      {{
+                        row?.avgSpeed || 0
+                          | sportPaceSibs
+                            : { sportType: SportType.run, userUnit: unit, showUnit: false }
+                      }}
                     </ng-container>
                   </span>
                 </div>
@@ -1283,7 +1292,7 @@
       </p>
       <p class="report-mapInfo">
         <span>{{ 'universal_activityData_distance' | translate }}：</span>
-        {{ +mapInfo.distance * 1000 | distanceSibs: [unit, true] }}
+        {{ +mapInfo.distance * 1000 | distanceSibs: { unitType: unit, showUnit: true } }}
       </p>
       <p class="report-mapInfo">
         <span>{{ 'universal_activityData_avgIncline' | translate }}：</span>

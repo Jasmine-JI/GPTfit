@@ -28,7 +28,6 @@ import { GroupSportsReportInfo } from '../../../../../shared/classes/sports-repo
 import { AllGroupMember } from '../../../../../shared/classes/all-group-member';
 import { SportsParameter } from '../../../../../shared/models/sports-report';
 import { mi, ft, lb } from '../../../../../shared/models/bs-constant';
-import { Unit } from '../../../../../shared/enum/value-conversion';
 import { SportsAnalysisSort } from '../../../../../shared/classes/sports-report/sports-analysis-sort';
 import { ProfessionalAnalysisOption } from '../../../../professional/classes/professional-analysis-option';
 import { ProfessionalChartAnalysisOption } from '../../../../professional/classes/professional-chart-analysis-option';
@@ -49,7 +48,7 @@ import {
   HashIdService,
   HintDialogService,
 } from '../../../../../core/services';
-import { BenefitTimeStartZone } from '../../../../../core/enums/common';
+import { BenefitTimeStartZone, DataUnitType } from '../../../../../core/enums/common';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 
@@ -132,7 +131,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   /**
    * 使用者使用之數據單位（公制/英制）
    */
-  userUnit = this.userService.getUser().userProfile.unit as Unit;
+  userUnit = this.userService.getUser().userProfile.unit as DataUnitType;
 
   /**
    * 團體分析排序相關
@@ -207,7 +206,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
   readonly SportType = SportType;
   readonly GroupLevel = GroupLevel;
-  readonly Unit = Unit;
+  readonly DataUnitType = DataUnitType;
   readonly AnalysisSportsColumn = AnalysisSportsColumn;
   readonly muscleMetricUnit = 'kg*rep*set';
   readonly muscleImperialUnit = 'lb*rep*set';
@@ -708,7 +707,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * @author kidin-1110324
    */
   getPerAvgData(infoData: any, key: string) {
-    const isMetric = this.userUnit === Unit.metric;
+    const isMetric = this.userUnit === DataUnitType.metric;
     const sportType = this.reportCondition.sportType as SportType;
     const result = {
       value: 0,
@@ -795,7 +794,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   getPersonalData(data: any, key: string) {
     if (this.uiFlag.progress !== 100) return 0;
 
-    const isMetric = this.userUnit === Unit.metric;
+    const isMetric = this.userUnit === DataUnitType.metric;
     const sportType = this.reportCondition.sportType as SportType;
     let result: string | number = 0;
     const value = data[key];
@@ -1107,7 +1106,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   getSpeedPaceUnit() {
     const { sportType } = this.reportCondition;
-    const isMetric = this.userUnit === Unit.metric;
+    const isMetric = this.userUnit === DataUnitType.metric;
     switch (sportType) {
       case SportType.run:
         return isMetric ? 'min/km' : 'min/mi';

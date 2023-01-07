@@ -1,0 +1,163 @@
+<section class="flexCol">
+  <div class="flexRow switch__tab" [class.switch__range__type]="calenderType === 'range'">
+    <button
+      class="calender__type__tab"
+      [class.calender__type__tab--active]="calenderType === 'single'"
+      (click)="switchTab('single')"
+    >
+      {{ 'universal_class_singleClassReport' | translate }}
+    </button>
+    <button
+      class="calender__type__tab"
+      [class.calender__type__tab--active]="calenderType === 'range'"
+      (click)="switchTab('range')"
+    >
+      {{ 'universal_class_rangeClassReport' | translate }}
+    </button>
+  </div>
+  <div class="flexRow calender__list__container">
+    <div
+      [ngClass]="{
+        flexCol: true,
+        single__calender: calenderType === 'single',
+        range__calender: calenderType === 'range'
+      }"
+      *ngIf="firstCalenderList"
+    >
+      <div *ngTemplateOutlet="monthSwitcher; context: { index: 0 }"></div>
+      <div class="flexRow calender__container">
+        <div
+          *ngTemplateOutlet="calender; context: { calenderList: firstCalenderList, index: 0 }"
+        ></div>
+        <ng-container *ngIf="calenderType === 'range'">
+          <div *ngTemplateOutlet="monthSwitcher; context: { index: 1 }"></div>
+        </ng-container>
+        <ng-container *ngIf="calenderType === 'range'">
+          <div
+            *ngTemplateOutlet="calender; context: { calenderList: secondCalenderList, index: 1 }"
+          ></div>
+        </ng-container>
+      </div>
+    </div>
+    <ul class="flexCol class__list" *ngIf="calenderType === 'single'">
+      <ng-container *ngIf="oneDayClassList.length === 0">
+        <li
+          *ngTemplateOutlet="
+            classItem;
+            context: {
+              noData: true
+            }
+          "
+        ></li>
+      </ng-container>
+      <ng-container *ngFor="let _class of oneDayClassList; let _index = index">
+        <li
+          *ngTemplateOutlet="
+            classItem;
+            context: {
+              noData: false,
+              activity: _class,
+              index: _index
+            }
+          "
+        ></li>
+      </ng-container>
+    </ul>
+  </div>
+</section>
+
+<ng-template #calender let-calenderList="calenderList" let-index="index">
+  <div class="calender__grid" [class.calender__divide]="index === 1">
+    <span class="calender__item">Su</span>
+    <span class="calender__item">Mo</span>
+    <span class="calender__item">Tu</span>
+    <span class="calender__item">We</span>
+    <span class="calender__item">Th</span>
+    <span class="calender__item">Fr</span>
+    <span class="calender__item">Sa</span>
+    <span
+      [ngClass]="{
+        calender__item: true,
+        calender__day: true,
+        today__mark: _list?.startTimestamp === currentTimestamp,
+        have__class__mark: _list?.haveClass,
+        focus__one__day:
+          calenderType === 'single' && _list?.startTimestamp === selectStartTimestamp,
+        day__in__range:
+          calenderType === 'range' &&
+          _list?.startTimestamp > selectStartTimestamp &&
+          _list?.endTimestamp < selectEndTimestamp,
+        focus__start__day:
+          calenderType === 'range' && _list?.startTimestamp === selectStartTimestamp,
+        focus__end__day: calenderType === 'range' && _list?.endTimestamp === selectEndTimestamp
+      }"
+      (click)="selectDate(_list)"
+      *ngFor="let _list of calenderList"
+    >
+      {{ _list?.day || ' ' }}
+    </span>
+  </div>
+</ng-template>
+
+<ng-template #classItem let-noData="noData" let-activity="activity" let-index="index">
+  <li
+    [ngClass]="{
+      flexRow: true,
+      class__item: true,
+      'class__item--disabled': noData,
+      'class__item--focus': index === selectClassIndex
+    }"
+    (click)="selectClass(index)"
+  >
+    <div
+      class="item__bar acitivty__item__component"
+      [class.item__bar--active]="index === selectClassIndex"
+      [class.item__bar--disabled]="noData"
+    ></div>
+    <span class="acitivty__item__component" *ngIf="noData">
+      {{ 'universal_status_noData' | translate }}
+    </span>
+    <ng-container *ngIf="!noData">
+      <span class="acitivty__item__component" [class.item--focous]="index === selectClassIndex">
+        {{ activity.activityInfoLayer.startTime | timeFormat: 'HH:mm' }}
+      </span>
+      <i
+        class="acitivty__item__component"
+        [class]="activity.activityInfoLayer.type | sportTypeIcon"
+        [class.item--focous]="index === selectClassIndex"
+        style="font-size: 24px"
+      ></i>
+      <span class="acitivty__item__component" [class.item--focous]="index === selectClassIndex">
+        {{ activity.fileInfo.dispName }}
+      </span>
+    </ng-container>
+  </li>
+</ng-template>
+
+<ng-template #monthSwitcher let-index="index">
+  <div class="flexRow month__switcher" [class.pc__hide__month]="index === 1">
+    <button class="month__switch__button" (click)="switchPrev()">
+      <i class="icon-svg_web-icon_p1_073-level_fold bold__icon"></i>
+    </button>
+    <span
+      [ngClass]="{
+        calender__range__month: calenderType === 'range',
+        mobile__hide__month: calenderType === 'range' && index === 1
+      }"
+    >
+      {{ firstCalenderList[15].startTimestamp | timeFormat: 'YYYY-MM' }}
+    </span>
+    <span
+      [ngClass]="{
+        calender__range__month: calenderType === 'range',
+        mobile__hide__month: calenderType === 'range' && index === 0
+      }"
+      *ngIf="calenderType === 'range'"
+    >
+      {{ secondCalenderList[15].startTimestamp | timeFormat: 'YYYY-MM' }}
+    </span>
+    <button class="month__switch__button" (click)="switchNext()">
+      <i class="icon-svg_web-icon_p1_074-level_unfold bold__icon"></i>
+    </button>
+  </div>
+</ng-template>

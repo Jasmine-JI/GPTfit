@@ -6,7 +6,7 @@ import {
   NodejsApiService,
   HintDialogService,
 } from '../../../../core/services';
-import { A3FormatPipe } from '../../../../shared/pipes/a3-format.pipe';
+import { A3FormatPipe } from '../../../../core/pipes/a3-format.pipe';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
@@ -255,7 +255,7 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
   // 時間補零-kidin-1081211
   fillTwoDigits(num) {
     const timeStr = '0' + Math.floor(num);
-    return timeStr.substr(-2);
+    return timeStr.slice(-2);
   }
 
   ngOnDestroy(): void {

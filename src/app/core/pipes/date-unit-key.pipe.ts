@@ -1,7 +1,10 @@
-import { Pipe, PipeTransform, NgModule } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 import { DateUnit } from '../enums/common/date-unit.enum';
 
-@Pipe({ name: 'dateUnitKey' })
+@Pipe({
+  name: 'dateUnitKey',
+  standalone: true,
+})
 export class DateUnitKeyPipe implements PipeTransform {
   constructor() {}
 
@@ -27,9 +30,3 @@ export class DateUnitKeyPipe implements PipeTransform {
     }
   }
 }
-
-@NgModule({
-  declarations: [DateUnitKeyPipe],
-  exports: [DateUnitKeyPipe],
-})
-export class DateUnitKeyModule {}

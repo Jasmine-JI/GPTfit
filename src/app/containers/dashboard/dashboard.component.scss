@@ -77,18 +77,6 @@ $alert-icon-color: rgba(255, 56, 56, 1);
   background-color: #fff;
 }
 
-.alatech-ribbon {
-  width: 100%;
-  height: 90px;
-  opacity: 0.9;
-  background-color: #66abdd;
-}
-
-.alatech-ribbon--bg-blue {
-  opacity: 1;
-  background-color: #80d6ff;
-}
-
 .edit-event__form {
   position: relative;
 }
@@ -145,7 +133,7 @@ $alert-icon-color: rgba(255, 56, 56, 1);
   color: #fff;
   height: 60px;
   padding: 0 10px 0 15px;
-  position: fixed;
+  position: absolute;
   top: 0;
   display: flex;
   -webkit-justify-content: space-between;

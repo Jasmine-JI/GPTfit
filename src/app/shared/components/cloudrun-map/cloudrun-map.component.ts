@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Unit } from '../../enum/value-conversion';
+import { DataUnitType } from '../../../core/enums/common';
 import { mi } from '../../models/bs-constant';
 import { ProfessionalService } from '../../../containers/professional/services/professional.service';
 import { SelectDate } from '../../models/utils-type';
@@ -25,6 +25,7 @@ import {
 } from '../../../core/services';
 import { RacerInfo, RacerPositionList } from '../../../core/models/compo';
 import { displayGroupLevel } from '../../../core/utils';
+import { SportType } from '../../../core/enums/sports';
 
 // 若google api掛掉則建物件代替，避免造成gptfit卡住。
 const google: any = (window as any).google;
@@ -45,7 +46,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() altitude: Array<number>;
   @Input() userList: Array<any>;
   @Input() userId: number;
-  @Input() unit: Unit;
+  @Input() unit: DataUnitType;
   @Input() selectDate: SelectDate;
   @Input() groupId: string;
   @Input() mapId: number;
@@ -104,6 +105,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   lastUnloadRacer: number | null = null;
   currentFocusRacer: number;
   racerPositionList: RacerPositionList = new Map();
+  readonly SportType = SportType;
 
   constructor(
     private api21xxService: Api21xxService,

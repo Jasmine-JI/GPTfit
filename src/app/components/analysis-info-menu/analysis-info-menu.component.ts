@@ -1,4 +1,4 @@
-import { NgModule, Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { HashIdService } from '../../core/services';
 import { ReportCondition } from '../../shared/models/report-condition';
 import { QueryString } from '../../shared/enum/query-string';
@@ -10,6 +10,8 @@ import { ReportDateUnit } from '../../shared/classes/report-date-unit';
   selector: 'app-analysis-info-menu',
   templateUrl: './analysis-info-menu.component.html',
   styleUrls: ['./analysis-info-menu.component.scss'],
+  standalone: true,
+  imports: [CommonModule, TranslateModule],
 })
 export class AnalysisInfoMenuComponent implements OnInit {
   /**
@@ -148,10 +150,3 @@ export class AnalysisInfoMenuComponent implements OnInit {
     return { x: `${newX}px`, y: `${newY}px` };
   }
 }
-
-@NgModule({
-  declarations: [AnalysisInfoMenuComponent],
-  exports: [AnalysisInfoMenuComponent],
-  imports: [CommonModule, TranslateModule],
-})
-export class AnalysisInfoMenuModule {}

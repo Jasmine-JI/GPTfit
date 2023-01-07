@@ -89,9 +89,9 @@
   }
 }
 
-@media (max-width: 1150px) {
+@media (max-width: 767px) {
   .fitWindow {
-    flex-direction: column;
+    flex-direction: column !important;
   }
 
   .reportName {

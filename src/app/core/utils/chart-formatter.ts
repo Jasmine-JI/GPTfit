@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { Unit } from '../../shared/enum/value-conversion';
+import { DataUnitType } from '../enums/common';
 import { mi, ft } from '../../shared/models/bs-constant';
 import { mathRounding } from './index';
 import { getPaceUnit, paceSecondTimeFormat } from './sports';
@@ -7,7 +7,6 @@ import { SportType } from '../../shared/enum/sports';
 
 /**
  * 預設x軸日期顯示格式(highchart用)
- * @author kidin=1110418
  */
 export function getDateTimeLabelFormats() {
   return {
@@ -24,7 +23,6 @@ export function getDateTimeLabelFormats() {
 
 /**
  * 將時間轉為所需格式(HH:mm:ss)(highchart用)
- * @author kidin=1110418
  */
 export function timeFormatter(value: number | undefined = undefined) {
   const yVal = value !== undefined ? value : this.y;
@@ -50,7 +48,6 @@ export function timeFormatter(value: number | undefined = undefined) {
 
 /**
  * 用於圖表y軸時間轉換成指定格式(HH:mm:ss)
- * @author kidin-1110418
  */
 export function yAxisTimeFormat() {
   return timeFormatter.bind(this)(this.value);
@@ -58,7 +55,6 @@ export function yAxisTimeFormat() {
 
 /**
  * 用於圖表y軸時間轉換成指定格式(HH:mm:ss)
- * @author kidin-1110418
  */
 export function yAxisPercentageFormat() {
   return `${this.value}%`;
@@ -66,7 +62,6 @@ export function yAxisPercentageFormat() {
 
 /**
  * 用於非心率區間相關圖表浮動框時間轉換成指定格式
- * @author kidin-1110418
  */
 export function tooltipFormat() {
   const dateRangeIndex = this.point.index;
@@ -77,7 +72,6 @@ export function tooltipFormat() {
 
 /**
  * 用於非心率區間相關圖表浮動框時間轉換成指定格式
- * @author kidin-1110418
  */
 export function tooltipTimeFormat() {
   const zoneTime = timeFormatter.bind(this);
@@ -89,7 +83,6 @@ export function tooltipTimeFormat() {
 
 /**
  * 用於心率區間相關圖表浮動框時間轉換成指定格式
- * @author kidin-1110418
  */
 export function tooltipHrZoneFormat() {
   const zoneTime = timeFormatter.bind(this);
@@ -118,7 +111,6 @@ export function tooltipHrZoneFormat() {
 
 /**
  * 用於百分比相關圖表浮動框顯示
- * @author kidin-1110418
  */
 export function tooltipPercentageFormat() {
   const dateRangeIndex = this.point.index;
@@ -129,10 +121,10 @@ export function tooltipPercentageFormat() {
 
 /**
  * 依使用者單位取得距離相關圖表軸線格式
- * @param unit {Unit}-使用者使用單位
+ * @param unit {DataUnitType}-使用者使用單位
  */
-export function distanceAxisFormat(unit: Unit) {
-  const isMetric = unit === Unit.metric;
+export function distanceAxisFormat(unit: DataUnitType) {
+  const isMetric = unit === DataUnitType.metric;
   let formatter: () => string;
   if (isMetric) {
     formatter = function () {
@@ -153,10 +145,10 @@ export function distanceAxisFormat(unit: Unit) {
 
 /**
  * 依使用者單位與數值大小，距離相關圖表提示框格式
- * @param unit {Unit}-使用者使用單位
+ * @param unit {DataUnitType}-使用者使用單位
  */
-export function distanceTooltipFormat(unit: Unit) {
-  const isMetric = unit === Unit.metric;
+export function distanceTooltipFormat(unit: DataUnitType) {
+  const isMetric = unit === DataUnitType.metric;
   let formatter: () => string;
   if (isMetric) {
     formatter = function () {
@@ -246,7 +238,7 @@ export function bodyWeightTooltip(isMetric = true) {
 /**
  * 用於個人配速圖表浮動框轉換成指定格式
  */
-export function paceTooltipFormatter(sportType: SportType, userUnit: Unit) {
+export function paceTooltipFormatter(sportType: SportType, userUnit: DataUnitType) {
   const unit = getPaceUnit(sportType, userUnit);
   const formatter = function () {
     const [baseMaxPaceInfo, baseAvgPaceInfo, compareMaxPaceInfo, compareAvgPaceInfo] = this.points;

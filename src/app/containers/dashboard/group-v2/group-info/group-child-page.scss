@@ -456,7 +456,7 @@ mat-footer-cell:last-child {
 
 /**************************************** media *********************************/
 
-@media (max-width: 470px) {
+@media (max-width: 565px) {
   .sportEfficiencyArea {
     flex-direction: column;
   }
@@ -469,7 +469,9 @@ mat-footer-cell:last-child {
   .bodyQuality {
     width: 100%;
   }
+}
 
+@media (max-width: 470px) {
   .hideColumn {
     display: none;
   }

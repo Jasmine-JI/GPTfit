@@ -5,6 +5,7 @@ export type DisplayPage = 'cloudrun' | 'sport' | 'lifeTracking' | 'sportReport';
 export const costTimeColor = 'rgba(188, 226, 58, 1)';
 export const strokeNumColor = 'rgba(53, 168, 201, 1)';
 export const caloriesColor = 'rgba(248, 181, 81, 1)';
+export const avgHrColor = 'rgba(201, 81, 248, 1)';
 export const distanceColor = 'rgba(110, 155, 255, 1)';
 export const rightMoveColor = 'rgba(110, 168, 255, 1)';
 export const leftMoveColor = 'rgba(206, 110, 255, 1)';
@@ -37,6 +38,19 @@ export const zoneColor = [
   'rgba(243, 179, 83, 1)',
   'rgba(243, 105, 83, 1)',
   'rgba(239, 56, 150, 1)',
+];
+
+/**
+ * 心率或閾值各區間，被比較的代表色（用於兩個不同區間數據比較）
+ */
+export const zoneCompareColor = [
+  'rgba(166, 206, 247, 1)',
+  'rgba(154, 241, 249, 1)',
+  'rgba(196, 243, 173, 1)',
+  'rgba(249, 246, 161, 1)',
+  'rgba(241, 211, 166, 1)',
+  'rgba(249, 172, 160, 1)',
+  'rgba(244, 123, 225, 1)',
 ];
 
 /**

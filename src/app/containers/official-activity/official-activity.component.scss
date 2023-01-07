@@ -39,6 +39,7 @@ $alert-icon-color: rgba(255, 56, 56, 1);
 }
 
 .page__container {
+  position: static;
   justify-content: center;
   overflow: hidden;
 }

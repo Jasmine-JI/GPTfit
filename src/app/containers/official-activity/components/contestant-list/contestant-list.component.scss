@@ -420,18 +420,20 @@ $edit-button-size: 30px;
 }
 
 .classification__area {
+  display: block;
+
   > h6 {
     font-weight: bold;
   }
+}
 
-  > div {
-    display: flex;
-    align-items: center;
-    margin-left: 10px;
+.list__condition {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
 
-    > input {
-      cursor: pointer;
-    }
+  > input {
+    cursor: pointer;
   }
 }
 

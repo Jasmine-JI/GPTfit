@@ -3,7 +3,6 @@ import {
   OnInit,
   AfterViewInit,
   OnDestroy,
-  NgModule,
   Input,
   Output,
   EventEmitter,
@@ -14,11 +13,11 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { SportType } from '../../core/enums/sports';
 import {
-  SportTypeIconModule,
-  SportTimeModule,
-  SportPaceSibsModule,
-  SpeedPaceUnitModule,
-  GetSplitStringModule,
+  SportTypeIconPipe,
+  SportTimePipe,
+  SportPaceSibsPipe,
+  SpeedPaceUnitPipe,
+  GetSplitStringPipe,
 } from '../../core/pipes';
 import { FileSimpleInfo } from '../../core/models/compo';
 import { DataUnitType } from '../../core/enums/common';
@@ -29,6 +28,16 @@ const scrollDisplacement = 145;
   selector: 'app-sports-file-road',
   templateUrl: './sports-file-road.component.html',
   styleUrls: ['./sports-file-road.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    TranslateModule,
+    SportTypeIconPipe,
+    SportTimePipe,
+    SportPaceSibsPipe,
+    SpeedPaceUnitPipe,
+    GetSplitStringPipe,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SportsFileRoadComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -151,17 +160,3 @@ export class SportsFileRoadComponent implements OnInit, AfterViewInit, OnDestroy
     this.intersectionObserver.disconnect();
   }
 }
-@NgModule({
-  imports: [
-    CommonModule,
-    TranslateModule,
-    SportTypeIconModule,
-    SportTimeModule,
-    SportPaceSibsModule,
-    SpeedPaceUnitModule,
-    GetSplitStringModule,
-  ],
-  declarations: [SportsFileRoadComponent],
-  exports: [SportsFileRoadComponent],
-})
-export class SportsFileRoadModule {}

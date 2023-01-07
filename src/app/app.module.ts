@@ -17,9 +17,6 @@ import { MatPaginatorIntl } from '@angular/material/paginator';
 import { CustomMatPaginatorIntl } from './core/classes/custom-mat-paginator-intl';
 // import { ServiceWorkerModule } from '@angular/service-worker';
 import { CommonModule } from '@angular/common';
-import { A3FormatPipe } from './shared/pipes/a3-format.pipe';
-import { GroupIdSlicePipe } from './shared/pipes/group-id-slice.pipe';
-import { LongTextPipe } from './shared/pipes/long-text.pipe';
 
 export function startupServiceFactory(startupService: StartupService) {
   return () => startupService.load();
@@ -52,9 +49,6 @@ export function createTranslateLoader(http: HttpClient) {
     StartupService,
     AuthGuard,
     SigninGuard,
-    A3FormatPipe,
-    GroupIdSlicePipe,
-    LongTextPipe,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

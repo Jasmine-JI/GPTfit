@@ -15,9 +15,24 @@
       *ngFor="let _list of fileList; let _index = index"
       (click)="selectAssignFile(_index)"
     >
-      <span class="file__name">{{ _list.dispName }}</span>
+      <span class="file__name">
+        <ng-container *ngIf="_list.type === SportType.complex">
+          {{ 'universal_activityData_allLaps' | translate }}
+        </ng-container>
+        <ng-container *ngIf="_list.type !== SportType.complex">
+          {{ _list.dispName }}
+        </ng-container>
+      </span>
       <div class="flexRow one__file__info">
-        <i class="sport__type__icon" [class]="_list.type | sportTypeIcon"></i>
+        <i
+          class="sport__type__icon"
+          [class]="_list.type | sportTypeIcon"
+          *ngIf="_list.type !== SportType.complex"
+        ></i>
+        <i
+          class="sport__type__icon icon-svg_web-icon_p4_015-select_all"
+          *ngIf="_list.type === SportType.complex"
+        ></i>
         <div class="flexCol file__info__content">
           <span class="info__data__row">
             <i class="icon-svg_web-icon_p1_026-time total__second__icon"></i>
@@ -40,7 +55,9 @@
             "
           >
             <i class="icon-svg_web-icon_p2_020-speed speed__icon"></i>
-            {{ _list.avgSpeed | sportPaceSibs: [_list.type, userUnit, 1] }}
+            {{
+              _list.avgSpeed | sportPaceSibs: { sportType: _list.type, userUnit, showUnit: false }
+            }}
             <span class="data__unit">
               <ng-container *ngIf="_list.type === SportType.cycle">
                 {{ _list.type | speedPaceUnit: userUnit }}

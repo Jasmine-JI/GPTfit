@@ -3,11 +3,9 @@ import {
   OnInit,
   OnChanges,
   OnDestroy,
-  NgModule,
   CUSTOM_ELEMENTS_SCHEMA,
   Input,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, fromEvent, Subscription, merge } from 'rxjs';
@@ -20,6 +18,9 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'app-feature-noun-tips',
   templateUrl: './feature-noun-tips.component.html',
   styleUrls: ['./feature-noun-tips.component.scss'],
+  standalone: true,
+  imports: [CommonModule, TranslateModule, MatIconModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeatureNounTipsComponent implements OnInit, OnChanges, OnDestroy {
@@ -91,11 +92,3 @@ export class FeatureNounTipsComponent implements OnInit, OnChanges, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 }
-
-@NgModule({
-  declarations: [FeatureNounTipsComponent],
-  exports: [FeatureNounTipsComponent],
-  imports: [CommonModule, TranslateModule, MatIconModule],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-})
-export class FeatureNounTipsModule {}

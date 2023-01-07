@@ -13,7 +13,7 @@ import {
   HintDialogService,
   ApiCommonService,
 } from '../../../../core/services';
-import { Unit } from '../../../../shared/enum/value-conversion';
+import { DataUnitType } from '../../../../core/enums/common';
 import {
   ZoneTrendData,
   DiscolorTrendData,
@@ -89,7 +89,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   userInfo = {
     id: null,
-    unit: <Unit>0,
+    unit: <DataUnitType>0,
     name: null,
     icon: null,
   };
@@ -169,6 +169,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     urlList: [],
     clickList: [],
   };
+
+  readonly SportType = SportType;
 
   constructor(
     private reportService: ReportService,

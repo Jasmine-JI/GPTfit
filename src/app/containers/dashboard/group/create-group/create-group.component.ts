@@ -13,12 +13,7 @@ import dayjs from 'dayjs';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import {
-  getUrlQueryStrings,
-  imageToDataUri,
-  getPartGroupId,
-  displayGroupLevel,
-} from '../../../../core/utils';
+import { getUrlQueryStrings, imageToDataUri, displayGroupLevel } from '../../../../core/utils';
 
 /**
  * 新建的群組類別

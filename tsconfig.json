@@ -15,6 +15,7 @@
     "typeRoots": ["node_modules/@types"],
     "lib": ["ES6", "dom", "esnext.asynciterable"],
     "module": "esnext",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "useDefineForClassFields": false
   }
 }

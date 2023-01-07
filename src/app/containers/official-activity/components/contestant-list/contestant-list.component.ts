@@ -15,12 +15,9 @@ import {
 } from '../../models/activity-content';
 import dayjs from 'dayjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { PaidStatusPipe } from '../../pipes/paid-status.pipe';
-import { ShippedStatusPipe } from '../../pipes/shipped-status.pipe';
-import { SportTimePipe } from '../../../../shared/pipes/sport-time.pipe';
 import { TranslateService } from '@ngx-translate/core';
 import { Sex } from '../../../../shared/enum/personal';
-import { AgePipe } from '../../../../shared/pipes/age.pipe';
+import { AgePipe, SportTimePipe, PaidStatusPipe, ShippedStatusPipe } from '../../../../core/pipes';
 import { getCurrentTimestamp, deepCopy } from '../../../../core/utils';
 import { AuthService, NodejsApiService, ApiCommonService } from '../../../../core/services';
 

@@ -4,7 +4,7 @@ import { HashIdService, Api11xxService, HintDialogService } from '../../../../..
 import { Router } from '@angular/router';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { GroupIdSlicePipe } from '../../../../../shared/pipes/group-id-slice.pipe';
+import { GroupIdSlicePipe } from '../../../../../core/pipes';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';

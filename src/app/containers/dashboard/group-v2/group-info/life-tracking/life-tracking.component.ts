@@ -25,7 +25,7 @@ import {
 import { ProfessionalService } from '../../../../professional/services/professional.service';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
 import { mi } from '../../../../../shared/models/bs-constant';
-import { Unit } from '../../../../../shared/enum/value-conversion';
+import { DataUnitType } from '../../../../../core/enums/common';
 import { GroupLevel, SettingObj } from '../../../../dashboard/models/group-detail';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { stepColor } from '../../../../../shared/models/chart-data';
@@ -235,7 +235,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   userInfo = {
     id: null,
     accessRight: null,
-    unit: <Unit>Unit.metric,
+    unit: <DataUnitType>DataUnitType.metric,
   };
 
   /**
@@ -258,7 +258,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   };
 
   readonly tableLength = 8; // 分析列表預設顯示長度
-  readonly unitEnum = Unit;
+  readonly unitEnum = DataUnitType;
   readonly mi = mi;
   dateLen = 0; // 報告橫跨天數/週數
   previewUrl: string;

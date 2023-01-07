@@ -3,7 +3,6 @@ import {
   OnInit,
   OnChanges,
   OnDestroy,
-  NgModule,
   Input,
   Output,
   EventEmitter,
@@ -18,7 +17,6 @@ import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TranslateModule } from '@ngx-translate/core';
 import { MapReservedSpace, RacerMarkInGoogleMap } from '../../core/classes';
-import { deepCopy } from '../../core/utils';
 import {
   TAIWAN_CENTER_LATLNG,
   MAP_START_ICON_PATH,
@@ -37,6 +35,8 @@ const google: any = (window as any).google || { maps: { OverlayView: null } };
   selector: 'app-google-map',
   templateUrl: './google-map.component.html',
   styleUrls: ['./google-map.component.scss'],
+  standalone: true,
+  imports: [CommonModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GoogleMapComponent implements OnInit, OnChanges, OnDestroy {
@@ -456,10 +456,3 @@ export class GoogleMapComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy(): void {}
 }
-
-@NgModule({
-  declarations: [GoogleMapComponent],
-  exports: [GoogleMapComponent],
-  imports: [CommonModule, TranslateModule],
-})
-export class GoogleMapModule {}
