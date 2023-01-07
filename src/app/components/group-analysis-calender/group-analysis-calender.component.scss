@@ -1,0 +1,277 @@
+@import 'transition.scss';
+@import 'z-index.scss';
+@import 'font.scss';
+@import 'flex-center.scss';
+@import 'overflow-scroll.scss';
+
+$calender-focus-color: rgba(53, 126, 189, 1);
+$calender-default-red: rgba(235, 104, 119, 1);
+$calender-pot-size: 3px;
+$month__button__width: 60px;
+$range-day-border-radius: calc(#{$month__button__width} / 2);
+
+@mixin range-focus-day() {
+  color: white;
+  background-color: $calender-focus-color;
+  @include transition(background-color);
+
+  &:after {
+    border-color: white;
+  }
+}
+
+.switch__tab {
+  position: relative;
+  border-bottom: 1px solid rgba(150, 150, 150, 1);
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+
+  &:after {
+    content: '';
+    position: absolute;
+    display: inline-block;
+    width: 50%;
+    height: 3px;
+    background-color: $calender-default-red;
+    bottom: 0;
+    @include transition(transform);
+  }
+}
+
+.switch__range__type {
+  &:after {
+    transform: translateX(100%);
+    @include transition(transform);
+  }
+}
+
+.calender__type__tab {
+  @include bold-font(16px);
+  font-size: 1rem;
+  color: rgba(150, 150, 150, 1);
+  width: 50%;
+
+  &:hover {
+    background-color: rgba(200, 200, 200, 0.2);
+  }
+}
+
+.calender__type__tab--active {
+  color: rgba(50, 50, 50, 1);
+  background: rgba(250, 231, 231, 1);
+}
+
+.month__switcher {
+  align-items: center;
+  justify-content: space-between;
+  color: rgba(0, 71, 112, 1);
+  font-weight: bold;
+}
+
+.month__switch__button {
+  width: $month__button__width;
+  height: 20px;
+  z-index: nth($normal-index, 1);
+
+  &:hover {
+    background-color: rgba(200, 200, 200, 0.2);
+  }
+}
+
+.single__calender {
+  width: 50%;
+}
+
+.range__calender {
+  width: 100%;
+}
+
+.calender__range__month {
+  text-align: center;
+  width: calc(50% - #{$month__button__width});
+
+  &:first-of-type {
+    transform: translateX(calc(-#{$month__button__width} / 2));
+  }
+
+  &:last-of-type {
+    transform: translateX(calc(#{$month__button__width} / 2));
+  }
+}
+
+.calender__grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(7, auto);
+  font-weight: bold;
+  padding: 0 5px;
+}
+
+.calender__divide {
+  border-left: 1px solid rgba(200, 200, 200, 1);
+}
+
+.calender__item {
+  @include center();
+}
+
+.calender__day {
+  cursor: pointer;
+
+  &:hover {
+    outline: rgba(53, 126, 189, 0.5) solid 1px;
+  }
+}
+
+.class__list {
+  width: 50%;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  max-height: 200px;
+  @include overflow-y-scroll();
+}
+
+.class__item {
+  height: 50px;
+  align-items: center;
+  cursor: pointer;
+  padding: 5px;
+  @include transition(background-color);
+
+  &:hover {
+    background-color: rgba(235, 104, 119, 0.2);
+    @include transition(background-color);
+  }
+}
+
+.class__item--disabled {
+  pointer-events: none;
+}
+
+.class__item--focus {
+  background-color: $calender-default-red;
+  pointer-events: none;
+  @include transition(background-color);
+}
+
+.item__bar {
+  position: relative;
+  z-index: nth($normal-index, 1);
+  width: 5px;
+  height: 40px;
+  background-color: $calender-default-red;
+  @include transition(background-color);
+}
+
+.item__bar--active {
+  background-color: white;
+  @include transition(background-color);
+}
+
+.item__bar--disabled {
+  background-color: rgba(150, 150, 150, 1);
+}
+
+.item--focous {
+  color: white;
+}
+
+.acitivty__item__component {
+  margin-right: 15px;
+}
+
+.have__class__mark {
+  position: relative;
+
+  &:after {
+    content: '';
+    width: $calender-pot-size;
+    height: $calender-pot-size;
+    border: $calender-pot-size solid $calender-default-red;
+    border-radius: $calender-pot-size;
+    position: absolute;
+    top: 3px;
+    left: calc(50% + 10px);
+  }
+}
+
+.focus__one__day {
+  background-color: $calender-focus-color;
+  color: white;
+  border-radius: 5px;
+  @include transition(background-color);
+
+  &:after {
+    border-color: white;
+  }
+}
+
+.today__mark {
+  border-radius: 5px;
+  border: 2px solid rgba(53, 126, 189, 0.5);
+}
+
+.bold__icon {
+  font-weight: bold;
+}
+
+.day__in__range {
+  background-color: rgba(53, 126, 189, 0.4);
+}
+
+.focus__start__day {
+  @include range-focus-day();
+  border-top-left-radius: $range-day-border-radius;
+  border-bottom-left-radius: $range-day-border-radius;
+}
+
+.focus__end__day {
+  @include range-focus-day();
+  border-top-right-radius: $range-day-border-radius;
+  border-bottom-right-radius: $range-day-border-radius;
+}
+
+.pc__hide__month {
+  display: none;
+}
+
+/******************************** media **************************/
+
+@media (max-width: 767px) {
+  .calender__list__container {
+    flex-direction: column;
+  }
+
+  .single__calender,
+  .class__list {
+    width: 100%;
+  }
+}
+
+@media (max-width: 575px) {
+  .calender__container {
+    flex-direction: column;
+  }
+
+  .month__switcher {
+    margin-top: 10px;
+  }
+
+  .calender__range__month {
+    width: calc(100% - 2 * #{$month__button__width});
+    transform: translateX(0) !important;
+  }
+
+  .pc__hide__month {
+    display: flex;
+  }
+
+  .mobile__hide__month {
+    display: none;
+  }
+
+  .calender__divide {
+    border: none;
+  }
+}

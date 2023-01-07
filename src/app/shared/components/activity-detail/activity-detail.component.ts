@@ -283,6 +283,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     'distanceMeters',
     'complexCadence',
     'complexWatt',
+    'feedbackWatt',
   ];
 
   constructor(
@@ -1001,9 +1002,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       { pointSecond: beforePointSecond } = point[pointLen - 2] || { pointSecond: undefined };
     // 若最後兩點時間相同，則將最後兩點進行均化
     if (pointSecond === beforePointSecond) {
-      const repeatPoint = point.splice(pointLen - 1, pointLen)[0],
-        newPointLen = point.length,
-        lastPoint = point[newPointLen - 1];
+      const repeatPoint = point.splice(pointLen - 1, pointLen)[0];
+      const newPointLen = point.length;
+      const lastPoint = point[newPointLen - 1];
       for (const key in lastPoint) {
         if (
           Object.prototype.hasOwnProperty.call(lastPoint, key) &&
@@ -1038,7 +1039,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       longitudeDegrees: null,
     };
     const convertDegree: Array<[number, number]> = [];
-
     point.forEach((_point, _index) => {
       // point解析度調整(預埋)
       if (_index % this.uiFlag.resolution === 0) {
@@ -1292,7 +1292,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   /**
    * 根據運動類別取得趨勢圖表所需顯示的項目
    * @param sportType {SportType}-運動類別
-   * @author kidin-1100205
    */
   getCountList(sportType: SportType): Array<Array<string>> {
     let arr: Array<Array<string>>;
@@ -1304,6 +1303,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['altitude', 'altitudeMeters'],
           ['cadence', 'runCadence'],
           ['speed', 'speed'],
+          ['feedbackWatt', 'feedbackWatt'],
         ];
         break;
       case SportType.cycle:
@@ -1314,6 +1314,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['cadence', 'cycleCadence'],
           ['power', 'cycleWatt'],
           ['speed', 'speed'],
+          ['feedbackWatt', 'feedbackWatt'],
         ];
         break;
       case SportType.weightTrain:

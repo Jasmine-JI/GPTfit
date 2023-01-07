@@ -104,34 +104,7 @@
             {{ 'universal_activityData_perCapita' | translate }} BMI
           </p>
         </div>
-        <!-- 先不顯示FFMI、人均步數與人均距離
-        <div *ngIf="info?.FFMI">
-          <span class="report-summaryData">
-            {{ (info.FFMI / info.FFMIEffectCount) || 0 | number: '1.0-1' }}
-          </span>
-          <p class="report-summaryDescription">
-            {{ 'universal_activityData_perCapita' | translate }} FFMI
-          </p>
-        </div>
-        <div>
-          <span class="report-summaryData">
-            {{ (info.totalStep / info.totalStepEffectCount) || 0 | thousandConversion: ' ' }}
-          </span>
-          <p class="report-summaryDescription">
-            {{ 'universal_activityData_perCapita' | translate }}
-            {{ 'universal_activityData_activityTotalSteps' | translate }}
-          </p>
-        </div>
-        <div>
-          <span class="report-summaryData">
-            {{ (info.totalDistanceMeters / info.totalDistanceMetersEffectCount) || 0 | distanceSibs: [userInfo.unit, true] }}
-          </span>
-          <p class="report-summaryDescription">
-            {{ 'universal_activityData_perCapita' | translate }}
-            {{ 'universal_userProfile_walkingDistance' | translate }}
-          </p>
-        </div>
-      --></div>
+      </div>
     </section>
     <section class="report-displaySection">
       <div class="flexRow cardTitle">
@@ -157,7 +130,10 @@
                 </div>
                 <div class="flexCol" style="margin-left: 10px">
                   <span class="report-summaryData">
-                    {{ chart.stepTrend.totalDistance || 0 | distanceSibs: [userInfo.unit, true] }}
+                    {{
+                      chart.stepTrend.totalDistance || 0
+                        | distanceSibs: { unitType: userInfo.unit, showUnit: true }
+                    }}
                   </span>
                   <span class="report-summaryDescription">
                     {{ 'universal_activityData_totalDistance' | translate }}

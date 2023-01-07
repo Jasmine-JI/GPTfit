@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil, tap, debounceTime } from 'rxjs/operators';
 import { ReportConditionOpt } from '../../../../shared/models/report-condition';
-import { Unit } from '../../../../shared/enum/value-conversion';
+import { DataUnitType } from '../../../../core/enums/common';
 import {
   GlobalEventsService,
   HashIdService,
@@ -69,7 +69,7 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
   activityList = [];
   targetUserId: number;
   totalCounts = 0;
-  unit = Unit.metric;
+  unit = DataUnitType.metric;
   readonly sportCode = SportType;
 
   constructor(
@@ -111,7 +111,7 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe((res) => {
         const { userId, unit: userUnit } = res;
         this.targetUserId = isOtherOwner ? userId : undefined;
-        this.unit = userUnit !== undefined ? userUnit : Unit.metric;
+        this.unit = userUnit !== undefined ? userUnit : DataUnitType.metric;
         this.reportService.setReportCondition(this.reportConditionOpt);
         this.getReportSelectedCondition();
       });

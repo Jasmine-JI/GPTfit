@@ -18,7 +18,7 @@
           <span class="dataNumber">
             <ng-container *ngIf="chartType === 'pace'">
               <ng-container *ngIf="data.maxSpeed !== undefined">
-                {{ data.maxSpeed | sportPaceSibs: [sportType, unit, 1] }}
+                {{ data.maxSpeed | sportPaceSibs: { sportType, userUnit: unit, showUnit: false } }}
               </ng-container>
               <ng-container *ngIf="data.maxSpeed === undefined">
                 {{ data.oneRangeBestPace }}
@@ -53,7 +53,7 @@
           <span class="dataNumber">
             <ng-container *ngIf="chartType === 'pace'">
               <ng-container *ngIf="data.avgSpeed !== undefined">
-                {{ data.avgSpeed | sportPaceSibs: [sportType, unit, 1] }}
+                {{ data.avgSpeed | sportPaceSibs: { sportType, userUnit: unit, showUnit: false } }}
               </ng-container>
               <ng-container *ngIf="data.avgSpeed === undefined">
                 {{ data.avgPace }}

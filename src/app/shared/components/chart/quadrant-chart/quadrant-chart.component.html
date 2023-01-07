@@ -251,10 +251,13 @@
           </span>
           <span class="data__content">
             <ng-container *ngIf="chartOpt.xAxis.type === 'pace'">
-              {{ chartOpt.xAxis.origin | sportPaceSibs: [sportType, unit, 1] }}
+              {{
+                chartOpt.xAxis.origin
+                  | sportPaceSibs: { sportType, userUnit: unit, showUnit: false }
+              }}
             </ng-container>
             <ng-container *ngIf="chartOpt.xAxis.type === 'speed'">
-              {{ chartOpt.xAxis.origin | speedSibs: unit }}
+              {{ chartOpt.xAxis.origin | speedSibs: { unitType: unit, showUnit: true } }}
             </ng-container>
             <ng-container *ngIf="!['pace', 'speed'].includes(chartOpt.xAxis.type)">
               {{ chartOpt.xAxis.origin }}{{ chartOpt.xAxis.type | dataTypeUnit: [sportType, unit] }}
@@ -273,7 +276,10 @@
           </span>
           <span class="data__content">
             <ng-container *ngIf="chartOpt.yAxis.type === 'pace'">
-              {{ chartOpt.yAxis.origin | sportPaceSibs: [sportType, unit, 1] }}
+              {{
+                chartOpt.yAxis.origin
+                  | sportPaceSibs: { sportType, userUnit: unit, showUnit: false }
+              }}
             </ng-container>
             <ng-container *ngIf="chartOpt.yAxis.type !== 'pace'">
               {{ chartOpt.yAxis.origin }}{{ chartOpt.yAxis.type | dataTypeUnit: [sportType, unit] }}
@@ -374,7 +380,10 @@
             [attr.font-size]="chart.label.size"
           >
             <ng-container *ngIf="chartOpt.xAxis.type === 'pace'">
-              &lt;{{ (chart.x.min < 0 ? 0 : chart.x.min) | sportPaceSibs: [sportType, unit, 1] }}
+              &lt;{{
+                (chart.x.min < 0 ? 0 : chart.x.min)
+                  | sportPaceSibs: { sportType, userUnit: unit, showUnit: false }
+              }}
             </ng-container>
             <ng-container *ngIf="chartOpt.xAxis.type !== 'pace'">
               {{ chart.x.min | number: '1.0-0' }}
@@ -389,7 +398,10 @@
             [attr.font-size]="chart.label.size"
           >
             <ng-container *ngIf="chartOpt.xAxis.type === 'pace'">
-              {{ (chart.x.min + chart.x.max) / 2 | sportPaceSibs: [sportType, unit, 1] }}
+              {{
+                (chart.x.min + chart.x.max) / 2
+                  | sportPaceSibs: { sportType, userUnit: unit, showUnit: false }
+              }}
             </ng-container>
             <ng-container *ngIf="chartOpt.xAxis.type !== 'pace'">
               {{ (chart.x.min + chart.x.max) / 2 | number: '1.0-0' }}
@@ -404,7 +416,7 @@
             [attr.font-size]="chart.label.size"
           >
             <ng-container *ngIf="chartOpt.xAxis.type === 'pace'">
-              {{ chart.x.max | sportPaceSibs: [sportType, unit, 1] }}
+              {{ chart.x.max | sportPaceSibs: { sportType, userUnit: unit, showUnit: false } }}
             </ng-container>
             <ng-container *ngIf="chartOpt.xAxis.type !== 'pace'">
               {{ chart.x.max | number: '1.0-0' }}
@@ -419,7 +431,10 @@
             [attr.font-size]="chart.label.size"
           >
             <ng-container *ngIf="chartOpt.yAxis.type === 'pace'">
-              &lt;{{ (chart.y.min < 0 ? 0 : chart.y.min) | sportPaceSibs: [sportType, unit, 1] }}
+              &lt;{{
+                (chart.y.min < 0 ? 0 : chart.y.min)
+                  | sportPaceSibs: { sportType, userUnit: unit, showUnit: false }
+              }}
             </ng-container>
             <ng-container *ngIf="chartOpt.yAxis.type !== 'pace'">
               {{ chart.y.min | number: '1.0-0' }}
@@ -434,7 +449,10 @@
             [attr.font-size]="chart.label.size"
           >
             <ng-container *ngIf="chartOpt.yAxis.type === 'pace'">
-              {{ (chart.y.min + chart.y.max) / 2 | sportPaceSibs: [sportType, unit, 1] }}
+              {{
+                (chart.y.min + chart.y.max) / 2
+                  | sportPaceSibs: { sportType, userUnit: unit, showUnit: false }
+              }}
             </ng-container>
             <ng-container *ngIf="chartOpt.yAxis.type !== 'pace'">
               {{ (chart.y.min + chart.y.max) / 2 | number: '1.0-0' }}
@@ -449,7 +467,7 @@
             [attr.font-size]="chart.label.size"
           >
             <ng-container *ngIf="chartOpt.yAxis.type === 'pace'">
-              {{ chart.y.max | sportPaceSibs: [sportType, unit, 1] }}
+              {{ chart.y.max | sportPaceSibs: { sportType, userUnit: unit, showUnit: false } }}
             </ng-container>
             <ng-container *ngIf="chartOpt.yAxis.type !== 'pace'">
               {{ chart.y.max | number: '1.0-0' }}

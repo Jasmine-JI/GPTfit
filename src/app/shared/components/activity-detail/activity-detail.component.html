@@ -199,7 +199,7 @@
               <span class="summary__type__content">
                 {{
                   activityInfoLayer.totalDistanceMeters ?? 0
-                    | distanceSibs: [userProfile.unit, true]
+                    | distanceSibs: { unitType: userProfile.unit, showUnit: true }
                 }}
               </span>
             </div>
@@ -210,7 +210,12 @@
               <span class="summary__type__content">
                 {{
                   activityInfoLayer.avgSpeed
-                    | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit]
+                    | sportPaceSibs
+                      : {
+                          sportType: +activityInfoLayer.type,
+                          userUnit: userProfile.unit,
+                          showUnit: false
+                        }
                 }}
               </span>
             </div>
@@ -219,7 +224,8 @@
                 'universal_activityData_avgSpeed' | translate
               }}</span>
               <span class="summary__type__content">{{
-                activityInfoLayer.avgSpeed | speedSibs: userProfile.unit || 0
+                activityInfoLayer.avgSpeed
+                  | speedSibs: { unitType: userProfile.unit, showUnit: true }
               }}</span>
             </div>
             <div class="flexCol summery__block" *ngIf="+activityInfoLayer.type === 3">
@@ -438,6 +444,39 @@
                 </div>
               </div>
             </div>
+            <div class="flexCol" *ngIf="activityInfoLayer.totalFeedbackEnergy">
+              <span class="table__list__title">{{
+                'universal_activityData_genPower' | translate
+              }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{
+                    'universal_activityData_totalEnergyGen' | translate
+                  }}</span>
+                  <span class="table__list__content"
+                    >{{ activityInfoLayer.totalFeedbackEnergy | number: '1.0-1' }} w</span
+                  >
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">
+                    {{ 'universal_adjective_maxBig' | translate }}
+                    {{ 'universal_activityData_genPower' | translate }}
+                  </span>
+                  <span class="table__list__content"
+                    >{{ activityInfoLayer.maxFeedbackWatt || 0 | number: '1.0-1' }} w</span
+                  >
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">
+                    {{ 'universal_adjective_avg' | translate }}
+                    {{ 'universal_activityData_genPower' | translate }}
+                  </span>
+                  <span class="table__list__content"
+                    >{{ activityInfoLayer.avgFeedbackWatt || 0 | number: '1.0-1' }} w</span
+                  >
+                </div>
+              </div>
+            </div>
             <div class="flexCol">
               <span class="table__list__title">{{
                 'universal_userProfile_calories' | translate
@@ -539,7 +578,12 @@
                     <span class="table__list__content">
                       {{
                         activityInfoLayer.avgSpeed
-                          | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit]
+                          | sportPaceSibs
+                            : {
+                                sportType: +activityInfoLayer.type,
+                                userUnit: userProfile.unit,
+                                showUnit: false
+                              }
                       }}
                     </span>
                   </div>
@@ -555,7 +599,12 @@
                     <span class="table__list__content">
                       {{
                         activityInfoLayer.avgMoveSpeed || 0
-                          | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit]
+                          | sportPaceSibs
+                            : {
+                                sportType: +activityInfoLayer.type,
+                                userUnit: userProfile.unit,
+                                showUnit: false
+                              }
                       }}
                     </span>
                   </div>
@@ -571,7 +620,12 @@
                     <span class="table__list__content">
                       {{
                         activityInfoLayer.maxSpeed
-                          | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit]
+                          | sportPaceSibs
+                            : {
+                                sportType: +activityInfoLayer.type,
+                                userUnit: userProfile.unit,
+                                showUnit: false
+                              }
                       }}
                     </span>
                   </div>
@@ -584,7 +638,12 @@
                     <span class="table__list__content">
                       {{
                         activityInfoLayer.avgSpeed
-                          | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit]
+                          | sportPaceSibs
+                            : {
+                                sportType: +activityInfoLayer.type,
+                                userUnit: userProfile.unit,
+                                showUnit: false
+                              }
                       }}
                     </span>
                   </div>
@@ -595,7 +654,12 @@
                     <span class="table__list__content">
                       {{
                         activityInfoLayer.avgMoveSpeed || 0
-                          | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit]
+                          | sportPaceSibs
+                            : {
+                                sportType: +activityInfoLayer.type,
+                                userUnit: userProfile.unit,
+                                showUnit: false
+                              }
                       }}
                     </span>
                   </div>
@@ -606,7 +670,12 @@
                     <span class="table__list__content">
                       {{
                         activityInfoLayer.maxSpeed
-                          | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit]
+                          | sportPaceSibs
+                            : {
+                                sportType: +activityInfoLayer.type,
+                                userUnit: userProfile.unit,
+                                showUnit: false
+                              }
                       }}
                     </span>
                   </div>
@@ -619,7 +688,12 @@
                     <span class="table__list__content">
                       {{
                         activityInfoLayer.avgSpeed
-                          | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit]
+                          | sportPaceSibs
+                            : {
+                                sportType: +activityInfoLayer.type,
+                                userUnit: userProfile.unit,
+                                showUnit: false
+                              }
                       }}
                     </span>
                   </div>
@@ -630,7 +704,12 @@
                     <span class="table__list__content">
                       {{
                         activityInfoLayer.avgMoveSpeed || 0
-                          | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit]
+                          | sportPaceSibs
+                            : {
+                                sportType: +activityInfoLayer.type,
+                                userUnit: userProfile.unit,
+                                showUnit: false
+                              }
                       }}
                     </span>
                   </div>
@@ -641,7 +720,12 @@
                     <span class="table__list__content">
                       {{
                         activityInfoLayer.maxSpeed
-                          | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit]
+                          | sportPaceSibs
+                            : {
+                                sportType: +activityInfoLayer.type,
+                                userUnit: userProfile.unit,
+                                showUnit: false
+                              }
                       }}
                     </span>
                   </div>
@@ -658,7 +742,8 @@
                     'universal_activityData_avgSpeedPerHour' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.avgSpeed || 0 | speedSibs: userProfile.unit
+                    activityInfoLayer.avgSpeed || 0
+                      | speedSibs: { unitType: userProfile.unit, showUnit: true }
                   }}</span>
                 </div>
                 <div class="flexRow table__row">
@@ -666,7 +751,8 @@
                     'universal_activityData_avgMovingSpeed' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.avgMoveSpeed || 0 | speedSibs: userProfile.unit
+                    activityInfoLayer.avgMoveSpeed || 0
+                      | speedSibs: { unitType: userProfile.unit, showUnit: true }
                   }}</span>
                 </div>
                 <div class="flexRow table__row">
@@ -674,7 +760,8 @@
                     'universal_activityData_liveBestSpeed' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.maxSpeed || 0 | speedSibs: userProfile.unit
+                    activityInfoLayer.maxSpeed || 0
+                      | speedSibs: { unitType: userProfile.unit, showUnit: true }
                   }}</span>
                 </div>
               </div>
@@ -729,7 +816,8 @@
                     'universal_activityData_climbGain' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.elevGain || 0 | distanceSibs: [userProfile.unit, true]
+                    activityInfoLayer.elevGain || 0
+                      | distanceSibs: { unitType: userProfile.unit, showUnit: true }
                   }}</span>
                 </div>
                 <div class="flexRow table__row">
@@ -737,7 +825,8 @@
                     'universal_activityData_climbLoss' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.elevLoss || 0 | distanceSibs: [userProfile.unit, true]
+                    activityInfoLayer.elevLoss || 0
+                      | distanceSibs: { unitType: userProfile.unit, showUnit: true }
                   }}</span>
                 </div>
               </div>
@@ -753,7 +842,10 @@
                   }}</span>
                   <span class="table__list__content">
                     <ng-container *ngIf="activityInfoLayer.maxElev; else dash">
-                      {{ activityInfoLayer.maxElev | distanceSibs: [userProfile.unit, true] }}
+                      {{
+                        activityInfoLayer.maxElev
+                          | distanceSibs: { unitType: userProfile.unit, showUnit: true }
+                      }}
                     </ng-container>
                   </span>
                 </div>
@@ -763,7 +855,10 @@
                   }}</span>
                   <span class="table__list__content">
                     <ng-container *ngIf="activityInfoLayer.minElev; else dash">
-                      {{ activityInfoLayer.minElev | distanceSibs: [userProfile.unit, true] }}
+                      {{
+                        activityInfoLayer.minElev
+                          | distanceSibs: { unitType: userProfile.unit, showUnit: true }
+                      }}
                     </ng-container>
                   </span>
                 </div>
@@ -972,7 +1067,8 @@
                     'universal_activityData_poolLength' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.poolLengthMeters | distanceSibs: [userProfile.unit, true]
+                    activityInfoLayer.poolLengthMeters
+                      | distanceSibs: { unitType: userProfile.unit, showUnit: true }
                   }}</span>
                 </div>
                 <div class="flexRow table__row">
@@ -1117,7 +1213,10 @@
                     'universal_activityData_maxSwing' | translate
                   }}</span>
                   <span class="table__list__content"
-                    >{{ activityInfoLayer.maxSwingSpeed | speedSibs: userProfile.unit }}
+                    >{{
+                      activityInfoLayer.maxSwingSpeed
+                        | speedSibs: { unitType: userProfile.unit, showUnit: true }
+                    }}
                   </span>
                 </div>
                 <div class="flexRow table__row">
@@ -1297,7 +1396,12 @@
                     >
                       {{
                         _layer.lapAvgSpeed
-                          | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit, 0] || 0
+                          | sportPaceSibs
+                            : {
+                                sportType: +activityInfoLayer.type,
+                                userUnit: userProfile.unit,
+                                showUnit: true
+                              } || 0
                       }}
                     </td>
                     <td class="segmentation__text" *ngIf="[2, 7].includes(+activityInfoLayer.type)">
@@ -1600,6 +1704,25 @@
           [chartType]="'pace'"
           [page]="'detail'"
           *ngIf="[1, 4, 6].includes(+activityInfoLayer.type) && activityPointLayer.speed"
+        >
+        </app-trend-info-chart>
+        <app-trend-info-chart
+          [yAxisData]="
+            trendChartOpt.segmentMode
+              ? trendChartOpt.yAxisDataRef.feedbackWatt
+              : trendChartOpt.yAxisDataRef.feedbackWatt
+          "
+          [xAxisData]="trendChartOpt.xAxisDataRef"
+          [xAxisType]="trendChartOpt.xAxisType"
+          [infoData]="{
+            best: activityInfoLayer.maxFeedbackWatt,
+            avg: activityInfoLayer.avgFeedbackWatt
+          }"
+          [sportType]="+activityInfoLayer.type"
+          [unit]="userProfile.unit"
+          [chartType]="'feedbackWatt'"
+          [page]="'detail'"
+          *ngIf="activityInfoLayer.totalFeedbackEnergy"
         >
         </app-trend-info-chart>
         <app-trend-info-chart

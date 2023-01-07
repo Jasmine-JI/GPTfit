@@ -5,6 +5,7 @@ export type DisplayPage = 'cloudrun' | 'sport' | 'lifeTracking' | 'sportReport';
 export const costTimeColor = 'rgba(188, 226, 58, 1)';
 export const strokeNumColor = 'rgba(53, 168, 201, 1)';
 export const caloriesColor = 'rgba(248, 181, 81, 1)';
+export const avgHrColor = 'rgba(201, 81, 248, 1)';
 export const distanceColor = 'rgba(110, 155, 255, 1)';
 export const rightMoveColor = 'rgba(110, 168, 255, 1)';
 export const leftMoveColor = 'rgba(206, 110, 255, 1)';

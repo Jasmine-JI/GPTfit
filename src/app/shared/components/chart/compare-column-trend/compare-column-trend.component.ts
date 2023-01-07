@@ -22,12 +22,12 @@ import {
   distanceAxisFormat,
   distanceTooltipFormat,
   dataLabelsFormatter,
-} from '../../../../core/utils/chart-formatter';
-import { TargetFieldNamePipe } from '../../../../core/pipes/target-field-name.pipe';
+  deepCopy,
+} from '../../../../core/utils';
+import { TargetFieldNamePipe } from '../../../../core/pipes';
 import dayjs from 'dayjs';
 import { GlobalEventsService, UserService } from '../../../../core/services';
-import { Unit } from '../../../enum/value-conversion';
-import { deepCopy } from '../../../../core/utils/index';
+import { DataUnitType } from '../../../../core/enums/common';
 
 @Component({
   selector: 'app-compare-column-trend',
@@ -108,7 +108,7 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
    * @author kidin-1110413
    */
   initChart(data: Array<number>, type: TargetField, targetLineValue: number | null) {
-    const userUnit = this.userService.getUser().userProfile.unit as Unit;
+    const userUnit = this.userService.getUser().userProfile.unit as DataUnitType;
     const chartOption = new ChartOption(data, type, targetLineValue, userUnit, this.xAxisTitle);
     return chartOption.option;
   }
@@ -157,7 +157,7 @@ class ChartOption {
     data: Array<any>,
     type: TargetField | string,
     targetLineValue: number | null,
-    unit: Unit,
+    unit: DataUnitType,
     xAxisTitle: string
   ) {
     this.initChart(data, xAxisTitle);
@@ -191,9 +191,9 @@ class ChartOption {
   /**
    * 根據數據類別設定y軸與浮動框顯示格式
    * @param type {TargetField | string}-數據類別
-   * @param unit {Unit}-使用者使用單位
+   * @param unit {DataUnitType}-使用者使用單位
    */
-  handleDataType(type: TargetField | string, unit: Unit) {
+  handleDataType(type: TargetField | string, unit: DataUnitType) {
     switch (type) {
       case 'totalTime':
       case 'benefitTime':

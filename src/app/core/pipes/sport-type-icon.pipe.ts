@@ -28,7 +28,7 @@ export class SportTypeIconPipe implements PipeTransform {
       case SportType.ball:
         return 'icon-svg_web-icon_p3_056-ball';
       case SportType.all:
-        return 'icon-svg_web-icon_p2_038-complex';
+        return 'icon-svg_web-icon_p4_015-select_all';
       case SportType.rest:
         return 'icon-svg_web-icon_p2_039-rest';
       default:

@@ -141,7 +141,7 @@
           context: {
             columnType: 'totalDistanceMeters',
             title: 'universal_activityData_totalDistance' | translate,
-            dataUnit: userUnit === Unit.metric ? 'km' : 'mi',
+            dataUnit: userUnit === DataUnitType.metric ? 'km' : 'mi',
             className: 'analysis__distance',
             showHeader:
               [
@@ -274,7 +274,7 @@
           context: {
             columnType: 'rowingAvgWatt',
             title: 'universal_userProfile_bodyWeight' | translate,
-            dataUnit: userUnit === Unit.metric ? 'kg' : 'lb',
+            dataUnit: userUnit === DataUnitType.metric ? 'kg' : 'lb',
             className: 'analysis__body__weight',
             showHeader: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.bodyWeight)
           }
@@ -418,7 +418,10 @@
                 *ngTemplateOutlet="
                   analysisData;
                   context: {
-                    data: _data[0].totalDistanceMeters ?? 0 | distanceSibs: [userUnit, false, true],
+                    data:
+                      _data[0].totalDistanceMeters ?? 0
+                      | distanceSibs
+                        : { unitType: userUnit, showUnit: false, convertKiloAlways: true },
                     diff: checkProgressive(index, 'totalDistanceMeters'),
                     className: 'analysis__distance',
                     showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.distance)
@@ -435,7 +438,9 @@
                 *ngTemplateOutlet="
                   analysisData;
                   context: {
-                    data: _data[0].avgSpeed ?? 0 | sportPaceSibs: [sportType, userUnit, 1],
+                    data:
+                      _data[0].avgSpeed ?? 0
+                      | sportPaceSibs: { sportType, userUnit, showUnit: false },
                     diff: checkProgressive(index, 'avgSpeed'),
                     className: 'analysis__pace',
                     showData: chartAnalysisOption.getItemSelectStatus(
@@ -654,7 +659,10 @@
                 *ngTemplateOutlet="
                   analysisData;
                   context: {
-                    data: _data[1].totalDistanceMeters ?? 0 | distanceSibs: [userUnit, false, true],
+                    data:
+                      _data[1].totalDistanceMeters ?? 0
+                      | distanceSibs
+                        : { unitType: userUnit, showUnit: false, convertKiloAlways: true },
                     className: 'analysis__distance',
                     showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.distance)
                   }
@@ -670,7 +678,9 @@
                 *ngTemplateOutlet="
                   analysisData;
                   context: {
-                    data: _data[1].avgSpeed ?? 0 | sportPaceSibs: [sportType, userUnit, 1],
+                    data:
+                      _data[1].avgSpeed ?? 0
+                      | sportPaceSibs: { sportType, userUnit, showUnit: false },
                     className: 'analysis__pace',
                     showData: chartAnalysisOption.getItemSelectStatus(
                       AnalysisSportsColumn.speedOrPace

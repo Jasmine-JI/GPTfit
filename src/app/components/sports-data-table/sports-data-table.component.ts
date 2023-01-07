@@ -3,7 +3,6 @@ import {
   OnInit,
   OnChanges,
   OnDestroy,
-  NgModule,
   Input,
   SimpleChanges,
   ChangeDetectionStrategy,
@@ -18,7 +17,7 @@ import { AnalysisOptionComponent } from '../analysis-option/analysis-option.comp
 import { SmallHrzoneChartComponent } from '../small-hrzone-chart/small-hrzone-chart.component';
 import { ProfessionalChartAnalysisOption } from '../../containers/professional/classes/professional-chart-analysis-option';
 import { PersonalChartAnalysisOption } from '../../containers/personal/classes/personal-chart-analysis-option';
-import { Unit } from '../../shared/enum/value-conversion';
+import { DataUnitType } from '../../core/enums/common';
 import { SportType } from '../../core/enums/sports';
 import {
   SpeedPaceUnitPipe,
@@ -58,14 +57,14 @@ export class SportsDataTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() baseReportRange: Array<number>;
   @Input() compareReportRange: Array<number>;
   @Input() chartAnalysisOption: ProfessionalChartAnalysisOption | PersonalChartAnalysisOption;
-  @Input() userUnit: Unit = Unit.metric;
+  @Input() userUnit: DataUnitType = DataUnitType.metric;
   @Input() sportType: SportType = 99;
 
   private ngUnsubscribe = new Subject();
   private resizeEventSubscription = new Subscription();
   private pluralEventSubscription = new Subscription();
 
-  readonly Unit = Unit;
+  readonly DataUnitType = DataUnitType;
   readonly SportType = SportType;
   readonly AnalysisSportsColumn = AnalysisSportsColumn;
 

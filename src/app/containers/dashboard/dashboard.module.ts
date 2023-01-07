@@ -78,6 +78,11 @@ import {
   SmallHrzoneChartComponent,
   AnalysisInfoMenuComponent,
   SportFileFooterComponent,
+  StationAnalysisListComponent,
+  GroupAnalysisCalenderComponent,
+  PieChartComponent,
+  HrZoneChartComponent,
+  LineCompareChartComponent,
 } from '../../components';
 import {
   DateUnitKeyPipe,
@@ -164,6 +169,11 @@ import {
     AnalysisInfoMenuComponent,
     SportTypeIconPipe,
     SportFileFooterComponent,
+    StationAnalysisListComponent,
+    GroupAnalysisCalenderComponent,
+    PieChartComponent,
+    HrZoneChartComponent,
+    LineCompareChartComponent,
     SexPipe,
     SafeHtmlPipe,
     LineBreakPipe,

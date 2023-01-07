@@ -13,7 +13,7 @@ import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { HrZoneRange } from '../../../models/chart-data';
 import { mi } from '../../../models/bs-constant';
-import { Unit } from '../../../enum/value-conversion';
+import { DataUnitType } from '../../../../core/enums/common';
 import {
   setLocalStorageObject,
   getLocalStorageObject,
@@ -57,7 +57,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() userInfo: Array<any>;
   @Input() sportType: SportType;
   @Input() sysAccessRight: number;
-  @Input() unit: Unit;
+  @Input() unit: DataUnitType;
   @Input() hrRange: HrZoneRange;
 
   /**
@@ -404,7 +404,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
    * @param ref {QuadrantDataOpt}-軸線類別
    * @param refValue {number}-軸線源點
    * @param sportType {SportType}-運動類別
-   * @param uniy {Unit}-使用者使用的單位
+   * @param unit {DataUnitType}-使用者使用的單位
    * @author kidin-1100202
    */
   handleAxisInput(
@@ -412,18 +412,18 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
     refType: QuadrantDataOpt,
     refValue: number,
     sportType: SportType,
-    uniy: Unit
+    unit: DataUnitType
   ) {
     switch (refType) {
       case 'pace':
-        this.axisInputValue[axis] = this.sportPaceSibsPipe.transform(refValue, [
+        this.axisInputValue[axis] = this.sportPaceSibsPipe.transform(refValue, {
           sportType,
-          uniy,
-          1,
-        ]);
+          userUnit: unit,
+          showUnit: false,
+        });
         break;
       case 'speed':
-        this.axisInputValue[axis] = uniy === 0 ? refValue : +(refValue / mi).toFixed(1);
+        this.axisInputValue[axis] = unit === 0 ? refValue : +(refValue / mi).toFixed(1);
         break;
       default:
         this.axisInputValue[axis] = refValue;

@@ -142,7 +142,10 @@
                     </div>
                     <div class="flexCol" style="margin-left: 10px">
                       <span class="report-summaryData">
-                        {{ chart.stepTrend.totalDistance | distanceSibs: [userInfo.unit, true] }}
+                        {{
+                          chart.stepTrend.totalDistance
+                            | distanceSibs: { unitType: userInfo.unit, showUnit: true }
+                        }}
                       </span>
                       <span class="report-summaryDescription">
                         {{ 'universal_activityData_totalDistance' | translate }}

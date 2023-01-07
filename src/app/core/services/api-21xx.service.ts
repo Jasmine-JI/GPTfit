@@ -94,7 +94,7 @@ export class Api21xxService {
    * api-v2 2111 依條件需求取得多筆運動檔案
    * @param body {any}-api 所需參數
    */
-  fetchMultiActivityData(body: any): Observable<any> {
+  fetchMultiActivityData(body: any, fake = false): Observable<any> {
     return <any>(
       this.http
         .post('/api/v2/sport/getMultiActivityData', body)

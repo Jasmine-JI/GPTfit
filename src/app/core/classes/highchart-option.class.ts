@@ -141,7 +141,7 @@ export class HighchartOption {
    */
   cancelSliced() {
     const { _option, _currentSlicedIndex } = this;
-    if (_currentSlicedIndex) {
+    if (_currentSlicedIndex !== null && _currentSlicedIndex > -1) {
       const assignData = _option.series[0].data[_currentSlicedIndex] as DataSetting;
       assignData.sliced = false;
       assignData.borderColor = 'rgba(255, 255, 255, 0)';
@@ -155,8 +155,10 @@ export class HighchartOption {
   assignSliced(index: number) {
     const { _option } = this;
     this.cancelSliced();
-    (_option.series[0].data[index] as DataSetting).sliced = true;
-    (_option.series[0].data[index] as DataSetting).borderColor = 'rgba(255, 0, 0, 0.7)';
-    this._currentSlicedIndex = index;
+    if (index > -1) {
+      (_option.series[0].data[index] as DataSetting).sliced = true;
+      (_option.series[0].data[index] as DataSetting).borderColor = 'rgba(255, 0, 0, 0.7)';
+      this._currentSlicedIndex = index;
+    }
   }
 }

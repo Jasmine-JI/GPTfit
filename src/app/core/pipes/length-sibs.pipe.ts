@@ -1,13 +1,13 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { ft, inch } from '../../shared/models/bs-constant';
-import { Unit } from '../../shared/enum/value-conversion';
+import { DataUnitType } from '../enums/common';
 import { mathRounding } from '../utils/index';
 
 type MetricLenUnit = 'cm' | 'mm';
 type ImperialLenUnit = 'ft' | 'inch';
 
 interface Option {
-  userUnit: Unit; // 公制或英制
+  userUnit: DataUnitType; // 公制或英制
   showUnit?: boolean; // 是否顯示單位
   valueUnit: MetricLenUnit; // 被轉換的單位
   transformUnit: ImperialLenUnit; // 欲轉換的單位
@@ -33,7 +33,7 @@ export class LengthSibsPipe implements PipeTransform {
     const { userUnit, showUnit, valueUnit, transformUnit, digit } = args;
 
     let finalValue: number, dispUnit: MetricLenUnit | ImperialLenUnit;
-    const isMetric = userUnit === Unit.metric,
+    const isMetric = userUnit === DataUnitType.metric,
       isCentiMeter = valueUnit === 'cm';
     if (isMetric) {
       finalValue = value;

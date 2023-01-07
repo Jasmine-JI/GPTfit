@@ -42,7 +42,7 @@
         <tr>
           <span>
             <ng-container *ngIf="displayInfo.avgSpeed !== '--'">
-              {{ displayInfo.avgSpeed | speedSibs: userInfo.unit }}
+              {{ displayInfo.avgSpeed | speedSibs: { unitType: userInfo.unit, showUnit: true } }}
             </ng-container>
             <ng-container *ngIf="displayInfo.avgSpeed === '--'">
               {{ displayInfo.avgSpeed }}

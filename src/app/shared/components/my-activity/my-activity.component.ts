@@ -13,7 +13,7 @@ import { MessageBoxComponent } from '../../components/message-box/message-box.co
 import { TranslateService } from '@ngx-translate/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Subject } from 'rxjs';
-import { Unit } from '../../enum/value-conversion';
+import { DataUnitType } from '../../../core/enums/common';
 import { getUrlQueryStrings } from '../../../core/utils/index';
 
 @Component({
@@ -36,7 +36,7 @@ export class MyActivityComponent implements OnInit, OnDestroy {
   filterEndTime = dayjs().format('YYYY-MM-DDTHH:mm:00.000Z');
   sportType = '99';
   searchWords = '';
-  unit: Unit = 0;
+  unit: DataUnitType = 0;
   @Input() isPortal = false;
   @Input() userName;
   @ViewChild('picker', { read: MatInput }) input: MatInput;

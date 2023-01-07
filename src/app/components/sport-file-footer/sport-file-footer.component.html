@@ -1,7 +1,7 @@
 <article class="footer__grid" *ngIf="footerInfo">
   <ng-container *ngIf="footerInfo.deviceInfo?.length > 0">
     <section
-      *ngTemplate="
+      *ngTemplateOutlet="
         footerInfoSection;
         context: {
           infoType: 'normal',
@@ -14,9 +14,9 @@
       "
     ></section>
   </ng-container>
-  <ng-container>
+  <ng-container *ngIf="footerInfo.classInfo?.length > 0">
     <section
-      *ngTemplate="
+      *ngTemplateOutlet="
         footerInfoSection;
         context: {
           infoType: 'normal',
@@ -25,31 +25,32 @@
           clipCircle: true,
           info: footerInfo.classInfo,
           showMore: showMoreClassInfo,
-          showMoreFunction: showFullClassInfo,
+          showMoreFunction: showFullClassInfo.bind(this),
           currentFocusIndex: 0
         }
       "
     ></section>
   </ng-container>
-  <ng-container>
+  <ng-container *ngIf="footerInfo.coachInfo?.length > 0">
     <section
-      *ngTemplate="
+      *ngTemplateOutlet="
         footerInfoSection;
         context: {
           infoType: 'normal',
           title: 'universal_group_coachIntroduction',
           substituteImgUrl: PERSONAL_ICON_SUBSTITUDE_PATH,
+          clipCircle: true,
           info: footerInfo.coachInfo,
           showMore: showMoreCoachInfo,
-          showMoreFunction: showFullCoachInfo,
+          showMoreFunction: showFullCoachInfo.bind(this),
           currentFocusIndex: 0
         }
       "
     ></section>
   </ng-container>
-  <ng-container>
+  <ng-container *ngIf="footerInfo.fileInfo?.length > 0">
     <section
-      *ngTemplate="
+      *ngTemplateOutlet="
         footerInfoSection;
         context: {
           infoType: 'fileInfo',
@@ -59,9 +60,9 @@
       "
     ></section>
   </ng-container>
-  <ng-container>
+  <ng-container *ngIf="footerInfo.tag?.length > 0">
     <section
-      *ngTemplate="
+      *ngTemplateOutlet="
         footerInfoSection;
         context: {
           infoType: 'tag',
@@ -87,15 +88,9 @@
 >
   <section class="flexCol" [ngSwitch]="infoType">
     <h6 class="footer__card__title">{{ title | translate }}</h6>
-    <p
-      class="group__uplayer__name"
-      *ngIf="info[currentFocusIndex].brandName && info[currentFocusIndex].branchName"
-    >
-      {{ info[currentFocusIndex].brandName }}/{{ info[currentFocusIndex].branchName }}
-    </p>
     <hr class="title__break__line" />
     <ng-container *ngSwitchCase="'normal'">
-      <div class="flexRow">
+      <div class="flexRow card__content__container">
         <ng-container *ngIf="info.length > 1">
           <button
             class="switch__button"
@@ -103,26 +98,53 @@
             (click)="switchPreviewFunction.bind(this)"
           ></button>
         </ng-container>
-        <figure class="image__container" [class.circle__image]="clipCircle">
-          <img
-            [src]="info[currentFocusIndex].imgUrl"
-            [alt]="name"
-            (error)="info[currentFocusIndex].imgUrl = substituteImgUrl"
-          />
-        </figure>
-        <p class="info__subtitle">{{ info[currentFocusIndex].name }}</p>
-        <p class="info__description" *ngIf="info[currentFocusIndex].description">
-          {{ info[currentFocusIndex].description }}
-        </p>
-        <p *ngIf="info[currentFocusIndex].description">
-          {{ 'universal_deviceSetting_modeType' | translate }}：{{
-            info[currentFocusIndex].modelTypeID | productType | translate
-          }}
-        </p>
-        <div class="flexRow show__more__container" *ngIf="!showMore">
-          <button class="show__more__button" (click)="showMoreFunction.bind(this)">
-            ...{{ 'universal_operating_more' | translate }}
-          </button>
+        <div class="flexCol card__content">
+          <figure class="image__container" [class.circle__image]="clipCircle">
+            <img
+              class="image__icon"
+              [src]="info[currentFocusIndex].imgUrl"
+              [alt]="name"
+              (error)="info[currentFocusIndex].imgUrl = substituteImgUrl"
+            />
+          </figure>
+          <p class="info__subtitle">{{ info[currentFocusIndex].name }}</p>
+          <p
+            class="group__uplayer__name"
+            *ngIf="info[currentFocusIndex].brandName && info[currentFocusIndex].branchName"
+          >
+            {{ info[currentFocusIndex].brandName }}/{{ info[currentFocusIndex].branchName }}
+          </p>
+          <p class="info__description" *ngIf="info[currentFocusIndex].description">
+            <ng-container
+              *ngIf="
+                info[currentFocusIndex].description.length > defaultDescriptionLength && !showMore
+              "
+            >
+              {{ info[currentFocusIndex].description | slice: 0:defaultDescriptionLength }}...
+            </ng-container>
+            <ng-container
+              *ngIf="
+                info[currentFocusIndex].description.length <= defaultDescriptionLength || showMore
+              "
+            >
+              {{ info[currentFocusIndex].description }}
+            </ng-container>
+          </p>
+          <p *ngIf="info[currentFocusIndex].modelTypeID">
+            {{ 'universal_deviceSetting_modeType' | translate }}：{{
+              info[currentFocusIndex].modelTypeID | productType | translate
+            }}
+          </p>
+          <div
+            class="flexRow show__more__container"
+            *ngIf="
+              info[currentFocusIndex].description?.length > defaultDescriptionLength && !showMore
+            "
+          >
+            <button class="show__more__button" (click)="showMoreFunction()">
+              ...{{ 'universal_operating_more' | translate }}
+            </button>
+          </div>
         </div>
         <ng-container *ngIf="info.length > 1">
           <button

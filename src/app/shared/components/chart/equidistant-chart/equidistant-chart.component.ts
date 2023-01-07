@@ -7,18 +7,16 @@ import {
   ElementRef,
   Input,
   Renderer2,
-  Output,
-  EventEmitter,
   SimpleChanges,
 } from '@angular/core';
-import { chart, charts } from 'highcharts';
+import { chart } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DataTypeUnitPipe } from '../../../../core/pipes/data-type-unit.pipe';
 import { mi } from '../../../models/bs-constant';
-import { Unit } from '../../../enum/value-conversion';
-import { countDistance } from '../../../../core/utils/index';
+import { DataUnitType } from '../../../../core/enums/common';
+import { countDistance } from '../../../../core/utils';
 
 /**
  * 建立圖表用
@@ -102,7 +100,7 @@ export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() racerChange: number | null;
   @Input() removeAllRacer = true;
-  @Input() unit: Unit;
+  @Input() unit: DataUnitType;
   @Input() loadedList: any;
   @Input() altitude: number[];
   @Input() gpx: Array<Array<number>>;

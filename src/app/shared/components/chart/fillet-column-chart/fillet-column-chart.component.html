@@ -38,7 +38,7 @@
               {{ data.maxCalories | thousandConversion: 'cal' }}
             </ng-container>
             <ng-container *ngIf="data.maxDistance || data.maxDistance === 0">
-              {{ data.maxDistance | distanceSibs: [unit, true] }}
+              {{ data.maxDistance | distanceSibs: { unitType: unit, showUnit: true } }}
             </ng-container>
             <ng-container *ngIf="data.maxPlaneGForce || data.maxPlaneGForce === 0">
               {{ data.maxPlaneGForce | number: '1.0-0' }} g
@@ -85,7 +85,7 @@
               {{ data.avgCalories | thousandConversion: 'cal' }}
             </ng-container>
             <ng-container *ngIf="data.avgDistance || data.avgDistance === 0">
-              {{ data.avgDistance | distanceSibs: [unit, true] }}
+              {{ data.avgDistance | distanceSibs: { unitType: unit, showUnit: true } }}
             </ng-container>
             <ng-container *ngIf="data.avgPlaneGForce || data.avgPlaneGForce === 0">
               {{ data.avgPlaneGForce | number: '1.0-0' }} g

@@ -1,6 +1,7 @@
 @import 'font.scss';
 
 $image-size: 150px;
+$gird-width: 280px;
 
 @mixin switch-triangle($isLeftTriangle) {
   $triangle-height: 8px;
@@ -17,9 +18,8 @@ $image-size: 150px;
 
 .footer__grid {
   display: grid;
-  grid-gap: 10px;
-  grid-template-columns: repeat(auto-fill, 280px);
-  align-items: center;
+  grid-gap: 20px;
+  grid-template-columns: repeat(auto-fit, $gird-width);
   background-color: rgba(240, 240, 240, 1);
 }
 
@@ -35,7 +35,8 @@ $image-size: 150px;
 }
 
 .title__break__line {
-  color: rgba(230, 230, 230, 1);
+  border: 1px solid rgba(230, 230, 230, 1);
+  margin: 2px 0 10px 0;
 }
 
 .switch__button {
@@ -59,11 +60,24 @@ $image-size: 150px;
   pointer-events: none;
 }
 
+.card__content__container {
+  justify-content: center;
+}
+
+.card__content {
+  width: 100%;
+}
+
 .image__container {
   display: flex;
   justify-content: center;
   margin: 0 auto;
+}
+
+.image__icon {
+  width: 100%;
   max-height: $image-size;
+  max-width: $gird-width;
 }
 
 .circle__image {
@@ -76,6 +90,7 @@ $image-size: 150px;
 
 .info__subtitle {
   color: black;
+  margin: 0;
   @include bold-font(24px);
 }
 
@@ -114,4 +129,12 @@ $image-size: 150px;
 
 .text__align__right {
   text-align: right;
+}
+
+/******************************* media ********************************/
+
+@media (max-width: 600px) {
+  .footer__grid {
+    justify-content: center;
+  }
 }
