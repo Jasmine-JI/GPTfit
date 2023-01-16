@@ -74,6 +74,10 @@ export const sportTypeColor = [
   'rgba(117, 242, 95, 1)',
   'rgba(114, 232, 176, 1)',
   'rgba(107, 235, 249, 1)',
+  'rgba(110, 155, 255, 1)',
+  'rgba(155, 112, 224, 1)',
+  'rgba(228, 88, 232, 1)',
+  'rgba(234, 87, 163, 1)',
 ];
 
 export const DISTRIBUTION_CHART_COLOR = {

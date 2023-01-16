@@ -165,8 +165,8 @@ const fake4101Res2 = {
       totalLifeTrackingFile: 10000,
     },
     activeAnalysis: {
-      male: '700',
-      female: '300',
+      male: 700,
+      female: 300,
     },
     sportsTypeAnalysis: {
       typeFieldName: ['s1', 's2', 's3', 's4', 's5', 's6', 's7'],

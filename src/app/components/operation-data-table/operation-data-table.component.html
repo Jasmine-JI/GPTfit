@@ -1,0 +1,59 @@
+<div class="flexRow data__table">
+  <ul class="flexCol table__header__column">
+    <ng-container *ngFor="let _rowData of tableData.data; let _rowIndex = index">
+      <li class="column__header__cell" [class.grid__row__header]="_rowIndex === 0">
+        <span
+          *ngTemplateOutlet="
+            gridCell;
+            context: {
+              value: _rowData[0],
+              valueType: tableData.option.headerRowType[0],
+              hideBorderLeft: true
+            }
+          "
+        ></span>
+      </li>
+    </ng-container>
+  </ul>
+  <ul class="flexCol content__row">
+    <li
+      class="grid__row"
+      [class.grid__row__header]="_rowIndex === 0"
+      [style.min-width]="(tableData.data[0].length - 1) * 120 + 'px'"
+      *ngFor="let _rowData of tableData.data; let _rowIndex = index"
+    >
+      <ng-container *ngFor="let _data of _rowData; let _cellIndex = index">
+        <ng-container *ngIf="_cellIndex !== 0">
+          <span
+            *ngTemplateOutlet="
+              gridCell;
+              context: {
+                value: _rowData[_cellIndex],
+                valueType: tableData.option.headerRowType[_cellIndex]
+              }
+            "
+          ></span>
+        </ng-container>
+      </ng-container>
+    </li>
+  </ul>
+</div>
+
+<ng-template
+  #gridCell
+  let-value="value"
+  let-valueType="valueType"
+  let-hideBorderLeft="hideBorderLeft"
+>
+  <span class="grid__cell" [class.grid__column__header]="hideBorderLeft" [ngSwitch]="valueType">
+    <ng-container *ngSwitchCase="OperationDataType.icon">
+      <i [class]="value"></i>
+    </ng-container>
+    <ng-container *ngSwitchCase="OperationDataType.translateKey">
+      {{ value | translate }}
+    </ng-container>
+    <ng-container *ngSwitchDefault>
+      {{ value || ' ' }}
+    </ng-container>
+  </span>
+</ng-template>

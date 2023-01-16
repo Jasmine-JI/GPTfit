@@ -1,0 +1,57 @@
+@import 'overflow-scroll.scss';
+
+$header-border: 1px solid black;
+$cell-border: 1px solid rgba(200, 200, 200, 1);
+$header-width: 150px;
+
+@mixin clear-ul-style() {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.data__table {
+  @include clear-ul-style();
+  border-top: $header-border;
+  border-bottom: $header-border;
+}
+
+.table__header__column {
+  @include clear-ul-style();
+  width: $header-width;
+  min-width: $header-width;
+  text-align: right;
+}
+
+.column__header__cell {
+  border-bottom: $cell-border;
+}
+
+.content__row {
+  @include clear-ul-style();
+  @include overflow-x-scroll();
+  width: calc(100% - $header-width);
+}
+
+.grid__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  border-bottom: $cell-border;
+}
+
+.grid__cell {
+  text-align: center;
+  border-left: $cell-border;
+  padding: 0 0.5rem;
+  white-space: nowrap;
+}
+
+.grid__row__header {
+  border-color: rgba(100, 100, 100, 1);
+  font-weight: bold;
+  background-color: rgba(250, 255, 234, 1);
+}
+
+.grid__column__header {
+  border-left: none;
+}
