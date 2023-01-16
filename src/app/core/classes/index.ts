@@ -3,3 +3,4 @@ export * from './cloudrun-map-icon.class';
 export * from './custom-mat-paginator-intl';
 export * from './highchart-option.class';
 export * from './data-intergration.class';
+export * from './operation-cjson-handler.class';

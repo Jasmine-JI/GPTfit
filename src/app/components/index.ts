@@ -16,3 +16,6 @@ export * from './pie-chart/pie-chart.component';
 export * from './hr-zone-chart/hr-zone-chart.component';
 export * from './line-compare-chart/line-compare-chart.component';
 export * from './tip-dialog/tip-dialog.component';
+export * from './loading-bar/loading-bar.component';
+export * from './category-column-chart/category-column-chart.component';
+export * from './operation-data-table/operation-data-table.component';

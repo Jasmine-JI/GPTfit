@@ -12,7 +12,10 @@ export const appPath = {
   deviceManage: {},
 
   // 後台管理
-  adminManage: {},
+  adminManage: {
+    systemOperationReport: 'system-operation-report',
+    groupOperationList: 'group-operation-list',
+  },
 
   // 官方活動
   officialActivity: {},

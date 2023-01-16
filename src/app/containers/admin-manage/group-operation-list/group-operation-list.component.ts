@@ -6,6 +6,7 @@ import { Api4103Post, Api4103Response } from '../../../core/models/api/api-41xx'
   selector: 'app-group-operation-list',
   templateUrl: './group-operation-list.component.html',
   styleUrls: ['./group-operation-list.component.scss'],
+  standalone: true,
 })
 export class GroupOperationListComponent implements OnInit {
   post: Api4103Post = {

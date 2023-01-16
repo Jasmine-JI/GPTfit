@@ -42,6 +42,7 @@ enum Dashboard {
   pushList,
   deviceSearch,
   deviceLog,
+  operationReport,
   appFlowAnalysis,
 }
 
@@ -569,6 +570,13 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       stationMail: { home, newMail },
     } = appPath;
     this.router.navigateByUrl(`/dashboard/${home}/${newMail}`);
+  }
+
+  /**
+   * 確認側邊欄收合項目是否為聚焦（展開）狀態
+   */
+  checkDropActive(itemList: Array<any>) {
+    return itemList.indexOf((_item) => _item.type === this.target) > -1;
   }
 
   /**

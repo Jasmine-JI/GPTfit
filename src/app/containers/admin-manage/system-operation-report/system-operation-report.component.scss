@@ -1,0 +1,126 @@
+@import 'transform.scss';
+@import 'font.scss';
+
+$report-border-color: rgba(200, 200, 200, 1);
+$report-background-color: rgba(250, 250, 250, 1);
+
+.tab__bar {
+  @include el-transform(translateY(2px));
+}
+
+.report__type__tab {
+  $border-radius: 15px;
+  font-size: 1.3rem;
+  padding: 5px 10px;
+  border-radius: $border-radius $border-radius 0 0;
+  border: 1px solid $report-border-color;
+  min-width: 90px;
+  min-height: 40px;
+  color: rgba(100, 100, 100, 1);
+  width: calc(100% / 3);
+}
+
+.report__type__tab--active {
+  @include bold-font(1.5rem);
+  color: black;
+  background-color: $report-background-color;
+  border-bottom: none;
+
+  > .tab__icon {
+    font-size: 1.7rem;
+  }
+}
+
+.tab__icon {
+  font-size: 1.4rem;
+}
+
+.report__content {
+  background-color: $report-background-color;
+  padding: 1rem;
+  border: 1px solid $report-border-color;
+}
+
+.content__section {
+  margin-bottom: 2rem;
+}
+
+.creation__time {
+  text-align: right;
+  font-size: 0.9rem;
+  color: rgba(150, 150, 150, 1);
+  margin: 0;
+}
+
+.section__title {
+  @include bold-font(1rem);
+  color: rgb(0, 137, 255, 1);
+  margin: 0;
+}
+
+.section__title__line {
+  margin: 0;
+  border-color: rgba(180, 227, 255, 1);
+}
+
+.description {
+  color: rgba(100, 100, 100, 1);
+  font-size: 0.9rem;
+  margin-left: 1rem;
+}
+
+.summary__grid {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, min(100px));
+  gap: 1rem;
+  list-style: none;
+  text-align: center;
+}
+
+.summary__value {
+  @include bold-font(1.25rem);
+}
+
+.summary__name {
+  font-size: 0.9rem;
+}
+
+.data__category {
+  margin: 1rem 0;
+}
+
+.data__category__title {
+  font-weight: bold;
+  margin: 0;
+}
+
+.data__divide__line {
+  margin: 0;
+}
+
+.pie__chart__area {
+  width: 100%;
+}
+
+.one__pie__chart {
+  width: 50%;
+}
+
+.pie__chart__title {
+  font-weight: bold;
+  text-align: center;
+}
+
+/******************************** media ********************************/
+
+@media (max-width: 767) {
+  .pie__chart__area {
+    flex-direction: column;
+  }
+
+  .one__pie__chart {
+    width: 100%;
+  }
+}

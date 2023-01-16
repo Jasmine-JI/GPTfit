@@ -157,6 +157,22 @@ const routes: Routes = [
         canActivate: [DashboardGuard],
       },
       {
+        path: `system/${appPath.adminManage.systemOperationReport}`,
+        canActivate: [DashboardGuard],
+        loadComponent: () =>
+          import('../admin-manage/system-operation-report/system-operation-report.component').then(
+            (m) => m.SystemOperationReportComponent
+          ),
+      },
+      {
+        path: `system/${appPath.adminManage.groupOperationList}`,
+        canActivate: [DashboardGuard],
+        loadComponent: () =>
+          import('../admin-manage/group-operation-list/group-operation-list.component').then(
+            (m) => m.GroupOperationListComponent
+          ),
+      },
+      {
         path: 'activity/:fileId',
         component: ActivityDetailComponent,
       },

@@ -1,0 +1,351 @@
+<app-loading-bar [progress]="progress"></app-loading-bar>
+<article>
+  <h4 class="pageTitle">營運分析報告</h4>
+  <section class="flexRow tab__bar">
+    <button
+      class="report__type__tab"
+      [class.report__type__tab--active]="postInfo.type === SystemAnalysisType.group"
+      (click)="chnageReportType(SystemAnalysisType.group)"
+    >
+      <i class="icon-svg_web-icon_p1_003-peoples tab__icon"></i>
+      {{ 'universal_group_group' | translate }}
+    </button>
+    <button
+      class="report__type__tab"
+      [class.report__type__tab--active]="postInfo.type === SystemAnalysisType.member"
+      (click)="chnageReportType(SystemAnalysisType.member)"
+    >
+      <i class="icon-svg_web-icon_p1_079-user tab__icon"></i>
+      會員
+    </button>
+    <button
+      class="report__type__tab"
+      [class.report__type__tab--active]="postInfo.type === SystemAnalysisType.device"
+      (click)="chnageReportType(SystemAnalysisType.device)"
+    >
+      <i class="icon-svg_web-icon_p1_010-treadmill tab__icon"></i>
+      {{ 'universal_deviceSetting_device' | translate }}
+    </button>
+  </section>
+  <div class="report__content">
+    <section class="content__section" *ngIf="operationInfo">
+      <p class="creation__time">
+        建立日期：<time>{{ creationTime }}</time>
+      </p>
+      <h5 class="section__title">
+        {{ 'universal_activityData_summary' | translate }}
+      </h5>
+      <hr class="section__title__line" />
+      <p class="description">截至目前為止的概要統計數據</p>
+      <ul class="summary__grid" [ngSwitch]="postInfo.type">
+        <ng-container *ngSwitchCase="SystemAnalysisType.group">
+          <li
+            *ngTemplateOutlet="
+              summaryItem;
+              context: {
+                value: operationInfo.info.baseCounts.totalBrand,
+                translateKey: '品牌數'
+              }
+            "
+          ></li>
+          <li
+            *ngTemplateOutlet="
+              summaryItem;
+              context: {
+                value: operationInfo.info.baseCounts.inOperationBrand,
+                translateKey: '營業中品牌數'
+              }
+            "
+          ></li>
+          <li
+            *ngTemplateOutlet="
+              summaryItem;
+              context: {
+                value: operationInfo.info.baseCounts.totalBranch,
+                translateKey: '分店數'
+              }
+            "
+          ></li>
+          <li
+            *ngTemplateOutlet="
+              summaryItem;
+              context: {
+                value: operationInfo.info.baseCounts.totalClass,
+                translateKey: '課程數'
+              }
+            "
+          ></li>
+          <li
+            *ngTemplateOutlet="
+              summaryItem;
+              context: {
+                value: operationInfo.info.baseCounts.totalGroupMember,
+                translateKey: '群組成員數'
+              }
+            "
+          ></li>
+          <li
+            *ngTemplateOutlet="
+              summaryItem;
+              context: {
+                value: operationInfo.info.baseCounts.totalClassFile,
+                translateKey: '課程檔案數'
+              }
+            "
+          ></li>
+        </ng-container>
+        <ng-container *ngSwitchCase="SystemAnalysisType.member">
+          <li
+            *ngTemplateOutlet="
+              summaryItem;
+              context: {
+                value: operationInfo.info.baseCounts.totalMember,
+                translateKey: '總會員數'
+              }
+            "
+          ></li>
+          <li
+            *ngTemplateOutlet="
+              summaryItem;
+              context: {
+                value: operationInfo.info.baseCounts.totalActiveMember,
+                translateKey: '活躍會員數'
+              }
+            "
+          ></li>
+          <li
+            *ngTemplateOutlet="
+              summaryItem;
+              context: {
+                value:
+                  ((operationInfo.info.baseCounts.totalActiveMember /
+                    operationInfo.info.baseCounts.totalMember) *
+                    100 | number: '1.0-1') + '%',
+                translateKey: '活躍率'
+              }
+            "
+          ></li>
+          <li
+            *ngTemplateOutlet="
+              summaryItem;
+              context: {
+                value: operationInfo.info.baseCounts.totalSportsFile,
+                translateKey: '運動檔案數'
+              }
+            "
+          ></li>
+          <li
+            *ngTemplateOutlet="
+              summaryItem;
+              context: {
+                value: operationInfo.info.baseCounts.totalLifeTrackingFile,
+                translateKey: '生活追蹤檔案數'
+              }
+            "
+          ></li>
+        </ng-container>
+        <ng-container *ngSwitchCase="SystemAnalysisType.device">
+          <li
+            *ngTemplateOutlet="
+              summaryItem;
+              context: {
+                value: operationInfo.info.baseCounts.totalEnableDevice,
+                translateKey: '啟用裝置數'
+              }
+            "
+          ></li>
+          <li
+            *ngTemplateOutlet="
+              summaryItem;
+              context: {
+                value: operationInfo.info.baseCounts.totalRegisterDevice,
+                translateKey: '註冊裝置數'
+              }
+            "
+          ></li>
+        </ng-container>
+      </ul>
+    </section>
+    <section class="content__section" [ngSwitch]="postInfo.type" *ngIf="operationInfo">
+      <h5 class="section__title">總體分析圖表</h5>
+      <hr class="section__title__line" />
+      <ng-container *ngSwitchCase="SystemAnalysisType.group">
+        <div class="data__category" *ngIf="overviewData.planAnalysisChartData">
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: { title: '方案分析', description: '目前各品牌或企業群組使用方案之統計數據' }
+            "
+          ></ng-container>
+          <app-category-column-chart
+            [data]="overviewData.planAnalysisChartData.data"
+            [seriesName]="overviewData.planAnalysisChartData.seriesName"
+          ></app-category-column-chart>
+          <app-operation-data-table
+            [tableData]="overviewData.planAnalysisTableData"
+          ></app-operation-data-table>
+        </div>
+        <div class="data__category" *ngIf="overviewData.overviewAnalysisTableData">
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: { title: '概要分析', description: '目前各品牌或企業群組相關統計數據' }
+            "
+          ></ng-container>
+          <app-operation-data-table
+            [tableData]="overviewData.overviewAnalysisTableData"
+          ></app-operation-data-table>
+        </div>
+        <div class="data__category" *ngIf="overviewData.classTypeAnalysisTableData">
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: {
+                title: '開課類別分析',
+                description: '各群組使用Trainlive開課之運動類別統計數據'
+              }
+            "
+          ></ng-container>
+          <div
+            *ngTemplateOutlet="
+              doublePieChart;
+              context: {
+                firstTitleKey: '開課類別',
+                firstChartData: overviewData.teachSportsTypeChartData,
+                secondTitleKey: '檔案類別',
+                secondChartData: overviewData.fileSportsTypeChartData
+              }
+            "
+          ></div>
+          <app-operation-data-table
+            [tableData]="overviewData.classTypeAnalysisTableData"
+          ></app-operation-data-table>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="SystemAnalysisType.member">
+        <div class="data__category" *ngIf="overviewData.activeAnalysisTableData">
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: {
+                title: '會員活躍度分析',
+                description: '1個月內上傳運動檔案之活躍會員統計數據'
+              }
+            "
+          ></ng-container>
+          <app-pie-chart [data]="overviewData.activeAnalysisChartData"></app-pie-chart>
+          <app-operation-data-table
+            [tableData]="overviewData.activeAnalysisTableData"
+          ></app-operation-data-table>
+        </div>
+        <div class="data__category" *ngIf="overviewData.ageAnalysisTableData">
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: {
+                title: '會員年齡分佈分析',
+                description: '依性別與年齡範圍分別計算之會員數統計數據'
+              }
+            "
+          ></ng-container>
+          <app-category-column-chart
+            [data]="overviewData.ageAnalysisChartData.data"
+            [seriesName]="overviewData.ageAnalysisChartData.seriesName"
+          ></app-category-column-chart>
+          <app-operation-data-table
+            [tableData]="overviewData.ageAnalysisTableData"
+          ></app-operation-data-table>
+        </div>
+        <div class="data__category" *ngIf="overviewData.sportsTypeTableData">
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: {
+                title: '運動類別分析',
+                description: '依會員上傳之運動檔案其運動類別統計數據'
+              }
+            "
+          ></ng-container>
+          <div
+            *ngTemplateOutlet="
+              doublePieChart;
+              context: {
+                firstTitleKey: 'universal_userProfile_male',
+                firstChartData: overviewData.maleSportsTypeChartData,
+                secondTitleKey: 'universal_userProfile_female',
+                secondChartData: overviewData.femaleSportsTypeChartData
+              }
+            "
+          ></div>
+          <app-operation-data-table
+            [tableData]="overviewData.sportsTypeTableData"
+          ></app-operation-data-table>
+        </div>
+      </ng-container>
+      <ng-container *ngSwitchCase="SystemAnalysisType.device">
+        <div class="data__category" *ngIf="overviewData.deviceTableData">
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: {
+                title: '裝置類別分析',
+                description: '依運動器材裝置其所屬類別之相關統計數據'
+              }
+            "
+          ></ng-container>
+          <div
+            *ngTemplateOutlet="
+              doublePieChart;
+              context: {
+                firstTitleKey: '啟用數量',
+                firstChartData: overviewData.enableChartData,
+                secondTitleKey: '註冊數量',
+                secondChartData: overviewData.registerChartData
+              }
+            "
+          ></div>
+          <app-operation-data-table
+            [tableData]="overviewData.deviceTableData"
+          ></app-operation-data-table>
+        </div>
+      </ng-container>
+    </section>
+  </div>
+</article>
+
+<ng-template #summaryItem let-value="value" let-translateKey="translateKey">
+  <li class="flexCol">
+    <span class="summary__value">{{ value }}</span>
+    <span class="summary__name">{{ translateKey | translate }}</span>
+  </li>
+</ng-template>
+
+<ng-template #dataTypeArea let-title="title" let-description="description">
+  <h6 class="data__category__title">{{ title | translate }}</h6>
+  <hr class="data__divide__line" />
+  <p class="description">{{ description | translate }}</p>
+</ng-template>
+
+<ng-template
+  #doublePieChart
+  let-firstTitleKey="firstTitleKey"
+  let-firstChartData="firstChartData"
+  let-secondTitleKey="secondTitleKey"
+  let-secondChartData="secondChartData"
+>
+  <div class="flexRow pie__chart__area">
+    <div class="flexCol one__pie__chart">
+      <p class="pie__chart__title">
+        {{ firstTitleKey | translate }}
+      </p>
+      <app-pie-chart [data]="firstChartData"></app-pie-chart>
+    </div>
+    <div class="flexCol one__pie__chart">
+      <p class="pie__chart__title">
+        {{ secondTitleKey | translate }}
+      </p>
+      <app-pie-chart [data]="secondChartData"></app-pie-chart>
+    </div>
+  </div>
+</ng-template>

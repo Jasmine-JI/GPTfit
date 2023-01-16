@@ -52,7 +52,6 @@ import { ThresholdInfoComponent } from './chart/threshold-info/threshold-info.co
 import { ThresholdChartComponent } from './chart/threshold-chart/threshold-chart.component';
 import { TrendInfoChartComponent } from './chart/trend-info-chart/trend-info-chart.component';
 import { MuscleMapCardComponent } from './activity-detail/muscle-map-card/muscle-map-card.component';
-import { LoadingBarComponent } from './loading-bar/loading-bar.component';
 import { EditIndividualPrivacyComponent } from './edit-individual-privacy/edit-individual-privacy.component';
 import { CloudrunMapComponent } from './cloudrun-map/cloudrun-map.component';
 import { EquidistantChartComponent } from './chart/equidistant-chart/equidistant-chart.component';
@@ -132,6 +131,7 @@ import {
   SportsFileRoadComponent,
   SportFileFooterComponent,
   TipDialogComponent,
+  LoadingBarComponent,
 } from '../../components';
 
 @NgModule({
@@ -161,6 +161,7 @@ import {
     SportsFileRoadComponent,
     SportFileFooterComponent,
     TipDialogComponent,
+    LoadingBarComponent,
     SexPipe,
     SafeHtmlPipe,
     LineBreakPipe,
@@ -249,7 +250,6 @@ import {
     ThresholdChartComponent,
     TrendInfoChartComponent,
     MuscleMapCardComponent,
-    LoadingBarComponent,
     EditIndividualPrivacyComponent,
     CloudrunMapComponent,
     EquidistantChartComponent,
@@ -310,7 +310,6 @@ import {
     TrinomialChartComponent,
     EditIndividualPrivacyComponent,
     CloudrunMapComponent,
-    LoadingBarComponent,
     ThresholdInfoComponent,
     ThresholdChartComponent,
     RelativeColumnChartComponent,
