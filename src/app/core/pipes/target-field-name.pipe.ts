@@ -29,6 +29,8 @@ export class TargetFieldNamePipe implements PipeTransform {
         return 'universal_lifeTracking_achievementRate';
       case 'distance':
         return 'universal_activityData_totalDistance';
+      case 'totalFeedbackEnergy':
+        return 'universal_activityData_totalEnergyGen';
       default:
         return value;
     }

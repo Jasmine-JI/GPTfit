@@ -60,6 +60,10 @@
   @include analysis-column(120px);
 }
 
+.analysis__energy {
+  @include analysis-column(120px);
+}
+
 .analysis__activity__second {
   @include analysis-column(120px);
 }

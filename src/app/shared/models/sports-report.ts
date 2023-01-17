@@ -17,6 +17,7 @@ export const COMMON_DATA = [
   'totalHrZone4Second',
   'totalHrZone5Second',
   'totalSecond',
+  'totalFeedbackEnergy',
 ];
 
 /**

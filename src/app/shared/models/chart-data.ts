@@ -66,7 +66,7 @@ export const infoColor = [
   'rgba(239, 56, 150, 1)',
 ];
 
-export const SPORT_TYPE_COLOR = [
+export const sportTypeColor = [
   'rgba(234, 87, 87, 1)',
   'rgba(255, 154, 34, 1)',
   'rgba(249, 204, 61, 1)',
@@ -250,6 +250,16 @@ export const trendChartColor = {
     compare: {
       top: 'rgba(68, 71, 196, 1)',
       bottom: 'rgba(241, 69, 160, 1)',
+    },
+  },
+  totalFeedbackEnergy: {
+    base: {
+      top: 'rgba(247, 148, 72, 1)',
+      bottom: 'rgba(247, 206, 72, 1)',
+    },
+    compare: {
+      top: 'rgba(110, 245, 177, 1)',
+      bottom: 'rgba(157, 245, 110, 1)',
     },
   },
   achieveRate: {
