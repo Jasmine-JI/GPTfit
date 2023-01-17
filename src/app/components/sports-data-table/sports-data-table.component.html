@@ -268,6 +268,22 @@
           "
         ></div>
       </ng-container>
+      <ng-container *ngIf="[SportType.all, SportType.run].includes(sportType)">
+        <div
+          *ngTemplateOutlet="
+            analysisHeader;
+            context: {
+              columnType: 'totalFeedbackEnergy',
+              title: 'universal_activityData_totalEnergyGen' | translate,
+              dataUnit: 'whr',
+              className: 'analysis__energy',
+              showHeader: chartAnalysisOption.getItemSelectStatus(
+                AnalysisSportsColumn.totalFeedbackEnergy
+              )
+            }
+          "
+        ></div>
+      </ng-container>
       <div
         *ngTemplateOutlet="
           analysisHeader;
@@ -524,6 +540,21 @@
                 "
               ></span>
             </ng-container>
+            <ng-container *ngIf="[SportType.all, SportType.run].includes(sportType)">
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[0].totalFeedbackEnergy ?? 0,
+                    diff: checkProgressive(index, 'totalFeedbackEnergy'),
+                    className: 'analysis__energy',
+                    showData: chartAnalysisOption.getItemSelectStatus(
+                      AnalysisSportsColumn.totalFeedbackEnergy
+                    )
+                  }
+                "
+              ></span>
+            </ng-container>
             <div
               *ngTemplateOutlet="
                 analysisData;
@@ -753,6 +784,20 @@
                     data: _data[1].avgWatt ?? 0,
                     className: 'analysis__power',
                     showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.power)
+                  }
+                "
+              ></span>
+            </ng-container>
+            <ng-container *ngIf="[SportType.all, SportType.run].includes(sportType)">
+              <span
+                *ngTemplateOutlet="
+                  analysisData;
+                  context: {
+                    data: _data[1].totalFeedbackEnergy ?? 0,
+                    className: 'analysis__energy',
+                    showData: chartAnalysisOption.getItemSelectStatus(
+                      AnalysisSportsColumn.totalFeedbackEnergy
+                    )
                   }
                 "
               ></span>

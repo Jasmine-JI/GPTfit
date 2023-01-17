@@ -33,7 +33,7 @@ import { ActivatedRoute } from '@angular/router';
 import { SportsTarget } from '../../classes/sports-target';
 import { SportsReport } from '../../classes/sports-report/sports-report';
 import { PersonalSportsChartData } from '../../classes/sports-report/personal-sports-chart-data';
-import { SPORT_TYPE_COLOR, trendChartColor, HrZoneRange } from '../../models/chart-data';
+import { sportTypeColor, trendChartColor, HrZoneRange } from '../../models/chart-data';
 import { mi, ft, lb } from '../../models/bs-constant';
 import { DataUnitType } from '../../../core/enums/common';
 import { DefaultDateRange } from '../../classes/default-date-range';
@@ -202,7 +202,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
   readonly SportType = SportType;
   readonly DataUnitType = DataUnitType;
-  readonly SPORT_TYPE_COLOR = SPORT_TYPE_COLOR;
+  readonly sportTypeColor = sportTypeColor;
   readonly trendChartColor = trendChartColor;
   readonly DateUnit = DateUnit;
   readonly MuscleGroup = MuscleGroup;
@@ -898,6 +898,10 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         case 'targetAchieveRate': {
           const percentage = mathRounding(value * 100, 1);
           result.update(percentage, '%');
+          break;
+        }
+        case 'totalFeedbackEnergy': {
+          result.update(mathRounding(value, 1), 'whr');
           break;
         }
         default:

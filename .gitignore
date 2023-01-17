@@ -52,3 +52,6 @@ Thumbs.db
 
 # sitemap.xml（備份在src/environment）
 sitemap.xml
+
+# vscode自動新增的log檔
+*.log

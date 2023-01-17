@@ -33,7 +33,7 @@ import { ProfessionalAnalysisOption } from '../../../../professional/classes/pro
 import { ProfessionalChartAnalysisOption } from '../../../../professional/classes/professional-chart-analysis-option';
 import { AnalysisSportsColumn } from '../../../../../shared/enum/report-analysis';
 import { AnalysisAssignMenu } from '../../../../../shared/models/report-analysis';
-import { SPORT_TYPE_COLOR, trendChartColor } from '../../../../../shared/models/chart-data';
+import { sportTypeColor, trendChartColor } from '../../../../../shared/models/chart-data';
 import { TargetField, TargetConditionMap } from '../../../../../core/models/api/api-common';
 import { MuscleGroup } from '../../../../../shared/enum/weight-train';
 import { REGEX_GROUP_ID } from '../../../../../shared/models/utils-constant';
@@ -211,7 +211,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   readonly muscleMetricUnit = 'kg*rep*set';
   readonly muscleImperialUnit = 'lb*rep*set';
   readonly MuscleGroup = MuscleGroup;
-  readonly SPORT_TYPE_COLOR = SPORT_TYPE_COLOR;
+  readonly sportTypeColor = sportTypeColor;
   readonly trendChartColor = trendChartColor;
   readonly DateUnit = DateUnit;
 
@@ -776,6 +776,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         case 'rowingAvgWatt':
           result.update(value, 'watt');
           break;
+        case 'totalFeedbackEnergy':
+          result.update(mathRounding(value ?? 0, 1), 'whr');
+          break;
         default:
           result.update(value);
           break;
@@ -828,8 +831,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         case 'targetAchieveRate':
           result = `${mathRounding(value * 100, 1)}%`;
           break;
+        case 'totalFeedbackEnergy':
+          result = mathRounding(value ?? 0, 1);
+          break;
         default:
-          result = Math.round(value);
+          result = Math.round(value ?? 0);
           break;
       }
     }
