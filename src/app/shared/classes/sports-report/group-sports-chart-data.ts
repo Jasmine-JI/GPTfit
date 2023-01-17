@@ -39,6 +39,8 @@ export class GroupSportsChartData {
 
   private _caloriesTrend: CompareTrendData;
 
+  private _totalFeedbackEnergy: CompareTrendData;
+
   private _achievementRate: CompareTrendData;
 
   private _sportsTableData: Array<any> = [];
@@ -63,6 +65,10 @@ export class GroupSportsChartData {
     this._hrZoneTrend = new HrZoneTrendChartData(isCompareMode);
     this._totalSecondTrend = new CompareTrendData(isCompareMode, trendChartColor.totalSecond);
     this._caloriesTrend = new CompareTrendData(isCompareMode, trendChartColor.calories);
+    this._totalFeedbackEnergy = new CompareTrendData(
+      isCompareMode,
+      trendChartColor.totalFeedbackEnergy
+    );
     this._achievementRate = new CompareTrendData(isCompareMode, trendChartColor.achieveRate);
 
     const { sportType, dateUnit, baseTime, compareTime } = condition;
@@ -391,6 +397,7 @@ export class GroupSportsChartData {
         calories: _calories,
         totalSecond: _totalSecond,
         totalActivitySecond: _totalActivitySecond,
+        totalFeedbackEnergy: _totalFeedbackEnergy,
         achieve: _achieve,
       } = _activities;
 
@@ -399,6 +406,7 @@ export class GroupSportsChartData {
       this._hrZoneTrend.addBaseData(hrZone, dateRange);
       this._totalSecondTrend.addBaseData(_totalSecond, dateRange);
       this._caloriesTrend.addBaseData(_calories, dateRange);
+      this._totalFeedbackEnergy.addBaseData(_totalFeedbackEnergy, dateRange);
 
       const _achieveRate = mathRounding(countPercentage(_achieve, totalPeople, 1), 1);
       this._achievementRate.addBaseData(_achieveRate, dateRange);
@@ -408,6 +416,7 @@ export class GroupSportsChartData {
           hrZone,
           totalSecond: _totalSecond || 0,
           calories: _calories || 0,
+          totalFeedbackEnergy: _totalFeedbackEnergy || 0,
           achieveRate: _achieveRate,
         },
       ]);
@@ -437,6 +446,7 @@ export class GroupSportsChartData {
         calories: _baseCalories,
         totalSecond: _baseTotalSecond,
         totalActivitySecond: _baseTotalActivitySecond,
+        totalFeedbackEnergy: _baseTotalFeedbackEnergy,
         achieve: _baseAchieve,
       } = _baseActivities;
 
@@ -455,6 +465,7 @@ export class GroupSportsChartData {
         calories: _compareCalories,
         totalSecond: _compareTotalSecond,
         totalActivitySecond: _compareTotalActivitySecond,
+        totalFeedbackEnergy: _compareTotalFeedbackEnergy,
         achieve: _compareAchieve,
       } = _compareActivities;
 
@@ -484,6 +495,12 @@ export class GroupSportsChartData {
         _compareCalories,
         _compareDateRange
       );
+      this._totalFeedbackEnergy.addMixData(
+        _baseTotalFeedbackEnergy,
+        _baseDateRange,
+        _compareTotalFeedbackEnergy,
+        _compareDateRange
+      );
 
       const _baseAchieveRate = mathRounding(countPercentage(_baseAchieve, totalPeople, 1), 1);
       const _compareAchieveRate = mathRounding(countPercentage(_compareAchieve, totalPeople, 1), 1);
@@ -500,6 +517,7 @@ export class GroupSportsChartData {
           hrZone: _baseHrZone,
           totalSecond: _baseTotalSecond || 0,
           calories: _baseCalories || 0,
+          totalFeedbackEnergy: _baseTotalFeedbackEnergy || 0,
           achieveRate: _baseAchieve,
         },
         {
@@ -507,6 +525,7 @@ export class GroupSportsChartData {
           hrZone: _compareHrZone,
           totalSecond: _compareTotalSecond || 0,
           calories: _compareCalories || 0,
+          totalFeedbackEnergy: _compareTotalFeedbackEnergy || 0,
           achieveRate: _compareAchieve,
         },
       ]);
@@ -762,6 +781,13 @@ export class GroupSportsChartData {
    */
   get caloriesTrend() {
     return this._caloriesTrend;
+  }
+
+  /**
+   * 取得卡路里趨勢數據
+   */
+  get totalFeedbackEnergyTrend() {
+    return this._totalFeedbackEnergy;
   }
 
   /**

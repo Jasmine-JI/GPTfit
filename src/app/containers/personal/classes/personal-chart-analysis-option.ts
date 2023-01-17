@@ -25,14 +25,18 @@ export class PersonalChartAnalysisOption extends AnalysisOption {
 
     switch (sportType) {
       case SportType.all:
-        list = list.concat([AnalysisSportsColumn.benefitTime, AnalysisSportsColumn.pai]);
+        list = list.concat([
+          AnalysisSportsColumn.benefitTime,
+          AnalysisSportsColumn.pai,
+          AnalysisSportsColumn.totalFeedbackEnergy,
+        ]);
         break;
       case SportType.run:
-      case SportType.swim:
         list = list.concat([
           AnalysisSportsColumn.distance,
           AnalysisSportsColumn.speedOrPace,
           AnalysisSportsColumn.cadence,
+          AnalysisSportsColumn.totalFeedbackEnergy,
         ]);
         break;
       case SportType.cycle:
@@ -42,9 +46,17 @@ export class PersonalChartAnalysisOption extends AnalysisOption {
           AnalysisSportsColumn.speedOrPace,
           AnalysisSportsColumn.cadence,
           AnalysisSportsColumn.power,
+          // AnalysisSportsColumn.totalFeedbackEnergy
         ]);
         break;
       case SportType.weightTrain:
+        break;
+      case SportType.swim:
+        list = list.concat([
+          AnalysisSportsColumn.distance,
+          AnalysisSportsColumn.speedOrPace,
+          AnalysisSportsColumn.cadence,
+        ]);
         break;
       case SportType.ball:
         list = list.concat([AnalysisSportsColumn.distance]);

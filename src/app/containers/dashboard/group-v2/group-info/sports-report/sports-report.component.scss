@@ -71,6 +71,10 @@ $not-achieved-color: rgba(255, 0, 0, 1);
   @include analysis-column(120px);
 }
 
+.analysis__energy {
+  @include analysis-column(120px);
+}
+
 .analysis__activity__second {
   @include analysis-column(120px);
 }

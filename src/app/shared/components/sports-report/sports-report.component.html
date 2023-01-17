@@ -184,7 +184,7 @@
               class="report-dot"
               [style.color]="
                 [SportType.all, _index + 1].includes(uiFlag.selectedType)
-                  ? SPORT_TYPE_COLOR[_index]
+                  ? sportTypeColor[_index]
                   : '#9e9e9e'
               "
               >●</span
@@ -994,6 +994,93 @@
             [conditionValue]="getAssignCondition('avgHeartRate')"
             *ngIf="chartData.complexHrTrend?.chartData"
           ></app-compare-overlay-column-chart>
+        </div>
+      </div>
+    </div>
+
+    <div class="flexCol" *ngIf="[SportType.all, SportType.run].includes(reportCondition.sportType)">
+      <h6 class="report-trendChartTitle">
+        {{ 'universal_activityData_totalEnergyGen' | translate }}
+      </h6>
+      <div class="flexRow report-trendChart">
+        <div class="flexCol report-chartHint">
+          <ng-container *ngIf="!uiFlag.isCompareMode">
+            <span
+              *ngTemplateOutlet="
+                chartInfoTemplate;
+                context: {
+                  key: 'universal_activityData_totalEnergyGen',
+                  valueUnit: {
+                    value: sportInfoData.base.infoData.totalFeedbackEnergy || 0 | number: '1.0-1',
+                    unit: 'whr'
+                  }
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                chartInfoTemplate;
+                context: {
+                  key: 'universal_activityData_totalEnergyGen',
+                  valueUnit: {
+                    value:
+                      (sportInfoData.base.infoData.totalFeedbackEnergy || 0) /
+                        (chartData.totalSecondTrend.baseDataLength || Infinity) | number: '1.0-1',
+                    unit: 'whr'
+                  },
+                  dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
+                }
+              "
+            ></span>
+          </ng-container>
+          <ng-container *ngIf="uiFlag.isCompareMode">
+            <div
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  timeRange: reportCondition.baseTime,
+                  valueUnit: {
+                    value: sportInfoData.base.infoData.totalFeedbackEnergy || 0 | number: '1.0-1',
+                    unit: 'whr'
+                  },
+                  color: trendChartColor.totalFeedbackEnergy.base
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  timeRange: reportCondition.compareTime,
+                  valueUnit: {
+                    value:
+                      sportInfoData.compare?.infoData.totalFeedbackEnergy || 0 | number: '1.0-1',
+                    unit: 'whr'
+                  },
+                  color: trendChartColor.totalFeedbackEnergy.compare
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                chartInfoDiff;
+                context: {
+                  originValue: sportInfoData.diff?.totalFeedbackEnergy || 0,
+                  value: sportInfoData.diff?.totalFeedbackEnergy || 0 | number: '1.0-1',
+                  unit: 'whr'
+                }
+              "
+            ></div>
+          </ng-container>
+        </div>
+        <div class="report-chartFigure">
+          <app-compare-column-trend
+            [data]="chartData.totalFeedbackEnergyTrend.chartData"
+            [type]="'totalFeedbackEnergy'"
+            [conditionValue]="getAssignCondition('totalFeedbackEnergy')"
+            [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
+            *ngIf="chartData.totalFeedbackEnergyTrend?.chartData"
+          ></app-compare-column-trend>
         </div>
       </div>
     </div>
@@ -2575,6 +2662,18 @@
           "
         ></div>
       </ng-container>
+      <ng-container *ngIf="[SportType.all, SportType.run].includes(reportCondition.sportType)">
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              data: getInfoData(infoData, 'totalFeedbackEnergy'),
+              type: 'totalFeedbackEnergy',
+              infoType
+            }
+          "
+        ></div>
+      </ng-container>
     </div>
   </div>
 </ng-template>
@@ -2681,6 +2780,9 @@
       </ng-container>
       <ng-container *ngSwitchCase="'power'">
         {{ 'universal_activityData_avgPower' | translate }}
+      </ng-container>
+      <ng-container *ngSwitchCase="'totalFeedbackEnergy'">
+        {{ 'universal_activityData_totalEnergyGen' | translate }}
       </ng-container>
     </span>
   </div>

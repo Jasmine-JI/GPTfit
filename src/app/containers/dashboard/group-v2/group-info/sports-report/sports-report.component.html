@@ -179,7 +179,7 @@
               class="report-dot"
               [style.color]="
                 [SportType.all, _index + 1].includes(uiFlag.selectedType)
-                  ? SPORT_TYPE_COLOR[_index]
+                  ? sportTypeColor[_index]
                   : '#9e9e9e'
               "
               >●</span
@@ -458,6 +458,89 @@
             [conditionValue]="getAssignCondition('calories')"
             [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
             *ngIf="groupChartData.caloriesTrend.chartData"
+          ></app-compare-column-trend>
+        </div>
+      </div>
+    </div>
+
+    <div class="flexCol" *ngIf="[SportType.all, SportType.run].includes(reportCondition.sportType)">
+      <h6 class="report-trendChartTitle">
+        {{ 'universal_activityData_totalEnergyGen' | translate }}
+      </h6>
+      <div class="flexRow report-trendChart">
+        <div class="flexCol report-chartHint">
+          <ng-container *ngIf="!uiFlag.isCompareMode">
+            <span
+              *ngTemplateOutlet="
+                chartInfoTemplate;
+                context: {
+                  key: 'universal_activityData_totalEnergyGen',
+                  value:
+                    groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base')
+                      .totalFeedbackEnergy || 0 | number: '1.0-0'
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                chartInfoTemplate;
+                context: {
+                  key: 'universal_activityData_totalEnergyGen',
+                  value:
+                    (groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base')
+                      .totalFeedbackEnergy || 0) /
+                      (groupChartData.totalSecondTrend.baseDataLength || Infinity)
+                    | number: '1.0-0',
+                  dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
+                }
+              "
+            ></span>
+          </ng-container>
+          <ng-container *ngIf="uiFlag.isCompareMode">
+            <div
+              *ngTemplateOutlet="
+                chartCompareModeInfo;
+                context: {
+                  timeRange: reportCondition.baseTime,
+                  value:
+                    groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'base')
+                      .totalFeedbackEnergy || 0 | number: '1.0-0',
+                  color: trendChartColor.totalFeedbackEnergy.base
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                chartCompareModeInfo;
+                context: {
+                  timeRange: reportCondition.compareTime,
+                  value:
+                    groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'compare')
+                      .totalFeedbackEnergy || 0 | number: '1.0-0',
+                  color: trendChartColor.totalFeedbackEnergy.compare
+                }
+              "
+            ></div>
+          </ng-container>
+          <span
+            class="report-targetLineHint"
+            *ngIf="
+              reportCondition.dateUnit.unit === reportCondition.dateUnit.unit &&
+              getAssignCondition('totalFeedbackEnergy')
+            "
+          >
+            {{ 'universal_lifeTracking_targetCalories' | translate }}
+            {{ getAssignCondition('totalFeedbackEnergy') }}
+            car/{{ reportCondition.dateUnit.unit | dateUnitKey | translate }}
+          </span>
+        </div>
+        <div class="report-chartFigure">
+          <app-compare-column-trend
+            [data]="groupChartData.totalFeedbackEnergyTrend.chartData"
+            [type]="'totalFeedbackEnergy'"
+            [conditionValue]="getAssignCondition('totalFeedbackEnergy')"
+            [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
+            *ngIf="groupChartData.totalFeedbackEnergyTrend.chartData"
           ></app-compare-column-trend>
         </div>
       </div>
@@ -818,6 +901,24 @@
             "
           ></div>
         </ng-container>
+        <ng-container *ngIf="[SportType.all, SportType.run].includes(reportCondition.sportType)">
+          <div
+            *ngTemplateOutlet="
+              analysisHeader;
+              context: {
+                isGroupAnalysis: true,
+                columnType: 'totalFeedbackEnergy',
+                title: 'universal_activityData_totalEnergyGen' | translate,
+                dataUnit: 'whr',
+                isPersonAvgData: true,
+                className: 'analysis__energy',
+                showHeader: groupAnalysisOption.getItemSelectStatus(
+                  AnalysisSportsColumn.totalFeedbackEnergy
+                )
+              }
+            "
+          ></div>
+        </ng-container>
         <div
           *ngTemplateOutlet="
             analysisHeader;
@@ -1095,6 +1196,23 @@
                   "
                 ></span>
               </ng-container>
+              <ng-container
+                *ngIf="[SportType.all, SportType.run].includes(reportCondition.sportType)"
+              >
+                <span
+                  *ngTemplateOutlet="
+                    analysisData;
+                    context: {
+                      data: getPerAvgData(_group.base, 'totalFeedbackEnergy').value,
+                      diff: checkGroupProgressive(_group.groupId, 'totalFeedbackEnergy'),
+                      className: 'analysis__energy',
+                      showData: groupAnalysisOption.getItemSelectStatus(
+                        AnalysisSportsColumn.totalFeedbackEnergy
+                      )
+                    }
+                  "
+                ></span>
+              </ng-container>
               <div
                 class="analysis__hr__chart"
                 *ngIf="groupAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.hrChart)"
@@ -1341,6 +1459,22 @@
                       data: getPerAvgData(_group.compare, 'rowingAvgWatt').value,
                       className: 'analysis__power',
                       showData: groupAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.power)
+                    }
+                  "
+                ></span>
+              </ng-container>
+              <ng-container
+                *ngIf="[SportType.all, SportType.run].includes(reportCondition.sportType)"
+              >
+                <span
+                  *ngTemplateOutlet="
+                    analysisData;
+                    context: {
+                      data: getPerAvgData(_group.compare, 'totalFeedbackEnergy').value,
+                      className: 'analysis__energy',
+                      showData: groupAnalysisOption.getItemSelectStatus(
+                        AnalysisSportsColumn.totalFeedbackEnergy
+                      )
                     }
                   "
                 ></span>
@@ -1778,6 +1912,23 @@
                 dataUnit: 'w',
                 className: 'analysis__power',
                 showHeader: personalAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.power)
+              }
+            "
+          ></div>
+        </ng-container>
+        <ng-container *ngIf="[SportType.all, SportType.run].includes(reportCondition.sportType)">
+          <div
+            *ngTemplateOutlet="
+              analysisHeader;
+              context: {
+                isGroupAnalysis: false,
+                columnType: 'totalFeedbackEnergy',
+                title: 'universal_activityData_totalEnergyGen' | translate,
+                dataUnit: 'whr',
+                className: 'analysis__energy',
+                showHeader: personalAnalysisOption.getItemSelectStatus(
+                  AnalysisSportsColumn.totalFeedbackEnergy
+                )
               }
             "
           ></div>
@@ -2229,6 +2380,24 @@
                   "
                 ></span>
               </ng-container>
+              <ng-container
+                *ngIf="[SportType.all, SportType.run].includes(reportCondition.sportType)"
+              >
+                <span
+                  *ngTemplateOutlet="
+                    analysisData;
+                    context: {
+                      data: getPersonalData(_person.base, 'totalFeedbackEnergy'),
+                      diff: checkPersonProgressive(_person.memberId, 'totalFeedbackEnergy'),
+                      className: 'analysis__energy',
+                      showData: personalAnalysisOption.getItemSelectStatus(
+                        AnalysisSportsColumn.totalFeedbackEnergy
+                      ),
+                      openPrivacy: _person.base.openPrivacy
+                    }
+                  "
+                ></span>
+              </ng-container>
               <ng-container *ngIf="reportCondition.sportType === SportType.all">
                 <span
                   class="analysis__prefer__sports"
@@ -2631,6 +2800,23 @@
                   "
                 ></span>
               </ng-container>
+              <ng-container
+                *ngIf="[SportType.all, SportType.run].includes(reportCondition.sportType)"
+              >
+                <span
+                  *ngTemplateOutlet="
+                    analysisData;
+                    context: {
+                      data: getPersonalData(_person.compare, 'totalFeedbackEnergy'),
+                      className: 'analysis__energy',
+                      showData: personalAnalysisOption.getItemSelectStatus(
+                        AnalysisSportsColumn.totalFeedbackEnergy
+                      ),
+                      openPrivacy: _person.compare?.openPrivacy
+                    }
+                  "
+                ></span>
+              </ng-container>
               <ng-container *ngIf="reportCondition.sportType === SportType.all">
                 <span
                   class="analysis__prefer__sports"
@@ -2930,6 +3116,18 @@
           "
         ></div>
       </ng-container>
+      <ng-container *ngIf="[SportType.all, SportType.run].includes(reportCondition.sportType)">
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              data: getPerAvgData(infoData, 'totalFeedbackEnergy'),
+              type: 'perEnergy',
+              isBaseData
+            }
+          "
+        ></div>
+      </ng-container>
     </div>
   </div>
 </ng-template>
@@ -3032,6 +3230,10 @@
       <ng-container *ngSwitchCase="'perPower'">
         {{ 'universal_activityData_perCapita' | translate }}
         {{ 'universal_activityData_power' | translate }}
+      </ng-container>
+      <ng-container *ngSwitchCase="'perEnergy'">
+        {{ 'universal_activityData_perCapita' | translate }}
+        {{ 'universal_activityData_totalEnergyGen' | translate }}
       </ng-container>
     </span>
   </div>
