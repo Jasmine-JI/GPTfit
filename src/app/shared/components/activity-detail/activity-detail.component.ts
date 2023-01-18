@@ -46,6 +46,7 @@ import {
   base64ToFile,
   getPaceUnit,
   getUserHrRange,
+  deepCopy,
 } from '../../../core/utils';
 import { AccessRight } from '../../enum/accessright';
 import { ComplexSportsHandler } from '../../classes/sports-report/complex-sports-handler';
@@ -201,6 +202,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       gforceX: <Array<number>>[0],
       gforceY: <Array<number>>[0],
       gforceZ: <Array<number>>[0],
+      generateWatt: <Array<number>>[0],
     },
   };
 
@@ -1254,15 +1256,15 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   assignDataRef() {
     if (!this.trendChartOpt.segmentMode) {
       if (this.trendChartOpt.xAxisType === 'pointSecond') {
-        this.trendChartOpt.xAxisDataRef = this.activityPointLayer['pointSecond'];
-        this.trendChartOpt.yAxisDataRef = this.activityPointLayer;
+        this.trendChartOpt.xAxisDataRef = deepCopy(this.activityPointLayer['pointSecond']);
+        this.trendChartOpt.yAxisDataRef = deepCopy(this.activityPointLayer);
       } else {
-        this.trendChartOpt.xAxisDataRef = this.trendChartData.xAxis;
-        this.trendChartOpt.yAxisDataRef = this.trendChartData.yAxis;
+        this.trendChartOpt.xAxisDataRef = deepCopy(this.trendChartData.xAxis);
+        this.trendChartOpt.yAxisDataRef = deepCopy(this.trendChartData.yAxis);
       }
     } else {
-      this.trendChartOpt.xAxisDataRef = this.segmentData.xAxis;
-      this.trendChartOpt.yAxisDataRef = this.segmentData.yAxis;
+      this.trendChartOpt.xAxisDataRef = deepCopy(this.segmentData.xAxis);
+      this.trendChartOpt.yAxisDataRef = deepCopy(this.segmentData.yAxis);
     }
   }
 
@@ -1303,7 +1305,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['altitude', 'altitudeMeters'],
           ['cadence', 'runCadence'],
           ['speed', 'speed'],
-          ['feedbackWatt', 'feedbackWatt'],
+          ['generateWatt', 'feedbackWatt'],
         ];
         break;
       case SportType.cycle:
@@ -1314,7 +1316,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['cadence', 'cycleCadence'],
           ['power', 'cycleWatt'],
           ['speed', 'speed'],
-          ['feedbackWatt', 'feedbackWatt'],
         ];
         break;
       case SportType.weightTrain:
@@ -1390,16 +1391,16 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   countSegmentData() {
     this.initSegmentData();
-    const countList = this.getCountList(+this.activityInfoLayer.type as SportType),
-      range = this.trendChartOpt.segmentRange,
-      refXAxisData =
-        this.trendChartOpt.xAxisType === 'pointSecond'
-          ? this.activityPointLayer['pointSecond']
-          : this.trendChartData.xAxis,
-      refYAxisData =
-        this.trendChartOpt.xAxisType === 'pointSecond'
-          ? this.activityPointLayer
-          : this.trendChartData.yAxis;
+    const countList = this.getCountList(+this.activityInfoLayer.type as SportType);
+    const range = this.trendChartOpt.segmentRange;
+    const refXAxisData =
+      this.trendChartOpt.xAxisType === 'pointSecond'
+        ? this.activityPointLayer['pointSecond']
+        : this.trendChartData.xAxis;
+    const refYAxisData =
+      this.trendChartOpt.xAxisType === 'pointSecond'
+        ? this.activityPointLayer
+        : this.trendChartData.yAxis;
 
     let divideIndex = 1;
     const segmentTotal = {};
@@ -1408,8 +1409,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       if (refXAxisData[i] < range * divideIndex) {
         // 將分段範圍內的所需所有類型數據根據比例進行加總
         countList.forEach((_list, _index) => {
-          const key = _list[0],
-            apiKey = _list[1];
+          const [key, apiKey] = _list;
 
           // 確認是否為最後一段數據
           let scale: number;
@@ -1530,17 +1530,18 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   initSegmentData() {
     this.segmentData = {
-      xAxis: <Array<number>>[0],
+      xAxis: [0],
       yAxis: {
-        hr: <Array<number>>[0],
-        speed: <Array<number>>[0],
-        altitude: <Array<number>>[0],
-        cadence: <Array<number>>[0],
-        power: <Array<number>>[0],
-        temperature: <Array<number>>[0],
-        gforceX: <Array<number>>[0],
-        gforceY: <Array<number>>[0],
-        gforceZ: <Array<number>>[0],
+        hr: [0],
+        speed: [0],
+        altitude: [0],
+        cadence: [0],
+        power: [0],
+        temperature: [0],
+        gforceX: [0],
+        gforceY: [0],
+        gforceZ: [0],
+        generateWatt: [0],
       },
     };
   }
