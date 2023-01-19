@@ -311,6 +311,110 @@
         </div>
       </ng-container>
     </section>
+    <section class="content__section" [ngSwitch]="postInfo.type">
+      <h5 class="section__title">趨勢分析圖表</h5>
+      <hr class="section__title__line" />
+      <div class="flexRow date__picker__area">
+        <span class="date__pick__title">{{ '日期範圍' | translate }}:</span>
+        <app-single-drop-list
+          [dropList]="trendList"
+          [defaultSelectIndex]="[OperationTrendType.singleTrend, SingleTrendRange.nearlyOneYear]"
+          (selectItem)="selectTrend($event)"
+        ></app-single-drop-list>
+      </div>
+      <div *ngIf="operationTrend && trendData">
+        <div class="data__category">
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: {
+                title: '品牌企業數量趨勢',
+                description: '最高階層群組之數量趨勢數據'
+              }
+            "
+          ></ng-container>
+          <app-category-column-chart
+            [data]="trendData.groupTrendChartData.brand.chartData"
+            [seriesName]="trendData.groupTrendChartData.brand.seriesName"
+          ></app-category-column-chart>
+          <app-operation-data-table
+            [tableData]="trendData.groupTrendTableData.brand"
+          ></app-operation-data-table>
+        </div>
+        <div class="data__category">
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: {
+                title: '開課次數趨勢',
+                description: '所有群組使用Trainlive開課的次數趨勢數據'
+              }
+            "
+          ></ng-container>
+          <app-category-column-chart
+            [data]="trendData.groupTrendChartData.teachCounts.chartData"
+            [seriesName]="trendData.groupTrendChartData.teachCounts.seriesName"
+          ></app-category-column-chart>
+          <app-operation-data-table
+            [tableData]="trendData.groupTrendTableData.teachCounts"
+          ></app-operation-data-table>
+        </div>
+        <div class="data__category">
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: {
+                title: '總課程時間趨勢',
+                description: '所有群組使用Trainlive開課的總課程時間趨勢數據'
+              }
+            "
+          ></ng-container>
+          <app-category-column-chart
+            [data]="trendData.groupTrendChartData.totalClassTime.chartData"
+            [seriesName]="trendData.groupTrendChartData.totalClassTime.seriesName"
+          ></app-category-column-chart>
+          <app-operation-data-table
+            [tableData]="trendData.groupTrendTableData.totalClassTime"
+          ></app-operation-data-table>
+        </div>
+        <div class="data__category">
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: {
+                title: '出席次數趨勢',
+                description: '學員出席Trainlive課程的次數趨勢數據'
+              }
+            "
+          ></ng-container>
+          <app-category-column-chart
+            [data]="trendData.groupTrendChartData.attendCounts.chartData"
+            [seriesName]="trendData.groupTrendChartData.attendCounts.seriesName"
+          ></app-category-column-chart>
+          <app-operation-data-table
+            [tableData]="trendData.groupTrendTableData.attendCounts"
+          ></app-operation-data-table>
+        </div>
+        <div class="data__category">
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: {
+                title: '檔案數量趨勢',
+                description: 'Trainlive課程上傳的檔案數量趨勢數據，可視為學員使用英達裝置上課的次數'
+              }
+            "
+          ></ng-container>
+          <app-category-column-chart
+            [data]="trendData.groupTrendChartData.classFile.chartData"
+            [seriesName]="trendData.groupTrendChartData.classFile.seriesName"
+          ></app-category-column-chart>
+          <app-operation-data-table
+            [tableData]="trendData.groupTrendTableData.classFile"
+          ></app-operation-data-table>
+        </div>
+      </div>
+    </section>
   </div>
 </article>
 

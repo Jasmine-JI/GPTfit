@@ -1,0 +1,56 @@
+@import 'z-index.scss';
+@import 'transform.scss';
+@import 'overflow-scroll.scss';
+@import 'font.scss';
+@import 'drop-triangle.scss';
+
+$height: 24px;
+
+.drop__list__container {
+  position: relative;
+  margin-left: 5px;
+  justify-content: center;
+}
+
+.current__select__item {
+  display: flex;
+  cursor: pointer;
+  border-bottom: 1px solid black;
+  max-height: $height;
+  padding-right: 20px;
+  @include drop-triangle();
+}
+
+.current__select__item--active {
+  &:after {
+    @include drop-active();
+  }
+}
+
+.drop__list {
+  position: absolute;
+  max-height: 150px;
+  min-width: 100px;
+  width: 100%;
+  list-style: none;
+  margin: 0;
+  padding: 2px;
+  border: 1px solid rgba(100, 100, 100, 1);
+  z-index: $drop-menu;
+  background-color: white;
+  @include el-transform(translateY($height));
+  @include overflow-y-scroll();
+}
+
+.list__title {
+  @include bold-font(0.9rem);
+  color: rgba(0, 137, 255, 1);
+}
+
+.list__content {
+  text-align: center;
+  &:hover {
+    background-color: rgba(206, 222, 255, 1);
+    cursor: pointer;
+  }
+}
