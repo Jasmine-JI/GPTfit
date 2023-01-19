@@ -7,7 +7,7 @@ import { HrBase } from '../../shared/enum/personal';
 import { HrZoneRange } from '../../shared/models/chart-data';
 import { BenefitTimeStartZone, DataUnitType } from '../enums/common';
 import { PAI_COFFICIENT, DAY_PAI_TARGET } from '../../shared/models/sports-report';
-import { SPORT_TYPE_COLOR } from '../../shared/models/chart-data';
+import { sportTypeColor } from '../../shared/models/chart-data';
 
 /**
  * 根據運動類型將速度轉成配速(若為bs英制則公里配速轉英哩配速)
@@ -152,9 +152,9 @@ export function getSportsTypeKey(code: number | string) {
  */
 export function assignSportsTypeColor(code: number | string) {
   const sportsCode = `${code}`.includes('s') ? +(code as string).split('s')[1] : +code;
-  const colorLength = SPORT_TYPE_COLOR.length;
-  if (sportsCode > SPORT_TYPE_COLOR.length) return SPORT_TYPE_COLOR[colorLength - 1];
-  return SPORT_TYPE_COLOR[sportsCode - 1];
+  const colorLength = sportTypeColor.length;
+  if (sportsCode > sportTypeColor.length) return sportTypeColor[colorLength - 1];
+  return sportTypeColor[sportsCode - 1];
 }
 
 /**

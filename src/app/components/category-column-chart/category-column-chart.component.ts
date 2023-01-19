@@ -110,12 +110,17 @@ export class CategoryColumnChartComponent implements OnInit, OnChanges, OnDestro
     return chartOption;
   }
 
+  /**
+   * 將圖表
+   */
   getSeries() {
     const { data, seriesName } = this;
+    console.log('column data', data);
     return data.map((_data, _index) => {
-      return {
+      const _value = _data.data ?? _data;
+      const result: any = {
         name: seriesName ? this.translate.instant(seriesName[_index]) : '',
-        data: _data.map((_oneData) => {
+        data: _value.map((_oneData) => {
           if (!Array.isArray(_oneData)) return _oneData;
           const [_category, _value] = _oneData;
           return {
@@ -124,6 +129,9 @@ export class CategoryColumnChartComponent implements OnInit, OnChanges, OnDestro
           };
         }),
       };
+
+      if (_data.color) result.color = _data.color;
+      return result;
     });
   }
 

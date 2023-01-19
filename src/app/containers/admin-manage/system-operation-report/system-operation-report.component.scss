@@ -37,7 +37,7 @@ $report-background-color: rgba(250, 250, 250, 1);
 
 .report__content {
   background-color: $report-background-color;
-  padding: 1rem;
+  padding: 1rem 1rem 10rem 1rem;
   border: 1px solid $report-border-color;
 }
 
@@ -111,6 +111,17 @@ $report-background-color: rgba(250, 250, 250, 1);
 .pie__chart__title {
   font-weight: bold;
   text-align: center;
+}
+
+.date__picker__area {
+  margin: 10px 0;
+  background-color: rgb(225 225 225);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.date__pick__title {
+  font-weight: bold;
 }
 
 /******************************** media ********************************/

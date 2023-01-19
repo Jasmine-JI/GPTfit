@@ -19,3 +19,4 @@ export * from './tip-dialog/tip-dialog.component';
 export * from './loading-bar/loading-bar.component';
 export * from './category-column-chart/category-column-chart.component';
 export * from './operation-data-table/operation-data-table.component';
+export * from './single-drop-list/single-drop-list.component';

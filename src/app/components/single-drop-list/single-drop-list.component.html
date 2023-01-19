@@ -1,0 +1,26 @@
+<div class="flexRow drop__list__container" [style.max-width]="maxWidth + 'px'">
+  <span
+    class="current__select__item"
+    [class.current__select__item--active]="showDropList"
+    (click)="toggleDropList($event)"
+  >
+    <ng-container *ngIf="currentSelect.title">
+      {{ currentSelect.title | translate }} -
+    </ng-container>
+    {{ currentSelect.content | translate }}
+  </span>
+  <ul class="drop__list" *ngIf="showDropList">
+    <ng-container *ngFor="let _dropList of dropList; let _index = index">
+      <span class="list__title" *ngIf="_dropList.titleKey">
+        {{ _dropList.titleKey | translate }}
+      </span>
+      <li
+        class="list__content"
+        *ngFor="let _list of _dropList.list; let _secondIndex = index"
+        (click)="selectListItem(_index, _secondIndex, $event)"
+      >
+        {{ _list.textKey | translate }}
+      </li>
+    </ng-container>
+  </ul>
+</div>

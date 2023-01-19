@@ -14,7 +14,7 @@ export interface Api4102Response {
   trend: {
     timeRange: {
       fieldName: Array<string>;
-      fieldValue: Array<Array<number>>;
+      fieldValue: Array<Array<string>>;
     };
     groupCountsAnalysis?: {
       fieldName: Array<string>;

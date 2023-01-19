@@ -16,7 +16,7 @@ import { of, fromEvent, Subject, Subscription, merge } from 'rxjs';
 import { map, debounceTime, takeUntil, tap } from 'rxjs/operators';
 import { ChartBlock } from '../../../enum/chart';
 import { Percentage } from '../../../classes/percentage';
-import { DISTRIBUTION_CHART_COLOR } from '../../../models/chart-data';
+import { distributionChartColor } from '../../../models/chart-data';
 import { GlobalEventsService } from '../../../../core/services';
 
 @Component({
@@ -281,7 +281,7 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
         this.ctxStatus.save(ctx, 'scale');
 
         // 軸線顏色
-        ctx.fillStyle = DISTRIBUTION_CHART_COLOR.axis;
+        ctx.fillStyle = distributionChartColor.axis;
 
         // y軸
         const yAxis = {
@@ -327,7 +327,7 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
 
         // 軸文字顏色與文字對齊位置
         this.ctxStatus.save(ctx, 'axisText');
-        ctx.fillStyle = DISTRIBUTION_CHART_COLOR.axisText;
+        ctx.fillStyle = distributionChartColor.axisText;
         ctx.textAlign = 'center';
 
         // y軸文字
@@ -462,39 +462,39 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
     switch (index) {
       case ChartBlock.leftTop:
         content = 'universal_activityData_hardWorkButLowIntensity';
-        set.update(leftX, topY, DISTRIBUTION_CHART_COLOR.leftTop, content);
+        set.update(leftX, topY, distributionChartColor.leftTop, content);
         break;
       case ChartBlock.leftMiddle:
         content = 'universal_activityData_needToStrengthenTrainingIntensity';
-        set.update(leftX, middleY, DISTRIBUTION_CHART_COLOR.leftMiddle, content);
+        set.update(leftX, middleY, distributionChartColor.leftMiddle, content);
         break;
       case ChartBlock.leftBottom:
         content = 'universal_activityData_insufficientAmountAndIntensity';
-        set.update(leftX, bottomY, DISTRIBUTION_CHART_COLOR.leftBottom, content);
+        set.update(leftX, bottomY, distributionChartColor.leftBottom, content);
         break;
       case ChartBlock.middleTop:
         content = 'universal_activityData_hardAndSureTraining';
-        set.update(middleX, topY, DISTRIBUTION_CHART_COLOR.middleTop, content);
+        set.update(middleX, topY, distributionChartColor.middleTop, content);
         break;
       case ChartBlock.center:
         content = 'universal_activityData_goodAndStableTraining';
-        set.update(middleX, middleY, DISTRIBUTION_CHART_COLOR.center, content);
+        set.update(middleX, middleY, distributionChartColor.center, content);
         break;
       case ChartBlock.middleBottom:
         content = 'universal_activityData_durationNeedsToBeStrengthened';
-        set.update(middleX, bottomY, DISTRIBUTION_CHART_COLOR.middleBottom, content);
+        set.update(middleX, bottomY, distributionChartColor.middleBottom, content);
         break;
       case ChartBlock.rightTop:
         content = 'universal_activityData_easyToCausePhysicalBurden';
-        set.update(rightX, topY, DISTRIBUTION_CHART_COLOR.rightTop, content);
+        set.update(rightX, topY, distributionChartColor.rightTop, content);
         break;
       case ChartBlock.rightMiddle:
         content = 'universal_activityData_moderateHighIntensityTraining';
-        set.update(rightX, middleY, DISTRIBUTION_CHART_COLOR.rightMiddle, content);
+        set.update(rightX, middleY, distributionChartColor.rightMiddle, content);
         break;
       case ChartBlock.rightBottom:
         content = 'universal_activityData_shortBurstTraining';
-        set.update(rightX, bottomY, DISTRIBUTION_CHART_COLOR.rightBottom, content);
+        set.update(rightX, bottomY, distributionChartColor.rightBottom, content);
         break;
     }
 
