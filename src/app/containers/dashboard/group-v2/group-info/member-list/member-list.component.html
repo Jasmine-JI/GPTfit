@@ -50,8 +50,8 @@
             [groupId]="groupInfo.groupId"
             [groupLevel]="groupInfo.groupLevel"
             [coachType]="groupInfo.coachType"
-            (onAssignAdmin)="handleAssignAdmin($event)"
-            (onRemoveAdmin)="handleWaittingMemberInfo($event)"
+            (assignAdmin)="handleAssignAdmin($event)"
+            (removeAdmin)="handleWaittingMemberInfo($event)"
           >
           </app-member-capsule>
         </ng-container>
@@ -83,7 +83,7 @@
             "
             [groupId]="groupInfo.groupId"
             [groupLevel]="groupInfo.groupLevel"
-            (onWaittingMemberInfoChange)="handleWaittingMemberInfo($event)"
+            (waittingMemberInfoChange)="handleWaittingMemberInfo($event)"
           >
           </app-member-capsule>
         </ng-container>

@@ -1,14 +1,13 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { GlobalEventsManager } from '../../shared/global-events-manager';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { UtilsService } from '../../shared/services/utils.service';
-import { DetectInappService } from '../../shared/services/detect-inapp.service';
+import { DetectInappService } from '../../core/services';
 import { fromEvent, Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { langList } from '../../shared/models/i18n';
-import { setLocalStorageObject, getLocalStorageObject } from '../../shared/utils/index';
+import { setLocalStorageObject, getLocalStorageObject } from '../../core/utils';
+import { GlobalEventsService, EnvironmentCheckService } from '../../core/services';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -37,8 +36,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     isAlphaVersion: false,
     isPreviewMode: false,
     hideNavbar: false,
-    isMaskShow: false,
-    isCollapseOpen: false,
+    showMask: false,
     darkMode: false,
     showActivityEntry: false,
   };
@@ -46,10 +44,10 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private globalEventsManager: GlobalEventsManager,
-    private utilsService: UtilsService,
     public translateService: TranslateService,
-    private detectInappService: DetectInappService
+    private detectInappService: DetectInappService,
+    private globalEventsService: GlobalEventsService,
+    private environmentCheckService: EnvironmentCheckService
   ) {
     if (location.search.indexOf('ipm=s') > -1) {
       this.uiFlag.isPreviewMode = true;
@@ -61,7 +59,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     this.checkDomain();
     this.checkPage();
     this.checkLanguage();
-    this.handleShowNavBar();
+    this.subscribeMaskStatus();
     this.listenTargetImg();
   }
 
@@ -87,7 +85,10 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    * @author kidin-1101229
    */
   checkUiSetting() {
-    combineLatest([this.utilsService.getHideNavbarStatus(), this.utilsService.getDarkModeStatus()])
+    combineLatest([
+      this.globalEventsService.getHideNavbarStatus(),
+      this.globalEventsService.getDarkModeStatus(),
+    ])
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((result) => {
         const [rxHideNavbar, rxDarkMode] = result;
@@ -108,7 +109,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    * @author kidin-1091008
    */
   checkDomain() {
-    this.uiFlag.isAlphaVersion = this.utilsService.checkWebVersion()[0];
+    this.uiFlag.isAlphaVersion = this.environmentCheckService.checkWebVersion()[0];
   }
 
   /**
@@ -149,8 +150,8 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    * @author kidin-1110114
    */
   clearAppViewSet() {
-    this.utilsService.setHideNavbarStatus(false);
-    this.utilsService.setDarkModeStatus(false);
+    this.globalEventsService.setHideNavbarStatus(false);
+    this.globalEventsService.setDarkModeStatus(false);
   }
 
   /**
@@ -215,13 +216,15 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * 是否顯示NavBar
-   * @author kidin-1091008
+   * 訂閱全域遮罩顯示狀態
    */
-  handleShowNavBar() {
-    this.globalEventsManager.showNavBarEmitter.subscribe((mode) => {
-      this.uiFlag.isMaskShow = mode;
-    });
+  subscribeMaskStatus() {
+    this.globalEventsService
+      .getShowMaskStatus()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((status) => {
+        this.uiFlag.showMask = status;
+      });
   }
 
   /**
@@ -300,10 +303,8 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    * @author kidin-1091008
    */
   touchMask() {
-    this.uiFlag.isCollapseOpen = false;
-    this.globalEventsManager.openCollapse(this.uiFlag.isCollapseOpen);
-    this.uiFlag.isMaskShow = false;
-    this.globalEventsManager.closeCollapse(false);
+    this.globalEventsService.setShowMaskStatus(false);
+    this.globalEventsService.setOpenCollapseStatus(false);
   }
 
   /**

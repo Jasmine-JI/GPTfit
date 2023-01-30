@@ -1,6 +1,7 @@
 import { AnalysisSportsColumn } from '../../../shared/enum/report-analysis';
 import { AnalysisOneOption } from '../../../shared/classes/analysis-one-option';
 import { AnalysisOption } from '../../../shared/classes/analysis-option';
+import { SportType } from '../../../shared/enum/sports';
 
 /**
  * 群組與個人運動報告圖表數據表格分析可設定的選項
@@ -18,7 +19,16 @@ export class ProfessionalChartAnalysisOption extends AnalysisOption {
       AnalysisSportsColumn.hrChart,
     ];
 
-    this.itemList = list.map((_item) => new AnalysisOneOption({ item: _item }));
+    switch (sportType) {
+      case SportType.all:
+      case SportType.run:
+        list.push(AnalysisSportsColumn.totalFeedbackEnergy);
+        break;
+    }
+
+    this.itemList = list
+      .sort((_a, _b) => _a - _b)
+      .map((_item) => new AnalysisOneOption({ item: _item }));
     this.storageKey = `groupReport-chart-${sportType}`;
     return;
   }

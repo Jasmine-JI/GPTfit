@@ -1,14 +1,12 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { AlaAppAnalysisService } from '../../services/ala-app-analysis.service';
-import { UtilsService } from '../../../../shared/services/utils.service';
 import dayjs from 'dayjs';
 import { AlaApp } from '../../../../shared/models/app-id';
 import { AlbumType } from '../../../../shared/models/image';
-import { GroupService } from '../../../../shared/services/group.service';
 import { Subject, fromEvent, Subscription } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { HttpParams } from '@angular/common/http';
-import { AuthService } from '../../../../core/services/auth.service';
+import { AuthService, NodejsApiService, ApiCommonService } from '../../../../core/services';
 
 enum StatisticTypeEnum {
   sports = 1,
@@ -135,9 +133,9 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
 
   constructor(
     private alaAppAnalysisService: AlaAppAnalysisService,
-    private utils: UtilsService,
-    private groupService: GroupService,
-    private authService: AuthService
+    private nodejsApiService: NodejsApiService,
+    private authService: AuthService,
+    private apiCommonService: ApiCommonService
   ) {}
 
   ngOnInit(): void {
@@ -342,7 +340,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
     params = params.set('keyword', str);
     params = params.set('searchType', '1');
     params = params.set('groupId', '0-0-0-0-0-0');
-    this.groupService.searchMember(params).subscribe((res) => {
+    this.nodejsApiService.searchMember(params).subscribe((res) => {
       if (res.length > 0) {
         this.autoCompletedList = res;
         this.uiFlag.showAutoCompleted = 'user';
@@ -362,7 +360,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
       token: this.authService.token,
       searchName: str,
     };
-    this.groupService.searchGroup(body).subscribe((res) => {
+    this.nodejsApiService.searchGroup(body).subscribe((res) => {
       this.autoCompletedList = res;
       this.uiFlag.showAutoCompleted = this.autoCompletedList.length > 0 ? 'group' : null;
     });
@@ -778,12 +776,12 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
       const { processResult, dataStatistics } = res;
       if (!processResult) {
         const { apiCode, resultCode, resultMessage } = res;
-        this.utils.handleError(resultCode, apiCode, resultMessage);
+        this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
         this.uiFlag.progress = 100;
       } else {
         const { apiCode, resultCode, resultMessage } = processResult;
         if (resultCode !== 200) {
-          this.utils.handleError(resultCode, apiCode, resultMessage);
+          this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
           this.uiFlag.progress = 100;
         } else {
           dataStatistics.forEach((_data) => {
@@ -836,12 +834,12 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
       const { processResult, dataStatistics } = res;
       if (!processResult) {
         const { apiCode, resultCode, resultMessage } = res;
-        this.utils.handleError(resultCode, apiCode, resultMessage);
+        this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
         this.uiFlag.progress = 100;
       } else {
         const { apiCode, resultCode, resultMessage } = processResult;
         if (resultCode !== 200) {
-          this.utils.handleError(resultCode, apiCode, resultMessage);
+          this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
           this.uiFlag.progress = 100;
         } else {
           dataStatistics.forEach((_data) => {
@@ -872,12 +870,12 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
       const { processResult, dataStatistics } = res;
       if (!processResult) {
         const { apiCode, resultCode, resultMessage } = res;
-        this.utils.handleError(resultCode, apiCode, resultMessage);
+        this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
         this.uiFlag.progress = 100;
       } else {
         const { apiCode, resultCode, resultMessage } = processResult;
         if (resultCode !== 200) {
-          this.utils.handleError(resultCode, apiCode, resultMessage);
+          this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
           this.uiFlag.progress = 100;
         } else {
           dataStatistics.forEach((_data) => {

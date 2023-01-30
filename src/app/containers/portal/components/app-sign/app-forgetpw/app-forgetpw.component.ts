@@ -1,10 +1,14 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { UtilsService } from '../../../../../shared/services/utils.service';
-import { AuthService } from '../../../../../core/services/auth.service';
-import { SignupService } from '../../../../../shared/services/signup.service';
+import {
+  AuthService,
+  GetClientIpService,
+  Api10xxService,
+  GlobalEventsService,
+  HintDialogService,
+  ApiCommonService,
+} from '../../../../../core/services';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
-import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 import { Subject, Subscription, fromEvent, merge, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -13,7 +17,7 @@ import { formTest } from '../../../../../shared/models/form-test';
 import { codes } from '../../../../../shared/models/countryCode';
 import { SignTypeEnum } from '../../../../../shared/enum/account';
 import { TFTViewMinWidth } from '../../../models/app-webview';
-import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../shared/utils/index';
+import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/utils';
 
 const errorCaptchaI18nKey = 'universal_userAccount_errorCaptcha';
 enum ResetFlow {
@@ -87,12 +91,14 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private translate: TranslateService,
-    private utils: UtilsService,
     private authService: AuthService,
-    private signupService: SignupService,
+    private api10xxService: Api10xxService,
     private dialog: MatDialog,
     private router: Router,
-    public getClientIp: GetClientIpService
+    public getClientIp: GetClientIpService,
+    private globalEventsService: GlobalEventsService,
+    private hintDialogService: HintDialogService,
+    private apiCommonService: ApiCommonService
   ) {}
 
   ngOnInit() {
@@ -115,8 +121,8 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1110113
    */
   setPageStyle(isPcView: boolean) {
-    this.utils.setHideNavbarStatus(isPcView);
-    this.utils.setDarkModeStatus(isPcView);
+    this.globalEventsService.setHideNavbarStatus(isPcView);
+    this.globalEventsService.setDarkModeStatus(isPcView);
   }
 
   /**
@@ -333,9 +339,12 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
       };
 
       this.getClientIpaddress()
-        .pipe(switchMap((ipResult) => this.signupService.fetchForgetpwd(body, this.requestHeader)))
+        .pipe(switchMap((ipResult) => this.api10xxService.fetchForgetpwd(body, this.requestHeader)))
         .subscribe((res: any) => {
-          const resultInfo = res.processResult;
+          const resultInfo = res?.processResult ?? {
+            resultCode: 400,
+            apiReturnMessage: 'Exception!',
+          };
           if (resultInfo.resultCode !== 200) {
             switch (resultInfo.apiReturnMessage) {
               case 'Found attack, update status to lock!':
@@ -345,13 +354,14 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
               case 'Post fail, account is not existing.':
                 this.cue.account = 'universal_userAccount_noRegisterData';
                 break;
-              default:
+              default: {
                 const msgBody = 'Error!<br /> Please try again later.';
                 this.showMsgBox(msgBody, this.turnBack);
                 console.error(
                   `${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`
                 );
                 break;
+              }
             }
           } else if (resultInfo.resultCode === 200) {
             const msg = this.translate.instant('universal_userAccount_sendSmsSuccess');
@@ -445,7 +455,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     this.getClientIpaddress()
-      .pipe(switchMap((ipResult) => this.signupService.fetchForgetpwd(body, this.requestHeader)))
+      .pipe(switchMap((ipResult) => this.api10xxService.fetchForgetpwd(body, this.requestHeader)))
       .subscribe((res: any) => {
         if (res.processResult.resultCode !== 200) {
           switch (res.processResult.apiReturnMessage) {
@@ -456,13 +466,14 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
             case 'Post fail, account is not existing.':
               this.cue.account = 'universal_userAccount_noRegisterData';
               break;
-            default:
+            default: {
               const msgBody = 'Error!<br /> Please try again later.';
               this.showMsgBox(msgBody, this.turnBack);
               console.error(
                 `${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`
               );
               break;
+            }
           }
         } else {
           const msgBody = this.translate.instant('universal_userAccount_sendCaptchaChackEmail');
@@ -495,7 +506,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.getClientIpaddress()
       .pipe(
-        switchMap((ipResult) => this.signupService.fetchCaptcha(releaseBody, this.requestHeader))
+        switchMap((ipResult) => this.api10xxService.fetchCaptcha(releaseBody, this.requestHeader))
       )
       .subscribe((res: any) => {
         if (res.processResult.resultCode === 200) {
@@ -511,13 +522,14 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
               this.imgCaptcha.cue = errorCaptchaI18nKey;
               this.progress = 100;
               break;
-            default:
+            default: {
               const msgBody = `Error.<br />Please try again later.`;
               this.showMsgBox(msgBody, this.turnBack);
               console.error(
                 `${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`
               );
               break;
+            }
           }
         }
       });
@@ -535,7 +547,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     this.getClientIpaddress()
-      .pipe(switchMap((ipResult) => this.signupService.fetchForgetpwd(body, this.requestHeader)))
+      .pipe(switchMap((ipResult) => this.api10xxService.fetchForgetpwd(body, this.requestHeader)))
       .subscribe((res: any) => {
         if (res.processResult.resultCode !== 200) {
           let msgBody;
@@ -580,7 +592,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     this.getClientIpaddress()
-      .pipe(switchMap((ipResult) => this.signupService.fetchForgetpwd(body, this.requestHeader)))
+      .pipe(switchMap((ipResult) => this.api10xxService.fetchForgetpwd(body, this.requestHeader)))
       .subscribe((res: any) => {
         if (res.processResult.resultCode !== 200) {
           switch (res.processResult.apiReturnMessage) {
@@ -595,13 +607,14 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
             case 'Post fail, account is not existing.':
               this.cue.account = 'universal_userAccount_noRegisterData';
               break;
-            default:
+            default: {
               const msgBody = 'Error!<br /> Please try again later.';
               this.showMsgBox(msgBody, this.turnBack);
               console.error(
                 `${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`
               );
               break;
+            }
           }
         } else {
           this.formValue.resetPasswordFlow = ResetFlow.reset;
@@ -640,10 +653,10 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.getClientIpaddress()
-      .pipe(switchMap((ipResult) => this.signupService.fetchForgetpwd(body, this.requestHeader)))
+      .pipe(switchMap((ipResult) => this.api10xxService.fetchForgetpwd(body, this.requestHeader)))
       .subscribe((res: any) => {
         let msgBody;
-        if (!this.utils.checkRes(res, false)) {
+        if (!this.apiCommonService.checkRes(res, false)) {
           const { processResult, resultMessage } = res;
           const resultMsg = processResult ? processResult.apiReturnMessage : resultMessage;
           switch (resultMsg) {
@@ -654,10 +667,11 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
             case 'Post fail, account is not existing.':
               this.cue.account = 'universal_userAccount_noRegisterData';
               break;
-            default:
+            default: {
               const msgBody = 'Error. Please try again later.';
               this.showMsgBox(msgBody, this.turnBack);
               break;
+            }
           }
         } else {
           msgBody = this.translate.instant('universal_userAccount_passwordResetComplete');
@@ -686,7 +700,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.getClientIpaddress()
       .pipe(
-        switchMap((ipResult) => this.signupService.fetchCaptcha(captchaBody, this.requestHeader))
+        switchMap((ipResult) => this.api10xxService.fetchCaptcha(captchaBody, this.requestHeader))
       )
       .subscribe((captchaRes: any) => {
         this.imgCaptcha = {
@@ -720,7 +734,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
           });
         });
     } else {
-      this.utils.showSnackBar(msg);
+      this.hintDialogService.showSnackBar(msg);
       if (fn) setTimeout(fn.bind(this), 2000);
     }
   }

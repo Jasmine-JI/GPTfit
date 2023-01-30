@@ -13,7 +13,6 @@ import {
 import { BehaviorSubject } from 'rxjs';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
 import { ImageCropperComponent } from 'ngx-image-cropper';
-import { UtilsService } from '../../services/utils.service';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -68,7 +67,7 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild(ImageCropperComponent, { static: false })
   imageCropper: ImageCropperComponent;
 
-  constructor(private utilsService: UtilsService, private translate: TranslateService) {}
+  constructor(private translate: TranslateService) {}
 
   ngOnInit() {}
 
@@ -108,7 +107,6 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
           this.fileInformation.isTypeCorrect = true;
         }
         if (this.fileInformation.isTypeCorrect) {
-          this.utilsService.setImgSelectedStatus(true);
           this.imgCropping = true;
           this.imgSelected = true;
           this.fileChangeEvent(event);
@@ -134,7 +132,6 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
 
   // 關閉裁切功能-kidin-1090109
   closeImgCropping() {
-    this.utilsService.setImgSelectedStatus(false);
     this.imgCropping = false;
   }
 
@@ -180,7 +177,5 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
     this.imgCropping = true;
   }
 
-  ngOnDestroy() {
-    this.utilsService.setImgSelectedStatus(false);
-  }
+  ngOnDestroy() {}
 }

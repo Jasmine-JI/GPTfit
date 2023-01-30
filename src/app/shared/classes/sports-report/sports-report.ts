@@ -1,4 +1,4 @@
-import { mathRounding, isAvgData, countBenefitTime } from '../../utils';
+import { mathRounding, isAvgData, countBenefitTime } from '../../../core/utils';
 import {
   COMMON_DATA,
   RUN_DATA,
@@ -74,7 +74,7 @@ export class SportsReport {
             // 根據運動類別將所需數據進行加總
             dataKey.forEach((_key) => {
               const isMaxData = _key.toLowerCase().includes('max');
-              const _value = +_activity[_key];
+              const _value = +(_activity[_key] ?? 0);
               if (isMaxData) {
                 // 若為最大相關數據，則只取該時間範圍最大值
                 if ((maxDataIntermediary[_key] ?? 0) < _value) maxDataIntermediary[_key] = _value;

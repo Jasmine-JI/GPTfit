@@ -1,12 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UtilsService } from '../../../../shared/services/utils.service';
 import { formTest } from '../../../../shared/models/form-test';
 import { Subject, Subscription, fromEvent, combineLatest, merge, of } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { pageNotFoundPath } from '../../models/official-activity-const';
-import { CloudrunService } from '../../../../shared/services/cloudrun.service';
 import { RankType } from '../../../../shared/models/cloudrun-leaderboard';
 import {
   ProductShipped,
@@ -17,14 +15,11 @@ import {
 } from '../../models/activity-content';
 import dayjs from 'dayjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { PaidStatusPipe } from '../../pipes/paid-status.pipe';
-import { ShippedStatusPipe } from '../../pipes/shipped-status.pipe';
-import { SportTimePipe } from '../../../../shared/pipes/sport-time.pipe';
 import { TranslateService } from '@ngx-translate/core';
 import { Sex } from '../../../../shared/enum/personal';
-import { AgePipe } from '../../../../shared/pipes/age.pipe';
-import { getCurrentTimestamp, deepCopy } from '../../../../shared/utils/index';
-import { AuthService } from '../../../../core/services/auth.service';
+import { AgePipe, SportTimePipe, PaidStatusPipe, ShippedStatusPipe } from '../../../../core/pipes';
+import { getCurrentTimestamp, deepCopy } from '../../../../core/utils';
+import { AuthService, NodejsApiService, ApiCommonService } from '../../../../core/services';
 
 type SortType =
   | 'rank'
@@ -144,16 +139,16 @@ export class ContestantListComponent implements OnInit, OnDestroy {
   constructor(
     private officialActivityService: OfficialActivityService,
     private activatedRoute: ActivatedRoute,
-    private utils: UtilsService,
     private router: Router,
-    private cloudrunService: CloudrunService,
+    private nodejsApiService: NodejsApiService,
     private snackbar: MatSnackBar,
     private paidStatusPipe: PaidStatusPipe,
     private shippedStatusPipe: ShippedStatusPipe,
     private translate: TranslateService,
     private agePipe: AgePipe,
     private sportTimePipe: SportTimePipe,
-    private authService: AuthService
+    private authService: AuthService,
+    private apiCommonService: ApiCommonService
   ) {}
 
   ngOnInit(): void {
@@ -209,7 +204,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
           this.eventInfo = eventInfo;
           this.groupList = this.getGroupList(group);
           this.allMapInfo = mapInfo as Array<any>;
-          if (this.utils.checkRes(detail)) {
+          if (this.apiCommonService.checkRes(detail)) {
             const {
               eventInfo: {
                 cloudrunMapId: mapId,
@@ -229,7 +224,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
               pageCounts: 10000,
             };
 
-            return this.cloudrunService
+            return this.nodejsApiService
               .getLeaderboardStatistics(body)
               .pipe(map((leaderboardResult) => leaderboardResult));
           } else {
@@ -238,7 +233,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((result) => {
-        if (this.utils.checkRes(result)) {
+        if (this.apiCommonService.checkRes(result)) {
           const {
             info: { rankList },
           } = result as any;
@@ -277,7 +272,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         .getParticipantList(this.searchInfo)
         .pipe(
           map((res) => {
-            if (this.utils.checkRes(res)) {
+            if (this.apiCommonService.checkRes(res)) {
               const { participantList } = res;
               return this.reEditList(participantList);
             } else {
@@ -1146,7 +1141,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         const [editResult, ...rest] = resArr;
         const successMsg = this.translate.instant('universal_status_updateCompleted');
         const failureMsg = this.translate.instant('universal_popUpMessage_updateFailed');
-        const success = this.utils.checkRes(editResult);
+        const success = this.apiCommonService.checkRes(editResult);
         const msg = success ? successMsg : failureMsg;
         this.snackbar.open(msg, 'OK', { duration: 2000 });
         return success;
@@ -1403,7 +1398,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         .updateProductOrder(body)
         .pipe(
           switchMap((updateResult) => {
-            if (this.utils.checkRes(updateResult)) {
+            if (this.apiCommonService.checkRes(updateResult)) {
               return this.officialActivityService
                 .getParticipantList(this.searchInfo)
                 .pipe(map((participantList) => participantList));
@@ -1413,7 +1408,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
           })
         )
         .subscribe((res) => {
-          if (this.utils.checkRes(res)) {
+          if (this.apiCommonService.checkRes(res)) {
             const { participantList } = res as any;
             const newUserInfo = participantList.filter((_list) => _list.userId === targetUserId);
             const { paidStatus, thirdPartyPaidId, paidDate } = newUserInfo[0];

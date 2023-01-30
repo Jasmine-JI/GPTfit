@@ -2,10 +2,10 @@ import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
 import { of, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
-import { yAxisTimeFormat, tooltipHrZoneFormat } from '../../../utils/chart-formatter';
+import { yAxisTimeFormat, tooltipHrZoneFormat } from '../../../../core/utils/chart-formatter';
 import dayjs from 'dayjs';
-import { GlobalEventsService } from '../../../../core/services/global-events.service';
-import { deepCopy } from '../../../utils/index';
+import { GlobalEventsService } from '../../../../core/services';
+import { deepCopy } from '../../../../core/utils/index';
 import { compareChartDefault } from '../../../models/chart-data';
 
 @Component({

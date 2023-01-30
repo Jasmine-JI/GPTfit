@@ -8,8 +8,7 @@ import { PeopleSelectorWinComponent } from '../../people-selector-win/people-sel
 import { Component, OnInit } from '@angular/core';
 import dayjs from 'dayjs';
 import { PushMessageService } from '../../../services/push-message.service';
-import { NodejsApiService } from '../../../../../core/services/nodejs-api.service';
-import { AuthService } from '../../../../../core/services/auth.service';
+import { NodejsApiService, AuthService } from '../../../../../core/services';
 
 @Component({
   selector: 'app-edit-push-message',

@@ -1,11 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Api21xxService } from './api-21xx.service';
-import { deepCopy } from '../../shared/utils/index';
+import { deepCopy } from '../utils/index';
+import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
+import { ReportConditionOpt } from '../../shared/models/report-condition';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ReportService {
+  reportCondition$ = new ReplaySubject<ReportConditionOpt>(1);
+  reportLoading$ = new ReplaySubject<boolean>(1);
+
   /**
    * 儲存api 2104回傳之基準運動數據，
    * 供僅切換報告運動類別時直接存取不call api
@@ -98,5 +103,39 @@ export class ReportService {
    */
   getCompareLifeTracking() {
     return this.compareLifeTracking;
+  }
+
+  /**
+   * 儲存篩選器條件
+   * @param status {ReportConditionOpt}-篩選器條件
+   * @author kidin-1091210
+   */
+  setReportCondition(status: ReportConditionOpt) {
+    this.reportCondition$.next(status);
+  }
+
+  /**
+   * 取得篩選器條件
+   * @author kidin-1091210
+   */
+  getReportCondition(): Observable<ReportConditionOpt> {
+    return this.reportCondition$;
+  }
+
+  /**
+   * 儲存loading狀態
+   * @param status {boolean}-loading狀態
+   * @author kidin-1091210
+   */
+  setReportLoading(status: boolean) {
+    this.reportLoading$.next(status);
+  }
+
+  /**
+   * 取得loading狀態
+   * @author kidin-1091210
+   */
+  getReportLoading(): Observable<boolean> {
+    return this.reportLoading$;
   }
 }

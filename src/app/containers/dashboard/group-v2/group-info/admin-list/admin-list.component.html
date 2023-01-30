@@ -57,8 +57,8 @@
           [groupLevel]="groupInfo.groupLevel"
           [coachType]="groupInfo.coachType"
           [adminList]="adminList.brand"
-          (onAssignAdmin)="handleAssignAdmin($event)"
-          (onRemoveAdmin)="handleRemoveAdmin()"
+          (assignAdmin)="handleAssignAdmin($event)"
+          (removeAdmin)="handleRemoveAdmin()"
         >
         </app-member-capsule>
       </div>
@@ -94,8 +94,8 @@
           [groupLevel]="groupInfo.groupLevel"
           [parentsName]="_branchAdmin.branchName"
           [adminList]="adminList.branch"
-          (onWaittingMemberInfoChange)="handleWaittingMemberInfo($event)"
-          (onRemoveAdmin)="handleRemoveAdmin()"
+          (waittingMemberInfoChange)="handleWaittingMemberInfo($event)"
+          (removeAdmin)="handleRemoveAdmin()"
         >
         </app-member-capsule>
       </div>
@@ -131,8 +131,8 @@
           [groupLevel]="groupInfo.groupLevel"
           [parentsName]="_coach.branchName + '/' + _coach.coachName"
           [adminList]="adminList.class"
-          (onWaittingMemberInfoChange)="handleWaittingMemberInfo($event)"
-          (onRemoveAdmin)="handleRemoveAdmin()"
+          (waittingMemberInfoChange)="handleWaittingMemberInfo($event)"
+          (removeAdmin)="handleRemoveAdmin()"
         >
         </app-member-capsule>
       </div>
@@ -164,8 +164,8 @@
           [groupLevel]="groupInfo.groupLevel"
           [parentsName]="_teacher.branchName + '/' + _teacher.coachName"
           [adminList]="adminList.teacher"
-          (onWaittingMemberInfoChange)="handleWaittingMemberInfo($event)"
-          (onRemoveAdmin)="handleRemoveAdmin()"
+          (waittingMemberInfoChange)="handleWaittingMemberInfo($event)"
+          (removeAdmin)="handleRemoveAdmin()"
         >
         </app-member-capsule>
       </div>

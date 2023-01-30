@@ -25,6 +25,7 @@ export enum AnalysisSportsColumn {
   legMuscle,
   totalWeight,
   power,
+  totalFeedbackEnergy,
   preferSports,
   bodyWeight,
   fatRate,

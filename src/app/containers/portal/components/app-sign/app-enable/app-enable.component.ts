@@ -1,19 +1,22 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { UtilsService } from '../../../../../shared/services/utils.service';
-import { SignupService } from '../../../../../shared/services/signup.service';
-import { Api10xxService } from '../../../../../core/services/api-10xx.service';
+import {
+  Api10xxService,
+  AuthService,
+  UserService,
+  GetClientIpService,
+  GlobalEventsService,
+  HintDialogService,
+  ApiCommonService,
+} from '../../../../../core/services';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
-import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 import { Subject, fromEvent, Subscription, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AccountTypeEnum } from '../../../../../shared/enum/account';
 import { TFTViewMinWidth } from '../../../models/app-webview';
-import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../shared/utils/index';
-import { AuthService } from '../../../../../core/services/auth.service';
-import { UserService } from '../../../../../core/services/user.service';
+import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/utils';
 
 const errorMsg = 'Error!<br /> Please try again later.';
 type RedirectPage = 'sign' | 'setting' | 'event';
@@ -81,14 +84,15 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private translate: TranslateService,
-    private utils: UtilsService,
-    private signupService: SignupService,
     private api10xxService: Api10xxService,
     private dialog: MatDialog,
     private router: Router,
     public getClientIp: GetClientIpService,
     private authService: AuthService,
-    private userService: UserService
+    private userService: UserService,
+    private globalEventsService: GlobalEventsService,
+    private hintDialogService: HintDialogService,
+    private apiCommonService: ApiCommonService
   ) {
     translate.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.createPlaceholder();
@@ -117,8 +121,8 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1110113
    */
   setPageStyle(isPcView: boolean) {
-    this.utils.setHideNavbarStatus(isPcView);
-    this.utils.setDarkModeStatus(isPcView);
+    this.globalEventsService.setHideNavbarStatus(isPcView);
+    this.globalEventsService.setDarkModeStatus(isPcView);
   }
 
   /**
@@ -223,7 +227,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
       };
 
       this.api10xxService.fetchGetUserProfile(body).subscribe((res) => {
-        if (this.utils.checkRes(res)) {
+        if (this.apiCommonService.checkRes(res)) {
           const {
             userProfile,
             signIn: { accountType },
@@ -318,20 +322,20 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.getClientIpaddress()
         .pipe(
-          switchMap((ipResult) => this.signupService.fetchEnableAccount(body, this.requestHeader))
+          switchMap((ipResult) => this.api10xxService.fetchEnableAccount(body, this.requestHeader))
         )
         .subscribe((res: any) => {
           const resultInfo = res.processResult;
           if (resultInfo.resultCode !== 200) {
             switch (resultInfo.apiReturnMessage) {
               case 'Found attack, update status to lock!':
-              case 'Found lock!':
+              case 'Found lock!': {
                 const captchaBody = {
                   unlockFlow: 1,
                   imgLockCode: res.processResult.imgLockCode,
                 };
 
-                this.signupService
+                this.api10xxService
                   .fetchCaptcha(captchaBody, this.requestHeader)
                   .subscribe((captchaRes) => {
                     this.imgCaptcha = {
@@ -343,7 +347,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
                   });
 
                 break;
-
+              }
               default:
                 this.showMsgBox(errorMsg, 'turnBack');
                 console.error(
@@ -427,7 +431,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.getClientIpaddress()
         .pipe(
-          switchMap((ipResult) => this.signupService.fetchEnableAccount(body, this.requestHeader))
+          switchMap((ipResult) => this.api10xxService.fetchEnableAccount(body, this.requestHeader))
         )
         .subscribe((res: any) => {
           if (res.processResult.resultCode !== 200) {
@@ -439,13 +443,13 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.showMsgBox(msgBody, 'none');
                 break;
               case 'Found attack, update status to lock!':
-              case 'Found lock!':
+              case 'Found lock!': {
                 const captchaBody = {
                   unlockFlow: 1,
                   imgLockCode: res.processResult.imgLockCode,
                 };
 
-                this.signupService
+                this.api10xxService
                   .fetchCaptcha(captchaBody, this.requestHeader)
                   .subscribe((captchaRes) => {
                     this.imgCaptcha = {
@@ -457,6 +461,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
                   });
 
                 break;
+              }
               default:
                 msgBody = errorMsg;
                 console.error(
@@ -499,7 +504,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1110110
    */
   debounceBack(msg: string, fn: Function = undefined) {
-    this.utils.showSnackBar(msg);
+    this.hintDialogService.showSnackBar(msg);
     if (fn) setTimeout(fn.bind(this), 2000);
   }
 
@@ -510,7 +515,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
       unlockKey: this.imgCaptcha.code,
     };
 
-    this.signupService.fetchCaptcha(releaseBody, this.requestHeader).subscribe((res) => {
+    this.api10xxService.fetchCaptcha(releaseBody, this.requestHeader).subscribe((res) => {
       if (res.processResult.resultCode === 200) {
         this.imgCaptcha.show = false;
 
@@ -551,7 +556,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
       this.progress = 30;
       this.getClientIpaddress()
         .pipe(
-          switchMap((ipResult) => this.signupService.fetchEnableAccount(body, this.requestHeader))
+          switchMap((ipResult) => this.api10xxService.fetchEnableAccount(body, this.requestHeader))
         )
         .subscribe((res: any) => {
           let msgBody;

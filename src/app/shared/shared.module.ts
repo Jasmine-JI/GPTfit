@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { MuscleNamePipe } from './pipes/muscle-name.pipe';
-import { DataTypeTranslatePipe } from './pipes/data-type-translate.pipe';
-import { DataTypeUnitPipe } from './pipes/data-type-unit.pipe';
-import { TemperatureSibsPipe } from './pipes/temperature-sibs.pipe';
-import { TargetFieldNamePipe } from './pipes/target-field-name.pipe';
-import { DateUnitKeyModule, SportPaceSibsModule } from '../core/pipes';
+import { MuscleNamePipe } from '../core/pipes/muscle-name.pipe';
+import { DataTypeTranslatePipe } from '../core/pipes/data-type-translate.pipe';
+import { DataTypeUnitPipe } from '../core/pipes/data-type-unit.pipe';
+import { TemperatureSibsPipe } from '../core/pipes/temperature-sibs.pipe';
+import { TargetFieldNamePipe } from '../core/pipes/target-field-name.pipe';
+import { DateUnitKeyPipe, SportPaceSibsPipe, SportTypeIconPipe } from '../core/pipes';
 
 @NgModule({
   exports: [TranslateModule],
-  imports: [DateUnitKeyModule, SportPaceSibsModule],
+  imports: [DateUnitKeyPipe, SportPaceSibsPipe, SportTypeIconPipe],
   providers: [
     MuscleNamePipe,
     DataTypeTranslatePipe,

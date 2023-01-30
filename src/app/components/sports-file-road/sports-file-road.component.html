@@ -1,0 +1,86 @@
+<div class="flexRow">
+  <button
+    class="switch__button"
+    [class.switch__button--disabled]="!canSwitchPrev"
+    (click)="scrollRight()"
+    *ngIf="canSwitchNext || canSwitchPrev"
+  >
+    <i class="icon-svg_web-icon_p1_073-level_fold"></i>
+  </button>
+  <div class="flexRow list__container">
+    <button
+      class="flexCol list__button"
+      [class.list__button--focus]="currentIndex === _index"
+      [attr.data-index]="_index"
+      *ngFor="let _list of fileList; let _index = index"
+      (click)="selectAssignFile(_index)"
+    >
+      <span class="file__name">
+        <ng-container *ngIf="_list.type === SportType.complex">
+          {{ 'universal_activityData_allLaps' | translate }}
+        </ng-container>
+        <ng-container *ngIf="_list.type !== SportType.complex">
+          {{ _list.dispName }}
+        </ng-container>
+      </span>
+      <div class="flexRow one__file__info">
+        <i
+          class="sport__type__icon"
+          [class]="_list.type | sportTypeIcon"
+          *ngIf="_list.type !== SportType.complex"
+        ></i>
+        <i
+          class="sport__type__icon icon-svg_web-icon_p4_015-select_all"
+          *ngIf="_list.type === SportType.complex"
+        ></i>
+        <div class="flexCol file__info__content">
+          <span class="info__data__row">
+            <i class="icon-svg_web-icon_p1_026-time total__second__icon"></i>
+            {{ _list.totalSecond | sportTime }}
+          </span>
+          <span
+            class="info__data__row"
+            *ngIf="
+              ![SportType.run, SportType.cycle, SportType.swim, SportType.row].includes(_list.type)
+            "
+          >
+            <i class="icon-svg_web-icon_p2_003-heart_rate heartrate__icon"></i>
+            {{ _list.avgHeartRateBpm }}
+            <span class="data__unit">bpm</span>
+          </span>
+          <span
+            class="info__data__row"
+            *ngIf="
+              [SportType.run, SportType.cycle, SportType.swim, SportType.row].includes(_list.type)
+            "
+          >
+            <i class="icon-svg_web-icon_p2_020-speed speed__icon"></i>
+            {{
+              _list.avgSpeed | sportPaceSibs: { sportType: _list.type, userUnit, showUnit: false }
+            }}
+            <span class="data__unit">
+              <ng-container *ngIf="_list.type === SportType.cycle">
+                {{ _list.type | speedPaceUnit: userUnit }}
+              </ng-container>
+              <ng-container *ngIf="_list.type !== SportType.cycle">
+                /{{
+                  _list.type
+                    | speedPaceUnit: userUnit
+                    | getSplitString: { splitSymbol: '/', targetIndex: 1 }
+                }}
+              </ng-container>
+            </span>
+          </span>
+        </div>
+      </div>
+    </button>
+  </div>
+  <button
+    class="switch__button"
+    [class.switch__button--disabled]="!canSwitchNext"
+    (click)="scrollLeft()"
+    *ngIf="canSwitchNext || canSwitchPrev"
+  >
+    <i class="icon-svg_web-icon_p1_074-level_unfold"></i>
+  </button>
+</div>

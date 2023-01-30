@@ -11,7 +11,7 @@
     darkMode: uiFlag.darkMode
   }"
 >
-  <div class="mask" [class.mask--show]="uiFlag.isMaskShow" (click)="touchMask()"></div>
+  <div class="mask" [class.mask--show]="uiFlag.showMask" (click)="touchMask()"></div>
   <div
     style="min-height: 3000px"
     *ngIf="uiFlag.page === 'analysis' || uiFlag.page === 'system' || uiFlag.page === 'application'"

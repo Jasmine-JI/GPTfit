@@ -1,17 +1,19 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { UtilsService } from '../../../../shared/services/utils.service';
-import { UserService } from '../../../../core/services/user.service';
+import {
+  UserService,
+  NodejsApiService,
+  AuthService,
+  ApiCommonService,
+} from '../../../../core/services';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import dayjs from 'dayjs';
 import { Sex } from '../../../../shared/enum/personal';
 import { lb } from '../../../../shared/models/bs-constant';
-import { Unit } from '../../../../shared/enum/value-conversion';
+import { DataUnitType } from '../../../../core/enums/common';
 import { formTest } from '../../../../shared/models/form-test';
 import { DashboardService } from '../../services/dashboard.service';
-import { checkResponse, valueConvert } from '../../../../shared/utils/index';
-import { NodejsApiService } from '../../../../core/services/nodejs-api.service';
-import { AuthService } from '../../../../core/services/auth.service';
+import { checkResponse, valueConvert, bodyHeightTransfer } from '../../../../core/utils';
 
 @Component({
   selector: 'app-setting-base',
@@ -56,10 +58,10 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
 
   userInfo: any;
   readonly Sex = Sex;
-  readonly Unit = Unit;
+  readonly DataUnitType = DataUnitType;
 
   constructor(
-    private utils: UtilsService,
+    private apiCommonService: ApiCommonService,
     private userService: UserService,
     private dashboardService: DashboardService,
     private nodejsApiService: NodejsApiService,
@@ -92,10 +94,10 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     this.uiFlag.editMode = 'edit';
     this.dashboardService.setRxEditMode('edit');
     const { nickname, birthday, bodyHeight, bodyWeight, gender, unit: userUnit } = this.userInfo;
-    const isMetric = userUnit === Unit.metric;
+    const isMetric = userUnit === DataUnitType.metric;
     this.setting = {
       nickname,
-      bodyHeight: this.utils.bodyHeightTransfer(bodyHeight, !isMetric, true),
+      bodyHeight: bodyHeightTransfer(bodyHeight, !isMetric, true),
       bodyWeight: valueConvert(bodyWeight, !isMetric, true, lb, 1),
       birthday: dayjs(birthday, 'YYYYMMDD').valueOf(),
       gender,
@@ -178,12 +180,12 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * @author kidin-1100825
    */
   valueRevert(key: string, value: string | number) {
-    const isMetric = this.userInfo.unit === Unit.metric,
+    const isMetric = this.userInfo.unit === DataUnitType.metric,
       edited = this.editFlag[key];
     switch (key) {
       case 'bodyHeight':
         if (edited) {
-          return isMetric ? value : this.utils.bodyHeightTransfer(value, true, false);
+          return isMetric ? value : bodyHeightTransfer(value, true, false);
         } else {
           return this.userInfo[key];
         }
@@ -207,7 +209,8 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    */
   handleNicknameInput(e: Event | MouseEvent) {
     const name = (e as any).target.value;
-    if (name.length < 4) {
+    const { nickname } = formTest;
+    if (!nickname.test(name)) {
       this.uiFlag.nicknameAlert = 'format';
     } else {
       if (name !== this.userInfo.nickname) {
@@ -219,7 +222,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
         this.nodejsApiService.checkNickname(body).subscribe((res) => {
           const { resultCode, resultMessage, apiCode, repeat } = res;
           if (resultCode !== 200) {
-            this.utils.handleError(resultCode, apiCode, resultMessage);
+            this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
           } else {
             if (repeat) {
               this.uiFlag.nicknameAlert = 'repeat';
@@ -260,7 +263,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * @author kidin-1100823
    */
   checkHeightFormat(e: KeyboardEvent) {
-    if (this.userInfo.unit === Unit.metric) {
+    if (this.userInfo.unit === DataUnitType.metric) {
       this.checkFormat(e);
     } else {
       const {
@@ -283,7 +286,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * @author kidin-1100823
    */
   checkWeightFormat(e: KeyboardEvent) {
-    if (this.userInfo.unit === Unit.metric) {
+    if (this.userInfo.unit === DataUnitType.metric) {
       this.checkFormat(e);
     } else {
       const { key } = e as any,
@@ -301,23 +304,23 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * @author kidin-1100818
    */
   handleHeightInput(e: Event | MouseEvent) {
-    const isMetric = this.userInfo.unit === Unit.metric,
+    const isMetric = this.userInfo.unit === DataUnitType.metric,
       { decimalValue, imperialHeight } = formTest,
       oldValue = this.userInfo.bodyHeight,
       { value } = (e as any).target,
       inputValue = isMetric ? +value : value,
       testReg = isMetric ? decimalValue : imperialHeight,
       testFormat = testReg.test(`${inputValue}`),
-      newValue = this.utils.bodyHeightTransfer(inputValue, !isMetric, false),
+      newValue = bodyHeightTransfer(inputValue, !isMetric, false),
       valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {
       this.editFlag.bodyHeight = true;
       const min = 100,
         max = 255;
       if (newValue < min) {
-        this.setting.bodyHeight = this.utils.bodyHeightTransfer(min, !isMetric, true);
+        this.setting.bodyHeight = bodyHeightTransfer(min, !isMetric, true);
       } else if (newValue > max) {
-        this.setting.bodyHeight = this.utils.bodyHeightTransfer(max, !isMetric, true);
+        this.setting.bodyHeight = bodyHeightTransfer(max, !isMetric, true);
       } else {
         this.setting.bodyHeight = inputValue;
       }
@@ -330,7 +333,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
         this.uiFlag.heightAlert = true;
       } else {
         const { bodyHeight } = this.userInfo;
-        (e as any).target.value = this.utils.bodyHeightTransfer(bodyHeight, !isMetric, true);
+        (e as any).target.value = bodyHeightTransfer(bodyHeight, !isMetric, true);
         this.uiFlag.heightAlert = false;
       }
 
@@ -347,7 +350,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
     const oldValue = this.userInfo.bodyWeight,
       inputValue = +(e as any).target.value,
       testFormat = formTest.decimalValue.test(`${inputValue}`),
-      isMetric = this.userInfo.unit === Unit.metric,
+      isMetric = this.userInfo.unit === DataUnitType.metric,
       newValue = valueConvert(inputValue, !isMetric, false, lb, 1),
       valueChanged = newValue !== oldValue;
     if (inputValue && testFormat && valueChanged) {

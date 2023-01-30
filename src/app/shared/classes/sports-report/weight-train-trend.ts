@@ -2,13 +2,13 @@ import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { WeightTrainingInfo } from '../../models/weight-train';
 import { MuscleCode, Proficiency, WeightTrainingLevel } from '../../enum/weight-train';
-import { mathRounding } from '../../utils/index';
+import { mathRounding } from '../../../core/utils/index';
 import { WEIGHT_TRAIN_COLOR } from '../../models/chart-data';
-import { deepCopy } from '../../utils/index';
-import { getCorrespondingMuscleGroup } from '../../utils/sports';
+import { deepCopy } from '../../../core/utils/index';
+import { getCorrespondingMuscleGroup } from '../../../core/utils/sports';
 import { ReportDateType } from '../../models/report-condition';
 import { lb } from '../../models/bs-constant';
-import { Unit } from '../../enum/value-conversion';
+import { DataUnitType } from '../../../core/enums/common';
 
 dayjs.extend(quarterOfYear);
 
@@ -83,12 +83,12 @@ export class WeightTrainingTrend {
   /**
    * 使用者使用單位
    */
-  private _userUnit: Unit = Unit.metric;
+  private _userUnit: DataUnitType = DataUnitType.metric;
 
   constructor(
     level: WeightTrainingLevel = WeightTrainingLevel.metacarpus,
     bodyWeight = 60,
-    unit: Unit
+    unit: DataUnitType
   ) {
     this._proficiency = this.getProficiency(level);
     this._bodyWeight = bodyWeight;
@@ -205,7 +205,7 @@ export class WeightTrainingTrend {
 
       const [max1RMData, avgWeightData] = this._groupTrainingData[_muscleCode];
       const { max1RMColor, avgWeightColor } = this.setColor(max1RM, false);
-      const denominator = _userUnit === Unit.metric ? 1 : lb;
+      const denominator = _userUnit === DataUnitType.metric ? 1 : lb;
       max1RMData.data.push({
         x: startDate,
         y: max1RM / denominator,

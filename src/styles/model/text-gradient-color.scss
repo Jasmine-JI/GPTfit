@@ -1,0 +1,16 @@
+@mixin background-clip($obj: text) {
+  background-clip: $obj;
+  -webkit-background-clip: $obj;
+  -moz-background-clip: $obj;
+}
+
+@mixin text-fill-color($color: transparent) {
+  -webkit-text-fill-color: $color;
+  -moz-text-fill-color: $color;
+}
+
+@mixin text-gradient-color($color) {
+  @include background-clip();
+  @include text-fill-color();
+  background-image: $focus-color;
+}

@@ -12,13 +12,12 @@ import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs';
-import { GlobalEventsService } from '../../../../core/services/global-events.service';
-import { deepCopy } from '../../../utils/index';
+import { GlobalEventsService } from '../../../../core/services';
+import { deepCopy, paceTooltipFormatter, paceYAxisFormatter } from '../../../../core/utils/index';
 import { compareChartDefault } from '../../../models/chart-data';
-import { speedToPace, speedToPaceSecond } from '../../../utils/sports';
+import { speedToPaceSecond } from '../../../../core/utils/sports';
 import { SportType } from '../../../enum/sports';
-import { Unit } from '../../../enum/value-conversion';
-import { paceTooltipFormatter, paceYAxisFormatter } from '../../../utils/chart-formatter';
+import { DataUnitType } from '../../../../core/enums/common';
 
 @Component({
   selector: 'app-compare-pace-chart',
@@ -34,7 +33,7 @@ export class ComparePaceChartComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() sportType: SportType;
 
-  @Input() unit: Unit;
+  @Input() unit: DataUnitType;
 
   @ViewChild('container', { static: false })
   container: ElementRef;
@@ -175,7 +174,7 @@ export class ComparePaceChartComponent implements OnInit, OnChanges, OnDestroy {
 class ChartOption {
   private _option = deepCopy(compareChartDefault);
 
-  constructor(data: Array<any>, xAxisTitle: string, sportType: SportType, unit: Unit) {
+  constructor(data: Array<any>, xAxisTitle: string, sportType: SportType, unit: DataUnitType) {
     this.initChart(data, xAxisTitle, sportType, unit);
   }
 
@@ -186,7 +185,7 @@ class ChartOption {
    * @param sportType {SportType}-運動類別
    * @param unit {string}-使用者使用單位
    */
-  initChart(data: Array<any>, xAxisTitle: string, sportType: SportType, unit: Unit) {
+  initChart(data: Array<any>, xAxisTitle: string, sportType: SportType, unit: DataUnitType) {
     this.setOtherOption(sportType, unit);
     const isCompareMode = data.length === 4;
     if (isCompareMode) {
@@ -199,9 +198,9 @@ class ChartOption {
   /**
    * 增加此圖表專用設定值
    * @param sportType {SportType}-運動類別
-   * @param unit {Unit}-使用者使用單位
+   * @param unit {DataUnitType}-使用者使用單位
    */
-  setOtherOption(sportType: SportType, unit: Unit) {
+  setOtherOption(sportType: SportType, unit: DataUnitType) {
     const { yAxis } = this._option;
     this._option.yAxis = {
       ...yAxis,

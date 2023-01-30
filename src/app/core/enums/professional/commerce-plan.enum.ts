@@ -2,7 +2,8 @@
  * 創建群組的方案類別
  */
 export enum CommercePlan {
-  tryOut = 1,
+  all,
+  tryOut,
   studio,
   company,
   enterprise,

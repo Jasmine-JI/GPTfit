@@ -5,19 +5,18 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
-import { GroupService } from '../../../../../shared/services/group.service';
-import { UtilsService } from '../../../../../shared/services/utils.service';
+import { ProfessionalService } from '../../../../professional/services/professional.service';
 import { ReportCondition, ReportDateType } from '../../../../../shared/models/report-condition';
 import { Subject, of, combineLatest, fromEvent, Subscription, merge } from 'rxjs';
 import { takeUntil, switchMap, map, tap, debounceTime } from 'rxjs/operators';
-import { HashIdService } from '../../../../../shared/services/hash-id.service';
 import { SportType } from '../../../../../shared/enum/sports';
 import {
   getUrlQueryStrings,
   deepCopy,
   mathRounding,
   subscribePluralEvent,
-} from '../../../../../shared/utils/index';
+  speedToPace,
+} from '../../../../../core/utils';
 import { QueryString } from '../../../../../shared/enum/query-string';
 import { DateRange } from '../../../../../shared/classes/date-range';
 import { BrandType, GroupLevel } from '../../../../../shared/enum/professional';
@@ -29,14 +28,12 @@ import { GroupSportsReportInfo } from '../../../../../shared/classes/sports-repo
 import { AllGroupMember } from '../../../../../shared/classes/all-group-member';
 import { SportsParameter } from '../../../../../shared/models/sports-report';
 import { mi, ft, lb } from '../../../../../shared/models/bs-constant';
-import { Unit } from '../../../../../shared/enum/value-conversion';
-import { speedToPace } from '../../../../../shared/utils/sports';
 import { SportsAnalysisSort } from '../../../../../shared/classes/sports-report/sports-analysis-sort';
 import { ProfessionalAnalysisOption } from '../../../../professional/classes/professional-analysis-option';
 import { ProfessionalChartAnalysisOption } from '../../../../professional/classes/professional-chart-analysis-option';
 import { AnalysisSportsColumn } from '../../../../../shared/enum/report-analysis';
 import { AnalysisAssignMenu } from '../../../../../shared/models/report-analysis';
-import { SPORT_TYPE_COLOR, trendChartColor } from '../../../../../shared/models/chart-data';
+import { sportTypeColor, trendChartColor } from '../../../../../shared/models/chart-data';
 import { TargetField, TargetConditionMap } from '../../../../../core/models/api/api-common';
 import { MuscleGroup } from '../../../../../shared/enum/weight-train';
 import { REGEX_GROUP_ID } from '../../../../../shared/models/utils-constant';
@@ -48,8 +45,10 @@ import {
   UserService,
   Api21xxService,
   ReportService,
+  HashIdService,
+  HintDialogService,
 } from '../../../../../core/services';
-import { BenefitTimeStartZone } from '../../../../../core/enums/common';
+import { BenefitTimeStartZone, DataUnitType } from '../../../../../core/enums/common';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 
@@ -132,7 +131,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   /**
    * 使用者使用之數據單位（公制/英制）
    */
-  userUnit = this.userService.getUser().userProfile.unit as Unit;
+  userUnit = this.userService.getUser().userProfile.unit as DataUnitType;
 
   /**
    * 團體分析排序相關
@@ -207,18 +206,18 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
   readonly SportType = SportType;
   readonly GroupLevel = GroupLevel;
-  readonly Unit = Unit;
+  readonly DataUnitType = DataUnitType;
   readonly AnalysisSportsColumn = AnalysisSportsColumn;
   readonly muscleMetricUnit = 'kg*rep*set';
   readonly muscleImperialUnit = 'lb*rep*set';
   readonly MuscleGroup = MuscleGroup;
-  readonly SPORT_TYPE_COLOR = SPORT_TYPE_COLOR;
+  readonly sportTypeColor = sportTypeColor;
   readonly trendChartColor = trendChartColor;
   readonly DateUnit = DateUnit;
 
   constructor(
-    private utils: UtilsService,
-    private groupService: GroupService,
+    private hintDialogService: HintDialogService,
+    private professionalService: ProfessionalService,
     private hashIdService: HashIdService,
     private changeDetectorRef: ChangeDetectorRef,
     private userService: UserService,
@@ -286,7 +285,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 取得管理員清單，用於篩選管理員數據的功能
    */
   getAdminList() {
-    this.groupService
+    this.professionalService
       .getRXAdminList()
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((list) => {
@@ -327,7 +326,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * @author kidin-1110315
    */
   getGroupInfo() {
-    return this.groupService.getCurrentGroupInfo();
+    return this.professionalService.getCurrentGroupInfo();
   }
 
   /**
@@ -422,7 +421,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       const { id, level } = group.focusGroup;
       const reportDayType = (dateUnit as ReportDateUnit).getReportDateType();
 
-      this.groupService
+      this.professionalService
         .getAllGroupMemberList(id as string)
         .pipe(
           switchMap((res) => {
@@ -479,7 +478,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         )
         .subscribe((resultArray) => {
           // 陣列為空則顯示錯誤訊息
-          if (resultArray.length === 0) return this.utils.openAlert(ERROR_MESSAGE);
+          if (resultArray.length === 0) return this.hintDialogService.openAlert(ERROR_MESSAGE);
           this.changeColumnOption(sportType as SportType, level as GroupLevel);
           this.initFlag();
           this.createReport(condition, resultArray);
@@ -541,7 +540,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   createReport(condition: ReportCondition, data: Array<any>) {
     const [allGroupMemberList, baseSportSummary, compareSportSummary] = data;
     const { groupDetail } = this.getGroupInfo();
-    this.sportsTargetCondition = this.groupService
+    this.sportsTargetCondition = this.professionalService
       .getSportsTarget(groupDetail)
       .getArrangeCondition((condition.dateUnit as ReportDateUnit).unit);
     this.handlePersonalData(
@@ -640,7 +639,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   getBelongGroupObj() {
     if (this.reportCondition.group) {
       const { id, level } = this.reportCondition.group.focusGroup;
-      const allGroupInfo = deepCopy(this.groupService.getCurrentGroupInfo().immediateGroupObj);
+      const allGroupInfo = deepCopy(
+        this.professionalService.getCurrentGroupInfo().immediateGroupObj
+      );
       if (level === GroupLevel.brand) return allGroupInfo;
 
       const {
@@ -706,7 +707,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * @author kidin-1110324
    */
   getPerAvgData(infoData: any, key: string) {
-    const isMetric = this.userUnit === Unit.metric;
+    const isMetric = this.userUnit === DataUnitType.metric;
     const sportType = this.reportCondition.sportType as SportType;
     const result = {
       value: 0,
@@ -775,6 +776,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         case 'rowingAvgWatt':
           result.update(value, 'watt');
           break;
+        case 'totalFeedbackEnergy':
+          result.update(mathRounding(value ?? 0, 1), 'whr');
+          break;
         default:
           result.update(value);
           break;
@@ -793,7 +797,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   getPersonalData(data: any, key: string) {
     if (this.uiFlag.progress !== 100) return 0;
 
-    const isMetric = this.userUnit === Unit.metric;
+    const isMetric = this.userUnit === DataUnitType.metric;
     const sportType = this.reportCondition.sportType as SportType;
     let result: string | number = 0;
     const value = data[key];
@@ -827,8 +831,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         case 'targetAchieveRate':
           result = `${mathRounding(value * 100, 1)}%`;
           break;
+        case 'totalFeedbackEnergy':
+          result = mathRounding(value ?? 0, 1);
+          break;
         default:
-          result = Math.round(value);
+          result = Math.round(value ?? 0);
           break;
       }
     }
@@ -1105,7 +1112,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   getSpeedPaceUnit() {
     const { sportType } = this.reportCondition;
-    const isMetric = this.userUnit === Unit.metric;
+    const isMetric = this.userUnit === DataUnitType.metric;
     switch (sportType) {
       case SportType.run:
         return isMetric ? 'min/km' : 'min/mi';

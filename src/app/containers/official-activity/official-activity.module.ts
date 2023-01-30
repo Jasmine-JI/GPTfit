@@ -12,21 +12,62 @@ import { EditActivityComponent } from './components/edit-activity/edit-activity.
 import { EditGuard } from './guards/edit.guard';
 import { AdminGuard } from './guards/admin.guard';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
-import { SharedPipes } from '../../shared/pipes/shared-pipes';
-import { CustomMaterialModule } from '../../shared/custom-material.module';
+import { CustomMaterialModule } from '../../core/custom-material.module';
 import { SharedModule } from '../../shared/shared.module';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { OfficialActivityService } from './services/official-activity.service';
 import { FormsModule } from '@angular/forms';
-import { PaidStatusPipe } from './pipes/paid-status.pipe';
-import { ShippedStatusPipe } from './pipes/shipped-status.pipe';
 import { QRCodeModule } from 'angularx-qrcode';
 import { EditCarouselComponent } from './components/edit-carousel/edit-carousel.component';
 import { ContactUsComponent } from './components/contact-us/contact-us.component';
-import { GroupService } from '../../shared/services/group.service';
-import { ListStatusPipe } from './pipes/list-status.pipe';
 import { AboutCloudrunComponent } from './components/about-cloudrun/about-cloudrun.component';
-import { SportTimePipe } from '../../shared/pipes/sport-time.pipe';
+import {
+  SexPipe,
+  SafeHtmlPipe,
+  LineBreakPipe,
+  GroupStatusPipe,
+  GroupLevelNamePipe,
+  SportTimePipe,
+  MuscleNamePipe,
+  SlicePipe,
+  RelativeDayPipe,
+  TimeFormatPipe,
+  RegionCodePipe,
+  LanguageCodePipe,
+  AppIdPipe,
+  SystemIdPipe,
+  SportTypePipe,
+  LongTextPipe,
+  GroupIdSlicePipe,
+  ThousandConversionPipe,
+  SpeedSibsPipe,
+  TemperatureSibsPipe,
+  swimPosture,
+  DataTypeTranslatePipe,
+  DataTypeUnitPipe,
+  PaiPipe,
+  FindPreferPipe,
+  MuscleGroupIconPipe,
+  PythagoreanPipe,
+  MathAbsPipe,
+  BodyHeightSibsPipe,
+  BMIPipe,
+  BodyAssessmentPipe,
+  FFMIPipe,
+  DataFlowConversionPipe,
+  LengthSibsPipe,
+  SafeStylePipe,
+  PatchUnitPipe,
+  AgePipe,
+  RankSuffixPipe,
+  TargetFieldNamePipe,
+  TargetFieldUnitPipe,
+  MuscleGroupNamePipe,
+  MusclePartIconPipe,
+  PaidStatusPipe,
+  ShippedStatusPipe,
+  ListStatusPipe,
+} from '../../core/pipes';
 import { StationMailModule } from '../station-mail/station-mail.module';
 
 @NgModule({
@@ -35,13 +76,57 @@ import { StationMailModule } from '../station-mail/station-mail.module';
     CommonModule,
     SharedComponentsModule,
     CustomMaterialModule,
-    SharedPipes,
     SharedModule,
     NgProgressModule,
     CKEditorModule,
     FormsModule,
     QRCodeModule,
     StationMailModule,
+    SexPipe,
+    SafeHtmlPipe,
+    LineBreakPipe,
+    GroupStatusPipe,
+    GroupLevelNamePipe,
+    SportTimePipe,
+    MuscleNamePipe,
+    SlicePipe,
+    RelativeDayPipe,
+    TimeFormatPipe,
+    RegionCodePipe,
+    LanguageCodePipe,
+    AppIdPipe,
+    SystemIdPipe,
+    SportTypePipe,
+    LongTextPipe,
+    GroupIdSlicePipe,
+    ThousandConversionPipe,
+    SpeedSibsPipe,
+    TemperatureSibsPipe,
+    swimPosture,
+    DataTypeTranslatePipe,
+    DataTypeUnitPipe,
+    PaiPipe,
+    FindPreferPipe,
+    MuscleGroupIconPipe,
+    PythagoreanPipe,
+    MathAbsPipe,
+    BodyHeightSibsPipe,
+    BMIPipe,
+    BodyAssessmentPipe,
+    FFMIPipe,
+    DataFlowConversionPipe,
+    LengthSibsPipe,
+    SafeStylePipe,
+    PatchUnitPipe,
+    AgePipe,
+    RankSuffixPipe,
+    TargetFieldNamePipe,
+    TargetFieldUnitPipe,
+    MuscleGroupNamePipe,
+    MusclePartIconPipe,
+    ListStatusPipe,
+    PaidStatusPipe,
+    ShippedStatusPipe,
   ],
   declarations: [
     OfficialActivityComponent,
@@ -51,21 +136,10 @@ import { StationMailModule } from '../station-mail/station-mail.module';
     LeaderboardComponent,
     ContestantListComponent,
     EditActivityComponent,
-    PaidStatusPipe,
-    ShippedStatusPipe,
     EditCarouselComponent,
     ContactUsComponent,
-    ListStatusPipe,
     AboutCloudrunComponent,
   ],
-  providers: [
-    EditGuard,
-    OfficialActivityService,
-    PaidStatusPipe,
-    ShippedStatusPipe,
-    SportTimePipe,
-    AdminGuard,
-    GroupService,
-  ],
+  providers: [EditGuard, OfficialActivityService, PaidStatusPipe, ShippedStatusPipe, AdminGuard],
 })
 export class OfficialActivityModule {}

@@ -1,4 +1,4 @@
-import { deepCopy, mathRounding } from '../../utils/index';
+import { deepCopy, mathRounding } from '../../../core/utils/index';
 
 /**
  * 比較趨勢圖

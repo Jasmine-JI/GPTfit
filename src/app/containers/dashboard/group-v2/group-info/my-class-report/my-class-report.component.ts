@@ -1,24 +1,31 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Renderer2 } from '@angular/core';
 import { GroupDetailInfo, UserSimpleInfo } from '../../../models/group-detail';
-import { GroupService } from '../../../../../shared/services/group.service';
-import { UtilsService } from '../../../../../shared/services/utils.service';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import dayjs from 'dayjs';
-import { ActivityService } from '../../../../../shared/services/activity.service';
-import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { getOptions } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
-import { UserService } from '../../../../../core/services/user.service';
+import {
+  UserService,
+  HashIdService,
+  AuthService,
+  Api10xxService,
+  Api11xxService,
+  Api21xxService,
+  Api70xxService,
+  ReportService,
+} from '../../../../../core/services';
 import { Router } from '@angular/router';
-import { HashIdService } from '../../../../../shared/services/hash-id.service';
 import { chart, charts, color, each } from 'highcharts';
-import { ReportService } from '../../../../../shared/services/report.service';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
 import { HrZoneRange } from '../../../../../shared/models/chart-data';
 import { HrBase } from '../../../../../shared/enum/personal';
-import { AuthService } from '../../../../../core/services/auth.service';
-import { Api10xxService } from '../../../../../core/services/api-10xx.service';
+import { ProfessionalService } from '../../../../professional/services/professional.service';
+import {
+  displayGroupLevel,
+  getUrlQueryStrings,
+  setUrlQueryString,
+} from '../../../../../core/utils';
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -261,39 +268,31 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   caloriesChartTarget: ElementRef;
 
   constructor(
-    private groupService: GroupService,
-    private utils: UtilsService,
-    private activityService: ActivityService,
+    private api11xxService: Api11xxService,
+    private api21xxService: Api21xxService,
     private userService: UserService,
     private hashIdService: HashIdService,
     private router: Router,
-    private qrcodeService: QrcodeService,
+    private api70xxService: Api70xxService,
     private renderer: Renderer2,
     private translateService: TranslateService,
     private reportService: ReportService,
     private authService: AuthService,
-    private api10xxService: Api10xxService
+    private api10xxService: Api10xxService,
+    private professionalService: ProfessionalService
   ) {}
 
   ngOnInit(): void {
     this.initPage();
+    const { search } = location;
+    const queryObj = getUrlQueryStrings(search);
+    const { ipm, debug, startdate, enddate, sportType, id } = queryObj;
+    if (ipm) this.isPreviewMode = true;
+    if (debug) this.isDebug = true;
 
-    if (location.search.indexOf('ipm=s') > -1) {
-      this.isPreviewMode = true;
-    }
-
-    if (location.search.indexOf('debug=') > -1) {
-      this.isDebug = true;
-    }
-
-    if (
-      location.search.indexOf('startdate=') > -1 &&
-      location.search.indexOf('enddate=') > -1 &&
-      location.search.indexOf('sportType=') > -1 &&
-      location.search.indexOf('id=')
-    ) {
+    if (startdate && enddate && sportType && id) {
       this.urlOpenReprot = true;
-      this.queryStringShowData();
+      this.queryStringShowData(queryObj);
     } else {
       this.reportService.setReportCondition(this.reportConditionOpt);
       this.getReportSelectedCondition();
@@ -308,14 +307,14 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
    */
   initPage() {
     combineLatest([
-      this.groupService.getRxGroupDetail(),
-      this.groupService.getRxCommerceInfo(),
-      this.groupService.getUserSimpleInfo(),
+      this.professionalService.getRxGroupDetail(),
+      this.professionalService.getRxCommerceInfo(),
+      this.professionalService.getUserSimpleInfo(),
     ])
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((resArr) => {
         this.groupInfo = resArr[0];
-        Object.assign(resArr[0], { groupLevel: this.utils.displayGroupLevel(resArr[0].groupId) });
+        Object.assign(resArr[0], { groupLevel: displayGroupLevel(resArr[0].groupId) });
         Object.assign(resArr[0], { expired: resArr[1].expired });
         Object.assign(resArr[0], { commerceStatus: resArr[1].commerceStatus });
         this.userSimpleInfo = resArr[2];
@@ -323,37 +322,26 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   }
 
   // 依query string顯示資料-kidin-20191226
-  queryStringShowData() {
-    const queryString = location.search.replace('?', '').split('&');
-    for (let i = 0; i < queryString.length; i++) {
-      if (queryString[i].indexOf('startdate=') > -1) {
-        this.startDate = queryString[i].replace('startdate=', '');
-        this.reportConditionOpt.date.startTimestamp = dayjs(
-          queryString[i].replace('startdate=', '')
-        ).valueOf();
-      } else if (queryString[i].indexOf('enddate=') > -1) {
-        this.reportConditionOpt.date.endTimestamp = dayjs(
-          queryString[i].replace('endDate=', '')
-        ).valueOf();
-      } else if (queryString[i].indexOf('sportType=') > -1) {
-        this.sportType = +queryString[i].replace('sportType=', '');
-      } else if (queryString[i].indexOf('id=') > -1) {
-        this.userId = this.hashIdService.handleGroupIdDecode(queryString[i].replace('id=', ''));
-      }
+  queryStringShowData(queryObj: any) {
+    const { startdate, enddate, sportType, id } = queryObj;
+    if (startdate) {
+      this.startDate = startdate;
+      this.reportConditionOpt.date.startTimestamp = dayjs(startdate).valueOf();
     }
+
+    if (enddate) this.reportConditionOpt.date.endTimestamp = dayjs(enddate).valueOf();
+    if (sportType) this.sportType = +sportType;
+    if (id) this.userId = this.hashIdService.handleGroupIdDecode(id);
 
     if (!this.isPreviewMode) {
       this.reportConditionOpt.date.type = 'custom';
       this.reportService.setReportCondition(this.reportConditionOpt);
       this.getReportSelectedCondition();
     } else {
+      const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
       this.selectDate = {
-        startDate: dayjs(this.reportConditionOpt.date.startTimestamp).format(
-          'YYYY-MM-DDTHH:mm:ss.SSSZ'
-        ),
-        endDate: dayjs(this.reportConditionOpt.date.endTimestamp).format(
-          'YYYY-MM-DDTHH:mm:ss.SSSZ'
-        ),
+        startDate: dayjs(this.reportConditionOpt.date.startTimestamp).format(dateFormat),
+        endDate: dayjs(this.reportConditionOpt.date.endTimestamp).format(dateFormat),
       };
 
       this.handleSubmitSearch();
@@ -365,14 +353,15 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
    * @author kidin-1091029
    */
   getReportSelectedCondition() {
+    const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
     this.reportService
       .getReportCondition()
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((res) => {
         if (res.date) {
           this.selectDate = {
-            startDate: dayjs(res.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-            endDate: dayjs(res.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+            startDate: dayjs(res.date.startTimestamp).format(dateFormat),
+            endDate: dayjs(res.date.endTimestamp).format(dateFormat),
           };
 
           this.sportType = res.sportType;
@@ -390,7 +379,8 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     this.getGroupInfo();
 
     // 根據條件取得多筆運動檔案資料-kidin-1081211
-    let targetUser, author;
+    let targetUser;
+    let author;
     if (this.isDebug) {
       targetUser = '99';
       author = this.userId;
@@ -436,7 +426,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   // 取得群組資訊-kidin-1090326
   getGroupInfo() {
     // 先從service取得群組資訊，若取不到再call api-kidin-1081210
-    this.groupService
+    this.professionalService
       .getGroupInfo()
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((res) => {
@@ -457,9 +447,9 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
             avatarType: '2',
           };
 
-          this.groupService.fetchGroupListDetail(groupBody).subscribe((result) => {
+          this.api11xxService.fetchGroupListDetail(groupBody).subscribe((result) => {
             this.groupData = result.info;
-            this.groupService.saveGroupInfo(this.groupData);
+            this.professionalService.saveGroupInfo(this.groupData);
             this.showGroupInfo();
           });
         }
@@ -583,16 +573,17 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   // 取得多筆活動資料並處理-kidin-1081211
   sendRequest(body) {
     this.changeLoadingStatus(true);
-    this.activityService.fetchMultiActivityData(body).subscribe((res) => {
-      const activity = res.info.activities;
-      if (res.resultCode !== 200) {
+    this.api21xxService.fetchMultiActivityData(body).subscribe((res) => {
+      const { resultCode, info, activities } = res;
+      if (resultCode !== 200) {
         this.hasResData = false;
         this.updateUrl('false');
         this.reportCompleted = true;
         this.initialChartComplated = true;
         this.changeLoadingStatus(false);
       } else {
-        this.activityLength = activity.length;
+        const allActivities = this.mergeActivitiesList(info, activities);
+        this.activityLength = allActivities.length;
         if (this.activityLength === 0) {
           this.hasResData = false;
           this.updateUrl('false');
@@ -602,66 +593,61 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
         } else {
           this.isSelectDateRange = false;
           this.hasResData = true;
-          const infoData = activity[0];
+          const infoData = allActivities[0];
           this.fileInfo = infoData.fileInfo;
 
-          let timeCount = 0,
-            HRCount = 0,
-            caloriesCount = 0,
-            HRZoneZero = 0,
-            HRZoneOne = 0,
-            HRZoneTwo = 0,
-            HRZoneThree = 0,
-            HRZoneFour = 0,
-            HRZoneFive = 0;
+          let timeCount = 0;
+          let HRCount = 0;
+          let caloriesCount = 0;
+          let HRZoneZero = 0;
+          let HRZoneOne = 0;
+          let HRZoneTwo = 0;
+          let HRZoneThree = 0;
+          let HRZoneFour = 0;
+          let HRZoneFive = 0;
 
           for (let i = 0; i < this.activityLength; i++) {
-            const activityItem = activity[i].activityInfoLayer;
-            timeCount += activityItem.totalSecond;
-            HRCount += activityItem.avgHeartRateBpm;
-            caloriesCount += activityItem.calories;
+            const activityItem = allActivities[i].activityInfoLayer;
+            const {
+              totalSecond,
+              avgHeartRateBpm,
+              calories,
+              totalHrZone0Second,
+              totalHrZone1Second,
+              totalHrZone2Second,
+              totalHrZone3Second,
+              totalHrZone4Second,
+              totalHrZone5Second,
+            } = activityItem;
+            timeCount += totalSecond;
+            HRCount += avgHeartRateBpm;
+            caloriesCount += calories;
 
             // 取得心率區間-kidin-1081213
-            if (activityItem.totalHrZone0Second !== null) {
-              HRZoneZero +=
-                activityItem.totalHrZone0Second > 0 ? activityItem.totalHrZone0Second : 0;
-              HRZoneOne +=
-                activityItem.totalHrZone1Second > 0 ? activityItem.totalHrZone1Second : 0;
-              HRZoneTwo +=
-                activityItem.totalHrZone2Second > 0 ? activityItem.totalHrZone2Second : 0;
-              HRZoneThree +=
-                activityItem.totalHrZone3Second > 0 ? activityItem.totalHrZone3Second : 0;
-              HRZoneFour +=
-                activityItem.totalHrZone4Second > 0 ? activityItem.totalHrZone4Second : 0;
-              HRZoneFive +=
-                activityItem.totalHrZone5Second > 0 ? activityItem.totalHrZone5Second : 0;
+            if (totalHrZone0Second !== null) {
+              HRZoneZero += totalHrZone0Second > 0 ? totalHrZone0Second : 0;
+              HRZoneOne += totalHrZone1Second > 0 ? totalHrZone1Second : 0;
+              HRZoneTwo += totalHrZone2Second > 0 ? totalHrZone2Second : 0;
+              HRZoneThree += totalHrZone3Second > 0 ? totalHrZone3Second : 0;
+              HRZoneFour += totalHrZone4Second > 0 ? totalHrZone4Second : 0;
+              HRZoneFive += totalHrZone5Second > 0 ? totalHrZone5Second : 0;
             } else {
               // 計算心率區間-kidin-1081213
-              const hrBpm = activity[i].activityPointLayer,
-                resolutionSeconds = 3;
+              const hrBpm = allActivities[i].activityPointLayer;
+              const resolutionSeconds = 3;
               for (let j = 0; j < hrBpm.length; j++) {
-                if (hrBpm[j].heartRateBpm !== 0) {
-                  if (
-                    hrBpm[j].heartRateBpm.heartRateBpm >= this.hrZoneRange.z0 &&
-                    hrBpm[j].heartRateBpm < this.hrZoneRange.z1
-                  ) {
+                const { heartRateBpm } = hrBpm[j];
+                const { z0, z1, z2, z3, z4 } = this.hrZoneRange;
+                if (heartRateBpm !== 0) {
+                  if (heartRateBpm >= z0 && heartRateBpm < z1) {
                     HRZoneOne += resolutionSeconds;
-                  } else if (
-                    hrBpm[j].heartRateBpm >= (this.hrZoneRange.z1 as any) + 1 &&
-                    hrBpm[j].heartRateBpm < this.hrZoneRange.z2
-                  ) {
+                  } else if (heartRateBpm >= (z1 as any) + 1 && heartRateBpm < z2) {
                     HRZoneTwo += resolutionSeconds;
-                  } else if (
-                    hrBpm[j].heartRateBpm >= (this.hrZoneRange.z2 as any) + 1 &&
-                    hrBpm[j].heartRateBpm < this.hrZoneRange.z3
-                  ) {
+                  } else if (heartRateBpm >= (z2 as any) + 1 && heartRateBpm < z3) {
                     HRZoneThree += resolutionSeconds;
-                  } else if (
-                    hrBpm[j].heartRateBpm >= (this.hrZoneRange.z3 as any) + 1 &&
-                    hrBpm[j].heartRateBpm < this.hrZoneRange.z4
-                  ) {
+                  } else if (heartRateBpm >= (z3 as any) + 1 && heartRateBpm < z4) {
                     HRZoneFour += resolutionSeconds;
-                  } else if (hrBpm[j].heartRateBpm >= (this.hrZoneRange.z4 as any) + 1) {
+                  } else if (heartRateBpm >= (z4 as any) + 1) {
                     HRZoneFive += resolutionSeconds;
                   } else {
                     HRZoneZero += resolutionSeconds;
@@ -670,9 +656,9 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
               }
             }
 
-            this.dateList.unshift(this.formatDate(activity[i].fileInfo.creationDate));
-            this.avgHRList.unshift(activityItem.avgHeartRateBpm);
-            this.caloriesList.unshift(activityItem.calories);
+            this.dateList.unshift(this.formatDate(allActivities[i].fileInfo.creationDate));
+            this.avgHRList.unshift(avgHeartRateBpm);
+            this.caloriesList.unshift(calories);
           }
 
           this.calculateTotalTime(timeCount);
@@ -707,6 +693,21 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     });
 
     this.reportCompleted = true;
+  }
+
+  /**
+   * 將單一類別課程與複合式課程清單合併
+   * @param singleTypeInfo {any}-單一類別課程資訊
+   * @param complexTypeInfo {Array<any>}-複合式類別課程資訊
+   */
+  mergeActivitiesList(singleTypeInfo: any, complexTypeInfo: Array<any>) {
+    const { activities } = singleTypeInfo;
+    if (!complexTypeInfo || complexTypeInfo.length === 0) return activities;
+    return (activities || []).concat(complexTypeInfo).sort((_a, _b) => {
+      const _aCreationTimestamp = dayjs(_a.fileInfo.creationDate).valueOf();
+      const _bCreationTimestamp = dayjs(_b.fileInfo.creationDate).valueOf();
+      return _aCreationTimestamp - _bCreationTimestamp;
+    });
   }
 
   // 取得變數內容並將部分變數替換成html element-kidin-1090623
@@ -771,62 +772,32 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     }
   }
 
-  // 將搜尋的類別和範圍處理過後加入query string並更新現在的url和預覽列印的url-kidin-1081226
+  // 將搜尋的類別和範圍處理過後加入query string並更新現在的url和預覽列印的url
   updateUrl(str) {
-    let newUrl;
+    const { pathname, search } = location;
+    let newUrl = pathname;
     if (str === 'true') {
-      const startDateString = this.selectDate.startDate.split('T')[0],
-        endDateString = this.selectDate.endDate.split('T')[0];
-      let searchString;
-
-      let userId: string;
-      if (this.fileInfo.author.indexOf('?') > 0) {
-        userId = this.hashIdService.handleUserIdEncode(
-          this.fileInfo.author.split('?')[1].split('=')[1].replace(')', '')
-        );
-      } else {
-        userId = this.hashIdService.handleUserIdEncode(this.fileInfo.author.replace(')', ''));
-      }
-
-      searchString = `startdate=${startDateString}&enddate=${endDateString}&sportType=${this.sportType}&id=${userId}`;
-
-      if (location.search.indexOf('?') > -1) {
-        if (
-          location.search.indexOf('startdate=') > -1 &&
-          location.search.indexOf('enddate=') > -1 &&
-          location.search.indexOf('sportType=') > -1 &&
-          location.search.indexOf('id=') > -1
-        ) {
-          // 將舊的sr query string換成新的-kidin-1081226
-          const preUrl = location.pathname;
-          const queryString = location.search.replace('?', '').split('&');
-          let newSufUrl = '';
-          for (let i = 0; i < queryString.length; i++) {
-            if (
-              queryString[i].indexOf('startdate=') === -1 &&
-              queryString[i].indexOf('enddate=') === -1 &&
-              queryString[i].indexOf('sportType=') === -1 &&
-              queryString[i].indexOf('id=') === -1
-            ) {
-              newSufUrl = `${newSufUrl}&${queryString[i]}`;
-            }
-          }
-          newUrl = `${preUrl}?${searchString} ${newSufUrl}`;
-        } else {
-          newUrl = location.pathname + location.search + `&${searchString}`;
-        }
-      } else {
-        newUrl = location.pathname + `?${searchString}`;
-      }
-
-      this.previewUrl = newUrl + '&ipm=s';
-    } else {
-      newUrl = location.pathname;
+      const startDateString = this.selectDate.startDate.split('T')[0];
+      const endDateString = this.selectDate.endDate.split('T')[0];
+      const { author } = this.fileInfo;
+      const userId =
+        author.indexOf('?') > 0
+          ? author.split('?')[1].split('=')[1].replace(')', '')
+          : author.replace(')', '');
+      const hashUserId = this.hashIdService.handleUserIdEncode(userId);
+      const queryObj = getUrlQueryStrings(search);
+      const newSearch = setUrlQueryString({
+        ...queryObj,
+        startdate: startDateString,
+        enddate: endDateString,
+        sportType: this.sportType,
+        id: hashUserId,
+      });
+      newUrl += newSearch;
+      this.previewUrl = `${newUrl}&ipm=s`;
     }
 
-    if (history.pushState) {
-      window.history.pushState({ path: newUrl }, '', newUrl);
-    }
+    if (history.pushState) window.history.pushState({ path: newUrl }, '', newUrl);
   }
 
   // 計算多筆資料合計的總運動時間-kidin-1081211
@@ -848,7 +819,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   // 時間補零-kidin-1081211
   fillTwoDigits(num: number) {
     const timeStr = '0' + Math.floor(num);
-    return timeStr.substr(-2);
+    return timeStr.slice(-2);
   }
 
   // 使檔案創建日期符合格式-kidin-1081211
@@ -1068,7 +1039,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       queryType: '1',
       queryArray: SN,
     };
-    this.qrcodeService.getProductInfo(deviceDody).subscribe((res) => {
+    this.api70xxService.fetchGetProductInfo(deviceDody).subscribe((res) => {
       if (res) {
         this.deviceInfo = res.info.productInfo[0];
         if (location.hostname === '192.168.1.235') {

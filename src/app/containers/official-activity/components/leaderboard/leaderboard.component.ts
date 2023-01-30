@@ -2,16 +2,18 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import { Subject, combineLatest, of, fromEvent, Subscription } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { UtilsService } from '../../../../shared/services/utils.service';
-import { CloudrunService } from '../../../../shared/services/cloudrun.service';
 import { TranslateService } from '@ngx-translate/core';
 import { MapLanguageEnum } from '../../../../shared/models/i18n';
-import { DEVELOP_DOMAIN, UAT_DOMAIN, PROD_DOMAIN } from '../../../../shared/models/utils-constant';
+import { Domain, WebIp } from '../../../../shared/enum/domain';
 import { formTest } from '../../../../shared/models/form-test';
 import { EventStatus } from '../../models/activity-content';
-import { NodejsApiService } from '../../../../core/services/nodejs-api.service';
-import { getCurrentTimestamp, deepCopy, getUrlQueryStrings } from '../../../../shared/utils/index';
-import { AuthService } from '../../../../core/services/auth.service';
+import {
+  NodejsApiService,
+  AuthService,
+  Api20xxService,
+  ApiCommonService,
+} from '../../../../core/services';
+import { getCurrentTimestamp, deepCopy, getUrlQueryStrings } from '../../../../core/utils';
 
 type SwitchType = 'main' | 'sub';
 type SwitchAction = 'up' | 'down';
@@ -62,8 +64,8 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
 
   constructor(
     private officialActivityService: OfficialActivityService,
-    private utils: UtilsService,
-    private cloudrunService: CloudrunService,
+    private apiCommonService: ApiCommonService,
+    private api20xxService: Api20xxService,
     private translateService: TranslateService,
     private nodejsApiService: NodejsApiService,
     private authService: AuthService
@@ -97,8 +99,8 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
    */
   getIconHost() {
     const { host } = location;
-    const isDevelop = host.includes(DEVELOP_DOMAIN) || host.includes(UAT_DOMAIN);
-    return isDevelop ? UAT_DOMAIN : PROD_DOMAIN;
+    const isDevelop = host.includes(WebIp.develop) || host.includes(Domain.uat);
+    return isDevelop ? Domain.uat : Domain.newProd;
   }
 
   /**
@@ -172,10 +174,11 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       case RankType.event:
         this.getEventRank(index);
         break;
-      case RankType.mapBest:
+      case RankType.mapBest: {
         const mapId = index + 1;
         this.getMapBestRank(mapId);
         break;
+      }
       case RankType.cumulativeClimb:
         this.getRankData(3, index);
         break;
@@ -308,7 +311,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       };
 
       this.officialActivityService.getEventList(body).subscribe((res) => {
-        if (this.utils.checkRes(res)) {
+        if (this.apiCommonService.checkRes(res)) {
           const eventList = res.eventList.filter((list) => list.eventStatus === EventStatus.audit);
           this.eventList = eventList;
           this.subList = eventList;
@@ -410,7 +413,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
    */
   getEventGroup(eventId: number) {
     this.officialActivityService.getEventDetail({ eventId }).subscribe((res) => {
-      if (this.utils.checkRes(res)) {
+      if (this.apiCommonService.checkRes(res)) {
         const { group } = res.eventDetail;
         this.groupList = this.assignGroupColor(group);
       }
@@ -451,12 +454,12 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
    */
   getLeaderboardStatistics(body: any) {
     this.initFlag();
-    this.cloudrunService
+    this.nodejsApiService
       .getLeaderboardStatistics(body)
       .pipe(
         switchMap((leaderboard) => {
           this.uiFlag.progress += 15;
-          const requestSuccess = this.utils.checkRes(leaderboard);
+          const requestSuccess = this.apiCommonService.checkRes(leaderboard);
           const rankList = leaderboard.info ? leaderboard.info.rankList : [];
           if (requestSuccess && rankList.length > 0) {
             const body = {
@@ -471,7 +474,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
             // 透過api取得所有參賽者的暱稱與頭像
             return this.nodejsApiService.getAssignInfo(body).pipe(
               map((userList) => {
-                if (this.utils.checkRes(userList)) {
+                if (this.apiCommonService.checkRes(userList)) {
                   const { result } = userList;
                   return rankList.map((_rankList, index) => {
                     const plugin = result[index];
@@ -525,11 +528,11 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     };
 
     if (rankType === 1) Object.assign(body, { mapId });
-    this.cloudrunService
+    this.api20xxService
       .getRankData(body)
       .pipe(
         switchMap((rankResult) => {
-          if (this.utils.checkRes(rankResult)) {
+          if (this.apiCommonService.checkRes(rankResult)) {
             this.uiFlag.progress += 15;
             const { accRankList, rankList } = rankResult.info;
             const list = accRankList ? accRankList : rankList;
@@ -547,7 +550,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
               // 透過api取得所有參賽者的頭像，並將物件參數重新命名
               return this.nodejsApiService.getAssignInfo(alaqlBody).pipe(
                 map((alaqlResult) => {
-                  if (this.utils.checkRes(alaqlResult)) {
+                  if (this.apiCommonService.checkRes(alaqlResult)) {
                     return list.map((_list, index) => {
                       const { rankNum: rank, raceManName: nickname, rankItemValue: result } = _list;
                       const { icon } = alaqlResult.result[index];

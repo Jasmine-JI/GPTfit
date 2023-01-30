@@ -5,6 +5,7 @@ export type DisplayPage = 'cloudrun' | 'sport' | 'lifeTracking' | 'sportReport';
 export const costTimeColor = 'rgba(188, 226, 58, 1)';
 export const strokeNumColor = 'rgba(53, 168, 201, 1)';
 export const caloriesColor = 'rgba(248, 181, 81, 1)';
+export const avgHrColor = 'rgba(201, 81, 248, 1)';
 export const distanceColor = 'rgba(110, 155, 255, 1)';
 export const rightMoveColor = 'rgba(110, 168, 255, 1)';
 export const leftMoveColor = 'rgba(206, 110, 255, 1)';
@@ -40,6 +41,19 @@ export const zoneColor = [
 ];
 
 /**
+ * 心率或閾值各區間，被比較的代表色（用於兩個不同區間數據比較）
+ */
+export const zoneCompareColor = [
+  'rgba(166, 206, 247, 1)',
+  'rgba(154, 241, 249, 1)',
+  'rgba(196, 243, 173, 1)',
+  'rgba(249, 246, 161, 1)',
+  'rgba(241, 211, 166, 1)',
+  'rgba(249, 172, 160, 1)',
+  'rgba(244, 123, 225, 1)',
+];
+
+/**
  * 心率或閾值說明各區間代表色（與圖表顏色有差異深淺色差是為了畫面好看）
  */
 export const infoColor = [
@@ -52,7 +66,7 @@ export const infoColor = [
   'rgba(239, 56, 150, 1)',
 ];
 
-export const SPORT_TYPE_COLOR = [
+export const sportTypeColor = [
   'rgba(234, 87, 87, 1)',
   'rgba(255, 154, 34, 1)',
   'rgba(249, 204, 61, 1)',
@@ -236,6 +250,16 @@ export const trendChartColor = {
     compare: {
       top: 'rgba(68, 71, 196, 1)',
       bottom: 'rgba(241, 69, 160, 1)',
+    },
+  },
+  totalFeedbackEnergy: {
+    base: {
+      top: 'rgba(247, 148, 72, 1)',
+      bottom: 'rgba(247, 206, 72, 1)',
+    },
+    compare: {
+      top: 'rgba(110, 245, 177, 1)',
+      bottom: 'rgba(157, 245, 110, 1)',
     },
   },
   achieveRate: {

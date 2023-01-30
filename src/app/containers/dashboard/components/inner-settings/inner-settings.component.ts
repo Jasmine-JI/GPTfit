@@ -1,9 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../people-selector-win/people-selector-win.component';
-import { GroupService } from '../../../../shared/services/group.service';
 import cloneDeep from 'lodash/cloneDeep';
-import { UserService } from '../../../../core/services/user.service';
+import { UserService, NodejsApiService } from '../../../../core/services';
 import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -31,7 +30,7 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
 
   constructor(
     private dialog: MatDialog,
-    private groupService: GroupService,
+    private nodejsApiService: NodejsApiService,
     private router: Router,
     private userService: UserService
   ) {}
@@ -49,7 +48,7 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
   }
 
   fetchInnerAdmin() {
-    this.groupService.getInnerAdmin().subscribe((_result) => {
+    this.nodejsApiService.getInnerAdmin().subscribe((_result) => {
       this.isLoading = false;
       const isCanUse = _result.findIndex((_res) => _res.userId === this.userId) > -1;
       if (isCanUse) {
@@ -70,7 +69,7 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
     const userIds = _lists.map((_list) => _list.userId);
     this.isLoading = true;
     const body = { targetRight: this.chooseType, userIds };
-    this.groupService.updateInnerAdmin(body).subscribe((res) => {
+    this.nodejsApiService.updateInnerAdmin(body).subscribe((res) => {
       if (res.resultCode === 200) {
         this.fetchInnerAdmin();
         this.dialog.closeAll();

@@ -7,7 +7,6 @@ import {
   Output,
   EventEmitter,
 } from '@angular/core';
-import { UtilsService } from '../../services/utils.service';
 import { Subject, Subscription, of, merge, fromEvent, combineLatest } from 'rxjs';
 import { takeUntil, tap, map, switchMap, debounceTime } from 'rxjs/operators';
 import { SportType } from '../../enum/sports';
@@ -28,15 +27,15 @@ import {
   AuthService,
   LocalstorageService,
   Api21xxService,
+  HashIdService,
 } from '../../../core/services';
 import { ActivatedRoute } from '@angular/router';
-import { HashIdService } from '../../services/hash-id.service';
 import { SportsTarget } from '../../classes/sports-target';
 import { SportsReport } from '../../classes/sports-report/sports-report';
 import { PersonalSportsChartData } from '../../classes/sports-report/personal-sports-chart-data';
-import { SPORT_TYPE_COLOR, trendChartColor, HrZoneRange } from '../../models/chart-data';
+import { sportTypeColor, trendChartColor, HrZoneRange } from '../../models/chart-data';
 import { mi, ft, lb } from '../../models/bs-constant';
-import { Unit } from '../../enum/value-conversion';
+import { DataUnitType } from '../../../core/enums/common';
 import { DefaultDateRange } from '../../classes/default-date-range';
 import { AccessRight } from '../../enum/accessright';
 import { MuscleGroup, MuscleAnalysisColumn } from '../../enum/weight-train';
@@ -59,7 +58,7 @@ import {
   getUrlQueryStrings,
   checkResponse,
   mathRounding,
-} from '../../utils';
+} from '../../../core/utils';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { SameWeekLifeTrackingData } from '../../classes/same-week-lifetracking-data';
@@ -202,15 +201,14 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   hrZoneRange: HrZoneRange | null = null;
 
   readonly SportType = SportType;
-  readonly Unit = Unit;
-  readonly SPORT_TYPE_COLOR = SPORT_TYPE_COLOR;
+  readonly DataUnitType = DataUnitType;
+  readonly sportTypeColor = sportTypeColor;
   readonly trendChartColor = trendChartColor;
   readonly DateUnit = DateUnit;
   readonly MuscleGroup = MuscleGroup;
   readonly MuscleAnalysisColumn = MuscleAnalysisColumn;
 
   constructor(
-    private utils: UtilsService,
     private changeDetectorRef: ChangeDetectorRef,
     private userService: UserService,
     private api21xxService: Api21xxService,
@@ -818,7 +816,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   getInfoData(infoData: any, key: string) {
     const { sportType } = this.reportCondition;
-    const isMetric = this.userUnit === Unit.metric;
+    const isMetric = this.userUnit === DataUnitType.metric;
     const result = {
       value: 0,
       unit: '',
@@ -900,6 +898,10 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         case 'targetAchieveRate': {
           const percentage = mathRounding(value * 100, 1);
           result.update(percentage, '%');
+          break;
+        }
+        case 'totalFeedbackEnergy': {
+          result.update(mathRounding(value, 1), 'whr');
           break;
         }
         default:

@@ -13,14 +13,19 @@ import {
 } from '@angular/core';
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { UtilsService } from '../../services/utils.service';
-import { Unit } from '../../enum/value-conversion';
-import { ActivityService } from '../../services/activity.service';
+import { DataUnitType } from '../../../core/enums/common';
 import { mi } from '../../models/bs-constant';
-import { GroupService } from '../../services/group.service';
+import { ProfessionalService } from '../../../containers/professional/services/professional.service';
 import { SelectDate } from '../../models/utils-type';
-import { AuthService } from '../../../core/services';
+import {
+  AuthService,
+  Api21xxService,
+  HintDialogService,
+  ApiCommonService,
+} from '../../../core/services';
 import { RacerInfo, RacerPositionList } from '../../../core/models/compo';
+import { displayGroupLevel } from '../../../core/utils';
+import { SportType } from '../../../core/enums/sports';
 
 // 若google api掛掉則建物件代替，避免造成gptfit卡住。
 const google: any = (window as any).google;
@@ -41,7 +46,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() altitude: Array<number>;
   @Input() userList: Array<any>;
   @Input() userId: number;
-  @Input() unit: Unit;
+  @Input() unit: DataUnitType;
   @Input() selectDate: SelectDate;
   @Input() groupId: string;
   @Input() mapId: number;
@@ -100,13 +105,15 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   lastUnloadRacer: number | null = null;
   currentFocusRacer: number;
   racerPositionList: RacerPositionList = new Map();
+  readonly SportType = SportType;
 
   constructor(
-    private utils: UtilsService,
-    private activityService: ActivityService,
+    private api21xxService: Api21xxService,
     private changeDetectorRef: ChangeDetectorRef,
-    private groupService: GroupService,
-    private authService: AuthService
+    private professionalService: ProfessionalService,
+    private authService: AuthService,
+    private hintDialogService: HintDialogService,
+    private apiCommonService: ApiCommonService
   ) {}
 
   ngOnInit(): void {}
@@ -118,7 +125,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     if (this.userList && e.userList) {
-      if (this.groupId) this.groupLevel = +this.utils.displayGroupLevel(this.groupId);
+      if (this.groupId) this.groupLevel = +displayGroupLevel(this.groupId);
       this.createPlayerList(this.userList);
       if (this.isPreviewMode) {
         this.mapOpt.mapSource = this.mapSource;
@@ -342,7 +349,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
         searchRule: {
           activity: 1,
           targetUser: this.groupId ? 3 : 2,
-          groupId: this.groupId ? `${this.groupService.getBlurryGroupId(this.groupId)}` : '',
+          groupId: this.groupId ? `${this.professionalService.getBlurryGroupId(this.groupId)}` : '',
           fileInfo: {
             fileId: fileIdArr,
             author: '',
@@ -370,13 +377,13 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
         pageCounts: 10,
       };
 
-      this.activityService.fetchMultiActivityData(body).subscribe((res) => {
+      this.api21xxService.fetchMultiActivityData(body).subscribe((res) => {
         const { resultCode, resultMessage, apiCode, info } = res;
         if (resultCode !== 200) {
-          this.utils.handleError(resultCode, apiCode, resultMessage);
+          this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
         } else if (!info || !info.activities || info.activities.length === 0) {
           const msg = 'Oops! Loading error.';
-          this.utils.openAlert(msg);
+          this.hintDialogService.openAlert(msg);
         } else {
           const { activities } = info;
           activities.forEach((_activity) => {

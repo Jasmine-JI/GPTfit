@@ -1,1 +1,13 @@
-<canvas #container id="hrzone" width="180" height="40"> Heart Rate Zone </canvas>
+<div style="position: relative">
+  <canvas
+    #container
+    id="hrzone"
+    width="180"
+    height="40"
+    (mousemove)="handleMouseMove($event)"
+    (mouseout)="handleMouseOut()"
+  >
+    Heart Rate Zone
+  </canvas>
+  <app-float-tooltip [option]="tooltipOption" *ngIf="showTooltip"></app-float-tooltip>
+</div>

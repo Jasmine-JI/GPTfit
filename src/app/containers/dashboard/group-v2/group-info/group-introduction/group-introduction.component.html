@@ -95,6 +95,9 @@
           (focusout)="saveGroupName($event)"
           (change)="saveGroupName($event)"
         />
+        <span *ngIf="formCheck.name === false">
+          {{ 'universal_status_wrongFormat' | translate }}
+        </span>
       </div>
     </div>
   </section>
@@ -498,4 +501,7 @@
     (change)="saveGroupName($event)"
     *ngIf="uiFlag.editMode === 'edit'"
   />
+  <span style="color: red" *ngIf="formCheck.name === false">
+    {{ 'universal_status_wrongFormat' | translate }}
+  </span>
 </ng-template>

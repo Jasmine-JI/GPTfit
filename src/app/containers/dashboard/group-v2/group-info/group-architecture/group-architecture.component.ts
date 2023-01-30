@@ -1,15 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GroupDetailInfo, GroupArchitecture, UserSimpleInfo } from '../../../models/group-detail';
-import { GroupService } from '../../../../../shared/services/group.service';
-import { UtilsService } from '../../../../../shared/services/utils.service';
-import { HashIdService } from '../../../../../shared/services/hash-id.service';
+import { HashIdService, Api11xxService, HintDialogService } from '../../../../../core/services';
 import { Router } from '@angular/router';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { GroupIdSlicePipe } from '../../../../../shared/pipes/group-id-slice.pipe';
+import { GroupIdSlicePipe } from '../../../../../core/pipes';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
+import { ProfessionalService } from '../../../../professional/services/professional.service';
+import { displayGroupLevel } from '../../../../../core/utils';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -46,13 +46,14 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
   userSimpleInfo: UserSimpleInfo;
 
   constructor(
-    private groupService: GroupService,
-    private utils: UtilsService,
+    private api11xxService: Api11xxService,
+    private hintDialogService: HintDialogService,
     private router: Router,
     private hashIdService: HashIdService,
     private groupIdSlicePipe: GroupIdSlicePipe,
     private dialog: MatDialog,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private professionalService: ProfessionalService
   ) {}
 
   ngOnInit(): void {
@@ -65,14 +66,14 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
    */
   initPage() {
     combineLatest([
-      this.groupService.getRxGroupDetail(),
-      this.groupService.getRxCommerceInfo(),
-      this.groupService.getAllLevelGroupData(),
-      this.groupService.getUserSimpleInfo(),
+      this.professionalService.getRxGroupDetail(),
+      this.professionalService.getRxCommerceInfo(),
+      this.professionalService.getAllLevelGroupData(),
+      this.professionalService.getUserSimpleInfo(),
     ])
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((resArr) => {
-        Object.assign(resArr[0], { groupLevel: this.utils.displayGroupLevel(resArr[0].groupId) });
+        Object.assign(resArr[0], { groupLevel: displayGroupLevel(resArr[0].groupId) });
         Object.assign(resArr[0], { expired: resArr[1].expired });
         Object.assign(resArr[0], { commerceStatus: resArr[1].commerceStatus });
         this.groupInfo = resArr[0];
@@ -130,10 +131,10 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
   handleEdit() {
     if (this.uiFlag.editMode === 'complete') {
       this.uiFlag.editMode = 'edit';
-      this.groupService.setEditMode('edit');
+      this.professionalService.setEditMode('edit');
     } else {
       this.uiFlag.editMode = 'complete';
-      this.groupService.setEditMode('complete');
+      this.professionalService.setEditMode('complete');
     }
   }
 
@@ -213,12 +214,12 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
       avatarType: 3,
     };
 
-    this.groupService.fetchGroupListDetail(body).subscribe((res) => {
+    this.api11xxService.fetchGroupListDetail(body).subscribe((res) => {
       if (res.resultCode !== 200) {
-        this.utils.openAlert(errMsg);
+        this.hintDialogService.openAlert(errMsg);
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
-        this.groupService.saveGroupDetail(res.info);
+        this.professionalService.saveGroupDetail(res.info);
       }
     });
   }
@@ -236,12 +237,12 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
       infoType: 1,
     };
 
-    this.groupService.fetchGroupMemberList(body).subscribe((res) => {
+    this.api11xxService.fetchGroupMemberList(body).subscribe((res) => {
       if (res.resultCode !== 200) {
-        this.utils.openAlert(errMsg);
+        this.hintDialogService.openAlert(errMsg);
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
-        this.groupService.setAllLevelGroupData(res.info.subGroupInfo);
+        this.professionalService.setAllLevelGroupData(res.info.subGroupInfo);
       }
     });
   }

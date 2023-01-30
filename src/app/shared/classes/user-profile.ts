@@ -1,8 +1,8 @@
 import { UserProfileInfo, SignInfo } from '../models/user-profile-info';
 import dayjs from 'dayjs';
-import { Unit } from '../enum/value-conversion';
+import { DataUnitType } from '../../core/enums/common';
 import { HrBase } from '../enum/personal';
-import { deepCopy } from '../utils/index';
+import { deepCopy } from '../../core/utils/index';
 import { AccessRight } from '../enum/accessright';
 import { WeightTrainingLevel } from '../enum/weight-train';
 import { BehaviorSubject } from 'rxjs';
@@ -19,7 +19,7 @@ const guestProfile: UserProfileInfo = {
   heartRateMax: 195,
   heartRateResting: 60,
   nickname: 'Guest',
-  unit: Unit.metric,
+  unit: DataUnitType.metric,
   userId: -1, // 負數表示未登入
   themeImgUrl: null,
   weightTrainingStrengthLevel: 100,

@@ -12,8 +12,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { chart } from 'highcharts';
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
-import { SPORT_TYPE_COLOR } from '../../../models/chart-data';
-import { GlobalEventsService } from '../../../../core/services/global-events.service';
+import { sportTypeColor } from '../../../models/chart-data';
+import { GlobalEventsService } from '../../../../core/services';
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -163,7 +163,7 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
               name: this.translateService.instant(key),
               y: this.data[i],
               color: [SportType.all, sportType].includes(this.selectType)
-                ? SPORT_TYPE_COLOR[i]
+                ? sportTypeColor[i]
                 : '#9e9e9e',
             });
           }

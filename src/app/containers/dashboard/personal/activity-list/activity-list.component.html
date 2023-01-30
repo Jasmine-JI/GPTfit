@@ -47,7 +47,10 @@
                   >
                     <i class="icon-svg_web-icon_p2_018-distance"></i>
                     <span style="font-size: 14px; margin-right: 5px">
-                      {{ _list.activityInfoLayer.totalDistanceMeters | distanceSibs: [unit, true] }}
+                      {{
+                        _list.activityInfoLayer.totalDistanceMeters
+                          | distanceSibs: { unitType: unit, showUnit: true }
+                      }}
                     </span>
                   </ng-container>
                   <ng-container

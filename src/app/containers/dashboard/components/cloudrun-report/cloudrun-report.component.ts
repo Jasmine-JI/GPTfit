@@ -3,13 +3,17 @@ import { Subject, combineLatest, fromEvent, Subscription } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { ReportConditionOpt } from '../../../../shared/models/report-condition';
 import dayjs from 'dayjs';
-import { ReportService } from '../../../../shared/services/report.service';
-import { UtilsService } from '../../../../shared/services/utils.service';
-import { ActivityService } from '../../../../shared/services/activity.service';
-import { CloudrunService } from '../../../../shared/services/cloudrun.service';
 import { TranslateService } from '@ngx-translate/core';
-import { UserService } from '../../../../core/services/user.service';
-import { Unit } from '../../../../shared/enum/value-conversion';
+import {
+  UserService,
+  AuthService,
+  NodejsApiService,
+  Api21xxService,
+  ReportService,
+  HintDialogService,
+  ApiCommonService,
+} from '../../../../core/services';
+import { DataUnitType } from '../../../../core/enums/common';
 import {
   ZoneTrendData,
   DiscolorTrendData,
@@ -21,9 +25,14 @@ import {
   HrZoneRange,
 } from '../../../../shared/models/chart-data';
 import { HrBase } from '../../../../shared/enum/personal';
-import { AuthService } from '../../../../core/services/auth.service';
-import { getLocalStorageObject, mathRounding } from '../../../../shared/utils/index';
-import { getUserHrRange, speedToPaceSecond, speedToPace } from '../../../../shared/utils/sports';
+import {
+  getUserHrRange,
+  speedToPaceSecond,
+  speedToPace,
+  countAge,
+  getLocalStorageObject,
+  mathRounding,
+} from '../../../../core/utils';
 import { SportType } from '../../../../shared/enum/sports';
 
 @Component({
@@ -80,7 +89,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   userInfo = {
     id: null,
-    unit: <Unit>0,
+    unit: <DataUnitType>0,
     name: null,
     icon: null,
   };
@@ -161,14 +170,17 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     clickList: [],
   };
 
+  readonly SportType = SportType;
+
   constructor(
     private reportService: ReportService,
-    private utils: UtilsService,
-    private activityService: ActivityService,
-    private cloudrunService: CloudrunService,
+    private api21xxService: Api21xxService,
+    private nodejsApiService: NodejsApiService,
     private authService: AuthService,
     private translate: TranslateService,
-    private userService: UserService
+    private userService: UserService,
+    private hintDialogService: HintDialogService,
+    private apiCommonService: ApiCommonService
   ) {}
 
   ngOnInit(): void {
@@ -243,7 +255,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-11100308
    */
   getNeedInfo() {
-    combineLatest([this.userService.getUser().rxUserProfile, this.cloudrunService.getAllMapInfo()])
+    combineLatest([this.userService.getUser().rxUserProfile, this.nodejsApiService.getAllMapInfo()])
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((resArr) => {
         const [userProfile, allMapList] = resArr;
@@ -257,7 +269,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           heartRateResting,
           birthday,
         } = userProfile;
-        const age = this.reportService.countAge(birthday);
+        const age = countAge(birthday);
         this.userInfo = { unit, name, id, icon };
         this.hrZoneRange = getUserHrRange(heartRateBase, age, heartRateMax, heartRateResting);
         this.allMapList = allMapList;
@@ -374,17 +386,17 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         pageCounts: 10000,
       };
 
-      this.cloudrunService
+      this.nodejsApiService
         .getMapGpx({ gpxPath })
         .pipe(
           switchMap((gpx) => {
-            return this.activityService.fetchMultiActivityData(body).pipe(
+            return this.api21xxService.fetchMultiActivityData(body).pipe(
               // 取得使用者數據
               map((data) => {
                 if (data.resultCode !== 200) {
                   this.uiFlag.noData = true;
                   const { resultCode, apiCode, resultMessage } = data;
-                  this.utils.handleError(resultCode, apiCode, resultMessage);
+                  this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
                   return [gpx, []];
                 } else {
                   this.uiFlag.noData = false;
@@ -417,7 +429,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         });
     } else {
       const msg = 'Can not get cloud run gpx file.<br>Please try again later.';
-      this.utils.openAlert(msg);
+      this.hintDialogService.openAlert(msg);
     }
   }
 
@@ -520,36 +532,36 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100401
    */
   handleChartData(data: Array<any>) {
-    let oneRangeMaxSpeed = 0,
-      oneRangeMinSpeed = null,
-      totalSpeed = 0,
-      oneRangeMaxHr = 0,
-      totalHr = 0,
-      oneRangeMinCostTime = null,
-      totalCostTime = 0,
-      date = [],
-      sameDateData = {
-        z0: 0,
-        z1: 0,
-        z2: 0,
-        z3: 0,
-        z4: 0,
-        z5: 0,
-        hr: 0,
-        maxHr: 0,
-        avgHr: 0,
-        avgSpeed: 0,
-        maxSpeed: 0,
-        avgSeconds: 0,
-        sameDateLen: 0,
-        init() {
-          for (const key in this) {
-            if (Object.prototype.hasOwnProperty.call(this, key)) {
-              if (key !== 'init') this[key] = 0;
-            }
+    let oneRangeMaxSpeed = 0;
+    let oneRangeMinSpeed = null;
+    let totalSpeed = 0;
+    let oneRangeMaxHr = 0;
+    let totalHr = 0;
+    let oneRangeMinCostTime = null;
+    let totalCostTime = 0;
+    const date = [];
+    const sameDateData = {
+      z0: 0,
+      z1: 0,
+      z2: 0,
+      z3: 0,
+      z4: 0,
+      z5: 0,
+      hr: 0,
+      maxHr: 0,
+      avgHr: 0,
+      avgSpeed: 0,
+      maxSpeed: 0,
+      avgSeconds: 0,
+      sameDateLen: 0,
+      init() {
+        for (const key in this) {
+          if (Object.prototype.hasOwnProperty.call(this, key)) {
+            if (key !== 'init') this[key] = 0;
           }
-        },
-      };
+        }
+      },
+    };
 
     for (let i = 0, len = data.length; i < len; i++) {
       const {
@@ -599,7 +611,6 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           totalSpeed += avgSpeed;
           totalHr += avgHeartRateBpm;
           totalCostTime += totalSecond;
-          length++;
         } else {
           (sameDateData.z0 += totalHrZone0Second),
             (sameDateData.z1 += totalHrZone1Second),
@@ -670,8 +681,6 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           totalSpeed += oneDayAvgSpeed;
           totalHr += oneDayAvgHr;
           totalCostTime += oneDayAvgSeconds;
-          length++;
-
           sameDateData.init();
         }
 

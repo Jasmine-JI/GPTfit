@@ -184,7 +184,7 @@
               class="report-dot"
               [style.color]="
                 [SportType.all, _index + 1].includes(uiFlag.selectedType)
-                  ? SPORT_TYPE_COLOR[_index]
+                  ? sportTypeColor[_index]
                   : '#9e9e9e'
               "
               >●</span
@@ -998,6 +998,93 @@
       </div>
     </div>
 
+    <div class="flexCol" *ngIf="[SportType.all, SportType.run].includes(reportCondition.sportType)">
+      <h6 class="report-trendChartTitle">
+        {{ 'universal_activityData_totalEnergyGen' | translate }}
+      </h6>
+      <div class="flexRow report-trendChart">
+        <div class="flexCol report-chartHint">
+          <ng-container *ngIf="!uiFlag.isCompareMode">
+            <span
+              *ngTemplateOutlet="
+                chartInfoTemplate;
+                context: {
+                  key: 'universal_activityData_totalEnergyGen',
+                  valueUnit: {
+                    value: sportInfoData.base.infoData.totalFeedbackEnergy || 0 | number: '1.0-1',
+                    unit: 'whr'
+                  }
+                }
+              "
+            ></span>
+            <span
+              *ngTemplateOutlet="
+                chartInfoTemplate;
+                context: {
+                  key: 'universal_activityData_totalEnergyGen',
+                  valueUnit: {
+                    value:
+                      (sportInfoData.base.infoData.totalFeedbackEnergy || 0) /
+                        (chartData.totalSecondTrend.baseDataLength || Infinity) | number: '1.0-1',
+                    unit: 'whr'
+                  },
+                  dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
+                }
+              "
+            ></span>
+          </ng-container>
+          <ng-container *ngIf="uiFlag.isCompareMode">
+            <div
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  timeRange: reportCondition.baseTime,
+                  valueUnit: {
+                    value: sportInfoData.base.infoData.totalFeedbackEnergy || 0 | number: '1.0-1',
+                    unit: 'whr'
+                  },
+                  color: trendChartColor.totalFeedbackEnergy.base
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                infoWithColorBar;
+                context: {
+                  timeRange: reportCondition.compareTime,
+                  valueUnit: {
+                    value:
+                      sportInfoData.compare?.infoData.totalFeedbackEnergy || 0 | number: '1.0-1',
+                    unit: 'whr'
+                  },
+                  color: trendChartColor.totalFeedbackEnergy.compare
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                chartInfoDiff;
+                context: {
+                  originValue: sportInfoData.diff?.totalFeedbackEnergy || 0,
+                  value: sportInfoData.diff?.totalFeedbackEnergy || 0 | number: '1.0-1',
+                  unit: 'whr'
+                }
+              "
+            ></div>
+          </ng-container>
+        </div>
+        <div class="report-chartFigure">
+          <app-compare-column-trend
+            [data]="chartData.totalFeedbackEnergyTrend.chartData"
+            [type]="'totalFeedbackEnergy'"
+            [conditionValue]="getAssignCondition('totalFeedbackEnergy')"
+            [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
+            *ngIf="chartData.totalFeedbackEnergyTrend?.chartData"
+          ></app-compare-column-trend>
+        </div>
+      </div>
+    </div>
+
     <div
       class="flexCol"
       *ngIf="
@@ -1188,7 +1275,7 @@
           <app-compare-overlay-column-chart
             [data]="chartData.speedPaceTrend.chartData"
             [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
-            [chartUnit]="userUnit === Unit.metric ? 'km/h' : 'mi/h'"
+            [chartUnit]="userUnit === DataUnitType.metric ? 'km/h' : 'mi/h'"
             *ngIf="chartData.speedPaceTrend?.chartData"
           ></app-compare-overlay-column-chart>
         </div>
@@ -1219,7 +1306,8 @@
                   valueUnit: {
                     value:
                       sportInfoData.base.infoData.avgMaxSpeed || 0
-                      | sportPaceSibs: [reportCondition.sportType, userUnit, false],
+                      | sportPaceSibs
+                        : { sportType: reportCondition.sportType, userUnit, showUnit: false },
                     unit: getPaceUnit(reportCondition.sportType, userUnit)
                   },
                   color: trendChartColor.speedPaceTrend.base.max,
@@ -1235,7 +1323,7 @@
                   valueUnit: {
                     value:
                       sportInfoData.base.infoData.avgSpeed || 0
-                      | sportPaceSibs: [reportCondition.sportType, userUnit, false],
+                      | sportPaceSibs: { sportType, userUnit: unit, showUnit: false },
                     unit: getPaceUnit(reportCondition.sportType, userUnit)
                   },
                   color: trendChartColor.speedPaceTrend.base.avg,
@@ -1255,7 +1343,7 @@
                     valueUnit: {
                       value:
                         sportInfoData.base.infoData.avgMaxSpeed || 0
-                        | sportPaceSibs: [reportCondition.sportType, userUnit, false],
+                        | sportPaceSibs: { sportType, userUnit: unit, showUnit: false },
                       unit: getPaceUnit(reportCondition.sportType, userUnit)
                     },
                     color: trendChartColor.speedPaceTrend.base.max
@@ -1265,7 +1353,7 @@
                     valueUnit: {
                       value:
                         sportInfoData.base.infoData.avgSpeed || 0
-                        | sportPaceSibs: [reportCondition.sportType, userUnit, false],
+                        | sportPaceSibs: { sportType, userUnit: unit, showUnit: false },
                       unit: getPaceUnit(reportCondition.sportType, userUnit)
                     },
                     color: trendChartColor.speedPaceTrend.base.avg
@@ -1283,7 +1371,7 @@
                     valueUnit: {
                       value:
                         sportInfoData.compare?.infoData.avgMaxSpeed || 0
-                        | sportPaceSibs: [reportCondition.sportType, userUnit, false],
+                        | sportPaceSibs: { sportType, userUnit: unit, showUnit: false },
                       unit: getPaceUnit(reportCondition.sportType, userUnit)
                     },
                     color: trendChartColor.speedPaceTrend.compare.max
@@ -1293,7 +1381,7 @@
                     valueUnit: {
                       value:
                         sportInfoData.compare?.infoData.avgSpeed || 0
-                        | sportPaceSibs: [reportCondition.sportType, userUnit, false],
+                        | sportPaceSibs: { sportType, userUnit: unit, showUnit: false },
                       unit: getPaceUnit(reportCondition.sportType, userUnit)
                     },
                     color: trendChartColor.speedPaceTrend.compare.avg
@@ -1907,7 +1995,7 @@
           <app-compare-body-weight-chart
             [data]="chartData.bodyWeightTrend.chartData"
             [xAxisTitle]="reportCondition.dateUnit.getUnitString()"
-            [isMetric]="userUnit === Unit.metric"
+            [isMetric]="userUnit === DataUnitType.metric"
             *ngIf="chartData.bodyWeightTrend?.chartData"
           ></app-compare-body-weight-chart>
         </div>
@@ -1990,7 +2078,7 @@
             context: {
               columnType: 'oneRepMax',
               title: 'universal_activityData_max1Rm' | translate,
-              dataUnit: userUnit === Unit.metric ? 'kg' : 'lb',
+              dataUnit: userUnit === DataUnitType.metric ? 'kg' : 'lb',
               className: 'analysis__rep__max',
               showHeader: weightTrainingAnalysisOption.getItemSelectStatus(
                 MuscleAnalysisColumn.oneRepMax
@@ -2032,7 +2120,7 @@
             context: {
               columnType: 'avgWeightKg',
               title: 'universal_activityData_avgWeight' | translate,
-              dataUnit: userUnit === Unit.metric ? 'kg' : 'lb',
+              dataUnit: userUnit === DataUnitType.metric ? 'kg' : 'lb',
               className: 'analysis__avg__weight',
               showHeader: weightTrainingAnalysisOption.getItemSelectStatus(
                 MuscleAnalysisColumn.avgWeightKg
@@ -2409,7 +2497,7 @@
               oneInfoData;
               context: {
                 data: getInfoData(infoData, 'avgSpeed'),
-                type: userUnit === Unit.metric ? 'kmPace' : 'miPace',
+                type: userUnit === DataUnitType.metric ? 'kmPace' : 'miPace',
                 infoType
               }
             "
@@ -2421,7 +2509,7 @@
               oneInfoData;
               context: {
                 data: getInfoData(infoData, 'paceSecond'),
-                type: userUnit === Unit.metric ? 'kmPace' : 'miPace',
+                type: userUnit === DataUnitType.metric ? 'kmPace' : 'miPace',
                 infoType,
                 compareReverse: true
               }
@@ -2574,6 +2662,18 @@
           "
         ></div>
       </ng-container>
+      <ng-container *ngIf="[SportType.all, SportType.run].includes(reportCondition.sportType)">
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              data: getInfoData(infoData, 'totalFeedbackEnergy'),
+              type: 'totalFeedbackEnergy',
+              infoType
+            }
+          "
+        ></div>
+      </ng-container>
     </div>
   </div>
 </ng-template>
@@ -2680,6 +2780,9 @@
       </ng-container>
       <ng-container *ngSwitchCase="'power'">
         {{ 'universal_activityData_avgPower' | translate }}
+      </ng-container>
+      <ng-container *ngSwitchCase="'totalFeedbackEnergy'">
+        {{ 'universal_activityData_totalEnergyGen' | translate }}
       </ng-container>
     </span>
   </div>

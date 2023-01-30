@@ -13,14 +13,19 @@ import dayjs from 'dayjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { Subject, Subscription, fromEvent, combineLatest, of, merge } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { UtilsService } from '../../../../../shared/services/utils.service';
-import { HashIdService } from '../../../../../shared/services/hash-id.service';
-import { ReportService } from '../../../../../shared/services/report.service';
-import { GroupService } from '../../../../../shared/services/group.service';
+import {
+  HashIdService,
+  UserService,
+  AuthService,
+  Api11xxService,
+  Api21xxService,
+  ReportService,
+  ApiCommonService,
+} from '../../../../../core/services';
+import { ProfessionalService } from '../../../../professional/services/professional.service';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
 import { mi } from '../../../../../shared/models/bs-constant';
-import { Unit } from '../../../../../shared/enum/value-conversion';
-import { UserService } from '../../../../../core/services/user.service';
+import { DataUnitType } from '../../../../../core/enums/common';
 import { GroupLevel, SettingObj } from '../../../../dashboard/models/group-detail';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { stepColor } from '../../../../../shared/models/chart-data';
@@ -28,8 +33,11 @@ import {
   setLocalStorageObject,
   getLocalStorageObject,
   deepCopy,
-} from '../../../../../shared/utils/index';
-import { AuthService } from '../../../../../core/services/auth.service';
+  countBMI,
+  countFFMI,
+  countAge,
+  displayGroupLevel,
+} from '../../../../../core/utils';
 
 @Component({
   selector: 'app-life-tracking',
@@ -227,7 +235,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   userInfo = {
     id: null,
     accessRight: null,
-    unit: <Unit>Unit.metric,
+    unit: <DataUnitType>DataUnitType.metric,
   };
 
   /**
@@ -250,7 +258,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   };
 
   readonly tableLength = 8; // 分析列表預設顯示長度
-  readonly unitEnum = Unit;
+  readonly unitEnum = DataUnitType;
   readonly mi = mi;
   dateLen = 0; // 報告橫跨天數/週數
   previewUrl: string;
@@ -258,14 +266,16 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   columnTranslate = {}; // 分析列表所需的欄位名稱翻譯
 
   constructor(
-    private utils: UtilsService,
+    private apiCommonService: ApiCommonService,
     private hashIdService: HashIdService,
     private reportService: ReportService,
     private translate: TranslateService,
-    private groupService: GroupService,
+    private professionalService: ProfessionalService,
     private userService: UserService,
     private changeDetectorRef: ChangeDetectorRef,
-    private authService: AuthService
+    private authService: AuthService,
+    private api11xxService: Api11xxService,
+    private api21xxService: Api21xxService
   ) {}
 
   ngOnInit() {
@@ -369,7 +379,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    */
   getNeedInfo() {
     combineLatest([
-      this.groupService.getAllLevelGroupData(),
+      this.professionalService.getAllLevelGroupData(),
       this.userService.getUser().rxUserProfile,
       this.translate.get('hellow world'),
     ])
@@ -380,7 +390,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
         this.groupList.originList = resArr[0];
         const { groupId, brands, branches, coaches } = resArr[0] as any;
         const { userId, unit } = resArr[1] as any;
-        const groupLevel = this.utils.displayGroupLevel(groupId);
+        const groupLevel = displayGroupLevel(groupId);
         const group = this.reportConditionOpt.group;
         this.userInfo = { id: userId, accessRight: systemAccessright, unit };
 
@@ -456,7 +466,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
           this.changeProgress(progress === 100 ? 10 : progress);
           this.initReportContent();
           const effectGroupId = (res as any).group.selectGroup.split('-'),
-            completeGroupId = this.groupService.getCompleteGroupId(effectGroupId),
+            completeGroupId = this.professionalService.getCompleteGroupId(effectGroupId),
             { id: currentGroupId } = this.groupInfo;
 
           // 若所選群組不變，則沿用之前的成員清單
@@ -467,12 +477,12 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
             const listBody = {
               token: this.authService.token,
               groupId: completeGroupId,
-              groupLevel: this.utils.displayGroupLevel(completeGroupId),
+              groupLevel: displayGroupLevel(completeGroupId),
               infoType: 5,
               avatarType: 3,
             };
 
-            return this.groupService.fetchGroupMemberList(listBody).pipe(
+            return this.api11xxService.fetchGroupMemberList(listBody).pipe(
               map((listRes) => {
                 const {
                   apiCode,
@@ -482,7 +492,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
                 } = listRes as any;
                 if (resultCode !== 200) {
                   this.uiFlag.noData = true;
-                  this.utils.handleError(resultCode, apiCode, resultMessage);
+                  this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
                   return [res, []];
                 } else {
                   return [res, groupMemberInfo];
@@ -601,7 +611,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     const { brands, branches, coaches } = this.groupList.originList;
 
     const { groupIcon: brandIcon, groupName: brandName } = brands[0],
-      level = this.utils.displayGroupLevel(id);
+      level = displayGroupLevel(id);
     switch (level) {
       case GroupLevel.brand:
         return (this.groupInfo = {
@@ -611,7 +621,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
           parents: null,
           level,
         });
-      case GroupLevel.branch:
+      case GroupLevel.branch: {
         const { groupIcon: _branchIcon, groupName: _branchName } = this.getGroupInfo(id, branches);
         return (this.groupInfo = {
           name: _branchName,
@@ -620,9 +630,10 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
           parents: brandName,
           level,
         });
-      case GroupLevel.class:
+      }
+      case GroupLevel.class: {
         const { groupIcon: _coachIcon, groupName: _coachName } = this.getGroupInfo(id, coaches),
-          branchGroupId = `${this.groupService.getPartGroupId(id, 4)}-0-0`,
+          branchGroupId = `${this.professionalService.getPartGroupId(id, 4)}-0-0`,
           { groupName: branchName } = this.getGroupInfo(branchGroupId, branches);
         return (this.groupInfo = {
           name: _coachName,
@@ -631,6 +642,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
           parents: `${brandName}\\${branchName}`,
           level,
         });
+      }
     }
   }
 
@@ -673,7 +685,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       case GroupLevel.branch:
         coaches.forEach((_coach) => {
           const { groupId: _coachId, groupName: _coachName } = _coach,
-            _parentId = `${this.groupService.getPartGroupId(_coachId, 4)}-0-0`;
+            _parentId = `${this.professionalService.getPartGroupId(_coachId, 4)}-0-0`;
           if (_parentId === id) {
             this.groupList.analysisObj = {
               [_coachId]: {
@@ -697,14 +709,14 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
           ...this.groupList.analysisObj,
         };
         break;
-      case GroupLevel.brand:
+      case GroupLevel.brand: {
         coaches.forEach((_coach) => {
           const { groupId: _coachId, groupName } = _coach;
           let parentsName: string;
           for (let i = 0, len = branches.length; i < len; i++) {
             const { groupId: _branchId, groupName: _branchName } = branches[i],
-              partCoachId = this.groupService.getPartGroupId(_branchId, 4),
-              partBranchId = this.groupService.getPartGroupId(_coachId, 4);
+              partCoachId = this.professionalService.getPartGroupId(_branchId, 4),
+              partBranchId = this.professionalService.getPartGroupId(_coachId, 4);
 
             if (partBranchId === partCoachId) {
               parentsName = _branchName;
@@ -747,6 +759,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
           ...this.groupList.analysisObj,
         };
         break;
+      }
     }
   }
 
@@ -773,20 +786,22 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
             this.createPersonAnalysisObj(memberId, memberName, _grouphName, _memGroupId);
           }
           break;
-        case GroupLevel.branch:
-          const parentsGroupId = `${this.groupService.getPartGroupId(_memGroupId, 4)}-0-0`;
+        case GroupLevel.branch: {
+          const parentsGroupId = `${this.professionalService.getPartGroupId(_memGroupId, 4)}-0-0`;
           this.groupList.analysisObj[parentsGroupId].memberSet.add(memberId);
           if (parentsGroupId === id) {
             this.createPersonAnalysisObj(memberId, memberName, _grouphName, _memGroupId);
           }
           break;
-        case GroupLevel.brand:
-          const branchGroupId = `${this.groupService.getPartGroupId(_memGroupId, 4)}-0-0`,
-            brandGroupId = `${this.groupService.getPartGroupId(_memGroupId, 3)}-0-0-0`;
+        }
+        case GroupLevel.brand: {
+          const branchGroupId = `${this.professionalService.getPartGroupId(_memGroupId, 4)}-0-0`,
+            brandGroupId = `${this.professionalService.getPartGroupId(_memGroupId, 3)}-0-0-0`;
           this.groupList.analysisObj[branchGroupId].memberSet.add(memberId);
           this.groupList.analysisObj[brandGroupId].memberSet.add(memberId);
           this.createPersonAnalysisObj(memberId, memberName, _grouphName, _memGroupId);
           break;
+        }
       }
     });
 
@@ -838,7 +853,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
         filterEndTime: dayjs(endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
       };
 
-    this.reportService.fetchTrackingSummaryArray(body).subscribe((res) => {
+    this.api21xxService.fetchTrackingSummaryArray(body).subscribe((res) => {
       if (res.length && res.length > 0) {
         this.uiFlag.noData = false;
         this.changeProgress(70);
@@ -988,7 +1003,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     const { bodyHeight, bodyWeight, fatRate } = this.personAnalysis[userId];
     if (bodyHeight && bodyWeight && fatRate) {
       this.personAnalysis[userId] = {
-        FFMI: this.reportService.countFFMI(bodyHeight, bodyWeight, fatRate),
+        FFMI: countFFMI(bodyHeight, bodyWeight, fatRate),
         ...this.personAnalysis[userId],
       };
     }
@@ -1016,8 +1031,8 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
         totalFitSecond,
         totalStep,
       } = _tracking;
-      const BMI = this.reportService.countBMI(bodyHeight, bodyWeight),
-        FFMI = this.reportService.countFFMI(bodyHeight, bodyWeight, fatRate);
+      const BMI = countBMI(bodyHeight, bodyWeight);
+      const FFMI = countFFMI(bodyHeight, bodyWeight, fatRate);
 
       const startTimestamp = dayjs(startTime).valueOf();
       regressionObj.timestampArr.push(startTimestamp);
@@ -1280,7 +1295,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
                       // 統一使用1月1日當生日計算年齡
                       const birthday = `${personData[_id][key]}0101`;
                       addKey = 'age';
-                      addValue = this.reportService.countAge(birthday);
+                      addValue = countAge(birthday);
                       break;
                     }
                     case 'totalSleepSecond':
@@ -1332,7 +1347,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     }
 
     const { selectGroup } = this.reportConditionOpt.group,
-      currentGroupId = this.groupService.getCompleteGroupId(selectGroup.split('-'));
+      currentGroupId = this.professionalService.getCompleteGroupId(selectGroup.split('-'));
     this.info = this.groupAnalysis[currentGroupId];
   }
 
@@ -1710,7 +1725,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     if (bodyWeightEffectCount && bodyHeightEffectCount) {
       const weight = parseFloat((bodyWeight / bodyWeightEffectCount).toFixed(1)),
         height = parseFloat((bodyHeight / bodyHeightEffectCount).toFixed(1)),
-        BMI = this.reportService.countBMI(height, weight);
+        BMI = countBMI(height, weight);
       BMITrend.noData = false;
       // 將前面為0的數據用後面的值補值
       if (BMITrend.zeroDataBefore) {
@@ -1997,7 +2012,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
         return restHeartRate / denominator || undefined;
       case 'BMI':
         if (bodyHeight && bodyWeight) {
-          return this.reportService.countBMI(bodyHeight, bodyWeight) / denominator;
+          return countBMI(bodyHeight, bodyWeight) / denominator;
         } else {
           return undefined;
         }
@@ -2007,7 +2022,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
         return muscleRate / denominator || undefined;
       case 'FFMI':
         if (bodyHeight && bodyWeight && fatRate) {
-          return this.reportService.countFFMI(bodyHeight, bodyWeight, fatRate) / denominator;
+          return countFFMI(bodyHeight, bodyWeight, fatRate) / denominator;
         } else {
           return undefined;
         }

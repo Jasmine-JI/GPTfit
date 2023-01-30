@@ -1,9 +1,8 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError, Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { Api2104Post, Api2104Response } from '../models/api/api-21xx/api-2104.model';
-import { Api2107Post, Api2107Response } from '../models/api/api-21xx/api-2107.model';
+import { throwError, Observable, of } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
+import { Api2104Post, Api2104Response } from '../models/api/api-21xx';
 
 @Injectable({
   providedIn: 'root',
@@ -95,7 +94,7 @@ export class Api21xxService {
    * api-v2 2111 依條件需求取得多筆運動檔案
    * @param body {any}-api 所需參數
    */
-  fetchMultiActivityData(body: any): Observable<any> {
+  fetchMultiActivityData(body: any, fake = false): Observable<any> {
     return <any>(
       this.http
         .post('/api/v2/sport/getMultiActivityData', body)

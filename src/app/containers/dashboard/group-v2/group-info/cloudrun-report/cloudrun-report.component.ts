@@ -10,19 +10,28 @@ import { Subject, combineLatest, fromEvent, Subscription } from 'rxjs';
 import { takeUntil, switchMap, map, first } from 'rxjs/operators';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
 import dayjs from 'dayjs';
-import { ReportService } from '../../../../../shared/services/report.service';
-import { UtilsService } from '../../../../../shared/services/utils.service';
-import { GroupService } from '../../../../../shared/services/group.service';
-import { ActivityService } from '../../../../../shared/services/activity.service';
-import { CloudrunService } from '../../../../../shared/services/cloudrun.service';
-import { HashIdService } from '../../../../../shared/services/hash-id.service';
+import { ProfessionalService } from '../../../../professional/services/professional.service';
+import {
+  HashIdService,
+  AuthService,
+  NodejsApiService,
+  Api11xxService,
+  Api21xxService,
+  ReportService,
+  HintDialogService,
+  ApiCommonService,
+} from '../../../../../core/services';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { TranslateService } from '@ngx-translate/core';
-import { Unit } from '../../../../../shared/enum/value-conversion';
-import { setLocalStorageObject, getLocalStorageObject } from '../../../../../shared/utils/index';
-import { AuthService } from '../../../../../core/services/auth.service';
+import { DataUnitType } from '../../../../../core/enums/common';
+import {
+  setLocalStorageObject,
+  getLocalStorageObject,
+  displayGroupLevel,
+} from '../../../../../core/utils';
 import { AccessRight } from '../../../../../shared/enum/accessright';
+import { SportType } from '../../../../../core/enums/sports';
 
 type AnalysisTable = 'group' | 'member';
 type AnalysisData =
@@ -263,7 +272,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   };
 
   userId: number;
-  unit = <Unit>0; // 使用者所使用的單位
+  unit = <DataUnitType>0; // 使用者所使用的單位
   systemAccessRight = AccessRight.guest;
   allMapList: any;
   mapInfo: any;
@@ -283,16 +292,20 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   };
   readonly GroupTableCol = GroupTableCol;
   readonly MemberTableCol = MemberTableCol;
+  readonly SportType = SportType;
+
   constructor(
     private reportService: ReportService,
-    private groupService: GroupService,
-    private utils: UtilsService,
-    private activityService: ActivityService,
-    private cloudrunService: CloudrunService,
+    private professionalService: ProfessionalService,
+    private api11xxService: Api11xxService,
+    private api21xxService: Api21xxService,
+    private nodejsApiService: NodejsApiService,
     private hashIdService: HashIdService,
     private translate: TranslateService,
     private changeDetectorRef: ChangeDetectorRef,
-    private authService: AuthService
+    private authService: AuthService,
+    private hintDialogService: HintDialogService,
+    private apiCommonService: ApiCommonService
   ) {}
 
   ngOnInit(): void {
@@ -534,10 +547,10 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   getNeedInfo() {
     combineLatest([
-      this.groupService.getUserSimpleInfo(),
-      this.groupService.getAllLevelGroupData(),
-      this.cloudrunService.getAllMapInfo(),
-      this.groupService.getRxGroupDetail(),
+      this.professionalService.getUserSimpleInfo(),
+      this.professionalService.getAllLevelGroupData(),
+      this.nodejsApiService.getAllMapInfo(),
+      this.professionalService.getRxGroupDetail(),
       this.translate.get('hellow world'),
     ])
       .pipe(takeUntil(this.ngUnsubscribe))
@@ -546,7 +559,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         const { unit, userId, accessRight } = resArr[0];
         const { brands, branches, coaches } = resArr[1];
         const { groupName, groupIcon, groupId, brandType } = resArr[3];
-        const level = +this.utils.displayGroupLevel(groupId);
+        const level = +displayGroupLevel(groupId);
 
         this.userId = userId;
         this.unit = unit;
@@ -697,17 +710,17 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         pageCounts: 10000,
       };
 
-      this.cloudrunService
+      this.nodejsApiService
         .getMapGpx({ gpxPath })
         .pipe(
           switchMap((gpx) => {
-            return this.activityService.fetchMultiActivityData(body).pipe(
+            return this.api21xxService.fetchMultiActivityData(body).pipe(
               // 取得使用者數據
               map((data) => {
                 if (data.resultCode !== 200) {
                   this.uiFlag.noData = true;
                   const { resultCode, apiCode, resultMessage } = data;
-                  this.utils.handleError(resultCode, apiCode, resultMessage);
+                  this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
                   return [gpx, []];
                 } else {
                   this.uiFlag.noData = false;
@@ -738,7 +751,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         });
     } else {
       const msg = 'Can not get cloud run gpx file.<br>Please try again later.';
-      this.utils.openAlert(msg);
+      this.hintDialogService.openAlert(msg);
     }
   }
 
@@ -956,7 +969,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100309
    */
   getGroupMemList(memberData: any) {
-    this.groupService
+    this.professionalService
       .getMemList()
       .pipe(
         first(),
@@ -968,20 +981,24 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
             const body = {
               token: this.authService.token,
               groupId: currentGroupId,
-              groupLevel: this.utils.displayGroupLevel(currentGroupId),
+              groupLevel: displayGroupLevel(currentGroupId),
               infoType: 5,
               avatarType: 3,
             };
-            return this.groupService.fetchGroupMemberList(body).pipe(
+            return this.api11xxService.fetchGroupMemberList(body).pipe(
               map((resp) => {
                 if (resp.resultCode !== 200) {
-                  this.utils.handleError(resp.resultCode, resp.apiCode, resp.resultMessage);
+                  this.apiCommonService.handleError(
+                    resp.resultCode,
+                    resp.apiCode,
+                    resp.resultMessage
+                  );
                   return [];
                 } else {
                   const filterList = resp.info.groupMemberInfo.filter(
                     (_mem) => _mem.joinStatus === 2
                   );
-                  this.groupService.setMemList(filterList);
+                  this.professionalService.setMemList(filterList);
                   return filterList;
                 }
               })
@@ -1071,7 +1088,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       let parentsName: string;
       for (let k = 0, branchesLen = this.branchList.length; k < branchesLen; k++) {
         const _branch = this.branchList[k];
-        if (_branch.groupId === `${this.groupService.getPartGroupId(groupId, 4)}-0-0`) {
+        if (_branch.groupId === `${this.professionalService.getPartGroupId(groupId, 4)}-0-0`) {
           parentsName = _branch.groupName;
           break;
         }
@@ -1127,9 +1144,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         gender,
       } = memList[i];
       const age = refDate.diff(dayjs(birthday, 'YYYYMMDD'), 'year'), // 年齡以報告開始日為基準
-        groupLevel = +this.utils.displayGroupLevel(groupId),
-        brandsGroupId = `${this.groupService.getPartGroupId(groupId, 3)}-0-0-0`,
-        branchesGroupId = `${this.groupService.getPartGroupId(groupId, 4)}-0-0`,
+        groupLevel = +displayGroupLevel(groupId),
+        brandsGroupId = `${this.professionalService.getPartGroupId(groupId, 3)}-0-0-0`,
+        branchesGroupId = `${this.professionalService.getPartGroupId(groupId, 4)}-0-0`,
         outOfAge = (ageMax !== null && age > ageMax) || (ageMin !== null && age < ageMin),
         outOfGender = genderFilter !== null && gender !== genderFilter;
       if (Object.prototype.hasOwnProperty.call(groupList, groupId) && !outOfAge && !outOfGender) {
@@ -1305,7 +1322,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
 
         tableArr.push({
           groupId: key,
-          level: +this.utils.displayGroupLevel(key),
+          level: +displayGroupLevel(key),
           name,
           parents,
           memberNum: member.length,
@@ -1497,12 +1514,12 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     const { id, level } = this.currentGroup;
     switch (level) {
       case 30:
-        return `${this.groupService.getPartGroupId(id, 3)}-*-*-*`;
+        return `${this.professionalService.getPartGroupId(id, 3)}-*-*-*`;
       case 40:
-        return `${this.groupService.getPartGroupId(id, 4)}-*-*`;
+        return `${this.professionalService.getPartGroupId(id, 4)}-*-*`;
       case 50:
       case 60:
-        return `${this.groupService.getPartGroupId(id, 5)}-*`;
+        return `${this.professionalService.getPartGroupId(id, 5)}-*`;
       default:
         return id;
     }

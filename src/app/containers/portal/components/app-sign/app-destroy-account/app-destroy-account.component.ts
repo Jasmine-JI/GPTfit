@@ -1,18 +1,21 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { AppCode } from '../../../models/app-webview';
 import { Router } from '@angular/router';
-import { UtilsService } from '../../../../../shared/services/utils.service';
-import { SignupService } from '../../../../../shared/services/signup.service';
 import dayjs from 'dayjs';
-import { Api10xxService } from '../../../../../core/services/api-10xx.service';
-import { Api11xxService } from '../../../../../core/services/api-11xx.service';
+import {
+  AuthService,
+  Api10xxService,
+  Api11xxService,
+  GlobalEventsService,
+  HintDialogService,
+  ApiCommonService,
+} from '../../../../../core/services';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-import { AuthService } from '../../../../../core/services/auth.service';
 import { AccountTypeEnum } from '../../../../../shared/enum/account';
 import { TFTViewMinWidth } from '../../../models/app-webview';
-import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../shared/utils/index';
+import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/utils';
 
 enum DestroyFlow {
   search = 1,
@@ -73,13 +76,14 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
   readonly DestroyFlow = DestroyFlow;
   readonly DestroyStatus = DestroyStatus;
   constructor(
-    private utils: UtilsService,
     private router: Router,
-    private signupService: SignupService,
     private api10xxService: Api10xxService,
     private api11xxService: Api11xxService,
     private translate: TranslateService,
-    private auth: AuthService
+    private auth: AuthService,
+    private globalEventsService: GlobalEventsService,
+    private hintDialogService: HintDialogService,
+    private apiCommonService: ApiCommonService
   ) {}
 
   ngOnInit(): void {
@@ -145,8 +149,8 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
    * @author kidin-1110113
    */
   setPageStyle(isPcView: boolean) {
-    this.utils.setHideNavbarStatus(isPcView);
-    this.utils.setDarkModeStatus(isPcView);
+    this.globalEventsService.setHideNavbarStatus(isPcView);
+    this.globalEventsService.setDarkModeStatus(isPcView);
   }
 
   /**
@@ -193,7 +197,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
     this.uiFlag.progress = 30;
     this.api10xxService.fetchGetUserProfile({ token: this.token }).subscribe((res) => {
       const { signIn, userProfile } = res as any;
-      if (this.utils.checkRes(res)) {
+      if (this.apiCommonService.checkRes(res)) {
         const { accountType } = signIn;
         this.user = {
           accountType,
@@ -219,9 +223,9 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
       };
 
       this.uiFlag.progress = 30;
-      this.signupService.fetchDestroyAccount(body, this.requestHeader).subscribe((res) => {
+      this.api10xxService.fetchDestroyAccount(body, this.requestHeader).subscribe((res) => {
         const { status, destroyTimestamp } = res as any;
-        if (this.utils.checkRes(res)) {
+        if (this.apiCommonService.checkRes(res)) {
           this.destroyResp.status = status;
           if (status === DestroyStatus.notApplied) {
             this.checkoutIsGroupAdmin();
@@ -252,7 +256,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
       )
       .subscribe((res) => {
         const { info } = res as any;
-        if (this.utils.checkRes(res)) {
+        if (this.apiCommonService.checkRes(res)) {
           if (info.groupAccessRight.some((_list) => +_list.accessRight < 90)) {
             this.uiFlag.isAnyGroupAdmin = true;
           }
@@ -273,7 +277,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
     };
 
     this.uiFlag.progress = 30;
-    this.signupService
+    this.api10xxService
       .fetchDestroyAccount(body, this.requestHeader)
       .pipe(
         switchMap((response) => this.translate.get('hellow world').pipe(map((resp) => response))),
@@ -281,15 +285,15 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
       )
       .subscribe((res) => {
         const { status } = res as any;
-        if (this.utils.checkRes(res)) {
+        if (this.apiCommonService.checkRes(res)) {
           this.destroyResp.status = status;
           if (this.user.accountType === AccountTypeEnum.phone) {
             const msg = this.translate.instant('universal_userAccount_sendSmsSuccess');
-            this.utils.showSnackBar(msg);
+            this.hintDialogService.showSnackBar(msg);
             this.countDown();
           } else {
             const msg = this.translate.instant('universal_userAccount_sendCaptchaChackEmail');
-            this.utils.showSnackBar(msg);
+            this.hintDialogService.showSnackBar(msg);
           }
         }
 
@@ -318,7 +322,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
     };
 
     this.uiFlag.progress = 30;
-    this.signupService
+    this.api10xxService
       .fetchDestroyAccount(body, this.requestHeader)
       .pipe(
         switchMap((response) => this.translate.get('hellow world').pipe(map((resp) => response))),
@@ -333,18 +337,18 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
           this.uiFlag.verifyCodeError = true;
         } else if (!processResult && resCode === 400) {
           const msg = 'Error! Please try again later.';
-          this.utils.showSnackBar(msg);
+          this.hintDialogService.showSnackBar(msg);
         } else if (processResult.resultCode !== 200) {
           this.checkoutIsGroupAdmin();
           this.checkBox.compressed = false;
           const { apiReturnMessage } = processResult;
           if (apiReturnMessage === 'Destroy me fail, code was verified.') {
             const msg = this.translate.instant('universal_userAccount_linkHasExpired');
-            this.utils.showSnackBar(msg);
+            this.hintDialogService.showSnackBar(msg);
           } else if (apiReturnMessage === 'Destroy me fail, found verification code error.') {
             const msg = this.translate.instant('universal_userAccount_errorCaptcha');
             this.uiFlag.verifyCodeError = true;
-            this.utils.showSnackBar(msg);
+            this.hintDialogService.showSnackBar(msg);
           } else {
             this.checkDestroyStatus();
           }
@@ -375,9 +379,9 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
     };
 
     this.uiFlag.progress = 30;
-    this.signupService.fetchDestroyAccount(body, this.requestHeader).subscribe((res) => {
+    this.api10xxService.fetchDestroyAccount(body, this.requestHeader).subscribe((res) => {
       this.uiFlag.progress = 100;
-      if (this.utils.checkRes(res)) {
+      if (this.apiCommonService.checkRes(res)) {
         this.destroyResp.status = DestroyStatus.notApplied;
         this.uiFlag.cancelDestroy = true;
       }

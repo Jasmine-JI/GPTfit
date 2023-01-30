@@ -8,20 +8,24 @@ import {
   EditMode,
   GroupLevel,
 } from '../../../models/group-detail';
-import { UtilsService } from '../../../../../shared/services/utils.service';
-import { GroupService } from '../../../../../shared/services/group.service';
-import { HashIdService } from '../../../../../shared/services/hash-id.service';
+import {
+  HashIdService,
+  AuthService,
+  Api11xxService,
+  HintDialogService,
+} from '../../../../../core/services';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { PeopleSelectorWinComponent } from '../../../components/people-selector-win/people-selector-win.component';
 import { planDatas } from '../../../group/desc';
 import dayjs from 'dayjs';
 import { DateUnit } from '../../../../../shared/enum/report';
-import { deepCopy } from '../../../../../shared/utils/index';
-import { AuthService } from '../../../../../core/services';
+import { deepCopy, displayGroupLevel } from '../../../../../core/utils';
 import { SportsTarget } from '../../../../../shared/classes/sports-target';
 import { TargetConditionMap } from '../../../../../core/models/api/api-common';
 import { BenefitTimeStartZone } from '../../../../../core/enums/common';
+import { ProfessionalService } from '../../../../professional/services/professional.service';
+import { formTest } from '../../../../../shared/models/form-test';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -177,13 +181,14 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   readonly BenefitTimeStartZone = BenefitTimeStartZone;
 
   constructor(
-    private groupService: GroupService,
-    private utils: UtilsService,
+    private api11xxService: Api11xxService,
+    private hintDialogService: HintDialogService,
     private hashIdService: HashIdService,
     private translate: TranslateService,
     private dialog: MatDialog,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private professionalService: ProfessionalService
   ) {}
 
   ngOnInit(): void {
@@ -196,11 +201,11 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091103
    */
   getGroupDetail() {
-    this.groupService
+    this.professionalService
       .getRxGroupDetail()
       .pipe(
         switchMap((res) =>
-          this.groupService.getRxCommerceInfo().pipe(
+          this.professionalService.getRxCommerceInfo().pipe(
             map((resp) => {
               Object.assign(res, { expired: resp.expired });
               Object.assign(res, { commerceStatus: +resp.commerceStatus });
@@ -217,7 +222,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
           token: this.authService.token,
           groupName,
           groupId,
-          groupLevel: +this.utils.displayGroupLevel(groupId) as GroupLevel,
+          groupLevel: +displayGroupLevel(groupId) as GroupLevel,
           groupDesc,
           groupVideoUrl,
           changeStatus: groupStatus,
@@ -236,8 +241,8 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   handleSportsTarget(reference: GroupLevel | null = null) {
     this.sportsTarget = reference
-      ? new SportsTarget(this.groupService.getReferenceTarget(this.groupDetail, reference))
-      : this.groupService.getSportsTarget(this.groupDetail);
+      ? new SportsTarget(this.professionalService.getReferenceTarget(this.groupDetail, reference))
+      : this.professionalService.getSportsTarget(this.groupDetail);
     this.saveAllCondition();
   }
 
@@ -259,7 +264,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091103
    */
   getUserProfile() {
-    this.groupService
+    this.professionalService
       .getUserSimpleInfo()
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((res) => {
@@ -396,7 +401,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   openEditMode(action: 'edit' | 'create') {
     this.uiFlag.editMode = action;
     this.getTargetInheritList();
-    this.groupService.setEditMode(action);
+    this.professionalService.setEditMode(action);
   }
 
   /**
@@ -407,11 +412,11 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     if (this.uiFlag.editMode === 'edit') {
       this.uiFlag.editMode = 'close';
       this.handleSportsTarget();
-      this.groupService.setEditMode(action);
+      this.professionalService.setEditMode(action);
     } else if (this.uiFlag.editMode === 'create' && action !== 'complete') {
       this.cancelCreateMode();
     } else if (this.uiFlag.editMode === 'create' && action === 'complete') {
-      this.groupService.setEditMode(action);
+      this.professionalService.setEditMode(action);
       this.uiFlag.editMode = 'close';
     }
   }
@@ -422,7 +427,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   cancelCreateMode() {
     this.uiFlag.editMode = 'close';
-    this.groupService.setEditMode('close');
+    this.professionalService.setEditMode('close');
     if (this.createBody.levelType !== 3) {
       this.router.navigateByUrl(
         `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
@@ -608,14 +613,15 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091103
    */
   saveGroupName(e: Event) {
-    if ((e as any).target.value.trim().length > 0) {
+    const name = (e as any).target.value.trim();
+    if (formTest.groupName.test(name)) {
       this.formCheck.name = true;
 
       if (this.uiFlag.editMode === 'create') {
-        this.createBody.levelName = (e as any).target.value.trim();
+        this.createBody.levelName = name;
       } else if (this.uiFlag.editMode === 'edit') {
         this.uiFlag.contentChange = true;
-        this.editBody.groupName = (e as any).target.value.trim();
+        this.editBody.groupName = name;
       }
     } else {
       this.formCheck.name = false;
@@ -628,14 +634,15 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091103
    */
   saveGroupDesc(e: Event) {
-    if ((e as any).target.value.trim().length > 0) {
+    const desc = (e as any).target.value.trim();
+    if (desc.length > 0) {
       this.formCheck.desc = true;
 
       if (this.uiFlag.editMode === 'create') {
-        this.createBody.levelDesc = (e as any).target.value;
+        this.createBody.levelDesc = desc;
       } else if (this.uiFlag.editMode === 'edit') {
         this.uiFlag.contentChange = true;
-        this.editBody.groupDesc = (e as any).target.value;
+        this.editBody.groupDesc = desc;
       }
     } else {
       this.formCheck.desc = false;
@@ -794,7 +801,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     this.uiFlag.isLoading = true;
     const target = this.sportsTarget.getReductionTarget();
     Object.assign(this.createBody, { target });
-    this.groupService.createGroup(this.createBody).subscribe((res) => {
+    this.api11xxService.fetchCreateGroup(this.createBody).subscribe((res) => {
       const { resultCode } = res;
       if (resultCode !== 200) {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
@@ -802,15 +809,15 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         switch (resultCode) {
           case 409:
             msg = `群組名稱重複，請更換名稱`;
-            this.utils.openAlert(msg);
+            this.hintDialogService.openAlert(msg);
             break;
           default:
             msg = `Error.<br />Please check Plans status or try again later.`;
-            this.utils.openAlert(msg);
+            this.hintDialogService.openAlert(msg);
             break;
         }
       } else {
-        this.groupService.saveNewGroupId(res.info.newGroupId);
+        this.professionalService.saveNewGroupId(res.info.newGroupId);
         this.closeEditMode('complete');
       }
 
@@ -846,16 +853,15 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   /**
    * 送出api 1105 的request並關閉編輯模式
    * @param body {any}-api 1105 的request body
-   * @author kidin-1091104
    */
   sendEditGroupReq(body: any) {
     this.uiFlag.isLoading = true;
-    this.groupService.editGroup(body).subscribe((res) => {
+    this.api11xxService.fetchEditGroup(body).subscribe((res) => {
       if (res.resultCode === 200) {
         this.initPage();
       } else {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
-        this.utils.openAlert(errMsg);
+        this.hintDialogService.openAlert(errMsg);
       }
 
       this.uiFlag.isLoading = false;
@@ -869,13 +875,13 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   sendchangeGroupStatusReq(body: any) {
     this.uiFlag.isLoading = true;
-    this.groupService.changeGroupStatus(body).subscribe((res) => {
+    this.api11xxService.fetchChangeGroupStatus(body).subscribe((res) => {
       if (res.resultCode === 200) {
         this.initPage();
         this.refreshAllLevelGroupData();
       } else {
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
-        this.utils.openAlert(errMsg);
+        this.hintDialogService.openAlert(errMsg);
       }
 
       this.uiFlag.isLoading = false;
@@ -890,8 +896,8 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   sendCombinedReq(editBody: any, changeBody: any) {
     this.uiFlag.isLoading = true;
     forkJoin([
-      this.groupService.editGroup(editBody),
-      this.groupService.changeGroupStatus(changeBody),
+      this.api11xxService.fetchEditGroup(editBody),
+      this.api11xxService.fetchChangeGroupStatus(changeBody),
     ]).subscribe((res) => {
       if (res[0].resultCode === 200 && res[1].resultCode === 200) {
         this.initPage();
@@ -899,7 +905,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       } else {
         console.error(`${res[0].resultCode}: Api-${res[0].apiCode} ${res[0].resultMessage}`);
         console.error(`${res[1].resultCode}: Api-${res[1].apiCode} ${res[1].resultMessage}`);
-        this.utils.openAlert(errMsg);
+        this.hintDialogService.openAlert(errMsg);
       }
 
       this.uiFlag.isLoading = false;
@@ -919,12 +925,12 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       infoType: 1,
     };
 
-    this.groupService.fetchGroupMemberList(body).subscribe((res) => {
+    this.api11xxService.fetchGroupMemberList(body).subscribe((res) => {
       if (res.resultCode !== 200) {
-        this.utils.openAlert(errMsg);
+        this.hintDialogService.openAlert(errMsg);
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
-        this.groupService.setAllLevelGroupData(res.info.subGroupInfo);
+        this.professionalService.setAllLevelGroupData(res.info.subGroupInfo);
       }
     });
   }
@@ -953,12 +959,12 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       avatarType: 3,
     };
 
-    this.groupService.fetchGroupListDetail(body).subscribe((res) => {
+    this.api11xxService.fetchGroupListDetail(body).subscribe((res) => {
       if (res.resultCode !== 200) {
-        this.utils.openAlert(errMsg);
+        this.hintDialogService.openAlert(errMsg);
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
-        this.groupService.saveGroupDetail(res.info);
+        this.professionalService.saveGroupDetail(res.info);
       }
     });
   }
@@ -1047,7 +1053,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   changeCondition(contentMap: TargetConditionMap, cycle: DateUnit) {
     const { groupId } = this.groupDetail;
     this.sportsTarget.changeAllCondition(cycle, contentMap);
-    this.sportsTarget.reference = +this.utils.displayGroupLevel(groupId) as GroupLevel;
+    this.sportsTarget.reference = +displayGroupLevel(groupId) as GroupLevel;
     this.uiFlag.contentChange = true;
   }
 

@@ -1,9 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { UtilsService } from '../../../../shared/services/utils.service';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { ft, inch, lb } from '../../../../shared/models/bs-constant';
-import { Unit } from '../../../../shared/enum/value-conversion';
+import { DataUnitType } from '../../../../core/enums/common';
 import { HrBase } from '../../../../shared/enum/personal';
 import { formTest } from '../../../../shared/models/form-test';
 import { HrZoneRange } from '../../../../shared/models/chart-data';
@@ -12,9 +11,14 @@ import { TranslateService } from '@ngx-translate/core';
 import { DashboardService } from '../../services/dashboard.service';
 import { TargetConditionMap } from '../../../../core/models/api/api-common/sport-target.model';
 import { DateUnit } from '../../../../shared/enum/report';
-import { checkResponse, mathRounding, valueConvert } from '../../../../shared/utils/index';
-import { UserService } from '../../../../core/services/user.service';
-import { getUserHrRange, getUserFtpZone } from '../../../../shared/utils/sports';
+import {
+  checkResponse,
+  mathRounding,
+  valueConvert,
+  getUserHrRange,
+  getUserFtpZone,
+} from '../../../../core/utils';
+import { UserService, HintDialogService } from '../../../../core/services';
 import { SportsTarget } from '../../../../shared/classes/sports-target';
 import { BenefitTimeStartZone } from '../../../../core/enums/common';
 
@@ -62,7 +66,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    * 使用者設定
    */
   setting = {
-    unit: Unit.metric,
+    unit: DataUnitType.metric,
     strideLengthCentimeter: 90,
     heartRateBase: HrBase.max,
     heartRateMax: 190,
@@ -130,14 +134,14 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   userHrZone: HrZoneRange;
   userFtpZone: any;
   readonly HrBase = HrBase;
-  readonly Unit = Unit;
+  readonly DataUnitType = DataUnitType;
   readonly DominantHand = DominantHand;
   readonly AutoStepTarget = AutoStepTarget;
   readonly DateUnit = DateUnit;
   readonly BenefitTimeStartZone = BenefitTimeStartZone;
 
   constructor(
-    private utils: UtilsService,
+    private hintDialogService: HintDialogService,
     private translate: TranslateService,
     private dashboardService: DashboardService,
     private userService: UserService
@@ -241,7 +245,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
       customField: { activityTimeHRZ },
     } = this.userInfo;
 
-    const isMetric = userUnit === Unit.metric;
+    const isMetric = userUnit === DataUnitType.metric;
     this.setting = {
       unit: userUnit,
       strideLengthCentimeter: valueConvert(strideLengthCentimeter, !isMetric, true, inch, 1),
@@ -344,13 +348,13 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
         .subscribe((res) => {
           if (!checkResponse(res, false)) {
             const errorMsg = this.translate.instant('universal_popUpMessage_updateFailed');
-            this.utils.showSnackBar(errorMsg);
+            this.hintDialogService.showSnackBar(errorMsg);
             this.uiFlag.progress = 100;
           } else {
             this.uiFlag.progress = 100;
             this.closeDialog();
             const successMsg = this.translate.instant('universal_status_updateCompleted');
-            this.utils.showSnackBar(successMsg);
+            this.hintDialogService.showSnackBar(successMsg);
             this.dashboardService.setRxEditMode('complete');
           }
         });
@@ -402,7 +406,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
    * @author kidin-1100825
    */
   valueRevert(key: string, value: string | number) {
-    const isMetric = this.setting.unit === Unit.metric,
+    const isMetric = this.setting.unit === DataUnitType.metric,
       edited = this.editFlag[key];
     switch (key) {
       case 'strideLengthCentimeter':
@@ -546,13 +550,13 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
 
   /**
    * 變更使用單位
-   * @param unit {Unit}-公制或英制
+   * @param unit {DataUnitType}-公制或英制
    * @author kidin-1100823
    */
-  changeUnit(userUnit: Unit) {
+  changeUnit(userUnit: DataUnitType) {
     if (userUnit != this.setting.unit) {
       this.setting.unit = userUnit;
-      const isMetric = userUnit === Unit.metric,
+      const isMetric = userUnit === DataUnitType.metric,
         {
           strideLengthCentimeter,
           wheelSize,
@@ -628,7 +632,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   handleStepLenInput(e: MouseEvent) {
     const oldValue = this.userInfo.strideLengthCentimeter,
       inputValue = +(e as any).target.value,
-      isMetric = this.setting.unit === Unit.metric,
+      isMetric = this.setting.unit === DataUnitType.metric,
       testFormat = formTest.decimalValue.test(`${inputValue}`),
       newValue = valueConvert(inputValue, !isMetric, false, inch, 1),
       valueChanged = newValue !== oldValue;
@@ -660,7 +664,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   handleWheelSizeInput(e: MouseEvent) {
     const oldValue = this.userInfo.wheelSize,
       inputValue = +(e as any).target.value,
-      isMetric = this.setting.unit === Unit.metric,
+      isMetric = this.setting.unit === DataUnitType.metric,
       testFormat = formTest.decimalValue.test(`${inputValue}`),
       newValue = valueConvert(inputValue, !isMetric, false, wheelSizeCoefficient, 1),
       valueChanged = newValue !== oldValue;
@@ -725,7 +729,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   handleTargetDistanceInput(e: MouseEvent) {
     const oldValue = this.userInfo.target.distance,
       inputValue = +(e as any).target.value,
-      isMetric = this.setting.unit === Unit.metric,
+      isMetric = this.setting.unit === DataUnitType.metric,
       testFormat = formTest.decimalValue.test(`${inputValue}`),
       newValue = valueConvert(inputValue, !isMetric, false, ft, 2),
       valueChanged = newValue !== oldValue;
@@ -857,7 +861,7 @@ export class SettingPreferComponent implements OnInit, OnDestroy {
   handleTargetWeightInput(e: MouseEvent) {
     const oldValue = this.userInfo.target.bodyWeight,
       inputValue = +(e as any).target.value,
-      isMetric = this.setting.unit === Unit.metric,
+      isMetric = this.setting.unit === DataUnitType.metric,
       testFormat = formTest.decimalValue.test(`${inputValue}`),
       newValue = valueConvert(inputValue, !isMetric, false, lb, 1),
       valueChanged = newValue !== oldValue;

@@ -1,0 +1,311 @@
+<div>
+  <div class="station__section" style="margin-top: 0">
+    <h6 class="station__title">{{ '總覽' | translate }}</h6>
+    <div class="flexRow">
+      <div class="flexCol nichname__header">
+        <div class="nickname__grid">
+          <div
+            *ngTemplateOutlet="
+              gridHeader;
+              context: {
+                titleKey: 'universal_activityData_name',
+                sortCode: ComplexSportSortType.nickname,
+                isAscending: stationList.sortDirection === SortDirection.asc
+              }
+            "
+          ></div>
+        </div>
+        <hr class="header__divide__line" />
+        <ng-container *ngFor="let _summary of stationList.summary">
+          <div class="flexRow nickname__grid">
+            <span class="one__grid">{{ _summary.nickname }}</span>
+          </div>
+          <hr class="content__divide__line" />
+        </ng-container>
+      </div>
+      <div class="station__content__container" (scroll)="handleScrollingSynchronous($event)">
+        <div class="flexCol station__content">
+          <div class="flexRow list__grid">
+            <div
+              *ngTemplateOutlet="
+                gridHeader;
+                context: {
+                  titleKey: 'universal_activityData_avgHr',
+                  unit: 'bpm',
+                  sortCode: ComplexSportSortType.avgHeartRateBpm,
+                  isAscending: stationList.sortDirection === SortDirection.asc
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                gridHeader;
+                context: {
+                  titleKey: 'universal_activityData_totalCalories',
+                  unit: 'cal',
+                  sortCode: ComplexSportSortType.calories,
+                  isAscending: stationList.sortDirection === SortDirection.asc
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                gridHeader;
+                context: {
+                  titleKey: 'universal_activityData_distance',
+                  unit: ('distanceKilo' | dataTypeUnit: { userUnit }),
+                  sortCode: ComplexSportSortType.totalDistanceMeters,
+                  isAscending: stationList.sortDirection === SortDirection.asc
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                gridHeader;
+                context: {
+                  titleKey: ('speed' | dataTypeTranslate: { sportType: SportType.all, userUnit }),
+                  sortCode: ComplexSportSortType.avgSpeed,
+                  isAscending: stationList.sortDirection === SortDirection.asc
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                gridHeader;
+                context: {
+                  titleKey: ('cadence' | dataTypeTranslate: { sportType: SportType.all, userUnit }),
+                  unit: ('cadence' | dataTypeUnit: { sportType: SportType.all, userUnit }),
+                  sortCode: ComplexSportSortType.cadence,
+                  isAscending: stationList.sortDirection === SortDirection.asc
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                gridHeader;
+                context: {
+                  titleKey: 'universal_activityData_power',
+                  unit: 'w',
+                  sortCode: ComplexSportSortType.power,
+                  isAscending: stationList.sortDirection === SortDirection.asc
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                gridHeader;
+                context: {
+                  titleKey: 'universal_activityData_hrZone',
+                  isHrZone: true
+                }
+              "
+            ></div>
+          </div>
+          <hr class="header__divide__line" />
+          <ng-container *ngFor="let _summary of stationList.summary">
+            <div class="flexRow list__grid">
+              <span class="one__grid data__column">{{ _summary.avgHeartRateBpm }}</span>
+              <span class="one__grid data__column">{{
+                _summary.calories || 0 | number: '1.0-1'
+              }}</span>
+              <span class="one__grid data__column">
+                {{ (_summary.totalDistanceMeters || 0) / 1000 | number: '1.0-2' }}
+              </span>
+              <span class="one__grid data__column">-</span>
+              <span class="one__grid data__column">-</span>
+              <span class="one__grid data__column">-</span>
+              <app-small-hrzone-chart
+                class="hrzone__grid"
+                [data]="_summary.hrZone"
+              ></app-small-hrzone-chart>
+            </div>
+            <hr class="content__divide__line" />
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-container *ngFor="let _station of stationList.station">
+    <div class="station__section">
+      <h6 class="station__title">Station{{ _station.stationId }}: {{ _station.dispName }}</h6>
+      <div class="flexRow">
+        <div class="flexCol nichname__header">
+          <div class="nickname__grid">
+            <div
+              *ngTemplateOutlet="
+                gridHeader;
+                context: {
+                  titleKey: 'universal_activityData_name',
+                  sortCode: ComplexSportSortType.nickname,
+                  isAscending: stationList.sortDirection === SortDirection.asc
+                }
+              "
+            ></div>
+          </div>
+          <hr class="header__divide__line" />
+          <ng-container *ngFor="let _member of _station.memberList">
+            <div class="flexRow nickname__grid">
+              <span class="one__grid">{{ _member.nickname }}</span>
+            </div>
+            <hr class="content__divide__line" />
+          </ng-container>
+        </div>
+        <div class="station__content__container" (scroll)="handleScrollingSynchronous($event)">
+          <div class="flexCol station__content">
+            <div class="flexRow list__grid list__header">
+              <div
+                *ngTemplateOutlet="
+                  gridHeader;
+                  context: {
+                    titleKey: 'universal_activityData_avgHr',
+                    unit: 'bpm',
+                    sortCode: ComplexSportSortType.avgHeartRateBpm,
+                    isAscending: stationList.sortDirection === SortDirection.asc
+                  }
+                "
+              ></div>
+              <div
+                *ngTemplateOutlet="
+                  gridHeader;
+                  context: {
+                    titleKey: 'universal_activityData_totalCalories',
+                    unit: 'cal',
+                    sortCode: ComplexSportSortType.calories,
+                    isAscending: stationList.sortDirection === SortDirection.asc
+                  }
+                "
+              ></div>
+              <div
+                *ngTemplateOutlet="
+                  gridHeader;
+                  context: {
+                    titleKey: 'universal_activityData_distance',
+                    unit: ('distanceKilo' | dataTypeUnit: { userUnit }),
+                    sortCode: ComplexSportSortType.totalDistanceMeters,
+                    isAscending: stationList.sortDirection === SortDirection.asc
+                  }
+                "
+              ></div>
+              <div
+                *ngTemplateOutlet="
+                  gridHeader;
+                  context: {
+                    titleKey: ('speed' | dataTypeTranslate: { sportType: _station.type, userUnit }),
+                    unit: ('speed' | dataTypeUnit: { sportType: _station.type, userUnit }),
+                    sortCode: ComplexSportSortType.avgSpeed,
+                    isAscending: stationList.sortDirection === SortDirection.asc
+                  }
+                "
+              ></div>
+              <div
+                *ngTemplateOutlet="
+                  gridHeader;
+                  context: {
+                    titleKey:
+                      ('cadence' | dataTypeTranslate: { sportType: _station.type, userUnit }),
+                    unit: ('cadence' | dataTypeUnit: { sportType: _station.type, userUnit }),
+                    sortCode: ComplexSportSortType.cadence,
+                    isAscending: stationList.sortDirection === SortDirection.asc
+                  }
+                "
+              ></div>
+              <div
+                *ngTemplateOutlet="
+                  gridHeader;
+                  context: {
+                    titleKey: 'universal_activityData_power',
+                    unit: 'w',
+                    sortCode: ComplexSportSortType.power,
+                    isAscending: stationList.sortDirection === SortDirection.asc
+                  }
+                "
+              ></div>
+              <div
+                class="hrzone__grid"
+                *ngTemplateOutlet="
+                  gridHeader;
+                  context: {
+                    titleKey: 'universal_activityData_hrZone',
+                    isHrZone: true
+                  }
+                "
+              ></div>
+            </div>
+            <hr class="header__divide__line" />
+            <ng-container *ngFor="let _member of _station.memberList">
+              <div class="flexRow list__grid">
+                <span class="one__grid data__column">{{ _member.avgHeartRateBpm }}</span>
+                <span class="one__grid data__column">{{
+                  _member.calories || 0 | number: '1.0-1'
+                }}</span>
+                <span class="one__grid data__column">{{
+                  _member.totalDistanceMeters
+                    ? ((_member.totalDistanceMeters || 0) / 1000 | number: '1.0-2')
+                    : '-'
+                }}</span>
+                <span class="one__grid data__column">
+                  {{
+                    _member.avgSpeed
+                      ? (_member.avgSpeed
+                        | sportPaceSibs: { sportType: _station.type, userUnit, showUnit: false })
+                      : '-'
+                  }}
+                </span>
+                <span class="one__grid data__column" [ngSwitch]="_station.type">
+                  <ng-container *ngSwitchCase="SportType.run">
+                    {{ _member.runAvgCadence || '-' }}
+                  </ng-container>
+                  <ng-container *ngSwitchCase="SportType.cycle">
+                    {{ _member.cycleAvgCadence || '-' }}
+                  </ng-container>
+                  <ng-container *ngSwitchCase="SportType.row">
+                    {{ _member.rowingAvgCadence || '-' }}
+                  </ng-container>
+                  <ng-container *ngSwitchDefault>-</ng-container>
+                </span>
+                <span class="one__grid data__column" [ngSwitch]="_station.type">
+                  <ng-container *ngSwitchCase="SportType.cycle">
+                    {{ _member.cycleAvgWatt || '-' }}
+                  </ng-container>
+                  <ng-container *ngSwitchCase="SportType.row">
+                    {{ _member.rowingAvgWatt || '-' }}
+                  </ng-container>
+                  <ng-container *ngSwitchDefault>-</ng-container>
+                </span>
+                <app-small-hrzone-chart
+                  class="hrzone__grid"
+                  [data]="_member.hrZone"
+                ></app-small-hrzone-chart>
+              </div>
+              <hr class="content__divide__line" />
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<ng-template
+  #gridHeader
+  let-titleKey="titleKey"
+  let-unit="unit"
+  let-sortCode="sortCode"
+  let-isAscending="isAscending"
+  let-isHrZone="isHrZone"
+>
+  <div
+    class="flexRow one__grid"
+    [class.hrzone__grid--disabled]="isHrZone"
+    (click)="handleSorting(sortCode, isHrZone)"
+  >
+    <div class="flexCol">
+      <span class="list__header__title">{{ titleKey | translate }}</span>
+      <span class="list__header__unit" *ngIf="unit">{{ unit }}</span>
+    </div>
+    <div *ngIf="sortCode === stationList.sortType">
+      <mat-icon class="report-sortArrowIcon" *ngIf="!isAscending"> arrow_upward </mat-icon>
+      <mat-icon class="report-sortArrowIcon" *ngIf="isAscending"> arrow_downward </mat-icon>
+    </div>
+  </div>
+</ng-template>

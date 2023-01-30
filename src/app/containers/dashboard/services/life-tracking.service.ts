@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { UtilsService } from '../../../shared/services/utils.service';
 import { getOptions } from 'highcharts';
 
 class Option {
@@ -69,7 +68,7 @@ class Option {
 
 @Injectable()
 export class LifeTrackingService {
-  constructor(private http: HttpClient, private utils: UtilsService) {}
+  constructor(private http: HttpClient) {}
 
   getTrackingDayDetail(body) {
     return this.http.post<any>('/api/v2/sport/getTrackingDayDetail', body);
@@ -99,97 +98,97 @@ export class LifeTrackingService {
       //pointSeconds.push(resolutionSeconds * (idx + 1) * 1000);
       pointSeconds.push(_point.pointSecond * 1000);
 
-      if (!this.utils.isNumber(_point.activity)) {
+      if (!this.isNumber(_point.activity)) {
         activitys.push(_point.activity);
       } else {
         activitys.push(+_point.activity);
       }
 
-      if (!this.utils.isNumber(_point.airPressure)) {
+      if (!this.isNumber(_point.airPressure)) {
         airPressures.push(_point.airPressure);
       } else {
         airPressures.push(+_point.airPressure);
       }
 
-      if (!this.utils.isNumber(_point.elev)) {
+      if (!this.isNumber(_point.elev)) {
         elevs.push(_point.elev);
       } else {
         elevs.push(+_point.elev);
       }
 
-      if (!this.utils.isNumber(_point.heartRate)) {
+      if (!this.isNumber(_point.heartRate)) {
         heartRates.push(_point.heartRate);
       } else {
         heartRates.push(+_point.heartRate);
       }
 
-      if (!this.utils.isNumber(_point.stress)) {
+      if (!this.isNumber(_point.stress)) {
         stresses.push(_point.stress);
       } else {
         stresses.push(+_point.stress);
       }
 
-      if (!this.utils.isNumber(_point.temp)) {
+      if (!this.isNumber(_point.temp)) {
         temps.push(_point.temp);
       } else {
         temps.push(+_point.temp);
       }
 
-      if (!this.utils.isNumber(_point.totalActivityCalories)) {
+      if (!this.isNumber(_point.totalActivityCalories)) {
         totalActivityCalories.push(_point.totalActivityCalories);
       } else {
         totalActivityCalories.push(+_point.totalActivityCalories);
       }
 
-      if (!this.utils.isNumber(_point.totalDistanceMeters)) {
+      if (!this.isNumber(_point.totalDistanceMeters)) {
         totalDistanceMeters.push(_point.totalDistanceMeters);
       } else {
         totalDistanceMeters.push(+_point.totalDistanceMeters);
       }
 
-      if (!this.utils.isNumber(_point.totalElevGain)) {
+      if (!this.isNumber(_point.totalElevGain)) {
         totalElevGains.push(_point.totalElevGain);
       } else {
         totalElevGains.push(+_point.totalElevGain);
       }
 
-      if (!this.utils.isNumber(_point.totalElevLoss)) {
+      if (!this.isNumber(_point.totalElevLoss)) {
         totalElevLoss.push(_point.totalElevLoss);
       } else {
         totalElevLoss.push(+_point.totalElevLoss);
       }
 
-      if (!this.utils.isNumber(_point.totalLifeCalories)) {
+      if (!this.isNumber(_point.totalLifeCalories)) {
         totalLifeCalories.push(_point.totalLifeCalories);
       } else {
         totalLifeCalories.push(+_point.totalLifeCalories);
       }
 
-      if (!this.utils.isNumber(_point.totalStep)) {
+      if (!this.isNumber(_point.totalStep)) {
         totalStep.push(_point.totalStep);
       } else {
         totalStep.push(+_point.totalStep);
       }
 
-      if (!this.utils.isNumber(_point.wearingStatus)) {
+      if (!this.isNumber(_point.wearingStatus)) {
         wearingStatus.push(_point.wearingStatus);
       } else {
         wearingStatus.push(+_point.wearingStatus);
       }
 
-      if (!this.utils.isNumber(_point.walkElevGain)) {
+      if (!this.isNumber(_point.walkElevGain)) {
         walkElevGain.push(_point.walkElevGain);
       } else {
         walkElevGain.push(+_point.walkElevGain);
       }
 
-      if (!this.utils.isNumber(_point.walkElevLoss)) {
+      if (!this.isNumber(_point.walkElevLoss)) {
         walkElevLoss.push(_point.walkElevLoss);
       } else {
         walkElevLoss.push(+_point.walkElevLoss);
       }
 
-      if (!this.utils.isNumber(_point.localPressure)) {
+      if (!this.isNumber(_point.localPressure)) {
         localPressure.push(_point.localPressure);
       } else {
         localPressure.push(+_point.localPressure);
@@ -326,33 +325,17 @@ export class LifeTrackingService {
 
     const finalDatas = [];
     const chartTargets = [];
-    let activityOptions,
-      airPressureOptions,
-      elevOptions,
-      heartRateOptions,
-      stressOptions,
-      tempOptions,
-      totalActivityCaloriesOptions,
-      totalDistanceMetersOptions,
-      totalElevGainOptions,
-      totalElevLossOptions,
-      totalLifeCaloriesOptions,
-      totalStepOptions,
-      wearingStatusOptions,
-      walkElevGainOptions,
-      walkElevLossOptions,
-      localPressureOptions;
 
     // activity
     activityDataset.data = activityDataset.data.map((val, j) => [pointSeconds[j], val]);
-    activityOptions = new Option(activityDataset, colorIdx);
+    const activityOptions = new Option(activityDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ activityChartTarget: activityOptions, isSyncExtremes: true });
     chartTargets.push('activityChartTarget');
 
     // heartRate
     heartRateDataset.data = heartRateDataset.data.map((val, j) => [pointSeconds[j], val]);
-    heartRateOptions = new Option(heartRateDataset, colorIdx);
+    const heartRateOptions = new Option(heartRateDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ heartRateChartTarget: heartRateOptions, isSyncExtremes: true });
     chartTargets.push('heartRateChartTarget');
@@ -362,7 +345,7 @@ export class LifeTrackingService {
       pointSeconds[j],
       val,
     ]);
-    totalDistanceMetersOptions = new Option(totalDistanceMetersDataset, colorIdx);
+    const totalDistanceMetersOptions = new Option(totalDistanceMetersDataset, colorIdx);
     colorIdx++;
     finalDatas.push({
       totalDistanceMetersChartTarget: totalDistanceMetersOptions,
@@ -375,7 +358,7 @@ export class LifeTrackingService {
       pointSeconds[j],
       val,
     ]);
-    totalLifeCaloriesOptions = new Option(totalLifeCaloriesDataset, colorIdx);
+    const totalLifeCaloriesOptions = new Option(totalLifeCaloriesDataset, colorIdx);
     colorIdx++;
     finalDatas.push({
       totalLifeCaloriesChartTarget: totalLifeCaloriesOptions,
@@ -385,35 +368,35 @@ export class LifeTrackingService {
 
     // totalStep
     totalStepDataset.data = totalStepDataset.data.map((val, j) => [pointSeconds[j], val]);
-    totalStepOptions = new Option(totalStepDataset, colorIdx);
+    const totalStepOptions = new Option(totalStepDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ totalStepChartTarget: totalStepOptions, isSyncExtremes: true });
     chartTargets.push('totalStepChartTarget');
 
     // airPressure
     airPressureDataset.data = airPressureDataset.data.map((val, j) => [pointSeconds[j], val]);
-    airPressureOptions = new Option(airPressureDataset, colorIdx);
+    const airPressureOptions = new Option(airPressureDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ airPressureChartTarget: airPressureOptions, isSyncExtremes: true });
     chartTargets.push('airPressureChartTarget');
 
     // elev
     elevDataset.data = elevDataset.data.map((val, j) => [pointSeconds[j], val]);
-    elevOptions = new Option(elevDataset, colorIdx);
+    const elevOptions = new Option(elevDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ elevChartTarget: elevOptions, isSyncExtremes: true });
     chartTargets.push('elevChartTarget');
 
     // stress
     stressDataset.data = stressDataset.data.map((val, j) => [pointSeconds[j], val]);
-    stressOptions = new Option(stressDataset, colorIdx);
+    const stressOptions = new Option(stressDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ stressChartTarget: stressOptions, isSyncExtremes: true });
     chartTargets.push('stressChartTarget');
 
     // temp
     tempDataset.data = tempDataset.data.map((val, j) => [pointSeconds[j], val]);
-    tempOptions = new Option(tempDataset, colorIdx);
+    const tempOptions = new Option(tempDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ tempChartTarget: tempOptions, isSyncExtremes: true });
     chartTargets.push('tempChartTarget');
@@ -423,7 +406,7 @@ export class LifeTrackingService {
       pointSeconds[j],
       val,
     ]);
-    totalActivityCaloriesOptions = new Option(totalActivityCaloriesDataset, colorIdx);
+    const totalActivityCaloriesOptions = new Option(totalActivityCaloriesDataset, colorIdx);
     colorIdx++;
     finalDatas.push({
       totalActivityCaloriesChartTarget: totalActivityCaloriesOptions,
@@ -433,46 +416,57 @@ export class LifeTrackingService {
 
     // totalElevGain
     totalElevGainDataset.data = totalElevGainDataset.data.map((val, j) => [pointSeconds[j], val]);
-    totalElevGainOptions = new Option(totalElevGainDataset, colorIdx);
+    const totalElevGainOptions = new Option(totalElevGainDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ totalElevGainChartTarget: totalElevGainOptions, isSyncExtremes: true });
     chartTargets.push('totalElevGainChartTarget');
 
     // totalElevLoss
     totalElevLossDataset.data = totalElevLossDataset.data.map((val, j) => [pointSeconds[j], val]);
-    totalElevLossOptions = new Option(totalElevLossDataset, colorIdx);
+    const totalElevLossOptions = new Option(totalElevLossDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ totalElevLossChartTarget: totalElevLossOptions, isSyncExtremes: true });
     chartTargets.push('totalElevLossChartTarget');
 
     // wearingStatus
     wearingStatusDataset.data = wearingStatusDataset.data.map((val, j) => [pointSeconds[j], val]);
-    wearingStatusOptions = new Option(wearingStatusDataset, colorIdx);
+    const wearingStatusOptions = new Option(wearingStatusDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ wearingStatusChartTarget: wearingStatusOptions, isSyncExtremes: true });
     chartTargets.push('wearingStatusChartTarget');
 
     // walkElevGain
     walkElevGainDataset.data = walkElevGainDataset.data.map((val, j) => [pointSeconds[j], val]);
-    walkElevGainOptions = new Option(walkElevGainDataset, colorIdx);
+    const walkElevGainOptions = new Option(walkElevGainDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ walkElevGainChartTarget: walkElevGainOptions, isSyncExtremes: true });
     chartTargets.push('walkElevGainChartTarget');
 
     // walkElevLoss
     walkElevLossDataset.data = walkElevLossDataset.data.map((val, j) => [pointSeconds[j], val]);
-    walkElevLossOptions = new Option(walkElevLossDataset, colorIdx);
+    const walkElevLossOptions = new Option(walkElevLossDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ walkElevLossChartTarget: walkElevLossOptions, isSyncExtremes: true });
     chartTargets.push('walkElevLossChartTarget');
 
     // localPressure
     localPressureDataset.data = localPressureDataset.data.map((val, j) => [pointSeconds[j], val]);
-    localPressureOptions = new Option(localPressureDataset, colorIdx);
+    const localPressureOptions = new Option(localPressureDataset, colorIdx);
     colorIdx++;
     finalDatas.push({ localPressureChartTarget: localPressureOptions, isSyncExtremes: true });
     chartTargets.push('localPressureChartTarget');
 
     return { finalDatas, chartTargets };
+  }
+
+  isNumber(val: any) {
+    const regPos = /^\d+(\.\d+)?$/; // 非負浮點數
+    const regNeg =
+      /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/; // 負浮點數
+    if (regPos.test(val) || regNeg.test(val)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

@@ -1,6 +1,9 @@
-import { Pipe, PipeTransform, NgModule } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({ name: 'translateKey' })
+@Pipe({
+  name: 'translateKey',
+  standalone: true,
+})
 export class TranslateKeyPipe implements PipeTransform {
   constructor() {}
 
@@ -32,9 +35,3 @@ export class TranslateKeyPipe implements PipeTransform {
     }
   }
 }
-
-@NgModule({
-  declarations: [TranslateKeyPipe],
-  exports: [TranslateKeyPipe],
-})
-export class TranslateKeyModule {}

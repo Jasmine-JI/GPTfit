@@ -11,12 +11,16 @@ import { SportType } from '../../../enum/sports';
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-import { UtilsService } from '../../../services/utils.service';
 import { HrZoneRange } from '../../../models/chart-data';
 import { mi } from '../../../models/bs-constant';
-import { Unit } from '../../../enum/value-conversion';
-import { SportPaceSibsPipe } from '../../../../core/pipes/sport-pace-sibs.pipe';
-import { setLocalStorageObject, getLocalStorageObject, deepCopy } from '../../../utils/index';
+import { DataUnitType } from '../../../../core/enums/common';
+import {
+  setLocalStorageObject,
+  getLocalStorageObject,
+  deepCopy,
+  simplify,
+} from '../../../../core/utils';
+import { SportPaceSibsPipe } from '../../../../core/pipes';
 
 type QuadrantDataOpt = 'hr' | 'speed' | 'pace' | 'cadence' | 'power';
 type Axis = 'xAxis' | 'yAxis';
@@ -53,7 +57,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() userInfo: Array<any>;
   @Input() sportType: SportType;
   @Input() sysAccessRight: number;
-  @Input() unit: Unit;
+  @Input() unit: DataUnitType;
   @Input() hrRange: HrZoneRange;
 
   /**
@@ -202,7 +206,6 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private translate: TranslateService,
-    private utils: UtilsService,
     private sportPaceSibsPipe: SportPaceSibsPipe,
     private changeDetectorRef: ChangeDetectorRef
   ) {}
@@ -401,7 +404,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
    * @param ref {QuadrantDataOpt}-軸線類別
    * @param refValue {number}-軸線源點
    * @param sportType {SportType}-運動類別
-   * @param uniy {Unit}-使用者使用的單位
+   * @param unit {DataUnitType}-使用者使用的單位
    * @author kidin-1100202
    */
   handleAxisInput(
@@ -409,18 +412,18 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
     refType: QuadrantDataOpt,
     refValue: number,
     sportType: SportType,
-    uniy: Unit
+    unit: DataUnitType
   ) {
     switch (refType) {
       case 'pace':
-        this.axisInputValue[axis] = this.sportPaceSibsPipe.transform(refValue, [
+        this.axisInputValue[axis] = this.sportPaceSibsPipe.transform(refValue, {
           sportType,
-          uniy,
-          1,
-        ]);
+          userUnit: unit,
+          showUnit: false,
+        });
         break;
       case 'speed':
-        this.axisInputValue[axis] = uniy === 0 ? refValue : +(refValue / mi).toFixed(1);
+        this.axisInputValue[axis] = unit === 0 ? refValue : +(refValue / mi).toFixed(1);
         break;
       default:
         this.axisInputValue[axis] = refValue;
@@ -582,7 +585,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
     });
 
     // 降噪
-    this.chart.displayPoint = this.utils.simplify(
+    this.chart.displayPoint = simplify(
       this.chart.displayPoint,
       this.getCoefficient(this.chart.displayPoint.length)
     );

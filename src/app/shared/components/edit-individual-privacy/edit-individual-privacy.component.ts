@@ -3,8 +3,7 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { PrivacyObj, allPrivacyItem } from '../../models/user-privacy';
-import { ActivityService } from '../../services/activity.service';
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService, Api21xxService } from '../../../core/services';
 
 @Component({
   selector: 'app-edit-individual-privacy',
@@ -23,7 +22,7 @@ export class EditIndividualPrivacyComponent implements OnInit {
     private translate: TranslateService,
     private dialog: MatDialog,
     private snackbar: MatSnackBar,
-    private activityService: ActivityService,
+    private api21xxService: Api21xxService,
     private authService: AuthService,
     @Inject(MAT_DIALOG_DATA) private data: any
   ) {}
@@ -142,7 +141,7 @@ export class EditIndividualPrivacyComponent implements OnInit {
       };
     }
 
-    this.activityService.editPrivacy(body).subscribe((res) => {
+    this.api21xxService.fetchEditPrivacy(body).subscribe((res) => {
       if (res.resultCode === 200) {
         this.data.onConfirm(this.openObj);
         this.snackbar.open(this.translate.instant('universal_operating_finishEdit'), 'OK', {

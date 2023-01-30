@@ -4,7 +4,7 @@ import {
   TargetConditionMap,
 } from '../../core/models/api/api-common/sport-target.model';
 import { GroupLevel } from '../enum/professional';
-import { mathRounding } from '../utils/index';
+import { mathRounding } from '../../core/utils/index';
 import { DateUnit } from '../enum/report';
 import { SportTargetSymbols } from '../../core/enums/sports';
 import { of } from 'rxjs';

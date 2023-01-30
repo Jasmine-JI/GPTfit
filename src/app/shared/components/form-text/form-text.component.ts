@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { DEFAULT_MAXLENGTH } from '../../utils/index';
+import { DEFAULT_MAXLENGTH } from '../../../core/utils/index';
 import { UntypedFormGroup } from '@angular/forms';
 
 @Component({

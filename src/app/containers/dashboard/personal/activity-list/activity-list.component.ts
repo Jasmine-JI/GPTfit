@@ -1,18 +1,20 @@
 import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
-import { ActivityService } from '../../../../shared/services/activity.service';
-import { UtilsService } from '../../../../shared/services/utils.service';
 import { SportType } from '../../../../shared/enum/sports';
 import dayjs from 'dayjs';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil, tap, debounceTime } from 'rxjs/operators';
 import { ReportConditionOpt } from '../../../../shared/models/report-condition';
-import { ReportService } from '../../../../shared/services/report.service';
-import { Unit } from '../../../../shared/enum/value-conversion';
-import { GlobalEventsService } from '../../../../core/services/global-events.service';
-import { UserService } from '../../../../core/services/user.service';
-import { HashIdService } from '../../../../shared/services/hash-id.service';
-import { deepCopy } from '../../../../shared/utils/index';
-import { AuthService } from '../../../../core/services/auth.service';
+import { DataUnitType } from '../../../../core/enums/common';
+import {
+  GlobalEventsService,
+  HashIdService,
+  UserService,
+  AuthService,
+  Api21xxService,
+  ReportService,
+  ApiCommonService,
+} from '../../../../core/services';
+import { deepCopy, handleSceneryImg } from '../../../../core/utils';
 
 const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 const defaultEnd = dayjs().endOf('day');
@@ -67,12 +69,12 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
   activityList = [];
   targetUserId: number;
   totalCounts = 0;
-  unit = Unit.metric;
+  unit = DataUnitType.metric;
   readonly sportCode = SportType;
 
   constructor(
-    private activityService: ActivityService,
-    private utils: UtilsService,
+    private api21xxService: Api21xxService,
+    private apiCommonService: ApiCommonService,
     private reportService: ReportService,
     private userService: UserService,
     private globalEventsService: GlobalEventsService,
@@ -109,7 +111,7 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe((res) => {
         const { userId, unit: userUnit } = res;
         this.targetUserId = isOtherOwner ? userId : undefined;
-        this.unit = userUnit !== undefined ? userUnit : Unit.metric;
+        this.unit = userUnit !== undefined ? userUnit : DataUnitType.metric;
         this.reportService.setReportCondition(this.reportConditionOpt);
         this.getReportSelectedCondition();
       });
@@ -160,11 +162,11 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
     const filterTrigger = trigger === 'filter';
     if (filterTrigger) this.listReq.page = 0;
     this.uiFlag.progress = 30;
-    this.activityService.fetchSportList(this.listReq).subscribe((res) => {
+    this.api21xxService.fetchSportList(this.listReq).subscribe((res) => {
       if (filterTrigger) this.activityList = [];
       const { apiCode, resultCode, resultMessage, totalCounts, info } = res;
       if (resultCode !== 200) {
-        this.utils.handleError(resultCode, apiCode, resultMessage);
+        this.apiCommonService.handleError(resultCode, apiCode, resultMessage);
       } else {
         this.uiFlag.progress = 80;
         this.activityList = this.activityList.concat(this.handleScenery(info) as never);
@@ -186,7 +188,7 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
         fileInfo: { photo },
       } = _list;
       if (!photo || photo === 'None') {
-        const img = this.activityService.handleSceneryImg(+type, +subtype);
+        const img = handleSceneryImg(+type, +subtype);
         Object.assign(_list.fileInfo, { scenery: img });
       }
 

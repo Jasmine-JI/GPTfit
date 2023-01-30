@@ -26,9 +26,14 @@
   ></app-upload-file>
   <a href (click)="downloadOriginalFile($event)">{{ originalFileName }}</a>
   <button
-    mat-raised-button
     mat-icon-button
-    style="background-color: #26abe3; color: #fff"
+    style="
+      background-color: #26abe3;
+      color: #fff;
+      transform: scale(0.85);
+      margin: 5px 0 0 5px;
+      padding: 9px;
+    "
     (click)="uploadFile()"
   >
     <mat-icon>search</mat-icon>

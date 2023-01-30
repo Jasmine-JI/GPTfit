@@ -14,21 +14,23 @@ import { TranslateService } from '@ngx-translate/core';
 import { ShareGroupInfoDialogComponent } from '../../../../shared/components/share-group-info-dialog/share-group-info-dialog.component';
 import { GroupDetailInfo, UserSimpleInfo, EditMode } from '../../models/group-detail';
 import dayjs from 'dayjs';
-import { UtilsService } from '../../../../shared/services/utils.service';
-import { GroupService } from '../../../../shared/services/group.service';
-import { HashIdService } from '../../../../shared/services/hash-id.service';
-import { UserService } from '../../../../core/services/user.service';
+import {
+  HashIdService,
+  UserService,
+  GlobalEventsService,
+  AuthService,
+  Api11xxService,
+  HintDialogService,
+} from '../../../../core/services';
 import { v5 as uuidv5 } from 'uuid';
 import { ImageUploadService } from '../../services/image-upload.service';
 import { AlbumType } from '../../../../shared/models/image';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { PrivacySettingDialogComponent } from '../../../../shared/components/privacy-setting-dialog/privacy-setting-dialog.component';
-import { Unit } from '../../../../shared/enum/value-conversion';
-import { GlobalEventsService } from '../../../../core/services/global-events.service';
+import { DataUnitType } from '../../../../core/enums/common';
 import { DateUnit } from '../../../../shared/enum/report';
 import { GroupLevel } from '../../models/group-detail';
-import { deepCopy } from '../../../../shared/utils/index';
-import { AuthService } from '../../../../core/services/auth.service';
+import { deepCopy, base64ToFile, displayGroupLevel } from '../../../../core/utils';
 import { ProfessionalService } from '../../../professional/services/professional.service';
 import { AccessRight } from '../../../../shared/enum/accessright';
 import { appPath } from '../../../../app-path.const';
@@ -89,7 +91,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   user = <UserSimpleInfo>{
     nickname: '',
     userId: null,
-    unit: Unit.metric,
+    unit: DataUnitType.metric,
     token: this.authService.token,
     accessRight: this.userService.getUser().systemAccessright,
     joinStatus: 2,
@@ -172,11 +174,11 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   constructor(
     private translate: TranslateService,
-    private groupService: GroupService,
+    private api11xxService: Api11xxService,
     private hashIdService: HashIdService,
     private route: ActivatedRoute,
     private router: Router,
-    private utils: UtilsService,
+    private hintDialogService: HintDialogService,
     private userService: UserService,
     private dialog: MatDialog,
     private imageUploadService: ImageUploadService,
@@ -277,7 +279,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091123
    */
   checkEditMode() {
-    this.groupService
+    this.professionalService
       .getRxEditMode()
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((res) => {
@@ -313,7 +315,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
             fileNameFull: `${fileName}.jpg`,
           });
 
-          formData.append('file', this.utils.base64ToFile(this.editImage.icon.base64, fileName));
+          formData.append('file', base64ToFile(this.editImage.icon.base64, fileName));
         }
 
         // 群組佈景
@@ -327,13 +329,13 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
             fileNameFull: `${fileName}.jpg`,
           });
 
-          formData.append('file', this.utils.base64ToFile(this.editImage.scenery.base64, fileName));
+          formData.append('file', base64ToFile(this.editImage.scenery.base64, fileName));
         }
 
         formData.set('img', JSON.stringify(imgArr));
         this.sendImgUploadReq(formData, this.currentGroupInfo.groupDetail.groupId);
       } else if (this.uiFlag.editMode === 'create') {
-        this.groupIdSubscription = this.groupService
+        this.groupIdSubscription = this.professionalService
           .getNewGroupId()
           .pipe(takeUntil(this.ngUnsubscribe))
           .subscribe((res) => {
@@ -346,10 +348,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
                 fileNameFull: `${fileName}.jpg`,
               });
 
-              formData.append(
-                'file',
-                this.utils.base64ToFile(this.editImage.icon.base64, fileName)
-              );
+              formData.append('file', base64ToFile(this.editImage.icon.base64, fileName));
             }
 
             // 群組佈景
@@ -360,10 +359,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
                 fileNameFull: `${fileName}.jpg`,
               });
 
-              formData.append(
-                'file',
-                this.utils.base64ToFile(this.editImage.scenery.base64, fileName)
-              );
+              formData.append('file', base64ToFile(this.editImage.scenery.base64, fileName));
             }
 
             formData.set('img', JSON.stringify(imgArr));
@@ -373,7 +369,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       }
     } else if (this.uiFlag.editMode === 'create' && editMode === 'complete') {
       this.closeCreateMode();
-      this.groupIdSubscription = this.groupService
+      this.groupIdSubscription = this.professionalService
         .getNewGroupId()
         .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe((res) => {
@@ -381,7 +377,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         });
     } else if (editMode === 'complete') {
       this.getGroupNeedInfo();
-      this.groupService.setEditMode('close');
+      this.professionalService.setEditMode('close');
     } else {
       this.uiFlag.editMode = editMode;
     }
@@ -396,7 +392,9 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   sendImgUploadReq(formData: FormData, groupId: string) {
     this.imageUploadService.addImg(formData).subscribe((res) => {
       if (res.processResult.resultCode !== 200) {
-        this.utils.openAlert('Image upload error.<br>Please change image and try again.');
+        this.hintDialogService.openAlert(
+          'Image upload error.<br>Please change image and try again.'
+        );
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.initImgSetting();
@@ -405,7 +403,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
           this.handleNavigation(groupId);
         } else {
           this.getGroupNeedInfo();
-          this.groupService.setEditMode('close');
+          this.professionalService.setEditMode('close');
         }
       }
     });
@@ -553,7 +551,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     // 移除query string，避免create mode被重複開啟
     const newUrl = `${location.origin}${location.pathname}`;
     window.history.replaceState({ path: newUrl }, '', newUrl);
-    this.groupService.setEditMode('close');
+    this.professionalService.setEditMode('close');
   }
 
   /**
@@ -621,7 +619,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   detectGroupChange() {
     if (this.currentGroupInfo.hashGroupId !== this.route.snapshot.paramMap.get('groupId')) {
-      this.groupService.setEditMode('close');
+      this.professionalService.setEditMode('close');
       this.getCurrentGroupInfo();
       this.getGroupNeedInfo();
     } else {
@@ -637,7 +635,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     const groupId = this.route.snapshot.paramMap.get('groupId');
     this.currentGroupInfo.hashGroupId = groupId;
     this.currentGroupInfo.groupId = this.hashIdService.handleGroupIdDecode(groupId);
-    this.currentGroupInfo.groupLevel = this.utils.displayGroupLevel(this.currentGroupInfo.groupId);
+    this.currentGroupInfo.groupLevel = displayGroupLevel(this.currentGroupInfo.groupId);
     this.professionalService.checkGroupAccessright(this.currentGroupInfo.groupId);
   }
 
@@ -703,8 +701,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.uiFlag.isLoading = true;
     if (this.uiFlag.portalMode) {
       forkJoin([
-        this.groupService.fetchGroupListDetail(detailBody),
-        this.groupService.fetchCommerceInfo(commerceBody),
+        this.api11xxService.fetchGroupListDetail(detailBody),
+        this.api11xxService.fetchCommerceInfo(commerceBody),
       ]).subscribe((resArr) => {
         this.uiFlag.isLoading = false;
         this.uiFlag.hideScenery = false;
@@ -717,11 +715,11 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       });
     } else {
       forkJoin([
-        this.groupService.fetchGroupListDetail(detailBody),
-        this.groupService.fetchCommerceInfo(commerceBody),
-        this.groupService.fetchGroupMemberList(childGroupBody),
-        this.groupService.fetchGroupMemberList(adminListBody),
-        this.groupService.fetchGroupMemberList(memberListBody),
+        this.api11xxService.fetchGroupListDetail(detailBody),
+        this.api11xxService.fetchCommerceInfo(commerceBody),
+        this.api11xxService.fetchGroupMemberList(childGroupBody),
+        this.api11xxService.fetchGroupMemberList(adminListBody),
+        this.api11xxService.fetchGroupMemberList(memberListBody),
       ])
         .pipe(
           map((resArr) => {
@@ -759,12 +757,12 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       infoType: 3,
     };
 
-    this.groupService.fetchGroupMemberList(body).subscribe((res) => {
+    this.api11xxService.fetchGroupMemberList(body).subscribe((res) => {
       if (res.resultCode !== 200) {
-        this.utils.openAlert(errMsg);
+        this.hintDialogService.openAlert(errMsg);
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
-        this.groupService.setNormalMemberList(res.info.groupMemberInfo);
+        this.professionalService.setNormalMemberList(res.info.groupMemberInfo);
       }
     });
   }
@@ -777,7 +775,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   handleDetail(res: any) {
     if (res.resultCode !== 200) {
       if (this.currentGroupInfo.groupId !== '0-0-0-0-0-0') {
-        this.utils.openAlert(errMsg);
+        this.hintDialogService.openAlert(errMsg);
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.saveDefaultGroupDetail();
@@ -789,8 +787,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         const { info } = res;
         this.user.joinStatus = info.selfJoinStatus;
         this.currentGroupInfo.groupDetail = info;
-        this.groupService.getCurrentGroupInfo().groupDetail = info;
-        this.groupService.saveGroupDetail(this.handleSportTarget(info));
+        this.professionalService.getCurrentGroupInfo().groupDetail = info;
+        this.professionalService.saveGroupDetail(this.handleSportTarget(info));
         this.checkGroupResLength();
       }
     }
@@ -839,7 +837,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       },
     };
 
-    this.groupService.saveGroupDetail(rootGroupDetail);
+    this.professionalService.saveGroupDetail(rootGroupDetail);
     this.currentGroupInfo.groupDetail = rootGroupDetail;
   }
 
@@ -850,7 +848,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   handleCommerce(res: any) {
     if (res.resultCode !== 200) {
-      this.utils.openAlert(errMsg);
+      this.hintDialogService.openAlert(errMsg);
       console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
     } else {
       const { info } = res;
@@ -861,8 +859,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       }
 
       this.currentGroupInfo.commerceInfo = info;
-      this.groupService.getCurrentGroupInfo().commerceInfo = info;
-      this.groupService.saveCommerceInfo(info);
+      this.professionalService.getCurrentGroupInfo().commerceInfo = info;
+      this.professionalService.saveCommerceInfo(info);
     }
   }
 
@@ -884,7 +882,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       console.error(`${adminRes.resultCode}: Api ${adminRes.apiCode} ${adminRes.resultMessage}`);
       console.error(`${memberRes.resultCode}: Api ${memberRes.apiCode} ${memberRes.resultMessage}`);
     } else {
-      const groupLevel = this.utils.displayGroupLevel(this.currentGroupInfo.groupId);
+      const groupLevel = displayGroupLevel(this.currentGroupInfo.groupId);
       if (groupLevel <= 30) {
         Object.assign(this.currentGroupInfo.groupDetail, {
           branchNum: childGroupRes.info.subGroupInfo.branches.length,
@@ -898,13 +896,14 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       }
 
       Object.assign(childGroupRes.info.subGroupInfo, { groupId: this.currentGroupInfo.groupId });
-      this.groupService.setAllLevelGroupData(childGroupRes.info.subGroupInfo);
-      this.groupService.setAdminList(adminRes.info.groupMemberInfo);
-      this.groupService.setNormalMemberList(memberRes.info.groupMemberInfo);
+      this.professionalService.setAllLevelGroupData(childGroupRes.info.subGroupInfo);
+      this.professionalService.setAdminList(adminRes.info.groupMemberInfo);
+      this.professionalService.setNormalMemberList(memberRes.info.groupMemberInfo);
 
-      this.groupService.getCurrentGroupInfo().immediateGroupList = childGroupRes.info.subGroupInfo;
-      this.groupService.getCurrentGroupInfo().adminList = adminRes.info.groupMemberInfo;
-      this.groupService.getCurrentGroupInfo().memberList = memberRes.info.groupMemberInfo;
+      this.professionalService.getCurrentGroupInfo().immediateGroupList =
+        childGroupRes.info.subGroupInfo;
+      this.professionalService.getCurrentGroupInfo().adminList = adminRes.info.groupMemberInfo;
+      this.professionalService.getCurrentGroupInfo().memberList = memberRes.info.groupMemberInfo;
 
       adminRes.info.groupMemberInfo = adminRes.info.groupMemberInfo.filter(
         (_admin) => _admin.groupId === this.currentGroupInfo.groupId
@@ -915,7 +914,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       Object.assign(this.currentGroupInfo.groupDetail, {
         memberNum: memberRes.info.groupMemberInfo.length,
       });
-      this.groupService.saveGroupDetail(this.currentGroupInfo.groupDetail);
+      this.professionalService.saveGroupDetail(this.currentGroupInfo.groupDetail);
     }
   }
 
@@ -926,7 +925,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   handleSportTarget(info: any) {
     const { target } = info;
-    const groupLevel = this.utils.displayGroupLevel(info.groupId);
+    const groupLevel = displayGroupLevel(info.groupId);
     let sportTarget: any;
     if (target && target.name) {
       const targetReferenceLevel = +target.name;
@@ -961,7 +960,10 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091105
    */
   getRxGroupNeedInfo() {
-    forkJoin([this.groupService.getRxGroupDetail(), this.groupService.getRxCommerceInfo()])
+    forkJoin([
+      this.professionalService.getRxGroupDetail(),
+      this.professionalService.getRxCommerceInfo(),
+    ])
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((resArr) => {
         this.user.joinStatus = (resArr[0] as any).info.selfJoinStatus;
@@ -1063,7 +1065,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
             isGroupAdmin: this.professionalService.isAdmin,
           };
 
-          this.groupService.saveUserSimpleInfo(this.user);
+          this.professionalService.saveUserSimpleInfo(this.user);
         });
     }
   }
@@ -1249,9 +1251,9 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     } = this.currentGroupInfo;
     const body = { token, groupId, brandType, actionType };
     this.uiFlag.isJoinLoading = true;
-    this.groupService.actionGroup(body).subscribe((res) => {
+    this.api11xxService.fetchActionGroup(body).subscribe((res) => {
       if (res.resultCode !== 200) {
-        this.utils.openAlert(errMsg);
+        this.hintDialogService.openAlert(errMsg);
         console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         if (groupStatus === 1 || joinStatus === 2) {

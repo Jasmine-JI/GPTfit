@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { DateUnit } from '../enum/report';
-import { mathRounding } from '../utils/index';
+import { mathRounding } from '../../core/utils/index';
 import { DAY } from '../models/utils-constant';
 import { DateRangeType } from '../models/report-condition';
 

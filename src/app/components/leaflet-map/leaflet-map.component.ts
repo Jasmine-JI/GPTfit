@@ -3,7 +3,6 @@ import {
   OnInit,
   OnChanges,
   OnDestroy,
-  NgModule,
   Input,
   Output,
   EventEmitter,
@@ -18,7 +17,7 @@ import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TranslateModule } from '@ngx-translate/core';
 import { MapReservedSpace, RacerMarkInLeafletMap } from '../../core/classes';
-import { deepCopy } from '../../shared/utils';
+import { deepCopy } from '../../core/utils';
 import {
   TAIWAN_CENTER_LATLNG,
   MAP_START_ICON_PATH,
@@ -35,6 +34,8 @@ const leaflet = globalThis.L;
   selector: 'app-leaflet-map',
   templateUrl: './leaflet-map.component.html',
   styleUrls: ['./leaflet-map.component.scss'],
+  standalone: true,
+  imports: [CommonModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LeafletMapComponent implements OnInit, OnChanges, OnDestroy {
@@ -398,10 +399,3 @@ export class LeafletMapComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy(): void {}
 }
-
-@NgModule({
-  declarations: [LeafletMapComponent],
-  exports: [LeafletMapComponent],
-  imports: [CommonModule, TranslateModule],
-})
-export class LeafletMapModule {}

@@ -2,7 +2,11 @@
 <div>
   <nav #navSection class="flexCol" style="position: relative">
     <section class="info-scenerySection">
-      <img class="info-imgAbs" [src]="deviceInfo.modelTypeName | productType: 'imgPath'" />
+      <img
+        class="info-imgAbs"
+        [src]="deviceInfo.modelTypeName | productType: 'imgPath'"
+        *ngIf="deviceInfo.modelTypeName"
+      />
     </section>
     <section class="info-header" [class.info-portalMode]="uiFlag.displayPage === 'fitPair'">
       <div
@@ -398,9 +402,14 @@
                 ></mat-datepicker>
               </mat-form-field>
               <button
-                mat-raised-button
                 mat-icon-button
-                style="background-color: #26abe3; color: #fff"
+                style="
+                  background-color: #26abe3;
+                  color: #fff;
+                  transform: scale(0.85);
+                  margin: 5px 0 0 5px;
+                  padding: 9px;
+                "
                 (click)="getProductLog()"
               >
                 <mat-icon>search</mat-icon>

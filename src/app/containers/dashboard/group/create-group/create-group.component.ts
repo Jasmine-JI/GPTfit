@@ -1,10 +1,8 @@
 import { Component, OnInit, ViewEncapsulation, HostListener, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { GroupService } from '../../../../shared/services/group.service';
-import { UtilsService } from '../../../../shared/services/utils.service';
 import { Router } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { UserService } from '../../../../core/services/user.service';
+import { UserService, HashIdService, AuthService, Api11xxService } from '../../../../core/services';
 import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
@@ -13,11 +11,9 @@ import { MessageBoxComponent } from '../../../../shared/components/message-box/m
 import { planDatas } from '../desc';
 import dayjs from 'dayjs';
 import { TranslateService } from '@ngx-translate/core';
-import { HashIdService } from '../../../../shared/services/hash-id.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { getUrlQueryStrings } from '../../../../shared/utils/index';
-import { AuthService } from '../../../../core/services/auth.service';
+import { getUrlQueryStrings, imageToDataUri, displayGroupLevel } from '../../../../core/utils';
 
 /**
  * 新建的群組類別
@@ -54,7 +50,6 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
   token: string;
   groupInfo: any;
   groupImg: string;
-  group_id: string;
   groupLevel: number;
   groupInfos: any;
   joinStatus = 0;
@@ -131,8 +126,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private groupService: GroupService,
-    private utils: UtilsService,
+    private api11xxService: Api11xxService,
     private router: Router,
     private fb: UntypedFormBuilder,
     private userService: UserService,
@@ -186,7 +180,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     };
 
     if ([CreateGroupType.branch, CreateGroupType.coach].includes(this.createType)) {
-      this.groupService.fetchGroupListDetail(body).subscribe((res) => {
+      this.api11xxService.fetchGroupListDetail(body).subscribe((res) => {
         this.groupInfo = res.info;
         const { groupIcon, groupId, groupName, selfJoinStatus, brandType } = this.groupInfo;
 
@@ -200,8 +194,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         this.brandType = brandType;
         this.groupImg = groupIcon;
         this.finalImageLink = this.groupImg;
-        this.group_id = this.utils.displayGroupId(groupId);
-        this.groupLevel = this.utils.displayGroupLevel(groupId);
+        this.groupLevel = displayGroupLevel(groupId);
         this.getGroupMemberList(1);
       });
     }
@@ -335,15 +328,17 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
       actionType: _type,
       brandType: this.brandType,
     };
-    this.groupService.actionGroup(body).subscribe(({ resultCode, info: { selfJoinStatus } }) => {
-      if (resultCode === 200) {
-        if (_type === 2) {
-          this.joinStatus = 0;
-        } else {
-          this.joinStatus = selfJoinStatus;
+    this.api11xxService
+      .fetchActionGroup(body)
+      .subscribe(({ resultCode, info: { selfJoinStatus } }) => {
+        if (resultCode === 200) {
+          if (_type === 2) {
+            this.joinStatus = 0;
+          } else {
+            this.joinStatus = selfJoinStatus;
+          }
         }
-      }
-    });
+      });
   }
 
   getGroupMemberList(_type) {
@@ -354,7 +349,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
       infoType: _type,
       avatarType: 3,
     };
-    this.groupService.fetchGroupMemberList(body).subscribe((res) => {
+    this.api11xxService.fetchGroupMemberList(body).subscribe((res) => {
       if (res.resultCode === 200) {
         const {
           info: { groupMemberInfo, subGroupInfo },
@@ -427,7 +422,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
   manage({ valid, value, submitted }) {
     if (!submitted) {
       // 如果脫離form的判斷
-      this.utils.markFormGroupTouched(this.form);
+      this.markFormGroupTouched(this.form);
     }
     // return
     if (valid) {
@@ -478,9 +473,9 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
           groupManager,
           levelDesc: groupDesc,
           groupStatus,
-          levelIcon: this.utils.imageToDataUri(image, 256, 256) || '',
-          levelIconMid: this.utils.imageToDataUri(image, 128, 128) || '',
-          levelIconSmall: this.utils.imageToDataUri(image, 64, 64) || '',
+          levelIcon: imageToDataUri(image, 256, 256) || '',
+          levelIconMid: imageToDataUri(image, 128, 128) || '',
+          levelIconSmall: imageToDataUri(image, 64, 64) || '',
           levelName: '',
           levelType: null,
           coachType: 2,
@@ -511,7 +506,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
           body.levelName = branchName;
           body.levelType = 4;
           this.isEditing = true;
-          this.groupService.createGroup(body).subscribe((res) => {
+          this.api11xxService.fetchCreateGroup(body).subscribe((res) => {
             this.isEditing = false;
             if (res.resultCode === 200) {
               this.router.navigateByUrl(
@@ -566,7 +561,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
             body.groupId = branchId;
           }
           this.isEditing = true;
-          this.groupService.createGroup(body).subscribe((res) => {
+          this.api11xxService.fetchCreateGroup(body).subscribe((res) => {
             this.isEditing = false;
             if (res.resultCode === 200) {
               this.router.navigateByUrl(
@@ -598,7 +593,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
           body.levelType = 6;
           body.groupId = '0-0-0-0-0-0';
           this.isEditing = true;
-          this.groupService.createGroup(body).subscribe((res) => {
+          this.api11xxService.fetchCreateGroup(body).subscribe((res) => {
             this.isEditing = false;
             if (res.resultCode === 200) {
               this.router.navigateByUrl('/dashboard/my-group-list');
@@ -638,7 +633,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
           body.groupMemberSetting = { maxGroupMembers };
           body.commercePlanExpired = commercePlanExpired;
           this.isEditing = true;
-          this.groupService.createGroup(body).subscribe((res) => {
+          this.api11xxService.fetchCreateGroup(body).subscribe((res) => {
             this.isEditing = false;
             if (res.resultCode === 200) {
               this.router.navigateByUrl('/dashboard/system/all-group-list');
@@ -864,6 +859,16 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         },
       });
     }
+  }
+
+  markFormGroupTouched(formGroup: UntypedFormGroup) {
+    (<any>Object).values(formGroup.controls).forEach((control) => {
+      control.markAsTouched();
+
+      if (control.controls) {
+        this.markFormGroupTouched(control);
+      }
+    });
   }
 
   /**

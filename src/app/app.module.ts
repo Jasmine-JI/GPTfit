@@ -4,25 +4,19 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { PortalModule } from './containers/portal/portal.module';
 import { SharedComponentsModule } from './shared/components/shared-components.module';
-import { WINDOW_PROVIDERS } from './shared/services/window.service';
+import { WINDOW_PROVIDERS, StartupService } from './core/services';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { StartupService } from './core/services/startup.service';
-import { AuthGuard } from './shared/guards/auth/auth.guard';
-import { SigninGuard } from './shared/guards/signin/signin.guard';
+import { AuthGuard, SigninGuard } from './core/guard';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { TokenInterceptor } from './shared/interceptors/token.interceptor';
-import { HttpStatusInterceptor } from './shared/interceptors/http-status.interceptor';
+import { HttpStatusInterceptor, TokenInterceptor } from './core/interceptors';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { MatPaginatorIntl } from '@angular/material/paginator';
-import { CustomMatPaginatorIntl } from './shared/custom-mat-paginator-intl';
+import { CustomMatPaginatorIntl } from './core/classes/custom-mat-paginator-intl';
 // import { ServiceWorkerModule } from '@angular/service-worker';
 import { CommonModule } from '@angular/common';
-import { A3FormatPipe } from './shared/pipes/a3-format.pipe';
-import { GroupIdSlicePipe } from './shared/pipes/group-id-slice.pipe';
-import { LongTextPipe } from './shared/pipes/long-text.pipe';
 
 export function startupServiceFactory(startupService: StartupService) {
   return () => startupService.load();
@@ -55,9 +49,6 @@ export function createTranslateLoader(http: HttpClient) {
     StartupService,
     AuthGuard,
     SigninGuard,
-    A3FormatPipe,
-    GroupIdSlicePipe,
-    LongTextPipe,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

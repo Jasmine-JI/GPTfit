@@ -82,14 +82,18 @@ export class ProfessionalAnalysisOption extends AnalysisOption {
 
     switch (sportType) {
       case SportType.all:
-        list = list.concat([AnalysisSportsColumn.benefitTime, AnalysisSportsColumn.pai]);
+        list = list.concat([
+          AnalysisSportsColumn.benefitTime,
+          AnalysisSportsColumn.pai,
+          AnalysisSportsColumn.totalFeedbackEnergy,
+        ]);
         break;
       case SportType.run:
-      case SportType.swim:
         list = list.concat([
           AnalysisSportsColumn.distance,
           AnalysisSportsColumn.speedOrPace,
           AnalysisSportsColumn.cadence,
+          AnalysisSportsColumn.totalFeedbackEnergy,
         ]);
         break;
       case SportType.cycle:
@@ -99,10 +103,18 @@ export class ProfessionalAnalysisOption extends AnalysisOption {
           AnalysisSportsColumn.speedOrPace,
           AnalysisSportsColumn.cadence,
           AnalysisSportsColumn.power,
+          // AnalysisSportsColumn.totalFeedbackEnergy
         ]);
         break;
       case SportType.weightTrain:
         list = list.concat([AnalysisSportsColumn.totalActivitySecond]);
+        break;
+      case SportType.swim:
+        list = list.concat([
+          AnalysisSportsColumn.distance,
+          AnalysisSportsColumn.speedOrPace,
+          AnalysisSportsColumn.cadence,
+        ]);
         break;
       case SportType.ball:
         list = list.concat([AnalysisSportsColumn.distance]);
@@ -136,15 +148,16 @@ export class ProfessionalAnalysisOption extends AnalysisOption {
         list = list.concat([
           AnalysisSportsColumn.benefitTime,
           AnalysisSportsColumn.pai,
+          AnalysisSportsColumn.totalFeedbackEnergy,
           AnalysisSportsColumn.preferSports,
         ]);
         break;
       case SportType.run:
-      case SportType.swim:
         list = list.concat([
           AnalysisSportsColumn.distance,
           AnalysisSportsColumn.speedOrPace,
           AnalysisSportsColumn.cadence,
+          AnalysisSportsColumn.totalFeedbackEnergy,
         ]);
         break;
       case SportType.cycle:
@@ -154,6 +167,7 @@ export class ProfessionalAnalysisOption extends AnalysisOption {
           AnalysisSportsColumn.speedOrPace,
           AnalysisSportsColumn.cadence,
           AnalysisSportsColumn.power,
+          // AnalysisSportsColumn.totalFeedbackEnergy,
         ]);
         break;
       case SportType.weightTrain:
@@ -166,6 +180,13 @@ export class ProfessionalAnalysisOption extends AnalysisOption {
           AnalysisSportsColumn.backMuscle,
           AnalysisSportsColumn.abdominalMuscle,
           AnalysisSportsColumn.legMuscle,
+        ]);
+        break;
+      case SportType.swim:
+        list = list.concat([
+          AnalysisSportsColumn.distance,
+          AnalysisSportsColumn.speedOrPace,
+          AnalysisSportsColumn.cadence,
         ]);
         break;
       case SportType.ball:

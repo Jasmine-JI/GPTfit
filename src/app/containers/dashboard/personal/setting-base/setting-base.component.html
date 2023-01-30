@@ -42,13 +42,20 @@
             (focusout)="handleNicknameInput($event)"
           />
         </div>
-        <span class="contentDescription" [style.color]="uiFlag.nicknameAlert ? 'red' : ''">
-          <ng-container *ngIf="uiFlag.nicknameAlert !== 'repeat'">
-            {{ 'universal_userAccount_nameCharactersToLong' | translate }}
+        <span
+          class="contentDescription"
+          [style.color]="uiFlag.nicknameAlert ? 'red' : ''"
+          [ngSwitch]="uiFlag.nicknameAlert"
+        >
+          <ng-container *ngSwitchCase="'format'">
+            {{ 'universal_status_wrongFormat' | translate }}
           </ng-container>
-          <ng-container *ngIf="uiFlag.nicknameAlert === 'repeat'">
+          <ng-container *ngSwitchCase="'repeat'">
             {{ 'universal_userAccount_nickname' | translate }}
             {{ 'universal_deviceSetting_repeat' | translate }}
+          </ng-container>
+          <ng-container *ngSwitchDefault>
+            {{ 'universal_userAccount_nameCharactersToLong' | translate }}
           </ng-container>
         </span>
       </ng-container>
