@@ -156,7 +156,6 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * 根據數據類別建立highchart圖表，並同時取得最高（佳）及平均數據
-   * @author kidin-1100208
    */
   initChart() {
     // 待多國語系套件載入後再產生圖表
@@ -705,20 +704,18 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
             this.yAxisData.forEach((_yAxis, _index) => {
               const _xAxis = this.xAxisData[_index];
               const _yAxisAfterCheck = _xAxis === 0 ? 0 : _yAxis;
-              const _yAxisConvert =
-                this.unit === 0 ? _yAxisAfterCheck : +(_yAxisAfterCheck / ft).toFixed(1);
               const chartData = {
                 x:
                   this.page === 'detail' && this.xAxisType === 'pointSecond'
                     ? _xAxis * 1000
                     : _xAxis,
-                y: _yAxisConvert,
+                y: _yAxisAfterCheck,
               };
 
               processedData.push(chartData);
-              totalCount += _yAxisConvert;
-              if (_yAxisConvert > best) {
-                best = _yAxisConvert;
+              totalCount += _yAxisAfterCheck;
+              if (_yAxisAfterCheck > best) {
+                best = _yAxisAfterCheck;
               }
             });
 
