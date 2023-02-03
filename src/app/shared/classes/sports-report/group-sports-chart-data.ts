@@ -1,6 +1,10 @@
 import { TargetConditionMap } from '../../../core/models/api/api-common/sport-target.model';
-import { DateUnit } from '../../enum/report';
-import { mathRounding, countPercentage, countBenefitTime } from '../../../core/utils';
+import {
+  mathRounding,
+  countPercentage,
+  countBenefitTime,
+  getSameRangeDate,
+} from '../../../core/utils';
 import { ReportCondition } from '../../models/report-condition';
 import { PAI_COFFICIENT, DAY_PAI_TARGET } from '../../models/sports-report';
 import { SportType } from '../../enum/sports';
@@ -164,7 +168,7 @@ export class GroupSportsChartData {
         const temporaryCount = new TemporaryCount();
         _data.forEach((_activity, _index) => {
           const { startTime: _startTime, endTime: _endTime, activities: _activities } = _activity;
-          const { start, end } = this.getSameRangeDate(_startTime, _endTime, dateUnit);
+          const { start, end } = getSameRangeDate(_startTime, _endTime, dateUnit);
           const { startTime } = temporaryCount.dateRange;
           const isFirstData = _index === 0;
           const isLastData = _index + 1 === _data.length;
@@ -533,31 +537,6 @@ export class GroupSportsChartData {
   }
 
   /**
-   * 根據報告日期單位與報告日期，取得所屬範圍
-   * @param startTime {string}-開始時間
-   * @param endTime {string}-結束時間
-   * @param dateUnit {ReportDateUnit}-報告所選擇的時間單位
-   */
-  getSameRangeDate(startTime: string, endTime: string, dateUnit: ReportDateUnit) {
-    const startTimestamp = dayjs(startTime).startOf('day').valueOf();
-    const endTimestamp = dayjs(endTime).endOf('day').valueOf();
-    switch (dateUnit.unit) {
-      case DateUnit.season: {
-        const seasonStart = dayjs(startTimestamp).startOf('quarter').valueOf();
-        const seasonEnd = dayjs(endTimestamp).endOf('quarter').valueOf();
-        return { start: seasonStart, end: seasonEnd };
-      }
-      case DateUnit.year: {
-        const rangeStart = dayjs(startTimestamp).startOf('year').valueOf();
-        const rangeEnd = dayjs(endTimestamp).endOf('year').valueOf();
-        return { start: rangeStart, end: rangeEnd };
-      }
-      default:
-        return { start: startTimestamp, end: endTimestamp };
-    }
-  }
-
-  /**
    * 合併數據
    * @param data {Array<any>}-運動數據
    * @param dateUnit {ReportDateUnit}-報告所選擇的時間單位
@@ -567,7 +546,7 @@ export class GroupSportsChartData {
     const temporaryCount = new TemporaryCount();
     data.forEach((_data, _index) => {
       const { startTime: _startTime, endTime: _endTime, activities: _activities } = _data;
-      const { start, end } = this.getSameRangeDate(_startTime, _endTime, dateUnit);
+      const { start, end } = getSameRangeDate(_startTime, _endTime, dateUnit);
       const { startTime } = temporaryCount.dateRange;
       const isFirstData = _index === 0;
       const isLastData = _index + 1 === data.length;

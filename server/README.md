@@ -1,4 +1,4 @@
-# GPT Center nodejs api server
+# GPTfit nodejs api server
 
 This project was generated with [express](http://expressjs.com/) version 4.16.2.
 
@@ -25,7 +25,7 @@ server/ // nodejs api server folder(正式port: 3000，開發port: 3001)
 
 ## Postman collection
 
-This ia an GPT center nodejs api collection
+This ia an GPTfit nodejs api collection
 
 [GPT-center-nodejs-api-collection json 連結]()
 

@@ -52,6 +52,8 @@ export class PersonalSportsChartData {
   private _zGForceTrend: ComplexTrend;
   private _weightTrainingTrend: WeightTrainingTrend;
   private _sportsTableData: Array<any> = [];
+  private _baseTotalAchieveRate = 0;
+  private _compareTotalAchieveRate = 0;
 
   /**
    * @param condition {ReportCondition}-報告條件
@@ -383,52 +385,72 @@ export class PersonalSportsChartData {
         targetCondition.forEach((_value, _filedName) => {
           const _filedValue = +_value.filedValue;
           switch (_filedName) {
-            case 'totalActivities':
+            case 'totalActivities': {
               if (totalActivities < _filedValue) achieve = 0;
-              achieveRate += this.getConditionAchieveRate(
+              const conditionAchieveRate = this.getConditionAchieveRate(
                 totalActivities,
                 _filedValue,
                 conditionPercentage
               );
+              achieveRate += conditionAchieveRate;
               break;
+            }
             case 'totalTime': {
               const targetSecond = _filedValue;
               if (!totalSecond || +totalSecond < targetSecond) achieve = 0;
-              achieveRate += this.getConditionAchieveRate(
+              const conditionAchieveRate = this.getConditionAchieveRate(
                 +totalSecond,
                 _filedValue,
                 conditionPercentage
               );
+
+              achieveRate += conditionAchieveRate;
               break;
             }
-            case 'benefitTime':
+            case 'benefitTime': {
               if (benefitTime < _filedValue) achieve = 0;
-              achieveRate += this.getConditionAchieveRate(
+              const conditionAchieveRate = this.getConditionAchieveRate(
                 benefitTime,
                 _filedValue,
                 conditionPercentage
               );
+
+              achieveRate += conditionAchieveRate;
               break;
-            case 'pai':
+            }
+            case 'pai': {
               if (pai < _filedValue) achieve = 0;
-              achieveRate += this.getConditionAchieveRate(pai, _filedValue, conditionPercentage);
+              const conditionAchieveRate = this.getConditionAchieveRate(
+                pai,
+                _filedValue,
+                conditionPercentage
+              );
+
+              achieveRate += conditionAchieveRate;
               break;
-            case 'calories':
+            }
+            case 'calories': {
               if (calories < _filedValue) achieve = 0;
-              achieveRate += this.getConditionAchieveRate(
+              const conditionAchieveRate = this.getConditionAchieveRate(
                 calories,
                 _filedValue,
                 conditionPercentage
               );
+
+              achieveRate += conditionAchieveRate;
               break;
-            case 'avgHeartRate':
+            }
+            case 'avgHeartRate': {
               if (avgHeartRate < _filedValue) achieve = 0;
-              achieveRate += this.getConditionAchieveRate(
+              const conditionAchieveRate = this.getConditionAchieveRate(
                 avgHeartRate,
                 _filedValue,
                 conditionPercentage
               );
+
+              achieveRate += conditionAchieveRate;
               break;
+            }
           }
         });
 
@@ -678,18 +700,21 @@ export class PersonalSportsChartData {
       this._targertAchieveTrend.addBaseData(_achieve, dateRange);
       this._complexHrTrend.addBaseData(_avgMaxHeartRateBpm, _avgHeartRateBpm, dateRange);
       this._bodyWeightTrend.addBaseData(_bodyWeight, _fatRate, dateRange);
-      tableData.dateRange = dateRange;
-      tableData.hrZone = hrZone;
-      tableData.totalSecond = _totalSecond ? +_totalSecond : 0;
-      tableData.benefitTime = _benefitTime;
-      tableData.calories = _calories;
-      tableData.totalActivities = _totalActivities;
-      tableData.pai = _pai;
-      tableData.achieveRate = _achieveRate;
-      tableData.avgMaxHeartRateBpm = _avgMaxHeartRateBpm;
-      tableData.avgHeartRateBpm = _avgHeartRateBpm;
-      tableData.bodyWeight = _bodyWeight;
-      tableData.fatRate = _fatRate;
+      this._baseTotalAchieveRate += _achieveRate ?? 0;
+      Object.assign(tableData, {
+        dateRange: dateRange,
+        hrZone: hrZone,
+        totalSecond: _totalSecond ? +_totalSecond : 0,
+        benefitTime: _benefitTime,
+        calories: _calories,
+        totalActivities: _totalActivities,
+        pai: _pai,
+        achieveRate: _achieveRate,
+        avgMaxHeartRateBpm: _avgMaxHeartRateBpm,
+        avgHeartRateBpm: _avgHeartRateBpm,
+        bodyWeight: _bodyWeight,
+        fatRate: _fatRate,
+      });
 
       switch (sportType) {
         case SportType.run:
@@ -697,12 +722,14 @@ export class PersonalSportsChartData {
           this._speedPaceTrend.addBaseData(_avgMaxSpeed, _avgSpeed, dateRange);
           this._cadenceTrend.addBaseData(_avgRunMaxCadence, _runAvgCadence, dateRange);
           this._totalFeedbackEnergy.addBaseData(_totalFeedbackEnergy, dateRange);
-          tableData.totalDistanceMeters = _totalDistanceMeters;
-          tableData.avgMaxSpeed = _avgMaxSpeed;
-          tableData.avgSpeed = _avgSpeed;
-          tableData.avgMaxCadence = _avgRunMaxCadence;
-          tableData.avgCadence = _runAvgCadence;
-          tableData.totalFeedbackEnergy = _totalFeedbackEnergy;
+          Object.assign(tableData, {
+            totalDistanceMeters: _totalDistanceMeters,
+            avgMaxSpeed: _avgMaxSpeed,
+            avgSpeed: _avgSpeed,
+            avgMaxCadence: _avgRunMaxCadence,
+            avgCadence: _runAvgCadence,
+            totalFeedbackEnergy: _totalFeedbackEnergy,
+          });
           break;
         case SportType.cycle:
           this._totalDistanceMetersTrend.addBaseData(_totalDistanceMeters, dateRange);
@@ -710,14 +737,16 @@ export class PersonalSportsChartData {
           this._cadenceTrend.addBaseData(_avgCycleMaxCadence, _cycleAvgCadence, dateRange);
           this._powerTrend.addBaseData(_avgCycleMaxWatt, _cycleAvgWatt, dateRange);
           this._totalFeedbackEnergy.addBaseData(_totalFeedbackEnergy, dateRange);
-          tableData.totalDistanceMeters = _totalDistanceMeters;
-          tableData.avgMaxSpeed = _avgMaxSpeed;
-          tableData.avgSpeed = _avgSpeed;
-          tableData.avgMaxCadence = _avgCycleMaxCadence;
-          tableData.avgCadence = _cycleAvgCadence;
-          tableData.avgMaxWatt = _avgCycleMaxWatt;
-          tableData.avgWatt = _cycleAvgWatt;
-          tableData.totalFeedbackEnergy = _totalFeedbackEnergy;
+          Object.assign(tableData, {
+            totalDistanceMeters: _totalDistanceMeters,
+            avgMaxSpeed: _avgMaxSpeed,
+            avgSpeed: _avgSpeed,
+            avgMaxCadence: _avgCycleMaxCadence,
+            avgCadence: _cycleAvgCadence,
+            avgMaxWatt: _avgCycleMaxWatt,
+            avgWatt: _cycleAvgWatt,
+            totalFeedbackEnergy: _totalFeedbackEnergy,
+          });
           break;
         case SportType.weightTrain:
           this._weightTrainingTrend.addTrainData('base', _weightTrainingInfo ?? [], dateRange);
@@ -726,11 +755,13 @@ export class PersonalSportsChartData {
           this._totalDistanceMetersTrend.addBaseData(_totalDistanceMeters, dateRange);
           this._speedPaceTrend.addBaseData(_avgMaxSpeed, _avgSpeed, dateRange);
           this._cadenceTrend.addBaseData(_avgSwimMaxCadence, _swimAvgCadence, dateRange);
-          tableData.totalDistanceMeters = _totalDistanceMeters;
-          tableData.avgMaxSpeed = _avgMaxSpeed;
-          tableData.avgSpeed = _avgSpeed;
-          tableData.avgMaxCadence = _avgSwimMaxCadence;
-          tableData.avgCadence = _swimAvgCadence;
+          Object.assign(tableData, {
+            totalDistanceMeters: _totalDistanceMeters,
+            avgMaxSpeed: _avgMaxSpeed,
+            avgSpeed: _avgSpeed,
+            avgMaxCadence: _avgSwimMaxCadence,
+            avgCadence: _swimAvgCadence,
+          });
           break;
         case SportType.row:
           this._totalDistanceMetersTrend.addBaseData(_totalDistanceMeters, dateRange);
@@ -738,14 +769,17 @@ export class PersonalSportsChartData {
           this._cadenceTrend.addBaseData(_avgRowingMaxCadence, _rowingAvgCadence, dateRange);
           this._powerTrend.addBaseData(_rowingMaxWatt, _rowingAvgWatt, dateRange);
           this._totalFeedbackEnergy.addBaseData(_totalFeedbackEnergy, dateRange);
-          tableData.totalDistanceMeters = _totalDistanceMeters;
-          tableData.avgMaxSpeed = _avgMaxSpeed;
-          tableData.avgSpeed = _avgSpeed;
-          tableData.avgMaxCadence = _avgRowingMaxCadence;
-          tableData.avgCadence = _rowingAvgCadence;
-          tableData.avgMaxWatt = _rowingMaxWatt;
-          tableData.avgWatt = _rowingAvgWatt;
-          tableData.totalFeedbackEnergy = _totalFeedbackEnergy;
+          Object.assign(tableData, {
+            totalDistanceMeters: _totalDistanceMeters,
+            avgMaxSpeed: _avgMaxSpeed,
+            avgSpeed: _avgSpeed,
+            avgMaxCadence: _avgRowingMaxCadence,
+            avgCadence: _rowingAvgCadence,
+            avgMaxWatt: _rowingMaxWatt,
+            avgWatt: _rowingAvgWatt,
+            totalFeedbackEnergy: _totalFeedbackEnergy,
+          });
+
           break;
         case SportType.ball:
           this._totalDistanceMetersTrend.addBaseData(_totalDistanceMeters, dateRange);
@@ -753,9 +787,12 @@ export class PersonalSportsChartData {
           this._xGForceTrend.addBaseData(_maxGforceX, _miniGforceX, dateRange);
           this._yGForceTrend.addBaseData(_maxGforceY, _miniGforceY, dateRange);
           this._zGForceTrend.addBaseData(_maxGforceZ, _miniGforceZ, dateRange);
-          tableData.totalDistanceMeters = _totalDistanceMeters;
-          tableData.avgMaxSpeed = _avgMaxSpeed;
-          tableData.avgSpeed = _avgSpeed;
+          Object.assign(tableData, {
+            totalDistanceMeters: _totalDistanceMeters,
+            avgMaxSpeed: _avgMaxSpeed,
+            avgSpeed: _avgSpeed,
+          });
+
           break;
         case SportType.all:
           this._totalFeedbackEnergy.addBaseData(_totalFeedbackEnergy, dateRange);
@@ -944,30 +981,37 @@ export class PersonalSportsChartData {
         dateRange: _compareDateRange,
       };
       this._bodyWeightTrend.addMixData(baseBodyData, compareBodyData);
-      baseTableData.dateRange = _baseDateRange;
-      baseTableData.hrZone = _baseHrZone;
-      baseTableData.totalSecond = _baseTotalSecond ? +_baseTotalSecond : 0;
-      baseTableData.benefitTime = _baseBenefitTime;
-      baseTableData.calories = _baseCalories;
-      baseTableData.totalActivities = _baseTotalActivities;
-      baseTableData.pai = _basePai;
-      baseTableData.achieveRate = _baseAchieveRate;
-      baseTableData.avgMaxHeartRateBpm = _baseAvgMaxHeartRateBpm;
-      baseTableData.avgHeartRateBpm = _baseAvgHeartRateBpm;
-      baseTableData.bodyWeight = _baseBodyWeight;
-      baseTableData.fatRate = _baseFatRate;
-      compareTableData.dateRange = _compareDateRange;
-      compareTableData.hrZone = _compareHrZone;
-      compareTableData.totalSecond = _compareTotalSecond ? +_compareTotalSecond : 0;
-      compareTableData.benefitTime = _compareBenefitTime;
-      compareTableData.calories = _compareCalories;
-      compareTableData.totalActivities = _compareTotalActivities;
-      compareTableData.pai = _comparePai;
-      compareTableData.achieveRate = _compareAchieveRate;
-      compareTableData.avgMaxHeartRateBpm = _compareAvgMaxHeartRateBpm;
-      compareTableData.avgHeartRateBpm = _compareAvgHeartRateBpm;
-      compareTableData.bodyWeight = _compareBodyWeight;
-      compareTableData.fatRate = _compareFatRate;
+      this._baseTotalAchieveRate += _baseAchieveRate ?? 0;
+      this._compareTotalAchieveRate += _compareAchieveRate ?? 0;
+      Object.assign(baseTableData, {
+        dateRange: _baseDateRange,
+        hrZone: _baseHrZone,
+        totalSecond: _baseTotalSecond ? +_baseTotalSecond : 0,
+        benefitTime: _baseBenefitTime,
+        calories: _baseCalories,
+        totalActivities: _baseTotalActivities,
+        pai: _basePai,
+        achieveRate: _baseAchieveRate,
+        avgMaxHeartRateBpm: _baseAvgMaxHeartRateBpm,
+        avgHeartRateBpm: _baseAvgHeartRateBpm,
+        bodyWeight: _baseBodyWeight,
+        fatRate: _baseFatRate,
+      });
+
+      Object.assign(compareTableData, {
+        dateRange: _compareDateRange,
+        hrZone: _compareHrZone,
+        totalSecond: _compareTotalSecond ? +_compareTotalSecond : 0,
+        benefitTime: _compareBenefitTime,
+        calories: _compareCalories,
+        totalActivities: _compareTotalActivities,
+        pai: _comparePai,
+        achieveRate: _compareAchieveRate,
+        avgMaxHeartRateBpm: _compareAvgMaxHeartRateBpm,
+        avgHeartRateBpm: _compareAvgHeartRateBpm,
+        bodyWeight: _compareBodyWeight,
+        fatRate: _compareFatRate,
+      });
 
       switch (sportType) {
         case SportType.run: {
@@ -1008,18 +1052,23 @@ export class PersonalSportsChartData {
             _compareDateRange
           );
 
-          baseTableData.totalDistanceMeters = _baseTotalDistanceMeters;
-          baseTableData.avgMaxSpeed = _baseAvgMaxSpeed;
-          baseTableData.avgSpeed = _baseAvgSpeed;
-          baseTableData.avgMaxCadence = _baseAvgRunMaxCadence;
-          baseTableData.avgCadence = _baseRunAvgCadence;
-          baseTableData.totalFeedbackEnergy = _baseTotalFeedbackEnergy;
-          compareTableData.totalDistanceMeters = _compareTotalDistanceMeters;
-          compareTableData.avgMaxSpeed = _compareAvgMaxSpeed;
-          compareTableData.avgSpeed = _compareAvgSpeed;
-          compareTableData.avgMaxCadence = _compareAvgRunMaxCadence;
-          compareTableData.avgCadence = _compareRunAvgCadence;
-          compareTableData.totalFeedbackEnergy = _compareTotalFeedbackEnergy;
+          Object.assign(baseTableData, {
+            totalDistanceMeters: _baseTotalDistanceMeters,
+            avgMaxSpeed: _baseAvgMaxSpeed,
+            avgSpeed: _baseAvgSpeed,
+            avgMaxCadence: _baseAvgRunMaxCadence,
+            avgCadence: _baseRunAvgCadence,
+            totalFeedbackEnergy: _baseTotalFeedbackEnergy,
+          });
+
+          Object.assign(compareTableData, {
+            totalDistanceMeters: _compareTotalDistanceMeters,
+            avgMaxSpeed: _compareAvgMaxSpeed,
+            avgSpeed: _compareAvgSpeed,
+            avgMaxCadence: _compareAvgRunMaxCadence,
+            avgCadence: _compareRunAvgCadence,
+            totalFeedbackEnergy: _compareTotalFeedbackEnergy,
+          });
           break;
         }
         case SportType.cycle: {
@@ -1072,22 +1121,28 @@ export class PersonalSportsChartData {
             _compareDateRange
           );
 
-          baseTableData.totalDistanceMeters = _baseTotalDistanceMeters;
-          baseTableData.avgMaxSpeed = _baseAvgMaxSpeed;
-          baseTableData.avgSpeed = _baseAvgSpeed;
-          baseTableData.avgMaxCadence = _baseAvgCycleMaxCadence;
-          baseTableData.avgCadence = _baseCycleAvgCadence;
-          baseTableData.avgMaxWatt = _baseAvgCycleMaxWatt;
-          baseTableData.avgWatt = _baseCycleAvgWatt;
-          baseTableData.totalFeedbackEnergy = _baseTotalFeedbackEnergy;
-          compareTableData.totalDistanceMeters = _compareTotalDistanceMeters;
-          compareTableData.avgMaxSpeed = _compareAvgMaxSpeed;
-          compareTableData.avgSpeed = _compareAvgSpeed;
-          compareTableData.avgMaxCadence = _compareAvgCycleMaxCadence;
-          compareTableData.avgCadence = _compareCycleAvgCadence;
-          compareTableData.avgMaxWatt = _compareAvgCycleMaxWatt;
-          compareTableData.avgWatt = _compareCycleAvgWatt;
-          compareTableData.totalFeedbackEnergy = _compareTotalFeedbackEnergy;
+          Object.assign(baseTableData, {
+            totalDistanceMeters: _baseTotalDistanceMeters,
+            avgMaxSpeed: _baseAvgMaxSpeed,
+            avgSpeed: _baseAvgSpeed,
+            avgMaxCadence: _baseAvgCycleMaxCadence,
+            avgCadence: _baseCycleAvgCadence,
+            avgMaxWatt: _baseAvgCycleMaxWatt,
+            avgWatt: _baseCycleAvgWatt,
+            totalFeedbackEnergy: _baseTotalFeedbackEnergy,
+          });
+
+          Object.assign(compareTableData, {
+            totalDistanceMeters: _compareTotalDistanceMeters,
+            avgMaxSpeed: _compareAvgMaxSpeed,
+            avgSpeed: _compareAvgSpeed,
+            avgMaxCadence: _compareAvgCycleMaxCadence,
+            avgCadence: _compareCycleAvgCadence,
+            avgMaxWatt: _compareAvgCycleMaxWatt,
+            avgWatt: _compareCycleAvgWatt,
+            totalFeedbackEnergy: _compareTotalFeedbackEnergy,
+          });
+
           break;
         }
         case SportType.weightTrain:
@@ -1134,16 +1189,21 @@ export class PersonalSportsChartData {
           };
           this._cadenceTrend.addMixData(baseCadenceData, compareCadenceData);
 
-          baseTableData.totalDistanceMeters = _baseTotalDistanceMeters;
-          baseTableData.avgMaxSpeed = _baseAvgMaxSpeed;
-          baseTableData.avgSpeed = _baseAvgSpeed;
-          baseTableData.avgMaxCadence = _baseAvgRowingMaxCadence;
-          baseTableData.avgCadence = _baseSwimAvgCadence;
-          compareTableData.totalDistanceMeters = _compareTotalDistanceMeters;
-          compareTableData.avgMaxSpeed = _compareAvgMaxSpeed;
-          compareTableData.avgSpeed = _compareAvgSpeed;
-          compareTableData.avgMaxCadence = _compareAvgRowingMaxCadence;
-          compareTableData.avgCadence = _compareSwimAvgCadence;
+          Object.assign(baseTableData, {
+            totalDistanceMeters: _baseTotalDistanceMeters,
+            avgMaxSpeed: _baseAvgMaxSpeed,
+            avgSpeed: _baseAvgSpeed,
+            avgMaxCadence: _baseAvgRowingMaxCadence,
+            avgCadence: _baseSwimAvgCadence,
+          });
+
+          Object.assign(compareTableData, {
+            totalDistanceMeters: _compareTotalDistanceMeters,
+            avgMaxSpeed: _compareAvgMaxSpeed,
+            avgSpeed: _compareAvgSpeed,
+            avgMaxCadence: _compareAvgRowingMaxCadence,
+            avgCadence: _compareSwimAvgCadence,
+          });
           break;
         }
         case SportType.row: {
@@ -1196,22 +1256,28 @@ export class PersonalSportsChartData {
             _compareDateRange
           );
 
-          baseTableData.totalDistanceMeters = _baseTotalDistanceMeters;
-          baseTableData.avgMaxSpeed = _baseAvgMaxSpeed;
-          baseTableData.avgSpeed = _baseAvgSpeed;
-          baseTableData.avgMaxCadence = _baseAvgRowingMaxCadence;
-          baseTableData.avgCadence = _baseRowingAvgCadence;
-          baseTableData.avgMaxWatt = _baseRowingMaxWatt;
-          baseTableData.avgWatt = _baseRowingAvgWatt;
-          baseTableData.totalFeedbackEnergy = _baseTotalFeedbackEnergy;
-          compareTableData.totalDistanceMeters = _compareTotalDistanceMeters;
-          compareTableData.avgMaxSpeed = _compareAvgMaxSpeed;
-          compareTableData.avgSpeed = _compareAvgSpeed;
-          compareTableData.avgMaxCadence = _compareAvgRowingMaxCadence;
-          compareTableData.avgCadence = _compareRowingAvgCadence;
-          compareTableData.avgMaxWatt = _compareRowingMaxWatt;
-          compareTableData.avgWatt = _compareRowingAvgWatt;
-          compareTableData.totalFeedbackEnergy = _compareTotalFeedbackEnergy;
+          Object.assign(baseTableData, {
+            totalDistanceMeters: _baseTotalDistanceMeters,
+            avgMaxSpeed: _baseAvgMaxSpeed,
+            avgSpeed: _baseAvgSpeed,
+            avgMaxCadence: _baseAvgRowingMaxCadence,
+            avgCadence: _baseRowingAvgCadence,
+            avgMaxWatt: _baseRowingMaxWatt,
+            avgWatt: _baseRowingAvgWatt,
+            totalFeedbackEnergy: _baseTotalFeedbackEnergy,
+          });
+
+          Object.assign(compareTableData, {
+            totalDistanceMeters: _compareTotalDistanceMeters,
+            avgMaxSpeed: _compareAvgMaxSpeed,
+            avgSpeed: _compareAvgSpeed,
+            avgMaxCadence: _compareAvgRowingMaxCadence,
+            avgCadence: _compareRowingAvgCadence,
+            avgMaxWatt: _compareRowingMaxWatt,
+            avgWatt: _compareRowingAvgWatt,
+            totalFeedbackEnergy: _compareTotalFeedbackEnergy,
+          });
+
           break;
         }
         case SportType.ball: {
@@ -1270,12 +1336,17 @@ export class PersonalSportsChartData {
           };
           this._zGForceTrend.addMixData(baseZGForceData, compareZGForceData);
 
-          baseTableData.totalDistanceMeters = _baseTotalDistanceMeters;
-          baseTableData.avgMaxSpeed = _baseAvgMaxSpeed;
-          baseTableData.avgSpeed = _baseAvgSpeed;
-          compareTableData.totalDistanceMeters = _compareTotalDistanceMeters;
-          compareTableData.avgMaxSpeed = _compareAvgMaxSpeed;
-          compareTableData.avgSpeed = _compareAvgSpeed;
+          Object.assign(baseTableData, {
+            totalDistanceMeters: _baseTotalDistanceMeters,
+            avgMaxSpeed: _baseAvgMaxSpeed,
+            avgSpeed: _baseAvgSpeed,
+          });
+
+          Object.assign(compareTableData, {
+            totalDistanceMeters: _compareTotalDistanceMeters,
+            avgMaxSpeed: _compareAvgMaxSpeed,
+            avgSpeed: _compareAvgSpeed,
+          });
           break;
         }
         case SportType.all:
@@ -1379,14 +1450,14 @@ export class PersonalSportsChartData {
    * @param conditionPercentage {number}-該條件佔所有條件的佔比
    */
   getConditionAchieveRate(value: number, conditionTarget: number, conditionPercentage: number) {
+    const effectValue = value ?? 0;
     let percentage = 0;
-    if (!conditionTarget || value > conditionTarget) {
+    if (!conditionTarget || effectValue > conditionTarget) {
       percentage = 1;
     } else {
-      percentage = (value ?? 0) / conditionTarget;
+      percentage = effectValue / conditionTarget;
     }
 
-    if (percentage > 1) percentage = 1;
     return mathRounding(percentage * conditionPercentage, 4);
   }
 
@@ -1558,5 +1629,45 @@ export class PersonalSportsChartData {
    */
   get sportsTableData() {
     return this._sportsTableData;
+  }
+
+  /**
+   * 取得報告基準範圍目標均化達成率
+   */
+  get baseTargetAchieveRate() {
+    const { _sportsTableData, _baseTotalAchieveRate } = this;
+    const dataLength = _sportsTableData.length;
+    const denominator = dataLength ? dataLength : Infinity;
+    return {
+      value: mathRounding(_baseTotalAchieveRate / denominator, 1),
+      unit: '%',
+    };
+  }
+
+  /**
+   * 取得報告比較範圍目標均化達成率
+   */
+  get compareTargetAchieveRate() {
+    const { _sportsTableData, _compareTotalAchieveRate } = this;
+    const dataLength = _sportsTableData.length;
+    const denominator = dataLength ? dataLength : Infinity;
+    return {
+      value: mathRounding(_compareTotalAchieveRate / denominator, 1),
+      unit: '%',
+    };
+  }
+
+  /**
+   * 取得報告基準與比較範圍目標均化達成率的差值
+   */
+  get diffTargetAchieveRate() {
+    const { _sportsTableData, _baseTotalAchieveRate, _compareTotalAchieveRate } = this;
+    const dataLength = _sportsTableData.length;
+    const diff = _baseTotalAchieveRate - _compareTotalAchieveRate;
+    const denominator = dataLength ? dataLength : Infinity;
+    return {
+      value: mathRounding(diff / denominator, 1),
+      unit: '%',
+    };
   }
 }

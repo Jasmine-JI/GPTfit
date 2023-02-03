@@ -131,6 +131,7 @@ import {
   SportsDataTableComponent,
   SportsFileRoadComponent,
   SportFileFooterComponent,
+  TipDialogComponent,
 } from '../../components';
 
 @NgModule({
@@ -159,6 +160,7 @@ import {
     SportTypeIconPipe,
     SportsFileRoadComponent,
     SportFileFooterComponent,
+    TipDialogComponent,
     SexPipe,
     SafeHtmlPipe,
     LineBreakPipe,

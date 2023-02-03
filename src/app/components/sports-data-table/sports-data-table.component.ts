@@ -15,6 +15,7 @@ import { takeUntil } from 'rxjs/operators';
 // 這邊無法使用index統一引入  https://github.com/ng-packagr/ng-packagr/issues/1173
 import { AnalysisOptionComponent } from '../analysis-option/analysis-option.component';
 import { SmallHrzoneChartComponent } from '../small-hrzone-chart/small-hrzone-chart.component';
+import { TipDialogComponent } from '../tip-dialog/tip-dialog.component';
 import { ProfessionalChartAnalysisOption } from '../../containers/professional/classes/professional-chart-analysis-option';
 import { PersonalChartAnalysisOption } from '../../containers/personal/classes/personal-chart-analysis-option';
 import { DataUnitType } from '../../core/enums/common';
@@ -29,6 +30,7 @@ import {
 } from '../../core/pipes';
 import { AnalysisSportsColumn } from '../../shared/enum/report-analysis';
 import { MatIconModule } from '@angular/material/icon';
+import { DataDescription } from '../../core/models/compo';
 
 @Component({
   selector: 'app-sports-data-table',
@@ -47,6 +49,7 @@ import { MatIconModule } from '@angular/material/icon';
     WeightSibsPipe,
     MatIconModule,
     SmallHrzoneChartComponent,
+    TipDialogComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -59,6 +62,7 @@ export class SportsDataTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() chartAnalysisOption: ProfessionalChartAnalysisOption | PersonalChartAnalysisOption;
   @Input() userUnit: DataUnitType = DataUnitType.metric;
   @Input() sportType: SportType = 99;
+  @Input() description: Array<DataDescription>;
 
   private ngUnsubscribe = new Subject();
   private resizeEventSubscription = new Subscription();

@@ -52,35 +52,14 @@
         }
       "
     ></div>
-    <div
-      *ngTemplateOutlet="
-        sportTargetInfo;
-        context: {
-          diffRange: diffTime.base,
-          condition: sportsTargetCondition,
-          startTime: reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD'),
-          endTime: reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD')
-        }
-      "
-    ></div>
-    <ng-container *ngIf="uiFlag.isCompareMode">
-      <div
-        *ngTemplateOutlet="
-          sportTargetInfo;
-          context: {
-            diffRange: diffTime.compare,
-            condition: sportsTargetCondition,
-            startTime: reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD'),
-            endTime: reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD')
-          }
-        "
-      ></div>
-    </ng-container>
   </section>
 
   <section class="report-section">
     <div class="flexRow cardTitle">
-      <h6 class="cardSubtitle">{{ 'universal_activityData_summary' | translate }}</h6>
+      <div class="flexRow">
+        <h6 class="cardSubtitle">{{ 'universal_activityData_summary' | translate }}</h6>
+        <app-tip-dialog [description]="tipContent.summary"></app-tip-dialog>
+      </div>
     </div>
     <div class="flexCol">
       <div
@@ -91,7 +70,8 @@
             startDate: reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD'),
             endDate: reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD'),
             memberNumber: groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'totalPeople'),
-            isBaseData: true
+            isBaseData: true,
+            crossRange: diffTime.base
           }
         "
       ></div>
@@ -104,7 +84,8 @@
               startDate: reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD'),
               endDate: reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD'),
               memberNumber: groupSportsInfo.getAssignGroupInfo(getFocusGroupId(), 'totalPeople'),
-              isBaseData: false
+              isBaseData: false,
+              crossRange: diffTime.compare
             }
           "
         ></div>
@@ -581,7 +562,10 @@
 
   <section class="report-section" *ngIf="groupAnalysis">
     <div class="flexRow cardTitle">
-      <h6 class="cardSubtitle">{{ 'universal_group_groupAnalysis' | translate }}</h6>
+      <div class="flexRow">
+        <h6 class="cardSubtitle">{{ 'universal_group_groupAnalysis' | translate }}</h6>
+        <app-tip-dialog [description]="tipContent.groupAnalysis"></app-tip-dialog>
+      </div>
       <div class="report-optionSection">
         <button (click)="showGroupAnalysisOption($event)">
           <i class="icon-svg_web-icon_p1_001-setting report-settingIcon"></i>
@@ -1512,7 +1496,10 @@
 
   <section class="report-section" *ngIf="personAnalysis">
     <div class="flexRow cardTitle">
-      <h6 class="cardSubtitle">{{ 'universal_group_personalAnalysis' | translate }}</h6>
+      <div class="flexRow">
+        <h6 class="cardSubtitle">{{ 'universal_group_personalAnalysis' | translate }}</h6>
+        <app-tip-dialog [description]="tipContent.personalAnalysis"></app-tip-dialog>
+      </div>
       <div class="report-optionSection">
         <button (click)="showPersonalAnalysisOption($event)">
           <i class="icon-svg_web-icon_p1_001-setting report-settingIcon"></i>
@@ -2888,10 +2875,12 @@
   let-endDate="endDate"
   let-memberNumber="memberNumber"
   let-isBaseData="isBaseData"
+  let-crossRange="crossRange"
 >
   <div class="flexCol">
-    <span class="report-compareDate" *ngIf="uiFlag.isCompareMode">
-      {{ startDate }} ~ {{ endDate }}
+    <span class="report-compareDate">
+      {{ startDate }} ~ {{ endDate }} ({{ crossRange }}
+      {{ reportCondition.dateUnit.getUnitI18nKey() | translate }})
     </span>
     <div class="flexRow report-infoRow">
       <div
