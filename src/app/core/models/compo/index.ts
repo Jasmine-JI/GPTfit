@@ -7,3 +7,4 @@ export * from './highchart-setting.model';
 export * from './complex-station.model';
 export * from './float-tooltip.model';
 export * from './group-analysis-calender.model';
+export * from './tip-dialog.model';

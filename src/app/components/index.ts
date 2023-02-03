@@ -15,3 +15,4 @@ export * from './group-analysis-calender/group-analysis-calender.component';
 export * from './pie-chart/pie-chart.component';
 export * from './hr-zone-chart/hr-zone-chart.component';
 export * from './line-compare-chart/line-compare-chart.component';
+export * from './tip-dialog/tip-dialog.component';
