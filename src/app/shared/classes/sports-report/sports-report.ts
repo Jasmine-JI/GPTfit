@@ -103,7 +103,7 @@ export class SportsReport {
           ...this.getAvgData(avgDataIntermediary),
           preferSports: preferSports.preferSport,
           targetAchieveRate: avgAcheieve,
-          targetAchieved: avgAcheieve < 100,
+          targetAchieved: avgAcheieve >= 100,
         };
 
         dataObj = {

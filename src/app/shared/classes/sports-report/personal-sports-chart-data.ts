@@ -362,7 +362,7 @@ export class PersonalSportsChartData {
             totalSecond,
             calories,
             totalActivities,
-            avgHeartRate,
+            avgHeartRateBpm,
           },
           startTime,
           endTime,
@@ -396,8 +396,7 @@ export class PersonalSportsChartData {
               break;
             }
             case 'totalTime': {
-              const targetSecond = _filedValue;
-              if (!totalSecond || +totalSecond < targetSecond) achieve = 0;
+              if (!totalSecond || +totalSecond < _filedValue) achieve = 0;
               const conditionAchieveRate = this.getConditionAchieveRate(
                 +totalSecond,
                 _filedValue,
@@ -441,9 +440,9 @@ export class PersonalSportsChartData {
               break;
             }
             case 'avgHeartRate': {
-              if (avgHeartRate < _filedValue) achieve = 0;
+              if (avgHeartRateBpm < _filedValue) achieve = 0;
               const conditionAchieveRate = this.getConditionAchieveRate(
-                avgHeartRate,
+                avgHeartRateBpm,
                 _filedValue,
                 conditionPercentage
               );
@@ -1452,7 +1451,7 @@ export class PersonalSportsChartData {
   getConditionAchieveRate(value: number, conditionTarget: number, conditionPercentage: number) {
     const effectValue = value ?? 0;
     let percentage = 0;
-    if (!conditionTarget || effectValue > conditionTarget) {
+    if (!conditionTarget || effectValue >= conditionTarget) {
       percentage = 1;
     } else {
       percentage = effectValue / conditionTarget;
