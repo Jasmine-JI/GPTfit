@@ -51,6 +51,7 @@ import {
 import { BenefitTimeStartZone, DataUnitType } from '../../../../../core/enums/common';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
+import { DataDescription } from '../../../../../core/models/compo';
 
 dayjs.extend(isoWeek);
 
@@ -203,6 +204,54 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 不重複的管理員userId清單
    */
   adminSet: Set<number> = new Set();
+
+  /**
+   * 說明框的內容
+   */
+  readonly tipContent = {
+    summary: <Array<DataDescription>>[
+      {
+        title: 'universal_lifeTracking_achievementRate',
+        content: 'universal_vocabulary_groupTargetInfo',
+      },
+      {
+        title: 'universal_activityData_benefitime',
+        content: 'universal_system_zoneInfo',
+      },
+      {
+        title: 'PAI',
+        content: 'universal_vocabulary_paiInfo',
+      },
+    ],
+    groupAnalysis: <Array<DataDescription>>[
+      {
+        title: 'universal_lifeTracking_achievementRate',
+        content: 'universal_vocabulary_groupTargetInfo',
+      },
+      {
+        title: 'universal_activityData_benefitime',
+        content: 'universal_system_zoneInfo',
+      },
+      {
+        title: 'PAI',
+        content: 'universal_vocabulary_paiInfo',
+      },
+    ],
+    personalAnalysis: <Array<DataDescription>>[
+      {
+        title: 'universal_lifeTracking_achievementRate',
+        content: 'universal_vocabulary_personalTargetInfo',
+      },
+      {
+        title: 'universal_activityData_benefitime',
+        content: 'universal_system_zoneInfo',
+      },
+      {
+        title: 'PAI',
+        content: 'universal_vocabulary_paiInfo',
+      },
+    ],
+  };
 
   readonly SportType = SportType;
   readonly GroupLevel = GroupLevel;
@@ -620,7 +669,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   /**
    * 計算各群組數據
    * @param allGroupList {AllGroupMember}-群組內所有成員清單
-   * @author kidin-1110322
    */
   handleGroupInfoData(allGroupList: AllGroupMember) {
     const rootGroupInfo = this.getBelongGroupObj();
@@ -777,7 +825,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           result.update(value, 'watt');
           break;
         case 'totalFeedbackEnergy':
-          result.update(mathRounding(value ?? 0, 1), 'whr');
+          result.update(mathRounding(value ?? 0, 2), 'whr');
           break;
         default:
           result.update(value);
@@ -829,7 +877,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           result = isMetric ? value : mathRounding(value / lb, 1);
           break;
         case 'targetAchieveRate':
-          result = `${mathRounding(value * 100, 1)}%`;
+          result = `${value}%`;
           break;
         case 'totalFeedbackEnergy':
           result = mathRounding(value ?? 0, 1);

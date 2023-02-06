@@ -256,7 +256,7 @@ app
 │   ├─ equal-value-validator.ts // 此validator會判斷兩個form control是否相等的驗證器，目前使用於forgetpwd component裡，驗證"再次確認電話號碼"
 │   ├─ global-events-manager.ts // 全域事件通知(event emitter管理)
 │   ├─ shared.module.ts // 共用module
-│   └─ version.ts // GPT center版本號
+│   └─ version.ts // GPTfit版本號
 │
 ├─ graphql.module.ts // 使用graphql用到的module（測試中）
 ├─ app-routing.module.ts

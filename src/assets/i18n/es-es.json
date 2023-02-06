@@ -2714,5 +2714,9 @@
  "universal_activityData_totalEnergyGen": "Total Energy Generated",
  "universal_activityData_genPower": "Generator power",
  "universal_class_singleClassReport": "Single class report",
- "universal_class_rangeClassReport": "Range class report"
+ "universal_class_rangeClassReport": "Range class report",
+ "universal_vocabulary_paiInfo": "Points of every time your heart rate increases,  Achieve 100 PAI or more every week is recommended.",
+ "universal_vocabulary_personalTargetInfo": "Average of every day(week/month/season/year)'s target achieve rate",
+ "universal_vocabulary_groupTargetInfo": "Persons ratio for who achieved group's target every time period",
+ "universal_vocabulary_unitTargetInfo": "Average percentage of  each targets' achievement rate"
 }

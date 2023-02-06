@@ -2600,7 +2600,7 @@
  "universal_vocabulary_cloudrunIntroSocial": "Cloud Run is a runner's social hub",
  "universal_vocabulary_cloudrunIntroSocialContent": "Cloud running is also a kind of cloud community center, not only users can train road running through the map, but also open the competition mode and other runners to train and compete together, can participate in many people at the same time, through the cloud running APP to promote runners from all over the world to compete and train together, in addition, we can also watch the competition in time through the viewing mode, so that you can also have a sense of presence in the current situation of the competition.",
  "universal_vocabulary_cloudrunIntroEarn": "What can you get by using CloudRun",
- "universal_vocabulary_cloudrunIntroEarnContent": "Instant motion data is transmitted via Bluetooth to ALA CloudRun records and timely to the game for racing or simulated road running practice with other runners. Important statistics such as distance, pace, speed, speed, and calories burned are available during and after the event. All exercise data analysis, statistics... etc., can be seen on the GPT Center.",
+ "universal_vocabulary_cloudrunIntroEarnContent": "Instant motion data is transmitted via Bluetooth to ALA CloudRun records and timely to the game for racing or simulated road running practice with other runners. Important statistics such as distance, pace, speed, speed, and calories burned are available during and after the event. All exercise data analysis, statistics... etc., can be seen on the GPTfit.",
  "universal_vocabulary_cloudrunIntroGet": "Get the app",
  "universal_vocabulary_cloudrunIntroGetContent": "is a treadmill real route connection competition and social interaction application, paired with a compatible Alatech treadmill, can establish a cloud road run, The change in route height is simulated by a treadmill to simulate actual road conditions.",
  "universal_vocabulary_typeRealName": "Please type your real name",
@@ -2714,5 +2714,9 @@
  "universal_activityData_totalEnergyGen": "Total Energy Generated",
  "universal_activityData_genPower": "Generator power",
  "universal_class_singleClassReport": "Single class report",
- "universal_class_rangeClassReport": "Range class report"
+ "universal_class_rangeClassReport": "Range class report",
+ "universal_vocabulary_paiInfo": "Points of every time your heart rate increases,  Achieve 100 PAI or more every week is recommended.",
+ "universal_vocabulary_personalTargetInfo": "Average of every day(week/month/season/year)'s target achieve rate",
+ "universal_vocabulary_groupTargetInfo": "Persons ratio for who achieved group's target every time period",
+ "universal_vocabulary_unitTargetInfo": "Average percentage of  each targets' achievement rate"
 }

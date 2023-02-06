@@ -413,8 +413,8 @@ export function handleSceneryImg(type: number, subtype = 0) {
  * @returns pai {number}
  */
 export function countPai(hrZone: Array<number>, weekNum: number) {
-  const { z0, z1, z2, z3, z4, z5 } = PAI_COFFICIENT,
-    [zone0, zone1, zone2, zone3, zone4, zone5] = [...hrZone],
-    weightedValue = z0 * zone0 + z1 * zone1 + z2 * zone2 + z3 * zone3 + z4 * zone4 + z5 * zone5;
+  const { z0, z1, z2, z3, z4, z5 } = PAI_COFFICIENT;
+  const [zone0, zone1, zone2, zone3, zone4, zone5] = hrZone.map((_zone) => _zone ?? 0);
+  const weightedValue = z0 * zone0 + z1 * zone1 + z2 * zone2 + z3 * zone3 + z4 * zone4 + z5 * zone5;
   return parseFloat((((weightedValue / (DAY_PAI_TARGET * 7)) * 100) / weekNum).toFixed(1));
 }

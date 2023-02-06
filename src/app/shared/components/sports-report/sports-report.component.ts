@@ -64,6 +64,7 @@ import isoWeek from 'dayjs/plugin/isoWeek';
 import { SameWeekLifeTrackingData } from '../../classes/same-week-lifetracking-data';
 import { BenefitTimeStartZone } from '../../../core/enums/common';
 import { PersonalChartAnalysisOption } from '../../../containers/personal/classes/personal-chart-analysis-option';
+import { DataDescription } from '../../../core/models/compo';
 
 dayjs.extend(isoWeek);
 
@@ -199,6 +200,40 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * 心率區間
    */
   hrZoneRange: HrZoneRange | null = null;
+
+  /**
+   * 說明框的內容
+   */
+  readonly tipContent = {
+    summary: <Array<DataDescription>>[
+      {
+        title: 'universal_lifeTracking_achievementRate',
+        content: 'universal_vocabulary_personalTargetInfo',
+      },
+      {
+        title: 'universal_activityData_benefitime',
+        content: 'universal_system_zoneInfo',
+      },
+      {
+        title: 'PAI',
+        content: 'universal_vocabulary_paiInfo',
+      },
+    ],
+    dataTable: <Array<DataDescription>>[
+      {
+        title: 'universal_lifeTracking_achievementRate',
+        content: 'universal_vocabulary_unitTargetInfo',
+      },
+      {
+        title: 'universal_activityData_benefitime',
+        content: 'universal_system_zoneInfo',
+      },
+      {
+        title: 'PAI',
+        content: 'universal_vocabulary_paiInfo',
+      },
+    ],
+  };
 
   readonly SportType = SportType;
   readonly DataUnitType = DataUnitType;
@@ -896,8 +931,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           result.update(Math.round(value), getPaceUnit(sportType, this.userUnit));
           break;
         case 'targetAchieveRate': {
-          const percentage = mathRounding(value * 100, 1);
-          result.update(percentage, '%');
+          result.update(value, '%');
           break;
         }
         case 'totalFeedbackEnergy': {

@@ -48,35 +48,16 @@
         }
       "
     ></div>
-    <div
-      *ngTemplateOutlet="
-        sportTargetInfo;
-        context: {
-          diffRange: diffTime.base,
-          condition: sportsTargetCondition,
-          startTime: reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD'),
-          endTime: reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD')
-        }
-      "
-    ></div>
-    <ng-container *ngIf="uiFlag.isCompareMode">
-      <div
-        *ngTemplateOutlet="
-          sportTargetInfo;
-          context: {
-            diffRange: diffTime.compare,
-            condition: sportsTargetCondition,
-            startTime: reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD'),
-            endTime: reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD')
-          }
-        "
-      ></div>
-    </ng-container>
   </section>
 
   <section class="report-section">
     <div class="flexRow cardTitle">
-      <h6 class="cardSubtitle">{{ 'universal_activityData_summary' | translate }}</h6>
+      <div class="flexRow">
+        <h6 class="flexRow cardSubtitle">
+          {{ 'universal_activityData_summary' | translate }}
+        </h6>
+        <app-tip-dialog [description]="tipContent.summary"></app-tip-dialog>
+      </div>
     </div>
     <div class="flexCol">
       <div
@@ -86,7 +67,8 @@
             infoData: sportInfoData.base.infoData,
             startDate: reportCondition.baseTime.getStartTimeFormat('YYYY-MM-DD'),
             endDate: reportCondition.baseTime.getEndTimeFormat('YYYY-MM-DD'),
-            infoType: 'base'
+            infoType: 'base',
+            crossRange: diffTime.base
           }
         "
       ></div>
@@ -98,7 +80,8 @@
               infoData: sportInfoData.compare?.infoData,
               startDate: reportCondition.compareTime.getStartTimeFormat('YYYY-MM-DD'),
               endDate: reportCondition.compareTime.getEndTimeFormat('YYYY-MM-DD'),
-              infoType: 'compare'
+              infoType: 'compare',
+              crossRange: diffTime.compare
             }
           "
         ></div>
@@ -1011,7 +994,7 @@
                 context: {
                   key: 'universal_activityData_totalEnergyGen',
                   valueUnit: {
-                    value: sportInfoData.base.infoData.totalFeedbackEnergy || 0 | number: '1.0-1',
+                    value: sportInfoData.base.infoData.totalFeedbackEnergy || 0 | number: '1.0-2',
                     unit: 'whr'
                   }
                 }
@@ -1025,7 +1008,7 @@
                   valueUnit: {
                     value:
                       (sportInfoData.base.infoData.totalFeedbackEnergy || 0) /
-                        (chartData.totalSecondTrend.baseDataLength || Infinity) | number: '1.0-1',
+                        (chartData.totalSecondTrend.baseDataLength || Infinity) | number: '1.0-2',
                     unit: 'whr'
                   },
                   dateUnitKey: reportCondition.dateUnit.getUnitI18nKey() | translate
@@ -1040,7 +1023,7 @@
                 context: {
                   timeRange: reportCondition.baseTime,
                   valueUnit: {
-                    value: sportInfoData.base.infoData.totalFeedbackEnergy || 0 | number: '1.0-1',
+                    value: sportInfoData.base.infoData.totalFeedbackEnergy || 0 | number: '1.0-2',
                     unit: 'whr'
                   },
                   color: trendChartColor.totalFeedbackEnergy.base
@@ -1054,7 +1037,7 @@
                   timeRange: reportCondition.compareTime,
                   valueUnit: {
                     value:
-                      sportInfoData.compare?.infoData.totalFeedbackEnergy || 0 | number: '1.0-1',
+                      sportInfoData.compare?.infoData.totalFeedbackEnergy || 0 | number: '1.0-2',
                     unit: 'whr'
                   },
                   color: trendChartColor.totalFeedbackEnergy.compare
@@ -1066,7 +1049,7 @@
                 chartInfoDiff;
                 context: {
                   originValue: sportInfoData.diff?.totalFeedbackEnergy || 0,
-                  value: sportInfoData.diff?.totalFeedbackEnergy || 0 | number: '1.0-1',
+                  value: sportInfoData.diff?.totalFeedbackEnergy || 0 | number: '1.0-2',
                   unit: 'whr'
                 }
               "
@@ -2012,6 +1995,7 @@
     [chartAnalysisOption]="chartAnalysisOption"
     [userUnit]="userUnit"
     [sportType]="reportCondition.sportType"
+    [description]="tipContent.dataTable"
   ></app-sports-data-table>
 
   <section
@@ -2369,10 +2353,12 @@
   let-startDate="startDate"
   let-endDate="endDate"
   let-infoType="infoType"
+  let-crossRange="crossRange"
 >
   <div class="flexCol">
-    <span class="report-compareDate" *ngIf="uiFlag.isCompareMode && startDate">
-      {{ startDate }} ~ {{ endDate }}
+    <span class="report-compareDate" *ngIf="startDate">
+      {{ startDate }} ~ {{ endDate }} ({{ crossRange }}
+      {{ reportCondition.dateUnit.getUnitI18nKey() | translate }})
     </span>
     <span class="report-compareDate" *ngIf="uiFlag.isCompareMode && !startDate">
       {{ 'universal_training_difference' | translate }}

@@ -1,6 +1,9 @@
 import { fromEvent, merge } from 'rxjs';
 import { QueryString } from '../../shared/enum/query-string';
 import { rgbaReg, hslaReg } from '../models/regex';
+import { DateUnit } from '../../shared/enum/report';
+import { ReportDateUnit } from '../../shared/classes/report-date-unit';
+import dayjs from 'dayjs';
 
 export const DEFAULT_MAXLENGTH = {
   TEXT: 100,
@@ -245,4 +248,29 @@ export function handleBorderData(point: [number, number], borderArr: Array<[numb
   }
 
   return inside;
+}
+
+/**
+ * 根據報告日期單位與報告日期，取得所屬範圍
+ * @param startTime {string}-開始時間
+ * @param endTime {string}-結束時間
+ * @param dateUnit {ReportDateUnit}-報告所選擇的時間單位
+ */
+export function getSameRangeDate(startTime: string, endTime: string, dateUnit: ReportDateUnit) {
+  const startTimestamp = dayjs(startTime).startOf('day').valueOf();
+  const endTimestamp = dayjs(endTime).endOf('day').valueOf();
+  switch (dateUnit.unit) {
+    case DateUnit.season: {
+      const seasonStart = dayjs(startTimestamp).startOf('quarter').valueOf();
+      const seasonEnd = dayjs(endTimestamp).endOf('quarter').valueOf();
+      return { start: seasonStart, end: seasonEnd };
+    }
+    case DateUnit.year: {
+      const rangeStart = dayjs(startTimestamp).startOf('year').valueOf();
+      const rangeEnd = dayjs(endTimestamp).endOf('year').valueOf();
+      return { start: rangeStart, end: rangeEnd };
+    }
+    default:
+      return { start: startTimestamp, end: endTimestamp };
+  }
 }

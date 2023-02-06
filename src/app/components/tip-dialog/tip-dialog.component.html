@@ -1,0 +1,21 @@
+<ng-container *ngIf="description">
+  <button class="open__btn" (click)="toggleDialog($event)">
+    <i class="icon-svg_web-icon_p1_070-doubt tip__icon"></i>
+  </button>
+  <div class="flexCol tip__dialog" (click)="$event.stopPropagation()" *ngIf="showDialog">
+    <h3 class="dialog__title">
+      {{ 'universal_operating_description' | translate }}
+    </h3>
+    <article class="dialog__content">
+      <section *ngFor="let _description of description">
+        <h6 class="description__title" *ngIf="_description.title">
+          {{ _description.title | translate }}
+        </h6>
+        <p class="description__content">{{ _description.content | translate }}</p>
+      </section>
+    </article>
+    <button class="dialog__close__btn" (click)="closeDialog()">
+      {{ 'universal_operating_close' | translate }}
+    </button>
+  </div>
+</ng-container>
