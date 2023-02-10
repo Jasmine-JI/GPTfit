@@ -1,0 +1,15 @@
+<aside class="aside__index" *ngIf="indexList?.length > 0">
+  <div class="flexCol fiexd__container">
+    <a
+      href="#"
+      *ngFor="let _indexList of indexList; let _index = index"
+      [ngClass]="{
+        first__layer__index: _indexList.indexLayer === 0,
+        second__layer__index: _indexList.indexLayer === 1
+      }"
+      (click)="clickIndex($event, _indexList.elementId)"
+    >
+      {{ _indexList.textKey | translate }}
+    </a>
+  </div>
+</aside>

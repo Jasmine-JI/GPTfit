@@ -1,0 +1,34 @@
+@import 'color.scss';
+
+$font-size: 0.9rem;
+$width: 8rem;
+
+.aside__index {
+  position: relative;
+  width: $width;
+  max-width: $width;
+  font-size: $font-size;
+}
+
+.fiexd__container {
+  position: fixed;
+  max-width: $width;
+  transform: translateY(2rem);
+}
+
+.first__layer__index {
+  color: rgba(0, 137, 255, 1);
+}
+
+.second__layer__index {
+  color: black;
+  margin-left: $font-size;
+}
+
+/****************************** media **************************/
+
+@media (max-width: 767px) {
+  .aside__index {
+    display: none;
+  }
+}

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './navbar/navbar.component';
 import { Page404Component } from './page404/page404.component';
 import { LoadingComponent } from './loading/loading.component';
-import { PaginationComponent } from './pagination/pagination.component';
 import { UploadFileComponent } from './upload-file/upload-file.component';
 import { RouterModule } from '@angular/router';
 import { IntlPhoneInputComponent } from './intl-phone-input/intl-phone-input.component';
@@ -209,7 +208,6 @@ import {
     NavbarComponent,
     Page404Component,
     LoadingComponent,
-    PaginationComponent,
     UploadFileComponent,
     IntlPhoneInputComponent,
     MessageBoxComponent,
@@ -275,7 +273,6 @@ import {
     Page404Component,
     Page403Component,
     LoadingComponent,
-    PaginationComponent,
     UploadFileComponent,
     IntlPhoneInputComponent,
     MessageBoxComponent,

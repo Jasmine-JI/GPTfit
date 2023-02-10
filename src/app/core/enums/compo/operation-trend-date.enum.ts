@@ -24,4 +24,7 @@ export enum CompareTrendRange {
   nearlyTwoYears,
   nearlyTwoSeasons,
   nearlyTwoMonths,
+  lastTwoYears,
+  lastTwoSeasons,
+  lastTwoMonths,
 }

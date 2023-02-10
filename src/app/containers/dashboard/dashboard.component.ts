@@ -43,6 +43,7 @@ enum Dashboard {
   deviceSearch,
   deviceLog,
   operationReport,
+  groupOperationList,
   appFlowAnalysis,
 }
 

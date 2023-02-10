@@ -425,6 +425,12 @@
                       nameKey: '營運分析報告'
                     },
                     {
+                      type: sideBarList.groupOperationList,
+                      link: '/dashboard/system/group-operation-list',
+                      display: systemAccessright < AccessRight.brandAdmin,
+                      nameKey: '群組分析列表'
+                    },
+                    {
                       type: sideBarList.appFlowAnalysis,
                       link: '/dashboard/system/ala-app-analysis',
                       display: systemAccessright <= AccessRight.maintainer,

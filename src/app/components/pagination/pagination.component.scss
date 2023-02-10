@@ -42,7 +42,13 @@ $drop-menu-width: 40px;
 }
 
 .switch__btn {
-  color: $pagination-color;
+  color: black;
+  font-weight: bold;
+}
+
+.switch__btn--disabled {
+  pointer-events: none;
+  color: rgba(0, 0, 0, 0.5);
 }
 
 .pagination__drop__menu {

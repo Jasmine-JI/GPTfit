@@ -18,7 +18,5 @@ export class OperationDataTableComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {}
 
-  ngOnChanges(e: SimpleChanges): void {
-    console.log('tableChange', e);
-  }
+  ngOnChanges(e: SimpleChanges): void {}
 }

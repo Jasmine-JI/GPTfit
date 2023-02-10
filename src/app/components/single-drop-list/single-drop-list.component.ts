@@ -7,6 +7,8 @@ import {
   Input,
   Output,
   EventEmitter,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
@@ -20,6 +22,7 @@ import { takeUntil } from 'rxjs/operators';
   imports: [CommonModule, TranslateModule],
   templateUrl: './single-drop-list.component.html',
   styleUrls: ['./single-drop-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SingleDropListComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject();
@@ -40,13 +43,17 @@ export class SingleDropListComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() dropList: Array<SingleLayerList>;
   @Input() defaultSelectIndex: [number, number] = [0, 0];
-  @Input() maxWidth: number = 200;
+  @Input() maxWidth = 200;
   @Output() selectItem = new EventEmitter<[number, number]>();
 
-  constructor() {}
+  constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
   ngOnInit(): void {}
 
+  /**
+   * 取得下拉選單內容時，先給預設選擇選項
+   * @param changes {SimpleChanges}-input change event
+   */
   ngOnChanges(changes: SimpleChanges): void {
     const { dropList } = this;
     if (dropList && dropList.length > 0) {
@@ -107,6 +114,7 @@ export class SingleDropListComponent implements OnInit, OnChanges, OnDestroy {
       .subscribe(() => {
         this.showDropList = false;
         this.unSubscribePlureEvent();
+        this.changeDetectorRef.markForCheck();
       });
   }
 

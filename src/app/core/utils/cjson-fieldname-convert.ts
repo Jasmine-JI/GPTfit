@@ -1,16 +1,23 @@
+import { CommercePlan } from '../enums/professional';
+
 /**
  * 裝置 fieldName 代號轉為翻譯鍵名
  * @param code {string}-方案統計數據代號
  */
-export function groupPlanCodeConvert(code: string) {
-  switch (code) {
-    case 'p1':
+export function groupPlanCodeConvert(code: string | number) {
+  const checkCode = code.toString().includes('p') ? +(code as string).split('p')[1] : code;
+  switch (checkCode) {
+    case CommercePlan.tryOut:
       return 'universal_group_experiencePlan';
-    case 'p2':
+    case CommercePlan.studio:
       return 'universal_group_studioPlan';
-    case 'p3':
+    case CommercePlan.company:
       return 'universal_group_smePlan';
-    case 'p99':
+    case CommercePlan.enterprise:
+      return '大型企業方案';
+    case CommercePlan.multinational:
+      return '跨國企業方案';
+    case CommercePlan.custom:
       return 'universal_group_customPlan';
     default:
       return 'universal_vocabulary_other';
