@@ -509,6 +509,9 @@ export const compareChartDefault: any = {
   series: [],
 };
 
+/**
+ * 營運分析趨勢圖圖表代表色
+ */
 export const operationTrendColor = [
   'rgba(204, 82, 71, 1)',
   'rgba(204, 133, 71, 1)',

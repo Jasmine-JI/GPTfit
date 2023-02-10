@@ -45,15 +45,25 @@
   let-valueType="valueType"
   let-hideBorderLeft="hideBorderLeft"
 >
-  <span class="grid__cell" [class.grid__column__header]="hideBorderLeft" [ngSwitch]="valueType">
+  <ng-container [ngSwitch]="valueType">
     <ng-container *ngSwitchCase="OperationDataType.icon">
-      <i [class]="value"></i>
+      <span class="grid__cell" [class.grid__column__header]="hideBorderLeft">
+        <i [class]="value"></i>
+      </span>
     </ng-container>
     <ng-container *ngSwitchCase="OperationDataType.translateKey">
-      {{ value | translate }}
+      <span
+        class="grid__cell"
+        [class.grid__column__header]="hideBorderLeft"
+        [title]="value | translate"
+      >
+        {{ value | translate }}
+      </span>
     </ng-container>
     <ng-container *ngSwitchDefault>
-      {{ value || ' ' }}
+      <span class="grid__cell" [class.grid__column__header]="hideBorderLeft">
+        {{ value || ' ' }}
+      </span>
     </ng-container>
-  </span>
+  </ng-container>
 </ng-template>

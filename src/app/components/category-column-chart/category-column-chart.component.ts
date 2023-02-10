@@ -51,7 +51,6 @@ export class CategoryColumnChartComponent implements OnInit, OnChanges, OnDestro
   }
 
   ngOnChanges(e: SimpleChanges): void {
-    console.log('changes', e);
     const { data } = e;
     if (data) this.initChart(data.currentValue);
   }
@@ -106,7 +105,6 @@ export class CategoryColumnChartComponent implements OnInit, OnChanges, OnDestro
     chartOption.xAxis = { type: 'category' };
     chartOption.yAxis = { title: null };
     chartOption.series = this.getSeries();
-    console.log('chartOption', chartOption);
     return chartOption;
   }
 
@@ -115,7 +113,6 @@ export class CategoryColumnChartComponent implements OnInit, OnChanges, OnDestro
    */
   getSeries() {
     const { data, seriesName } = this;
-    console.log('column data', data);
     return data.map((_data, _index) => {
       const _value = _data.data ?? _data;
       const result: any = {

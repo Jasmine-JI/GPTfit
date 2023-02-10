@@ -10,15 +10,18 @@ $height: 24px;
   position: relative;
   margin-left: 5px;
   justify-content: center;
+  min-width: 5rem;
 }
 
 .current__select__item {
   display: flex;
+  justify-content: center;
+  width: 100%;
   cursor: pointer;
   border-bottom: 1px solid black;
   max-height: $height;
   padding-right: 20px;
-  @include drop-triangle();
+  @include drop-triangle(6px, 4px, black, 3px);
 }
 
 .current__select__item--active {

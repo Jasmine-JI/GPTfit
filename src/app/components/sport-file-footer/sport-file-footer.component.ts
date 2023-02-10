@@ -2,9 +2,9 @@ import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import {
-  UNKNOWN_DEVICE_IMAGE_PATH,
-  PROFESSIONAL_ICON_SUBSTITUDE_PATH,
-  PERSONAL_ICON_SUBSTITUDE_PATH,
+  unknownDeviceImagePath,
+  professionalIconSubstitudePath,
+  personalIconSubstitudePath,
 } from '../../core/models/const';
 import { ProductTypePipe } from '../../core/pipes';
 import { FileFooterInfo } from '../../core/models/compo';
@@ -20,9 +20,9 @@ import { FileFooterInfo } from '../../core/models/compo';
 export class SportFileFooterComponent implements OnInit {
   @Input() footerInfo: FileFooterInfo;
 
-  readonly UNKNOWN_DEVICE_IMAGE_PATH = UNKNOWN_DEVICE_IMAGE_PATH;
-  readonly PROFESSIONAL_ICON_SUBSTITUDE_PATH = PROFESSIONAL_ICON_SUBSTITUDE_PATH;
-  readonly PERSONAL_ICON_SUBSTITUDE_PATH = PERSONAL_ICON_SUBSTITUDE_PATH;
+  readonly unknownDeviceImagePath = unknownDeviceImagePath;
+  readonly professionalIconSubstitudePath = professionalIconSubstitudePath;
+  readonly personalIconSubstitudePath = personalIconSubstitudePath;
   readonly defaultDescriptionLength = 50;
 
   /**

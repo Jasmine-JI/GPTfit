@@ -20,3 +20,7 @@ export * from './loading-bar/loading-bar.component';
 export * from './category-column-chart/category-column-chart.component';
 export * from './operation-data-table/operation-data-table.component';
 export * from './single-drop-list/single-drop-list.component';
+export * from './pagination/pagination.component';
+export * from './page-road-path/page-road-path.component';
+export * from './operation-list-condition/operation-list-condition.component';
+export * from './aside-index-box/aside-index-box.component';

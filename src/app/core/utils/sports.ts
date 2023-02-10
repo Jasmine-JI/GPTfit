@@ -147,6 +147,38 @@ export function getSportsTypeKey(code: number | string) {
 }
 
 /**
+ * 將 cjson 運動類別代碼轉為運動類別名稱
+ * @param code {string}-cjson運動類別代碼
+ */
+export function translateSportsCode(code: string) {
+  const sportsCode = +code.split('s')[1];
+  switch (sportsCode) {
+    case SportType.run:
+      return 'run';
+    case SportType.cycle:
+      return 'cycle';
+    case SportType.weightTrain:
+      return 'weightTraining';
+    case SportType.swim:
+      return 'swim';
+    case SportType.aerobic:
+      return 'aerobic';
+    case SportType.row:
+      return 'row';
+    case SportType.ball:
+      return 'ball';
+    case SportType.all:
+      return 'all';
+    case SportType.complex:
+      return 'complex';
+    case SportType.rest:
+      return 'rest';
+    default:
+      return 'other';
+  }
+}
+
+/**
  * 根據運動類別指派代表色
  * @param code {number | string}-運動類別代號
  */

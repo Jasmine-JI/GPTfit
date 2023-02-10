@@ -19,10 +19,10 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MapReservedSpace, RacerMarkInLeafletMap } from '../../core/classes';
 import { deepCopy } from '../../core/utils';
 import {
-  TAIWAN_CENTER_LATLNG,
-  MAP_START_ICON_PATH,
-  MAP_END_ICON_PATH,
-  MAP_CURRENT_ICON_PATH,
+  taiwanCenterLatLng,
+  mapStartIconPath,
+  mapEndIconPath,
+  mapCurrentIconPath,
 } from '../../core/models/const';
 import 'heatmap.js';
 import { RacerInfo } from '../../core/models/compo';
@@ -184,7 +184,7 @@ export class LeafletMapComponent implements OnInit, OnChanges, OnDestroy {
         const container = this.mapContainer.nativeElement;
         const option = {
           ...this.mapSetting,
-          center: TAIWAN_CENTER_LATLNG,
+          center: taiwanCenterLatLng,
           scrollWheelZoom: false,
           dragging: false,
         };
@@ -214,10 +214,10 @@ export class LeafletMapComponent implements OnInit, OnChanges, OnDestroy {
     const startLatLng = path[0];
     const endLatLng = path[path.length - 1];
     const startMark = leaflet.marker(startLatLng, {
-      icon: this.getMarkIcon(MAP_START_ICON_PATH, false),
+      icon: this.getMarkIcon(mapStartIconPath, false),
     });
     const endMark = leaflet.marker(endLatLng, {
-      icon: this.getMarkIcon(MAP_END_ICON_PATH, false),
+      icon: this.getMarkIcon(mapEndIconPath, false),
     });
 
     startMark.addTo(this.leafletMap);
@@ -282,7 +282,7 @@ export class LeafletMapComponent implements OnInit, OnChanges, OnDestroy {
         break;
       default:
         this.currentMark = leaflet.marker(startLatLng, {
-          icon: this.getMarkIcon(MAP_CURRENT_ICON_PATH, true),
+          icon: this.getMarkIcon(mapCurrentIconPath, true),
         });
         this.currentMark.addTo(this.leafletMap);
         break;

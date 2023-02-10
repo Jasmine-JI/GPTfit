@@ -24,6 +24,8 @@ $header-width: 150px;
 }
 
 .column__header__cell {
+  overflow-x: hidden;
+  text-overflow: ellipsis;
   border-bottom: $cell-border;
 }
 

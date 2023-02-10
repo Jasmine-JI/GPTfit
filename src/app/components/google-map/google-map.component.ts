@@ -18,10 +18,10 @@ import { map } from 'rxjs/operators';
 import { TranslateModule } from '@ngx-translate/core';
 import { MapReservedSpace, RacerMarkInGoogleMap } from '../../core/classes';
 import {
-  TAIWAN_CENTER_LATLNG,
-  MAP_START_ICON_PATH,
-  MAP_END_ICON_PATH,
-  MAP_CURRENT_ICON_PATH,
+  taiwanCenterLatLng,
+  mapStartIconPath,
+  mapEndIconPath,
+  mapCurrentIconPath,
 } from '../../core/models/const';
 import 'heatmap.js';
 import { RacerInfo } from '../../core/models/compo';
@@ -224,7 +224,7 @@ export class GoogleMapComponent implements OnInit, OnChanges, OnDestroy {
         const { bounds, mapPath } = data;
         this.googleMapPath = mapPath;
         const container = this.mapContainer.nativeElement;
-        const [centerLat, centerLng] = TAIWAN_CENTER_LATLNG;
+        const [centerLat, centerLng] = taiwanCenterLatLng;
         const centerPoint = new google.maps.LatLng(centerLat, centerLng);
         const option = {
           ...this.mapSetting,
@@ -257,12 +257,12 @@ export class GoogleMapComponent implements OnInit, OnChanges, OnDestroy {
     const endLatLng = path[path.length - 1];
     const startMark = new google.maps.Marker({
       position: startLatLng,
-      icon: MAP_START_ICON_PATH,
+      icon: mapStartIconPath,
       title: 'Start point',
     });
     const endMark = new google.maps.Marker({
       position: endLatLng,
-      icon: MAP_END_ICON_PATH,
+      icon: mapEndIconPath,
       title: 'End point',
     });
 
@@ -327,7 +327,7 @@ export class GoogleMapComponent implements OnInit, OnChanges, OnDestroy {
       default:
         this.currentMark = new google.maps.Marker({
           position: startLatLng,
-          icon: MAP_CURRENT_ICON_PATH,
+          icon: mapCurrentIconPath,
           title: 'User',
         });
 

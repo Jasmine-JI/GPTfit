@@ -7,15 +7,19 @@ import {
   EventEmitter,
   Input,
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { fromEvent, Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { PaginationSetting } from '../../models/pagination';
-import { deepCopy } from '../../../core/utils/index';
+import { PaginationSetting } from '../../shared/models/pagination';
+import { deepCopy } from '../../core/utils';
 
 @Component({
   selector: 'app-pagination',
   templateUrl: './pagination.component.html',
   styleUrls: ['./pagination.component.scss'],
+  standalone: true,
+  imports: [CommonModule, TranslateModule],
 })
 export class PaginationComponent implements OnInit, OnDestroy, OnChanges {
   @Output() pageChange = new EventEmitter();
@@ -44,7 +48,6 @@ export class PaginationComponent implements OnInit, OnDestroy, OnChanges {
   /**
    * 顯示一頁顯示項數選單
    * @param e {MouseEvent}
-   * @author kidin-1100712
    */
   showPageSizeOpt(e: MouseEvent) {
     e.stopPropagation();
@@ -59,7 +62,6 @@ export class PaginationComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * 訂閱全域點擊事件
-   * @author kidin-1100712
    */
   subscribeClickEvent() {
     const click = fromEvent(document, 'click');
@@ -71,7 +73,6 @@ export class PaginationComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * 切換頁碼
-   * @author kidin-1100712
    */
   switchPage(action: 'pre' | 'next') {
     if (action === 'pre') {
@@ -98,7 +99,6 @@ export class PaginationComponent implements OnInit, OnDestroy, OnChanges {
   /**
    * 變更單頁顯示項數
    * @param size {number}-單一頁所顯示項數
-   * @author kidin-1100712
    */
   changeOnePageSize(size: number) {
     this.pageSettingObj.onePageSize = size;
@@ -108,7 +108,6 @@ export class PaginationComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * 向父組件傳遞頁碼設定
-   * @author kidin-1100712
    */
   emitPageSetting() {
     this.pageChange.emit(this.pageSettingObj);

@@ -1,10 +1,10 @@
 import {
-  WEARABLE_BACKGROUND_IMAGE_PATH,
-  TREADMILL_BACKGROUND_IMAGE_PATH,
-  SPINBIKE_BACKGROUND_IMAGE_PATH,
-  ROWMACHINE_BACKGROUND_IMAGE_PATH,
-  SENSOR_BACKGROUND_IMAGE_PATH,
-  UNKNOWN_DEVICE_IMAGE_PATH,
+  wearableBackgroundImagePath,
+  treadmillBackgroundImagePath,
+  spinbikeBackgroundImagePath,
+  rowmachineBackgroundImagePath,
+  sensorBackgroundImagePath,
+  unknownDeviceImagePath,
 } from '../models/const/image-path.model';
 import { deviceColor } from '../models/represent-color';
 
@@ -12,37 +12,43 @@ import { deviceColor } from '../models/represent-color';
  * 根據裝置代號取得所需資訊
  * @param name {string}-裝置代號
  */
-export function getDevicTypeInfo(name: string, args: 'key' | 'imgPath' | 'color') {
+export function getDevicTypeInfo(name: string, args: 'key' | 'imgPath' | 'color' | 'type') {
   const device = {
     wearable: {
       key: 'universal_vocabulary_wearableDevice',
-      imgPath: WEARABLE_BACKGROUND_IMAGE_PATH,
+      imgPath: wearableBackgroundImagePath,
       color: deviceColor.wearable,
+      type: 'wearable',
     },
     treadmill: {
       key: 'universal_vocabulary_treadmill',
-      imgPath: TREADMILL_BACKGROUND_IMAGE_PATH,
+      imgPath: treadmillBackgroundImagePath,
       color: deviceColor.treadmill,
+      type: 'treadmill',
     },
     spinBike: {
       key: 'universal_vocabulary_spinBike',
-      imgPath: SPINBIKE_BACKGROUND_IMAGE_PATH,
+      imgPath: spinbikeBackgroundImagePath,
       color: deviceColor.spinBike,
+      type: 'spinBike',
     },
     rowMachine: {
       key: 'universal_vocabulary_rowingMachine',
-      imgPath: ROWMACHINE_BACKGROUND_IMAGE_PATH,
+      imgPath: rowmachineBackgroundImagePath,
       color: deviceColor.rowMachine,
+      type: 'rowMachine',
     },
     sensor: {
       key: 'universal_vocabulary_sensor',
-      imgPath: SENSOR_BACKGROUND_IMAGE_PATH,
+      imgPath: sensorBackgroundImagePath,
       color: deviceColor.sensor,
+      type: 'sensor',
     },
     unknown: {
       key: 'Unknown',
-      imgPath: UNKNOWN_DEVICE_IMAGE_PATH,
+      imgPath: unknownDeviceImagePath,
       color: deviceColor.unknown,
+      type: 'unknown',
     },
   };
 

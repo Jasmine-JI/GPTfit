@@ -1,0 +1,14 @@
+.road__path {
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.path__link {
+  color: black;
+}
+
+.path__link--disabled {
+  color: rgba(0, 123, 255, 1);
+  pointer-events: none;
+}
