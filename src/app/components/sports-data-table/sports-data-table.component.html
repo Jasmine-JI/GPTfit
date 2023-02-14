@@ -1,6 +1,9 @@
 <section class="report-section">
   <div class="flexRow cardTitle">
-    <h6 class="cardSubtitle">{{ tableTitleKey | translate }}</h6>
+    <div class="flexRow">
+      <h6 class="cardSubtitle">{{ tableTitleKey | translate }}</h6>
+      <app-tip-dialog [description]="description" *ngIf="description"></app-tip-dialog>
+    </div>
     <div class="report-optionSection">
       <button (click)="showAnalysisOption($event)">
         <i class="icon-svg_web-icon_p1_001-setting report-settingIcon"></i>

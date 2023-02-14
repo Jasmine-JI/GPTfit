@@ -19,6 +19,7 @@ import { WeightTrainStatistics } from '../weight-train-statistics';
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { TargetConditionMap } from '../../../core/models/api/api-common';
+import { SportsTargetAchieveRate } from './target-achieve-rate';
 
 dayjs.extend(quarterOfYear);
 
@@ -49,10 +50,9 @@ export class SportsReport {
     const maxDataIntermediary = {};
     if (openPrivacy) {
       const { sportType } = condition;
-      const dataKey = this.getDataKey(sportType!);
+      const dataKey = this.getDataKey(sportType);
       const preferSports = new PreferSportType();
       const preferWeightTrainGroup = new WeightTrainStatistics();
-
       data.forEach((_data) => {
         const { activities: _activities } = _data;
         _activities.forEach((_activity) => {
@@ -96,11 +96,14 @@ export class SportsReport {
 
       // 最後處理其他數據
       if (Object.keys(dataObj).length > 0) {
+        const avgAcheieve = new SportsTargetAchieveRate(parameter).avgAcheieveRate;
         dataObj = {
           ...dataObj,
           ...maxDataIntermediary,
           ...this.getAvgData(avgDataIntermediary),
           preferSports: preferSports.preferSport,
+          targetAchieveRate: avgAcheieve,
+          targetAchieved: avgAcheieve >= 100,
         };
 
         dataObj = {
@@ -178,83 +181,27 @@ export class SportsReport {
    * @param parameter {any}-統計運動數據所需參數與數據
    */
   postProcessingData(parameter: any) {
-    const { targetCondition, condition, dataObj, timeType, benefitTimeStartZone } = parameter;
+    const { condition, dataObj, timeType, benefitTimeStartZone } = parameter;
     const { dateUnit, baseTime, compareTime } = condition;
     const {
-      totalActivities,
       totalHrZone0Second: zone0,
       totalHrZone1Second: zone1,
       totalHrZone2Second: zone2,
       totalHrZone3Second: zone3,
       totalHrZone4Second: zone4,
       totalHrZone5Second: zone5,
-      totalSecond,
-      avgHeartRateBpm,
     } = dataObj;
     const { realStartTime, realEndTime } =
       timeType === 'base'
         ? baseTime.getReportRealTimeRange(dateUnit.unit)
         : compareTime.getReportRealTimeRange(dateUnit.unit);
-    const targetUnitKey = dateUnit.getUnitString();
-    const crossRange = baseTime.getDiffRange(targetUnitKey);
-    const conditionPercentage = this.getConditionPercentage(targetCondition);
     const reportPeriodDay = Math.round((realEndTime - realStartTime) / DAY);
     const hrZone = [zone0, zone1, zone2, zone3, zone4, zone5];
     const { pai } = SportsReport.countPai(hrZone, reportPeriodDay);
     const benefitTime = countBenefitTime(hrZone, benefitTimeStartZone);
-    let targetAchieved = totalActivities ? true : false;
-    let targetAchieveRate = 0;
-    targetCondition.forEach((_value, _key) => {
-      const { filedValue } = _value;
-      const notWeighted = _key === 'pai' || _key === 'avgHeartRate';
-      const targetValue = (notWeighted ? 1 : crossRange) * +filedValue;
-      switch (_key) {
-        case 'pai':
-          if (pai < targetValue) targetAchieved = false;
-          targetAchieveRate += this.getConditionAchieveRate(pai, targetValue, conditionPercentage);
-          break;
-        case 'benefitTime':
-          if (!benefitTime || benefitTime < targetValue) targetAchieved = false;
-          targetAchieveRate += this.getConditionAchieveRate(
-            benefitTime,
-            targetValue,
-            conditionPercentage
-          );
-          break;
-        case 'totalTime':
-          if (!totalSecond || totalSecond < targetValue) targetAchieved = false;
-          targetAchieveRate += this.getConditionAchieveRate(
-            totalSecond,
-            targetValue,
-            conditionPercentage
-          );
-          break;
-        case 'avgHeartRate':
-          if (!avgHeartRateBpm || avgHeartRateBpm < targetValue) targetAchieved = false;
-          targetAchieveRate += this.getConditionAchieveRate(
-            avgHeartRateBpm,
-            targetValue,
-            conditionPercentage
-          );
-          break;
-        default: {
-          const value = dataObj[_key];
-          if (!value || value < targetValue) targetAchieved = false;
-          targetAchieveRate += this.getConditionAchieveRate(
-            value,
-            targetValue,
-            conditionPercentage
-          );
-          break;
-        }
-      }
-    });
-
     const result = {
       benefitTime,
       pai,
-      targetAchieveRate,
-      targetAchieved,
     };
 
     return result;

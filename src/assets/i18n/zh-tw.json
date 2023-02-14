@@ -2600,7 +2600,7 @@
  "universal_vocabulary_cloudrunIntroSocial": "雲跑是跑者的交誼大廳",
  "universal_vocabulary_cloudrunIntroSocialContent": "雲跑也是一種雲端社群中心，不只使用者可以透過地圖訓練路跑，也能同時開啟競賽模式和其他跑者一同訓練競賽，可同時多人一起參與，透過雲跑APP促使來自世界各地的跑者一起競賽訓練，另外我們也能透過觀賽模式及時觀看競賽實況，使你也能有親臨比賽現況的臨場感。",
  "universal_vocabulary_cloudrunIntroEarn": "通過雲跑可以得到什麼!?",
- "universal_vocabulary_cloudrunIntroEarnContent": "即時的運動數據透過藍牙傳至ALA CloudRun紀錄，並且及時傳送至賽局，與其他跑者進行競賽或模擬路跑練習。<br>活動期間及活動結束，都可取得重要的統計資料，例如距離、配速、速度、和燃燒的熱量。<br>所有的運動數據分析、統計...等，都能在GPT Center上看到。",
+ "universal_vocabulary_cloudrunIntroEarnContent": "即時的運動數據透過藍牙傳至ALA CloudRun紀錄，並且及時傳送至賽局，與其他跑者進行競賽或模擬路跑練習。<br>活動期間及活動結束，都可取得重要的統計資料，例如距離、配速、速度、和燃燒的熱量。<br>所有的運動數據分析、統計...等，都能在GPTfit上看到。",
  "universal_vocabulary_cloudrunIntroGet": "取得雲跑",
  "universal_vocabulary_cloudrunIntroGetContent": "一款提供跑步機真實路線連線競賽與社群互動應用，與相容的Alatech跑步機配對後，可建立起雲端路跑，將路線高度變化透過跑步機模擬實際路況。",
  "universal_vocabulary_typeRealName": "請輸入您的真實姓名",
@@ -2714,5 +2714,9 @@
  "universal_activityData_totalEnergyGen": "總發電量",
  "universal_activityData_genPower": "發電功率",
  "universal_class_singleClassReport": "單堂報告",
- "universal_class_rangeClassReport": "範圍報告"
+ "universal_class_rangeClassReport": "範圍報告",
+ "universal_vocabulary_paiInfo": "為運動強度與運動時間加成計算的數值，建議維持100以上。",
+ "universal_vocabulary_personalTargetInfo": "各日（周/月/季/年）目標達成率之平均值",
+ "universal_vocabulary_groupTargetInfo": "達成群組運動目標的人數佔比，需各時間單位皆達成運動目標才可視為該成員達成群組運動目標",
+ "universal_vocabulary_unitTargetInfo": "時間內各目標平均完成百分比"
 }
