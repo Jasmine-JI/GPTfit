@@ -213,32 +213,34 @@
               [tableData]="overviewData.overviewAnalysisTableData"
             ></app-operation-data-table>
           </div>
-          <div class="data__category" *ngIf="overviewData.classTypeAnalysisTableData">
-            <ng-container
-              *ngTemplateOutlet="
-                dataTypeArea;
-                context: {
-                  title: '開課類別分析',
-                  elementId: 'teach__type__analysis',
-                  description: '各群組使用Trainlive開課之運動類別統計數據'
-                }
-              "
-            ></ng-container>
-            <div
-              *ngTemplateOutlet="
-                doublePieChart;
-                context: {
-                  firstTitleKey: '開課類別',
-                  firstChartData: overviewData.teachSportsTypeChartData,
-                  secondTitleKey: '檔案類別',
-                  secondChartData: overviewData.fileSportsTypeChartData
-                }
-              "
-            ></div>
-            <app-operation-data-table
-              [tableData]="overviewData.classTypeAnalysisTableData"
-            ></app-operation-data-table>
-          </div>
+          <!--
+            <div class="data__category" *ngIf="overviewData.classTypeAnalysisTableData">
+              <ng-container
+                *ngTemplateOutlet="
+                  dataTypeArea;
+                  context: {
+                    title: '開課類別分析',
+                    elementId: 'teach__type__analysis',
+                    description: '各群組使用Trainlive開課之運動類別統計數據'
+                  }
+                "
+              ></ng-container>
+              <div
+                *ngTemplateOutlet="
+                  doublePieChart;
+                  context: {
+                    firstTitleKey: '開課類別',
+                    firstChartData: overviewData.teachSportsTypeChartData,
+                    secondTitleKey: '檔案類別',
+                    secondChartData: overviewData.fileSportsTypeChartData
+                  }
+                "
+              ></div>
+              <app-operation-data-table
+                [tableData]="overviewData.classTypeAnalysisTableData"
+              ></app-operation-data-table>
+            </div>
+          -->
         </ng-container>
 
         <ng-container *ngSwitchCase="SystemAnalysisType.member">
@@ -389,15 +391,16 @@
                 *ngTemplateOutlet="
                   dataTypeArea;
                   context: {
-                    title: '總課程時間趨勢',
+                    title: '總課程時數趨勢',
                     elementId: 'class__time__analysis',
-                    description: '所有群組使用Trainlive開課的總課程時間趨勢數據'
+                    description: '所有群組使用Trainlive開課的總課程時間總時數趨勢數據'
                   }
                 "
               ></ng-container>
               <app-category-column-chart
                 [data]="trendData.groupTrendChartData.totalClassTime.chartData"
                 [seriesName]="trendData.groupTrendChartData.totalClassTime.seriesName"
+                [unit]="'hr'"
               ></app-category-column-chart>
               <app-operation-data-table
                 [tableData]="trendData.groupTrendTableData.totalClassTime"
@@ -488,6 +491,33 @@
                   *ngTemplateOutlet="
                     dataTypeArea;
                     context: {
+                      title: '運動類別趨勢總量',
+                      elementId: 'sports__type__pie',
+                      description:
+                        '依會員上傳之運動檔案其運動類別統計數據趨勢總量，可以得知這段時間各運動類別佔比'
+                    }
+                  "
+                ></ng-container>
+                <div
+                  *ngTemplateOutlet="
+                    doublePieChart;
+                    context: {
+                      firstTitleKey: 'universal_userProfile_male',
+                      firstChartData: trendData.malePieChartData,
+                      secondTitleKey: 'universal_userProfile_female',
+                      secondChartData: trendData.femalePieChartData
+                    }
+                  "
+                ></div>
+                <app-operation-data-table
+                  [tableData]="trendData.sportsTypeTrendTableData"
+                ></app-operation-data-table>
+              </div>
+              <div class="data__category">
+                <ng-container
+                  *ngTemplateOutlet="
+                    dataTypeArea;
+                    context: {
                       title: '運動類別趨勢',
                       elementId: 'sports__type__trend',
                       description: '各運動類別檔案筆數趨勢數據，用來分析各運動類別風氣趨勢'
@@ -504,6 +534,33 @@
               </div>
             </ng-container>
             <ng-container *ngIf="isCompareMode">
+              <div class="data__category">
+                <ng-container
+                  *ngTemplateOutlet="
+                    dataTypeArea;
+                    context: {
+                      title: '運動類別趨勢總量',
+                      elementId: 'sports__type__pie',
+                      description:
+                        '依會員上傳之運動檔案其運動類別統計數據趨勢總量，可以得知這段時間各運動類別佔比'
+                    }
+                  "
+                ></ng-container>
+                <div
+                  *ngTemplateOutlet="
+                    doublePieChart;
+                    context: {
+                      firstTitleKey: trendData.valueHeader[0],
+                      firstChartData: trendData.olderPieChartData,
+                      secondTitleKey: trendData.valueHeader[1],
+                      secondChartData: trendData.newerPieChartData
+                    }
+                  "
+                ></div>
+                <app-operation-data-table
+                  [tableData]="trendData.sportsTypeTrendTableData"
+                ></app-operation-data-table>
+              </div>
               <div class="data__category">
                 <ng-container
                   *ngTemplateOutlet="

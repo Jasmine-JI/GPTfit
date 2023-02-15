@@ -40,7 +40,7 @@ export function groupOverViewConvert(name: string) {
       return '總學員數';
     case 'fileCounts':
       return '總檔案數';
-    case 'deviceCounts':
+    case 'deviceUsedCounts':
       return '裝置使用次數';
     default:
       return 'universal_vocabulary_other';
