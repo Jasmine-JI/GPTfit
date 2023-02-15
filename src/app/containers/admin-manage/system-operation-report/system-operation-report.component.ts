@@ -9,7 +9,7 @@ import {
   Api4102Post,
   Api4102Response,
 } from '../../../core/models/api/api-41xx';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import {
@@ -35,11 +35,11 @@ import {
   assignSportsTypeColor,
   ageCodeConvert,
   getDevicTypeInfo,
-  countPercentage,
   deepCopy,
   changeOpacity,
   getMonthKey,
   translateSportsCode,
+  mathRounding,
 } from '../../../core/utils';
 import { genderColor } from '../../../core/models/represent-color';
 import { DateUnit } from '../../../core/enums/common';
@@ -110,6 +110,61 @@ export class SystemOperationReportComponent implements OnInit {
         endDate: dayjs(endDate).unix(),
         dateUnit,
       };
+    },
+
+    /**
+     * 取得完整日期範圍清單。用來比對 api 回覆的日期範圍
+     */
+    get completeDateRangeList() {
+      const result = [];
+      const { dateUnit, startDate, endDate } = this;
+      switch (dateUnit) {
+        case PostDateUnit.month: {
+          const format = 'YYYY-MM';
+          let [year, month] = dayjs(startDate).format(format).split('-');
+          const [endYear, endMonth] = dayjs(endDate).format(format).split('-');
+          while (year !== endYear || month !== endMonth) {
+            result.push(+`${year}${month}`);
+            if (month === '12') {
+              month = '01';
+              year = `${+year + 1}`;
+            } else {
+              month = `${+month + 1}`.padStart(2, '0');
+            }
+          }
+
+          result.push(+`${endYear}${endMonth}`);
+          break;
+        }
+        default: {
+          const startDayjs = dayjs(startDate);
+          let year = startDayjs.startOf('isoWeek').format('YYYY');
+          let week = startDayjs.isoWeek().toString().padStart(2, '0');
+          const yearEndWeek = startDayjs
+            .endOf('year')
+            .endOf('isoWeek')
+            .isoWeek()
+            .toString()
+            .padStart(2, '0');
+          const endDayjs = dayjs(endDate);
+          const endYear = endDayjs.startOf('isoWeek').format('YYYY');
+          const endWeek = endDayjs.isoWeek().toString().padStart(2, '0');
+          while (year !== endYear || week !== endWeek) {
+            result.push(+`${year}${week}`);
+            if (week === yearEndWeek) {
+              week = '01';
+              year = `${+year + 1}`;
+            } else {
+              week = `${+week + 1}`.padStart(2, '0');
+            }
+          }
+
+          result.push(+`${endYear}${endWeek}`);
+          break;
+        }
+      }
+
+      return result;
     },
   };
 
@@ -202,7 +257,7 @@ export class SystemOperationReportComponent implements OnInit {
       this.progress = 30;
       this.trendData = undefined;
       this.getOperationTrend().subscribe((res) => {
-        this.operationTrend = res as Api4102Response;
+        this.operationTrend = this.fillUpCompleteDate(res as Api4102Response);
         this.trendData = this.handleTrendChartData(this.operationTrend);
         if (!allRefresh) this.progress = 100;
       });
@@ -259,12 +314,131 @@ export class SystemOperationReportComponent implements OnInit {
   }
 
   /**
+   * 將api填補完整的時間範圍清單，同時為數據補零，方便後續繪製圖表與表格
+   * @param res {Api4102Response}-api 4102 回覆內容
+   */
+  fillUpCompleteDate(res: Api4102Response): any {
+    const { completeDateRangeList, type } = this.postInfo;
+    const { trend, processResult } = res;
+    const {
+      timeRange: { fieldValue: timeRange },
+    } = trend;
+    let timeRangeIndex = 0;
+    const finalAnalysis = this.getAnalysisModel(type);
+    completeDateRangeList.forEach((_completeDate, _index) => {
+      const currentTimeRange = timeRange[timeRangeIndex] ? timeRange[timeRangeIndex][0] : null;
+      const haveData = _completeDate === currentTimeRange;
+      switch (type) {
+        case SystemAnalysisType.group: {
+          const {
+            groupCountsAnalysis: { fieldName, fieldValue },
+          } = trend;
+          const fieldNameLength = fieldName.length;
+          finalAnalysis.groupCountsAnalysis.fieldName = fieldName;
+          finalAnalysis.groupCountsAnalysis.fieldValue.push(
+            haveData ? fieldValue[timeRangeIndex] : this.getZeroArray(fieldNameLength)
+          );
+          break;
+        }
+        case SystemAnalysisType.member: {
+          const {
+            memberAnalysis: {
+              fieldName: memberAnalysisFieldName,
+              fieldValue: memberAnalysisFieldValue,
+            },
+            sportsTypeAnalysis: {
+              fieldName: sportsTypeFieldName,
+              maleFieldValue,
+              femaleFieldValue,
+            },
+          } = trend;
+          const memberAnalysisLength = memberAnalysisFieldName.length;
+          finalAnalysis.memberAnalysis.fieldName = memberAnalysisFieldName;
+          finalAnalysis.memberAnalysis.fieldValue.push(
+            haveData
+              ? memberAnalysisFieldValue[timeRangeIndex]
+              : this.getZeroArray(memberAnalysisLength)
+          );
+
+          const sportsTypeLength = sportsTypeFieldName.length;
+          finalAnalysis.sportsTypeAnalysis.fieldName = sportsTypeFieldName;
+          finalAnalysis.sportsTypeAnalysis.maleFieldValue.push(
+            haveData ? maleFieldValue[timeRangeIndex] : this.getZeroArray(sportsTypeLength)
+          );
+          finalAnalysis.sportsTypeAnalysis.femaleFieldValue.push(
+            haveData ? femaleFieldValue[timeRangeIndex] : this.getZeroArray(sportsTypeLength)
+          );
+          break;
+        }
+        case SystemAnalysisType.device: {
+          const {
+            deviceTypeAnalysis: { fieldName, enableFieldValue, registerFieldValue },
+          } = trend;
+          const fieldNameLength = fieldName.length;
+          finalAnalysis.deviceTypeAnalysis.fieldName = fieldName;
+          finalAnalysis.deviceTypeAnalysis.enableFieldValue.push(
+            haveData ? enableFieldValue[timeRangeIndex] : this.getZeroArray(fieldNameLength)
+          );
+          finalAnalysis.deviceTypeAnalysis.registerFieldValue.push(
+            haveData ? registerFieldValue[timeRangeIndex] : this.getZeroArray(fieldNameLength)
+          );
+          break;
+        }
+      }
+
+      if (haveData) timeRangeIndex++;
+    });
+
+    return {
+      processResult,
+      trend: {
+        timeRange: {
+          fieldName: ['dateRange'],
+          fieldValue: completeDateRangeList.map((_list) => [_list]),
+        },
+        ...finalAnalysis,
+      },
+    };
+  }
+
+  /**
+   * 取得各類別趨勢數據模型，供數據加工用
+   * @param type {SystemAnalysisType}-營運報告類型
+   */
+  getAnalysisModel(type: SystemAnalysisType) {
+    switch (type) {
+      case SystemAnalysisType.group: {
+        return { groupCountsAnalysis: { fieldName: [], fieldValue: [] } };
+      }
+      case SystemAnalysisType.member: {
+        return {
+          memberAnalysis: { fieldName: [], fieldValue: [] },
+          sportsTypeAnalysis: { fieldName: [], maleFieldValue: [], femaleFieldValue: [] },
+        };
+      }
+      case SystemAnalysisType.device: {
+        return {
+          deviceTypeAnalysis: { fieldName: [], enableFieldValue: [], registerFieldValue: [] },
+        };
+      }
+    }
+  }
+
+  /**
+   * 取得指定長度的且數值皆為0的陣列
+   * @param length {number}-數據
+   */
+  getZeroArray(length: number) {
+    return new Array(length).fill(0);
+  }
+
+  /**
    * 處理趨勢分析圖表數據
    * @param data {any}-api 4102 res
    */
   handleTrendChartData(data: any) {
     const {
-      postInfo: { type },
+      postInfo: { type, completeDateRangeList },
       isCompareMode,
     } = this;
     const { trendChartUnit } = this;
@@ -658,26 +832,7 @@ export class SystemOperationReportComponent implements OnInit {
     const { typeFieldName, maleFieldValue, femaleFieldValue } = data;
     const maleSportsTypeChartData = [];
     const femaleSportsTypeChartData = [];
-    const sportsTypeTableData = {
-      option: <OperationTableOption>{
-        headerRowType: [
-          OperationDataType.translateKey,
-          OperationDataType.translateKey,
-          OperationDataType.translateKey,
-          OperationDataType.translateKey,
-        ],
-        valueRowType: [
-          OperationDataType.translateKey,
-          OperationDataType.normal,
-          OperationDataType.normal,
-          OperationDataType.normal,
-        ],
-      },
-      data: [
-        ['運動類別', 'universal_userProfile_male', 'universal_userProfile_female', '總檔案數'],
-      ],
-    };
-
+    const sportsTypeTableData = this.getGenderSportsTypeTableModel();
     typeFieldName.forEach((_name, _index) => {
       const _translateKey = getSportsTypeKey(_name);
       const _maleValue = maleFieldValue[_index];
@@ -697,6 +852,31 @@ export class SystemOperationReportComponent implements OnInit {
       sportsTypeTableData.data.push([_translateKey, _maleValue, _femaleValue, _totalCount]);
     });
     return { maleSportsTypeChartData, femaleSportsTypeChartData, sportsTypeTableData };
+  }
+
+  /**
+   * 取得依性別與運動類別混合分析列表模型
+   */
+  getGenderSportsTypeTableModel() {
+    return {
+      option: <OperationTableOption>{
+        headerRowType: [
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+        ],
+        valueRowType: [
+          OperationDataType.translateKey,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+        ],
+      },
+      data: <Array<Array<string | number>>>[
+        ['運動類別', 'universal_userProfile_male', 'universal_userProfile_female', '總檔案數'],
+      ],
+    };
   }
 
   /**
@@ -758,9 +938,12 @@ export class SystemOperationReportComponent implements OnInit {
       const dateRange = this.getDateRangeTimestamp(_dateRange[0]);
       analysisName.forEach((_fieldName, _nameIndex) => {
         const dataValue = analysisValue[_dateIndex][_nameIndex];
+        const hour = 3600;
+        const processedValue =
+          _fieldName === 'totalClassTime' ? mathRounding(dataValue / hour, 1) : dataValue;
         groupTrendChartData[_fieldName].chartData[0].data.push({
           name: this.getXAxisName(trendChartUnit, dateRange.startDate),
-          y: dataValue,
+          y: processedValue,
         });
 
         const trendTableRowHeader = this.getTrendTableRowHeader(dateRange.startDate);
@@ -783,15 +966,15 @@ export class SystemOperationReportComponent implements OnInit {
             },
             data: [
               [`日期範圍(${this.getDateUnitString()})`, dataName, '增長(%)'],
-              [trendTableRowHeader, dataValue, '0'],
+              [trendTableRowHeader, processedValue, '-'],
             ],
           };
         } else {
           const prevValue = analysisValue[_dateIndex - 1][_nameIndex];
           groupTrendTableData[_fieldName].data.push([
             trendTableRowHeader,
-            dataValue,
-            `${countPercentage(dataValue - prevValue, prevValue, 1)}`,
+            processedValue,
+            `${this.countIncreaseRatio(processedValue - prevValue, prevValue, 1)}`,
           ]);
         }
       });
@@ -879,6 +1062,8 @@ export class SystemOperationReportComponent implements OnInit {
 
     let malePrevTotal = 0;
     let femalePrevTotal = 0;
+    const maleTrendPieDataMap = new Map();
+    const femaleTrendPieDataMap = new Map();
     rangeValue.forEach((_dateRange, _dateIndex) => {
       const dateRange = this.getDateRangeTimestamp(_dateRange[0]);
       const trendTableRowHeader = this.getTrendTableRowHeader(dateRange.startDate);
@@ -910,7 +1095,7 @@ export class SystemOperationReportComponent implements OnInit {
             },
             data: [
               [`日期範圍(${this.getDateUnitString()})`, dataName, '增長(%)'],
-              [trendTableRowHeader, dataValue, '0'],
+              [trendTableRowHeader, dataValue, '-'],
             ],
           };
         } else {
@@ -918,7 +1103,7 @@ export class SystemOperationReportComponent implements OnInit {
           memberTrendTableData[_fieldName].data.push([
             trendTableRowHeader,
             dataValue,
-            `${countPercentage(dataValue - prevValue, prevValue, 1)}`,
+            `${this.countIncreaseRatio(dataValue - prevValue, prevValue, 1)}`,
           ]);
         }
       });
@@ -931,6 +1116,8 @@ export class SystemOperationReportComponent implements OnInit {
         const maleValue = maleFieldValue[_dateIndex][_typeIndex];
         const femaleValue = femaleFieldValue[_dateIndex][_typeIndex];
         const typeValue = maleValue + femaleValue;
+        maleTrendPieDataMap.set(_code, (maleTrendPieDataMap.get(_code) ?? 0) + maleValue);
+        femaleTrendPieDataMap.set(_code, (femaleTrendPieDataMap.get(_code) ?? 0) + femaleValue);
         maleFileTotal += maleValue;
         femaleFileTotal += femaleValue;
         memberTrendChartData[typeFieldName].chartData[_typeIndex].data.push({
@@ -956,16 +1143,52 @@ export class SystemOperationReportComponent implements OnInit {
       memberTrendTableData[genderFieldName].data.push([
         trendTableRowHeader,
         maleFileTotal,
-        `${countPercentage(maleFileTotal - malePrevTotal, malePrevTotal, 1)}`,
+        `${this.countIncreaseRatio(maleFileTotal - malePrevTotal, malePrevTotal, 1)}`,
         femaleFileTotal,
-        `${countPercentage(femaleFileTotal - femalePrevTotal, femalePrevTotal, 1)}`,
+        `${this.countIncreaseRatio(femaleFileTotal - femalePrevTotal, femalePrevTotal, 1)}`,
       ]);
 
       malePrevTotal = maleFileTotal;
       femalePrevTotal = femaleFileTotal;
     });
 
-    return { memberTrendChartData, memberTrendTableData };
+    return {
+      memberTrendChartData,
+      memberTrendTableData,
+      ...this.getGenderSportsTypeTrend(maleTrendPieDataMap, femaleTrendPieDataMap),
+    };
+  }
+
+  /**
+   * 將運動類別Map物件轉highchart可用的圖表數據
+   * @param maleMap {Map<number, number>}-男性運動類別資訊
+   * @param femaleMap {Map<number, number>}-女性運動類別資訊
+   */
+  getGenderSportsTypeTrend(maleMap: Map<string, number>, femaleMap: Map<string, number>) {
+    const malePieChartData = [];
+    const femalePieChartData = [];
+    const sportsTypeTrendTableData = this.getGenderSportsTypeTableModel();
+    maleMap.forEach((_maleValue, _typeCode) => {
+      const _femaleValue = femaleMap.get(_typeCode);
+      const _translateKey = getSportsTypeKey(_typeCode);
+      const sportsTypeName = this.translate.instant(_translateKey);
+      malePieChartData.push({
+        name: sportsTypeName,
+        y: _maleValue,
+        color: assignSportsTypeColor(_typeCode),
+      });
+
+      femalePieChartData.push({
+        name: sportsTypeName,
+        y: _femaleValue,
+        color: assignSportsTypeColor(_typeCode),
+      });
+
+      const _totalCount = _maleValue + _femaleValue;
+      sportsTypeTrendTableData.data.push([_translateKey, _maleValue, _femaleValue, _totalCount]);
+    });
+
+    return { malePieChartData, femalePieChartData, sportsTypeTrendTableData };
   }
 
   /**
@@ -1065,6 +1288,7 @@ export class SystemOperationReportComponent implements OnInit {
     const finalLength = newerDataLength >= olderDataLength ? newerDataLength : olderDataLength;
     const olderTotalValueObj = {};
     const newerTotalValueObj = {};
+
     for (let i = 0; i < finalLength; i++) {
       const _olderRange = olderRange[i] ? this.getDateRangeTimestamp(olderRange[i]) : null;
       const _newerRange = newerRange[i] ? this.getDateRangeTimestamp(newerRange[i]) : null;
@@ -1117,7 +1341,7 @@ export class SystemOperationReportComponent implements OnInit {
             },
             data: [
               [`單位日期`, olderColumnHeader, newerColumnHeader, '增長(%)'],
-              [trendTableRowHeader, _olderValue, _newerValue, '0'],
+              [trendTableRowHeader, _olderValue, _newerValue, '-'],
             ],
           };
         } else {
@@ -1125,7 +1349,7 @@ export class SystemOperationReportComponent implements OnInit {
             trendTableRowHeader,
             _olderValue ?? '-',
             _newerValue ?? '-',
-            `${countPercentage(_newerValue - _olderValue, _olderValue, 1)}`,
+            `${this.countIncreaseRatio(_newerValue - _olderValue, _olderValue, 1)}`,
           ]);
         }
 
@@ -1136,7 +1360,7 @@ export class SystemOperationReportComponent implements OnInit {
             'universal_adjective_total',
             olderTotalValue,
             newerTotalValue,
-            `${countPercentage(newerTotalValue - olderTotalValue, olderTotalValue, 1)}`,
+            `${this.countIncreaseRatio(newerTotalValue - olderTotalValue, olderTotalValue, 1)}`,
           ]);
         }
       });
@@ -1212,42 +1436,72 @@ export class SystemOperationReportComponent implements OnInit {
 
   /**
    * 取得根據範圍日期顯示單位將數據切分兩個時期的切分序列
-   * @param rangeValue {Array<Array<string>>}-報告日期清單
+   * @param rangeValue {Array<Array<number>>}-報告日期清單
    */
-  getSplitIndex(rangeValue: Array<Array<string>>) {
+  getSplitIndex(rangeValue: Array<Array<number>>) {
     const { trendChartUnit } = this;
+    switch (trendChartUnit) {
+      case DateUnit.month:
+        return this.getSplitYearIndex(rangeValue);
+      default: {
+        return rangeValue.length > 12
+          ? this.getSplitSeasonIndex(rangeValue)
+          : this.getSplitMonthIndex(rangeValue);
+      }
+    }
+  }
+
+  /**
+   * 取得根據範圍日期顯示單位將數據切分兩年的切分序列
+   * @param rangeValue {Array<Array<number>>}-報告日期清單
+   */
+  getSplitYearIndex(rangeValue: Array<Array<number>>) {
     return rangeValue.findIndex((_range, _index) => {
       if (_index === 0) return false;
       const _previousIndex = _index - 1;
       const _currentYear = _range[0].toString().slice(0, 4);
       const _previousYear = rangeValue[_previousIndex][0].toString().slice(0, 4);
-      switch (trendChartUnit) {
-        case DateUnit.month:
-          return _currentYear !== _previousYear;
-        default: {
-          const _currentWeek = _range[0].toString().slice(4, 6);
-          const _currentDayjs = dayjs(_currentYear, 'YYYY')
-            .endOf('year')
-            .isoWeek(+_currentWeek)
-            .endOf('isoWeek');
-          const _previousWeek = rangeValue[_previousIndex][0].toString().slice(4, 6);
-          const _previousDayjs = dayjs(_previousYear, 'YYYY')
-            .endOf('year')
-            .isoWeek(+_previousWeek)
-            .endOf('isoWeek');
-          if (rangeValue.length > 10) {
-            // 代表兩季相比較
-            const _currentSeason = _currentDayjs.quarter();
-            const _previousSeason = _previousDayjs.quarter();
-            return _currentSeason !== _previousSeason;
-          } else {
-            // 兩個月相比較
-            const _currentMonth = _currentDayjs.month();
-            const _previousMonth = _previousDayjs.month();
-            return _currentMonth !== _previousMonth;
-          }
-        }
-      }
+      return _currentYear !== _previousYear;
+    });
+  }
+
+  /**
+   * 取得根據範圍日期顯示單位將數據切分兩季的切分序列
+   * @param rangeValue {Array<Array<number>>}-報告日期清單
+   */
+  getSplitSeasonIndex(rangeValue: Array<Array<number>>) {
+    const dateFirst = rangeValue[0][0].toString();
+    const [yearFirst, weekFirst] = [dateFirst.slice(0, 4), +dateFirst.slice(4, 6)];
+    // 用該週第一天當作季的判斷基準
+    const getSeason = (year: string, week: number) =>
+      dayjs(year, 'YYYY').endOf('year').isoWeek(week).startOf('isoWeek').quarter();
+    const seasonFirst = getSeason(yearFirst, weekFirst);
+    return rangeValue.findIndex((_range, _index) => {
+      if (_index === 0) return false;
+      const _currentRange = _range[0].toString();
+      const [_currentYear, _currentWeek] = [_currentRange.slice(0, 4), +_currentRange.slice(4, 6)];
+      const _currentSeason = getSeason(_currentYear, _currentWeek);
+      return _currentSeason !== seasonFirst;
+    });
+  }
+
+  /**
+   * 取得根據範圍日期顯示單位將數據切分兩月的切分序列
+   * @param rangeValue {Array<Array<number>>}-報告日期清單
+   */
+  getSplitMonthIndex(rangeValue: Array<Array<number>>) {
+    const dateFirst = rangeValue[0][0].toString();
+    const [yearFirst, weekFirst] = [dateFirst.slice(0, 4), +dateFirst.slice(4, 6)];
+    // 用該週第一天當作月的判斷基準
+    const getMonth = (year: string, week: number) =>
+      dayjs(year, 'YYYY').endOf('year').isoWeek(week).startOf('isoWeek').month();
+    const monthFirst = getMonth(yearFirst, weekFirst);
+    return rangeValue.findIndex((_range, _index) => {
+      if (_index === 0) return false;
+      const _currentRange = _range[0].toString();
+      const [_currentYear, _currentWeek] = [_currentRange.slice(0, 4), +_currentRange.slice(4, 6)];
+      const _currentMonth = getMonth(_currentYear, _currentWeek);
+      return _currentMonth !== monthFirst;
     });
   }
 
@@ -1273,6 +1527,14 @@ export class SystemOperationReportComponent implements OnInit {
     const memberFieldNameLength = memberFieldName.length;
     const olderTotalValueObj = {};
     const newerTotalValueObj = {};
+    const olderPieDataMap = new Map();
+    const newerPieDataMap = new Map();
+    const isSeasonData = finalLength > 6;
+    const firstOlderRange = this.getDateRangeTimestamp(olderRange[0]);
+    const firstNewerRange = this.getDateRangeTimestamp(newerRange[0]);
+    const olderColumnHeader = this.getCompareColumnHeader(firstOlderRange.startDate, isSeasonData);
+    const newerColumnHeader = this.getCompareColumnHeader(firstNewerRange.startDate, isSeasonData);
+    const valueHeader = [olderColumnHeader, newerColumnHeader];
     for (let i = 0; i < finalLength; i++) {
       const _olderRange = olderRange[i] ? this.getDateRangeTimestamp(olderRange[i]) : null;
       const _newerRange = newerRange[i] ? this.getDateRangeTimestamp(newerRange[i]) : null;
@@ -1292,6 +1554,16 @@ export class SystemOperationReportComponent implements OnInit {
           _newerValue = _newerRange
             ? newerMaleValue[i][_typeIndex] + newerFemaleValue[i][_typeIndex]
             : null;
+
+          const _typeCode = typeFieldName[_typeIndex];
+          olderPieDataMap.set(
+            _typeCode,
+            (olderPieDataMap.get(_typeCode) ?? 0) + (_olderValue ?? 0)
+          );
+          newerPieDataMap.set(
+            _typeCode,
+            (newerPieDataMap.get(_typeCode) ?? 0) + (_newerValue ?? 0)
+          );
         }
 
         olderTotalValueObj[_fieldName] = (olderTotalValueObj[_fieldName] ?? 0) + (_olderValue ?? 0);
@@ -1314,17 +1586,7 @@ export class SystemOperationReportComponent implements OnInit {
             : sportTypeColor[_typeIndex];
           memberTrendChartData[_fieldName].chartData[0].color = changeOpacity(_mainColor, 0.7);
           memberTrendChartData[_fieldName].chartData[1].color = _mainColor;
-          const isSeasonData = finalLength > 6;
-          const olderColumnHeader = this.getCompareColumnHeader(
-            _olderRange.startDate,
-            isSeasonData
-          );
-          const newerColumnHeader = this.getCompareColumnHeader(
-            _newerRange.startDate,
-            isSeasonData
-          );
-
-          memberTrendChartData[_fieldName].seriesName = [olderColumnHeader, newerColumnHeader];
+          memberTrendChartData[_fieldName].seriesName = valueHeader;
           memberTrendTableData[_fieldName] = {
             option: {
               headerRowType: [
@@ -1342,7 +1604,7 @@ export class SystemOperationReportComponent implements OnInit {
             },
             data: [
               [`單位日期`, olderColumnHeader, newerColumnHeader, '增長(%)'],
-              [trendTableRowHeader, _olderValue, _newerValue, '0'],
+              [trendTableRowHeader, _olderValue, _newerValue, '-'],
             ],
           };
         } else {
@@ -1350,7 +1612,7 @@ export class SystemOperationReportComponent implements OnInit {
             trendTableRowHeader,
             _olderValue ?? '-',
             _newerValue ?? '-',
-            `${countPercentage(_newerValue - _olderValue, _olderValue, 1)}`,
+            `${this.countIncreaseRatio(_newerValue - _olderValue, _olderValue, 1)}`,
           ]);
         }
 
@@ -1361,13 +1623,70 @@ export class SystemOperationReportComponent implements OnInit {
             'universal_adjective_total',
             olderTotalValue,
             newerTotalValue,
-            `${countPercentage(newerTotalValue - olderTotalValue, olderTotalValue, 1)}`,
+            `${this.countIncreaseRatio(newerTotalValue - olderTotalValue, olderTotalValue, 1)}`,
           ]);
         }
       });
     }
 
-    return { memberTrendChartData, memberTrendTableData };
+    return {
+      memberTrendChartData,
+      memberTrendTableData,
+      ...this.getSportsTypeTrendPieData(olderPieDataMap, newerPieDataMap, valueHeader),
+    };
+  }
+
+  /**
+   * 取得運動類別比較趨勢總量數據
+   * @param olderMap {Map<number, number>}-舊比較數據Map物件
+   * @param newerMap {Map<number, number>}-新比較數據Map物件
+   */
+  getSportsTypeTrendPieData(
+    olderMap: Map<string, number>,
+    newerMap: Map<string, number>,
+    header: Array<string | number>
+  ) {
+    const olderPieChartData = [];
+    const newerPieChartData = [];
+    const sportsTypeTrendTableData = {
+      option: <OperationTableOption>{
+        headerRowType: [
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+        ],
+        valueRowType: [
+          OperationDataType.translateKey,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+        ],
+      },
+      data: <Array<Array<string | number>>>[['運動類別', ...header, '增長(%)']],
+    };
+
+    olderMap.forEach((_olderValue, _typeCode) => {
+      const _newerValue = newerMap.get(_typeCode);
+      const _translateKey = getSportsTypeKey(_typeCode);
+      const sportsTypeName = this.translate.instant(_translateKey);
+      olderPieChartData.push({
+        name: sportsTypeName,
+        y: _olderValue,
+        color: assignSportsTypeColor(_typeCode),
+      });
+
+      newerPieChartData.push({
+        name: sportsTypeName,
+        y: _newerValue,
+        color: assignSportsTypeColor(_typeCode),
+      });
+
+      const _diffRatio = this.countIncreaseRatio(_olderValue, _newerValue, 1);
+      sportsTypeTrendTableData.data.push([_translateKey, _olderValue, _newerValue, _diffRatio]);
+    });
+
+    return { olderPieChartData, newerPieChartData, sportsTypeTrendTableData, valueHeader: header };
   }
 
   /**
@@ -1447,6 +1766,7 @@ export class SystemOperationReportComponent implements OnInit {
     const deviceTypeLength = typeFieldName.length;
     const olderTotalValueObj = {};
     const newerTotalValueObj = {};
+
     for (let i = 0; i < finalLength; i++) {
       const _olderRange = olderRange[i] ? this.getDateRangeTimestamp(olderRange[i]) : null;
       const _newerRange = newerRange[i] ? this.getDateRangeTimestamp(newerRange[i]) : null;
@@ -1510,7 +1830,7 @@ export class SystemOperationReportComponent implements OnInit {
             },
             data: [
               [`單位日期`, olderColumnHeader, newerColumnHeader, '增長(%)'],
-              [trendTableRowHeader, _olderValue, _newerValue, '0'],
+              [trendTableRowHeader, _olderValue, _newerValue, '-'],
             ],
           };
         } else {
@@ -1518,7 +1838,7 @@ export class SystemOperationReportComponent implements OnInit {
             trendTableRowHeader,
             _olderValue ?? '-',
             _newerValue ?? '-',
-            `${countPercentage(_newerValue - _olderValue, _olderValue, 1)}`,
+            `${this.countIncreaseRatio(_newerValue - _olderValue, _olderValue, 1)}`,
           ]);
         }
 
@@ -1529,7 +1849,7 @@ export class SystemOperationReportComponent implements OnInit {
             'universal_adjective_total',
             olderTotalValue,
             newerTotalValue,
-            `${countPercentage(newerTotalValue - olderTotalValue, olderTotalValue, 1)}`,
+            `${this.countIncreaseRatio(newerTotalValue - olderTotalValue, olderTotalValue, 1)}`,
           ]);
         }
       });
@@ -1739,6 +2059,17 @@ export class SystemOperationReportComponent implements OnInit {
   }
 
   /**
+   * 計算增長率
+   * @param currentValue {number}-現在數值
+   * @param prevValue {number}-上個數值
+   * @param decimal {number}-四捨五入位數
+   */
+  countIncreaseRatio(currentValue: number, prevValue: number, decimal: number) {
+    if (!prevValue || prevValue <= 0) return '-';
+    return mathRounding(((currentValue ?? 0) / prevValue) * 100, decimal);
+  }
+
+  /**
    * 變更報告類型
    * @param type {SystemAnalysisType}-報告類型
    */
@@ -1748,7 +2079,6 @@ export class SystemOperationReportComponent implements OnInit {
       if (type !== prevType) {
         this.postInfo.type = type;
         this.allRefresh = true;
-        this.getSingleTrendData(SingleTrendRange.nearlyOneYear);
         this.getReportInfo();
         this.getReportTrend();
       }
@@ -1778,7 +2108,7 @@ export class SystemOperationReportComponent implements OnInit {
           { indexLayer: 0, textKey: '總體分析圖表', elementId: 'overall__analysis__section' },
           { indexLayer: 1, textKey: '方案', elementId: 'plan__analysis' },
           { indexLayer: 1, textKey: '概要', elementId: 'summary__analysis' },
-          { indexLayer: 1, textKey: '開課類別', elementId: 'teach__type__analysis' },
+          // { indexLayer: 1, textKey: '開課類別', elementId: 'teach__type__analysis' },
           { indexLayer: 0, textKey: '趨勢分析圖表', elementId: 'trend__chart__section' },
           { indexLayer: 1, textKey: '品牌企業數量', elementId: 'brand__counts__analysis' },
           { indexLayer: 1, textKey: '開課次數', elementId: 'teach__counts__analysis' },
@@ -1803,10 +2133,12 @@ export class SystemOperationReportComponent implements OnInit {
 
         const singleTrendList = [
           { indexLayer: 1, textKey: '運動筆數', elementId: 'sports__count__analysis' },
+          { indexLayer: 1, textKey: '運動類別總量', elementId: 'sports__type__pie' },
           { indexLayer: 1, textKey: '運動類別', elementId: 'sports__type__trend' },
         ];
 
         const compareTrendList = [
+          { indexLayer: 1, textKey: '運動類別總量', elementId: 'sports__type__pie' },
           { indexLayer: 1, textKey: '跑步類別', elementId: 'run__count__trend' },
           { indexLayer: 1, textKey: '騎乘類別', elementId: 'cycle__count__trend' },
           { indexLayer: 1, textKey: '重訓類別', elementId: 'weightTrain__count__trend' },
@@ -1921,15 +2253,17 @@ export class SystemOperationReportComponent implements OnInit {
         break;
       }
       case CompareTrendRange.nearlyTwoSeasons: {
-        this.postInfo.startDate = dayjs().subtract(1, 'quarter').startOf('quarter').valueOf();
-        this.postInfo.endDate = dayjs().endOf('quarter').valueOf();
+        const startDayjs = dayjs().subtract(1, 'quarter');
+        this.postInfo.startDate = this.getWeekFirstDayByDate(startDayjs, 'quarter');
+        this.postInfo.endDate = dayjs().endOf('quarter').endOf('isoWeek').valueOf();
         this.postInfo.dateUnit = PostDateUnit.week;
         this.trendChartUnit = DateUnit.week;
         break;
       }
       case CompareTrendRange.nearlyTwoMonths: {
-        this.postInfo.startDate = dayjs().subtract(1, 'month').startOf('month').valueOf();
-        this.postInfo.endDate = dayjs().endOf('month').valueOf();
+        const startDayjs = dayjs().subtract(1, 'month');
+        this.postInfo.startDate = this.getWeekFirstDayByDate(startDayjs, 'month');
+        this.postInfo.endDate = dayjs().endOf('month').endOf('isoWeek').valueOf();
         this.postInfo.dateUnit = PostDateUnit.week;
         this.trendChartUnit = DateUnit.week;
         break;
@@ -1944,21 +2278,47 @@ export class SystemOperationReportComponent implements OnInit {
       }
       case CompareTrendRange.lastTwoSeasons: {
         const baseDayjsObj = dayjs().subtract(1, 'quarter');
-        this.postInfo.startDate = baseDayjsObj.subtract(1, 'quarter').startOf('quarter').valueOf();
-        this.postInfo.endDate = baseDayjsObj.endOf('quarter').valueOf();
+        const startDayjs = baseDayjsObj.subtract(1, 'quarter');
+        this.postInfo.startDate = this.getWeekFirstDayByDate(startDayjs, 'quarter');
+        this.postInfo.endDate = baseDayjsObj.endOf('quarter').endOf('isoWeek').valueOf();
         this.postInfo.dateUnit = PostDateUnit.week;
         this.trendChartUnit = DateUnit.week;
         break;
       }
       case CompareTrendRange.lastTwoMonths: {
         const baseDayjsObj = dayjs().subtract(1, 'month');
-        this.postInfo.startDate = baseDayjsObj.subtract(1, 'month').startOf('month').valueOf();
-        this.postInfo.endDate = baseDayjsObj.endOf('month').valueOf();
+        const startDayjs = baseDayjsObj.subtract(1, 'month');
+        this.postInfo.startDate = this.getWeekFirstDayByDate(startDayjs, 'month');
+        this.postInfo.endDate = baseDayjsObj.endOf('month').endOf('isoWeek').valueOf();
         this.postInfo.dateUnit = PostDateUnit.week;
         this.trendChartUnit = DateUnit.week;
         break;
       }
     }
+  }
+
+  /**
+   * 取得指定日期範圍的第一週星期一
+   * @param dayjsObj {Dayjs}-dayjs物件
+   * @param unit {any}-日期範圍單位
+   */
+  getWeekFirstDayByDate(dayjsObj: Dayjs, unit: any): number {
+    const startUnitDayjs = dayjsObj.startOf(unit);
+    const dayInWeek = startUnitDayjs.isoWeekday();
+    let shiftDay: number;
+    switch (dayInWeek) {
+      case 0:
+        shiftDay = 1;
+        break;
+      case 1:
+        shiftDay = 0;
+        break;
+      default:
+        shiftDay = 8 - dayInWeek;
+        break;
+    }
+
+    return startUnitDayjs.add(shiftDay, 'day').valueOf();
   }
 
   /**
@@ -1984,7 +2344,7 @@ export class SystemOperationReportComponent implements OnInit {
     const result = [];
     currentData.forEach((_currentData, _index) => {
       const _prevData = prevData ? prevData[_index] : 0;
-      const increasePercentage = countPercentage(
+      const increasePercentage = this.countIncreaseRatio(
         _currentData - _prevData,
         _prevData || Infinity,
         1

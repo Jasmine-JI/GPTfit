@@ -101,22 +101,29 @@ export class CategoryColumnChartComponent implements OnInit, OnChanges, OnDestro
    */
   getChartOption() {
     const chartOption = new HighchartOption('column', 250);
+    const { unit } = this;
     chartOption.plotOptions = { series: { pointPadding: 0, dataLabels: { enabled: true } } };
     chartOption.xAxis = { type: 'category' };
     chartOption.yAxis = { title: null };
     chartOption.series = this.getSeries();
+    if (unit) {
+      const { yAxis, tooltip } = chartOption.option;
+      chartOption.yAxis = { ...(yAxis ?? {}), labels: { format: `{value} ${unit}` } };
+      chartOption.tooltip = { ...(tooltip ?? {}), valueSuffix: unit };
+    }
+
     return chartOption;
   }
 
   /**
-   * 將圖表
+   * 將圖表數據再進行加工，含多國語系轉換、單位置入、數據格式化為highchart用格式
    */
   getSeries() {
     const { data, seriesName } = this;
     return data.map((_data, _index) => {
       const _value = _data.data ?? _data;
       const result: any = {
-        name: seriesName ? this.translate.instant(seriesName[_index]) : '',
+        name: seriesName && seriesName[_index] ? this.translate.instant(seriesName[_index]) : '',
         data: _value.map((_oneData) => {
           if (!Array.isArray(_oneData)) return _oneData;
           const [_category, _value] = _oneData;
