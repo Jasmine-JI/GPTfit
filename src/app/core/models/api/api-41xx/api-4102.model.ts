@@ -13,8 +13,8 @@ export interface Api4102Response {
   processResult: ProcessResult;
   trend: {
     timeRange: {
-      fieldName: Array<string>;
-      fieldValue: Array<Array<number>>;
+      fieldName: Array<number>;
+      fieldValue: Array<Array<string>>;
     };
     groupCountsAnalysis?: {
       fieldName: Array<string>;

@@ -11,7 +11,7 @@ $header-title-size: 0.8rem;
 
 .station__title {
   font-weight: bold;
-  border-bottom: 2px solid rgb(219 204 25);
+  border-bottom: 2px solid rgb(219, 204, 25, 1);
 }
 
 .station__content__container {
@@ -38,7 +38,7 @@ $header-title-size: 0.8rem;
 
 .list__grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: 100px;
   grid-auto-rows: minmax($row-height, $row-height);
 }
 

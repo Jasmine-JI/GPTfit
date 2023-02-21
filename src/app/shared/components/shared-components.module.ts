@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './navbar/navbar.component';
 import { Page404Component } from './page404/page404.component';
 import { LoadingComponent } from './loading/loading.component';
-import { PaginationComponent } from './pagination/pagination.component';
 import { UploadFileComponent } from './upload-file/upload-file.component';
 import { RouterModule } from '@angular/router';
 import { IntlPhoneInputComponent } from './intl-phone-input/intl-phone-input.component';
@@ -52,7 +51,6 @@ import { ThresholdInfoComponent } from './chart/threshold-info/threshold-info.co
 import { ThresholdChartComponent } from './chart/threshold-chart/threshold-chart.component';
 import { TrendInfoChartComponent } from './chart/trend-info-chart/trend-info-chart.component';
 import { MuscleMapCardComponent } from './activity-detail/muscle-map-card/muscle-map-card.component';
-import { LoadingBarComponent } from './loading-bar/loading-bar.component';
 import { EditIndividualPrivacyComponent } from './edit-individual-privacy/edit-individual-privacy.component';
 import { CloudrunMapComponent } from './cloudrun-map/cloudrun-map.component';
 import { EquidistantChartComponent } from './chart/equidistant-chart/equidistant-chart.component';
@@ -132,6 +130,7 @@ import {
   SportsFileRoadComponent,
   SportFileFooterComponent,
   TipDialogComponent,
+  LoadingBarComponent,
 } from '../../components';
 
 @NgModule({
@@ -161,6 +160,7 @@ import {
     SportsFileRoadComponent,
     SportFileFooterComponent,
     TipDialogComponent,
+    LoadingBarComponent,
     SexPipe,
     SafeHtmlPipe,
     LineBreakPipe,
@@ -208,7 +208,6 @@ import {
     NavbarComponent,
     Page404Component,
     LoadingComponent,
-    PaginationComponent,
     UploadFileComponent,
     IntlPhoneInputComponent,
     MessageBoxComponent,
@@ -249,7 +248,6 @@ import {
     ThresholdChartComponent,
     TrendInfoChartComponent,
     MuscleMapCardComponent,
-    LoadingBarComponent,
     EditIndividualPrivacyComponent,
     CloudrunMapComponent,
     EquidistantChartComponent,
@@ -275,7 +273,6 @@ import {
     Page404Component,
     Page403Component,
     LoadingComponent,
-    PaginationComponent,
     UploadFileComponent,
     IntlPhoneInputComponent,
     MessageBoxComponent,
@@ -310,7 +307,6 @@ import {
     TrinomialChartComponent,
     EditIndividualPrivacyComponent,
     CloudrunMapComponent,
-    LoadingBarComponent,
     ThresholdInfoComponent,
     ThresholdChartComponent,
     RelativeColumnChartComponent,

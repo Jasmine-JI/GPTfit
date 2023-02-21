@@ -3,7 +3,7 @@ import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { WeightTrainingInfo } from '../../models/weight-train';
 import { MuscleCode, Proficiency, WeightTrainingLevel } from '../../enum/weight-train';
 import { mathRounding } from '../../../core/utils/index';
-import { WEIGHT_TRAIN_COLOR } from '../../models/chart-data';
+import { weightTrainColor } from '../../models/chart-data';
 import { deepCopy } from '../../../core/utils/index';
 import { getCorrespondingMuscleGroup } from '../../../core/utils/sports';
 import { ReportDateType } from '../../models/report-condition';
@@ -226,8 +226,7 @@ export class WeightTrainingTrend {
    * @param max1RM {number}-最大1RM
    */
   setColor(max1RM: number, useInMuscleMap = true) {
-    const { saturation, brightnessFor1RM, brightnessForAvgWeight, transparency } =
-      WEIGHT_TRAIN_COLOR;
+    const { saturation, brightnessFor1RM, brightnessForAvgWeight, transparency } = weightTrainColor;
     const { _bodyWeight, _proficiency } = this;
     const transparencyPercentage = useInMuscleMap ? transparency : 1;
     let hue = Math.round(200 - (max1RM / _bodyWeight) * 100 * _proficiency);

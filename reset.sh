@@ -50,7 +50,7 @@ elif [ $IP_ADDR == "192.168.1.234" ]; then
           ln -s /var/www/html/d67e2f48a7425feb0a0fcedbffd9f4ad /var/www/html/dist/d67e2f48a7425feb0a0fcedbffd9f4ad
   fi
   if [ ! -L /var/www/html/dist/.well-known ]; then
-    ln -s /var/www/html/.well-know /var/www/html/dist/.well-know
+    ln -s /var/www/html/.well-known /var/www/html/dist/.well-known
   fi
   if [ ! -L /var/www/html/dist/RD_FW_2 ]; then
         ln -s /var/www/html/RD_FW_2 /var/www/html/dist/RD_FW_2
@@ -117,7 +117,7 @@ else
           ln -s /var/www/html/d67e2f48a7425feb0a0fcedbffd9f4ad /var/www/html/dist/d67e2f48a7425feb0a0fcedbffd9f4ad
   fi
   if [ ! -L /var/www/html/dist/.well-known ]; then
-          ln -s /var/www/html/.well-know /var/www/html/dist/.well-know
+          ln -s /var/www/html/.well-known /var/www/html/dist/.well-known
   fi
   if [ ! -L /var/www/html/dist/RD_FW_2 ]; then
         ln -s /var/www/html/RD_FW_2 /var/www/html/dist/RD_FW_2

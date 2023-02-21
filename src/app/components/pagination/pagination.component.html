@@ -32,17 +32,17 @@
     <div class="flexRow">
       <button
         class="switch__btn"
+        [class.switch__btn--disabled]="pageSettingObj.pageIndex === 0"
         (click)="switchPage('pre')"
-        [disabled]="pageSettingObj.pageIndex === 0"
       >
         <i class="icon-svg_web-icon_p1_073-level_fold"></i>
       </button>
       <button
         class="switch__btn"
-        (click)="switchPage('next')"
-        [disabled]="
+        [class.switch__btn--disabled]="
           (pageSettingObj.pageIndex + 1) * pageSettingObj.onePageSize >= pageSettingObj.totalCounts
         "
+        (click)="switchPage('next')"
       >
         <i class="icon-svg_web-icon_p1_074-level_unfold"></i>
       </button>

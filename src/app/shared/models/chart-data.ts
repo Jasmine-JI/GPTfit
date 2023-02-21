@@ -74,9 +74,13 @@ export const sportTypeColor = [
   'rgba(117, 242, 95, 1)',
   'rgba(114, 232, 176, 1)',
   'rgba(107, 235, 249, 1)',
+  'rgba(110, 155, 255, 1)',
+  'rgba(155, 112, 224, 1)',
+  'rgba(228, 88, 232, 1)',
+  'rgba(234, 87, 163, 1)',
 ];
 
-export const DISTRIBUTION_CHART_COLOR = {
+export const distributionChartColor = {
   axis: 'rgba(210, 210, 210, 1)',
   axisText: 'rgba(135, 135, 135, 1)',
   leftTop: {
@@ -129,7 +133,7 @@ export const DISTRIBUTION_CHART_COLOR = {
 /**
  * 重訓肌肉地圖與趨勢圖顏色設定（hsla）
  */
-export const WEIGHT_TRAIN_COLOR = {
+export const weightTrainColor = {
   saturation: '100%', // 主訓練部位色彩飽和度
   brightnessFor1RM: '70%', // 主訓練部位色彩明亮度(1RM)
   brightnessForAvgWeight: '80%', // 主訓練部位色彩明亮度(平均重量)
@@ -504,3 +508,16 @@ export const compareChartDefault: any = {
   },
   series: [],
 };
+
+/**
+ * 營運分析趨勢圖圖表代表色
+ */
+export const operationTrendColor = [
+  'rgba(204, 82, 71, 1)',
+  'rgba(204, 133, 71, 1)',
+  'rgba(193, 204, 71, 1)',
+  'rgba(71, 204, 118, 1)',
+  'rgba(71, 138, 204, 1)',
+  'rgba(160, 71, 204, 1)',
+  'rgba(204, 71, 157, 1)',
+];
