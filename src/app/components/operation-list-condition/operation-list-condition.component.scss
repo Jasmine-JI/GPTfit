@@ -1,0 +1,67 @@
+@import 'color.scss';
+@import 'transform.scss';
+@import 'transition.scss';
+
+.condition__setting {
+  padding: 0.5rem;
+  background-color: rgba(240, 240, 240, 0.5);
+  border-radius: 10px;
+}
+
+.setting__title {
+  display: flex;
+  justify-content: space-between;
+  color: rgba(100, 100, 100, 1);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.unfold__icon {
+  @include transition(transform);
+}
+
+.unfold__icon--active {
+  @include el-rotate(180deg);
+  @include transition(transform);
+}
+
+.setting__section {
+  padding-left: 2rem;
+  flex-wrap: wrap;
+}
+
+.setting__subtitle {
+  font-weight: bold;
+  color: $primary-blue;
+}
+
+.setting__item {
+  flex-wrap: nowrap;
+  margin: 0.25rem 2rem 0.25rem 0;
+}
+
+.type__label {
+  font-weight: bold;
+}
+
+.text__input {
+  height: 24px;
+  margin-left: 0.5rem;
+  border: none;
+  border-bottom: 1px solid black;
+  outline: none;
+}
+
+.submit__button__section {
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.submit__button {
+  width: 120px;
+  height: 40px;
+  background-color: $primary-blue;
+  color: white;
+  border-radius: 10px;
+  font-weight: bold;
+}

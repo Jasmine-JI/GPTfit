@@ -7,6 +7,7 @@ import { HrBase } from '../../shared/enum/personal';
 import { HrZoneRange } from '../../shared/models/chart-data';
 import { BenefitTimeStartZone, DataUnitType } from '../enums/common';
 import { PAI_COFFICIENT, DAY_PAI_TARGET } from '../../shared/models/sports-report';
+import { sportTypeColor } from '../../shared/models/chart-data';
 
 /**
  * 根據運動類型將速度轉成配速(若為bs英制則公里配速轉英哩配速)
@@ -111,6 +112,81 @@ export function isAvgData(key: string) {
   const isMinData = lowerCaseString.includes('mini');
   const haveKeyword = lowerCaseString.includes('avg') || lowerCaseString.includes('average');
   return !isMaxData && !isMinData && haveKeyword;
+}
+
+/**
+ * 根據運動類別取得翻譯的鍵名
+ * @param code {number | string}-運動類別代號
+ */
+export function getSportsTypeKey(code: number | string) {
+  const sportsCode = `${code}`.includes('s') ? +(code as string).split('s')[1] : +code;
+  switch (sportsCode) {
+    case SportType.run:
+      return 'universal_activityData_run';
+    case SportType.cycle:
+      return 'universal_activityData_cycle';
+    case SportType.weightTrain:
+      return 'universal_activityData_weightTraining';
+    case SportType.swim:
+      return 'universal_activityData_swin';
+    case SportType.aerobic:
+      return 'universal_activityData_aerobic';
+    case SportType.row:
+      return 'universal_sportsName_boating';
+    case SportType.ball:
+      return 'universal_activityData_ballSports';
+    case SportType.all:
+      return 'universal_adjective_all';
+    case SportType.complex:
+      return 'universal_activityData_complex';
+    case SportType.rest:
+      return 'universal_activityData_restSection';
+    default:
+      return 'universal_userAccount_otherTypes';
+  }
+}
+
+/**
+ * 將 cjson 運動類別代碼轉為運動類別名稱
+ * @param code {string}-cjson運動類別代碼
+ */
+export function translateSportsCode(code: string) {
+  const sportsCode = +code.split('s')[1];
+  switch (sportsCode) {
+    case SportType.run:
+      return 'run';
+    case SportType.cycle:
+      return 'cycle';
+    case SportType.weightTrain:
+      return 'weightTraining';
+    case SportType.swim:
+      return 'swim';
+    case SportType.aerobic:
+      return 'aerobic';
+    case SportType.row:
+      return 'row';
+    case SportType.ball:
+      return 'ball';
+    case SportType.all:
+      return 'all';
+    case SportType.complex:
+      return 'complex';
+    case SportType.rest:
+      return 'rest';
+    default:
+      return 'other';
+  }
+}
+
+/**
+ * 根據運動類別指派代表色
+ * @param code {number | string}-運動類別代號
+ */
+export function assignSportsTypeColor(code: number | string) {
+  const sportsCode = `${code}`.includes('s') ? +(code as string).split('s')[1] : +code;
+  const colorLength = sportTypeColor.length;
+  if (sportsCode > sportTypeColor.length) return sportTypeColor[colorLength - 1];
+  return sportTypeColor[sportsCode - 1];
 }
 
 /**

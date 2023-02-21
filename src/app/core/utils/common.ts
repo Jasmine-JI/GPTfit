@@ -274,3 +274,38 @@ export function getSameRangeDate(startTime: string, endTime: string, dateUnit: R
       return { start: startTimestamp, end: endTimestamp };
   }
 }
+
+/**
+ * 根據序列取得對應月份的翻譯鍵
+ * @param index {number}-月份序列，第一個月序列為0（同dayjs）
+ */
+export function getMonthKey(index: number) {
+  switch (index) {
+    case 0:
+      return 'universal_time_january';
+    case 1:
+      return 'universal_time_february';
+    case 2:
+      return 'universal_time_march';
+    case 3:
+      return 'universal_time_april';
+    case 4:
+      return 'universal_time_may';
+    case 5:
+      return 'universal_time_june';
+    case 6:
+      return 'universal_time_july';
+    case 7:
+      return 'universal_time_august';
+    case 8:
+      return 'universal_time_september';
+    case 9:
+      return 'universal_time_october';
+    case 10:
+      return 'universal_time_november';
+    case 11:
+      return 'universal_time_december';
+    default:
+      return 'Index Error';
+  }
+}

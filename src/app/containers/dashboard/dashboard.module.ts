@@ -84,6 +84,8 @@ import {
   HrZoneChartComponent,
   LineCompareChartComponent,
   TipDialogComponent,
+  LoadingBarComponent,
+  PaginationComponent,
 } from '../../components';
 import {
   DateUnitKeyPipe,
@@ -176,6 +178,8 @@ import {
     HrZoneChartComponent,
     LineCompareChartComponent,
     TipDialogComponent,
+    LoadingBarComponent,
+    PaginationComponent,
     SexPipe,
     SafeHtmlPipe,
     LineBreakPipe,

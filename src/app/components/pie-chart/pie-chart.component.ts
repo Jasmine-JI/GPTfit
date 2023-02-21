@@ -17,6 +17,7 @@ import { HighchartOption } from '../../core/classes';
 import { GlobalEventsService } from '../../core/services/global-events.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { mathRounding } from '../../core/utils';
 
 @Component({
   selector: 'app-pie-chart',
@@ -112,10 +113,7 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
         dataLabels: {
           enabled: true,
           formatter: function () {
-            let percent = ((this.point.y / this.point.total) * 100).toFixed(1);
-            if (percent.slice(-1) === '0') {
-              percent = '' + (this.point.y / this.point.total) * 100;
-            }
+            const percent = mathRounding((this.point.y / this.point.total) * 100, 1);
             return `${this.key}<br> ${percent}%`;
           },
         },

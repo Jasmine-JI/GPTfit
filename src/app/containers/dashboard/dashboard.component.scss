@@ -371,6 +371,9 @@ $alert-icon-color: rgba(255, 56, 56, 1);
 .navbar__list__content {
   max-height: 0;
   overflow: hidden;
+  list-style: none;
+  padding: 0;
+  margin: 0;
   @include transition(max-height);
 }
 

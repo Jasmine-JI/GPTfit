@@ -1,0 +1,13 @@
+<div class="flexRow road__path" *ngIf="pathList?.length > 1">
+  <ng-container *ngFor="let _path of pathList; let _index = index">
+    <a
+      href="#"
+      [routerLink]="[_path.url]"
+      class="path__link"
+      [class.path__link--disabled]="_index === pathList.length - 1"
+    >
+      {{ _path.title | translate }}
+    </a>
+    <span class="direct__symbol" *ngIf="_index < pathList.length - 1">&gt;</span>
+  </ng-container>
+</div>

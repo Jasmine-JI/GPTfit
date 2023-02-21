@@ -1,0 +1,69 @@
+<div class="condition__setting" *ngIf="allConditionSetting">
+  <h5 class="setting__title" (click)="handleSettingUnfold()">
+    {{ '列表設定' | translate }}
+    <i
+      class="icon-svg_web-icon_p1_006-unfold unfold__icon"
+      [class.unfold__icon--active]="conditionSettingUnfold"
+    ></i>
+  </h5>
+  <ng-container *ngIf="conditionSettingUnfold">
+    <div class="flexCol">
+      <h6 class="setting__subtitle">{{ 'universal_operating_filter' | translate }}</h6>
+      <div class="flexRow setting__section">
+        <div
+          class="flexRow setting__item"
+          *ngFor="
+            let _conditionList of allConditionSetting.conditionList;
+            let _conditionIndex = index
+          "
+        >
+          <span class="type__label">{{ _conditionList.titleTranslateKey | translate }}:</span>
+          <ng-container *ngIf="_conditionList.type === 'dropList'">
+            <app-single-drop-list
+              [dropList]="[{ list: _conditionList.conditionItemList }]"
+              [defaultSelectIndex]="[0, _conditionList.initIndex ?? 0]"
+              (selectItem)="selectCondition($event, _conditionIndex)"
+            ></app-single-drop-list>
+          </ng-container>
+          <ng-container *ngIf="_conditionList.type === 'keyword'">
+            <input
+              type="text"
+              class="text__input"
+              maxlength="24"
+              [placeholder]="'universal_activityData_keyword' | translate"
+              (focusout)="handleInputText($event, _conditionIndex)"
+            />
+          </ng-container>
+        </div>
+      </div>
+    </div>
+    <div class="flexCol">
+      <h6 class="setting__subtitle">{{ 'universal_activityData_sort' | translate }}</h6>
+      <div class="flexRow setting__section">
+        <div class="flexRow setting__item">
+          <span class="type__label">
+            {{ 'universal_activityData_inAccordanceWith' | translate }}:
+          </span>
+          <app-single-drop-list
+            [dropList]="[{ list: allConditionSetting.sortTypeList.list }]"
+            [defaultSelectIndex]="[0, allConditionSetting.sortTypeList.initIndex ?? 0]"
+            (selectItem)="selectSortType($event)"
+          ></app-single-drop-list>
+        </div>
+        <div class="flexRow setting__item">
+          <span class="type__label">{{ '排序方向' | translate }}:</span>
+          <app-single-drop-list
+            [dropList]="[{ list: allConditionSetting.sortDirection.list }]"
+            [defaultSelectIndex]="[0, allConditionSetting.sortDirection.initIndex ?? 0]"
+            (selectItem)="selectSortDirect($event)"
+          ></app-single-drop-list>
+        </div>
+      </div>
+    </div>
+    <div class="flexRow submit__button__section">
+      <button class="submit__button" (click)="submitCondition()">
+        {{ 'universal_operating_send' | translate }}
+      </button>
+    </div>
+  </ng-container>
+</div>

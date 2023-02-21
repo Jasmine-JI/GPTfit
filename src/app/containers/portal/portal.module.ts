@@ -72,6 +72,7 @@ import {
   MuscleGroupNamePipe,
   MusclePartIconPipe,
 } from '../../core/pipes';
+import { LoadingBarComponent } from '../../components';
 
 @NgModule({
   imports: [
@@ -131,6 +132,7 @@ import {
     TargetFieldUnitPipe,
     MuscleGroupNamePipe,
     MusclePartIconPipe,
+    LoadingBarComponent,
   ],
   providers: [
     QrcodeService,
