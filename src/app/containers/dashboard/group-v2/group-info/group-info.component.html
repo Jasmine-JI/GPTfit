@@ -226,41 +226,14 @@
                 (click)="handleShowContent($event, _page, _idx)"
                 *ngIf="uiFlag.divideIndex === null || _idx < uiFlag.divideIndex"
               >
-                <ng-container *ngIf="_page === GroupChildPage.groupIntroduction">
-                  {{ 'universal_deviceSetting_adout' | translate }}
-                </ng-container>
-                <ng-container *ngIf="_page === GroupChildPage.myclassReport">
-                  {{ 'universal_userProfile_personal' | translate }}
-                  {{ 'universal_group_classReport' | translate }}
-                </ng-container>
-                <ng-container *ngIf="_page === GroupChildPage.classAnalysis">
-                  {{ 'universal_group_group' | translate }}
-                  {{ 'universal_group_classReport' | translate }}
-                </ng-container>
-                <ng-container *ngIf="_page === GroupChildPage.sportsReport">
-                  {{ 'universal_activityData_sportReport' | translate }}
-                </ng-container>
-                <ng-container *ngIf="_page === GroupChildPage.lifeTracking">
-                  {{ 'universal_lifeTracking_lifeTracking' | translate }}
-                </ng-container>
-                <ng-container *ngIf="_page === GroupChildPage.cloudrunReport">
-                  Cloud run
-                </ng-container>
-                <ng-container *ngIf="_page === GroupChildPage.memberList">
-                  {{ 'universal_group_member' | translate }}
-                </ng-container>
-                <ng-container *ngIf="_page === GroupChildPage.groupArchitecture">
-                  {{ 'universal_group_layer' | translate }}
-                </ng-container>
-                <ng-container *ngIf="_page === GroupChildPage.commercePlan">
-                  {{ 'universal_group_program' | translate }}
-                </ng-container>
-                <ng-container *ngIf="_page === GroupChildPage.adminList">
-                  {{ 'universal_group_administrator' | translate }}
-                </ng-container>
-                <ng-container *ngIf="_page === GroupChildPage.deviceList">
-                  {{ 'universal_deviceSetting_deviceManagement' | translate }}
-                </ng-container>
+                <ng-container
+                  *ngTemplateOutlet="
+                    pageNav;
+                    context: {
+                      pageName: _page
+                    }
+                  "
+                ></ng-container>
                 <i
                   class="icon-svg_web-icon_p1_069-about warn__icon"
                   *ngIf="
@@ -311,41 +284,14 @@
                   [class.info-active--color]="uiFlag.currentTagIndex === _fIdx"
                   (click)="handleShowContent($event, _foldItem, _fIdx)"
                 >
-                  <ng-container *ngIf="_foldItem === GroupChildPage.groupIntroduction">
-                    {{ 'universal_deviceSetting_adout' | translate }}
-                  </ng-container>
-                  <ng-container *ngIf="_foldItem === GroupChildPage.myclassReport">
-                    {{ 'universal_userProfile_personal' | translate }}
-                    {{ 'universal_group_classReport' | translate }}
-                  </ng-container>
-                  <ng-container *ngIf="_foldItem === GroupChildPage.classAnalysis">
-                    {{ 'universal_group_group' | translate }}
-                    {{ 'universal_group_classReport' | translate }}
-                  </ng-container>
-                  <ng-container *ngIf="_foldItem === GroupChildPage.sportsReport">
-                    {{ 'universal_activityData_sportReport' | translate }}
-                  </ng-container>
-                  <ng-container *ngIf="_foldItem === GroupChildPage.lifeTracking">
-                    {{ 'universal_lifeTracking_lifeTracking' | translate }}
-                  </ng-container>
-                  <ng-container *ngIf="_foldItem === GroupChildPage.cloudrunReport">
-                    Cloud run
-                  </ng-container>
-                  <ng-container *ngIf="_foldItem === GroupChildPage.memberList">
-                    {{ 'universal_group_member' | translate }}
-                  </ng-container>
-                  <ng-container *ngIf="_foldItem === GroupChildPage.groupArchitecture">
-                    {{ 'universal_group_layer' | translate }}
-                  </ng-container>
-                  <ng-container *ngIf="_foldItem === GroupChildPage.commercePlan">
-                    {{ 'universal_group_program' | translate }}
-                  </ng-container>
-                  <ng-container *ngIf="_foldItem === GroupChildPage.adminList">
-                    {{ 'universal_group_administrator' | translate }}
-                  </ng-container>
-                  <ng-container *ngIf="_foldItem === GroupChildPage.deviceList">
-                    {{ 'universal_deviceSetting_deviceManagement' | translate }}
-                  </ng-container>
+                  <ng-container
+                    *ngTemplateOutlet="
+                      pageNav;
+                      context: {
+                        pageName: _foldItem
+                      }
+                    "
+                  ></ng-container>
                 </span>
               </div>
             </ng-container>
@@ -397,3 +343,44 @@
     </div>
   </section>
 </div>
+
+<ng-template #pageNav let-pageName="pageName">
+  <ng-container [ngSwitch]="pageName">
+    <ng-container *ngSwitchCase="GroupChildPage.groupIntroduction">
+      {{ 'universal_deviceSetting_adout' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="GroupChildPage.myclassReport">
+      {{ 'universal_userProfile_personal' | translate }}
+      {{ 'universal_group_classReport' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="GroupChildPage.classAnalysis">
+      {{ 'universal_group_group' | translate }}
+      {{ 'universal_group_classReport' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="GroupChildPage.sportsReport">
+      {{ 'universal_activityData_sportReport' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="GroupChildPage.lifeTracking">
+      {{ 'universal_lifeTracking_lifeTracking' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="GroupChildPage.cloudrunReport"> Cloud run </ng-container>
+    <ng-container *ngSwitchCase="GroupChildPage.memberList">
+      {{ 'universal_group_member' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="GroupChildPage.groupArchitecture">
+      {{ 'universal_group_layer' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="GroupChildPage.commercePlan">
+      {{ 'universal_group_program' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="GroupChildPage.adminList">
+      {{ 'universal_group_administrator' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="GroupChildPage.deviceList">
+      {{ 'universal_deviceSetting_deviceManagement' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="GroupChildPage.operationReport">
+      {{ '營運分析' | translate }}
+    </ng-container>
+  </ng-container>
+</ng-template>

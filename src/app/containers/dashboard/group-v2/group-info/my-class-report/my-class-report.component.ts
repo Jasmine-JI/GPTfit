@@ -574,7 +574,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   sendRequest(body) {
     this.changeLoadingStatus(true);
     this.api21xxService.fetchMultiActivityData(body).subscribe((res) => {
-      const { resultCode, info, activities } = res;
+      const { resultCode, info, cross_multi_info } = res;
       if (resultCode !== 200) {
         this.hasResData = false;
         this.updateUrl('false');
@@ -582,7 +582,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
         this.initialChartComplated = true;
         this.changeLoadingStatus(false);
       } else {
-        const allActivities = this.mergeActivitiesList(info, activities);
+        const allActivities = this.mergeActivitiesList(info, cross_multi_info);
         this.activityLength = allActivities.length;
         if (this.activityLength === 0) {
           this.hasResData = false;

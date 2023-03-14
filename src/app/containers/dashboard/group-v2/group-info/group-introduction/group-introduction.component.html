@@ -395,14 +395,14 @@
           [class.form__label--required]="createBody.commercePlan === 99"
           *ngIf="createBody.brandType === 1"
         >
-          分店數量：
+          分店群組數量：
         </label>
         <label
           class="ala-form__label"
           [class.form__label--required]="createBody.commercePlan === 99"
           *ngIf="createBody.brandType === 2"
         >
-          分公司數量：
+          分公司群組數量：
         </label>
         <span *ngIf="createBody.commercePlan !== 99">
           {{ createBody.groupSetting.maxBranches }}
@@ -423,14 +423,14 @@
           [class.form__label--required]="createBody.commercePlan === 99"
           *ngIf="createBody.brandType === 1"
         >
-          課程數量：
+          課程群組數量：
         </label>
         <label
           class="ala-form__label"
           [class.form__label--required]="createBody.commercePlan === 99"
           *ngIf="createBody.brandType === 2"
         >
-          部門數量：
+          部門群組數量：
         </label>
         <span *ngIf="createBody.commercePlan !== 99">
           {{ createBody.groupSetting.maxClasses }}

@@ -1,6 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-
-import { GroupDetailInfo, UserSimpleInfo, MemberInfo } from '../../../models/group-detail';
+import {
+  GroupDetailInfo,
+  UserSimpleInfo,
+  MemberInfo,
+  GroupArchitecture,
+} from '../../../models/group-detail';
 import { ProfessionalService } from '../../../../professional/services/professional.service';
 import { Api11xxService, HintDialogService } from '../../../../../core/services';
 import { Subject, combineLatest, forkJoin } from 'rxjs';
@@ -24,6 +28,7 @@ export class MemberListComponent implements OnInit, OnDestroy {
     editMode: <'complete' | 'edit'>'complete',
     seeMoreMember: false,
     seeMoreWaitMember: false,
+    pageType: <'normal' | 'analysis'>'normal',
   };
 
   /**
@@ -46,6 +51,18 @@ export class MemberListComponent implements OnInit, OnDestroy {
    */
   waitMemberList: Array<MemberInfo> = [];
 
+  /**
+   * 群組階層簡易資訊
+   */
+  groupArchitecture = <GroupArchitecture>{};
+
+  /**
+   * 群組階層
+   */
+  get groupLevel() {
+    return displayGroupLevel(this.groupInfo.groupId);
+  }
+
   constructor(
     private professionalService: ProfessionalService,
     private hintDialogService: HintDialogService,
@@ -66,28 +83,30 @@ export class MemberListComponent implements OnInit, OnDestroy {
       this.professionalService.getRxCommerceInfo(),
       this.professionalService.getUserSimpleInfo(),
       this.professionalService.getRXNormalMemberList(),
+      this.professionalService.getAllLevelGroupData(),
     ])
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((resArr) => {
-        Object.assign(resArr[0], { groupLevel: displayGroupLevel(resArr[0].groupId) });
-        Object.assign(resArr[0], { expired: resArr[1].expired });
-        Object.assign(resArr[0], { commerceStatus: resArr[1].commerceStatus });
-        this.sortMember(resArr[3]);
-        this.groupInfo = resArr[0];
-        this.userSimpleInfo = resArr[2];
+        const [groupDetail, commerceInfo, userSimpleInfo, normalMemberList, allLevelGroupData] =
+          resArr;
+        Object.assign(groupDetail, { groupLevel: displayGroupLevel(groupDetail.groupId) });
+        Object.assign(groupDetail, { expired: commerceInfo.expired });
+        Object.assign(groupDetail, { commerceStatus: commerceInfo.commerceStatus });
+        this.sortMember(normalMemberList);
+        this.groupInfo = groupDetail;
+        this.userSimpleInfo = userSimpleInfo;
+        this.groupArchitecture = allLevelGroupData;
       });
   }
 
   /**
    * 取得管理員和成員名單
-   * @param groupArchitecture {GroupArchitecture}-api 1103的群組階層（subGroupInfo）
-   * @author kidin-1091111
    */
   refreshList() {
     const adminBody = {
       token: this.userSimpleInfo.token,
       groupId: this.groupInfo.groupId,
-      groupLevel: displayGroupLevel(this.groupInfo.groupId),
+      groupLevel: this.groupLevel,
       infoType: 2,
       avatarType: 3,
     };
@@ -95,7 +114,7 @@ export class MemberListComponent implements OnInit, OnDestroy {
     const memberBody = {
       token: this.userSimpleInfo.token,
       groupId: this.groupInfo.groupId,
-      groupLevel: displayGroupLevel(this.groupInfo.groupId),
+      groupLevel: this.groupLevel,
       infoType: 3,
       avatarType: 3,
     };
@@ -122,7 +141,6 @@ export class MemberListComponent implements OnInit, OnDestroy {
   /**
    * 將成員依加入狀態分類
    * @param memArr {Array<MemberInfo>}-api 1103回應的groupMemberInfo內容
-   * @author kidin-1091111
    */
   sortMember(memArr: Array<MemberInfo>) {
     this.initList();
@@ -137,7 +155,6 @@ export class MemberListComponent implements OnInit, OnDestroy {
 
   /**
    * 將各類成員清單初始化
-   * @author kidin-1091112
    */
   initList() {
     this.normalMemberList.length = 0;
@@ -146,10 +163,12 @@ export class MemberListComponent implements OnInit, OnDestroy {
 
   /**
    * 開啟或關閉編輯模式
-   * @author kidin-1091111
    */
   handleEdit() {
-    if (this.uiFlag.editMode === 'complete') {
+    const { pageType, editMode } = this.uiFlag;
+    // 分析列表不開放編輯功能
+    if (pageType === 'analysis') return;
+    if (editMode === 'complete') {
       this.uiFlag.editMode = 'edit';
       this.professionalService.setEditMode('edit');
     } else {
@@ -160,8 +179,7 @@ export class MemberListComponent implements OnInit, OnDestroy {
 
   /**
    * 指派為管理員
-   * @param e {}
-   * @author kidin-1091111
+   * @param e
    */
   handleAssignAdmin(e: number) {
     this.refreshList();
@@ -170,7 +188,6 @@ export class MemberListComponent implements OnInit, OnDestroy {
   /**
    * 加入或拒絕成員
    * @param e
-   * @author kidin-1091111
    */
   handleWaittingMemberInfo(e) {
     this.refreshList();
@@ -179,15 +196,21 @@ export class MemberListComponent implements OnInit, OnDestroy {
   /**
    * 點擊看更多顯示所有人列表
    * @param type {'Member' | 'WaitMember'}-看更多的類別
-   * @author kidin-1091201
    */
   seeMore(type: 'Member' | 'WaitMember') {
     this.uiFlag[`seeMore${type}`] = true;
   }
 
   /**
+   * 變更顯示內容類別
+   * @param pageType {'normal' | 'analysis'}
+   */
+  changeContent(pageType: 'normal' | 'analysis') {
+    this.uiFlag.pageType = pageType;
+  }
+
+  /**
    * 取消rxjs訂閱
-   * @author kidin-1091112
    */
   ngOnDestroy() {
     this.ngUnsubscribe.next();

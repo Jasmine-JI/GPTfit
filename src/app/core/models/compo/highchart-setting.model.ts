@@ -198,7 +198,7 @@ export interface HighchartSettingTooltip {
   valuePrefix?: string; // 前綴
   valueSuffix?: string; // 後綴
   split?: boolean; // 同時顯示所有 group 的 tooltip
-  share?: boolean; // 不同 group 圖表是否共用 tooltip
+  shared?: boolean; // 不同 group 圖表是否共用 tooltip
   hideDelay?: number; // 隱藏tooltip的延遲秒數
   outside?: boolean; // 提示框是否可以超出圖表
 }

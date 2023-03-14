@@ -4,6 +4,7 @@
 export enum OperationDataType {
   normal = 1,
   icon,
+  iconList,
   translateKey,
   date,
   dateTime,
@@ -13,4 +14,5 @@ export enum OperationDataType {
   day,
   hr,
   distance,
+  link,
 }

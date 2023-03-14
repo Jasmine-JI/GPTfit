@@ -9,6 +9,7 @@ import {
   GlobalEventsService,
   HintDialogService,
   ApiCommonService,
+  NetworkService,
 } from '../../../../../core/services';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
@@ -83,7 +84,8 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
     private auth: AuthService,
     private globalEventsService: GlobalEventsService,
     private hintDialogService: HintDialogService,
-    private apiCommonService: ApiCommonService
+    private apiCommonService: ApiCommonService,
+    private networkService: NetworkService
   ) {}
 
   ngOnInit(): void {
@@ -194,19 +196,22 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
    * @author kidin-1091223
    */
   getUserProfile() {
-    this.uiFlag.progress = 30;
-    this.api10xxService.fetchGetUserProfile({ token: this.token }).subscribe((res) => {
-      const { signIn, userProfile } = res as any;
-      if (this.apiCommonService.checkRes(res)) {
-        const { accountType } = signIn;
-        this.user = {
-          accountType,
-          ...userProfile,
-        };
-      }
+    const online = this.networkService.checkNetworkStatus();
+    if (online) {
+      this.uiFlag.progress = 30;
+      this.api10xxService.fetchGetUserProfile({ token: this.token }).subscribe((res) => {
+        const { signIn, userProfile } = res as any;
+        if (this.apiCommonService.checkRes(res)) {
+          const { accountType } = signIn;
+          this.user = {
+            accountType,
+            ...userProfile,
+          };
+        }
 
-      this.uiFlag.progress = 100;
-    });
+        this.uiFlag.progress = 100;
+      });
+    }
   }
 
   /**
@@ -217,28 +222,31 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
     if (this.token.length === 0) {
       this.turnBack();
     } else {
-      const body = {
-        token: this.token,
-        flow: 1,
-      };
+      const online = this.networkService.checkNetworkStatus();
+      if (online) {
+        const body = {
+          token: this.token,
+          flow: 1,
+        };
 
-      this.uiFlag.progress = 30;
-      this.api10xxService.fetchDestroyAccount(body, this.requestHeader).subscribe((res) => {
-        const { status, destroyTimestamp } = res as any;
-        if (this.apiCommonService.checkRes(res)) {
-          this.destroyResp.status = status;
-          if (status === DestroyStatus.notApplied) {
-            this.checkoutIsGroupAdmin();
-          } else if (status === DestroyStatus.destroying) {
-            this.destroyResp.destroyTimestamp = destroyTimestamp;
-            const destroyDate = dayjs(destroyTimestamp * 1000).format('YYYY-MM-DD'),
-              destroyTime = dayjs(destroyTimestamp * 1000).format('HH:mm');
-            this.getTranslate(destroyDate, destroyTime);
+        this.uiFlag.progress = 30;
+        this.api10xxService.fetchDestroyAccount(body, this.requestHeader).subscribe((res) => {
+          const { status, destroyTimestamp } = res as any;
+          if (this.apiCommonService.checkRes(res)) {
+            this.destroyResp.status = status;
+            if (status === DestroyStatus.notApplied) {
+              this.checkoutIsGroupAdmin();
+            } else if (status === DestroyStatus.destroying) {
+              this.destroyResp.destroyTimestamp = destroyTimestamp;
+              const destroyDate = dayjs(destroyTimestamp * 1000).format('YYYY-MM-DD'),
+                destroyTime = dayjs(destroyTimestamp * 1000).format('HH:mm');
+              this.getTranslate(destroyDate, destroyTime);
+            }
           }
-        }
 
-        this.uiFlag.progress = 100;
-      });
+          this.uiFlag.progress = 100;
+        });
+      }
     }
   }
 
@@ -271,34 +279,37 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
    * @author kidin-1091223
    */
   applyDestroy() {
-    const body = {
-      token: this.token,
-      flow: DestroyFlow.apply,
-    };
+    const online = this.networkService.checkNetworkStatus();
+    if (online) {
+      const body = {
+        token: this.token,
+        flow: DestroyFlow.apply,
+      };
 
-    this.uiFlag.progress = 30;
-    this.api10xxService
-      .fetchDestroyAccount(body, this.requestHeader)
-      .pipe(
-        switchMap((response) => this.translate.get('hellow world').pipe(map((resp) => response))),
-        takeUntil(this.ngUnsubscribe)
-      )
-      .subscribe((res) => {
-        const { status } = res as any;
-        if (this.apiCommonService.checkRes(res)) {
-          this.destroyResp.status = status;
-          if (this.user.accountType === AccountTypeEnum.phone) {
-            const msg = this.translate.instant('universal_userAccount_sendSmsSuccess');
-            this.hintDialogService.showSnackBar(msg);
-            this.countDown();
-          } else {
-            const msg = this.translate.instant('universal_userAccount_sendCaptchaChackEmail');
-            this.hintDialogService.showSnackBar(msg);
+      this.uiFlag.progress = 30;
+      this.api10xxService
+        .fetchDestroyAccount(body, this.requestHeader)
+        .pipe(
+          switchMap((response) => this.translate.get('hellow world').pipe(map((resp) => response))),
+          takeUntil(this.ngUnsubscribe)
+        )
+        .subscribe((res) => {
+          const { status } = res as any;
+          if (this.apiCommonService.checkRes(res)) {
+            this.destroyResp.status = status;
+            if (this.user.accountType === AccountTypeEnum.phone) {
+              const msg = this.translate.instant('universal_userAccount_sendSmsSuccess');
+              this.hintDialogService.showSnackBar(msg);
+              this.countDown();
+            } else {
+              const msg = this.translate.instant('universal_userAccount_sendCaptchaChackEmail');
+              this.hintDialogService.showSnackBar(msg);
+            }
           }
-        }
 
-        this.uiFlag.progress = 100;
-      });
+          this.uiFlag.progress = 100;
+        });
+    }
   }
 
   /**

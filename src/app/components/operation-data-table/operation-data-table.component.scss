@@ -3,6 +3,7 @@
 $header-border: 1px solid black;
 $cell-border: 1px solid rgba(200, 200, 200, 1);
 $header-width: 150px;
+$grid-height: minmax(25px, 25px);
 
 @mixin clear-ul-style() {
   list-style: none;
@@ -18,15 +19,26 @@ $header-width: 150px;
 
 .table__header__column {
   @include clear-ul-style();
+  @include overflow-x-scroll();
+  display: grid;
+  grid-template-rows: $grid-height;
   width: $header-width;
   min-width: $header-width;
   text-align: right;
+  font-size: 0.95rem;
+}
+
+.table__first__header {
+  display: grid;
+  grid-template-rows: 25px auto;
 }
 
 .column__header__cell {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
   overflow-x: hidden;
   text-overflow: ellipsis;
-  border-bottom: $cell-border;
 }
 
 .content__row {
@@ -37,23 +49,47 @@ $header-width: 150px;
 
 .grid__row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  border-bottom: $cell-border;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-rows: $grid-height;
 }
 
 .grid__cell {
   text-align: center;
   border-left: $cell-border;
+  border-bottom: $cell-border;
   padding: 0 0.5rem;
   white-space: nowrap;
+  width: 100%;
+  height: 100%;
 }
 
 .grid__row__header {
   border-color: rgba(100, 100, 100, 1);
   font-weight: bold;
+  font-size: 0.9rem;
   background-color: rgba(250, 255, 234, 1);
 }
 
 .grid__column__header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
   border-left: none;
+  text-align: right;
+}
+
+.table__header__link {
+  color: black;
+
+  &:hover {
+    color: rgb(81 155 219);
+  }
+
+  &:visited {
+    color: black;
+  }
+}
+
+.grid__icon {
+  font-size: 1.2rem;
 }

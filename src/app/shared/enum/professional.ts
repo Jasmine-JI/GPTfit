@@ -54,5 +54,6 @@ export enum GroupChildPage {
   adminList,
   memberList,
   deviceList,
+  operationReport,
   commercePlan,
 }

@@ -2,7 +2,12 @@ import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } fr
 import { AppCode } from '../../../models/app-webview';
 import { Router } from '@angular/router';
 import dayjs from 'dayjs';
-import { AuthService, Api10xxService, GlobalEventsService } from '../../../../../core/services';
+import {
+  AuthService,
+  Api10xxService,
+  GlobalEventsService,
+  NetworkService,
+} from '../../../../../core/services';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TFTViewMinWidth } from '../../../models/app-webview';
@@ -56,7 +61,8 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
     private router: Router,
     private api10xxService: Api10xxService,
     private auth: AuthService,
-    private globalEventsService: GlobalEventsService
+    private globalEventsService: GlobalEventsService,
+    private networkService: NetworkService
   ) {}
 
   ngOnInit(): void {
@@ -192,9 +198,61 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
     if (this.token.length === 0) {
       this.turnBack();
     } else {
+      const online = this.networkService.checkNetworkStatus();
+      if (online) {
+        const body = {
+          token: this.token,
+          flow: 1,
+        };
+
+        this.uiFlag.progress = 30;
+        this.api10xxService.fetchCompressData(body, this.requestHeader).subscribe((res) => {
+          this.uiFlag.progress = 100;
+          const processResult = res.processResult;
+          if (processResult.resultCode !== 200) {
+            console.error(
+              `${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`
+            );
+          } else {
+            this.compressResp.status = res.status;
+
+            if (res.status === CompressStatus.complete) {
+              this.compressResp.archiveLink =
+                location.hostname === 'www.gptfit.com'
+                  ? res.archiveLink.replace('5443', '6443')
+                  : res.archiveLink;
+              this.compressResp.archiveFakeLink = `https://${location.hostname}/compressData?${
+                res.archiveLink.split('?')[1]
+              }`;
+              this.compressResp.archiveLinkDate = dayjs(res.archiveLinkTimestamp * 1000).format(
+                'YYYY-MM-DD'
+              );
+              this.compressResp.archiveLinkTime = dayjs(res.archiveLinkTimestamp * 1000).format(
+                'HH:mm'
+              );
+            } else if (res.status === CompressStatus.prohibited) {
+              this.compressResp.cooldownTimestamp = res.cooldownTimestamp;
+              this.compressResp.cooldownDate = dayjs(res.cooldownTimestamp * 1000).format(
+                'YYYY-MM-DD'
+              );
+              this.compressResp.cooldownTime = dayjs(res.cooldownTimestamp * 1000).format('HH:mm');
+            }
+          }
+        });
+      }
+    }
+  }
+
+  /**
+   * 串接api 1012申請資料封存
+   * @author kidin-1091217
+   */
+  applyCompress() {
+    const online = this.networkService.checkNetworkStatus();
+    if (online) {
       const body = {
         token: this.token,
-        flow: 1,
+        flow: 2,
       };
 
       this.uiFlag.progress = 30;
@@ -207,55 +265,9 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
           );
         } else {
           this.compressResp.status = res.status;
-
-          if (res.status === CompressStatus.complete) {
-            this.compressResp.archiveLink =
-              location.hostname === 'www.gptfit.com'
-                ? res.archiveLink.replace('5443', '6443')
-                : res.archiveLink;
-            this.compressResp.archiveFakeLink = `https://${location.hostname}/compressData?${
-              res.archiveLink.split('?')[1]
-            }`;
-            this.compressResp.archiveLinkDate = dayjs(res.archiveLinkTimestamp * 1000).format(
-              'YYYY-MM-DD'
-            );
-            this.compressResp.archiveLinkTime = dayjs(res.archiveLinkTimestamp * 1000).format(
-              'HH:mm'
-            );
-          } else if (res.status === CompressStatus.prohibited) {
-            this.compressResp.cooldownTimestamp = res.cooldownTimestamp;
-            this.compressResp.cooldownDate = dayjs(res.cooldownTimestamp * 1000).format(
-              'YYYY-MM-DD'
-            );
-            this.compressResp.cooldownTime = dayjs(res.cooldownTimestamp * 1000).format('HH:mm');
-          }
         }
       });
     }
-  }
-
-  /**
-   * 串接api 1012申請資料封存
-   * @author kidin-1091217
-   */
-  applyCompress() {
-    const body = {
-      token: this.token,
-      flow: 2,
-    };
-
-    this.uiFlag.progress = 30;
-    this.api10xxService.fetchCompressData(body, this.requestHeader).subscribe((res) => {
-      this.uiFlag.progress = 100;
-      const processResult = res.processResult;
-      if (processResult.resultCode !== 200) {
-        console.error(
-          `${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`
-        );
-      } else {
-        this.compressResp.status = res.status;
-      }
-    });
   }
 
   /**

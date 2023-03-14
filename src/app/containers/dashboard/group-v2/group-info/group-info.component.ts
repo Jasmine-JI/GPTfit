@@ -6,8 +6,8 @@ import {
   AfterViewChecked,
   ViewChild,
 } from '@angular/core';
-import { fromEvent, Subscription, Subject, forkJoin } from 'rxjs';
-import { takeUntil, switchMap, map } from 'rxjs/operators';
+import { fromEvent, Subscription, Subject, forkJoin, merge } from 'rxjs';
+import { debounceTime, takeUntil, switchMap, map } from 'rxjs/operators';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
@@ -64,7 +64,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   private ngUnsubscribe = new Subject();
   groupIdSubscription: Subscription;
-  pageResize: Subscription;
   clickEvent: Subscription;
   scrollEvent: Subscription;
 
@@ -198,6 +197,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.detectParamChange();
     this.detectGroupIdChange();
     this.handlePageResize();
+    this.handleLanguageChange();
     if (!this.uiFlag.isPreviewMode) this.handleScroll();
     this.handleSideBarSwitch();
     this.checkEditMode();
@@ -207,12 +207,20 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 偵測瀏覽器是否改變大小
-   * @author kidin-20200710
    */
   handlePageResize() {
     const page = fromEvent(window, 'resize');
-    this.pageResize = page.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
+    page.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.checkScreenSize();
+    });
+  }
+
+  /**
+   * 偵測語言改變事件
+   */
+  handleLanguageChange() {
+    this.translate.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
+      this.getPerPageOptSize();
     });
   }
 
@@ -230,7 +238,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 確認tab位置與寬度
-   * @author kidin-1100908
    */
   checkPageListBarPosition() {
     const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as any,
@@ -556,7 +563,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 依瀏覽器大小將超出邊界的清單進行收納
-   * @author kidin-20200714
    */
   checkScreenSize() {
     // 確認多國語系載入後再計算按鈕位置
@@ -564,12 +570,12 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       .get('hellow world')
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(() => {
-        const navSection = this.navSection.nativeElement,
-          navSectionWidth = navSection.clientWidth;
-
+        const navSection = this.navSection.nativeElement;
+        const navSectionWidth = navSection.clientWidth;
         let reservedSpace = 0;
         this.uiFlag.windowInnerWidth = window.innerWidth;
-        if (window.innerWidth >= 1000 && window.innerWidth <= 1390) {
+        const { innerWidth } = window;
+        if (innerWidth >= 1000 && innerWidth <= 1390) {
           reservedSpace = 270; // sidebar展開所需的空間
         }
 
@@ -604,9 +610,11 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   checkPage() {
     const { token } = this.user;
-    if (location.pathname.indexOf('dashboard') < 0 && token !== '') {
-      this.router.navigateByUrl(`/dashboard${location.pathname}${location.search}`);
-    } else if (location.pathname.indexOf('dashboard') < 0) {
+    const { pathname, search } = location;
+    const notDashboardPage = pathname.indexOf('dashboard') < 0;
+    if (notDashboardPage && token !== '') {
+      this.router.navigateByUrl(`/dashboard${pathname}${search}`);
+    } else if (notDashboardPage) {
       this.uiFlag.portalMode = true;
     } else {
       this.uiFlag.portalMode = false;
@@ -615,7 +623,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 切換不同群組頁面即更新群組和使用者相關資訊
-   * @author kidin-10812217
    */
   detectGroupChange() {
     if (this.currentGroupInfo.hashGroupId !== this.route.snapshot.paramMap.get('groupId')) {
@@ -1072,7 +1079,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 根據群組類別、群組階層、群組經營狀態、使用者權限等，顯示可點選的頁面
-   * @author kidin-1091104
    */
   initChildPageList(): Array<GroupChildPage> {
     const { accessRight } = this.user;
@@ -1086,44 +1092,45 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     const upperClassAdmin = accessRight <= AccessRight.coachAdmin;
     const isGroupMember = accessRight <= AccessRight.member;
     const upperMarktingManage = accessRight <= AccessRight.marketing;
-    let childPageList = [GroupChildPage.groupIntroduction];
+    const isValidGroup = inOperation && notLock;
+    const childPageSet = new Set<GroupChildPage>(); // 用 set 避免頁面設定重複
+    childPageSet.add(GroupChildPage.groupIntroduction);
+
+    // 登入環境
     if (!this.uiFlag.portalMode) {
-      childPageList = childPageList.concat([
-        GroupChildPage.groupArchitecture,
-        GroupChildPage.adminList,
-      ]);
+      childPageSet.add(GroupChildPage.groupArchitecture);
+      childPageSet.add(GroupChildPage.adminList);
 
-      if (inBrandLevel && (upperMarktingManage || this.user.isGroupAdmin))
-        childPageList.push(GroupChildPage.commercePlan);
+      // 系統管理員或品牌階層管理員可以看到方案管理頁面
+      const haveBrandAccessRight = inBrandLevel && (upperMarktingManage || this.user.isGroupAdmin);
+      if (haveBrandAccessRight) childPageSet.add(GroupChildPage.commercePlan);
 
-      if (upperClassAdmin)
-        childPageList = childPageList.concat([
-          GroupChildPage.memberList,
-          GroupChildPage.deviceList,
-        ]);
+      // 成員列表與裝置列表僅群組管理員可以瀏覽
+      if (upperClassAdmin) {
+        childPageSet.add(GroupChildPage.memberList);
+        childPageSet.add(GroupChildPage.deviceList);
 
-      if (isGroupMember && inOperation && notLock) {
-        childPageList = childPageList.concat([
-          GroupChildPage.sportsReport,
-          GroupChildPage.cloudrunReport,
-        ]);
-
-        if (isEnterpriseType) childPageList.push(GroupChildPage.lifeTracking);
-
-        if (inClassLevel && !isEnterpriseType) {
-          childPageList.push(GroupChildPage.myclassReport);
-
-          if (upperClassAdmin) childPageList.push(GroupChildPage.classAnalysis);
+        if (isValidGroup) {
+          childPageSet.add(GroupChildPage.classAnalysis);
+          childPageSet.add(GroupChildPage.operationReport);
         }
+      }
+
+      // 營運中群組，群組成員可以看到課程分析報告以外的各式報告
+      if (isGroupMember && isValidGroup) {
+        childPageSet.add(GroupChildPage.sportsReport);
+        childPageSet.add(GroupChildPage.cloudrunReport);
+
+        if (isEnterpriseType) childPageSet.add(GroupChildPage.lifeTracking);
+        if (inClassLevel && !isEnterpriseType) childPageSet.add(GroupChildPage.myclassReport);
       }
     }
 
-    return childPageList.sort((_a, _b) => _a - _b);
+    return Array.from(childPageSet).sort((_a, _b) => _a - _b);
   }
 
   /**
    * 取得子頁面清單各選項按鈕寬度
-   * @author kidin-1091030
    */
   getPerPageOptSize() {
     this.uiFlag.divideIndex = null;
@@ -1134,7 +1141,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     setTimeout(() => {
       this.initPageOptSize();
       const menuList = document.querySelectorAll('.main__page__list');
-      this.uiFlag.barWidth = menuList[0].clientWidth;
+      this.uiFlag.barWidth = menuList[0]?.clientWidth ?? 65;
       menuList.forEach((_menu) => {
         this.perPageOptSize.perSize.push(_menu.clientWidth);
         this.perPageOptSize.total += _menu.clientWidth;
@@ -1146,7 +1153,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 將perPageOptSize參數進行初始化
-   * @author kidin-1091110
    */
   initPageOptSize() {
     this.uiFlag.divideIndex = null;
@@ -1162,7 +1168,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 加入群組並顯示隱私權
-   * @author kidin-1091223
    */
   joinGroup() {
     if (this.user.token.length === 0) {
@@ -1195,7 +1200,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 確認使用者的隱私權設定
-   * @author kidin-1091224
    */
   checkoutUserPrivacy() {
     let openPrivacy = true;
@@ -1220,7 +1224,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 顯示隱私權設定框
-   * @author kidin-1091229
    */
   openPrivacySetting() {
     // 待上一個dialog完全關閉再開啟隱私權設定dialog
@@ -1241,7 +1244,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   /**
    * 使用者加入或退出群組
    * @event click
-   * @author kidin-1090811
    */
   handleJoinGroup(actionType: number) {
     const { token, joinStatus } = this.user;
@@ -1276,7 +1278,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * 導向使用者點選的群組頁面
    * @param groupId {string}
    * @event click
-   * @author kidin-1090811
    */
   handleNavigation(groupId: string) {
     if (this.uiFlag.portalMode) {
@@ -1297,7 +1298,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @param e {MouseEvent}
    * @param page {GroupChildPage}-子頁面
    * @param tagIdx {number}-tag的顯示序
-   * @author kidin-1090811
    */
   handleShowContent(e: MouseEvent, page: GroupChildPage, tagIdx: number) {
     e.stopPropagation();
@@ -1339,7 +1339,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   /**
    * 根據子頁面捲動頁面至指定位置
    * @param page {string}-子頁面
-   * @author kidin-1100226
    */
   scrollPage(page: GroupChildPage) {
     const mainBodyEle = document.querySelector('.main-body');
@@ -1494,6 +1493,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         return GroupChildPage.deviceList;
       case 'commerce-plan':
         return GroupChildPage.commercePlan;
+      case 'operation-report':
+        return GroupChildPage.operationReport;
       default:
         return GroupChildPage.groupIntroduction;
     }
@@ -1526,6 +1527,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         return 'device-list';
       case GroupChildPage.commercePlan:
         return 'commerce-plan';
+      case GroupChildPage.operationReport:
+        return 'operation-report';
       default:
         return 'group-introduction';
     }

@@ -1,0 +1,239 @@
+<article [ngSwitch]="post.type">
+  <h4 class="pageTitle flexRow">
+    <ng-container *ngSwitchCase="MemberType.admin">
+      {{ '教練分析列表' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="MemberType.normal">
+      {{ '學員分析列表' | translate }}
+    </ng-container>
+  </h4>
+  <hr class="title__divide__line" />
+  <p class="analysis__description">
+    <ng-container *ngSwitchCase="MemberType.admin">
+      {{ '以下所有群組階層管理員的課程相關分析列表' | translate }}
+    </ng-container>
+    <ng-container *ngSwitchCase="MemberType.normal">
+      {{ '以下所有群組階層一般成員的課程相關分析列表' | translate }}
+    </ng-container>
+  </p>
+  <section>
+    <app-operation-list-condition
+      [allConditionSetting]="allOperationCondition"
+      (changeCondition)="changeCondition($event)"
+    ></app-operation-list-condition>
+  </section>
+  <section>
+    <app-pagination [pageSetting]="pageSetting" (pageChange)="shiftPage($event)"></app-pagination>
+  </section>
+  <section class="flexCol">
+    <div class="list__column__header list__grid">
+      <span class="grid__cell">{{ 'universal_activityData_name' | translate }}</span>
+      <span class="grid__cell">{{ 'universal_userProfile_gender' | translate }}</span>
+      <span class="grid__cell">{{ 'universal_userProfile_age' | translate }}</span>
+      <ng-container *ngSwitchCase="MemberType.admin">
+        <span class="grid__cell">{{ '累計開課次數' | translate }}</span>
+        <span class="grid__cell">{{ '累計上課人次' | translate }}</span>
+        <span class="grid__cell">{{ '最後開課日' | translate }}</span>
+      </ng-container>
+      <ng-container *ngSwitchCase="MemberType.normal">
+        <span class="grid__cell">{{ '累計上課次數' | translate }}</span>
+        <span class="grid__cell">{{ '累計上課時數' | translate }}</span>
+        <span class="grid__cell">{{ '最後上課日' | translate }}</span>
+      </ng-container>
+    </div>
+    <ul class="flexCol group__list" *ngIf="list$ | async as list">
+      <li class="group__list__item" *ngFor="let _list of list; let _index = index">
+        <div class="flexCol">
+          <div
+            class="list__grid list__info"
+            (click)="_list.unfold = handleUnfoldItem($event, _list)"
+          >
+            <div class="flexRow member__name">
+              <figure class="flexCenter group__icon__container">
+                <img
+                  class="group__image"
+                  [src]="_list.baseInfo.userIcon"
+                  [alt]="_list.baseInfo.userName"
+                  (error)="_list.baseInfo.userIcon = personalIconSubstitudePath"
+                />
+              </figure>
+              <span class="list__member__name">{{ _list.baseInfo.userName }}</span>
+            </div>
+            <span class="grid__cell">
+              {{ _list.baseInfo.gender | sex: 'i18n' | translate }}
+            </span>
+            <span class="grid__cell">
+              {{
+                {
+                  birth: _list.baseInfo.birthday,
+                  birthFormat: 'YYYYMMDD'
+                } | countAge
+              }}
+            </span>
+            <ng-container *ngSwitchCase="MemberType.admin">
+              <span class="grid__cell">
+                {{ _list.classInfo.totalTeachCounts }}
+              </span>
+              <span class="grid__cell">
+                {{ _list.classInfo.maleAttendCounts + _list.classInfo.femaleAttendCounts }}
+              </span>
+              <span class="grid__cell">
+                <ng-container *ngIf="_list.classInfo.lastTeachDate">
+                  {{ _list.classInfo.lastTeachDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
+                </ng-container>
+                <ng-container *ngIf="!_list.classInfo.lastTeachDate">
+                  {{ '-' }}
+                </ng-container>
+              </span>
+            </ng-container>
+            <ng-container *ngSwitchCase="MemberType.normal">
+              <span class="grid__cell">
+                {{ _list.attendInfo.totalAttendCounts }}
+              </span>
+              <span class="grid__cell">
+                {{ _list.attendInfo.totalAttendTime / 3600 | number: '1.0-1' }}
+              </span>
+              <span class="grid__cell">
+                <ng-container *ngIf="_list.attendInfo.lastAttendDate">
+                  {{ _list.attendInfo.lastAttendDate * 1000 | timeFormat: 'YYYY-MM-DD' }}
+                </ng-container>
+                <ng-container *ngIf="!_list.attendInfo.lastAttendDate">
+                  {{ '-' }}
+                </ng-container>
+              </span>
+            </ng-container>
+            <i
+              class="icon-svg_web-icon_p1_006-unfold unfold__icon"
+              [class.unfold__icon--active]="_list.unfold"
+            ></i>
+          </div>
+          <div class="item__detail" *ngIf="_list.unfold">
+            <ng-container *ngSwitchCase="MemberType.admin">
+              <div class="flexCol" *ngIf="_list.groupBelonging">
+                <h6 class="content__title">{{ '所屬群組' | translate }}</h6>
+                <div class="flexRow content__section">
+                  <span class="list__in__line" *ngFor="let _group of _list.groupBelonging">
+                    {{ _group.branchName }}/{{ _group.className }}
+                  </span>
+                </div>
+              </div>
+              <div class="flexCol" *ngIf="_list.groupBelonging">
+                <h6 class="content__title">{{ '開課概況' | translate }}</h6>
+                <div class="content__section">
+                  <span class="flexRow">
+                    {{ '開課類別' }}:<ng-container *ngFor="let _type of _list.classInfo.teachType">
+                      {{ _type | spaceTrim | sportType | translate }},
+                    </ng-container>
+                  </span>
+                  <div
+                    *ngTemplateOutlet="
+                      detailGrid;
+                      context: {
+                        detailArray: [
+                          ['男性上課人次', _list.classInfo.maleAttendCounts],
+                          ['女性上課人次', _list.classInfo.femaleAttendCounts]
+                        ]
+                      }
+                    "
+                  ></div>
+                </div>
+              </div>
+              <div class="flexCol">
+                <h6 class="content__title">{{ '近一個月概況' | translate }}</h6>
+                <div class="content__section">
+                  <div
+                    *ngTemplateOutlet="
+                      detailGrid;
+                      context: {
+                        detailArray: [
+                          ['開課次數', _list.oneMonthClassInfo.teachCounts],
+                          [
+                            '課程計時',
+                            _list.oneMonthClassInfo.teachTotalTime / 3600 | number: '1.0-1'
+                          ]
+                        ]
+                      }
+                    "
+                  ></div>
+                  <span class="flexRow">
+                    {{ '開課類別' }}:<ng-container
+                      *ngFor="let _type of _list.oneMonthClassInfo.teachType"
+                    >
+                      {{ _type | spaceTrim | sportType | translate }},
+                    </ng-container>
+                  </span>
+                </div>
+              </div>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="MemberType.normal">
+              <div class="flexCol">
+                <h6 class="content__title">{{ '近一個月概況' | translate }}</h6>
+                <div class="content__section">
+                  <div
+                    *ngTemplateOutlet="
+                      detailGrid;
+                      context: {
+                        detailArray: [
+                          ['上課次數', _list.oneMonthAttendInfo.attendClassCounts],
+                          ['課程計時', _list.oneMonthAttendInfo.attendClassTotalTime]
+                        ]
+                      }
+                    "
+                  ></div>
+                  <span class="flexRow">
+                    {{ '課程類別' }}:<ng-container
+                      *ngFor="let _type of _list.oneMonthAttendInfo.attendClassType"
+                    >
+                      {{ _type | spaceTrim | sportType | translate }}
+                    </ng-container>
+                  </span>
+                </div>
+              </div>
+            </ng-container>
+
+            <div class="flexCol">
+              <h6 class="content__title">{{ '使用裝置' | translate }}</h6>
+              <div class="content__section">
+                <span class="list__in__line" *ngFor="let _device of _list.useDevice">
+                  {{ _device | spaceTrim | productType: 'key' | translate }},
+                </span>
+              </div>
+            </div>
+            <div class="flexCol">
+              <h6 class="content__title">{{ '相關連結' | translate }}</h6>
+              <div class="flexCol content__section">
+                <a [href]="_list.link.introduction" target="_blank" class="relative__link">
+                  {{ '介紹頁' | translate }}
+                </a>
+                <a [href]="_list.link.sportsReport" target="_blank" class="relative__link">
+                  {{ '運動報告' | translate }}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="group__list__item" *ngIf="list.length === 0">
+        {{ 'universal_status_noData' | translate }}
+      </li>
+    </ul>
+  </section>
+  <section>
+    <app-pagination [pageSetting]="pageSetting" (pageChange)="shiftPage($event)"></app-pagination>
+  </section>
+  <!--
+  <p class="update__time" *ngIf="lastUpdateTime$ | async as lastUpdateTime">
+    {{ '數據更新時間' }}:
+    <time>{{ lastUpdateTime.update.timestamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm' }}</time>
+  </p>
+  -->
+</article>
+
+<ng-template #detailGrid let-detailArray="detailArray">
+  <div class="detail__grid">
+    <span *ngFor="let _detail of detailArray">
+      {{ _detail[0] | translate }}: {{ _detail[1] }}
+    </span>
+  </div>
+</ng-template>

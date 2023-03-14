@@ -15,9 +15,9 @@ export function countBMI(height: number, weight: number): number {
  * 計算年齡
  * @param birthday {string}-生日
  */
-export function countAge(birthday: string) {
+export function countAge(birthday: number | string) {
   const todayMoment = dayjs();
-  const birthMoment = dayjs(birthday, 'YYYYMMDD');
+  const birthMoment = dayjs(birthday.toString(), 'YYYYMMDD');
   return todayMoment.diff(birthMoment, 'year');
 }
 

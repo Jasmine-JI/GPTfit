@@ -211,14 +211,13 @@ export class DateRangePickerComponent implements OnInit, OnChanges, OnDestroy {
       }
 
       setTimeout(() => {
-        jquery(`#picker${this.serialId}`).daterangepicker(pickerOpt);
-        jquery(`#picker${this.serialId}`).on(
-          'apply.daterangepicker',
-          this.emitDateRange.bind(this)
-        );
+        const targetElementId = `#picker${this.serialId}`;
+        jquery(targetElementId).daterangepicker(pickerOpt);
+        jquery(targetElementId).on('apply.daterangepicker', this.emitDateRange.bind(this));
 
         if (this.zIndex) {
-          jquery(`#picker${this.serialId}`).on(
+          jquery(targetElementId).on('show.daterangepicker', this.handleCalenderZIndex.bind(this));
+          jquery(targetElementId).on(
             'showCalendar.daterangepicker',
             this.handleCalenderZIndex.bind(this)
           );

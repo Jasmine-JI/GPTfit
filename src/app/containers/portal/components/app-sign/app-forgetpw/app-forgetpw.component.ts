@@ -7,6 +7,7 @@ import {
   GlobalEventsService,
   HintDialogService,
   ApiCommonService,
+  NetworkService,
 } from '../../../../../core/services';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { Subject, Subscription, fromEvent, merge, of } from 'rxjs';
@@ -98,7 +99,8 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     public getClientIp: GetClientIpService,
     private globalEventsService: GlobalEventsService,
     private hintDialogService: HintDialogService,
-    private apiCommonService: ApiCommonService
+    private apiCommonService: ApiCommonService,
+    private networkService: NetworkService
   ) {}
 
   ngOnInit() {
@@ -427,19 +429,22 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 寄發驗證信或檢查驗證碼-kidin-1090515
   submit() {
-    this.progress = 30;
-    if (this.imgCaptcha.show) {
-      this.removeCaptcha('submit');
-    } else {
-      const { type, resetPasswordFlow } = this.formValue;
-      if (type === SignTypeEnum.email && resetPasswordFlow === ResetFlow.request) {
-        this.sendEmailCaptcha();
-      } else if (type === SignTypeEnum.email && resetPasswordFlow === ResetFlow.verify) {
-        this.emailVarify();
-      } else if (type === SignTypeEnum.phone && resetPasswordFlow !== ResetFlow.reset) {
-        this.phoneVarify();
-      } else if (resetPasswordFlow === ResetFlow.reset) {
-        this.resetPWD();
+    const online = this.networkService.checkNetworkStatus();
+    if (online) {
+      this.progress = 30;
+      if (this.imgCaptcha.show) {
+        this.removeCaptcha('submit');
+      } else {
+        const { type, resetPasswordFlow } = this.formValue;
+        if (type === SignTypeEnum.email && resetPasswordFlow === ResetFlow.request) {
+          this.sendEmailCaptcha();
+        } else if (type === SignTypeEnum.email && resetPasswordFlow === ResetFlow.verify) {
+          this.emailVarify();
+        } else if (type === SignTypeEnum.phone && resetPasswordFlow !== ResetFlow.reset) {
+          this.phoneVarify();
+        } else if (resetPasswordFlow === ResetFlow.reset) {
+          this.resetPWD();
+        }
       }
     }
   }

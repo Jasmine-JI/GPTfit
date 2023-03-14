@@ -173,6 +173,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     this.checkUrl();
     this.checkLang();
     this.handlePageResize();
+    this.handleLanguageChange();
     this.handleScroll();
     this.handleSideBarSwitch();
     this.getNeedInfo(this.uiFlag.displayPage);
@@ -246,8 +247,16 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 偵測語言改變事件
+   */
+  handleLanguageChange() {
+    this.translateService.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
+      this.getPerPageOptSize();
+    });
+  }
+
+  /**
    * 監聽捲動事件，當捲動到tab時，tab固定置頂
-   * @author kidin-1100908
    */
   handleScroll() {
     const targetElement = document.querySelector('.main__container');
