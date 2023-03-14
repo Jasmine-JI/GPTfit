@@ -931,7 +931,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           result.update(Math.round(value), getPaceUnit(sportType, this.userUnit));
           break;
         case 'targetAchieveRate': {
-          result.update(value, '%');
+          result.update(mathRounding(value, 1), '%');
           break;
         }
         case 'totalFeedbackEnergy': {

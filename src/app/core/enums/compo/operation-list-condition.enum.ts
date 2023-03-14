@@ -15,6 +15,10 @@ export enum CondtionType {
   planType,
   expiredStatus,
   keyword,
+  gender,
+  childName,
+  teachType,
+  age,
 }
 
 /**
@@ -24,6 +28,7 @@ export enum BrandType {
   all,
   brand,
   enterprise,
+  school,
 }
 
 /**
@@ -43,4 +48,27 @@ export enum GroupListSortType {
   expiredTime,
   totalMembers,
   memberLimitation,
+}
+
+/**
+ * 教練/學員分析列表排序類別
+ */
+export enum MemberListSortType {
+  name = 1,
+  gender,
+  age,
+  totalTeachCounts,
+  totalStudentsCounts,
+  lastTeachTime,
+  totalAttendCounts,
+  totalAttendHour,
+  lastAttendTime,
+}
+
+/**
+ * 成員身份類別
+ */
+export enum MemberType {
+  admin = 1,
+  normal,
 }

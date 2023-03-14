@@ -119,6 +119,7 @@ export function isAvgData(key: string) {
  * @param code {number | string}-運動類別代號
  */
 export function getSportsTypeKey(code: number | string) {
+  if (code === '') return '';
   const sportsCode = `${code}`.includes('s') ? +(code as string).split('s')[1] : +code;
   switch (sportsCode) {
     case SportType.run:

@@ -53,6 +53,7 @@ import { ReceiverListComponent } from '../station-mail/receiver-list/receiver-li
 import { appPath } from '../../app-path.const';
 import { GsensorComponent } from './components/gsensor/gsensor.component';
 import { Page404Component } from '../../shared/components/page404/page404.component';
+import { GroupAnalysisReportComponent } from '../professional';
 
 const routes: Routes = [
   {
@@ -215,6 +216,10 @@ const routes: Routes = [
           {
             path: 'admin-list',
             component: AdminListComponent,
+          },
+          {
+            path: 'operation-report',
+            component: GroupAnalysisReportComponent,
           },
           {
             path: 'myclass-report',

@@ -18,17 +18,17 @@ import { HighchartOption } from '../../core/classes';
 import { GlobalEventsService } from '../../core/services/global-events.service';
 
 @Component({
-  selector: 'app-category-column-chart',
+  selector: 'app-line-column-compare-chart',
   standalone: true,
   imports: [CommonModule, TranslateModule],
-  templateUrl: './category-column-chart.component.html',
-  styleUrls: ['./category-column-chart.component.scss'],
+  templateUrl: './line-column-compare-chart.component.html',
+  styleUrls: ['./line-column-compare-chart.component.scss'],
 })
-export class CategoryColumnChartComponent implements OnInit, OnChanges, OnDestroy {
+export class LineColumnCompareChartComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('container') container: ElementRef;
   @Input() data: Array<any>;
-  @Input() seriesName: Array<string>;
   @Input() unit: string;
+  @Input() compareUnit: string;
   @Input() tooltipLegendKey: string;
 
   private ngUnsubscribe = new Subject();
@@ -98,44 +98,26 @@ export class CategoryColumnChartComponent implements OnInit, OnChanges, OnDestro
    */
   getChartOption() {
     const chartOption = new HighchartOption('column', 250);
-    const { unit } = this;
-    chartOption.plotOptions = { series: { pointPadding: 0, dataLabels: { enabled: true } } };
+    const { unit, compareUnit } = this;
+    chartOption.plotOptions = { series: { pointPadding: 0 } };
     chartOption.xAxis = { type: 'category' };
-    chartOption.yAxis = { title: null };
-    chartOption.series = this.getSeries();
-    if (unit) {
-      const { yAxis, tooltip } = chartOption.option;
-      chartOption.yAxis = { ...(yAxis ?? {}), labels: { format: `{value} ${unit}` } };
-      chartOption.tooltip = { ...(tooltip ?? {}), valueSuffix: unit };
+    chartOption.yAxis = [{ title: null }, { title: null, opposite: true }];
+    chartOption.tooltip = { shared: true };
+    chartOption.series = this.data;
+    if (unit || compareUnit) {
+      chartOption.yAxis = chartOption.yAxis.map((_yAxis, _index) => {
+        const displayUnit = _index === 0 ? unit ?? '' : compareUnit ?? '';
+        Object.assign(_yAxis, { labels: { format: `{value} ${displayUnit}` } });
+        return _yAxis;
+      });
     }
 
     return chartOption;
   }
 
   /**
-   * 將圖表數據再進行加工，含多國語系轉換、單位置入、數據格式化為highchart用格式
+   * 解除rxjs訂閱
    */
-  getSeries() {
-    const { data, seriesName } = this;
-    return data.map((_data, _index) => {
-      const _value = _data.data ?? _data;
-      const result: any = {
-        name: seriesName && seriesName[_index] ? this.translate.instant(seriesName[_index]) : '',
-        data: _value.map((_oneData) => {
-          if (!Array.isArray(_oneData)) return _oneData;
-          const [_category, _value] = _oneData;
-          return {
-            name: this.translate.instant(_category),
-            y: _value,
-          };
-        }),
-      };
-
-      if (_data.color) result.color = _data.color;
-      return result;
-    });
-  }
-
   ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();

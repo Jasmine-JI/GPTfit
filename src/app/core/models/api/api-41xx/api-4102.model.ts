@@ -1,5 +1,6 @@
 import { ProcessResult } from '../api-common/process-result.model';
 import { SystemAnalysisType } from '../../../enums/api';
+import { TimeRange } from './index';
 
 export interface Api4102Post {
   token: string;
@@ -12,10 +13,7 @@ export interface Api4102Post {
 export interface Api4102Response {
   processResult: ProcessResult;
   trend: {
-    timeRange: {
-      fieldName: Array<number>;
-      fieldValue: Array<Array<string>>;
-    };
+    timeRange: TimeRange;
     groupCountsAnalysis?: {
       fieldName: Array<string>;
       fieldValue: Array<Array<number>>;

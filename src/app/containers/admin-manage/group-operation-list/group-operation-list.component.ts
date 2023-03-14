@@ -24,7 +24,6 @@ import {
   RoadPath,
   AllOperationCondition,
   OperationConditionResult,
-  OperationCondition,
 } from '../../../core/models/compo';
 import {
   SortDirection,
@@ -251,6 +250,7 @@ export class GroupOperationListComponent implements OnInit {
    * 1. 裝置型號排序
    * 2. 裝置使用次數 cjson 還原為一般 json
    * 3. 插入unfold status方便處理展開收合功能
+   * 4. 插入相關連結
    * @param list {Array<any>}-api 4103 response 的 info 物件
    */
   processingList(list: Array<any>) {
@@ -288,7 +288,7 @@ export class GroupOperationListComponent implements OnInit {
     return {
       introduction: `/dashboard/group-info/${hashGroupId}/group-introduction`,
       commerce: `/dashboard/group-info/${hashGroupId}/commerce-plan`,
-      operation: `/dashboard/group-info/${hashGroupId}/operation-analysis`,
+      operation: `/dashboard/group-info/${hashGroupId}/operation-report`,
     };
   }
 
@@ -345,9 +345,17 @@ export class GroupOperationListComponent implements OnInit {
       }
     });
 
-    this.post.sort = {
-      direction: sortDirection,
-      type: sortType,
+    const { page } = this.post;
+    this.post = {
+      ...this.post,
+      page: {
+        index: 0,
+        counts: page.counts,
+      },
+      sort: {
+        direction: sortDirection,
+        type: sortType,
+      },
     };
 
     this.getList();

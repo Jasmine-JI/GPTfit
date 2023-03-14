@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Api41xxService, AuthService } from '../../../core/services';
+import { Api41xxService, AuthService, CorrespondTranslateKeyService } from '../../../core/services';
 import { SystemAnalysisType } from '../../../core/enums/api';
 import { Observable } from 'rxjs';
 import {
@@ -33,7 +33,6 @@ import {
   groupOverViewConvert,
   getSportsTypeKey,
   assignSportsTypeColor,
-  ageCodeConvert,
   getDevicTypeInfo,
   deepCopy,
   changeOpacity,
@@ -211,7 +210,8 @@ export class SystemOperationReportComponent implements OnInit {
   constructor(
     private api41xxService: Api41xxService,
     private authService: AuthService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private correspondTranslateKeyService: CorrespondTranslateKeyService
   ) {}
 
   ngOnInit(): void {
@@ -438,10 +438,10 @@ export class SystemOperationReportComponent implements OnInit {
    */
   handleTrendChartData(data: any) {
     const {
-      postInfo: { type, completeDateRangeList },
+      postInfo: { type },
       isCompareMode,
+      trendChartUnit,
     } = this;
-    const { trendChartUnit } = this;
     switch (type) {
       case SystemAnalysisType.group: {
         const aggregationData =
@@ -484,7 +484,8 @@ export class SystemOperationReportComponent implements OnInit {
     rangeValue.forEach((_rangeValue, _rangeIndex) => {
       const _year = _rangeValue[0].toString().slice(0, 4);
       const mergeLastIndex = mergeRangeValue.length - 1;
-      if (mergeRangeValue[mergeLastIndex] && _year === mergeRangeValue[mergeLastIndex][0]) {
+      const mergeLastYearArr = mergeRangeValue[mergeLastIndex];
+      if (mergeLastYearArr && _year === mergeLastYearArr[0]) {
         mergeDataValue[mergeLastIndex] = mergeDataValue[mergeLastIndex].map(
           (_value, _dataIndex) => {
             return _value + dataValue[_rangeIndex][_dataIndex];
@@ -807,7 +808,7 @@ export class SystemOperationReportComponent implements OnInit {
     };
 
     ageFieldName.forEach((_ageFieldName, _index) => {
-      const _translateKey = ageCodeConvert(_ageFieldName);
+      const _translateKey = this.correspondTranslateKeyService.ageCodeConvert(_ageFieldName);
       const _maleCount = maleFieldValue[_index];
       const _femaleCount = femaleFieldValue[_index];
       const _totalCount = _maleCount + _femaleCount;
@@ -938,12 +939,10 @@ export class SystemOperationReportComponent implements OnInit {
       const dateRange = this.getDateRangeTimestamp(_dateRange[0]);
       analysisName.forEach((_fieldName, _nameIndex) => {
         const dataValue = analysisValue[_dateIndex][_nameIndex];
-        const hour = 3600;
-        const processedValue =
-          _fieldName === 'totalClassTime' ? mathRounding(dataValue / hour, 1) : dataValue;
+        const processedValue = this.countClassHour(_fieldName, dataValue);
         groupTrendChartData[_fieldName].chartData[0].data.push({
           name: this.getXAxisName(trendChartUnit, dateRange.startDate),
-          y: processedValue,
+          y: mathRounding(processedValue, 1),
         });
 
         const trendTableRowHeader = this.getTrendTableRowHeader(dateRange.startDate);
@@ -971,16 +970,27 @@ export class SystemOperationReportComponent implements OnInit {
           };
         } else {
           const prevValue = analysisValue[_dateIndex - 1][_nameIndex];
+          const prevProcessedValue = this.countClassHour(_fieldName, prevValue);
           groupTrendTableData[_fieldName].data.push([
             trendTableRowHeader,
             processedValue,
-            `${this.countIncreaseRatio(processedValue - prevValue, prevValue, 1)}`,
+            `${this.countIncreaseRatio(processedValue, prevProcessedValue, 1)}`,
           ]);
         }
       });
     });
 
     return { groupTrendChartData, groupTrendTableData };
+  }
+
+  /**
+   * 依數據類別轉為小時或返回原值
+   * @param fieldName {string}-數據類別
+   * @param value {number}-數值
+   */
+  countClassHour(fieldName: string, value: number) {
+    const hour = 3600;
+    return fieldName === 'totalClassTime' ? mathRounding(value / hour, 1) : value;
   }
 
   /**
@@ -1103,7 +1113,7 @@ export class SystemOperationReportComponent implements OnInit {
           memberTrendTableData[_fieldName].data.push([
             trendTableRowHeader,
             dataValue,
-            `${this.countIncreaseRatio(dataValue - prevValue, prevValue, 1)}`,
+            `${this.countIncreaseRatio(dataValue, prevValue, 1)}`,
           ]);
         }
       });
@@ -1143,9 +1153,9 @@ export class SystemOperationReportComponent implements OnInit {
       memberTrendTableData[genderFieldName].data.push([
         trendTableRowHeader,
         maleFileTotal,
-        `${this.countIncreaseRatio(maleFileTotal - malePrevTotal, malePrevTotal, 1)}`,
+        `${this.countIncreaseRatio(maleFileTotal, malePrevTotal, 1)}`,
         femaleFileTotal,
-        `${this.countIncreaseRatio(femaleFileTotal - femalePrevTotal, femalePrevTotal, 1)}`,
+        `${this.countIncreaseRatio(femaleFileTotal, femalePrevTotal, 1)}`,
       ]);
 
       malePrevTotal = maleFileTotal;
@@ -1294,19 +1304,23 @@ export class SystemOperationReportComponent implements OnInit {
       const _newerRange = newerRange[i] ? this.getDateRangeTimestamp(newerRange[i]) : null;
       fieldName.forEach((_fieldName, _nameIndex) => {
         const _olderValue = olderValue[i] ? olderValue[i][_nameIndex] : null;
+        const _olderProcessedValue = this.countClassHour(_fieldName, _olderValue);
         const _newerValue = newerValue[i] ? newerValue[i][_nameIndex] : null;
-        olderTotalValueObj[_fieldName] = (olderTotalValueObj[_fieldName] ?? 0) + (_olderValue ?? 0);
-        newerTotalValueObj[_fieldName] = (newerTotalValueObj[_fieldName] ?? 0) + (_newerValue ?? 0);
+        const _newerProcessedValue = this.countClassHour(_fieldName, _newerValue);
+        olderTotalValueObj[_fieldName] =
+          (olderTotalValueObj[_fieldName] ?? 0) + (_olderProcessedValue ?? 0);
+        newerTotalValueObj[_fieldName] =
+          (newerTotalValueObj[_fieldName] ?? 0) + (_newerProcessedValue ?? 0);
 
         const trendTableRowHeader = this.translate.instant(this.getCompareRowHeader(i));
         groupTrendChartData[_fieldName].chartData[0].data.push({
           name: trendTableRowHeader,
-          y: _olderValue ?? 0,
+          y: _olderProcessedValue ?? 0,
         });
 
         groupTrendChartData[_fieldName].chartData[1].data.push({
           name: trendTableRowHeader,
-          y: _newerValue ?? 0,
+          y: _newerProcessedValue ?? 0,
         });
 
         if (!groupTrendTableData[_fieldName]) {
@@ -1333,7 +1347,7 @@ export class SystemOperationReportComponent implements OnInit {
                 OperationDataType.translateKey,
               ],
               valueRowType: [
-                OperationDataType.normal,
+                OperationDataType.translateKey,
                 OperationDataType.normal,
                 OperationDataType.normal,
                 OperationDataType.normal,
@@ -1341,15 +1355,15 @@ export class SystemOperationReportComponent implements OnInit {
             },
             data: [
               [`單位日期`, olderColumnHeader, newerColumnHeader, '增長(%)'],
-              [trendTableRowHeader, _olderValue, _newerValue, '-'],
+              [trendTableRowHeader, _olderProcessedValue, _newerProcessedValue, '-'],
             ],
           };
         } else {
           groupTrendTableData[_fieldName].data.push([
             trendTableRowHeader,
-            _olderValue ?? '-',
-            _newerValue ?? '-',
-            `${this.countIncreaseRatio(_newerValue - _olderValue, _olderValue, 1)}`,
+            _olderProcessedValue ?? '-',
+            _newerProcessedValue ?? '-',
+            `${this.countIncreaseRatio(_newerProcessedValue, _olderProcessedValue, 1)}`,
           ]);
         }
 
@@ -1358,9 +1372,9 @@ export class SystemOperationReportComponent implements OnInit {
           const newerTotalValue = newerTotalValueObj[_fieldName];
           groupTrendTableData[_fieldName].data.push([
             'universal_adjective_total',
-            olderTotalValue,
-            newerTotalValue,
-            `${this.countIncreaseRatio(newerTotalValue - olderTotalValue, olderTotalValue, 1)}`,
+            mathRounding(olderTotalValue, 1),
+            mathRounding(newerTotalValue, 1),
+            `${this.countIncreaseRatio(newerTotalValue, olderTotalValue, 1)}`,
           ]);
         }
       });
@@ -1596,7 +1610,7 @@ export class SystemOperationReportComponent implements OnInit {
                 OperationDataType.translateKey,
               ],
               valueRowType: [
-                OperationDataType.normal,
+                OperationDataType.translateKey,
                 OperationDataType.normal,
                 OperationDataType.normal,
                 OperationDataType.normal,
@@ -1612,7 +1626,7 @@ export class SystemOperationReportComponent implements OnInit {
             trendTableRowHeader,
             _olderValue ?? '-',
             _newerValue ?? '-',
-            `${this.countIncreaseRatio(_newerValue - _olderValue, _olderValue, 1)}`,
+            `${this.countIncreaseRatio(_newerValue, _olderValue, 1)}`,
           ]);
         }
 
@@ -1623,7 +1637,7 @@ export class SystemOperationReportComponent implements OnInit {
             'universal_adjective_total',
             olderTotalValue,
             newerTotalValue,
-            `${this.countIncreaseRatio(newerTotalValue - olderTotalValue, olderTotalValue, 1)}`,
+            `${this.countIncreaseRatio(newerTotalValue, olderTotalValue, 1)}`,
           ]);
         }
       });
@@ -1682,7 +1696,7 @@ export class SystemOperationReportComponent implements OnInit {
         color: assignSportsTypeColor(_typeCode),
       });
 
-      const _diffRatio = this.countIncreaseRatio(_olderValue, _newerValue, 1);
+      const _diffRatio = this.countIncreaseRatio(_newerValue, _olderValue, 1);
       sportsTypeTrendTableData.data.push([_translateKey, _olderValue, _newerValue, _diffRatio]);
     });
 
@@ -1822,7 +1836,7 @@ export class SystemOperationReportComponent implements OnInit {
                 OperationDataType.translateKey,
               ],
               valueRowType: [
-                OperationDataType.normal,
+                OperationDataType.translateKey,
                 OperationDataType.normal,
                 OperationDataType.normal,
                 OperationDataType.normal,
@@ -1838,7 +1852,7 @@ export class SystemOperationReportComponent implements OnInit {
             trendTableRowHeader,
             _olderValue ?? '-',
             _newerValue ?? '-',
-            `${this.countIncreaseRatio(_newerValue - _olderValue, _olderValue, 1)}`,
+            `${this.countIncreaseRatio(_newerValue, _olderValue, 1)}`,
           ]);
         }
 
@@ -1849,7 +1863,7 @@ export class SystemOperationReportComponent implements OnInit {
             'universal_adjective_total',
             olderTotalValue,
             newerTotalValue,
-            `${this.countIncreaseRatio(newerTotalValue - olderTotalValue, olderTotalValue, 1)}`,
+            `${this.countIncreaseRatio(newerTotalValue, olderTotalValue, 1)}`,
           ]);
         }
       });
@@ -2022,7 +2036,7 @@ export class SystemOperationReportComponent implements OnInit {
       case 'branch':
         return '分店分公司數量';
       case 'class':
-        return '課程部門數量';
+        return '課程群組數量';
       case 'teachCounts':
         return '開課次數';
       case 'attendCounts':
@@ -2066,7 +2080,7 @@ export class SystemOperationReportComponent implements OnInit {
    */
   countIncreaseRatio(currentValue: number, prevValue: number, decimal: number) {
     if (!prevValue || prevValue <= 0) return '-';
-    return mathRounding(((currentValue ?? 0) / prevValue) * 100, decimal);
+    return mathRounding((((currentValue ?? 0) - prevValue) / prevValue) * 100, decimal);
   }
 
   /**
@@ -2344,11 +2358,7 @@ export class SystemOperationReportComponent implements OnInit {
     const result = [];
     currentData.forEach((_currentData, _index) => {
       const _prevData = prevData ? prevData[_index] : 0;
-      const increasePercentage = this.countIncreaseRatio(
-        _currentData - _prevData,
-        _prevData || Infinity,
-        1
-      );
+      const increasePercentage = this.countIncreaseRatio(_currentData, _prevData, 1);
       result.push(_currentData);
       result.push(increasePercentage);
     });

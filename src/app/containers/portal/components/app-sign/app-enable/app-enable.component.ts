@@ -8,6 +8,7 @@ import {
   GlobalEventsService,
   HintDialogService,
   ApiCommonService,
+  NetworkService,
 } from '../../../../../core/services';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { Subject, fromEvent, Subscription, of } from 'rxjs';
@@ -92,7 +93,8 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
     private userService: UserService,
     private globalEventsService: GlobalEventsService,
     private hintDialogService: HintDialogService,
-    private apiCommonService: ApiCommonService
+    private apiCommonService: ApiCommonService,
+    private networkService: NetworkService
   ) {
     translate.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.createPlaceholder();
@@ -409,91 +411,96 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 進行啟用帳號流程-kidin-1090515
   submit() {
-    if (this.imgCaptcha.show) {
-      this.removeCaptcha('submit');
-    } else {
-      this.progress = 30;
-      const body = {
-        enableAccountFlow: 2,
-        token: this.appInfo.token,
-        userId: this.accountInfo.id,
-        project: this.appInfo.project,
-      };
-
-      if (this.accountInfo.type === 2) {
-        (body as any).verificationCode = this.phoneCaptcha.value;
+    const online = this.networkService.checkNetworkStatus();
+    if (online) {
+      if (this.imgCaptcha.show) {
+        this.removeCaptcha('submit');
       } else {
-        body.enableAccountFlow = 1;
-        if (this.redirectPage === 'event') {
-          Object.assign(body, { redirectUrl: 'event' });
+        this.progress = 30;
+        const body = {
+          enableAccountFlow: 2,
+          token: this.appInfo.token,
+          userId: this.accountInfo.id,
+          project: this.appInfo.project,
+        };
+
+        if (this.accountInfo.type === 2) {
+          (body as any).verificationCode = this.phoneCaptcha.value;
+        } else {
+          body.enableAccountFlow = 1;
+          if (this.redirectPage === 'event') {
+            Object.assign(body, { redirectUrl: 'event' });
+          }
         }
-      }
 
-      this.getClientIpaddress()
-        .pipe(
-          switchMap((ipResult) => this.api10xxService.fetchEnableAccount(body, this.requestHeader))
-        )
-        .subscribe((res: any) => {
-          if (res.processResult.resultCode !== 200) {
-            let msgBody;
-            switch (res.processResult.apiReturnMessage) {
-              case `Post fail, parmameter 'project' or 'token' or 'userId' error.`:
-              case `Post fail, check 'userId' error with verification code.`:
-                msgBody = this.translate.instant('universal_userAccount_errorCaptcha');
-                this.showMsgBox(msgBody, 'none');
-                break;
-              case 'Found attack, update status to lock!':
-              case 'Found lock!': {
-                const captchaBody = {
-                  unlockFlow: 1,
-                  imgLockCode: res.processResult.imgLockCode,
-                };
+        this.getClientIpaddress()
+          .pipe(
+            switchMap((ipResult) =>
+              this.api10xxService.fetchEnableAccount(body, this.requestHeader)
+            )
+          )
+          .subscribe((res: any) => {
+            if (res.processResult.resultCode !== 200) {
+              let msgBody;
+              switch (res.processResult.apiReturnMessage) {
+                case `Post fail, parmameter 'project' or 'token' or 'userId' error.`:
+                case `Post fail, check 'userId' error with verification code.`:
+                  msgBody = this.translate.instant('universal_userAccount_errorCaptcha');
+                  this.showMsgBox(msgBody, 'none');
+                  break;
+                case 'Found attack, update status to lock!':
+                case 'Found lock!': {
+                  const captchaBody = {
+                    unlockFlow: 1,
+                    imgLockCode: res.processResult.imgLockCode,
+                  };
 
-                this.api10xxService
-                  .fetchCaptcha(captchaBody, this.requestHeader)
-                  .subscribe((captchaRes) => {
-                    this.imgCaptcha = {
-                      show: true,
-                      imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
-                      cue: '',
-                      code: '',
-                    };
-                  });
+                  this.api10xxService
+                    .fetchCaptcha(captchaBody, this.requestHeader)
+                    .subscribe((captchaRes) => {
+                      this.imgCaptcha = {
+                        show: true,
+                        imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
+                        cue: '',
+                        code: '',
+                      };
+                    });
 
-                break;
-              }
-              default:
-                msgBody = errorMsg;
-                console.error(
-                  `${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`
-                );
-                this.showMsgBox(errorMsg, 'turnBack');
-                break;
-            }
-          } else {
-            if (this.accountInfo.type === 1) {
-              this.sendEmail = true;
-              if (this.pcView) {
-                const msgBody = this.translate.instant(
-                  'universal_userAccount_sendCaptchaChackEmail'
-                );
-                this.showMsgBox(msgBody, 'enableSuccess');
+                  break;
+                }
+                default:
+                  msgBody = errorMsg;
+                  console.error(
+                    `${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`
+                  );
+                  this.showMsgBox(errorMsg, 'turnBack');
+                  break;
               }
             } else {
-              this.enableSuccess = true;
-              const msgBody = `${this.logMessage.enable} ${this.logMessage.success}`;
-              if (this.pcView) {
-                this.showMsgBox(msgBody, 'enableSuccess');
+              if (this.accountInfo.type === 1) {
+                this.sendEmail = true;
+                if (this.pcView) {
+                  const msgBody = this.translate.instant(
+                    'universal_userAccount_sendCaptchaChackEmail'
+                  );
+                  this.showMsgBox(msgBody, 'enableSuccess');
+                }
               } else {
-                this.debounceBack(msgBody, this.turnFirstLoginOrBack);
+                this.enableSuccess = true;
+                const msgBody = `${this.logMessage.enable} ${this.logMessage.success}`;
+                if (this.pcView) {
+                  this.showMsgBox(msgBody, 'enableSuccess');
+                } else {
+                  this.debounceBack(msgBody, this.turnFirstLoginOrBack);
+                }
+
+                this.userService.refreshUserProfile();
               }
-
-              this.userService.refreshUserProfile();
             }
-          }
 
-          this.progress = 100;
-        });
+            this.progress = 100;
+          });
+      }
     }
   }
 

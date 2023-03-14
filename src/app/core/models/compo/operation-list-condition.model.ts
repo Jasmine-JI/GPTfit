@@ -31,7 +31,12 @@ export interface OperationCondition {
  * 條件排序設定結束後的輸出結果
  */
 export interface OperationConditionResult {
-  conditionList: Array<{ conditionCode: number; selectedCode?: number; keyword?: string }>;
+  conditionList: Array<{
+    conditionCode: number;
+    selectedCode?: number;
+    keyword?: string;
+    value?: number | string;
+  }>;
   sortType: number;
   sortDirection: SortDirection;
 }

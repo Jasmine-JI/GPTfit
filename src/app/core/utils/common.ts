@@ -78,7 +78,7 @@ export function showErrorApiLog(resultCode: number, apiCode: number, msg: string
 }
 
 /**
- * 物件深拷貝
+ * 物件深拷貝，包含複製函式
  * @param obj
  * @param cache
  * @author kidin-1090902
@@ -148,6 +148,19 @@ export function changeOpacity(color: string, opacity: number) {
   }
 
   return color;
+}
+
+/**
+ * 根據對象長度及對象序列，使用hsla分配顏色，
+ * 可藉此確保同類型數據各個圖表顏色分配固定
+ */
+export function assignHslaColor(index: number, dataLength: number, arg: any = {}) {
+  const saturation = arg.saturation ?? 60;
+  const lightness = arg.lightness ?? 60;
+  const opacity = arg.opacity ?? 1;
+  const oneRangeDegree = dataLength ? Math.round(360 / dataLength) : 0;
+  const hue = oneRangeDegree * index;
+  return `hsla(${hue}, ${saturation}%, ${lightness}%, ${opacity})`;
 }
 
 /**
