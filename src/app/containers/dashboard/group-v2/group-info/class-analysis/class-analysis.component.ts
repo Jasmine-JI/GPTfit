@@ -362,14 +362,14 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.initReport();
     this.api21xxService.fetchMultiActivityData(body).subscribe((res) => {
       this.uiFlag.isLoading = false;
-      const { resultCode, info, activities } = res;
+      const { resultCode, info, cross_multi_info } = res;
       if (resultCode !== 200) {
         this.handleReportError(res);
       } else {
         this.reportCreatedTime = dayjs().format('YYYY-MM-DD HH:mm');
-        if (activities && activities.length > 0) {
+        if (cross_multi_info && cross_multi_info.length > 0) {
           this.uiFlag.noData = false;
-          this.handleComplexTypeData(activities);
+          this.handleComplexTypeData(cross_multi_info);
         } else {
           this.checkData(info.activities);
         }
@@ -381,9 +381,9 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   /**
    * 處理多人複合式運動檔案
-   * @param activities {Array<any>}-api 2111 res.activities 內容
+   * @param crossMultiInfo {Array<any>}-api 2111 res.cross_multi_info 內容
    */
-  handleComplexTypeData(activities: Array<any>) {
+  handleComplexTypeData(crossMultiInfo: Array<any>) {
     const summaryInfo = { activities: [] };
     const stationList: StationDataList = {
       summary: [],
@@ -393,7 +393,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     };
     const stationInfoMap = new Map();
     const stationDataMap = new Map();
-    activities.forEach((_activity) => {
+    crossMultiInfo.forEach((_activity) => {
       const { activityInfoLayer, fileInfo, info } = _activity;
       summaryInfo.activities.push({ activityInfoLayer, fileInfo });
       const nickname = fileInfo.author.split('?')[0];
@@ -518,11 +518,11 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.initReport();
     this.api21xxService.fetchMultiActivityData(body).subscribe((res) => {
       this.uiFlag.isLoading = false;
-      const { resultCode, info, activities } = res;
+      const { resultCode, info, cross_multi_info } = res;
       if (resultCode !== 200) {
         this.handleReportError(res);
       } else {
-        const allActivities = this.mergeAllData(info.activities, activities);
+        const allActivities = this.mergeAllData(info.activities, cross_multi_info);
         this.checkData(allActivities);
       }
 
@@ -533,7 +533,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   /**
    * 將單一類型運動數據與複合式運動數據進行合併與排序
    * @param info {Array<any>}-單一類型運動數據
-   * @param activities {Array<any>}-複合式類型運動數據
+   * @param complexActivities {Array<any>}-複合式類型運動數據
    */
   mergeAllData(singleActivities: Array<any>, complexActivities: Array<any>) {
     return singleActivities.concat(complexActivities ?? []).sort((_a, _b) => {

@@ -8,4 +8,11 @@ export interface OperationTableOption {
   headerRowType: Array<OperationDataType>; // 第一列標頭類型
   secondHeaderRowType?: Array<OperationDataType>; // 第二列標頭類型
   valueRowType: Array<OperationDataType>; // 其他列的表格類型
+  valueRowStyle?: Array<TableStyleOption>;
+}
+
+export interface TableStyleOption {
+  bgColor: string;
+  fontWeight: string;
+  fontColor: string;
 }

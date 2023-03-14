@@ -88,7 +88,6 @@ export class OperationListConditionComponent implements OnChanges {
    * 處理列表設定收合
    */
   handleSettingUnfold() {
-    const { conditionSettingUnfold } = this;
     this.conditionSettingUnfold = !this.conditionSettingUnfold;
   }
 
@@ -99,7 +98,11 @@ export class OperationListConditionComponent implements OnChanges {
    */
   selectCondition(itemIndex: [number, number], conditionIndex: number) {
     const [firstIndex, secondIndex] = itemIndex;
+    const { conditionList } = this.allConditionSetting;
+    const { value } = conditionList[conditionIndex].conditionItemList[secondIndex];
     this.conditionResult.conditionList[conditionIndex].selectedCode = secondIndex;
+    if (value !== undefined) this.conditionResult.conditionList[conditionIndex].value = value;
+    console.log('single drop', conditionList, conditionIndex, this.conditionResult);
   }
 
   /**
@@ -118,7 +121,8 @@ export class OperationListConditionComponent implements OnChanges {
    */
   selectSortType(typeIndex: [number, number]) {
     const [firstIndex, secondIndex] = typeIndex;
-    this.conditionResult.sortType = secondIndex + 1;
+    const { list } = this.allConditionSetting.sortTypeList;
+    this.conditionResult.sortType = list[secondIndex].value as number;
   }
 
   /**
@@ -127,6 +131,7 @@ export class OperationListConditionComponent implements OnChanges {
    */
   selectSortDirect(directIndex: [number, number]) {
     const [firstIndex, secondIndex] = directIndex;
-    this.conditionResult.sortDirection = secondIndex + 1;
+    const { list } = this.allConditionSetting.sortTypeList;
+    this.conditionResult.sortDirection = list[secondIndex].value as number;
   }
 }

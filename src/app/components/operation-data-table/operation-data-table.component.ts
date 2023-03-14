@@ -12,7 +12,7 @@ import { TranslateModule } from '@ngx-translate/core';
   styleUrls: ['./operation-data-table.component.scss'],
 })
 export class OperationDataTableComponent implements OnInit, OnChanges {
-  @Input() tableData: any;
+  @Input() tableData: { option: OperationTableOption; data: Array<unknown> };
 
   readonly OperationDataType = OperationDataType;
 

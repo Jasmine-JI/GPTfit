@@ -6,6 +6,7 @@
 @import 'transition.scss';
 @import 'overflow-scroll';
 @import 'z-index.scss';
+@import 'color.scss';
 
 $warn-color: rgba(255, 75, 75, 1);
 $group-btn-blue: rgba(0, 183, 238, 1);
@@ -25,6 +26,13 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   }
 }
 
+.childPageBtn--disabled {
+  $color: rgba(150, 150, 150, 1);
+  pointer-events: none;
+  color: $color;
+  border-color: $color;
+}
+
 .childPageCard {
   background-color: var(--scale-255-0);
   border: 1px solid rgba(200, 200, 200, 1);
@@ -41,6 +49,9 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   background-color: rgba(255, 75, 75, 1) !important;
   color: white !important;
   @include transition(background-color);
+}
+
+.editModeBtn--disabled {
 }
 
 .btnLoadingStatus {
@@ -81,6 +92,29 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 .contentSubtitle {
   @include subtitle-or-focus(18px);
   margin-bottom: 15px;
+}
+
+.analysisSwitchButton {
+  border: 1px solid rgba(150, 150, 150, 1);
+  padding: 0 1rem;
+  font-size: 0.9rem;
+
+  &:first-child {
+    border-radius: 1rem 0 0 1rem;
+  }
+
+  &:last-child {
+    border-radius: 0 1rem 1rem 0;
+  }
+
+  &:not(:first-child) {
+    border-left: none;
+  }
+}
+
+.analysisSwitchButton--active {
+  color: white;
+  background-color: $primary-blue;
 }
 
 /******************************** 我的報告和課程分析共用樣式(命名待重構) ***************************************/

@@ -1,10 +1,12 @@
 import { ProcessResult } from '../api-common/process-result.model';
 import { Gender } from '../../../enums/personal';
+import { MemberType } from '../../../enums/compo';
 
 export interface Api4106Post {
   token: string;
   groupId: string;
-  type: number; // 1. 權限範圍內所有60階管理員 2. 權限範圍內所有60階一般成員
+  groupLevel: number;
+  type: MemberType; // 1. 權限範圍內所有60階管理員 2. 權限範圍內所有60階一般成員
 }
 
 export interface Api4106Response {

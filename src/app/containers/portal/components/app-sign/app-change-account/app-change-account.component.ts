@@ -7,6 +7,7 @@ import {
   GlobalEventsService,
   HintDialogService,
   ApiCommonService,
+  NetworkService,
 } from '../../../../../core/services';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { Subject, Subscription, fromEvent, merge, of } from 'rxjs';
@@ -97,7 +98,8 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     private getClientIp: GetClientIpService,
     private globalEventsService: GlobalEventsService,
     private hintDialogService: HintDialogService,
-    private apiCommonService: ApiCommonService
+    private apiCommonService: ApiCommonService,
+    private networkService: NetworkService
   ) {
     translate.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.getTranslate();
@@ -415,48 +417,53 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
   // 進行變更帳號流程-kidin-1090518
   submit() {
-    this.progress = 30;
-    if (this.imgCaptcha.show) {
-      const releaseBody = {
-        unlockFlow: 2,
-        unlockKey: this.imgCaptcha.code,
-      };
+    const online = this.networkService.checkNetworkStatus();
+    if (online) {
+      this.progress = 30;
+      if (this.imgCaptcha.show) {
+        const releaseBody = {
+          unlockFlow: 2,
+          unlockKey: this.imgCaptcha.code,
+        };
 
-      this.getClientIpaddress()
-        .pipe(
-          switchMap((ipResult) => this.api10xxService.fetchCaptcha(releaseBody, this.requestHeader))
-        )
-        .subscribe((res: any) => {
-          const {
-            processResult,
-            resultCode: resCode,
-            apiCode: resApiCode,
-            resultMessage: resMsg,
-          } = res as any;
-          if (!processResult) {
-            this.apiCommonService.handleError(resCode, resApiCode, resMsg);
-          } else {
-            const { resultCode, apiReturnMessage } = processResult;
-            if (resultCode === 200) {
-              this.imgCaptcha.show = false;
-              this.submit();
+        this.getClientIpaddress()
+          .pipe(
+            switchMap((ipResult) =>
+              this.api10xxService.fetchCaptcha(releaseBody, this.requestHeader)
+            )
+          )
+          .subscribe((res: any) => {
+            const {
+              processResult,
+              resultCode: resCode,
+              apiCode: resApiCode,
+              resultMessage: resMsg,
+            } = res as any;
+            if (!processResult) {
+              this.apiCommonService.handleError(resCode, resApiCode, resMsg);
             } else {
-              switch (apiReturnMessage) {
-                case 'Found a wrong unlock key.':
-                  this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
-                  break;
-                default:
-                  this.showErrorMsg();
-                  console.error(`${resultCode}: ${apiReturnMessage}`);
-                  break;
+              const { resultCode, apiReturnMessage } = processResult;
+              if (resultCode === 200) {
+                this.imgCaptcha.show = false;
+                this.submit();
+              } else {
+                switch (apiReturnMessage) {
+                  case 'Found a wrong unlock key.':
+                    this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
+                    break;
+                  default:
+                    this.showErrorMsg();
+                    console.error(`${resultCode}: ${apiReturnMessage}`);
+                    break;
+                }
               }
             }
-          }
 
-          this.progress = 100;
-        });
-    } else {
-      this.sendFormInfo();
+            this.progress = 100;
+          });
+      } else {
+        this.sendFormInfo();
+      }
     }
   }
 

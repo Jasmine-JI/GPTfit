@@ -118,6 +118,7 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
     this.checkPage();
     this.checkQueryString();
     this.handlePageResize();
+    this.handleLanguageChange();
     if (!this.uiFlag.isPreviewMode) this.handleScroll();
     this.getNeedInfo();
     this.detectParamChange();
@@ -191,7 +192,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * 偵測瀏覽器是否改變大小
-   * @author kidin-1100812
    */
   handlePageResize() {
     const page = fromEvent(window, 'resize');
@@ -203,6 +203,15 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
       .subscribe(() => {
         this.checkScreenSize();
       });
+  }
+
+  /**
+   * 偵測語言改變事件
+   */
+  handleLanguageChange() {
+    this.translate.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
+      this.getPerPageOptSize();
+    });
   }
 
   /**

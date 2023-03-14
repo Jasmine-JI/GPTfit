@@ -59,3 +59,4 @@ export * from './translate-unit-key.pipe';
 export * from './weight-sibs.pipe';
 export * from './group-commerce-plan.pipe';
 export * from './commerce-operation-status.pipe';
+export * from './space-trim.pipe';

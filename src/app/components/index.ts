@@ -24,3 +24,4 @@ export * from './pagination/pagination.component';
 export * from './page-road-path/page-road-path.component';
 export * from './operation-list-condition/operation-list-condition.component';
 export * from './aside-index-box/aside-index-box.component';
+export * from './line-column-compare-chart/line-column-compare-chart.component';

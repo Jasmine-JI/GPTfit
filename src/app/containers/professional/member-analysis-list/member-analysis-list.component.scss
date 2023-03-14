@@ -1,0 +1,151 @@
+@import 'flex-center.scss';
+@import 'transform.scss';
+@import 'transition.scss';
+
+.title__divide__line {
+  margin: 0;
+}
+
+.analysis__description {
+  position: relative;
+  left: 1rem;
+  font-size: 0.9rem;
+  color: rgba(150, 150, 150, 1);
+}
+
+.update__time {
+  margin: 0;
+  text-align: right;
+  color: rgba(150, 150, 150, 1);
+  font-size: 0.9rem;
+}
+
+.list__column__header {
+  font-weight: bold;
+  color: rgba(100, 100, 100, 1);
+}
+
+.list__grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 3fr repeat(5, 2fr) 16px;
+}
+
+.list__info {
+  cursor: pointer;
+}
+
+.grid__cell {
+  @include center();
+  word-break: break-word;
+}
+
+.group__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.group__list__item {
+  padding: 0.5rem 0.2rem;
+  margin: 0.5rem 0;
+  box-shadow: 1px 1px 5px rgba(0, 116, 74, 0.5), -1px -1px 5px rgba(100, 100, 100, 0.1);
+  border-radius: 10px;
+  background-color: rgba(245, 255, 254, 0.5);
+
+  &:hover {
+    background-color: rgba(245, 255, 254, 1);
+  }
+}
+
+.member__name {
+  align-items: center;
+}
+
+.group__icon__container {
+  $size: 40px;
+  width: $size;
+  height: $size;
+  min-width: $size;
+  margin: 0 1rem 0 0;
+}
+
+.group__image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.list__member__name {
+  word-break: break-all;
+}
+
+.unfold__icon {
+  @include center();
+  @include transition(transform);
+  font-weight: bold;
+}
+
+.unfold__icon--active {
+  @include el-rotate(180deg);
+  @include transition(transform);
+}
+
+.item__detail {
+  background-color: rgba(150, 150, 150, 0.1);
+  border-radius: 1rem;
+  margin: 0.5rem 0;
+  padding: 0 1rem 0.5rem 1rem;
+}
+
+.content__section {
+  margin-left: 1rem;
+}
+
+.content__title {
+  font-weight: bold;
+  margin: 1rem 0 0 0;
+}
+
+.content__subtitle {
+  margin: 0;
+  font-weight: bold;
+  color: rgba(150, 150, 150, 1);
+}
+
+.detail__grid {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 0.25rem 0;
+}
+
+.relative__link {
+  width: fit-content;
+}
+
+/**************** media ************************/
+
+@media (max-width: 767px) {
+  .group__icon__container {
+    display: none;
+  }
+
+  .detail__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 575px) {
+  .detail__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 450px) {
+  .detail__grid {
+    grid-template-columns: 1fr;
+  }
+}

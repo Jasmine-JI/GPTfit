@@ -140,6 +140,7 @@ import {
   MuscleGroupNamePipe,
   MusclePartIconPipe,
 } from '../../core/pipes';
+import { MemberAnalysisListComponent } from '../professional';
 
 @NgModule({
   imports: [
@@ -222,6 +223,7 @@ import {
     TargetFieldUnitPipe,
     MuscleGroupNamePipe,
     MusclePartIconPipe,
+    MemberAnalysisListComponent,
   ],
   providers: [
     GpxService,
