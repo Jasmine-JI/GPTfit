@@ -102,7 +102,6 @@ export class OperationListConditionComponent implements OnChanges {
     const { value } = conditionList[conditionIndex].conditionItemList[secondIndex];
     this.conditionResult.conditionList[conditionIndex].selectedCode = secondIndex;
     if (value !== undefined) this.conditionResult.conditionList[conditionIndex].value = value;
-    console.log('single drop', conditionList, conditionIndex, this.conditionResult);
   }
 
   /**

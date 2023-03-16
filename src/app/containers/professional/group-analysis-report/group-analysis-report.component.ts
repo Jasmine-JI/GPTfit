@@ -34,6 +34,9 @@ import {
   assignHslaColor,
   getNextLayerGroupLevelName,
   deepCopy,
+  getMonthKey,
+  getWeekdayKey,
+  changeOpacity,
 } from '../../../core/utils';
 import { GroupDetailInfo, UserSimpleInfo, GroupLevel } from '../../dashboard/models/group-detail';
 import {
@@ -57,6 +60,7 @@ import {
   SingleLayerList,
   IndexInfo,
   TableStyleOption,
+  SeriesOption,
 } from '../../../core/models/compo';
 import { DateUnit } from '../../../core/enums/common';
 import { genderColor, classTimeColor } from '../../../core/models/represent-color';
@@ -71,6 +75,14 @@ enum PostDateUnit {
   day = 1,
   week,
   month,
+}
+
+/**
+ * 比較模式的時間範圍模型
+ */
+interface CompareTimeRange {
+  older: Array<Array<number>>;
+  newer: Array<Array<number>>;
 }
 
 @Component({
@@ -165,7 +177,6 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
         { textKey: '近1月', id: SingleTrendRange.nearlyOneMonth },
       ],
     },
-    /**
     {
       titleKey: '比較趨勢',
       id: OperationTrendType.compareTrend,
@@ -180,7 +191,6 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
         { textKey: '過去2週', id: CompareTrendRange.lastTwoWeeks },
       ],
     },
-     */
   ];
 
   overviewData: any;
@@ -953,6 +963,10 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
           data: <any>[],
         },
         {
+          color: getDevicTypeInfo('sensor', 'color'),
+          data: <any>[],
+        },
+        {
           color: getDevicTypeInfo('treadmill', 'color'),
           data: <any>[],
         },
@@ -964,17 +978,13 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
           color: getDevicTypeInfo('rowMachine', 'color'),
           data: <any>[],
         },
-        {
-          color: getDevicTypeInfo('sensor', 'color'),
-          data: <any>[],
-        },
       ],
       seriesName: [
         wearableI18nKey,
+        sensorI18nKey,
         treadmillI18nKey,
         spinbikeI18nKey,
         rowMechineI18nKey,
-        sensorI18nKey,
       ],
     };
 
@@ -1001,10 +1011,10 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
         [
           groupNameHeader,
           wearableI18nKey,
+          sensorI18nKey,
           treadmillI18nKey,
           spinbikeI18nKey,
           rowMechineI18nKey,
-          sensorI18nKey,
         ],
       ],
     };
@@ -1018,10 +1028,10 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       const _sensorCounts = sensorCountsFieldValue[_index];
 
       childDeviceChartData.data[0].data.push({ name: _groupName, y: _wearableCounts });
-      childDeviceChartData.data[1].data.push({ name: _groupName, y: _treadmillCounts });
-      childDeviceChartData.data[2].data.push({ name: _groupName, y: _spinBikeCounts });
-      childDeviceChartData.data[3].data.push({ name: _groupName, y: _rowMachineCounts });
-      childDeviceChartData.data[4].data.push({ name: _groupName, y: _sensorCounts });
+      childDeviceChartData.data[1].data.push({ name: _groupName, y: _sensorCounts });
+      childDeviceChartData.data[2].data.push({ name: _groupName, y: _treadmillCounts });
+      childDeviceChartData.data[3].data.push({ name: _groupName, y: _spinBikeCounts });
+      childDeviceChartData.data[4].data.push({ name: _groupName, y: _rowMachineCounts });
 
       childDeviceTableData.data.push([
         this.getGroupLinkInfo(_id, _groupName),
@@ -1163,6 +1173,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
     return {
       ...this.handleSingleChildTrend(timeRange, childGroupAnalysisList),
       ...this.handleSingleCreateChildTrend(timeRange, groupCountsAnalysis),
+      ...this.handleSingleTeachTrendData(timeRange, groupCountsAnalysis),
       ...this.handleSingleDeviceCountTrend(timeRange, deviceUsedCounts),
     };
   }
@@ -1177,7 +1188,6 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
     return {
       ...this.handleChildMemberChartData(timeRange, data),
       ...this.handleChildMemberTrendTable(timeRange, data),
-      ...this.handleTeachTrendData(timeRange, data),
       ...this.handleChildTeachTrendTableData(timeRange, data),
     };
   }
@@ -1378,14 +1388,11 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
    * @param timeRange {TimeRange}-統計的日期時間範圍
    * @param data {any}-學員術趨勢分析數據
    */
-  handleTeachTrendData(timeRange: TimeRange, data: any) {
-    const {
-      trendChartUnit,
-      groupInfo: { groupName },
-    } = this;
+  handleSingleTeachTrendData(timeRange: TimeRange, data: any) {
+    const { trendChartUnit } = this;
     const { fieldValue: dateValue } = timeRange;
-    const { childGroupList, innerFieldName } = data;
-    const fieldNameCorrespondence = this.getFieldNameCorrespondence(innerFieldName);
+    const { fieldValue, fieldName } = data;
+    const fieldNameCorrespondence = this.getFieldNameCorrespondence(fieldName);
     const teachSingleTrendChart = [
       {
         type: 'column',
@@ -1448,59 +1455,46 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       ],
     };
 
-    let prevValue: AnalysisCount = new AnalysisCount([0, 0]); // 用來計算增長率
     dateValue.forEach((_date, _dateIndex) => {
       const dateRange = this.getDateRangeTimestamp(_date[0]);
       const xAxisName = this.getXAxisName(trendChartUnit, dateRange?.startDate);
-      const attendCounts = new AnalysisCount([0, 0]);
-      let totalTeachCounts = 0;
-      let totalTeachTime = 0;
-      childGroupList.forEach((_list, _listIndex) => {
-        const { fieldValue: _dataValue } = _list;
-        const _teachTime = _dataValue[_dateIndex][fieldNameCorrespondence['teachTime']];
-        const _teachCounts = _dataValue[_dateIndex][fieldNameCorrespondence['teachCounts']];
-        const _maleAttendCounts =
-          _dataValue[_dateIndex][fieldNameCorrespondence['maleAttendCounts']];
-        const _femaleAttendCounts =
-          _dataValue[_dateIndex][fieldNameCorrespondence['femaleAttendCounts']];
-        totalTeachCounts += _teachCounts;
-        totalTeachTime += _teachTime;
-        attendCounts.add([_maleAttendCounts, _femaleAttendCounts]);
-      });
-
+      const _teachTime = fieldValue[_dateIndex][fieldNameCorrespondence['teachTime']];
+      const _teachCounts = fieldValue[_dateIndex][fieldNameCorrespondence['teachCounts']];
+      const _maleAttendCounts = fieldValue[_dateIndex][fieldNameCorrespondence['maleAttendCounts']];
+      const _femaleAttendCounts =
+        fieldValue[_dateIndex][fieldNameCorrespondence['femaleAttendCounts']];
+      const _totalAttendCounts = _maleAttendCounts + _femaleAttendCounts;
       teachSingleTrendChart[0].data.push({
         name: xAxisName,
-        y: totalTeachCounts,
+        y: _teachCounts,
       });
 
       teachSingleTrendChart[1].data.push({
         name: xAxisName,
-        y: attendCounts.totalCount,
+        y: _totalAttendCounts,
       });
 
-      const {
-        totalCount: totalAttendCounts,
-        result: [maleAttendCounts, femaleAttendCounts],
-      } = attendCounts;
-      const {
-        totalCount: prevTotalAttendCount,
-        result: [prevMaleAttendCounts, prevFemaleAttendCounts],
-      } = prevValue;
-
+      const isFirstData = _dateIndex === 0;
+      const prevIndex = _dateIndex - 1;
+      const prevMaleAttendCounts = isFirstData
+        ? 0
+        : fieldValue[prevIndex][fieldNameCorrespondence['maleAttendCounts']];
+      const prevFemaleAttendCounts = isFirstData
+        ? 0
+        : fieldValue[prevIndex][fieldNameCorrespondence['femaleAttendCounts']];
+      const prevTotalAttendCount = prevMaleAttendCounts + prevFemaleAttendCounts;
       teachSingleTrendTable.data.push([
         xAxisName,
-        totalTeachCounts,
-        mathRounding(totalTeachTime / 3600 / (totalTeachCounts || Infinity), 1),
-        totalAttendCounts,
-        this.countIncreaseRatio(totalAttendCounts, prevTotalAttendCount, 1),
-        mathRounding(totalAttendCounts / (totalTeachCounts || Infinity), 1),
-        maleAttendCounts,
-        this.countIncreaseRatio(maleAttendCounts, prevMaleAttendCounts, 1),
-        femaleAttendCounts,
-        this.countIncreaseRatio(femaleAttendCounts, prevFemaleAttendCounts, 1),
+        _teachCounts,
+        mathRounding(_teachTime / 3600 / (_teachCounts || Infinity), 1),
+        _totalAttendCounts,
+        this.countIncreaseRatio(_totalAttendCounts, prevTotalAttendCount, 1),
+        mathRounding(_totalAttendCounts / (_teachCounts || Infinity), 1),
+        _maleAttendCounts,
+        this.countIncreaseRatio(_maleAttendCounts, prevMaleAttendCounts, 1),
+        _femaleAttendCounts,
+        this.countIncreaseRatio(_femaleAttendCounts, prevFemaleAttendCounts, 1),
       ]);
-
-      prevValue = deepCopy(attendCounts);
     });
 
     return { teachSingleTrendChart, teachSingleTrendTable };
@@ -1716,7 +1710,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
           endDate: dayjsObj.endOf('isoWeek').valueOf(),
         };
       }
-      case DateUnit.day: {
+      default: {
         const date = rangeCheck.toString();
         const dayjsObj = dayjs(date, 'YYYYMMDD');
         return {
@@ -1996,7 +1990,864 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
    * @param data {any}-api 4105 res 合併過後的數據
    */
   handleCompareChartData(data: Api4105Response) {
-    return data;
+    const { childGroupAnalysisList, deviceUsedCounts, groupCountsAnalysis, timeRange } =
+      this.splitCompareData(data.trend);
+    const finalLength = this.getCompareDateFinalLength(timeRange);
+    return {
+      ...this.handleCompareMemberTrend(timeRange, childGroupAnalysisList, finalLength),
+      ...this.handleCompareCreateChildTrend(timeRange, groupCountsAnalysis, finalLength),
+      ...this.handleCompareTeachTrendData(timeRange, groupCountsAnalysis, finalLength),
+      ...this.handleCompareDeviceCountTrend(timeRange, deviceUsedCounts, finalLength),
+    };
+  }
+
+  /**
+   * 因數據包含兩個時期的數據，故將數據切分以便生成比較圖表與數據
+   * @param trendData {any}-api 4102 res 合併過後的 trend 物件
+   */
+  splitCompareData(trendData: any) {
+    const {
+      childGroupAnalysisList: { innerFieldName, childGroupList },
+      deviceUsedCounts: { fieldName: deviceCodeName, useCountsFieldValue },
+      groupCountsAnalysis: { fieldName: groupCountsName, fieldValue: groupCountsValue },
+      timeRange,
+    } = trendData;
+    const { fieldValue: rangeValue } = timeRange;
+    const splitIndex = this.getSplitIndex(rangeValue);
+    const copyRange = [...rangeValue];
+    const [olderRange, newerRange] = [copyRange.splice(0, splitIndex), copyRange];
+    return {
+      timeRange: {
+        older: olderRange,
+        newer: newerRange,
+      },
+      childGroupAnalysisList: {
+        innerFieldName,
+        childGroupList: this.splitChildGroupData(splitIndex, childGroupList),
+      },
+      deviceUsedCounts: {
+        fieldName: deviceCodeName,
+        useCountsFieldValue: this.splitTrendData(splitIndex, useCountsFieldValue),
+      },
+      groupCountsAnalysis: {
+        fieldName: groupCountsName,
+        fieldValue: this.splitTrendData(splitIndex, groupCountsValue),
+      },
+    };
+  }
+
+  /**
+   * 將數據依照時間單位與範圍，切分成對等的兩個子群組相關比較數據
+   * @param splitIndex {number}-切分點
+   * @param childGroupList {Array<any>}-子群組數據
+   */
+  splitChildGroupData(splitIndex: number, childGroupList: Array<any>) {
+    const result: any = [];
+    childGroupList.forEach((_list) => {
+      const { groupId, groupName, fieldValue } = _list;
+      const [olderRange, newerRange] = [fieldValue.splice(0, splitIndex), fieldValue];
+      result.push({
+        groupId,
+        groupName,
+        olderRange,
+        newerRange,
+      });
+    });
+
+    return result;
+  }
+
+  /**
+   * 將數據依照時間單位與範圍，切分成對等的兩個比較趨勢數據
+   * @param splitIndex {number}-切分點
+   * @param value {Array<Array<number>>}-所有趨勢數據
+   */
+  splitTrendData(splitIndex: number, value: Array<Array<number>>) {
+    const [olderRange, newerRange] = [value.splice(0, splitIndex), value];
+    return { olderRange, newerRange };
+  }
+
+  /**
+   * 取得根據範圍日期顯示單位將數據切分兩個時期的切分序列
+   * @param rangeValue {Array<Array<number>>}-報告日期清單
+   */
+  getSplitIndex(rangeValue: Array<Array<number>>) {
+    const { trendChartUnit } = this;
+    switch (trendChartUnit) {
+      case DateUnit.month:
+        return this.getSplitYearIndex(rangeValue);
+      case DateUnit.day:
+        return 7;
+      default: {
+        return rangeValue.length > 12
+          ? this.getSplitSeasonIndex(rangeValue)
+          : this.getSplitMonthIndex(rangeValue);
+      }
+    }
+  }
+
+  /**
+   * 取得根據範圍日期顯示單位將數據切分兩年的切分序列
+   * @param rangeValue {Array<Array<number>>}-報告日期清單
+   */
+  getSplitYearIndex(rangeValue: Array<Array<number>>) {
+    return rangeValue.findIndex((_range, _index) => {
+      if (_index === 0) return false;
+      const _previousIndex = _index - 1;
+      const _currentYear = _range[0].toString().slice(0, 4);
+      const _previousYear = rangeValue[_previousIndex][0].toString().slice(0, 4);
+      return _currentYear !== _previousYear;
+    });
+  }
+
+  /**
+   * 取得根據範圍日期顯示單位將數據切分兩季的切分序列
+   * @param rangeValue {Array<Array<number>>}-報告日期清單
+   */
+  getSplitSeasonIndex(rangeValue: Array<Array<number>>) {
+    const dateFirst = rangeValue[0][0].toString();
+    const [yearFirst, weekFirst] = [dateFirst.slice(0, 4), +dateFirst.slice(4, 6)];
+    // 用該週第一天當作季的判斷基準
+    const getSeason = (year: string, week: number) =>
+      dayjs(year, 'YYYY').endOf('year').isoWeek(week).startOf('isoWeek').quarter();
+    const seasonFirst = getSeason(yearFirst, weekFirst);
+    return rangeValue.findIndex((_range, _index) => {
+      if (_index === 0) return false;
+      const _currentRange = _range[0].toString();
+      const [_currentYear, _currentWeek] = [_currentRange.slice(0, 4), +_currentRange.slice(4, 6)];
+      const _currentSeason = getSeason(_currentYear, _currentWeek);
+      return _currentSeason !== seasonFirst;
+    });
+  }
+
+  /**
+   * 取得根據範圍日期顯示單位將數據切分兩月的切分序列
+   * @param rangeValue {Array<Array<number>>}-報告日期清單
+   */
+  getSplitMonthIndex(rangeValue: Array<Array<number>>) {
+    const dateFirst = rangeValue[0][0].toString();
+    const [yearFirst, weekFirst] = [dateFirst.slice(0, 4), +dateFirst.slice(4, 6)];
+    // 用該週第一天當作月的判斷基準
+    const getMonth = (year: string, week: number) =>
+      dayjs(year, 'YYYY').endOf('year').isoWeek(week).startOf('isoWeek').month();
+    const monthFirst = getMonth(yearFirst, weekFirst);
+    return rangeValue.findIndex((_range, _index) => {
+      if (_index === 0) return false;
+      const _currentRange = _range[0].toString();
+      const [_currentYear, _currentWeek] = [_currentRange.slice(0, 4), +_currentRange.slice(4, 6)];
+      const _currentMonth = getMonth(_currentYear, _currentWeek);
+      return _currentMonth !== monthFirst;
+    });
+  }
+
+  /**
+   * 避免新舊數據因週數不同造成數據長度不同，故需取範圍最大的時間範圍長度
+   * @param timeRange {TimeRange}-統計的日期時間範圍
+   */
+  getCompareDateFinalLength(timeRange: CompareTimeRange) {
+    const { older, newer } = timeRange;
+    const olderDataLength = older.length;
+    const newerDataLength = newer.length;
+    return newerDataLength >= olderDataLength ? newerDataLength : olderDataLength;
+  }
+
+  /**
+   * 將子群組相關數據依不同圖表類別數據進行分離後再分別處理比較趨勢
+   * @param timeRange {TimeRange}-統計的日期時間範圍
+   * @param data {any}-學員術趨勢分析數據
+   * @param finalLength {number}-最終比較數據的長度
+   */
+  handleCompareMemberTrend(timeRange: CompareTimeRange, data: any, finalLength: number) {
+    const { innerFieldName, childGroupList } = data;
+    const notHaveData = !childGroupList || childGroupList.length === 0;
+    const isLowerClassLevel = this.post.groupLevel >= GroupLevel.class;
+    if (isLowerClassLevel || notHaveData) return {};
+    const { older, newer } = timeRange;
+    const fieldNameCorrespondence = this.getFieldNameCorrespondence(innerFieldName);
+    const maleMemberIndex = fieldNameCorrespondence['maleMember'];
+    const femaleMemberIndex = fieldNameCorrespondence['femaleMember'];
+    const { startDate: olderStartDate } = this.getDateRangeTimestamp(older[0][0]);
+    const { startDate: newerStartDate } = this.getDateRangeTimestamp(newer[0][0]);
+    const olderColumnHeader = this.getCompareColumnHeader(olderStartDate, finalLength);
+    const newerColumnHeader = this.getCompareColumnHeader(newerStartDate, finalLength);
+    const memberCompareTrendChart: Array<SeriesOption> = [
+      {
+        name: olderColumnHeader,
+        data: [],
+      },
+      {
+        name: newerColumnHeader,
+        data: [],
+      },
+    ];
+    const memberCompareTrendTable = {
+      option: {
+        headerRowType: [
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+        ],
+        valueRowType: [
+          OperationDataType.translateKey,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+        ],
+      },
+      data: [[`單位日期`, olderColumnHeader, newerColumnHeader, '增長(%)']],
+    };
+
+    for (let i = 0; i < finalLength; i++) {
+      const trendTableRowHeader = this.translate.instant(this.getCompareRowHeader(i));
+      let olderTotalMember = 0;
+      let newerTotalMember = 0;
+      childGroupList.forEach((_list) => {
+        const { olderRange, newerRange } = _list;
+        const olderMaleData = olderRange[i] ? olderRange[i][maleMemberIndex] : 0;
+        const olderFemaleData = olderRange[i] ? olderRange[i][femaleMemberIndex] : 0;
+        olderTotalMember += olderMaleData + olderFemaleData;
+        const newerMaleData = newerRange[i] ? newerRange[i][maleMemberIndex] : 0;
+        const newerFemaleData = newerRange[i] ? newerRange[i][femaleMemberIndex] : 0;
+        newerTotalMember += newerMaleData + newerFemaleData;
+      });
+
+      memberCompareTrendChart[0].data.push({
+        name: trendTableRowHeader,
+        y: olderTotalMember,
+      });
+
+      memberCompareTrendChart[1].data.push({
+        name: trendTableRowHeader,
+        y: newerTotalMember,
+      });
+
+      const increaseRatio = this.countIncreaseRatio(newerTotalMember, olderTotalMember, 1);
+      memberCompareTrendTable.data.push([
+        trendTableRowHeader,
+        olderTotalMember,
+        newerTotalMember,
+        increaseRatio,
+      ]);
+    }
+
+    return { memberCompareTrendChart, memberCompareTrendTable };
+  }
+
+  /**
+   * 根據數據序列取得比較表格列標頭
+   * @param index {number}-數據序列
+   */
+  getCompareRowHeader(index: number) {
+    const { trendChartUnit } = this;
+    switch (trendChartUnit) {
+      case DateUnit.month:
+        return getMonthKey(index);
+      case DateUnit.day:
+        return getWeekdayKey(index);
+      default:
+        return `Week ${index + 1}`;
+    }
+  }
+
+  /**
+   * 根據起始日期取得比較表格行標頭
+   * @param date {number}-新或舊數據起始timestamp
+   */
+  getCompareColumnHeader(date: number, dateLength: number) {
+    const { trendChartUnit } = this;
+    switch (trendChartUnit) {
+      case DateUnit.month:
+        return dayjs(date).format('YYYY');
+      case DateUnit.day: {
+        const dateDayjs = dayjs(date);
+        const startDate = dateDayjs.format('YYYYMMDD');
+        const endDate = dateDayjs.endOf('isoWeek').format('YYYYMMDD');
+        return `${startDate}-${endDate}`;
+      }
+      default:
+        return dateLength > 6 ? this.getSeasonName(date) : getMonthKey(dayjs(date).month());
+    }
+  }
+
+  /**
+   * 根據時間取得該季名稱，ex. 2022Q1
+   * @param date {number}-新或舊數據起始timestamp
+   */
+  getSeasonName(date: number) {
+    const dayjsObj = dayjs(date);
+    const year = dayjsObj.format('YYYY');
+    const season = dayjsObj.quarter();
+    return `${year}Q${season}`;
+  }
+
+  /**
+   * 處理子群組建立數目比較趨勢圖表數據
+   * @param timeRange {TimeRange}-統計的日期時間範圍
+   * @param data {any}-子群組建立數目分析數據
+   * @param finalLength {number}-最終比較數據的長度
+   */
+  handleCompareCreateChildTrend(timeRange: CompareTimeRange, data: any, finalLength: number) {
+    switch (this.post.groupLevel) {
+      case GroupLevel.brand:
+        return this.handleCompareBrandChildTrend(timeRange, data, finalLength);
+      case GroupLevel.branch:
+        return this.handleCompareBranchChildTrend(timeRange, data, finalLength);
+      default:
+        return {};
+    }
+  }
+
+  /**
+   * 處理品牌下子群組建立數目比較趨勢圖表數據
+   * @param timeRange {TimeRange}-統計的日期時間範圍
+   * @param data {any}-子群組建立數目分析數據
+   * @param finalLength {number}-最終比較數據的長度
+   */
+  handleCompareBrandChildTrend(timeRange: CompareTimeRange, data: any, finalLength: number) {
+    const { older, newer } = timeRange;
+    const {
+      fieldName,
+      fieldValue: { olderRange, newerRange },
+    } = data;
+    const fieldNameCorrespondence = this.getFieldNameCorrespondence(fieldName);
+    const branchCountIndex = fieldNameCorrespondence['branch'];
+    const classCountIndex = fieldNameCorrespondence['class'];
+    const { startDate: olderStartDate } = this.getDateRangeTimestamp(older[0][0]);
+    const { startDate: newerStartDate } = this.getDateRangeTimestamp(newer[0][0]);
+    const olderColumnHeaderKey = this.getCompareColumnHeader(olderStartDate, finalLength);
+    const newerColumnHeaderKey = this.getCompareColumnHeader(newerStartDate, finalLength);
+    const olderColumnHeader = this.translate.instant(olderColumnHeaderKey);
+    const newerColumnHeader = this.translate.instant(newerColumnHeaderKey);
+    const branchTranslate = this.translate.instant('universal_group_numberOfBranches');
+    const classTranslate = this.translate.instant('課程群組數');
+    const childCountCompareTrendChart: Array<SeriesOption> = [
+      {
+        name: `${olderColumnHeader}${branchTranslate}`,
+        type: 'column',
+        data: [],
+      },
+      {
+        name: `${newerColumnHeader}${branchTranslate}`,
+        type: 'column',
+        data: [],
+      },
+      {
+        name: `${olderColumnHeader}${classTranslate}`,
+        type: 'spline',
+        yAxis: 1,
+        data: [],
+      },
+      {
+        name: `${newerColumnHeader}${classTranslate}`,
+        type: 'spline',
+        yAxis: 1,
+        data: [],
+      },
+    ];
+
+    const childCountCompareTrendTable = {
+      option: {
+        headerRowType: [
+          OperationDataType.normal,
+          OperationDataType.translateKey,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.translateKey,
+          OperationDataType.normal,
+          OperationDataType.normal,
+        ],
+        secondHeaderRowType: [
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+        ],
+        valueRowType: [
+          OperationDataType.translateKey,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+        ],
+        valueRowStyle: [null, { bgColor: 'rgba(240, 240, 240, 1)' }],
+      },
+      data: [
+        ['', 'universal_group_numberOfBranches', null, null, '課程群組數', null, null],
+        [
+          `單位日期`,
+          olderColumnHeader,
+          newerColumnHeader,
+          '增長(%)',
+          olderColumnHeader,
+          newerColumnHeader,
+          '增長(%)',
+        ],
+      ],
+    };
+
+    for (let i = 0; i < finalLength; i++) {
+      const trendTableRowHeader = this.translate.instant(this.getCompareRowHeader(i));
+      const olderBranchCount = olderRange[i] ? olderRange[i][branchCountIndex] : 0;
+      const newerBranchCount = newerRange[i] ? newerRange[i][branchCountIndex] : 0;
+      const branchIncreaseRatio = this.countIncreaseRatio(newerBranchCount, olderBranchCount, 1);
+      const olderClassCount = olderRange[i] ? olderRange[i][classCountIndex] : 0;
+      const newerClassCount = newerRange[i] ? newerRange[i][classCountIndex] : 0;
+      const classIncreaseRatio = this.countIncreaseRatio(newerClassCount, olderClassCount, 1);
+      childCountCompareTrendChart[0].data.push({
+        name: trendTableRowHeader,
+        y: olderBranchCount,
+      });
+      childCountCompareTrendChart[1].data.push({
+        name: trendTableRowHeader,
+        y: newerBranchCount,
+      });
+      childCountCompareTrendChart[2].data.push({
+        name: trendTableRowHeader,
+        y: olderClassCount,
+      });
+      childCountCompareTrendChart[3].data.push({
+        name: trendTableRowHeader,
+        y: newerClassCount,
+      });
+
+      childCountCompareTrendTable.data.push([
+        trendTableRowHeader,
+        olderBranchCount,
+        newerBranchCount,
+        branchIncreaseRatio,
+        olderClassCount,
+        newerClassCount,
+        classIncreaseRatio,
+      ]);
+    }
+
+    return { childCountCompareTrendChart, childCountCompareTrendTable };
+  }
+
+  /**
+   * 處理分店下子群組建立數目比較趨勢圖表數據
+   * @param timeRange {TimeRange}-統計的日期時間範圍
+   * @param data {any}-子群組建立數目分析數據
+   * @param finalLength {number}-最終比較數據的長度
+   */
+  handleCompareBranchChildTrend(timeRange: CompareTimeRange, data: any, finalLength: number) {
+    const { older, newer } = timeRange;
+    const {
+      fieldName,
+      fieldValue: { olderRange, newerRange },
+    } = data;
+    const fieldNameCorrespondence = this.getFieldNameCorrespondence(fieldName);
+    const classCountIndex = fieldNameCorrespondence['class'];
+    const { startDate: olderStartDate } = this.getDateRangeTimestamp(older[0][0]);
+    const { startDate: newerStartDate } = this.getDateRangeTimestamp(newer[0][0]);
+    const olderColumnHeader = this.getCompareColumnHeader(olderStartDate, finalLength);
+    const newerColumnHeader = this.getCompareColumnHeader(newerStartDate, finalLength);
+    const classTranslate = this.translate.instant('課程群組數');
+    const childCountCompareTrendChart: Array<SeriesOption> = [
+      {
+        name: `${newerColumnHeader}${classTranslate}`,
+        type: 'column',
+        data: [],
+      },
+      {
+        name: `${newerColumnHeader}${classTranslate}`,
+        type: 'column',
+        data: [],
+      },
+    ];
+
+    const childCountCompareTrendTable = {
+      option: {
+        headerRowType: [
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+        ],
+        valueRowType: [
+          OperationDataType.translateKey,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+        ],
+      },
+      data: [['單位日期', olderColumnHeader, newerColumnHeader, '增長(%)']],
+    };
+
+    for (let i = 0; i < finalLength; i++) {
+      const trendTableRowHeader = this.translate.instant(this.getCompareRowHeader(i));
+      const olderClassCount = olderRange[i] ? olderRange[i][classCountIndex] : 0;
+      const newerClassCount = newerRange[i] ? newerRange[i][classCountIndex] : 0;
+      const classIncreaseRatio = this.countIncreaseRatio(newerClassCount, olderClassCount, 1);
+      childCountCompareTrendChart[0].data.push({
+        name: trendTableRowHeader,
+        y: olderClassCount,
+      });
+      childCountCompareTrendChart[1].data.push({
+        name: trendTableRowHeader,
+        y: newerClassCount,
+      });
+
+      childCountCompareTrendTable.data.push([
+        trendTableRowHeader,
+        olderClassCount,
+        newerClassCount,
+        classIncreaseRatio,
+      ]);
+    }
+
+    return { childCountCompareTrendChart, childCountCompareTrendTable };
+  }
+
+  /**
+   * 處理目前群組開課相關比較趨勢圖表與列表數據
+   * @param timeRange {TimeRange}-統計的日期時間範圍
+   * @param data {any}-學員術趨勢分析數據
+   * @param finalLength {number}-最終比較數據的長度
+   */
+  handleCompareTeachTrendData(timeRange: CompareTimeRange, data: any, finalLength: number) {
+    const { older, newer } = timeRange;
+    const {
+      fieldName,
+      fieldValue: { olderRange, newerRange },
+    } = data;
+    const fieldNameCorrespondence = this.getFieldNameCorrespondence(fieldName);
+    const teachCountIndex = fieldNameCorrespondence['teachCounts'];
+    const maleAttendIndex = fieldNameCorrespondence['maleAttendCounts'];
+    const femaleAttendIndex = fieldNameCorrespondence['femaleAttendCounts'];
+    const { startDate: olderStartDate } = this.getDateRangeTimestamp(older[0][0]);
+    const { startDate: newerStartDate } = this.getDateRangeTimestamp(newer[0][0]);
+    const olderColumnHeaderKey = this.getCompareColumnHeader(olderStartDate, finalLength);
+    const newerColumnHeaderKey = this.getCompareColumnHeader(newerStartDate, finalLength);
+    const olderColumnHeader = this.translate.instant(olderColumnHeaderKey);
+    const newerColumnHeader = this.translate.instant(newerColumnHeaderKey);
+    const branchTranslate = this.translate.instant('開課次數');
+    const classTranslate = this.translate.instant('上課人次');
+    const teachCompareTrendChart: Array<SeriesOption> = [
+      {
+        name: `${olderColumnHeader}${branchTranslate}`,
+        type: 'column',
+        data: [],
+      },
+      {
+        name: `${newerColumnHeader}${branchTranslate}`,
+        type: 'column',
+        data: [],
+      },
+      {
+        name: `${olderColumnHeader}${classTranslate}`,
+        type: 'spline',
+        yAxis: 1,
+        data: [],
+      },
+      {
+        name: `${newerColumnHeader}${classTranslate}`,
+        type: 'spline',
+        yAxis: 1,
+        data: [],
+      },
+    ];
+
+    const teachCompareTrendTable = {
+      option: {
+        headerRowType: [
+          OperationDataType.normal,
+          OperationDataType.translateKey,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.translateKey,
+          OperationDataType.normal,
+          OperationDataType.normal,
+        ],
+        secondHeaderRowType: [
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+        ],
+        valueRowType: [
+          OperationDataType.translateKey,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+        ],
+        valueRowStyle: [null, { bgColor: 'rgba(240, 240, 240, 1)' }],
+      },
+      data: [
+        ['', '開課次數', null, null, '上課人次', null, null],
+        [
+          `單位日期`,
+          olderColumnHeader,
+          newerColumnHeader,
+          '增長(%)',
+          olderColumnHeader,
+          newerColumnHeader,
+          '增長(%)',
+        ],
+      ],
+    };
+
+    for (let i = 0; i < finalLength; i++) {
+      const trendTableRowHeader = this.translate.instant(this.getCompareRowHeader(i));
+      const olderTeachCount = olderRange[i] ? olderRange[i][teachCountIndex] : 0;
+      const newerTeachCount = newerRange[i] ? newerRange[i][teachCountIndex] : 0;
+      const teachIncreaseRatio = this.countIncreaseRatio(newerTeachCount, olderTeachCount, 1);
+      const olderMaleAttendCount = olderRange[i] ? olderRange[i][maleAttendIndex] : 0;
+      const olderFemaleAttendCount = olderRange[i] ? olderRange[i][femaleAttendIndex] : 0;
+      const olderTotalAttendCount = olderMaleAttendCount + olderFemaleAttendCount;
+      const newerMaleAttendCount = newerRange[i] ? newerRange[i][maleAttendIndex] : 0;
+      const newerFemaleAttendCount = newerRange[i] ? newerRange[i][maleAttendIndex] : 0;
+      const newerTotalAttendCount = newerMaleAttendCount + newerFemaleAttendCount;
+      const attendIncreaseRatio = this.countIncreaseRatio(
+        newerTotalAttendCount,
+        olderTotalAttendCount,
+        1
+      );
+      teachCompareTrendChart[0].data.push({
+        name: trendTableRowHeader,
+        y: olderTeachCount,
+      });
+      teachCompareTrendChart[1].data.push({
+        name: trendTableRowHeader,
+        y: newerTeachCount,
+      });
+      teachCompareTrendChart[2].data.push({
+        name: trendTableRowHeader,
+        y: olderTotalAttendCount,
+      });
+      teachCompareTrendChart[3].data.push({
+        name: trendTableRowHeader,
+        y: newerTotalAttendCount,
+      });
+
+      teachCompareTrendTable.data.push([
+        trendTableRowHeader,
+        olderTeachCount,
+        newerTeachCount,
+        teachIncreaseRatio,
+        olderTotalAttendCount,
+        newerTotalAttendCount,
+        attendIncreaseRatio,
+      ]);
+    }
+
+    return { teachCompareTrendChart, teachCompareTrendTable };
+  }
+
+  /**
+   * 處理使用裝置次數相關單一趨勢圖表數據，比較模式各裝置類別獨立一個圖表與表格
+   * @param timeRange {TimeRange}-統計的日期時間範圍
+   * @param data {any}-裝置使用次數分析數據
+   * @param finalLength {number}-最終比較數據的長度
+   */
+  handleCompareDeviceCountTrend(timeRange: CompareTimeRange, data: any, finalLength: number) {
+    const { older, newer } = timeRange;
+    const {
+      fieldName,
+      useCountsFieldValue: { olderRange, newerRange },
+    } = data;
+    const { startDate: olderStartDate } = this.getDateRangeTimestamp(older[0][0]);
+    const { startDate: newerStartDate } = this.getDateRangeTimestamp(newer[0][0]);
+    const olderColumnHeader = this.getCompareColumnHeader(olderStartDate, finalLength);
+    const newerColumnHeader = this.getCompareColumnHeader(newerStartDate, finalLength);
+    const deviceTypeCorrespond = this.getDeviceTypeCorrespond(fieldName);
+    const { index: wearableIndex, color: wearableColor } = deviceTypeCorrespond['wearable'];
+    const { index: sensorIndex, color: sensorColor } = deviceTypeCorrespond['sensor'];
+    const { index: treadmillIndex, color: treadmillColor } = deviceTypeCorrespond['treadmill'];
+    const { index: spinBikeIndex, color: spinBikeColor } = deviceTypeCorrespond['spinBike'];
+    const { index: rowMachineIndex, color: rowMechineColor } = deviceTypeCorrespond['rowMachine'];
+    const getChartDataModel = (color: string) => {
+      return <Array<SeriesOption>>[
+        {
+          name: olderColumnHeader,
+          color: changeOpacity(color, 0.7),
+          data: [],
+        },
+        {
+          name: newerColumnHeader,
+          color: color,
+          data: [],
+        },
+      ];
+    };
+
+    const tableDataModel = {
+      option: {
+        headerRowType: [
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+        ],
+        valueRowType: [
+          OperationDataType.translateKey,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+        ],
+      },
+      data: [['單位日期', olderColumnHeader, newerColumnHeader, '增長(%)']],
+    };
+
+    const deviceTypeCompareTrendChart = {
+      wearable: getChartDataModel(wearableColor),
+      sensor: getChartDataModel(sensorColor),
+      treadmill: getChartDataModel(treadmillColor),
+      spinBike: getChartDataModel(spinBikeColor),
+      rowMachine: getChartDataModel(rowMechineColor),
+    };
+
+    const deviceTypeCompareTrendTable = {
+      wearable: deepCopy(tableDataModel),
+      sensor: deepCopy(tableDataModel),
+      treadmill: deepCopy(tableDataModel),
+      spinBike: deepCopy(tableDataModel),
+      rowMachine: deepCopy(tableDataModel),
+    };
+
+    for (let i = 0; i < finalLength; i++) {
+      const trendTableRowHeader = this.translate.instant(this.getCompareRowHeader(i));
+      const olderWearableValue = olderRange[i] ? olderRange[i][wearableIndex] : 0;
+      const olderSensorValue = olderRange[i] ? olderRange[i][sensorIndex] : 0;
+      const olderTreadmillValue = olderRange[i] ? olderRange[i][treadmillIndex] : 0;
+      const olderSpinBikeValue = olderRange[i] ? olderRange[i][spinBikeIndex] : 0;
+      const olderRowMachineValue = olderRange[i] ? olderRange[i][rowMachineIndex] : 0;
+      const newerWearableValue = newerRange[i] ? newerRange[i][wearableIndex] : 0;
+      const newerSensorValue = newerRange[i] ? newerRange[i][sensorIndex] : 0;
+      const newerTreadmillValue = newerRange[i] ? newerRange[i][treadmillIndex] : 0;
+      const newerSpinBikeValue = newerRange[i] ? newerRange[i][spinBikeIndex] : 0;
+      const newerRowMachineValue = newerRange[i] ? newerRange[i][rowMachineIndex] : 0;
+      const wearableIncreaseRatio = this.countIncreaseRatio(
+        newerWearableValue,
+        olderWearableValue,
+        1
+      );
+      const sensorIncreaseRatio = this.countIncreaseRatio(newerSensorValue, olderSensorValue, 1);
+      const treadmillIncreaseRatio = this.countIncreaseRatio(
+        newerTreadmillValue,
+        olderTreadmillValue,
+        1
+      );
+      const spinBikeIncreaseRatio = this.countIncreaseRatio(
+        newerSpinBikeValue,
+        olderSpinBikeValue,
+        1
+      );
+      const rowMachineIncreaseRatio = this.countIncreaseRatio(
+        newerRowMachineValue,
+        olderRowMachineValue,
+        1
+      );
+      deviceTypeCompareTrendChart.wearable[0].data.push({
+        name: trendTableRowHeader,
+        y: olderWearableValue,
+      });
+      deviceTypeCompareTrendChart.wearable[1].data.push({
+        name: trendTableRowHeader,
+        y: newerWearableValue,
+      });
+
+      deviceTypeCompareTrendChart.sensor[0].data.push({
+        name: trendTableRowHeader,
+        y: olderSensorValue,
+      });
+      deviceTypeCompareTrendChart.sensor[1].data.push({
+        name: trendTableRowHeader,
+        y: newerSensorValue,
+      });
+
+      deviceTypeCompareTrendChart.treadmill[0].data.push({
+        name: trendTableRowHeader,
+        y: olderTreadmillValue,
+      });
+      deviceTypeCompareTrendChart.treadmill[1].data.push({
+        name: trendTableRowHeader,
+        y: newerTreadmillValue,
+      });
+
+      deviceTypeCompareTrendChart.spinBike[0].data.push({
+        name: trendTableRowHeader,
+        y: olderSpinBikeValue,
+      });
+      deviceTypeCompareTrendChart.spinBike[1].data.push({
+        name: trendTableRowHeader,
+        y: newerSpinBikeValue,
+      });
+
+      deviceTypeCompareTrendChart.rowMachine[0].data.push({
+        name: trendTableRowHeader,
+        y: olderRowMachineValue,
+      });
+      deviceTypeCompareTrendChart.rowMachine[1].data.push({
+        name: trendTableRowHeader,
+        y: newerRowMachineValue,
+      });
+
+      deviceTypeCompareTrendTable.wearable.data.push([
+        trendTableRowHeader,
+        olderWearableValue,
+        newerWearableValue,
+        wearableIncreaseRatio,
+      ]);
+
+      deviceTypeCompareTrendTable.sensor.data.push([
+        trendTableRowHeader,
+        olderSensorValue,
+        newerSensorValue,
+        sensorIncreaseRatio,
+      ]);
+
+      deviceTypeCompareTrendTable.treadmill.data.push([
+        trendTableRowHeader,
+        olderTreadmillValue,
+        newerTreadmillValue,
+        treadmillIncreaseRatio,
+      ]);
+
+      deviceTypeCompareTrendTable.spinBike.data.push([
+        trendTableRowHeader,
+        olderSpinBikeValue,
+        newerSpinBikeValue,
+        spinBikeIncreaseRatio,
+      ]);
+
+      deviceTypeCompareTrendTable.rowMachine.data.push([
+        trendTableRowHeader,
+        olderRowMachineValue,
+        newerRowMachineValue,
+        rowMachineIncreaseRatio,
+      ]);
+    }
+
+    return { deviceTypeCompareTrendChart, deviceTypeCompareTrendTable };
+  }
+
+  /**
+   * 取得裝置類別在數據陣列中相對應的序列
+   * @param nameCode {Array<string>}
+   */
+  getDeviceTypeCorrespond(nameCode: Array<string>) {
+    const result = {};
+    nameCode.forEach((_code, _index) => {
+      const deviceCode = _code.split('d')[1];
+      const deviceType = getDevicTypeInfo(deviceCode, 'type');
+      const deviceColor = getDevicTypeInfo(deviceCode, 'color');
+      Object.assign(result, { [deviceType]: { index: _index, color: deviceColor } });
+    });
+
+    return result;
   }
 
   /**

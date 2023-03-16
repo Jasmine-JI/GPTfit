@@ -131,8 +131,8 @@ export class Api41xxService {
       processResult,
       info: {
         baseCounts: {
-          branchCounts,
-          classCounts,
+          branchCounts: this.getRandomValue(0, 3),
+          classCounts: this.getRandomValue(0, 10),
           totalTeachCounts: finalTeachCounts,
           totalAttendCounts: this.getRandomValue(finalTeachCounts + totalAttendCounts),
           adminCounts: finalAdminCounts,
@@ -283,7 +283,7 @@ export class Api41xxService {
     const { fieldName, fieldValue } = data;
     return {
       fieldName,
-      fieldValue: this.getIncreaseColumnArray(fieldValue),
+      fieldValue: this.getIncreaseColumnArray(fieldValue, 2),
     };
   }
 
@@ -345,12 +345,14 @@ export class Api41xxService {
   /**
    * 將兩層數據陣列數值調整為非0且縱向向上遞增的陣列
    */
-  getIncreaseColumnArray(array: Array<Array<number>>) {
+  getIncreaseColumnArray(array: Array<Array<number>>, timeIndex: number | null = null) {
     let prevArray: Array<number>;
     return array.map((_array, _index) => {
       const result = _array.map((_arr, _secondIndex) => {
         const prevValue = prevArray ? prevArray[_secondIndex] : 0;
         if (_arr < prevValue) _arr = prevValue;
+        if (timeIndex !== null && timeIndex === _secondIndex)
+          return _arr + this.getRandomValue(36000, 144000);
         return _arr + this.getRandomValue();
       });
 
@@ -362,7 +364,7 @@ export class Api41xxService {
   /**
    * 取得隨機數值
    */
-  getRandomValue(initValue = 0, range = 100) {
+  getRandomValue(initValue = 1, range = 100) {
     const randomValue = Math.random() * range + initValue;
     return mathRounding(randomValue, 0);
   }

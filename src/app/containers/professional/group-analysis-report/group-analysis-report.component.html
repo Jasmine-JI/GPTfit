@@ -313,21 +313,27 @@
             }
           "
         ></ng-container>
-        <ng-container *ngIf="!isCompareMode">
-          <div class="flexCol">
-            <app-line-column-compare-chart
-              [data]="operationTrend.memberSingleTrendChart"
-            ></app-line-column-compare-chart>
-          </div>
-          <app-operation-data-table
-            [tableData]="operationTrend.memberSingleTrendTable"
-          ></app-operation-data-table>
-        </ng-container>
+        <div class="flexCol">
+          <app-line-column-compare-chart
+            [data]="
+              isCompareMode
+                ? operationTrend.memberCompareTrendChart
+                : operationTrend.memberSingleTrendChart
+            "
+          ></app-line-column-compare-chart>
+        </div>
+        <app-operation-data-table
+          [tableData]="
+            isCompareMode
+              ? operationTrend.memberCompareTrendTable
+              : operationTrend.memberSingleTrendTable
+          "
+        ></app-operation-data-table>
       </div>
       <div
         class="operation-dataCategory"
         *ngIf="
-          operationTrend.singleCreateChildTableData || operationTrend.compareCreateChildTableData
+          operationTrend.singleCreateChildTableData || operationTrend.childCountCompareTrendTable
         "
       >
         <ng-container
@@ -340,16 +346,22 @@
             }
           "
         ></ng-container>
-        <ng-container *ngIf="!isCompareMode">
-          <div class="flexCol">
-            <app-line-column-compare-chart
-              [data]="operationTrend.singleCreateChildChartData"
-            ></app-line-column-compare-chart>
-          </div>
-          <app-operation-data-table
-            [tableData]="operationTrend.singleCreateChildTableData"
-          ></app-operation-data-table>
-        </ng-container>
+        <div class="flexCol">
+          <app-line-column-compare-chart
+            [data]="
+              isCompareMode
+                ? operationTrend.childCountCompareTrendChart
+                : operationTrend.singleCreateChildChartData
+            "
+          ></app-line-column-compare-chart>
+        </div>
+        <app-operation-data-table
+          [tableData]="
+            isCompareMode
+              ? operationTrend.childCountCompareTrendTable
+              : operationTrend.singleCreateChildTableData
+          "
+        ></app-operation-data-table>
       </div>
 
       <div class="operation-dataCategory">
@@ -363,16 +375,22 @@
             }
           "
         ></ng-container>
-        <ng-container *ngIf="!isCompareMode">
-          <div class="flexCol">
-            <app-line-column-compare-chart
-              [data]="operationTrend.teachSingleTrendChart"
-            ></app-line-column-compare-chart>
-          </div>
-          <app-operation-data-table
-            [tableData]="operationTrend.teachSingleTrendTable"
-          ></app-operation-data-table>
-        </ng-container>
+        <div class="flexCol">
+          <app-line-column-compare-chart
+            [data]="
+              isCompareMode
+                ? operationTrend.teachCompareTrendChart
+                : operationTrend.teachSingleTrendChart
+            "
+          ></app-line-column-compare-chart>
+        </div>
+        <app-operation-data-table
+          [tableData]="
+            isCompareMode
+              ? operationTrend.teachCompareTrendTable
+              : operationTrend.teachSingleTrendTable
+          "
+        ></app-operation-data-table>
       </div>
       <div
         class="operation-dataCategory"
@@ -394,7 +412,6 @@
           ></app-operation-data-table>
         </ng-container>
       </div>
-
       <div class="operation-dataCategory">
         <ng-container
           *ngTemplateOutlet="
@@ -415,6 +432,108 @@
           <app-operation-data-table
             [tableData]="operationTrend.singleDeviceTrendTableData"
           ></app-operation-data-table>
+        </ng-container>
+        <ng-container *ngIf="isCompareMode && operationTrend.deviceTypeCompareTrendTable">
+          <div class="operation-dataCategory">
+            <ng-container
+              *ngTemplateOutlet="
+                dataTypeArea;
+                context: {
+                  title: 'universal_vocabulary_wearableDevice',
+                  elementId: 'wearable__use__trend',
+                  description: ''
+                }
+              "
+            ></ng-container>
+            <div class="flexCol">
+              <app-line-column-compare-chart
+                [data]="operationTrend.deviceTypeCompareTrendChart.wearable"
+              ></app-line-column-compare-chart>
+            </div>
+            <app-operation-data-table
+              [tableData]="operationTrend.deviceTypeCompareTrendTable.wearable"
+            ></app-operation-data-table>
+          </div>
+          <div class="operation-dataCategory">
+            <ng-container
+              *ngTemplateOutlet="
+                dataTypeArea;
+                context: {
+                  title: 'universal_vocabulary_sensor',
+                  elementId: 'sensor__use__trend',
+                  description: ''
+                }
+              "
+            ></ng-container>
+            <div class="flexCol">
+              <app-line-column-compare-chart
+                [data]="operationTrend.deviceTypeCompareTrendChart.sensor"
+              ></app-line-column-compare-chart>
+            </div>
+            <app-operation-data-table
+              [tableData]="operationTrend.deviceTypeCompareTrendTable.sensor"
+            ></app-operation-data-table>
+          </div>
+          <div class="operation-dataCategory">
+            <ng-container
+              *ngTemplateOutlet="
+                dataTypeArea;
+                context: {
+                  title: 'universal_vocabulary_treadmill',
+                  elementId: 'treadmill__use__trend',
+                  description: ''
+                }
+              "
+            ></ng-container>
+            <div class="flexCol">
+              <app-line-column-compare-chart
+                [data]="operationTrend.deviceTypeCompareTrendChart.treadmill"
+              ></app-line-column-compare-chart>
+            </div>
+            <app-operation-data-table
+              [tableData]="operationTrend.deviceTypeCompareTrendTable.treadmill"
+            ></app-operation-data-table>
+          </div>
+          <div class="operation-dataCategory">
+            <ng-container
+              *ngTemplateOutlet="
+                dataTypeArea;
+                context: {
+                  title: 'universal_vocabulary_spinBike',
+                  elementId: 'spinbike__use__trend',
+                  description: ''
+                }
+              "
+            ></ng-container>
+            <div class="flexCol">
+              <app-line-column-compare-chart
+                [data]="operationTrend.deviceTypeCompareTrendChart.spinBike"
+              ></app-line-column-compare-chart>
+            </div>
+            <app-operation-data-table
+              [tableData]="operationTrend.deviceTypeCompareTrendTable.spinBike"
+            ></app-operation-data-table>
+          </div>
+          <div class="operation-dataCategory">
+            <ng-container
+              *ngTemplateOutlet="
+                dataTypeArea;
+                context: {
+                  title: 'universal_vocabulary_rowingMachine',
+                  elementId: 'rowing__use__trend',
+                  description: ''
+                }
+              "
+            ></ng-container>
+            <div class="flexCol">
+              <app-line-column-compare-chart
+                [data]="operationTrend.deviceTypeCompareTrendChart.rowMachine"
+              ></app-line-column-compare-chart>
+            </div>
+            <app-operation-data-table
+              [tableData]="operationTrend.deviceTypeCompareTrendTable.rowMachine"
+            ></app-operation-data-table>
+          </div>
         </ng-container>
       </div>
     </ng-container>

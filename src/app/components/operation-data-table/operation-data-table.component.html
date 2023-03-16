@@ -44,7 +44,7 @@
       *ngFor="let _rowData of tableData.data; let _rowIndex = index"
     >
       <ng-container *ngFor="let _data of _rowData; let _cellIndex = index">
-        <ng-container *ngIf="_cellIndex !== 0">
+        <ng-container *ngIf="_cellIndex !== 0 && _rowData[_cellIndex] !== null">
           <span
             *ngTemplateOutlet="
               gridCell;

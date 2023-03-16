@@ -229,7 +229,7 @@ export class SettingPrivacyComponent implements OnInit, OnDestroy {
     switch (obj) {
       case PrivacyObj.anyone:
         if (this.openObj.includes(PrivacyObj.anyone)) {
-          this.openObj = [PrivacyObj.self];
+          this.openObj = [PrivacyObj.self, PrivacyObj.onlyGroupAdmin, PrivacyObj.myGroup];
         } else {
           this.openObj = [...allPrivacyItem];
         }
