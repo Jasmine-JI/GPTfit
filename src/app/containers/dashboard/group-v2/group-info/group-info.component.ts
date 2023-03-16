@@ -1111,7 +1111,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         childPageSet.add(GroupChildPage.deviceList);
 
         if (isValidGroup) {
-          childPageSet.add(GroupChildPage.classAnalysis);
+          if (inClassLevel) childPageSet.add(GroupChildPage.classAnalysis);
           childPageSet.add(GroupChildPage.operationReport);
         }
       }
@@ -1122,7 +1122,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         childPageSet.add(GroupChildPage.cloudrunReport);
 
         if (isEnterpriseType) childPageSet.add(GroupChildPage.lifeTracking);
-        if (inClassLevel && !isEnterpriseType) childPageSet.add(GroupChildPage.myclassReport);
+        if (inClassLevel) childPageSet.add(GroupChildPage.myclassReport);
       }
     }
 
