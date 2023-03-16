@@ -322,3 +322,27 @@ export function getMonthKey(index: number) {
       return 'Index Error';
   }
 }
+
+/**
+ * 根據序列取得對應月份的翻譯鍵
+ * @param index {number}-月份序列，第一個月序列為0（同dayjs）
+ * @param isAbbreviation {boolean}-是否用縮寫
+ */
+export function getWeekdayKey(index: number, isAbbreviation = true) {
+  switch (index) {
+    case 0:
+      return isAbbreviation ? 'universal_time_mon' : 'universal_time_monday';
+    case 1:
+      return isAbbreviation ? 'universal_time_tue' : 'universal_time_tuesday';
+    case 2:
+      return isAbbreviation ? 'universal_time_wed' : 'universal_time_wednesday';
+    case 3:
+      return isAbbreviation ? 'universal_time_thu' : 'universal_time_thursday';
+    case 4:
+      return isAbbreviation ? 'universal_time_fri' : 'universal_time_friday';
+    case 5:
+      return isAbbreviation ? 'universal_time_sat' : 'universal_time_saturday';
+    case 6:
+      return isAbbreviation ? 'universal_time_sun' : 'universal_time_sunday';
+  }
+}
