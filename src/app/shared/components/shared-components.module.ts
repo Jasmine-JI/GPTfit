@@ -131,6 +131,7 @@ import {
   SportFileFooterComponent,
   TipDialogComponent,
   LoadingBarComponent,
+  LoadingMaskComponent,
 } from '../../components';
 
 @NgModule({
@@ -161,6 +162,7 @@ import {
     SportFileFooterComponent,
     TipDialogComponent,
     LoadingBarComponent,
+    LoadingMaskComponent,
     SexPipe,
     SafeHtmlPipe,
     LineBreakPipe,

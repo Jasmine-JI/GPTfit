@@ -57,3 +57,11 @@ $height: 24px;
     cursor: pointer;
   }
 }
+
+/**************************** media ******************************/
+
+@media (max-width: 450px) {
+  .drop__list__container {
+    max-width: 280px;
+  }
+}

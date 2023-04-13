@@ -19,14 +19,14 @@
         [class.analysisSwitchButton--active]="uiFlag.pageType === 'normal'"
         (click)="changeContent('normal')"
       >
-        簡易
+        {{ 'universal_group_easy' | translate }}
       </button>
       <button
         class="analysisSwitchButton"
         [class.analysisSwitchButton--active]="uiFlag.pageType === 'analysis'"
         (click)="changeContent('analysis')"
       >
-        分析
+        {{ 'universal_app_analyze' | translate }}
       </button>
     </div>
     <button

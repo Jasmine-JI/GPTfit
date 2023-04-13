@@ -4,6 +4,7 @@ $header-border: 1px solid black;
 $cell-border: 1px solid rgba(200, 200, 200, 1);
 $header-width: 150px;
 $grid-height: minmax(25px, 25px);
+$ul-padding-top: 15px;
 
 @mixin clear-ul-style() {
   list-style: none;
@@ -13,24 +14,29 @@ $grid-height: minmax(25px, 25px);
 
 .data__table {
   @include clear-ul-style();
-  border-top: $header-border;
-  border-bottom: $header-border;
 }
 
 .table__header__column {
   @include clear-ul-style();
   @include overflow-x-scroll();
   display: grid;
-  grid-template-rows: $grid-height;
+  // grid-template-rows: $grid-height;
   width: $header-width;
   min-width: $header-width;
   text-align: right;
   font-size: 0.95rem;
+
+  grid-template-rows: 2rem $grid-height;
+  padding-top: $ul-padding-top;
+
+  li:first-of-type .grid__column__header {
+    border-right: none;
+  }
 }
 
 .table__first__header {
   display: grid;
-  grid-template-rows: 25px auto;
+  grid-template-rows: 2rem auto;
 }
 
 .column__header__cell {
@@ -44,18 +50,21 @@ $grid-height: minmax(25px, 25px);
 .content__row {
   @include clear-ul-style();
   @include overflow-x-scroll();
+  position: relative;
   width: calc(100% - $header-width);
+
+  padding-top: $ul-padding-top;
 }
 
 .grid__row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   grid-template-rows: $grid-height;
 }
 
 .grid__cell {
   text-align: center;
-  border-left: $cell-border;
+  border-right: $cell-border;
   border-bottom: $cell-border;
   padding: 0 0.5rem;
   white-space: nowrap;
@@ -67,7 +76,9 @@ $grid-height: minmax(25px, 25px);
   border-color: rgba(100, 100, 100, 1);
   font-weight: bold;
   font-size: 0.9rem;
-  background-color: rgba(250, 255, 234, 1);
+  // background-color: rgba(250, 255, 234, 1);
+
+  grid-template-rows: 2rem;
 }
 
 .grid__column__header {
@@ -92,4 +103,49 @@ $grid-height: minmax(25px, 25px);
 
 .grid__icon {
   font-size: 1.2rem;
+}
+
+.unfold__button {
+  $color: rgba(150, 150, 150, 1);
+  $size: 1rem;
+  max-height: $size;
+  max-width: $size;
+  border: 1px solid $color;
+  padding: 1px;
+  margin-left: 5px;
+  color: $color;
+  border-radius: 5px;
+}
+
+.overflow__inline {
+  display: inline-block;
+  max-width: 110px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
+.column__header__row {
+  position: absolute;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.column__header__title {
+  text-align: center;
+  background-color: rgba(178, 199, 224, 1);
+  border-radius: 1rem;
+  font-size: 0.9rem;
+  padding: 5px 0.5rem;
+  min-width: 100px;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow-x: hidden;
+}
+
+.empty__column__header {
+  border-radius: 1rem 1rem 0 0;
+  border: $cell-border;
 }

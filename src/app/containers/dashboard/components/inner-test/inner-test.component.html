@@ -113,7 +113,9 @@
         />
       </div>
       <div class="col-md-8">
-        <div><label>群組名稱:</label>{{ groupInfo?.groupName }}</div>
+        <div>
+          <label>{{ 'universal_group_groupName' | translate }}:</label>{{ groupInfo?.groupName }}
+        </div>
         <div><label>階層: </label>{{ this.groupLevel | groupLevelTranslate | translate }}</div>
         <div><label>狀態: </label>{{ groupInfo?.groupStatus | groupStatus | translate }}</div>
         <div>

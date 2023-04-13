@@ -27,6 +27,17 @@ export class DataTypeUnitPipe implements PipeTransform {
       case 'hr':
         return 'bpm';
       case 'speed':
+        switch (sportType) {
+          case SportType.run:
+          case SportType.cycle:
+            return userUnit === DataUnitType.metric ? 'km/h' : 'mi/h';
+          case SportType.swim:
+            return 'min/100m';
+          case SportType.row:
+            return 'min/500m';
+          default:
+            return '';
+        }
       case 'pace':
         switch (sportType) {
           case SportType.run:

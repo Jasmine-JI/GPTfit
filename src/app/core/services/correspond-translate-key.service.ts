@@ -15,7 +15,7 @@ export class CorrespondTranslateKeyService {
     const ageKey = this.translate.instant('universal_deviceSetting_yearsOld');
     switch (code) {
       case 'o1':
-        return '20歲以下';
+        return 'universal_group_under20s';
       case 'o2':
         return `21-30 ${ageKey}`;
       case 'o3':
@@ -25,7 +25,7 @@ export class CorrespondTranslateKeyService {
       case 'o5':
         return `51-60 ${ageKey}`;
       case 'o6':
-        return '61歲以上';
+        return 'universal_group_over60s';
       default:
         return 'universal_vocabulary_other';
     }
