@@ -37,7 +37,7 @@ export function groupOverViewConvert(name: string) {
     case 'classCounts':
       return 'universal_group_numberOfClass';
     case 'memberCounts':
-      return '總學員數';
+      return 'universal_group_totalUsers';
     case 'fileCounts':
       return '總檔案數';
     case 'deviceUsedCounts':

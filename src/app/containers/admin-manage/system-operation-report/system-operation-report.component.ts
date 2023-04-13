@@ -44,6 +44,7 @@ import { genderColor } from '../../../core/models/represent-color';
 import { DateUnit } from '../../../core/enums/common';
 import { operationTrendColor, sportTypeColor } from '../../../shared/models/chart-data';
 import { TimeFormatPipe } from '../../../core/pipes';
+import { MultipleUnfoldStatus } from '../../../core/classes';
 
 dayjs.extend(isoWeek);
 dayjs.extend(quarterOfYear);
@@ -169,39 +170,84 @@ export class SystemOperationReportComponent implements OnInit {
 
   trendList: Array<SingleLayerList> = [
     {
-      titleKey: '單一趨勢',
+      titleKey: 'universal_group_singleTrend',
       id: OperationTrendType.singleTrend,
       list: [
-        { textKey: '2018年～', id: SingleTrendRange.unlimit },
-        { textKey: '近5年', id: SingleTrendRange.nearlyFiveYears },
-        { textKey: '近3年', id: SingleTrendRange.nearlyTwoYears },
-        { textKey: '近1年', id: SingleTrendRange.nearlyOneYear },
-        { textKey: '近1季', id: SingleTrendRange.nearlyOneSeason },
+        { textKey: '2018～', id: SingleTrendRange.unlimit },
+        { textKey: 'universal_time_previous5Years', id: SingleTrendRange.nearlyFiveYears },
+        { textKey: 'universal_time_previous3Years', id: SingleTrendRange.nearlyTwoYears },
+        { textKey: 'universal_time_previousYear', id: SingleTrendRange.nearlyOneYear },
+        { textKey: 'universal_time_previousSeason', id: SingleTrendRange.nearlyOneSeason },
       ],
     },
     {
-      titleKey: '比較趨勢',
+      titleKey: 'universal_operating_compareTrends',
       id: OperationTrendType.compareTrend,
       list: [
-        { textKey: '近2年', id: CompareTrendRange.nearlyTwoYears },
-        { textKey: '近2季', id: CompareTrendRange.nearlyTwoSeasons },
-        { textKey: '近2月', id: CompareTrendRange.nearlyTwoMonths },
-        { textKey: '過去2年', id: CompareTrendRange.lastTwoYears },
-        { textKey: '過去2季', id: CompareTrendRange.lastTwoSeasons },
-        { textKey: '過去2月', id: CompareTrendRange.lastTwoMonths },
+        { textKey: 'universal_time_previous2Years', id: CompareTrendRange.nearlyTwoYears },
+        { textKey: 'universal_time_previous2Season', id: CompareTrendRange.nearlyTwoSeasons },
+        { textKey: 'universal_time_previous2Months', id: CompareTrendRange.nearlyTwoMonths },
+        { textKey: 'universal_time_last2Years', id: CompareTrendRange.lastTwoYears },
+        { textKey: 'universal_time_last2Seasons', id: CompareTrendRange.lastTwoSeasons },
+        { textKey: 'universal_time_last2Months', id: CompareTrendRange.lastTwoMonths },
       ],
     },
   ];
 
+  /**
+   * 單獨更新趨勢數據或整頁數據更新的旗標
+   */
   allRefresh = false;
+
+  /**
+   * 報告產生日期
+   */
   creationTime: string = this.getCurrentTime();
+
+  /**
+   * api 4104 回覆內容
+   */
   operationInfo: Api4101Response;
+
+  /**
+   * api 4105 回覆內容
+   */
   operationTrend: Api4102Response;
+
+  /**
+   * 總體分析相關數據
+   */
   overviewData: any;
+
+  /**
+   * 趨勢分析相關數據
+   */
   trendData: any;
+
+  /**
+   * 趨勢分析是否為比較模式
+   */
   isCompareMode = false;
+
+  /**
+   * 圖表時間單位
+   */
   trendChartUnit = DateUnit.month;
+
+  /**
+   * 側邊快速索引區塊用清單
+   */
   sectionIndexList: Array<IndexInfo> = [];
+
+  /**
+   * 用來切換總體分析各圖表的列表數據顯示與否
+   */
+  overviewTableDisplayStatus = new MultipleUnfoldStatus();
+
+  /**
+   * 用來切換趨勢分析各圖表的列表數據顯示與否
+   */
+  trendTableDisplayStatus = new MultipleUnfoldStatus();
 
   readonly SystemAnalysisType = SystemAnalysisType;
   readonly SingleTrendRange = SingleTrendRange;
@@ -653,6 +699,7 @@ export class SystemOperationReportComponent implements OnInit {
       planAnalysisTableData.data.push([_translateKey, _brandValue, _enterpriseValue]);
     });
 
+    this.overviewTableDisplayStatus.setNewStatus('planAnalysis');
     return { planAnalysisChartData, planAnalysisTableData };
   }
 
@@ -685,6 +732,7 @@ export class SystemOperationReportComponent implements OnInit {
       overviewAnalysisTableData.data.push([_translateKey, _brandValue, _enterpriseValue]);
     });
 
+    this.overviewTableDisplayStatus.setNewStatus('overviewInfoAnalysis');
     return { overviewAnalysisTableData };
   }
 
@@ -709,7 +757,7 @@ export class SystemOperationReportComponent implements OnInit {
           OperationDataType.normal,
         ],
       },
-      data: [['運動類別', '開課數量', '課程檔案數']],
+      data: [['universal_group_classType', 'universal_group_classCounts', '課程檔案數']],
     };
 
     typeFieldName.forEach((_code, _index) => {
@@ -729,6 +777,7 @@ export class SystemOperationReportComponent implements OnInit {
       classTypeAnalysisTableData.data.push([_translateKey, _teachCountValue, _fileCountValue]);
     });
 
+    this.overviewTableDisplayStatus.setNewStatus('classTypeAnalysis');
     return { teachSportsTypeChartData, fileSportsTypeChartData, classTypeAnalysisTableData };
   }
 
@@ -772,6 +821,7 @@ export class SystemOperationReportComponent implements OnInit {
       ],
     };
 
+    this.overviewTableDisplayStatus.setNewStatus('activeAnalysis');
     return { activeAnalysisChartData, activeAnalysisTableData };
   }
 
@@ -822,6 +872,8 @@ export class SystemOperationReportComponent implements OnInit {
       });
       ageAnalysisTableData.data.push([_translateKey, _maleCount, _femaleCount, _totalCount]);
     });
+
+    this.overviewTableDisplayStatus.setNewStatus('ageAnalysis');
     return { ageAnalysisChartData, ageAnalysisTableData };
   }
 
@@ -852,6 +904,8 @@ export class SystemOperationReportComponent implements OnInit {
       });
       sportsTypeTableData.data.push([_translateKey, _maleValue, _femaleValue, _totalCount]);
     });
+
+    this.overviewTableDisplayStatus.setNewStatus('sportTypeAnalysis');
     return { maleSportsTypeChartData, femaleSportsTypeChartData, sportsTypeTableData };
   }
 
@@ -921,6 +975,8 @@ export class SystemOperationReportComponent implements OnInit {
       });
       deviceTableData.data.push([_translateKey, enableValue, registerValue]);
     });
+
+    this.overviewTableDisplayStatus.setNewStatus('deviceAnalysis');
     return { enableChartData, registerChartData, deviceTableData };
   }
 
@@ -947,6 +1003,7 @@ export class SystemOperationReportComponent implements OnInit {
 
         const trendTableRowHeader = this.getTrendTableRowHeader(dateRange.startDate);
         if (!groupTrendTableData[_fieldName]) {
+          this.trendTableDisplayStatus.setNewStatus(_fieldName);
           groupTrendChartData[_fieldName].chartData[0].color = operationTrendColor[_nameIndex];
           const dataName = this.getTrendTableColumnHeader(_fieldName);
           groupTrendChartData[_fieldName].seriesName.push(dataName);
@@ -1042,6 +1099,7 @@ export class SystemOperationReportComponent implements OnInit {
       { data: [], color: genderColor.female },
     ];
 
+    this.trendTableDisplayStatus.setNewStatus(genderFieldName);
     memberTrendTableData[genderFieldName] = {
       option: {
         headerRowType: [
@@ -1061,11 +1119,13 @@ export class SystemOperationReportComponent implements OnInit {
       },
       data: [
         [
-          `日期範圍(${this.getDateUnitString()})`,
+          `${this.translate.instant(
+            'universal_activityData_dateRange'
+          )}(${this.getDateUnitString()})`,
           maleTranslateKey,
-          '男性增長(%)',
+          `${this.translate.instant('universal_group_maleUserGrowth')}(%)`,
           femaleTranslateKey,
-          '女性增長(%)',
+          `${this.translate.instant('universal_group_femaleUserGrowth')}(%)`,
         ],
       ],
     };
@@ -1087,6 +1147,7 @@ export class SystemOperationReportComponent implements OnInit {
         });
 
         if (!memberTrendTableData[_fieldName]) {
+          this.trendTableDisplayStatus.setNewStatus(_fieldName);
           memberTrendChartData[_fieldName].chartData[0].color = operationTrendColor[_nameIndex];
           const dataName = this.getTrendTableColumnHeader(_fieldName);
           memberTrendChartData[_fieldName].seriesName.push(dataName);
@@ -1108,6 +1169,8 @@ export class SystemOperationReportComponent implements OnInit {
               [trendTableRowHeader, dataValue, '-'],
             ],
           };
+
+          this.trendTableDisplayStatus.setNewStatus(_fieldName);
         } else {
           const prevValue = memberAnalysisValue[_dateIndex - 1][_nameIndex];
           memberTrendTableData[_fieldName].data.push([
@@ -1162,6 +1225,7 @@ export class SystemOperationReportComponent implements OnInit {
       femalePrevTotal = femaleFileTotal;
     });
 
+    this.trendTableDisplayStatus.setNewStatus(genderFieldName);
     return {
       memberTrendChartData,
       memberTrendTableData,
@@ -1198,6 +1262,7 @@ export class SystemOperationReportComponent implements OnInit {
       sportsTypeTrendTableData.data.push([_translateKey, _maleValue, _femaleValue, _totalCount]);
     });
 
+    this.trendTableDisplayStatus.setNewStatus('sportsTypeTotal');
     return { malePieChartData, femalePieChartData, sportsTypeTrendTableData };
   }
 
@@ -1325,7 +1390,7 @@ export class SystemOperationReportComponent implements OnInit {
 
         if (!groupTrendTableData[_fieldName]) {
           const _mainColor = operationTrendColor[_nameIndex];
-          groupTrendChartData[_fieldName].chartData[0].color = changeOpacity(_mainColor, 0.7);
+          groupTrendChartData[_fieldName].chartData[0].color = changeOpacity(_mainColor, 0.5);
           groupTrendChartData[_fieldName].chartData[1].color = _mainColor;
           const isSeasonData = finalLength > 6;
           const olderColumnHeader = this.getCompareColumnHeader(
@@ -1595,10 +1660,11 @@ export class SystemOperationReportComponent implements OnInit {
         });
 
         if (!memberTrendTableData[_fieldName]) {
+          this.trendTableDisplayStatus.setNewStatus(_fieldName);
           const _mainColor = isMemberAnalysis
             ? operationTrendColor[_nameIndex]
             : sportTypeColor[_typeIndex];
-          memberTrendChartData[_fieldName].chartData[0].color = changeOpacity(_mainColor, 0.7);
+          memberTrendChartData[_fieldName].chartData[0].color = changeOpacity(_mainColor, 0.5);
           memberTrendChartData[_fieldName].chartData[1].color = _mainColor;
           memberTrendChartData[_fieldName].seriesName = valueHeader;
           memberTrendTableData[_fieldName] = {
@@ -1700,6 +1766,7 @@ export class SystemOperationReportComponent implements OnInit {
       sportsTypeTrendTableData.data.push([_translateKey, _olderValue, _newerValue, _diffRatio]);
     });
 
+    this.trendTableDisplayStatus.setNewStatus('sportsTypeTotal');
     return { olderPieChartData, newerPieChartData, sportsTypeTrendTableData, valueHeader: header };
   }
 
@@ -1812,9 +1879,10 @@ export class SystemOperationReportComponent implements OnInit {
         });
 
         if (!deviceTrendTableData[_fieldName]) {
+          this.trendTableDisplayStatus.setNewStatus(_fieldName);
           const deviceCode = (_realIndex + 1).toString();
           const _mainColor = getDevicTypeInfo(deviceCode, 'color');
-          deviceTrendChartData[_fieldName].chartData[0].color = changeOpacity(_mainColor, 0.7);
+          deviceTrendChartData[_fieldName].chartData[0].color = changeOpacity(_mainColor, 0.5);
           deviceTrendChartData[_fieldName].chartData[1].color = _mainColor;
           const isSeasonData = finalLength > 6;
           const olderColumnHeader = this.getCompareColumnHeader(
@@ -2036,7 +2104,7 @@ export class SystemOperationReportComponent implements OnInit {
       case 'branch':
         return '分店分公司數量';
       case 'class':
-        return '課程群組數量';
+        return 'universal_group_classGroupAmount';
       case 'teachCounts':
         return '開課次數';
       case 'attendCounts':
@@ -2093,6 +2161,8 @@ export class SystemOperationReportComponent implements OnInit {
       if (type !== prevType) {
         this.postInfo.type = type;
         this.allRefresh = true;
+        this.overviewTableDisplayStatus.removeAllStatus();
+        this.trendTableDisplayStatus.removeAllStatus();
         this.getReportInfo();
         this.getReportTrend();
       }
@@ -2119,13 +2189,25 @@ export class SystemOperationReportComponent implements OnInit {
             textKey: 'universal_activityData_summary',
             elementId: 'summary__info__section',
           },
-          { indexLayer: 0, textKey: '總體分析圖表', elementId: 'overall__analysis__section' },
+          {
+            indexLayer: 0,
+            textKey: 'universal_group_generalAnalysisChart',
+            elementId: 'overall__analysis__section',
+          },
           { indexLayer: 1, textKey: '方案', elementId: 'plan__analysis' },
           { indexLayer: 1, textKey: '概要', elementId: 'summary__analysis' },
-          // { indexLayer: 1, textKey: '開課類別', elementId: 'teach__type__analysis' },
-          { indexLayer: 0, textKey: '趨勢分析圖表', elementId: 'trend__chart__section' },
+          // { indexLayer: 1, textKey: 'universal_group_classType', elementId: 'teach__type__analysis' },
+          {
+            indexLayer: 0,
+            textKey: 'universal_group_trendAnalysisCharts',
+            elementId: 'trend__chart__section',
+          },
           { indexLayer: 1, textKey: '品牌企業數量', elementId: 'brand__counts__analysis' },
-          { indexLayer: 1, textKey: '開課次數', elementId: 'teach__counts__analysis' },
+          {
+            indexLayer: 1,
+            textKey: 'universal_group_classCounts',
+            elementId: 'teach__counts__analysis',
+          },
           { indexLayer: 1, textKey: '總課程時間', elementId: 'class__time__analysis' },
           { indexLayer: 1, textKey: '出席次數', elementId: 'attend__counts__analysis' },
           { indexLayer: 1, textKey: '檔案數量', elementId: 'file__counts__analysis' },
@@ -2137,11 +2219,19 @@ export class SystemOperationReportComponent implements OnInit {
             textKey: 'universal_activityData_summary',
             elementId: 'summary__info__section',
           },
-          { indexLayer: 0, textKey: '總體分析圖表', elementId: 'overall__analysis__section' },
+          {
+            indexLayer: 0,
+            textKey: 'universal_group_generalAnalysisChart',
+            elementId: 'overall__analysis__section',
+          },
           { indexLayer: 1, textKey: '會員活躍度', elementId: 'active__analysis' },
           { indexLayer: 1, textKey: '會員年齡分佈', elementId: 'age__analysis' },
           { indexLayer: 1, textKey: '運動類別', elementId: 'sports__type__analysis' },
-          { indexLayer: 0, textKey: '趨勢分析圖表', elementId: 'trend__chart__section' },
+          {
+            indexLayer: 0,
+            textKey: 'universal_group_trendAnalysisCharts',
+            elementId: 'trend__chart__section',
+          },
           { indexLayer: 1, textKey: '會員數', elementId: 'member__counts__analysis' },
         ];
 
@@ -2170,9 +2260,17 @@ export class SystemOperationReportComponent implements OnInit {
             textKey: 'universal_activityData_summary',
             elementId: 'summary__info__section',
           },
-          { indexLayer: 0, textKey: '總體分析圖表', elementId: 'overall__analysis__section' },
+          {
+            indexLayer: 0,
+            textKey: 'universal_group_generalAnalysisChart',
+            elementId: 'overall__analysis__section',
+          },
           { indexLayer: 1, textKey: '裝置類別', elementId: 'device__type__analysis' },
-          { indexLayer: 0, textKey: '趨勢分析圖表', elementId: 'trend__chart__section' },
+          {
+            indexLayer: 0,
+            textKey: 'universal_group_trendAnalysisCharts',
+            elementId: 'trend__chart__section',
+          },
         ];
 
         const singleTrendList = [
@@ -2204,6 +2302,7 @@ export class SystemOperationReportComponent implements OnInit {
    */
   selectTrend(e: [number, number]) {
     const [typeIndex, itemIndex] = e;
+    this.trendTableDisplayStatus.removeAllStatus();
     typeIndex === OperationTrendType.singleTrend
       ? this.getSingleTrendData(itemIndex)
       : this.getCompareTrendData(itemIndex);
@@ -2376,6 +2475,22 @@ export class SystemOperationReportComponent implements OnInit {
     if (targetElement) {
       const top = targetElement.offsetTop - 80;
       mainBodyEle.scrollTo({ top, behavior: 'smooth' });
+    }
+  }
+
+  /**
+   * 切換數據列表顯示與否
+   * @param type 列表類別
+   * @param key 狀態鍵名
+   */
+  toggleTableDisplayStatus(type: 'overview' | 'trend', key: string) {
+    switch (type) {
+      case 'overview':
+        this.overviewTableDisplayStatus.toggleStatus(key);
+        break;
+      default:
+        this.trendTableDisplayStatus.toggleStatus(key);
+        break;
     }
   }
 }

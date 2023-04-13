@@ -69,7 +69,7 @@ import {
   ListStatusPipe,
 } from '../../core/pipes';
 import { StationMailModule } from '../station-mail/station-mail.module';
-import { LoadingBarComponent } from '../../components';
+import { LoadingBarComponent, LoadingMaskComponent } from '../../components';
 
 @NgModule({
   imports: [
@@ -129,6 +129,7 @@ import { LoadingBarComponent } from '../../components';
     PaidStatusPipe,
     ShippedStatusPipe,
     LoadingBarComponent,
+    LoadingMaskComponent,
   ],
   declarations: [
     OfficialActivityComponent,

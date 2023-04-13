@@ -1112,7 +1112,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
         if (isValidGroup) {
           if (inClassLevel) childPageSet.add(GroupChildPage.classAnalysis);
-          childPageSet.add(GroupChildPage.operationReport);
+          if (upperMarktingManage) childPageSet.add(GroupChildPage.operationReport);
         }
       }
 

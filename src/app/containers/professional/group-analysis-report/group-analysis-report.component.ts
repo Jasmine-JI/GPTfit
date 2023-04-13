@@ -37,10 +37,11 @@ import {
   getMonthKey,
   getWeekdayKey,
   changeOpacity,
+  checkResponse,
 } from '../../../core/utils';
 import { GroupDetailInfo, UserSimpleInfo, GroupLevel } from '../../dashboard/models/group-detail';
 import {
-  LoadingBarComponent,
+  LoadingMaskComponent,
   CategoryColumnChartComponent,
   OperationDataTableComponent,
   PieChartComponent,
@@ -64,7 +65,7 @@ import {
 } from '../../../core/models/compo';
 import { DateUnit } from '../../../core/enums/common';
 import { genderColor, classTimeColor } from '../../../core/models/represent-color';
-import { AnalysisCount } from '../../../core/classes';
+import { AnalysisCount, IncreaseRatio, MultipleUnfoldStatus } from '../../../core/classes';
 
 dayjs.extend(isoWeek);
 
@@ -93,7 +94,7 @@ interface CompareTimeRange {
   imports: [
     CommonModule,
     TranslateModule,
-    LoadingBarComponent,
+    LoadingMaskComponent,
     CategoryColumnChartComponent,
     OperationDataTableComponent,
     PieChartComponent,
@@ -110,13 +111,21 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
   readonly SingleTrendRange = SingleTrendRange;
   readonly GroupLevel = GroupLevel;
 
+  isLoading = false;
+
   /**
    * 資料最後更新時間
    */
   lastUpdateTime$: Observable<any>;
 
+  /**
+   * 報告建立日期
+   */
   creationTime: string = this.getCurrentTime();
 
+  /**
+   * 處理api 4104-4105的post
+   */
   post = {
     token: this.authService.token,
     groupId: '',
@@ -145,6 +154,11 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
   analysisTrend: Api4105Response;
 
   /**
+   * 將api 4105同一時間範圍合併後的數據
+   */
+  sameRangeAnalysisTrend: Api4105Response;
+
+  /**
    * 此群組相關資訊
    */
   groupInfo = <GroupDetailInfo>{};
@@ -159,6 +173,19 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
    */
   isCompareMode = false;
 
+  /**
+   * 是否顯示指定的子群組趨勢圖表與列表
+   */
+  showAssignChildTrend = false;
+
+  /**
+   * 用於顯示在彈跳視窗的完整子群組趨勢數據
+   */
+  childFullTrend: { title: string; chart: any; table: any };
+
+  /**
+   * 趨勢圖表的日期單位
+   */
   trendChartUnit = DateUnit.month;
 
   /**
@@ -166,35 +193,52 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
    */
   trendList: Array<SingleLayerList> = [
     {
-      titleKey: '單一趨勢',
+      titleKey: 'universal_group_singleTrend',
       id: OperationTrendType.singleTrend,
       list: [
         { textKey: '2018～', id: SingleTrendRange.unlimit },
-        { textKey: '近5年', id: SingleTrendRange.nearlyFiveYears },
-        { textKey: '近3年', id: SingleTrendRange.nearlyTwoYears },
-        { textKey: '近1年', id: SingleTrendRange.nearlyOneYear },
-        { textKey: '近1季', id: SingleTrendRange.nearlyOneSeason },
-        { textKey: '近1月', id: SingleTrendRange.nearlyOneMonth },
+        { textKey: 'universal_time_previous5Years', id: SingleTrendRange.nearlyFiveYears },
+        { textKey: 'universal_time_previous3Years', id: SingleTrendRange.nearlyTwoYears },
+        { textKey: 'universal_time_previousYear', id: SingleTrendRange.nearlyOneYear },
+        { textKey: 'universal_time_previousSeason', id: SingleTrendRange.nearlyOneSeason },
+        { textKey: 'universal_time_previousMonth', id: SingleTrendRange.nearlyOneMonth },
       ],
     },
     {
-      titleKey: '比較趨勢',
+      titleKey: 'universal_operating_compareTrends',
       id: OperationTrendType.compareTrend,
       list: [
-        { textKey: '近2年', id: CompareTrendRange.nearlyTwoYears },
-        { textKey: '近2季', id: CompareTrendRange.nearlyTwoSeasons },
-        { textKey: '近2月', id: CompareTrendRange.nearlyTwoMonths },
-        { textKey: '近2週', id: CompareTrendRange.nearlyTwoWeeks },
-        { textKey: '過去2年', id: CompareTrendRange.lastTwoYears },
-        { textKey: '過去2季', id: CompareTrendRange.lastTwoSeasons },
-        { textKey: '過去2月', id: CompareTrendRange.lastTwoMonths },
-        { textKey: '過去2週', id: CompareTrendRange.lastTwoWeeks },
+        { textKey: 'universal_time_previous2Years', id: CompareTrendRange.nearlyTwoYears },
+        { textKey: 'universal_time_previous2Season', id: CompareTrendRange.nearlyTwoSeasons },
+        { textKey: 'universal_time_previous2Months', id: CompareTrendRange.nearlyTwoMonths },
+        { textKey: 'universal_time_previous2Weeks', id: CompareTrendRange.nearlyTwoWeeks },
+        { textKey: 'universal_time_last2Years', id: CompareTrendRange.lastTwoYears },
+        { textKey: 'universal_time_last2Seasons', id: CompareTrendRange.lastTwoSeasons },
+        { textKey: 'universal_time_last2Months', id: CompareTrendRange.lastTwoMonths },
+        { textKey: 'universal_time_last2Weeks', id: CompareTrendRange.lastTwoWeeks },
       ],
     },
   ];
 
+  /**
+   * 總體分析圖表的數據
+   */
   overviewData: any;
+
+  /**
+   * 趨勢分析圖表的數據
+   */
   operationTrend: any;
+
+  /**
+   * 用來切換總體分析各圖表的列表數據顯示與否
+   */
+  overviewTableDisplayStatus = new MultipleUnfoldStatus();
+
+  /**
+   * 用來切換趨勢分析各圖表的列表數據顯示與否
+   */
+  trendTableDisplayStatus = new MultipleUnfoldStatus();
 
   constructor(
     private api41xxService: Api41xxService,
@@ -247,10 +291,14 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
    * 取得群組營運分析概要
    */
   getAnalysisInfo() {
+    this.isLoading = true;
     this.api41xxService.fetchGetGroupOperationDetail(this.post.api4104Post).subscribe((res) => {
-      this.analysisInfo = res;
-      this.overviewData = this.handleOverviewChartData(this.analysisInfo);
-      this.creationTime = this.getCurrentTime();
+      if (checkResponse(res, false)) {
+        this.analysisInfo = res;
+        this.overviewData = this.handleOverviewChartData(this.analysisInfo);
+        this.creationTime = this.getCurrentTime();
+        this.isLoading = false;
+      }
     });
   }
 
@@ -331,6 +379,8 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       });
       ageAnalysisTableData.data.push([_translateKey, _maleCount, _femaleCount, _totalCount]);
     });
+
+    this.overviewTableDisplayStatus.setNewStatus('ageAnalysis');
     return { ageAnalysisChartData, ageAnalysisTableData };
   }
 
@@ -388,12 +438,12 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       },
       data: <Array<unknown>>[
         [
-          '開課類別',
-          '開課次數',
-          '總上課人次',
+          'universal_group_classType',
+          'universal_group_classCounts',
+          'universal_group_totalClassUserCounts',
           this.getAvgPersonCourseTranslate(),
-          '男性上課人次',
-          '女性上課人次',
+          'universal_group_maleClassUsersCounts',
+          'universal_group_femaleClassUsersCounts',
         ],
       ],
     };
@@ -423,6 +473,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       ]);
     });
 
+    this.overviewTableDisplayStatus.setNewStatus('classTypeAnalysis');
     return {
       typeTeachCountsPieChartData,
       typeAttendCountsPieChartData,
@@ -488,7 +539,14 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
           OperationDataType.normal,
         ],
       },
-      data: <Array<unknown>>[['開課時段', '開課次數', '上課人次', '平均人次']],
+      data: <Array<unknown>>[
+        [
+          'universal_group_classTime',
+          'universal_group_classCounts',
+          'universal_group_classUserCounts',
+          '平均人次',
+        ],
+      ],
     };
 
     typeFieldName.forEach((_code, _index) => {
@@ -499,6 +557,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       classTimeAnalysisTableData.data.push([_translateKey, _teachCount, _attendCount, _avgCount]);
     });
 
+    this.overviewTableDisplayStatus.setNewStatus('classTimeAnalysis');
     return {
       classTimeTeachCountsPieChartData,
       classTimeAttendCountsPieChartData,
@@ -553,7 +612,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
   /**
    * 處理裝置類別相關總體分析圖表數據
    * @param data {MemberAnalysis}-群組學員分析
-   * @param totalTeachCount {number}-總開課次數
+   * @param totalTeachCount {number}-universal_group_classCounts
    */
   handleDeviceTypeAnalysis(data: DeviceTypeAnalysis, totalTeachCount: number) {
     const { deviceFieldName, useCountsFieldValue } = data;
@@ -572,7 +631,13 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
           OperationDataType.normal,
         ],
       },
-      data: <Array<unknown>>[['universal_deviceSetting_modeType', '課程使用次數', '平均使用次數']],
+      data: <Array<unknown>>[
+        [
+          'universal_deviceSetting_modeType',
+          'universal_group_deviceClassCounts',
+          'universal_group_avgDeviceClassCounts',
+        ],
+      ],
     };
     deviceFieldName.forEach((_code, _index) => {
       const deviceCode = _code.split('d')[1];
@@ -588,6 +653,8 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
 
       deviceTypeAnalysisTableData.data.push([deviceTypeName, _value, _avgValue]);
     });
+
+    this.overviewTableDisplayStatus.setNewStatus('deviceTypeAnalysis');
     return { deviceTypeCountsPieChartData, deviceTypeAnalysisTableData };
   }
 
@@ -688,7 +755,15 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
           OperationDataType.iconList,
         ],
       },
-      data: <Array<unknown>>[[groupNameHeader, '總教練數', '男性教練數', '女性教練數', '開課類別']],
+      data: <Array<unknown>>[
+        [
+          groupNameHeader,
+          'universal_group_totalCoaches',
+          'universal_group_maleCoaches',
+          'universal_group_femaleCoaches',
+          'universal_group_classType',
+        ],
+      ],
     };
 
     const childGroupLength = groupIdFieldName.length;
@@ -714,6 +789,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       ]);
     });
 
+    this.overviewTableDisplayStatus.setNewStatus('childGroupCoachAnalysis');
     return { childGroupCoachChartData, childGroupCoachTableData };
   }
 
@@ -775,7 +851,14 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
           OperationDataType.normal,
         ],
       },
-      data: <Array<unknown>>[[groupNameHeader, '總學員數', '男性學員數', '女性學員數']],
+      data: <Array<unknown>>[
+        [
+          groupNameHeader,
+          'universal_group_totalUsers',
+          'universal_group_maleClassUsers',
+          'universal_group_femaleClassUsers',
+        ],
+      ],
     };
 
     const childGroupLength = groupIdFieldName.length;
@@ -799,6 +882,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       ]);
     });
 
+    this.overviewTableDisplayStatus.setNewStatus('childGroupMemberAnalysis');
     return { childGroupMemberChartData, childGroupMemberTableData };
   }
 
@@ -824,7 +908,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
     } = this;
     const teachChartData = {
       type: 'spline',
-      name: '開課數',
+      name: this.translate.instant('universal_group_classCounts'),
       data: <any>[],
       yAxis: 1,
       marker: {
@@ -837,7 +921,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
     };
     const maleAttendChartData = {
       type: 'column',
-      name: '男性上課人次',
+      name: this.translate.instant('universal_group_maleClassUsersCounts'),
       data: <any>[],
       color: genderColor.male,
       dataLabels: {
@@ -846,7 +930,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
     };
     const femaleAttendChartData = {
       type: 'column',
-      name: '女性上課人次',
+      name: this.translate.instant('universal_group_femaleClassUsersCounts'),
       data: <any>[],
       color: genderColor.female,
       dataLabels: {
@@ -883,14 +967,14 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       data: <Array<unknown>>[
         [
           groupNameHeader,
-          '總開課計時',
-          '開課次數',
-          '總上課人次',
+          'universal_group_totalClassTime',
+          'universal_group_classCounts',
+          'universal_group_totalClassUserCounts',
           this.getAvgPersonCourseTranslate(),
-          '男性上課人次',
-          '女性上課人次',
-          '最後開課日',
-          '開課類別',
+          'universal_group_maleClassUsersCounts',
+          'universal_group_femaleClassUsersCounts',
+          'universal_group_lastClassDate',
+          'universal_group_classType',
         ],
       ],
     };
@@ -926,6 +1010,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       ]);
     });
 
+    this.overviewTableDisplayStatus.setNewStatus('childGroupTeachAnalysis');
     return {
       childGroupTeachChartData: [maleAttendChartData, femaleAttendChartData, teachChartData],
       childGroupTeachTableData,
@@ -1042,6 +1127,8 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
         _sensorCounts,
       ]);
     });
+
+    this.overviewTableDisplayStatus.setNewStatus('childGroupDeviceAnalysis');
     return { childDeviceChartData, childDeviceTableData };
   }
 
@@ -1064,8 +1151,10 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
     return this.api41xxService
       .fetchGetGroupOperationTrend(this.post.api4105Post)
       .subscribe((res) => {
-        this.analysisTrend = res;
-        this.operationTrend = this.handleTrendChartData(this.analysisTrend);
+        if (checkResponse) {
+          this.analysisTrend = res;
+          this.operationTrend = this.handleTrendChartData(this.analysisTrend);
+        }
       });
   }
 
@@ -1075,10 +1164,11 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
    */
   handleTrendChartData(data: Api4105Response) {
     const { isCompareMode, trendChartUnit } = this;
-    const sameRangeData = trendChartUnit === DateUnit.year ? this.mergeSameYearData(data) : data;
+    this.sameRangeAnalysisTrend =
+      trendChartUnit === DateUnit.year ? this.mergeSameYearData(data) : data;
     return isCompareMode
-      ? this.handleCompareChartData(sameRangeData)
-      : this.handleSingleChartData(sameRangeData);
+      ? this.handleCompareChartData(this.sameRangeAnalysisTrend)
+      : this.handleSingleChartData(this.sameRangeAnalysisTrend);
   }
 
   /**
@@ -1206,14 +1296,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
     const { childGroupList, innerFieldName } = data;
     const fieldNameCorrespondence = this.getFieldNameCorrespondence(innerFieldName);
     const memberSingleTrendChart = [
-      {
-        type: 'column',
-        name: groupName,
-        data: <any>[],
-        dataLabels: {
-          enabled: true,
-        },
-      },
+      this.getColumnChartModel(groupName),
       ...this.getSplineChartModel(childGroupList),
     ];
 
@@ -1260,6 +1343,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
     const memberSingleTrendTable = {
       option: <OperationTableOption>{
         secondColumnHeader: true,
+        detailButton: true,
         headerRowType: [
           OperationDataType.translateKey,
           OperationDataType.translateKey,
@@ -1292,14 +1376,14 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       },
       data: <Array<unknown>>[
         [
-          '群組名稱',
+          'universal_group_groupName',
           'universal_activityData_dateRange',
-          '總學員數',
-          '學員增長(%)',
-          '男性學員數',
-          '男性增長(%)',
-          '女性學員數',
-          '女性增長(%)',
+          'universal_group_totalUsers',
+          `${this.translate.instant('universal_group_classUserGrowth')}(%)`,
+          'universal_group_maleClassUsers',
+          `${this.translate.instant('universal_group_maleUserGrowth')}(%)`,
+          'universal_group_femaleClassUsers',
+          `${this.translate.instant('universal_group_femaleUserGrowth')}(%)`,
         ],
       ],
     };
@@ -1380,6 +1464,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       ...childAnalysisTableData,
     ]);
 
+    this.trendTableDisplayStatus.setNewStatus('memberAnalysis');
     return { memberSingleTrendTable };
   }
 
@@ -1396,7 +1481,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
     const teachSingleTrendChart = [
       {
         type: 'column',
-        name: '開課次數',
+        name: this.translate.instant('universal_group_classCounts'),
         data: <any>[],
         dataLabels: {
           enabled: true,
@@ -1404,11 +1489,12 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       },
       {
         type: 'spline',
-        name: '上課人次',
+        name: this.translate.instant('universal_group_classUserCounts'),
         data: <any>[],
         dataLabels: {
           enabled: false,
         },
+        yAxis: 1,
       },
     ];
 
@@ -1442,19 +1528,22 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       data: <Array<unknown>>[
         [
           'universal_activityData_dateRange',
-          '總開課次數',
+          'universal_group_classCounts',
           '平均課程時數',
-          '總上課人次',
+          'universal_group_totalClassUserCounts',
           '上課人次增長(%)',
           this.getAvgPersonCourseTranslate(),
-          '男性上課人次',
-          '男性增長(%)',
-          '女性上課人次',
-          '女性增長(%)',
+          'universal_group_maleClassUsersCounts',
+          `${this.translate.instant('universal_group_maleUserGrowth')}(%)`,
+          'universal_group_femaleClassUsersCounts',
+          `${this.translate.instant('universal_group_femaleUserGrowth')}(%)`,
         ],
       ],
     };
 
+    const totalIncreaseRatio = new IncreaseRatio();
+    const maleIncreaseRatio = new IncreaseRatio();
+    const femaleIncreaseRatio = new IncreaseRatio();
     dateValue.forEach((_date, _dateIndex) => {
       const dateRange = this.getDateRangeTimestamp(_date[0]);
       const xAxisName = this.getXAxisName(trendChartUnit, dateRange?.startDate);
@@ -1474,29 +1563,21 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
         y: _totalAttendCounts,
       });
 
-      const isFirstData = _dateIndex === 0;
-      const prevIndex = _dateIndex - 1;
-      const prevMaleAttendCounts = isFirstData
-        ? 0
-        : fieldValue[prevIndex][fieldNameCorrespondence['maleAttendCounts']];
-      const prevFemaleAttendCounts = isFirstData
-        ? 0
-        : fieldValue[prevIndex][fieldNameCorrespondence['femaleAttendCounts']];
-      const prevTotalAttendCount = prevMaleAttendCounts + prevFemaleAttendCounts;
       teachSingleTrendTable.data.push([
         xAxisName,
         _teachCounts,
         mathRounding(_teachTime / 3600 / (_teachCounts || Infinity), 1),
         _totalAttendCounts,
-        this.countIncreaseRatio(_totalAttendCounts, prevTotalAttendCount, 1),
+        totalIncreaseRatio.getRatio(_totalAttendCounts),
         mathRounding(_totalAttendCounts / (_teachCounts || Infinity), 1),
         _maleAttendCounts,
-        this.countIncreaseRatio(_maleAttendCounts, prevMaleAttendCounts, 1),
+        maleIncreaseRatio.getRatio(_maleAttendCounts),
         _femaleAttendCounts,
-        this.countIncreaseRatio(_femaleAttendCounts, prevFemaleAttendCounts, 1),
+        femaleIncreaseRatio.getRatio(_femaleAttendCounts),
       ]);
     });
 
+    this.trendTableDisplayStatus.setNewStatus('teachAnalysis');
     return { teachSingleTrendChart, teachSingleTrendTable };
   }
 
@@ -1511,12 +1592,12 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
     const { childGroupList, innerFieldName } = data;
     if (!childGroupList?.length) return {};
 
-    const { groupId, groupName } = this.groupInfo;
     const finalDateIndex = dateValue.length - 1;
     const fieldNameCorrespondence = this.getFieldNameCorrespondence(innerFieldName);
     const childTeachSingleTrendTable = {
       option: <OperationTableOption>{
         secondColumnHeader: true,
+        detailButton: true,
         headerRowType: [
           OperationDataType.translateKey,
           OperationDataType.translateKey,
@@ -1548,17 +1629,17 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       },
       data: <Array<unknown>>[
         [
-          '群組名稱',
+          'universal_group_groupName',
           'universal_activityData_dateRange',
-          '總開課次數',
+          'universal_group_classCounts',
           '平均課程時數',
-          '總上課人次',
+          'universal_group_totalClassUserCounts',
           '上課人次增長(%)',
           this.getAvgPersonCourseTranslate(),
-          '男性上課人次',
-          '男性增長(%)',
-          '女性上課人次',
-          '女性增長(%)',
+          'universal_group_maleClassUsersCounts',
+          `${this.translate.instant('universal_group_maleUserGrowth')}(%)`,
+          'universal_group_femaleClassUsersCounts',
+          `${this.translate.instant('universal_group_femaleUserGrowth')}(%)`,
         ],
       ],
     };
@@ -1614,6 +1695,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       );
     });
 
+    this.trendTableDisplayStatus.setNewStatus('childTeachAnalysis');
     return { childTeachSingleTrendTable };
   }
 
@@ -1628,6 +1710,21 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
     });
 
     return result;
+  }
+
+  /**
+   * 根據群組名稱回應柱狀圖模型
+   * @param groupList {Array<any>}-群組數據清單
+   */
+  getColumnChartModel(groupName: string) {
+    return {
+      type: 'column',
+      name: groupName,
+      data: <any>[],
+      dataLabels: {
+        enabled: true,
+      },
+    };
   }
 
   /**
@@ -1784,22 +1881,20 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
     const classIndex = fieldNameCorrespondence['class'];
     const singleCreateChildChartData = this.getSingleCreateChildDataModel(groupLevel);
     const singleCreateChildTableData = this.getSingleCreateChildTableModel(groupLevel);
-
+    const classIncreaseRatio = new IncreaseRatio();
+    const branchIncreaseRatio = new IncreaseRatio();
     dateValue.forEach((_date, _dateIndex) => {
       const dateRnage = this.getDateRangeTimestamp(_date[0]);
       const xAxisName = this.getXAxisName(trendChartUnit, dateRnage?.startDate);
       const _classData = dataValue[_dateIndex][classIndex];
-      const _previousClassData = _dateIndex === 0 ? null : dataValue[_dateIndex - 1][classIndex];
-      const _classIncreaseRatio = this.countIncreaseRatio(_classData, _previousClassData, 1);
+      const _classIncreaseRatio = classIncreaseRatio.getRatio(_classData);
       singleCreateChildChartData[0].data.push({
         name: xAxisName,
         y: _classData,
       });
       if (isBrandLevel) {
         const _branchData = dataValue[_dateIndex][branchIndex];
-        const _previousBranchData =
-          _dateIndex === 0 ? null : dataValue[_dateIndex - 1][branchIndex];
-        const _branchIncreaseRatio = this.countIncreaseRatio(_branchData, _previousBranchData, 1);
+        const _branchIncreaseRatio = branchIncreaseRatio.getRatio(_branchData);
         singleCreateChildChartData[1].data.push({
           name: xAxisName,
           y: _branchData,
@@ -1817,6 +1912,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       }
     });
 
+    this.trendTableDisplayStatus.setNewStatus('createChildAnalysis');
     return { singleCreateChildChartData, singleCreateChildTableData };
   }
 
@@ -1830,7 +1926,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       ? [
           {
             type: 'spline',
-            name: '課程群組數',
+            name: this.translate.instant('universal_group_classGroupAmount'),
             data: <any>[],
             dataLabels: {
               enabled: true,
@@ -1842,7 +1938,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
           },
           {
             type: 'column',
-            name: '分店群組數',
+            name: this.translate.instant('universal_group_storeGroupAmount'),
             data: <any>[],
             dataLabels: {
               enabled: true,
@@ -1852,7 +1948,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       : [
           {
             type: 'column',
-            name: '課程群組數',
+            name: this.translate.instant('universal_group_classGroupAmount'),
             data: <any>[],
             dataLabels: {
               enabled: true,
@@ -1888,10 +1984,10 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
           data: <Array<unknown>>[
             [
               'universal_activityData_dateRange',
-              '分店群組數',
-              '分店群組增長(%)',
-              '課程群組數',
-              '課程群組增長(%)',
+              'universal_group_storeGroupAmount',
+              `${this.translate.instant('universal_group_storeGroupGrowth')}(%)`,
+              'universal_group_classGroupAmount',
+              `${this.translate.instant('universal_group_classGroupGrowth')}(%)`,
             ],
           ],
         }
@@ -1909,7 +2005,11 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
             ],
           },
           data: <Array<unknown>>[
-            ['universal_activityData_dateRange', '課程群組數', '課程群組增長(%)'],
+            [
+              'universal_activityData_dateRange',
+              'universal_group_classGroupAmount',
+              `${this.translate.instant('universal_group_classGroupGrowth')}(%)`,
+            ],
           ],
         };
   }
@@ -1962,6 +2062,8 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
         singleDeviceTrendTableData.data[_dateIndex + 1].push([_value]);
       });
     });
+
+    this.trendTableDisplayStatus.setNewStatus('deviceAnalysis');
     return { singleDeviceTrendChartData, singleDeviceTrendTableData };
   }
 
@@ -2172,11 +2274,11 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
     const newerColumnHeader = this.getCompareColumnHeader(newerStartDate, finalLength);
     const memberCompareTrendChart: Array<SeriesOption> = [
       {
-        name: olderColumnHeader,
+        name: this.translate.instant(olderColumnHeader),
         data: [],
       },
       {
-        name: newerColumnHeader,
+        name: this.translate.instant(newerColumnHeader),
         data: [],
       },
     ];
@@ -2231,6 +2333,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       ]);
     }
 
+    this.trendTableDisplayStatus.setNewStatus('memberAnalysis');
     return { memberCompareTrendChart, memberCompareTrendTable };
   }
 
@@ -2261,8 +2364,8 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
         return dayjs(date).format('YYYY');
       case DateUnit.day: {
         const dateDayjs = dayjs(date);
-        const startDate = dateDayjs.format('YYYYMMDD');
-        const endDate = dateDayjs.endOf('isoWeek').format('YYYYMMDD');
+        const startDate = dateDayjs.format('YYYY-MM-DD');
+        const endDate = dateDayjs.endOf('isoWeek').format('MMDD');
         return `${startDate}-${endDate}`;
       }
       default:
@@ -2288,10 +2391,13 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
    * @param finalLength {number}-最終比較數據的長度
    */
   handleCompareCreateChildTrend(timeRange: CompareTimeRange, data: any, finalLength: number) {
+    const statusKey = 'createChildAnalysis';
     switch (this.post.groupLevel) {
       case GroupLevel.brand:
+        this.trendTableDisplayStatus.setNewStatus(statusKey);
         return this.handleCompareBrandChildTrend(timeRange, data, finalLength);
       case GroupLevel.branch:
+        this.trendTableDisplayStatus.setNewStatus(statusKey);
         return this.handleCompareBranchChildTrend(timeRange, data, finalLength);
       default:
         return {};
@@ -2320,33 +2426,33 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
     const olderColumnHeader = this.translate.instant(olderColumnHeaderKey);
     const newerColumnHeader = this.translate.instant(newerColumnHeaderKey);
     const branchTranslate = this.translate.instant('universal_group_numberOfBranches');
-    const classTranslate = this.translate.instant('課程群組數');
+    const classTranslate = this.translate.instant('universal_group_classGroupAmount');
     const childCountCompareTrendChart: Array<SeriesOption> = [
       {
-        name: `${olderColumnHeader}${branchTranslate}`,
+        name: `${olderColumnHeader} ${branchTranslate}`,
         type: 'column',
         data: [],
       },
       {
-        name: `${newerColumnHeader}${branchTranslate}`,
+        name: `${newerColumnHeader} ${branchTranslate}`,
         type: 'column',
         data: [],
       },
       {
-        name: `${olderColumnHeader}${classTranslate}`,
+        name: `${olderColumnHeader} ${classTranslate}`,
         type: 'spline',
         yAxis: 1,
         data: [],
       },
       {
-        name: `${newerColumnHeader}${classTranslate}`,
+        name: `${newerColumnHeader} ${classTranslate}`,
         type: 'spline',
         yAxis: 1,
         data: [],
       },
     ];
 
-    const childCountCompareTrendTable = {
+    const compareCreateChildTrendTable = {
       option: {
         headerRowType: [
           OperationDataType.normal,
@@ -2378,7 +2484,15 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
         valueRowStyle: [null, { bgColor: 'rgba(240, 240, 240, 1)' }],
       },
       data: [
-        ['', 'universal_group_numberOfBranches', null, null, '課程群組數', null, null],
+        [
+          '',
+          'universal_group_numberOfBranches',
+          null,
+          null,
+          'universal_group_classGroupAmount',
+          null,
+          null,
+        ],
         [
           `單位日期`,
           olderColumnHeader,
@@ -2416,7 +2530,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
         y: newerClassCount,
       });
 
-      childCountCompareTrendTable.data.push([
+      compareCreateChildTrendTable.data.push([
         trendTableRowHeader,
         olderBranchCount,
         newerBranchCount,
@@ -2427,7 +2541,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       ]);
     }
 
-    return { childCountCompareTrendChart, childCountCompareTrendTable };
+    return { childCountCompareTrendChart, compareCreateChildTrendTable };
   }
 
   /**
@@ -2446,23 +2560,25 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
     const classCountIndex = fieldNameCorrespondence['class'];
     const { startDate: olderStartDate } = this.getDateRangeTimestamp(older[0][0]);
     const { startDate: newerStartDate } = this.getDateRangeTimestamp(newer[0][0]);
-    const olderColumnHeader = this.getCompareColumnHeader(olderStartDate, finalLength);
-    const newerColumnHeader = this.getCompareColumnHeader(newerStartDate, finalLength);
-    const classTranslate = this.translate.instant('課程群組數');
+    const olderColumnHeaderKey = this.getCompareColumnHeader(olderStartDate, finalLength);
+    const newerColumnHeaderKey = this.getCompareColumnHeader(newerStartDate, finalLength);
+    const olderColumnHeader = this.translate.instant(olderColumnHeaderKey);
+    const newerColumnHeader = this.translate.instant(newerColumnHeaderKey);
+    const classTranslate = this.translate.instant('universal_group_classGroupAmount');
     const childCountCompareTrendChart: Array<SeriesOption> = [
       {
-        name: `${newerColumnHeader}${classTranslate}`,
+        name: `${newerColumnHeader} ${classTranslate}`,
         type: 'column',
         data: [],
       },
       {
-        name: `${newerColumnHeader}${classTranslate}`,
+        name: `${newerColumnHeader} ${classTranslate}`,
         type: 'column',
         data: [],
       },
     ];
 
-    const childCountCompareTrendTable = {
+    const compareCreateChildTrendTable = {
       option: {
         headerRowType: [
           OperationDataType.translateKey,
@@ -2494,7 +2610,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
         y: newerClassCount,
       });
 
-      childCountCompareTrendTable.data.push([
+      compareCreateChildTrendTable.data.push([
         trendTableRowHeader,
         olderClassCount,
         newerClassCount,
@@ -2502,7 +2618,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       ]);
     }
 
-    return { childCountCompareTrendChart, childCountCompareTrendTable };
+    return { childCountCompareTrendChart, compareCreateChildTrendTable };
   }
 
   /**
@@ -2527,27 +2643,27 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
     const newerColumnHeaderKey = this.getCompareColumnHeader(newerStartDate, finalLength);
     const olderColumnHeader = this.translate.instant(olderColumnHeaderKey);
     const newerColumnHeader = this.translate.instant(newerColumnHeaderKey);
-    const branchTranslate = this.translate.instant('開課次數');
-    const classTranslate = this.translate.instant('上課人次');
+    const branchTranslate = this.translate.instant('universal_group_classCounts');
+    const classTranslate = this.translate.instant('universal_group_classUserCounts');
     const teachCompareTrendChart: Array<SeriesOption> = [
       {
-        name: `${olderColumnHeader}${branchTranslate}`,
+        name: `${olderColumnHeader} ${branchTranslate}`,
         type: 'column',
         data: [],
       },
       {
-        name: `${newerColumnHeader}${branchTranslate}`,
+        name: `${newerColumnHeader} ${branchTranslate}`,
         type: 'column',
         data: [],
       },
       {
-        name: `${olderColumnHeader}${classTranslate}`,
+        name: `${olderColumnHeader} ${classTranslate}`,
         type: 'spline',
         yAxis: 1,
         data: [],
       },
       {
-        name: `${newerColumnHeader}${classTranslate}`,
+        name: `${newerColumnHeader} ${classTranslate}`,
         type: 'spline',
         yAxis: 1,
         data: [],
@@ -2586,7 +2702,15 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
         valueRowStyle: [null, { bgColor: 'rgba(240, 240, 240, 1)' }],
       },
       data: [
-        ['', '開課次數', null, null, '上課人次', null, null],
+        [
+          '',
+          'universal_group_classCounts',
+          null,
+          null,
+          'universal_group_classUserCounts',
+          null,
+          null,
+        ],
         [
           `單位日期`,
           olderColumnHeader,
@@ -2643,6 +2767,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       ]);
     }
 
+    this.trendTableDisplayStatus.setNewStatus('teachAnalysis');
     return { teachCompareTrendChart, teachCompareTrendTable };
   }
 
@@ -2660,8 +2785,10 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
     } = data;
     const { startDate: olderStartDate } = this.getDateRangeTimestamp(older[0][0]);
     const { startDate: newerStartDate } = this.getDateRangeTimestamp(newer[0][0]);
-    const olderColumnHeader = this.getCompareColumnHeader(olderStartDate, finalLength);
-    const newerColumnHeader = this.getCompareColumnHeader(newerStartDate, finalLength);
+    const olderColumnHeaderKey = this.getCompareColumnHeader(olderStartDate, finalLength);
+    const newerColumnHeaderKey = this.getCompareColumnHeader(newerStartDate, finalLength);
+    const olderColumnHeader = this.translate.instant(olderColumnHeaderKey);
+    const newerColumnHeader = this.translate.instant(newerColumnHeaderKey);
     const deviceTypeCorrespond = this.getDeviceTypeCorrespond(fieldName);
     const { index: wearableIndex, color: wearableColor } = deviceTypeCorrespond['wearable'];
     const { index: sensorIndex, color: sensorColor } = deviceTypeCorrespond['sensor'];
@@ -2672,7 +2799,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       return <Array<SeriesOption>>[
         {
           name: olderColumnHeader,
-          color: changeOpacity(color, 0.7),
+          color: changeOpacity(color, 0.5),
           data: [],
         },
         {
@@ -2831,6 +2958,11 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       ]);
     }
 
+    this.trendTableDisplayStatus.setNewStatus('wearableAnalysis');
+    this.trendTableDisplayStatus.setNewStatus('sensorAnalysis');
+    this.trendTableDisplayStatus.setNewStatus('treadmillAnalysis');
+    this.trendTableDisplayStatus.setNewStatus('spinBikeAnalysis');
+    this.trendTableDisplayStatus.setNewStatus('rowMachineAnalysis');
     return { deviceTypeCompareTrendChart, deviceTypeCompareTrendTable };
   }
 
@@ -2856,6 +2988,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
    */
   selectTrend(e: [number, number]) {
     const [typeIndex, itemIndex] = e;
+    this.trendTableDisplayStatus.removeAllStatus();
     typeIndex === OperationTrendType.singleTrend
       ? this.getSingleTrendData(itemIndex)
       : this.getCompareTrendData(itemIndex);
@@ -3005,6 +3138,350 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
     }
 
     return startUnitDayjs.add(shiftDay, 'day').valueOf();
+  }
+
+  /**
+   * 顯示指定群組完整的學員數分析數據列表
+   * @param index {number}-欲展開的數據列序列
+   */
+  showFullMemberTable(index: number) {
+    const { sameRangeAnalysisTrend } = this;
+    const { childGroupAnalysisList, timeRange } = sameRangeAnalysisTrend.trend;
+    const groupIndex = (index - 1) / 2; // 需去掉標題列
+    this.childFullTrend = {
+      title: 'universal_group_classUserAmountAnalysis',
+      ...this.handleFullChildTrendChart(timeRange, childGroupAnalysisList, groupIndex),
+      ...this.handleFullChildTrendTable(timeRange, childGroupAnalysisList, groupIndex),
+    };
+
+    this.showAssignChildTrend = true;
+  }
+
+  /**
+   * 處理指定的子群組學員數趨勢相關折線圖數據
+   * @param timeRange {TimeRange}-統計的日期時間範圍
+   * @param data {any}-學員術趨勢分析數據
+   * @param index {number}-欲完整顯示的群組序列
+   */
+  handleFullChildTrendChart(timeRange: TimeRange, data: any, index: number) {
+    const assignGroupIndex = index - 1; // 0為自己，1開始才是子群組
+    const {
+      trendChartUnit,
+      groupInfo: { groupName },
+    } = this;
+    const { fieldValue: dateValue } = timeRange;
+    const { childGroupList, innerFieldName } = data;
+    const fieldNameCorrespondence = this.getFieldNameCorrespondence(innerFieldName);
+    const chart =
+      index === 0
+        ? [this.getColumnChartModel(groupName)]
+        : this.getSplineChartModel(childGroupList).filter(
+            (_list, _index) => _index === assignGroupIndex
+          );
+
+    dateValue.forEach((_date, _dateIndex) => {
+      let allMemberCount = 0;
+      const dateRange = this.getDateRangeTimestamp(_date[0]);
+      const xAxisName = this.getXAxisName(trendChartUnit, dateRange?.startDate);
+      childGroupList.forEach((_list, _listIndex) => {
+        if (index !== 0 && _listIndex !== assignGroupIndex) return false;
+        const { fieldValue: _dataValue } = _list;
+        const maleMemberCount = _dataValue[_dateIndex][fieldNameCorrespondence['maleMember']];
+        const femaleMemberCount = _dataValue[_dateIndex][fieldNameCorrespondence['femaleMember']];
+        const totalMemberCount = maleMemberCount + femaleMemberCount;
+        allMemberCount += totalMemberCount;
+
+        if (index !== 0 && _listIndex === assignGroupIndex) {
+          chart[0].data.push({
+            name: xAxisName,
+            y: totalMemberCount,
+          });
+        }
+      });
+
+      if (index === 0) {
+        chart[0].data.push({
+          name: xAxisName,
+          y: allMemberCount,
+        });
+      }
+    });
+
+    return { chart };
+  }
+
+  /**
+   * 處理子群組學員數趨勢相關列表數據
+   * @param timeRange {TimeRange}-統計的日期時間範圍
+   * @param data {any}-學員術趨勢分析數據
+   * @param index {number}-欲完整顯示的群組序列
+   */
+  handleFullChildTrendTable(timeRange: TimeRange, data: any, index: number) {
+    const { fieldValue: dateValue } = timeRange;
+    const { childGroupList, innerFieldName } = data;
+    const { trendChartUnit } = this;
+    const fieldNameCorrespondence = this.getFieldNameCorrespondence(innerFieldName);
+    const table = {
+      option: <OperationTableOption>{
+        secondColumnHeader: true,
+        headerRowType: [
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+        ],
+        valueRowType: [
+          OperationDataType.link,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+        ],
+      },
+      data: <Array<unknown>>[
+        [
+          'universal_group_groupName',
+          'universal_activityData_dateRange',
+          'universal_group_totalUsers',
+          `${this.translate.instant('universal_group_classUserGrowth')}(%)`,
+          'universal_group_maleClassUsers',
+          `${this.translate.instant('universal_group_maleUserGrowth')}(%)`,
+          'universal_group_femaleClassUsers',
+          `${this.translate.instant('universal_group_femaleUserGrowth')}(%)`,
+        ],
+      ],
+    };
+
+    const { groupId, groupName } = this.groupInfo;
+    const maleMemberIndex = fieldNameCorrespondence['maleMember'];
+    const femaleMemberIndex = fieldNameCorrespondence['femaleMember'];
+    const assignGroupIndex = index - 1; // 0為自己，1開始才是子群組
+    const totalIncreaseRatio = new IncreaseRatio(); // 處理總學員增長數據
+    const maleIncreaseRatio = new IncreaseRatio(); // 處理男性學員增長數據
+    const femaleIncreaseRatio = new IncreaseRatio(); // 處理女性學員增長數據
+    dateValue.forEach((_date, _dateIndex) => {
+      const dateRange = this.getDateRangeTimestamp(_date[0]);
+      const xAxisName = this.getXAxisName(trendChartUnit, dateRange?.startDate);
+      let _allGroupMaleCount = 0;
+      let _allGroupFemaleCount = 0;
+      childGroupList.forEach((_list, _groupIndex) => {
+        if (index !== 0 && assignGroupIndex !== _groupIndex) return false;
+        const {
+          groupId: childGroupId,
+          groupName: childGroupName,
+          fieldValue: _dataValue,
+        } = childGroupList[_groupIndex];
+        const _maleCount = _dataValue[_dateIndex][maleMemberIndex];
+        const _femaleCount = _dataValue[_dateIndex][femaleMemberIndex];
+        const _totalCount = _maleCount + _femaleCount;
+        _allGroupMaleCount += _maleCount;
+        _allGroupFemaleCount += _femaleCount;
+
+        if (index !== 0 && assignGroupIndex === _groupIndex) {
+          table.data.push([
+            this.getGroupLinkInfo(childGroupId, childGroupName),
+            xAxisName,
+            _totalCount,
+            totalIncreaseRatio.getRatio(_totalCount),
+            _maleCount,
+            maleIncreaseRatio.getRatio(_maleCount),
+            _femaleCount,
+            femaleIncreaseRatio.getRatio(_femaleCount),
+          ]);
+        }
+      });
+
+      if (index === 0) {
+        const _allGroupCount = _allGroupMaleCount + _allGroupFemaleCount;
+        table.data.push([
+          this.getGroupLinkInfo(groupId, groupName),
+          xAxisName,
+          _allGroupCount,
+          totalIncreaseRatio.getRatio(_allGroupCount),
+          _allGroupMaleCount,
+          maleIncreaseRatio.getRatio(_allGroupMaleCount),
+          _allGroupFemaleCount,
+          femaleIncreaseRatio.getRatio(_allGroupFemaleCount),
+        ]);
+      }
+    });
+
+    return { table };
+  }
+
+  /**
+   * 顯示完整子群組開課相關分析
+   */
+  showFullChildTeachTable(index: number) {
+    const { sameRangeAnalysisTrend } = this;
+    const { childGroupAnalysisList, timeRange } = sameRangeAnalysisTrend.trend;
+    const groupIndex = (index - 1) / 2; // 需去掉標題列
+    this.childFullTrend = {
+      title: 'universal_group_subGroupClassAnalysis',
+      ...this.handleFullChildTeachTrend(timeRange, childGroupAnalysisList, groupIndex),
+    };
+
+    this.showAssignChildTrend = true;
+  }
+
+  /**
+   * 處理指定的子群組開課相關趨勢折線圖數據
+   * @param timeRange {TimeRange}-統計的日期時間範圍
+   * @param data {any}-學員術趨勢分析數據
+   * @param index {number}-欲完整顯示的群組序列
+   */
+  handleFullChildTeachTrend(timeRange: TimeRange, data: any, index: number) {
+    const { trendChartUnit } = this;
+    const { fieldValue: dateValue } = timeRange;
+    const { childGroupList, innerFieldName } = data;
+    const fieldNameCorrespondence = this.getFieldNameCorrespondence(innerFieldName);
+    const chart = [
+      {
+        type: 'column',
+        name: this.translate.instant('universal_group_classCounts'),
+        data: <any>[],
+        dataLabels: {
+          enabled: true,
+        },
+      },
+      {
+        type: 'spline',
+        name: this.translate.instant('universal_group_classUserCounts'),
+        data: <any>[],
+        dataLabels: {
+          enabled: false,
+        },
+        yAxis: 1,
+      },
+    ];
+
+    const table = {
+      option: <OperationTableOption>{
+        secondColumnHeader: true,
+        headerRowType: [
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+          OperationDataType.translateKey,
+        ],
+        valueRowType: [
+          OperationDataType.link,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+          OperationDataType.normal,
+        ],
+      },
+      data: <Array<unknown>>[
+        [
+          'universal_group_groupName',
+          'universal_activityData_dateRange',
+          'universal_group_classCounts',
+          '平均課程時數',
+          'universal_group_totalClassUserCounts',
+          '上課人次增長(%)',
+          this.getAvgPersonCourseTranslate(),
+          'universal_group_maleClassUsersCounts',
+          `${this.translate.instant('universal_group_maleUserGrowth')}(%)`,
+          'universal_group_femaleClassUsersCounts',
+          `${this.translate.instant('universal_group_femaleUserGrowth')}(%)`,
+        ],
+      ],
+    };
+
+    const totalAttendIncreaseRatio = new IncreaseRatio();
+    const maleAttendIncreaseRatio = new IncreaseRatio();
+    const femaleAttendIncreaseRatio = new IncreaseRatio();
+    dateValue.forEach((_date, _dateIndex) => {
+      const dateRange = this.getDateRangeTimestamp(_date[0]);
+      const xAxisName = this.getXAxisName(trendChartUnit, dateRange?.startDate);
+      childGroupList.forEach((_list, _groupIndex) => {
+        if (index !== _groupIndex) return false;
+        const {
+          groupId: childGroupId,
+          groupName: childGroupName,
+          fieldValue: _dataValue,
+        } = childGroupList[_groupIndex];
+        const _teachTime = _dataValue[_dateIndex][fieldNameCorrespondence['teachTime']];
+        const _teachCounts = _dataValue[_dateIndex][fieldNameCorrespondence['teachCounts']];
+        const _maleAttendCounts =
+          _dataValue[_dateIndex][fieldNameCorrespondence['maleAttendCounts']];
+        const _femaleAttendCounts =
+          _dataValue[_dateIndex][fieldNameCorrespondence['femaleAttendCounts']];
+        const _totalAttendCount = _maleAttendCounts + _femaleAttendCounts;
+        chart[0].data.push({
+          name: xAxisName,
+          y: _teachCounts,
+        });
+
+        chart[1].data.push({
+          name: xAxisName,
+          y: _totalAttendCount,
+        });
+
+        table.data.push([
+          this.getGroupLinkInfo(childGroupId, childGroupName),
+          xAxisName,
+          _teachCounts,
+          mathRounding(_teachTime / 3600 / (_teachCounts || Infinity), 1),
+          _totalAttendCount,
+          totalAttendIncreaseRatio.getRatio(_totalAttendCount),
+          mathRounding(_totalAttendCount / (_teachCounts || Infinity), 1),
+          _maleAttendCounts,
+          maleAttendIncreaseRatio.getRatio(_maleAttendCounts),
+          _femaleAttendCounts,
+          femaleAttendIncreaseRatio.getRatio(_femaleAttendCounts),
+        ]);
+      });
+    });
+
+    return { chart, table };
+  }
+
+  /**
+   * 關閉完整趨勢數據顯示框
+   */
+  closeFullMemberTable() {
+    this.showAssignChildTrend = false;
+    this.childFullTrend = undefined;
+  }
+
+  /**
+   * 切換數據列表顯示與否
+   * @param type 列表類別
+   * @param key 狀態鍵名
+   */
+  toggleTableDisplayStatus(type: 'overview' | 'trend', key: string) {
+    switch (type) {
+      case 'overview':
+        this.overviewTableDisplayStatus.toggleStatus(key);
+        break;
+      default:
+        this.trendTableDisplayStatus.toggleStatus(key);
+        break;
+    }
   }
 
   /**

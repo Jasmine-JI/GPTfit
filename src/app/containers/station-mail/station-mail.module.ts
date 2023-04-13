@@ -52,6 +52,7 @@ import {
   MusclePartIconPipe,
 } from '../../core/pipes';
 import { CustomMaterialModule } from '../../core/custom-material.module';
+import { LoadingMaskComponent } from '../../components';
 
 @NgModule({
   imports: [
@@ -101,6 +102,7 @@ import { CustomMaterialModule } from '../../core/custom-material.module';
     TargetFieldUnitPipe,
     MuscleGroupNamePipe,
     MusclePartIconPipe,
+    LoadingMaskComponent,
   ],
   declarations: [
     StationMailComponent,

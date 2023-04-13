@@ -292,7 +292,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       .getReportCondition()
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((res) => {
-        if (res.date) {
+        const isLogin = this.userInfo.id > 0;
+        // 避免登出後仍去取api而產生錯誤訊息
+        if (res.date && isLogin) {
           this.selectDate = {
             startDate: dayjs(res.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
             endDate: dayjs(res.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),

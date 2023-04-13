@@ -43,7 +43,6 @@ export class SingleDropListComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() dropList: Array<SingleLayerList>;
   @Input() defaultSelectIndex: [number, number] = [0, 0];
-  @Input() maxWidth = 200;
   @Output() selectItem = new EventEmitter<[number, number]>();
 
   constructor(private changeDetectorRef: ChangeDetectorRef) {}

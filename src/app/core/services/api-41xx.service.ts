@@ -52,7 +52,7 @@ export class Api41xxService {
    */
   fetchGetGroupOperationDetail(body: any): Observable<any> {
     return <any>this.http.post('/api/v2/operationAnalysis/getGroupOperationDetail', body).pipe(
-      map((res) => this.createFate4104Data(res)),
+      // map((res) => this.createFate4104Data(res)),
       catchError((err) => throwError(err))
     );
   }
@@ -63,7 +63,7 @@ export class Api41xxService {
    */
   fetchGetGroupOperationTrend(body: any): Observable<any> {
     return <any>this.http.post('/api/v2/operationAnalysis/getGroupOperationTrend', body).pipe(
-      map((res) => this.createFate4105Data(res)),
+      // map((res) => this.createFate4105Data(res)),
       catchError((err) => throwError(err))
     );
   }
@@ -110,14 +110,7 @@ export class Api41xxService {
   createFate4104Data(res: any) {
     const { processResult, info } = res;
     const {
-      baseCounts: {
-        branchCounts,
-        classCounts,
-        totalTeachCounts,
-        totalAttendCounts,
-        adminCounts,
-        memberCounts,
-      },
+      baseCounts: { totalTeachCounts, totalAttendCounts, adminCounts, memberCounts },
       memberAnalysis,
       classTypeAnalysis,
       classTimeAnalysis,
@@ -131,8 +124,8 @@ export class Api41xxService {
       processResult,
       info: {
         baseCounts: {
-          branchCounts: this.getRandomValue(0, 3),
-          classCounts: this.getRandomValue(0, 10),
+          branchCounts: this.getRandomValue(1, 3),
+          classCounts: this.getRandomValue(1, 10),
           totalTeachCounts: finalTeachCounts,
           totalAttendCounts: this.getRandomValue(finalTeachCounts + totalAttendCounts),
           adminCounts: finalAdminCounts,

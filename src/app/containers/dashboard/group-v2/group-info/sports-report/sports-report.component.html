@@ -1,9 +1,8 @@
 <app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
-<div [class.loadingMask]="uiFlag.progress !== 100" *ngIf="uiFlag.progress !== 100">
-  <div class="loadingMaskAnimation"></div>
-  <div class="loadingMaskAnimation"></div>
-  <div class="loadingMaskAnimation"></div>
-</div>
+<app-loading-mask
+  [isLoading]="uiFlag.progress !== 100"
+  *ngIf="uiFlag.progress !== 100"
+></app-loading-mask>
 <app-condition-selector
   [progress]="uiFlag.progress"
   [initialCondition]="initReportCondition"

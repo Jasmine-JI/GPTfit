@@ -75,3 +75,11 @@
 .operation-datePickTitle {
   font-weight: bold;
 }
+
+/******************************************* media ********************************/
+
+@media (max-width: 767px) {
+  .operation-datePickerArea {
+    flex-direction: column;
+  }
+}
