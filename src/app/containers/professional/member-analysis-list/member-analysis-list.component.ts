@@ -140,9 +140,9 @@ export class MemberAnalysisListComponent implements OnInit, OnChanges {
       value: MemberListSortType.gender,
     },
     { textKey: 'universal_userProfile_age', value: MemberListSortType.age },
-    { textKey: '累計開課次數', value: MemberListSortType.totalTeachCounts },
+    { textKey: 'universal_group_totalClassAmount', value: MemberListSortType.totalTeachCounts },
     { textKey: '累計上課人次', value: MemberListSortType.totalStudentsCounts },
-    { textKey: '最後開課日', value: MemberListSortType.lastTeachTime },
+    { textKey: 'universal_group_lastClassDate', value: MemberListSortType.lastTeachTime },
   ];
 
   /**

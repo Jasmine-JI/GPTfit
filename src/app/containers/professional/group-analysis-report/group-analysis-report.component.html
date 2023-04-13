@@ -1,543 +1,706 @@
+<app-loading-mask [isLoading]="isLoading" *ngIf="isLoading"></app-loading-mask>
 <div class="flexCol group__child__page">
-  <h4 class="analysis__report__title">{{ '營運分析報告' | translate }}</h4>
+  <h4 class="analysis__report__title">{{ 'universal_group_analysisReport' | translate }}</h4>
   <section class="flexCol">
     <p class="creation__time">
       {{ 'universal_vocabulary_creationDate' | translate }}:<time>{{ creationTime }}</time>
     </p>
     <p class="creation__time" *ngIf="lastUpdateTime$ | async as lastUpdateTime">
-      {{ '數據更新時間' | translate }}:<time>{{
+      {{ 'universal_group_lastUpdateddate' | translate }}:<time>{{
         lastUpdateTime.update.timestamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm'
       }}</time>
     </p>
   </section>
-  <section class="operation-contentSection" *ngIf="analysisInfo">
-    <h5 id="summary__info__section" class="operation-sectionTitle">
-      {{ 'universal_activityData_summary' | translate }}
-    </h5>
-    <hr class="operation-sectionTitleLine" />
-    <p class="operation-description">{{ '截至目前為止的概要統計數據' | translate }}</p>
-    <ul class="operation-summaryGrid">
-      <ng-container *ngIf="post.groupLevel === GroupLevel.brand">
-        <li
-          *ngTemplateOutlet="
-            summaryItem;
-            context: {
-              value: analysisInfo.info.baseCounts.branchCounts,
-              translateKey: '分店數'
-            }
-          "
-        ></li>
-      </ng-container>
-      <ng-container *ngIf="post.groupLevel <= GroupLevel.branch">
-        <li
-          *ngTemplateOutlet="
-            summaryItem;
-            context: {
-              value: analysisInfo.info.baseCounts.classCounts,
-              translateKey: '課程群組數'
-            }
-          "
-        ></li>
-      </ng-container>
-      <li
-        *ngTemplateOutlet="
-          summaryItem;
-          context: {
-            value: analysisInfo.info.baseCounts.adminCounts,
-            translateKey: 'universal_group_numberOfAdministrators'
-          }
-        "
-      ></li>
-      <li
-        *ngTemplateOutlet="
-          summaryItem;
-          context: {
-            value: analysisInfo.info.baseCounts.memberCounts,
-            translateKey: '總學員數'
-          }
-        "
-      ></li>
-      <li
-        *ngTemplateOutlet="
-          summaryItem;
-          context: {
-            value: analysisInfo.info.baseCounts.totalTeachCounts,
-            translateKey: '開課次數'
-          }
-        "
-      ></li>
-      <li
-        *ngTemplateOutlet="
-          summaryItem;
-          context: {
-            value: analysisInfo.info.baseCounts.totalAttendCounts,
-            translateKey: '上課人次'
-          }
-        "
-      ></li>
-    </ul>
-  </section>
-  <section class="operation-contentSection" *ngIf="overviewData">
-    <h5 id="overall__analysis__section" class="operation-sectionTitle">
-      {{ '總體分析圖表' | translate }}
-    </h5>
-    <hr class="operation-sectionTitleLine" />
-    <p class="operation-description">{{ '截至目前為止的圖表分析數據' | translate }}</p>
-    <div class="operation-dataCategory" *ngIf="overviewData.ageAnalysisTableData">
-      <ng-container
-        *ngTemplateOutlet="
-          dataTypeArea;
-          context: {
-            title: '學員年齡分佈分析',
-            elementId: 'age__analysis',
-            description: '依性別與年齡範圍分別計算之學員數統計數據'
-          }
-        "
-      ></ng-container>
-      <app-category-column-chart
-        [data]="overviewData.ageAnalysisChartData.data"
-        [seriesName]="overviewData.ageAnalysisChartData.seriesName"
-      ></app-category-column-chart>
-      <app-operation-data-table
-        [tableData]="overviewData.ageAnalysisTableData"
-      ></app-operation-data-table>
-    </div>
-    <div class="operation-dataCategory" *ngIf="overviewData.ageAnalysisTableData">
-      <ng-container
-        *ngTemplateOutlet="
-          dataTypeArea;
-          context: {
-            title: '開課類別分析',
-            elementId: 'sports__type__analysis',
-            description: '依開課運動類別統計的相關數據'
-          }
-        "
-      ></ng-container>
-      <div
-        *ngTemplateOutlet="
-          doublePieChart;
-          context: {
-            firstTitleKey: '開課次數',
-            firstChartData: overviewData.typeTeachCountsPieChartData,
-            firstChartOption: {
-              tooltipTitle: 'universal_activityData_reps'
-            },
-            secondTitleKey: '上課人次',
-            secondChartData: overviewData.typeAttendCountsPieChartData
-          }
-        "
-      ></div>
-      <app-category-column-chart
-        [data]="overviewData.classTypeColumnChartData.data"
-        [seriesName]="overviewData.classTypeColumnChartData.seriesName"
-      ></app-category-column-chart>
-      <app-operation-data-table
-        [tableData]="overviewData.classTypeAnalysisTableData"
-      ></app-operation-data-table>
-    </div>
-    <div class="operation-dataCategory" *ngIf="overviewData.classTimeAnalysisTableData">
-      <ng-container
-        *ngTemplateOutlet="
-          dataTypeArea;
-          context: {
-            title: '開課時段分析',
-            elementId: 'class__time__analysis',
-            description: '依開課時段統計的相關數據'
-          }
-        "
-      ></ng-container>
-      <div
-        *ngTemplateOutlet="
-          doublePieChart;
-          context: {
-            firstTitleKey: '開課次數',
-            firstChartData: overviewData.classTimeTeachCountsPieChartData,
-            firstChartOption: {
-              tooltipTitle: 'universal_activityData_reps'
-            },
-            secondTitleKey: '上課人次',
-            secondChartData: overviewData.classTimeAttendCountsPieChartData
-          }
-        "
-      ></div>
-      <app-operation-data-table
-        [tableData]="overviewData.classTimeAnalysisTableData"
-      ></app-operation-data-table>
-    </div>
-    <div class="operation-dataCategory" *ngIf="overviewData.deviceTypeAnalysisTableData">
-      <ng-container
-        *ngTemplateOutlet="
-          dataTypeArea;
-          context: {
-            title: '裝置類別分析',
-            elementId: 'device__type__analysis',
-            description: '依裝置類別統計的相關數據'
-          }
-        "
-      ></ng-container>
-      <div class="flexCol">
-        <p class="operation-pieChartTitle">
-          {{ 'universal_deviceSetting_modeType' | translate }}
-        </p>
-        <app-pie-chart
-          [data]="overviewData.deviceTypeCountsPieChartData"
-          [tooltipTitleKey]="'universal_activityData_reps'"
-        ></app-pie-chart>
-      </div>
-      <app-operation-data-table
-        [tableData]="overviewData.deviceTypeAnalysisTableData"
-      ></app-operation-data-table>
-    </div>
-  </section>
-  <ng-container *ngIf="overviewData && post.groupLevel <= GroupLevel.branch">
+  <ng-container *ngIf="!analysisInfo">
+    <p>{{ 'universal_status_noData' | translate }}</p>
+  </ng-container>
+  <ng-container *ngIf="analysisInfo">
     <section class="operation-contentSection">
-      <h5 id="trend__chart__section" class="operation-sectionTitle">
-        {{ '子群組分析圖表' | translate }}
+      <h5 id="summary__info__section" class="operation-sectionTitle">
+        {{ 'universal_activityData_summary' | translate }}
       </h5>
       <hr class="operation-sectionTitleLine" />
-      <p class="operation-description">{{ '截至目前為止的子群組圖表分析數據' | translate }}</p>
-      <div class="operation-dataCategory" *ngIf="overviewData.childGroupCoachTableData">
+      <p class="operation-description">{{ 'universal_group_summaryTillNow' | translate }}</p>
+      <ul class="operation-summaryGrid">
+        <ng-container *ngIf="post.groupLevel === GroupLevel.brand">
+          <li
+            *ngTemplateOutlet="
+              summaryItem;
+              context: {
+                value: analysisInfo.info.baseCounts.branchCounts,
+                translateKey: 'universal_group_numberOfBranches'
+              }
+            "
+          ></li>
+        </ng-container>
+        <ng-container *ngIf="post.groupLevel <= GroupLevel.branch">
+          <li
+            *ngTemplateOutlet="
+              summaryItem;
+              context: {
+                value: analysisInfo.info.baseCounts.classCounts,
+                translateKey: 'universal_group_classGroupAmount'
+              }
+            "
+          ></li>
+        </ng-container>
+        <li
+          *ngTemplateOutlet="
+            summaryItem;
+            context: {
+              value: analysisInfo.info.baseCounts.adminCounts,
+              translateKey: 'universal_group_numberOfAdministrators'
+            }
+          "
+        ></li>
+        <li
+          *ngTemplateOutlet="
+            summaryItem;
+            context: {
+              value: analysisInfo.info.baseCounts.memberCounts,
+              translateKey: 'universal_group_totalUsers'
+            }
+          "
+        ></li>
+        <li
+          *ngTemplateOutlet="
+            summaryItem;
+            context: {
+              value: analysisInfo.info.baseCounts.totalTeachCounts,
+              translateKey: 'universal_group_classCounts'
+            }
+          "
+        ></li>
+        <li
+          *ngTemplateOutlet="
+            summaryItem;
+            context: {
+              value: analysisInfo.info.baseCounts.totalAttendCounts,
+              translateKey: 'universal_group_classUserCounts'
+            }
+          "
+        ></li>
+      </ul>
+    </section>
+    <section class="operation-contentSection" *ngIf="overviewData">
+      <h5 id="overall__analysis__section" class="operation-sectionTitle">
+        {{ 'universal_group_generalAnalysisChart' | translate }}
+      </h5>
+      <hr class="operation-sectionTitleLine" />
+      <p class="operation-description">{{ 'universal_group_summaryChartTillNow' | translate }}</p>
+      <div class="operation-dataCategory" *ngIf="overviewData.ageAnalysisTableData">
         <ng-container
           *ngTemplateOutlet="
             dataTypeArea;
             context: {
-              title: '教練分析',
-              elementId: 'child__coach__analysis',
-              description: '各子群組的教練數目統計數據'
+              title: 'universal_group_userAgeDistribution',
+              elementId: 'age__analysis',
+              description: 'universal_group_userDatabyGenderAge'
+            }
+          "
+        ></ng-container>
+        <app-category-column-chart
+          [data]="overviewData.ageAnalysisChartData.data"
+          [seriesName]="overviewData.ageAnalysisChartData.seriesName"
+        ></app-category-column-chart>
+        <div
+          *ngTemplateOutlet="
+            analysisTable;
+            context: {
+              data: overviewData.ageAnalysisTableData,
+              type: 'overview',
+              status: overviewTableDisplayStatus.getStatus('ageAnalysis'),
+              statusKey: 'ageAnalysis'
+            }
+          "
+        ></div>
+      </div>
+      <div class="operation-dataCategory" *ngIf="overviewData.ageAnalysisTableData">
+        <ng-container
+          *ngTemplateOutlet="
+            dataTypeArea;
+            context: {
+              title: 'universal_group_classTypeAnalysis',
+              elementId: 'sports__type__analysis',
+              description: 'universal_group_databyClassType'
+            }
+          "
+        ></ng-container>
+        <div
+          *ngTemplateOutlet="
+            doublePieChart;
+            context: {
+              firstTitleKey: 'universal_group_classCounts',
+              firstChartData: overviewData.typeTeachCountsPieChartData,
+              firstChartOption: {
+                tooltipTitle: 'universal_activityData_reps'
+              },
+              secondTitleKey: 'universal_group_classUserCounts',
+              secondChartData: overviewData.typeAttendCountsPieChartData
+            }
+          "
+        ></div>
+        <app-category-column-chart
+          [data]="overviewData.classTypeColumnChartData.data"
+          [seriesName]="overviewData.classTypeColumnChartData.seriesName"
+        ></app-category-column-chart>
+        <div
+          *ngTemplateOutlet="
+            analysisTable;
+            context: {
+              data: overviewData.classTypeAnalysisTableData,
+              type: 'overview',
+              status: overviewTableDisplayStatus.getStatus('classTypeAnalysis'),
+              statusKey: 'classTypeAnalysis'
+            }
+          "
+        ></div>
+      </div>
+      <div class="operation-dataCategory" *ngIf="overviewData.classTimeAnalysisTableData">
+        <ng-container
+          *ngTemplateOutlet="
+            dataTypeArea;
+            context: {
+              title: 'universal_group_classTimeAnalysis',
+              elementId: 'class__time__analysis',
+              description: 'universal_group_databyClassTime'
+            }
+          "
+        ></ng-container>
+        <div
+          *ngTemplateOutlet="
+            doublePieChart;
+            context: {
+              firstTitleKey: 'universal_group_classCounts',
+              firstChartData: overviewData.classTimeTeachCountsPieChartData,
+              firstChartOption: {
+                tooltipTitle: 'universal_activityData_reps'
+              },
+              secondTitleKey: 'universal_group_classUserCounts',
+              secondChartData: overviewData.classTimeAttendCountsPieChartData
+            }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            analysisTable;
+            context: {
+              data: overviewData.classTimeAnalysisTableData,
+              type: 'overview',
+              status: overviewTableDisplayStatus.getStatus('classTimeAnalysis'),
+              statusKey: 'classTimeAnalysis'
+            }
+          "
+        ></div>
+      </div>
+      <div class="operation-dataCategory" *ngIf="overviewData.deviceTypeAnalysisTableData">
+        <ng-container
+          *ngTemplateOutlet="
+            dataTypeArea;
+            context: {
+              title: 'universal_group_deviceTypeAnalysis',
+              elementId: 'device__type__analysis',
+              description: 'universal_group_databyDeviceType'
             }
           "
         ></ng-container>
         <div class="flexCol">
           <p class="operation-pieChartTitle">
-            {{ '總教練數' | translate }}
+            {{ 'universal_deviceSetting_modeType' | translate }}
           </p>
-          <app-pie-chart [data]="overviewData.childGroupCoachChartData"></app-pie-chart>
+          <app-pie-chart
+            [data]="overviewData.deviceTypeCountsPieChartData"
+            [tooltipTitleKey]="'universal_activityData_reps'"
+          ></app-pie-chart>
         </div>
-        <app-operation-data-table
-          [tableData]="overviewData.childGroupCoachTableData"
-        ></app-operation-data-table>
-      </div>
-      <div class="operation-dataCategory" *ngIf="overviewData.childGroupMemberTableData">
-        <ng-container
+        <div
           *ngTemplateOutlet="
-            dataTypeArea;
+            analysisTable;
             context: {
-              title: '學員分析',
-              elementId: 'child__member__analysis',
-              description: '各子群組的學員數目統計數據'
+              data: overviewData.deviceTypeAnalysisTableData,
+              type: 'overview',
+              status: overviewTableDisplayStatus.getStatus('deviceTypeAnalysis'),
+              statusKey: 'deviceTypeAnalysis'
             }
           "
-        ></ng-container>
-        <div class="flexCol">
-          <p class="operation-pieChartTitle">
-            {{ '總學員數' | translate }}
-          </p>
-          <app-pie-chart [data]="overviewData.childGroupMemberChartData"></app-pie-chart>
-        </div>
-        <app-operation-data-table
-          [tableData]="overviewData.childGroupMemberTableData"
-        ></app-operation-data-table>
-      </div>
-
-      <div class="operation-dataCategory" *ngIf="overviewData.childGroupTeachTableData">
-        <ng-container
-          *ngTemplateOutlet="
-            dataTypeArea;
-            context: {
-              title: '開課相關分析',
-              elementId: 'child__teach__analysis',
-              description: '各子群組開課相關統計數據'
-            }
-          "
-        ></ng-container>
-        <div class="flexCol">
-          <app-line-column-compare-chart
-            [data]="overviewData.childGroupTeachChartData"
-          ></app-line-column-compare-chart>
-        </div>
-        <app-operation-data-table
-          [tableData]="overviewData.childGroupTeachTableData"
-        ></app-operation-data-table>
-      </div>
-
-      <div class="operation-dataCategory" *ngIf="overviewData.childDeviceTableData">
-        <ng-container
-          *ngTemplateOutlet="
-            dataTypeArea;
-            context: {
-              title: '裝置類別分析',
-              elementId: 'child__device__analysis',
-              description: '各子群組使用的各裝置類別統計數據'
-            }
-          "
-        ></ng-container>
-        <div class="flexCol">
-          <app-category-column-chart
-            [data]="overviewData.childDeviceChartData.data"
-            [seriesName]="overviewData.childDeviceChartData.seriesName"
-          ></app-category-column-chart>
-        </div>
-        <app-operation-data-table
-          [tableData]="overviewData.childDeviceTableData"
-        ></app-operation-data-table>
+        ></div>
       </div>
     </section>
-  </ng-container>
-  <section class="operation-contentSection">
-    <h5 id="trend__chart__section" class="operation-sectionTitle">
-      {{ '趨勢分析圖表' | translate }}
-    </h5>
-    <hr class="operation-sectionTitleLine" />
-    <div class="flexRow operation-datePickerArea">
-      <span class="operation-datePickTitle"
-        >{{ 'universal_activityData_dateRange' | translate }}:</span
-      >
-      <app-single-drop-list
-        [dropList]="trendList"
-        [defaultSelectIndex]="[OperationTrendType.singleTrend, SingleTrendRange.nearlyOneMonth]"
-        (selectItem)="selectTrend($event)"
-      ></app-single-drop-list>
-    </div>
-    <ng-container *ngIf="operationTrend">
-      <div
-        class="operation-dataCategory"
-        *ngIf="operationTrend.memberSingleTrendTable || operationTrend.memberCompareTrendTable"
-      >
-        <ng-container
-          *ngTemplateOutlet="
-            dataTypeArea;
-            context: {
-              title: '學員數分析',
-              elementId: 'member__count__trend',
-              description: '群組所屬之學員其數量趨勢數據'
-            }
-          "
-        ></ng-container>
-        <div class="flexCol">
-          <app-line-column-compare-chart
-            [data]="
-              isCompareMode
-                ? operationTrend.memberCompareTrendChart
-                : operationTrend.memberSingleTrendChart
+    <ng-container *ngIf="overviewData && post.groupLevel <= GroupLevel.branch">
+      <section class="operation-contentSection">
+        <h5 id="trend__chart__section" class="operation-sectionTitle">
+          {{ 'universal_group_subGroupAnalysisChart' | translate }}
+        </h5>
+        <hr class="operation-sectionTitleLine" />
+        <p class="operation-description">
+          {{ 'universal_group_dataSubGroupAnalysisCharttillNow' | translate }}
+        </p>
+        <div class="operation-dataCategory" *ngIf="overviewData.childGroupCoachTableData">
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: {
+                title: 'universal_group_coachAnalysis',
+                elementId: 'child__coach__analysis',
+                description: 'universal_group_subGroupCoachStats'
+              }
             "
-          ></app-line-column-compare-chart>
-        </div>
-        <app-operation-data-table
-          [tableData]="
-            isCompareMode
-              ? operationTrend.memberCompareTrendTable
-              : operationTrend.memberSingleTrendTable
-          "
-        ></app-operation-data-table>
-      </div>
-      <div
-        class="operation-dataCategory"
-        *ngIf="
-          operationTrend.singleCreateChildTableData || operationTrend.childCountCompareTrendTable
-        "
-      >
-        <ng-container
-          *ngTemplateOutlet="
-            dataTypeArea;
-            context: {
-              title: '子群組數量分析',
-              elementId: 'child__group__count__trend',
-              description: '該群組的子群組數量趨勢數據'
-            }
-          "
-        ></ng-container>
-        <div class="flexCol">
-          <app-line-column-compare-chart
-            [data]="
-              isCompareMode
-                ? operationTrend.childCountCompareTrendChart
-                : operationTrend.singleCreateChildChartData
+          ></ng-container>
+          <div class="flexCol">
+            <p class="operation-pieChartTitle">
+              {{ 'universal_group_totalCoaches' | translate }}
+            </p>
+            <app-pie-chart [data]="overviewData.childGroupCoachChartData"></app-pie-chart>
+          </div>
+          <div
+            *ngTemplateOutlet="
+              analysisTable;
+              context: {
+                data: overviewData.childGroupCoachTableData,
+                type: 'overview',
+                status: overviewTableDisplayStatus.getStatus('childGroupCoachAnalysis'),
+                statusKey: 'childGroupCoachAnalysis'
+              }
             "
-          ></app-line-column-compare-chart>
+          ></div>
         </div>
-        <app-operation-data-table
-          [tableData]="
-            isCompareMode
-              ? operationTrend.childCountCompareTrendTable
-              : operationTrend.singleCreateChildTableData
-          "
-        ></app-operation-data-table>
-      </div>
+        <div class="operation-dataCategory" *ngIf="overviewData.childGroupMemberTableData">
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: {
+                title: 'universal_group_classUserAnalysis',
+                elementId: 'child__member__analysis',
+                description: 'universal_group_subGroupUsersStats'
+              }
+            "
+          ></ng-container>
+          <div class="flexCol">
+            <p class="operation-pieChartTitle">
+              {{ 'universal_group_totalUsers' | translate }}
+            </p>
+            <app-pie-chart [data]="overviewData.childGroupMemberChartData"></app-pie-chart>
+          </div>
+          <div
+            *ngTemplateOutlet="
+              analysisTable;
+              context: {
+                data: overviewData.childGroupMemberTableData,
+                type: 'overview',
+                status: overviewTableDisplayStatus.getStatus('childGroupMemberAnalysis'),
+                statusKey: 'childGroupMemberAnalysis'
+              }
+            "
+          ></div>
+        </div>
 
-      <div class="operation-dataCategory">
-        <ng-container
-          *ngTemplateOutlet="
-            dataTypeArea;
-            context: {
-              title: '開課相關分析',
-              elementId: 'teach__analysis__trend',
-              description: '此群組開課相關趨勢分析數據'
-            }
-          "
-        ></ng-container>
-        <div class="flexCol">
-          <app-line-column-compare-chart
-            [data]="
-              isCompareMode
-                ? operationTrend.teachCompareTrendChart
-                : operationTrend.teachSingleTrendChart
+        <div class="operation-dataCategory" *ngIf="overviewData.childGroupTeachTableData">
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: {
+                title: 'universal_group_classAnalysis',
+                elementId: 'child__teach__analysis',
+                description: 'universal_group_subGroupClassStats'
+              }
             "
-          ></app-line-column-compare-chart>
-        </div>
-        <app-operation-data-table
-          [tableData]="
-            isCompareMode
-              ? operationTrend.teachCompareTrendTable
-              : operationTrend.teachSingleTrendTable
-          "
-        ></app-operation-data-table>
-      </div>
-      <div
-        class="operation-dataCategory"
-        *ngIf="post.groupLevel <= GroupLevel.branch && operationTrend.childTeachSingleTrendTable"
-      >
-        <ng-container
-          *ngTemplateOutlet="
-            dataTypeArea;
-            context: {
-              title: '子群組開課相關分析',
-              elementId: 'child__teach__trend',
-              description: '此群組下之子群組開課相關趨勢分析數據'
-            }
-          "
-        ></ng-container>
-        <ng-container *ngIf="!isCompareMode">
-          <app-operation-data-table
-            [tableData]="operationTrend.childTeachSingleTrendTable"
-          ></app-operation-data-table>
-        </ng-container>
-      </div>
-      <div class="operation-dataCategory">
-        <ng-container
-          *ngTemplateOutlet="
-            dataTypeArea;
-            context: {
-              title: '裝置類別分析',
-              elementId: 'device__use__trend',
-              description: '該群組使用裝置類別之次數趨勢數據'
-            }
-          "
-        ></ng-container>
-        <ng-container *ngIf="!isCompareMode">
+          ></ng-container>
           <div class="flexCol">
             <app-line-column-compare-chart
-              [data]="operationTrend.singleDeviceTrendChartData"
+              [data]="overviewData.childGroupTeachChartData"
             ></app-line-column-compare-chart>
           </div>
-          <app-operation-data-table
-            [tableData]="operationTrend.singleDeviceTrendTableData"
-          ></app-operation-data-table>
-        </ng-container>
-        <ng-container *ngIf="isCompareMode && operationTrend.deviceTypeCompareTrendTable">
-          <div class="operation-dataCategory">
-            <ng-container
-              *ngTemplateOutlet="
-                dataTypeArea;
-                context: {
-                  title: 'universal_vocabulary_wearableDevice',
-                  elementId: 'wearable__use__trend',
-                  description: ''
-                }
-              "
-            ></ng-container>
-            <div class="flexCol">
-              <app-line-column-compare-chart
-                [data]="operationTrend.deviceTypeCompareTrendChart.wearable"
-              ></app-line-column-compare-chart>
-            </div>
-            <app-operation-data-table
-              [tableData]="operationTrend.deviceTypeCompareTrendTable.wearable"
-            ></app-operation-data-table>
+          <div
+            *ngTemplateOutlet="
+              analysisTable;
+              context: {
+                data: overviewData.childGroupTeachTableData,
+                type: 'overview',
+                status: overviewTableDisplayStatus.getStatus('childGroupTeachAnalysis'),
+                statusKey: 'childGroupTeachAnalysis'
+              }
+            "
+          ></div>
+        </div>
+
+        <div class="operation-dataCategory" *ngIf="overviewData.childDeviceTableData">
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: {
+                title: 'universal_group_deviceTypeAnalysis',
+                elementId: 'child__device__analysis',
+                description: 'universal_group_subGroupDeviceTypeData'
+              }
+            "
+          ></ng-container>
+          <div class="flexCol">
+            <app-category-column-chart
+              [data]="overviewData.childDeviceChartData.data"
+              [seriesName]="overviewData.childDeviceChartData.seriesName"
+            ></app-category-column-chart>
           </div>
-          <div class="operation-dataCategory">
-            <ng-container
-              *ngTemplateOutlet="
-                dataTypeArea;
-                context: {
-                  title: 'universal_vocabulary_sensor',
-                  elementId: 'sensor__use__trend',
-                  description: ''
-                }
-              "
-            ></ng-container>
-            <div class="flexCol">
-              <app-line-column-compare-chart
-                [data]="operationTrend.deviceTypeCompareTrendChart.sensor"
-              ></app-line-column-compare-chart>
-            </div>
-            <app-operation-data-table
-              [tableData]="operationTrend.deviceTypeCompareTrendTable.sensor"
-            ></app-operation-data-table>
-          </div>
-          <div class="operation-dataCategory">
-            <ng-container
-              *ngTemplateOutlet="
-                dataTypeArea;
-                context: {
-                  title: 'universal_vocabulary_treadmill',
-                  elementId: 'treadmill__use__trend',
-                  description: ''
-                }
-              "
-            ></ng-container>
-            <div class="flexCol">
-              <app-line-column-compare-chart
-                [data]="operationTrend.deviceTypeCompareTrendChart.treadmill"
-              ></app-line-column-compare-chart>
-            </div>
-            <app-operation-data-table
-              [tableData]="operationTrend.deviceTypeCompareTrendTable.treadmill"
-            ></app-operation-data-table>
-          </div>
-          <div class="operation-dataCategory">
-            <ng-container
-              *ngTemplateOutlet="
-                dataTypeArea;
-                context: {
-                  title: 'universal_vocabulary_spinBike',
-                  elementId: 'spinbike__use__trend',
-                  description: ''
-                }
-              "
-            ></ng-container>
-            <div class="flexCol">
-              <app-line-column-compare-chart
-                [data]="operationTrend.deviceTypeCompareTrendChart.spinBike"
-              ></app-line-column-compare-chart>
-            </div>
-            <app-operation-data-table
-              [tableData]="operationTrend.deviceTypeCompareTrendTable.spinBike"
-            ></app-operation-data-table>
-          </div>
-          <div class="operation-dataCategory">
-            <ng-container
-              *ngTemplateOutlet="
-                dataTypeArea;
-                context: {
-                  title: 'universal_vocabulary_rowingMachine',
-                  elementId: 'rowing__use__trend',
-                  description: ''
-                }
-              "
-            ></ng-container>
-            <div class="flexCol">
-              <app-line-column-compare-chart
-                [data]="operationTrend.deviceTypeCompareTrendChart.rowMachine"
-              ></app-line-column-compare-chart>
-            </div>
-            <app-operation-data-table
-              [tableData]="operationTrend.deviceTypeCompareTrendTable.rowMachine"
-            ></app-operation-data-table>
-          </div>
-        </ng-container>
-      </div>
+          <div
+            *ngTemplateOutlet="
+              analysisTable;
+              context: {
+                data: overviewData.childDeviceTableData,
+                type: 'overview',
+                status: overviewTableDisplayStatus.getStatus('childGroupDeviceAnalysis'),
+                statusKey: 'childGroupDeviceAnalysis'
+              }
+            "
+          ></div>
+        </div>
+      </section>
     </ng-container>
-  </section>
+    <section class="operation-contentSection">
+      <h5 id="trend__chart__section" class="operation-sectionTitle">
+        {{ 'universal_group_trendAnalysisCharts' | translate }}
+      </h5>
+      <hr class="operation-sectionTitleLine" />
+      <div class="flexRow operation-datePickerArea">
+        <span class="operation-datePickTitle"
+          >{{ 'universal_activityData_dateRange' | translate }}:</span
+        >
+        <app-single-drop-list
+          [dropList]="trendList"
+          [defaultSelectIndex]="[OperationTrendType.singleTrend, SingleTrendRange.nearlyOneMonth]"
+          (selectItem)="selectTrend($event)"
+        ></app-single-drop-list>
+      </div>
+      <ng-container *ngIf="operationTrend">
+        <div
+          class="operation-dataCategory"
+          *ngIf="operationTrend.memberSingleTrendTable || operationTrend.memberCompareTrendTable"
+        >
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: {
+                title: 'universal_group_classUserAmountAnalysis',
+                elementId: 'member__count__trend',
+                description: 'universal_group_classUserAmountbyGroup'
+              }
+            "
+          ></ng-container>
+          <div class="flexCol">
+            <app-line-column-compare-chart
+              [data]="
+                isCompareMode
+                  ? operationTrend.memberCompareTrendChart
+                  : operationTrend.memberSingleTrendChart
+              "
+            ></app-line-column-compare-chart>
+          </div>
+          <div
+            *ngTemplateOutlet="
+              analysisTable;
+              context: {
+                data: isCompareMode
+                  ? operationTrend.memberCompareTrendTable
+                  : operationTrend.memberSingleTrendTable,
+                type: 'trend',
+                status: trendTableDisplayStatus.getStatus('memberAnalysis'),
+                statusKey: 'memberAnalysis',
+                handleIndexReturn: showFullMemberTable.bind(this)
+              }
+            "
+          ></div>
+        </div>
+        <div
+          class="operation-dataCategory"
+          *ngIf="
+            operationTrend.singleCreateChildTableData || operationTrend.childCountCompareTrendTable
+          "
+        >
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: {
+                title: 'universal_group_subGroupAmountAnalysis',
+                elementId: 'child__group__count__trend',
+                description: 'universal_group_subGroupAmountData'
+              }
+            "
+          ></ng-container>
+          <div class="flexCol">
+            <app-line-column-compare-chart
+              [data]="
+                isCompareMode
+                  ? operationTrend.childCountCompareTrendChart
+                  : operationTrend.singleCreateChildChartData
+              "
+            ></app-line-column-compare-chart>
+          </div>
+          <div
+            *ngTemplateOutlet="
+              analysisTable;
+              context: {
+                data: isCompareMode
+                  ? operationTrend.compareCreateChildTrendTable
+                  : operationTrend.singleCreateChildTableData,
+                type: 'trend',
+                status: trendTableDisplayStatus.getStatus('createChildAnalysis'),
+                statusKey: 'createChildAnalysis'
+              }
+            "
+          ></div>
+        </div>
+
+        <div class="operation-dataCategory">
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: {
+                title: 'universal_group_classAnalysis',
+                elementId: 'teach__analysis__trend',
+                description: '此群組開課相關趨勢分析數據'
+              }
+            "
+          ></ng-container>
+          <div class="flexCol">
+            <app-line-column-compare-chart
+              [data]="
+                isCompareMode
+                  ? operationTrend.teachCompareTrendChart
+                  : operationTrend.teachSingleTrendChart
+              "
+            ></app-line-column-compare-chart>
+          </div>
+          <div
+            *ngTemplateOutlet="
+              analysisTable;
+              context: {
+                data: isCompareMode
+                  ? operationTrend.teachCompareTrendTable
+                  : operationTrend.teachSingleTrendTable,
+                type: 'trend',
+                status: trendTableDisplayStatus.getStatus('teachAnalysis'),
+                statusKey: 'teachAnalysis'
+              }
+            "
+          ></div>
+        </div>
+        <div
+          class="operation-dataCategory"
+          *ngIf="post.groupLevel <= GroupLevel.branch && operationTrend.childTeachSingleTrendTable"
+        >
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: {
+                title: 'universal_group_subGroupClassAnalysis',
+                elementId: 'child__teach__trend',
+                description: 'universal_group_subGroupClassData'
+              }
+            "
+          ></ng-container>
+          <ng-container *ngIf="!isCompareMode">
+            <div
+              *ngTemplateOutlet="
+                analysisTable;
+                context: {
+                  data: operationTrend.childTeachSingleTrendTable,
+                  type: 'trend',
+                  status: trendTableDisplayStatus.getStatus('childTeachAnalysis'),
+                  statusKey: 'childTeachAnalysis',
+                  handleIndexReturn: showFullChildTeachTable.bind(this)
+                }
+              "
+            ></div>
+          </ng-container>
+        </div>
+        <div class="operation-dataCategory">
+          <ng-container
+            *ngTemplateOutlet="
+              dataTypeArea;
+              context: {
+                title: 'universal_group_deviceTypeAnalysis',
+                elementId: 'device__use__trend',
+                description: 'universal_group_groupDeviceUseCountsData'
+              }
+            "
+          ></ng-container>
+          <ng-container *ngIf="!isCompareMode">
+            <div class="flexCol">
+              <app-line-column-compare-chart
+                [data]="operationTrend.singleDeviceTrendChartData"
+              ></app-line-column-compare-chart>
+            </div>
+            <div
+              *ngTemplateOutlet="
+                analysisTable;
+                context: {
+                  data: operationTrend.singleDeviceTrendTableData,
+                  type: 'trend',
+                  status: trendTableDisplayStatus.getStatus('deviceAnalysis'),
+                  statusKey: 'deviceAnalysis'
+                }
+              "
+            ></div>
+          </ng-container>
+          <ng-container *ngIf="isCompareMode && operationTrend.deviceTypeCompareTrendTable">
+            <div class="operation-dataCategory">
+              <ng-container
+                *ngTemplateOutlet="
+                  dataTypeArea;
+                  context: {
+                    title: 'universal_vocabulary_wearableDevice',
+                    elementId: 'wearable__use__trend',
+                    description: ''
+                  }
+                "
+              ></ng-container>
+              <div class="flexCol">
+                <app-line-column-compare-chart
+                  [data]="operationTrend.deviceTypeCompareTrendChart.wearable"
+                ></app-line-column-compare-chart>
+              </div>
+              <div
+                *ngTemplateOutlet="
+                  analysisTable;
+                  context: {
+                    data: operationTrend.deviceTypeCompareTrendTable.wearable,
+                    type: 'trend',
+                    status: trendTableDisplayStatus.getStatus('wearableAnalysis'),
+                    statusKey: 'wearableAnalysis'
+                  }
+                "
+              ></div>
+            </div>
+            <div class="operation-dataCategory">
+              <ng-container
+                *ngTemplateOutlet="
+                  dataTypeArea;
+                  context: {
+                    title: 'universal_vocabulary_sensor',
+                    elementId: 'sensor__use__trend',
+                    description: ''
+                  }
+                "
+              ></ng-container>
+              <div class="flexCol">
+                <app-line-column-compare-chart
+                  [data]="operationTrend.deviceTypeCompareTrendChart.sensor"
+                ></app-line-column-compare-chart>
+              </div>
+              <div
+                *ngTemplateOutlet="
+                  analysisTable;
+                  context: {
+                    data: operationTrend.deviceTypeCompareTrendTable.sensor,
+                    type: 'trend',
+                    status: trendTableDisplayStatus.getStatus('sensorAnalysis'),
+                    statusKey: 'sensorAnalysis'
+                  }
+                "
+              ></div>
+            </div>
+            <div class="operation-dataCategory">
+              <ng-container
+                *ngTemplateOutlet="
+                  dataTypeArea;
+                  context: {
+                    title: 'universal_vocabulary_treadmill',
+                    elementId: 'treadmill__use__trend',
+                    description: ''
+                  }
+                "
+              ></ng-container>
+              <div class="flexCol">
+                <app-line-column-compare-chart
+                  [data]="operationTrend.deviceTypeCompareTrendChart.treadmill"
+                ></app-line-column-compare-chart>
+              </div>
+              <div
+                *ngTemplateOutlet="
+                  analysisTable;
+                  context: {
+                    data: operationTrend.deviceTypeCompareTrendTable.treadmill,
+                    type: 'trend',
+                    status: trendTableDisplayStatus.getStatus('treadmillAnalysis'),
+                    statusKey: 'treadmillAnalysis'
+                  }
+                "
+              ></div>
+            </div>
+            <div class="operation-dataCategory">
+              <ng-container
+                *ngTemplateOutlet="
+                  dataTypeArea;
+                  context: {
+                    title: 'universal_vocabulary_spinBike',
+                    elementId: 'spinbike__use__trend',
+                    description: ''
+                  }
+                "
+              ></ng-container>
+              <div class="flexCol">
+                <app-line-column-compare-chart
+                  [data]="operationTrend.deviceTypeCompareTrendChart.spinBike"
+                ></app-line-column-compare-chart>
+              </div>
+              <div
+                *ngTemplateOutlet="
+                  analysisTable;
+                  context: {
+                    data: operationTrend.deviceTypeCompareTrendTable.spinBike,
+                    type: 'trend',
+                    status: trendTableDisplayStatus.getStatus('spinBikeAnalysis'),
+                    statusKey: 'spinBikeAnalysis'
+                  }
+                "
+              ></div>
+            </div>
+            <div class="operation-dataCategory">
+              <ng-container
+                *ngTemplateOutlet="
+                  dataTypeArea;
+                  context: {
+                    title: 'universal_vocabulary_rowingMachine',
+                    elementId: 'rowing__use__trend',
+                    description: ''
+                  }
+                "
+              ></ng-container>
+              <div class="flexCol">
+                <app-line-column-compare-chart
+                  [data]="operationTrend.deviceTypeCompareTrendChart.rowMachine"
+                ></app-line-column-compare-chart>
+              </div>
+              <div
+                *ngTemplateOutlet="
+                  analysisTable;
+                  context: {
+                    data: operationTrend.deviceTypeCompareTrendTable.rowMachine,
+                    type: 'trend',
+                    status: trendTableDisplayStatus.getStatus('rowMachineAnalysis'),
+                    statusKey: 'rowMachineAnalysis'
+                  }
+                "
+              ></div>
+            </div>
+          </ng-container>
+        </div>
+      </ng-container>
+    </section>
+  </ng-container>
+</div>
+
+<div class="flexCenter box__mask" (click)="closeFullMemberTable()" *ngIf="showAssignChildTrend">
+  <div class="flexCol child__trend__box" (click)="$event.stopPropagation()">
+    <h6 class="detail__box__title">{{ childFullTrend.title | translate }}</h6>
+    <div class="flexCol child__trend__detail">
+      <app-line-column-compare-chart [data]="childFullTrend.chart"></app-line-column-compare-chart>
+      <app-operation-data-table [tableData]="childFullTrend.table"></app-operation-data-table>
+    </div>
+    <div class="flexCenter">
+      <button class="close__button" (click)="closeFullMemberTable()">
+        {{ 'universal_operating_close' | translate }}
+      </button>
+    </div>
+  </div>
 </div>
 
 <ng-template #summaryItem let-value="value" let-translateKey="translateKey">
@@ -586,5 +749,32 @@
         [tooltipTitleKey]="secondChartOption?.tooltipTitle"
       ></app-pie-chart>
     </div>
+  </div>
+</ng-template>
+
+<ng-template
+  #analysisTable
+  let-data="data"
+  let-type="type"
+  let-status="status"
+  let-statusKey="statusKey"
+  let-handleIndexReturn="handleIndexReturn"
+>
+  <div class="flexCol">
+    <div class="flexCenter">
+      <button class="display__table__button" (click)="toggleTableDisplayStatus(type, statusKey)">
+        <ng-container *ngIf="!status">
+          {{ '顯示數據列表' | translate }}
+        </ng-container>
+        <ng-container *ngIf="status">
+          {{ '隱藏數據列表' | translate }}
+        </ng-container>
+      </button>
+    </div>
+    <app-operation-data-table
+      [tableData]="data"
+      (showIndex)="handleIndexReturn ? handleIndexReturn($event) : return"
+      *ngIf="status"
+    ></app-operation-data-table>
   </div>
 </ng-template>

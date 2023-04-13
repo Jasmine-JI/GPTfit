@@ -31,9 +31,9 @@
       <span class="grid__cell">{{ 'universal_userProfile_gender' | translate }}</span>
       <span class="grid__cell">{{ 'universal_userProfile_age' | translate }}</span>
       <ng-container *ngSwitchCase="MemberType.admin">
-        <span class="grid__cell">{{ '累計開課次數' | translate }}</span>
+        <span class="grid__cell">{{ 'universal_group_totalClassAmount' | translate }}</span>
         <span class="grid__cell">{{ '累計上課人次' | translate }}</span>
-        <span class="grid__cell">{{ '最後開課日' | translate }}</span>
+        <span class="grid__cell">{{ 'universal_group_lastClassDate' | translate }}</span>
       </ng-container>
       <ng-container *ngSwitchCase="MemberType.normal">
         <span class="grid__cell">{{ '累計上課次數' | translate }}</span>
@@ -121,7 +121,9 @@
                 <h6 class="content__title">{{ '開課概況' | translate }}</h6>
                 <div class="content__section">
                   <span class="flexRow">
-                    {{ '開課類別' }}:<ng-container *ngFor="let _type of _list.classInfo.teachType">
+                    {{ 'universal_group_classType' | translate }}:<ng-container
+                      *ngFor="let _type of _list.classInfo.teachType"
+                    >
                       {{ _type | spaceTrim | sportType | translate }},
                     </ng-container>
                   </span>
@@ -130,8 +132,14 @@
                       detailGrid;
                       context: {
                         detailArray: [
-                          ['男性上課人次', _list.classInfo.maleAttendCounts],
-                          ['女性上課人次', _list.classInfo.femaleAttendCounts]
+                          [
+                            'universal_group_maleClassUsersCounts',
+                            _list.classInfo.maleAttendCounts
+                          ],
+                          [
+                            'universal_group_femaleClassUsersCounts',
+                            _list.classInfo.femaleAttendCounts
+                          ]
                         ]
                       }
                     "
@@ -146,7 +154,7 @@
                       detailGrid;
                       context: {
                         detailArray: [
-                          ['開課次數', _list.oneMonthClassInfo.teachCounts],
+                          ['universal_group_classCounts', _list.oneMonthClassInfo.teachCounts],
                           [
                             '課程計時',
                             _list.oneMonthClassInfo.teachTotalTime / 3600 | number: '1.0-1'
@@ -156,7 +164,7 @@
                     "
                   ></div>
                   <span class="flexRow">
-                    {{ '開課類別' }}:<ng-container
+                    {{ 'universal_group_classType' | translate }}:<ng-container
                       *ngFor="let _type of _list.oneMonthClassInfo.teachType"
                     >
                       {{ _type | spaceTrim | sportType | translate }},
@@ -182,7 +190,7 @@
                     "
                   ></div>
                   <span class="flexRow">
-                    {{ '課程類別' }}:<ng-container
+                    {{ 'universal_activityData_type' }}:<ng-container
                       *ngFor="let _type of _list.oneMonthAttendInfo.attendClassType"
                     >
                       {{ _type | spaceTrim | sportType | translate }}
@@ -193,7 +201,7 @@
             </ng-container>
 
             <div class="flexCol">
-              <h6 class="content__title">{{ '使用裝置' | translate }}</h6>
+              <h6 class="content__title">{{ 'universal_group_devices' | translate }}</h6>
               <div class="content__section">
                 <span class="list__in__line" *ngFor="let _device of _list.useDevice">
                   {{ _device | spaceTrim | productType: 'key' | translate }},
@@ -201,13 +209,15 @@
               </div>
             </div>
             <div class="flexCol">
-              <h6 class="content__title">{{ '相關連結' | translate }}</h6>
+              <h6 class="content__title">
+                {{ 'universal_deviceSetting_relatedLinks' | translate }}
+              </h6>
               <div class="flexCol content__section">
                 <a [href]="_list.link.introduction" target="_blank" class="relative__link">
-                  {{ '介紹頁' | translate }}
+                  {{ 'universal_group_introduction' | translate }}
                 </a>
                 <a [href]="_list.link.sportsReport" target="_blank" class="relative__link">
-                  {{ '運動報告' | translate }}
+                  {{ 'universal_activityData_sportReport' | translate }}
                 </a>
               </div>
             </div>
@@ -224,7 +234,7 @@
   </section>
   <!--
   <p class="update__time" *ngIf="lastUpdateTime$ | async as lastUpdateTime">
-    {{ '數據更新時間' }}:
+    {{ 'universal_group_lastUpdateddate' | translate }}:
     <time>{{ lastUpdateTime.update.timestamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm' }}</time>
   </p>
   -->

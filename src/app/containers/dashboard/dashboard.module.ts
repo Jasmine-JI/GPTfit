@@ -85,6 +85,7 @@ import {
   LineCompareChartComponent,
   TipDialogComponent,
   LoadingBarComponent,
+  LoadingMaskComponent,
   PaginationComponent,
 } from '../../components';
 import {
@@ -180,6 +181,7 @@ import { MemberAnalysisListComponent } from '../professional';
     LineCompareChartComponent,
     TipDialogComponent,
     LoadingBarComponent,
+    LoadingMaskComponent,
     PaginationComponent,
     SexPipe,
     SafeHtmlPipe,

@@ -729,7 +729,7 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
 
             seriesSet = [
               {
-                name: this.translate.instant('發電功率'),
+                name: this.translate.instant('universal_activityData_limit_genPower'),
                 data: processedData,
                 turboThreshold: 100000,
                 showInLegend: false,

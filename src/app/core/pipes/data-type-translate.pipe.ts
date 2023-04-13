@@ -105,7 +105,7 @@ export class DataTypeTranslatePipe implements PipeTransform {
       case 'fitTime':
         return 'universal_userProfile_fitTime';
       case 'feedbackWatt':
-        return '發電功率';
+        return 'universal_activityData_limit_genPower';
       default:
         return 'universal_vocabulary_other';
     }
