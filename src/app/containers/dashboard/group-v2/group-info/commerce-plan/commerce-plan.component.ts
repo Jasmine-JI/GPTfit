@@ -235,7 +235,7 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
         }
         break;
       case 'memberNum':
-        if (num < 20 || num > 100000) {
+        if (num < 10 || num > 100000) {
           this.editBody.groupAllMemberSetting.maxAllGroupMembers = 100;
         } else {
           this.editBody.groupAllMemberSetting.maxAllGroupMembers = num;

@@ -1,0 +1,44 @@
+<app-loading-mask [isLoading]="isLoading"></app-loading-mask>
+<button
+  [title]="'universal_activityData_editActivityName' | translate"
+  class="flexCenter function__toolbar__button"
+  (click)="showEditBox()"
+>
+  <i class="icon-svg_web-icon_p1_008-edit"></i>
+</button>
+
+<div class="box__mask" *ngIf="displayEditBox" (click)="cancelEdit()">
+  <div class="popup__box" (click)="$event.stopPropagation()">
+    <h4 class="box__title">{{ 'universal_activityData_editActivityName' | translate }}</h4>
+    <form class="box__content" [formGroup]="formGroup" novalidate (ngSubmit)="submit()">
+      <div class="flexCol input__section">
+        <p class="input__row">
+          <label class="input__label" for="name">
+            {{ 'universal_activityData_activityName' | translate }}:
+          </label>
+          <input
+            class="name__input"
+            id="name"
+            type="text"
+            [formControl]="formGroup.controls.dispName"
+            maxlength="24"
+          />
+        </p>
+        <span class="error__hint">
+          <ng-container *ngIf="formGroup.controls.dispName.errors">
+            {{ 'universal_status_wrongFormat' | translate }}
+          </ng-container>
+          <ng-container *ngIf="!formGroup.controls.dispName.errors">&nbsp;</ng-container>
+        </span>
+      </div>
+      <p class="flexRow button__section">
+        <button type="button" class="cancel__button" (click)="cancelEdit()">
+          {{ 'universal_operating_cancel' | translate }}
+        </button>
+        <button type="submit" class="submit__button" [disabled]="formGroup.status === 'INVALID'">
+          {{ 'universal_operating_confirm' | translate }}
+        </button>
+      </p>
+    </form>
+  </div>
+</div>

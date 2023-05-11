@@ -1,0 +1,18 @@
+<app-loading-mask [isLoading]="isLoading"></app-loading-mask>
+<button
+  class="flexCenter function__toolbar__button"
+  [title]="'universal_operating_selectImg' | translate"
+  (click)="showEditBox()"
+>
+  <i class="icon-svg_web-icon_p2_096-camera"></i>
+</button>
+
+<section class="flexCenter info-editMask" *ngIf="displayEditBox">
+  <div class="imgSelector">
+    <app-image-cropper
+      [imgInputEvent]="null"
+      [albumType]="AlbumType.personalSportFile"
+      (closeSelector)="closeSelector($event)"
+    ></app-image-cropper>
+  </div>
+</section>

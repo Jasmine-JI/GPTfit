@@ -1,0 +1,30 @@
+<button class="flexCenter function__toolbar__button" (click)="showAlert()">
+  <i class="icon-svg_web-icon_p1_013-share"></i>
+</button>
+
+<div class="box__mask" *ngIf="displayAlert" (click)="cancel()">
+  <div class="popup__box" (click)="$event.stopPropagation()">
+    <h4 class="box__title">Message</h4>
+    <div class="box__content">
+      <p class="alert__text">
+        {{ 'universal_privacy_usingSharing' | translate }}
+      </p>
+      <p class="flexRow button__section">
+        <button type="button" class="cancel__button" (click)="cancel()">
+          {{ 'universal_operating_cancel' | translate }}
+        </button>
+        <button type="submit" class="submit__button" (click)="updatePrivacy()">
+          {{ 'universal_operating_confirm' | translate }}
+        </button>
+      </p>
+    </div>
+  </div>
+</div>
+
+<app-share-box
+  [title]="title"
+  [link]="link"
+  [debugLink]="debugLink"
+  (closeBox)="closeSharedBox()"
+  *ngIf="displayShareBox"
+></app-share-box>

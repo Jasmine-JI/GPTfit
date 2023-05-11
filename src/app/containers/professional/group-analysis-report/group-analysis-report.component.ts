@@ -114,6 +114,11 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
   isLoading = false;
 
   /**
+   * 是否無資料顯示
+   */
+  noData = true;
+
+  /**
    * 資料最後更新時間
    */
   lastUpdateTime$: Observable<any>;
@@ -293,11 +298,14 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
   getAnalysisInfo() {
     this.isLoading = true;
     this.api41xxService.fetchGetGroupOperationDetail(this.post.api4104Post).subscribe((res) => {
+      this.isLoading = false;
       if (checkResponse(res, false)) {
+        const emptyObj = Object.keys(res.info).length === 0;
+        if (emptyObj) return;
+        this.noData = false;
         this.analysisInfo = res;
         this.overviewData = this.handleOverviewChartData(this.analysisInfo);
         this.creationTime = this.getCurrentTime();
-        this.isLoading = false;
       }
     });
   }
@@ -503,7 +511,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
    * 取得'平均人次/課'的翻譯
    */
   getAvgPersonCourseTranslate() {
-    const agePersonTranslate = this.translate.instant('平均人次');
+    const agePersonTranslate = this.translate.instant('universal_group_avgPersonCounts');
     const courseTranslate = this.translate.instant('universal_group_class');
     return `${agePersonTranslate}/${courseTranslate}`;
   }
@@ -544,7 +552,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
           'universal_group_classTime',
           'universal_group_classCounts',
           'universal_group_classUserCounts',
-          '平均人次',
+          'universal_group_avgPersonCounts',
         ],
       ],
     };
@@ -1529,9 +1537,9 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
         [
           'universal_activityData_dateRange',
           'universal_group_classCounts',
-          '平均課程時數',
+          'universal_group_avgClassTime',
           'universal_group_totalClassUserCounts',
-          '上課人次增長(%)',
+          `${this.translate.instant('universal_group_classUserCountsGrowth')}(%)`,
           this.getAvgPersonCourseTranslate(),
           'universal_group_maleClassUsersCounts',
           `${this.translate.instant('universal_group_maleUserGrowth')}(%)`,
@@ -1632,9 +1640,9 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
           'universal_group_groupName',
           'universal_activityData_dateRange',
           'universal_group_classCounts',
-          '平均課程時數',
+          'universal_group_avgClassTime',
           'universal_group_totalClassUserCounts',
-          '上課人次增長(%)',
+          `${this.translate.instant('universal_group_classUserCountsGrowth')}(%)`,
           this.getAvgPersonCourseTranslate(),
           'universal_group_maleClassUsersCounts',
           `${this.translate.instant('universal_group_maleUserGrowth')}(%)`,
@@ -2297,7 +2305,14 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
           OperationDataType.normal,
         ],
       },
-      data: [[`單位日期`, olderColumnHeader, newerColumnHeader, '增長(%)']],
+      data: [
+        [
+          this.translate.instant('universal_time_dateUnit'),
+          olderColumnHeader,
+          newerColumnHeader,
+          `${this.translate.instant('universal_group_growth')}(%)`,
+        ],
+      ],
     };
 
     for (let i = 0; i < finalLength; i++) {
@@ -2494,13 +2509,13 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
           null,
         ],
         [
-          `單位日期`,
+          this.translate.instant('universal_time_dateUnit'),
           olderColumnHeader,
           newerColumnHeader,
-          '增長(%)',
+          `${this.translate.instant('universal_group_growth')}(%)`,
           olderColumnHeader,
           newerColumnHeader,
-          '增長(%)',
+          `${this.translate.instant('universal_group_growth')}(%)`,
         ],
       ],
     };
@@ -2593,7 +2608,14 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
           OperationDataType.normal,
         ],
       },
-      data: [['單位日期', olderColumnHeader, newerColumnHeader, '增長(%)']],
+      data: [
+        [
+          this.translate.instant('universal_time_dateUnit'),
+          olderColumnHeader,
+          newerColumnHeader,
+          `${this.translate.instant('universal_group_growth')}(%)`,
+        ],
+      ],
     };
 
     for (let i = 0; i < finalLength; i++) {
@@ -2712,13 +2734,13 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
           null,
         ],
         [
-          `單位日期`,
+          this.translate.instant('universal_time_dateUnit'),
           olderColumnHeader,
           newerColumnHeader,
-          '增長(%)',
+          `${this.translate.instant('universal_group_growth')}(%)`,
           olderColumnHeader,
           newerColumnHeader,
-          '增長(%)',
+          `${this.translate.instant('universal_group_growth')}(%)`,
         ],
       ],
     };
@@ -2825,7 +2847,14 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
           OperationDataType.normal,
         ],
       },
-      data: [['單位日期', olderColumnHeader, newerColumnHeader, '增長(%)']],
+      data: [
+        [
+          this.translate.instant('universal_time_dateUnit'),
+          olderColumnHeader,
+          newerColumnHeader,
+          `${this.translate.instant('universal_group_growth')}(%)`,
+        ],
+      ],
     };
 
     const deviceTypeCompareTrendChart = {
@@ -3399,9 +3428,9 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
           'universal_group_groupName',
           'universal_activityData_dateRange',
           'universal_group_classCounts',
-          '平均課程時數',
+          'universal_group_avgClassTime',
           'universal_group_totalClassUserCounts',
-          '上課人次增長(%)',
+          `${this.translate.instant('universal_group_classUserCountsGrowth')}(%)`,
           this.getAvgPersonCourseTranslate(),
           'universal_group_maleClassUsersCounts',
           `${this.translate.instant('universal_group_maleUserGrowth')}(%)`,

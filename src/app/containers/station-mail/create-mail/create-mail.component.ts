@@ -24,7 +24,7 @@ import { takeUntil, debounceTime, switchMap, map } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { appPath } from '../../../app-path.const';
-import { QueryString } from '../../../shared/enum/query-string';
+import { QueryString } from '../../../core/enums/common';
 import { KeyCode } from '../../../shared/models/key-code';
 import { AccessRight } from '../../../shared/enum/accessright';
 import { REGEX_GROUP_ID } from '../../../shared/models/utils-constant';

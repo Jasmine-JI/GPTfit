@@ -1,0 +1,64 @@
+.header__row {
+  align-items: center;
+}
+
+.sport__type__icon {
+  $size: 50px;
+  font-size: 30px;
+  color: rgba(100, 100, 100, 1);
+  border: 2px solid rgba(200, 200, 200, 1);
+  border-radius: 50%;
+  height: $size;
+  width: $size;
+  min-width: $size;
+  margin-right: 0.5rem;
+}
+
+.header__remark {
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.activiy__start__time {
+  font-size: 0.75rem;
+  color: rgba(150, 150, 150, 1);
+  line-height: 1;
+  margin-right: 0.5rem;
+}
+
+.user__info {
+  align-items: center;
+}
+
+.user__icon {
+  $size: 1rem;
+  border-radius: 50%;
+  height: $size;
+  width: $size;
+  min-width: $size;
+  margin-right: 0.5rem;
+}
+
+.user__nickname {
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.user__link {
+  color: black;
+  border-bottom: 1px solid black;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  &:visited {
+    color: black;
+  }
+}
+
+.file__title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: rgba(115, 115, 115, 1);
+}

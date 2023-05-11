@@ -87,6 +87,8 @@ import {
   LoadingBarComponent,
   LoadingMaskComponent,
   PaginationComponent,
+  ImgCropperComponent,
+  ShareBoxComponent,
 } from '../../components';
 import {
   DateUnitKeyPipe,
@@ -183,6 +185,8 @@ import { MemberAnalysisListComponent } from '../professional';
     LoadingBarComponent,
     LoadingMaskComponent,
     PaginationComponent,
+    ImgCropperComponent,
+    ShareBoxComponent,
     SexPipe,
     SafeHtmlPipe,
     LineBreakPipe,

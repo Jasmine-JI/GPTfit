@@ -3,9 +3,9 @@
  * @param _search {string}-query string
  * @returns {any}-物件 {queryKey: queryValue }
  */
-export function getUrlQueryStrings(search: string = undefined) {
+export function getUrlQueryStrings(search?: string) {
   const queryString = search || window.location.search;
-  const queryObj = {} as any;
+  const queryObj = {} as { [key: string]: any };
   let queryArr: Array<string>;
 
   if (!queryString) {

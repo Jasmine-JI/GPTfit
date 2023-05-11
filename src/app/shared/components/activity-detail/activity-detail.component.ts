@@ -35,7 +35,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../message-box/message-box.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShareGroupInfoDialogComponent } from '../share-group-info-dialog/share-group-info-dialog.component';
-import { PrivacyObj } from '../../models/user-privacy';
+import { PrivacyObj } from '../../../core/enums/api';
 import { EditIndividualPrivacyComponent } from '../edit-individual-privacy/edit-individual-privacy.component';
 import { AlbumType } from '../../models/image';
 import { v5 as uuidv5 } from 'uuid';

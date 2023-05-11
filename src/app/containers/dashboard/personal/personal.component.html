@@ -198,3 +198,11 @@
     {{ 'universal_deviceSetting_adout' | translate }}
   </ng-container>
 </ng-template>
+
+<app-share-box
+  [title]="share.title"
+  [link]="share.link"
+  [debugLink]="debugLink"
+  (closeBox)="closeSharedBox()"
+  *ngIf="uiFlag.displayShareBox"
+></app-share-box>

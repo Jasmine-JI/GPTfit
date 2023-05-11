@@ -1,0 +1,67 @@
+<app-loading-mask [isLoading]="isLoading"></app-loading-mask>
+<button class="flexCenter function__toolbar__button" (click)="showEditBox()">
+  <i class="icon-svg_web-icon_p1_059-lock"></i>
+</button>
+
+<div class="box__mask" *ngIf="displayBox" (click)="cancelEdit()">
+  <div class="popup__box" (click)="$event.stopPropagation()">
+    <h4 class="box__title">{{ 'universal_privacy_set' | translate }}</h4>
+    <div class="box__content">
+      <div class="flexCol">
+        <div class="flexRow rod__bar__section">
+          <span>
+            {{ 'universal_operating_close' | translate }}
+          </span>
+          <div
+            class="rodBar"
+            [class.rodBar--active]="setting.size > 1"
+            (click)="batchChangePrivacy()"
+          ></div>
+          <span style="margin-left: 10px">
+            {{ 'universal_privacy_openPrivacy' | translate }}
+          </span>
+        </div>
+        <ng-container *ngIf="setting.size > 1">
+          <p class="checkbox__description">{{ 'universal_privacy_openOnlyObject' | translate }}:</p>
+          <div class="checkbox__section">
+            <span *ngTemplateOutlet="checkBox; context: { obj: PrivacyObj.anyone }"></span>
+            <span *ngTemplateOutlet="checkBox; context: { obj: PrivacyObj.myGroup }"></span>
+            <span *ngTemplateOutlet="checkBox; context: { obj: PrivacyObj.onlyGroupAdmin }"></span>
+          </div>
+        </ng-container>
+      </div>
+      <p class="flexRow button__section">
+        <button type="button" class="cancel__button" (click)="cancelEdit()">
+          {{ 'universal_operating_cancel' | translate }}
+        </button>
+        <button type="submit" class="submit__button" (click)="updatePrivacy()">
+          {{ 'universal_operating_confirm' | translate }}
+        </button>
+      </p>
+    </div>
+  </div>
+</div>
+
+<ng-template #checkBox let-obj="obj">
+  <span class="flexRow checkBoxBlock">
+    <span class="layer__line" *ngIf="obj !== PrivacyObj.anyone">└</span>
+    <button
+      [id]="'privacy' + obj"
+      [class.checkBox--active]="setting.has(obj)"
+      (click)="changePrivacy(obj)"
+    >
+      <span *ngIf="setting.has(obj)">✔</span>
+    </button>
+    <label [for]="'privacy' + obj" class="checkbox__label" [ngSwitch]="obj">
+      <ng-container *ngSwitchCase="PrivacyObj.anyone">
+        {{ 'universal_privacy_allMember' | translate }}
+      </ng-container>
+      <ng-container *ngSwitchCase="PrivacyObj.myGroup">
+        {{ 'universal_group_myGroup' | translate }}
+      </ng-container>
+      <ng-container *ngSwitchCase="PrivacyObj.onlyGroupAdmin">
+        {{ 'universal_group_administrator' | translate }}
+      </ng-container>
+    </label>
+  </span>
+</ng-template>

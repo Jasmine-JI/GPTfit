@@ -1,0 +1,41 @@
+<app-loading-bar [progress]="progress"></app-loading-bar>
+<app-loading-mask [isLoading]="progress !== 100"></app-loading-mask>
+<app-connection-error *ngIf="connectionError"></app-connection-error>
+<article class="file__content grid-container" *ngIf="baseFileData && !connectionError">
+  <div class="function__toolbar grid-col-12" *ngIf="!isPreviewPrint">
+    <app-edit-button
+      [fileName]="baseFileData.fileInfo.dispName"
+      [fileId]="baseFileData.fileInfo.fileId"
+      (changeFileName)="updateFileName($event)"
+      *ngIf="isFileOwner"
+    ></app-edit-button>
+    <app-change-photo-button
+      [fileId]="baseFileData.fileInfo.fileId"
+      [photo]="baseFileData.fileInfo.photo"
+      (changePhoto)="changeFileSenery($event)"
+      *ngIf="isFileOwner"
+    ></app-change-photo-button>
+    <app-privacy-setting-button
+      [fileInfo]="baseFileData.fileInfo"
+      *ngIf="isFileOwner"
+    ></app-privacy-setting-button>
+    <app-share-button
+      [title]="baseFileData.fileInfo.dispName"
+      [fileId]="baseFileData.fileInfo.fileId"
+      *ngIf="isFileOwner"
+    ></app-share-button>
+    <app-download-gpx-button [rawData]="baseFileData" *ngIf="isFileOwner"></app-download-gpx-button>
+    <app-download-csv-button [rawData]="baseFileData" *ngIf="isFileOwner"></app-download-csv-button>
+    <app-print-button [fileId]="baseFileData.fileInfo.fileId"></app-print-button>
+    <app-delete-button
+      [fileId]="baseFileData.fileInfo.fileId"
+      *ngIf="isFileOwner"
+    ></app-delete-button>
+    <app-return-button></app-return-button>
+  </div>
+  <app-header
+    class="grid-col-12"
+    [baseData]="baseFileData"
+    [compareData]="compareFileData"
+  ></app-header>
+</article>
