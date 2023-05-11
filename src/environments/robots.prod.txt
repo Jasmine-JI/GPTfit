@@ -9,5 +9,6 @@ Disallow: /resetPassword-web/*
 Disallow: /pair/*
 Disallow: /403
 Disallow: /404
+Disallow: /500
 
 Sitemap: https://www.gptfit.com/sitemap.xml

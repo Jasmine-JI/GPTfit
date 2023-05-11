@@ -53,7 +53,9 @@ import { ReceiverListComponent } from '../station-mail/receiver-list/receiver-li
 import { appPath } from '../../app-path.const';
 import { GsensorComponent } from './components/gsensor/gsensor.component';
 import { Page404Component } from '../../shared/components/page404/page404.component';
+import { Page403Component } from '../../shared/components/page403/page403.component';
 import { GroupAnalysisReportComponent } from '../professional';
+import { SportsDetailComponent } from '../personal';
 
 const routes: Routes = [
   {
@@ -321,7 +323,11 @@ const routes: Routes = [
         component: GsensorComponent,
       },
       {
-        path: '404',
+        path: appPath.pageNoPermission,
+        component: Page403Component,
+      },
+      {
+        path: appPath.pageNotFound,
         component: Page404Component,
       },
       {
@@ -329,10 +335,6 @@ const routes: Routes = [
         redirectTo: appPath.pageNotFound,
       },
     ],
-  },
-  {
-    path: '**',
-    redirectTo: appPath.pageNotFound,
   },
 ];
 

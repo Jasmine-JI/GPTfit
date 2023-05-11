@@ -1,8 +1,5 @@
 <app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
-<app-loading-mask
-  [isLoading]="uiFlag.progress !== 100"
-  *ngIf="uiFlag.progress !== 100"
-></app-loading-mask>
+<app-loading-mask [isLoading]="uiFlag.progress !== 100"></app-loading-mask>
 <div class="page__standby" [class.slide__in]="uiFlag.progress === 100">
   <section
     *ngTemplateOutlet="

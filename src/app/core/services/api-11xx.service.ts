@@ -3,6 +3,9 @@ import { Injectable } from '@angular/core';
 import { throwError, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
+/**
+ * 群組相關api
+ */
 @Injectable({
   providedIn: 'root',
 })

@@ -1,0 +1,20 @@
+@import 'screen-size.scss';
+
+@mixin custom-grid($gap: 1rem, $grid-num: 12) {
+  display: grid;
+  gap: $gap;
+  grid-template-columns: repeat($grid-num, 1fr);
+}
+
+.grid-container {
+  @include custom-grid();
+  @include medium-screen() {
+    grid-template-columns: 1fr;
+  }
+}
+
+@for $i from 1 through 12 {
+  .grid-col-#{$i} {
+    grid-column: span $i;
+  }
+}

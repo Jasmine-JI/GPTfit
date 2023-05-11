@@ -1,7 +1,4 @@
-<app-loading-mask
-  [isLoading]="uiFlag.progress !== 100"
-  *ngIf="uiFlag.progress !== 100"
-></app-loading-mask>
+<app-loading-mask [isLoading]="uiFlag.progress !== 100"></app-loading-mask>
 <div class="flexCol">
   <div class="child-back__button__row" *ngIf="uiFlag.isMobile">
     <button (click)="turnBack()">

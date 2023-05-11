@@ -1,5 +1,5 @@
-import { fromEvent, merge } from 'rxjs';
-import { QueryString } from '../../shared/enum/query-string';
+import { Observable, fromEvent, merge, of, throwError } from 'rxjs';
+import { QueryString } from '../enums/common';
 import { rgbaReg, hslaReg } from '../models/regex';
 import { DateUnit } from '../../shared/enum/report';
 import { ReportDateUnit } from '../../shared/classes/report-date-unit';
@@ -75,6 +75,16 @@ export function checkResponse(res: any, showErrorMessage = true): boolean {
  */
 export function showErrorApiLog(resultCode: number, apiCode: number, msg: string) {
   console.error(`${resultCode}: Api ${apiCode} ${msg}`);
+}
+
+/**
+ * 確認回應是否有效，無效拋出錯誤並回傳resultCode
+ * @param res api 回應
+ * @param showErrorMsg 顯示錯誤訊息與否
+ */
+export function checkRxFlowResponse(res: any, showErrorMsg = false): Observable<any> {
+  const isEffect = checkResponse(res, showErrorMsg);
+  return isEffect ? of(res) : throwError(res.resultCode);
 }
 
 /**
@@ -345,4 +355,24 @@ export function getWeekdayKey(index: number, isAbbreviation = true) {
     case 6:
       return isAbbreviation ? 'universal_time_sun' : 'universal_time_sunday';
   }
+}
+
+/**
+ * 將api response特定格式資料拆解為好取得的格式
+ * @param nameInfo 特殊格式名稱字串
+ */
+export function splitNameInfo(nameInfo: string): { [key: string]: string } {
+  let result = {};
+  const [name, ...rest] = nameInfo.split('?');
+  rest.forEach((_restInfo) =>
+    _restInfo.split('&').forEach((_info) => {
+      const [key, value] = _info.split('=');
+      result = { [key]: value, ...result };
+    })
+  );
+
+  return {
+    name,
+    ...result,
+  };
 }

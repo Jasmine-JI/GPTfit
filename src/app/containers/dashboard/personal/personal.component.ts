@@ -24,11 +24,10 @@ import { v5 as uuidv5 } from 'uuid';
 import dayjs from 'dayjs';
 import { ImageUploadService } from '../services/image-upload.service';
 import { MatDialog } from '@angular/material/dialog';
-import { ShareGroupInfoDialogComponent } from '../../../shared/components/share-group-info-dialog/share-group-info-dialog.component';
 import { TranslateService } from '@ngx-translate/core';
 import { getUrlQueryStrings, base64ToFile } from '../../../core/utils';
 import { appPath } from '../../../app-path.const';
-import { QueryString } from '../../../shared/enum/query-string';
+import { QueryString } from '../../../core/enums/common';
 
 type ImgType = 'icon' | 'scenery';
 
@@ -69,6 +68,7 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
     hideScenery: false,
     isSettingPage: false,
     patchEditPrivacy: false,
+    displayShareBox: false,
   };
 
   /**
@@ -92,6 +92,14 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
   perPageOptSize = {
     total: 0,
     perSize: <Array<number>>[],
+  };
+
+  /**
+   * 分享框顯示內容
+   */
+  share = {
+    title: '',
+    link: '',
   };
 
   userProfile: UserProfileInfo;
@@ -135,8 +143,8 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
    * @author kidin-1100812
    */
   checkPage() {
-    const { pathname, search } = location;
-    const [origin, mainPath, secondPath, thirdPath] = pathname.split('/');
+    const { pathname } = location;
+    const [, mainPath, secondPath, thirdPath] = pathname.split('/');
     switch (mainPath) {
       case 'dashboard': {
         const isSettingPath = secondPath === 'user-settings';
@@ -146,9 +154,8 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
         break;
       }
       case 'user-profile': {
-        const redirectPath = `/dashboard/${thirdPath}${search}`;
         this.handleNotDashBoardPage();
-        this.checkPageOwner(redirectPath);
+        this.checkPageOwner(thirdPath);
         break;
       }
       default:
@@ -159,11 +166,18 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * 確認目前頁面擁有者是否為自己
+   * @param thirdPath 第三個路徑名稱
    */
-  checkPageOwner(redirectPath: string) {
+  checkPageOwner(thirdPath: string) {
     const userId = this.usreService.getUser().userId;
     const targetUserId = this.getPageOwnerId();
-    if (targetUserId === userId) this.router.navigateByUrl(redirectPath);
+    if (targetUserId === userId) {
+      if (!thirdPath) return this.router.navigateByUrl('/dashboard/activity-list');
+
+      const { search } = location;
+      const redirectPath = `/dashboard/${thirdPath}${search}`;
+      return this.router.navigateByUrl(redirectPath);
+    }
   }
 
   /**
@@ -645,18 +659,21 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * 開啟分享框
-   * @author kidin-1100812
    */
   openSharePersonalPage() {
-    this.dialog.open(ShareGroupInfoDialogComponent, {
-      hasBackdrop: true,
-      data: {
-        url: `${location.origin}/user-profile/${this.hashUserId}`,
-        title: this.translate.instant('universal_operating_share'),
-        shareName: this.userProfile.nickname || '',
-        cancelText: this.translate.instant('universal_operating_confirm'),
-      },
-    });
+    this.share = {
+      title: this.userProfile.nickname || '',
+      link: `${location.origin}/user-profile/${this.hashUserId}`,
+    };
+
+    this.uiFlag.displayShareBox = true;
+  }
+
+  /**
+   * 關閉分享框
+   */
+  closeSharedBox() {
+    this.uiFlag.displayShareBox = false;
   }
 
   /**

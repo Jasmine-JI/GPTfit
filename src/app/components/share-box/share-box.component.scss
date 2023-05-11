@@ -1,0 +1,118 @@
+@import 'z-index.scss';
+@import 'transform.scss';
+@import 'screen-size.scss';
+
+@mixin button() {
+  border-radius: 5px;
+  height: 2rem;
+  width: 8rem;
+  font-size: 1.1rem;
+
+  @include medium-screen() {
+    width: 8rem;
+    font-size: 1rem;
+  }
+}
+
+$dialog-border-radius: 10px;
+
+.box__mask {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: $content-navbar;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.popup__box {
+  $shadow-color: rgba(0, 0, 0, 0.15);
+  $shadow-size: 2px;
+  $blur: 20px;
+  align-items: center;
+  position: fixed;
+  width: fit-content;
+  max-width: 800px;
+  min-width: 300px;
+  left: 50%;
+  top: 50%;
+  background-color: white;
+  z-index: $float-tips;
+  border-radius: $dialog-border-radius;
+  box-shadow: $shadow-size $shadow-size $blur $shadow-color,
+    (-$shadow-size) $shadow-size $blur $shadow-color,
+    $shadow-size (-$shadow-size) $blur $shadow-color,
+    (-$shadow-size) (-$shadow-size) $blur $shadow-color;
+  @include el-transform(translate(-50%, -50%));
+}
+
+.box__title {
+  text-align: center;
+  color: white;
+  background-color: rgb(47, 67, 73, 1);
+  width: 100%;
+  padding: 0.5rem 0;
+  border-radius: $dialog-border-radius $dialog-border-radius 0 0;
+  margin: 0;
+}
+
+.box__content {
+  padding: 1rem 2rem;
+}
+
+.qrcode__section {
+  align-items: center;
+}
+
+.qrcode__title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.7);
+  margin: 0;
+}
+
+.link__section {
+  margin: 1rem 0;
+}
+
+.link__title {
+  margin: 5px 0;
+  font-size: 1rem;
+}
+
+.link__input {
+  font-size: 0.8rem;
+  width: 100%;
+  padding: 0 5px;
+  border-radius: 1rem;
+}
+
+.button__section {
+  justify-content: space-around;
+  margin: 1rem 0 0 0;
+
+  .close__button,
+  .app__share__button {
+    font-size: 1rem;
+  }
+}
+
+.close__button {
+  @include button();
+  color: rgba(244, 67, 54, 1);
+
+  &:hover {
+    background-color: rgba(250, 240, 240, 1);
+  }
+}
+
+.app__share__button {
+  @include button();
+  color: white;
+  background-color: rgba(43, 129, 155, 1);
+
+  &:hover {
+    background-color: rgba(43, 129, 155, 0.9);
+  }
+}

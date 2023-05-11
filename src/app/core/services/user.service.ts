@@ -113,7 +113,7 @@ export class UserService {
   /**
    * 不套用authService.token，避免circular inject
    */
-  getToken() {
+  private getToken() {
     return localStorage.getItem(LocalStorageKey.token) || '';
   }
 }

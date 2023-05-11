@@ -15,7 +15,7 @@ import { EventStatus, ApplyStatus, EventInfo, EventDetail } from '../../models/a
 import { AccessRight } from '../../../../shared/enum/accessright';
 import { Gender } from '../../../../core/enums/personal';
 import { UserProfileInfo } from '../../../../shared/models/user-profile-info';
-import { QueryString } from '../../../../shared/enum/query-string';
+import { QueryString } from '../../../../core/enums/common';
 
 const switchButtonWidth = 40;
 const navHeight = 60;

@@ -35,7 +35,7 @@ import { AlaApp } from '../../../../shared/models/app-id';
 import { EnableAccountFlow } from '../../../../shared/models/signup-response';
 import { LockCaptcha } from '../../../../shared/classes/lock-captcha';
 import { checkResponse, getCurrentTimestamp, getUrlQueryStrings } from '../../../../core/utils';
-import { QueryString } from '../../../../shared/enum/query-string';
+import { QueryString } from '../../../../core/enums/common';
 
 const stageHeight = 90;
 const fullMsg = 'Apply group full.';

@@ -38,7 +38,8 @@
               "src/styles/module/dialog.scss",
               "src/styles/module/operation-report.scss",
               "src/styles/module/official-activity.scss",
-              "src/styles/module/app-webview.scss"
+              "src/styles/module/app-webview.scss",
+              "src/styles/module/grid.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
@@ -230,7 +231,8 @@
               "src/styles/module/report.scss",
               "src/styles/module/dialog.scss",
               "src/styles/module/official-activity.scss",
-              "src/styles/module/app-webview.scss"
+              "src/styles/module/app-webview.scss",
+              "src/styles/module/grid.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [

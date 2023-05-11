@@ -2,7 +2,8 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
-import { PrivacyObj, allPrivacyItem } from '../../models/user-privacy';
+import { PrivacyObj } from '../../../core/enums/api';
+import { allPrivacyItem } from '../../../core/models/const';
 import { AuthService, Api21xxService } from '../../../core/services';
 
 @Component({
@@ -37,7 +38,6 @@ export class EditIndividualPrivacyComponent implements OnInit {
 
   /**
    * 取得該筆運動檔案目前隱私權設定
-   * @author kidin-1100302
    */
   getCurrentSetting() {
     const { openObj } = this.data;
@@ -68,7 +68,6 @@ export class EditIndividualPrivacyComponent implements OnInit {
   /**
    * 選擇開放隱私權的對象 1:僅自己 2:我的朋友 3:我的群組 4:我的健身房教練 99:所有人
    * @param privacy {PrivacyObj}
-   * @author kidin-1100302
    */
   selectModifyRange(privacy: PrivacyObj) {
     const privacySetting = this.openObj;
@@ -118,7 +117,6 @@ export class EditIndividualPrivacyComponent implements OnInit {
 
   /**
    * 根據使用者選擇修改隱私權
-   * @author kidin-1100302
    */
   modifyPrivacy() {
     let body;

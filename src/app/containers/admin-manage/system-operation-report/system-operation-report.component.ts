@@ -1021,7 +1021,11 @@ export class SystemOperationReportComponent implements OnInit {
               ],
             },
             data: [
-              [`日期範圍(${this.getDateUnitString()})`, dataName, '增長(%)'],
+              [
+                `日期範圍(${this.getDateUnitString()})`,
+                dataName,
+                `${this.translate.instant('universal_group_growth')}(%)`,
+              ],
               [trendTableRowHeader, processedValue, '-'],
             ],
           };
@@ -1165,7 +1169,11 @@ export class SystemOperationReportComponent implements OnInit {
               ],
             },
             data: [
-              [`日期範圍(${this.getDateUnitString()})`, dataName, '增長(%)'],
+              [
+                `日期範圍(${this.getDateUnitString()})`,
+                dataName,
+                `${this.translate.instant('universal_group_growth')}(%)`,
+              ],
               [trendTableRowHeader, dataValue, '-'],
             ],
           };
@@ -1419,7 +1427,12 @@ export class SystemOperationReportComponent implements OnInit {
               ],
             },
             data: [
-              [`單位日期`, olderColumnHeader, newerColumnHeader, '增長(%)'],
+              [
+                this.translate.instant('universal_time_dateUnit'),
+                olderColumnHeader,
+                newerColumnHeader,
+                `${this.translate.instant('universal_group_growth')}(%)`,
+              ],
               [trendTableRowHeader, _olderProcessedValue, _newerProcessedValue, '-'],
             ],
           };
@@ -1683,7 +1696,12 @@ export class SystemOperationReportComponent implements OnInit {
               ],
             },
             data: [
-              [`單位日期`, olderColumnHeader, newerColumnHeader, '增長(%)'],
+              [
+                this.translate.instant('universal_time_dateUnit'),
+                olderColumnHeader,
+                newerColumnHeader,
+                `${this.translate.instant('universal_group_growth')}(%)`,
+              ],
               [trendTableRowHeader, _olderValue, _newerValue, '-'],
             ],
           };
@@ -1743,7 +1761,9 @@ export class SystemOperationReportComponent implements OnInit {
           OperationDataType.normal,
         ],
       },
-      data: <Array<Array<string | number>>>[['運動類別', ...header, '增長(%)']],
+      data: <Array<Array<string | number>>>[
+        ['運動類別', ...header, `${this.translate.instant('universal_group_growth')}(%)`],
+      ],
     };
 
     olderMap.forEach((_olderValue, _typeCode) => {
@@ -1911,7 +1931,12 @@ export class SystemOperationReportComponent implements OnInit {
               ],
             },
             data: [
-              [`單位日期`, olderColumnHeader, newerColumnHeader, '增長(%)'],
+              [
+                this.translate.instant('universal_time_dateUnit'),
+                olderColumnHeader,
+                newerColumnHeader,
+                `${this.translate.instant('universal_group_growth')}(%)`,
+              ],
               [trendTableRowHeader, _olderValue, _newerValue, '-'],
             ],
           };
@@ -2442,7 +2467,12 @@ export class SystemOperationReportComponent implements OnInit {
     const result = [];
     deviceCode.forEach((_name) => {
       const _code = _name.split('d')[1];
-      result.push(...[getDevicTypeInfo(_code, 'key'), '增長(%)']);
+      result.push(
+        ...[
+          getDevicTypeInfo(_code, 'key'),
+          `${this.translate.instant('universal_group_growth')}(%)`,
+        ]
+      );
     });
 
     return result;

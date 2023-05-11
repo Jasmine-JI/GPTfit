@@ -120,7 +120,7 @@
               </div>
             </div>
             <div class="flexCol">
-              <h6 class="content__title">{{ '近一個月概況' | translate }}</h6>
+              <h6 class="content__title">{{ 'universal_time_lastMonthSummary' | translate }}</h6>
               <div class="content__section">
                 <div
                   *ngTemplateOutlet="
@@ -138,9 +138,20 @@
                     detailGrid;
                     context: {
                       detailArray: [
-                        ['universal_group_classCounts', _list.oneMonthAnalysis.oneMonthAnalysis],
+                        ['universal_group_classCounts', _list.oneMonthAnalysis.teachCounts],
                         ['universal_group_classUserCounts', _list.oneMonthAnalysis.attendsCounts],
                         ['課程檔案數', _list.oneMonthAnalysis.classFile]
+                      ]
+                    }
+                  "
+                ></div>
+                <div
+                  *ngTemplateOutlet="
+                    detailGrid;
+                    context: {
+                      detailArray: [
+                        ['上課活躍人數', _list.oneMonthAnalysis.class_active_count],
+                        ['運動活躍人數', _list.oneMonthAnalysis.group_active_count]
                       ]
                     }
                   "
@@ -192,7 +203,7 @@
     <app-pagination [pageSetting]="page$ | async" (pageChange)="shiftPage($event)"></app-pagination>
   </section>
   <p class="update__time" *ngIf="lastUpdateTime$ | async as lastUpdateTime">
-    {{ 'universal_group_lastUpdateddate' }}:
+    {{ 'universal_group_lastUpdateddate' | translate }}:
     <time>{{ lastUpdateTime.update.timestamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm' }}</time>
   </p>
 </article>

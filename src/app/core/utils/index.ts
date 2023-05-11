@@ -11,3 +11,4 @@ export * from './img-file-handler';
 export * from './professional';
 export * from './cjson-fieldname-convert';
 export * from './device';
+export * from './form-validating';

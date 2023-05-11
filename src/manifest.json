@@ -1,7 +1,7 @@
 {
-  "name": "web",
-  "short_name": "web",
-  "theme_color": "#1976d2",
+  "name": "GPTfit",
+  "short_name": "GPTfit",
+  "theme_color": "#b50c5d",
   "background_color": "#fafafa",
   "display": "standalone",
   "scope": "/",

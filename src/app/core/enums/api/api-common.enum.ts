@@ -1,4 +1,14 @@
 /**
+ * 檔案類別
+ */
+export enum FileType {
+  trainingProgram = 1, // 訓練程序
+  activityTracking, // 運動檔案
+  lifeTracking, // 生活追蹤檔案
+  exchangeProfile, // 資料交換格式
+}
+
+/**
  * 隱私權開放對象
  */
 export enum PrivacyObj {
@@ -17,11 +27,3 @@ export enum PrivacyEditObj {
   sportsReport,
   lifeTracking,
 }
-
-export const allPrivacyItem = [
-  PrivacyObj.self,
-  // PrivacyObj.myFriend
-  PrivacyObj.myGroup,
-  PrivacyObj.onlyGroupAdmin,
-  PrivacyObj.anyone,
-];
