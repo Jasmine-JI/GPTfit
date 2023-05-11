@@ -8,22 +8,28 @@ import {
   OnChanges,
   ElementRef,
   OnDestroy,
+  CUSTOM_ELEMENTS_SCHEMA,
 } from '@angular/core';
-import { ImageCroppedEvent } from 'ngx-image-cropper';
-import { ImageCropperComponent } from 'ngx-image-cropper';
+import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
+import { ImageCroppedEvent, ImageCropperComponent, ImageCropperModule } from 'ngx-image-cropper';
 import { Subject } from 'rxjs';
-import { HintDialogService } from '../../../core/services';
-import { AlbumType } from '../../models/image';
-import { advertiseRatio } from '../../../containers/official-activity/models/official-activity-const';
+import { HintDialogService } from '../../core/services';
+import { AlbumType } from '../../core/enums/api';
+import { advertiseRatio } from '../../containers/official-activity/models/official-activity-const';
+import { CropperResult } from '../../core/models/compo';
 
 @Component({
   selector: 'app-image-cropper',
   templateUrl: './image-cropper.component.html',
   styleUrls: ['./image-cropper.component.scss'],
+  standalone: true,
+  imports: [CommonModule, TranslateModule, ImageCropperModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
   @Input() imgInputEvent: any;
-  @Input() albumType: AlbumType = 1; // 參考api 8001的albumType
+  @Input() albumType: AlbumType = AlbumType.personalIcon; // 參考api 8001的albumType
   @Output() closeSelector = new EventEmitter();
   @ViewChild('imgUpload', { static: false }) imgUpload: ElementRef;
   @ViewChild(ImageCropperComponent, { static: false }) imageCropper: ImageCropperComponent;
@@ -52,7 +58,7 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
   /**
    * 裁切結果
    */
-  result = {
+  result: CropperResult = {
     action: <'close' | 'complete' | null>null,
     img: {
       albumType: this.albumType,
@@ -67,7 +73,6 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * 根據圖片類型設定圖片裁切形狀和比例
-   * @author kidin-1091125
    */
   ngOnChanges() {
     this.result.img.albumType = this.albumType;
@@ -108,7 +113,6 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * 開啟圖片選擇器
-   * @author kidin-1091124
    */
   selectorImg() {
     const imgInput = this.imgUpload.nativeElement;
@@ -117,7 +121,6 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * 關閉圖片選擇器
-   * @author kidin-1091123
    */
   closeImgSelector() {
     this.result.action = 'close';
@@ -126,7 +129,6 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * 處理使用者選擇照片
-   * @author kidin-1091124
    */
   handleImgSelected(e: any) {
     this.uiFlag.isImgUpLoading = true;
@@ -163,7 +165,6 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * 逆時針旋轉90度
-   * @author kidin-1091124
    */
   rotateLeft() {
     this.imageCropper.rotateLeft();
@@ -171,7 +172,6 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * 順時針旋轉90度
-   * @author kidin-1091124
    */
   rotateRight() {
     this.imageCropper.rotateRight();
@@ -179,7 +179,6 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * 水平翻轉
-   * @author kidin-1091124
    */
   flipHorizontal() {
     this.imageCropper.flipHorizontal();
@@ -187,7 +186,6 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * 垂直翻轉
-   * @author kidin-1091124
    */
   flipVertical() {
     this.imageCropper.flipVertical();
@@ -195,7 +193,6 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * 完成裁切
-   * @author kidin-1091125
    */
   finishCrop() {
     this.result.action = this.uiFlag.selectedImg ? 'complete' : 'close';
@@ -204,7 +201,6 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * 解除rxjs訂閱
-   * @author kidin-1091124
    */
   ngOnDestroy() {
     this.ngUnsubscribe.next();

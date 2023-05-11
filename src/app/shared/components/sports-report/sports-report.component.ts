@@ -18,7 +18,6 @@ import {
   TargetField,
   TargetConditionMap,
 } from '../../../core/models/api/api-common/sport-target.model';
-import { QueryString } from '../../enum/query-string';
 import {
   UserService,
   ReportService,
@@ -35,7 +34,7 @@ import { SportsReport } from '../../classes/sports-report/sports-report';
 import { PersonalSportsChartData } from '../../classes/sports-report/personal-sports-chart-data';
 import { sportTypeColor, trendChartColor, HrZoneRange } from '../../models/chart-data';
 import { mi, ft, lb } from '../../models/bs-constant';
-import { DataUnitType } from '../../../core/enums/common';
+import { DataUnitType, QueryString, BenefitTimeStartZone } from '../../../core/enums/common';
 import { DefaultDateRange } from '../../classes/default-date-range';
 import { AccessRight } from '../../enum/accessright';
 import { MuscleGroup, MuscleAnalysisColumn } from '../../enum/weight-train';
@@ -62,7 +61,6 @@ import {
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { SameWeekLifeTrackingData } from '../../classes/same-week-lifetracking-data';
-import { BenefitTimeStartZone } from '../../../core/enums/common';
 import { PersonalChartAnalysisOption } from '../../../containers/personal/classes/personal-chart-analysis-option';
 import { DataDescription } from '../../../core/models/compo';
 

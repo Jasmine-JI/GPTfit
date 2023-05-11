@@ -1,0 +1,32 @@
+.box__content {
+  font-size: 1rem;
+}
+
+.rod__bar__section {
+  align-items: center;
+  margin: 0.5rem 0;
+}
+
+.checkbox__description {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.checkbox__section {
+  margin-left: 1rem;
+}
+
+.checkBoxBlock {
+  min-height: 30px;
+  margin: 0;
+
+  &:nth-child(3) {
+    margin-left: calc(25px);
+  }
+}
+
+.layer__line {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0 5px;
+}

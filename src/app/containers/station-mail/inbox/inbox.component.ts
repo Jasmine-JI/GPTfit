@@ -14,7 +14,7 @@ import dayjs from 'dayjs';
 import { MessageType, ReadStatus } from '../enum/station-mail';
 import { appPath } from '../../../app-path.const';
 import { Router, NavigationEnd } from '@angular/router';
-import { QueryString } from '../../../shared/enum/query-string';
+import { QueryString } from '../../../core/enums/common';
 import { Api50xxService, AuthService } from '../../../core/services';
 import { checkResponse, deepCopy } from '../../../core/utils/index';
 import { TranslateService } from '@ngx-translate/core';

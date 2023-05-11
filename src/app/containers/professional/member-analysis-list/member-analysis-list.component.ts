@@ -141,7 +141,7 @@ export class MemberAnalysisListComponent implements OnInit, OnChanges {
     },
     { textKey: 'universal_userProfile_age', value: MemberListSortType.age },
     { textKey: 'universal_group_totalClassAmount', value: MemberListSortType.totalTeachCounts },
-    { textKey: '累計上課人次', value: MemberListSortType.totalStudentsCounts },
+    { textKey: 'universal_group_totalClassCounts', value: MemberListSortType.totalStudentsCounts },
     { textKey: 'universal_group_lastClassDate', value: MemberListSortType.lastTeachTime },
   ];
 
@@ -158,9 +158,12 @@ export class MemberAnalysisListComponent implements OnInit, OnChanges {
       value: MemberListSortType.gender,
     },
     { textKey: 'universal_userProfile_age', value: MemberListSortType.age },
-    { textKey: '累計上課次數', value: MemberListSortType.totalAttendCounts },
-    { textKey: '累計上課時數', value: MemberListSortType.totalAttendHour },
-    { textKey: '最後上課日', value: MemberListSortType.lastAttendTime },
+    {
+      textKey: 'universal_group_userTotalClassCounts',
+      value: MemberListSortType.totalAttendCounts,
+    },
+    { textKey: 'universal_group_userTotalClassTime', value: MemberListSortType.totalAttendHour },
+    { textKey: 'universal_group_userLastClassDate', value: MemberListSortType.lastAttendTime },
   ];
 
   readonly MemberType = MemberType;

@@ -26,3 +26,6 @@ export * from './operation-list-condition/operation-list-condition.component';
 export * from './aside-index-box/aside-index-box.component';
 export * from './line-column-compare-chart/line-column-compare-chart.component';
 export * from './loading-mask/loading-mask.component';
+export * from './connection-error/connection-error.component';
+export * from './image-cropper/image-cropper.component';
+export * from './share-box/share-box.component';

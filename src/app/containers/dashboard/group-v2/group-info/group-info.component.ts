@@ -27,14 +27,13 @@ import { ImageUploadService } from '../../services/image-upload.service';
 import { AlbumType } from '../../../../shared/models/image';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { PrivacySettingDialogComponent } from '../../../../shared/components/privacy-setting-dialog/privacy-setting-dialog.component';
-import { DataUnitType } from '../../../../core/enums/common';
+import { DataUnitType, QueryString } from '../../../../core/enums/common';
 import { DateUnit } from '../../../../shared/enum/report';
 import { GroupLevel } from '../../models/group-detail';
 import { deepCopy, base64ToFile, displayGroupLevel } from '../../../../core/utils';
 import { ProfessionalService } from '../../../professional/services/professional.service';
 import { AccessRight } from '../../../../shared/enum/accessright';
 import { appPath } from '../../../../app-path.const';
-import { QueryString } from '../../../../shared/enum/query-string';
 import { GroupChildPage } from '../../../../shared/enum/professional';
 
 const errMsg = `Error.<br />Please try again later.`;
@@ -123,6 +122,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     portalMode: false,
     isLoading: false,
     isJoinLoading: false,
+    displayShareBox: false,
   };
 
   /**
@@ -167,6 +167,14 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   };
 
   newGroupId: string;
+
+  /**
+   * 分享框顯示的標題與連結
+   */
+  share = {
+    title: '',
+    link: '',
+  };
 
   readonly AccessRight = AccessRight;
   readonly GroupChildPage = GroupChildPage;
@@ -1170,7 +1178,11 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * 加入群組並顯示隱私權
    */
   joinGroup() {
+    const { currentAllGroupMembers, maxAllGroupMembers } = this.currentGroupInfo.commerceInfo
+      .groupAllMemberStatus ?? { currentAllGroupMembers: 0, maxAllGroupMembers: 0 };
+    if (+currentAllGroupMembers >= +maxAllGroupMembers) return false;
     if (this.user.token.length === 0) {
+      // 透過轉導 dashboard 後的路由守衛轉導登入頁
       this.router.navigateByUrl(
         `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
           this.currentGroupInfo.groupId
@@ -1385,28 +1397,32 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       groupLevel,
       groupDetail: { groupName, groupRootInfo },
     } = this.currentGroupInfo;
-    let shareName: string;
+    let title: string;
     switch (groupLevel) {
       case 30:
-        shareName = groupName;
+        title = groupName;
         break;
       case 40:
-        shareName = `${groupRootInfo[2].brandName}-${groupName}`;
+        title = `${groupRootInfo[2].brandName}-${groupName}`;
         break;
       case 60:
-        shareName = `${groupRootInfo[2].brandName}-${groupRootInfo[3].branchName}-${groupName}`;
+        title = `${groupRootInfo[2].brandName}-${groupRootInfo[3].branchName}-${groupName}`;
         break;
     }
 
-    this.dialog.open(ShareGroupInfoDialogComponent, {
-      hasBackdrop: true,
-      data: {
-        url: `${location.origin}/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}`,
-        title: this.translate.instant('universal_operating_share'),
-        shareName: shareName || '',
-        cancelText: this.translate.instant('universal_operating_confirm'),
-      },
-    });
+    this.share = {
+      title,
+      link: `${location.origin}/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}`,
+    };
+
+    this.uiFlag.displayShareBox = true;
+  }
+
+  /**
+   * 關閉分享框
+   */
+  closeSharedBox() {
+    this.uiFlag.displayShareBox = false;
   }
 
   /**

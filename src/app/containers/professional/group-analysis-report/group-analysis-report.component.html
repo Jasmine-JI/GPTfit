@@ -1,4 +1,4 @@
-<app-loading-mask [isLoading]="isLoading" *ngIf="isLoading"></app-loading-mask>
+<app-loading-mask [isLoading]="isLoading"></app-loading-mask>
 <div class="flexCol group__child__page">
   <h4 class="analysis__report__title">{{ 'universal_group_analysisReport' | translate }}</h4>
   <section class="flexCol">
@@ -11,10 +11,10 @@
       }}</time>
     </p>
   </section>
-  <ng-container *ngIf="!analysisInfo">
+  <ng-container *ngIf="!analysisInfo || noData">
     <p>{{ 'universal_status_noData' | translate }}</p>
   </ng-container>
-  <ng-container *ngIf="analysisInfo">
+  <ng-container *ngIf="analysisInfo && !noData">
     <section class="operation-contentSection">
       <h5 id="summary__info__section" class="operation-sectionTitle">
         {{ 'universal_activityData_summary' | translate }}
@@ -455,7 +455,7 @@
               context: {
                 title: 'universal_group_classAnalysis',
                 elementId: 'teach__analysis__trend',
-                description: '此群組開課相關趨勢分析數據'
+                description: 'universal_group_dataAnalysisInGroup'
               }
             "
           ></ng-container>
@@ -764,10 +764,10 @@
     <div class="flexCenter">
       <button class="display__table__button" (click)="toggleTableDisplayStatus(type, statusKey)">
         <ng-container *ngIf="!status">
-          {{ '顯示數據列表' | translate }}
+          {{ 'universal_group_showDataList' | translate }}
         </ng-container>
         <ng-container *ngIf="status">
-          {{ '隱藏數據列表' | translate }}
+          {{ 'universal_group_hideDataList' | translate }}
         </ng-container>
       </button>
     </div>

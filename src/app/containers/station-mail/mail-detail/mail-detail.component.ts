@@ -4,7 +4,7 @@ import { Api50xxService, HashIdService, AuthService } from '../../../core/servic
 import { checkResponse, getUrlQueryStrings, deepCopy } from '../../../core/utils/index';
 import { Router, NavigationEnd } from '@angular/router';
 import { appPath } from '../../../app-path.const';
-import { QueryString } from '../../../shared/enum/query-string';
+import { QueryString } from '../../../core/enums/common';
 import { Subject, fromEvent, Subscription, merge, combineLatest, Observable } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
 import { MessageType } from '../enum/station-mail';

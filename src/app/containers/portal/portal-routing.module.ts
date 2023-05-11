@@ -25,6 +25,7 @@ import { ActivityListComponent } from '../dashboard/personal/activity-list/activ
 import { InfoComponent } from '../dashboard/personal/info/info.component';
 import { MyLifeTrackingComponent } from '../../shared/components/my-life-tracking/my-life-tracking.component';
 import { CloudrunReportComponent as PersonCloudrunReport } from '../dashboard/components/cloudrun-report/cloudrun-report.component';
+import { SportsDetailComponent } from '../personal';
 
 const routes: Routes = [
   {

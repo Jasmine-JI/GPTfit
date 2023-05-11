@@ -1,0 +1,50 @@
+<div class="box__mask" (click)="closeShareBox()">
+  <div class="popup__box" (click)="$event.stopPropagation()">
+    <h4 class="box__title">{{ 'universal_operating_share' | translate }}</h4>
+    <div class="box__content">
+      <div class="flexCol qrcode__section">
+        <qrcode [qrdata]="link" size="256" level="'M'"></qrcode>
+        <p class="qrcode__title">{{ title }}</p>
+      </div>
+      <div
+        *ngTemplateOutlet="
+          linkSection;
+          context: {
+            url: link
+          }
+        "
+      ></div>
+      <ng-container *ngIf="debugLink && accessRight <= AccessRight.marketing">
+        <div
+          *ngTemplateOutlet="
+            linkSection;
+            context: {
+              url: debugLink,
+              isDebugLink: true
+            }
+          "
+        ></div>
+      </ng-container>
+      <div class="flexRow button__section">
+        <button class="close__button" (click)="closeShareBox()">
+          {{ 'universal_operating_close' | translate }}
+        </button>
+        <button class="app__share__button" (click)="shareLink()" *ngIf="canShare">
+          {{ 'universal_operating_share' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #linkSection let-url="url" let-isDebugLink="isDebugLink">
+  <div class="flexCol link__section">
+    <p class="flexRow link__title">
+      {{ isDebugLink ? 'Debug Link' : 'Link' }}:
+      <button (click)="isDebugLink ? copyDebugLink(shareLink) : copyLink(shareLink)">
+        <mat-icon>content_copy</mat-icon>
+      </button>
+    </p>
+    <input #shareLink type="text" class="link__input" [value]="url" readonly />
+  </div>
+</ng-template>

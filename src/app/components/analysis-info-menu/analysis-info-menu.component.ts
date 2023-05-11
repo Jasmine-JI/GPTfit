@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { HashIdService } from '../../core/services';
 import { ReportCondition } from '../../shared/models/report-condition';
-import { QueryString } from '../../shared/enum/query-string';
+import { QueryString } from '../../core/enums/common';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { ReportDateUnit } from '../../shared/classes/report-date-unit';

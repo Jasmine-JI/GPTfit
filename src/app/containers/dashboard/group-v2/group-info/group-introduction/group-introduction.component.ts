@@ -1091,11 +1091,8 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   changeBenefitTimeStartZone(zone: BenefitTimeStartZone) {
     const { activityTimeHRZ } = this.groupDetail.customField;
-    if (activityTimeHRZ !== zone) {
-      this.editBody.customField.activityTimeHRZ = zone;
-      this.uiFlag.contentChange = true;
-    }
-
+    this.editBody.customField.activityTimeHRZ = zone;
+    if (activityTimeHRZ !== zone) this.uiFlag.contentChange = true;
     this.cancelListenPluralEvent();
   }
 

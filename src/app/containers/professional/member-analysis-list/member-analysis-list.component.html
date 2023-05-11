@@ -1,19 +1,19 @@
 <article [ngSwitch]="post.type">
   <h4 class="pageTitle flexRow">
     <ng-container *ngSwitchCase="MemberType.admin">
-      {{ '教練分析列表' | translate }}
+      {{ 'universal_group_coachAnalysisList' | translate }}
     </ng-container>
     <ng-container *ngSwitchCase="MemberType.normal">
-      {{ '學員分析列表' | translate }}
+      {{ 'universal_group_userAnalysisList' | translate }}
     </ng-container>
   </h4>
   <hr class="title__divide__line" />
   <p class="analysis__description">
     <ng-container *ngSwitchCase="MemberType.admin">
-      {{ '以下所有群組階層管理員的課程相關分析列表' | translate }}
+      {{ 'universal_group_allGroupManagerClassList' | translate }}
     </ng-container>
     <ng-container *ngSwitchCase="MemberType.normal">
-      {{ '以下所有群組階層一般成員的課程相關分析列表' | translate }}
+      {{ 'universal_group_allGroupUserClassList' | translate }}
     </ng-container>
   </p>
   <section>
@@ -32,13 +32,13 @@
       <span class="grid__cell">{{ 'universal_userProfile_age' | translate }}</span>
       <ng-container *ngSwitchCase="MemberType.admin">
         <span class="grid__cell">{{ 'universal_group_totalClassAmount' | translate }}</span>
-        <span class="grid__cell">{{ '累計上課人次' | translate }}</span>
+        <span class="grid__cell">{{ 'universal_group_totalClassCounts' | translate }}</span>
         <span class="grid__cell">{{ 'universal_group_lastClassDate' | translate }}</span>
       </ng-container>
       <ng-container *ngSwitchCase="MemberType.normal">
-        <span class="grid__cell">{{ '累計上課次數' | translate }}</span>
-        <span class="grid__cell">{{ '累計上課時數' | translate }}</span>
-        <span class="grid__cell">{{ '最後上課日' | translate }}</span>
+        <span class="grid__cell">{{ 'universal_group_userTotalClassCounts' | translate }}</span>
+        <span class="grid__cell">{{ 'universal_group_userTotalClassTime' | translate }}</span>
+        <span class="grid__cell">{{ 'universal_group_userLastClassDate' | translate }}</span>
       </ng-container>
     </div>
     <ul class="flexCol group__list" *ngIf="list$ | async as list">
@@ -110,7 +110,7 @@
           <div class="item__detail" *ngIf="_list.unfold">
             <ng-container *ngSwitchCase="MemberType.admin">
               <div class="flexCol" *ngIf="_list.groupBelonging">
-                <h6 class="content__title">{{ '所屬群組' | translate }}</h6>
+                <h6 class="content__title">{{ 'universal_group_underGroup' | translate }}</h6>
                 <div class="flexRow content__section">
                   <span class="list__in__line" *ngFor="let _group of _list.groupBelonging">
                     {{ _group.branchName }}/{{ _group.className }}
@@ -118,7 +118,7 @@
                 </div>
               </div>
               <div class="flexCol" *ngIf="_list.groupBelonging">
-                <h6 class="content__title">{{ '開課概況' | translate }}</h6>
+                <h6 class="content__title">{{ 'universal_group_classSummary' | translate }}</h6>
                 <div class="content__section">
                   <span class="flexRow">
                     {{ 'universal_group_classType' | translate }}:<ng-container
@@ -147,7 +147,7 @@
                 </div>
               </div>
               <div class="flexCol">
-                <h6 class="content__title">{{ '近一個月概況' | translate }}</h6>
+                <h6 class="content__title">{{ 'universal_time_lastMonthSummary' | translate }}</h6>
                 <div class="content__section">
                   <div
                     *ngTemplateOutlet="
@@ -156,7 +156,7 @@
                         detailArray: [
                           ['universal_group_classCounts', _list.oneMonthClassInfo.teachCounts],
                           [
-                            '課程計時',
+                            'universal_group_classLengh',
                             _list.oneMonthClassInfo.teachTotalTime / 3600 | number: '1.0-1'
                           ]
                         ]
@@ -176,21 +176,27 @@
 
             <ng-container *ngSwitchCase="MemberType.normal">
               <div class="flexCol">
-                <h6 class="content__title">{{ '近一個月概況' | translate }}</h6>
+                <h6 class="content__title">{{ 'universal_time_lastMonthSummary' | translate }}</h6>
                 <div class="content__section">
                   <div
                     *ngTemplateOutlet="
                       detailGrid;
                       context: {
                         detailArray: [
-                          ['上課次數', _list.oneMonthAttendInfo.attendClassCounts],
-                          ['課程計時', _list.oneMonthAttendInfo.attendClassTotalTime]
+                          [
+                            'universal_group_userTotalClassCounts',
+                            _list.oneMonthAttendInfo.attendClassCounts
+                          ],
+                          [
+                            'universal_group_classLengh',
+                            _list.oneMonthAttendInfo.attendClassTotalTime
+                          ]
                         ]
                       }
                     "
                   ></div>
                   <span class="flexRow">
-                    {{ 'universal_activityData_type' }}:<ng-container
+                    {{ 'universal_activityData_type' | translate }}:<ng-container
                       *ngFor="let _type of _list.oneMonthAttendInfo.attendClassType"
                     >
                       {{ _type | spaceTrim | sportType | translate }}

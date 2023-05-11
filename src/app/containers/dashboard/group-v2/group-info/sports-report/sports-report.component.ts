@@ -17,7 +17,6 @@ import {
   subscribePluralEvent,
   speedToPace,
 } from '../../../../../core/utils';
-import { QueryString } from '../../../../../shared/enum/query-string';
 import { DateRange } from '../../../../../shared/classes/date-range';
 import { BrandType, GroupLevel } from '../../../../../shared/enum/professional';
 import { DateUnit } from '../../../../../shared/enum/report';
@@ -48,7 +47,7 @@ import {
   HashIdService,
   HintDialogService,
 } from '../../../../../core/services';
-import { BenefitTimeStartZone, DataUnitType } from '../../../../../core/enums/common';
+import { BenefitTimeStartZone, DataUnitType, QueryString } from '../../../../../core/enums/common';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { DataDescription } from '../../../../../core/models/compo';

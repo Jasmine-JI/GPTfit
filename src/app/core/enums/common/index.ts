@@ -5,3 +5,4 @@ export * from './system-accessright.enum';
 export * from './benefit-time-zone.enum';
 export * from './sort.enum';
 export * from './integration-type.enum';
+export * from './query-string';

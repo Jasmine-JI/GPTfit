@@ -1,0 +1,106 @@
+@import 'z-index.scss';
+@import 'transform.scss';
+@import 'screen-size.scss';
+
+$dialog-border-radius: 10px;
+
+@mixin button() {
+  border-radius: 5px;
+  height: 2rem;
+  width: 8rem;
+  font-size: 1.1rem;
+
+  @include medium-screen() {
+    width: 8rem;
+    font-size: 1rem;
+  }
+}
+
+.file__content {
+  padding-top: 1rem;
+}
+
+.function__toolbar {
+  display: grid;
+  gap: 5px;
+  grid-auto-flow: column;
+  justify-content: flex-end;
+  font-size: 30px;
+}
+
+.function__toolbar__button {
+  color: rgba(120, 120, 120, 1);
+  padding: 0;
+
+  &:hover {
+    color: rgba(17, 166, 235, 1);
+  }
+}
+
+.box__mask {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: $content-navbar;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.popup__box {
+  $shadow-color: rgba(0, 0, 0, 0.15);
+  $shadow-size: 2px;
+  $blur: 20px;
+  align-items: center;
+  position: fixed;
+  width: fit-content;
+  max-width: 800px;
+  left: 50%;
+  top: 50%;
+  background-color: white;
+  z-index: $float-tips;
+  border-radius: $dialog-border-radius;
+  box-shadow: $shadow-size $shadow-size $blur $shadow-color,
+    (-$shadow-size) $shadow-size $blur $shadow-color,
+    $shadow-size (-$shadow-size) $blur $shadow-color,
+    (-$shadow-size) (-$shadow-size) $blur $shadow-color;
+  @include el-transform(translate(-50%, -50%));
+}
+
+.box__title {
+  text-align: center;
+  color: white;
+  background-color: rgb(47, 67, 73, 1);
+  width: 100%;
+  padding: 0.5rem 0;
+  border-radius: $dialog-border-radius $dialog-border-radius 0 0;
+  margin: 0;
+}
+
+.box__content {
+  padding: 1rem 2rem;
+}
+
+.button__section {
+  justify-content: space-around;
+  margin: 1rem 0 0 0;
+}
+
+.cancel__button {
+  @include button();
+  color: rgba(244, 67, 54, 1);
+
+  &:hover {
+    background-color: rgba(250, 240, 240, 1);
+  }
+}
+
+.submit__button {
+  @include button();
+  color: white;
+  background-color: rgba(43, 129, 155, 1);
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
