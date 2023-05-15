@@ -7,7 +7,7 @@ import {
   Output,
   EventEmitter,
 } from '@angular/core';
-import { Subject, Subscription, of, merge, fromEvent, combineLatest } from 'rxjs';
+import { Subject, Subscription, of, merge, fromEvent, combineLatestWith } from 'rxjs';
 import { takeUntil, tap, map, switchMap, debounceTime } from 'rxjs/operators';
 import { SportType } from '../../enum/sports';
 import { ReportCondition, ReportDateType } from '../../models/report-condition';
@@ -499,12 +499,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           switchMap((resultObj: any) => {
             if (isPageOwner && this.reportCondition.sportType === SportType.weightTrain) {
               const body = this.getMultiActivityRequestBody(baseTime);
-              return combineLatest([
-                this.configJsonService.getWeightTrainingConfig(),
-                this.api21xxService.fetchMultiActivityData(body),
-              ]).pipe(
-                map((resArray) => {
-                  const [weightTrainingConfig, baseWeigtTrainingLap] = resArray;
+              return this.configJsonService.getWeightTrainingConfig().pipe(
+                combineLatestWith(this.api21xxService.fetchMultiActivityData(body)),
+                map(([weightTrainingConfig, baseWeigtTrainingLap]) => {
                   return { ...resultObj, weightTrainingConfig, baseWeigtTrainingLap };
                 })
               );
@@ -530,15 +527,33 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           }),
           takeUntil(this.ngUnsubscribe)
         )
-        .subscribe((resultObj) => {
-          this.saveData(resultObj);
-          this.createReport(condition, resultObj);
-          this.diffTime = this.getDiffTime(condition);
-          this.scrollToReport();
-          this.uiFlag.progress = 100;
-          this.changeDetectorRef.markForCheck();
+        .subscribe({
+          next: (res) => this.handleNext(res, condition),
+          error: (err) => this.handleError(err),
         });
     }
+  }
+
+  /**
+   * api回應後生成報告
+   * @param result 所有api回應
+   * @param condition 報告條件
+   */
+  handleNext(result: any, condition: ReportCondition) {
+    this.saveData(result);
+    this.createReport(condition, result);
+    this.diffTime = this.getDiffTime(condition);
+    this.scrollToReport();
+    this.uiFlag.progress = 100;
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 錯誤處理
+   * @param err 錯誤訊息
+   */
+  handleError(err) {
+    console.error('error', err);
   }
 
   /**
@@ -1232,7 +1247,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   ngOnDestroy() {
     this.subscribeUserProfile.unsubscribe();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

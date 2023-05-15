@@ -5,7 +5,7 @@ import { GroupDetailInfo, UserSimpleInfo } from '../../../models/group-detail';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
-import { QrcodeService } from '../../../../portal/services/qrcode.service';
+import { QrcodeService } from '../../../../../core/services/qrcode.service';
 import {
   Api10xxService,
   Api70xxService,
@@ -636,7 +636,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

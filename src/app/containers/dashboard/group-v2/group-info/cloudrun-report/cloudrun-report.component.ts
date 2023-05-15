@@ -2134,7 +2134,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100309
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

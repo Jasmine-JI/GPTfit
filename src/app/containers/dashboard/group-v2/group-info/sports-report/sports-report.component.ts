@@ -1192,7 +1192,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * @author kidin-1091211
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

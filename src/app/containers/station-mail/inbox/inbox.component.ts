@@ -300,7 +300,7 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   ngOnDestroy(): void {
     if (this.inputSubscription) this.inputSubscription.unsubscribe();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

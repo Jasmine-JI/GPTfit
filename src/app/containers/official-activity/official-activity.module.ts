@@ -14,7 +14,6 @@ import { AdminGuard } from './guards/admin.guard';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 import { CustomMaterialModule } from '../../core/custom-material.module';
 import { SharedModule } from '../../shared/shared.module';
-import { NgProgressModule } from '@ngx-progressbar/core';
 import { OfficialActivityService } from './services/official-activity.service';
 import { FormsModule } from '@angular/forms';
 import { QRCodeModule } from 'angularx-qrcode';
@@ -78,7 +77,6 @@ import { LoadingBarComponent, LoadingMaskComponent, ImgCropperComponent } from '
     SharedComponentsModule,
     CustomMaterialModule,
     SharedModule,
-    NgProgressModule,
     CKEditorModule,
     FormsModule,
     QRCodeModule,

@@ -155,7 +155,7 @@ export class CompareBodyWeightChartComponent implements OnInit, OnDestroy, OnCha
   }
 
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

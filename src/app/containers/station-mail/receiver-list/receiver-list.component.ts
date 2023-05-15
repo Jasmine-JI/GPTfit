@@ -218,7 +218,7 @@ export class ReceiverListComponent implements OnInit, OnChanges, OnDestroy {
    * 解除rxjs訂閱
    */
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

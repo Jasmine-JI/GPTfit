@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Api11xxService, AuthService, ApiCommonService } from '../../../core/services';
 import { AccessRight } from '../../../shared/enum/accessright';
 
 @Injectable()
-export class DashboardGuard implements CanActivate {
+export class DashboardGuard {
   constructor(
     private apiCommonService: ApiCommonService,
     private api11xxService: Api11xxService,

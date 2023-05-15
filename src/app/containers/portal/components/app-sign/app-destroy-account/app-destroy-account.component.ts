@@ -480,7 +480,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
    */
   ngOnDestroy() {
     this.setPageStyle(false);
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

@@ -265,7 +265,7 @@ export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
    * 取消訂閱rxjs
    */
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

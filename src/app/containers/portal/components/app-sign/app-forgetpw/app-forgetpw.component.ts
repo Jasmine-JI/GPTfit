@@ -806,7 +806,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
   // 離開頁面則取消隱藏navbar和取消rxjs訂閱-kidin-1090514
   ngOnDestroy() {
     this.setPageStyle(false);
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

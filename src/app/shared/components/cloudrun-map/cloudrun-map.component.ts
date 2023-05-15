@@ -676,7 +676,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    */
   ngOnDestroy(): void {
     if (this.playInterval) clearInterval(this.playInterval);
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

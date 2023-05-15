@@ -1783,7 +1783,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     if (this.intervals) clearInterval(this.intervals);
     this.stopPollingNewMail();
     this.stopCarousel();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

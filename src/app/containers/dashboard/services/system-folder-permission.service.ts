@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { throwRxError } from '../../../core/utils';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +17,7 @@ export class SystemFolderPermissionService {
   createSysAccount(body: any) {
     return this.http
       .post<any>('/privilege/addRdUser', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -28,7 +28,7 @@ export class SystemFolderPermissionService {
   createSysFolder(body: any) {
     return this.http
       .post<any>('/privilege/createProject', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -39,7 +39,7 @@ export class SystemFolderPermissionService {
   getSysList(body: any) {
     return this.http
       .post<any>('/privilege/getUserDataList', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -50,7 +50,7 @@ export class SystemFolderPermissionService {
   setUserAccessRight(body: any) {
     return this.http
       .post<any>('/privilege/setFolderAccessRight', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -61,6 +61,6 @@ export class SystemFolderPermissionService {
   delSysAccount(body: any) {
     return this.http
       .post<any>('/privilege/deleteRdUser', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 }

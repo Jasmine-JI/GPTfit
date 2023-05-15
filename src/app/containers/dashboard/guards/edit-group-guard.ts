@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ProfessionalService } from '../../professional/services/professional.service';
@@ -8,7 +8,7 @@ import { UserService, HashIdService } from '../../../core/services';
 import { displayGroupLevel } from '../../../core/utils';
 
 @Injectable()
-export class EditGroupGuard implements CanActivate {
+export class EditGroupGuard {
   visittingId = '';
 
   constructor(

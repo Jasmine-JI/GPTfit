@@ -3517,7 +3517,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
    * 取消rxjs訂閱
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

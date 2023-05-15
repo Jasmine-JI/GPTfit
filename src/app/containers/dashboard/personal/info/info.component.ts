@@ -107,7 +107,7 @@ export class InfoComponent implements OnInit, OnDestroy {
    * 取消訂閱rxjs
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

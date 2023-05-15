@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { throwRxError } from '../utils';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +18,7 @@ export class Api50xxService {
     return <any>(
       this.http
         .post('/api/v1/system/getAddressBook', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -29,7 +30,7 @@ export class Api50xxService {
     return <any>(
       this.http
         .post('/api/v1/system/getMessageList', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -41,7 +42,7 @@ export class Api50xxService {
     return <any>(
       this.http
         .post('/api/v1/system/getMessageContent', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -51,7 +52,9 @@ export class Api50xxService {
    */
   fetchSendMessage(body: any): Observable<any> {
     return <any>(
-      this.http.post('/api/v1/system/sendMessage', body).pipe(catchError((err) => throwError(err)))
+      this.http
+        .post('/api/v1/system/sendMessage', body)
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -61,7 +64,9 @@ export class Api50xxService {
    */
   fetchBlackList(body: any): Observable<any> {
     return <any>(
-      this.http.post('/api/v1/system/getBlackList', body).pipe(catchError((err) => throwError(err)))
+      this.http
+        .post('/api/v1/system/getBlackList', body)
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -73,7 +78,7 @@ export class Api50xxService {
     return <any>(
       this.http
         .post('/api/v1/system/editContactList', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -85,7 +90,7 @@ export class Api50xxService {
     return <any>(
       this.http
         .post('/api/v1/system/deleteMessage', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -97,7 +102,7 @@ export class Api50xxService {
     return <any>(
       this.http
         .post('/api/v1/system/getMessageNotifyFlagStatus', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 }

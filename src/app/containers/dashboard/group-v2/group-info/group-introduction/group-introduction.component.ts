@@ -1102,7 +1102,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   ngOnDestroy() {
     this.cancelListenPluralEvent();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

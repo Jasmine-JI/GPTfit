@@ -8,7 +8,6 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { LifeTrackingService } from '../../services/life-tracking.service';
-import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
 import { Router } from '@angular/router';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { HashIdService, AuthService } from '../../../../core/services';
@@ -39,7 +38,6 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   };
   isShowNoRight = false;
   isLoading = false;
-  progressRef: NgProgressRef;
   isFileIDNotExist = false;
   fileInfo: any;
   userLink = {
@@ -121,7 +119,6 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
 
   constructor(
     private lifeTrackingService: LifeTrackingService,
-    private ngProgress: NgProgress,
     private hashIdService: HashIdService,
     private router: Router,
     private renderer: Renderer2,
@@ -130,7 +127,6 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.progressRef = this.ngProgress.ref();
     this.fetchTrackingDayDetail();
   }
 
@@ -170,12 +166,10 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       filterEndTime: this.filterEndTime,
     };
 
-    this.progressRef.start();
     this.lifeTrackingService.getTrackingDayDetail(body).subscribe((res) => {
       if (res.resultCode === 401 || res.resultCode === 402) {
         this.isShowNoRight = true;
         this.isLoading = false;
-        this.progressRef.complete();
         return;
       } else if (res.resultCode === 400) {
         this.isFileIDNotExist = true;
@@ -204,7 +198,6 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
         this.isShowChart = false;
       }
 
-      this.progressRef.complete();
       this.isLoading = false;
     });
   }

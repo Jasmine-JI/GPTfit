@@ -100,6 +100,11 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     applyFeeId: [],
   };
 
+  /**
+   * 編輯文字區塊暫存文字，處理每次輸入文字時selection會從零開始的問題
+   */
+  tempContent = '';
+
   private compareContent = {
     eventInfo: <EventInfo>null,
     eventDetail: <EventDetail>null,
@@ -1257,21 +1262,39 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * 輸入區塊文字
    * @param e {ChangeEvent}-ckeditor change event
    * @param id {number}-區塊前端自定義流水id
-   * @param kidin-1101021
    */
   handleContentTextInput(e: ChangeEvent, id: number) {
+    const oldText = this.eventDetail.content[id - 1].text;
     const newText = e.editor.getData();
     const innerHtmlLengthOver = newText.length > contentInnerHtmlLimit;
     const textLengthOver = this.countContentLength(newText) > contentTextLimit;
+    if (oldText === newText) return false;
     if (innerHtmlLengthOver || textLengthOver) {
-      const { text } = this.eventDetail.content[id - 1];
-      e.editor.setData(text);
+      e.editor.setData(this.tempContent);
       this.hintDialogService.showSnackBar('HTML或字數超出限制');
     } else {
-      this.eventDetail.content[id - 1].text = newText;
+      this.tempContent = newText;
     }
 
     this.saveDraft();
+  }
+
+  /**
+   * 聚焦時，將該區塊文字複製並暫存
+   * @param e 聚焦事件
+   * @param id 區塊編號
+   */
+  handleFocusInput(e, id: number) {
+    this.tempContent = this.eventDetail.content[id - 1].text;
+  }
+
+  /**
+   * 離焦時，將該區塊編輯後的文字存回原有內容中
+   * @param e 離焦事件
+   * @param id 區塊編號
+   */
+  handleFocusoutInput(e, id: number) {
+    this.eventDetail.content[id - 1].text = this.tempContent;
   }
 
   /**
@@ -1863,7 +1886,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * 解除rxjs訂閱
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

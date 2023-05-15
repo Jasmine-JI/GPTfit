@@ -128,7 +128,7 @@ export class CompareOverlayColumnChartComponent implements OnInit, OnDestroy, On
   }
 
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

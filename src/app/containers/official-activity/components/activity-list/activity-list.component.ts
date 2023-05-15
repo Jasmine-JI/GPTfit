@@ -297,8 +297,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     this.officialActivityService
       .getScreenSize()
       .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe((res) => {
-        this.screenSize = res as number;
+      .subscribe((res: number) => {
+        this.screenSize = res;
         this.uiFlag.isMobile = res <= 767;
       });
   }
@@ -1123,7 +1123,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    */
   ngOnDestroy() {
     if (this.timeInterval) clearInterval(this.timeInterval);
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

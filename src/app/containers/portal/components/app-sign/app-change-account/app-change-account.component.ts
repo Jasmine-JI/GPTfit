@@ -641,7 +641,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
   // 離開頁面則取消隱藏navbar-kidin-1090514
   ngOnDestroy() {
     this.setPageStyle(false);
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

@@ -287,7 +287,7 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
    * 取消訂閱和clearTimeout
    */
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
     clearTimeout(this.timeout);
   }

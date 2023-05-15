@@ -407,7 +407,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

@@ -1555,7 +1555,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-20200710
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

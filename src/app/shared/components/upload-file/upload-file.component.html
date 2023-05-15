@@ -109,6 +109,8 @@
     [maintainAspectRatio]="true"
     [aspectRatio]="1 / 1"
     [resizeToWidth]="256"
+    [canvasRotation]="canvasRotation"
+    [transform]="{ flipH, flipV }"
     format="png"
     (imageCropped)="imageCropped($event)"
     (imageLoaded)="imageLoaded()"

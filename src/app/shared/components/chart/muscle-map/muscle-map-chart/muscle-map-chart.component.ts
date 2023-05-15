@@ -306,7 +306,7 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
    */
   ngOnDestroy() {
     this.mouseoverSubscription.unsubscribe();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

@@ -129,7 +129,7 @@ export class SingleDropListComponent implements OnInit, OnChanges, OnDestroy {
    */
   ngOnDestroy(): void {
     this.unSubscribePlureEvent();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

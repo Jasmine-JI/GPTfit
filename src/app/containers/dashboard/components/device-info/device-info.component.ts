@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { QrcodeService } from '../../../portal/services/qrcode.service';
+import { QrcodeService } from '../../../../core/services/qrcode.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, Subject, fromEvent, Subscription } from 'rxjs';
+import { Subject, fromEvent, Subscription, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import dayjs, { Dayjs } from 'dayjs';
 import {
@@ -1218,7 +1218,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * 解除rxjs訂閱
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

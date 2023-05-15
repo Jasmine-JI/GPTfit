@@ -438,7 +438,7 @@ export class MailDetailComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.pluralEventSubscription) this.pluralEventSubscription.unsubscribe();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

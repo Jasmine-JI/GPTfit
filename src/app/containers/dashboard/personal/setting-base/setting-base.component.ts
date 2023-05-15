@@ -317,9 +317,9 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
       this.editFlag.bodyHeight = true;
       const min = 100,
         max = 255;
-      if (newValue < min) {
+      if (+newValue < min) {
         this.setting.bodyHeight = bodyHeightTransfer(min, !isMetric, true);
-      } else if (newValue > max) {
+      } else if (+newValue > max) {
         this.setting.bodyHeight = bodyHeightTransfer(max, !isMetric, true);
       } else {
         this.setting.bodyHeight = inputValue;
@@ -407,7 +407,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * 取消訂閱rxjs
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

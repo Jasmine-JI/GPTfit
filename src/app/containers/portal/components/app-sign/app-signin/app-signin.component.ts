@@ -580,7 +580,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
   // 離開頁面則取消隱藏navbar和清除Interval-kidin-1090514
   ngOnDestroy() {
     this.setPageStyle(false);
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

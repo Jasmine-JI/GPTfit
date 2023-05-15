@@ -419,7 +419,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
   // 離開頁面則取消隱藏navbar-kidin-1090514
   ngOnDestroy() {
     this.setPageStyle(false); // 避免回到首頁仍吃到會員系統頁面樣式
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }
