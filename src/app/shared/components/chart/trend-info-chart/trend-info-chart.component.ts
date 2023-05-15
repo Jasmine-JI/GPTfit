@@ -763,15 +763,15 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
   getColor(data: number, type: ChartType, sportType = this.sportType): string {
     switch (type) {
       case 'hr':
-        if (data <= this.hrRange.z0) {
+        if (data <= +this.hrRange.z0) {
           return '#6e9bff';
-        } else if (data <= this.hrRange.z1) {
+        } else if (data <= +this.hrRange.z1) {
           return '#6bebf9';
-        } else if (data <= this.hrRange.z2) {
+        } else if (data <= +this.hrRange.z2) {
           return '#75f25f';
-        } else if (data <= this.hrRange.z3) {
+        } else if (data <= +this.hrRange.z3) {
           return '#f9cc3d';
-        } else if (data <= this.hrRange.z4) {
+        } else if (data <= +this.hrRange.z4) {
           return '#ff9a22';
         } else {
           return '#ea5757';
@@ -857,7 +857,7 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

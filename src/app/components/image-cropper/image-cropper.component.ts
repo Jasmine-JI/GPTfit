@@ -52,7 +52,9 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
     imageChangedEvent: <any>null, // 設null可初始化變更事件
     aspectRatio: <number>1, // 圖片比例
     roundCropper: false,
-    maintainAspectRatio: true,
+    canvasRotation: 0,
+    flipH: false,
+    flipV: false,
   };
 
   /**
@@ -81,28 +83,23 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
       case AlbumType.groupIcon:
         this.imageCropSetting.aspectRatio = 1;
         this.imageCropSetting.roundCropper = true;
-        this.imageCropSetting.maintainAspectRatio = true;
         break;
       case AlbumType.personalScenery:
       case AlbumType.groupScenery:
         this.imageCropSetting.aspectRatio = 3;
         this.imageCropSetting.roundCropper = false;
-        this.imageCropSetting.maintainAspectRatio = true;
         break;
       case AlbumType.eventApplyFee:
         this.imageCropSetting.aspectRatio = 1;
         this.imageCropSetting.roundCropper = false;
-        this.imageCropSetting.maintainAspectRatio = true;
         break;
       case AlbumType.advertise:
         this.imageCropSetting.aspectRatio = advertiseRatio;
         this.imageCropSetting.roundCropper = false;
-        this.imageCropSetting.maintainAspectRatio = true;
         break;
       default:
         this.imageCropSetting.aspectRatio = 1.75;
         this.imageCropSetting.roundCropper = false;
-        this.imageCropSetting.maintainAspectRatio = true;
         break;
     }
 
@@ -167,28 +164,44 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
    * 逆時針旋轉90度
    */
   rotateLeft() {
-    this.imageCropper.rotateLeft();
+    this.imageCropSetting.canvasRotation--;
+    this.flipAfterRotate();
   }
 
   /**
    * 順時針旋轉90度
    */
   rotateRight() {
-    this.imageCropper.rotateRight();
+    this.imageCropSetting.canvasRotation++;
+    this.flipAfterRotate();
+  }
+
+  /**
+   * 圖片選轉時，垂直與水平翻轉 flag要交換
+   */
+  flipAfterRotate() {
+    const { flipH, flipV } = this.imageCropSetting;
+    this.imageCropSetting = {
+      ...this.imageCropSetting,
+      flipH: flipV,
+      flipV: flipH,
+    };
   }
 
   /**
    * 水平翻轉
    */
   flipHorizontal() {
-    this.imageCropper.flipHorizontal();
+    const { flipH } = this.imageCropSetting;
+    this.imageCropSetting.flipH = !flipH;
   }
 
   /**
    * 垂直翻轉
    */
   flipVertical() {
-    this.imageCropper.flipVertical();
+    const { flipV } = this.imageCropSetting;
+    this.imageCropSetting.flipV = !flipV;
   }
 
   /**
@@ -203,7 +216,7 @@ export class ImgCropperComponent implements OnInit, OnDestroy, OnChanges {
    * 解除rxjs訂閱
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

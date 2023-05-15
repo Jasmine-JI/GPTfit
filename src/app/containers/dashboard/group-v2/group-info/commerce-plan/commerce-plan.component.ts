@@ -283,7 +283,7 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
    * @author kidin-1091112
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

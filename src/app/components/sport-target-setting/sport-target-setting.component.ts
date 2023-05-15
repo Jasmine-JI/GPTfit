@@ -173,7 +173,7 @@ export class SportTargetSettingComponent implements OnInit, OnDestroy {
    */
   ngOnDestroy(): void {
     this.unsubscribePluralEvent();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { throwRxError } from '../utils';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +16,7 @@ export class ConfigJsonService {
     return <any>(
       this.http
         .get('/app/public_html/fitness/configs/weight_training.json')
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 }

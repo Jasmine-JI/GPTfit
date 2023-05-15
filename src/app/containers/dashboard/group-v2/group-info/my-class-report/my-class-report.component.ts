@@ -605,6 +605,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
           let HRZoneThree = 0;
           let HRZoneFour = 0;
           let HRZoneFive = 0;
+          let equipmentList = [];
 
           for (let i = 0; i < this.activityLength; i++) {
             const activityItem = allActivities[i].activityInfoLayer;
@@ -656,9 +657,11 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
               }
             }
 
+            const { creationDate, equipmentSN } = allActivities[i].fileInfo;
             this.dateList.unshift(this.formatDate(allActivities[i].fileInfo.creationDate));
             this.avgHRList.unshift(avgHeartRateBpm);
             this.caloriesList.unshift(calories);
+            equipmentList = equipmentList.concat(equipmentSN);
           }
 
           this.calculateTotalTime(timeCount);
@@ -680,7 +683,8 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
           }
           const coachId = this.fileInfo.teacher.split('?userId=')[1];
           this.initHighChart();
-          this.getClassDetails(this.fileInfo.equipmentSN, coachId);
+          this.getDeviceInfo(equipmentList);
+          this.getCoachInfo(coachId);
           this.updateUrl('true');
 
           setTimeout(() => {
@@ -1032,12 +1036,16 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     }
   }
 
-  getClassDetails(SN, coachId) {
-    // 取得裝置資訊-kidin-1081218
+  /**
+   * 取得裝置資訊
+   * @param equipmentList 裝置序號陣列
+   */
+  getDeviceInfo(snArr) {
+    this.deviceInfo = undefined;
     const deviceDody = {
       token: '',
       queryType: '1',
-      queryArray: SN,
+      queryArray: snArr,
     };
     this.api70xxService.fetchGetProductInfo(deviceDody).subscribe((res) => {
       if (res) {
@@ -1049,8 +1057,13 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
         }
       }
     });
+  }
 
-    // 取得教練資訊-kidin-1081218
+  /**
+   * 取得教練資訊
+   * @param coachId 教練使用者id
+   */
+  getCoachInfo(coachId) {
     const bodyForCoach = {
       token: this.token,
       targetUserId: coachId,
@@ -1163,7 +1176,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       this.classLink.removeEventListener('click', this.visitClass.bind(this));
     }
 
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

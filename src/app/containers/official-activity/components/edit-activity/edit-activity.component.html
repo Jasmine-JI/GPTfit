@@ -360,6 +360,8 @@
                 [data]="_content.text"
                 (ready)="editorOnReady($event)"
                 (change)="handleContentTextInput($event, _content.contentId)"
+                (focus)="handleFocusInput($event, _content.contentId)"
+                (focusout)="handleFocusoutInput($event, _content.contentId)"
               ></ckeditor>
             </ng-container>
             <ng-container *ngIf="_content.cardType === CardTypeEnum.img">

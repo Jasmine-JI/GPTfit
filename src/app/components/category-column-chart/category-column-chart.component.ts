@@ -137,7 +137,7 @@ export class CategoryColumnChartComponent implements OnInit, OnChanges, OnDestro
   }
 
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

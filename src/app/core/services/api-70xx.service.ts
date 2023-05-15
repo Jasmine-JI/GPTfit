@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { throwRxError } from '../utils';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -22,7 +23,7 @@ export class Api70xxService {
 
     return this.http
       .post<any>('/api/v1/device/uploadDeviceInfo', body, httpOptions)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -32,7 +33,7 @@ export class Api70xxService {
   fetchUpdateDeviceBonding(body: any) {
     return this.http
       .post<any>('/api/v1/device/updateDeviceBonding', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -42,7 +43,7 @@ export class Api70xxService {
   fetchGetDeviceList(body: any) {
     return this.http
       .post<any>('/api/v1/device/getDeviceList', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -52,7 +53,7 @@ export class Api70xxService {
   fetchGetDeviceDetail(body: any) {
     return this.http
       .post<any>('/api/v1/device/getDeviceDetail', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -62,7 +63,7 @@ export class Api70xxService {
   fetchFitPairSetting(body: any) {
     return this.http
       .post<any>('/api/v1/device/fitPairSetting', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -72,7 +73,7 @@ export class Api70xxService {
   fetchEditDeviceInfo(body: any) {
     return this.http
       .post<any>('/api/v1/device/editDeviceInfo', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -82,7 +83,7 @@ export class Api70xxService {
   fetchFitPairInfo(body: any) {
     return this.http
       .post<any>('/api/v1/device/getFitPairInfo', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -92,7 +93,7 @@ export class Api70xxService {
   fetchGetProductInfo(body: any) {
     return this.http
       .post<any>('/api/v1/device/getProductInfo', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -102,7 +103,7 @@ export class Api70xxService {
   fetchGetQRFitPairURL(body: any) {
     return this.http
       .post<any>('/api/v1/device/getQRFitPairURL', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -112,7 +113,7 @@ export class Api70xxService {
   fetchGetEquipmentLog(body: any) {
     return this.http
       .post<any>('/api/v1/device/getEquipmentLog', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -122,6 +123,6 @@ export class Api70xxService {
   fetchUpdateGroupDeviceList(body: any) {
     return this.http
       .post<any>('/api/v1/device/updateGroupDeviceList', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 }

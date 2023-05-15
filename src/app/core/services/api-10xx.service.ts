@@ -1,7 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError, Observable } from 'rxjs';
-import { catchError, retryWhen, delay, take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { catchError, delay, take, retry } from 'rxjs/operators';
+import { throwRxError } from '../utils';
 
 /**
  * 會員系統相關api
@@ -22,7 +23,7 @@ export class Api10xxService {
     return <any>(
       this.http
         .post('/api/v2/user/register', body, httpOptions)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -36,7 +37,7 @@ export class Api10xxService {
     return <any>(
       this.http
         .post('/api/v2/user/enableAccount', body, httpOptions)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -46,8 +47,10 @@ export class Api10xxService {
    */
   fetchSignIn(body: any): Observable<any> {
     return <any>this.http.post('/api/v2/user/signIn', body).pipe(
-      catchError((err) => throwError(err)),
-      retryWhen((errors) => errors.pipe(delay(3000), take(10)))
+      catchError((err) => throwRxError(err)),
+      retry({
+        delay: (errors) => errors.pipe(delay(3000), take(5)),
+      })
     );
   }
 
@@ -77,7 +80,7 @@ export class Api10xxService {
     return <any>(
       this.http
         .post('/api/v2/user/captcha', body, httpOptions)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -91,7 +94,7 @@ export class Api10xxService {
     return <any>(
       this.http
         .post('/api/v2/user/qrSignIn', body, httpOptions)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -103,7 +106,7 @@ export class Api10xxService {
     return <any>(
       this.http
         .post('/api/v2/user/thirdPartyAccess', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -113,8 +116,10 @@ export class Api10xxService {
    */
   fetchGetUserProfile(body: any): Observable<any> {
     return <any>this.http.post('/api/v2/user/getUserProfile', body).pipe(
-      catchError((err) => throwError(err)),
-      retryWhen((errors) => errors.pipe(delay(3000), take(10)))
+      catchError((err) => throwRxError(err)),
+      retry({
+        delay: (errors) => errors.pipe(delay(3000), take(5)),
+      })
     );
   }
 
@@ -126,7 +131,7 @@ export class Api10xxService {
     return <any>(
       this.http
         .post('/api/v2/user/editUserProfile', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -140,7 +145,7 @@ export class Api10xxService {
     return <any>(
       this.http
         .post('/api/v2/archive/startCompressData', body, httpOptions)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -154,7 +159,7 @@ export class Api10xxService {
     return <any>(
       this.http
         .post('/api/v2/archive/destroyMe', body, httpOptions)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 

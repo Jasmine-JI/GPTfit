@@ -47,21 +47,19 @@ export function debounce(func, wait) {
  * @param res {any}-api response
  * @param showAlert {boolean}-是否顯示錯誤alert
  * @returns {boolean} resultCode是否回傳200
- * @author kidin-1100902
  */
 export function checkResponse(res: any, showErrorMessage = true): boolean {
+  if (Array.isArray(res)) return true; // 陣列型回應先一律當作有效回應
   const { processResult, resultCode: resCode, apiCode: resApiCode, resultMessage: resMsg } = res;
-  if (!processResult) {
-    if (resCode !== 200) {
-      if (showErrorMessage) showErrorApiLog(resCode, resApiCode, resMsg);
-      return false;
+  const checkCode = processResult?.resultCode ?? resCode;
+  if (checkCode !== 200) {
+    if (showErrorMessage) {
+      const apiCode = processResult?.apiCode ?? resApiCode;
+      const resultMessage = processResult?.resultMessage ?? resMsg;
+      showErrorApiLog(resCode, apiCode, resultMessage);
     }
-  } else {
-    const { resultCode, apiCode, resultMessage } = processResult;
-    if (resultCode !== 200) {
-      if (showErrorMessage) showErrorApiLog(resultCode, apiCode, resultMessage);
-      return false;
-    }
+
+    return false;
   }
 
   return true;
@@ -84,7 +82,7 @@ export function showErrorApiLog(resultCode: number, apiCode: number, msg: string
  */
 export function checkRxFlowResponse(res: any, showErrorMsg = false): Observable<any> {
   const isEffect = checkResponse(res, showErrorMsg);
-  return isEffect ? of(res) : throwError(res.resultCode);
+  return isEffect ? of(res) : throwRxError();
 }
 
 /**
@@ -375,4 +373,15 @@ export function splitNameInfo(nameInfo: string): { [key: string]: string } {
     name,
     ...result,
   };
+}
+
+/**
+ * 處理rxjs資料流錯誤回應
+ * @param error 錯誤訊息
+ */
+export function throwRxError(error?: string) {
+  return throwError(() => {
+    const err = new Error(error ?? 'Exception!');
+    return err;
+  });
 }

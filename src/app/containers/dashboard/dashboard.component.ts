@@ -586,7 +586,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   ngOnDestroy(): void {
     if (this.mailNotify) clearInterval(this.mailNotify);
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

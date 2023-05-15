@@ -27,3 +27,4 @@ export * from './api-common.service';
 export * from './hint-dialog.service';
 export * from './network.service';
 export * from './correspond-translate-key.service';
+export * from './qrcode.service';

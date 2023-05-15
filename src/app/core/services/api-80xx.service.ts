@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import {
   Api8001Post,
@@ -10,7 +10,7 @@ import {
   Api8003Post,
   Api8003Response,
 } from '../models/api/api-80xx';
-import { checkRxFlowResponse } from '../utils';
+import { checkRxFlowResponse, throwRxError } from '../utils';
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +24,7 @@ export class Api80xxService {
    */
   fetchAddimg(body: Api8001Post): Observable<Api8001Response> {
     return this.http.post('/api/v1/img/addimg', body).pipe(
-      catchError((err) => throwError(err)),
+      catchError((err) => throwRxError(err)),
       switchMap((res) => checkRxFlowResponse(res))
     ) as Observable<Api8001Response>;
   }
@@ -35,7 +35,7 @@ export class Api80xxService {
    */
   fetchDeleteimg(body: Api8002Post): Observable<Api8002Response> {
     return this.http.post('/api/v1/img/deleteimg', body).pipe(
-      catchError((err) => throwError(err)),
+      catchError((err) => throwRxError(err)),
       switchMap((res) => checkRxFlowResponse(res))
     ) as Observable<Api8002Response>;
   }
@@ -46,7 +46,7 @@ export class Api80xxService {
    */
   fetchGetimglist(body: Api8003Post): Observable<Api8003Response> {
     return this.http.post('/api/v1/img/getimglist', body).pipe(
-      catchError((err) => throwError(err)),
+      catchError((err) => throwRxError(err)),
       switchMap((res) => checkRxFlowResponse(res))
     ) as Observable<Api8003Response>;
   }

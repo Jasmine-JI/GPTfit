@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subject, combineLatest, fromEvent, Subscription } from 'rxjs';
+import { Subject, combineLatestWith, fromEvent, Subscription } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { ReportConditionOpt } from '../../../../shared/models/report-condition';
 import dayjs from 'dayjs';
@@ -255,8 +255,12 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-11100308
    */
   getNeedInfo() {
-    combineLatest([this.userService.getUser().rxUserProfile, this.nodejsApiService.getAllMapInfo()])
-      .pipe(takeUntil(this.ngUnsubscribe))
+    this.userService
+      .getUser()
+      .rxUserProfile.pipe(
+        combineLatestWith(this.nodejsApiService.getAllMapInfo()),
+        takeUntil(this.ngUnsubscribe)
+      )
       .subscribe((resArr) => {
         const [userProfile, allMapList] = resArr;
         const {
@@ -883,7 +887,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100309
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

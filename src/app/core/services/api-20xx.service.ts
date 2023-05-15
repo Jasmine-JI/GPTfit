@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { throwRxError } from '../utils';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +16,7 @@ export class Api20xxService {
   fetchClassRoomList(body: any) {
     return this.http
       .post<any>('/api/v1/train/getClassRoomList', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -26,7 +26,7 @@ export class Api20xxService {
   fetchClassRoomDetail(body: any) {
     return this.http
       .post<any>('/api/v1/train/getClassRoomDetail', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -36,7 +36,7 @@ export class Api20xxService {
   createRace(body: any) {
     return this.http
       .post<any>('/api/v1/race/createRace', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -46,6 +46,6 @@ export class Api20xxService {
   getRankData(body: any) {
     return this.http
       .post<any>('/api/v1/race/getRankData', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 }

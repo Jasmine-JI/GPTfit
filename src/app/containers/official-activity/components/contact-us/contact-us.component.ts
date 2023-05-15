@@ -278,7 +278,7 @@ export class ContactUsComponent implements OnInit, OnDestroy {
    * 解除rxjs訂閱和計時器
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

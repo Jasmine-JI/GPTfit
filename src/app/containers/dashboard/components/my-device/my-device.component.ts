@@ -1,6 +1,6 @@
 import { Component, OnInit, OnChanges, OnDestroy, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { QrcodeService } from '../../../portal/services/qrcode.service';
+import { QrcodeService } from '../../../../core/services/qrcode.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -321,7 +321,7 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
    * 解除rxjs訂閱
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

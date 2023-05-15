@@ -290,7 +290,7 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
    */
   ngOnDestroy() {
     this.setPageStyle(false);
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

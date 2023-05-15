@@ -1100,7 +1100,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
 
   // 解除rxjs訂閱-kidin-1090325
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

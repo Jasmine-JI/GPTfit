@@ -123,7 +123,7 @@ export class CompareExtremeGforceChartComponent implements OnInit, OnChanges, On
   }
 
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

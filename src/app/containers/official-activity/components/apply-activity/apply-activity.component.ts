@@ -1519,7 +1519,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   ngOnDestroy() {
     if (this.intervals) window.clearInterval(this.intervals);
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

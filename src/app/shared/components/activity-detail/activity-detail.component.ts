@@ -2430,7 +2430,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * 取消rxjs訂閱，並將highchart卸除
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

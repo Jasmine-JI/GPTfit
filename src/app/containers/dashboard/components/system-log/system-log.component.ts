@@ -383,7 +383,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
    * @author kidin-1090722
    */
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

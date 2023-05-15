@@ -16,7 +16,7 @@ import {
   ActivityPoint,
 } from '../../../core/models/api/api-21xx';
 import { DisplayDetailField } from '../../../core/enums/api';
-import { throwError, of } from 'rxjs';
+import { of } from 'rxjs';
 import { switchMap, map, tap } from 'rxjs/operators';
 import { checkResponse, splitNameInfo, handleSceneryImg } from '../../../core/utils';
 

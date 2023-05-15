@@ -990,7 +990,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    * 取消rxjs訂閱和卸除highchart
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

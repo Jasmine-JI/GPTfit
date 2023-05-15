@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError, Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import {
   Api2103Post,
@@ -16,7 +16,7 @@ import {
   Api2114Post,
   Api2114Response,
 } from '../models/api/api-21xx';
-import { checkRxFlowResponse } from '../utils';
+import { checkRxFlowResponse, throwRxError } from '../utils';
 
 @Injectable({
   providedIn: 'root',
@@ -30,7 +30,7 @@ export class Api21xxService {
    */
   fetchSportList(body: any): Observable<any> {
     return <any>this.http.post('/api/v2/sport/getSportList', body).pipe(
-      catchError((err) => throwError(err)),
+      catchError((err) => throwRxError(err)),
       switchMap((res) => checkRxFlowResponse(res))
     );
   }
@@ -41,7 +41,7 @@ export class Api21xxService {
    */
   fetchSportListDetail(body: Api2103Post): Observable<Api2103Response> {
     return this.http.post('/api/v2/sport/getSportListDetail', body).pipe(
-      catchError((err) => throwError(err)),
+      catchError((err) => throwRxError(err)),
       switchMap((res) => checkRxFlowResponse(res))
     ) as Observable<Api2103Response>;
   }
@@ -52,7 +52,9 @@ export class Api21xxService {
    */
   fetchSportSummaryArray(body: Api2104Post): Observable<Api2104Response> {
     return this.http.post('/api/v2/sport/getSportSummaryArray', body).pipe(
-      catchError((err) => throwError(err)),
+      catchError((err) => {
+        return throwRxError(err);
+      }),
       switchMap((res) => checkRxFlowResponse(res))
     ) as Observable<Api2104Response>;
   }
@@ -63,7 +65,7 @@ export class Api21xxService {
    */
   fetchTrackingDayDetail(body: any): Observable<any> {
     return <any>this.http.post('/api/v2/sport/getTrackingDayDetail', body).pipe(
-      catchError((err) => throwError(err)),
+      catchError((err) => throwRxError(err)),
       switchMap((res) => checkRxFlowResponse(res))
     );
   }
@@ -74,7 +76,7 @@ export class Api21xxService {
    */
   fetchTrackingSummaryArray(body: any): Observable<any> {
     return <any>this.http.post('/api/v2/sport/getTrackingSummaryArray', body).pipe(
-      catchError((err) => throwError(err)),
+      catchError((err) => throwRxError(err)),
       switchMap((res) => checkRxFlowResponse(res))
     );
   }
@@ -85,7 +87,7 @@ export class Api21xxService {
    */
   fetchEditActivityProfile(body: Api2108Post): Observable<Api2108Response> {
     return this.http.post('/api/v2/sport/editActivityProfile', body).pipe(
-      catchError((err) => throwError(err)),
+      catchError((err) => throwRxError(err)),
       switchMap((res) => checkRxFlowResponse(res))
     ) as Observable<Api2108Response>;
   }
@@ -96,7 +98,7 @@ export class Api21xxService {
    */
   fetchDeleteActivityData(body: Api2109Post): Observable<Api2109Response> {
     return this.http.post('/api/v2/sport/deleteActivityData', body).pipe(
-      catchError((err) => throwError(err)),
+      catchError((err) => throwRxError(err)),
       switchMap((res) => checkRxFlowResponse(res))
     ) as Observable<Api2109Response>;
   }
@@ -107,7 +109,7 @@ export class Api21xxService {
    */
   fetchMultiActivityData(body: any, fake = false): Observable<any> {
     return <any>this.http.post('/api/v2/sport/getMultiActivityData', body).pipe(
-      catchError((err) => throwError(err)),
+      catchError((err) => throwRxError(err)),
       switchMap((res) => checkRxFlowResponse(res))
     );
   }
@@ -118,7 +120,7 @@ export class Api21xxService {
    */
   fetchEditPrivacy(body: Api2114Post): Observable<Api2114Response> {
     return this.http.post('/api/v2/sport/editPrivacy', body).pipe(
-      catchError((err) => throwError(err)),
+      catchError((err) => throwRxError(err)),
       switchMap((res) => checkRxFlowResponse(res))
     ) as Observable<Api2114Response>;
   }
@@ -129,7 +131,7 @@ export class Api21xxService {
    */
   fetchGetSportListSort(body: Api2116Post): Observable<Api2116Response> {
     return this.http.post('/api/v2/sport/getSportListSort', body).pipe(
-      catchError((err) => throwError(err)),
+      catchError((err) => throwRxError(err)),
       switchMap((res) => checkRxFlowResponse(res))
     ) as Observable<Api2116Response>;
   }

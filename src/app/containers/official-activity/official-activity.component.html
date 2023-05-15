@@ -324,10 +324,10 @@
         <div class="flexRow" *ngIf="uiFlag.authBox !== 'resetPassword'">
           <div class="flexRow input__row">
             <ng-container *ngIf="!authInfo.signInType">
-              <mat-icon>account_box</mat-icon>
+              <mat-icon class="sign__icon">account_box</mat-icon>
             </ng-container>
             <ng-container *ngIf="authInfo.signInType === SignTypeEnum.phone">
-              <mat-icon>smartphone</mat-icon>
+              <mat-icon class="sign__icon">smartphone</mat-icon>
               <div
                 class="official-countryCodeSelector"
                 [class.official-selector--active]="uiFlag.showCountryCodeList"
@@ -351,7 +351,7 @@
               </div>
             </ng-container>
             <ng-container *ngIf="authInfo.signInType === SignTypeEnum.email">
-              <mat-icon>email</mat-icon>
+              <mat-icon class="sign__icon">email</mat-icon>
             </ng-container>
             <input
               #accountInput
@@ -392,7 +392,7 @@
         <ng-container *ngIf="uiFlag.authBox !== 'forgetPassword'">
           <div class="flexRow">
             <div class="flexRow input__row">
-              <mat-icon>vpn_key</mat-icon>
+              <mat-icon class="sign__icon">vpn_key</mat-icon>
               <input
                 #passwordInput
                 [type]="uiFlag.showPassword ? 'text' : 'password'"
@@ -433,7 +433,7 @@
         </ng-container>
         <ng-container *ngIf="uiFlag.authBox === 'register'">
           <div class="flexRow input__row">
-            <mat-icon>person</mat-icon>
+            <mat-icon class="sign__icon">person</mat-icon>
             <input
               #nicknameInput
               type="text"
@@ -479,7 +479,7 @@
           *ngIf="uiFlag.authBox === 'forgetPassword' && authInfo.signInType === SignTypeEnum.phone"
         >
           <div class="flexRow input__row">
-            <mat-icon>sms</mat-icon>
+            <mat-icon class="sign__icon">sms</mat-icon>
             <input
               #smsInput
               type="text"

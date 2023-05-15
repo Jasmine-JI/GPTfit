@@ -929,7 +929,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
    * 取消rxjs訂閱
    */
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

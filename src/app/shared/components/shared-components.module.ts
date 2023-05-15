@@ -17,7 +17,6 @@ import { FormTextareaComponent } from './form-textarea/form-textarea.component';
 import { MemberCapsuleComponent } from './member-capsule/member-capsule.component';
 import { Page403Component } from './page403/page403.component';
 import { AlaIframeComponent } from './ala-iframe/ala-iframe.component';
-import { NgProgressModule } from '@ngx-progressbar/core';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { ShareGroupInfoDialogComponent } from './share-group-info-dialog/share-group-info-dialog.component';
 import { QRCodeModule } from 'angularx-qrcode';
@@ -142,7 +141,6 @@ import {
     ReactiveFormsModule,
     SharedModule,
     CustomMaterialModule,
-    NgProgressModule,
     QRCodeModule,
     DateUnitKeyPipe,
     TranslateKeyPipe,

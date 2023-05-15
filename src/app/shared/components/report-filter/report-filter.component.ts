@@ -882,7 +882,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1091029
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

@@ -448,7 +448,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100615
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

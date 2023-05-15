@@ -900,7 +900,7 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   ngOnDestroy(): void {
     if (this.uiFlag.needSaveDraft) this.saveDraft();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }
