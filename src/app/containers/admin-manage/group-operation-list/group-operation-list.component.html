@@ -18,7 +18,7 @@
       <span class="grid__cell">{{ '方案類別' | translate }}</span>
       <span class="grid__cell">{{ '會員數/限制' | translate }}</span>
       <span class="grid__cell">{{ 'universal_group_authorizationDueDate' | translate }}</span>
-      <span class="grid__cell">{{ '最後開課日' | translate }}</span>
+      <span class="grid__cell">{{ 'universal_group_lastClassDate' | translate }}</span>
       <span class="grid__cell">{{ '建立日期' | translate }}</span>
     </div>
     <ul class="flexCol group__list" *ngIf="list$ | async as list">
@@ -99,8 +99,8 @@
                     detailGrid;
                     context: {
                       detailArray: [
-                        ['分店數量', _list.baseInfo.branchCounts],
-                        ['課程數量', _list.baseInfo.classCounts]
+                        ['universal_group_storeGroupAmount', _list.baseInfo.branchCounts],
+                        ['universal_group_classGroupAmount', _list.baseInfo.classCounts]
                       ]
                     }
                   "
@@ -110,8 +110,8 @@
                     detailGrid;
                     context: {
                       detailArray: [
-                        ['總開課次數', _list.classAnalysis.teachCounts],
-                        ['總上課人次', _list.classAnalysis.attendsCounts],
+                        ['universal_group_classCounts', _list.classAnalysis.teachCounts],
+                        ['universal_group_totalClassUserCounts', _list.classAnalysis.attendsCounts],
                         ['總課程檔案數', _list.classAnalysis.classFile]
                       ]
                     }
@@ -120,7 +120,7 @@
               </div>
             </div>
             <div class="flexCol">
-              <h6 class="content__title">{{ '近一個月概況' | translate }}</h6>
+              <h6 class="content__title">{{ 'universal_time_lastMonthSummary' | translate }}</h6>
               <div class="content__section">
                 <div
                   *ngTemplateOutlet="
@@ -138,9 +138,20 @@
                     detailGrid;
                     context: {
                       detailArray: [
-                        ['開課次數', _list.oneMonthAnalysis.oneMonthAnalysis],
-                        ['上課人次', _list.oneMonthAnalysis.attendsCounts],
+                        ['universal_group_classCounts', _list.oneMonthAnalysis.teachCounts],
+                        ['universal_group_classUserCounts', _list.oneMonthAnalysis.attendsCounts],
                         ['課程檔案數', _list.oneMonthAnalysis.classFile]
+                      ]
+                    }
+                  "
+                ></div>
+                <div
+                  *ngTemplateOutlet="
+                    detailGrid;
+                    context: {
+                      detailArray: [
+                        ['上課活躍人數', _list.oneMonthAnalysis.class_active_count],
+                        ['運動活躍人數', _list.oneMonthAnalysis.group_active_count]
                       ]
                     }
                   "
@@ -165,10 +176,12 @@
               </div>
             </div>
             <div class="flexCol">
-              <h6 class="content__title">{{ '相關連結' | translate }}</h6>
+              <h6 class="content__title">
+                {{ 'universal_deviceSetting_relatedLinks' | translate }}
+              </h6>
               <div class="flexCol content__section">
                 <a [href]="_list.link.introduction" target="_blank" class="relative__link">
-                  {{ '介紹頁' | translate }}
+                  {{ 'universal_group_introduction' | translate }}
                 </a>
                 <a [href]="_list.link.commerce" target="_blank" class="relative__link">
                   {{ '群組方案頁' | translate }}
@@ -190,7 +203,7 @@
     <app-pagination [pageSetting]="page$ | async" (pageChange)="shiftPage($event)"></app-pagination>
   </section>
   <p class="update__time" *ngIf="lastUpdateTime$ | async as lastUpdateTime">
-    {{ '數據更新時間' }}:
+    {{ 'universal_group_lastUpdateddate' | translate }}:
     <time>{{ lastUpdateTime.update.timestamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm' }}</time>
   </p>
 </article>

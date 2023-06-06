@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { pageNoAccessright } from '../models/official-activity-const';
-import { AccessRight } from '../../../shared/enum/accessright';
+import { AccessRight } from '../../../core/enums/common';
 import { AuthService, UserService } from '../../../core/services';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AdminGuard implements CanActivate {
+export class AdminGuard {
   constructor(
     private userService: UserService,
     private router: Router,

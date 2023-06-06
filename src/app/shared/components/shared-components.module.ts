@@ -17,8 +17,6 @@ import { FormTextareaComponent } from './form-textarea/form-textarea.component';
 import { MemberCapsuleComponent } from './member-capsule/member-capsule.component';
 import { Page403Component } from './page403/page403.component';
 import { AlaIframeComponent } from './ala-iframe/ala-iframe.component';
-import { MyActivityComponent } from './my-activity/my-activity.component';
-import { NgProgressModule } from '@ngx-progressbar/core';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { ShareGroupInfoDialogComponent } from './share-group-info-dialog/share-group-info-dialog.component';
 import { QRCodeModule } from 'angularx-qrcode';
@@ -41,7 +39,6 @@ import { ReportFilterComponent } from './report-filter/report-filter.component';
 import { BottomSheetComponent } from './bottom-sheet/bottom-sheet.component';
 import { SportsReportComponent } from './sports-report/sports-report.component';
 import { LoadingIconComponent } from './loading-icon/loading-icon.component';
-import { ImgCropperComponent } from './image-cropper/image-cropper.component';
 import { PrivacySettingDialogComponent } from './privacy-setting-dialog/privacy-setting-dialog.component';
 import { ActivityDetailComponent } from './activity-detail/activity-detail.component';
 import { MapChartCompareComponent } from './map-chart-compare/map-chart-compare.component';
@@ -98,7 +95,7 @@ import {
   ThousandConversionPipe,
   SpeedSibsPipe,
   TemperatureSibsPipe,
-  swimPosture,
+  SwimPosturePipe,
   DataTypeTranslatePipe,
   DataTypeUnitPipe,
   PaiPipe,
@@ -131,6 +128,8 @@ import {
   SportFileFooterComponent,
   TipDialogComponent,
   LoadingBarComponent,
+  LoadingMaskComponent,
+  ImgCropperComponent,
 } from '../../components';
 
 @NgModule({
@@ -142,7 +141,6 @@ import {
     ReactiveFormsModule,
     SharedModule,
     CustomMaterialModule,
-    NgProgressModule,
     QRCodeModule,
     DateUnitKeyPipe,
     TranslateKeyPipe,
@@ -161,6 +159,7 @@ import {
     SportFileFooterComponent,
     TipDialogComponent,
     LoadingBarComponent,
+    LoadingMaskComponent,
     SexPipe,
     SafeHtmlPipe,
     LineBreakPipe,
@@ -181,7 +180,7 @@ import {
     ThousandConversionPipe,
     SpeedSibsPipe,
     TemperatureSibsPipe,
-    swimPosture,
+    SwimPosturePipe,
     DataTypeTranslatePipe,
     DataTypeUnitPipe,
     PaiPipe,
@@ -203,6 +202,7 @@ import {
     TargetFieldUnitPipe,
     MuscleGroupNamePipe,
     MusclePartIconPipe,
+    ImgCropperComponent,
   ],
   declarations: [
     NavbarComponent,
@@ -217,7 +217,6 @@ import {
     MemberCapsuleComponent,
     Page403Component,
     AlaIframeComponent,
-    MyActivityComponent,
     ShareGroupInfoDialogComponent,
     RingChartComponent,
     HrzoneChartComponent,
@@ -238,7 +237,6 @@ import {
     BottomSheetComponent,
     SportsReportComponent,
     LoadingIconComponent,
-    ImgCropperComponent,
     PrivacySettingDialogComponent,
     ActivityDetailComponent,
     MapChartCompareComponent,
@@ -281,7 +279,6 @@ import {
     FormTextareaComponent,
     MemberCapsuleComponent,
     AlaIframeComponent,
-    MyActivityComponent,
     ShareGroupInfoDialogComponent,
     RingChartComponent,
     HrzoneChartComponent,
@@ -300,7 +297,6 @@ import {
     ReportFilterComponent,
     SportsReportComponent,
     LoadingIconComponent,
-    ImgCropperComponent,
     PrivacySettingDialogComponent,
     ActivityDetailComponent,
     MapChartCompareComponent,

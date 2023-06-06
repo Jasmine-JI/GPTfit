@@ -12,7 +12,8 @@ import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
 import { TargetField } from '../../../../core/models/api/api-common/sport-target.model';
-import { TARGET_LINE_COLOR, compareChartDefault } from '../../../models/chart-data';
+import { compareChartDefault } from '../../../../core/models/compo/chart-data.model';
+import { targetLineColor } from '../../../../core/models/represent-color';
 import {
   yAxisTimeFormat,
   tooltipTimeFormat,
@@ -145,7 +146,7 @@ export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy
   }
 
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }
@@ -299,7 +300,7 @@ class ChartOption {
   handleTargetLine(value: number) {
     this._option.yAxis['plotLines'] = [
       {
-        color: TARGET_LINE_COLOR,
+        color: targetLineColor,
         width: 2,
         value,
       },

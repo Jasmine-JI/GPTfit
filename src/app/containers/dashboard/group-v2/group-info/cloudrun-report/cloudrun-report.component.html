@@ -6,7 +6,7 @@
         style="align-items: center; margin: 5px 0"
         target="_blank"
         title="Cloud run"
-        href="/introduction/application/#cloudrun"
+        [href]="cloudrunIntroductionUrl"
         *ngIf="!uiFlag.isPreviewMode"
       >
         <img class="report-cloudrunIcon" src="/assets/cloud_run/cloudrun-app-icon.png" />
@@ -76,7 +76,8 @@
           <span class="report-summaryData">
             {{
               groupDataObj[currentGroup.id].record.totalSeconds /
-                groupDataObj[currentGroup.id].record.completeNum || 0 | sportTime: [false, false]
+                groupDataObj[currentGroup.id].record.completeNum || 0
+                | sportTime: { showZeroHour: false, hideSecond: false }
             }}
           </span>
           <p class="report-summaryDescription">
@@ -334,7 +335,9 @@
                 <div class="setIn">
                   <span class="tableData regulate__col">
                     <ng-container *ngIf="row?.completeNum !== 0; else noTimeData">
-                      {{ row?.avgSecond || 0 | sportTime: [false, false] }}
+                      {{
+                        row?.avgSecond || 0 | sportTime: { showZeroHour: false, hideSecond: false }
+                      }}
                     </ng-container>
                   </span>
                 </div>
@@ -372,7 +375,9 @@
                 <div class="setIn">
                   <span class="tableData regulate__col">
                     <ng-container *ngIf="row?.completeNum !== 0; else noTimeData">
-                      {{ row?.totalSeconds | sportTime: [false, false] }}
+                      {{
+                        row?.totalSeconds | sportTime: { showZeroHour: false, hideSecond: false }
+                      }}
                     </ng-container>
                   </span>
                 </div>
@@ -919,7 +924,7 @@
                 <div class="setIn">
                   <span class="tableData regulate__col" *ngIf="row?.privacy; else privacyLock">
                     <ng-container *ngIf="row?.runTimes !== 0; else noTimeData">
-                      {{ row?.bestSeconds | sportTime: [false, false] }}
+                      {{ row?.bestSeconds | sportTime: { showZeroHour: false, hideSecond: false } }}
                     </ng-container>
                   </span>
                 </div>
@@ -958,7 +963,9 @@
                 <div class="setIn">
                   <span class="tableData regulate__col" *ngIf="row?.privacy; else privacyLock">
                     <ng-container *ngIf="row?.runTimes !== 0; else noTimeData">
-                      {{ row?.avgSecond || 0 | sportTime: [false, false] }}
+                      {{
+                        row?.avgSecond || 0 | sportTime: { showZeroHour: false, hideSecond: false }
+                      }}
                     </ng-container>
                   </span>
                 </div>
@@ -996,7 +1003,9 @@
                 <div class="setIn">
                   <span class="tableData regulate__col" *ngIf="row?.privacy; else privacyLock">
                     <ng-container *ngIf="row?.runTimes !== 0; else noTimeData">
-                      {{ row?.totalSeconds | sportTime: [false, false] }}
+                      {{
+                        row?.totalSeconds | sportTime: { showZeroHour: false, hideSecond: false }
+                      }}
                     </ng-container>
                   </span>
                 </div>

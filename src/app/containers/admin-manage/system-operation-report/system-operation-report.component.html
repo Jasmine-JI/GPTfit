@@ -5,7 +5,7 @@
     (scrollToTitle)="scrollToTitle($event)"
   ></app-aside-index-box>
   <article class="report__article">
-    <h4 class="pageTitle">營運分析報告</h4>
+    <h4 class="pageTitle">{{ 'universal_group_analysisReport' | translate }}</h4>
     <section class="flexRow tab__bar">
       <button
         class="report__type__tab"
@@ -33,20 +33,23 @@
       </button>
     </section>
     <div class="report__content">
-      <section class="content__section" *ngIf="operationInfo">
+      <section class="operation-contentSection" *ngIf="operationInfo">
         <p class="creation__time">
           建立日期:<time>{{ creationTime }}</time>
         </p>
         <p class="creation__time" *ngIf="lastUpdateTime$ | async as lastUpdateTime">
-          {{ '數據更新時間' }}:
-          <time>{{ lastUpdateTime.update.timestamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm' }}</time>
+          {{ 'universal_group_lastUpdateddate' | translate }}:<time>{{
+            lastUpdateTime.update.timestamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm'
+          }}</time>
         </p>
-        <h5 id="summary__info__section" class="section__title">
+        <h5 id="summary__info__section" class="operation-sectionTitle">
           {{ 'universal_activityData_summary' | translate }}
         </h5>
-        <hr class="section__title__line" />
-        <p class="description">截至目前為止的概要統計數據</p>
-        <ul class="summary__grid" [ngSwitch]="postInfo.type">
+        <hr class="operation-sectionTitleLine" />
+        <p class="operation-description">
+          {{ 'universal_group_summaryTillNow' | translate }}
+        </p>
+        <ul class="operation-summaryGrid" [ngSwitch]="postInfo.type">
           <ng-container *ngSwitchCase="SystemAnalysisType.group">
             <li
               *ngTemplateOutlet="
@@ -80,7 +83,7 @@
                 summaryItem;
                 context: {
                   value: operationInfo.info.baseCounts.totalClass,
-                  translateKey: '課程數'
+                  translateKey: 'universal_group_classGroupAmount'
                 }
               "
             ></li>
@@ -89,7 +92,7 @@
                 summaryItem;
                 context: {
                   value: operationInfo.info.baseCounts.totalGroupMember,
-                  translateKey: '群組成員數'
+                  translateKey: '群組學員數'
                 }
               "
             ></li>
@@ -175,11 +178,13 @@
           </ng-container>
         </ul>
       </section>
-      <section class="content__section" [ngSwitch]="postInfo.type" *ngIf="operationInfo">
-        <h5 id="overall__analysis__section" class="section__title">總體分析圖表</h5>
-        <hr class="section__title__line" />
+      <section class="operation-contentSection" [ngSwitch]="postInfo.type" *ngIf="operationInfo">
+        <h5 id="overall__analysis__section" class="operation-sectionTitle">
+          {{ 'universal_group_generalAnalysisChart' | translate }}
+        </h5>
+        <hr class="operation-sectionTitleLine" />
         <ng-container *ngSwitchCase="SystemAnalysisType.group">
-          <div class="data__category" *ngIf="overviewData.planAnalysisChartData">
+          <div class="operation-dataCategory" *ngIf="overviewData.planAnalysisChartData">
             <ng-container
               *ngTemplateOutlet="
                 dataTypeArea;
@@ -194,11 +199,19 @@
               [data]="overviewData.planAnalysisChartData.data"
               [seriesName]="overviewData.planAnalysisChartData.seriesName"
             ></app-category-column-chart>
-            <app-operation-data-table
-              [tableData]="overviewData.planAnalysisTableData"
-            ></app-operation-data-table>
+            <div
+              *ngTemplateOutlet="
+                analysisTable;
+                context: {
+                  data: overviewData.planAnalysisTableData,
+                  type: 'overview',
+                  status: overviewTableDisplayStatus.getStatus('planAnalysis'),
+                  statusKey: 'planAnalysis'
+                }
+              "
+            ></div>
           </div>
-          <div class="data__category" *ngIf="overviewData.overviewAnalysisTableData">
+          <div class="operation-dataCategory" *ngIf="overviewData.overviewAnalysisTableData">
             <ng-container
               *ngTemplateOutlet="
                 dataTypeArea;
@@ -209,17 +222,25 @@
                 }
               "
             ></ng-container>
-            <app-operation-data-table
-              [tableData]="overviewData.overviewAnalysisTableData"
-            ></app-operation-data-table>
+            <div
+              *ngTemplateOutlet="
+                analysisTable;
+                context: {
+                  data: overviewData.overviewAnalysisTableData,
+                  type: 'overview',
+                  status: overviewTableDisplayStatus.getStatus('overviewInfoAnalysis'),
+                  statusKey: 'overviewInfoAnalysis'
+                }
+              "
+            ></div>
           </div>
           <!--
-            <div class="data__category" *ngIf="overviewData.classTypeAnalysisTableData">
+            <div class="operation-dataCategory" *ngIf="overviewData.classTypeAnalysisTableData">
               <ng-container
                 *ngTemplateOutlet="
                   dataTypeArea;
                   context: {
-                    title: '開課類別分析',
+                    title: 'universal_group_classTypeAnalysis',
                     elementId: 'teach__type__analysis',
                     description: '各群組使用Trainlive開課之運動類別統計數據'
                   }
@@ -229,22 +250,30 @@
                 *ngTemplateOutlet="
                   doublePieChart;
                   context: {
-                    firstTitleKey: '開課類別',
+                    firstTitleKey: 'universal_group_classType',
                     firstChartData: overviewData.teachSportsTypeChartData,
                     secondTitleKey: '檔案類別',
                     secondChartData: overviewData.fileSportsTypeChartData
                   }
                 "
               ></div>
-              <app-operation-data-table
-                [tableData]="overviewData.classTypeAnalysisTableData"
-              ></app-operation-data-table>
+              <div
+                *ngTemplateOutlet="
+                  analysisTable;
+                  context: {
+                    data: overviewData.classTypeAnalysisTableData,
+                    type: 'overview',
+                    status: overviewTableDisplayStatus.getStatus('classTypeAnalysis'),
+                    statusKey: 'classTypeAnalysis'
+                  }
+                "
+              ></div>
             </div>
           -->
         </ng-container>
 
         <ng-container *ngSwitchCase="SystemAnalysisType.member">
-          <div class="data__category" *ngIf="overviewData.activeAnalysisTableData">
+          <div class="operation-dataCategory" *ngIf="overviewData.activeAnalysisTableData">
             <ng-container
               *ngTemplateOutlet="
                 dataTypeArea;
@@ -256,11 +285,19 @@
               "
             ></ng-container>
             <app-pie-chart [data]="overviewData.activeAnalysisChartData"></app-pie-chart>
-            <app-operation-data-table
-              [tableData]="overviewData.activeAnalysisTableData"
-            ></app-operation-data-table>
+            <div
+              *ngTemplateOutlet="
+                analysisTable;
+                context: {
+                  data: overviewData.activeAnalysisTableData,
+                  type: 'overview',
+                  status: overviewTableDisplayStatus.getStatus('activeAnalysis'),
+                  statusKey: 'activeAnalysis'
+                }
+              "
+            ></div>
           </div>
-          <div class="data__category" *ngIf="overviewData.ageAnalysisTableData">
+          <div class="operation-dataCategory" *ngIf="overviewData.ageAnalysisTableData">
             <ng-container
               *ngTemplateOutlet="
                 dataTypeArea;
@@ -275,11 +312,19 @@
               [data]="overviewData.ageAnalysisChartData.data"
               [seriesName]="overviewData.ageAnalysisChartData.seriesName"
             ></app-category-column-chart>
-            <app-operation-data-table
-              [tableData]="overviewData.ageAnalysisTableData"
-            ></app-operation-data-table>
+            <div
+              *ngTemplateOutlet="
+                analysisTable;
+                context: {
+                  data: overviewData.ageAnalysisTableData,
+                  type: 'overview',
+                  status: overviewTableDisplayStatus.getStatus('ageAnalysis'),
+                  statusKey: 'ageAnalysis'
+                }
+              "
+            ></div>
           </div>
-          <div class="data__category" *ngIf="overviewData.sportsTypeTableData">
+          <div class="operation-dataCategory" *ngIf="overviewData.sportsTypeTableData">
             <ng-container
               *ngTemplateOutlet="
                 dataTypeArea;
@@ -301,18 +346,26 @@
                 }
               "
             ></div>
-            <app-operation-data-table
-              [tableData]="overviewData.sportsTypeTableData"
-            ></app-operation-data-table>
+            <div
+              *ngTemplateOutlet="
+                analysisTable;
+                context: {
+                  data: overviewData.sportsTypeTableData,
+                  type: 'overview',
+                  status: overviewTableDisplayStatus.getStatus('sportTypeAnalysis'),
+                  statusKey: 'sportTypeAnalysis'
+                }
+              "
+            ></div>
           </div>
         </ng-container>
         <ng-container *ngSwitchCase="SystemAnalysisType.device">
-          <div class="data__category" *ngIf="overviewData.deviceTableData">
+          <div class="operation-dataCategory" *ngIf="overviewData.deviceTableData">
             <ng-container
               *ngTemplateOutlet="
                 dataTypeArea;
                 context: {
-                  title: '裝置類別分析',
+                  title: 'universal_group_deviceTypeAnalysis',
                   elementId: 'device__type__analysis',
                   description: '依運動器材裝置其所屬類別之相關統計數據'
                 }
@@ -329,17 +382,27 @@
                 }
               "
             ></div>
-            <app-operation-data-table
-              [tableData]="overviewData.deviceTableData"
-            ></app-operation-data-table>
+            <div
+              *ngTemplateOutlet="
+                analysisTable;
+                context: {
+                  data: overviewData.deviceTableData,
+                  type: 'overview',
+                  status: overviewTableDisplayStatus.getStatus('deviceAnalysis'),
+                  statusKey: 'deviceAnalysis'
+                }
+              "
+            ></div>
           </div>
         </ng-container>
       </section>
-      <section class="content__section" [ngSwitch]="postInfo.type">
-        <h5 id="trend__chart__section" class="section__title">趨勢分析圖表</h5>
-        <hr class="section__title__line" />
-        <div class="flexRow date__picker__area">
-          <span class="date__pick__title">{{ '日期範圍' | translate }}:</span>
+      <section class="operation-contentSection" [ngSwitch]="postInfo.type">
+        <h5 id="trend__chart__section" class="operation-sectionTitle">
+          {{ 'universal_group_trendAnalysisCharts' | translate }}
+        </h5>
+        <hr class="operation-sectionTitleLine" />
+        <div class="flexRow operation-datePickerArea">
+          <span class="operation-datePickTitle">{{ '日期範圍' | translate }}:</span>
           <app-single-drop-list
             [dropList]="trendList"
             [defaultSelectIndex]="[OperationTrendType.singleTrend, SingleTrendRange.nearlyOneYear]"
@@ -348,7 +411,7 @@
         </div>
         <div *ngIf="operationTrend && trendData">
           <ng-container *ngIf="postInfo.type === SystemAnalysisType.group">
-            <div class="data__category">
+            <div class="operation-dataCategory">
               <ng-container
                 *ngTemplateOutlet="
                   dataTypeArea;
@@ -363,11 +426,19 @@
                 [data]="trendData.groupTrendChartData.brand.chartData"
                 [seriesName]="trendData.groupTrendChartData.brand.seriesName"
               ></app-category-column-chart>
-              <app-operation-data-table
-                [tableData]="trendData.groupTrendTableData.brand"
-              ></app-operation-data-table>
+              <div
+                *ngTemplateOutlet="
+                  analysisTable;
+                  context: {
+                    data: trendData.groupTrendTableData.brand,
+                    type: 'trend',
+                    status: trendTableDisplayStatus.getStatus('brand'),
+                    statusKey: 'brand'
+                  }
+                "
+              ></div>
             </div>
-            <div class="data__category">
+            <div class="operation-dataCategory">
               <ng-container
                 *ngTemplateOutlet="
                   dataTypeArea;
@@ -382,11 +453,19 @@
                 [data]="trendData.groupTrendChartData.teachCounts.chartData"
                 [seriesName]="trendData.groupTrendChartData.teachCounts.seriesName"
               ></app-category-column-chart>
-              <app-operation-data-table
-                [tableData]="trendData.groupTrendTableData.teachCounts"
-              ></app-operation-data-table>
+              <div
+                *ngTemplateOutlet="
+                  analysisTable;
+                  context: {
+                    data: trendData.groupTrendTableData.teachCounts,
+                    type: 'trend',
+                    status: trendTableDisplayStatus.getStatus('teachCounts'),
+                    statusKey: 'teachCounts'
+                  }
+                "
+              ></div>
             </div>
-            <div class="data__category">
+            <div class="operation-dataCategory">
               <ng-container
                 *ngTemplateOutlet="
                   dataTypeArea;
@@ -402,11 +481,19 @@
                 [seriesName]="trendData.groupTrendChartData.totalClassTime.seriesName"
                 [unit]="'hr'"
               ></app-category-column-chart>
-              <app-operation-data-table
-                [tableData]="trendData.groupTrendTableData.totalClassTime"
-              ></app-operation-data-table>
+              <div
+                *ngTemplateOutlet="
+                  analysisTable;
+                  context: {
+                    data: trendData.groupTrendTableData.totalClassTime,
+                    type: 'trend',
+                    status: trendTableDisplayStatus.getStatus('totalClassTime'),
+                    statusKey: 'totalClassTime'
+                  }
+                "
+              ></div>
             </div>
-            <div class="data__category">
+            <div class="operation-dataCategory">
               <ng-container
                 *ngTemplateOutlet="
                   dataTypeArea;
@@ -421,11 +508,19 @@
                 [data]="trendData.groupTrendChartData.attendCounts.chartData"
                 [seriesName]="trendData.groupTrendChartData.attendCounts.seriesName"
               ></app-category-column-chart>
-              <app-operation-data-table
-                [tableData]="trendData.groupTrendTableData.attendCounts"
-              ></app-operation-data-table>
+              <div
+                *ngTemplateOutlet="
+                  analysisTable;
+                  context: {
+                    data: trendData.groupTrendTableData.attendCounts,
+                    type: 'trend',
+                    status: trendTableDisplayStatus.getStatus('attendCounts'),
+                    statusKey: 'attendCounts'
+                  }
+                "
+              ></div>
             </div>
-            <div class="data__category">
+            <div class="operation-dataCategory">
               <ng-container
                 *ngTemplateOutlet="
                   dataTypeArea;
@@ -441,13 +536,21 @@
                 [data]="trendData.groupTrendChartData.classFile.chartData"
                 [seriesName]="trendData.groupTrendChartData.classFile.seriesName"
               ></app-category-column-chart>
-              <app-operation-data-table
-                [tableData]="trendData.groupTrendTableData.classFile"
-              ></app-operation-data-table>
+              <div
+                *ngTemplateOutlet="
+                  analysisTable;
+                  context: {
+                    data: trendData.groupTrendTableData.classFile,
+                    type: 'trend',
+                    status: trendTableDisplayStatus.getStatus('classFile'),
+                    statusKey: 'classFile'
+                  }
+                "
+              ></div>
             </div>
           </ng-container>
           <ng-container *ngIf="postInfo.type === SystemAnalysisType.member">
-            <div class="data__category">
+            <div class="operation-dataCategory">
               <ng-container
                 *ngTemplateOutlet="
                   dataTypeArea;
@@ -462,12 +565,20 @@
                 [data]="trendData.memberTrendChartData.totalMembers.chartData"
                 [seriesName]="trendData.memberTrendChartData.totalMembers.seriesName"
               ></app-category-column-chart>
-              <app-operation-data-table
-                [tableData]="trendData.memberTrendTableData.totalMembers"
-              ></app-operation-data-table>
+              <div
+                *ngTemplateOutlet="
+                  analysisTable;
+                  context: {
+                    data: trendData.memberTrendTableData.totalMembers,
+                    type: 'trend',
+                    status: trendTableDisplayStatus.getStatus('totalMembers'),
+                    statusKey: 'totalMembers'
+                  }
+                "
+              ></div>
             </div>
             <ng-container *ngIf="!isCompareMode && trendData.memberTrendChartData">
-              <div class="data__category">
+              <div class="operation-dataCategory">
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -482,11 +593,19 @@
                   [data]="trendData.memberTrendChartData.gender.chartData"
                   [seriesName]="trendData.memberTrendChartData.gender.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.memberTrendTableData.gender"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.memberTrendTableData.gender,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('gender'),
+                      statusKey: 'gender'
+                    }
+                  "
+                ></div>
               </div>
-              <div class="data__category">
+              <div class="operation-dataCategory">
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -509,11 +628,19 @@
                     }
                   "
                 ></div>
-                <app-operation-data-table
-                  [tableData]="trendData.sportsTypeTrendTableData"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.sportsTypeTrendTableData,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('sportsTypeTotal'),
+                      statusKey: 'sportsTypeTotal'
+                    }
+                  "
+                ></div>
               </div>
-              <div class="data__category">
+              <div class="operation-dataCategory">
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -528,13 +655,21 @@
                   [data]="trendData.memberTrendChartData.sportsType.chartData"
                   [seriesName]="trendData.memberTrendChartData.sportsType.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.memberTrendTableData.sportsType"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.memberTrendTableData.sportsType,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('sportsType'),
+                      statusKey: 'sportsType'
+                    }
+                  "
+                ></div>
               </div>
             </ng-container>
             <ng-container *ngIf="isCompareMode">
-              <div class="data__category">
+              <div class="operation-dataCategory">
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -557,11 +692,19 @@
                     }
                   "
                 ></div>
-                <app-operation-data-table
-                  [tableData]="trendData.sportsTypeTrendTableData"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.sportsTypeTrendTableData,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('sportsTypeTotal'),
+                      statusKey: 'sportsTypeTotal'
+                    }
+                  "
+                ></div>
               </div>
-              <div class="data__category">
+              <div class="operation-dataCategory">
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -576,11 +719,19 @@
                   [data]="trendData.memberTrendChartData.run.chartData"
                   [seriesName]="trendData.memberTrendChartData.run.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.memberTrendTableData.run"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.memberTrendTableData.run,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('run'),
+                      statusKey: 'run'
+                    }
+                  "
+                ></div>
               </div>
-              <div class="data__category">
+              <div class="operation-dataCategory">
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -595,11 +746,19 @@
                   [data]="trendData.memberTrendChartData.cycle.chartData"
                   [seriesName]="trendData.memberTrendChartData.cycle.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.memberTrendTableData.cycle"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.memberTrendTableData.cycle,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('cycle'),
+                      statusKey: 'cycle'
+                    }
+                  "
+                ></div>
               </div>
-              <div class="data__category">
+              <div class="operation-dataCategory">
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -614,11 +773,19 @@
                   [data]="trendData.memberTrendChartData.weightTraining.chartData"
                   [seriesName]="trendData.memberTrendChartData.weightTraining.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.memberTrendTableData.weightTraining"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.memberTrendTableData.weightTraining,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('weightTraining'),
+                      statusKey: 'weightTraining'
+                    }
+                  "
+                ></div>
               </div>
-              <div class="data__category">
+              <div class="operation-dataCategory">
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -633,11 +800,19 @@
                   [data]="trendData.memberTrendChartData.swim.chartData"
                   [seriesName]="trendData.memberTrendChartData.swim.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.memberTrendTableData.swim"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.memberTrendTableData.swim,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('swim'),
+                      statusKey: 'swim'
+                    }
+                  "
+                ></div>
               </div>
-              <div class="data__category">
+              <div class="operation-dataCategory">
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -652,11 +827,19 @@
                   [data]="trendData.memberTrendChartData.aerobic.chartData"
                   [seriesName]="trendData.memberTrendChartData.aerobic.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.memberTrendTableData.aerobic"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.memberTrendTableData.aerobic,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('aerobic'),
+                      statusKey: 'aerobic'
+                    }
+                  "
+                ></div>
               </div>
-              <div class="data__category">
+              <div class="operation-dataCategory">
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -671,11 +854,19 @@
                   [data]="trendData.memberTrendChartData.row.chartData"
                   [seriesName]="trendData.memberTrendChartData.row.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.memberTrendTableData.row"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.memberTrendTableData.row,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('row'),
+                      statusKey: 'row'
+                    }
+                  "
+                ></div>
               </div>
-              <div class="data__category">
+              <div class="operation-dataCategory">
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -690,11 +881,19 @@
                   [data]="trendData.memberTrendChartData.ball.chartData"
                   [seriesName]="trendData.memberTrendChartData.ball.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.memberTrendTableData.ball"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.memberTrendTableData.ball,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('ball'),
+                      statusKey: 'ball'
+                    }
+                  "
+                ></div>
               </div>
-              <div class="data__category" *ngIf="trendData.memberTrendChartData.complex">
+              <div class="operation-dataCategory" *ngIf="trendData.memberTrendChartData.complex">
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -709,15 +908,23 @@
                   [data]="trendData.memberTrendChartData.complex.chartData"
                   [seriesName]="trendData.memberTrendChartData.complex.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.memberTrendTableData.complex"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.memberTrendTableData.complex,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('complex'),
+                      statusKey: 'complex'
+                    }
+                  "
+                ></div>
               </div>
             </ng-container>
           </ng-container>
           <ng-container *ngIf="postInfo.type === SystemAnalysisType.device">
             <ng-container *ngIf="!isCompareMode">
-              <div class="data__category" *ngIf="trendData.deviceTrendChartData.enable">
+              <div class="operation-dataCategory" *ngIf="trendData.deviceTrendChartData.enable">
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -733,11 +940,19 @@
                   [data]="trendData.deviceTrendChartData.enable.chartData"
                   [seriesName]="trendData.deviceTrendChartData.enable.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.deviceTrendTableData.enable"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.deviceTrendTableData.enable,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('enable'),
+                      statusKey: 'enable'
+                    }
+                  "
+                ></div>
               </div>
-              <div class="data__category" *ngIf="trendData.deviceTrendChartData.register">
+              <div class="operation-dataCategory" *ngIf="trendData.deviceTrendChartData.register">
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -753,13 +968,24 @@
                   [data]="trendData.deviceTrendChartData.register.chartData"
                   [seriesName]="trendData.deviceTrendChartData.register.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.deviceTrendTableData.register"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.deviceTrendTableData.register,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('register'),
+                      statusKey: 'register'
+                    }
+                  "
+                ></div>
               </div>
             </ng-container>
             <ng-container *ngIf="isCompareMode">
-              <div class="data__category" *ngIf="trendData.deviceTrendChartData.wearableEnable">
+              <div
+                class="operation-dataCategory"
+                *ngIf="trendData.deviceTrendChartData.wearableEnable"
+              >
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -774,11 +1000,22 @@
                   [data]="trendData.deviceTrendChartData.wearableEnable.chartData"
                   [seriesName]="trendData.deviceTrendChartData.wearableEnable.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.deviceTrendTableData.wearableEnable"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.deviceTrendTableData.wearableEnable,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('wearableEnable'),
+                      statusKey: 'wearableEnable'
+                    }
+                  "
+                ></div>
               </div>
-              <div class="data__category" *ngIf="trendData.deviceTrendChartData.wearableRegister">
+              <div
+                class="operation-dataCategory"
+                *ngIf="trendData.deviceTrendChartData.wearableRegister"
+              >
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -794,12 +1031,23 @@
                   [data]="trendData.deviceTrendChartData.wearableRegister.chartData"
                   [seriesName]="trendData.deviceTrendChartData.wearableRegister.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.deviceTrendTableData.wearableRegister"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.deviceTrendTableData.wearableRegister,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('wearableRegister'),
+                      statusKey: 'wearableRegister'
+                    }
+                  "
+                ></div>
               </div>
 
-              <div class="data__category" *ngIf="trendData.deviceTrendChartData.treadmillEnable">
+              <div
+                class="operation-dataCategory"
+                *ngIf="trendData.deviceTrendChartData.treadmillEnable"
+              >
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -814,11 +1062,22 @@
                   [data]="trendData.deviceTrendChartData.treadmillEnable.chartData"
                   [seriesName]="trendData.deviceTrendChartData.treadmillEnable.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.deviceTrendTableData.treadmillEnable"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.deviceTrendTableData.treadmillEnable,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('treadmillEnable'),
+                      statusKey: 'treadmillEnable'
+                    }
+                  "
+                ></div>
               </div>
-              <div class="data__category" *ngIf="trendData.deviceTrendChartData.treadmillRegister">
+              <div
+                class="operation-dataCategory"
+                *ngIf="trendData.deviceTrendChartData.treadmillRegister"
+              >
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -834,12 +1093,23 @@
                   [data]="trendData.deviceTrendChartData.treadmillRegister.chartData"
                   [seriesName]="trendData.deviceTrendChartData.treadmillRegister.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.deviceTrendTableData.treadmillRegister"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.deviceTrendTableData.treadmillRegister,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('treadmillRegister'),
+                      statusKey: 'treadmillRegister'
+                    }
+                  "
+                ></div>
               </div>
 
-              <div class="data__category" *ngIf="trendData.deviceTrendChartData.spinBikeEnable">
+              <div
+                class="operation-dataCategory"
+                *ngIf="trendData.deviceTrendChartData.spinBikeEnable"
+              >
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -854,11 +1124,22 @@
                   [data]="trendData.deviceTrendChartData.spinBikeEnable.chartData"
                   [seriesName]="trendData.deviceTrendChartData.spinBikeEnable.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.deviceTrendTableData.spinBikeEnable"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.deviceTrendTableData.spinBikeEnable,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('spinBikeEnable'),
+                      statusKey: 'spinBikeEnable'
+                    }
+                  "
+                ></div>
               </div>
-              <div class="data__category" *ngIf="trendData.deviceTrendChartData.spinBikeRegister">
+              <div
+                class="operation-dataCategory"
+                *ngIf="trendData.deviceTrendChartData.spinBikeRegister"
+              >
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -874,12 +1155,23 @@
                   [data]="trendData.deviceTrendChartData.spinBikeRegister.chartData"
                   [seriesName]="trendData.deviceTrendChartData.spinBikeRegister.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.deviceTrendTableData.spinBikeRegister"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.deviceTrendTableData.spinBikeRegister,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('spinBikeRegister'),
+                      statusKey: 'spinBikeRegister'
+                    }
+                  "
+                ></div>
               </div>
 
-              <div class="data__category" *ngIf="trendData.deviceTrendChartData.rowMachineEnable">
+              <div
+                class="operation-dataCategory"
+                *ngIf="trendData.deviceTrendChartData.rowMachineEnable"
+              >
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -894,11 +1186,22 @@
                   [data]="trendData.deviceTrendChartData.rowMachineEnable.chartData"
                   [seriesName]="trendData.deviceTrendChartData.rowMachineEnable.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.deviceTrendTableData.rowMachineEnable"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.deviceTrendTableData.rowMachineEnable,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('rowMachineEnable'),
+                      statusKey: 'rowMachineEnable'
+                    }
+                  "
+                ></div>
               </div>
-              <div class="data__category" *ngIf="trendData.deviceTrendChartData.rowMachineRegister">
+              <div
+                class="operation-dataCategory"
+                *ngIf="trendData.deviceTrendChartData.rowMachineRegister"
+              >
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -914,12 +1217,23 @@
                   [data]="trendData.deviceTrendChartData.rowMachineRegister.chartData"
                   [seriesName]="trendData.deviceTrendChartData.rowMachineRegister.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.deviceTrendTableData.rowMachineRegister"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.deviceTrendTableData.rowMachineRegister,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('rowMachineRegister'),
+                      statusKey: 'rowMachineRegister'
+                    }
+                  "
+                ></div>
               </div>
 
-              <div class="data__category" *ngIf="trendData.deviceTrendChartData.sensorEnable">
+              <div
+                class="operation-dataCategory"
+                *ngIf="trendData.deviceTrendChartData.sensorEnable"
+              >
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -934,11 +1248,22 @@
                   [data]="trendData.deviceTrendChartData.sensorEnable.chartData"
                   [seriesName]="trendData.deviceTrendChartData.sensorEnable.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.deviceTrendTableData.sensorEnable"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.deviceTrendTableData.sensorEnable,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('sensorEnable'),
+                      statusKey: 'sensorEnable'
+                    }
+                  "
+                ></div>
               </div>
-              <div class="data__category" *ngIf="trendData.deviceTrendChartData.sensorRegister">
+              <div
+                class="operation-dataCategory"
+                *ngIf="trendData.deviceTrendChartData.sensorRegister"
+              >
                 <ng-container
                   *ngTemplateOutlet="
                     dataTypeArea;
@@ -954,9 +1279,17 @@
                   [data]="trendData.deviceTrendChartData.sensorRegister.chartData"
                   [seriesName]="trendData.deviceTrendChartData.sensorRegister.seriesName"
                 ></app-category-column-chart>
-                <app-operation-data-table
-                  [tableData]="trendData.deviceTrendTableData.sensorRegister"
-                ></app-operation-data-table>
+                <div
+                  *ngTemplateOutlet="
+                    analysisTable;
+                    context: {
+                      data: trendData.deviceTrendTableData.sensorRegister,
+                      type: 'trend',
+                      status: trendTableDisplayStatus.getStatus('sensorRegister'),
+                      statusKey: 'sensorRegister'
+                    }
+                  "
+                ></div>
               </div>
             </ng-container>
           </ng-container>
@@ -967,8 +1300,8 @@
 </div>
 <ng-template #summaryItem let-value="value" let-translateKey="translateKey">
   <li class="flexCol">
-    <span class="summary__value">{{ value }}</span>
-    <span class="summary__name">{{ translateKey | translate }}</span>
+    <span class="operation-summaryValue">{{ value }}</span>
+    <span class="operation-summaryName">{{ translateKey | translate }}</span>
   </li>
 </ng-template>
 
@@ -978,9 +1311,9 @@
   let-elementId="elementId"
   let-description="description"
 >
-  <h6 [id]="elementId" class="data__category__title">{{ title | translate }}</h6>
-  <hr class="data__divide__line" />
-  <p class="description">{{ description | translate }}</p>
+  <h6 [id]="elementId" class="operation-dataCategoryTitle">{{ title | translate }}</h6>
+  <hr class="operation-dataDivideLine" />
+  <p class="operation-description">{{ description | translate }}</p>
 </ng-template>
 
 <ng-template
@@ -990,18 +1323,40 @@
   let-secondTitleKey="secondTitleKey"
   let-secondChartData="secondChartData"
 >
-  <div class="flexRow pie__chart__area">
-    <div class="flexCol one__pie__chart">
-      <p class="pie__chart__title">
+  <div class="flexRow operation-pieChartArea">
+    <div class="flexCol operation-onePieChart">
+      <p class="operation-pieChartTitle">
         {{ firstTitleKey | translate }}
       </p>
       <app-pie-chart [data]="firstChartData"></app-pie-chart>
     </div>
-    <div class="flexCol one__pie__chart">
-      <p class="pie__chart__title">
+    <div class="flexCol operation-onePieChart">
+      <p class="operation-pieChartTitle">
         {{ secondTitleKey | translate }}
       </p>
       <app-pie-chart [data]="secondChartData"></app-pie-chart>
     </div>
+  </div>
+</ng-template>
+
+<ng-template
+  #analysisTable
+  let-data="data"
+  let-type="type"
+  let-status="status"
+  let-statusKey="statusKey"
+>
+  <div class="flexCol">
+    <div class="flexCenter">
+      <button class="display__table__button" (click)="toggleTableDisplayStatus(type, statusKey)">
+        <ng-container *ngIf="!status">
+          {{ 'universal_group_showDataList' | translate }}
+        </ng-container>
+        <ng-container *ngIf="status">
+          {{ 'universal_group_hideDataList' | translate }}
+        </ng-container>
+      </button>
+    </div>
+    <app-operation-data-table [tableData]="data" *ngIf="status"></app-operation-data-table>
   </div>
 </ng-template>

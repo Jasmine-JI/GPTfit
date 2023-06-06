@@ -18,7 +18,7 @@ export class CustomMatPaginatorIntl extends MatPaginatorIntl implements OnDestro
   }
 
   ngOnDestroy() {
-    this.unsubscribe.next();
+    this.unsubscribe.next(null);
     this.unsubscribe.complete();
   }
 
@@ -33,7 +33,7 @@ export class CustomMatPaginatorIntl extends MatPaginatorIntl implements OnDestro
         this.itemsPerPageLabel = translation['universal_status_pageCount'];
         this.nextPageLabel = translation['universal_operating_nextPage'];
         this.previousPageLabel = translation['universal_operating_previousPage'];
-        this.changes.next();
+        this.changes.next(null);
       });
   }
 

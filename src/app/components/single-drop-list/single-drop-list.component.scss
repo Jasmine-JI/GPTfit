@@ -33,7 +33,7 @@ $height: 24px;
 .drop__list {
   position: absolute;
   max-height: 150px;
-  min-width: 100px;
+  min-width: 120px;
   width: 100%;
   list-style: none;
   margin: 0;
@@ -55,5 +55,13 @@ $height: 24px;
   &:hover {
     background-color: rgba(206, 222, 255, 1);
     cursor: pointer;
+  }
+}
+
+/**************************** media ******************************/
+
+@media (max-width: 450px) {
+  .drop__list__container {
+    max-width: 280px;
   }
 }

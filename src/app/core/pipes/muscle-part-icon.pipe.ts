@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { MuscleCode } from '../../shared/enum/weight-train';
+import { MuscleCode } from '../enums/sports';
 
 @Pipe({
   name: 'musclePartIcon',
@@ -71,6 +71,8 @@ export class MusclePartIconPipe implements PipeTransform {
         return 'icon-svg_web-icon_p4_007-muscle_117';
       case MuscleCode.wristFlexor:
         return 'icon-svg_web-icon_p2_095-muscle_128';
+      default:
+        return 'universal_vocabulary_other';
     }
   }
 }

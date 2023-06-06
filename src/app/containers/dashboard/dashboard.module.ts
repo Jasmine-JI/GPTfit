@@ -4,7 +4,6 @@ import { DashboardComponent } from './dashboard.component';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 import { FormsModule } from '@angular/forms';
-import { MyDatePickerModule } from 'mydatepicker';
 import { CustomMaterialModule } from '../../core/custom-material.module';
 import { GpxService } from './services/gpx.service';
 import { MsgDialogComponent } from './components/msg-dialog/msg-dialog.component';
@@ -20,13 +19,11 @@ import { InnerSettingsComponent } from './components/inner-settings/inner-settin
 import { PeopleSelectorWinComponent } from './components/people-selector-win/people-selector-win.component';
 import { DashboardGuard } from './guards/dashboard-guard';
 import { ProductErrorLogPipe } from './pipes/product-error-log.pipe';
-import { NgProgressModule } from '@ngx-progressbar/core';
 import { MyDeviceComponent } from './components/my-device/my-device.component';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from '../../core/interceptors/token.interceptor';
 import { InnerTestComponent } from './components/inner-test/inner-test.component';
-import { HashIdService, DetectInappService } from '../../core/services';
 import { CloudRunGpxComponent } from './components/cloud-run-gpx/cloud-run-gpx.component';
 import { InnerAdminService } from './services/inner-admin.service';
 import { QRCodeModule } from 'angularx-qrcode';
@@ -40,7 +37,6 @@ import { MyGroupListComponent } from './group/my-group-list/my-group-list.compon
 import { CreateGroupComponent } from './group/create-group/create-group.component';
 import { CommercePlanTableComponent } from './group/commerce-plan-table/commerce-plan-table.component';
 import { GroupInfoComponent as GroupInfoV2Component } from './group-v2/group-info/group-info.component';
-import { SearchGroupComponent } from './group-v2/search-group/search-group.component';
 import { GroupIntroductionComponent } from './group-v2/group-info/group-introduction/group-introduction.component';
 import { SportsReportComponent } from './group-v2/group-info/sports-report/sports-report.component';
 import { LifeTrackingComponent as LifeTrackingV2Component } from './group-v2/group-info/life-tracking/life-tracking.component';
@@ -85,7 +81,10 @@ import {
   LineCompareChartComponent,
   TipDialogComponent,
   LoadingBarComponent,
+  LoadingMaskComponent,
   PaginationComponent,
+  ImgCropperComponent,
+  ShareBoxComponent,
 } from '../../components';
 import {
   DateUnitKeyPipe,
@@ -117,7 +116,7 @@ import {
   ThousandConversionPipe,
   SpeedSibsPipe,
   TemperatureSibsPipe,
-  swimPosture,
+  SwimPosturePipe,
   DataTypeTranslatePipe,
   DataTypeUnitPipe,
   PaiPipe,
@@ -140,18 +139,25 @@ import {
   MuscleGroupNamePipe,
   MusclePartIconPipe,
 } from '../../core/pipes';
+import {
+  HashIdService,
+  DetectInappService,
+  HintDialogService,
+  ApiCommonService,
+  NodejsApiService,
+  QrcodeService,
+} from '../../core/services';
+import { MemberAnalysisListComponent } from '../professional';
 
 @NgModule({
   imports: [
     DashboardRoutingModule,
     CommonModule,
-    SharedComponentsModule,
     FormsModule,
-    MyDatePickerModule,
     CustomMaterialModule,
     ReactiveFormsModule,
     SharedModule,
-    NgProgressModule,
+    SharedComponentsModule,
     QRCodeModule,
     StationMailModule,
     SportTargetSettingComponent,
@@ -179,7 +185,10 @@ import {
     LineCompareChartComponent,
     TipDialogComponent,
     LoadingBarComponent,
+    LoadingMaskComponent,
     PaginationComponent,
+    ImgCropperComponent,
+    ShareBoxComponent,
     SexPipe,
     SafeHtmlPipe,
     LineBreakPipe,
@@ -200,7 +209,7 @@ import {
     ThousandConversionPipe,
     SpeedSibsPipe,
     TemperatureSibsPipe,
-    swimPosture,
+    SwimPosturePipe,
     DataTypeTranslatePipe,
     DataTypeUnitPipe,
     PaiPipe,
@@ -222,6 +231,7 @@ import {
     TargetFieldUnitPipe,
     MuscleGroupNamePipe,
     MusclePartIconPipe,
+    MemberAnalysisListComponent,
   ],
   providers: [
     GpxService,
@@ -231,6 +241,10 @@ import {
     HashIdService,
     InnerAdminService,
     DetectInappService,
+    HintDialogService,
+    ApiCommonService,
+    NodejsApiService,
+    QrcodeService,
     LifeTrackingService,
     PersonCloudrunReport,
     SportPaceSibsPipe,
@@ -254,7 +268,7 @@ import {
     ThousandConversionPipe,
     SpeedSibsPipe,
     TemperatureSibsPipe,
-    swimPosture,
+    SwimPosturePipe,
     DataTypeTranslatePipe,
     DataTypeUnitPipe,
     PaiPipe,
@@ -305,7 +319,6 @@ import {
     CommercePlanTableComponent,
     QrcodeUploadComponent,
     GroupInfoV2Component,
-    SearchGroupComponent,
     GroupIntroductionComponent,
     SportsReportComponent,
     LifeTrackingV2Component,

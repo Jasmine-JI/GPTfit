@@ -184,17 +184,25 @@
   </section>
 </div>
 <ng-template #childPage let-page="page">
-  <ng-container *ngIf="page === 'activity-list'">
+  <ng-container *ngIf="page === personalPage.activityList">
     {{ 'universal_activityData_story' | translate }}
   </ng-container>
-  <ng-container *ngIf="page === 'sport-report'">
+  <ng-container *ngIf="page === personalPage.sportsReport">
     {{ 'universal_activityData_sportReport' | translate }}
   </ng-container>
-  <ng-container *ngIf="page === 'life-tracking'">
+  <ng-container *ngIf="page === personalPage.lifeTracking">
     {{ 'universal_lifeTracking_lifeTracking' | translate }}
   </ng-container>
-  <ng-container *ngIf="page === 'cloudrun'"> Cloud run </ng-container>
-  <ng-container *ngIf="page === 'info'">
+  <ng-container *ngIf="page === personalPage.cloudrun"> Cloud run </ng-container>
+  <ng-container *ngIf="page === personalPage.info">
     {{ 'universal_deviceSetting_adout' | translate }}
   </ng-container>
 </ng-template>
+
+<app-share-box
+  [title]="share.title"
+  [link]="share.link"
+  [debugLink]="debugLink"
+  (closeBox)="closeSharedBox()"
+  *ngIf="uiFlag.displayShareBox"
+></app-share-box>

@@ -904,7 +904,7 @@ export class GsensorComponent implements OnInit, OnDestroy {
     if (this.timer) clearInterval(this.timer);
     if (this.wakeLock && this.wakeLock.release) this.wakeLock.release();
     if (this.wakeLock) this.wakeLock = null;
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

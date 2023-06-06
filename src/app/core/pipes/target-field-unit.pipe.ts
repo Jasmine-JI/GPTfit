@@ -24,6 +24,8 @@ export class TargetFieldUnitPipe implements PipeTransform {
         return '';
       case 'calories':
         return 'universal_unit_calories';
+      default:
+        return 'universal_vocabulary_other';
     }
   }
 }

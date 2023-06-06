@@ -40,11 +40,14 @@ import {
   ComplexSportSortType,
   IntegrationType,
   ResultCode,
+  Domain,
+  WebIp,
+  QueryString,
 } from '../../../../../core/enums/common';
 import { DataIntegration } from '../../../../../core/classes';
-import { Domain, WebIp } from '../../../../../shared/enum/domain';
 import { SportType } from '../../../../../core/enums/sports';
-import { caloriesColor, avgHrColor } from '../../../../../shared/models/chart-data';
+import { caloriesColor, avgHrColor } from '../../../../../core/models/represent-color';
+import { appPath } from '../../../../../app-path.const';
 
 dayjs.extend(weekday);
 
@@ -186,10 +189,10 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       const queryObj = getUrlQueryStrings(search);
       Object.entries(queryObj).forEach(([_key, _value]) => {
         switch (_key) {
-          case 'debug':
+          case QueryString.debug:
             this.uiFlag.isDebugMode = true;
             break;
-          case 'ipm':
+          case QueryString.printMode:
             this.uiFlag.isPreviewMode = true;
             break;
         }
@@ -362,14 +365,14 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.initReport();
     this.api21xxService.fetchMultiActivityData(body).subscribe((res) => {
       this.uiFlag.isLoading = false;
-      const { resultCode, info, activities } = res;
+      const { resultCode, info, cross_multi_info } = res;
       if (resultCode !== 200) {
         this.handleReportError(res);
       } else {
         this.reportCreatedTime = dayjs().format('YYYY-MM-DD HH:mm');
-        if (activities && activities.length > 0) {
+        if (cross_multi_info && cross_multi_info.length > 0) {
           this.uiFlag.noData = false;
-          this.handleComplexTypeData(activities);
+          this.handleComplexTypeData(cross_multi_info);
         } else {
           this.checkData(info.activities);
         }
@@ -381,9 +384,9 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   /**
    * 處理多人複合式運動檔案
-   * @param activities {Array<any>}-api 2111 res.activities 內容
+   * @param crossMultiInfo {Array<any>}-api 2111 res.cross_multi_info 內容
    */
-  handleComplexTypeData(activities: Array<any>) {
+  handleComplexTypeData(crossMultiInfo: Array<any>) {
     const summaryInfo = { activities: [] };
     const stationList: StationDataList = {
       summary: [],
@@ -393,7 +396,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     };
     const stationInfoMap = new Map();
     const stationDataMap = new Map();
-    activities.forEach((_activity) => {
+    crossMultiInfo.forEach((_activity) => {
       const { activityInfoLayer, fileInfo, info } = _activity;
       summaryInfo.activities.push({ activityInfoLayer, fileInfo });
       const nickname = fileInfo.author.split('?')[0];
@@ -518,11 +521,11 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.initReport();
     this.api21xxService.fetchMultiActivityData(body).subscribe((res) => {
       this.uiFlag.isLoading = false;
-      const { resultCode, info, activities } = res;
+      const { resultCode, info, cross_multi_info } = res;
       if (resultCode !== 200) {
         this.handleReportError(res);
       } else {
-        const allActivities = this.mergeAllData(info.activities, activities);
+        const allActivities = this.mergeAllData(info.activities, cross_multi_info);
         this.checkData(allActivities);
       }
 
@@ -533,7 +536,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   /**
    * 將單一類型運動數據與複合式運動數據進行合併與排序
    * @param info {Array<any>}-單一類型運動數據
-   * @param activities {Array<any>}-複合式類型運動數據
+   * @param complexActivities {Array<any>}-複合式類型運動數據
    */
   mergeAllData(singleActivities: Array<any>, complexActivities: Array<any>) {
     return singleActivities.concat(complexActivities ?? []).sort((_a, _b) => {
@@ -723,9 +726,9 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       }
 
       newUrl += setUrlQueryString(queryObj);
-      this.previewUrl = `${newUrl}&ipm=s`;
+      this.previewUrl = `${newUrl}&${QueryString.printMode}=s`;
     } else if (isDebugMode) {
-      newUrl += '?debug=';
+      newUrl += `?${QueryString.debug}=`;
     }
 
     if (history.pushState) window.history.pushState({ path: newUrl }, '', newUrl);
@@ -947,7 +950,13 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    */
   visitLink() {
     const hashGroupId = this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId);
-    this.router.navigateByUrl(`/dashboard/group-info/${hashGroupId}/group-introduction`);
+    const {
+      dashboard,
+      professional: { groupDetail },
+    } = appPath;
+    this.router.navigateByUrl(
+      `/${dashboard}/${groupDetail.home}/${hashGroupId}/${groupDetail.introduction}`
+    );
   }
 
   /**
@@ -990,7 +999,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    * 取消rxjs訂閱和卸除highchart
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

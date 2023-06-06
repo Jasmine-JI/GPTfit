@@ -1,0 +1,15 @@
+@import 'screen-size.scss';
+@import 'grid-setting.scss';
+
+.grid-container {
+  @include custom-grid();
+  @include medium-screen() {
+    grid-template-columns: 1fr;
+  }
+}
+
+@for $i from 1 through 12 {
+  .grid-col-#{$i} {
+    grid-column: span $i;
+  }
+}

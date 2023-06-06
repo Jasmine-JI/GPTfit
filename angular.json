@@ -36,8 +36,10 @@
               "src/styles/module/info.scss",
               "src/styles/module/report.scss",
               "src/styles/module/dialog.scss",
+              "src/styles/module/operation-report.scss",
               "src/styles/module/official-activity.scss",
-              "src/styles/module/app-webview.scss"
+              "src/styles/module/app-webview.scss",
+              "src/styles/module/grid.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
@@ -229,7 +231,8 @@
               "src/styles/module/report.scss",
               "src/styles/module/dialog.scss",
               "src/styles/module/official-activity.scss",
-              "src/styles/module/app-webview.scss"
+              "src/styles/module/app-webview.scss",
+              "src/styles/module/grid.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
@@ -278,6 +281,12 @@
     },
     "@schematics/angular:directive": {
       "prefix": "app"
+    },
+    "@angular-eslint/schematics:application": {
+      "setParserOptionsProject": true
+    },
+    "@angular-eslint/schematics:library": {
+      "setParserOptionsProject": true
     }
   },
   "cli": {

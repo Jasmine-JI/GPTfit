@@ -1,6 +1,6 @@
 import { DateUnit } from '../../core/enums/common/date-unit.enum';
-import { PageType } from '../models/report-condition';
-import { DAY, MONTH, WEEK, SEASON, YEAR } from '../models/utils-constant';
+import { PageType } from '../../core/models/compo/report-condition.model';
+import { day, month, week, season, year } from '../../core/models/const';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 
@@ -97,15 +97,15 @@ export class ReportDateUnit {
   get reportDatePeroid() {
     switch (this._dateUnit) {
       case DateUnit.year:
-        return YEAR;
+        return year;
       case DateUnit.season:
-        return SEASON;
+        return season;
       case DateUnit.month:
-        return MONTH;
+        return month;
       case DateUnit.week:
-        return WEEK;
+        return week;
       case DateUnit.day:
-        return DAY;
+        return day;
     }
   }
 

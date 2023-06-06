@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { QrcodeService } from '../../../portal/services/qrcode.service';
+import { QrcodeService } from '../../../../core/services/qrcode.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, Subject, fromEvent, Subscription } from 'rxjs';
+import { Subject, fromEvent, Subscription, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import dayjs, { Dayjs } from 'dayjs';
 import {
@@ -13,24 +13,25 @@ import {
   ApiCommonService,
 } from '../../../../core/services';
 import { TranslateService } from '@ngx-translate/core';
-import { langList } from '../../../../shared/models/i18n';
+import { langList } from '../../../../core/models/const';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
-import { UserProfileInfo } from '../../../../shared/models/user-profile-info';
+import { UserProfile } from '../../../../core/models/api/api-10xx';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
-import { PaginationSetting } from '../../../../shared/models/pagination';
+import { PaginationSetting } from '../../../../core/models/compo/pagination.model';
 import {
   setLocalStorageObject,
   getLocalStorageObject,
   removeLocalStorageObject,
 } from '../../../../core/utils';
-import { AccessRight } from '../../../../shared/enum/accessright';
+import { AccessRight } from '../../../../core/enums/common';
+import { errorMessage } from '../../../../core/models/const';
+import { appPath } from '../../../../app-path.const';
+import { Domain, WebIp, QueryString } from '../../../../core/enums/common';
 
 type DisplayPage = 'fitPair' | 'system' | 'myDevice';
 type MainContent = 'info' | 'management' | 'odometer' | 'log' | 'register';
-
-const errMsg = 'Error! Please try again later.';
 
 @Component({
   selector: 'app-device-info',
@@ -65,7 +66,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     openAppDl: [],
     showFitPairSettingDialog: false,
     fitPairChanged: false,
-    isPortalMode: !location.pathname.includes('dashboard'),
+    isPortalMode: !location.pathname.includes(appPath.dashboard.home),
   };
 
   /**
@@ -148,9 +149,9 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
   userId: number = null;
   systemAccessRight = AccessRight.guest;
   readonly imgStoragePath = `http://${
-    location.hostname.includes('192.168.1.235') ? 'app.alatech.com.tw' : location.hostname
+    location.hostname.includes(WebIp.develop) ? Domain.uat : location.hostname
   }/app/public_html/products`;
-  readonly appDlImgDomain = 'https://app.alatech.com.tw/app/public_html/products/img/';
+  readonly appDlImgDomain = `https://${Domain.uat}/app/public_html/products/img/`;
   readonly onePageSizeOpt = [10, 30, 50];
   readonly AccessRight = AccessRight;
 
@@ -173,6 +174,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     this.checkUrl();
     this.checkLang();
     this.handlePageResize();
+    this.handleLanguageChange();
     this.handleScroll();
     this.handleSideBarSwitch();
     this.getNeedInfo(this.uiFlag.displayPage);
@@ -184,15 +186,16 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    */
   checkUrl() {
     const { pathname, search } = location;
-    if (pathname.includes('pair')) {
+    const { device, adminManage } = appPath;
+    if (pathname.includes(device.pair)) {
       this.uiFlag.displayPage = 'fitPair';
       this.checkQueryString(search);
-    } else if (pathname.includes('system')) {
+    } else if (pathname.includes(adminManage.home)) {
       this.uiFlag.displayPage = 'system';
-      this.deviceInfo.sn = this.route.snapshot.paramMap.get('deviceSN');
+      this.deviceInfo.sn = this.route.snapshot.paramMap.get(device.deviceSn);
     } else {
       this.uiFlag.displayPage = 'myDevice';
-      this.deviceInfo.sn = this.route.snapshot.paramMap.get('deviceSN');
+      this.deviceInfo.sn = this.route.snapshot.paramMap.get(device.deviceSn);
     }
   }
 
@@ -218,10 +221,10 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
       queryArr.forEach((_query) => {
         const [_key, _value] = _query.split('=');
         switch (_key) {
-          case 'device_sn':
+          case QueryString.deviceSN:
             this.deviceInfo.sn = _value;
             break;
-          case 'cs':
+          case QueryString.CS:
             this.deviceInfo.cs = _value;
             break;
         }
@@ -246,8 +249,16 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 偵測語言改變事件
+   */
+  handleLanguageChange() {
+    this.translateService.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
+      this.getPerPageOptSize();
+    });
+  }
+
+  /**
    * 監聽捲動事件，當捲動到tab時，tab固定置頂
-   * @author kidin-1100908
    */
   handleScroll() {
     const targetElement = document.querySelector('.main__container');
@@ -611,8 +622,8 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * @author kidin-1100706
    */
   checkResponse(res: Array<any>): boolean {
-    let passCheck = true,
-      errorMsg = errMsg;
+    let passCheck = true;
+    let errorMsg = errorMessage;
     res.forEach((_res) => {
       if (_res) {
         const { resultCode, resultMessage, apiCode } = _res;
@@ -637,10 +648,10 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
 
   /**
    * 儲存user id 和使用者權限
-   * @param userProfile {UserProfileInfo}
+   * @param userProfile {UserProfile}
    * @author kidin-1100709
    */
-  handleUserProfile(userProfile: UserProfileInfo) {
+  handleUserProfile(userProfile: UserProfile) {
     if (userProfile) {
       const { userId, systemAccessright } = this.userService.getUser();
       this.userId = userId;
@@ -909,15 +920,16 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
       this.api70xxService.fetchUpdateDeviceBonding(body).subscribe((res) => {
         const { resultCode, resultMessage } = res;
         if (resultCode !== 200) {
-          const errorMsg = bondStatus === 2 ? resultMessage : errMsg;
+          const errorMsg = bondStatus === 2 ? resultMessage : errorMessage;
           this.hintDialogService.openAlert(errorMsg);
         } else {
+          const { dashboard, adminManage, device } = appPath;
           if (bondStatus === 2) {
+            const navigatePath = `/${dashboard.home}/${adminManage.home}/${adminManage.devicePairManagement}`;
             this.snackbar.open('解綁成功', 'OK', { duration: 3000 });
-
-            this.router.navigateByUrl('/dashboard/system/device-pair-management');
+            this.router.navigateByUrl(navigatePath);
           } else {
-            const navigatePath = `/dashboard/device/info/${sn}`;
+            const navigatePath = `/${dashboard.home}/${device.home}/${device.info}/${sn}`;
             this.qrcodeService.setFitPairSettingMsg(true);
             this.router.navigateByUrl(navigatePath);
           }
@@ -1047,7 +1059,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
   handleGoLoginPage(action: 'fitPair' | 'unFitPair' | 'coverPair' | 'bonding') {
     this.auth.backUrl = location.href;
     setLocalStorageObject('actionAfterLogin', action);
-    this.router.navigateByUrl(`signIn-web`);
+    this.router.navigateByUrl(appPath.portal.signInWeb);
   }
 
   /**
@@ -1209,7 +1221,7 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
    * 解除rxjs訂閱
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

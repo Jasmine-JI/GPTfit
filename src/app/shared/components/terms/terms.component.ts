@@ -1,4 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { AlaApp } from '../../../core/enums/common/app-id.enum';
+import { getUrlQueryStrings } from '../../../core/utils';
 
 @Component({
   selector: 'app-terms',
@@ -7,8 +9,14 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class TermsComponent implements OnInit {
   @Input() language = 'zh-tw';
+  appId = AlaApp.gptfit;
+
+  readonly AlaApp = AlaApp;
 
   constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    const { fi } = getUrlQueryStrings(location.search);
+    if (fi) this.appId = +fi;
+  }
 }

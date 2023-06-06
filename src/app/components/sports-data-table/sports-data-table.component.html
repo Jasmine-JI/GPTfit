@@ -563,7 +563,7 @@
                 analysisData;
                 context: {
                   data: _data[0].bodyWeight
-                    ? (_data[0].bodyWeight | weightSibs: [userUnit, 1])
+                    ? (_data[0].bodyWeight | weightSibs: { unitType: userUnit, showUnit: false })
                     : '-',
                   diff: checkProgressive(index, 'bodyWeight'),
                   className: 'analysis__body__weight',
@@ -810,7 +810,7 @@
                 analysisData;
                 context: {
                   data: _data[1].bodyWeight
-                    ? (_data[1].bodyWeight | weightSibs: [userUnit, 1])
+                    ? (_data[1].bodyWeight | weightSibs: { unitType: userUnit, showUnit: false })
                     : '-',
                   className: 'analysis__body__weight',
                   showData: chartAnalysisOption.getItemSelectStatus(AnalysisSportsColumn.bodyWeight)

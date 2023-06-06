@@ -13,9 +13,9 @@ import dayjs from 'dayjs';
 import { chart } from 'highcharts';
 import Highcharts from 'highcharts';
 import heatmap from 'highcharts/modules/heatmap';
-import { ReportCondition } from '../../../models/report-condition';
+import { ReportCondition } from '../../../../core/models/compo/report-condition.model';
 import { targetAchieveTooltip } from '../../../../core/utils/chart-formatter';
-import { compareChartDefault } from '../../../models/chart-data';
+import { compareChartDefault } from '../../../../core/models/compo/chart-data.model';
 import { deepCopy } from '../../../../core/utils/index';
 import { GlobalEventsService } from '../../../../core/services';
 
@@ -112,7 +112,7 @@ export class TargetAchieveChartComponent implements OnInit, OnChanges, OnDestroy
   }
 
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

@@ -1,6 +1,5 @@
 import { ProcessResult } from '../api-common/process-result.model';
-import { SignInType } from '../../../enums/personal/sign-in-type.enum';
-import { ThirdParty } from '../../../enums/personal/third-party.enum';
+import { SignInType, ThirdParty } from '../../../enums/personal';
 import { SignInInfo, UserProfile } from './api-10xx-common.model';
 
 export interface Api1003Post {

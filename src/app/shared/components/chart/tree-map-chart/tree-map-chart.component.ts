@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { zoneColor } from '../../../models/chart-data';
+import { zoneColor } from '../../../../core/models/represent-color';
 import Highcharts from 'highcharts';
 import { chart } from 'highcharts';
 import Treemap from 'highcharts/modules/treemap';

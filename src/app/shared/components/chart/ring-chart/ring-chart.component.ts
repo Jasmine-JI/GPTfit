@@ -7,12 +7,12 @@ import {
   Input,
   OnChanges,
 } from '@angular/core';
-import { SportType } from '../../../enum/sports';
+import { SportType } from '../../../../core/enums/sports';
 import { TranslateService } from '@ngx-translate/core';
 import { chart } from 'highcharts';
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
-import { sportTypeColor } from '../../../models/chart-data';
+import { sportTypeColor } from '../../../../core/models/represent-color';
 import { GlobalEventsService } from '../../../../core/services';
 
 // 建立圖表用-kidin-1081212
@@ -189,7 +189,7 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

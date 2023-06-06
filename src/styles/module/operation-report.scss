@@ -1,0 +1,85 @@
+@import 'font.scss';
+
+.operation-contentSection {
+  margin-bottom: 2rem;
+}
+
+.operation-sectionTitle {
+  @include bold-font(1rem);
+  color: rgb(0, 137, 255, 1);
+  margin: 0;
+}
+
+.operation-sectionTitleLine {
+  margin: 0;
+  border-color: rgba(180, 227, 255, 1);
+}
+
+.operation-description {
+  color: rgba(100, 100, 100, 1);
+  font-size: 0.9rem;
+  margin-left: 1rem;
+}
+
+.operation-summaryGrid {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, min(100px));
+  gap: 1rem;
+  list-style: none;
+  text-align: center;
+}
+
+.operation-summaryValue {
+  @include bold-font(1.25rem);
+}
+
+.operation-summaryName {
+  font-size: 0.9rem;
+}
+
+.operation-dataCategory {
+  margin: 1rem 0;
+}
+
+.operation-dataCategoryTitle {
+  font-weight: bold;
+  margin: 0;
+}
+
+.operation-dataDivideLine {
+  margin: 0;
+}
+
+.operation-pieChartArea {
+  width: 100%;
+}
+
+.operation-onePieChart {
+  width: 50%;
+}
+
+.operation-pieChartTitle {
+  font-weight: bold;
+  text-align: center;
+}
+
+.operation-datePickerArea {
+  margin: 10px 0;
+  background-color: rgb(225 225 225);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.operation-datePickTitle {
+  font-weight: bold;
+}
+
+/******************************************* media ********************************/
+
+@media (max-width: 767px) {
+  .operation-datePickerArea {
+    flex-direction: column;
+  }
+}

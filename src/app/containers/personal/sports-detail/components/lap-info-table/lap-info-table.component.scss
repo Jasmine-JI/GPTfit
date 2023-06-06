@@ -1,0 +1,104 @@
+@import 'overflow-scroll.scss';
+
+@mixin table-column($width: 120px) {
+  display: inline-block;
+  min-width: $width;
+  width: $width;
+  text-align: center;
+}
+
+@mixin table-content-row($color) {
+  position: relative;
+
+  &:before {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    width: 5px;
+    height: 100%;
+    border-radius: 2px;
+    background-color: $color;
+  }
+}
+
+.table__title {
+  color: rgba(73, 73, 73, 1);
+  font-size: 1.125rem;
+  font-weight: bold;
+  border-bottom: 0.5px solid rgba(225, 225, 225, 1);
+}
+
+.lap__table {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.column__header__block {
+  &:after {
+    content: '';
+    display: block;
+    height: 7px;
+    width: 100%;
+    border-radius: 2px;
+    background-color: rgba(61, 61, 61, 1);
+  }
+}
+
+.table__column__header {
+  background: rgba(217, 217, 217, 1);
+}
+
+.table__row {
+  margin: 2px 0;
+  padding: 3px;
+  background: rgba(241, 241, 241, 1);
+}
+
+.table__content {
+  max-height: 350px;
+  @include overflow-y-scroll();
+}
+
+.base__row {
+  background-color: rgba(254, 202, 87, 0.5);
+  @include table-content-row(rgba(254, 202, 87, 1));
+}
+
+.compare__row {
+  background-color: rgba(154, 135, 249, 0.5);
+  @include table-content-row(rgba(154, 135, 249, 1));
+}
+
+.lap__column {
+  @include table-column(60px);
+}
+
+.lap__content {
+  justify-content: space-between;
+  width: 100%;
+}
+
+.one__column {
+  @include table-column();
+}
+
+.table__unit {
+  font-size: 0.75rem;
+}
+
+.diff__value {
+  font-size: 0.75rem;
+  min-height: 18px;
+  font-weight: bold;
+}
+
+.positive__value {
+  background-color: rgba(255, 210, 210, 1);
+  color: rgba(207, 0, 0, 1);
+}
+
+.negative__value {
+  background-color: rgba(210, 255, 217, 1);
+  color: rgba(4, 154, 37, 1);
+}

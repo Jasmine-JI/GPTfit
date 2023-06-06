@@ -1,0 +1,28 @@
+.error__page {
+  position: absolute;
+  left: 50%;
+  top: 35%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  text-align: center;
+  color: #405060;
+}
+
+.error__page__title {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.error__page__description {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+@media (min-width: 768px) {
+  .error__page {
+    width: 40%;
+    padding: 20px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 2px 1px hsla(0, 0%, 100%, 0.2);
+  }
+}

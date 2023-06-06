@@ -14,7 +14,8 @@ import { MessageBoxComponent } from '../../../../shared/components/message-box/m
 import { TranslateService } from '@ngx-translate/core';
 import { last } from 'rxjs/operators';
 import dayjs from 'dayjs';
-import { AccountTypeEnum } from '../../../../shared/enum/account';
+import { AccountType } from '../../../../core/enums/personal';
+import { appPath } from '../../../../app-path.const';
 
 interface UserInfo {
   userName: string;
@@ -41,7 +42,7 @@ interface UserInfo {
 export class InnerTestComponent implements OnInit {
   userInfo: UserInfo = {
     userName: '',
-    accountType: AccountTypeEnum.email,
+    accountType: AccountType.email,
     userId: null,
     userPageLink: '',
     userDeviceLog: '',
@@ -77,7 +78,7 @@ export class InnerTestComponent implements OnInit {
   hashUserId: string;
   groupLevel: number;
   flag = 402;
-  readonly accountType = AccountTypeEnum;
+  readonly accountType = AccountType;
 
   constructor(
     private api11xxService: Api11xxService,
@@ -129,14 +130,20 @@ export class InnerTestComponent implements OnInit {
           lastResetPasswordd = '未重設';
         }
 
+        const { hostname } = location;
+        const {
+          dashboard,
+          adminManage: { home: adminManageHome, deviceLog },
+          personal,
+        } = appPath;
+        const deviceLogUrl = `https://${hostname}/${dashboard.home}/${adminManageHome}/${deviceLog.home}/${deviceLog.detail}/${userId}`;
+        const hashUserId = this.hashIdService.handleUserIdEncode(userId.toString());
         this.userInfo = {
           userName,
           accountType,
           userId: userId,
-          userPageLink: `https://${
-            location.hostname
-          }/user-profile/${this.hashIdService.handleUserIdEncode(userId.toString())}`,
-          userDeviceLog: `https://${location.hostname}/dashboard/system/device_log/detail/${userId}`,
+          userPageLink: `https://${hostname}/${personal.home}/${hashUserId}`,
+          userDeviceLog: deviceLogUrl,
           smallIcon: buildBase64ImgString(smallIcon),
           middleIcon: buildBase64ImgString(middleIcon),
           largeIcon: buildBase64ImgString(largeIcon),
@@ -209,13 +216,7 @@ export class InnerTestComponent implements OnInit {
    * @author kidin-1090806
    */
   handleConfirm(type: number, _lists: Array<any>): void {
-    let userIds: Array<number>;
-    if (type === 1) {
-      userIds = _lists.map((_list) => _list.userId);
-    } else {
-      userIds = _lists.map((_list) => _list.user_id);
-    }
-
+    const userIds = _lists.map((_list) => _list[type === 1 ? 'userId' : 'user_id']);
     this.getUserAvartar(userIds[0]);
   }
 
@@ -261,24 +262,28 @@ export class InnerTestComponent implements OnInit {
         });
     }
   }
+
   onGroupEncode(e) {
     this.hashGroupId = this.hashIdService.handleGroupIdEncode(e.target.value);
     this.fetchGroupInfo();
   }
+
   onGroupDecode(e) {
     this.groupId = this.hashIdService.handleGroupIdDecode(e.target.value);
     this.fetchGroupInfo();
   }
+
   onUserEncode(e) {
     this.hashUserId = this.hashIdService.handleUserIdEncode(e.target.value);
     this.fetchUserProfile();
   }
+
   onUserDecode(e) {
     this.userId = this.hashIdService.handleUserIdDecode(e.target.value);
     this.fetchUserProfile();
   }
 
-  // 顯示彈跳視窗訊息-kidin-1090518
+  // 顯示彈跳視窗訊息
   showMsgBox(msg: string, navigate: boolean) {
     if (navigate) {
       this.dialog.open(MessageBoxComponent, {
@@ -288,7 +293,7 @@ export class InnerTestComponent implements OnInit {
           title: 'Message',
           body: msg,
           confirmText: this.translate.instant('universal_operating_confirm'),
-          onConfirm: this.router.navigateByUrl('/signIn-web'),
+          onConfirm: this.router.navigateByUrl(`/${appPath.portal.signInWeb}`),
         },
       });
     } else {

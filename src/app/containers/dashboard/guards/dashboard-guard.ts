@@ -1,23 +1,22 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Api11xxService, AuthService, ApiCommonService } from '../../../core/services';
-import { AccessRight } from '../../../shared/enum/accessright';
+import { AccessRight } from '../../../core/enums/common';
+import { appPath } from '../../../app-path.const';
 
 @Injectable()
-export class DashboardGuard implements CanActivate {
+export class DashboardGuard {
   constructor(
     private apiCommonService: ApiCommonService,
     private api11xxService: Api11xxService,
     private router: Router,
     private authService: AuthService
   ) {}
-  canActivate(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
+  canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     const token = this.authService.token;
+    const { pageNoPermission, portal } = appPath;
     if (token) {
       return this.api11xxService.fetchMemberAccessRight({ token }).pipe(
         map((res: any) => {
@@ -29,23 +28,23 @@ export class DashboardGuard implements CanActivate {
             if (maxAccessRight < AccessRight.brandAdmin) {
               return true;
             } else {
-              return this.checkAccessRightFailed('403');
+              return this.checkAccessRightFailed(pageNoPermission);
             }
           } else {
-            return this.checkAccessRightFailed('signIn-web');
+            return this.checkAccessRightFailed(portal.signInWeb);
           }
         })
       );
     } else {
-      return this.checkAccessRightFailed('signIn-web');
+      return this.checkAccessRightFailed(portal.signInWeb);
     }
   }
 
   /**
    * 驗證失敗後轉導其他路徑
-   * @param path {'403' | 'signIn-web'}-轉導路徑
+   * @param path 轉導路徑
    */
-  checkAccessRightFailed(path: '403' | 'signIn-web') {
+  checkAccessRightFailed(path: string) {
     this.router.navigateByUrl(`/${path}`);
     return false;
   }

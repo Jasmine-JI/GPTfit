@@ -508,7 +508,7 @@ export class CalenderSelectorComponent implements OnInit, OnChanges, OnDestroy {
    */
   ngOnDestroy(): void {
     this.unsubscribePluralEvent();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

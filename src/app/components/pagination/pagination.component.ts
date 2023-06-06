@@ -6,18 +6,20 @@ import {
   Output,
   EventEmitter,
   Input,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { fromEvent, Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { PaginationSetting } from '../../shared/models/pagination';
+import { PaginationSetting } from '../../core/models/compo/pagination.model';
 import { deepCopy } from '../../core/utils';
 
 @Component({
   selector: 'app-pagination',
   templateUrl: './pagination.component.html',
   styleUrls: ['./pagination.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [CommonModule, TranslateModule],
 })
@@ -117,7 +119,7 @@ export class PaginationComponent implements OnInit, OnDestroy, OnChanges {
    * 解除rxjs訂閱
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

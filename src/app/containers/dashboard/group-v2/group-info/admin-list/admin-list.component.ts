@@ -26,6 +26,7 @@ export class AdminListComponent implements OnInit, OnDestroy {
    */
   uiFlag = {
     editMode: <'complete' | 'edit'>'complete',
+    pageType: <'normal' | 'analysis'>'normal',
   };
 
   /**
@@ -53,6 +54,13 @@ export class AdminListComponent implements OnInit, OnDestroy {
     teacher: <Array<MemberInfo>>[],
   };
 
+  /**
+   * 群組階層
+   */
+  get groupLevel() {
+    return displayGroupLevel(this.groupInfo.groupId);
+  }
+
   constructor(
     private api11xxService: Api11xxService,
     private hintDialogService: HintDialogService,
@@ -65,7 +73,6 @@ export class AdminListComponent implements OnInit, OnDestroy {
 
   /**
    * 取得已儲存的群組詳細資訊、階層群組資訊、使用者資訊
-   * @author kidin-1091020
    */
   initPage() {
     combineLatest([
@@ -79,7 +86,7 @@ export class AdminListComponent implements OnInit, OnDestroy {
       .subscribe((resArr) => {
         const [groupDetail, commerceInfo, userSimpleInfo, allLevelGroupData, adminList] = resArr;
         Object.assign(groupDetail, {
-          groupLevel: displayGroupLevel(groupDetail.groupId),
+          groupLevel: this.groupLevel,
         });
         Object.assign(groupDetail, { expired: commerceInfo.expired });
         Object.assign(groupDetail, { commerceStatus: commerceInfo.commerceStatus });
@@ -93,13 +100,12 @@ export class AdminListComponent implements OnInit, OnDestroy {
   /**
    * 取得管理員和成員名單
    * @param groupArchitecture {GroupArchitecture}-api 1103的群組階層（subGroupInfo）
-   * @author kidin-1091111
    */
   refreshList() {
     const adminBody = {
       token: this.userSimpleInfo.token,
       groupId: this.groupInfo.groupId,
-      groupLevel: displayGroupLevel(this.groupInfo.groupId),
+      groupLevel: this.groupLevel,
       infoType: 2,
       avatarType: 3,
     };
@@ -107,7 +113,7 @@ export class AdminListComponent implements OnInit, OnDestroy {
     const memberBody = {
       token: this.userSimpleInfo.token,
       groupId: this.groupInfo.groupId,
-      groupLevel: displayGroupLevel(this.groupInfo.groupId),
+      groupLevel: this.groupLevel,
       infoType: 3,
       avatarType: 3,
     };
@@ -135,7 +141,6 @@ export class AdminListComponent implements OnInit, OnDestroy {
    * 將成員依加入狀態分類
    * @param memArr {Array<MemberInfo>}-api 1103回應的groupMemberInfo內容
    * @param groupArchitecture {GroupArchitecture}-api 1103的群組階層（subGroupInfo）
-   * @author kidin-1091111
    */
   sortMember(memArr: Array<MemberInfo>, groupArchitecture: GroupArchitecture) {
     this.initList();
@@ -171,7 +176,6 @@ export class AdminListComponent implements OnInit, OnDestroy {
 
   /**
    * 將各類成員清單初始化
-   * @author kidin-1091112
    */
   initList() {
     this.adminList = {
@@ -187,7 +191,6 @@ export class AdminListComponent implements OnInit, OnDestroy {
    * @param member {MemberInfo}-管理員簡易資訊
    * @param groupArchitecture {GroupArchitecture}-api 1103的群組階層（subGroupInfo）
    * @param groupLevel {number}-群組階層
-   * @author kidin-1091201
    */
   getGroupName(member: MemberInfo, groupArchitecture: GroupArchitecture, groupLevel: number) {
     let haveGroup = false;
@@ -233,10 +236,12 @@ export class AdminListComponent implements OnInit, OnDestroy {
 
   /**
    * 開啟或關閉編輯模式
-   * @author kidin-1091111
    */
   handleEdit() {
-    if (this.uiFlag.editMode === 'complete') {
+    const { editMode, pageType } = this.uiFlag;
+    // 分析列表不開放編輯功能
+    if (pageType === 'analysis') return;
+    if (editMode === 'complete') {
       this.uiFlag.editMode = 'edit';
       this.professionalService.setEditMode('edit');
     } else {
@@ -248,18 +253,24 @@ export class AdminListComponent implements OnInit, OnDestroy {
   /**
    * 指派為管理員
    * @param e {number}
-   * @author kidin-1091111
    */
   handleRemoveAdmin(e: number) {
     this.refreshList();
   }
 
   /**
+   * 變更顯示內容類別
+   * @param pageType {'normal' | 'analysis'}
+   */
+  changeContent(pageType: 'normal' | 'analysis') {
+    this.uiFlag.pageType = pageType;
+  }
+
+  /**
    * 取消rxjs訂閱
-   * @author kidin-1091112
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

@@ -6,11 +6,8 @@ import { PortalRoutingModule } from './portal-routing.module';
 import { PortalComponent } from './portal.component';
 import { EmptyResponseBodyErrorInterceptor } from '../../core/interceptors/empty-response-body-error-interceptor';
 import { PatternValidator } from '@angular/forms';
-import { MyDatePickerModule } from 'mydatepicker';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { QrcodeService } from './services/qrcode.service';
-import { NgProgressModule } from '@ngx-progressbar/core';
 import { SharedModule } from '../../shared/shared.module';
 import { CustomMaterialModule } from '../../core/custom-material.module';
 import { AppSignupComponent } from './components/app-sign/app-signup/app-signup.component';
@@ -24,7 +21,7 @@ import { AppFirstLoginComponent } from './components/app-sign/app-first-login/ap
 import { QRCodeModule } from 'angularx-qrcode';
 import { AppCompressDataComponent } from './components/app-sign/app-compress-data/app-compress-data.component';
 import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-account/app-destroy-account.component';
-import { HashIdService, DetectInappService } from '../../core/services';
+import { HashIdService, DetectInappService, QrcodeService } from '../../core/services';
 import {
   SportPaceSibsPipe,
   SportTypeIconPipe,
@@ -49,7 +46,7 @@ import {
   ThousandConversionPipe,
   SpeedSibsPipe,
   TemperatureSibsPipe,
-  swimPosture,
+  SwimPosturePipe,
   DataTypeTranslatePipe,
   DataTypeUnitPipe,
   PaiPipe,
@@ -80,10 +77,7 @@ import { LoadingBarComponent } from '../../components';
     PortalRoutingModule,
     HttpClientJsonpModule,
     FormsModule,
-    MyDatePickerModule,
-    SharedComponentsModule,
     ProductTypePipe,
-    NgProgressModule,
     ReactiveFormsModule,
     SharedModule,
     CustomMaterialModule,
@@ -110,7 +104,7 @@ import { LoadingBarComponent } from '../../components';
     ThousandConversionPipe,
     SpeedSibsPipe,
     TemperatureSibsPipe,
-    swimPosture,
+    SwimPosturePipe,
     DataTypeTranslatePipe,
     DataTypeUnitPipe,
     PaiPipe,
@@ -133,11 +127,12 @@ import { LoadingBarComponent } from '../../components';
     MuscleGroupNamePipe,
     MusclePartIconPipe,
     LoadingBarComponent,
+    SharedComponentsModule,
   ],
   providers: [
-    QrcodeService,
     HashIdService,
     DetectInappService,
+    QrcodeService,
     SportPaceSibsPipe,
     SportPaceSibsPipe,
     SexPipe,
@@ -160,7 +155,7 @@ import { LoadingBarComponent } from '../../components';
     ThousandConversionPipe,
     SpeedSibsPipe,
     TemperatureSibsPipe,
-    swimPosture,
+    SwimPosturePipe,
     DataTypeTranslatePipe,
     DataTypeUnitPipe,
     PaiPipe,

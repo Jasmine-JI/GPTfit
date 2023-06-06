@@ -5,6 +5,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '../../../core/services';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { appPath } from '../../../app-path.const';
+import { QueryString } from '../../../core/enums/common';
 
 @Component({
   selector: 'app-bottom-sheet',
@@ -75,10 +77,14 @@ export class BottomSheetComponent implements OnInit {
           confirmText: this.confirmText,
           cancelText: this.cancelText,
           onConfirm: () => {
+            const {
+              dashboard,
+              professional: { groupDetail },
+            } = appPath;
             this.router.navigateByUrl(
-              `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+              `/${dashboard.home}/${groupDetail.home}/${this.hashIdService.handleGroupIdEncode(
                 this.groupId
-              )}/group-introduction?createType=${type}`
+              )}/${groupDetail.introduction}?${QueryString.createType}=${type}`
             );
           },
         },

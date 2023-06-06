@@ -1,0 +1,15 @@
+.alert__content {
+  font-size: 1.2rem;
+}
+
+.alert__cancel__button {
+  color: black;
+
+  &:hover {
+    background-color: rgba(100, 100, 100, 0.1);
+  }
+}
+
+.alert__button {
+  background-color: rgba(190, 0, 0, 1);
+}

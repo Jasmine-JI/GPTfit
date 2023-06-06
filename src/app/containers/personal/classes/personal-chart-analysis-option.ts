@@ -1,5 +1,5 @@
-import { SportType } from '../../../shared/enum/sports';
-import { AnalysisSportsColumn } from '../../../shared/enum/report-analysis';
+import { SportType } from '../../../core/enums/sports';
+import { AnalysisSportsColumn } from '../../../core/enums/sports/report-analysis.enum';
 import { AnalysisOneOption } from '../../../shared/classes/analysis-one-option';
 import { AnalysisOption } from '../../../shared/classes/analysis-option';
 

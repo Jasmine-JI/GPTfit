@@ -15,6 +15,7 @@ import { TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import md5 from 'md5';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
+import { appPath } from '../../../../app-path.const';
 
 const timeFormat = 'YYYY-MM-DD HH:mm';
 
@@ -55,16 +56,18 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // 未登入則導至登入頁，接著導至dashboard以取得user infomation-kidin-1090525
+    // 未登入則導至登入頁，接著導至dashboard以取得user infomation
     const token = this.authService.token;
+    const { portal, dashboard } = appPath;
+    const { href, pathname, search } = location;
     if (token.length === 0) {
-      this.auth.backUrl = location.href;
-      this.router.navigateByUrl('/signIn-web');
-    } else if (location.pathname.indexOf('dashboard') < 0) {
-      this.router.navigateByUrl(`/dashboard${location.pathname}${location.search}`);
+      this.auth.backUrl = href;
+      this.router.navigateByUrl(portal.signInWeb);
+    } else if (pathname.indexOf(dashboard.home) < 0) {
+      this.router.navigateByUrl(`/${dashboard.home}${pathname}${search}`);
     } else {
       this.getUserInfo();
-      const content = location.search.replace('?', '').split('&'),
+      const content = search.replace('?', '').split('&'),
         info = this.baseDecodeUnicode(content[1].split('base64,')[1]);
       if (info) {
         if (content[0].split('=')[1] === 'a3') {
@@ -78,7 +81,7 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
     }
   }
 
-  // 取得個人資訊-kidin-1090420
+  // 取得個人資訊
   getUserInfo() {
     this.userService
       .getUser()
@@ -89,7 +92,7 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
       });
   }
 
-  // 解碼base64成utf-8-kidin-1090420
+  // 解碼base64成utf-8
   baseDecodeUnicode(str) {
     try {
       return decodeURIComponent(
@@ -108,7 +111,7 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
     }
   }
 
-  // 轉譯a3格式-kidin-1090420
+  // 轉譯a3格式
   a3Translate(a3Obj) {
     const newObj = new Object();
     for (const a3Key in a3Obj) {
@@ -124,7 +127,7 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
     return newObj;
   }
 
-  // 根據格式顯示數據-kidin-1090420
+  // 根據格式顯示數據
   displayData(data) {
     this.displayInfo = {
       type: data.activityInfoLayer.type,
@@ -135,7 +138,7 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
     };
   }
 
-  // 上傳運動檔案-kidin-1090420
+  // 上傳運動檔案
   uploadFile() {
     const { createdTime } = this.displayInfo,
       fileTimestamp = dayjs(createdTime, timeFormat).valueOf(),
@@ -188,7 +191,6 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
 
   /**
    * 根據userProfile補上author欄位，並用md5編碼運動檔案內容並產生檔案
-   * @author kidin-1100426
    */
   createMd5File() {
     this.uploading = true;
@@ -218,7 +220,8 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
 
         setTimeout(() => {
           this.uploading = false;
-          this.router.navigateByUrl('/dashboard/activity-list');
+          const { dashboard, personal } = appPath;
+          this.router.navigateByUrl(`/${dashboard.home}/${personal.activityList}`);
         }, 2000);
       } else {
         console.error(`${resultCode}: Api ${nodejsApiCode} ${errMsg || 'Upload file failed.'}`);
@@ -230,7 +233,7 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
     });
   }
 
-  // 轉換時間格式-kidin-1090420
+  // 轉換時間格式
   timeFormat(time, type) {
     switch (type) {
       case 'activity':
@@ -252,14 +255,14 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
     }
   }
 
-  // 時間補零-kidin-1081211
+  // 時間補零
   fillTwoDigits(num) {
     const timeStr = '0' + Math.floor(num);
     return timeStr.slice(-2);
   }
 
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

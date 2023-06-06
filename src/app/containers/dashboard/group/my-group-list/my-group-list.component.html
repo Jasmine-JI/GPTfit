@@ -6,16 +6,10 @@
     <button
       class="alatech-btn alatech-btn--default"
       title="{{ 'universal_group_searchGroup' | translate }}"
-      [routerLink]="['/dashboard/group-search']"
+      [routerLink]="[searchGroupLink]"
     >
       {{ 'universal_group_searchGroup' | translate }}
     </button>
-    <!-- <button class="alatech-btn alatech-btn--default"
-      title="建立新群組"
-      [routerLink]="['/dashboard/my-group-list/create']"
-    >
-      建立新群組
-    </button> -->
   </div>
 </div>
 <mat-form-field style="max-width: 130px">
@@ -34,13 +28,13 @@
     <mat-header-cell *matHeaderCellDef>{{
       'universal_activityData_name' | translate
     }}</mat-header-cell>
-    <mat-cell *matCellDef="let row">{{ row.groupName }}</mat-cell>
+    <mat-cell class="row__hover" *matCellDef="let row">{{ row.groupName }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="time">
     <mat-header-cell *matHeaderCellDef disableClear="true">
       {{ 'universal_group_identity' | translate }}
     </mat-header-cell>
-    <mat-cell *matCellDef="let row">{{
+    <mat-cell class="row__hover" *matCellDef="let row">{{
       row.groupProperty | accessName: row.brandType | translate
     }}</mat-cell>
   </ng-container>

@@ -1,38 +1,82 @@
 <div class="flexRow data__table">
-  <ul class="flexCol table__header__column">
+  <ul
+    class="table__header__column"
+    [class.table__first__header]="tableData.option.secondColumnHeader"
+  >
     <ng-container *ngFor="let _rowData of tableData.data; let _rowIndex = index">
-      <li class="column__header__cell" [class.grid__row__header]="_rowIndex === 0">
-        <span
-          *ngTemplateOutlet="
-            gridCell;
-            context: {
-              value: _rowData[0],
-              valueType: tableData.option.headerRowType[0],
-              hideBorderLeft: true
-            }
+      <ng-container *ngIf="_rowData[0] !== null">
+        <li
+          class="column__header__cell"
+          [class.grid__row__header]="_rowIndex === 0"
+          [style.background-color]="
+            tableData.option.valueRowStyle && tableData.option.valueRowStyle[_rowIndex]?.bgColor
+              ? tableData.option.valueRowStyle[_rowIndex].bgColor
+              : 'none'
           "
-        ></span>
-      </li>
-    </ng-container>
-  </ul>
-  <ul class="flexCol content__row">
-    <li
-      class="grid__row"
-      [class.grid__row__header]="_rowIndex === 0"
-      [style.min-width]="(tableData.data[0].length - 1) * 120 + 'px'"
-      *ngFor="let _rowData of tableData.data; let _rowIndex = index"
-    >
-      <ng-container *ngFor="let _data of _rowData; let _cellIndex = index">
-        <ng-container *ngIf="_cellIndex !== 0">
+        >
           <span
             *ngTemplateOutlet="
               gridCell;
               context: {
-                value: _rowData[_cellIndex],
-                valueType: tableData.option.headerRowType[_cellIndex]
+                value: _rowData[0],
+                valueType:
+                  _rowIndex === 0
+                    ? tableData.option.headerRowType[0]
+                    : tableData.option.valueRowType[0],
+                hideBorderLeft: true,
+                showUnfolderButton: tableData.option.detailButton && _rowIndex !== 0,
+                rowIndex: _rowIndex
               }
             "
           ></span>
+        </li>
+      </ng-container>
+    </ng-container>
+  </ul>
+  <ul class="flexCol content__row">
+    <li
+      class="column__header__row"
+      [style.min-width]="((tableData.data[0] ?? []).length - 1) * 150 + 'px'"
+    >
+      <ng-container *ngFor="let _data of tableData.data[0]; let _cellIndex = index">
+        <div class="flexCenter" *ngIf="_cellIndex !== 0 && _data">
+          <span class="column__header__title">
+            {{ _data | translate }}
+          </span>
+        </div>
+      </ng-container>
+    </li>
+    <li
+      class="grid__row"
+      [class.grid__row__header]="_rowIndex === 0"
+      [style.min-width]="(tableData.data[0].length - 1) * 150 + 'px'"
+      [style.background-color]="
+        tableData.option.valueRowStyle && tableData.option.valueRowStyle[_rowIndex]?.bgColor
+          ? tableData.option.valueRowStyle[_rowIndex].bgColor
+          : 'none'
+      "
+      *ngFor="let _rowData of tableData.data; let _rowIndex = index"
+    >
+      <ng-container *ngFor="let _data of _rowData; let _cellIndex = index">
+        <ng-container *ngIf="_cellIndex !== 0 && _data !== null">
+          <ng-container *ngIf="_rowIndex === 0">
+            <span class="empty__column__header">&nbsp;</span>
+          </ng-container>
+          <ng-container *ngIf="_rowIndex !== 0">
+            <span
+              *ngTemplateOutlet="
+                gridCell;
+                context: {
+                  value: _data,
+                  valueType:
+                    _rowIndex === 0
+                      ? tableData.option.headerRowType[_cellIndex]
+                      : tableData.option.valueRowType[_cellIndex],
+                  rowIndex: _rowIndex
+                }
+              "
+            ></span>
+          </ng-container>
         </ng-container>
       </ng-container>
     </li>
@@ -44,11 +88,20 @@
   let-value="value"
   let-valueType="valueType"
   let-hideBorderLeft="hideBorderLeft"
+  let-showUnfolderButton="showUnfolderButton"
+  let-rowIndex="rowIndex"
 >
   <ng-container [ngSwitch]="valueType">
     <ng-container *ngSwitchCase="OperationDataType.icon">
       <span class="grid__cell" [class.grid__column__header]="hideBorderLeft">
-        <i [class]="value"></i>
+        <i class="grid__icon" [class]="value"></i>
+      </span>
+    </ng-container>
+    <ng-container *ngSwitchCase="OperationDataType.iconList">
+      <span class="grid__cell" [class.grid__column__header]="hideBorderLeft">
+        <ng-container *ngFor="let _icon of value">
+          <i class="grid__icon" [class]="_icon"></i>
+        </ng-container>
       </span>
     </ng-container>
     <ng-container *ngSwitchCase="OperationDataType.translateKey">
@@ -60,9 +113,29 @@
         {{ value | translate }}
       </span>
     </ng-container>
+    <ng-container *ngSwitchCase="OperationDataType.link">
+      <span class="grid__cell" [class.grid__column__header]="hideBorderLeft">
+        <a
+          class="table__header__link"
+          [class.overflow__inline]="showUnfolderButton"
+          [title]="value?.name ?? 'Error' | translate"
+          [href]="value?.url ?? '/404'"
+          target="_blank"
+        >
+          {{ value?.name ?? 'Error' | translate }}
+        </a>
+        <button
+          class="unfold__button"
+          (click)="showFullTableData(rowIndex)"
+          *ngIf="showUnfolderButton"
+        >
+          <i class="icon-svg_web-icon_p1_037-chart"></i>
+        </button>
+      </span>
+    </ng-container>
     <ng-container *ngSwitchDefault>
       <span class="grid__cell" [class.grid__column__header]="hideBorderLeft">
-        {{ value || ' ' }}
+        {{ value ?? ' ' }}
       </span>
     </ng-container>
   </ng-container>

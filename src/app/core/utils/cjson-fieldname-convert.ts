@@ -37,34 +37,11 @@ export function groupOverViewConvert(name: string) {
     case 'classCounts':
       return 'universal_group_numberOfClass';
     case 'memberCounts':
-      return '總學員數';
+      return 'universal_group_totalUsers';
     case 'fileCounts':
       return '總檔案數';
     case 'deviceUsedCounts':
       return '裝置使用次數';
-    default:
-      return 'universal_vocabulary_other';
-  }
-}
-
-/**
- * 裝置 fieldName 代號轉為翻譯鍵名
- * @param code {string}-裝置統計數據代號
- */
-export function ageCodeConvert(code: string) {
-  switch (code) {
-    case 'o1':
-      return '20歲以下';
-    case 'o2':
-      return '21-30歲';
-    case 'o3':
-      return '31-40歲';
-    case 'o4':
-      return '41-50歲';
-    case 'o5':
-      return '51-60歲';
-    case 'o6':
-      return '61歲以上';
     default:
       return 'universal_vocabulary_other';
   }

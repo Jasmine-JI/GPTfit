@@ -3,10 +3,10 @@
     <div class="flexRow" style="align-items: center; justify-content: space-between">
       <h6 id="chartTitle">
         <ng-container *ngIf="sportType === undefined">
-          {{ chartType | dataTypeTranslate: [1, unit] | translate }}
+          {{ chartType | dataTypeTranslate: { sportsType: 1, unitType: unit } | translate }}
         </ng-container>
         <ng-container *ngIf="sportType !== undefined">
-          {{ chartType | dataTypeTranslate: [sportType, unit] | translate }}
+          {{ chartType | dataTypeTranslate: { sportsType: sportType, unitType: unit } | translate }}
         </ng-container>
       </h6>
     </div>
@@ -36,7 +36,7 @@
               </ng-container>
             </ng-container>
             <ng-container *ngIf="chartType !== 'pace'">
-              {{ chartType | dataTypeUnit: [sportType, unit] }}
+              {{ chartType | dataTypeUnit: { sportsType: sportType, unitType: unit } }}
             </ng-container>
           </span>
           <span class="dataDescription">
@@ -46,7 +46,9 @@
             <ng-container *ngIf="chartType !== 'pace'">
               {{ 'universal_adjective_maxHight' | translate }}
             </ng-container>
-            {{ chartType | dataTypeTranslate: [sportType, unit] | translate }}
+            {{
+              chartType | dataTypeTranslate: { sportsType: sportType, unitType: unit } | translate
+            }}
           </span>
         </div>
         <div class="flexCol infoSection">
@@ -71,12 +73,14 @@
               </ng-container>
             </ng-container>
             <ng-container *ngIf="chartType !== 'pace'">
-              {{ chartType | dataTypeUnit: [sportType, unit] }}
+              {{ chartType | dataTypeUnit: { sportsType: sportType, unitType: unit } }}
             </ng-container>
           </span>
           <span class="dataDescription">
             {{ 'universal_adjective_avg' | translate }}
-            {{ chartType | dataTypeTranslate: [sportType, unit] | translate }}
+            {{
+              chartType | dataTypeTranslate: { sportsType: sportType, unitType: unit } | translate
+            }}
           </span>
         </div>
       </div>

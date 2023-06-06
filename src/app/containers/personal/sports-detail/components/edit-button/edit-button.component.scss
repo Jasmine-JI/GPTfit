@@ -1,0 +1,49 @@
+@import 'z-index.scss';
+@import 'transform.scss';
+@import 'screen-size.scss';
+
+$input-font-size: 1.25rem;
+
+.input__section {
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.input__row {
+  display: flex;
+  flex-direction: row;
+  margin: 0;
+}
+
+.input__label {
+  font-size: $input-font-size;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.name__input {
+  border: none;
+  border-bottom: 1px solid rgba(100, 100, 100, 1);
+  font-size: $input-font-size;
+  outline-color: rgba(225, 225, 225, 1);
+  margin: 0 5px;
+  padding: 0 5px;
+}
+
+.error__hint {
+  font-size: 0.9rem;
+  color: rgba(255, 50, 50, 1);
+}
+
+/******************************* media **************************************/
+
+@include medium-screen() {
+  .input__row {
+    flex-direction: column;
+  }
+
+  .input__label,
+  .name__input {
+    font-size: 1.2rem;
+  }
+}

@@ -9,8 +9,8 @@
       groupDetail.groupStatus !== 5 &&
       (groupDetail.groupStatus !== 6 ||
         (userSimpleInfo.accessRight < editBody.groupLevel && userSimpleInfo.accessRight < 50)) &&
-      !groupDetail.expired &&
-      groupDetail.commerceStatus === 1
+      !groupDetail?.expired &&
+      groupDetail?.commerceStatus === 1
     "
   >
     <button
@@ -95,7 +95,7 @@
           (focusout)="saveGroupName($event)"
           (change)="saveGroupName($event)"
         />
-        <span *ngIf="formCheck.name === false">
+        <span style="color: red" *ngIf="formCheck.name === false">
           {{ 'universal_status_wrongFormat' | translate }}
         </span>
       </div>
@@ -395,14 +395,14 @@
           [class.form__label--required]="createBody.commercePlan === 99"
           *ngIf="createBody.brandType === 1"
         >
-          分店數量：
+          {{ 'universal_group_storeGroupAmount' | translate }}：
         </label>
         <label
           class="ala-form__label"
           [class.form__label--required]="createBody.commercePlan === 99"
           *ngIf="createBody.brandType === 2"
         >
-          分公司數量：
+          分公司群組數量：
         </label>
         <span *ngIf="createBody.commercePlan !== 99">
           {{ createBody.groupSetting.maxBranches }}
@@ -423,14 +423,14 @@
           [class.form__label--required]="createBody.commercePlan === 99"
           *ngIf="createBody.brandType === 1"
         >
-          課程數量：
+          {{ 'universal_group_classGroupAmount' | translate }}：
         </label>
         <label
           class="ala-form__label"
           [class.form__label--required]="createBody.commercePlan === 99"
           *ngIf="createBody.brandType === 2"
         >
-          部門數量：
+          部門群組數量：
         </label>
         <span *ngIf="createBody.commercePlan !== 99">
           {{ createBody.groupSetting.maxClasses }}
@@ -501,7 +501,4 @@
     (change)="saveGroupName($event)"
     *ngIf="uiFlag.editMode === 'edit'"
   />
-  <span style="color: red" *ngIf="formCheck.name === false">
-    {{ 'universal_status_wrongFormat' | translate }}
-  </span>
 </ng-template>

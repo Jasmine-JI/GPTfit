@@ -8,6 +8,7 @@ import { takeUntil } from 'rxjs/operators';
 import { AuthService, Api10xxService, GlobalEventsService } from '../../../../../core/services';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { imageToDataUri } from '../../../../../core/utils';
+import { appPath } from '../../../../../app-path.const';
 
 @Component({
   selector: 'app-app-first-login',
@@ -67,7 +68,7 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getTranslate();
 
-    if (location.pathname.indexOf('web') > 0) {
+    if (location.pathname.indexOf('-web') > -1) {
       this.pcView = true;
       this.globalEventsService.setHideNavbarStatus(false);
     } else {
@@ -81,10 +82,11 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
 
     // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)
     this.authService.isLogin.pipe(takeUntil(this.ngUnsubscribe)).subscribe((res) => {
+      const { portal } = appPath;
       if (!res && this.pcView === true) {
-        return this.router.navigateByUrl('/signIn-web');
+        return this.router.navigateByUrl(`/${portal.signInWeb}`);
       } else if (!res && !this.pcView) {
-        return this.router.navigateByUrl('/signIn');
+        return this.router.navigateByUrl(`/${portal.signIn}`);
       }
     });
   }
@@ -107,8 +109,7 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
   handleAttachmentChange(file) {
     if (file) {
       const { isTypeCorrect, link } = file;
-      if (!isTypeCorrect) {
-      } else {
+      if (isTypeCorrect) {
         this.finalImageLink = link;
       }
     }
@@ -292,13 +293,13 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
     if (this.authService.backUrl.length > 0) {
       return (location.href = this.authService.backUrl);
     } else {
-      return (location.href = '/dashboard');
+      return (location.href = `/${appPath.dashboard.home}`);
     }
   }
 
   // 離開頁面則取消隱藏navbar及取消rxjs訂閱-kidin-1090514
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

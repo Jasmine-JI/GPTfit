@@ -12,13 +12,15 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { metacarpus } from '../../../../models/weight-train';
-import { MuscleCode } from '../../../../enum/weight-train';
+import { metacarpus } from '../../../../../core/models/const/weight-train.model';
 import { UserService } from '../../../../../core/services';
-import { ReportDateType, ReportCondition } from '../../../../models/report-condition';
-import { mathRounding } from '../../../../../core/utils/index';
-import { getWeightTrainingLevelText } from '../../../../../core/utils/sports';
+import {
+  ReportDateType,
+  ReportCondition,
+} from '../../../../../core/models/compo/report-condition.model';
+import { mathRounding, getWeightTrainingLevelText } from '../../../../../core/utils';
 import { DataUnitType } from '../../../../../core/enums/common';
+import { MuscleCode } from '../../../../../core/enums/sports';
 
 @Component({
   selector: 'app-muscle-map-chart',
@@ -306,7 +308,7 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
    */
   ngOnDestroy() {
     this.mouseoverSubscription.unsubscribe();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

@@ -7,7 +7,8 @@ import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { AccessRight } from '../../../../shared/enum/accessright';
+import { AccessRight } from '../../../../core/enums/common';
+import { appPath } from '../../../../app-path.const';
 
 @Component({
   selector: 'app-inner-settings',
@@ -74,7 +75,7 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
         this.fetchInnerAdmin();
         this.dialog.closeAll();
       } else {
-        this.router.navigateByUrl(`/403`);
+        this.router.navigateByUrl(`/${appPath.pageNoPermission}`);
       }
     });
   }
@@ -137,7 +138,7 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

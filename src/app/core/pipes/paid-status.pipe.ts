@@ -9,7 +9,7 @@ import { PaidStatusEnum } from '../../containers/official-activity/models/activi
   standalone: true,
 })
 export class PaidStatusPipe implements PipeTransform {
-  transform(value: PaidStatusEnum): any {
+  transform(value: PaidStatusEnum): string {
     switch (value) {
       case PaidStatusEnum.unPaid:
         return 'universal_vocabulary_notPaid';
@@ -19,6 +19,8 @@ export class PaidStatusPipe implements PipeTransform {
         return '已審核';
       case PaidStatusEnum.refund:
         return 'universal_vocabulary_refunded';
+      default:
+        return 'universal_popUpMessage_error';
     }
   }
 }

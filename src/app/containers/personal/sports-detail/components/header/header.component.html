@@ -1,0 +1,49 @@
+<section class="flexCol">
+  <div
+    *ngTemplateOutlet="
+      header;
+      context: {
+        data: fileData
+      }
+    "
+  ></div>
+</section>
+
+<ng-template #header let-data="data">
+  <div class="flexRow header__row">
+    <i
+      class="flexCenter sport__type__icon"
+      [class]="+data.activityInfoLayer.type | sportTypeIcon"
+    ></i>
+    <div class="flexCol">
+      <div class="flexRow header__remark">
+        <time class="activiy__start__time">
+          {{ data.activityInfoLayer.startTime.split('T')[0] }}
+          {{ data.activityInfoLayer.startTime | weekDayKey | translate }}
+          {{ data.activityInfoLayer.startTime.split('T')[1] | slice: 0:5 }}
+        </time>
+        <span class="flexRow user__info">
+          <img
+            [src]="data.fileInfo.authorIcon"
+            [alt]="data.fileInfo.author.split('?')[0]"
+            (error)="handleUserIconError($event)"
+            class="user__icon"
+          />
+          <span class="user__nickname" *ngIf="!data.fileInfo.authorLink">
+            {{ data.fileInfo.author.split('?')[0] }}
+          </span>
+          <a
+            class="user__nickname user__link"
+            [routerLink]="[data.fileInfo.authorLink]"
+            *ngIf="data.fileInfo.authorLink"
+          >
+            {{ data.fileInfo.author.split('?')[0] }}
+          </a>
+        </span>
+      </div>
+      <h6 class="file__title">
+        {{ data.fileInfo.dispName ?? (+data.activityInfoLayer.type | sportType | translate) }}
+      </h6>
+    </div>
+  </div>
+</ng-template>

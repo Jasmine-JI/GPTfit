@@ -11,12 +11,15 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { DateRange } from '../../classes/date-range';
-import { ReportCondition, DateRangeType, DateRangeInfo } from '../../models/report-condition';
-import { DateUnit } from '../../enum/report';
+import {
+  ReportCondition,
+  DateRangeType,
+  DateRangeInfo,
+} from '../../../core/models/compo/report-condition.model';
 import dayjs from 'dayjs';
-import { SportType } from '../../enum/sports';
-import { deepCopy } from '../../../core/utils/index';
-import { GroupLevel, BrandType } from '../../enum/professional';
+import { SportType } from '../../../core/enums/sports';
+import { deepCopy } from '../../../core/utils';
+import { GroupLevel, BrandType } from '../../../core/enums/professional';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
 import { DefaultDateRange } from '../../classes/default-date-range';
@@ -24,6 +27,7 @@ import { GroupInfo } from '../../classes/group-info';
 import { LocalstorageService, GlobalEventsService } from '../../../core/services';
 import { WeekDayLock } from '../../../core/models/compo';
 import { ReportDateUnit } from '../../classes/report-date-unit';
+import { DateUnit } from '../../../core/enums/common';
 
 @Component({
   selector: 'app-condition-selector',
@@ -652,7 +656,7 @@ export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy 
    * 解除rxjs訂閱
    */
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

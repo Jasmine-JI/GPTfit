@@ -1,7 +1,6 @@
-import { getAvgCadenceI18nKey, getMaxCadenceI18nKey } from '../../../core/utils/sports';
-import { trendChartColor } from '../../models/chart-data';
-import { SportType } from '../../enum/sports';
-import { deepCopy } from '../../../core/utils/index';
+import { getAvgCadenceI18nKey, getMaxCadenceI18nKey, deepCopy } from '../../../core/utils';
+import { trendChartColor } from '../../../core/models/represent-color';
+import { SportType } from '../../../core/enums/sports';
 
 /**
  * 用於個人最大與平均(或反向最大)趨勢圖表

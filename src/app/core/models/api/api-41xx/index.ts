@@ -6,3 +6,4 @@ export * from './api-4105.model';
 export * from './api-4106.model';
 export * from './api-4107.model';
 export * from './api-4108.model';
+export * from './api-41xx-common.model';

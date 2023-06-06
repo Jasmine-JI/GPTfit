@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Api41xxService, AuthService } from '../../../core/services';
+import { Api41xxService, AuthService, CorrespondTranslateKeyService } from '../../../core/services';
 import { SystemAnalysisType } from '../../../core/enums/api';
 import { Observable } from 'rxjs';
 import {
@@ -33,7 +33,6 @@ import {
   groupOverViewConvert,
   getSportsTypeKey,
   assignSportsTypeColor,
-  ageCodeConvert,
   getDevicTypeInfo,
   deepCopy,
   changeOpacity,
@@ -43,8 +42,9 @@ import {
 } from '../../../core/utils';
 import { genderColor } from '../../../core/models/represent-color';
 import { DateUnit } from '../../../core/enums/common';
-import { operationTrendColor, sportTypeColor } from '../../../shared/models/chart-data';
+import { operationTrendColor, sportTypeColor } from '../../../core/models/represent-color';
 import { TimeFormatPipe } from '../../../core/pipes';
+import { MultipleUnfoldStatus } from '../../../core/classes';
 
 dayjs.extend(isoWeek);
 dayjs.extend(quarterOfYear);
@@ -170,39 +170,84 @@ export class SystemOperationReportComponent implements OnInit {
 
   trendList: Array<SingleLayerList> = [
     {
-      titleKey: '單一趨勢',
+      titleKey: 'universal_group_singleTrend',
       id: OperationTrendType.singleTrend,
       list: [
-        { textKey: '2018年～', id: SingleTrendRange.unlimit },
-        { textKey: '近5年', id: SingleTrendRange.nearlyFiveYears },
-        { textKey: '近3年', id: SingleTrendRange.nearlyTwoYears },
-        { textKey: '近1年', id: SingleTrendRange.nearlyOneYear },
-        { textKey: '近1季', id: SingleTrendRange.nearlyOneSeason },
+        { textKey: '2018～', id: SingleTrendRange.unlimit },
+        { textKey: 'universal_time_previous5Years', id: SingleTrendRange.nearlyFiveYears },
+        { textKey: 'universal_time_previous3Years', id: SingleTrendRange.nearlyTwoYears },
+        { textKey: 'universal_time_previousYear', id: SingleTrendRange.nearlyOneYear },
+        { textKey: 'universal_time_previousSeason', id: SingleTrendRange.nearlyOneSeason },
       ],
     },
     {
-      titleKey: '比較趨勢',
+      titleKey: 'universal_operating_compareTrends',
       id: OperationTrendType.compareTrend,
       list: [
-        { textKey: '近2年', id: CompareTrendRange.nearlyTwoYears },
-        { textKey: '近2季', id: CompareTrendRange.nearlyTwoSeasons },
-        { textKey: '近2月', id: CompareTrendRange.nearlyTwoMonths },
-        { textKey: '過去2年', id: CompareTrendRange.lastTwoYears },
-        { textKey: '過去2季', id: CompareTrendRange.lastTwoSeasons },
-        { textKey: '過去2月', id: CompareTrendRange.lastTwoMonths },
+        { textKey: 'universal_time_previous2Years', id: CompareTrendRange.nearlyTwoYears },
+        { textKey: 'universal_time_previous2Season', id: CompareTrendRange.nearlyTwoSeasons },
+        { textKey: 'universal_time_previous2Months', id: CompareTrendRange.nearlyTwoMonths },
+        { textKey: 'universal_time_last2Years', id: CompareTrendRange.lastTwoYears },
+        { textKey: 'universal_time_last2Seasons', id: CompareTrendRange.lastTwoSeasons },
+        { textKey: 'universal_time_last2Months', id: CompareTrendRange.lastTwoMonths },
       ],
     },
   ];
 
+  /**
+   * 單獨更新趨勢數據或整頁數據更新的旗標
+   */
   allRefresh = false;
+
+  /**
+   * 報告產生日期
+   */
   creationTime: string = this.getCurrentTime();
+
+  /**
+   * api 4104 回覆內容
+   */
   operationInfo: Api4101Response;
+
+  /**
+   * api 4105 回覆內容
+   */
   operationTrend: Api4102Response;
+
+  /**
+   * 總體分析相關數據
+   */
   overviewData: any;
+
+  /**
+   * 趨勢分析相關數據
+   */
   trendData: any;
+
+  /**
+   * 趨勢分析是否為比較模式
+   */
   isCompareMode = false;
+
+  /**
+   * 圖表時間單位
+   */
   trendChartUnit = DateUnit.month;
+
+  /**
+   * 側邊快速索引區塊用清單
+   */
   sectionIndexList: Array<IndexInfo> = [];
+
+  /**
+   * 用來切換總體分析各圖表的列表數據顯示與否
+   */
+  overviewTableDisplayStatus = new MultipleUnfoldStatus();
+
+  /**
+   * 用來切換趨勢分析各圖表的列表數據顯示與否
+   */
+  trendTableDisplayStatus = new MultipleUnfoldStatus();
 
   readonly SystemAnalysisType = SystemAnalysisType;
   readonly SingleTrendRange = SingleTrendRange;
@@ -211,7 +256,8 @@ export class SystemOperationReportComponent implements OnInit {
   constructor(
     private api41xxService: Api41xxService,
     private authService: AuthService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private correspondTranslateKeyService: CorrespondTranslateKeyService
   ) {}
 
   ngOnInit(): void {
@@ -438,10 +484,10 @@ export class SystemOperationReportComponent implements OnInit {
    */
   handleTrendChartData(data: any) {
     const {
-      postInfo: { type, completeDateRangeList },
+      postInfo: { type },
       isCompareMode,
+      trendChartUnit,
     } = this;
-    const { trendChartUnit } = this;
     switch (type) {
       case SystemAnalysisType.group: {
         const aggregationData =
@@ -484,7 +530,8 @@ export class SystemOperationReportComponent implements OnInit {
     rangeValue.forEach((_rangeValue, _rangeIndex) => {
       const _year = _rangeValue[0].toString().slice(0, 4);
       const mergeLastIndex = mergeRangeValue.length - 1;
-      if (mergeRangeValue[mergeLastIndex] && _year === mergeRangeValue[mergeLastIndex][0]) {
+      const mergeLastYearArr = mergeRangeValue[mergeLastIndex];
+      if (mergeLastYearArr && _year === mergeLastYearArr[0]) {
         mergeDataValue[mergeLastIndex] = mergeDataValue[mergeLastIndex].map(
           (_value, _dataIndex) => {
             return _value + dataValue[_rangeIndex][_dataIndex];
@@ -652,6 +699,7 @@ export class SystemOperationReportComponent implements OnInit {
       planAnalysisTableData.data.push([_translateKey, _brandValue, _enterpriseValue]);
     });
 
+    this.overviewTableDisplayStatus.setNewStatus('planAnalysis');
     return { planAnalysisChartData, planAnalysisTableData };
   }
 
@@ -684,6 +732,7 @@ export class SystemOperationReportComponent implements OnInit {
       overviewAnalysisTableData.data.push([_translateKey, _brandValue, _enterpriseValue]);
     });
 
+    this.overviewTableDisplayStatus.setNewStatus('overviewInfoAnalysis');
     return { overviewAnalysisTableData };
   }
 
@@ -708,7 +757,7 @@ export class SystemOperationReportComponent implements OnInit {
           OperationDataType.normal,
         ],
       },
-      data: [['運動類別', '開課數量', '課程檔案數']],
+      data: [['universal_group_classType', 'universal_group_classCounts', '課程檔案數']],
     };
 
     typeFieldName.forEach((_code, _index) => {
@@ -728,6 +777,7 @@ export class SystemOperationReportComponent implements OnInit {
       classTypeAnalysisTableData.data.push([_translateKey, _teachCountValue, _fileCountValue]);
     });
 
+    this.overviewTableDisplayStatus.setNewStatus('classTypeAnalysis');
     return { teachSportsTypeChartData, fileSportsTypeChartData, classTypeAnalysisTableData };
   }
 
@@ -771,6 +821,7 @@ export class SystemOperationReportComponent implements OnInit {
       ],
     };
 
+    this.overviewTableDisplayStatus.setNewStatus('activeAnalysis');
     return { activeAnalysisChartData, activeAnalysisTableData };
   }
 
@@ -807,7 +858,7 @@ export class SystemOperationReportComponent implements OnInit {
     };
 
     ageFieldName.forEach((_ageFieldName, _index) => {
-      const _translateKey = ageCodeConvert(_ageFieldName);
+      const _translateKey = this.correspondTranslateKeyService.ageCodeConvert(_ageFieldName);
       const _maleCount = maleFieldValue[_index];
       const _femaleCount = femaleFieldValue[_index];
       const _totalCount = _maleCount + _femaleCount;
@@ -821,6 +872,8 @@ export class SystemOperationReportComponent implements OnInit {
       });
       ageAnalysisTableData.data.push([_translateKey, _maleCount, _femaleCount, _totalCount]);
     });
+
+    this.overviewTableDisplayStatus.setNewStatus('ageAnalysis');
     return { ageAnalysisChartData, ageAnalysisTableData };
   }
 
@@ -851,6 +904,8 @@ export class SystemOperationReportComponent implements OnInit {
       });
       sportsTypeTableData.data.push([_translateKey, _maleValue, _femaleValue, _totalCount]);
     });
+
+    this.overviewTableDisplayStatus.setNewStatus('sportTypeAnalysis');
     return { maleSportsTypeChartData, femaleSportsTypeChartData, sportsTypeTableData };
   }
 
@@ -920,6 +975,8 @@ export class SystemOperationReportComponent implements OnInit {
       });
       deviceTableData.data.push([_translateKey, enableValue, registerValue]);
     });
+
+    this.overviewTableDisplayStatus.setNewStatus('deviceAnalysis');
     return { enableChartData, registerChartData, deviceTableData };
   }
 
@@ -938,16 +995,15 @@ export class SystemOperationReportComponent implements OnInit {
       const dateRange = this.getDateRangeTimestamp(_dateRange[0]);
       analysisName.forEach((_fieldName, _nameIndex) => {
         const dataValue = analysisValue[_dateIndex][_nameIndex];
-        const hour = 3600;
-        const processedValue =
-          _fieldName === 'totalClassTime' ? mathRounding(dataValue / hour, 1) : dataValue;
+        const processedValue = this.countClassHour(_fieldName, dataValue);
         groupTrendChartData[_fieldName].chartData[0].data.push({
           name: this.getXAxisName(trendChartUnit, dateRange.startDate),
-          y: processedValue,
+          y: mathRounding(processedValue, 1),
         });
 
         const trendTableRowHeader = this.getTrendTableRowHeader(dateRange.startDate);
         if (!groupTrendTableData[_fieldName]) {
+          this.trendTableDisplayStatus.setNewStatus(_fieldName);
           groupTrendChartData[_fieldName].chartData[0].color = operationTrendColor[_nameIndex];
           const dataName = this.getTrendTableColumnHeader(_fieldName);
           groupTrendChartData[_fieldName].seriesName.push(dataName);
@@ -965,22 +1021,37 @@ export class SystemOperationReportComponent implements OnInit {
               ],
             },
             data: [
-              [`日期範圍(${this.getDateUnitString()})`, dataName, '增長(%)'],
+              [
+                `日期範圍(${this.getDateUnitString()})`,
+                dataName,
+                `${this.translate.instant('universal_group_growth')}(%)`,
+              ],
               [trendTableRowHeader, processedValue, '-'],
             ],
           };
         } else {
           const prevValue = analysisValue[_dateIndex - 1][_nameIndex];
+          const prevProcessedValue = this.countClassHour(_fieldName, prevValue);
           groupTrendTableData[_fieldName].data.push([
             trendTableRowHeader,
             processedValue,
-            `${this.countIncreaseRatio(processedValue - prevValue, prevValue, 1)}`,
+            `${this.countIncreaseRatio(processedValue, prevProcessedValue, 1)}`,
           ]);
         }
       });
     });
 
     return { groupTrendChartData, groupTrendTableData };
+  }
+
+  /**
+   * 依數據類別轉為小時或返回原值
+   * @param fieldName {string}-數據類別
+   * @param value {number}-數值
+   */
+  countClassHour(fieldName: string, value: number) {
+    const hour = 3600;
+    return fieldName === 'totalClassTime' ? mathRounding(value / hour, 1) : value;
   }
 
   /**
@@ -1032,6 +1103,7 @@ export class SystemOperationReportComponent implements OnInit {
       { data: [], color: genderColor.female },
     ];
 
+    this.trendTableDisplayStatus.setNewStatus(genderFieldName);
     memberTrendTableData[genderFieldName] = {
       option: {
         headerRowType: [
@@ -1051,11 +1123,13 @@ export class SystemOperationReportComponent implements OnInit {
       },
       data: [
         [
-          `日期範圍(${this.getDateUnitString()})`,
+          `${this.translate.instant(
+            'universal_activityData_dateRange'
+          )}(${this.getDateUnitString()})`,
           maleTranslateKey,
-          '男性增長(%)',
+          `${this.translate.instant('universal_group_maleUserGrowth')}(%)`,
           femaleTranslateKey,
-          '女性增長(%)',
+          `${this.translate.instant('universal_group_femaleUserGrowth')}(%)`,
         ],
       ],
     };
@@ -1077,6 +1151,7 @@ export class SystemOperationReportComponent implements OnInit {
         });
 
         if (!memberTrendTableData[_fieldName]) {
+          this.trendTableDisplayStatus.setNewStatus(_fieldName);
           memberTrendChartData[_fieldName].chartData[0].color = operationTrendColor[_nameIndex];
           const dataName = this.getTrendTableColumnHeader(_fieldName);
           memberTrendChartData[_fieldName].seriesName.push(dataName);
@@ -1094,16 +1169,22 @@ export class SystemOperationReportComponent implements OnInit {
               ],
             },
             data: [
-              [`日期範圍(${this.getDateUnitString()})`, dataName, '增長(%)'],
+              [
+                `日期範圍(${this.getDateUnitString()})`,
+                dataName,
+                `${this.translate.instant('universal_group_growth')}(%)`,
+              ],
               [trendTableRowHeader, dataValue, '-'],
             ],
           };
+
+          this.trendTableDisplayStatus.setNewStatus(_fieldName);
         } else {
           const prevValue = memberAnalysisValue[_dateIndex - 1][_nameIndex];
           memberTrendTableData[_fieldName].data.push([
             trendTableRowHeader,
             dataValue,
-            `${this.countIncreaseRatio(dataValue - prevValue, prevValue, 1)}`,
+            `${this.countIncreaseRatio(dataValue, prevValue, 1)}`,
           ]);
         }
       });
@@ -1143,15 +1224,16 @@ export class SystemOperationReportComponent implements OnInit {
       memberTrendTableData[genderFieldName].data.push([
         trendTableRowHeader,
         maleFileTotal,
-        `${this.countIncreaseRatio(maleFileTotal - malePrevTotal, malePrevTotal, 1)}`,
+        `${this.countIncreaseRatio(maleFileTotal, malePrevTotal, 1)}`,
         femaleFileTotal,
-        `${this.countIncreaseRatio(femaleFileTotal - femalePrevTotal, femalePrevTotal, 1)}`,
+        `${this.countIncreaseRatio(femaleFileTotal, femalePrevTotal, 1)}`,
       ]);
 
       malePrevTotal = maleFileTotal;
       femalePrevTotal = femaleFileTotal;
     });
 
+    this.trendTableDisplayStatus.setNewStatus(genderFieldName);
     return {
       memberTrendChartData,
       memberTrendTableData,
@@ -1188,6 +1270,7 @@ export class SystemOperationReportComponent implements OnInit {
       sportsTypeTrendTableData.data.push([_translateKey, _maleValue, _femaleValue, _totalCount]);
     });
 
+    this.trendTableDisplayStatus.setNewStatus('sportsTypeTotal');
     return { malePieChartData, femalePieChartData, sportsTypeTrendTableData };
   }
 
@@ -1294,24 +1377,28 @@ export class SystemOperationReportComponent implements OnInit {
       const _newerRange = newerRange[i] ? this.getDateRangeTimestamp(newerRange[i]) : null;
       fieldName.forEach((_fieldName, _nameIndex) => {
         const _olderValue = olderValue[i] ? olderValue[i][_nameIndex] : null;
+        const _olderProcessedValue = this.countClassHour(_fieldName, _olderValue);
         const _newerValue = newerValue[i] ? newerValue[i][_nameIndex] : null;
-        olderTotalValueObj[_fieldName] = (olderTotalValueObj[_fieldName] ?? 0) + (_olderValue ?? 0);
-        newerTotalValueObj[_fieldName] = (newerTotalValueObj[_fieldName] ?? 0) + (_newerValue ?? 0);
+        const _newerProcessedValue = this.countClassHour(_fieldName, _newerValue);
+        olderTotalValueObj[_fieldName] =
+          (olderTotalValueObj[_fieldName] ?? 0) + (_olderProcessedValue ?? 0);
+        newerTotalValueObj[_fieldName] =
+          (newerTotalValueObj[_fieldName] ?? 0) + (_newerProcessedValue ?? 0);
 
         const trendTableRowHeader = this.translate.instant(this.getCompareRowHeader(i));
         groupTrendChartData[_fieldName].chartData[0].data.push({
           name: trendTableRowHeader,
-          y: _olderValue ?? 0,
+          y: _olderProcessedValue ?? 0,
         });
 
         groupTrendChartData[_fieldName].chartData[1].data.push({
           name: trendTableRowHeader,
-          y: _newerValue ?? 0,
+          y: _newerProcessedValue ?? 0,
         });
 
         if (!groupTrendTableData[_fieldName]) {
           const _mainColor = operationTrendColor[_nameIndex];
-          groupTrendChartData[_fieldName].chartData[0].color = changeOpacity(_mainColor, 0.7);
+          groupTrendChartData[_fieldName].chartData[0].color = changeOpacity(_mainColor, 0.5);
           groupTrendChartData[_fieldName].chartData[1].color = _mainColor;
           const isSeasonData = finalLength > 6;
           const olderColumnHeader = this.getCompareColumnHeader(
@@ -1333,23 +1420,28 @@ export class SystemOperationReportComponent implements OnInit {
                 OperationDataType.translateKey,
               ],
               valueRowType: [
-                OperationDataType.normal,
+                OperationDataType.translateKey,
                 OperationDataType.normal,
                 OperationDataType.normal,
                 OperationDataType.normal,
               ],
             },
             data: [
-              [`單位日期`, olderColumnHeader, newerColumnHeader, '增長(%)'],
-              [trendTableRowHeader, _olderValue, _newerValue, '-'],
+              [
+                this.translate.instant('universal_time_dateUnit'),
+                olderColumnHeader,
+                newerColumnHeader,
+                `${this.translate.instant('universal_group_growth')}(%)`,
+              ],
+              [trendTableRowHeader, _olderProcessedValue, _newerProcessedValue, '-'],
             ],
           };
         } else {
           groupTrendTableData[_fieldName].data.push([
             trendTableRowHeader,
-            _olderValue ?? '-',
-            _newerValue ?? '-',
-            `${this.countIncreaseRatio(_newerValue - _olderValue, _olderValue, 1)}`,
+            _olderProcessedValue ?? '-',
+            _newerProcessedValue ?? '-',
+            `${this.countIncreaseRatio(_newerProcessedValue, _olderProcessedValue, 1)}`,
           ]);
         }
 
@@ -1358,9 +1450,9 @@ export class SystemOperationReportComponent implements OnInit {
           const newerTotalValue = newerTotalValueObj[_fieldName];
           groupTrendTableData[_fieldName].data.push([
             'universal_adjective_total',
-            olderTotalValue,
-            newerTotalValue,
-            `${this.countIncreaseRatio(newerTotalValue - olderTotalValue, olderTotalValue, 1)}`,
+            mathRounding(olderTotalValue, 1),
+            mathRounding(newerTotalValue, 1),
+            `${this.countIncreaseRatio(newerTotalValue, olderTotalValue, 1)}`,
           ]);
         }
       });
@@ -1396,8 +1488,8 @@ export class SystemOperationReportComponent implements OnInit {
   }
 
   /**
-   * 根據數據序列取得比較表格列標頭
-   * @param index {number}-數據序列
+   * 根據數據索引取得比較表格列標頭
+   * @param index {number}-數據索引
    */
   getCompareRowHeader(index: number) {
     const { trendChartUnit } = this;
@@ -1435,7 +1527,7 @@ export class SystemOperationReportComponent implements OnInit {
   }
 
   /**
-   * 取得根據範圍日期顯示單位將數據切分兩個時期的切分序列
+   * 取得根據範圍日期顯示單位將數據切分兩個時期的切分索引
    * @param rangeValue {Array<Array<number>>}-報告日期清單
    */
   getSplitIndex(rangeValue: Array<Array<number>>) {
@@ -1452,7 +1544,7 @@ export class SystemOperationReportComponent implements OnInit {
   }
 
   /**
-   * 取得根據範圍日期顯示單位將數據切分兩年的切分序列
+   * 取得根據範圍日期顯示單位將數據切分兩年的切分索引
    * @param rangeValue {Array<Array<number>>}-報告日期清單
    */
   getSplitYearIndex(rangeValue: Array<Array<number>>) {
@@ -1466,7 +1558,7 @@ export class SystemOperationReportComponent implements OnInit {
   }
 
   /**
-   * 取得根據範圍日期顯示單位將數據切分兩季的切分序列
+   * 取得根據範圍日期顯示單位將數據切分兩季的切分索引
    * @param rangeValue {Array<Array<number>>}-報告日期清單
    */
   getSplitSeasonIndex(rangeValue: Array<Array<number>>) {
@@ -1486,7 +1578,7 @@ export class SystemOperationReportComponent implements OnInit {
   }
 
   /**
-   * 取得根據範圍日期顯示單位將數據切分兩月的切分序列
+   * 取得根據範圍日期顯示單位將數據切分兩月的切分索引
    * @param rangeValue {Array<Array<number>>}-報告日期清單
    */
   getSplitMonthIndex(rangeValue: Array<Array<number>>) {
@@ -1581,10 +1673,11 @@ export class SystemOperationReportComponent implements OnInit {
         });
 
         if (!memberTrendTableData[_fieldName]) {
+          this.trendTableDisplayStatus.setNewStatus(_fieldName);
           const _mainColor = isMemberAnalysis
             ? operationTrendColor[_nameIndex]
             : sportTypeColor[_typeIndex];
-          memberTrendChartData[_fieldName].chartData[0].color = changeOpacity(_mainColor, 0.7);
+          memberTrendChartData[_fieldName].chartData[0].color = changeOpacity(_mainColor, 0.5);
           memberTrendChartData[_fieldName].chartData[1].color = _mainColor;
           memberTrendChartData[_fieldName].seriesName = valueHeader;
           memberTrendTableData[_fieldName] = {
@@ -1596,14 +1689,19 @@ export class SystemOperationReportComponent implements OnInit {
                 OperationDataType.translateKey,
               ],
               valueRowType: [
-                OperationDataType.normal,
+                OperationDataType.translateKey,
                 OperationDataType.normal,
                 OperationDataType.normal,
                 OperationDataType.normal,
               ],
             },
             data: [
-              [`單位日期`, olderColumnHeader, newerColumnHeader, '增長(%)'],
+              [
+                this.translate.instant('universal_time_dateUnit'),
+                olderColumnHeader,
+                newerColumnHeader,
+                `${this.translate.instant('universal_group_growth')}(%)`,
+              ],
               [trendTableRowHeader, _olderValue, _newerValue, '-'],
             ],
           };
@@ -1612,7 +1710,7 @@ export class SystemOperationReportComponent implements OnInit {
             trendTableRowHeader,
             _olderValue ?? '-',
             _newerValue ?? '-',
-            `${this.countIncreaseRatio(_newerValue - _olderValue, _olderValue, 1)}`,
+            `${this.countIncreaseRatio(_newerValue, _olderValue, 1)}`,
           ]);
         }
 
@@ -1623,7 +1721,7 @@ export class SystemOperationReportComponent implements OnInit {
             'universal_adjective_total',
             olderTotalValue,
             newerTotalValue,
-            `${this.countIncreaseRatio(newerTotalValue - olderTotalValue, olderTotalValue, 1)}`,
+            `${this.countIncreaseRatio(newerTotalValue, olderTotalValue, 1)}`,
           ]);
         }
       });
@@ -1663,7 +1761,9 @@ export class SystemOperationReportComponent implements OnInit {
           OperationDataType.normal,
         ],
       },
-      data: <Array<Array<string | number>>>[['運動類別', ...header, '增長(%)']],
+      data: <Array<Array<string | number>>>[
+        ['運動類別', ...header, `${this.translate.instant('universal_group_growth')}(%)`],
+      ],
     };
 
     olderMap.forEach((_olderValue, _typeCode) => {
@@ -1682,10 +1782,11 @@ export class SystemOperationReportComponent implements OnInit {
         color: assignSportsTypeColor(_typeCode),
       });
 
-      const _diffRatio = this.countIncreaseRatio(_olderValue, _newerValue, 1);
+      const _diffRatio = this.countIncreaseRatio(_newerValue, _olderValue, 1);
       sportsTypeTrendTableData.data.push([_translateKey, _olderValue, _newerValue, _diffRatio]);
     });
 
+    this.trendTableDisplayStatus.setNewStatus('sportsTypeTotal');
     return { olderPieChartData, newerPieChartData, sportsTypeTrendTableData, valueHeader: header };
   }
 
@@ -1798,9 +1899,10 @@ export class SystemOperationReportComponent implements OnInit {
         });
 
         if (!deviceTrendTableData[_fieldName]) {
+          this.trendTableDisplayStatus.setNewStatus(_fieldName);
           const deviceCode = (_realIndex + 1).toString();
           const _mainColor = getDevicTypeInfo(deviceCode, 'color');
-          deviceTrendChartData[_fieldName].chartData[0].color = changeOpacity(_mainColor, 0.7);
+          deviceTrendChartData[_fieldName].chartData[0].color = changeOpacity(_mainColor, 0.5);
           deviceTrendChartData[_fieldName].chartData[1].color = _mainColor;
           const isSeasonData = finalLength > 6;
           const olderColumnHeader = this.getCompareColumnHeader(
@@ -1822,14 +1924,19 @@ export class SystemOperationReportComponent implements OnInit {
                 OperationDataType.translateKey,
               ],
               valueRowType: [
-                OperationDataType.normal,
+                OperationDataType.translateKey,
                 OperationDataType.normal,
                 OperationDataType.normal,
                 OperationDataType.normal,
               ],
             },
             data: [
-              [`單位日期`, olderColumnHeader, newerColumnHeader, '增長(%)'],
+              [
+                this.translate.instant('universal_time_dateUnit'),
+                olderColumnHeader,
+                newerColumnHeader,
+                `${this.translate.instant('universal_group_growth')}(%)`,
+              ],
               [trendTableRowHeader, _olderValue, _newerValue, '-'],
             ],
           };
@@ -1838,7 +1945,7 @@ export class SystemOperationReportComponent implements OnInit {
             trendTableRowHeader,
             _olderValue ?? '-',
             _newerValue ?? '-',
-            `${this.countIncreaseRatio(_newerValue - _olderValue, _olderValue, 1)}`,
+            `${this.countIncreaseRatio(_newerValue, _olderValue, 1)}`,
           ]);
         }
 
@@ -1849,7 +1956,7 @@ export class SystemOperationReportComponent implements OnInit {
             'universal_adjective_total',
             olderTotalValue,
             newerTotalValue,
-            `${this.countIncreaseRatio(newerTotalValue - olderTotalValue, olderTotalValue, 1)}`,
+            `${this.countIncreaseRatio(newerTotalValue, olderTotalValue, 1)}`,
           ]);
         }
       });
@@ -2022,7 +2129,7 @@ export class SystemOperationReportComponent implements OnInit {
       case 'branch':
         return '分店分公司數量';
       case 'class':
-        return '課程部門數量';
+        return 'universal_group_classGroupAmount';
       case 'teachCounts':
         return '開課次數';
       case 'attendCounts':
@@ -2066,7 +2173,7 @@ export class SystemOperationReportComponent implements OnInit {
    */
   countIncreaseRatio(currentValue: number, prevValue: number, decimal: number) {
     if (!prevValue || prevValue <= 0) return '-';
-    return mathRounding(((currentValue ?? 0) / prevValue) * 100, decimal);
+    return mathRounding((((currentValue ?? 0) - prevValue) / prevValue) * 100, decimal);
   }
 
   /**
@@ -2079,6 +2186,8 @@ export class SystemOperationReportComponent implements OnInit {
       if (type !== prevType) {
         this.postInfo.type = type;
         this.allRefresh = true;
+        this.overviewTableDisplayStatus.removeAllStatus();
+        this.trendTableDisplayStatus.removeAllStatus();
         this.getReportInfo();
         this.getReportTrend();
       }
@@ -2105,13 +2214,25 @@ export class SystemOperationReportComponent implements OnInit {
             textKey: 'universal_activityData_summary',
             elementId: 'summary__info__section',
           },
-          { indexLayer: 0, textKey: '總體分析圖表', elementId: 'overall__analysis__section' },
+          {
+            indexLayer: 0,
+            textKey: 'universal_group_generalAnalysisChart',
+            elementId: 'overall__analysis__section',
+          },
           { indexLayer: 1, textKey: '方案', elementId: 'plan__analysis' },
           { indexLayer: 1, textKey: '概要', elementId: 'summary__analysis' },
-          // { indexLayer: 1, textKey: '開課類別', elementId: 'teach__type__analysis' },
-          { indexLayer: 0, textKey: '趨勢分析圖表', elementId: 'trend__chart__section' },
+          // { indexLayer: 1, textKey: 'universal_group_classType', elementId: 'teach__type__analysis' },
+          {
+            indexLayer: 0,
+            textKey: 'universal_group_trendAnalysisCharts',
+            elementId: 'trend__chart__section',
+          },
           { indexLayer: 1, textKey: '品牌企業數量', elementId: 'brand__counts__analysis' },
-          { indexLayer: 1, textKey: '開課次數', elementId: 'teach__counts__analysis' },
+          {
+            indexLayer: 1,
+            textKey: 'universal_group_classCounts',
+            elementId: 'teach__counts__analysis',
+          },
           { indexLayer: 1, textKey: '總課程時間', elementId: 'class__time__analysis' },
           { indexLayer: 1, textKey: '出席次數', elementId: 'attend__counts__analysis' },
           { indexLayer: 1, textKey: '檔案數量', elementId: 'file__counts__analysis' },
@@ -2123,11 +2244,19 @@ export class SystemOperationReportComponent implements OnInit {
             textKey: 'universal_activityData_summary',
             elementId: 'summary__info__section',
           },
-          { indexLayer: 0, textKey: '總體分析圖表', elementId: 'overall__analysis__section' },
+          {
+            indexLayer: 0,
+            textKey: 'universal_group_generalAnalysisChart',
+            elementId: 'overall__analysis__section',
+          },
           { indexLayer: 1, textKey: '會員活躍度', elementId: 'active__analysis' },
           { indexLayer: 1, textKey: '會員年齡分佈', elementId: 'age__analysis' },
           { indexLayer: 1, textKey: '運動類別', elementId: 'sports__type__analysis' },
-          { indexLayer: 0, textKey: '趨勢分析圖表', elementId: 'trend__chart__section' },
+          {
+            indexLayer: 0,
+            textKey: 'universal_group_trendAnalysisCharts',
+            elementId: 'trend__chart__section',
+          },
           { indexLayer: 1, textKey: '會員數', elementId: 'member__counts__analysis' },
         ];
 
@@ -2156,9 +2285,17 @@ export class SystemOperationReportComponent implements OnInit {
             textKey: 'universal_activityData_summary',
             elementId: 'summary__info__section',
           },
-          { indexLayer: 0, textKey: '總體分析圖表', elementId: 'overall__analysis__section' },
+          {
+            indexLayer: 0,
+            textKey: 'universal_group_generalAnalysisChart',
+            elementId: 'overall__analysis__section',
+          },
           { indexLayer: 1, textKey: '裝置類別', elementId: 'device__type__analysis' },
-          { indexLayer: 0, textKey: '趨勢分析圖表', elementId: 'trend__chart__section' },
+          {
+            indexLayer: 0,
+            textKey: 'universal_group_trendAnalysisCharts',
+            elementId: 'trend__chart__section',
+          },
         ];
 
         const singleTrendList = [
@@ -2190,6 +2327,7 @@ export class SystemOperationReportComponent implements OnInit {
    */
   selectTrend(e: [number, number]) {
     const [typeIndex, itemIndex] = e;
+    this.trendTableDisplayStatus.removeAllStatus();
     typeIndex === OperationTrendType.singleTrend
       ? this.getSingleTrendData(itemIndex)
       : this.getCompareTrendData(itemIndex);
@@ -2329,7 +2467,12 @@ export class SystemOperationReportComponent implements OnInit {
     const result = [];
     deviceCode.forEach((_name) => {
       const _code = _name.split('d')[1];
-      result.push(...[getDevicTypeInfo(_code, 'key'), '增長(%)']);
+      result.push(
+        ...[
+          getDevicTypeInfo(_code, 'key'),
+          `${this.translate.instant('universal_group_growth')}(%)`,
+        ]
+      );
     });
 
     return result;
@@ -2344,11 +2487,7 @@ export class SystemOperationReportComponent implements OnInit {
     const result = [];
     currentData.forEach((_currentData, _index) => {
       const _prevData = prevData ? prevData[_index] : 0;
-      const increasePercentage = this.countIncreaseRatio(
-        _currentData - _prevData,
-        _prevData || Infinity,
-        1
-      );
+      const increasePercentage = this.countIncreaseRatio(_currentData, _prevData, 1);
       result.push(_currentData);
       result.push(increasePercentage);
     });
@@ -2366,6 +2505,22 @@ export class SystemOperationReportComponent implements OnInit {
     if (targetElement) {
       const top = targetElement.offsetTop - 80;
       mainBodyEle.scrollTo({ top, behavior: 'smooth' });
+    }
+  }
+
+  /**
+   * 切換數據列表顯示與否
+   * @param type 列表類別
+   * @param key 狀態鍵名
+   */
+  toggleTableDisplayStatus(type: 'overview' | 'trend', key: string) {
+    switch (type) {
+      case 'overview':
+        this.overviewTableDisplayStatus.toggleStatus(key);
+        break;
+      default:
+        this.trendTableDisplayStatus.toggleStatus(key);
+        break;
     }
   }
 }

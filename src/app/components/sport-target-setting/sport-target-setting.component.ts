@@ -15,7 +15,7 @@ import { DateUnit } from '../../core/enums/common';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SportTargetSymbols } from '../../core/enums/sports';
-import { formTest } from '../../shared/models/form-test';
+import { formTest } from '../../core/models/regex/form-test';
 import { TranslateKeyPipe, TranslateUnitKeyPipe } from '../../core/pipes';
 
 @Component({
@@ -149,7 +149,7 @@ export class SportTargetSettingComponent implements OnInit, OnDestroy {
 
   /**
    * 移除指定之條件
-   * @param fieldName {TargetField}-條件序列
+   * @param fieldName {TargetField}-條件索引
    */
   deleteCondition(fieldName: TargetField) {
     this.condition.delete(fieldName);
@@ -173,7 +173,7 @@ export class SportTargetSettingComponent implements OnInit, OnDestroy {
    */
   ngOnDestroy(): void {
     this.unsubscribePluralEvent();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

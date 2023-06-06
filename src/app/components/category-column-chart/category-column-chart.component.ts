@@ -28,11 +28,8 @@ export class CategoryColumnChartComponent implements OnInit, OnChanges, OnDestro
   @ViewChild('container') container: ElementRef;
   @Input() data: Array<any>;
   @Input() seriesName: Array<string>;
-  @Input() compareData: Array<any>;
   @Input() unit: string;
   @Input() tooltipLegendKey: string;
-  @Input() lineData: Array<any>;
-  @Input() compareLineData: Array<any>;
 
   private ngUnsubscribe = new Subject();
   private _option: HighchartOption;
@@ -140,7 +137,7 @@ export class CategoryColumnChartComponent implements OnInit, OnChanges, OnDestro
   }
 
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

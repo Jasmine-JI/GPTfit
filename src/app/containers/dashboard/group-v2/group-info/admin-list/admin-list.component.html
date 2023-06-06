@@ -8,15 +8,34 @@
       groupInfo.groupStatus !== 4 &&
       groupInfo.groupStatus !== 5 &&
       (groupInfo.groupStatus !== 6 ||
-        (userSimpleInfo.accessRight < groupInfo.groupLevel && userSimpleInfo.accessRight < 50)) &&
+        (userSimpleInfo.accessRight < groupInfo.groupLevel && userSimpleInfo.accessRight < 30)) &&
       !groupInfo.expired &&
       +groupInfo.commerceStatus === 1
     "
   >
+    <div class="flexRow" *ngIf="uiFlag.editMode !== 'edit'">
+      <button
+        class="analysisSwitchButton"
+        [class.analysisSwitchButton--active]="uiFlag.pageType === 'normal'"
+        (click)="changeContent('normal')"
+      >
+        {{ 'universal_group_easy' | translate }}
+      </button>
+      <button
+        class="analysisSwitchButton"
+        [class.analysisSwitchButton--active]="uiFlag.pageType === 'analysis'"
+        (click)="changeContent('analysis')"
+      >
+        {{ 'universal_app_analyze' | translate }}
+      </button>
+    </div>
     <button
-      class="childPageBtn"
-      [class.editModeBtn]="uiFlag.editMode === 'edit'"
-      [class.btnLoadingStatus]="uiFlag.isLoading"
+      [ngClass]="{
+        childPageBtn: true,
+        'childPageBtn--disabled': uiFlag.pageType === 'analysis',
+        editModeBtn: uiFlag.editMode === 'edit',
+        btnLoadingStatus: uiFlag.isLoading
+      }"
       (click)="handleEdit()"
     >
       <span *ngIf="uiFlag.editMode === 'complete'">{{
@@ -27,151 +46,164 @@
       }}</span>
     </button>
   </section>
-  <section class="architectureSection">
-    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{
-      'universal_group_brandAdministrator' | translate
-    }}</span>
-    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{
-      'universal_group_companyAdmin' | translate
-    }}</span>
-    <div
-      class="flexRow"
-      style="flex-wrap: wrap"
-      *ngIf="adminList.brand.length > 0 && groupInfo.brandType; else noData"
-    >
-      <div class="groupListContent" *ngFor="let _brandAdmin of adminList.brand">
-        <app-member-capsule
-          [isAdminInfo]="true"
-          [title]="_brandAdmin.memberName"
-          [memberInfo]="_brandAdmin"
-          [name]="_brandAdmin.memberName"
-          [icon]="_brandAdmin.memberIcon"
-          [userId]="_brandAdmin.memberId"
-          [brandType]="this.brandType"
-          [isHadMenu]="
-            adminList.brand.length > 1 &&
-            uiFlag.editMode === 'edit' &&
-            userSimpleInfo.accessRight <= 30
-          "
-          [groupId]="_brandAdmin.groupId"
-          [groupLevel]="groupInfo.groupLevel"
-          [coachType]="groupInfo.coachType"
-          [adminList]="adminList.brand"
-          (assignAdmin)="handleAssignAdmin($event)"
-          (removeAdmin)="handleRemoveAdmin()"
-        >
-        </app-member-capsule>
+  <ng-container *ngIf="uiFlag.pageType === 'normal'">
+    <section class="architectureSection">
+      <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{
+        'universal_group_brandAdministrator' | translate
+      }}</span>
+      <span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{
+        'universal_group_companyAdmin' | translate
+      }}</span>
+      <div
+        class="flexRow"
+        style="flex-wrap: wrap"
+        *ngIf="adminList.brand.length > 0 && groupInfo.brandType; else noData"
+      >
+        <div class="groupListContent" *ngFor="let _brandAdmin of adminList.brand">
+          <app-member-capsule
+            [isAdminInfo]="true"
+            [title]="_brandAdmin.memberName"
+            [memberInfo]="_brandAdmin"
+            [name]="_brandAdmin.memberName"
+            [icon]="_brandAdmin.memberIcon"
+            [userId]="_brandAdmin.memberId"
+            [brandType]="this.brandType"
+            [isHadMenu]="
+              adminList.brand.length > 1 &&
+              uiFlag.editMode === 'edit' &&
+              userSimpleInfo.accessRight <= 30
+            "
+            [groupId]="_brandAdmin.groupId"
+            [groupLevel]="groupInfo.groupLevel"
+            [coachType]="groupInfo.coachType"
+            [adminList]="adminList.brand"
+            (assignAdmin)="handleAssignAdmin($event)"
+            (removeAdmin)="handleRemoveAdmin()"
+          >
+          </app-member-capsule>
+        </div>
       </div>
-    </div>
-  </section>
-  <section class="architectureSection">
-    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{
-      'universal_group_branchAdministrator' | translate
-    }}</span>
-    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{
-      'universal_group_branchAdmin' | translate
-    }}</span>
-    <div
-      class="flexRow"
-      style="flex-wrap: wrap"
-      *ngIf="adminList.branch.length > 0 && groupInfo.brandType; else noData"
-    >
-      <div class="groupListContent" *ngFor="let _branchAdmin of adminList.branch">
-        <app-member-capsule
-          [isAdminInfo]="true"
-          [title]="_branchAdmin.memberName"
-          [memberInfo]="item"
-          [name]="_branchAdmin.memberName"
-          [icon]="_branchAdmin.memberIcon"
-          [userId]="_branchAdmin.memberId"
-          [brandType]="this.brandType"
-          [isHadMenu]="
-            adminList.branch.length > 1 &&
-            uiFlag.editMode === 'edit' &&
-            userSimpleInfo.accessRight <= 40
-          "
-          [groupId]="_branchAdmin.groupId"
-          [groupLevel]="groupInfo.groupLevel"
-          [parentsName]="_branchAdmin.branchName"
-          [adminList]="adminList.branch"
-          (waittingMemberInfoChange)="handleWaittingMemberInfo($event)"
-          (removeAdmin)="handleRemoveAdmin()"
-        >
-        </app-member-capsule>
+    </section>
+    <section class="architectureSection">
+      <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{
+        'universal_group_branchAdministrator' | translate
+      }}</span>
+      <span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{
+        'universal_group_branchAdmin' | translate
+      }}</span>
+      <div
+        class="flexRow"
+        style="flex-wrap: wrap"
+        *ngIf="adminList.branch.length > 0 && groupInfo.brandType; else noData"
+      >
+        <div class="groupListContent" *ngFor="let _branchAdmin of adminList.branch">
+          <app-member-capsule
+            [isAdminInfo]="true"
+            [title]="_branchAdmin.memberName"
+            [memberInfo]="item"
+            [name]="_branchAdmin.memberName"
+            [icon]="_branchAdmin.memberIcon"
+            [userId]="_branchAdmin.memberId"
+            [brandType]="this.brandType"
+            [isHadMenu]="
+              adminList.branch.length > 1 &&
+              uiFlag.editMode === 'edit' &&
+              userSimpleInfo.accessRight <= 40
+            "
+            [groupId]="_branchAdmin.groupId"
+            [groupLevel]="groupInfo.groupLevel"
+            [parentsName]="_branchAdmin.branchName"
+            [adminList]="adminList.branch"
+            (waittingMemberInfoChange)="handleWaittingMemberInfo($event)"
+            (removeAdmin)="handleRemoveAdmin()"
+          >
+          </app-member-capsule>
+        </div>
       </div>
-    </div>
-  </section>
-  <section class="architectureSection">
-    <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{
-      'universal_group_coach' | translate
-    }}</span>
-    <span span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{
-      'universal_group_departmentAdmin' | translate
-    }}</span>
-    <div
-      class="flexRow"
-      style="flex-wrap: wrap"
-      *ngIf="adminList.class.length > 0 && groupInfo.brandType; else noData"
-    >
-      <div class="groupListContent" *ngFor="let _coach of adminList.class">
-        <app-member-capsule
-          [isAdminInfo]="true"
-          [title]="_coach.memberName"
-          [memberInfo]="item"
-          [name]="_coach.memberName"
-          [icon]="_coach.memberIcon"
-          [userId]="_coach.memberId"
-          [brandType]="this.brandType"
-          [isHadMenu]="
-            adminList.class.length > 1 &&
-            uiFlag.editMode === 'edit' &&
-            userSimpleInfo.accessRight <= 50
-          "
-          [groupId]="_coach.groupId"
-          [groupLevel]="groupInfo.groupLevel"
-          [parentsName]="_coach.branchName + '/' + _coach.coachName"
-          [adminList]="adminList.class"
-          (waittingMemberInfoChange)="handleWaittingMemberInfo($event)"
-          (removeAdmin)="handleRemoveAdmin()"
-        >
-        </app-member-capsule>
+    </section>
+    <section class="architectureSection">
+      <span class="contentSubtitle" *ngIf="groupInfo.brandType === 1">{{
+        'universal_group_coach' | translate
+      }}</span>
+      <span span class="contentSubtitle" *ngIf="groupInfo.brandType === 2">{{
+        'universal_group_departmentAdmin' | translate
+      }}</span>
+      <div
+        class="flexRow"
+        style="flex-wrap: wrap"
+        *ngIf="adminList.class.length > 0 && groupInfo.brandType; else noData"
+      >
+        <div class="groupListContent" *ngFor="let _coach of adminList.class">
+          <app-member-capsule
+            [isAdminInfo]="true"
+            [title]="_coach.memberName"
+            [memberInfo]="item"
+            [name]="_coach.memberName"
+            [icon]="_coach.memberIcon"
+            [userId]="_coach.memberId"
+            [brandType]="this.brandType"
+            [isHadMenu]="
+              adminList.class.length > 1 &&
+              uiFlag.editMode === 'edit' &&
+              userSimpleInfo.accessRight <= 50
+            "
+            [groupId]="_coach.groupId"
+            [groupLevel]="groupInfo.groupLevel"
+            [parentsName]="_coach.branchName + '/' + _coach.coachName"
+            [adminList]="adminList.class"
+            (waittingMemberInfoChange)="handleWaittingMemberInfo($event)"
+            (removeAdmin)="handleRemoveAdmin()"
+          >
+          </app-member-capsule>
+        </div>
       </div>
-    </div>
-  </section>
-  <section class="architectureSection" *ngIf="groupInfo.brandType === 1">
-    <span class="contentSubtitle">{{ 'universal_group_teacher' | translate }}</span>
-    <div
-      class="flexRow"
-      style="flex-wrap: wrap"
-      *ngIf="adminList.teacher.length > 0 && groupInfo.brandType; else noData"
-    >
-      <div class="groupListContent" *ngFor="let _teacher of adminList.teacher">
-        <app-member-capsule
-          [isAdminInfo]="true"
-          [title]="_teacher.memberName"
-          [memberInfo]="item"
-          [name]="_teacher.memberName"
-          [icon]="_teacher.memberIcon"
-          [userId]="_teacher.memberId"
-          [brandType]="this.brandType"
-          [isHadMenu]="
-            adminList.teacher.length > 1 &&
-            uiFlag.editMode === 'edit' &&
-            userSimpleInfo.accessRight <= 60 &&
-            userSimpleInfo.accessRight !== 50
-          "
-          [groupId]="_teacher.groupId"
-          [groupLevel]="groupInfo.groupLevel"
-          [parentsName]="_teacher.branchName + '/' + _teacher.coachName"
-          [adminList]="adminList.teacher"
-          (waittingMemberInfoChange)="handleWaittingMemberInfo($event)"
-          (removeAdmin)="handleRemoveAdmin()"
-        >
-        </app-member-capsule>
+    </section>
+    <section class="architectureSection" *ngIf="groupInfo.brandType === 1">
+      <span class="contentSubtitle">{{ 'universal_group_teacher' | translate }}</span>
+      <div
+        class="flexRow"
+        style="flex-wrap: wrap"
+        *ngIf="adminList.teacher.length > 0 && groupInfo.brandType; else noData"
+      >
+        <div class="groupListContent" *ngFor="let _teacher of adminList.teacher">
+          <app-member-capsule
+            [isAdminInfo]="true"
+            [title]="_teacher.memberName"
+            [memberInfo]="item"
+            [name]="_teacher.memberName"
+            [icon]="_teacher.memberIcon"
+            [userId]="_teacher.memberId"
+            [brandType]="this.brandType"
+            [isHadMenu]="
+              adminList.teacher.length > 1 &&
+              uiFlag.editMode === 'edit' &&
+              userSimpleInfo.accessRight <= 60 &&
+              userSimpleInfo.accessRight !== 50
+            "
+            [groupId]="_teacher.groupId"
+            [groupLevel]="groupInfo.groupLevel"
+            [parentsName]="_teacher.branchName + '/' + _teacher.coachName"
+            [adminList]="adminList.teacher"
+            (waittingMemberInfoChange)="handleWaittingMemberInfo($event)"
+            (removeAdmin)="handleRemoveAdmin()"
+          >
+          </app-member-capsule>
+        </div>
       </div>
-    </div>
-  </section>
-  <ng-template #noData>
-    <div style="margin: 5px 5px 5px 10px">{{ 'universal_status_noData' | translate }}</div>
-  </ng-template>
+    </section>
+    <ng-template #noData>
+      <div style="margin: 5px 5px 5px 10px">{{ 'universal_status_noData' | translate }}</div>
+    </ng-template>
+  </ng-container>
+  <ng-container *ngIf="uiFlag.pageType === 'analysis'">
+    <app-member-analysis-list
+      [post]="{
+        token: userSimpleInfo.token,
+        groupId: groupInfo.groupId,
+        groupLevel,
+        type: 1
+      }"
+      [groupList]="groupArchitecture"
+    ></app-member-analysis-list>
+  </ng-container>
 </div>

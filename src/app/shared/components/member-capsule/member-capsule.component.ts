@@ -16,6 +16,7 @@ import { MessageBoxComponent } from '../message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { LongTextPipe } from '../../../core/pipes/long-text.pipe';
 import { ProfessionalService } from '../../../containers/professional/services/professional.service';
+import { appPath } from '../../../app-path.const';
 
 @Component({
   selector: 'app-member-capsule',
@@ -139,9 +140,12 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
    */
   toggleMenu() {
     if (this.isSubGroupInfo && !this.isHadMenu) {
-      const targetUrl = `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
-        this.groupId
-      )}/group-introduction`;
+      const {
+        dashboard: { home: dashboardHome },
+        professional: { groupDetail },
+      } = appPath;
+      const hashGroupId = this.hashIdService.handleGroupIdEncode(this.groupId);
+      const targetUrl = `/${dashboardHome}/${groupDetail.home}/${hashGroupId}/${groupDetail.introduction}`;
       this.router.navigateByUrl(targetUrl);
     } else {
       this.active = !this.active;
@@ -345,7 +349,8 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
   }
 
   goToUserProfileInEditGroupInfo() {
-    const targetUrl = `/user-profile/${this.hashIdService.handleUserIdEncode(this.userId)}`;
+    const hashUserId = this.hashIdService.handleUserIdEncode(this.userId);
+    const targetUrl = `/${appPath.personal.home}/${hashUserId}`;
     window.open(targetUrl, '_blank', 'noopener=yes,noreferrer=yes');
   }
 

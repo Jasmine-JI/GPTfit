@@ -1,10 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { HashIdService } from '../../core/services';
-import { ReportCondition } from '../../shared/models/report-condition';
-import { QueryString } from '../../shared/enum/query-string';
+import { ReportCondition } from '../../core/models/compo/report-condition.model';
+import { QueryString } from '../../core/enums/common';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { ReportDateUnit } from '../../shared/classes/report-date-unit';
+import { appPath } from '../../app-path.const';
 
 @Component({
   selector: 'app-analysis-info-menu',
@@ -60,7 +61,7 @@ export class AnalysisInfoMenuComponent implements OnInit {
   getPersonalInfoUrl(id: number) {
     const { origin } = location;
     const hashId = this.hashIdService.handleUserIdEncode(`${id}`);
-    return `${origin}/user-profile/${hashId}`;
+    return `${origin}/${appPath.personal.home}/${hashId}`;
   }
 
   /**
@@ -69,9 +70,13 @@ export class AnalysisInfoMenuComponent implements OnInit {
    * @author kidin-1110401
    */
   getGroupInfoUrl(id: string) {
+    const {
+      dashboard,
+      professional: { groupDetail },
+    } = appPath;
     const { origin } = location;
     const hashId = this.hashIdService.handleGroupIdEncode(id);
-    return `${origin}/dashboard/group-info/${hashId}/group-introduction`;
+    return `${origin}/${dashboard.home}/${groupDetail.home}/${hashId}/${groupDetail.introduction}`;
   }
 
   /**
@@ -92,9 +97,14 @@ export class AnalysisInfoMenuComponent implements OnInit {
    * @author kidin-1110401
    */
   getGroupSportsReportUrl(id: string) {
+    const {
+      dashboard,
+      professional: { groupDetail },
+    } = appPath;
     const { origin } = location;
     const hashId = this.hashIdService.handleGroupIdEncode(id);
-    return `${origin}/dashboard/group-info/${hashId}/sports-report${this.addReportQueryString()}`;
+    const query = this.addReportQueryString();
+    return `${origin}/${dashboard.home}/${groupDetail.home}/${hashId}/${groupDetail.sportsReport}${query}`;
   }
 
   /**
@@ -103,9 +113,10 @@ export class AnalysisInfoMenuComponent implements OnInit {
    * @author kidin-1110401
    */
   getPersonalSportsReportUrl(id: number) {
+    const { personal } = appPath;
     const { origin } = location;
     const hashId = this.hashIdService.handleUserIdEncode(`${id}`);
-    return `${origin}/user-profile/${hashId}/sport-report`;
+    return `${origin}/${personal.home}/${hashId}/${personal.sportsReport}`;
   }
 
   /**

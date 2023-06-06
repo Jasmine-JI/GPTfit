@@ -6,8 +6,8 @@ import {
   BackMuscle,
   AbdominalMuscle,
   LegMuscle,
-} from '../../../../models/weight-train';
-import { MuscleGroup } from '../../../../enum/weight-train';
+} from '../../../../../core/models/const/weight-train.model';
+import { MuscleGroup } from '../../../../../core/enums/sports';
 
 @Component({
   selector: 'app-muscle-svg-icon',

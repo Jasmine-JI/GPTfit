@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { OfficialActivityService } from '../../services/official-activity.service';
-import { formTest } from '../../../../shared/models/form-test';
+import { formTest } from '../../../../core/models/regex/form-test';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -278,7 +278,7 @@ export class ContactUsComponent implements OnInit, OnDestroy {
    * 解除rxjs訂閱和計時器
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

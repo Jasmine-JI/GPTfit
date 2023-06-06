@@ -13,33 +13,21 @@ export class MonthKeyPipe implements PipeTransform {
    * @return {string}-多國語系鍵名
    */
   transform(month: string | number): string {
-    switch (+month) {
-      case 1:
-        return 'universal_time_limit_january';
-      case 2:
-        return 'universal_time_limit_february';
-      case 3:
-        return 'universal_time_limit_march';
-      case 4:
-        return 'universal_time_limit_april';
-      case 5:
-        return 'universal_time_limit_may';
-      case 6:
-        return 'universal_time_limit_june';
-      case 7:
-        return 'universal_time_limit_july';
-      case 8:
-        return 'universal_time_limit_august';
-      case 9:
-        return 'universal_time_limit_september';
-      case 10:
-        return 'universal_time_limit_october';
-      case 11:
-        return 'universal_time_limit_november';
-      case 12:
-        return 'universal_time_limit_december';
-      default:
-        return '';
-    }
+    const monthKey = {
+      1: 'universal_time_limit_january',
+      2: 'universal_time_limit_february',
+      3: 'universal_time_limit_march',
+      4: 'universal_time_limit_april',
+      5: 'universal_time_limit_may',
+      6: 'universal_time_limit_june',
+      7: 'universal_time_limit_july',
+      8: 'universal_time_limit_august',
+      9: 'universal_time_limit_september',
+      10: 'universal_time_limit_october',
+      11: 'universal_time_limit_november',
+      12: 'universal_time_limit_december',
+    };
+
+    return monthKey[+month] ?? '';
   }
 }

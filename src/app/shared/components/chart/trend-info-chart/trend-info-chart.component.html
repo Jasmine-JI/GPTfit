@@ -1,7 +1,9 @@
 <section class="flexCol pageBreakAvoid" *ngIf="chartType !== 'feedbackWatt' || infoData?.best">
   <div class="flexRow" style="align-items: center; justify-content: space-between">
     <h6 id="chart__title">
-      {{ finalChartType | dataTypeTranslate: [sportType, unit] | translate }}
+      {{
+        finalChartType | dataTypeTranslate: { sportsType: sportType, unitType: unit } | translate
+      }}
     </h6>
     <button
       class="switch__button"
@@ -28,7 +30,7 @@
           </ng-container>
           <ng-container *ngIf="finalChartType !== 'pace'">
             {{ infoData?.best || 0 }}
-            {{ finalChartType | dataTypeUnit: [sportType, unit] }}
+            {{ finalChartType | dataTypeUnit: { sportsType: sportType, unitType: unit } }}
           </ng-container>
         </span>
         <span class="data__description">
@@ -38,7 +40,11 @@
           <ng-container *ngIf="finalChartType !== 'pace'">
             {{ 'universal_adjective_maxHight' | translate }}
           </ng-container>
-          {{ finalChartType | dataTypeTranslate: [sportType, unit] | translate }}
+          {{
+            finalChartType
+              | dataTypeTranslate: { sportsType: sportType, unitType: unit }
+              | translate
+          }}
         </span>
       </div>
       <div class="flexCol info__section">
@@ -48,12 +54,16 @@
           </ng-container>
           <ng-container *ngIf="finalChartType !== 'pace'">
             {{ infoData?.avg || 0 }}
-            {{ finalChartType | dataTypeUnit: [sportType, unit] }}
+            {{ finalChartType | dataTypeUnit: { sportsType: sportType, unitType: unit } }}
           </ng-container>
         </span>
         <span class="data__description">
           {{ 'universal_adjective_avg' | translate }}
-          {{ finalChartType | dataTypeTranslate: [sportType, unit] | translate }}
+          {{
+            finalChartType
+              | dataTypeTranslate: { sportsType: sportType, unitType: unit }
+              | translate
+          }}
         </span>
       </div>
     </div>

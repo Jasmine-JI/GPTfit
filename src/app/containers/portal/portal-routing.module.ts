@@ -25,55 +25,67 @@ import { ActivityListComponent } from '../dashboard/personal/activity-list/activ
 import { InfoComponent } from '../dashboard/personal/info/info.component';
 import { MyLifeTrackingComponent } from '../../shared/components/my-life-tracking/my-life-tracking.component';
 import { CloudrunReportComponent as PersonCloudrunReport } from '../dashboard/components/cloudrun-report/cloudrun-report.component';
+import { SportsDetailComponent } from '../personal';
+import { appPath } from '../../app-path.const';
+
+const { portal, personal, professional, device, qrcodeUploadData, pageNoPermission, pageNotFound } =
+  appPath;
 
 const routes: Routes = [
   {
-    path: 'introduction/system',
+    path: portal.introduction.home,
     component: PortalComponent,
-  },
-  {
-    path: 'introduction/application',
-    component: PortalComponent,
-  },
-  {
-    path: 'introduction/analysis',
-    component: PortalComponent,
+    children: [
+      {
+        path: portal.introduction.system,
+        component: PortalComponent,
+      },
+      {
+        path: portal.introduction.application,
+        component: PortalComponent,
+      },
+      {
+        path: portal.introduction.analysis,
+        component: PortalComponent,
+      },
+    ],
   },
   {
     path: '',
     component: PortalComponent,
     children: [
       {
-        path: 'pair',
+        path: device.pair,
         component: DeviceInfoComponent,
       },
       {
-        path: 'activity/:fileId',
+        path: `${personal.activityDetail}/:${personal.fileId}`,
         component: ActivityDetailComponent,
+        // component: SportsDetailComponent,
       },
 
       {
-        path: 'user-profile/:userId',
+        path: `${personal.home}/:${personal.userId}`,
         component: PersonalComponent,
         children: [
           {
-            path: 'activity-list',
+            path: personal.activityList,
             component: ActivityListComponent,
           },
           {
-            path: 'sport-report',
+            path: personal.sportsReport,
             component: SportsReportComponent,
           },
           {
-            path: 'life-tracking',
+            path: personal.lifeTracking,
             component: MyLifeTrackingComponent,
           },
           {
-            path: 'cloudrun',
+            path: personal.cloudrun,
             component: PersonCloudrunReport,
           },
           {
-            path: 'info',
+            path: personal.info,
             component: InfoComponent,
           },
           {
@@ -83,117 +95,104 @@ const routes: Routes = [
         ],
       },
       {
-        path: 'group-info/:groupId',
+        path: `${professional.groupDetail.home}/:${professional.groupId}`,
         component: GroupInfoComponent,
         children: [
           {
-            path: 'group-introduction',
+            path: professional.groupDetail.introduction,
             component: GroupIntroductionComponent,
           },
         ],
       },
       {
-        path: 'first-login',
-        component: AppFirstLoginComponent,
-      },
-      {
-        path: 'qrupload/activityfile',
+        path: qrcodeUploadData,
         component: QrcodeUploadComponent,
       },
       {
-        path: 'signin',
-        component: AppSigninComponent,
-        canActivate: [SigninGuard],
-      },
-      {
-        path: 'register',
+        path: portal.register,
         component: AppSignupComponent,
       },
       {
-        path: 'signIn',
+        path: portal.signIn,
         component: AppSigninComponent,
         canActivate: [SigninGuard],
       },
       {
-        path: 'enableAccount',
+        path: portal.enableAccount,
         component: AppEnableComponent,
       },
       {
-        path: 'resetPassword',
+        path: portal.resetPassword,
         component: AppForgetpwComponent,
       },
       {
-        path: 'editPassword',
+        path: portal.editPassword,
         component: AppModifypwComponent,
       },
       {
-        path: 'changeAccount',
+        path: portal.changeAccount,
         component: AppChangeAccountComponent,
       },
       {
-        path: 'qrSignIn',
+        path: portal.signInQrcode,
         component: AppQrcodeLoginComponent,
       },
       {
-        path: 'signInQrcode',
-        component: AppQrcodeLoginComponent,
-      },
-      {
-        path: 'firstLogin',
+        path: portal.firstLogin,
         component: AppFirstLoginComponent,
       },
       {
-        path: 'compressData',
+        path: portal.compressData,
         component: AppCompressDataComponent,
       },
       {
-        path: 'destroyAccount',
+        path: portal.destroyAccount,
         component: AppDestroyAccountComponent,
       },
       {
-        path: 'register-web',
+        path: portal.registerWeb,
         component: AppSignupComponent,
       },
       {
-        path: 'signIn-web',
+        path: portal.signInWeb,
         component: AppSigninComponent,
         canActivate: [SigninGuard],
       },
       {
-        path: 'enableAccount-web',
+        path: portal.enableAccountWeb,
         component: AppEnableComponent,
       },
       {
-        path: 'resetPassword-web',
+        path: portal.resetPasswordWeb,
         component: AppForgetpwComponent,
       },
       {
-        path: 'editPassword-web',
+        path: portal.editPasswordWeb,
         component: AppModifypwComponent,
       },
       {
-        path: 'changeAccount-web',
+        path: portal.changeAccountWeb,
         component: AppChangeAccountComponent,
       },
       {
-        path: 'signInQrcode-web',
+        path: portal.signInQrcodeWeb,
         component: AppQrcodeLoginComponent,
       },
       {
-        path: 'firstLogin-web',
+        path: portal.firstLoginWeb,
         component: AppFirstLoginComponent,
       },
       {
-        path: '404',
+        path: pageNotFound,
         component: Page404Component,
       },
       {
-        path: '403',
+        path: pageNoPermission,
         component: Page403Component,
       },
       {
         path: '**',
-        redirectTo: '404',
+        redirectTo: pageNotFound,
       },
     ],
   },

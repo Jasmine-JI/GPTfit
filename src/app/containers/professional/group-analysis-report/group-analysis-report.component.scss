@@ -1,0 +1,82 @@
+@import 'overflow-scroll.scss';
+@import 'z-index.scss';
+@import 'backdrop-filter.scss';
+@import 'font.scss';
+
+.group__child__page {
+  padding: 0.5rem;
+  background-color: white;
+}
+
+.analysis__report__title {
+  font-weight: bold;
+  margin: 0;
+}
+
+.creation__time {
+  text-align: right;
+  font-size: 0.8rem;
+  color: rgba(150, 150, 150, 1);
+  margin: 0;
+}
+
+.box__mask {
+  position: fixed;
+  top: 60px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: $float-tips;
+  @include backdrop-filter(blur(5px));
+}
+
+.child__trend__box {
+  width: 90vw;
+  height: 70vh;
+  $shadow-size: 2px;
+  $shadow-color: rgba(200, 200, 200, 1);
+  padding: 10px;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: $shadow-size $shadow-size $shadow-size $shadow-color,
+    #{-$shadow-size} #{-$shadow-size} $shadow-size $shadow-color,
+    $shadow-size #{-$shadow-size} $shadow-size $shadow-color,
+    #{-$shadow-size} $shadow-size $shadow-size $shadow-color;
+}
+
+.detail__box__title {
+  @include bold-font(1.2rem);
+  text-align: center;
+}
+
+.child__trend__detail {
+  @include overflow-y-scroll();
+  margin: 5px;
+}
+
+.close__button {
+  border: 1px solid rgba(150, 150, 150, 1);
+  border-radius: 5px;
+  width: 120px;
+  padding: 5px;
+  background-color: white;
+
+  &:hover {
+    background-color: rgba(200, 200, 200, 0.5);
+  }
+}
+
+.display__table__button {
+  border: 1px solid rgba(150, 150, 150, 1);
+  border-radius: 5px;
+  padding: 0 1rem;
+  margin: 5px 0 1rem 0;
+  font-size: 0.9rem;
+  font-weight: bold;
+  background-color: rgb(0, 179, 241, 1);
+  color: white;
+
+  &:hover {
+    background-color: rgb(0, 150, 200, 1);
+  }
+}

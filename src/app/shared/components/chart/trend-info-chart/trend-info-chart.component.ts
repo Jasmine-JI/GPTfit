@@ -14,9 +14,9 @@ import { chart } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { HrZoneRange } from '../../../models/chart-data';
-import { mi, ft } from '../../../models/bs-constant';
-import { SportType } from '../../../enum/sports';
+import { HrZoneRange } from '../../../../core/models/compo/chart-data.model';
+import { mi, ft } from '../../../../core/models/const/bs-constant.model';
+import { SportType } from '../../../../core/enums/sports';
 import { TemperatureSibsPipe } from '../../../../core/pipes/temperature-sibs.pipe';
 import { mathRounding } from '../../../../core/utils';
 
@@ -163,7 +163,7 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
       .get('hellow world')
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(() => {
-        let processedData = [];
+        let processedData = [] as Array<any>;
         let type = 'line';
         let seriesSet: any;
         let chartOptions: any;
@@ -216,12 +216,12 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
 
             this.createChart(chartOptions);
             break;
-          case 'pace':
+          case 'pace': {
             this.yAxisData.forEach((_yAxis, _index) => {
               const _xAxis = this.xAxisData[_index];
               const _yAxisAfterCheck = _xAxis === 0 ? 0 : _yAxis;
 
-              let _yAxisConvert: number;
+              let _yAxisConvert = _yAxisAfterCheck;
               switch (sportType) {
                 case SportType.run: // 公里或英里配速
                   _yAxisConvert = this.unit === 0 ? _yAxisAfterCheck : _yAxisAfterCheck / mi;
@@ -304,6 +304,7 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
 
             this.createChart(chartOptions);
             break;
+          }
           case 'altitude': {
             let best = 0;
             let totalCount = 0;
@@ -393,7 +394,7 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
                   ],
                 },
                 tooltip: {
-                  valueSuffix: ` ${this.unit === 0 ? 'km/h' : 'mi/h'}`,
+                  valueSuffix: ` ${this.unit === 0 ? 'kph' : 'mph'}`,
                 },
               },
             ];
@@ -534,7 +535,10 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
               const _yAxisConvert =
                 this.unit === 0
                   ? _yAxisAfterCheck || 0
-                  : this.temperatureSibsPipe.transform(_yAxisAfterCheck || 0, [this.unit, 1]);
+                  : this.temperatureSibsPipe.transform(_yAxisAfterCheck || 0, {
+                      unitType: this.unit,
+                      showUnit: false,
+                    });
               const chartData = {
                 x:
                   this.page === 'detail' && this.xAxisType === 'pointSecond'
@@ -601,15 +605,15 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
           case 'gforce': {
             const xGForce = {
               ref: this.yAxisData[0],
-              final: [],
+              final: <Array<any>>[],
             };
             const yGForce = {
               ref: this.yAxisData[1],
-              final: [],
+              final: <Array<any>>[],
             };
             const zGForce = {
               ref: this.yAxisData[2],
-              final: [],
+              final: <Array<any>>[],
             };
 
             // let chartMax = null; // 預埋此變數避免圖表y軸線需對稱
@@ -729,7 +733,7 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
 
             seriesSet = [
               {
-                name: this.translate.instant('發電功率'),
+                name: this.translate.instant('universal_activityData_limit_genPower'),
                 data: processedData,
                 turboThreshold: 100000,
                 showInLegend: false,
@@ -761,20 +765,21 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
    * @param sportType {SportType}-運動類型
    */
   getColor(data: number, type: ChartType, sportType = this.sportType): string {
+    const defaultColor = '#ea5757';
     switch (type) {
       case 'hr':
-        if (data <= this.hrRange.z0) {
+        if (data <= +this.hrRange.z0) {
           return '#6e9bff';
-        } else if (data <= this.hrRange.z1) {
+        } else if (data <= +this.hrRange.z1) {
           return '#6bebf9';
-        } else if (data <= this.hrRange.z2) {
+        } else if (data <= +this.hrRange.z2) {
           return '#75f25f';
-        } else if (data <= this.hrRange.z3) {
+        } else if (data <= +this.hrRange.z3) {
           return '#f9cc3d';
-        } else if (data <= this.hrRange.z4) {
+        } else if (data <= +this.hrRange.z4) {
           return '#ff9a22';
         } else {
-          return '#ea5757';
+          return defaultColor;
         }
 
       case 'cadence':
@@ -803,9 +808,11 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
         } else if (data <= 31) {
           return '#75f25f';
         } else {
-          return '#ea5757';
+          return defaultColor;
         }
     }
+
+    return defaultColor;
   }
 
   /**
@@ -857,7 +864,7 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

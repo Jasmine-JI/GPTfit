@@ -15,17 +15,17 @@ router.get('/lists', function (req, res, next) {
   if (keyword) {
     keywordQuery =
       completeKeyword.substring(0, 1) === '+'
-        ? `and u.phone like '%${completeKeyword.slice(5)}%'`
-        : `and u.e_mail = '${completeKeyword}'`;
+        ? `where u.phone like '%${completeKeyword.slice(5)}%'`
+        : `where u.e_mail = '${completeKeyword}'`;
   }
 
   let sql = `
-    select concat('[', login_acc, ']', (case when e_mail is null or e_mail = '' then concat('+',u.country_code, u.phone) else e_mail end)) as info,
+    select concat('[', login_acc, ']', COALESCE(e_mail, concat('+',u.country_code, u.phone))) as info,
     DATE_FORMAT(max(s.time), '%Y-%m-%d %H:%i:%s') as time,
     s.user_id, count(s.user_id) as number
-    from ?? as s ,
-    ?? as u
-    where s.user_id= u.user_id
+    from ?? as s
+    inner join ?? as u
+    on s.user_id = u.user_id
     ${keywordQuery}
     group by s.user_id
     ${sortQuery}
@@ -33,12 +33,12 @@ router.get('/lists', function (req, res, next) {
   `;
   if (userId) {
     sql = `
-    select concat('[', login_acc, ']', (case when e_mail is null or e_mail = '' then concat('+',u.country_code, u.phone) else e_mail end)) as info,
+    select concat('[', login_acc, ']', COALESCE(e_mail, concat('+',u.country_code, u.phone))) as info,
     s.message, DATE_FORMAT(s.time, '%Y-%m-%d %H:%i:%s') as time, s.equipment_sn
-    from ?? as s,
-    ?? as u
-    where s.user_id = u.user_id
-    and u.user_id = ?
+    from ?? as s
+    inner join ?? as u
+    on s.user_id = u.user_id
+    where u.user_id = ?
     ${dateQuery}
     ${sortQuery}
     ;

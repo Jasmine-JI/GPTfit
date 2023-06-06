@@ -7,18 +7,15 @@ import {
   Output,
   EventEmitter,
 } from '@angular/core';
-import { Subject, Subscription, of, merge, fromEvent, combineLatest } from 'rxjs';
+import { Subject, Subscription, of, merge, fromEvent, combineLatestWith } from 'rxjs';
 import { takeUntil, tap, map, switchMap, debounceTime } from 'rxjs/operators';
-import { SportType } from '../../enum/sports';
-import { ReportCondition, ReportDateType } from '../../models/report-condition';
+import { ReportCondition, ReportDateType } from '../../../core/models/compo/report-condition.model';
 import { DateRange } from '../../classes/date-range';
-import { DateUnit } from '../../enum/report';
 import { ReportDateUnit } from '../../classes/report-date-unit';
 import {
   TargetField,
   TargetConditionMap,
 } from '../../../core/models/api/api-common/sport-target.model';
-import { QueryString } from '../../enum/query-string';
 import {
   UserService,
   ReportService,
@@ -33,13 +30,17 @@ import { ActivatedRoute } from '@angular/router';
 import { SportsTarget } from '../../classes/sports-target';
 import { SportsReport } from '../../classes/sports-report/sports-report';
 import { PersonalSportsChartData } from '../../classes/sports-report/personal-sports-chart-data';
-import { sportTypeColor, trendChartColor, HrZoneRange } from '../../models/chart-data';
-import { mi, ft, lb } from '../../models/bs-constant';
-import { DataUnitType } from '../../../core/enums/common';
+import { HrZoneRange } from '../../../core/models/compo/chart-data.model';
+import { mi, ft, lb } from '../../../core/models/const';
+import {
+  DataUnitType,
+  QueryString,
+  BenefitTimeStartZone,
+  AccessRight,
+  DateUnit,
+} from '../../../core/enums/common';
 import { DefaultDateRange } from '../../classes/default-date-range';
-import { AccessRight } from '../../enum/accessright';
-import { MuscleGroup, MuscleAnalysisColumn } from '../../enum/weight-train';
-import { zoneColor } from '../../models/chart-data';
+import { zoneColor, sportTypeColor, trendChartColor } from '../../../core/models/represent-color';
 import { WeightTrainingAnalysis } from '../../classes/sports-report/weight-train-anaysis';
 import { WeightTrainAnalysisOption } from '../../classes/weight-train-analysis-option';
 import { TranslateService } from '@ngx-translate/core';
@@ -62,9 +63,9 @@ import {
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { SameWeekLifeTrackingData } from '../../classes/same-week-lifetracking-data';
-import { BenefitTimeStartZone } from '../../../core/enums/common';
 import { PersonalChartAnalysisOption } from '../../../containers/personal/classes/personal-chart-analysis-option';
 import { DataDescription } from '../../../core/models/compo';
+import { MuscleAnalysisColumn, MuscleGroup, SportType } from '../../../core/enums/sports';
 
 dayjs.extend(isoWeek);
 
@@ -501,12 +502,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           switchMap((resultObj: any) => {
             if (isPageOwner && this.reportCondition.sportType === SportType.weightTrain) {
               const body = this.getMultiActivityRequestBody(baseTime);
-              return combineLatest([
-                this.configJsonService.getWeightTrainingConfig(),
-                this.api21xxService.fetchMultiActivityData(body),
-              ]).pipe(
-                map((resArray) => {
-                  const [weightTrainingConfig, baseWeigtTrainingLap] = resArray;
+              return this.configJsonService.getWeightTrainingConfig().pipe(
+                combineLatestWith(this.api21xxService.fetchMultiActivityData(body)),
+                map(([weightTrainingConfig, baseWeigtTrainingLap]) => {
                   return { ...resultObj, weightTrainingConfig, baseWeigtTrainingLap };
                 })
               );
@@ -532,15 +530,33 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           }),
           takeUntil(this.ngUnsubscribe)
         )
-        .subscribe((resultObj) => {
-          this.saveData(resultObj);
-          this.createReport(condition, resultObj);
-          this.diffTime = this.getDiffTime(condition);
-          this.scrollToReport();
-          this.uiFlag.progress = 100;
-          this.changeDetectorRef.markForCheck();
+        .subscribe({
+          next: (res) => this.handleNext(res, condition),
+          error: (err) => this.handleError(err),
         });
     }
+  }
+
+  /**
+   * api回應後生成報告
+   * @param result 所有api回應
+   * @param condition 報告條件
+   */
+  handleNext(result: any, condition: ReportCondition) {
+    this.saveData(result);
+    this.createReport(condition, result);
+    this.diffTime = this.getDiffTime(condition);
+    this.scrollToReport();
+    this.uiFlag.progress = 100;
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 錯誤處理
+   * @param err 錯誤訊息
+   */
+  handleError(err) {
+    console.error('error', err);
   }
 
   /**
@@ -906,8 +922,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
             result.update(pace, paceUnit);
           } else {
             isMetric
-              ? result.update(mathRounding(value, 1), 'km/hr')
-              : result.update(mathRounding(value / mi, 2), 'mi/hr');
+              ? result.update(mathRounding(value, 1), 'kph')
+              : result.update(mathRounding(value / mi, 2), 'mph');
           }
 
           break;
@@ -931,7 +947,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           result.update(Math.round(value), getPaceUnit(sportType, this.userUnit));
           break;
         case 'targetAchieveRate': {
-          result.update(value, '%');
+          result.update(mathRounding(value, 1), '%');
           break;
         }
         case 'totalFeedbackEnergy': {
@@ -1234,7 +1250,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   ngOnDestroy() {
     this.subscribeUserProfile.unsubscribe();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

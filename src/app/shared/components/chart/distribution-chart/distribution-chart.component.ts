@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { SportType } from '../../../enum/sports';
+import { SportType } from '../../../../core/enums/sports';
 
 /**
  * 運動成效分佈圖

@@ -30,6 +30,7 @@ import { mathRounding } from '../../core/utils';
 export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() page: string;
   @Input() type: string;
+  @Input() tooltipTitleKey: string;
   @Input() data: any;
   @Input() chartHeight: number;
   @Input() focusData: number | null;
@@ -133,7 +134,8 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
    * 取得提示框格式
    */
   getTooltipFormat() {
-    const title = this.translate.instant('universal_activityData_people');
+    const { tooltipTitleKey } = this;
+    const title = this.translate.instant(tooltipTitleKey ?? 'universal_activityData_people');
     return `${title}: {point.y}`;
   }
 
@@ -158,7 +160,7 @@ export class PieChartComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

@@ -91,7 +91,9 @@
               *ngTemplateOutlet="
                 reportInfo;
                 context: {
-                  value: (summary.classAvgDurationTime | sportTime: [false, flase]),
+                  value:
+                    (summary.classAvgDurationTime
+                    | sportTime: { showZeroHour: false, hideSecond: false }),
                   translateKey: 'universal_class_classDuration',
                   prefixTranslateKey: uiFlag.isRangeReport ? 'universal_adjective_avg' : null
                 }
@@ -297,7 +299,7 @@
                     <span class="tableTitleWord">{{
                       'universal_activityData_limit_avgSpeed' | translate
                     }}</span>
-                    <span class="chartTitleUnit">km/h</span>
+                    <span class="chartTitleUnit">kph</span>
                   </div>
                 </mat-header-cell>
                 <mat-cell

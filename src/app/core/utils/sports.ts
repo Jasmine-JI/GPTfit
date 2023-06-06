@@ -1,13 +1,12 @@
-import { SportType } from '../../shared/enum/sports';
-import { mi, ft } from '../../shared/models/bs-constant';
+import { mi, ft } from '../models/const/bs-constant.model';
 import { mathRounding } from './index';
-import { MuscleCode, MuscleGroup, WeightTrainingLevel } from '../../shared/enum/weight-train';
-import { asept, metacarpus, novice } from '../../shared/models/weight-train';
-import { HrBase } from '../../shared/enum/personal';
-import { HrZoneRange } from '../../shared/models/chart-data';
+import { asept, metacarpus, novice } from '../models/const/weight-train.model';
+import { HrBase } from '../../core/enums/sports';
+import { HrZoneRange } from '../models/compo/chart-data.model';
 import { BenefitTimeStartZone, DataUnitType } from '../enums/common';
-import { PAI_COFFICIENT, DAY_PAI_TARGET } from '../../shared/models/sports-report';
-import { sportTypeColor } from '../../shared/models/chart-data';
+import { paiCofficient, dayPaiTarget } from '../models/const/sports-report.model';
+import { sportTypeColor } from '../models/represent-color';
+import { MuscleCode, MuscleGroup, WeightTrainingLevel, SportType } from '../../core/enums/sports';
 
 /**
  * 根據運動類型將速度轉成配速(若為bs英制則公里配速轉英哩配速)
@@ -32,6 +31,9 @@ export function speedToPaceSecond(value: number, sportType: SportType, unit: Dat
     case SportType.row: // 划船配速
       result = ((60 / value) * 60) / 2;
       break;
+    default:
+      // 其他運動類別直接回傳速度
+      return isMetric ? value : mathRounding(value / mi, 2);
   }
 
   return Math.abs(result) > 3600 ? (isMinus ? -3600 : 3600) : result;
@@ -70,14 +72,16 @@ export function paceSecondTimeFormat(second: number) {
 export function speedToPace(data: number | string, sportType: SportType, unit: DataUnitType) {
   const value = +data;
   const converseType = [SportType.run, SportType.swim, SportType.row];
-  let result = { value: <number | string>value, unit: '' };
+  const result = { value: <number | string>value, unit: getPaceUnit(sportType, unit) };
 
   // 其他運動類別則直接返回速度值
   if (!converseType.includes(sportType)) return result;
-  result = { value: `60'00"`, unit: getPaceUnit(sportType, unit) };
 
   // 速度為0則配速一律顯示60'00"
-  if (value === 0) return result;
+  if (value === 0) {
+    result.value = `60'00"`;
+    return result;
+  }
 
   const paceSecond = speedToPaceSecond(value, sportType, unit);
   result.value = paceSecondTimeFormat(paceSecond);
@@ -90,15 +94,16 @@ export function speedToPace(data: number | string, sportType: SportType, unit: D
  * @param unit {DataUnitType}-使用者所使用的單位
  */
 export function getPaceUnit(sportType: SportType, unit: DataUnitType) {
+  const isMetric = unit === DataUnitType.metric;
   switch (sportType) {
     case SportType.run:
-      return unit === DataUnitType.metric ? 'min/km' : 'min/mi';
+      return isMetric ? 'min/km' : 'min/mi';
     case SportType.swim:
       return 'min/100m';
     case SportType.row:
       return 'min/500m';
     default:
-      return '';
+      return isMetric ? 'kph' : 'mph';
   }
 }
 
@@ -119,6 +124,7 @@ export function isAvgData(key: string) {
  * @param code {number | string}-運動類別代號
  */
 export function getSportsTypeKey(code: number | string) {
+  if (code === '') return '';
   const sportsCode = `${code}`.includes('s') ? +(code as string).split('s')[1] : +code;
   switch (sportsCode) {
     case SportType.run:
@@ -489,8 +495,8 @@ export function handleSceneryImg(type: number, subtype = 0) {
  * @returns pai {number}
  */
 export function countPai(hrZone: Array<number>, weekNum: number) {
-  const { z0, z1, z2, z3, z4, z5 } = PAI_COFFICIENT;
+  const { z0, z1, z2, z3, z4, z5 } = paiCofficient;
   const [zone0, zone1, zone2, zone3, zone4, zone5] = hrZone.map((_zone) => _zone ?? 0);
   const weightedValue = z0 * zone0 + z1 * zone1 + z2 * zone2 + z3 * zone3 + z4 * zone4 + z5 * zone5;
-  return parseFloat((((weightedValue / (DAY_PAI_TARGET * 7)) * 100) / weekNum).toFixed(1));
+  return parseFloat((((weightedValue / (dayPaiTarget * 7)) * 100) / weekNum).toFixed(1));
 }

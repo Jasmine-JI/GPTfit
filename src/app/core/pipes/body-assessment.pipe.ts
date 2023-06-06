@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { maleBodyBoundary, femaleBodyBoundary } from '../../shared/models/chart-data';
+import { maleBodyBoundary, femaleBodyBoundary } from '../models/const';
 
 @Pipe({
   name: 'bodyAssessment',

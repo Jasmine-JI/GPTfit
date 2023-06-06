@@ -1,7 +1,6 @@
-import { fromEvent, merge } from 'rxjs';
-import { QueryString } from '../../shared/enum/query-string';
+import { Observable, fromEvent, merge, of, throwError } from 'rxjs';
+import { QueryString, DateUnit } from '../enums/common';
 import { rgbaReg, hslaReg } from '../models/regex';
-import { DateUnit } from '../../shared/enum/report';
 import { ReportDateUnit } from '../../shared/classes/report-date-unit';
 import dayjs from 'dayjs';
 
@@ -47,21 +46,19 @@ export function debounce(func, wait) {
  * @param res {any}-api response
  * @param showAlert {boolean}-是否顯示錯誤alert
  * @returns {boolean} resultCode是否回傳200
- * @author kidin-1100902
  */
 export function checkResponse(res: any, showErrorMessage = true): boolean {
+  if (Array.isArray(res)) return true; // 陣列型回應先一律當作有效回應
   const { processResult, resultCode: resCode, apiCode: resApiCode, resultMessage: resMsg } = res;
-  if (!processResult) {
-    if (resCode !== 200) {
-      if (showErrorMessage) showErrorApiLog(resCode, resApiCode, resMsg);
-      return false;
+  const checkCode = processResult?.resultCode ?? resCode;
+  if (checkCode !== 200) {
+    if (showErrorMessage) {
+      const apiCode = processResult?.apiCode ?? resApiCode;
+      const resultMessage = processResult?.resultMessage ?? resMsg;
+      showErrorApiLog(resCode, apiCode, resultMessage);
     }
-  } else {
-    const { resultCode, apiCode, resultMessage } = processResult;
-    if (resultCode !== 200) {
-      if (showErrorMessage) showErrorApiLog(resultCode, apiCode, resultMessage);
-      return false;
-    }
+
+    return false;
   }
 
   return true;
@@ -78,7 +75,17 @@ export function showErrorApiLog(resultCode: number, apiCode: number, msg: string
 }
 
 /**
- * 物件深拷貝
+ * 確認回應是否有效，無效拋出錯誤並回傳resultCode
+ * @param res api 回應
+ * @param showErrorMsg 顯示錯誤訊息與否
+ */
+export function checkRxFlowResponse(res: any, showErrorMsg = false): Observable<any> {
+  const isEffect = checkResponse(res, showErrorMsg);
+  return isEffect ? of(res) : throwRxError();
+}
+
+/**
+ * 物件深拷貝，包含複製函式
  * @param obj
  * @param cache
  * @author kidin-1090902
@@ -148,6 +155,28 @@ export function changeOpacity(color: string, opacity: number) {
   }
 
   return color;
+}
+
+/**
+ * 根據對象長度及對象索引，使用hsla分配顏色，
+ * 可藉此確保同類型數據各個圖表顏色分配固定
+ * @paam index 索引
+ * @param dataLength 數據長度
+ * @param arg.saturation 色彩飽和度設定
+ * @param arg.lightness 亮度設定
+ * @param arg.opacity 透明度設定
+ */
+export function assignHslaColor(
+  index: number,
+  dataLength: number,
+  arg?: { saturation?: number; lightness?: number; opacity?: number }
+) {
+  const saturation = arg?.saturation ?? 60;
+  const lightness = arg?.lightness ?? 60;
+  const opacity = arg?.opacity ?? 1;
+  const oneRangeDegree = dataLength ? Math.round(360 / dataLength) : 0;
+  const hue = oneRangeDegree * index;
+  return `hsla(${hue}, ${saturation}%, ${lightness}%, ${opacity})`;
 }
 
 /**
@@ -276,8 +305,8 @@ export function getSameRangeDate(startTime: string, endTime: string, dateUnit: R
 }
 
 /**
- * 根據序列取得對應月份的翻譯鍵
- * @param index {number}-月份序列，第一個月序列為0（同dayjs）
+ * 根據索引取得對應月份的翻譯鍵
+ * @param index {number}-月份索引，第一個月索引為0（同dayjs）
  */
 export function getMonthKey(index: number) {
   switch (index) {
@@ -308,4 +337,59 @@ export function getMonthKey(index: number) {
     default:
       return 'Index Error';
   }
+}
+
+/**
+ * 根據索引取得對應月份的翻譯鍵
+ * @param index {number}-月份索引，第一個月索引為0（同dayjs）
+ * @param isAbbreviation {boolean}-是否用縮寫
+ */
+export function getWeekdayKey(index: number, isAbbreviation = true) {
+  switch (index) {
+    case 0:
+      return isAbbreviation ? 'universal_time_mon' : 'universal_time_monday';
+    case 1:
+      return isAbbreviation ? 'universal_time_tue' : 'universal_time_tuesday';
+    case 2:
+      return isAbbreviation ? 'universal_time_wed' : 'universal_time_wednesday';
+    case 3:
+      return isAbbreviation ? 'universal_time_thu' : 'universal_time_thursday';
+    case 4:
+      return isAbbreviation ? 'universal_time_fri' : 'universal_time_friday';
+    case 5:
+      return isAbbreviation ? 'universal_time_sat' : 'universal_time_saturday';
+    case 6:
+      return isAbbreviation ? 'universal_time_sun' : 'universal_time_sunday';
+  }
+}
+
+/**
+ * 將api response特定格式資料拆解為好取得的格式
+ * @param nameInfo 特殊格式名稱字串
+ */
+export function splitNameInfo(nameInfo: string): { [key: string]: string } {
+  let result = {};
+  const [name, ...rest] = nameInfo.split('?');
+  rest.forEach((_restInfo) =>
+    _restInfo.split('&').forEach((_info) => {
+      const [key, value] = _info.split('=');
+      result = { [key]: value, ...result };
+    })
+  );
+
+  return {
+    name,
+    ...result,
+  };
+}
+
+/**
+ * 處理rxjs資料流錯誤回應
+ * @param error 錯誤訊息
+ */
+export function throwRxError(error?: string) {
+  return throwError(() => {
+    const err = new Error(error ?? 'Exception!');
+    return err;
+  });
 }

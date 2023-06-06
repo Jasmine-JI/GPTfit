@@ -13,3 +13,7 @@ export * from './single-drop-list.model';
 export * from './page-road-path.model';
 export * from './operation-list-condition.model';
 export * from './aside-index-box.model';
+export * from './image-cropper.model';
+export * from './report-analysis.model';
+export * from './sports-report.model';
+export * from './chart-data.model';

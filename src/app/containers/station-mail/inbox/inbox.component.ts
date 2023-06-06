@@ -14,7 +14,7 @@ import dayjs from 'dayjs';
 import { MessageType, ReadStatus } from '../enum/station-mail';
 import { appPath } from '../../../app-path.const';
 import { Router, NavigationEnd } from '@angular/router';
-import { QueryString } from '../../../shared/enum/query-string';
+import { QueryString } from '../../../core/enums/common';
 import { Api50xxService, AuthService } from '../../../core/services';
 import { checkResponse, deepCopy } from '../../../core/utils/index';
 import { TranslateService } from '@ngx-translate/core';
@@ -171,7 +171,7 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   checkPathName() {
     if (!this.uiFlag.isMobile) {
-      const [empty, firstPath, secondPath, thirdPath, ...rest] = location.pathname.split('/');
+      const [, , , thirdPath] = location.pathname.split('/');
       const isInboxPage = !thirdPath || thirdPath === appPath.stationMail.inbox;
       if (!this.isBriefList && isInboxPage && this.mailList.length > 0) {
         const [date, mailList] = this.mailList[0];
@@ -186,10 +186,11 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   seeDetail(messageId: number) {
     const {
-      stationMail: { home, mailDetail },
+      dashboard: { home: dashboardHome },
+      stationMail: { home: stationMailHome, mailDetail },
     } = appPath;
     this.router.navigateByUrl(
-      `/dashboard/${home}/${mailDetail}?${QueryString.messageId}=${messageId}`
+      `/${dashboardHome}/${stationMailHome}/${mailDetail}?${QueryString.messageId}=${messageId}`
     );
   }
 
@@ -202,8 +203,8 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * 選擇或取消選擇信件
-   * @param index {number}-信件清單序列
-   * @param subIndex {number}-信件清單次要序列
+   * @param index {number}-信件清單索引
+   * @param subIndex {number}-信件清單次要索引
    */
   handleMailSelected(index: number, subIndex: number) {
     const { selected } = this.mailList[index][1][subIndex];
@@ -300,7 +301,7 @@ export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   ngOnDestroy(): void {
     if (this.inputSubscription) this.inputSubscription.unsubscribe();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

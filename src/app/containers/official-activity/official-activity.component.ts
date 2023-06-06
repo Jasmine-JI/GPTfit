@@ -2,16 +2,16 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } fr
 import { Router, NavigationEnd } from '@angular/router';
 import { Subject, Subscription, fromEvent, merge, combineLatest, of } from 'rxjs';
 import { takeUntil, switchMap, tap, debounceTime } from 'rxjs/operators';
-import { UserProfileInfo } from '../../shared/models/user-profile-info';
+import { UserProfile } from '../../core/models/api/api-10xx';
 import { OfficialActivityService } from './services/official-activity.service';
 import { TranslateService } from '@ngx-translate/core';
-import { SignTypeEnum } from '../../shared/enum/account';
-import { codes } from '../../shared/models/countryCode';
-import { formTest } from '../../shared/models/form-test';
+import { codes, errorMessage } from '../../core/models/const';
+import { formTest } from '../../core/models/regex/form-test';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { KeyCode } from '../../shared/models/key-code';
-import { ResetPasswordFlow, UnlockFlow, QrSignInFlow } from '../../shared/models/signup-response';
-import { AlaApp } from '../../shared/models/app-id';
+import { KeyCode } from '../../core/enums/common/key-code.enum';
+import { ResetPasswordFlow, UnlockFlow, QrSignInFlow } from '../../core/enums/api';
+import { AlaApp, Domain, WebIp, WebPort, QueryString } from '../../core/enums/common';
+import { SignInType } from '../../core/enums/personal';
 import {
   NodejsApiService,
   AuthService,
@@ -34,19 +34,7 @@ import {
 import { StationMailService } from '../station-mail/services/station-mail.service';
 import { appPath } from '../../app-path.const';
 
-const errorMsg = 'Something error! Please try again later.';
-
-type Page =
-  | 'activity-list'
-  | 'my-activity'
-  | 'activity-detail'
-  | 'apply-activity'
-  | 'leaderboard'
-  | 'contestant-list'
-  | 'edit-activity'
-  | 'about-cloudrun'
-  | '403'
-  | '404';
+const { officialActivity } = appPath;
 
 type AuthAction =
   | 'login'
@@ -77,7 +65,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * ui 會用到的各個flag
    */
   uiFlag = {
-    currentPage: <Page>'activity-list',
+    currentPage: officialActivity.activityList,
     isMobile: false,
     currentAdvertiseId: 1,
     showAdvertise: true,
@@ -100,7 +88,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    * 登入/註冊/忘記密碼等欄位資訊
    */
   authInfo = <any>{
-    signInType: <SignTypeEnum>null,
+    signInType: <SignInType | null>null,
     password: null,
   };
 
@@ -132,7 +120,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
   };
 
   qrLoginUrl: string;
-  userInfo: UserProfileInfo;
+  userInfo: UserProfile;
   token = this.auth.token;
   advertise = [];
   carousel: { img: string; advertiseId: number; link: string };
@@ -149,7 +137,17 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
   requestHeader = {};
   mailNotify: NodeJS.Timeout;
   notifyUpdateTime: number | null = null;
-  readonly SignTypeEnum = SignTypeEnum;
+
+  readonly linkList = {
+    activityList: `/${officialActivity.home}/${officialActivity.activityList}`,
+    leaderboard: `/${officialActivity.home}/${officialActivity.leaderboard}`,
+    myActivity: `/${officialActivity.home}/${officialActivity.myActivity}`,
+    aboutCloudrun: `/${officialActivity.home}/${officialActivity.aboutCloudrun}`,
+    contactUs: `/${officialActivity.home}/${officialActivity.contactUs}`,
+  };
+  readonly officialActivity = officialActivity;
+
+  readonly SignTypeEnum = SignInType;
   readonly countryCodeList = codes;
 
   constructor(
@@ -203,13 +201,13 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     const { hostname } = location;
     let host: string;
     switch (hostname) {
-      case '192.168.1.235':
-      case '192.168.1.235:8080':
-      case 'app.alatech.com.tw':
-        host = 'https://app.alatech.com.tw/app/public_html/appHelp';
+      case WebIp.develop:
+      case `${WebIp.develop}:${WebPort.develop}`:
+      case Domain.uat:
+        host = `https://${Domain.uat}/app/public_html/appHelp`;
         break;
-      case 'www.gptfit.com':
-        host = 'https://www.gptfit.com/app/public_html/appHelp';
+      case Domain.newProd:
+        host = `https://${Domain.newProd}/app/public_html/appHelp`;
         break;
     }
 
@@ -251,9 +249,9 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    */
   checkCurrentPage() {
     const { pathname } = location;
-    const [, mainPath, secondPath, ...rest] = pathname.split('/');
+    const [, , secondPath] = pathname.split('/');
     if (secondPath) {
-      const childPage = secondPath as Page;
+      const childPage = secondPath;
       this.uiFlag.currentPage = childPage;
       this.checkShowAdvertisePage(secondPath);
       this.checkForbiddenPage(secondPath);
@@ -271,10 +269,13 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
   /**
    * 確認目前路徑是否顯示廣告
    * @param path {string}-參考路徑
-   * @author kidin-1110208
    */
   checkShowAdvertisePage(path: string) {
-    this.uiFlag.showAdvertise = ['activity-list', 'my-activity', 'edit-carousel'].includes(path);
+    this.uiFlag.showAdvertise = [
+      officialActivity.activityList,
+      officialActivity.myActivity,
+      officialActivity.editCarousel,
+    ].includes(path);
   }
 
   /**
@@ -284,18 +285,19 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    */
   checkForbiddenPage(path: string) {
     setTimeout(() => {
-      this.uiFlag.fixFooter = ['403', '404'].includes(path);
+      const { pageNoPermission, pageNotFound } = appPath;
+      this.uiFlag.fixFooter = [pageNoPermission, pageNotFound].includes(path);
     });
   }
 
   /**
    * 確認所在頁面，調整頁面提示底線的位置
-   * @param page {Page}-現在所在頁面
-   * @author kidin-1101008
+   * @param page 現在所在頁面
    */
-  checkPageUnderlinePosition(page: Page) {
+  checkPageUnderlinePosition(page: string) {
     setTimeout(() => {
-      if (!['403', '404'].includes(page)) {
+      const { pageNoPermission, pageNotFound } = appPath;
+      if (![pageNoPermission, pageNotFound].includes(page)) {
         const target = document.querySelector(`[name=${page}]`);
         const linkActiveUnderline = document.getElementById('link__active') as any;
         if (target) {
@@ -671,7 +673,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    */
   initAuthInfo() {
     this.authInfo = {
-      signInType: <SignTypeEnum>null,
+      signInType: null,
       password: null,
     };
 
@@ -728,11 +730,11 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       this.authInfo.signInType = null;
       delete this.authInfo.countryCode;
     } else if (formTest.number.test(value)) {
-      this.authInfo.signInType = SignTypeEnum.phone;
+      this.authInfo.signInType = SignInType.phone;
       const countryCode = this.getCountryCode();
       Object.assign(this.authInfo, { countryCode });
     } else {
-      this.authInfo.signInType = SignTypeEnum.email;
+      this.authInfo.signInType = SignInType.email;
       delete this.authInfo.countryCode;
     }
   }
@@ -755,9 +757,9 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     this.uiFlag.focusInput = false;
     const value = (e as any).target.value.trim();
     const { signInType } = this.authInfo;
-    if (signInType === SignTypeEnum.phone) {
+    if (signInType === SignInType.phone) {
       this.checkPhoneFormat(+value); // 藉由轉數字將開頭所有0去除
-    } else if (signInType === SignTypeEnum.email) {
+    } else if (signInType === SignInType.email) {
       this.checkEmailFormat(value);
     } else {
       this.authAlert.account = 'empty';
@@ -971,10 +973,10 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       if (accountPasswordError.includes(apiReturnCode)) {
         this.authAlert.account = 'mistake';
       } else {
-        this.hintDialogService.showSnackBar(errorMsg);
+        this.hintDialogService.showSnackBar(errorMessage);
       }
     } else {
-      this.hintDialogService.showSnackBar(errorMsg);
+      this.hintDialogService.showSnackBar(errorMessage);
     }
   }
 
@@ -1034,7 +1036,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
                   this.translate.get('hellow world'), // 確保翻譯載入完成
                 ]);
               } else {
-                this.hintDialogService.showSnackBar(errorMsg);
+                this.hintDialogService.showSnackBar(errorMessage);
                 return of(false);
               }
             })
@@ -1091,7 +1093,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
         if (nicknameRepeat) this.authAlert.nickname = 'repeat';
       }
     } else {
-      this.hintDialogService.showSnackBar(errorMsg);
+      this.hintDialogService.showSnackBar(errorMessage);
     }
   }
 
@@ -1124,7 +1126,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
         ]).subscribe((result) => {
           const requestResult = result[0];
           if (this.apiCommonService.checkRes(requestResult, false)) {
-            if (accountType === SignTypeEnum.email) {
+            if (accountType === SignInType.email) {
               this.uiFlag.authBox = 'sendVerifySuccess';
             } else {
               this.reciprocal();
@@ -1153,10 +1155,10 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       if (imgLockCode) {
         this.handleCaptchaUnlock(UnlockFlow.requestUnlockImage, imgLockCode);
       } else {
-        this.hintDialogService.showSnackBar(errorMsg);
+        this.hintDialogService.showSnackBar(errorMessage);
       }
     } else {
-      this.hintDialogService.showSnackBar(errorMsg);
+      this.hintDialogService.showSnackBar(errorMessage);
     }
   }
 
@@ -1176,7 +1178,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
         } else {
           this.uiFlag.progress = 30;
           const flow = ResetPasswordFlow.verify;
-          const accountType = SignTypeEnum.phone;
+          const accountType = SignInType.phone;
           combineLatest([
             this.fetchForgetPwd(flow, accountType),
             this.translate.get('hellow world'), // 確保翻譯載入完成
@@ -1216,12 +1218,12 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
             this.authAlert.sms = 'notExist';
             break;
           default:
-            this.hintDialogService.showSnackBar(errorMsg);
+            this.hintDialogService.showSnackBar(errorMessage);
             break;
         }
       }
     } else {
-      this.hintDialogService.showSnackBar(errorMsg);
+      this.hintDialogService.showSnackBar(errorMessage);
     }
   }
 
@@ -1234,14 +1236,14 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     if (progress === 100) {
       this.uiFlag.progress = 30;
       combineLatest([
-        this.fetchForgetPwd(ResetPasswordFlow.reset, SignTypeEnum.phone),
+        this.fetchForgetPwd(ResetPasswordFlow.reset, SignInType.phone),
         this.translate.get('hellow world'), // 確保翻譯載入完成
       ]).subscribe((result) => {
         const resetResult = result[0];
         if (this.apiCommonService.checkRes(resetResult, false)) {
           this.handleResetPwdSuccess(resetResult);
         } else {
-          this.hintDialogService.showSnackBar(errorMsg);
+          this.hintDialogService.showSnackBar(errorMessage);
         }
 
         this.uiFlag.progress = 100;
@@ -1268,10 +1270,10 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
   /**
    * 使用api v2-1004進行忘記密碼流程
    * @param flow {ResetPasswordFlow}-目前重設密碼進行之步驟
-   * @param accountType {SignTypeEnum}-帳號類別
+   * @param accountType {SignInType}-帳號類別
    * @author kidin-1101206
    */
-  fetchForgetPwd(flow: ResetPasswordFlow, accountType: SignTypeEnum) {
+  fetchForgetPwd(flow: ResetPasswordFlow, accountType: SignInType) {
     const {
       email,
       countryCode,
@@ -1285,14 +1287,14 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       project: AlaApp.gptfit,
     };
 
-    if (accountType === SignTypeEnum.email) {
+    if (accountType === SignInType.email) {
       body = { email, ...body };
     } else {
       body = { countryCode, mobileNumber, ...body };
     }
 
     const flowAfterRequest = flow >= ResetPasswordFlow.verify;
-    const isPhoneAccount = accountType === SignTypeEnum.phone;
+    const isPhoneAccount = accountType === SignInType.phone;
     const isResetPwdFlow = flow === ResetPasswordFlow.reset;
     if (flowAfterRequest) body = { verificationCode, ...body };
 
@@ -1396,7 +1398,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       case 'forgetPassword': {
         const { signInType } = this.authInfo;
         inputOrder =
-          signInType === SignTypeEnum.phone ? ['accountInput', 'smsInput'] : ['accountInput'];
+          signInType === SignInType.phone ? ['accountInput', 'smsInput'] : ['accountInput'];
         break;
       }
     }
@@ -1437,7 +1439,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
       case 'forgetPassword': {
         const { signInType } = this.authInfo;
         if (passCheck || this.captchaImg) {
-          signInType === SignTypeEnum.phone ? this.submitVerify() : this.sendVerify();
+          signInType === SignInType.phone ? this.submitVerify() : this.sendVerify();
         }
 
         break;
@@ -1518,7 +1520,9 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    */
   createLoginQrcode() {
     const guid = this.createGuid();
-    this.qrLoginUrl = `${location.origin}/qrSignIn?qsf=1&g=${guid}`;
+    const pathName = `${location.origin}/${appPath.portal.signInQrcode}`;
+    const query = `?${QueryString.qrSignInFlow}=1&${QueryString.guid}=${guid}`;
+    this.qrLoginUrl = pathName + query;
     return guid;
   }
 
@@ -1546,7 +1550,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
               })
             );
           } else {
-            this.hintDialogService.showSnackBar(errorMsg);
+            this.hintDialogService.showSnackBar(errorMessage);
             return of(false);
           }
         })
@@ -1562,7 +1566,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
               this.authAlert.qrLogin = 'overdue';
               break;
             default:
-              this.snackbar.open(errorMsg, 'OK', { duration: 3000 });
+              this.snackbar.open(errorMessage, 'OK', { duration: 3000 });
               break;
           }
         }
@@ -1637,11 +1641,11 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
                 this.authAlert.captcha = 'mistake';
                 break;
               default:
-                this.hintDialogService.showSnackBar(errorMsg);
+                this.hintDialogService.showSnackBar(errorMessage);
                 break;
             }
           } else {
-            this.hintDialogService.showSnackBar(errorMsg);
+            this.hintDialogService.showSnackBar(errorMessage);
           }
         }
       });
@@ -1683,17 +1687,21 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
 
   /**
    * 根據所在頁面搜尋活動
-   * @param page {Page}-所在頁面
-   * @author kidin-1101217
+   * @param page 所在頁面
    */
-  searchActivity(page: Page) {
+  searchActivity(page: string) {
     const { activityKeyword } = this;
+    const query = `?${QueryString.search}=${activityKeyword}`;
     switch (page) {
-      case 'my-activity':
-        this.router.navigateByUrl(`/official-activity/my-activity?search=${activityKeyword}`);
+      case officialActivity.myActivity:
+        this.router.navigateByUrl(
+          `/${officialActivity.home}/${officialActivity.myActivity}${query}`
+        );
         break;
       default:
-        this.router.navigateByUrl(`/official-activity/activity-list?search=${activityKeyword}`);
+        this.router.navigateByUrl(
+          `/${officialActivity.home}/${officialActivity.activityList}${query}`
+        );
         break;
     }
   }
@@ -1761,9 +1769,10 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
   navigateInbox(e: MouseEvent) {
     e.preventDefault();
     const {
-      stationMail: { home, inbox },
+      dashboard,
+      stationMail: { home: stationMailHome, inbox },
     } = appPath;
-    this.router.navigateByUrl(`/dashboard/${home}/${inbox}`);
+    this.router.navigateByUrl(`/${dashboard.home}/${stationMailHome}/${inbox}`);
   }
 
   /**
@@ -1771,9 +1780,10 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
    */
   navigateNewMailPage() {
     const {
-      stationMail: { home, newMail },
+      dashboard,
+      stationMail: { home: stationMailHome, newMail },
     } = appPath;
-    this.router.navigateByUrl(`/dashboard/${home}/${newMail}`);
+    this.router.navigateByUrl(`/${dashboard.home}/${stationMailHome}/${newMail}`);
   }
 
   /**
@@ -1783,7 +1793,7 @@ export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestr
     if (this.intervals) clearInterval(this.intervals);
     this.stopPollingNewMail();
     this.stopCarousel();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

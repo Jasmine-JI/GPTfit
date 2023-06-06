@@ -1,14 +1,12 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OfficialActivityService } from '../../services/official-activity.service';
-import { formTest } from '../../../../shared/models/form-test';
+import { formTest } from '../../../../core/models/regex/form-test';
 import { fromEvent, Subject, Subscription, merge, of, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map, tap } from 'rxjs/operators';
-import { codes } from '../../../../shared/models/countryCode';
-import { Sex } from '../../../../shared/enum/personal';
-import { nicknameDefaultList } from '../../../../shared/models/nickname-list';
-import { SelectDate } from '../../../../shared/models/utils-type';
-import { SignTypeEnum } from '../../../../shared/enum/account';
+import { codes } from '../../../../core/models/const';
+import { nicknameDefaultList } from '../../../../core/models/const/nickname-list';
+import { SelectDate } from '../../../../core/models/common';
 import dayjs from 'dayjs';
 import {
   AuthService,
@@ -19,8 +17,7 @@ import {
   ApiCommonService,
 } from '../../../../core/services';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { UserProfileInfo } from '../../../../shared/models/user-profile-info';
-import { AccountTypeEnum, AccountStatusEnum } from '../../../../shared/enum/account';
+import { UserProfile } from '../../../../core/models/api/api-10xx';
 import {
   Nationality,
   ApplyStatus,
@@ -31,11 +28,12 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
-import { AlaApp } from '../../../../shared/models/app-id';
-import { EnableAccountFlow } from '../../../../shared/models/signup-response';
+import { EnableAccountFlow } from '../../../../core/enums/api';
 import { LockCaptcha } from '../../../../shared/classes/lock-captcha';
 import { checkResponse, getCurrentTimestamp, getUrlQueryStrings } from '../../../../core/utils';
-import { QueryString } from '../../../../shared/enum/query-string';
+import { QueryString, AlaApp } from '../../../../core/enums/common';
+import { SignInType, AccountType, AccountStatus, Gender } from '../../../../core/enums/personal';
+import { appPath } from '../../../../app-path.const';
 
 const stageHeight = 90;
 const fullMsg = 'Apply group full.';
@@ -60,10 +58,10 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   uiFlag = {
     progress: 100,
-    showLoginButton: <AccountTypeEnum>null,
+    showLoginButton: <AccountType | null>null,
     showAside: true,
     haveAccount: false,
-    accountChecking: <AccountTypeEnum>null,
+    accountChecking: <AccountType | null>null,
     showCountryCodeList: false,
     showNicknameHint: false,
     showEmergencyContact: false,
@@ -121,7 +119,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       idCardNumber: null,
       address: null,
       birthday: null,
-      gender: Sex.male,
+      gender: Gender.male,
       truthName: null,
       emergencyContact: {
         name: null,
@@ -151,7 +149,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * 登入request
    */
   loginBody = <any>{
-    signInType: <SignTypeEnum>SignTypeEnum.phone,
+    signInType: <SignInType>SignInType.phone,
     password: null,
   };
 
@@ -189,11 +187,11 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   userId: number;
   intervals: NodeJS.Timeout;
   timeCount = 30;
-  readonly SignTypeEnum = SignTypeEnum;
-  readonly AccountTypeEnum = AccountTypeEnum;
+  readonly SignTypeEnum = SignInType;
+  readonly AccountTypeEnum = AccountType;
   readonly countryCodeList = codes;
   readonly Nationality = Nationality;
-  readonly Sex = Sex;
+  readonly Sex = Gender;
   readonly limitMinBirth = dayjs().subtract(100, 'year').startOf('year');
 
   constructor(
@@ -279,7 +277,8 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101229
    */
   navigateMyActivityPage() {
-    this.router.navigateByUrl('/official-activity/my-activity');
+    const { officialActivity } = appPath;
+    this.router.navigateByUrl(`/${officialActivity.home}/${officialActivity.myActivity}`);
   }
 
   /**
@@ -306,7 +305,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
               userProfile,
             } = userProfileResult;
             this.loginBody.signInType = accountType;
-            this.uiFlag.enableAccount = accountStatus === AccountStatusEnum.enabled;
+            this.uiFlag.enableAccount = accountStatus === AccountStatus.enabled;
             this.handleUserProfile(userProfile);
           }
         })
@@ -334,10 +333,10 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
 
   /**
    * 將使用者部份資訊填入表單(覆蓋eventUserProfile以避免資訊並非最新的)
-   * @param userProfile {UserProfileInfo}-使用者資訊
+   * @param userProfile {UserProfile}-使用者資訊
    * @author kidin-1101116
    */
-  handleUserProfile(userProfile: UserProfileInfo) {
+  handleUserProfile(userProfile: UserProfile) {
     const { nickname, email, birthday, gender, countryCode, mobileNumber, userId } = userProfile;
 
     this.applyInfo.userProfile.nickname = nickname;
@@ -359,7 +358,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101104
    */
   checkEventId() {
-    const eventId = +this.route.snapshot.paramMap.get('eventId');
+    const eventId = +this.route.snapshot.paramMap.get(appPath.officialActivity.eventId);
     if (formTest.number.test(`${eventId}`)) {
       this.applyInfo.targetEventId = eventId;
       this.getEventDetail(eventId);
@@ -373,7 +372,8 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    * @author kidin-1101104
    */
   navigate404() {
-    this.router.navigateByUrl('/official-activity/404');
+    const { officialActivity, pageNotFound } = appPath;
+    this.router.navigateByUrl(`/${officialActivity.home}/${pageNotFound}`);
   }
 
   /**
@@ -550,7 +550,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       token,
       loginBody: { signInType },
     } = this;
-    if (!token || signInType !== SignTypeEnum.phone) {
+    if (!token || signInType !== SignInType.phone) {
       const { showCountryCodeList } = this.uiFlag;
       if (showCountryCodeList) {
         this.unsubscribeClickScrollEvent();
@@ -617,7 +617,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     if (!trimValue) {
       this.alert.mobileNumber = 'empty';
       const { showLoginButton } = this.uiFlag;
-      if (showLoginButton === AccountTypeEnum.phone) this.uiFlag.showLoginButton = null;
+      if (showLoginButton === AccountType.phone) this.uiFlag.showLoginButton = null;
     } else {
       const newPhone = `${+trimValue}`; // 藉由轉數字將開頭所有0去除
       if (!formTest.phone.test(newPhone)) {
@@ -661,13 +661,13 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
           const { phone } = res.result[0] ?? {};
           if (phone) {
             delete this.loginBody.email; // 避免多帳號者更換帳號
-            this.loginBody.signInType = SignTypeEnum.phone;
+            this.loginBody.signInType = SignInType.phone;
             this.loginBody.countryCode = countryCode;
             this.loginBody.mobileNumber = mobileNumber;
-            this.handleLoginButton(AccountTypeEnum.phone);
+            this.handleLoginButton(AccountType.phone);
           } else {
             const { showLoginButton } = this.uiFlag;
-            if (showLoginButton === AccountTypeEnum.phone) this.uiFlag.showLoginButton = null;
+            if (showLoginButton === AccountType.phone) this.uiFlag.showLoginButton = null;
           }
         }
       });
@@ -684,7 +684,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     if (!newEmail) {
       this.alert.email = 'empty';
       const { showLoginButton } = this.uiFlag;
-      if (showLoginButton === AccountTypeEnum.email) this.uiFlag.showLoginButton = null;
+      if (showLoginButton === AccountType.email) this.uiFlag.showLoginButton = null;
     } else {
       if (!formTest.email.test(newEmail)) {
         this.alert.email = 'format';
@@ -711,12 +711,12 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
           if (email) {
             delete this.loginBody.countryCode; // 避免多帳號者更換帳號
             delete this.loginBody.mobileNumber;
-            this.loginBody.signInType = SignTypeEnum.email;
+            this.loginBody.signInType = SignInType.email;
             this.loginBody.email = email;
-            this.handleLoginButton(AccountTypeEnum.email);
+            this.handleLoginButton(AccountType.email);
           } else {
             const { showLoginButton } = this.uiFlag;
-            if (showLoginButton === AccountTypeEnum.email) this.uiFlag.showLoginButton = null;
+            if (showLoginButton === AccountType.email) this.uiFlag.showLoginButton = null;
           }
         }
       });
@@ -758,7 +758,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   /**
    * 確認密碼是否有值
    * @param e {MouseEvent}
-   * @author kidin-1101111
    */
   checkPassword(e: MouseEvent) {
     const password = (e as any).target.value;
@@ -767,7 +766,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
 
   /**
    * 登入
-   * @author kidin-1101111
    */
   login() {
     const { progress } = this.uiFlag;
@@ -781,7 +779,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
               const {
                 signIn: { token, accountStatus },
               } = loginResponse;
-              this.uiFlag.enableAccount = accountStatus === AccountStatusEnum.enabled;
+              this.uiFlag.enableAccount = accountStatus === AccountStatus.enabled;
               this.handleLoginSuccess(token);
               const args = { eventId: this.applyInfo.targetEventId };
               const target = ['eventId'];
@@ -803,8 +801,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
 
   /**
    * 登入成功
-   * @param token {string}-登入權杖
-   * @author kidin-1101229
+   * @param token 登入權杖
    */
   handleLoginSuccess(token: string) {
     this.token = token;
@@ -828,8 +825,9 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       .subscribe(() => {
         const { eventId: appliedEventId } = response.result[0] || { eventId: null };
         if (appliedEventId) {
+          const { officialActivity } = appPath;
           this.uiFlag.isApplied = true;
-          const backUrl = `/official-activity/activity-detail/${appliedEventId}`;
+          const backUrl = `/${officialActivity.home}/${officialActivity.activityDetail}/${appliedEventId}`;
           this.dialog.open(MessageBoxComponent, {
             hasBackdrop: true,
             data: {
@@ -912,7 +910,6 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
   /**
    * 確認地址是否符合格式
    * @param e {MouseEvent}
-   * @author kidin-1101110
    */
   checkIdAddressFormat(e: MouseEvent) {
     const address = (e as any).target.value.trim();
@@ -1040,9 +1037,9 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
     } = this;
     if (!isApplied && progress === 100) {
       this.uiFlag.progress = 30;
-
+      const { officialActivity } = appPath;
       if (token) Object.assign(this.applyInfo, { token });
-      const eventId = +this.route.snapshot.paramMap.get('eventId');
+      const eventId = +this.route.snapshot.paramMap.get(officialActivity.eventId);
       this.officialActivityService
         .getEventDetail({ eventId })
         .pipe(
@@ -1078,7 +1075,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
           } else {
             if (res.processResult?.apiReturnMessage === fullMsg) {
               const eventId = this.applyInfo.targetEventId;
-              const backPath = `official-activity/activity-detail/${eventId}`;
+              const backPath = `${officialActivity.home}/${officialActivity.activityDetail}/${eventId}`;
               this.dialog.open(MessageBoxComponent, {
                 hasBackdrop: true,
                 data: {
@@ -1116,7 +1113,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   tokenLogin(token: string, newAccount = false) {
     const body = {
-      signInType: SignTypeEnum.token,
+      signInType: SignInType.token,
       token,
     };
 
@@ -1129,7 +1126,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         } = res;
 
         this.userId = userId;
-        this.uiFlag.enableAccount = accountStatus === AccountStatusEnum.enabled;
+        this.uiFlag.enableAccount = accountStatus === AccountStatus.enabled;
         this.loginBody.signInType = accountType;
         if (newAccount) this.getVerification();
       }
@@ -1158,10 +1155,10 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
 
   /**
    * 根據是否已經登入與是否有帳號顯示登入按鈕
-   * @param type {AccountTypeEnum}-帳號類別
+   * @param type {AccountType}-帳號類別
    * @author kidin-1101115
    */
-  handleLoginButton(type: AccountTypeEnum) {
+  handleLoginButton(type: AccountType) {
     this.uiFlag.showLoginButton = this.token ? null : type;
   }
 
@@ -1291,7 +1288,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
       }
     }
 
-    if (gender !== Sex.unlimit) {
+    if (gender !== Gender.unlimit) {
       this.applyInfo.userProfile.gender = gender;
     }
   }
@@ -1312,7 +1309,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         const { gender: groupGender, age: groupAge, currentApplyNumber, id } = _list;
         if (numberLimit > 0 && currentApplyNumber >= numberLimit) return false;
         const { max, min } = groupAge || { max: 100, min: 0 };
-        const fitGender = groupGender === Sex.unlimit || gender === groupGender;
+        const fitGender = groupGender === Gender.unlimit || gender === groupGender;
         const fitAge = !groupAge || (age >= min && age <= max);
         if (targetGroup === _index && fitGender && fitAge) targetGroupId = id;
         return fitGender && fitAge;
@@ -1404,7 +1401,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
         let enableBody = { ...this.enableBody, token };
         let msgKey = 'universal_userAccount_sendSmsSuccess';
 
-        if (signInType === SignTypeEnum.email) {
+        if (signInType === SignInType.email) {
           enableBody = { ...enableBody, redirectUrl: 'event' };
           msgKey = 'universal_userAccount_sendCaptchaChackEmail';
         }
@@ -1439,7 +1436,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
               const msg = this.translate.instant(msgKey);
               this.hintDialogService.showSnackBar(msg);
               this.enableBody.enableAccountFlow = EnableAccountFlow.verify;
-              if (signInType === SignTypeEnum.phone) this.reciprocal();
+              if (signInType === SignInType.phone) this.reciprocal();
             }
 
             this.uiFlag.progress = 100;
@@ -1519,7 +1516,7 @@ export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy 
    */
   ngOnDestroy() {
     if (this.intervals) window.clearInterval(this.intervals);
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

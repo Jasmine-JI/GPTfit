@@ -5,7 +5,7 @@ import { GroupDetailInfo, UserSimpleInfo } from '../../../models/group-detail';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
-import { QrcodeService } from '../../../../portal/services/qrcode.service';
+import { QrcodeService } from '../../../../../core/services/qrcode.service';
 import {
   Api10xxService,
   Api70xxService,
@@ -14,10 +14,12 @@ import {
   HintDialogService,
   ApiCommonService,
 } from '../../../../../core/services';
-import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
+import { ReportConditionOpt } from '../../../../../core/models/compo/report-condition.model';
 import { GroupLevel } from '../../../../dashboard/models/group-detail';
 import { deepCopy, displayGroupLevel } from '../../../../../core/utils';
 import { ProfessionalService } from '../../../../professional/services/professional.service';
+import { appPath } from '../../../../../app-path.const';
+import { Domain, WebIp, QueryString } from '../../../../../core/enums/common';
 
 type EditMode = 'add' | 'del';
 
@@ -79,7 +81,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
   mouseHoldTime = 0;
   readonly onePageSizeOpt = [5, 10, 20];
   readonly imgStoragePath = `http://${
-    location.hostname.includes('192.168.1.235') ? 'app.alatech.com.tw' : location.hostname
+    location.hostname.includes(WebIp.develop) ? Domain.oldProd : location.hostname
   }/app/public_html/products`;
 
   constructor(
@@ -274,15 +276,21 @@ export class DeviceListComponent implements OnInit, OnDestroy {
 
     this.uiFlag.progress = 70;
     combineLatest(querry).subscribe((res) => {
-      const [productInfoRes, userProfileRes] = res,
-        { apiCode, resultCode, resultMessage, info } = productInfoRes;
+      const [productInfoRes, userProfileRes] = res;
+      const { apiCode, resultCode, resultMessage, info } = productInfoRes;
       if (resultCode !== 200) {
         console.error(`${resultCode}: Api ${apiCode} ${resultMessage}`);
       } else {
         const finalList = deviceList.map((_list, _idx) => {
           // 顯示fitpair qrcode
-          const checkSum = this.qrcodeService.createDeviceChecksum(_list.myEquipmentSN),
-            qrURL = `${location.origin}/pair?device_sn=${_list.myEquipmentSN}&bt_name=${_list.myEquipmentSN}&cs=${checkSum}`;
+          const checkSum = this.qrcodeService.createDeviceChecksum(_list.myEquipmentSN);
+          const qrQueryArr = [
+            `${QueryString.deviceSN}=${_list.myEquipmentSN}`,
+            `${QueryString.btName}=${_list.myEquipmentSN}`,
+            `${QueryString.CS}=${checkSum}`,
+          ];
+          const qrQuery = `?${qrQueryArr.join('&')}`;
+          const qrURL = `${location.origin}/${appPath.device.pair}${qrQuery}`;
           Object.assign(_list, { qrURL });
 
           // 取得裝置圖片
@@ -385,12 +393,17 @@ export class DeviceListComponent implements OnInit, OnDestroy {
    */
   navigateDevicePage(idx: number) {
     if (!this.uiFlag.editMode) {
-      const { myEquipmentSN, bondingUserId, qrURL } = this.deviceList[idx],
-        { userId } = this.userSimpleInfo;
+      const { myEquipmentSN, bondingUserId, qrURL } = this.deviceList[idx];
+      const { userId } = this.userSimpleInfo;
       if (bondingUserId != userId) {
         window.open(qrURL);
       } else {
-        window.open(`${location.origin}/dashboard/device/info/${myEquipmentSN}`);
+        const {
+          dashboard: { home: dashboardHome },
+          device,
+        } = appPath;
+        const pathName = `/${dashboardHome}/${device.home}/${device.info}/${myEquipmentSN}`;
+        window.open(`${location.origin}${pathName}/${myEquipmentSN}`);
       }
     } else {
       const { editMode } = this.uiFlag,
@@ -487,7 +500,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
    * 選取或取消單一裝置
    * @param e {MouseEvent}
    * @param type {'add' | 'del'}-清單類別
-   * @param idx {number}-指定的序列
+   * @param idx {number}-指定的索引
    * @author kidin-1100727
    */
   selectOne(e: any, type: 'add' | 'del', idx: number) {
@@ -636,7 +649,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

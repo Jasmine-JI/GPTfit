@@ -8,15 +8,18 @@ import {
   GlobalEventsService,
   HintDialogService,
   ApiCommonService,
+  NetworkService,
 } from '../../../../../core/services';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { Subject, fromEvent, Subscription, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { AccountTypeEnum } from '../../../../../shared/enum/account';
 import { TFTViewMinWidth } from '../../../models/app-webview';
 import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/utils';
+import { AccountType } from '../../../../../core/enums/personal';
+import { QueryString } from '../../../../../core/enums/common';
+import { appPath } from '../../../../../app-path.const';
 
 const errorMsg = 'Error!<br /> Please try again later.';
 type RedirectPage = 'sign' | 'setting' | 'event';
@@ -80,7 +83,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
   enableSuccess = false;
   requestHeader = {};
   redirectPage: RedirectPage = 'sign';
-  readonly AccountTypeEnum = AccountTypeEnum;
+  readonly AccountTypeEnum = AccountType;
 
   constructor(
     private translate: TranslateService,
@@ -92,7 +95,8 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
     private userService: UserService,
     private globalEventsService: GlobalEventsService,
     private hintDialogService: HintDialogService,
-    private apiCommonService: ApiCommonService
+    private apiCommonService: ApiCommonService,
+    private networkService: NetworkService
   ) {
     translate.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.createPlaceholder();
@@ -103,7 +107,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
     this.createPlaceholder();
     this.subscribeResizeEvent();
 
-    if (location.pathname.indexOf('web') > 0) {
+    if (location.pathname.indexOf('-web') > -1) {
       this.pcView = true;
       this.setPageStyle(false);
     } else {
@@ -184,10 +188,10 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
     Object.entries(query).forEach(([_key, _value]) => {
       switch (_key) {
-        case 'tk':
+        case QueryString.token:
           this.appInfo.token = _value as string;
           break;
-        case 'p':
+        case QueryString.project:
           this.appInfo.project = +_value;
           this.emailLinkString.project = +_value;
           if (+_value === 0) {
@@ -195,16 +199,16 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
           break;
-        case 'eaf':
+        case QueryString.enableAccountFlow:
           this.emailLinkString.enableAccountFlow = +_value;
           break;
-        case 'ui':
+        case QueryString.userId:
           this.emailLinkString.userId = +_value;
           break;
-        case 'vc':
+        case QueryString.verificationCode:
           this.emailLinkString.verificationCode = _value as string;
           break;
-        case 'ru':
+        case QueryString.redirectUrl:
           this.redirectPage = _value as RedirectPage;
           break;
       }
@@ -232,7 +236,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
             userProfile,
             signIn: { accountType },
           } = res as any;
-          if (accountType === AccountTypeEnum.email) {
+          if (accountType === AccountType.email) {
             this.accountInfo = {
               type: 1,
               account: userProfile.email,
@@ -289,19 +293,19 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * 轉導至指定頁面
-   * @author kidin-1110218
    */
   redirect() {
+    const { officialActivity, dashboard, personal, portal } = appPath;
     let path: string;
     switch (this.redirectPage) {
       case 'event':
-        path = '/official-activity/my-activity';
+        path = `/${officialActivity.home}/${officialActivity.myActivity}`;
         break;
       case 'setting':
-        path = '/dashboard/user-settings';
+        path = `/${dashboard.home}/${personal.userSettings}`;
         break;
       default:
-        path = this.pcView ? '/signIn-web' : '/signIn';
+        path = this.pcView ? `/${portal.signInWeb}` : `/${portal.signIn}`;
         break;
     }
 
@@ -409,91 +413,96 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 進行啟用帳號流程-kidin-1090515
   submit() {
-    if (this.imgCaptcha.show) {
-      this.removeCaptcha('submit');
-    } else {
-      this.progress = 30;
-      const body = {
-        enableAccountFlow: 2,
-        token: this.appInfo.token,
-        userId: this.accountInfo.id,
-        project: this.appInfo.project,
-      };
-
-      if (this.accountInfo.type === 2) {
-        (body as any).verificationCode = this.phoneCaptcha.value;
+    const online = this.networkService.checkNetworkStatus();
+    if (online) {
+      if (this.imgCaptcha.show) {
+        this.removeCaptcha('submit');
       } else {
-        body.enableAccountFlow = 1;
-        if (this.redirectPage === 'event') {
-          Object.assign(body, { redirectUrl: 'event' });
+        this.progress = 30;
+        const body = {
+          enableAccountFlow: 2,
+          token: this.appInfo.token,
+          userId: this.accountInfo.id,
+          project: this.appInfo.project,
+        };
+
+        if (this.accountInfo.type === 2) {
+          (body as any).verificationCode = this.phoneCaptcha.value;
+        } else {
+          body.enableAccountFlow = 1;
+          if (this.redirectPage === 'event') {
+            Object.assign(body, { redirectUrl: 'event' });
+          }
         }
-      }
 
-      this.getClientIpaddress()
-        .pipe(
-          switchMap((ipResult) => this.api10xxService.fetchEnableAccount(body, this.requestHeader))
-        )
-        .subscribe((res: any) => {
-          if (res.processResult.resultCode !== 200) {
-            let msgBody;
-            switch (res.processResult.apiReturnMessage) {
-              case `Post fail, parmameter 'project' or 'token' or 'userId' error.`:
-              case `Post fail, check 'userId' error with verification code.`:
-                msgBody = this.translate.instant('universal_userAccount_errorCaptcha');
-                this.showMsgBox(msgBody, 'none');
-                break;
-              case 'Found attack, update status to lock!':
-              case 'Found lock!': {
-                const captchaBody = {
-                  unlockFlow: 1,
-                  imgLockCode: res.processResult.imgLockCode,
-                };
+        this.getClientIpaddress()
+          .pipe(
+            switchMap((ipResult) =>
+              this.api10xxService.fetchEnableAccount(body, this.requestHeader)
+            )
+          )
+          .subscribe((res: any) => {
+            if (res.processResult.resultCode !== 200) {
+              let msgBody;
+              switch (res.processResult.apiReturnMessage) {
+                case `Post fail, parmameter 'project' or 'token' or 'userId' error.`:
+                case `Post fail, check 'userId' error with verification code.`:
+                  msgBody = this.translate.instant('universal_userAccount_errorCaptcha');
+                  this.showMsgBox(msgBody, 'none');
+                  break;
+                case 'Found attack, update status to lock!':
+                case 'Found lock!': {
+                  const captchaBody = {
+                    unlockFlow: 1,
+                    imgLockCode: res.processResult.imgLockCode,
+                  };
 
-                this.api10xxService
-                  .fetchCaptcha(captchaBody, this.requestHeader)
-                  .subscribe((captchaRes) => {
-                    this.imgCaptcha = {
-                      show: true,
-                      imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
-                      cue: '',
-                      code: '',
-                    };
-                  });
+                  this.api10xxService
+                    .fetchCaptcha(captchaBody, this.requestHeader)
+                    .subscribe((captchaRes) => {
+                      this.imgCaptcha = {
+                        show: true,
+                        imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
+                        cue: '',
+                        code: '',
+                      };
+                    });
 
-                break;
-              }
-              default:
-                msgBody = errorMsg;
-                console.error(
-                  `${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`
-                );
-                this.showMsgBox(errorMsg, 'turnBack');
-                break;
-            }
-          } else {
-            if (this.accountInfo.type === 1) {
-              this.sendEmail = true;
-              if (this.pcView) {
-                const msgBody = this.translate.instant(
-                  'universal_userAccount_sendCaptchaChackEmail'
-                );
-                this.showMsgBox(msgBody, 'enableSuccess');
+                  break;
+                }
+                default:
+                  msgBody = errorMsg;
+                  console.error(
+                    `${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`
+                  );
+                  this.showMsgBox(errorMsg, 'turnBack');
+                  break;
               }
             } else {
-              this.enableSuccess = true;
-              const msgBody = `${this.logMessage.enable} ${this.logMessage.success}`;
-              if (this.pcView) {
-                this.showMsgBox(msgBody, 'enableSuccess');
+              if (this.accountInfo.type === 1) {
+                this.sendEmail = true;
+                if (this.pcView) {
+                  const msgBody = this.translate.instant(
+                    'universal_userAccount_sendCaptchaChackEmail'
+                  );
+                  this.showMsgBox(msgBody, 'enableSuccess');
+                }
               } else {
-                this.debounceBack(msgBody, this.turnFirstLoginOrBack);
+                this.enableSuccess = true;
+                const msgBody = `${this.logMessage.enable} ${this.logMessage.success}`;
+                if (this.pcView) {
+                  this.showMsgBox(msgBody, 'enableSuccess');
+                } else {
+                  this.debounceBack(msgBody, this.turnFirstLoginOrBack);
+                }
+
+                this.userService.refreshUserProfile();
               }
-
-              this.userService.refreshUserProfile();
             }
-          }
 
-          this.progress = 100;
-        });
+            this.progress = 100;
+          });
+      }
     }
   }
 
@@ -503,7 +512,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param fn {Founction}-轉導函式
    * @author kidin-1110110
    */
-  debounceBack(msg: string, fn: Function = undefined) {
+  debounceBack(msg: string, fn: CallableFunction = undefined) {
     this.hintDialogService.showSnackBar(msg);
     if (fn) setTimeout(fn.bind(this), 2000);
   }
@@ -596,7 +605,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1091229
    */
   showMsgBox(msg: string, action: 'turnBack' | 'enableSuccess' | 'none') {
-    let fn: Function;
+    let fn: CallableFunction;
     switch (action) {
       case 'turnBack':
         fn = this.turnBack;
@@ -656,7 +665,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
   // 離開頁面則取消隱藏navbar-kidin-1090514
   ngOnDestroy() {
     this.setPageStyle(false);
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

@@ -70,13 +70,7 @@ export interface SportsReportData {
       avgEstimateFtp: number;
       totalWeightKg: number;
       totalReps: number;
-      weightTrainingInfo: Array<{
-        muscle: MuscleCode;
-        max1RmWeightKg: number;
-        totalWeightKg: number;
-        totalSets: number;
-        totalReps: number;
-      }>;
+      weightTrainingInfo: Array<WeightTrainingInfo>;
       swimAvgCadence: number;
       avgSwimMaxCadence: number;
       avgSwolf: number;
@@ -106,4 +100,15 @@ export interface SportsReportData {
   ];
   startTime: string; // YYYY-MM-DDTHH:mm:ss.SSSZ
   endTime: string; // YYYY-MM-DDTHH:mm:ss.SSSZ
+}
+
+/**
+ * api 2104 response weightTrainingInfo[]內的資訊
+ */
+export interface WeightTrainingInfo {
+  muscle: MuscleCode;
+  max1RmWeightKg: number;
+  totalWeightKg: number;
+  totalSets: number;
+  totalReps: number;
 }

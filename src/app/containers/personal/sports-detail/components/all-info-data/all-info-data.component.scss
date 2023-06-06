@@ -1,0 +1,80 @@
+@import 'grid-setting.scss';
+
+.info__grid {
+  @include diff-gap-grid(0.5rem, 1rem, 3);
+}
+
+.info__type__title {
+  grid-column: span 3;
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: bold;
+  border-bottom: 0.5px solid rgba(225, 225, 225, 1);
+}
+
+.one__info {
+  grid-column: span 1;
+  max-width: 130px;
+}
+
+.info__title {
+  font-size: 0.75rem;
+  color: rgba(85, 85, 85, 1);
+  margin: 0;
+}
+
+.info__value__unit {
+  margin: 0;
+
+  &:after {
+    $height: 3px;
+    content: '';
+    display: block;
+    height: $height;
+    width: 100%;
+    border-radius: $height;
+  }
+}
+
+.info__value {
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+.info__unit {
+  font-size: 0.625rem;
+  color: rgba(89, 89, 89, 1);
+  margin-left: 3px;
+}
+
+.base__info {
+  &:after {
+    background-color: rgba(254, 202, 87, 1);
+  }
+}
+
+.compare__info {
+  &:after {
+    background-color: rgba(154, 135, 249, 1);
+  }
+}
+
+.info__diff {
+  width: fit-content;
+  height: 18px;
+  padding: 0 5px;
+  margin: 2px 0 0 0;
+  border-radius: 3px;
+  font-weight: bold;
+  font-size: 0.75rem;
+}
+
+.positive__diff {
+  background-color: rgba(255, 210, 210, 1);
+  color: rgba(207, 0, 0, 1);
+}
+
+.negative__diff {
+  background-color: rgba(210, 255, 217, 1);
+  color: rgba(4, 154, 37, 1);
+}

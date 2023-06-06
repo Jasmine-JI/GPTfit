@@ -1,4 +1,12 @@
-import { Component, OnInit, OnChanges, SimpleChanges, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+  Input,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OperationTableOption } from '../../core/models/compo';
 import { OperationDataType } from '../../core/enums/compo';
@@ -12,11 +20,20 @@ import { TranslateModule } from '@ngx-translate/core';
   styleUrls: ['./operation-data-table.component.scss'],
 })
 export class OperationDataTableComponent implements OnInit, OnChanges {
-  @Input() tableData: any;
+  @Input() tableData: { option: OperationTableOption; data: Array<unknown> };
+  @Output() showIndex: EventEmitter<number> = new EventEmitter();
 
   readonly OperationDataType = OperationDataType;
 
   ngOnInit(): void {}
 
   ngOnChanges(e: SimpleChanges): void {}
+
+  /**
+   * 展開或收合指定的列數據
+   * @param rowIndex {number}-欲展開或收合的數據清單列索引
+   */
+  showFullTableData(rowIndex: number) {
+    this.showIndex.emit(rowIndex);
+  }
 }

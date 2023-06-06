@@ -185,15 +185,15 @@
         <li class="flexRow leaderboard__content" *ngFor="let _rankList of rankList">
           <span
             class="rank"
-            [class.first__place]="_rankList.rank == 1"
-            [class.second__place]="_rankList.rank == 2"
-            [class.third__place]="_rankList.rank == 3"
+            [class.first__place]="+_rankList.rank === 1"
+            [class.second__place]="+_rankList.rank === 2"
+            [class.third__place]="+_rankList.rank === 3"
           >
             <span class="rank__value">
               <ng-container *ngIf="+_rankList.rank <= 3">
-                <img src="/assets//icons/champion.svg" alt="First" *ngIf="_rankList.rank == 1" />
-                <img src="/assets//icons/silver.svg" alt="Second" *ngIf="_rankList.rank == 2" />
-                <img src="/assets//icons/bronze.svg" alt="Third" *ngIf="_rankList.rank == 3" />
+                <img src="/assets//icons/champion.svg" alt="First" *ngIf="+_rankList.rank === 1" />
+                <img src="/assets//icons/silver.svg" alt="Second" *ngIf="+_rankList.rank === 2" />
+                <img src="/assets//icons/bronze.svg" alt="Third" *ngIf="+_rankList.rank === 3" />
               </ng-container>
               <ng-container *ngIf="+_rankList.rank > 3"> {{ _rankList.rank }} th </ng-container>
             </span>
@@ -213,7 +213,7 @@
           </span>
           <span class="record record__content">
             <ng-container *ngIf="[RankType.event, RankType.mapBest].includes(uiFlag.rankType)">
-              {{ _rankList.result | sportTime: [false, false] }}
+              {{ _rankList.result | sportTime: { showZeroHour: false, hideSecond: false } }}
             </ng-container>
             <ng-container
               *ngIf="

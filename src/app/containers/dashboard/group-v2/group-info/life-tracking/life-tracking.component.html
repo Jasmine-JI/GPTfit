@@ -83,7 +83,7 @@
           <span class="report-summaryData">
             {{
               info.bodyHeight / info.bodyHeightEffectCount || 0
-                | bodyHeightSibs: [userInfo.unit, true]
+                | bodyHeightSibs: { unitType: userInfo.unit, showUnit: true }
             }}
           </span>
           <p class="report-summaryDescription">
@@ -172,7 +172,7 @@
                   <span class="report-summaryData">
                     {{
                       chart.sleepTrend.ttlAvgSleepSecond / chart.sleepTrend.dataLen || 0
-                        | sportTime: [true, true]
+                        | sportTime: { showZeroHour: true, hideSecond: true }
                     }}
                   </span>
                   <span class="report-summaryDescription">
@@ -184,7 +184,7 @@
                   <span class="report-summaryData">
                     {{
                       chart.sleepTrend.ttlAvgDeepSleepSecond / chart.sleepTrend.dataLen || 0
-                        | sportTime: [true, true]
+                        | sportTime: { showZeroHour: true, hideSecond: true }
                     }}
                   </span>
                   <span class="report-summaryDescription">
@@ -196,7 +196,7 @@
                   <span class="report-summaryData">
                     {{
                       chart.sleepTrend.ttlAvgLightSleepSecond / chart.sleepTrend.dataLen || 0
-                        | sportTime: [true, true]
+                        | sportTime: { showZeroHour: true, hideSecond: true }
                     }}
                   </span>
                   <span class="report-summaryDescription">
@@ -541,7 +541,8 @@
                     >
                       {{
                         groupAnalysis[row]?.totalSleepSecond /
-                          groupAnalysis[row]?.totalSleepSecondEffectCount | sportTime: [true, true]
+                          groupAnalysis[row]?.totalSleepSecondEffectCount
+                          | sportTime: { showZeroHour: true, hideSecond: true }
                       }}
                     </ng-container>
                   </span>
@@ -930,7 +931,8 @@
                     >
                       {{
                         personAnalysis[row]?.totalSleepSecond /
-                          personAnalysis[row]?.totalSleepSecondEffectCount | sportTime: [true, true]
+                          personAnalysis[row]?.totalSleepSecondEffectCount
+                          | sportTime: { showZeroHour: true, hideSecond: true }
                       }}
                     </ng-container>
                   </span>
@@ -1194,11 +1196,11 @@
                       *ngIf="personAnalysis[row]?.bodyHeight && personAnalysis[row]?.bodyWeight && personAnalysis[row]?.fatRate; else noData;"
                     >
                       {{
-                        [
-                          personAnalysis[row]?.bodyHeight,
-                          personAnalysis[row]?.bodyWeight,
-                          personAnalysis[row]?.fatRate
-                        ] | ffmi
+                        {
+                          height: personAnalysis[row]?.bodyHeight,
+                          weight: personAnalysis[row]?.bodyWeight,
+                          fatRate: personAnalysis[row]?.fatRate
+                        } | ffmi
                       }}
                       <i
                         class="icon-svg_web-icon_p3_017-up upArrow"

@@ -14,8 +14,9 @@ import { TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import { GlobalEventsService } from '../../../../core/services';
 import { complexTrendTooltip } from '../../../../core/utils/chart-formatter';
-import { deepCopy } from '../../../../core/utils/index';
-import { compareChartDefault, TARGET_LINE_COLOR } from '../../../models/chart-data';
+import { deepCopy } from '../../../../core/utils';
+import { compareChartDefault } from '../../../../core/models/compo/chart-data.model';
+import { targetLineColor } from '../../../../core/models/represent-color';
 
 @Component({
   selector: 'app-compare-overlay-column-chart',
@@ -128,7 +129,7 @@ export class CompareOverlayColumnChartComponent implements OnInit, OnDestroy, On
   }
 
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }
@@ -229,7 +230,7 @@ class ChartOption {
   handleTargetLine(value: number) {
     this._option.yAxis['plotLines'] = [
       {
-        color: TARGET_LINE_COLOR,
+        color: targetLineColor,
         width: 2,
         value,
       },

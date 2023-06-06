@@ -3,7 +3,7 @@ import { GroupDetailInfo, UserSimpleInfo } from '../../../models/group-detail';
 import { Api11xxService, HintDialogService } from '../../../../../core/services';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { SelectDate } from '../../../../../shared/models/utils-type';
+import { SelectDate } from '../../../../../core/models/common';
 import { planDatas } from '../../../group/desc';
 import { ProfessionalService } from '../../../../professional/services/professional.service';
 
@@ -235,7 +235,7 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
         }
         break;
       case 'memberNum':
-        if (num < 20 || num > 100000) {
+        if (num < 10 || num > 100000) {
           this.editBody.groupAllMemberSetting.maxAllGroupMembers = 100;
         } else {
           this.editBody.groupAllMemberSetting.maxAllGroupMembers = num;
@@ -283,7 +283,7 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
    * @author kidin-1091112
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

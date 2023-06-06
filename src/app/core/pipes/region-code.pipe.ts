@@ -18,6 +18,8 @@ export class RegionCodePipe implements PipeTransform {
         return '中國';
       case 'US':
         return '美國';
+      default:
+        return '其他';
     }
   }
 }

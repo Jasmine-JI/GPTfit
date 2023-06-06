@@ -36,7 +36,7 @@ export class SportFileFooterComponent implements OnInit {
   showMoreCoachInfo = false;
 
   /**
-   * 現在顯示的裝置序列
+   * 現在顯示的裝置索引
    */
   currentDeviceIndex = 0;
 
@@ -88,7 +88,7 @@ export class SportFileFooterComponent implements OnInit {
 
   /**
    * 切換指定的裝置資訊
-   * @param index {number}-指定的序列
+   * @param index {number}-指定的索引
    */
   switchAssignDevice(index: number) {
     this.currentDeviceIndex = index;

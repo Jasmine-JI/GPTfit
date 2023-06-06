@@ -14,5 +14,7 @@ export class LineBreakPipe implements PipeTransform {
     if (value) {
       return value.replace(new RegExp('\\n', 'g'), '<br />');
     }
+
+    return value;
   }
 }

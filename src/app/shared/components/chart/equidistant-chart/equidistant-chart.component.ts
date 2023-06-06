@@ -14,7 +14,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DataTypeUnitPipe } from '../../../../core/pipes/data-type-unit.pipe';
-import { mi } from '../../../models/bs-constant';
+import { mi } from '../../../../core/models/const/bs-constant.model';
 import { DataUnitType } from '../../../../core/enums/common';
 import { countDistance } from '../../../../core/utils';
 
@@ -109,7 +109,7 @@ export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isPreviewMode = false;
   @ViewChild('container') container: ElementRef;
 
-  chartIndex = null; // 此圖表在詳細頁面所有的highchart的順位
+  chartIndex: number | null = null; // 此圖表在詳細頁面所有的highchart的順位
   terrain: Array<Array<number>>;
 
   constructor(
@@ -168,7 +168,7 @@ export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
       .get('hellow world')
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(() => {
-        const dataSet = [];
+        const dataSet: any = [];
         data.forEach((_value) => {
           const { name, distanceBase, color } = _value;
           dataSet.push({
@@ -179,7 +179,9 @@ export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
             color,
             type: 'spline',
             tooltip: {
-              valueSuffix: ' ' + this.dataTypeUnitPipe.transform('pace', [1, this.unit]),
+              valueSuffix:
+                ' ' +
+                this.dataTypeUnitPipe.transform('pace', { sportsType: 1, unitType: this.unit }),
             },
           });
         });
@@ -265,7 +267,7 @@ export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
    * 取消訂閱rxjs
    */
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

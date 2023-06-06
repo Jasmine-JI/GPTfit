@@ -5,8 +5,9 @@ import {
   AllOperationCondition,
   OperationConditionResult,
   OperationCondition,
+  ListItem,
 } from '../../core/models/compo';
-import { SortDirection } from '../../core/enums/compo';
+import { DescFirstSortDirection } from '../../core/enums/api';
 import { SingleDropListComponent } from '../single-drop-list/single-drop-list.component';
 
 @Component({
@@ -31,7 +32,7 @@ export class OperationListConditionComponent implements OnChanges {
   conditionResult: OperationConditionResult = {
     conditionList: [],
     sortType: 0,
-    sortDirection: SortDirection.desc,
+    sortDirection: DescFirstSortDirection.desc,
   };
 
   /**
@@ -55,7 +56,7 @@ export class OperationListConditionComponent implements OnChanges {
     return {
       conditionList: this.getDefaultCondition(conditionList),
       sortType: list[initIndex].value as number,
-      sortDirection: SortDirection.desc,
+      sortDirection: DescFirstSortDirection.desc,
     };
   }
 
@@ -68,7 +69,12 @@ export class OperationListConditionComponent implements OnChanges {
       const { type, initIndex, conditionItemList, conditionCode } = _condition;
       switch (type) {
         case 'dropList':
-          return { conditionCode, selectedCode: conditionItemList[initIndex ?? 0].value as number };
+          return {
+            conditionCode,
+            selectedCode: conditionItemList
+              ? (conditionItemList[initIndex ?? 0].value as number)
+              : 0,
+          };
         case 'keyword':
           return { conditionCode, keyword: '' };
         default:
@@ -88,24 +94,28 @@ export class OperationListConditionComponent implements OnChanges {
    * 處理列表設定收合
    */
   handleSettingUnfold() {
-    const { conditionSettingUnfold } = this;
     this.conditionSettingUnfold = !this.conditionSettingUnfold;
   }
 
   /**
    * 單一條件類別選定項目
-   * @param itemIndex {[number, number]}-選定的項目序列
-   * @param conditionIndex {number}-條件類別序列
+   * @param itemIndex {[number, number]}-選定的項目索引
+   * @param conditionIndex {number}-條件類別索引
    */
   selectCondition(itemIndex: [number, number], conditionIndex: number) {
-    const [firstIndex, secondIndex] = itemIndex;
+    const [, secondIndex] = itemIndex;
+    const { conditionList } = this.allConditionSetting;
+    const itemList = conditionList[conditionIndex].conditionItemList as ListItem[];
+    const { value } = itemList[secondIndex];
     this.conditionResult.conditionList[conditionIndex].selectedCode = secondIndex;
+    if (value !== undefined)
+      this.conditionResult.conditionList[conditionIndex].value = value as number;
   }
 
   /**
    * 處理輸入框輸入文字
    * @param e {MouseEvent}
-   * @param conditionIndex {number}-條件類別序列
+   * @param conditionIndex {number}-條件類別索引
    */
   handleInputText(e: MouseEvent, conditionIndex: number) {
     const { value } = (e as any).target;
@@ -114,19 +124,21 @@ export class OperationListConditionComponent implements OnChanges {
 
   /**
    * 選定排序類別
-   * @param typeIndex {[number, number]}-選定的項目序列
+   * @param typeIndex {[number, number]}-選定的項目索引
    */
   selectSortType(typeIndex: [number, number]) {
-    const [firstIndex, secondIndex] = typeIndex;
-    this.conditionResult.sortType = secondIndex + 1;
+    const [, secondIndex] = typeIndex;
+    const { list } = this.allConditionSetting.sortTypeList;
+    this.conditionResult.sortType = list[secondIndex].value as number;
   }
 
   /**
    * 選定排序方向
-   * @param typeIndex {[number, number]}-選定的項目序列
+   * @param typeIndex {[number, number]}-選定的項目索引
    */
   selectSortDirect(directIndex: [number, number]) {
-    const [firstIndex, secondIndex] = directIndex;
-    this.conditionResult.sortDirection = secondIndex + 1;
+    const [, secondIndex] = directIndex;
+    const { list } = this.allConditionSetting.sortTypeList;
+    this.conditionResult.sortDirection = list[secondIndex].value as number;
   }
 }

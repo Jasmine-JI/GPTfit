@@ -1,0 +1,100 @@
+<section class="flexCol">
+  <h6 class="table__title">{{ 'universal_activityData_segmentationData' | translate }}</h6>
+  <ul class="lap__table">
+    <div class="flexCol column__header__block">
+      <li class="flexRow table__column__header">
+        <span class="lap__column">Lap</span>
+        <div class="flexRow lap__content">
+          <span class="one__column" *ngIf="showName">Name</span>
+          <span class="one__column">Time</span>
+          <span class="one__column">HR</span>
+          <span class="one__column" *ngIf="showDistance">Dist</span>
+          <span class="one__column" *ngIf="showSpeed">Spd</span>
+          <span class="one__column" *ngIf="showPace">Pace</span>
+          <span class="one__column" *ngIf="showSwimPosture">Posture</span>
+          <ng-container *ngIf="showWeightTrainData">
+            <span class="one__column">1RM</span>
+            <span class="one__column">Avg. TP.</span>
+          </ng-container>
+        </div>
+      </li>
+    </div>
+    <div class="table__content" (scroll)="handleSynchronizeScroll($event)">
+      <ng-container *ngFor="let _lap of lapData; let _index = index">
+        <li class="flexRow table__row" *ngIf="_index !== 0">
+          <span class="lap__column">{{ _index }}</span>
+          <div
+            class="flexRow lap__content"
+            [class.base__row]="isBaseFile"
+            [class.compare__row]="!isBaseFile"
+          >
+            <ng-container *ngIf="showName">
+              <div
+                *ngTemplateOutlet="
+                  tableValue;
+                  context: {
+                    value: _lap ? _lap[dataIndex['dispName']] : ''
+                  }
+                "
+              ></div>
+            </ng-container>
+            <div *ngTemplateOutlet="tableValue; context: getTimeRangeContext(_index)"></div>
+            <div *ngTemplateOutlet="tableValue; context: getAvgHrContext(_index)"></div>
+            <ng-container *ngIf="showDistance">
+              <div *ngTemplateOutlet="tableValue; context: getDistanceContext(_index)"></div>
+            </ng-container>
+            <ng-container *ngIf="showSpeed">
+              <div *ngTemplateOutlet="tableValue; context: getSpeedContext(_index)"></div>
+            </ng-container>
+            <ng-container *ngIf="showPace">
+              <div *ngTemplateOutlet="tableValue; context: getPaceContext(_index)"></div>
+            </ng-container>
+            <ng-container *ngIf="showSwimPosture">
+              <div
+                *ngTemplateOutlet="
+                  tableValue;
+                  context: {
+                    value: _lap ? (_lap[dataIndex['lapSwimPosture']] | swimPosture | translate) : ''
+                  }
+                "
+              ></div>
+            </ng-container>
+
+            <ng-container *ngIf="showWeightTrainData">
+              <div *ngTemplateOutlet="tableValue; context: getOneMaxRepContext(_index)"></div>
+              <div
+                *ngTemplateOutlet="tableValue; context: getWeightTrainCadenceContext(_index)"
+              ></div>
+            </ng-container>
+          </div>
+        </li>
+      </ng-container>
+    </div>
+  </ul>
+</section>
+
+<ng-template
+  #tableValue
+  let-value="value"
+  let-unit="unit"
+  let-diffValue="diffValue"
+  let-isPositiveDiff="isPositiveDiff"
+  let-displayDiff="displayDiff"
+>
+  <div class="flexCol one__column">
+    <div>
+      {{ value }}
+      <span class="table__unit" *ngIf="unit">{{ unit }}</span>
+    </div>
+    <div
+      class="diff__value"
+      [class.positive__value]="isPositiveDiff"
+      [class.negative__value]="!(isPositiveDiff ?? true)"
+      *ngIf="displayDiff"
+    >
+      <ng-container *ngIf="diffValue !== undefined">
+        {{ isPositiveDiff ? '+' : '' }}{{ diffValue }}
+      </ng-container>
+    </div>
+  </div>
+</ng-template>

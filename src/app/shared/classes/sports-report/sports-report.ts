@@ -1,19 +1,19 @@
 import { mathRounding, isAvgData, countBenefitTime } from '../../../core/utils';
 import {
-  COMMON_DATA,
-  RUN_DATA,
-  RIDE_DATA,
-  WEIGHT_TRAIN_DATA,
-  SWIM_DATA,
-  ROW_DATA,
-  BALL_DATA,
-  PERSON_BALL_DATA,
-  PAI_COFFICIENT,
-  DAY_PAI_TARGET,
-} from '../../models/sports-report';
-import { SportType } from '../../enum/sports';
-import { SportsParameter } from '../../models/sports-report';
-import { DAY } from '../../models/utils-constant';
+  commonData,
+  runData,
+  rideData,
+  weightTrainData,
+  swimData,
+  rowData,
+  ballData,
+  personBallData,
+  paiCofficient,
+  dayPaiTarget,
+} from '../../../core/models/const/sports-report.model';
+import { SportType } from '../../../core/enums/sports';
+import { SportsParameter } from '../../../core/models/compo';
+import { day } from '../../../core/models/const';
 import { PreferSportType } from '../prefer-sport-type';
 import { WeightTrainStatistics } from '../weight-train-statistics';
 import dayjs from 'dayjs';
@@ -143,19 +143,19 @@ export class SportsReport {
     switch (type) {
       case SportType.all:
       case SportType.aerobic:
-        return COMMON_DATA;
+        return commonData;
       case SportType.run:
-        return COMMON_DATA.concat(RUN_DATA);
+        return commonData.concat(runData);
       case SportType.cycle:
-        return COMMON_DATA.concat(RIDE_DATA);
+        return commonData.concat(rideData);
       case SportType.weightTrain:
-        return COMMON_DATA.concat(WEIGHT_TRAIN_DATA);
+        return commonData.concat(weightTrainData);
       case SportType.swim:
-        return COMMON_DATA.concat(SWIM_DATA);
+        return commonData.concat(swimData);
       case SportType.row:
-        return COMMON_DATA.concat(ROW_DATA);
+        return commonData.concat(rowData);
       case SportType.ball:
-        return COMMON_DATA.concat(PERSON_BALL_DATA);
+        return commonData.concat(personBallData);
     }
   }
 
@@ -195,7 +195,7 @@ export class SportsReport {
       timeType === 'base'
         ? baseTime.getReportRealTimeRange(dateUnit.unit)
         : compareTime.getReportRealTimeRange(dateUnit.unit);
-    const reportPeriodDay = Math.round((realEndTime - realStartTime) / DAY);
+    const reportPeriodDay = Math.round((realEndTime - realStartTime) / day);
     const hrZone = [zone0, zone1, zone2, zone3, zone4, zone5];
     const { pai } = SportsReport.countPai(hrZone, reportPeriodDay);
     const benefitTime = countBenefitTime(hrZone, benefitTimeStartZone);
@@ -213,7 +213,7 @@ export class SportsReport {
    * @param periodDay {number}-報告橫跨天數
    */
   static countPai(hrZone: Array<number>, periodDay: number) {
-    const { z0, z1, z2, z3, z4, z5 } = PAI_COFFICIENT;
+    const { z0, z1, z2, z3, z4, z5 } = paiCofficient;
     const [
       totalHrZone0Second,
       totalHrZone1Second,
@@ -229,7 +229,7 @@ export class SportsReport {
         (totalHrZone3Second ?? 0) * z3 +
         (totalHrZone4Second ?? 0) * z4 +
         (totalHrZone5Second ?? 0) * z5) /
-        DAY_PAI_TARGET) *
+        dayPaiTarget) *
       100;
 
     const pai = mathRounding(totalWeightedValue / periodDay, 0);
@@ -280,19 +280,19 @@ export class GroupSportsReport extends SportsReport {
     switch (type) {
       case SportType.all:
       case SportType.aerobic:
-        return COMMON_DATA;
+        return commonData;
       case SportType.run:
-        return COMMON_DATA.concat(RUN_DATA);
+        return commonData.concat(runData);
       case SportType.cycle:
-        return COMMON_DATA.concat(RIDE_DATA);
+        return commonData.concat(rideData);
       case SportType.weightTrain:
-        return COMMON_DATA.concat(WEIGHT_TRAIN_DATA);
+        return commonData.concat(weightTrainData);
       case SportType.swim:
-        return COMMON_DATA.concat(SWIM_DATA);
+        return commonData.concat(swimData);
       case SportType.row:
-        return COMMON_DATA.concat(ROW_DATA);
+        return commonData.concat(rowData);
       case SportType.ball:
-        return COMMON_DATA.concat(BALL_DATA);
+        return commonData.concat(ballData);
     }
   }
 }

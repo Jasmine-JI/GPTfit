@@ -1,7 +1,6 @@
-import { AnalysisOptionInfo } from '../models/report-analysis';
-import { GroupLevel } from '../enum/professional';
-import { SportType } from '../enum/sports';
-import { AnalysisSportsColumn } from '../enum/report-analysis';
+import { AnalysisOptionInfo } from '../../core/models/compo/report-analysis.model';
+import { GroupLevel } from '../../core/enums/professional';
+import { AnalysisSportsColumn, SportType } from '../../core/enums/sports';
 import { setLocalStorageObject, getLocalStorageObject } from '../../core/utils/index';
 import { of } from 'rxjs';
 import { tap } from 'rxjs/operators';

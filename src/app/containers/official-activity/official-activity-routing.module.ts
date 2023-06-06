@@ -14,6 +14,10 @@ import { Page403Component } from '../../shared/components/page403/page403.compon
 import { EditCarouselComponent } from './components/edit-carousel/edit-carousel.component';
 import { ContactUsComponent } from './components/contact-us/contact-us.component';
 import { AboutCloudrunComponent } from './components/about-cloudrun/about-cloudrun.component';
+import { appPath } from '../../app-path.const';
+
+const { officialActivity, pageNoPermission, pageNotFound } = appPath;
+const officialActivityNotFound = `/${officialActivity.home}/${pageNotFound}`;
 
 const routes: Routes = [
   {
@@ -21,105 +25,105 @@ const routes: Routes = [
     component: OfficialActivityComponent,
     children: [
       {
-        path: 'activity-list',
+        path: officialActivity.activityList,
         component: ActivityListComponent,
       },
       {
-        path: 'my-activity',
+        path: officialActivity.myActivity,
         component: ActivityListComponent,
       },
       {
-        path: 'activity-detail',
+        path: officialActivity.activityDetail,
         children: [
           {
-            path: ':eventId',
+            path: `:${officialActivity.eventId}`,
             component: ActivityDetailComponent,
           },
           {
             path: '',
-            redirectTo: '/official-activity/404',
+            redirectTo: officialActivityNotFound,
             pathMatch: 'full',
           },
         ],
       },
       {
-        path: 'apply-activity',
+        path: officialActivity.applyActivity,
         children: [
           {
-            path: ':eventId',
+            path: `:${officialActivity.eventId}`,
             component: ApplyActivityComponent,
           },
           {
             path: '',
-            redirectTo: '/official-activity/404',
+            redirectTo: officialActivityNotFound,
             pathMatch: 'full',
           },
         ],
       },
       {
-        path: 'leaderboard',
+        path: officialActivity.leaderboard,
         component: LeaderboardComponent,
       },
       {
-        path: 'contestant-list',
+        path: officialActivity.contestantList,
         children: [
           {
-            path: ':eventId',
+            path: `:${officialActivity.eventId}`,
             component: ContestantListComponent,
             canActivate: [AdminGuard],
           },
           {
             path: '',
-            redirectTo: '/official-activity/404',
+            redirectTo: officialActivityNotFound,
             pathMatch: 'full',
           },
         ],
       },
       {
-        path: 'edit-activity',
+        path: officialActivity.editActivity,
         children: [
           {
-            path: ':eventId',
+            path: `:${officialActivity.eventId}`,
             component: EditActivityComponent,
             canActivate: [AdminGuard],
             canDeactivate: [EditGuard],
           },
           {
             path: '',
-            redirectTo: '/official-activity/404',
+            redirectTo: officialActivityNotFound,
             pathMatch: 'full',
           },
         ],
       },
       {
-        path: 'about-cloudrun',
+        path: officialActivity.aboutCloudrun,
         component: AboutCloudrunComponent,
       },
       {
-        path: 'contact-us',
+        path: officialActivity.contactUs,
         component: ContactUsComponent,
       },
       {
-        path: 'edit-carousel',
+        path: officialActivity.editCarousel,
         component: EditCarouselComponent,
         canActivate: [AdminGuard],
       },
       {
-        path: '403',
+        path: pageNoPermission,
         component: Page403Component,
       },
       {
-        path: '404',
+        path: pageNotFound,
         component: Page404Component,
       },
       {
         path: '',
-        redirectTo: 'activity-list',
+        redirectTo: officialActivity.activityList,
         pathMatch: 'full',
       },
       {
         path: '**',
-        redirectTo: '/official-activity/404',
+        redirectTo: officialActivityNotFound,
       },
     ],
   },

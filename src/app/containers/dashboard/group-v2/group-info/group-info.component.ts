@@ -11,7 +11,6 @@ import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
-import { ShareGroupInfoDialogComponent } from '../../../../shared/components/share-group-info-dialog/share-group-info-dialog.component';
 import { GroupDetailInfo, UserSimpleInfo, EditMode } from '../../models/group-detail';
 import dayjs from 'dayjs';
 import {
@@ -24,18 +23,21 @@ import {
 } from '../../../../core/services';
 import { v5 as uuidv5 } from 'uuid';
 import { ImageUploadService } from '../../services/image-upload.service';
-import { AlbumType } from '../../../../shared/models/image';
+import { AlbumType } from '../../../../core/enums/api';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { PrivacySettingDialogComponent } from '../../../../shared/components/privacy-setting-dialog/privacy-setting-dialog.component';
-import { DataUnitType } from '../../../../core/enums/common';
-import { DateUnit } from '../../../../shared/enum/report';
-import { GroupLevel } from '../../models/group-detail';
+import {
+  DataUnitType,
+  QueryString,
+  DateUnit,
+  AccessRight,
+  Domain,
+  WebIp,
+} from '../../../../core/enums/common';
+import { GroupLevel, GroupChildPage } from '../../../../core/enums/professional';
 import { deepCopy, base64ToFile, displayGroupLevel } from '../../../../core/utils';
 import { ProfessionalService } from '../../../professional/services/professional.service';
-import { AccessRight } from '../../../../shared/enum/accessright';
 import { appPath } from '../../../../app-path.const';
-import { QueryString } from '../../../../shared/enum/query-string';
-import { GroupChildPage } from '../../../../shared/enum/professional';
 
 const errMsg = `Error.<br />Please try again later.`;
 const replaceResult = {
@@ -64,7 +66,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   private ngUnsubscribe = new Subject();
   groupIdSubscription: Subscription;
-  pageResize: Subscription;
   clickEvent: Subscription;
   scrollEvent: Subscription;
 
@@ -124,6 +125,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     portalMode: false,
     isLoading: false,
     isJoinLoading: false,
+    displayShareBox: false,
   };
 
   /**
@@ -169,6 +171,14 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   newGroupId: string;
 
+  /**
+   * 分享框顯示的標題與連結
+   */
+  share = {
+    title: '',
+    link: '',
+  };
+
   readonly AccessRight = AccessRight;
   readonly GroupChildPage = GroupChildPage;
 
@@ -198,6 +208,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.detectParamChange();
     this.detectGroupIdChange();
     this.handlePageResize();
+    this.handleLanguageChange();
     if (!this.uiFlag.isPreviewMode) this.handleScroll();
     this.handleSideBarSwitch();
     this.checkEditMode();
@@ -207,12 +218,20 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 偵測瀏覽器是否改變大小
-   * @author kidin-20200710
    */
   handlePageResize() {
     const page = fromEvent(window, 'resize');
-    this.pageResize = page.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
+    page.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
       this.checkScreenSize();
+    });
+  }
+
+  /**
+   * 偵測語言改變事件
+   */
+  handleLanguageChange() {
+    this.translate.onLangChange.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
+      this.getPerPageOptSize();
     });
   }
 
@@ -230,7 +249,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 確認tab位置與寬度
-   * @author kidin-1100908
    */
   checkPageListBarPosition() {
     const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as any,
@@ -415,13 +433,13 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 建立圖片名稱
-   * @param length {number}-檔案序列
+   * @param length {number}-檔案索引
    * @param groupId {string}-群組id
    * @author kidin-1091125
    */
   createFileName(length: number, groupId: string) {
-    const nameSpace = uuidv5('https://www.gptfit.com', uuidv5.URL),
-      keyword = `${dayjs().valueOf().toString()}${length}${groupId.split('-').join('')}`;
+    const nameSpace = uuidv5(`https://${Domain.newProd}`, uuidv5.URL);
+    const keyword = `${dayjs().valueOf().toString()}${length}${groupId.split('-').join('')}`;
     return uuidv5(keyword, nameSpace);
   }
 
@@ -458,7 +476,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   /**
    * 確認url的query string
    * @param query {string}-url query string
-   * @author kidin-1091106
    */
   checkQueryString(query: string) {
     if (query.indexOf('?') > -1) {
@@ -556,7 +573,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 依瀏覽器大小將超出邊界的清單進行收納
-   * @author kidin-20200714
    */
   checkScreenSize() {
     // 確認多國語系載入後再計算按鈕位置
@@ -564,12 +580,12 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       .get('hellow world')
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(() => {
-        const navSection = this.navSection.nativeElement,
-          navSectionWidth = navSection.clientWidth;
-
+        const navSection = this.navSection.nativeElement;
+        const navSectionWidth = navSection.clientWidth;
         let reservedSpace = 0;
         this.uiFlag.windowInnerWidth = window.innerWidth;
-        if (window.innerWidth >= 1000 && window.innerWidth <= 1390) {
+        const { innerWidth } = window;
+        if (innerWidth >= 1000 && innerWidth <= 1390) {
           reservedSpace = 270; // sidebar展開所需的空間
         }
 
@@ -604,9 +620,12 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   checkPage() {
     const { token } = this.user;
-    if (location.pathname.indexOf('dashboard') < 0 && token !== '') {
-      this.router.navigateByUrl(`/dashboard${location.pathname}${location.search}`);
-    } else if (location.pathname.indexOf('dashboard') < 0) {
+    const { pathname, search } = location;
+    const dashboardHome = appPath.dashboard.home;
+    const notDashboardPage = pathname.indexOf(dashboardHome) < 0;
+    if (notDashboardPage && token !== '') {
+      this.router.navigateByUrl(`/${dashboardHome}${pathname}${search}`);
+    } else if (notDashboardPage) {
       this.uiFlag.portalMode = true;
     } else {
       this.uiFlag.portalMode = false;
@@ -615,10 +634,10 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 切換不同群組頁面即更新群組和使用者相關資訊
-   * @author kidin-10812217
    */
   detectGroupChange() {
-    if (this.currentGroupInfo.hashGroupId !== this.route.snapshot.paramMap.get('groupId')) {
+    const param = this.route.snapshot.paramMap.get(appPath.professional.groupId);
+    if (this.currentGroupInfo.hashGroupId !== param) {
       this.professionalService.setEditMode('close');
       this.getCurrentGroupInfo();
       this.getGroupNeedInfo();
@@ -632,7 +651,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1090716
    */
   getCurrentGroupInfo() {
-    const groupId = this.route.snapshot.paramMap.get('groupId');
+    const groupId = this.route.snapshot.paramMap.get(appPath.professional.groupId);
     this.currentGroupInfo.hashGroupId = groupId;
     this.currentGroupInfo.groupId = this.hashIdService.handleGroupIdDecode(groupId);
     this.currentGroupInfo.groupLevel = displayGroupLevel(this.currentGroupInfo.groupId);
@@ -1002,14 +1021,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1090813
    */
   getCurrentContentPage(event = null): void {
-    let urlArr: Array<string>;
-    if (event !== null) {
-      urlArr = event.url.split('/');
-    } else {
-      urlArr = location.pathname.split('/');
-    }
-
-    if (urlArr.indexOf('group-info') > -1) {
+    const urlArr = (event?.url ?? location.pathname).split('/');
+    if (urlArr.indexOf(appPath.professional.groupDetail.home) > -1) {
       if (this.uiFlag.portalMode) {
         this.uiFlag.currentPage = GroupChildPage.groupIntroduction;
         this.uiFlag.currentTagIndex = 0;
@@ -1072,7 +1085,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 根據群組類別、群組階層、群組經營狀態、使用者權限等，顯示可點選的頁面
-   * @author kidin-1091104
    */
   initChildPageList(): Array<GroupChildPage> {
     const { accessRight } = this.user;
@@ -1086,44 +1098,45 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     const upperClassAdmin = accessRight <= AccessRight.coachAdmin;
     const isGroupMember = accessRight <= AccessRight.member;
     const upperMarktingManage = accessRight <= AccessRight.marketing;
-    let childPageList = [GroupChildPage.groupIntroduction];
+    const isValidGroup = inOperation && notLock;
+    const childPageSet = new Set<GroupChildPage>(); // 用 set 避免頁面設定重複
+    childPageSet.add(GroupChildPage.groupIntroduction);
+
+    // 登入環境
     if (!this.uiFlag.portalMode) {
-      childPageList = childPageList.concat([
-        GroupChildPage.groupArchitecture,
-        GroupChildPage.adminList,
-      ]);
+      childPageSet.add(GroupChildPage.groupArchitecture);
+      childPageSet.add(GroupChildPage.adminList);
 
-      if (inBrandLevel && (upperMarktingManage || this.user.isGroupAdmin))
-        childPageList.push(GroupChildPage.commercePlan);
+      // 系統管理員或品牌階層管理員可以看到方案管理頁面
+      const haveBrandAccessRight = inBrandLevel && (upperMarktingManage || this.user.isGroupAdmin);
+      if (haveBrandAccessRight) childPageSet.add(GroupChildPage.commercePlan);
 
-      if (upperClassAdmin)
-        childPageList = childPageList.concat([
-          GroupChildPage.memberList,
-          GroupChildPage.deviceList,
-        ]);
+      // 成員列表與裝置列表僅群組管理員可以瀏覽
+      if (upperClassAdmin) {
+        childPageSet.add(GroupChildPage.memberList);
+        childPageSet.add(GroupChildPage.deviceList);
 
-      if (isGroupMember && inOperation && notLock) {
-        childPageList = childPageList.concat([
-          GroupChildPage.sportsReport,
-          GroupChildPage.cloudrunReport,
-        ]);
-
-        if (isEnterpriseType) childPageList.push(GroupChildPage.lifeTracking);
-
-        if (inClassLevel && !isEnterpriseType) {
-          childPageList.push(GroupChildPage.myclassReport);
-
-          if (upperClassAdmin) childPageList.push(GroupChildPage.classAnalysis);
+        if (isValidGroup) {
+          if (inClassLevel) childPageSet.add(GroupChildPage.classAnalysis);
+          if (upperMarktingManage) childPageSet.add(GroupChildPage.operationReport);
         }
+      }
+
+      // 營運中群組，群組成員可以看到課程分析報告以外的各式報告
+      if (isGroupMember && isValidGroup) {
+        childPageSet.add(GroupChildPage.sportsReport);
+        childPageSet.add(GroupChildPage.cloudrunReport);
+
+        if (isEnterpriseType) childPageSet.add(GroupChildPage.lifeTracking);
+        if (inClassLevel) childPageSet.add(GroupChildPage.myclassReport);
       }
     }
 
-    return childPageList.sort((_a, _b) => _a - _b);
+    return Array.from(childPageSet).sort((_a, _b) => _a - _b);
   }
 
   /**
    * 取得子頁面清單各選項按鈕寬度
-   * @author kidin-1091030
    */
   getPerPageOptSize() {
     this.uiFlag.divideIndex = null;
@@ -1134,7 +1147,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     setTimeout(() => {
       this.initPageOptSize();
       const menuList = document.querySelectorAll('.main__page__list');
-      this.uiFlag.barWidth = menuList[0].clientWidth;
+      this.uiFlag.barWidth = menuList[0]?.clientWidth ?? 65;
       menuList.forEach((_menu) => {
         this.perPageOptSize.perSize.push(_menu.clientWidth);
         this.perPageOptSize.total += _menu.clientWidth;
@@ -1146,7 +1159,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 將perPageOptSize參數進行初始化
-   * @author kidin-1091110
    */
   initPageOptSize() {
     this.uiFlag.divideIndex = null;
@@ -1162,14 +1174,21 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 加入群組並顯示隱私權
-   * @author kidin-1091223
    */
   joinGroup() {
+    const defaultModel = { currentAllGroupMembers: 0, maxAllGroupMembers: 0 };
+    const { currentAllGroupMembers, maxAllGroupMembers } =
+      this.currentGroupInfo?.commerceInfo?.groupAllMemberStatus ?? defaultModel;
+    if (+currentAllGroupMembers >= +maxAllGroupMembers) return false;
     if (this.user.token.length === 0) {
+      // 透過轉導 dashboard 後的路由守衛轉導登入頁
+      const {
+        dashboard,
+        professional: { groupDetail },
+      } = appPath;
+      const hashGroupId = this.hashIdService.handleGroupIdEncode(this.currentGroupInfo.groupId);
       this.router.navigateByUrl(
-        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
-          this.currentGroupInfo.groupId
-        )}/group-introduction`
+        `/${dashboard.home}/${groupDetail.home}/${hashGroupId}/${groupDetail.introduction}`
       );
     } else {
       this.translate.get('hellow world').subscribe(() => {
@@ -1195,7 +1214,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 確認使用者的隱私權設定
-   * @author kidin-1091224
    */
   checkoutUserPrivacy() {
     let openPrivacy = true;
@@ -1220,7 +1238,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 顯示隱私權設定框
-   * @author kidin-1091229
    */
   openPrivacySetting() {
     // 待上一個dialog完全關閉再開啟隱私權設定dialog
@@ -1241,7 +1258,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   /**
    * 使用者加入或退出群組
    * @event click
-   * @author kidin-1090811
    */
   handleJoinGroup(actionType: number) {
     const { token, joinStatus } = this.user;
@@ -1276,20 +1292,16 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * 導向使用者點選的群組頁面
    * @param groupId {string}
    * @event click
-   * @author kidin-1090811
    */
   handleNavigation(groupId: string) {
-    if (this.uiFlag.portalMode) {
-      this.router.navigateByUrl(
-        `/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}/group-introduction`
-      );
-    } else {
-      this.router.navigateByUrl(
-        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
-          groupId
-        )}/group-introduction`
-      );
-    }
+    const {
+      dashboard,
+      professional: { groupDetail },
+    } = appPath;
+    const isPortal = this.uiFlag.portalMode;
+    const hashGroupId = this.hashIdService.handleGroupIdEncode(groupId);
+    const url = `/${groupDetail.home}/${hashGroupId}/${groupDetail.introduction}`;
+    this.router.navigateByUrl(isPortal ? url : `/${dashboard.home}${url}`);
   }
 
   /**
@@ -1297,13 +1309,17 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @param e {MouseEvent}
    * @param page {GroupChildPage}-子頁面
    * @param tagIdx {number}-tag的顯示序
-   * @author kidin-1090811
    */
   handleShowContent(e: MouseEvent, page: GroupChildPage, tagIdx: number) {
     e.stopPropagation();
     const pageString = this.getGroupPageString(page);
+    const { hashGroupId } = this.currentGroupInfo;
+    const {
+      dashboard,
+      professional: { groupDetail },
+    } = appPath;
     this.router.navigateByUrl(
-      `/dashboard/group-info/${this.currentGroupInfo.hashGroupId}/${pageString}`
+      `/${dashboard.home}/${groupDetail.home}/${hashGroupId}/${pageString}`
     );
     this.uiFlag.currentPage = page;
     this.uiFlag.currentTagIndex = tagIdx;
@@ -1339,7 +1355,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   /**
    * 根據子頁面捲動頁面至指定位置
    * @param page {string}-子頁面
-   * @author kidin-1100226
    */
   scrollPage(page: GroupChildPage) {
     const mainBodyEle = document.querySelector('.main-body');
@@ -1386,28 +1401,33 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       groupLevel,
       groupDetail: { groupName, groupRootInfo },
     } = this.currentGroupInfo;
-    let shareName: string;
+    let title: string;
     switch (groupLevel) {
       case 30:
-        shareName = groupName;
+        title = groupName;
         break;
       case 40:
-        shareName = `${groupRootInfo[2].brandName}-${groupName}`;
+        title = `${groupRootInfo[2].brandName}-${groupName}`;
         break;
       case 60:
-        shareName = `${groupRootInfo[2].brandName}-${groupRootInfo[3].branchName}-${groupName}`;
+        title = `${groupRootInfo[2].brandName}-${groupRootInfo[3].branchName}-${groupName}`;
         break;
     }
 
-    this.dialog.open(ShareGroupInfoDialogComponent, {
-      hasBackdrop: true,
-      data: {
-        url: `${location.origin}/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}`,
-        title: this.translate.instant('universal_operating_share'),
-        shareName: shareName || '',
-        cancelText: this.translate.instant('universal_operating_confirm'),
-      },
-    });
+    const hashGroupId = this.hashIdService.handleGroupIdEncode(groupId);
+    this.share = {
+      title,
+      link: `${location.origin}/${appPath.professional.groupDetail.home}/${hashGroupId}`,
+    };
+
+    this.uiFlag.displayShareBox = true;
+  }
+
+  /**
+   * 關閉分享框
+   */
+  closeSharedBox() {
+    this.uiFlag.displayShareBox = false;
   }
 
   /**
@@ -1457,13 +1477,14 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * 轉導至建立新訊息頁面
    */
   navigateNewMailPage() {
-    const groupId = this.route.snapshot.paramMap.get('groupId');
+    const groupId = this.route.snapshot.paramMap.get(appPath.professional.groupId);
     const {
-      stationMail: { home, newMail },
+      stationMail: { home: stationMailHome, newMail },
+      dashboard: { home: dashboardHome },
     } = appPath;
     const { messageReceiverId, messageReceiverType } = QueryString;
     this.router.navigateByUrl(
-      `/dashboard/${home}/${newMail}?${messageReceiverId}=${groupId}&${messageReceiverType}=g`
+      `/${dashboardHome}/${stationMailHome}/${newMail}?${messageReceiverId}=${groupId}&${messageReceiverType}=g`
     );
   }
 
@@ -1471,29 +1492,32 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * 取得頁面字串對應的enum code
    */
   getGroupPageCode(pageString: string) {
+    const { groupDetail } = appPath.professional;
     switch (pageString) {
-      case 'group-introduction':
+      case groupDetail.introduction:
         return GroupChildPage.groupIntroduction;
-      case 'myclass-report':
+      case groupDetail.myclassReport:
         return GroupChildPage.myclassReport;
-      case 'class-analysis':
+      case groupDetail.classAnalysis:
         return GroupChildPage.classAnalysis;
-      case 'sports-report':
+      case groupDetail.sportsReport:
         return GroupChildPage.sportsReport;
-      case 'life-tracking':
+      case groupDetail.lifeTracking:
         return GroupChildPage.lifeTracking;
-      case 'cloudrun-report':
+      case groupDetail.cloudrunReport:
         return GroupChildPage.cloudrunReport;
-      case 'group-architecture':
+      case groupDetail.groupArchitecture:
         return GroupChildPage.groupArchitecture;
-      case 'admin-list':
+      case groupDetail.adminList:
         return GroupChildPage.adminList;
-      case 'member-list':
+      case groupDetail.memberList:
         return GroupChildPage.memberList;
-      case 'device-list':
+      case groupDetail.deviceList:
         return GroupChildPage.deviceList;
-      case 'commerce-plan':
+      case groupDetail.commercePlan:
         return GroupChildPage.commercePlan;
+      case groupDetail.operationReport:
+        return GroupChildPage.operationReport;
       default:
         return GroupChildPage.groupIntroduction;
     }
@@ -1503,31 +1527,34 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * 取得頁面字串對應的enum code
    */
   getGroupPageString(pageCode: GroupChildPage): string {
+    const { groupDetail } = appPath.professional;
     switch (pageCode) {
       case GroupChildPage.groupIntroduction:
-        return 'group-introduction';
+        return groupDetail.introduction;
       case GroupChildPage.myclassReport:
-        return 'myclass-report';
+        return groupDetail.myclassReport;
       case GroupChildPage.classAnalysis:
-        return 'class-analysis';
+        return groupDetail.classAnalysis;
       case GroupChildPage.sportsReport:
-        return 'sports-report';
+        return groupDetail.sportsReport;
       case GroupChildPage.lifeTracking:
-        return 'life-tracking';
+        return groupDetail.lifeTracking;
       case GroupChildPage.cloudrunReport:
-        return 'cloudrun-report';
+        return groupDetail.cloudrunReport;
       case GroupChildPage.groupArchitecture:
-        return 'group-architecture';
+        return groupDetail.groupArchitecture;
       case GroupChildPage.adminList:
-        return 'admin-list';
+        return groupDetail.adminList;
       case GroupChildPage.memberList:
-        return 'member-list';
+        return groupDetail.memberList;
       case GroupChildPage.deviceList:
-        return 'device-list';
+        return groupDetail.deviceList;
       case GroupChildPage.commercePlan:
-        return 'commerce-plan';
+        return groupDetail.commercePlan;
+      case GroupChildPage.operationReport:
+        return groupDetail.operationReport;
       default:
-        return 'group-introduction';
+        return groupDetail.introduction;
     }
   }
 
@@ -1536,7 +1563,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-20200710
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

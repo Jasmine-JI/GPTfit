@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { throwError, of } from 'rxjs';
+import { of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
+import { throwRxError } from '../utils';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +20,9 @@ export class GetClientIpService {
    */
   requestJsonp(url: string, params: string, callback = 'callback') {
     // options.params is an HttpParams object
-    return this.http.jsonp(`${url}?${params}`, callback).pipe(catchError((err) => throwError(err)));
+    return this.http
+      .jsonp(`${url}?${params}`, callback)
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**

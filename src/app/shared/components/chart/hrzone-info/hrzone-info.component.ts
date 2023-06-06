@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
-import { HrZoneRange } from '../../../models/chart-data';
-import { HrBase } from '../../../enum/personal';
+import { HrZoneRange } from '../../../../core/models/compo/chart-data.model';
+import { HrBase } from '../../../../core/enums/sports';
 
 @Component({
   selector: 'app-hrzone-info',

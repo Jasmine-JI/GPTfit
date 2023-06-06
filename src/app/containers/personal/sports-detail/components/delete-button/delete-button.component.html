@@ -1,0 +1,32 @@
+<app-loading-mask [isLoading]="isLoading"></app-loading-mask>
+<button
+  class="flexCenter function__toolbar__button"
+  [title]="'universal_operating_delete' | translate"
+  (click)="showAlert()"
+>
+  <i class="icon-svg_web-icon_p1_009-delete"></i>
+</button>
+
+<div class="box__mask" *ngIf="displayAlert" (click)="hideAlert()">
+  <div class="popup__box" (click)="$event.stopPropagation()">
+    <h4 class="box__title">
+      {{ 'universal_activityData_editActivityName' | translate }}
+    </h4>
+    <div class="box__content">
+      <div class="flexCol">
+        <p class="alert__content">
+          {{ 'universal_activityData_file' | translate }}
+          {{ 'universal_popUpMessage_confirmDelete' | translate }}
+        </p>
+      </div>
+      <p class="flexRow button__section">
+        <button class="cancel__button alert__cancel__button" (click)="hideAlert()">
+          {{ 'universal_operating_cancel' | translate }}
+        </button>
+        <button class="submit__button alert__button" (click)="deleteSportsFile()">
+          {{ 'universal_operating_confirm' | translate }}
+        </button>
+      </p>
+    </div>
+  </div>
+</div>

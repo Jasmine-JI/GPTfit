@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../../../core/services';
-import { WeightTrainingLevel } from '../../enum/weight-train';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { WeightTrainingLevel } from '../../../core/enums/sports';
 
 @Component({
   selector: 'app-weight-train-level-selector',
@@ -72,7 +72,7 @@ export class WeightTrainLevelSelectorComponent implements OnInit, OnDestroy {
    * 解除rxjs訂閱
    */
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

@@ -17,15 +17,17 @@ import {
 } from '../../../../../core/services';
 import { Router } from '@angular/router';
 import { chart, charts, color, each } from 'highcharts';
-import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
-import { HrZoneRange } from '../../../../../shared/models/chart-data';
-import { HrBase } from '../../../../../shared/enum/personal';
+import { ReportConditionOpt } from '../../../../../core/models/compo/report-condition.model';
+import { HrZoneRange } from '../../../../../core/models/compo/chart-data.model';
+import { HrBase } from '../../../../../core/enums/sports';
 import { ProfessionalService } from '../../../../professional/services/professional.service';
 import {
   displayGroupLevel,
   getUrlQueryStrings,
   setUrlQueryString,
 } from '../../../../../core/utils';
+import { appPath } from '../../../../../app-path.const';
+import { Domain, WebIp } from '../../../../../core/enums/common';
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -103,8 +105,6 @@ class ChartOptions {
     };
   }
 }
-
-const errMsg = `Error.<br />Please try again later.`;
 
 @Component({
   selector: 'app-my-class-report',
@@ -560,10 +560,9 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   showGroupInfo() {
     const groupIcon = this.groupData.groupIcon;
     const brandIcon = this.groupData.groupRootInfo[2].brandIcon;
-    this.groupImg =
-      groupIcon && groupIcon.length > 0 ? groupIcon : '/assets/images/group-default.svg';
-    this.brandImg =
-      brandIcon && brandIcon.length > 0 ? brandIcon : '/assets/images/group-default.svg';
+    const defaultImg = '/assets/images/group-default.svg';
+    this.groupImg = groupIcon && groupIcon.length > 0 ? groupIcon : defaultImg;
+    this.brandImg = brandIcon && brandIcon.length > 0 ? brandIcon : defaultImg;
     this.brandName = this.groupData.groupRootInfo[2].brandName;
     this.branchName = this.groupData.groupRootInfo[3].branchName;
 
@@ -574,7 +573,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   sendRequest(body) {
     this.changeLoadingStatus(true);
     this.api21xxService.fetchMultiActivityData(body).subscribe((res) => {
-      const { resultCode, info, activities } = res;
+      const { resultCode, info, cross_multi_info } = res;
       if (resultCode !== 200) {
         this.hasResData = false;
         this.updateUrl('false');
@@ -582,7 +581,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
         this.initialChartComplated = true;
         this.changeLoadingStatus(false);
       } else {
-        const allActivities = this.mergeActivitiesList(info, activities);
+        const allActivities = this.mergeActivitiesList(info, cross_multi_info);
         this.activityLength = allActivities.length;
         if (this.activityLength === 0) {
           this.hasResData = false;
@@ -605,6 +604,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
           let HRZoneThree = 0;
           let HRZoneFour = 0;
           let HRZoneFive = 0;
+          let equipmentList = [];
 
           for (let i = 0; i < this.activityLength; i++) {
             const activityItem = allActivities[i].activityInfoLayer;
@@ -656,9 +656,11 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
               }
             }
 
+            const { equipmentSN } = allActivities[i].fileInfo;
             this.dateList.unshift(this.formatDate(allActivities[i].fileInfo.creationDate));
             this.avgHRList.unshift(avgHeartRateBpm);
             this.caloriesList.unshift(calories);
+            equipmentList = equipmentList.concat(equipmentSN);
           }
 
           this.calculateTotalTime(timeCount);
@@ -680,7 +682,8 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
           }
           const coachId = this.fileInfo.teacher.split('?userId=')[1];
           this.initHighChart();
-          this.getClassDetails(this.fileInfo.equipmentSN, coachId);
+          this.getDeviceInfo(equipmentList);
+          this.getCoachInfo(coachId);
           this.updateUrl('true');
 
           setTimeout(() => {
@@ -1032,25 +1035,34 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     }
   }
 
-  getClassDetails(SN, coachId) {
-    // 取得裝置資訊-kidin-1081218
+  /**
+   * 取得裝置資訊
+   * @param equipmentList 裝置序號陣列
+   */
+  getDeviceInfo(snArr) {
+    this.deviceInfo = undefined;
     const deviceDody = {
       token: '',
       queryType: '1',
-      queryArray: SN,
+      queryArray: snArr,
     };
     this.api70xxService.fetchGetProductInfo(deviceDody).subscribe((res) => {
       if (res) {
         this.deviceInfo = res.info.productInfo[0];
-        if (location.hostname === '192.168.1.235') {
-          this.deviceImgUrl = `http://app.alatech.com.tw/app/public_html/products${this.deviceInfo.modelImg}`;
+        if (location.hostname === WebIp.develop) {
+          this.deviceImgUrl = `http://${Domain.uat}/app/public_html/products${this.deviceInfo.modelImg}`;
         } else {
           this.deviceImgUrl = `http://${location.hostname}/app/public_html/products${this.deviceInfo.modelImg}`;
         }
       }
     });
+  }
 
-    // 取得教練資訊-kidin-1081218
+  /**
+   * 取得教練資訊
+   * @param coachId 教練使用者id
+   */
+  getCoachInfo(coachId) {
     const bodyForCoach = {
       token: this.token,
       targetUserId: coachId,
@@ -1072,21 +1084,22 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     });
   }
 
-  // 連結至個人頁面-kidin-1081223
+  // 連結至個人頁面
   visitAuthor() {
-    this.router.navigateByUrl(
-      `/user-profile/${this.hashIdService.handleUserIdEncode(
-        this.fileInfo.author.split('?')[1].split('=')[1].replace(')', '')
-      )}`
-    );
+    const userId = this.fileInfo.author.split('?')[1].split('=')[1].replace(')', '');
+    const hashUserId = this.hashIdService.handleUserIdEncode(userId);
+    this.router.navigateByUrl(`/${appPath.personal.home}/${hashUserId}`);
   }
 
-  // 連結至課程頁面-kidin-1090624
+  // 連結至課程頁面
   visitClass() {
+    const {
+      dashboard,
+      professional: { groupDetail },
+    } = appPath;
+    const hashGroupId = this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId);
     this.router.navigateByUrl(
-      `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
-        this.groupInfo.groupId
-      )}/group-introduction`
+      `/${dashboard.home}/${groupDetail.home}/${hashGroupId}/${groupDetail.introduction}`
     );
   }
 
@@ -1163,7 +1176,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       this.classLink.removeEventListener('click', this.visitClass.bind(this));
     }
 
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

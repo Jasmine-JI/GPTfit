@@ -14,7 +14,6 @@ import { AdminGuard } from './guards/admin.guard';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 import { CustomMaterialModule } from '../../core/custom-material.module';
 import { SharedModule } from '../../shared/shared.module';
-import { NgProgressModule } from '@ngx-progressbar/core';
 import { OfficialActivityService } from './services/official-activity.service';
 import { FormsModule } from '@angular/forms';
 import { QRCodeModule } from 'angularx-qrcode';
@@ -42,7 +41,7 @@ import {
   ThousandConversionPipe,
   SpeedSibsPipe,
   TemperatureSibsPipe,
-  swimPosture,
+  SwimPosturePipe,
   DataTypeTranslatePipe,
   DataTypeUnitPipe,
   PaiPipe,
@@ -69,7 +68,7 @@ import {
   ListStatusPipe,
 } from '../../core/pipes';
 import { StationMailModule } from '../station-mail/station-mail.module';
-import { LoadingBarComponent } from '../../components';
+import { LoadingBarComponent, LoadingMaskComponent, ImgCropperComponent } from '../../components';
 
 @NgModule({
   imports: [
@@ -78,7 +77,6 @@ import { LoadingBarComponent } from '../../components';
     SharedComponentsModule,
     CustomMaterialModule,
     SharedModule,
-    NgProgressModule,
     CKEditorModule,
     FormsModule,
     QRCodeModule,
@@ -103,7 +101,7 @@ import { LoadingBarComponent } from '../../components';
     ThousandConversionPipe,
     SpeedSibsPipe,
     TemperatureSibsPipe,
-    swimPosture,
+    SwimPosturePipe,
     DataTypeTranslatePipe,
     DataTypeUnitPipe,
     PaiPipe,
@@ -129,6 +127,8 @@ import { LoadingBarComponent } from '../../components';
     PaidStatusPipe,
     ShippedStatusPipe,
     LoadingBarComponent,
+    LoadingMaskComponent,
+    ImgCropperComponent,
   ],
   declarations: [
     OfficialActivityComponent,

@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { MuscleGroup } from '../../shared/enum/weight-train';
+import { MuscleGroup } from '../enums/sports';
 
 @Pipe({
   name: 'muscleGroupIcon',
@@ -25,6 +25,8 @@ export class MuscleGroupIconPipe implements PipeTransform {
         return 'icon-svg_web-icon_p3_032-shoulder_muscles';
       case MuscleGroup.pectoralsMuscle:
         return 'icon-svg_web-icon_p3_033-chest_muscles';
+      default:
+        return 'universal_vocabulary_other';
     }
   }
 }

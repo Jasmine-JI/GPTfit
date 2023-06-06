@@ -20,7 +20,7 @@ export class SpeedPaceUnitPipe implements PipeTransform {
       case SportType.run:
         return isMetric ? 'min/km' : 'min/mi';
       case SportType.cycle:
-        return isMetric ? 'km/hr' : 'mi/hr';
+        return isMetric ? 'kph' : 'mph';
       case SportType.swim:
         return 'min/100m';
       case SportType.row:

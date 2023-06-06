@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { version } from '../version';
 import { setLocalStorageObject, getLocalStorageObject } from '../utils';
 import { TranslateService } from '@ngx-translate/core';
-import { Domain } from '../../shared/enum/domain';
+import { Domain } from '../enums/common/domain.enum';
 
 @Injectable({
   providedIn: 'root',

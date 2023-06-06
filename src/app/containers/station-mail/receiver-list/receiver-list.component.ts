@@ -82,7 +82,7 @@ export class ReceiverListComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * 選擇為收件者
-   * @param index {number}-常用清單列表序列
+   * @param index {number}-常用清單列表索引
    */
   selectReceiver(index: number) {
     if (this.uiFlag.currentTag === 'favorite') {
@@ -218,7 +218,7 @@ export class ReceiverListComponent implements OnInit, OnChanges, OnDestroy {
    * 解除rxjs訂閱
    */
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

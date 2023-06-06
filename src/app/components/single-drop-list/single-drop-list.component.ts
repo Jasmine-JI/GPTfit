@@ -43,7 +43,6 @@ export class SingleDropListComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() dropList: Array<SingleLayerList>;
   @Input() defaultSelectIndex: [number, number] = [0, 0];
-  @Input() maxWidth = 200;
   @Output() selectItem = new EventEmitter<[number, number]>();
 
   constructor(private changeDetectorRef: ChangeDetectorRef) {}
@@ -64,8 +63,8 @@ export class SingleDropListComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * 選擇選單中的選項
-   * @param firstIndex {number}-選項類別序列
-   * @param secondIndex {number}-選項序列
+   * @param firstIndex {number}-選項類別索引
+   * @param secondIndex {number}-選項索引
    * @param e {MouseEvent}
    */
   selectListItem(firstIndex: number, secondIndex: number, e?: MouseEvent) {
@@ -130,7 +129,7 @@ export class SingleDropListComponent implements OnInit, OnChanges, OnDestroy {
    */
   ngOnDestroy(): void {
     this.unSubscribePlureEvent();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

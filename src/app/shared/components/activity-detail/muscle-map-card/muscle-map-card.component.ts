@@ -1,13 +1,13 @@
 import { Component, OnInit, OnChanges, OnDestroy, Input } from '@angular/core';
 import {
-  UserLevel,
   asept,
   metacarpus,
   novice,
   muscleMapColorSetting,
-} from '../../../models/weight-train';
-import { MuscleCode, Proficiency } from '../../../enum/weight-train';
+} from '../../../../core/models/const/weight-train.model';
 import { DataUnitType } from '../../../../core/enums/common';
+import { MuscleCode, Proficiency } from '../../../../core/enums/sports';
+import { UserLevel } from '../../../../core/models/common';
 
 @Component({
   selector: 'app-muscle-map-card',

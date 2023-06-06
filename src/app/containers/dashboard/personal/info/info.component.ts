@@ -4,7 +4,8 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UserService, HashIdService, AuthService } from '../../../../core/services';
 import { DashboardService } from '../../services/dashboard.service';
-import { checkResponse } from '../../../../core/utils/index';
+import { checkResponse } from '../../../../core/utils';
+import { appPath } from '../../../../app-path.const';
 
 @Component({
   selector: 'app-info',
@@ -44,9 +45,9 @@ export class InfoComponent implements OnInit, OnDestroy {
    * 取得頁面擁有者之個人資訊
    */
   getPageOwnerProfile() {
-    const [empty, firstPath, secondPath, ...rest] = location.pathname.split('/');
+    const [, firstPath, secondPath] = location.pathname.split('/');
     const pageOwnerId =
-      firstPath === 'user-profile'
+      firstPath === appPath.personal.home
         ? +this.hashIdService.handleUserIdDecode(secondPath)
         : this.userService.getUser().userId;
 
@@ -107,7 +108,7 @@ export class InfoComponent implements OnInit, OnDestroy {
    * 取消訂閱rxjs
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

@@ -13,7 +13,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { chart } from 'highcharts';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { zoneColor } from '../../../models/chart-data';
+import { zoneColor } from '../../../../core/models/represent-color';
 
 /**
  * 建立圖表用
@@ -287,7 +287,7 @@ export class ThresholdChartComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

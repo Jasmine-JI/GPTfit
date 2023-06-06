@@ -5,18 +5,20 @@ import {
   GetClientIpService,
   Api10xxService,
   GlobalEventsService,
+  NetworkService,
 } from '../../../../../core/services';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { fromEvent, Subscription, Subject, merge, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { formTest } from '../../../../../shared/models/form-test';
-import { Lang } from '../../../../../shared/models/i18n';
-import { codes } from '../../../../../shared/models/countryCode';
-import { SignTypeEnum } from '../../../../../shared/enum/account';
+import { formTest } from '../../../../../core/models/regex';
+import { codes } from '../../../../../core/models/const';
 import { TFTViewMinWidth } from '../../../models/app-webview';
 import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/utils';
+import { SignInType } from '../../../../../core/enums/personal';
+import { Lang } from '../../../../../core/models/common';
+import { appPath } from '../../../../../app-path.const';
 
 interface RegCheck {
   email: RegExp;
@@ -28,8 +30,7 @@ interface RegCheck {
   countryCodePass: boolean;
 }
 
-type PolicyType = 'termsConditions' | 'privacyPolicy';
-type InputType = 'account' | 'password' | 'nickname';
+type PolicyType = 'termsConditions' | 'privacyPolicy' | null;
 
 @Component({
   selector: 'app-app-signup',
@@ -43,7 +44,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   readonly formReg = formTest;
   readonly countryCodeList = codes;
-  readonly SignTypeEnum = SignTypeEnum;
+  readonly SignTypeEnum = SignInType;
 
   appSys = 0; // 0:web, 1:ios, 2:android
   focusForm = '';
@@ -105,6 +106,8 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     imgCode: '',
   };
 
+  readonly signWebUrl = `/${appPath.portal.signInWeb}`;
+
   constructor(
     private translate: TranslateService,
     private api10xxService: Api10xxService,
@@ -112,13 +115,14 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     public getClientIp: GetClientIpService,
     private authService: AuthService,
-    private globalEventsService: GlobalEventsService
+    private globalEventsService: GlobalEventsService,
+    private networkService: NetworkService
   ) {}
 
   ngOnInit(): void {
     this.getQueryString();
     this.language = this.getUrlLanguageString(location.search);
-    if (location.pathname.indexOf('web') > 0) {
+    if (location.pathname.indexOf('-web') > -1) {
       this.pcView = true;
       this.setPageStyle(false);
     } else {
@@ -131,18 +135,16 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * 因應ios嵌入webkit物件時間點較後面，故在此生命週期才判斷裝置平台
-   * @author kidin-1090710
    */
   ngAfterViewInit(): void {
     if (this.pcView === false) {
-      this.getAppId(location.search);
+      this.getAppId();
     }
   }
 
   /**
    * 根據裝置設定頁面樣式
    * @param isPcView {boolean}-是否非行動裝置或TFT
-   * @author kidin-1110113
    */
   setPageStyle(isPcView: boolean) {
     this.globalEventsService.setHideNavbarStatus(isPcView);
@@ -151,7 +153,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * 從url取得header
-   * @author kidin-1110114
    */
   getQueryString() {
     const query = getUrlQueryStrings(location.search);
@@ -169,7 +170,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * 從網址取得語系
    * @param str {string}-query string
-   * @author kidin-1091222
    */
   getUrlLanguageString(str: string): Lang {
     if (navigator && navigator.language) {
@@ -204,7 +204,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * 返回app或導回登入頁
-   * @author kidin-1090717
    */
   turnBack(): void {
     if (this.appSys === 1) {
@@ -212,20 +211,16 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     } else if (this.appSys === 2) {
       (window as any).android.closeWebView('Close');
     } else {
-      if (this.pcView) {
-        this.router.navigateByUrl('/signIn-web');
-      } else {
-        this.router.navigateByUrl('/signIn');
-      }
+      const { portal } = appPath;
+      const pathName = this.pcView ? portal.signInWeb : portal.signIn;
+      this.router.navigateByUrl(`/${pathName}`);
     }
   }
 
   /**
    * 取得註冊來源平台、類型和ID
-   * @param urlStr {string}
-   * @author kidin-1090512
    */
-  getAppId(urlStr: string): void {
+  getAppId(): void {
     if ((window as any).webkit) {
       this.appSys = 1;
     } else if ((window as any).android) {
@@ -262,7 +257,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * 訂閱頁面尺寸改變事件
-   * @author kidin-1101230
    */
   subscribeResizeEvent() {
     const resizeEvent = fromEvent(window, 'resize');
@@ -283,7 +277,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * 顯示條款或隱私權聲明
    * @param type {PolicyType}-條款或隱私權聲明
-   * @author kidin-1101230
    */
   showPolicyContent(type: PolicyType) {
     this.showTerms = type;
@@ -291,7 +284,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * 關閉條款或隱私權聲明
-   * @author kidin-1101230
    */
   closePolicyContent() {
     this.showTerms = null;
@@ -320,7 +312,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * 儲存使用者輸入的帳號
    * @param e {ChangeEvent}
-   * @author kidin-1091006
    */
   saveAccount(e: Event) {
     const account = (e as any).currentTarget.value;
@@ -345,7 +336,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * 確認使用者信箱格式
    * @param email {string}
-   * @author kidin-1090511
    */
   checkEmail(email: string): void {
     if (email.length === 0 || !this.regCheck.email.test(email)) {
@@ -362,7 +352,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * 顯示密碼
-   * @author kidin-1090429
    */
   toggleDisplayPW(): void {
     if (this.displayPW === false) {
@@ -375,7 +364,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * 確認密碼格式
    * @param e {MouseEvent | KeyboardEvent}
-   * @author kidin-1090511
    */
   checkPassword(e: any): void {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
@@ -397,7 +385,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * 取得使用者輸入的國碼
    * @param countryCode {string}
-   * @author kidin-1090504
    */
   onCodeChange(countryCode: string): void {
     this.signupData.countryCode = +countryCode;
@@ -410,7 +397,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * 確認暱稱格式
    * @param e MouseEvent | KeyboardEvent
-   * @author kidin-1090511
    */
   checkNickname(e: any) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
@@ -432,7 +418,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * 去除前後空白
    * @param str {string}
    * @returns {string}
-   * @author kidin-1090803
    */
   trimWhiteSpace(str: string): string {
     return str.replace(/(^[\s]*)|([\s]*$)/g, '');
@@ -497,62 +482,66 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090429
    */
   submit(): void {
-    this.progress = 30;
+    const online = this.networkService.checkNetworkStatus();
+    if (online) {
+      this.progress = 30;
+      if (this.imgCaptcha.show) {
+        const releaseBody = {
+          unlockFlow: 2,
+          unlockKey: this.signupData.imgCaptcha,
+        };
 
-    if (this.imgCaptcha.show) {
-      const releaseBody = {
-        unlockFlow: 2,
-        unlockKey: this.signupData.imgCaptcha,
-      };
-
-      this.getClientIpaddress()
-        .pipe(
-          switchMap((ipResult) => this.api10xxService.fetchCaptcha(releaseBody, this.requestHeader))
-        )
-        .subscribe((res: any) => {
-          if (res.processResult && res.processResult.resultCode === 200) {
-            this.imgCaptcha.show = false;
-            this.submit();
-          } else {
-            if (res.processResult) {
-              switch (res.processResult.apiReturnMessage) {
-                case 'Found a wrong unlock key.':
-                  this.signupCue.imgCaptcha = 'errorValue';
-                  this.progress = 100;
-                  break;
-                default:
-                  this.dialog.open(MessageBoxComponent, {
-                    hasBackdrop: true,
-                    data: {
-                      title: 'Message',
-                      body: `Error.<br />Please try again later.`,
-                      confirmText: this.translate.instant('universal_operating_confirm'),
-                      onConfirm: this.turnBack.bind(this),
-                    },
-                  });
-
-                  console.error(
-                    `${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`
-                  );
-                  break;
-              }
+        this.getClientIpaddress()
+          .pipe(
+            switchMap((ipResult) =>
+              this.api10xxService.fetchCaptcha(releaseBody, this.requestHeader)
+            )
+          )
+          .subscribe((res: any) => {
+            if (res.processResult && res.processResult.resultCode === 200) {
+              this.imgCaptcha.show = false;
+              this.submit();
             } else {
-              this.dialog.open(MessageBoxComponent, {
-                hasBackdrop: true,
-                data: {
-                  title: 'Message',
-                  body: `Error.<br />Please try again later.`,
-                  confirmText: this.translate.instant('universal_operating_confirm'),
-                  onConfirm: this.turnBack.bind(this),
-                },
-              });
+              if (res.processResult) {
+                switch (res.processResult.apiReturnMessage) {
+                  case 'Found a wrong unlock key.':
+                    this.signupCue.imgCaptcha = 'errorValue';
+                    this.progress = 100;
+                    break;
+                  default:
+                    this.dialog.open(MessageBoxComponent, {
+                      hasBackdrop: true,
+                      data: {
+                        title: 'Message',
+                        body: `Error.<br />Please try again later.`,
+                        confirmText: this.translate.instant('universal_operating_confirm'),
+                        onConfirm: this.turnBack.bind(this),
+                      },
+                    });
 
-              console.error(`${res.resultCode}: ${res.info}`);
+                    console.error(
+                      `${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`
+                    );
+                    break;
+                }
+              } else {
+                this.dialog.open(MessageBoxComponent, {
+                  hasBackdrop: true,
+                  data: {
+                    title: 'Message',
+                    body: `Error.<br />Please try again later.`,
+                    confirmText: this.translate.instant('universal_operating_confirm'),
+                    onConfirm: this.turnBack.bind(this),
+                  },
+                });
+
+                console.error(`${res.resultCode}: ${res.info}`);
+              }
             }
-          }
-        });
-    } else {
-      this.sendFormInfo();
+          });
+      } else {
+        this.sendFormInfo();
+      }
     }
   }
 
@@ -673,7 +662,8 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       (window as any).android.returnToken(this.newToken);
       this.turnBack();
     } else {
-      this.router.navigateByUrl('/dashboard/user-settings');
+      const { dashboard, personal } = appPath;
+      this.router.navigateByUrl(`/${dashboard.home}/${personal.userSettings}`);
     }
   }
 
@@ -693,21 +683,20 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * 轉導至啟用帳號頁面
-   * @author kidin-1090513
    */
   toEnableAccount(): void {
     this.globalEventsService.setHideNavbarStatus(false);
+    const { portal } = appPath;
     if (this.pcView === true) {
-      this.router.navigate(['/enableAccount-web'], { queryParamsHandling: 'preserve' });
+      this.router.navigate([`/${portal.enableAccountWeb}`], { queryParamsHandling: 'preserve' });
     } else {
-      this.router.navigate(['/enableAccount'], { queryParamsHandling: 'preserve' });
+      this.router.navigate([`/${portal.enableAccount}`], { queryParamsHandling: 'preserve' });
     }
   }
 
   /**
    * 處理使用者點選同意或不同意條款和隱私權聲明
    * @param action {boolean}-同意/不同意
-   * @author kidin-1091208
    */
   handleAgreeTerms(action: boolean, turnBack = true) {
     this.agreeTerms = action;
@@ -720,7 +709,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * 待動畫結束後捲動至表單位置
-   * @author kidin-1100103
    */
   scrollToForm() {
     setTimeout(() => {
@@ -728,7 +716,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       if (targetElement) {
         const scrollTop = targetElement.getBoundingClientRect().top;
         const scrollElement = document.querySelector('.main');
-        scrollElement.scrollTo({ top: scrollTop, behavior: 'smooth' });
+        scrollElement?.scrollTo({ top: scrollTop, behavior: 'smooth' });
       } else {
         this.scrollToForm();
       }
@@ -746,7 +734,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       signupData: { type },
       displayCountryCodeList,
     } = this;
-    if (type === SignTypeEnum.phone) {
+    if (type === SignInType.phone) {
       if (displayCountryCodeList) {
         this.unsubscribeClickScrollEvent();
       } else {
@@ -801,7 +789,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   ngOnDestroy(): void {
     this.setPageStyle(false);
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

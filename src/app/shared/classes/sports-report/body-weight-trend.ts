@@ -1,4 +1,4 @@
-import { trendChartColor } from '../../models/chart-data';
+import { trendChartColor } from '../../../core/models/represent-color';
 import { deepCopy } from '../../../core/utils/index';
 
 /**

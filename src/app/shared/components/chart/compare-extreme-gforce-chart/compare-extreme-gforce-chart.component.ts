@@ -14,7 +14,7 @@ import { TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import { GlobalEventsService } from '../../../../core/services';
 import { deepCopy } from '../../../../core/utils/index';
-import { compareChartDefault } from '../../../models/chart-data';
+import { compareChartDefault } from '../../../../core/models/compo/chart-data.model';
 import { complexTrendTooltip } from '../../../../core/utils/chart-formatter';
 
 @Component({
@@ -123,7 +123,7 @@ export class CompareExtremeGforceChartComponent implements OnInit, OnChanges, On
   }
 
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

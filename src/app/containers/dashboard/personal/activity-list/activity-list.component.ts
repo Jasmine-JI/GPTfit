@@ -1,10 +1,9 @@
 import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
-import { SportType } from '../../../../shared/enum/sports';
 import dayjs from 'dayjs';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil, tap, debounceTime } from 'rxjs/operators';
-import { ReportConditionOpt } from '../../../../shared/models/report-condition';
-import { DataUnitType } from '../../../../core/enums/common';
+import { ReportConditionOpt } from '../../../../core/models/compo/report-condition.model';
+import { DataUnitType, QueryString } from '../../../../core/enums/common';
 import {
   GlobalEventsService,
   HashIdService,
@@ -15,6 +14,8 @@ import {
   ApiCommonService,
 } from '../../../../core/services';
 import { deepCopy, handleSceneryImg } from '../../../../core/utils';
+import { SportType } from '../../../../core/enums/sports';
+import { appPath } from '../../../../app-path.const';
 
 const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 const defaultEnd = dayjs().endOf('day');
@@ -99,8 +100,8 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1100816
    */
   getNeedInfo() {
-    const [empty, firstPath, secondPath, ...rest] = location.pathname.split('/');
-    const isOtherOwner = firstPath === 'user-profile';
+    const [, firstPath, secondPath] = location.pathname.split('/');
+    const isOtherOwner = firstPath === appPath.personal.home;
     const pageOwnerId = isOtherOwner
       ? +this.hashIdService.handleUserIdDecode(secondPath)
       : this.userService.getUser().userId;
@@ -198,7 +199,7 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * 另開視窗至指定的運動檔案詳細頁面
-   * @param idx {number}-指定之清單序列
+   * @param idx {number}-指定之清單索引
    * @author kidin-1100816
    */
   handleNavigation(idx: number) {
@@ -206,19 +207,17 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
       fileInfo: { fileId },
     } = this.activityList[idx];
     let debugString = '';
-    if (location.search.includes('debug=')) {
-      debugString = '?debug=';
+    if (location.search.includes(`${QueryString.debug}=`)) {
+      debugString = `?${QueryString.debug}=`;
     }
 
-    if (this.uiFlag.isPortalMode) {
-      window.open(`/activity/${fileId}${debugString}`, '_blank', 'noopener=yes,noreferrer=yes');
-    } else {
-      window.open(
-        `/dashboard/activity/${fileId}${debugString}`,
-        '_blank',
-        'noopener=yes,noreferrer=yes'
-      );
-    }
+    const {
+      dashboard: { home: dashboardHome },
+      personal,
+    } = appPath;
+    const filePath = `/${personal.activityDetail}/${fileId}${debugString}`;
+    const targetUrl = this.uiFlag.isPortalMode ? filePath : `/${dashboardHome}${filePath}`;
+    window.open(targetUrl, '_blank', 'noopener=yes,noreferrer=yes');
   }
 
   /**
@@ -271,7 +270,7 @@ export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }
