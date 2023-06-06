@@ -1,5 +1,5 @@
 import { SportTarget } from '../../../core/models/api/api-common';
-import { AccessRight } from '../../../shared/enum/accessright';
+import { AccessRight } from '../../../core/enums/common';
 import { BenefitTimeStartZone } from '../../../core/enums/common';
 
 /**

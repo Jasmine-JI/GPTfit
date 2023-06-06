@@ -1,16 +1,14 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { take, map } from 'rxjs/operators';
 import { AuthService } from '../../services';
+import { appPath } from '../../../app-path.const';
 
 @Injectable()
 export class SigninGuard {
   constructor(private authService: AuthService, private router: Router) {}
-  canActivate(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
+  canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     return this.checkLogin();
   }
   checkLogin(): Observable<boolean> {
@@ -20,7 +18,7 @@ export class SigninGuard {
       map((res) => {
         if (res) {
           // 導回dashboard頁面
-          this.router.navigate(['/dashboard']);
+          this.router.navigate([`/${appPath.dashboard.home}`]);
           return false;
         }
 

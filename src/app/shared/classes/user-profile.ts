@@ -1,17 +1,16 @@
-import { UserProfileInfo, SignInfo } from '../models/user-profile-info';
+import { UserProfile, SignInInfo } from '../../core/models/api/api-10xx';
 import dayjs from 'dayjs';
 import { DataUnitType } from '../../core/enums/common';
-import { HrBase } from '../enum/personal';
+import { HrBase, WeightTrainingLevel } from '../../core/enums/sports';
 import { deepCopy } from '../../core/utils/index';
-import { AccessRight } from '../enum/accessright';
-import { WeightTrainingLevel } from '../enum/weight-train';
+import { AccessRight } from '../../core/enums/common';
 import { BehaviorSubject } from 'rxjs';
-import { ThirdParty } from '../enum/thirdParty';
+import { ThirdParty } from '../../core/enums/personal';
 import { BenefitTimeStartZone } from '../../core/enums/common';
 
-const guestProfile: UserProfileInfo = {
+const guestProfile: UserProfile = {
   avatarUrl: '/assets/images/user2.png',
-  birthday: dayjs().subtract(30, 'year').format('YYYYMMDD'), // 訪客預設30歲
+  birthday: +dayjs().subtract(30, 'year').format('YYYYMMDD'), // 訪客預設30歲
   bodyHeight: 175,
   bodyWeight: 75,
   description: '',
@@ -32,7 +31,7 @@ export class User {
   /**
    * api 1010 內的 userProfile 物件(未登入則給予訪客預設值)
    */
-  private _userProfile: UserProfileInfo = deepCopy(guestProfile);
+  private _userProfile: UserProfile = deepCopy(guestProfile);
 
   /**
    * userProfile observable 物件(未登入則給予訪客預設值)
@@ -42,7 +41,7 @@ export class User {
   /**
    * api 1003 或 1010 內的 signIn 物件
    */
-  private _signInfo: SignInfo;
+  private _signInfo: SignInInfo;
 
   /**
    * api 1010 內的 thirdPartyAgency 物件
@@ -63,7 +62,7 @@ export class User {
    * 更新 userProfile
    * @author kidin-1110311
    */
-  set userProfile(userProfile: UserProfileInfo) {
+  set userProfile(userProfile: UserProfile) {
     this._userProfile = userProfile;
     this.updateRxUserProfile();
   }
@@ -99,7 +98,7 @@ export class User {
    * 更新登入資訊
    * @author kidin-1110314
    */
-  set signInfo(info: SignInfo) {
+  set signInfo(info: SignInInfo) {
     this._signInfo = info;
   }
 
@@ -192,7 +191,7 @@ export class User {
    */
   get age() {
     const currentDay = dayjs();
-    const birthDay = dayjs(this._userProfile.birthday, 'YYYYMMDD');
+    const birthDay = dayjs(`${this._userProfile.birthday}`, 'YYYYMMDD');
     const age = currentDay.diff(birthDay, 'year');
     return age;
   }

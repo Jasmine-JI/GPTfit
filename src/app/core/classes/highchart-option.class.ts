@@ -33,7 +33,7 @@ export class HighchartOption {
   };
 
   /**
-   * 現在被區隔的區塊序列（用於圓餅圖）
+   * 現在被區隔的區塊索引（用於圓餅圖）
    */
   private _currentSlicedIndex: number | null = null;
 
@@ -150,7 +150,7 @@ export class HighchartOption {
 
   /**
    * 將指定區塊區隔出來
-   * @param index {number}-指定的序列
+   * @param index {number}-指定的索引
    */
   assignSliced(index: number) {
     const { _option } = this;

@@ -5,7 +5,7 @@ import {
   maxTypeKey,
   miniTypeKey,
   totalTypeKey,
-} from '../models/lifetracking-merge-type';
+} from '../../core/models/const/lifetracking-merge-type.model';
 
 export class SameWeekLifeTrackingData {
   private _data: any = null;

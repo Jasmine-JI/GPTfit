@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import dayjs from 'dayjs';
-import { AlaApp } from '../../../../shared/models/app-id';
+import { AlaApp } from '../../../../core/enums/common/app-id.enum';
 import { InnerSystemService } from '../../services/inner-system.service';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -8,7 +8,7 @@ import { PeopleSelectorWinComponent } from '../../components/people-selector-win
 import { MatDialog } from '@angular/material/dialog';
 import { Api10xxService, AuthService, ApiCommonService } from '../../../../core/services';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { SelectDate } from '../../../../shared/models/utils-type';
+import { SelectDate } from '../../../../core/models/common';
 
 type Serverity = 'INFO' | 'WARN' | 'ERROR' | 'DEBUG';
 type TargetType = 'user' | 'equipment';

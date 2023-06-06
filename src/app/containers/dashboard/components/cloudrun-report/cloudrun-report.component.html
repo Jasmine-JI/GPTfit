@@ -10,7 +10,7 @@
           style="align-items: center; margin: 5px 0"
           target="_blank"
           title="Cloud run"
-          href="/introduction/application/#cloudrun"
+          [href]="cloudrunIntroductionUrl"
           *ngIf="!uiFlag.isPreviewMode"
         >
           <img class="report-cloudrunIcon" src="/assets/cloud_run/cloudrun-app-icon.png" />
@@ -67,7 +67,7 @@
           </div>
           <div>
             <span class="report-summaryData">{{
-              infoData.totalSeconds || 0 | sportTime: [false, false]
+              infoData.totalSeconds || 0 | sportTime: { showZeroHour: false, hideSecond: false }
             }}</span>
             <p class="report-summaryDescription">
               {{ 'universal_activityData_totalTime' | translate }}
@@ -75,7 +75,10 @@
           </div>
           <div>
             <span class="report-summaryData">
-              {{ infoData.totalSeconds / infoData.stroke || 0 | sportTime: [false, false] }}
+              {{
+                infoData.totalSeconds / infoData.stroke || 0
+                  | sportTime: { showZeroHour: false, hideSecond: false }
+              }}
             </span>
             <p class="report-summaryDescription">
               {{ 'universal_adjective_avg' | translate }}

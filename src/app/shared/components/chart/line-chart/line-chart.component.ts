@@ -10,7 +10,7 @@ import {
 import { chart } from 'highcharts';
 import dayjs from 'dayjs';
 import { TranslateService } from '@ngx-translate/core';
-import { BMIColor, fatRateColor, muscleRateColor } from '../../../models/chart-data';
+import { BMIColor, fatRateColor, muscleRateColor } from '../../../../core/models/represent-color';
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {

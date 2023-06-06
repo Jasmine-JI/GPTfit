@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { fromEvent, Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { PaginationSetting } from '../../shared/models/pagination';
+import { PaginationSetting } from '../../core/models/compo/pagination.model';
 import { deepCopy } from '../../core/utils';
 
 @Component({

@@ -14,9 +14,9 @@ import { TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import { GlobalEventsService } from '../../../../core/services';
 import { deepCopy, mathRounding } from '../../../../core/utils/index';
-import { compareChartDefault } from '../../../models/chart-data';
+import { compareChartDefault } from '../../../../core/models/compo/chart-data.model';
 import { bodyWeightTooltip } from '../../../../core/utils/chart-formatter';
-import { lb } from '../../../models/bs-constant';
+import { lb } from '../../../../core/models/const/bs-constant.model';
 
 @Component({
   selector: 'app-compare-body-weight-chart',

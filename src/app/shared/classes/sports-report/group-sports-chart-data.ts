@@ -5,23 +5,23 @@ import {
   countBenefitTime,
   getSameRangeDate,
 } from '../../../core/utils';
-import { ReportCondition } from '../../models/report-condition';
-import { PAI_COFFICIENT, DAY_PAI_TARGET } from '../../models/sports-report';
-import { SportType } from '../../enum/sports';
+import { ReportCondition } from '../../../core/models/compo/report-condition.model';
+import { paiCofficient, dayPaiTarget } from '../../../core/models/const/sports-report.model';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ReportDateUnit } from '../report-date-unit';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { DateRange } from '../date-range';
-import { trendChartColor } from '../../models/chart-data';
+import { trendChartColor } from '../../../core/models/represent-color';
 import { CompareTrendData } from '../sports-report/compare-trend-data';
 import { HrZoneTrendChartData } from '../sports-report/hrzone-trend-chart-data';
 import { HrZoneChartData } from '../sports-report/hrzone-chart-data';
 import { TypeAllChart } from '../sports-report/type-all-chart';
 import { TemporaryCount } from '../sports-report/temporary-count';
 import { BenefitTimeStartZone } from '../../../core/enums/common';
-import { DAY } from '../../models/utils-constant';
+import { day } from '../../../core/models/const';
+import { SportType } from '../../../core/enums/sports';
 
 dayjs.extend(isoWeek);
 
@@ -246,11 +246,11 @@ export class GroupSportsChartData {
                 break;
               }
               case 'pai': {
-                const { z0, z1, z2, z3, z4, z5 } = PAI_COFFICIENT;
-                const datePeroid = dateUnit.reportDatePeroid / DAY;
+                const { z0, z1, z2, z3, z4, z5 } = paiCofficient;
+                const datePeroid = dateUnit.reportDatePeroid / day;
                 const weightedValue =
                   zone0 * z0 + zone1 * z1 + zone2 * z2 + zone3 * z3 + zone4 * z4 + zone5 * z5;
-                const pai = (weightedValue / DAY_PAI_TARGET / datePeroid) * 100;
+                const pai = (weightedValue / dayPaiTarget / datePeroid) * 100;
                 if (pai < _filedValue) achieve = 0;
                 break;
               }
@@ -613,7 +613,7 @@ export class GroupSportsChartData {
   }
 
   /**
-   * 根據報告時間單位、基準日期範圍與比較日期範圍產生完整的日期序列
+   * 根據報告時間單位、基準日期範圍與比較日期範圍產生完整的日期索引
    * @param dateUnit {ReportDateUnit}-選擇的報告日期單位
    * @param baseTime {DateRange}-報告基準日期
    * @param compareTime {DateRange}-報告比較日期

@@ -3,7 +3,7 @@ import { GroupDetailInfo, UserSimpleInfo } from '../../../models/group-detail';
 import { Api11xxService, HintDialogService } from '../../../../../core/services';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { SelectDate } from '../../../../../shared/models/utils-type';
+import { SelectDate } from '../../../../../core/models/common';
 import { planDatas } from '../../../group/desc';
 import { ProfessionalService } from '../../../../professional/services/professional.service';
 

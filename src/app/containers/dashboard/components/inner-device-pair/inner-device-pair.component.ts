@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import { Router } from '@angular/router';
-import { getUrlQueryStrings } from '../../../../core/utils/index';
+import { getUrlQueryStrings } from '../../../../core/utils';
+import { QueryString } from '../../../../core/enums/common';
+import { appPath } from '../../../../app-path.const';
 
 @Component({
   selector: 'app-inner-device-pair',
@@ -40,11 +42,16 @@ export class InnerDevicePairComponent implements OnInit {
     const { userId, userName } = _lists[0];
     this.targetUserName = userName;
     this.targetUserId = userId;
-    this.router.navigateByUrl(`${location.pathname}?targetUserId=${this.targetUserId}`);
+    this.router.navigateByUrl(
+      `${location.pathname}?${QueryString.targetUserId}=${this.targetUserId}`
+    );
   }
 
   watchDeviceSNDetail() {
+    const { dashboard, adminManage, device } = appPath;
     this.deviceSN = this.deviceSN.toUpperCase();
-    this.router.navigateByUrl(`/dashboard/system/device/info/${this.deviceSN}`);
+    this.router.navigateByUrl(
+      `/${dashboard.home}/${adminManage.home}/${device.home}/${device.info}/${this.deviceSN}`
+    );
   }
 }

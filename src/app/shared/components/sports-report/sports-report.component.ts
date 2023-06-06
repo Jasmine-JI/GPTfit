@@ -9,10 +9,8 @@ import {
 } from '@angular/core';
 import { Subject, Subscription, of, merge, fromEvent, combineLatestWith } from 'rxjs';
 import { takeUntil, tap, map, switchMap, debounceTime } from 'rxjs/operators';
-import { SportType } from '../../enum/sports';
-import { ReportCondition, ReportDateType } from '../../models/report-condition';
+import { ReportCondition, ReportDateType } from '../../../core/models/compo/report-condition.model';
 import { DateRange } from '../../classes/date-range';
-import { DateUnit } from '../../enum/report';
 import { ReportDateUnit } from '../../classes/report-date-unit';
 import {
   TargetField,
@@ -32,13 +30,17 @@ import { ActivatedRoute } from '@angular/router';
 import { SportsTarget } from '../../classes/sports-target';
 import { SportsReport } from '../../classes/sports-report/sports-report';
 import { PersonalSportsChartData } from '../../classes/sports-report/personal-sports-chart-data';
-import { sportTypeColor, trendChartColor, HrZoneRange } from '../../models/chart-data';
-import { mi, ft, lb } from '../../models/bs-constant';
-import { DataUnitType, QueryString, BenefitTimeStartZone } from '../../../core/enums/common';
+import { HrZoneRange } from '../../../core/models/compo/chart-data.model';
+import { mi, ft, lb } from '../../../core/models/const';
+import {
+  DataUnitType,
+  QueryString,
+  BenefitTimeStartZone,
+  AccessRight,
+  DateUnit,
+} from '../../../core/enums/common';
 import { DefaultDateRange } from '../../classes/default-date-range';
-import { AccessRight } from '../../enum/accessright';
-import { MuscleGroup, MuscleAnalysisColumn } from '../../enum/weight-train';
-import { zoneColor } from '../../models/chart-data';
+import { zoneColor, sportTypeColor, trendChartColor } from '../../../core/models/represent-color';
 import { WeightTrainingAnalysis } from '../../classes/sports-report/weight-train-anaysis';
 import { WeightTrainAnalysisOption } from '../../classes/weight-train-analysis-option';
 import { TranslateService } from '@ngx-translate/core';
@@ -63,6 +65,7 @@ import isoWeek from 'dayjs/plugin/isoWeek';
 import { SameWeekLifeTrackingData } from '../../classes/same-week-lifetracking-data';
 import { PersonalChartAnalysisOption } from '../../../containers/personal/classes/personal-chart-analysis-option';
 import { DataDescription } from '../../../core/models/compo';
+import { MuscleAnalysisColumn, MuscleGroup, SportType } from '../../../core/enums/sports';
 
 dayjs.extend(isoWeek);
 
@@ -919,8 +922,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
             result.update(pace, paceUnit);
           } else {
             isMetric
-              ? result.update(mathRounding(value, 1), 'km/hr')
-              : result.update(mathRounding(value / mi, 2), 'mi/hr');
+              ? result.update(mathRounding(value, 1), 'kph')
+              : result.update(mathRounding(value / mi, 2), 'mph');
           }
 
           break;

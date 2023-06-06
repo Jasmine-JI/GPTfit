@@ -10,11 +10,11 @@ export class FFMIPipe implements PipeTransform {
 
   /**
    * 依身高、體重、脂肪率，計算FFMI。
-   * @param value {Array<number>}-[身高(cm), 體重, 脂肪率]
+   * @param value 身高(cm), 體重, 脂肪率數據
    * @return {number}-FFMI
    */
-  transform(value: Array<number>): number {
-    const [height, weight, fatRate] = value;
-    return countFFMI(height, weight, fatRate);
+  transform(value: { height: number; weight: number; fatRate: number }): number {
+    const { height, weight, fatRate } = value;
+    return countFFMI(height, weight, fatRate) ?? 0;
   }
 }

@@ -1164,7 +1164,7 @@
         </g>
         <g>
           <text transform="matrix(1 0 0 1 300 620)" font-size="16">
-            Body weight {{ userWeight | weightSibs: [userUnit, 0] }}
+            Body weight {{ userWeight | weightSibs: { unitType: userUnit } }}
           </text>
         </g>
       </g>
@@ -3199,8 +3199,8 @@
             </p>
             <p class="muscle__dataText">
               {{ 'universal_activityData_totalWeight' | translate }}
-              {{ _list.totalWeightKg | weightSibs: [userUnit, 0] }} | 1RM
-              {{ _list.max1RmWeightKg | weightSibs: [userUnit, 0] }}
+              {{ _list.totalWeightKg | weightSibs: { unitType: userUnit } }} | 1RM
+              {{ _list.max1RmWeightKg | weightSibs: { unitType: userUnit } }}
             </p>
           </div>
         </div>

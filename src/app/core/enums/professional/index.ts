@@ -4,3 +4,4 @@ export * from './commerce-status.enum';
 export * from './group-join-status.enum';
 export * from './group-level.enum';
 export * from './group-status.enum';
+export * from './professional-child-page.enum';

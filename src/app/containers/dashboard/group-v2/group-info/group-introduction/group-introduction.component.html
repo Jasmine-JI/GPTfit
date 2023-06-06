@@ -9,8 +9,8 @@
       groupDetail.groupStatus !== 5 &&
       (groupDetail.groupStatus !== 6 ||
         (userSimpleInfo.accessRight < editBody.groupLevel && userSimpleInfo.accessRight < 50)) &&
-      !groupDetail.expired &&
-      groupDetail.commerceStatus === 1
+      !groupDetail?.expired &&
+      groupDetail?.commerceStatus === 1
     "
   >
     <button
@@ -95,7 +95,7 @@
           (focusout)="saveGroupName($event)"
           (change)="saveGroupName($event)"
         />
-        <span *ngIf="formCheck.name === false">
+        <span style="color: red" *ngIf="formCheck.name === false">
           {{ 'universal_status_wrongFormat' | translate }}
         </span>
       </div>
@@ -501,7 +501,4 @@
     (change)="saveGroupName($event)"
     *ngIf="uiFlag.editMode === 'edit'"
   />
-  <span style="color: red" *ngIf="formCheck.name === false">
-    {{ 'universal_status_wrongFormat' | translate }}
-  </span>
 </ng-template>

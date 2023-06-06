@@ -1,0 +1,122 @@
+<figure class="data__image">
+  <img class="file__image" [src]="imagePath" />
+  <div class="info__data__section">
+    <div class="flexCol info__data">
+      <div
+        *ngTemplateOutlet="
+          oneInfoData;
+          context: {
+            title: 'universal_activityData_totalTime',
+            value: activityInfo.totalSecond | sportTime
+          }
+        "
+      ></div>
+      <ng-container
+        *ngIf="excludeSportsType([SportType.weightTrain, SportType.aerobic, SportType.rest])"
+      >
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              title: 'universal_activityData_totalDistance',
+              value:
+                activityInfo.totalDistanceMeters ?? 0
+                | distanceSibs: { unitType: userUnit, showUnit: false, convertKiloAlways: true },
+              unit: userUnit === DataUnitType.metric ? 'km' : 'mi'
+            }
+          "
+        ></div>
+      </ng-container>
+      <ng-container *ngIf="includeSportsType([SportType.run, SportType.swim, SportType.row])">
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              title: 'universal_activityData_avgPace',
+              value:
+                activityInfo.avgSpeed ?? 0
+                | sportPaceSibs
+                  : {
+                      sportType: +activityInfo.type,
+                      userUnit: userUnit,
+                      showUnit: false
+                    },
+              unit: +activityInfo.type | speedPaceUnit: userUnit
+            }
+          "
+        ></div>
+      </ng-container>
+      <ng-container *ngIf="includeSportsType([SportType.cycle, SportType.ball])">
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              title: 'universal_activityData_avgSpeed',
+              value:
+                activityInfo.avgSpeed ?? 0
+                | speedSibs
+                  : {
+                      unitType: userUnit,
+                      showUnit: false
+                    },
+              unit: userUnit === DataUnitType.metric ? 'kph' : 'mph'
+            }
+          "
+        ></div>
+      </ng-container>
+      <ng-container *ngIf="includeSportsType([SportType.weightTrain])">
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              title: 'universal_activityData_totalWeight',
+              value:
+                activityInfo.totalWeightKg ?? 0
+                | weightSibs
+                  : {
+                      unitType: userUnit,
+                      showUnit: false
+                    },
+              unit: userUnit === DataUnitType.metric ? 'kg' : 'lb'
+            }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              title: 'universal_activityData_totalReps',
+              value: activityInfo.totalReps ?? 0,
+              unit: 'reps'
+            }
+          "
+        ></div>
+      </ng-container>
+      <ng-container *ngIf="includeSportsType([SportType.aerobic, SportType.complex])">
+        <div *ngTemplateOutlet="oneInfoData; context: getCalories()"></div>
+      </ng-container>
+      <ng-container *ngIf="includeSportsType([SportType.aerobic, SportType.rest])">
+        <div
+          *ngTemplateOutlet="
+            oneInfoData;
+            context: {
+              title: 'universal_userProfile_maxHr',
+              value: activityInfo.maxHeartRateBpm ?? 0,
+              unit: 'bpm'
+            }
+          "
+        ></div>
+      </ng-container>
+    </div>
+  </div>
+</figure>
+
+<ng-template #oneInfoData let-title="title" let-value="value" let-unit="unit">
+  <div>
+    <h6 class="info__title">{{ title | translate }}</h6>
+    <p class="info__value__row">
+      <span class="info__value">{{ value }}</span>
+      <span class="info__unit" *ngIf="unit">{{ unit }}</span>
+    </p>
+  </div>
+</ng-template>

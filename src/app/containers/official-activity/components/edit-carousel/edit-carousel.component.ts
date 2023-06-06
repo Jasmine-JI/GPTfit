@@ -4,7 +4,7 @@ import { OfficialActivityService } from '../../services/official-activity.servic
 import { Subject, combineLatest, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-import { AlbumType } from '../../../../shared/models/image';
+import { AlbumType } from '../../../../core/enums/api';
 import { ImageUploadService } from '../../../dashboard/services/image-upload.service';
 import {
   getCurrentTimestamp,
@@ -13,6 +13,7 @@ import {
   base64ToFile,
 } from '../../../../core/utils';
 import { AuthService, HintDialogService, ApiCommonService } from '../../../../core/services';
+import { appPath } from '../../../../app-path.const';
 
 @Component({
   selector: 'app-edit-carousel',
@@ -334,12 +335,13 @@ export class EditCarouselComponent implements OnInit, OnDestroy {
    * @author kidin-1101209
    */
   navigateHomePage() {
-    this.router.navigateByUrl('/official-activity/activity-list');
+    const { officialActivity } = appPath;
+    this.router.navigateByUrl(`/${officialActivity.home}/${officialActivity.activityList}`);
   }
 
   /**
    * 變更輪播排序
-   * @param id {number}-內容序列
+   * @param id {number}-內容索引
    * @param direction {'up' | 'down'}-目標移動方向
    * @author kidin-1101222
    */

@@ -14,9 +14,11 @@ import {
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-import { AccountTypeEnum } from '../../../../../shared/enum/account';
 import { TFTViewMinWidth } from '../../../models/app-webview';
 import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/utils';
+import { AccountType } from '../../../../../core/enums/personal';
+import { errorMessage } from '../../../../../core/models/const';
+import { appPath } from '../../../../../app-path.const';
 
 enum DestroyFlow {
   search = 1,
@@ -73,7 +75,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
     adminGiveUp: false,
   };
 
-  readonly AccountTypeEnum = AccountTypeEnum;
+  readonly AccountTypeEnum = AccountType;
   readonly DestroyFlow = DestroyFlow;
   readonly DestroyStatus = DestroyStatus;
   constructor(
@@ -170,7 +172,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
 
     if (this.token.length === 0) {
       this.auth.backUrl = location.href;
-      this.router.navigateByUrl('/signIn');
+      this.router.navigateByUrl(`/${appPath.portal.signIn}`);
     } else {
       this.getUserProfile();
       this.checkQueryString();
@@ -276,7 +278,6 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
 
   /**
    * 申請撤銷帳號
-   * @author kidin-1091223
    */
   applyDestroy() {
     const online = this.networkService.checkNetworkStatus();
@@ -297,7 +298,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
           const { status } = res as any;
           if (this.apiCommonService.checkRes(res)) {
             this.destroyResp.status = status;
-            if (this.user.accountType === AccountTypeEnum.phone) {
+            if (this.user.accountType === AccountType.phone) {
               const msg = this.translate.instant('universal_userAccount_sendSmsSuccess');
               this.hintDialogService.showSnackBar(msg);
               this.countDown();
@@ -347,7 +348,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
         ) {
           this.uiFlag.verifyCodeError = true;
         } else if (!processResult && resCode === 400) {
-          const msg = 'Error! Please try again later.';
+          const msg = errorMessage;
           this.hintDialogService.showSnackBar(msg);
         } else if (processResult.resultCode !== 200) {
           this.checkoutIsGroupAdmin();
@@ -410,7 +411,8 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
       (window as any).android.closeWebView('Close');
     } else {
       window.close();
-      this.router.navigateByUrl('/dashboard/user-settings'); // 避免頁面無法關閉
+      const { dashboard, personal } = appPath;
+      this.router.navigateByUrl(`/${dashboard.home}/${personal.userSettings}`); // 避免頁面無法關閉
     }
   }
 
@@ -476,7 +478,6 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDest
 
   /**
    * 取消訂閱rxjs
-   * @author kidin-1091223
    */
   ngOnDestroy() {
     this.setPageStyle(false);

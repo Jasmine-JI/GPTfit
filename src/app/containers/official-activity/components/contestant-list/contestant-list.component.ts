@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { formTest } from '../../../../shared/models/form-test';
+import { formTest } from '../../../../core/models/regex/form-test';
 import { Subject, Subscription, fromEvent, combineLatest, merge, of } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { pageNotFoundPath } from '../../models/official-activity-const';
-import { RankType } from '../../../../shared/models/cloudrun-leaderboard';
+import { RankType } from '../../../../core/enums/official-activity/cloudrun-leaderboard.enum';
 import {
   ProductShipped,
   HaveProduct,
@@ -16,10 +16,11 @@ import {
 import dayjs from 'dayjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
-import { Sex } from '../../../../shared/enum/personal';
 import { AgePipe, SportTimePipe, PaidStatusPipe, ShippedStatusPipe } from '../../../../core/pipes';
 import { getCurrentTimestamp, deepCopy } from '../../../../core/utils';
 import { AuthService, NodejsApiService, ApiCommonService } from '../../../../core/services';
+import { Gender } from '../../../../core/enums/personal';
+import { appPath } from '../../../../app-path.const';
 
 type SortType =
   | 'rank'
@@ -171,10 +172,9 @@ export class ContestantListComponent implements OnInit, OnDestroy {
 
   /**
    * 確認eventId是否符合數字格式
-   * @author kidin-1101015
    */
   checkEventId() {
-    const eventId = this.activatedRoute.snapshot.paramMap.get('eventId');
+    const eventId = this.activatedRoute.snapshot.paramMap.get(appPath.officialActivity.eventId);
     if (formTest.number.test(eventId)) {
       this.eventId = +eventId;
       this.searchInfo.targetEventId = +eventId;
@@ -185,10 +185,9 @@ export class ContestantListComponent implements OnInit, OnDestroy {
 
   /**
    * 取得活動詳細資訊與排行榜
-   * @author kidin-1101014
    */
   getActivityDetail() {
-    this.eventId = +this.activatedRoute.snapshot.paramMap.get('eventId');
+    this.eventId = +this.activatedRoute.snapshot.paramMap.get(appPath.officialActivity.eventId);
     const { eventId, token } = this;
     combineLatest([
       this.officialActivityService.getEventDetail({ eventId }),
@@ -669,7 +668,6 @@ export class ContestantListComponent implements OnInit, OnDestroy {
 
   /**
    * 根據條件將清單做篩選
-   * @author kidin-1101124
    */
   filterList() {
     this.uiFlag.expandDetail = null;
@@ -765,7 +763,6 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    * @param listType {ListType}-參賽者清單類別
    * @param type {string}-欲開啟選單之欄位類別
    * @param index {number}-清單顯示順位
-   * @author kidin-1101124
    */
   showSelector(e: MouseEvent, listType: ListType, type: string, index: number) {
     e.stopPropagation();
@@ -786,7 +783,6 @@ export class ContestantListComponent implements OnInit, OnDestroy {
   /**
    * 開啟參賽者詳細資訊編輯模式
    * @param e {MouseEvent}
-   * @author kidin-1101125
    */
   openEditableMode(e: MouseEvent) {
     e.stopPropagation();
@@ -799,7 +795,6 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    * @param targetUserId {number}-使用者流水id
    * @param group {number}-指定的群組資訊
    * @param index {number}-顯示順位
-   * @author kidin-1101125
    */
   changeGroup(e: MouseEvent, group: any, index: number) {
     e.stopPropagation();
@@ -1301,7 +1296,7 @@ export class ContestantListComponent implements OnInit, OnDestroy {
         awardShipped
       )},${this.convertDateFormat(awardShippingDate)},${truthName},${this.agePipe.transform(
         ageBase
-      )},${gender === Sex.male ? '男' : '女'},+${countryCode},${mobileNumber},${
+      )},${gender === Gender.male ? '男' : '女'},+${countryCode},${mobileNumber},${
         email ? email : ''
       },${taiwaness === Nationality.taiwaness ? '本國' : '外國'},${idCardNumber},${address},${
         remark ? remark : ''
@@ -1455,7 +1450,8 @@ export class ContestantListComponent implements OnInit, OnDestroy {
    * 開啟編輯賽事新視窗
    */
   navigatorEditEvent() {
-    const url = `/official-activity/edit-activity/${this.eventId}`;
+    const { officialActivity } = appPath;
+    const url = `/${officialActivity.home}/${officialActivity.editActivity}/${this.eventId}`;
     window.open(url, '_blank', 'noopener=yes,noreferrer=yes');
   }
 

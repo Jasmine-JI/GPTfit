@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject, combineLatestWith, fromEvent, Subscription } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { ReportConditionOpt } from '../../../../shared/models/report-condition';
+import { ReportConditionOpt } from '../../../../core/models/compo/report-condition.model';
 import dayjs from 'dayjs';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -17,14 +17,10 @@ import { DataUnitType } from '../../../../core/enums/common';
 import {
   ZoneTrendData,
   DiscolorTrendData,
-  paceTrendColor,
   CompareLineTrendChart,
   FilletTrendChart,
-  zoneColor,
-  costTimeColor,
   HrZoneRange,
-} from '../../../../shared/models/chart-data';
-import { HrBase } from '../../../../shared/enum/personal';
+} from '../../../../core/models/compo/chart-data.model';
 import {
   getUserHrRange,
   speedToPaceSecond,
@@ -33,7 +29,9 @@ import {
   getLocalStorageObject,
   mathRounding,
 } from '../../../../core/utils';
-import { SportType } from '../../../../shared/enum/sports';
+import { HrBase, SportType } from '../../../../core/enums/sports';
+import { paceTrendColor, costTimeColor, zoneColor } from '../../../../core/models/represent-color';
+import { appPath } from '../../../../app-path.const';
 
 @Component({
   selector: 'app-cloudrun-report',
@@ -182,6 +180,16 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     private hintDialogService: HintDialogService,
     private apiCommonService: ApiCommonService
   ) {}
+
+  /**
+   * 首頁雲跑介紹區塊
+   */
+  get cloudrunIntroductionUrl() {
+    const {
+      portal: { introduction },
+    } = appPath;
+    return `/${introduction.home}/${introduction.application}/${introduction.cloudrunAnchor}`;
+  }
 
   ngOnInit(): void {
     this.windowWidth = window.innerWidth;
@@ -797,7 +805,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 根據語系回傳地圖對應語系的序列
+   * 根據語系回傳地圖對應語系的索引
    * @author kidin-1100309
    */
   checkLanguage() {

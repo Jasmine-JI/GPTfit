@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Api21xxService } from './api-21xx.service';
 import { deepCopy } from '../utils/index';
 import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
-import { ReportConditionOpt } from '../../shared/models/report-condition';
+import { ReportConditionOpt } from '../models/compo/report-condition.model';
 
 @Injectable({
   providedIn: 'root',

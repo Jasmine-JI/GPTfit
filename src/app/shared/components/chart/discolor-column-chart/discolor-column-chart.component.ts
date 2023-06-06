@@ -11,19 +11,19 @@ import { chart } from 'highcharts';
 import dayjs from 'dayjs';
 import { TranslateService } from '@ngx-translate/core';
 import {
-  DisplayPage,
   paceTrendColor,
   speedTrendColor,
   cadenceTrendColor,
   swolfTrendColor,
   swingSpeedTrendColor,
-} from '../../../models/chart-data';
+} from '../../../../core/models/represent-color';
 import { DataUnitType } from '../../../../core/enums/common';
-import { SportType } from '../../../enum/sports';
+import { SportType } from '../../../../core/enums/sports';
 import { DataTypeTranslatePipe } from '../../../../core/pipes/data-type-translate.pipe';
-import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
+import { day, month, week } from '../../../../core/models/const';
 import { speedToPaceSecond } from '../../../../core/utils/sports';
 import isoWeek from 'dayjs/plugin/isoWeek';
+import { DisplayPage } from '../../../../core/models/common';
 
 dayjs.extend(isoWeek);
 
@@ -86,7 +86,7 @@ class ChartOptions {
   styleUrls: ['./discolor-column-chart.component.scss', '../chart-share-style.scss'],
 })
 export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestroy {
-  dateList = [];
+  dateList: Array<any> = [];
   highestPoint = 0;
   lowestPoint = 3600;
   dataLength: number;
@@ -119,18 +119,19 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
 
   initChart() {
     const { sportType, unit } = this;
+    const pipeArgs = { sportsType: sportType, unitType: unit };
     let trendDataset: any;
-    let chartData = [];
-    let colorSet: Array<string>;
+    let chartData: any = [];
+    let colorSet: Array<string> | null = null;
     switch (this.chartName) {
-      case 'Pace':
+      case 'Pace': {
         this.chartType = 'pace';
         colorSet = paceTrendColor;
         this.chartTitle = [
           `${this.translate.instant('universal_adjective_maxBest')} ${this.translate.instant(
-            this.dataTypeTranslate.transform('pace', [sportType, unit])
+            this.dataTypeTranslate.transform('pace', pipeArgs)
           )}`,
-          this.translate.instant(this.dataTypeTranslate.transform('pace', [sportType, unit])),
+          this.translate.instant(this.dataTypeTranslate.transform('pace', pipeArgs)),
         ];
 
         const { dataArr: paceDataArr, minSpeed: paceminSpeed, maxSpeed: paceSpeed } = this.data;
@@ -139,7 +140,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         this.highestPoint = speedToPaceSecond(paceminSpeed || 0, sportType, unit);
         this.lowestPoint = speedToPaceSecond(paceSpeed, sportType, unit);
         break;
-      case 'Cadence':
+      }
+      case 'Cadence': {
         colorSet = cadenceTrendColor;
         this.chartType = 'cadence';
         const { dataArr: cadenceDataArr, maxCadence, minCadence } = this.data;
@@ -148,7 +150,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         this.highestPoint = maxCadence;
         this.lowestPoint = minCadence;
         break;
-      case 'Swolf':
+      }
+      case 'Swolf': {
         this.chartType = 'swolf';
         colorSet = swolfTrendColor;
         const { dataArr: swolfDataArr, maxSwolf, minSwolf } = this.data;
@@ -156,16 +159,16 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         this.dataLength = swolfDataArr.length;
         this.highestPoint = maxSwolf;
         this.lowestPoint = minSwolf;
-
         break;
-      case 'Speed':
+      }
+      case 'Speed': {
         colorSet = speedTrendColor;
         this.chartType = 'speed';
         this.chartTitle = [
           `${this.translate.instant('universal_adjective_maxBest')} ${this.translate.instant(
-            this.dataTypeTranslate.transform('speed', [sportType, unit])
+            this.dataTypeTranslate.transform('speed', pipeArgs)
           )}`,
-          this.translate.instant(this.dataTypeTranslate.transform('speed', [sportType, unit])),
+          this.translate.instant(this.dataTypeTranslate.transform('speed', pipeArgs)),
         ];
 
         const { dataArr: speedDataArr, maxSpeed, minSpeed } = this.data;
@@ -174,7 +177,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         this.highestPoint = maxSpeed;
         this.lowestPoint = minSpeed;
         break;
-      case 'SwingSpeed':
+      }
+      case 'SwingSpeed': {
         colorSet = swingSpeedTrendColor;
         this.chartType = 'swingSpeed';
         this.chartTitle = [
@@ -188,11 +192,12 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         this.highestPoint = swingMaxSpeed;
         this.lowestPoint = swingminSpeed;
         break;
+      }
       case 'Step': // 生活追蹤步數資料-kidin-1090218
         chartData = this.data;
         this.dataLength = this.data.length;
         break;
-      case 'Muscle':
+      case 'Muscle': {
         const saturation = '100%', // 主訓練部位色彩飽和度
           Brightness = '70%', // 主訓練部位色彩明亮度
           transparency = 1; // 主訓練部位色彩透明度
@@ -222,6 +227,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         }
 
         break;
+      }
     }
 
     switch (this.chartName) {
@@ -248,7 +254,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         ];
 
         break;
-      default:
+      default: {
+        const [startColor, middleColor, endColor] = colorSet ?? this.data.colorSet;
         trendDataset = [
           {
             name: this.chartTitle ?? this.chartName,
@@ -262,19 +269,20 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
                 y2: 1,
               },
               stops: [
-                [0, colorSet ? colorSet[2] : this.data.colorSet[2]],
-                [0.5, colorSet ? colorSet[1] : this.data.colorSet[1]],
-                [1, colorSet ? colorSet[0] : this.data.colorSet[0]],
+                [0, startColor],
+                [0.5, middleColor],
+                [1, endColor],
               ],
             },
           },
         ];
 
         break;
+      }
     }
 
-    const trendChartOptions = new ChartOptions(trendDataset),
-      labelPadding = 2;
+    const trendChartOptions = new ChartOptions(trendDataset);
+    const labelPadding = 2;
     switch (this.chartName) {
       case 'Pace':
         trendChartOptions['yAxis'].max = this.highestPoint + labelPadding || null;
@@ -331,8 +339,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
             }
 
             const startDate = dayjs(this.x).format('YYYY-MM-DD');
-            if (this.series.xAxis.tickInterval === MONTH) {
-              const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
+            if (this.series.xAxis.tickInterval === month) {
+              const endDate = dayjs(this.x + 6 * day).format('YYYY-MM-DD');
               return `${startDate}~${endDate}
                 <br/>${this.series.name[0]}: ${paceBestTime}
                 <br/>${this.series.name[1]}: ${bottomPace}`;
@@ -355,8 +363,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
             const startDate = dayjs(this.x).format('YYYY-MM-DD'),
               yVal = parseFloat(this.point.y.toFixed(1)),
               lowVal = parseFloat(this.point.low.toFixed(1));
-            if (this.series.xAxis.tickInterval === MONTH) {
-              const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
+            if (this.series.xAxis.tickInterval === month) {
+              const endDate = dayjs(this.x + 6 * day).format('YYYY-MM-DD');
               return `${startDate}~${endDate}
                 <br/>Best cadence: ${yVal}
                 <br/>${this.series.name}: ${lowVal}`;
@@ -379,8 +387,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
             const startDate = dayjs(this.x).format('YYYY-MM-DD'),
               yVal = parseFloat(this.point.y.toFixed(1)),
               lowVal = parseFloat(this.point.low.toFixed(1));
-            if (this.series.xAxis.tickInterval === MONTH) {
-              const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
+            if (this.series.xAxis.tickInterval === month) {
+              const endDate = dayjs(this.x + 6 * day).format('YYYY-MM-DD');
               return `${startDate}~${endDate}
                 <br/>Best Swolf: ${lowVal}
                 <br/>${this.series.name}: ${yVal}`;
@@ -403,8 +411,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
             const startDate = dayjs(this.x).format('YYYY-MM-DD'),
               yVal = parseFloat(this.point.y.toFixed(1)),
               lowVal = parseFloat(this.point.low.toFixed(1));
-            if (this.series.xAxis.tickInterval === MONTH) {
-              const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
+            if (this.series.xAxis.tickInterval === month) {
+              const endDate = dayjs(this.x + 6 * day).format('YYYY-MM-DD');
               return `${startDate}~${endDate}
                 <br/>${this.series.name[0]}: ${yVal}
                 <br/>${this.series.name[1]}: ${lowVal}`;
@@ -423,8 +431,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
             const startDate = dayjs(this.x).format('YYYY-MM-DD'),
               tVal = parseFloat(this.point.t.toFixed(1)),
               zVal = parseFloat(this.point.z.toFixed(1));
-            if (this.series.xAxis.tickInterval === MONTH) {
-              const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
+            if (this.series.xAxis.tickInterval === month) {
+              const endDate = dayjs(this.x + 6 * day).format('YYYY-MM-DD');
               return `${startDate}~${endDate}
                 <br/>${this.series.name[1]}: ${tVal}
                 <br/>${this.series.name[0]}: ${zVal}`;
@@ -453,8 +461,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
             const startDate = dayjs(this.x).format('YYYY-MM-DD'),
               yVal = parseFloat(this.point.y.toFixed(1)),
               lowVal = parseFloat(this.point.low.toFixed(1));
-            if (this.series.xAxis.tickInterval === MONTH) {
-              const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
+            if (this.series.xAxis.tickInterval === month) {
+              const endDate = dayjs(this.x + 6 * day).format('YYYY-MM-DD');
               return `${startDate}~${endDate}
                 <br/>1RM: ${yVal}K
                 <br/>Avg Weight: ${lowVal}`;
@@ -471,11 +479,11 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
     if (this.page !== 'cloudrun') {
       // 設定圖表x軸時間間距-kidin-1090204
       if (this.dateRange === 'day' && this.dataLength <= 7) {
-        trendChartOptions['xAxis'].tickInterval = DAY;
+        trendChartOptions['xAxis'].tickInterval = day;
       } else if (this.dateRange === 'day' && this.dataLength > 7) {
-        trendChartOptions['xAxis'].tickInterval = WEEK;
+        trendChartOptions['xAxis'].tickInterval = week;
       } else {
-        trendChartOptions['xAxis'].tickInterval = MONTH;
+        trendChartOptions['xAxis'].tickInterval = month;
       }
     }
 
@@ -486,29 +494,29 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
   createDateList() {
     let diff, weekStartDay, weekEndDay;
     if (this.dateRange === 'day') {
-      diff = (this.searchDate[1] - this.searchDate[0]) / DAY;
+      diff = (this.searchDate[1] - this.searchDate[0]) / day;
 
       for (let i = 0; i < diff + 1; i++) {
-        this.dateList.push(this.searchDate[0] + DAY * i);
+        this.dateList.push(this.searchDate[0] + day * i);
       }
     } else if (this.dateRange === 'week') {
       // 周報告開頭是星期日-kidin-1090220
       if (dayjs(this.searchDate[0]).isoWeekday() !== 7) {
-        weekStartDay = this.searchDate[0] - DAY * dayjs(this.searchDate[0]).isoWeekday();
+        weekStartDay = this.searchDate[0] - day * dayjs(this.searchDate[0]).isoWeekday();
       } else {
         weekStartDay = this.searchDate[0];
       }
 
       if (dayjs(this.searchDate[0]).isoWeekday() !== 7) {
-        weekEndDay = this.searchDate[1] - DAY * dayjs(this.searchDate[1]).isoWeekday();
+        weekEndDay = this.searchDate[1] - day * dayjs(this.searchDate[1]).isoWeekday();
       } else {
         weekEndDay = this.searchDate[1];
       }
 
-      diff = (weekEndDay - weekStartDay) / WEEK + 1;
+      diff = (weekEndDay - weekStartDay) / week + 1;
 
       for (let i = 0; i < diff + 1; i++) {
-        this.dateList.push(weekStartDay + WEEK * i);
+        this.dateList.push(weekStartDay + week * i);
       }
     }
   }

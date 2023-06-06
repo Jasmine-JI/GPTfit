@@ -1,7 +1,7 @@
-import { Lang } from '../../models/i18n';
-import { ReportDateType } from '../../models/report-condition';
+import { Lang } from '../../../core/models/common';
+import { ReportDateType } from '../../../core/models/compo/report-condition.model';
 import { getCorrespondingMuscleGroup } from '../../../core/utils/sports';
-import { MuscleCode } from '../../enum/weight-train';
+import { MuscleCode } from '../../../core/enums/sports';
 
 /**
  * 處理重訓運動檔案訓練菜單分析

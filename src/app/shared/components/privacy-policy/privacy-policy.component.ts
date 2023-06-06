@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { AlaApp } from '../../models/app-id';
+import { AlaApp } from '../../../core/enums/common/app-id.enum';
 import { getUrlQueryStrings } from '../../../core/utils';
 
 @Component({

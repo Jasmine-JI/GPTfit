@@ -1,3 +1,6 @@
+/**
+ * 用來判斷gpx台灣區域
+ */
 export const taiwanBorder = [
   // 台灣
   [121.5632, 25.38361],

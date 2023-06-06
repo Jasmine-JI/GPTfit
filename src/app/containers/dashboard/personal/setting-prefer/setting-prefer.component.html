@@ -475,7 +475,7 @@
               (focusout)="handleStepLenInput($event)"
             />
             <span class="valueUnit">
-              {{ 'stepLength' | dataTypeUnit: [null, setting.unit] }}
+              {{ 'stepLength' | dataTypeUnit: { unitType: setting.unit } }}
             </span>
           </div>
           <div class="childPageContent">
@@ -501,7 +501,7 @@
               (focusout)="handleWheelSizeInput($event)"
             />
             <span class="valueUnit">
-              {{ 'wheelSize' | dataTypeUnit: [null, setting.unit] }}
+              {{ 'wheelSize' | dataTypeUnit: { unitType: setting.unit } }}
             </span>
           </div>
         </div>
@@ -625,7 +625,7 @@
               (focusout)="handleTargetDistanceInput($event)"
             />
             <span class="valueUnit">
-              {{ 'targetDistance' | dataTypeUnit: [null, setting.unit] }}
+              {{ 'targetDistance' | dataTypeUnit: { unitType: setting.unit } }}
             </span>
           </div>
           <div class="flexRowWrap childPageContent">
@@ -709,7 +709,7 @@
               (focusout)="handleTargetWeightInput($event)"
             />
             <span class="valueUnit">
-              {{ 'bodyWeight' | dataTypeUnit: [null, setting.unit] }}
+              {{ 'bodyWeight' | dataTypeUnit: { unitType: setting.unit } }}
             </span>
           </div>
           <div class="flexRowWrap childPageContent">

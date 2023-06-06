@@ -15,6 +15,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { chart, charts, each } from 'highcharts';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import { MatDialog } from '@angular/material/dialog';
+import { appPath } from '../../../../app-path.const';
 
 @Component({
   selector: 'app-life-tracking',
@@ -173,7 +174,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
         return;
       } else if (res.resultCode === 400) {
         this.isFileIDNotExist = true;
-        return this.router.navigateByUrl('/404');
+        return this.router.navigateByUrl(`/${appPath.pageNotFound}`);
       }
 
       this.fileInfo = res['trackingData'][0]['fileInfo'];
@@ -204,7 +205,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
 
   goToProfile() {
     this.router.navigateByUrl(
-      `/user-profile/${this.hashIdService.handleUserIdEncode(this.userLink.userId)}`
+      `/${appPath.personal.home}/${this.hashIdService.handleUserIdEncode(this.userLink.userId)}`
     );
   }
 

@@ -1,0 +1,390 @@
+<section class="flexCol">
+  <div class="info__grid">
+    <h5 class="info__type__title">
+      {{ 'universal_activityData_timing' | translate }}
+    </h5>
+    <div
+      *ngTemplateOutlet="
+        oneInfo;
+        context: {
+          title: 'universal_activityData_limit_totalTime',
+          value: activityInfo.totalSecond | sportTime,
+          diff: diffData?.totalSecond ?? 0 | sportTime,
+          isPositiveDiff: diffData?.totalSecond >= 0
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        oneInfo;
+        context: {
+          title: 'universal_activityData_limit_activityTime',
+          value: activityInfo.totalActivitySecond | sportTime,
+          diff: diffData?.totalActivitySecond ?? 0 | sportTime,
+          isPositiveDiff: diffData?.totalActivitySecond >= 0
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        oneInfo;
+        context: {
+          title: 'universal_activityData_limit_restTime',
+          value: activityInfo.totalRestSecond | sportTime,
+          diff: diffData?.totalRestSecond ?? 0 | sportTime,
+          isPositiveDiff: diffData?.totalRestSecond >= 0
+        }
+      "
+    ></div>
+    <h5 class="info__type__title">
+      {{ 'universal_activityData_hr' | translate }}
+    </h5>
+    <div
+      *ngTemplateOutlet="
+        oneInfo;
+        context: {
+          title: 'universal_activityData_limit_avgHr',
+          value: activityInfo.avgHeartRateBpm,
+          unit: 'bpm',
+          diff: diffData?.avgHeartRateBpm ?? 0,
+          isPositiveDiff: diffData?.avgHeartRateBpm >= 0
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        oneInfo;
+        context: {
+          title: 'universal_userProfile_limit_maximalHeartRate',
+          value: activityInfo.maxHeartRateBpm,
+          unit: 'bpm',
+          diff: diffData?.maxHeartRateBpm ?? 0,
+          isPositiveDiff: diffData?.maxHeartRateBpm >= 0
+        }
+      "
+    ></div>
+    <h5 class="info__type__title">
+      {{ 'universal_userProfile_calories' | translate }}
+    </h5>
+    <div
+      *ngTemplateOutlet="
+        oneInfo;
+        context: {
+          title: 'universal_activityData_limit_totalCalorie',
+          value: activityInfo.calories | number: '1.0-2',
+          unit: 'cal',
+          diff: diffData?.calories ?? 0,
+          isPositiveDiff: diffData?.calories >= 0
+        }
+      "
+    ></div>
+    <ng-container
+      *ngIf="
+        includeSportsType([
+          SportType.run,
+          SportType.cycle,
+          SportType.swim,
+          SportType.row,
+          SportType.ball,
+          SportType.complex
+        ])
+      "
+    >
+      <h5 class="info__type__title">
+        {{ 'universal_activityData_distance' | translate }}
+      </h5>
+      <div *ngTemplateOutlet="oneInfo; context: getDistanceContext()"></div>
+      <ng-container *ngIf="includeSportsType([SportType.run, SportType.cycle])">
+        <div
+          *ngTemplateOutlet="
+            oneInfo;
+            context: {
+              title: 'universal_activityData_limit_climbGain',
+              value: activityInfo.elevGain | distanceSibs: elevPipeOption,
+              unit: elevUnit,
+              diff: diffData?.elevGain ?? 0 | distanceSibs: elevPipeOption,
+              isPositiveDiff: diffData?.elevGain >= 0
+            }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            oneInfo;
+            context: {
+              title: 'universal_activityData_limit_climbLoss',
+              value: activityInfo.elevLoss,
+              unit: elevUnit,
+              diff: diffData?.elevLoss ?? 0 | distanceSibs: elevPipeOption,
+              isPositiveDiff: diffData?.elevLoss >= 0
+            }
+          "
+        ></div>
+      </ng-container>
+      <h5 class="info__type__title">
+        {{ 'universal_activityData_speed' | translate }}
+      </h5>
+      <ng-container *ngIf="includeSportsType([SportType.run, SportType.swim, SportType.row])">
+        <div *ngTemplateOutlet="oneInfo; context: getPaceContext('avgSpeed')"></div>
+        <div *ngTemplateOutlet="oneInfo; context: getPaceContext('maxSpeed')"></div>
+      </ng-container>
+      <ng-container *ngIf="excludeSportsType([SportType.run, SportType.swim, SportType.row])">
+        <div *ngTemplateOutlet="oneInfo; context: getSpeedContext('avgSpeed')"></div>
+        <div *ngTemplateOutlet="oneInfo; context: getSpeedContext('maxSpeed')"></div>
+      </ng-container>
+    </ng-container>
+    <ng-container
+      *ngIf="includeSportsType([SportType.run, SportType.cycle, SportType.swim, SportType.row])"
+    >
+      <h5 class="info__type__title">
+        {{ 'universal_activityData_combinedFrequency' | translate }}
+      </h5>
+      <ng-container *ngIf="includeSportsType([SportType.run])">
+        <div
+          *ngTemplateOutlet="
+            oneInfo;
+            context: {
+              title: 'universal_activityData_limit_avgStepCadence',
+              value: activityInfo.runAvgCadence,
+              unit: 'spm',
+              diff: diffData?.runAvgCadence ?? 0,
+              isPositiveDiff: diffData?.runAvgCadence >= 0
+            }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            oneInfo;
+            context: {
+              title: 'universal_activityData_limit_liveMaxStepCadence',
+              value: activityInfo.runMaxCadence,
+              unit: 'spm',
+              diff: diffData?.runMaxCadence ?? 0,
+              isPositiveDiff: diffData?.runMaxCadence >= 0
+            }
+          "
+        ></div>
+      </ng-container>
+      <ng-container *ngIf="includeSportsType([SportType.cycle])">
+        <div
+          *ngTemplateOutlet="
+            oneInfo;
+            context: {
+              title: 'universal_activityData_limit_avgCyclingCadence',
+              value: activityInfo.cycleAvgCadence,
+              unit: 'rpm',
+              diff: diffData?.cycleAvgCadence ?? 0,
+              isPositiveDiff: diffData?.cycleAvgCadence >= 0
+            }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            oneInfo;
+            context: {
+              title: 'universal_activityData_limit_liveMaxCycleCadence',
+              value: activityInfo.cycleMaxCadence,
+              unit: 'rpm',
+              diff: diffData?.cycleMaxCadence ?? 0,
+              isPositiveDiff: diffData?.cycleMaxCadence >= 0
+            }
+          "
+        ></div>
+      </ng-container>
+      <ng-container *ngIf="includeSportsType([SportType.swim])">
+        <div
+          *ngTemplateOutlet="
+            oneInfo;
+            context: {
+              title: 'universal_activityData_limit_avgSwimReps',
+              value: activityInfo.swimAvgCadence,
+              unit: 'spm',
+              diff: diffData?.swimAvgCadence ?? 0,
+              isPositiveDiff: diffData?.swimAvgCadence >= 0
+            }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            oneInfo;
+            context: {
+              title: 'universal_activityData_limit_baetSwimReps',
+              value: activityInfo.swimMaxCadence,
+              unit: 'spm',
+              diff: diffData?.swimMaxCadence ?? 0,
+              isPositiveDiff: diffData?.swimMaxCadence >= 0
+            }
+          "
+        ></div>
+      </ng-container>
+      <ng-container *ngIf="includeSportsType([SportType.row])">
+        <div
+          *ngTemplateOutlet="
+            oneInfo;
+            context: {
+              title: 'universal_activityData_limit_avgRowCadence',
+              value: activityInfo.rowingAvgCadence,
+              unit: 'rpm',
+              diff: diffData?.rowingAvgCadence ?? 0,
+              isPositiveDiff: diffData?.rowingAvgCadence >= 0
+            }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            oneInfo;
+            context: {
+              title: 'universal_activityData_limit_baetRowReps',
+              value: activityInfo.rowingMaxCadence,
+              unit: 'rpm',
+              diff: diffData?.rowingMaxCadence ?? 0,
+              isPositiveDiff: diffData?.rowingMaxCadence >= 0
+            }
+          "
+        ></div>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="includeSportsType([SportType.cycle, SportType.row])">
+      <h5 class="info__type__title">
+        {{ 'universal_activityData_power' | translate }}
+      </h5>
+      <div *ngTemplateOutlet="oneInfo; context: getAvgPowerContext()"></div>
+      <div *ngTemplateOutlet="oneInfo; context: getMaxPowerContext()"></div>
+    </ng-container>
+    <ng-container *ngIf="activityInfo.totalFeedbackEnergy || diffData?.totalFeedbackEnergy">
+      <h5 class="info__type__title">
+        {{ 'universal_activityData_genPower' | translate }}
+      </h5>
+      <div
+        *ngTemplateOutlet="
+          oneInfo;
+          context: {
+            title: 'universal_activityData_totalEnergyGen',
+            value: activityInfo.totalFeedbackEnergy,
+            unit: 'whr',
+            diff: diffData?.totalFeedbackEnergy ?? 0,
+            isPositiveDiff: diffData?.totalFeedbackEnergy >= 0
+          }
+        "
+      ></div>
+    </ng-container>
+    <ng-container *ngIf="includeSportsType([SportType.weightTrain])">
+      <h5 class="info__type__title">
+        {{ 'universal_activityData_sets' | translate }}
+      </h5>
+      <div
+        *ngTemplateOutlet="
+          oneInfo;
+          context: {
+            title: 'universal_activityData_limit_totalActivitySet',
+            value: activityInfo.totalRestLapOrSet,
+            unit: 'sets',
+            diff: diffData?.totalRestLapOrSet ?? 0,
+            isPositiveDiff: diffData?.totalRestLapOrSet >= 0
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          oneInfo;
+          context: {
+            title: 'universal_activityData_limit_totalReps',
+            value: activityInfo.totalReps,
+            unit: 'reps',
+            diff: diffData?.totalReps ?? 0,
+            isPositiveDiff: diffData?.totalReps >= 0
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          oneInfo;
+          context: {
+            title: 'universal_activityData_limit_activiyTotalWeight',
+            value: activityInfo.totalWeightKg | weightSibs: weightPipeOption,
+            unit: userUnit === metric ? 'kg' : 'lb',
+            diff: diffData?.totalWeightKg ?? 0 | weightSibs: weightPipeOption,
+            isPositiveDiff: diffData?.totalWeightKg >= 0
+          }
+        "
+      ></div>
+    </ng-container>
+    <ng-container *ngIf="includeSportsType([SportType.swim])">
+      <h5 class="info__type__title">
+        {{ 'universal_activityData_swimmingDynamics' | translate }}
+      </h5>
+      <div
+        *ngTemplateOutlet="
+          oneInfo;
+          context: {
+            title: 'universal_activityData_limit_totalSwimReps',
+            value: activityInfo?.totalStrokes ?? 0,
+            unit: 'spm',
+            diff: diffData?.totalStrokes ?? 0,
+            isPositiveDiff: diffData?.totalStrokes >= 0
+          }
+        "
+      ></div>
+      <div *ngTemplateOutlet="oneInfo; context: getAvgStrokeContext()"></div>
+      <ng-container *ngIf="activityInfo.avgSwolf || diffData?.avgSwolf">
+        <h5 class="info__type__title">
+          {{ 'Swolf' | translate }}
+        </h5>
+        <div
+          *ngTemplateOutlet="
+            oneInfo;
+            context: {
+              title: 'universal_activityData_limit_avgSwolf',
+              value: activityInfo.avgSwolf ?? 0,
+              unit: 'spm',
+              diff: diffData?.avgSwolf ?? 0,
+              isPositiveDiff: diffData?.avgSwolf >= 0
+            }
+          "
+        ></div>
+        <div
+          *ngTemplateOutlet="
+            oneInfo;
+            context: {
+              title: 'universal_activityData_limit_bestSwolf',
+              value: activityInfo.bestSwolf ?? 0,
+              unit: 'spm',
+              diff: diffData?.bestSwolf ?? 0,
+              isPositiveDiff: diffData?.bestSwolf >= 0
+            }
+          "
+        ></div>
+      </ng-container>
+    </ng-container>
+  </div>
+</section>
+
+<ng-template
+  #oneInfo
+  let-title="title"
+  let-value="value"
+  let-unit="unit"
+  let-diff="diff"
+  let-isPositiveDiff="isPositiveDiff"
+>
+  <div class="flexCol one__info">
+    <h6 class="info__title">{{ title | translate }}</h6>
+    <p
+      class="info__value__unit"
+      [class.base__info]="isBaseFile"
+      [class.compare__info]="!isBaseFile"
+    >
+      <span class="info__value">{{ value ?? '--' }}</span>
+      <span class="info__unit" *ngIf="unit">{{ unit }}</span>
+    </p>
+    <p
+      class="info__diff"
+      [class.positive__diff]="isBaseFile && isPositiveDiff"
+      [class.negative__diff]="isBaseFile && !isPositiveDiff"
+      *ngIf="isCompareMode"
+    >
+      <ng-container *ngIf="compareActivityInfo">
+        {{ isPositiveDiff ? '+' : '' }}{{ diff }}
+      </ng-container>
+    </p>
+  </div>
+</ng-template>

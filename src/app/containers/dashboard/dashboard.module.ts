@@ -37,7 +37,6 @@ import { MyGroupListComponent } from './group/my-group-list/my-group-list.compon
 import { CreateGroupComponent } from './group/create-group/create-group.component';
 import { CommercePlanTableComponent } from './group/commerce-plan-table/commerce-plan-table.component';
 import { GroupInfoComponent as GroupInfoV2Component } from './group-v2/group-info/group-info.component';
-import { SearchGroupComponent } from './group-v2/search-group/search-group.component';
 import { GroupIntroductionComponent } from './group-v2/group-info/group-introduction/group-introduction.component';
 import { SportsReportComponent } from './group-v2/group-info/sports-report/sports-report.component';
 import { LifeTrackingComponent as LifeTrackingV2Component } from './group-v2/group-info/life-tracking/life-tracking.component';
@@ -117,7 +116,7 @@ import {
   ThousandConversionPipe,
   SpeedSibsPipe,
   TemperatureSibsPipe,
-  swimPosture,
+  SwimPosturePipe,
   DataTypeTranslatePipe,
   DataTypeUnitPipe,
   PaiPipe,
@@ -210,7 +209,7 @@ import { MemberAnalysisListComponent } from '../professional';
     ThousandConversionPipe,
     SpeedSibsPipe,
     TemperatureSibsPipe,
-    swimPosture,
+    SwimPosturePipe,
     DataTypeTranslatePipe,
     DataTypeUnitPipe,
     PaiPipe,
@@ -269,7 +268,7 @@ import { MemberAnalysisListComponent } from '../professional';
     ThousandConversionPipe,
     SpeedSibsPipe,
     TemperatureSibsPipe,
-    swimPosture,
+    SwimPosturePipe,
     DataTypeTranslatePipe,
     DataTypeUnitPipe,
     PaiPipe,
@@ -320,7 +319,6 @@ import { MemberAnalysisListComponent } from '../professional';
     CommercePlanTableComponent,
     QrcodeUploadComponent,
     GroupInfoV2Component,
-    SearchGroupComponent,
     GroupIntroductionComponent,
     SportsReportComponent,
     LifeTrackingV2Component,

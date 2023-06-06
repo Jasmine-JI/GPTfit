@@ -49,7 +49,8 @@ export class Api10xxService {
     return <any>this.http.post('/api/v2/user/signIn', body).pipe(
       catchError((err) => throwRxError(err)),
       retry({
-        delay: (errors) => errors.pipe(delay(3000), take(5)),
+        count: 3,
+        delay: 3000,
       })
     );
   }

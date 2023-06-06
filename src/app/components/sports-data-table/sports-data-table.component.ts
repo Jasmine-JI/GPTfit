@@ -28,7 +28,7 @@ import {
   SportPaceSibsPipe,
   WeightSibsPipe,
 } from '../../core/pipes';
-import { AnalysisSportsColumn } from '../../shared/enum/report-analysis';
+import { AnalysisSportsColumn } from '../../core/enums/sports/report-analysis.enum';
 import { MatIconModule } from '@angular/material/icon';
 import { DataDescription } from '../../core/models/compo';
 
@@ -188,7 +188,7 @@ export class SportsDataTableComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * 將基準數據與比較數據比對是否進步
-   * @param index {string}-數據序列
+   * @param index {string}-數據索引
    * @param key {string}-欲比較的數據
    */
   checkProgressive(index: string, key: string) {

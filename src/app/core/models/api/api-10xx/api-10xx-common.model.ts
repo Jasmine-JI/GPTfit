@@ -10,6 +10,7 @@ import { Gender } from '../../../enums/personal/gender.enum';
 import { HrBase } from '../../../enums/sports/heart-rate-base.enum';
 import { WeightTrainingLevel } from '../../../enums/sports/weight-training-level.enum';
 import { SportTarget } from '../api-common/sport-target.model';
+import { BenefitTimeStartZone } from '../../../enums/common';
 
 /**
  * 使用者登入相關資訊
@@ -83,6 +84,9 @@ export interface UserProfile {
     activityTracking?: Array<number>;
     activityTrackingReport?: Array<number>;
     lifeTrackingReport?: Array<number>;
+  };
+  customField?: {
+    activityTimeHRZ: BenefitTimeStartZone;
   };
 }
 

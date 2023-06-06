@@ -10,14 +10,13 @@ import {
 } from '../../../../core/services';
 import { Subject, Subscription, fromEvent, merge, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { UserProfileInfo } from '../../../../shared/models/user-profile-info';
-import { AccountTypeEnum, AccountStatusEnum } from '../../../../shared/enum/account';
+import { UserProfile } from '../../../../core/models/api/api-10xx';
 import dayjs from 'dayjs';
-import { MapLanguageEnum } from '../../../../shared/models/i18n';
-import { SelectDate } from '../../../../shared/models/utils-type';
+import { MapLanguageEnum } from '../../../../core/enums/common';
+import { SelectDate } from '../../../../core/models/common';
 import { DomSanitizer } from '@angular/platform-browser';
 import { EventStatus } from '../../models/activity-content';
-import { formTest } from '../../../../shared/models/form-test';
+import { formTest } from '../../../../core/models/regex/form-test';
 import {
   PaidStatusEnum,
   ProductShipped,
@@ -25,16 +24,16 @@ import {
   ApplyStatus,
   ListStatus,
 } from '../../models/activity-content';
-import { AccessRight } from '../../../../shared/enum/accessright';
+import { AccessRight, QueryString, Domain } from '../../../../core/enums/common';
 import { TranslateService } from '@ngx-translate/core';
-import { codes } from '../../../../shared/models/countryCode';
+import { codes } from '../../../../core/models/const';
 import {
   getLocalStorageObject,
   setUrlQueryString,
   getUrlQueryStrings,
 } from '../../../../core/utils';
-
-type Page = 'activity-list' | 'my-activity';
+import { AccountType, AccountStatus } from '../../../../core/enums/personal';
+import { appPath } from '../../../../app-path.const';
 
 enum AllStatus {
   notEnable,
@@ -51,6 +50,8 @@ const defaultRaceDate = {
   end: dayjs().add(6, 'month'),
 };
 
+const { officialActivity } = appPath;
+
 @Component({
   selector: 'app-activity-list',
   templateUrl: './activity-list.component.html',
@@ -65,7 +66,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    */
   uiFlag = {
     progress: 100,
-    currentPage: <Page>'activity-list',
+    currentPage: officialActivity.activityList,
     editMode: false,
     isMobile: false,
     showManageMenu: false,
@@ -128,7 +129,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   eventList = [];
   effectEventList = [];
   serverTimestamp: number;
-  userProfile: UserProfileInfo;
+  userProfile: UserProfile;
   systemAccessright = AccessRight.guest;
   timeInterval: any;
   allMapInfo: Array<any>;
@@ -143,14 +144,14 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   readonly AccessRight = AccessRight;
   readonly passAdmin = [AccessRight.auditor, AccessRight.pusher];
   readonly countryCodeList = codes;
-  readonly AccountTypeEnum = AccountTypeEnum;
+  readonly AccountTypeEnum = AccountType;
   readonly AllStatus = AllStatus;
+  readonly officialActivity = officialActivity;
 
   constructor(
     private officialActivityService: OfficialActivityService,
     private userService: UserService,
     private router: Router,
-    private sanitizer: DomSanitizer,
     private api20xxService: Api20xxService,
     private translate: TranslateService,
     private authService: AuthService,
@@ -195,8 +196,8 @@ export class ActivityListComponent implements OnInit, OnDestroy {
           this.checkCurrentPage();
         } else {
           this.uiFlag.editMode = false;
-          if (this.uiFlag.currentPage === 'my-activity') {
-            this.router.navigateByUrl(`/official-activity/activity-list`);
+          if (this.uiFlag.currentPage === officialActivity.myActivity) {
+            this.router.navigateByUrl(`/${officialActivity.home}/${officialActivity.activityList}`);
           }
         }
       });
@@ -204,14 +205,13 @@ export class ActivityListComponent implements OnInit, OnDestroy {
 
   /**
    * 確認domain以方便產生雲跑圖片路徑
-   * @author kidin-1101007
    */
   checkDomain() {
     const { hostname, origin } = location;
-    if (hostname === 'www.gptfit.com') {
+    if (hostname === Domain.newProd) {
       this.mapImgPath = `${origin}/app/public_html/cloudrun/update/`;
     } else {
-      this.mapImgPath = 'https://app.alatech.com.tw/app/public_html/cloudrun/update/';
+      this.mapImgPath = `https://${Domain.uat}/app/public_html/cloudrun/update/`;
     }
   }
 
@@ -221,12 +221,12 @@ export class ActivityListComponent implements OnInit, OnDestroy {
    */
   checkCurrentPage() {
     const { pathname } = location,
-      [, mainPath, childPath, ...rest] = pathname.split('/');
-    this.uiFlag.currentPage = childPath as Page;
-    if (childPath === 'activity-list') {
+      [, , childPath] = pathname.split('/');
+    this.uiFlag.currentPage = childPath;
+    if (childPath === officialActivity.activityList) {
       this.checkPage();
       this.getActivityList();
-    } else if (childPath === 'my-activity') {
+    } else if (childPath === officialActivity.myActivity) {
       this.getUserHistory();
     }
   }
@@ -243,7 +243,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
         const searchWords = decodeURIComponent(search);
         const { currentPage } = this.uiFlag;
         switch (currentPage) {
-          case 'activity-list':
+          case officialActivity.activityList:
             if (!search || searchWords.length === 0) {
               delete (this.eventListCondition as any).searchWords;
             } else {
@@ -252,7 +252,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
 
             this.getActivityList();
             break;
-          case 'my-activity':
+          case officialActivity.myActivity:
             this.handleEffectEvent();
             if (searchWords) {
               this.effectEventList = this.effectEventList.filter((_list) =>
@@ -394,7 +394,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
         });
       }
     } else {
-      this.router.navigateByUrl(`/official-activity/activity-list`);
+      this.router.navigateByUrl(`/${officialActivity.home}/${officialActivity.activityList}`);
     }
   }
 
@@ -415,22 +415,17 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   /**
    * 轉導至指定頁面
    * @param e {MouseEvent}
-   * @param page {'contestant-list' | 'edit-activity' | 'edit-carousel'}-欲轉導之頁面
+   * @param page 欲轉導之頁面
    * @param eventId {number}-活動流水id
    * @param canEdit {boolean}-該活動是否可編輯
    * @author kidin-1101013
    */
-  navigatePage(
-    e: MouseEvent,
-    page: 'contestant-list' | 'edit-activity' | 'edit-carousel',
-    eventId: number,
-    canEdit: boolean
-  ) {
+  navigatePage(e: MouseEvent, page: string, eventId: number, canEdit: boolean) {
     e.preventDefault();
-    if (canEdit || page === 'contestant-list') {
-      this.router.navigateByUrl(`/official-activity/${page}/${eventId}`);
-    } else if (page === 'edit-carousel') {
-      this.router.navigateByUrl(`/official-activity/${page}`);
+    if (canEdit || page === officialActivity.contestantList) {
+      this.router.navigateByUrl(`/${officialActivity.home}/${page}/${eventId}`);
+    } else if (page === officialActivity.editCarousel) {
+      this.router.navigateByUrl(`/${officialActivity.home}/${page}`);
     }
   }
 
@@ -874,7 +869,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
   /**
    * 展開或收合詳細資訊
    * @param e {MouseEvent}
-   * @param index {number}-指定之賽事序列
+   * @param index {number}-指定之賽事索引
    * @author kidin-1110217
    */
   toggleDetail(e: MouseEvent, index: number) {
@@ -1036,7 +1031,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
         this.translate.get('hellow world'),
         this.officialActivityService.updateEventUserProfile(body),
       ]).subscribe((resArray) => {
-        const [translateResult, updateResult] = resArray;
+        const [, updateResult] = resArray;
         let msg: string;
         if (this.apiCommonService.checkRes(updateResult)) {
           msg = this.translate.instant('universal_status_updateCompleted');
@@ -1103,7 +1098,7 @@ export class ActivityListComponent implements OnInit, OnDestroy {
     const { accountStatus } = this.userService.getUser().signInfo ?? {
       accountStatus: AllStatus.notEnable,
     };
-    const accountEnable = userProfile && accountStatus === AccountStatusEnum.enabled;
+    const accountEnable = userProfile && accountStatus === AccountStatus.enabled;
     if (fee > 0 && !accountEnable) return AllStatus.notEnable;
     if (applyStatus === ApplyStatus.applyingQuit) return AllStatus.personCanceling;
 
@@ -1112,10 +1107,22 @@ export class ActivityListComponent implements OnInit, OnDestroy {
 
   /**
    * 開啟啟用帳號頁面
-   * @author kidin-1110217
    */
   openEnablePage() {
-    window.open(`/enableAccount?ru=event`, '', 'height=700,width=375,resizable=no');
+    const { portal } = appPath;
+    window.open(
+      `/${portal.enableAccount}?${QueryString.redirectUrl}=event`,
+      '',
+      'height=700,width=375,resizable=no'
+    );
+  }
+
+  /**
+   * 取得指定的活動詳細頁面網址
+   * @param eventId 活動流水編號
+   */
+  getEventDetailUrl(eventId: number) {
+    return `/${officialActivity.home}/${officialActivity.activityDetail}/${eventId}`;
   }
 
   /**

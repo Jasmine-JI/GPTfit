@@ -1,0 +1,12 @@
+@mixin custom-grid($gap: 1rem, $grid-num: 12) {
+  display: grid;
+  gap: $gap;
+  grid-template-columns: repeat($grid-num, 1fr);
+}
+
+@mixin diff-gap-grid($row-gap: 1rem, $colun-gap: 1rem, $grid-num: 12) {
+  display: grid;
+  row-gap: $row-gap;
+  column-gap: $colun-gap;
+  grid-template-columns: repeat($grid-num, 1fr);
+}

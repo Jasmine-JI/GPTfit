@@ -1,7 +1,6 @@
-import { AnalysisSportsColumn } from '../../../shared/enum/report-analysis';
+import { AnalysisSportsColumn, SportType } from '../../../core/enums/sports';
 import { AnalysisOneOption } from '../../../shared/classes/analysis-one-option';
 import { AnalysisOption } from '../../../shared/classes/analysis-option';
-import { SportType } from '../../../shared/enum/sports';
 
 /**
  * 群組與個人運動報告圖表數據表格分析可設定的選項

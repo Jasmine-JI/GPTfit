@@ -16,7 +16,7 @@
         >
           {{ 'universal_adjective_singleTotal' | translate }}
         </ng-container>
-        {{ chartType | dataTypeTranslate: [sportType, unit] | translate }}
+        {{ chartType | dataTypeTranslate: { sportsType: sportType, unitType: unit } | translate }}
       </h6>
     </div>
   </ng-container>
@@ -26,13 +26,13 @@
         <div class="flexCol infoSection">
           <span class="dataNumber">
             <ng-container *ngIf="page === 'cloudrun'">
-              {{ data.bestCostTime | sportTime: [false, false] }}
+              {{ data.bestCostTime | sportTime: { showZeroHour: false, hideSecond: false } }}
             </ng-container>
             <ng-container *ngIf="data.maxStrokeNum || data.maxStrokeNum === 0">
               {{ data.maxStrokeNum }}
             </ng-container>
             <ng-container *ngIf="data.maxTotalTime || data.maxTotalTime === 0">
-              {{ data.maxTotalTime | sportTime: [false, false] }}
+              {{ data.maxTotalTime | sportTime: { showZeroHour: false, hideSecond: false } }}
             </ng-container>
             <ng-container *ngIf="data.maxCalories || data.maxCalories === 0">
               {{ data.maxCalories | thousandConversion: 'cal' }}
@@ -67,19 +67,19 @@
             >
               {{ 'universal_adjective_maxHight' | translate }}
             </ng-container>
-            {{ chartType | dataTypeTranslate: [1, unit] | translate }}
+            {{ chartType | dataTypeTranslate: { sportsType: 1, unitType: unit } | translate }}
           </span>
         </div>
         <div class="flexCol infoSection">
           <span class="dataNumber">
             <ng-container *ngIf="page === 'cloudrun'">
-              {{ data.avgCostTime | sportTime: [false, false] }}
+              {{ data.avgCostTime | sportTime: { showZeroHour: false, hideSecond: false } }}
             </ng-container>
             <ng-container *ngIf="data.avgStrokeNum || data.avgStrokeNum === 0">
               {{ data.avgStrokeNum | number: '1.0-1' }}
             </ng-container>
             <ng-container *ngIf="data.avgTotalTime || data.avgTotalTime === 0">
-              {{ data.avgTotalTime | sportTime: [false, false] }}
+              {{ data.avgTotalTime | sportTime: { showZeroHour: false, hideSecond: false } }}
             </ng-container>
             <ng-container *ngIf="data.avgCalories || data.avgCalories === 0">
               {{ data.avgCalories | thousandConversion: 'cal' }}
@@ -99,7 +99,7 @@
           </span>
           <span class="dataDescription">
             {{ 'universal_adjective_avg' | translate }}
-            {{ chartType | dataTypeTranslate: [1, unit] | translate }}
+            {{ chartType | dataTypeTranslate: { sportsType: 1, unitType: unit } | translate }}
           </span>
         </div>
       </div>

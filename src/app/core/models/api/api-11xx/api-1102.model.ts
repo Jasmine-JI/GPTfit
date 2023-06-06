@@ -1,8 +1,6 @@
-import { ResultCode } from '../../../enums/common/result-code.enum';
-import { BrandType } from '../../../enums/professional/brand-type.enum';
-import { GroupStatus } from '../../../enums/professional/group-status.enum';
-import { GroupJoinStatus } from '../../../enums/professional/group-join-status.enum';
-import { SportType } from '../../../enums/sports/sports-type.enum';
+import { ResultCode, BenefitTimeStartZone } from '../../../enums/common';
+import { BrandType, GroupStatus, GroupJoinStatus } from '../../../enums/professional';
+import { SportType } from '../../../enums/sports';
 import { ShareOption } from './api-11xx-common.model';
 import { SportTarget } from '../api-common/sport-target.model';
 
@@ -18,42 +16,58 @@ export interface Api1102Response {
   resultMessage: string;
   msgCode: number;
   apiCode: number;
-  info: {
-    rtnMsg: string;
-    brandType: BrandType;
-    groupId: string;
-    groupName: string;
-    groupIcon: string;
-    groupDesc: string;
-    groupStatus: GroupStatus;
-    groupVideoUrl: string;
-    selfJoinStatus: GroupJoinStatus;
-    coachType: 2; // 目前已無分別，皆當作2（教練課）
-    classActivityType: Array<SportType>;
-    shareAvatarToMember: ShareOption;
-    shareActivityToMember: ShareOption;
-    shareReportToMember: ShareOption;
-    groupRootInfo: Array<{
-      systemGroupId?: string;
-      systemName?: string;
-      systemIcon?: string;
-      locationGroupId?: string;
-      locationName?: string;
-      locationIcon?: string;
-      brandGroupId?: string;
-      brandName?: string;
-      brandIcon?: string;
-      branchGroupId?: string;
-      branchName?: string;
-      branchIcon?: string;
-      classGroupId?: string;
-      className?: string;
-      classIcon?: string;
-      generalGroupId?: string;
-      generalName?: string;
-      generalIcon?: string;
-      target: SportTarget;
-    }>;
+  info: GroupDetail;
+}
+
+/**
+ * api 1102 response 的 info 內容
+ */
+export interface GroupDetail {
+  rtnMsg: string;
+  brandType: BrandType;
+  groupId: string;
+  groupName: string;
+  groupIcon: string;
+  groupDesc: string;
+  groupStatus: GroupStatus;
+  groupVideoUrl: string;
+  selfJoinStatus: GroupJoinStatus;
+  coachType: 2; // 目前已無分別，皆當作2（教練課）
+  classActivityType: Array<SportType>;
+  shareAvatarToMember: ShareOption;
+  shareActivityToMember: ShareOption;
+  shareReportToMember: ShareOption;
+  groupRootInfo: Array<{
+    systemGroupId?: string;
+    systemName?: string;
+    systemIcon?: string;
+    locationGroupId?: string;
+    locationName?: string;
+    locationIcon?: string;
+    brandGroupId?: string;
+    brandName?: string;
+    brandIcon?: string;
+    branchGroupId?: string;
+    branchName?: string;
+    branchIcon?: string;
+    classGroupId?: string;
+    className?: string;
+    classIcon?: string;
+    generalGroupId?: string;
+    generalName?: string;
+    generalIcon?: string;
     target: SportTarget;
+  }>;
+  target: SportTarget;
+  groupThemeImgUrl: string;
+  customField?: {
+    activityTimeHRZ: BenefitTimeStartZone;
   };
+
+  /**
+   * 以下參數為api 1115，方便合併api 1102和api 1115用
+   */
+  expired?: boolean;
+  commerceStatus?: number;
+  groupLevel?: number;
 }

@@ -1,6 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { lb } from '../../shared/models/bs-constant';
+import { lb } from '../models/const/bs-constant.model';
 import { DataUnitType } from '../enums/common';
+import { DataUnitOption } from '../models/common';
 
 @Pipe({
   name: 'weightSibs',
@@ -9,21 +10,16 @@ import { DataUnitType } from '../enums/common';
 export class WeightSibsPipe implements PipeTransform {
   /**
    * 依公英制轉換重量單位。
-   * @param value {number}-重量
-   * @param args {number[]}-[公英制, 是否回傳單位（0. 是, 1. 否）]
+   * @param value 重量
+   * @param args.unitType 單位類別(公英制)
+   * @param args.showUnit 是否顯示單位
    */
-  transform(value: number, args: number[] = [DataUnitType.metric, 1]): string {
-    const [unitType, showUnit] = args;
-    let finalValue: number, unit: string;
-    if (unitType === DataUnitType.metric) {
-      finalValue = value || 0;
-      unit = 'kg';
-    } else {
-      finalValue = +(value / lb) || 0;
-      unit = 'lb';
-    }
-
+  transform(value: number, args: DataUnitOption): string {
+    const { unitType, showUnit } = args;
+    const isMetric = unitType === undefined || unitType === DataUnitType.metric;
+    const finalValue = isMetric ? value || 0 : +(value / lb) || 0;
+    const unit = isMetric ? 'kg' : 'lb';
     const fixedValue = parseFloat(finalValue.toFixed(0));
-    return showUnit === 0 ? `${fixedValue} ${unit}` : `${fixedValue}`;
+    return showUnit ?? true ? `${fixedValue} ${unit}` : `${fixedValue}`;
   }
 }

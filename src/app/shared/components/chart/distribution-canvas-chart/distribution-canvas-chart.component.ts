@@ -10,13 +10,13 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { SportType } from '../../../enum/sports';
+import { SportType } from '../../../../core/enums/sports';
 import { changeOpacity, mathRounding } from '../../../../core/utils/index';
 import { of, fromEvent, Subject, Subscription, merge } from 'rxjs';
 import { map, debounceTime, takeUntil, tap } from 'rxjs/operators';
-import { ChartBlock } from '../../../enum/chart';
+import { ChartBlock } from '../../../../core/enums/compo';
 import { Percentage } from '../../../classes/percentage';
-import { distributionChartColor } from '../../../models/chart-data';
+import { distributionChartColor } from '../../../../core/models/represent-color';
 import { GlobalEventsService } from '../../../../core/services';
 
 @Component({
@@ -427,7 +427,7 @@ export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDe
 
   /**
    * 取得該區塊之基本設定
-   * @param index {number}-該區塊序列
+   * @param index {number}-該區塊索引
    */
   getBlockSet(index: number) {
     const { leftX, topY, middleY, bottomY, middleX, rightX } = this.chartBaseOption;

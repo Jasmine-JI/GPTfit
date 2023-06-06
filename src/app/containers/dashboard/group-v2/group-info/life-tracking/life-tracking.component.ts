@@ -23,12 +23,12 @@ import {
   ApiCommonService,
 } from '../../../../../core/services';
 import { ProfessionalService } from '../../../../professional/services/professional.service';
-import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
-import { mi } from '../../../../../shared/models/bs-constant';
-import { DataUnitType } from '../../../../../core/enums/common';
+import { ReportConditionOpt } from '../../../../../core/models/compo/report-condition.model';
+import { mi } from '../../../../../core/models/const/bs-constant.model';
+import { DataUnitType, QueryString } from '../../../../../core/enums/common';
 import { GroupLevel, SettingObj } from '../../../../dashboard/models/group-detail';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { stepColor } from '../../../../../shared/models/chart-data';
+import { stepColor } from '../../../../../core/models/represent-color';
 import {
   setLocalStorageObject,
   getLocalStorageObject,
@@ -38,6 +38,7 @@ import {
   countAge,
   displayGroupLevel,
 } from '../../../../../core/utils';
+import { appPath } from '../../../../../app-path.const';
 
 @Component({
   selector: 'app-life-tracking',
@@ -647,7 +648,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 查找指定id在群組列表的序列位置
+   * 查找指定id在群組列表的索引位置
    * @param id {string}-groupId
    * @param list {Array<any>}-group list
    * @author kidin-1100617
@@ -1276,18 +1277,18 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
               }
 
               for (const key in personData[_id]) {
-                const isEffectCountKey = key.toLowerCase().includes('effectcount'),
-                  excludeKey = [
-                    'name',
-                    'gender',
-                    'openPrivacy',
-                    'restHeartRate',
-                    'targetStep',
-                    'totalDeepSecond',
-                    'totalLightSecond',
-                    'totalStandUpSecond',
-                    'belongGroup',
-                  ];
+                const isEffectCountKey = key.toLowerCase().includes('effectcount');
+                const excludeKey = [
+                  'name',
+                  'gender',
+                  'openPrivacy',
+                  'restHeartRate',
+                  'targetStep',
+                  'totalDeepSecond',
+                  'totalLightSecond',
+                  'totalStandUpSecond',
+                  'belongGroup',
+                ];
                 if (!excludeKey.includes(key) && !isEffectCountKey) {
                   let addKey: string, addValue: number;
                   switch (key) {
@@ -2038,9 +2039,9 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    * @author kidin-1100317
    */
   sortData(type: SettingObj, data: Array<any>, sortCategory: string, asc: boolean) {
-    let sortDenominator = 0,
-      swaped = true,
-      [...sortData] = data;
+    let sortDenominator = 0;
+    let swaped = true;
+    const [...sortData] = data;
     for (let i = 0, len = sortData.length; i < len && swaped; i++) {
       swaped = false;
       for (let j = 0; j < len - 1 - i; j++) {
@@ -2131,13 +2132,18 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    * @author kidin-1100524
    */
   goPage(obj: SettingObj, id: string) {
+    const {
+      dashboard,
+      professional: { groupDetail },
+      personal,
+    } = appPath;
     let url: string, hashId: string;
     if (obj === 'group') {
       hashId = this.hashIdService.handleGroupIdEncode(id);
-      url = `/dashboard/group-info/${hashId}`;
+      url = `/${dashboard.home}/${groupDetail.home}/${hashId}`;
     } else {
       hashId = this.hashIdService.handleUserIdEncode(id);
-      url = `/user-profile/${hashId}`;
+      url = `/${personal.home}/${hashId}`;
     }
 
     window.open(url);
@@ -2160,18 +2166,28 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    */
   updateUrl() {
     const {
-        date: { startTimestamp, endTimestamp },
-      } = this.reportConditionOpt,
-      { id } = this.groupInfo,
-      { origin } = location,
-      hashGroupId = this.hashIdService.handleGroupIdEncode(id),
-      startDate = dayjs(startTimestamp).format('YYYY-MM-DD'),
-      endDate = dayjs(endTimestamp).format('YYYY-MM-DD');
+      date: { startTimestamp, endTimestamp },
+    } = this.reportConditionOpt;
+    const { id } = this.groupInfo;
+    const { origin } = location;
+    const hashGroupId = this.hashIdService.handleGroupIdEncode(id);
+    const startDate = dayjs(startTimestamp).format('YYYY-MM-DD');
+    const endDate = dayjs(endTimestamp).format('YYYY-MM-DD');
     let seeMore = '';
     if (this.groupTable.showAll) seeMore += 'g';
     if (this.personTable.showAll) seeMore += 'p';
-    this.previewUrl = `${origin}/dashboard/group-info/${hashGroupId}/life-tracking?startdate=${startDate}&enddate=${endDate}&seemore=${seeMore}&ipm=s
-    `;
+    const queryArr = [
+      `${QueryString.startDate}=${startDate}`,
+      `${QueryString.endDate}=${endDate}`,
+      `${QueryString.seeMore}=${seeMore}`,
+      `${QueryString.printMode}=s`,
+    ];
+    const query = `?${queryArr.join('&')}`;
+    const {
+      dashboard: { home: dashboardHome },
+      professional: { groupDetail },
+    } = appPath;
+    this.previewUrl = `${origin}/${dashboardHome}/${groupDetail.home}/${hashGroupId}/${groupDetail.lifeTracking}${query}`;
   }
 
   /**

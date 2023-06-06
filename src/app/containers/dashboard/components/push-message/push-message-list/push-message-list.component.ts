@@ -9,7 +9,9 @@ import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { PushMessageService } from '../../../services/push-message.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import dayjs from 'dayjs';
-import { AccessRight } from '../../../../../shared/enum/accessright';
+import { AccessRight } from '../../../../../core/enums/common';
+import { appPath } from '../../../../../app-path.const';
+import { QueryString } from '../../../../../core/enums/common';
 
 @Component({
   selector: 'app-push-message-list',
@@ -60,6 +62,7 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
   pushList: any;
 
   readonly AccessRight = AccessRight;
+  readonly createPushLink = `/${appPath.dashboard.home}/${appPath.adminManage.home}/${appPath.adminManage.createPush}`;
 
   constructor(
     private pushMessageService: PushMessageService,
@@ -79,7 +82,6 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
 
   /**
    * 確認當前分頁
-   * @author kidin-1090923
    */
   checkCurrentPage() {
     this.currentPage = {
@@ -105,7 +107,6 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
 
   /**
    * 取得訊息列表
-   * @author kidin-1090917
    */
   getPushMessage() {
     this.uiFlag.isTableLoading = true;
@@ -171,7 +172,6 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
 
   /**
    * 確認是否有未發送的推播
-   * @author kidin-1090923
    */
   checkHaveReservation() {
     this.uiFlag.haveReservation = false;
@@ -185,7 +185,6 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
 
   /**
    * 建立時鐘，若有預約中的推播並且到了推播發送時間時，自動刷新列表
-   * @author kidin-1090923
    */
   createClock() {
     this.timeout = setTimeout(() => {
@@ -201,7 +200,6 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
 
   /**
    * 確認現在時間是否到了推播發送時間，已到時間則刷新列表
-   * @author kidin-1090923
    */
   checkPushTime() {
     for (let i = 0; i < this.res.length; i++) {
@@ -218,7 +216,6 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
   /**
    * 取得選取的時間
    * @param e {event}
-   * @author kidin-1090923
    */
   getSelectDate(e: any) {
     this.filterCondition.startTimeStamp = dayjs(e.startDate).valueOf();
@@ -230,7 +227,6 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
    * @event click
    * @param e {KeyboardEvent}
    * @param index {number}
-   * @author kidin-1090923
    */
   checkCancelPush(e: KeyboardEvent, index: number) {
     e.stopPropagation();
@@ -252,7 +248,6 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
 
   /**
    * 取消未發送的推播
-   * @author kidin-1090923
    */
   cancelPush() {
     const body = {
@@ -275,11 +270,11 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
   /**
    * 導向該則推播
    * @param index {number}
-   * @author kidin-1090923
    */
   navigatePushDetail(index: number) {
+    const { dashboard, adminManage } = appPath;
     this.router.navigateByUrl(
-      `/dashboard/system/push-detail?push_id=${this.res[index].pushNotifyId}`
+      `/${dashboard.home}/${adminManage.home}/${adminManage.pushDetail}?${QueryString.pushId}=${this.res[index].pushNotifyId}`
     );
   }
 

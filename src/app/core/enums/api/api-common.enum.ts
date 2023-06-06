@@ -27,3 +27,19 @@ export enum PrivacyEditObj {
   sportsReport,
   lifeTracking,
 }
+
+/**
+ * 排序類別(升冪為1)
+ */
+export enum SortDirection {
+  asc = 1,
+  desc,
+}
+
+/**
+ * 排序類別(降冪為1)
+ */
+export enum DescFirstSortDirection {
+  desc = 1,
+  asc,
+}

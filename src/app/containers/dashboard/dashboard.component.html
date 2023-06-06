@@ -78,7 +78,7 @@
                   {{ 'universal_deviceSetting_switch' | translate }}
                   {{ 'universal_userAccount_account' | translate }}
                 </li>
-                <li [routerLink]="['/dashboard/user-settings']">
+                <li [routerLink]="[linkList.userSetting]">
                   {{ 'universal_system_accountManagement' | translate }}
                 </li>
               </ul>
@@ -184,7 +184,7 @@
                   itemList: [
                     {
                       type: sideBarList.trainLive,
-                      link: '/dashboard/live/train-live',
+                      link: linkList.trainlive,
                       display: true,
                       nameKey: 'Train live'
                     }
@@ -203,13 +203,13 @@
                   itemList: [
                     {
                       type: sideBarList.myGroup,
-                      link: '/dashboard/my-group-list',
+                      link: linkList.myGroupList,
                       display: true,
                       nameKey: 'universal_group_myGroup'
                     },
                     {
                       type: sideBarList.searchGroup,
-                      link: '/dashboard/group-search',
+                      link: linkList.groupSearch,
                       display: true,
                       nameKey: 'universal_group_searchGroup'
                     }
@@ -223,7 +223,7 @@
                 context: {
                   icon: 'icon-svg_web-icon_p1_083-run',
                   type: sideBarList.myActivity,
-                  link: '/dashboard/activity-list',
+                  link: linkList.activityList,
                   display: uiFlag.sidebarMode !== 'hide',
                   nameKey: 'universal_activityData_myActivities'
                 }
@@ -235,7 +235,7 @@
                 context: {
                   icon: 'icon-svg_web-icon_p1_010-treadmill',
                   type: sideBarList.myDevice,
-                  link: '/dashboard/device',
+                  link: linkList.device,
                   display: uiFlag.sidebarMode !== 'hide',
                   nameKey: 'universal_deviceSetting_myDevice'
                 }
@@ -252,19 +252,19 @@
                   itemList: [
                     {
                       type: sideBarList.sportReport,
-                      link: '/dashboard/sport-report',
+                      link: linkList.personalSportsReport,
                       display: true,
                       nameKey: 'universal_activityData_sportReport'
                     },
                     {
                       type: sideBarList.lifeTracking,
-                      link: '/dashboard/life-tracking',
+                      link: linkList.personalLifeTracking,
                       display: true,
                       nameKey: 'universal_lifeTracking_lifeTracking'
                     },
                     {
-                      type: sideBarList.searchGroup,
-                      link: '/dashboard/cloudrun',
+                      type: sideBarList.cloudrun,
+                      link: linkList.personalCloudrun,
                       display: true,
                       nameKey: 'Cloud run'
                     }
@@ -286,37 +286,37 @@
                   itemList: [
                     {
                       type: sideBarList.innerAdmin,
-                      link: '/dashboard/system/setting-member',
+                      link: linkList.adminSettingMember,
                       display: systemAccessright < AccessRight.brandAdmin,
                       nameKey: 'universal_system_internalAdministrator'
                     },
                     {
                       type: sideBarList.innerSearch,
-                      link: '/dashboard/system/inner-test',
+                      link: linkList.adminInnerTest,
                       display: systemAccessright < AccessRight.brandAdmin,
                       nameKey: 'universal_group_rserGroupQuery'
                     },
                     {
                       type: sideBarList.coordinateTranslate,
-                      link: '/dashboard/system/inner-gpx',
+                      link: linkList.adminInnerGpx,
                       display: systemAccessright <= AccessRight.maintainer,
                       nameKey: 'universal_system_coordinateSystemConversion'
                     },
                     {
                       type: sideBarList.lifeTrackingLog,
-                      link: '/dashboard/system/life-tracking',
+                      link: linkList.adminLifeTracking,
                       display: systemAccessright <= AccessRight.maintainer,
                       nameKey: 'universal_system_lifetrackingLog'
                     },
                     {
                       type: sideBarList.systemLog,
-                      link: '/dashboard/system/system-log',
+                      link: linkList.adminSystemLog,
                       display: systemAccessright <= AccessRight.maintainer,
                       nameKey: '系統日誌'
                     },
                     {
                       type: sideBarList.systemFolder,
-                      link: '/dashboard/system/folder-permission',
+                      link: linkList.adminFolderPermission,
                       display: systemAccessright <= AccessRight.god,
                       nameKey: '系統使用者存取權限設定'
                     }
@@ -336,19 +336,19 @@
                   itemList: [
                     {
                       type: sideBarList.allGroupList,
-                      link: '/dashboard/system/all-group-list',
+                      link: linkList.adminAllGroupList,
                       display: systemAccessright < AccessRight.brandAdmin,
                       nameKey: 'universal_group_listAllGroups'
                     },
                     {
                       type: sideBarList.createBrandGroup,
-                      link: '/dashboard/system/create-brand-group',
+                      link: linkList.adminCreateBrandGroup,
                       display: systemAccessright < AccessRight.brandAdmin,
                       nameKey: '建立健身品牌群組'
                     },
                     {
                       type: sideBarList.createEnterpriseGroup,
-                      link: '/dashboard/system/create-com-group',
+                      link: linkList.adminCreateComGroup,
                       display: systemAccessright < AccessRight.brandAdmin,
                       nameKey: '建立企業經營群組'
                     }
@@ -368,13 +368,13 @@
                   itemList: [
                     {
                       type: sideBarList.createPush,
-                      link: '/dashboard/system/create-push',
+                      link: linkList.adminCreatePush,
                       display: [AccessRight.god, AccessRight.pusher].includes(systemAccessright),
                       nameKey: '建立推播'
                     },
                     {
                       type: sideBarList.pushList,
-                      link: '/dashboard/system/push-list',
+                      link: linkList.adminPushList,
                       display: systemAccessright < AccessRight.brandAdmin,
                       nameKey: '推播清單'
                     }
@@ -394,13 +394,13 @@
                   itemList: [
                     {
                       type: sideBarList.deviceSearch,
-                      link: '/dashboard/system/device-pair-management',
+                      link: linkList.adminDevicePairManagement,
                       display: systemAccessright < AccessRight.brandAdmin,
                       nameKey: 'universal_deviceSetting_deviceInquiry'
                     },
                     {
                       type: sideBarList.deviceLog,
-                      link: '/dashboard/system/device_log',
+                      link: linkList.adminDeviceLog,
                       display: systemAccessright <= AccessRight.maintainer,
                       nameKey: '應用日誌'
                     }
@@ -420,19 +420,19 @@
                   itemList: [
                     {
                       type: sideBarList.operationReport,
-                      link: '/dashboard/system/system-operation-report',
+                      link: linkList.adminSystemOperationReport,
                       display: systemAccessright < AccessRight.brandAdmin,
                       nameKey: 'universal_group_analysisReport'
                     },
                     {
                       type: sideBarList.groupOperationList,
-                      link: '/dashboard/system/group-operation-list',
+                      link: linkList.adminGroupOperationList,
                       display: systemAccessright < AccessRight.brandAdmin,
                       nameKey: '群組分析列表'
                     },
                     {
                       type: sideBarList.appFlowAnalysis,
-                      link: '/dashboard/system/ala-app-analysis',
+                      link: linkList.adminAlaAppAnalysis,
                       display: systemAccessright <= AccessRight.maintainer,
                       nameKey: '流量統計分析'
                     }

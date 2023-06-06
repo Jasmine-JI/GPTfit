@@ -12,12 +12,12 @@ export class SystemIdPipe implements PipeTransform {
    */
   transform(value: number): string {
     switch (value) {
-      case 0:
-        return 'Web';
       case 1:
         return 'iOS';
       case 2:
         return 'Android';
+      default:
+        return 'Web';
     }
   }
 }

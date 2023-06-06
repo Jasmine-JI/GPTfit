@@ -31,7 +31,7 @@ export class OperationDataTableComponent implements OnInit, OnChanges {
 
   /**
    * 展開或收合指定的列數據
-   * @param rowIndex {number}-欲展開或收合的數據清單列序列
+   * @param rowIndex {number}-欲展開或收合的數據清單列索引
    */
   showFullTableData(rowIndex: number) {
     this.showIndex.emit(rowIndex);

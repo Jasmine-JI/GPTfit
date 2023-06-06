@@ -1,5 +1,5 @@
 import { DateRange } from '../date-range';
-import { trendChartColor } from '../../models/chart-data';
+import { trendChartColor } from '../../../core/models/represent-color';
 
 /**
  * 用於個人目標達成率圖表

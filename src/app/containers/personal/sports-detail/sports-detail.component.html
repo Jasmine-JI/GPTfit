@@ -3,39 +3,115 @@
 <app-connection-error *ngIf="connectionError"></app-connection-error>
 <article class="file__content grid-container" *ngIf="baseFileData && !connectionError">
   <div class="function__toolbar grid-col-12" *ngIf="!isPreviewPrint">
-    <app-edit-button
-      [fileName]="baseFileData.fileInfo.dispName"
+    <app-compare-file-selector
       [fileId]="baseFileData.fileInfo.fileId"
-      (changeFileName)="updateFileName($event)"
-      *ngIf="isFileOwner"
-    ></app-edit-button>
-    <app-change-photo-button
-      [fileId]="baseFileData.fileInfo.fileId"
-      [photo]="baseFileData.fileInfo.photo"
-      (changePhoto)="changeFileSenery($event)"
-      *ngIf="isFileOwner"
-    ></app-change-photo-button>
-    <app-privacy-setting-button
-      [fileInfo]="baseFileData.fileInfo"
-      *ngIf="isFileOwner"
-    ></app-privacy-setting-button>
-    <app-share-button
-      [title]="baseFileData.fileInfo.dispName"
-      [fileId]="baseFileData.fileInfo.fileId"
-      *ngIf="isFileOwner"
-    ></app-share-button>
-    <app-download-gpx-button [rawData]="baseFileData" *ngIf="isFileOwner"></app-download-gpx-button>
-    <app-download-csv-button [rawData]="baseFileData" *ngIf="isFileOwner"></app-download-csv-button>
-    <app-print-button [fileId]="baseFileData.fileInfo.fileId"></app-print-button>
-    <app-delete-button
-      [fileId]="baseFileData.fileInfo.fileId"
-      *ngIf="isFileOwner"
-    ></app-delete-button>
+      [sportsType]="+baseFileData.activityInfoLayer.type"
+      [cloudrunMapId]="baseFileData.fileInfo.cloudRunMapId"
+      (selectFile)="selectCompareFile($event)"
+      *ngIf="+baseFileData.activityInfoLayer.type !== SportType.complex && (isLogin | async)"
+    >
+    </app-compare-file-selector>
+    <ng-container *ngIf="!compareFileData">
+      <app-edit-button
+        [fileName]="baseFileData.fileInfo.dispName"
+        [fileId]="baseFileData.fileInfo.fileId"
+        (changeFileName)="updateFileName($event)"
+        *ngIf="isFileOwner"
+      ></app-edit-button>
+      <app-change-photo-button
+        [fileId]="baseFileData.fileInfo.fileId"
+        [photo]="baseFileData.fileInfo.photo"
+        (changePhoto)="changeFileSenery($event)"
+        *ngIf="isFileOwner"
+      ></app-change-photo-button>
+      <app-privacy-setting-button
+        [fileInfo]="baseFileData.fileInfo"
+        *ngIf="isFileOwner"
+      ></app-privacy-setting-button>
+      <app-share-button
+        [title]="baseFileData.fileInfo.dispName"
+        [fileId]="baseFileData.fileInfo.fileId"
+        *ngIf="isFileOwner"
+      ></app-share-button>
+      <app-download-gpx-button
+        [rawData]="baseFileData"
+        *ngIf="isFileOwner"
+      ></app-download-gpx-button>
+      <app-download-csv-button
+        [rawData]="baseFileData"
+        *ngIf="isFileOwner"
+      ></app-download-csv-button>
+      <app-print-button [fileId]="baseFileData.fileInfo.fileId"></app-print-button>
+      <app-delete-button
+        [fileId]="baseFileData.fileInfo.fileId"
+        *ngIf="isFileOwner"
+      ></app-delete-button>
+    </ng-container>
     <app-return-button></app-return-button>
   </div>
   <app-header
-    class="grid-col-12"
-    [baseData]="baseFileData"
-    [compareData]="compareFileData"
+    [ngClass]="{
+      'grid-col-12': !compareFileData,
+      'grid-col-6': compareFileData
+    }"
+    [fileData]="baseFileData"
   ></app-header>
+  <ng-container *ngIf="compareFileData">
+    <app-header class="grid-col-6" [fileData]="compareFileData"></app-header>
+  </ng-container>
+  <app-info-data-image
+    [ngClass]="{
+      'grid-col-12': !compareFileData,
+      'grid-col-6': compareFileData
+    }"
+    [imagePath]="baseFileData.fileInfo.photo"
+    [activityInfo]="baseFileData.activityInfoLayer"
+  ></app-info-data-image>
+  <ng-container *ngIf="compareFileData">
+    <app-info-data-image
+      class="grid-col-6"
+      [imagePath]="compareFileData.fileInfo.photo"
+      [activityInfo]="compareFileData.activityInfoLayer"
+    ></app-info-data-image>
+  </ng-container>
+  <app-all-info-data
+    [ngClass]="{
+      'grid-col-12': !compareFileData,
+      'grid-col-6': compareFileData
+    }"
+    [activityInfo]="baseFileData.activityInfoLayer"
+    [isCompareMode]="compareFileData !== undefined"
+    [compareActivityInfo]="compareFileData?.activityInfoLayer"
+  ></app-all-info-data>
+  <ng-container *ngIf="compareFileData">
+    <app-all-info-data
+      class="grid-col-6"
+      [isBaseFile]="false"
+      [activityInfo]="compareFileData.activityInfoLayer"
+      [isCompareMode]="compareFileData !== undefined"
+    ></app-all-info-data>
+  </ng-container>
+  <ng-container *ngIf="baseFileData.activityLapLayer?.length > 0">
+    <app-lap-info-table
+      [ngClass]="{
+        'grid-col-12': !compareFileData,
+        'grid-col-6': compareFileData
+      }"
+      [sportsType]="+baseFileData.activityInfoLayer.type"
+      [activityLap]="baseFileData.activityLapLayer"
+      [isCompareMode]="compareFileData !== undefined"
+      [compareActivityLap]="compareFileData?.activityLapLayer"
+      [oppsiteLapLength]="compareFileData?.activityLapLayer?.length ?? 0"
+    ></app-lap-info-table>
+    <ng-container *ngIf="compareFileData">
+      <app-lap-info-table
+        class="grid-col-6"
+        [isBaseFile]="false"
+        [sportsType]="+baseFileData.activityInfoLayer.type"
+        [activityLap]="compareFileData.activityLapLayer"
+        [isCompareMode]="compareFileData !== undefined"
+        [oppsiteLapLength]="baseFileData.activityLapLayer.length ?? 0"
+      ></app-lap-info-table>
+    </ng-container>
+  </ng-container>
 </article>

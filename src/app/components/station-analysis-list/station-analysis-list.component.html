@@ -53,7 +53,7 @@
                 gridHeader;
                 context: {
                   titleKey: 'universal_activityData_distance',
-                  unit: ('distanceKilo' | dataTypeUnit: { userUnit }),
+                  unit: ('distanceKilo' | dataTypeUnit: { unitType: userUnit }),
                   sortCode: ComplexSportSortType.totalDistanceMeters,
                   isAscending: stationList.sortDirection === SortDirection.asc
                 }
@@ -63,7 +63,8 @@
               *ngTemplateOutlet="
                 gridHeader;
                 context: {
-                  titleKey: ('speed' | dataTypeTranslate: { sportType: SportType.all, userUnit }),
+                  titleKey:
+                    ('speed' | dataTypeTranslate: { sportType: SportType.all, unitType: userUnit }),
                   sortCode: ComplexSportSortType.avgSpeed,
                   isAscending: stationList.sortDirection === SortDirection.asc
                 }
@@ -73,8 +74,11 @@
               *ngTemplateOutlet="
                 gridHeader;
                 context: {
-                  titleKey: ('cadence' | dataTypeTranslate: { sportType: SportType.all, userUnit }),
-                  unit: ('cadence' | dataTypeUnit: { sportType: SportType.all, userUnit }),
+                  titleKey:
+                    ('cadence'
+                    | dataTypeTranslate: { sportType: SportType.all, unitType: userUnit }),
+                  unit:
+                    ('cadence' | dataTypeUnit: { sportType: SportType.all, unitType: userUnit }),
                   sortCode: ComplexSportSortType.cadence,
                   isAscending: stationList.sortDirection === SortDirection.asc
                 }
@@ -180,7 +184,7 @@
                   gridHeader;
                   context: {
                     titleKey: 'universal_activityData_distance',
-                    unit: ('distanceKilo' | dataTypeUnit: { userUnit }),
+                    unit: ('distanceKilo' | dataTypeUnit: { unitType: userUnit }),
                     sortCode: ComplexSportSortType.totalDistanceMeters,
                     isAscending: stationList.sortDirection === SortDirection.asc
                   }
@@ -190,8 +194,11 @@
                 *ngTemplateOutlet="
                   gridHeader;
                   context: {
-                    titleKey: ('speed' | dataTypeTranslate: { sportType: _station.type, userUnit }),
-                    unit: ('speed' | dataTypeUnit: { sportType: _station.type, userUnit }),
+                    titleKey:
+                      ('speed'
+                      | dataTypeTranslate: { sportType: _station.type, unitType: userUnit }),
+                    unit:
+                      ('speed' | dataTypeUnit: { sportType: _station.type, unitType: userUnit }),
                     sortCode: ComplexSportSortType.avgSpeed,
                     isAscending: stationList.sortDirection === SortDirection.asc
                   }
@@ -202,8 +209,10 @@
                   gridHeader;
                   context: {
                     titleKey:
-                      ('cadence' | dataTypeTranslate: { sportType: _station.type, userUnit }),
-                    unit: ('cadence' | dataTypeUnit: { sportType: _station.type, userUnit }),
+                      ('cadence'
+                      | dataTypeTranslate: { sportType: _station.type, unitType: userUnit }),
+                    unit:
+                      ('cadence' | dataTypeUnit: { sportType: _station.type, unitType: userUnit }),
                     sortCode: ComplexSportSortType.cadence,
                     isAscending: stationList.sortDirection === SortDirection.asc
                   }

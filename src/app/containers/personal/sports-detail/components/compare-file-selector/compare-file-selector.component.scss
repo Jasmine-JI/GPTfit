@@ -1,0 +1,187 @@
+@import 'z-index';
+@import 'overflow-scroll.scss';
+@import 'color.scss';
+@import 'transition.scss';
+@import 'transform.scss';
+
+$condition-border-radius: 10px;
+$horizon-padding: 5px;
+
+@mixin condition-content($width: 100px) {
+  min-width: $width;
+  width: $width;
+  height: fit-content;
+  border-radius: 10px;
+  padding: 0 5px;
+  margin: 0 5px;
+  border: 1px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+    linear-gradient(180deg, rgb(223, 58, 58) 0%, rgb(197, 73, 184) 100%) border-box;
+}
+
+.selector__box {
+  position: absolute;
+  z-index: $float-tips;
+  border-radius: 10px;
+  border: 2px solid rgba(200, 200, 200, 1);
+  padding: 10px;
+  background-color: white;
+  font-size: initial;
+}
+
+.selector__title {
+  padding: 0 0.5rem 0.5rem 0.5rem;
+  margin: 0;
+  font-weight: bold;
+}
+
+.filter__condition__row {
+  box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 25px;
+  align-items: center;
+  padding: 10px $horizon-padding;
+}
+
+.divide__line {
+  margin: 1rem 0;
+  border: 1px solid #acacac;
+}
+
+.sort__row {
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 $horizon-padding;
+}
+
+.condition__item {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.condition__label {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.keyword__input {
+  @include condition-content();
+}
+
+.condition__content {
+  position: relative;
+  @include condition-content();
+}
+
+.current__select__item {
+  cursor: pointer;
+}
+
+.year__condition__content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.year__fold__icon {
+  position: absolute;
+  right: 0;
+  top: 8px;
+}
+
+.drop__list {
+  position: absolute;
+  z-index: $drop-menu;
+  top: 24px;
+  left: 0;
+  min-width: 100px;
+  background-color: white;
+  list-style: none;
+  padding: 5px;
+  margin: 0;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+    linear-gradient(180deg, rgb(223, 58, 58) 0%, rgb(197, 73, 184) 100%) border-box;
+}
+
+.drop__list__item {
+  padding: 0 2px;
+  text-align: center;
+
+  &:hover {
+    color: white;
+    background-color: $primary-blue;
+  }
+}
+
+.sort__button {
+  font-size: 1.5rem;
+}
+
+.file__list {
+  $width: 300px;
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0 0;
+  max-height: 50vh;
+  min-width: $width;
+  width: $width;
+  @include overflow-y-scroll();
+}
+
+.file__list__item {
+  background-color: rgba(49, 49, 49, 0.1);
+  border-radius: 15px;
+  padding: 0.5rem;
+  margin: 5px 0;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(207, 160, 9, 0.1);
+  }
+}
+
+.no__data__text {
+  pointer-events: none;
+}
+
+.date__time {
+  font-size: 0.8rem;
+  color: rgba(14, 14, 14, 0.8);
+}
+
+.file__title {
+  font-weight: bold;
+  margin: 0;
+}
+
+.info__data__grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr;
+  gap: 0.5rem;
+  font-weight: bold;
+}
+
+.file__info__data {
+  font-size: 0.8rem;
+  margin-right: 0.5rem;
+}
+
+.data__icon {
+  font-size: 18px;
+}
+
+.fold__icon {
+  display: inline-block;
+  font-weight: bold;
+  font-size: 0.8rem;
+  transform-origin: center 5px;
+  @include transition(transform);
+}
+
+.unfold {
+  @include el-rotate(180deg);
+  @include transition(transform);
+}

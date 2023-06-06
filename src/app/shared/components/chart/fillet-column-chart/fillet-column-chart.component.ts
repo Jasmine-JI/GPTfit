@@ -13,11 +13,12 @@ import isoWeek from 'dayjs/plugin/isoWeek';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { DisplayPage, planeGColor, planeMaxGColor, fitTimeColor } from '../../../models/chart-data';
-import { mi, ft } from '../../../models/bs-constant';
+import { planeGColor, planeMaxGColor, fitTimeColor } from '../../../../core/models/represent-color';
+import { mi, ft } from '../../../../core/models/const/bs-constant.model';
 import { DataUnitType } from '../../../../core/enums/common';
-import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
-import { SportType } from '../../../enum/sports';
+import { day, month, week } from '../../../../core/models/const';
+import { SportType } from '../../../../core/enums/sports';
+import { DisplayPage } from '../../../../core/models/common';
 
 dayjs.extend(isoWeek);
 
@@ -118,8 +119,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
       .get('hellow world')
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(() => {
-        let trendDataset,
-          chartData = [];
+        let chartData = [];
         switch (this.chartName) {
           case 'StrokeNum':
             chartData = this.data.strokeNum;
@@ -183,7 +183,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
             break;
         }
 
-        trendDataset = [
+        const trendDataset = [
           {
             name: this.tooltipTitle,
             data: chartData,
@@ -196,11 +196,11 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
         if (!['cloudrun'].includes(this.page)) {
           // 設定圖表x軸時間間距-kidin-1090204
           if (this.dateRange === 'day' && chartData.length <= 7) {
-            trendChartOptions['xAxis'].tickInterval = DAY;
+            trendChartOptions['xAxis'].tickInterval = day;
           } else if (this.dateRange === 'day' && chartData.length > 7) {
-            trendChartOptions['xAxis'].tickInterval = WEEK;
+            trendChartOptions['xAxis'].tickInterval = week;
           } else {
-            trendChartOptions['xAxis'].tickInterval = MONTH;
+            trendChartOptions['xAxis'].tickInterval = month;
           }
         }
 
@@ -250,8 +250,8 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
                 zoneTime = `${costhr}:${timeMin}:${timeSecond}`;
               }
 
-              if (this.series.xAxis.tickInterval === MONTH) {
-                const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
+              if (this.series.xAxis.tickInterval === month) {
+                const endDate = dayjs(this.x + 6 * day).format('YYYY-MM-DD');
                 return `${startDate}~${endDate}<br>${this.series.name}: ${zoneTime}`;
               } else {
                 return `${startDate}<br>${this.series.name}: ${zoneTime}`;
@@ -279,8 +279,8 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
                   const value = parseFloat((this.y / mi).toFixed(1)),
                     suffix = 'mi',
                     startDate = dayjs(this.x).format('YYYY-MM-DD');
-                  if (this.series.xAxis.tickInterval === MONTH) {
-                    const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
+                  if (this.series.xAxis.tickInterval === month) {
+                    const endDate = dayjs(this.x + 6 * day).format('YYYY-MM-DD');
                     return `${startDate}~${endDate}<br>${this.series.name}: ${value} ${suffix}`;
                   } else {
                     return `${startDate}<br>${this.series.name}: ${value} ${suffix}`;
@@ -289,8 +289,8 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
                   const value = parseFloat((this.y / ft).toFixed(1)),
                     suffix = 'ft',
                     startDate = dayjs(this.x).format('YYYY-MM-DD');
-                  if (this.series.xAxis.tickInterval === MONTH) {
-                    const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
+                  if (this.series.xAxis.tickInterval === month) {
+                    const endDate = dayjs(this.x + 6 * day).format('YYYY-MM-DD');
                     return `${startDate}~${endDate}<br>${this.series.name}: ${value} ${suffix}`;
                   } else {
                     return `${startDate}<br>${this.series.name}: ${value} ${suffix}`;
@@ -317,8 +317,8 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
                   const value = parseFloat((this.y / 1000).toFixed(1)),
                     suffix = 'km',
                     startDate = dayjs(this.x).format('YYYY-MM-DD');
-                  if (this.series.xAxis.tickInterval === MONTH) {
-                    const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
+                  if (this.series.xAxis.tickInterval === month) {
+                    const endDate = dayjs(this.x + 6 * day).format('YYYY-MM-DD');
                     return `${startDate}~${endDate}
                     <br>${this.series.name}: ${value} ${suffix}
                   `;
@@ -331,8 +331,8 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
                   const value = parseFloat(this.y.toFixed(1)),
                     suffix = 'm',
                     startDate = dayjs(this.x).format('YYYY-MM-DD');
-                  if (this.series.xAxis.tickInterval === MONTH) {
-                    const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
+                  if (this.series.xAxis.tickInterval === month) {
+                    const endDate = dayjs(this.x + 6 * day).format('YYYY-MM-DD');
                     return `${startDate}~${endDate}<br>${this.series.name}: ${value} ${suffix}`;
                   } else {
                     return `${startDate}<br>${this.series.name}: ${value} ${suffix}`;
@@ -346,8 +346,8 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
             formatter: function () {
               const value = parseFloat(this.y.toFixed(1)),
                 startDate = dayjs(this.x).format('YYYY-MM-DD');
-              if (this.series.xAxis.tickInterval === MONTH) {
-                const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
+              if (this.series.xAxis.tickInterval === month) {
+                const endDate = dayjs(this.x + 6 * day).format('YYYY-MM-DD');
                 return `${startDate}~${endDate}<br>${this.series.name}: ${value}`;
               } else {
                 return `${startDate}<br>${this.series.name}: ${value}`;
@@ -367,29 +367,29 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
   createDateList() {
     let diff, weekStartDay, weekEndDay;
     if (this.dateRange === 'day') {
-      diff = (this.searchDate[1] - this.searchDate[0]) / DAY;
+      diff = (this.searchDate[1] - this.searchDate[0]) / day;
 
       for (let i = 0; i < diff + 1; i++) {
-        this.dateList.push(this.searchDate[0] + DAY * i);
+        this.dateList.push(this.searchDate[0] + day * i);
       }
     } else if (this.dateRange === 'week') {
       // 周報告開頭是星期日-kidin-1090220
       if (dayjs(this.searchDate[0]).isoWeekday() !== 7) {
-        weekStartDay = this.searchDate[0] - DAY * dayjs(this.searchDate[0]).isoWeekday();
+        weekStartDay = this.searchDate[0] - day * dayjs(this.searchDate[0]).isoWeekday();
       } else {
         weekStartDay = this.searchDate[0];
       }
 
       if (dayjs(this.searchDate[0]).isoWeekday() !== 7) {
-        weekEndDay = this.searchDate[1] - DAY * dayjs(this.searchDate[1]).isoWeekday();
+        weekEndDay = this.searchDate[1] - day * dayjs(this.searchDate[1]).isoWeekday();
       } else {
         weekEndDay = this.searchDate[1];
       }
 
-      diff = (weekEndDay - weekStartDay) / WEEK + 1;
+      diff = (weekEndDay - weekStartDay) / week + 1;
 
       for (let i = 0; i < diff + 1; i++) {
-        this.dateList.push(weekStartDay + WEEK * i);
+        this.dateList.push(weekStartDay + week * i);
       }
     }
   }

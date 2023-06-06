@@ -6,7 +6,7 @@
     <button
       class="alatech-btn alatech-btn--default"
       title="{{ 'universal_operating_back' | translate }}"
-      [routerLink]="['/dashboard/my-group-list']"
+      [routerLink]="[backUrl]"
     >
       {{ 'universal_operating_back' | translate }}
     </button>
@@ -55,13 +55,15 @@
     <mat-header-cell *matHeaderCellDef>{{
       'universal_activityData_name' | translate
     }}</mat-header-cell>
-    <mat-cell *matCellDef="let row">{{ row.groupName }}</mat-cell>
+    <mat-cell class="row__hover" *matCellDef="let row">{{ row.groupName }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="time">
     <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" start="asc">
       {{ 'universal_group_status' | translate }}
     </mat-header-cell>
-    <mat-cell *matCellDef="let row">{{ row.groupStatus | groupStatus | translate }}</mat-cell>
+    <mat-cell class="row__hover" *matCellDef="let row">{{
+      row.groupStatus | groupStatus | translate
+    }}</mat-cell>
   </ng-container>
   <mat-header-row *matHeaderRowDef="['info', 'time']"></mat-header-row>
   <mat-row *matRowDef="let logRow; columns: ['info', 'time']" (click)="goDetail(logRow.groupId)">

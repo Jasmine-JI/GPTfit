@@ -8,3 +8,7 @@ export * from './print-button/print-button.component';
 export * from './privacy-setting-button/privacy-setting-button.component';
 export * from './return-button/return-button.component';
 export * from './share-button/share-button.component';
+export * from './compare-file-selector/compare-file-selector.component';
+export * from './info-data-image/info-data-image.component';
+export * from './all-info-data/all-info-data.component';
+export * from './lap-info-table/lap-info-table.component';

@@ -21,7 +21,7 @@ import { AppFirstLoginComponent } from './components/app-sign/app-first-login/ap
 import { QRCodeModule } from 'angularx-qrcode';
 import { AppCompressDataComponent } from './components/app-sign/app-compress-data/app-compress-data.component';
 import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-account/app-destroy-account.component';
-import { HashIdService, DetectInappService } from '../../core/services';
+import { HashIdService, DetectInappService, QrcodeService } from '../../core/services';
 import {
   SportPaceSibsPipe,
   SportTypeIconPipe,
@@ -46,7 +46,7 @@ import {
   ThousandConversionPipe,
   SpeedSibsPipe,
   TemperatureSibsPipe,
-  swimPosture,
+  SwimPosturePipe,
   DataTypeTranslatePipe,
   DataTypeUnitPipe,
   PaiPipe,
@@ -104,7 +104,7 @@ import { LoadingBarComponent } from '../../components';
     ThousandConversionPipe,
     SpeedSibsPipe,
     TemperatureSibsPipe,
-    swimPosture,
+    SwimPosturePipe,
     DataTypeTranslatePipe,
     DataTypeUnitPipe,
     PaiPipe,
@@ -132,6 +132,7 @@ import { LoadingBarComponent } from '../../components';
   providers: [
     HashIdService,
     DetectInappService,
+    QrcodeService,
     SportPaceSibsPipe,
     SportPaceSibsPipe,
     SexPipe,
@@ -154,7 +155,7 @@ import { LoadingBarComponent } from '../../components';
     ThousandConversionPipe,
     SpeedSibsPipe,
     TemperatureSibsPipe,
-    swimPosture,
+    SwimPosturePipe,
     DataTypeTranslatePipe,
     DataTypeUnitPipe,
     PaiPipe,
