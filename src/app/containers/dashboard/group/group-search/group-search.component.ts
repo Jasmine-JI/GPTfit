@@ -4,7 +4,9 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { AuthService, HashIdService, Api11xxService } from '../../../../core/services';
-import { getUrlQueryStrings } from '../../../../core/utils/index';
+import { getUrlQueryStrings } from '../../../../core/utils';
+import { appPath } from '../../../../app-path.const';
+import { QueryString } from '../../../../core/enums/common';
 
 @Component({
   selector: 'app-group-search',
@@ -31,6 +33,8 @@ export class GroupSearchComponent implements OnInit {
   sortTable: MatSort;
   @ViewChild('filter', { static: false })
   filter: ElementRef;
+
+  readonly backUrl = `/${appPath.dashboard.home}/${appPath.professional.myGroupList}`;
 
   constructor(
     private api11xxService: Api11xxService,
@@ -82,24 +86,21 @@ export class GroupSearchComponent implements OnInit {
         this.isLoading = false;
         this.logSource.data = res.info.groupList;
         this.totalCount = res.info.totalCounts;
-        if (this.logSource.data.length === 0) {
-          this.isEmpty = true;
-        } else {
-          this.isEmpty = false;
-        }
-        const url =
-          '/dashboard/group-search?' +
-          `pageNumber=${this.currentPage.pageIndex + 1}&searchWords=${(
-            this.searchWords as string
-          ).trim()}` +
-          `&groupLevel=${this.groupLevel}`;
-        this.router.navigateByUrl(url);
+        this.isEmpty = this.logSource.data.length === 0;
+        const { dashboard, professional } = appPath;
+        const { pageNumber, searchWords, groupLevel } = QueryString;
+        const pathName = `/${dashboard.home}/${professional.groupSearch}`;
+        const query = `?${pageNumber}=${this.currentPage.pageIndex + 1}&${searchWords}=${(
+          this.searchWords as string
+        ).trim()}&${groupLevel}=${this.groupLevel}`;
+        this.router.navigateByUrl(pathName + query);
       });
     }
   }
+
   goDetail(groupId) {
-    this.router.navigateByUrl(
-      `dashboard/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}`
-    );
+    const { dashboard, professional } = appPath;
+    const hashGroupId = this.hashIdService.handleGroupIdEncode(groupId);
+    this.router.navigateByUrl(`${dashboard.home}/${professional.groupDetail.home}/${hashGroupId}`);
   }
 }

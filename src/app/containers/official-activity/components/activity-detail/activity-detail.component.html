@@ -124,9 +124,7 @@
         </li>
       </ng-container>
       <li>
-        <a [href]="'/official-activity/leaderboard?eventId=' + eventInfo.eventId">
-          {{ 'universal_race_leaderboard' | translate }}&nbsp;→
-        </a>
+        <a [href]="leaderboardUrl"> {{ 'universal_race_leaderboard' | translate }}&nbsp;→ </a>
       </li>
     </ul>
     <button class="switch__buton" *ngIf="uiFlag.showSwitchButton" (click)="switchNext()">

@@ -11,10 +11,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { AnalysisOneOption } from '../../shared/classes/analysis-one-option';
-import { SportType } from '../../shared/enum/sports';
-import { BrandType, GroupLevel } from '../../shared/enum/professional';
-import { AnalysisSportsColumn } from '../../shared/enum/report-analysis';
-import { MuscleAnalysisColumn } from '../../shared/enum/weight-train';
+import { BrandType, GroupLevel } from '../../core/enums/professional';
+import { AnalysisSportsColumn, MuscleAnalysisColumn, SportType } from '../../core/enums/sports';
 
 @Component({
   selector: 'app-analysis-option',
@@ -43,7 +41,6 @@ export class AnalysisOptionComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * 變更單一階層項目選擇狀態
    * @param layer {AnalysisOneOption}-單一階層選項
-   * @author kidin-1110331
    */
   changeLayerSelectedStatus(layer: AnalysisOneOption) {
     layer.toggleSelected();
@@ -53,7 +50,6 @@ export class AnalysisOptionComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * 變更單一欄位項目選擇狀態
    * @param column {AnalysisOneOption}-單一欄位選項
-   * @author kidin-1110331
    */
   changeColumnSelectedStatus(column: AnalysisOneOption) {
     column.toggleSelected();

@@ -6,10 +6,12 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { ProfessionalService } from '../../../../professional/services/professional.service';
-import { ReportCondition, ReportDateType } from '../../../../../shared/models/report-condition';
+import {
+  ReportCondition,
+  ReportDateType,
+} from '../../../../../core/models/compo/report-condition.model';
 import { Subject, of, combineLatest, fromEvent, Subscription, merge } from 'rxjs';
 import { takeUntil, switchMap, map, tap, debounceTime } from 'rxjs/operators';
-import { SportType } from '../../../../../shared/enum/sports';
 import {
   getUrlQueryStrings,
   deepCopy,
@@ -18,24 +20,23 @@ import {
   speedToPace,
 } from '../../../../../core/utils';
 import { DateRange } from '../../../../../shared/classes/date-range';
-import { BrandType, GroupLevel } from '../../../../../shared/enum/professional';
-import { DateUnit } from '../../../../../shared/enum/report';
+import { BrandType, GroupLevel } from '../../../../../core/enums/professional';
 import { ReportDateUnit } from '../../../../../shared/classes/report-date-unit';
 import { GroupSportsChartData } from '../../../../../shared/classes/sports-report/group-sports-chart-data';
 import { GroupSportsReport } from '../../../../../shared/classes/sports-report/sports-report';
 import { GroupSportsReportInfo } from '../../../../../shared/classes/sports-report/group-sports-report-info';
 import { AllGroupMember } from '../../../../../shared/classes/all-group-member';
-import { SportsParameter } from '../../../../../shared/models/sports-report';
-import { mi, ft, lb } from '../../../../../shared/models/bs-constant';
+import { SportsParameter } from '../../../../../core/models/compo';
+import { mi, ft, lb, errorMessage } from '../../../../../core/models/const';
 import { SportsAnalysisSort } from '../../../../../shared/classes/sports-report/sports-analysis-sort';
 import { ProfessionalAnalysisOption } from '../../../../professional/classes/professional-analysis-option';
 import { ProfessionalChartAnalysisOption } from '../../../../professional/classes/professional-chart-analysis-option';
-import { AnalysisSportsColumn } from '../../../../../shared/enum/report-analysis';
-import { AnalysisAssignMenu } from '../../../../../shared/models/report-analysis';
-import { sportTypeColor, trendChartColor } from '../../../../../shared/models/chart-data';
+import { AnalysisSportsColumn } from '../../../../../core/enums/sports/report-analysis.enum';
+import { AnalysisAssignMenu } from '../../../../../core/models/compo';
+import { sportTypeColor, trendChartColor } from '../../../../../core/models/represent-color';
 import { TargetField, TargetConditionMap } from '../../../../../core/models/api/api-common';
-import { MuscleGroup } from '../../../../../shared/enum/weight-train';
-import { REGEX_GROUP_ID } from '../../../../../shared/models/utils-constant';
+import { MuscleGroup, SportType } from '../../../../../core/enums/sports';
+import { groupIdReg } from '../../../../../core/models/regex';
 import { DefaultDateRange } from '../../../../../shared/classes/default-date-range';
 import {
   AuthService,
@@ -47,14 +48,17 @@ import {
   HashIdService,
   HintDialogService,
 } from '../../../../../core/services';
-import { BenefitTimeStartZone, DataUnitType, QueryString } from '../../../../../core/enums/common';
+import {
+  BenefitTimeStartZone,
+  DataUnitType,
+  QueryString,
+  DateUnit,
+} from '../../../../../core/enums/common';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { DataDescription } from '../../../../../core/models/compo';
 
 dayjs.extend(isoWeek);
-
-const ERROR_MESSAGE = 'Error! Please try again later.';
 
 @Component({
   selector: 'app-sports-report',
@@ -526,7 +530,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         )
         .subscribe((resultArray) => {
           // 陣列為空則顯示錯誤訊息
-          if (resultArray.length === 0) return this.hintDialogService.openAlert(ERROR_MESSAGE);
+          if (resultArray.length === 0) return this.hintDialogService.openAlert(errorMessage);
           this.changeColumnOption(sportType as SportType, level as GroupLevel);
           this.initFlag();
           this.createReport(condition, resultArray);
@@ -693,11 +697,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
       const {
         groups: { branchId, classId },
-      } = REGEX_GROUP_ID.exec(id as string) as any;
+      } = groupIdReg.exec(id as string) as any;
       for (const _id in allGroupInfo) {
         const {
           groups: { branchId: _branchId, classId: _classId },
-        } = REGEX_GROUP_ID.exec(_id) as any;
+        } = groupIdReg.exec(_id) as any;
         if (_branchId !== branchId) {
           delete allGroupInfo[_id];
           continue;
@@ -806,8 +810,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
             result.update(pace, paceUnit);
           } else {
             isMetric
-              ? result.update(value, 'km/hr')
-              : result.update(mathRounding(value / mi, 2), 'mi/hr');
+              ? result.update(value, 'kph')
+              : result.update(mathRounding(value / mi, 2), 'mph');
           }
 
           break;
@@ -1164,7 +1168,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       case SportType.run:
         return isMetric ? 'min/km' : 'min/mi';
       case SportType.cycle:
-        return isMetric ? 'km/hr' : 'mi/hr';
+        return isMetric ? 'kph' : 'mph';
       case SportType.swim:
         return 'min/100m';
       case SportType.row:
@@ -1192,7 +1196,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    * @author kidin-1091211
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

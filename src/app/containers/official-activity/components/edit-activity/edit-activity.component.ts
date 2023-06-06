@@ -10,15 +10,14 @@ import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import dayjs from 'dayjs';
-import { Sex } from '../../../../shared/enum/personal';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
-import { MapLanguageEnum } from '../../../../shared/models/i18n';
+import { MapLanguageEnum } from '../../../../core/enums/common';
 import * as DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
 import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
-import { AlbumType } from '../../../../shared/models/image';
+import { AlbumType } from '../../../../core/enums/api';
 import { ImageUploadService } from '../../../dashboard/services/image-upload.service';
-import { SelectDate } from '../../../../shared/models/utils-type';
+import { SelectDate } from '../../../../core/models/common';
 import {
   EventInfo,
   EventDetail,
@@ -26,7 +25,7 @@ import {
   HaveProduct,
   EventStatus,
 } from '../../models/activity-content';
-import { AccessRight } from '../../../../shared/enum/accessright';
+import { AccessRight } from '../../../../core/enums/common';
 import {
   setLocalStorageObject,
   getLocalStorageObject,
@@ -36,7 +35,9 @@ import {
   base64ToFile,
   deepCopy,
 } from '../../../../core/utils';
-import { DAY } from '../../../../shared/models/utils-constant';
+import { day } from '../../../../core/models/const';
+import { Gender } from '../../../../core/enums/personal';
+import { appPath } from '../../../../app-path.const';
 
 const leaveMessage = '尚未儲存，是否仍要離開此頁面？';
 const contentTextLimit = 2500; // 詳細內容單一區塊字數上限
@@ -100,6 +101,11 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     applyFeeId: [],
   };
 
+  /**
+   * 編輯文字區塊暫存文字，處理每次輸入文字時selection會從零開始的問題
+   */
+  tempContent = '';
+
   private compareContent = {
     eventInfo: <EventInfo>null,
     eventDetail: <EventDetail>null,
@@ -109,7 +115,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
   readonly AlbumType = AlbumType;
   readonly ageList = this.createAgeList();
   readonly CardTypeEnum = CardTypeEnum;
-  readonly Sex = Sex;
+  readonly Sex = Gender;
   readonly HaveProduct = HaveProduct;
   readonly EventStatus = EventStatus;
   readonly HaveNumberLimit = HaveNumberLimit;
@@ -205,12 +211,12 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101020
    */
   checkEditMode() {
-    this.eventId = +this.route.snapshot.paramMap.get('eventId');
+    this.eventId = +this.route.snapshot.paramMap.get(appPath.officialActivity.eventId);
     if (this.eventId < 0) {
       this.uiFlag.editMode = 'create';
     } else {
       this.uiFlag.editMode = 'edit';
-      this.applyStartDateMin = this.currentTimestamp * 1000 + DAY;
+      this.applyStartDateMin = this.currentTimestamp * 1000 + day;
     }
   }
 
@@ -224,17 +230,15 @@ export class EditActivityComponent implements OnInit, OnDestroy {
     if (eventDraftString) {
       const eventDraft = JSON.parse(eventDraftString);
       const { eventId: draftEventId } = eventDraft.eventInfo;
-      if (draftEventId === eventId) this.askImportDraft(eventDraft, eventId);
+      if (draftEventId === eventId) this.askImportDraft(eventDraft);
     }
   }
 
   /**
    * 跳出提示框詢問是否引入草稿
    * @param draft {any}-草稿內容
-   * @param eventId {number}-活動流水id
-   * @author kidin-1101029
    */
-  askImportDraft(draft: any, eventId: number) {
+  askImportDraft(draft: any) {
     const importMessage = '存在暫存草稿，是否引入？';
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
@@ -282,7 +286,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1101029
    */
   getEvent() {
-    const eventId = +this.route.snapshot.paramMap.get('eventId');
+    const eventId = +this.route.snapshot.paramMap.get(appPath.officialActivity.eventId);
     const { editMode } = this.uiFlag;
     if (editMode === 'create') {
       this.createNewEventBody();
@@ -372,7 +376,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         {
           id: 1,
           name: '分組',
-          gender: Sex.unlimit,
+          gender: Gender.unlimit,
         },
       ],
     };
@@ -399,7 +403,8 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         const { eventStatus } = this.eventInfo;
         if (eventStatus === EventStatus.cancel) {
           // 取消賽事則該賽事凍結不得編輯
-          this.router.navigateByUrl('/official-activity/activity-list');
+          const { officialActivity } = appPath;
+          this.router.navigateByUrl(`/${officialActivity.home}/${officialActivity.activityList}`);
         } else {
           this.eventDetail = this.filterVarible(eventDetail);
           this.compareContent = deepCopy({
@@ -523,7 +528,10 @@ export class EditActivityComponent implements OnInit, OnDestroy {
           if (this.apiCommonService.checkRes(result)) {
             this.saveSuccess();
             const newEventId = result.eventId;
-            this.router.navigateByUrl(`/official-activity/activity-detail/${newEventId}`);
+            const { officialActivity } = appPath;
+            this.router.navigateByUrl(
+              `/${officialActivity.home}/${officialActivity.activityDetail}/${newEventId}`
+            );
           }
 
           this.uiFlag.progress = 100;
@@ -665,7 +673,9 @@ export class EditActivityComponent implements OnInit, OnDestroy {
         .subscribe((result) => {
           if (this.apiCommonService.checkRes(result)) {
             this.saveSuccess();
-            this.router.navigateByUrl(`/official-activity/activity-detail/${targetEventId}`);
+            const { officialActivity } = appPath;
+            const url = `/${officialActivity.home}/${officialActivity.activityDetail}/${targetEventId}`;
+            this.router.navigateByUrl(url);
           }
 
           this.uiFlag.progress = 100;
@@ -1257,21 +1267,39 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * 輸入區塊文字
    * @param e {ChangeEvent}-ckeditor change event
    * @param id {number}-區塊前端自定義流水id
-   * @param kidin-1101021
    */
   handleContentTextInput(e: ChangeEvent, id: number) {
+    const oldText = this.eventDetail.content[id - 1].text;
     const newText = e.editor.getData();
     const innerHtmlLengthOver = newText.length > contentInnerHtmlLimit;
     const textLengthOver = this.countContentLength(newText) > contentTextLimit;
+    if (oldText === newText) return false;
     if (innerHtmlLengthOver || textLengthOver) {
-      const { text } = this.eventDetail.content[id - 1];
-      e.editor.setData(text);
+      e.editor.setData(this.tempContent);
       this.hintDialogService.showSnackBar('HTML或字數超出限制');
     } else {
-      this.eventDetail.content[id - 1].text = newText;
+      this.tempContent = newText;
     }
 
     this.saveDraft();
+  }
+
+  /**
+   * 聚焦時，將該區塊文字複製並暫存
+   * @param e 聚焦事件
+   * @param id 區塊編號
+   */
+  handleFocusInput(e, id: number) {
+    this.tempContent = this.eventDetail.content[id - 1].text;
+  }
+
+  /**
+   * 離焦時，將該區塊編輯後的文字存回原有內容中
+   * @param e 離焦事件
+   * @param id 區塊編號
+   */
+  handleFocusoutInput(e, id: number) {
+    this.eventDetail.content[id - 1].text = this.tempContent;
   }
 
   /**
@@ -1394,7 +1422,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
 
   /**
    * 變更內容區塊排序
-   * @param index {number}-內容序列
+   * @param index {number}-內容索引
    * @param direction {'up' | 'down'}-目標移動方向
    * @author kidin-1101222
    */
@@ -1591,7 +1619,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * @param gender {number}-所選性別
    * @author kidin-1101026
    */
-  selectLimitGender(e: MouseEvent, gender: Sex) {
+  selectLimitGender(e: MouseEvent, gender: Gender) {
     e.stopPropagation();
     const targetIndex = this.uiFlag.showGenderSelector - 1;
     const oldGenderLimit = this.eventDetail.group[targetIndex].gender;
@@ -1652,7 +1680,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
       this.eventDetail.group.push({
         id: newId,
         name: '',
-        gender: Sex.unlimit,
+        gender: Gender.unlimit,
       });
     } else {
       const newId = this.eventDetail.applyFee.length + 1;
@@ -1863,7 +1891,7 @@ export class EditActivityComponent implements OnInit, OnDestroy {
    * 解除rxjs訂閱
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

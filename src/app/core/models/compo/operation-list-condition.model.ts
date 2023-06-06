@@ -1,4 +1,4 @@
-import { SortDirection } from '../../enums/compo';
+import { DescFirstSortDirection } from '../../enums/api';
 import { ListItem } from './single-drop-list.model';
 
 /**
@@ -38,5 +38,5 @@ export interface OperationConditionResult {
     value?: number | string;
   }>;
   sortType: number;
-  sortDirection: SortDirection;
+  sortDirection: DescFirstSortDirection;
 }

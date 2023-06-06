@@ -42,7 +42,7 @@ import {
 } from '../../../core/utils';
 import { genderColor } from '../../../core/models/represent-color';
 import { DateUnit } from '../../../core/enums/common';
-import { operationTrendColor, sportTypeColor } from '../../../shared/models/chart-data';
+import { operationTrendColor, sportTypeColor } from '../../../core/models/represent-color';
 import { TimeFormatPipe } from '../../../core/pipes';
 import { MultipleUnfoldStatus } from '../../../core/classes';
 
@@ -1488,8 +1488,8 @@ export class SystemOperationReportComponent implements OnInit {
   }
 
   /**
-   * 根據數據序列取得比較表格列標頭
-   * @param index {number}-數據序列
+   * 根據數據索引取得比較表格列標頭
+   * @param index {number}-數據索引
    */
   getCompareRowHeader(index: number) {
     const { trendChartUnit } = this;
@@ -1527,7 +1527,7 @@ export class SystemOperationReportComponent implements OnInit {
   }
 
   /**
-   * 取得根據範圍日期顯示單位將數據切分兩個時期的切分序列
+   * 取得根據範圍日期顯示單位將數據切分兩個時期的切分索引
    * @param rangeValue {Array<Array<number>>}-報告日期清單
    */
   getSplitIndex(rangeValue: Array<Array<number>>) {
@@ -1544,7 +1544,7 @@ export class SystemOperationReportComponent implements OnInit {
   }
 
   /**
-   * 取得根據範圍日期顯示單位將數據切分兩年的切分序列
+   * 取得根據範圍日期顯示單位將數據切分兩年的切分索引
    * @param rangeValue {Array<Array<number>>}-報告日期清單
    */
   getSplitYearIndex(rangeValue: Array<Array<number>>) {
@@ -1558,7 +1558,7 @@ export class SystemOperationReportComponent implements OnInit {
   }
 
   /**
-   * 取得根據範圍日期顯示單位將數據切分兩季的切分序列
+   * 取得根據範圍日期顯示單位將數據切分兩季的切分索引
    * @param rangeValue {Array<Array<number>>}-報告日期清單
    */
   getSplitSeasonIndex(rangeValue: Array<Array<number>>) {
@@ -1578,7 +1578,7 @@ export class SystemOperationReportComponent implements OnInit {
   }
 
   /**
-   * 取得根據範圍日期顯示單位將數據切分兩月的切分序列
+   * 取得根據範圍日期顯示單位將數據切分兩月的切分索引
    * @param rangeValue {Array<Array<number>>}-報告日期清單
    */
   getSplitMonthIndex(rangeValue: Array<Array<number>>) {

@@ -14,7 +14,7 @@ import {
   CommerceOperationStatusPipe,
 } from '../../../core/pipes';
 import { HashIdService } from '../../../core/services';
-import { PaginationSetting } from '../../../shared/models/pagination';
+import { PaginationSetting } from '../../../core/models/compo/pagination.model';
 import {
   PaginationComponent,
   PageRoadPathComponent,
@@ -26,13 +26,14 @@ import {
   OperationConditionResult,
 } from '../../../core/models/compo';
 import {
-  SortDirection,
   ExpiredStatus,
   GroupListSortType,
   BrandType,
   CondtionType,
 } from '../../../core/enums/compo';
+import { DescFirstSortDirection } from '../../../core/enums/api';
 import { CommerceStatus, CommercePlan } from '../../../core/enums/professional';
+import { appPath } from '../../../app-path.const';
 
 @Component({
   selector: 'app-group-operation-list',
@@ -88,8 +89,14 @@ export class GroupOperationListComponent implements OnInit {
   });
 
   pathList: RoadPath = [
-    { title: '系統營運分析報告', url: '/dashboard/system/system-operation-report' },
-    { title: '群組分析列表', url: '/dashboard/system/group-operation-list' },
+    {
+      title: '系統營運分析報告',
+      url: `/${appPath.dashboard.home}/${appPath.adminManage.home}/${appPath.adminManage.systemOperationReport}`,
+    },
+    {
+      title: '群組分析列表',
+      url: `/${appPath.dashboard.home}/${appPath.adminManage.home}/${appPath.adminManage.groupOperationList}`,
+    },
   ];
 
   /**
@@ -172,14 +179,14 @@ export class GroupOperationListComponent implements OnInit {
       list: [
         {
           textKey: 'universal_activityData_powerDown',
-          value: SortDirection.desc,
+          value: DescFirstSortDirection.desc,
         },
         {
           textKey: 'universal_activityData_ascendingPower',
-          value: SortDirection.asc,
+          value: DescFirstSortDirection.asc,
         },
       ],
-      initIndex: SortDirection.desc - 1,
+      initIndex: DescFirstSortDirection.desc - 1,
     },
   };
 
@@ -284,11 +291,16 @@ export class GroupOperationListComponent implements OnInit {
    * @param groupId {string}-群組編號
    */
   getRelativeLink(groupId: string) {
+    const {
+      dashboard: { home: dashboardHome },
+      professional: { groupDetail },
+    } = appPath;
     const hashGroupId = this.hashIdService.handleGroupIdEncode(groupId);
+    const baseUrl = `/${dashboardHome}/${groupDetail.home}/${hashGroupId}`;
     return {
-      introduction: `/dashboard/group-info/${hashGroupId}/group-introduction`,
-      commerce: `/dashboard/group-info/${hashGroupId}/commerce-plan`,
-      operation: `/dashboard/group-info/${hashGroupId}/operation-report`,
+      introduction: `${baseUrl}/group-introduction`,
+      commerce: `${baseUrl}/commerce-plan`,
+      operation: `${baseUrl}/operation-report`,
     };
   }
 
@@ -328,19 +340,19 @@ export class GroupOperationListComponent implements OnInit {
       const { conditionCode, selectedCode, keyword } = _list;
       switch (conditionCode) {
         case CondtionType.commerceStatus:
-          this.post.filter.commerceStatus = selectedCode;
+          this.post.filter.commerceStatus = selectedCode as number;
           break;
         case CondtionType.brandType:
-          this.post.filter.brandType = selectedCode;
+          this.post.filter.brandType = selectedCode as number;
           break;
         case CondtionType.planType:
-          this.post.filter.plan = selectedCode;
+          this.post.filter.plan = selectedCode as number;
           break;
         case CondtionType.expiredStatus:
-          this.post.filter.expiredStatus = selectedCode;
+          this.post.filter.expiredStatus = selectedCode as number;
           break;
         case CondtionType.keyword:
-          this.post.filter.brandKeyword = keyword;
+          this.post.filter.brandKeyword = keyword as string;
           break;
       }
     });

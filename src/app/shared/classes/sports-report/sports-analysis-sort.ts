@@ -1,4 +1,4 @@
-import { MuscleGroup } from '../../enum/weight-train';
+import { MuscleGroup } from '../../../core/enums/sports';
 
 /**
  * 處理Array<Object>數據排序相關

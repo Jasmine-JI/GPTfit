@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
-import { DateRangeType } from '../models/report-condition';
+import { DateRangeType } from '../../core/models/compo/report-condition.model';
 
 dayjs.extend(isoWeek);
 

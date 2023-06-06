@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LocalStorageKey } from '../../shared/enum/local-storage-key';
+import { LocalStorageKey } from '../enums/common/local-storage-key.enum';
 
 /**
  * 統一管理與localstorage的存取

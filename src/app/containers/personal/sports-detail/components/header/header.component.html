@@ -3,13 +3,13 @@
     *ngTemplateOutlet="
       header;
       context: {
-        data: baseData
+        data: fileData
       }
     "
   ></div>
 </section>
 
-<ng-template #header let-data="data" let-isCompareData="isCompareData">
+<ng-template #header let-data="data">
   <div class="flexRow header__row">
     <i
       class="flexCenter sport__type__icon"

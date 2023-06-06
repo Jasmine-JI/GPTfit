@@ -1,4 +1,4 @@
-import { Sex } from '../../../shared/enum/personal';
+import { Gender } from '../../../core/enums/personal';
 
 export interface EventInfo {
   eventId?: number;
@@ -49,7 +49,7 @@ export interface DetailApplyFee {
 export interface DetailGroup {
   id: number;
   name: string;
-  gender?: Sex;
+  gender?: Gender;
   age?: {
     max: number;
     min: number;

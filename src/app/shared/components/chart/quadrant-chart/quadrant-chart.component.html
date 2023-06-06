@@ -17,7 +17,7 @@
             <div class="axis__type__selector" (click)="showAxisType('xAxis')">
               {{
                 (uiFlag.optTempChange ? tempOpt.xAxis.type : chartOpt.xAxis.type)
-                  | dataTypeTranslate: [sportType, unit]
+                  | dataTypeTranslate: { sportsType: sportType, unitType: unit }
                   | translate
               }}
             </div>
@@ -45,7 +45,7 @@
             <div class="axis__type__selector" (click)="showAxisType('yAxis')">
               {{
                 (uiFlag.optTempChange ? tempOpt.yAxis.type : chartOpt.yAxis.type)
-                  | dataTypeTranslate: [sportType, unit]
+                  | dataTypeTranslate: { sportsType: sportType, unitType: unit }
                   | translate
               }}
             </div>
@@ -145,7 +145,7 @@
             {{ 'universal_activityData_speedPerHour' | translate }}
           </span>
           <span (click)="changeAxisType('pace')" *ngIf="sportType !== 2">
-            {{ 'pace' | dataTypeTranslate: [sportType, unit] | translate }}
+            {{ 'pace' | dataTypeTranslate: { sportsType: sportType, unitType: unit } | translate }}
           </span>
           <span (click)="changeAxisType('cadence')" *ngIf="sportType === 1">
             {{ 'universal_activityData_stepCadence' | translate }}
@@ -245,7 +245,9 @@
             <span class="data__title">
               {{ 'universal_vocabulary_xOrigin' | translate }}-
               <span class="origin__type">{{
-                chartOpt.xAxis.type | dataTypeTranslate: [sportType, unit] | translate
+                chartOpt.xAxis.type
+                  | dataTypeTranslate: { sportsType: sportType, unitType: unit }
+                  | translate
               }}</span>
             </span>
           </span>
@@ -260,7 +262,8 @@
               {{ chartOpt.xAxis.origin | speedSibs: { unitType: unit, showUnit: true } }}
             </ng-container>
             <ng-container *ngIf="!['pace', 'speed'].includes(chartOpt.xAxis.type)">
-              {{ chartOpt.xAxis.origin }}{{ chartOpt.xAxis.type | dataTypeUnit: [sportType, unit] }}
+              {{ chartOpt.xAxis.origin
+              }}{{ chartOpt.xAxis.type | dataTypeUnit: { sportsType: sportType, unitType: unit } }}
             </ng-container>
           </span>
         </div>
@@ -270,7 +273,9 @@
             <span class="data__title">
               {{ 'universal_vocabulary_yOrigin' | translate }}-
               <span class="origin__type">{{
-                chartOpt.yAxis.type | dataTypeTranslate: [sportType, unit] | translate
+                chartOpt.yAxis.type
+                  | dataTypeTranslate: { sportsType: sportType, unitType: unit }
+                  | translate
               }}</span>
             </span>
           </span>
@@ -282,7 +287,8 @@
               }}
             </ng-container>
             <ng-container *ngIf="chartOpt.yAxis.type !== 'pace'">
-              {{ chartOpt.yAxis.origin }}{{ chartOpt.yAxis.type | dataTypeUnit: [sportType, unit] }}
+              {{ chartOpt.yAxis.origin
+              }}{{ chartOpt.yAxis.type | dataTypeUnit: { sportsType: sportType, unitType: unit } }}
             </ng-container>
           </span>
         </div>

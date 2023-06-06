@@ -5,6 +5,7 @@ import { AuthService, Api21xxService } from '../../../../../core/services';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { LoadingMaskComponent } from '../../../../../components';
+import { appPath } from '../../../../../app-path.const';
 
 @Component({
   selector: 'app-delete-button',
@@ -74,8 +75,9 @@ export class DeleteButtonComponent {
   handleDeleteSuccess() {
     this.isLoading = false;
     const msgKey = 'universal_status_updateCompleted';
+    const { dashboard, personal } = appPath;
     this.showMsg(msgKey);
-    this.router.navigateByUrl('/dashboard/activity-list');
+    this.router.navigateByUrl(`/${dashboard.home}/${personal.activityList}`);
   }
 
   /**

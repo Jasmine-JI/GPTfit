@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { throwError, of, ReplaySubject, BehaviorSubject } from 'rxjs';
+import { ReplaySubject, BehaviorSubject } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
+import { throwRxError } from '../../../core/utils';
 
 const { API_SERVER } = environment.url;
 
@@ -24,7 +25,7 @@ export class OfficialActivityService {
   createEvent(body: any) {
     return this.http.post<any>('api/v2/event/createEvent', body).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwRxError(err);
       })
     );
   }
@@ -37,7 +38,7 @@ export class OfficialActivityService {
   getEventDetail(body: any) {
     return this.http.post<any>('api/v2/event/getEventDetail', body).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwRxError(err);
       })
     );
   }
@@ -50,7 +51,7 @@ export class OfficialActivityService {
   editEventDetail(body: any) {
     return this.http.post<any>('api/v2/event/editEventDetail', body).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwRxError(err);
       })
     );
   }
@@ -63,7 +64,7 @@ export class OfficialActivityService {
   getEventList(body: any) {
     return this.http.post<any>('api/v2/event/getEventList', body).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwRxError(err);
       })
     );
   }
@@ -76,7 +77,7 @@ export class OfficialActivityService {
   applyEvent(body: any) {
     return this.http.post<any>('api/v2/event/applyEvent', body).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwRxError(err);
       })
     );
   }
@@ -89,7 +90,7 @@ export class OfficialActivityService {
   getParticipantList(body: any) {
     return this.http.post<any>('api/v2/event/getParticipantList', body).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwRxError(err);
       })
     );
   }
@@ -102,7 +103,7 @@ export class OfficialActivityService {
   editParticipantList(body: any) {
     return this.http.post<any>('api/v2/event/editParticipantList', body).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwRxError(err);
       })
     );
   }
@@ -115,7 +116,7 @@ export class OfficialActivityService {
   getParticipantHistory(body: any) {
     return this.http.post<any>('api/v2/event/getParticipantHistory', body).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwRxError(err);
       })
     );
   }
@@ -128,7 +129,7 @@ export class OfficialActivityService {
   getEventLeaderboard(body: any) {
     return this.http.post<any>('api/v2/event/getEventLeaderboard', body).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwRxError(err);
       })
     );
   }
@@ -141,7 +142,7 @@ export class OfficialActivityService {
   getEventUserProfile(body: any) {
     return this.http.post<any>('api/v2/event/getEventUserProfile', body).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwRxError(err);
       })
     );
   }
@@ -154,7 +155,7 @@ export class OfficialActivityService {
   getEventAdvertise(body: any) {
     return this.http.post<any>('api/v2/event/getEventAdvertise', body).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwRxError(err);
       })
     );
   }
@@ -167,7 +168,7 @@ export class OfficialActivityService {
   updateEventAdvertise(body: any) {
     return this.http.post<any>('api/v2/event/updateEventAdvertise', body).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwRxError(err);
       })
     );
   }
@@ -180,7 +181,7 @@ export class OfficialActivityService {
   createProductOrder(body: any) {
     return this.http.post<any>('api/v2/event/createProductOrder', body).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwRxError(err);
       })
     );
   }
@@ -193,7 +194,7 @@ export class OfficialActivityService {
   updateProductOrder(body: any) {
     return this.http.post<any>('api/v2/event/updateProductOrder', body).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwRxError(err);
       })
     );
   }
@@ -206,7 +207,7 @@ export class OfficialActivityService {
   updateEventUserProfile(body: any) {
     return this.http.post<any>('api/v2/event/updateEventUserProfile', body).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwRxError(err);
       })
     );
   }
@@ -219,7 +220,7 @@ export class OfficialActivityService {
   fetchOfficialContactus(body: any) {
     return this.http.post<any>(API_SERVER + 'email/official-contactus', body).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwRxError(err);
       })
     );
   }
@@ -232,7 +233,7 @@ export class OfficialActivityService {
   notifyLeavingEvent(body: any) {
     return this.http.post<any>(API_SERVER + 'email/leave-event', body).pipe(
       catchError((err) => {
-        return throwError(err);
+        return throwRxError(err);
       })
     );
   }

@@ -1,13 +1,13 @@
-import { SportsParameter } from '../../models/sports-report';
+import { SportsParameter } from '../../../core/models/compo';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TemporaryCount } from '../sports-report/temporary-count';
 import { ReportDateUnit } from '../report-date-unit';
 import { getSameRangeDate, countBenefitTime, mathRounding } from '../../../core/utils';
-import { SportType } from '../../enum/sports';
+import { SportType } from '../../../core/enums/sports';
 import { TargetConditionMap } from '../../../core/models/api/api-common/sport-target.model';
-import { PAI_COFFICIENT, DAY_PAI_TARGET } from '../../models/sports-report';
-import { DAY } from '../../models/utils-constant';
+import { paiCofficient, dayPaiTarget } from '../../../core/models/const';
+import { day } from '../../../core/models/const';
 import { BenefitTimeStartZone } from '../../../core/enums/common';
 
 /**
@@ -182,12 +182,12 @@ export class SportsTargetAchieveRate {
             break;
           }
           case 'pai': {
-            const { z0, z1, z2, z3, z4, z5 } = PAI_COFFICIENT;
+            const { z0, z1, z2, z3, z4, z5 } = paiCofficient;
             const [zone0, zone1, zone2, zone3, zone4, zone5] = hrZone;
-            const datePeroid = dateUnit.reportDatePeroid / DAY;
+            const datePeroid = dateUnit.reportDatePeroid / day;
             const weightedValue =
               zone0 * z0 + zone1 * z1 + zone2 * z2 + zone3 * z3 + zone4 * z4 + zone5 * z5;
-            const pai = (weightedValue / DAY_PAI_TARGET / datePeroid) * 100;
+            const pai = (weightedValue / dayPaiTarget / datePeroid) * 100;
             const proportion = this.getProportion(pai, _filedValue);
             currentAchieveRate += proportion / targetConditionSize;
             break;

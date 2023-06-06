@@ -40,11 +40,14 @@ import {
   ComplexSportSortType,
   IntegrationType,
   ResultCode,
+  Domain,
+  WebIp,
+  QueryString,
 } from '../../../../../core/enums/common';
 import { DataIntegration } from '../../../../../core/classes';
-import { Domain, WebIp } from '../../../../../shared/enum/domain';
 import { SportType } from '../../../../../core/enums/sports';
-import { caloriesColor, avgHrColor } from '../../../../../shared/models/chart-data';
+import { caloriesColor, avgHrColor } from '../../../../../core/models/represent-color';
+import { appPath } from '../../../../../app-path.const';
 
 dayjs.extend(weekday);
 
@@ -186,10 +189,10 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       const queryObj = getUrlQueryStrings(search);
       Object.entries(queryObj).forEach(([_key, _value]) => {
         switch (_key) {
-          case 'debug':
+          case QueryString.debug:
             this.uiFlag.isDebugMode = true;
             break;
-          case 'ipm':
+          case QueryString.printMode:
             this.uiFlag.isPreviewMode = true;
             break;
         }
@@ -723,9 +726,9 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       }
 
       newUrl += setUrlQueryString(queryObj);
-      this.previewUrl = `${newUrl}&ipm=s`;
+      this.previewUrl = `${newUrl}&${QueryString.printMode}=s`;
     } else if (isDebugMode) {
-      newUrl += '?debug=';
+      newUrl += `?${QueryString.debug}=`;
     }
 
     if (history.pushState) window.history.pushState({ path: newUrl }, '', newUrl);
@@ -947,7 +950,13 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    */
   visitLink() {
     const hashGroupId = this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId);
-    this.router.navigateByUrl(`/dashboard/group-info/${hashGroupId}/group-introduction`);
+    const {
+      dashboard,
+      professional: { groupDetail },
+    } = appPath;
+    this.router.navigateByUrl(
+      `/${dashboard}/${groupDetail.home}/${hashGroupId}/${groupDetail.introduction}`
+    );
   }
 
   /**
@@ -990,7 +999,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
    * 取消rxjs訂閱和卸除highchart
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

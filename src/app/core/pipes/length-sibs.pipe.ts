@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { ft, inch } from '../../shared/models/bs-constant';
+import { ft, inch } from '../models/const/bs-constant.model';
 import { DataUnitType } from '../enums/common';
 import { mathRounding } from '../utils/index';
 

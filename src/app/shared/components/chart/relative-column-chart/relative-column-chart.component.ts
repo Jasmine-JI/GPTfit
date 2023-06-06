@@ -19,9 +19,9 @@ import {
   landingColor,
   forehandSwingColor,
   backHandSwingColor,
-  RelativeTrendChart,
-} from '../../../models/chart-data';
-import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
+} from '../../../../core/models/represent-color';
+import { RelativeTrendChart } from '../../../../core/models/compo/chart-data.model';
+import { day, month, week } from '../../../../core/models/const';
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -172,19 +172,19 @@ export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestro
 
     // 設定圖表x軸時間間距-kidin-1090204
     if (this.dateRange === 'day' && positiveData.length <= 7) {
-      chartOptions['xAxis'].tickInterval = DAY;
+      chartOptions['xAxis'].tickInterval = day;
     } else if (this.dateRange === 'day' && positiveData.length > 7) {
-      chartOptions['xAxis'].tickInterval = WEEK;
+      chartOptions['xAxis'].tickInterval = week;
     } else {
-      chartOptions['xAxis'].tickInterval = MONTH;
+      chartOptions['xAxis'].tickInterval = month;
     }
 
     // 設定浮動提示框顯示格式-kidin-1090204
     chartOptions['tooltip'] = {
       formatter: function () {
         const yVal = parseFloat(this.y.toFixed(1));
-        if (this.series.xAxis.tickInterval === MONTH) {
-          return `${dayjs(this.x).format('YYYY-MM-DD')}~${dayjs(this.x + 6 * DAY).format(
+        if (this.series.xAxis.tickInterval === month) {
+          return `${dayjs(this.x).format('YYYY-MM-DD')}~${dayjs(this.x + 6 * day).format(
             'YYYY-MM-DD'
           )}
             <br/>${this.series.name}: ${yVal}`;

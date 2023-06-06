@@ -79,7 +79,7 @@ export class TipDialogComponent implements OnDestroy {
    * 解除rxjs訂閱
    */
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

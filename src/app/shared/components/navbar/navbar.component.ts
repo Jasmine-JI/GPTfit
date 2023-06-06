@@ -3,8 +3,9 @@ import { Router } from '@angular/router';
 import { AuthService, GetClientIpService, GlobalEventsService } from '../../../core/services';
 import { Observable } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { langData } from '../../models/i18n';
+import { langData } from '../../../core/models/const';
 import { setLocalStorageObject, getLocalStorageObject } from '../../../core/utils';
+import { appPath } from '../../../app-path.const';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -22,6 +23,8 @@ export class NavbarComponent implements OnInit {
   langName: string;
   hideLogout = false;
   showActivityEntry = false;
+
+  readonly dashboardHomeUrl = `/${appPath.dashboard.home}`;
 
   @Input() isAlphaVersion = false;
   @Output() selectPage = new EventEmitter<string>();
@@ -48,29 +51,33 @@ export class NavbarComponent implements OnInit {
    * @author kidin-1091013
    */
   handleActivePage() {
+    const {
+      portal: { introduction, signInWeb },
+      officialActivity,
+    } = appPath;
     switch (this.router.url) {
       case '/':
-      case '/introduction/system':
+      case `/${introduction.home}/${introduction.system}`:
         this.navItemNum = 1;
         break;
-      case '/introduction/application':
-      case '/introduction/application#connect':
-      case '/introduction/application#cloudrun':
-      case '/introduction/application#trainlive':
-      case '/introduction/application#fitness':
-      case '/#connect':
-      case '/#cloudrun':
-      case '/#trainlive':
-      case '/#fitness':
+      case `/${introduction.home}/${introduction.application}`:
+      case `/${introduction.home}/${introduction.application}${introduction.connectAnchor}`:
+      case `/${introduction.home}/${introduction.application}${introduction.cloudrunAnchor}`:
+      case `/${introduction.home}/${introduction.application}${introduction.trainliveAnchor}`:
+      case `/${introduction.home}/${introduction.application}${introduction.fitnessAnchor}`:
+      case `/${introduction.connectAnchor}`:
+      case `/${introduction.cloudrunAnchor}`:
+      case `/${introduction.trainliveAnchor}`:
+      case `/${introduction.fitnessAnchor}`:
         this.navItemNum = 2;
         break;
-      case '/introduction/analysis':
+      case `/${introduction.home}/${introduction.analysis}`:
         this.navItemNum = 3;
         break;
-      case '/official-activity':
+      case `/${officialActivity.home}`:
         this.navItemNum = 4;
         break;
-      case '/signIn-web':
+      case `/${signInWeb}`:
         this.navItemNum = 5;
         break;
       default:
@@ -98,6 +105,7 @@ export class NavbarComponent implements OnInit {
   }
 
   chooseNavItem(num: number) {
+    const { officialActivity, portal } = appPath;
     this.navItemNum = num;
     this.isCollapseShow = false;
     this.isShowMask = false;
@@ -113,11 +121,11 @@ export class NavbarComponent implements OnInit {
         this.selectPage.emit('analysis');
         break;
       case 4:
-        this.router.navigateByUrl('/official-activity');
+        this.router.navigateByUrl(`/${officialActivity.home}`);
         break;
       case 5:
       case 6:
-        this.router.navigateByUrl('/signIn-web');
+        this.router.navigateByUrl(`/${portal.signInWeb}`);
         break;
     }
   }

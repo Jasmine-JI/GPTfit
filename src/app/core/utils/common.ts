@@ -1,7 +1,6 @@
 import { Observable, fromEvent, merge, of, throwError } from 'rxjs';
-import { QueryString } from '../enums/common';
+import { QueryString, DateUnit } from '../enums/common';
 import { rgbaReg, hslaReg } from '../models/regex';
-import { DateUnit } from '../../shared/enum/report';
 import { ReportDateUnit } from '../../shared/classes/report-date-unit';
 import dayjs from 'dayjs';
 
@@ -47,21 +46,19 @@ export function debounce(func, wait) {
  * @param res {any}-api response
  * @param showAlert {boolean}-是否顯示錯誤alert
  * @returns {boolean} resultCode是否回傳200
- * @author kidin-1100902
  */
 export function checkResponse(res: any, showErrorMessage = true): boolean {
+  if (Array.isArray(res)) return true; // 陣列型回應先一律當作有效回應
   const { processResult, resultCode: resCode, apiCode: resApiCode, resultMessage: resMsg } = res;
-  if (!processResult) {
-    if (resCode !== 200) {
-      if (showErrorMessage) showErrorApiLog(resCode, resApiCode, resMsg);
-      return false;
+  const checkCode = processResult?.resultCode ?? resCode;
+  if (checkCode !== 200) {
+    if (showErrorMessage) {
+      const apiCode = processResult?.apiCode ?? resApiCode;
+      const resultMessage = processResult?.resultMessage ?? resMsg;
+      showErrorApiLog(resCode, apiCode, resultMessage);
     }
-  } else {
-    const { resultCode, apiCode, resultMessage } = processResult;
-    if (resultCode !== 200) {
-      if (showErrorMessage) showErrorApiLog(resultCode, apiCode, resultMessage);
-      return false;
-    }
+
+    return false;
   }
 
   return true;
@@ -84,7 +81,7 @@ export function showErrorApiLog(resultCode: number, apiCode: number, msg: string
  */
 export function checkRxFlowResponse(res: any, showErrorMsg = false): Observable<any> {
   const isEffect = checkResponse(res, showErrorMsg);
-  return isEffect ? of(res) : throwError(res.resultCode);
+  return isEffect ? of(res) : throwRxError();
 }
 
 /**
@@ -161,13 +158,22 @@ export function changeOpacity(color: string, opacity: number) {
 }
 
 /**
- * 根據對象長度及對象序列，使用hsla分配顏色，
+ * 根據對象長度及對象索引，使用hsla分配顏色，
  * 可藉此確保同類型數據各個圖表顏色分配固定
+ * @paam index 索引
+ * @param dataLength 數據長度
+ * @param arg.saturation 色彩飽和度設定
+ * @param arg.lightness 亮度設定
+ * @param arg.opacity 透明度設定
  */
-export function assignHslaColor(index: number, dataLength: number, arg: any = {}) {
-  const saturation = arg.saturation ?? 60;
-  const lightness = arg.lightness ?? 60;
-  const opacity = arg.opacity ?? 1;
+export function assignHslaColor(
+  index: number,
+  dataLength: number,
+  arg?: { saturation?: number; lightness?: number; opacity?: number }
+) {
+  const saturation = arg?.saturation ?? 60;
+  const lightness = arg?.lightness ?? 60;
+  const opacity = arg?.opacity ?? 1;
   const oneRangeDegree = dataLength ? Math.round(360 / dataLength) : 0;
   const hue = oneRangeDegree * index;
   return `hsla(${hue}, ${saturation}%, ${lightness}%, ${opacity})`;
@@ -299,8 +305,8 @@ export function getSameRangeDate(startTime: string, endTime: string, dateUnit: R
 }
 
 /**
- * 根據序列取得對應月份的翻譯鍵
- * @param index {number}-月份序列，第一個月序列為0（同dayjs）
+ * 根據索引取得對應月份的翻譯鍵
+ * @param index {number}-月份索引，第一個月索引為0（同dayjs）
  */
 export function getMonthKey(index: number) {
   switch (index) {
@@ -334,8 +340,8 @@ export function getMonthKey(index: number) {
 }
 
 /**
- * 根據序列取得對應月份的翻譯鍵
- * @param index {number}-月份序列，第一個月序列為0（同dayjs）
+ * 根據索引取得對應月份的翻譯鍵
+ * @param index {number}-月份索引，第一個月索引為0（同dayjs）
  * @param isAbbreviation {boolean}-是否用縮寫
  */
 export function getWeekdayKey(index: number, isAbbreviation = true) {
@@ -375,4 +381,15 @@ export function splitNameInfo(nameInfo: string): { [key: string]: string } {
     name,
     ...result,
   };
+}
+
+/**
+ * 處理rxjs資料流錯誤回應
+ * @param error 錯誤訊息
+ */
+export function throwRxError(error?: string) {
+  return throwError(() => {
+    const err = new Error(error ?? 'Exception!');
+    return err;
+  });
 }

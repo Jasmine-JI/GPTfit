@@ -16,7 +16,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DataTypeUnitPipe } from '../../../../core/pipes/data-type-unit.pipe';
 import { TemperatureSibsPipe } from '../../../../core/pipes/temperature-sibs.pipe';
-import { mi, ft } from '../../../models/bs-constant';
+import { mi, ft } from '../../../../core/models/const/bs-constant.model';
 
 /**
  * 建立圖表用
@@ -124,9 +124,9 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() second: number[];
   @Input() showMap: boolean;
   @ViewChild('container') container: ElementRef;
-  @Output() onHover: EventEmitter<any> = new EventEmitter();
+  @Output() isMouseHover: EventEmitter<any> = new EventEmitter();
 
-  chartIndex = null; // 此圖表在詳細頁面所有的highchart的順位
+  chartIndex: any = null; // 此圖表在詳細頁面所有的highchart的順位
 
   constructor(
     private renderer: Renderer2,
@@ -158,10 +158,9 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
       .get('hellow world')
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(() => {
-        let dataSet: any;
-        const chartDataA = [],
-          chartDataB = [],
-          chartTerrain = [];
+        const chartDataA: Array<any> = [];
+        const chartDataB: Array<any> = [];
+        const chartTerrain: Array<any> = [];
         for (let i = 0, dataLen = second.length; i < dataLen; i++) {
           // highchart時間以毫秒為單位
           chartDataA.push([second[i] * 1000, this.convertData(+dataA[i], this.compareA.type)]);
@@ -171,7 +170,8 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
           }
         }
 
-        dataSet = [
+        const { sportType, unit } = this;
+        const dataSet: Array<any> = [
           {
             name: this.compareA.name,
             yAxis: 0,
@@ -182,7 +182,10 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
             tooltip: {
               valueSuffix:
                 ' ' +
-                this.dataTypeUnitPipe.transform(this.compareA.type, [this.sportType, this.unit]),
+                this.dataTypeUnitPipe.transform(this.compareA.type, {
+                  sportsType: sportType,
+                  unitType: unit,
+                }),
             },
           },
           {
@@ -195,7 +198,10 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
             tooltip: {
               valueSuffix:
                 ' ' +
-                this.dataTypeUnitPipe.transform(this.compareB.type, [this.sportType, this.unit]),
+                this.dataTypeUnitPipe.transform(this.compareB.type, {
+                  sportsType: sportType,
+                  unitType: unit,
+                }),
             },
           },
         ];
@@ -284,7 +290,7 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
       event = compareChart.pointer.normalize(e), // Find coordinates within the chart
       point = compareChart.series[0].searchPoint(event, true); // Get the hovered point
     if (point && point.index) {
-      this.onHover.emit(point.index);
+      this.isMouseHover.emit(point.index);
     }
   }
 
@@ -298,23 +304,24 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
     switch (type) {
       case 'speed':
         return this.unit === 0 ? data : data / mi;
-      case 'pace':
+      case 'pace': {
         let costSecond: number;
         switch (this.sportType) {
-          case 1:
-            costSecond = +(3600 / (this.unit === 0 ? data : data / mi)).toFixed(0); // 公里或英里配速
-            break;
           case 4:
             costSecond = +(3600 / (data * 10)).toFixed(0); // 百米配速
             break;
           case 6:
             costSecond = +(3600 / (data * 2)).toFixed(0); // 500米配速
             break;
+          default: // 公里或英里配速
+            costSecond = +(3600 / (this.unit === 0 ? data : data / mi)).toFixed(0);
+            break;
         }
 
         return costSecond > 3600 ? 3600 : costSecond;
+      }
       case 'temperature':
-        return this.temperatureSibsPipe.transform(data, [this.unit, 1]);
+        return this.temperatureSibsPipe.transform(data, { unitType: this.unit, showUnit: false });
       case 'altitude':
         return this.unit === 0 ? data : +(data / ft).toFixed(1);
       default:
@@ -326,7 +333,7 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
    * 取消訂閱rxjs
    */
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

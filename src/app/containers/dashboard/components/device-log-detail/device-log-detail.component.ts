@@ -5,6 +5,7 @@ import {
   HostListener,
   Inject,
   ViewEncapsulation,
+  OnDestroy,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DeviceLogService } from '../../services/device-log.service';
@@ -13,15 +14,17 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, Subject, merge } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import dayjs, { Dayjs } from 'dayjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Location, DOCUMENT } from '@angular/common';
 import { WINDOW } from '../../../../core/services';
-import { getUrlQueryStrings } from '../../../../core/utils/index';
+import { getUrlQueryStrings } from '../../../../core/utils';
+import { QueryString } from '../../../../core/enums/common';
+import { appPath } from '../../../../app-path.const';
 
 @Component({
   selector: 'app-device-log-detail',
@@ -29,7 +32,9 @@ import { getUrlQueryStrings } from '../../../../core/utils/index';
   styleUrls: ['./device-log-detail.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class DeviceLogDetailComponent implements OnInit {
+export class DeviceLogDetailComponent implements OnInit, OnDestroy {
+  private ngUnsubscribe = new Subject();
+
   userId: string;
   logSource = new MatTableDataSource<any>();
   totalCount: number;
@@ -51,6 +56,9 @@ export class DeviceLogDetailComponent implements OnInit {
   @ViewChild('paginatorB', { static: true }) paginatorB: MatPaginator;
   @ViewChild('sortTable', { static: false }) sortTable: MatSort;
   @ViewChild('f', { static: false }) form: any;
+
+  readonly backUrl = `/${appPath.dashboard.home}/${appPath.adminManage.home}/${appPath.adminManage.deviceLog.home}`;
+
   constructor(
     private route: ActivatedRoute,
     private deviceLogservice: DeviceLogService,
@@ -75,27 +83,7 @@ export class DeviceLogDetailComponent implements OnInit {
       .observe(Breakpoints.Handset)
       .pipe(map((match) => match.matches));
 
-    this.userId = this.route.snapshot.paramMap.get('userId');
-
-    // // 設定顯示筆數資訊文字
-    // this.matPaginatorIntl.getRangeLabel = (
-    //   page: number,
-    //   pageSize: number,
-    //   length: number
-    // ): string => {
-    //   if (length === 0 || pageSize === 0) {
-    //     return `第 0 筆、共 ${length} 筆`;
-    //   }
-
-    //   length = Math.max(length, 0);
-    //   const startIndex = page * pageSize;
-    //   const endIndex =
-    //     startIndex < length
-    //       ? Math.min(startIndex + pageSize, length)
-    //       : startIndex + pageSize;
-
-    //   return `第 ${startIndex + 1} - ${endIndex} 筆、共 ${length} 筆`;
-    // };
+    this.userId = this.route.snapshot.paramMap.get(appPath.personal.userId);
     this.currentPage = {
       pageIndex: +pageNumber - 1 || 0,
       pageSize: 10,
@@ -107,25 +95,25 @@ export class DeviceLogDetailComponent implements OnInit {
       direction: '',
     };
     this.getLists();
-    // 分頁切換時，重新取得資料
-    this.paginatorA.page.subscribe((page: PageEvent) => {
-      this.currentPage = page;
-      this.pageSize = this.currentPage.pageSize;
-      this.router.navigateByUrl(
-        `${location.pathname}?pageNumber=${this.currentPage.pageIndex + 1}`
-      );
-      this.getLists();
-    });
-
-    this.paginatorB.page.subscribe((page: PageEvent) => {
-      this.currentPage = page;
-      this.pageSize = this.currentPage.pageSize;
-      this.router.navigateByUrl(
-        `${location.pathname}?pageNumber=${this.currentPage.pageIndex + 1}`
-      );
-      this.getLists();
-    });
+    this.subscribePaginator();
   }
+
+  /**
+   * 訂閱頁碼變更事件，並重新取得資料
+   */
+  subscribePaginator() {
+    merge(this.paginatorA.page, this.paginatorB.page)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((page: PageEvent) => {
+        this.currentPage = page;
+        this.pageSize = this.currentPage.pageSize;
+        this.router.navigateByUrl(
+          `${location.pathname}?${QueryString.pageNumber}=${this.currentPage.pageIndex + 1}`
+        );
+        this.getLists();
+      });
+  }
+
   @HostListener('window:scroll', [])
   onWindowScroll() {
     const number =
@@ -139,10 +127,12 @@ export class DeviceLogDetailComponent implements OnInit {
       this.isTopIconDisplay = false;
     }
   }
+
   changeSort(sortInfo: Sort) {
     this.currentSort = sortInfo;
     this.getLists();
   }
+
   getLists() {
     let params = new HttpParams();
     const pageNumber = (this.currentPage.pageIndex + 1).toString();
@@ -187,6 +177,7 @@ export class DeviceLogDetailComponent implements OnInit {
     const value = dayjs($event.value).format('YYYY-MM-DD 23:59:59.000000');
     this.complexForm.patchValue({ endDate: value });
   }
+
   submit({ value, valid }) {
     if (valid) {
       this.isDateSearch = true;
@@ -195,6 +186,7 @@ export class DeviceLogDetailComponent implements OnInit {
       this.isDateSearch = false;
     }
   }
+
   refreshLists(event) {
     this.currentPage.pageIndex = 0;
 
@@ -204,5 +196,13 @@ export class DeviceLogDetailComponent implements OnInit {
 
   goTop() {
     window.scrollTo(1170, 0);
+  }
+
+  /**
+   * 解除rxjs訂閱
+   */
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next(null);
+    this.ngUnsubscribe.complete();
   }
 }

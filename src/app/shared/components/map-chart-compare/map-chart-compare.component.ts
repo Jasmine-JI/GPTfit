@@ -13,7 +13,7 @@ import {
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { HintDialogService } from '../../../core/services';
-import { SportType } from '../../enum/sports';
+import { SportType } from '../../../core/enums/sports';
 import { TranslateService } from '@ngx-translate/core';
 import { DataTypeTranslatePipe } from '../../../core/pipes/data-type-translate.pipe';
 
@@ -54,7 +54,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
   uiFlag = {
     showMap: false,
     showMapOpt: false,
-    showDataSelector: null,
+    showDataSelector: <string | null>null,
     isPreviewMode: false,
   };
 
@@ -66,13 +66,13 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
     mapSource: <MapSource>'google', // 地圖來源
     mapKind: <MapKind>'normal', // 街道圖/熱力圖
     compareA: {
-      type: <CompareDataOpt>null,
+      type: <CompareDataOpt | null>null,
       name: '',
       color: 'rgba(155, 194, 71, 1)',
       data: [],
     },
     compareB: {
-      type: <CompareDataOpt>null,
+      type: <CompareDataOpt | null>null,
       name: '',
       color: 'rgba(252, 124, 124, 1)',
       data: [],
@@ -198,6 +198,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100120
    */
   handleDefaultCompareData(type: SportType) {
+    const pipeArgs = { sportsType: type, unitType: this.unit };
     this.translate
       .get('hellow world')
       .pipe(takeUntil(this.ngUnsubscribe))
@@ -206,18 +207,14 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
           case SportType.run:
             this.mapOpt.compareA = {
               type: 'hr',
-              name: this.translate.instant(
-                this.dataTypeTranslatePipe.transform('hr', [type, this.unit])
-              ),
+              name: this.translate.instant(this.dataTypeTranslatePipe.transform('hr', pipeArgs)),
               color: this.mapOpt.compareA.color,
               data: this.userPoint[0][this.handleDataKey('hr', type)],
             };
 
             this.mapOpt.compareB = {
               type: 'pace',
-              name: this.translate.instant(
-                this.dataTypeTranslatePipe.transform('pace', [type, this.unit])
-              ),
+              name: this.translate.instant(this.dataTypeTranslatePipe.transform('pace', pipeArgs)),
               color: this.mapOpt.compareB.color,
               data: this.userPoint[0][this.handleDataKey('pace', type)],
             };
@@ -227,18 +224,14 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
           case SportType.ball:
             this.mapOpt.compareA = {
               type: 'hr',
-              name: this.translate.instant(
-                this.dataTypeTranslatePipe.transform('hr', [type, this.unit])
-              ),
+              name: this.translate.instant(this.dataTypeTranslatePipe.transform('hr', pipeArgs)),
               color: this.mapOpt.compareA.color,
               data: this.userPoint[0][this.handleDataKey('hr', type)],
             };
 
             this.mapOpt.compareB = {
               type: 'speed',
-              name: this.translate.instant(
-                this.dataTypeTranslatePipe.transform('speed', [type, this.unit])
-              ),
+              name: this.translate.instant(this.dataTypeTranslatePipe.transform('speed', pipeArgs)),
               color: this.mapOpt.compareB.color,
               data: this.userPoint[0][this.handleDataKey('speed', type)],
             };
@@ -248,9 +241,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
           case SportType.row:
             this.mapOpt.compareA = {
               type: 'pace',
-              name: this.translate.instant(
-                this.dataTypeTranslatePipe.transform('pace', [type, this.unit])
-              ),
+              name: this.translate.instant(this.dataTypeTranslatePipe.transform('pace', pipeArgs)),
               color: this.mapOpt.compareA.color,
               data: this.userPoint[0][this.handleDataKey('pace', type)],
             };
@@ -258,7 +249,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
             this.mapOpt.compareB = {
               type: 'cadence',
               name: this.translate.instant(
-                this.dataTypeTranslatePipe.transform('cadence', [type, this.unit])
+                this.dataTypeTranslatePipe.transform('cadence', pipeArgs)
               ),
               color: this.mapOpt.compareB.color,
               data: this.userPoint[0][this.handleDataKey('cadence', type)],
@@ -302,18 +293,25 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100114
    */
   changeCompareData(type: CompareDataOpt) {
+    const {
+      uiFlag: { showDataSelector },
+      sportType,
+      unit,
+    } = this;
     this.translate
       .get('hellow world')
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(() => {
-        this.mapOpt[this.uiFlag.showDataSelector] = {
-          type,
-          name: this.translate.instant(
-            this.dataTypeTranslatePipe.transform(type, [this.sportType, this.unit])
-          ),
-          color: this.mapOpt[this.uiFlag.showDataSelector].color,
-          data: this.userPoint[0][this.handleDataKey(type, this.sportType)],
-        };
+        if (showDataSelector) {
+          this.mapOpt[showDataSelector] = {
+            type,
+            name: this.translate.instant(
+              this.dataTypeTranslatePipe.transform(type, { sportsType: sportType, unitType: unit })
+            ),
+            color: this.mapOpt[showDataSelector].color,
+            data: this.userPoint[0][this.handleDataKey(type, this.sportType)],
+          };
+        }
       });
 
     this.uiFlag.showDataSelector = null;
@@ -394,6 +392,8 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
             return 'swimCadence';
           case SportType.row:
             return 'rowingCadence';
+          default:
+            return 'cadence';
         }
         break;
       case 'power':
@@ -406,6 +406,8 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
         return 'gsensorYRawData';
       case 'gforceZ':
         return 'gsensorZRawData';
+      default:
+        return '';
     }
   }
 
@@ -433,7 +435,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100226
    */
   findEffectIndex(coordinate: Array<[number, number]>) {
-    let index: number = null;
+    let index: number | null = null;
     for (let i = 0, len = coordinate.length; i < len; i++) {
       const [_lon, _lat] = coordinate[i];
       if (_lon !== null && _lon !== 100 && _lat !== null && _lat !== 100) {
@@ -473,7 +475,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
    * 取消訂閱rxjs
    */
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

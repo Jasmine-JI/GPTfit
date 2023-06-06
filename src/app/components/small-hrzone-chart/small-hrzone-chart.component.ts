@@ -8,7 +8,7 @@ import {
   Input,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { zoneColor } from '../../shared/models/chart-data';
+import { zoneColor } from '../../core/models/represent-color';
 import { FloatTooltipOption } from '../../core/models/compo';
 import { FloatTooltipComponent } from '../float-tooltip/float-tooltip.component';
 

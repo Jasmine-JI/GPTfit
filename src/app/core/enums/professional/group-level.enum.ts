@@ -5,5 +5,5 @@ export enum GroupLevel {
   brand = 30,
   branch = 40,
   class = 60,
-  normal = 90,
+  normal = 80,
 }

@@ -15,3 +15,15 @@ export enum RangeType {
   fileId,
   all = 99,
 }
+
+/**
+ * api 2116 post 排序類別用
+ */
+export enum FileSortType {
+  startDate = 1,
+  totalSecond,
+  distance,
+  avgHr,
+  avgSpeed,
+  totalWeight,
+}

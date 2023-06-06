@@ -13,10 +13,15 @@ export interface Api1113Response {
   apiCode: number;
   info: {
     rtnMsg: string;
-    groupAcessRight: Array<{
-      groupId: string;
-      accessRight: AccessRight;
-      joinStatus: GroupJoinStatus;
-    }>;
+    groupAcessRight: Array<GroupAccessrightInfo>;
   };
+}
+
+/**
+ * api 1113 response 的 info.groupAccessRight[] 的內容
+ */
+export interface GroupAccessrightInfo {
+  groupId: string;
+  accessRight: AccessRight;
+  joinStatus: GroupJoinStatus;
 }

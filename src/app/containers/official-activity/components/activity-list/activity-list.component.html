@@ -1,7 +1,7 @@
 <app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
 <div class="flexCol">
   <div class="flexRow control__section">
-    <div class="flexRow filter__area" *ngIf="uiFlag.currentPage === 'activity-list'">
+    <div class="flexRow filter__area" *ngIf="uiFlag.currentPage === officialActivity.activityList">
       <div class="flexCol filter__block">
         <label for="date__filter__button" class="list__filter__label">
           {{ 'universal_vocabulary_raceDate' | translate }}
@@ -152,11 +152,16 @@
       *ngIf="
         passAdmin.includes(systemAccessright) &&
         !uiFlag.isMobile &&
-        uiFlag.currentPage === 'activity-list'
+        uiFlag.currentPage === officialActivity.activityList
       "
     >
-      <button class="manage__btn" (click)="navigatePage($event, 'edit-carousel')">編輯輪播</button>
-      <button class="manage__btn" (click)="navigatePage($event, 'edit-activity', -1, true)">
+      <button class="manage__btn" (click)="navigatePage($event, officialActivity.editCarousel)">
+        編輯輪播
+      </button>
+      <button
+        class="manage__btn"
+        (click)="navigatePage($event, officialActivity.editActivity, -1, true)"
+      >
         新建賽事
       </button>
       <button class="manage__btn" (click)="switchEditMode()">
@@ -170,16 +175,18 @@
       *ngIf="
         passAdmin.includes(systemAccessright) &&
         uiFlag.isMobile &&
-        uiFlag.currentPage === 'activity-list'
+        uiFlag.currentPage === officialActivity.activityList
       "
     >
       <button class="manage__menu__btn manage__btn" (click)="showManageMenu($event)">管理</button>
       <ul class="manage__menu" *ngIf="uiFlag.showManageMenu">
         <li>
-          <button (click)="navigatePage($event, 'edit-carousel')">編輯輪播</button>
+          <button (click)="navigatePage($event, officialActivity.editCarousel)">編輯輪播</button>
         </li>
         <li>
-          <button (click)="navigatePage($event, 'edit-activity', -1, true)">新建賽事</button>
+          <button (click)="navigatePage($event, officialActivity.editActivity, -1, true)">
+            新建賽事
+          </button>
         </li>
         <li>
           <button (click)="switchEditMode()">
@@ -199,13 +206,17 @@
           </div>
           <div
             class="flexCol race__list"
-            [class.divider__line]="uiFlag.currentPage === 'activity-list' || screenSize > 1150"
+            [class.divider__line]="
+              uiFlag.currentPage === officialActivity.activityList || screenSize > 1150
+            "
           >
             <div class="flexRow">
               <div
                 class="flexCol race__info"
                 [style.width]="
-                  uiFlag.currentPage === 'my-activity' && screenSize < 1150 ? '100%' : ''
+                  uiFlag.currentPage === officialActivity.myActivity && screenSize < 1150
+                    ? '100%'
+                    : ''
                 "
               >
                 <div class="flexRow race__info__header">
@@ -231,7 +242,9 @@
           </div>
           <div
             class="flexRow race__info__mobile"
-            [class.divider__line]="uiFlag.currentPage !== 'my-activity' && !uiFlag.editMode"
+            [class.divider__line]="
+              uiFlag.currentPage !== officialActivity.myActivity && !uiFlag.editMode
+            "
           >
             <p class="race__description__mobile">
               {{ 'universal_vocabulary_noRaces' | translate }}
@@ -242,7 +255,7 @@
     </li>
     <ng-container *ngFor="let _eventList of effectEventList; let index = index">
       <li class="activity__list">
-        <a [href]="'/official-activity/activity-detail/' + _eventList.eventId" target="_blank">
+        <a [href]="getEventDetailUrl(_eventList.eventId)" target="_blank">
           <div class="flexCol" style="width: 100%">
             <ng-container *ngIf="!uiFlag.isMobile">
               <div class="flexCol" style="width: 100%">
@@ -279,14 +292,16 @@
                   <div
                     class="flexCol race__list"
                     [class.divider__line]="
-                      uiFlag.currentPage === 'activity-list' || screenSize > 1150
+                      uiFlag.currentPage === officialActivity.activityList || screenSize > 1150
                     "
                   >
                     <div class="flexRow">
                       <div
                         class="flexCol race__info"
                         [style.width]="
-                          uiFlag.currentPage === 'my-activity' && screenSize < 1150 ? '100%' : ''
+                          uiFlag.currentPage === officialActivity.myActivity && screenSize < 1150
+                            ? '100%'
+                            : ''
                         "
                       >
                         <div class="flexRow race__info__header">
@@ -322,7 +337,7 @@
                         *ngIf="
                           allMapInfo &&
                           allMapInfo[_eventList.cloudrunMapId - 1] &&
-                          uiFlag.currentPage === 'activity-list' &&
+                          uiFlag.currentPage === officialActivity.activityList &&
                           !uiFlag.editMode
                         "
                       >
@@ -365,7 +380,9 @@
                       </ng-container>
                       <div
                         class="flexCol history__detail"
-                        *ngIf="uiFlag.currentPage === 'my-activity' && screenSize > 1150"
+                        *ngIf="
+                          uiFlag.currentPage === officialActivity.myActivity && screenSize > 1150
+                        "
                       >
                         <div
                           *ngTemplateOutlet="
@@ -391,7 +408,9 @@
                 <div
                   class="flexRow history__detail"
                   *ngIf="
-                    uiFlag.currentPage === 'my-activity' && screenSize <= 1150 && screenSize > 767
+                    uiFlag.currentPage === officialActivity.myActivity &&
+                    screenSize <= 1150 &&
+                    screenSize > 767
                   "
                 >
                   <div
@@ -431,7 +450,7 @@
                 <div
                   class="flexRow"
                   style="align-items: center"
-                  *ngIf="uiFlag.currentPage === 'activity-list'"
+                  *ngIf="uiFlag.currentPage === officialActivity.activityList"
                 >
                   <div class="map__img__mobile">
                     <img
@@ -483,7 +502,9 @@
                 </div>
                 <div
                   class="flexRow race__info__mobile"
-                  [class.divider__line]="uiFlag.currentPage !== 'my-activity' && !uiFlag.editMode"
+                  [class.divider__line]="
+                    uiFlag.currentPage !== officialActivity.myActivity && !uiFlag.editMode
+                  "
                 >
                   <div
                     *ngTemplateOutlet="
@@ -511,7 +532,10 @@
                     "
                   ></div>
                 </ng-container>
-                <div class="flexCol history__detail" *ngIf="uiFlag.currentPage === 'my-activity'">
+                <div
+                  class="flexCol history__detail"
+                  *ngIf="uiFlag.currentPage === officialActivity.myActivity"
+                >
                   <div
                     *ngTemplateOutlet="
                       applySchedule;
@@ -540,7 +564,10 @@
       </li>
     </ng-container>
   </ul>
-  <div class="flexRow pagination__area" *ngIf="uiFlag.currentPage === 'activity-list'">
+  <div
+    class="flexRow pagination__area"
+    *ngIf="uiFlag.currentPage === officialActivity.activityList"
+  >
     <button
       class="pagination__button"
       [class.pagination__button--disabled]="eventListCondition.page.index === 0"
@@ -654,7 +681,7 @@
               <input
                 type="time"
                 class="schedule__time__selector"
-                [value]="scheduleTime.time | sportTime: [true, true]"
+                [value]="scheduleTime.time | sportTime: { showZeroHour: true, hideSecond: true }"
                 (change)="getScheduleTime($event)"
               />
             </div>
@@ -701,7 +728,7 @@
     <ng-container *ngIf="eventCancel">
       {{ 'universal_vocabulary_raceCancel' | translate }}
     </ng-container>
-    <ng-container *ngIf="!eventCancel && uiFlag.currentPage !== 'my-activity'">
+    <ng-container *ngIf="!eventCancel && uiFlag.currentPage !== officialActivity.myActivity">
       {{ startDate * 1000 | timeFormat: 'MM/DD' }}~{{ endDate * 1000 | timeFormat: 'MM/DD' }}
     </ng-container>
   </span>
@@ -891,12 +918,15 @@
   let-endDate="endDate"
 >
   <div class="flexRow edit__btn">
-    <button title="報名列表" (click)="navigatePage($event, 'contestant-list', eventId, true)">
+    <button
+      title="報名列表"
+      (click)="navigatePage($event, officialActivity.contestantList, eventId, true)"
+    >
       <i class="icon-svg_web-icon_p3_082-ordered-list"></i>
     </button>
     <button
       [title]="canEdit ? '編輯賽事' : '賽事凍結'"
-      (click)="navigatePage($event, 'edit-activity', eventId, canEdit)"
+      (click)="navigatePage($event, officialActivity.editActivity, eventId, canEdit)"
     >
       <i class="icon-svg_web-icon_p1_008-edit" *ngIf="canEdit"></i>
       <mat-icon class="block__icon" *ngIf="!canEdit">block</mat-icon>
@@ -986,7 +1016,9 @@
             infoColumn;
             context: {
               title: 'universal_vocabulary_results' | translate,
-              value: list.record ? (list.record | sportTime: [false, false]) : 'N/A'
+              value: list.record
+                ? (list.record | sportTime: { showZeroHour: false, hideSecond: false })
+                : 'N/A'
             }
           "
         ></div>

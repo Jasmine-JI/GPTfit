@@ -65,7 +65,7 @@
         {{ 'universal_userProfile_bodyHeight' | translate }}
       </label>
       <span class="contentText" *ngIf="uiFlag.editMode === 'close'">
-        {{ userInfo.bodyHeight | bodyHeightSibs: [userInfo.unit, false] }}
+        {{ userInfo.bodyHeight | bodyHeightSibs: { unitType: userInfo.unit, showUnit: false } }}
       </span>
       <div class="contentInput">
         <input
@@ -73,13 +73,15 @@
           id="height__input"
           class="userSettingInput"
           maxlength="5"
-          [placeholder]="175 | bodyHeightSibs: [userInfo.unit, false]"
+          [placeholder]="175 | bodyHeightSibs: { unitType: userInfo.unit, showUnit: false }"
           [value]="setting.bodyHeight"
           (keydown)="checkHeightFormat($event)"
           (focusout)="handleHeightInput($event)"
           *ngIf="uiFlag.editMode === 'edit'"
         />
-        <span class="valueUnit">{{ 'bodyHeight' | dataTypeUnit: [null, userInfo.unit] }}</span>
+        <span class="valueUnit">{{
+          'bodyHeight' | dataTypeUnit: { unitType: userInfo.unit }
+        }}</span>
       </div>
       <span class="contentDescription" [style.color]="uiFlag.heightAlert ? 'red' : ''">
         <ng-container *ngIf="!uiFlag.heightAlert">
@@ -98,7 +100,7 @@
         {{ 'universal_userProfile_limit_bodyWeight' | translate }}
       </label>
       <span class="contentText" *ngIf="uiFlag.editMode === 'close'">
-        {{ userInfo.bodyWeight | weightSibs: [userInfo.unit, 1] }}
+        {{ userInfo.bodyWeight | weightSibs: { unitType: userInfo.unit, showUnit: false } }}
       </span>
       <div class="contentInput">
         <input
@@ -106,13 +108,15 @@
           id="weight__input"
           class="userSettingInput"
           maxlength="5"
-          [placeholder]="70 | weightSibs: [userInfo.unit, 1]"
+          [placeholder]="70 | weightSibs: { unitType: userInfo.unit, showUnit: false }"
           [value]="setting.bodyWeight"
           (keydown)="checkWeightFormat($event)"
           (focusout)="handleWeightInput($event)"
           *ngIf="uiFlag.editMode === 'edit'"
         />
-        <span class="valueUnit">{{ 'bodyWeight' | dataTypeUnit: [null, userInfo.unit] }}</span>
+        <span class="valueUnit">{{
+          'bodyWeight' | dataTypeUnit: { unitType: userInfo.unit }
+        }}</span>
       </div>
       <span class="contentDescription">
         {{

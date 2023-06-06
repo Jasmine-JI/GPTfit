@@ -12,12 +12,13 @@ import { fromEvent, Subscription, Subject, merge, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { formTest } from '../../../../../shared/models/form-test';
-import { Lang } from '../../../../../shared/models/i18n';
-import { codes } from '../../../../../shared/models/countryCode';
-import { SignTypeEnum } from '../../../../../shared/enum/account';
+import { formTest } from '../../../../../core/models/regex';
+import { codes } from '../../../../../core/models/const';
 import { TFTViewMinWidth } from '../../../models/app-webview';
 import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/utils';
+import { SignInType } from '../../../../../core/enums/personal';
+import { Lang } from '../../../../../core/models/common';
+import { appPath } from '../../../../../app-path.const';
 
 interface RegCheck {
   email: RegExp;
@@ -30,7 +31,6 @@ interface RegCheck {
 }
 
 type PolicyType = 'termsConditions' | 'privacyPolicy' | null;
-type InputType = 'account' | 'password' | 'nickname';
 
 @Component({
   selector: 'app-app-signup',
@@ -44,7 +44,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   readonly formReg = formTest;
   readonly countryCodeList = codes;
-  readonly SignTypeEnum = SignTypeEnum;
+  readonly SignTypeEnum = SignInType;
 
   appSys = 0; // 0:web, 1:ios, 2:android
   focusForm = '';
@@ -106,6 +106,8 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     imgCode: '',
   };
 
+  readonly signWebUrl = `/${appPath.portal.signInWeb}`;
+
   constructor(
     private translate: TranslateService,
     private api10xxService: Api10xxService,
@@ -120,7 +122,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.getQueryString();
     this.language = this.getUrlLanguageString(location.search);
-    if (location.pathname.indexOf('web') > 0) {
+    if (location.pathname.indexOf('-web') > -1) {
       this.pcView = true;
       this.setPageStyle(false);
     } else {
@@ -136,7 +138,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   ngAfterViewInit(): void {
     if (this.pcView === false) {
-      this.getAppId(location.search);
+      this.getAppId();
     }
   }
 
@@ -209,19 +211,16 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     } else if (this.appSys === 2) {
       (window as any).android.closeWebView('Close');
     } else {
-      if (this.pcView) {
-        this.router.navigateByUrl('/signIn-web');
-      } else {
-        this.router.navigateByUrl('/signIn');
-      }
+      const { portal } = appPath;
+      const pathName = this.pcView ? portal.signInWeb : portal.signIn;
+      this.router.navigateByUrl(`/${pathName}`);
     }
   }
 
   /**
    * 取得註冊來源平台、類型和ID
-   * @param urlStr {string}
    */
-  getAppId(urlStr: string): void {
+  getAppId(): void {
     if ((window as any).webkit) {
       this.appSys = 1;
     } else if ((window as any).android) {
@@ -663,7 +662,8 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       (window as any).android.returnToken(this.newToken);
       this.turnBack();
     } else {
-      this.router.navigateByUrl('/dashboard/user-settings');
+      const { dashboard, personal } = appPath;
+      this.router.navigateByUrl(`/${dashboard.home}/${personal.userSettings}`);
     }
   }
 
@@ -683,21 +683,20 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * 轉導至啟用帳號頁面
-   * @author kidin-1090513
    */
   toEnableAccount(): void {
     this.globalEventsService.setHideNavbarStatus(false);
+    const { portal } = appPath;
     if (this.pcView === true) {
-      this.router.navigate(['/enableAccount-web'], { queryParamsHandling: 'preserve' });
+      this.router.navigate([`/${portal.enableAccountWeb}`], { queryParamsHandling: 'preserve' });
     } else {
-      this.router.navigate(['/enableAccount'], { queryParamsHandling: 'preserve' });
+      this.router.navigate([`/${portal.enableAccount}`], { queryParamsHandling: 'preserve' });
     }
   }
 
   /**
    * 處理使用者點選同意或不同意條款和隱私權聲明
    * @param action {boolean}-同意/不同意
-   * @author kidin-1091208
    */
   handleAgreeTerms(action: boolean, turnBack = true) {
     this.agreeTerms = action;
@@ -710,7 +709,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * 待動畫結束後捲動至表單位置
-   * @author kidin-1100103
    */
   scrollToForm() {
     setTimeout(() => {
@@ -736,7 +734,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       signupData: { type },
       displayCountryCodeList,
     } = this;
-    if (type === SignTypeEnum.phone) {
+    if (type === SignInType.phone) {
       if (displayCountryCodeList) {
         this.unsubscribeClickScrollEvent();
       } else {
@@ -791,7 +789,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   ngOnDestroy(): void {
     this.setPageStyle(false);
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

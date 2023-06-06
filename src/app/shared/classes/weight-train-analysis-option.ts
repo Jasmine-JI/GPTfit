@@ -1,7 +1,7 @@
 import { AnalysisOneOption } from './analysis-one-option';
 import { AnalysisOption } from './analysis-option';
-import { MuscleAnalysisColumn } from '../enum/weight-train';
-import { LocalStorageKey } from '../enum/local-storage-key';
+import { MuscleAnalysisColumn } from '../../core/enums/sports';
+import { LocalStorageKey } from '../../core/enums/common';
 
 const muscleAnalysisColumnList = Object.values(MuscleAnalysisColumn).filter(
   (value) => typeof value === 'number'

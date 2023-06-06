@@ -7,15 +7,16 @@ import {
   NodejsApiService,
   ApiCommonService,
 } from '../../../../core/services';
-import { formTest } from '../../../../shared/models/form-test';
+import { formTest } from '../../../../core/models/regex/form-test';
 import { Subject, Subscription, fromEvent, of } from 'rxjs';
 import { takeUntil, switchMap, map, tap } from 'rxjs/operators';
 import { pageNotFoundPath } from '../../models/official-activity-const';
 import { EventStatus, ApplyStatus, EventInfo, EventDetail } from '../../models/activity-content';
-import { AccessRight } from '../../../../shared/enum/accessright';
+import { AccessRight } from '../../../../core/enums/common';
 import { Gender } from '../../../../core/enums/personal';
-import { UserProfileInfo } from '../../../../shared/models/user-profile-info';
+import { UserProfile } from '../../../../core/models/api/api-10xx';
 import { QueryString } from '../../../../core/enums/common';
+import { appPath } from '../../../../app-path.const';
 
 const switchButtonWidth = 40;
 const navHeight = 60;
@@ -28,6 +29,8 @@ enum ApplyButtonStatus {
   applyCancelled,
   applyCancelling,
 }
+
+const { officialActivity } = appPath;
 
 @Component({
   selector: 'app-activity-detail',
@@ -77,6 +80,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
   readonly EventStatus = EventStatus;
   readonly ApplyButtonStatus = ApplyButtonStatus;
   readonly Gender = Gender;
+  readonly officialActivity = officialActivity;
 
   constructor(
     private officialActivityService: OfficialActivityService,
@@ -88,6 +92,14 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
     private authService: AuthService
   ) {}
 
+  /**
+   * 此活動之排行榜網址
+   */
+  get leaderboardUrl() {
+    const { eventId } = this.eventInfo;
+    return `/${officialActivity.home}/${officialActivity.leaderboard}?${QueryString.eventId}=${eventId}`;
+  }
+
   ngOnInit(): void {
     of('')
       .pipe(
@@ -95,7 +107,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
         switchMap((eventId) => this.getEventInfomation(eventId)),
         switchMap((eventInfomation) =>
           this.getUserProfile().pipe(
-            map((userProfile) => [eventInfomation, userProfile] as [any, UserProfileInfo])
+            map((userProfile) => [eventInfomation, userProfile] as [any, UserProfile])
           )
         ),
         tap((res) => this.checkPagePermission(res)),
@@ -119,7 +131,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
    * 確認eventId是否符合數字格式
    */
   getEventId() {
-    const eventId = this.activatedRoute.snapshot.paramMap.get('eventId');
+    const eventId = this.activatedRoute.snapshot.paramMap.get(officialActivity.eventId);
     if (formTest.number.test(eventId)) {
       this.eventId = +eventId;
     } else {
@@ -153,9 +165,9 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
 
   /**
    * 確認頁面是否為可瀏覽狀態
-   * @param pageData {[any, UserProfileInfo]}-[api 6002 response, 使用者資訊]
+   * @param pageData [api 6002 response, 使用者資訊]
    */
-  checkPagePermission(pageData: [any, UserProfileInfo]) {
+  checkPagePermission(pageData: [any, UserProfile]) {
     const [eventInfomation] = pageData;
     const { eventStatus } = eventInfomation.eventInfo;
     const { systemAccessright } = this.userService.getUser();
@@ -244,9 +256,9 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
 
   /**
    * 確認各分組報名資格
-   * @param pageData {[any, UserProfileInfo]}-[api 6002 response, 使用者資訊]
+   * @param pageData [api 6002 response, 使用者資訊]
    */
-  checkApplyQualifications(pageData: [any, UserProfileInfo]) {
+  checkApplyQualifications(pageData: [any, UserProfile]) {
     const [eventInfomation, userProfile] = pageData;
     const {
       eventInfo: { numberLimit },
@@ -271,9 +283,9 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
 
   /**
    * 確認各分組報名資格
-   * @param pageData {[any, UserProfileInfo]}-[api 6002 response, 使用者資訊]
+   * @param pageData [api 6002 response, 使用者資訊]
    */
-  getSelectedGroup(pageData: [any, UserProfileInfo]) {
+  getSelectedGroup(pageData: [any, UserProfile]) {
     const {
       uiFlag: { applyButtonStatus },
       groupApplyCheck,
@@ -530,7 +542,7 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
 
   /**
    * 選擇分組
-   * @param index {number}-分組序列
+   * @param index {number}-分組索引
    */
   selectGroup(index: number) {
     if (this.groupApplyCheck[index]) {
@@ -547,8 +559,9 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
       const { applyButtonStatus } = this.uiFlag;
       if (applyButtonStatus === ApplyButtonStatus.canApply) {
         const { eventId } = this.eventInfo;
-        const url = `/official-activity/apply-activity/${eventId}?${QueryString.applyGroup}=${index}`;
-        this.router.navigateByUrl(url);
+        const pathName = `/${officialActivity.home}/${officialActivity.applyActivity}/${eventId}`;
+        const query = `?${QueryString.applyGroup}=${index}`;
+        this.router.navigateByUrl(pathName + query);
       }
     }
   }
@@ -559,14 +572,15 @@ export class ActivityDetailComponent implements OnInit, OnDestroy {
    */
   navigateEditPage(e: MouseEvent) {
     e.preventDefault();
-    this.router.navigateByUrl(`/official-activity/edit-activity/${this.eventInfo.eventId}`);
+    const url = `/${officialActivity.home}/${officialActivity.editActivity}/${this.eventInfo.eventId}`;
+    this.router.navigateByUrl(url);
   }
 
   /**
    * 解除rxjs訂閱
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

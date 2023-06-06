@@ -14,11 +14,13 @@ import { Subject, Subscription, fromEvent, merge, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { formTest } from '../../../../../shared/models/form-test';
-import { codes } from '../../../../../shared/models/countryCode';
-import { SignTypeEnum } from '../../../../../shared/enum/account';
+import { formTest } from '../../../../../core/models/regex/form-test';
+import { codes } from '../../../../../core/models/const';
 import { TFTViewMinWidth } from '../../../models/app-webview';
 import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/utils';
+import { SignInType } from '../../../../../core/enums/personal';
+import { appPath } from '../../../../../app-path.const';
+import { QueryString } from '../../../../../core/enums/common';
 
 const errorCaptchaI18nKey = 'universal_userAccount_errorCaptcha';
 enum ResetFlow {
@@ -39,7 +41,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   readonly formReg = formTest;
   readonly countryCodeList = codes;
-  readonly SignTypeEnum = SignTypeEnum;
+  readonly SignTypeEnum = SignInType;
   readonly ResetFlow = ResetFlow;
 
   displayCountryCodeList = false;
@@ -60,7 +62,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   formValue = {
     resetPasswordFlow: ResetFlow.request,
-    type: SignTypeEnum.email, // 1. 信箱 2. 手機
+    type: SignInType.email, // 1. 信箱 2. 手機
     email: '',
     countryCode: 886,
     phone: null,
@@ -90,6 +92,8 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     password: this.formReg.password,
   };
 
+  readonly signInUrl = `/${appPath.portal.signInWeb}`;
+
   constructor(
     private translate: TranslateService,
     private authService: AuthService,
@@ -106,7 +110,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.subscribeResizeEvent();
 
-    if (location.pathname.indexOf('web') > 0) {
+    if (location.pathname.indexOf('-web') > -1) {
       this.pcView = true;
       this.setPageStyle(false);
     } else {
@@ -174,19 +178,19 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     Object.entries(query).forEach(([_key, _value]) => {
       const _valueStr = _value as string;
       switch (_key) {
-        case 'rpf':
+        case QueryString.resetPasswordFlow:
           this.formValue.resetPasswordFlow = +_valueStr;
           break;
-        case 'e':
+        case QueryString.email:
           this.formValue.email = this.currentAccount = decodeURIComponent(_valueStr || '');
           break;
-        case 'mn':
+        case QueryString.mobileNumber:
           this.currentAccount = _valueStr || '';
           break;
-        case 'cc':
+        case QueryString.countryCode:
           this.formValue.countryCode = +_valueStr || null;
           break;
-        case 'p':
+        case QueryString.project:
           this.formValue.project = +_valueStr;
 
           if (+_valueStr === 0) {
@@ -194,7 +198,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
           break;
-        case 'vc':
+        case QueryString.verificationCode:
           this.formValue.verificationCode = _valueStr;
           break;
       }
@@ -234,11 +238,9 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     } else if (this.appSys === 2) {
       (window as any).android.closeWebView('Close');
     } else {
-      if (this.pcView === true) {
-        this.router.navigateByUrl('/signIn-web');
-      } else {
-        this.router.navigateByUrl('/signIn');
-      }
+      const { portal } = appPath;
+      const url = this.pcView ? portal.signInWeb : portal.signIn;
+      this.router.navigateByUrl(`/${url}`);
     }
   }
 
@@ -334,7 +336,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
       this.progress = 40;
       const body = {
         resetPasswordFlow: ResetFlow.request,
-        accountType: SignTypeEnum.phone,
+        accountType: SignInType.phone,
         countryCode: this.formValue.countryCode,
         mobileNumber: +this.formValue.phone,
         project: this.formValue.project,
@@ -436,11 +438,11 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
         this.removeCaptcha('submit');
       } else {
         const { type, resetPasswordFlow } = this.formValue;
-        if (type === SignTypeEnum.email && resetPasswordFlow === ResetFlow.request) {
+        if (type === SignInType.email && resetPasswordFlow === ResetFlow.request) {
           this.sendEmailCaptcha();
-        } else if (type === SignTypeEnum.email && resetPasswordFlow === ResetFlow.verify) {
+        } else if (type === SignInType.email && resetPasswordFlow === ResetFlow.verify) {
           this.emailVarify();
-        } else if (type === SignTypeEnum.phone && resetPasswordFlow !== ResetFlow.reset) {
+        } else if (type === SignInType.phone && resetPasswordFlow !== ResetFlow.reset) {
           this.phoneVarify();
         } else if (resetPasswordFlow === ResetFlow.reset) {
           this.resetPWD();
@@ -454,7 +456,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     const { email, project } = this.formValue;
     const body = {
       resetPasswordFlow: ResetFlow.request,
-      accountType: SignTypeEnum.email,
+      accountType: SignInType.email,
       email,
       project,
     };
@@ -545,7 +547,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     const { email, verificationCode, project } = this.formValue;
     const body = {
       resetPasswordFlow: ResetFlow.verify,
-      accountType: SignTypeEnum.email,
+      accountType: SignInType.email,
       email,
       verificationCode,
       project,
@@ -589,7 +591,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     const { countryCode, phone, verificationCode, project } = this.formValue;
     const body = {
       resetPasswordFlow: ResetFlow.verify,
-      accountType: SignTypeEnum.phone,
+      accountType: SignInType.phone,
       countryCode,
       mobileNumber: +phone,
       verificationCode,
@@ -650,7 +652,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
       project,
     };
 
-    if (type === SignTypeEnum.email) {
+    if (type === SignInType.email) {
       body.email = email;
     } else {
       body.countryCode = countryCode;
@@ -718,7 +720,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // 顯示彈跳視窗訊息-kidin-1090518
-  showMsgBox(msg: string, fn: Function) {
+  showMsgBox(msg: string, fn: CallableFunction) {
     if (this.pcView) {
       this.translate
         .get('hellow world')
@@ -755,7 +757,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
       formValue: { type },
       displayCountryCodeList,
     } = this;
-    if (type === SignTypeEnum.phone) {
+    if (type === SignInType.phone) {
       if (displayCountryCodeList) {
         this.unsubscribeClickScrollEvent();
       } else {
@@ -806,7 +808,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
   // 離開頁面則取消隱藏navbar和取消rxjs訂閱-kidin-1090514
   ngOnDestroy() {
     this.setPageStyle(false);
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

@@ -2,12 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { fromEvent, Subscription, Subject, forkJoin, merge } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import {
-  GroupDetailInfo,
-  UserSimpleInfo,
-  EditMode,
-  GroupLevel,
-} from '../../../models/group-detail';
+import { UserSimpleInfo, EditMode, GroupLevel } from '../../../models/group-detail';
 import {
   HashIdService,
   AuthService,
@@ -19,13 +14,14 @@ import { TranslateService } from '@ngx-translate/core';
 import { PeopleSelectorWinComponent } from '../../../components/people-selector-win/people-selector-win.component';
 import { planDatas } from '../../../group/desc';
 import dayjs from 'dayjs';
-import { DateUnit } from '../../../../../shared/enum/report';
 import { deepCopy, displayGroupLevel } from '../../../../../core/utils';
 import { SportsTarget } from '../../../../../shared/classes/sports-target';
 import { TargetConditionMap } from '../../../../../core/models/api/api-common';
-import { BenefitTimeStartZone } from '../../../../../core/enums/common';
+import { BenefitTimeStartZone, DateUnit, QueryString } from '../../../../../core/enums/common';
 import { ProfessionalService } from '../../../../professional/services/professional.service';
-import { formTest } from '../../../../../shared/models/form-test';
+import { formTest } from '../../../../../core/models/regex';
+import { GroupDetail } from '../../../../../core/models/api/api-11xx';
+import { appPath } from '../../../../../app-path.const';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -77,7 +73,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   /**
    * 頁面主要顯示的內容
    */
-  groupDetail: GroupDetailInfo;
+  groupDetail: GroupDetail;
 
   /**
    * 編輯完成送出api 1105 的 request body
@@ -275,16 +271,15 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 確認url的query string，判斷是否開啟新增群組模式
-   * @author kidin-1091106
    */
   checkQueryString(query: string) {
     const queryArr = query.split('&');
     for (let i = 0, queryLength = queryArr.length; i < queryLength; i++) {
-      if (queryArr[i].indexOf('createType') > -1) {
+      if (queryArr[i].indexOf(QueryString.createType) > -1) {
         this.checkCreateMode(queryArr[i].split('=')[1]);
-      } else if (queryArr[i].indexOf('plan') > -1) {
+      } else if (queryArr[i].indexOf(QueryString.plan) > -1) {
         this.saveBrandPlan(+queryArr[i].split('=')[1]);
-      } else if (queryArr[i].indexOf('brandType') > -1) {
+      } else if (queryArr[i].indexOf(QueryString.brandType) > -1) {
         this.createBody.brandType = +queryArr[i].split('=')[1];
       }
     }
@@ -293,7 +288,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   /**
    * 根據權限和群組類別開啟建立群組模式
    * @param type {string}-欲新建的群組type
-   * @author kidin-1091106
    */
   checkCreateMode(type: string) {
     switch (type) {
@@ -366,7 +360,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 若創建分店/分公司以下階層群組，則預設創建者為管理員
-   * @author kidin-1091109
    */
   assignAdmin() {
     this.chooseLabels.length = 0;
@@ -379,7 +372,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 待套件載入完成再產生翻譯
-   * @author kidin-1091106
    */
   getTranslate() {
     this.translate
@@ -396,7 +388,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 開啟編輯或建立群組模式
-   * @author kidin1091123
    */
   openEditMode(action: 'edit' | 'create') {
     this.uiFlag.editMode = action;
@@ -406,7 +397,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 關閉編輯模式
-   * @author kidin1091123
    */
   closeEditMode(action: 'complete' | 'close') {
     if (this.uiFlag.editMode === 'edit') {
@@ -423,29 +413,30 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 取消新建群組
-   * @author kidin-1091111
    */
   cancelCreateMode() {
+    const {
+      dashboard,
+      professional: { groupDetail },
+      adminManage,
+    } = appPath;
     this.uiFlag.editMode = 'close';
     this.professionalService.setEditMode('close');
     if (this.createBody.levelType !== 3) {
+      const hashGroupId = this.hashIdService.handleGroupIdEncode(this.createBody.groupId);
       this.router.navigateByUrl(
-        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
-          this.createBody.groupId
-        )}/group-architecture`
+        `/${dashboard.home}/${groupDetail.home}/${hashGroupId}/${groupDetail.groupArchitecture}`
       );
     } else {
-      if (this.createBody.brandType === 1) {
-        this.router.navigateByUrl(`/dashboard/system/create-brand-group`);
-      } else {
-        this.router.navigateByUrl(`/dashboard/system/create-com-group`);
-      }
+      const childPath =
+        this.createBody.brandType === 1 ? adminManage.createBrandGroup : adminManage.createComGroup;
+      const url = `/${dashboard.home}/${adminManage.home}/${childPath}`;
+      this.router.navigateByUrl(url);
     }
   }
 
   /**
    * 開啟編輯模式或送出request並關閉編輯模式
-   * @author kidin-1091103
    */
   handleEdit() {
     if (this.uiFlag.editMode === 'create') {
@@ -460,7 +451,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 確認創建群組的表單哪些欄位未輸入
-   * @author kidin1091110
    */
   checkCreateInput() {
     if (
@@ -484,7 +474,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 確認編輯群組的表單欄位是否皆有值
-   * @author kidin1091110
    */
   checkEditInput() {
     if (
@@ -501,7 +490,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 偵測全域點擊事件，以收納"群組狀態"選單
-   * @author kidin-20201104
    */
   listenPluralEvent() {
     const element = document.querySelector('.main__container') as Element;
@@ -517,7 +505,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 取消訂閱全域點擊事件
-   * @author kidin-20201104
    */
   cancelListenPluralEvent() {
     if (this.pluralEvent) this.pluralEvent.unsubscribe();
@@ -525,7 +512,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 將所有已顯示清單收合
-   * @author kidin-1110308
    */
   foldAllList() {
     this.uiFlag.openStatusSelector = false;
@@ -545,7 +531,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 顯示群組狀態清單
-   * @author kidin-1110308
    */
   openStatusSelector() {
     this.foldAllList();
@@ -610,7 +595,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   /**
    * 儲存群組名稱
    * @param e {Event}
-   * @author kidin-1091103
    */
   saveGroupName(e: Event) {
     const name = (e as any).target.value.trim();
@@ -631,7 +615,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   /**
    * 儲存群組介紹
    * @param e {Event}
-   * @author kidin-1091103
    */
   saveGroupDesc(e: Event) {
     const desc = (e as any).target.value.trim();
@@ -652,7 +635,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   /**
    * 儲存課程直播連結
    * @param e {Event}
-   * @author kidin-1091103
    */
   saveVedioUrl(e: Event) {
     this.uiFlag.contentChange = true;
@@ -663,7 +645,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * 編輯群組加入狀態
    * @param e {MouseEvent}
    * @param status {number}-group join status
-   * @author kidin-1091103
    */
   saveGroupStatus(e: MouseEvent, status: number) {
     e.stopPropagation();
@@ -680,7 +661,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   /**
    * 儲存群組建立方案
    * @param plan {number}-群組建立方案
-   * @author kidin-1091110
    */
   saveBrandPlan(plan: number) {
     switch (plan) {
@@ -720,30 +700,13 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @param e {Event}
    */
   saveExpireTime(e: Event) {
-    let date = '';
-    switch ((e as any).value) {
-      case '1':
-        date = dayjs().add(1, 'month').format('YYYY-MM-DDTHH:mm:ss.000+08:00');
-        break;
-      case '2':
-        date = dayjs().add(2, 'month').format('YYYY-MM-DDTHH:mm:ss.000+08:00');
-        break;
-      case '3':
-        date = dayjs().add(3, 'month').format('YYYY-MM-DDTHH:mm:ss.000+08:00');
-        break;
-      case '6':
-        date = dayjs().add(6, 'month').format('YYYY-MM-DDTHH:mm:ss.000+08:00');
-        break;
-      default:
-        date = dayjs().add(12, 'month').format('YYYY-MM-DDTHH:mm:ss.000+08:00');
-        break;
-    }
-
+    const diff = +(e as any).value;
+    const date = dayjs().add(diff, 'month').format('YYYY-MM-DDTHH:mm:ss.000+08:00');
     const { commercePlan } = this.createBody;
     this.createBody.commercePlanExpired = date;
     if (commercePlan && commercePlan !== 1 && commercePlan !== 99) {
       const { cost } = planDatas[commercePlan - 1];
-      this.createBrandSetting.totalCost = +(cost as number) * +(e as any).value;
+      this.createBrandSetting.totalCost = +(cost as number) * diff;
     }
   }
 
@@ -751,7 +714,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * 儲存客製方案細部設定
    * @param e {Event}
    * @param formItem {string}-變更的表單類別
-   * @author kidin-1091110
    */
   savePlanSetting(e: Event, formItem: 'branch' | 'class' | 'admin' | 'member') {
     const num = (e as any).target.value;
@@ -795,7 +757,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 儲存建立群組的內容
-   * @author kidin-1091106
    */
   saveCreateContent() {
     this.uiFlag.isLoading = true;
@@ -827,7 +788,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 儲存編輯內容
-   * @author kidin-1091103
    */
   saveEditContent() {
     const { editBody, sportsTarget } = this;
@@ -871,7 +831,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   /**
    * 送出api 1107 的request並關閉編輯模式
    * @param body {any}-api 1107 的request body
-   * @author kidin-1091104
    */
   sendchangeGroupStatusReq(body: any) {
     this.uiFlag.isLoading = true;
@@ -891,7 +850,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   /**
    * 送出api 1105 和 api 1107 的request並關閉編輯模式
    * @param body {any}-api 1105 的request body
-   * @author kidin-1091104
    */
   sendCombinedReq(editBody: any, changeBody: any) {
     this.uiFlag.isLoading = true;
@@ -914,7 +872,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 儲存所有階層群組資訊
-   * @author kidin-1090716
    */
   refreshAllLevelGroupData() {
     const body = {
@@ -937,7 +894,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 更新群組頁面
-   * @author kidin-1091111
    */
   initPage() {
     this.refreshGroupDetail();
@@ -949,7 +905,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 重新刷新群組資訊
-   * @author kidin-1091104
    */
   refreshGroupDetail() {
     const body = {
@@ -972,19 +927,22 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   /**
    * 轉導至使用者點選的父群組
    * @param groupId {string}-父群組id
-   * @author kidin-1091111
    */
   navigateParentsGroup(groupId: string) {
+    const {
+      dashboard,
+      professional: { groupDetail },
+    } = appPath;
+    const hashGroupId = this.hashIdService.handleGroupIdEncode(groupId);
     this.closeEditMode('close');
     this.router.navigateByUrl(
-      `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}/group-introduction`
+      `/${dashboard.home}/${groupDetail.home}/${hashGroupId}/${groupDetail.introduction}`
     );
   }
 
   /**
    * 展開/收合套用目標清單
    * @param e {MouseEvent}
-   * @author kidin-1110308
    */
   toggleInheritList(e: MouseEvent) {
     e.stopPropagation();
@@ -994,7 +952,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 顯示套用清單
-   * @author kidin-1110308
    */
   unfoldInheritList() {
     this.foldAllList();
@@ -1013,7 +970,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   /**
    * 選擇繼承指定的運動目標
    * @param referenceLevel {GroupLevel}-欲繼承目標的階層
-   * @author kidin-1110307
    */
   setTargetReference(referenceLevel: GroupLevel) {
     this.handleSportsTarget(referenceLevel);
@@ -1024,7 +980,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 取得可選擇的繼承清單
-   * @author kidin-1110309
    */
   getTargetInheritList() {
     this.targetInheritList = [];
@@ -1098,11 +1053,10 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 取消rxjs訂閱
-   * @author kidin-1091103
    */
   ngOnDestroy() {
     this.cancelListenPluralEvent();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

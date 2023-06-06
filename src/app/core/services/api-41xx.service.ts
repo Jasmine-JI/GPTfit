@@ -1,8 +1,9 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError, Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { mathRounding } from '../utils';
+import { throwRxError } from '../utils';
 
 @Injectable({
   providedIn: 'root',
@@ -18,7 +19,7 @@ export class Api41xxService {
     return <any>(
       this.http
         .post('/api/v2/operationAnalysis/getSystemOperationInfo', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -30,7 +31,7 @@ export class Api41xxService {
     return <any>(
       this.http
         .post('/api/v2/operationAnalysis/getSystemOperationTrend', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -42,7 +43,7 @@ export class Api41xxService {
     return <any>(
       this.http
         .post('/api/v2/operationAnalysis/getBrandOperationInfoList', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -53,7 +54,7 @@ export class Api41xxService {
   fetchGetGroupOperationDetail(body: any): Observable<any> {
     return <any>this.http.post('/api/v2/operationAnalysis/getGroupOperationDetail', body).pipe(
       // map((res) => this.createFate4104Data(res)),
-      catchError((err) => throwError(err))
+      catchError((err) => throwRxError(err))
     );
   }
 
@@ -64,7 +65,7 @@ export class Api41xxService {
   fetchGetGroupOperationTrend(body: any): Observable<any> {
     return <any>this.http.post('/api/v2/operationAnalysis/getGroupOperationTrend', body).pipe(
       // map((res) => this.createFate4105Data(res)),
-      catchError((err) => throwError(err))
+      catchError((err) => throwRxError(err))
     );
   }
 
@@ -76,7 +77,7 @@ export class Api41xxService {
     return <any>(
       this.http
         .post('/api/v2/operationAnalysis/getGroupMemberAnalysisList', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -88,7 +89,7 @@ export class Api41xxService {
     return <any>(
       this.http
         .post('/api/v2/operationAnalysis/updateAnalysisData', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -100,7 +101,7 @@ export class Api41xxService {
     return <any>(
       this.http
         .post('/api/v2/operationAnalysis/getUpdateAnalysisDataStatus', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 

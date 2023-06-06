@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { AlaAppAnalysisService } from '../../services/ala-app-analysis.service';
 import dayjs from 'dayjs';
-import { AlaApp } from '../../../../shared/models/app-id';
-import { AlbumType } from '../../../../shared/models/image';
+import { AlaApp } from '../../../../core/enums/common';
+import { AlbumType } from '../../../../core/enums/api';
 import { Subject, fromEvent, Subscription } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { HttpParams } from '@angular/common/http';
@@ -369,7 +369,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
   /**
    * 點擊自動完成表單的內容
    * @param e {MouseEvent}
-   * @param idx {number}-在自動完成表單內的序列
+   * @param idx {number}-在自動完成表單內的索引
    * @author kidin-1100806
    */
   clickAutoCompleted(e: MouseEvent, idx: number) {
@@ -417,7 +417,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
   /**
    * 移除指定的條件
    * @param type {string}-條件類型
-   * @param idx {number}-條件清單序列
+   * @param idx {number}-條件清單索引
    * @author kidin-1100806
    */
   delCondition(type: string, idx: number) {
@@ -898,7 +898,7 @@ export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
    * 解除rxjs訂閱
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

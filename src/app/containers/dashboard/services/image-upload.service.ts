@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { throwRxError } from '../../../core/utils';
 
 /**
  * 圖床相關api
@@ -21,7 +21,7 @@ export class ImageUploadService {
   addImg(body: object) {
     return this.http
       .post<any>('/api/v1/img/addimg', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -33,7 +33,7 @@ export class ImageUploadService {
   deleteImg(body: object) {
     return this.http
       .post<any>('/api/v1/img/deleteimg', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -45,6 +45,6 @@ export class ImageUploadService {
   getImgList(body: object) {
     return this.http
       .post<any>('/api/v1/img/getimglist', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 }

@@ -46,7 +46,7 @@ export class SportsFileRoadComponent implements OnInit, AfterViewInit, OnDestroy
   @Output() selectFile: EventEmitter<number> = new EventEmitter();
 
   /**
-   * 現在聚焦的分段序列
+   * 現在聚焦的分段索引
    */
   currentIndex = 0;
 
@@ -112,7 +112,7 @@ export class SportsFileRoadComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 選擇特定的檔案資訊
-   * @param index {number}-指定的檔案序列
+   * @param index {number}-指定的檔案索引
    */
   selectAssignFile(index: number) {
     if (index !== this.currentIndex) {

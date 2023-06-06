@@ -176,17 +176,17 @@
   </ng-container>
   <ng-container *ngIf="hasResData">
     <div class="other-info--area otherInfoArea">
-      <div class="otherInfoSection">
+      <div class="otherInfoSection" *ngIf="deviceInfo">
         <p class="ala-dashboard-title activity-title">
           {{ 'universal_deviceSetting_device' | translate }}
         </p>
         <img src="{{ this.deviceImgUrl }}" style="width: 100px; height: 100px; margin: 0 auto" />
         <span class="introductionName">{{
-          deviceInfo?.modelName || 'universal_status_noData' | translate
+          deviceInfo.modelName || 'universal_status_noData' | translate
         }}</span>
         <p>
           {{ 'universal_deviceSetting_modeType' | translate }}：{{
-            (deviceInfo?.modelTypeID | productType | translate) || 'universal_status_noData'
+            (deviceInfo.modelTypeID | productType | translate) || 'universal_status_noData'
               | translate
           }}
         </p>

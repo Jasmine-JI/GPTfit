@@ -1,11 +1,12 @@
 import { SportType } from '../../../enums/sports/sports-type.enum';
+import { FileSortType, DescFirstSortDirection } from '../../../enums/api';
 
 export interface Api2116Post {
   token: string; // 登入權杖
   filterStartTime: string; // 活動開始日期搜尋起始範圍
   filterEndTime: string; // 活動開始日期搜尋結束範圍
-  sortType: string; // 1. 日期、2. 活動計時、3. 距離、4. 平均心率、5. 平均速度、6. 累重
-  sortDirection: string; // 1. 降冪(新到舊)  2. 升冪
+  sortType: FileSortType; // 1. 日期、2. 活動計時、3. 距離、4. 平均心率、5. 平均速度、6. 累重
+  sortDirection: DescFirstSortDirection; // 1. 降冪(新到舊)  2. 升冪
   filter: {
     // 以下條件必帶一項
     type: SportType; // 運動類別，選填
@@ -15,7 +16,6 @@ export interface Api2116Post {
   };
   page: number; // 頁次
   pageCounts: number; // 每頁項目數目
-
   targetUserId?: number;
 }
 

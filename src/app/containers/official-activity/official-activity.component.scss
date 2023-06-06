@@ -290,6 +290,10 @@ $alert-icon-color: rgba(255, 56, 56, 1);
   }
 }
 
+.sign__icon {
+  min-width: 24px;
+}
+
 .hint__text {
   font-size: 14px;
   color: rgba(150, 150, 150, 1);

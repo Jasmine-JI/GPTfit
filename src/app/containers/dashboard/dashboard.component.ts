@@ -13,9 +13,9 @@ import {
 } from '../../core/services';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { UserProfileInfo } from '../../shared/models/user-profile-info';
-import { langData } from '../../shared/models/i18n';
-import { AccessRight } from '../../shared/enum/accessright';
+import { UserProfile } from '../../core/models/api/api-10xx';
+import { langData } from '../../core/models/const';
+import { AccessRight } from '../../core/enums/common';
 import { setLocalStorageObject, getLocalStorageObject, checkResponse } from '../../core/utils';
 import { appPath } from '../../app-path.const';
 import { StationMailService } from '../station-mail/services/station-mail.service';
@@ -49,6 +49,9 @@ enum Dashboard {
 
 type Theme = 'light' | 'dark';
 
+const dashboardHome = appPath.dashboard.home;
+const adminPath = appPath.adminManage;
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -69,7 +72,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   };
 
   langName: string;
-  userProfile = <UserProfileInfo>{};
+  userProfile = <UserProfile>{};
   isPreviewMode = false;
   isCollapseOpen = false;
   target: Dashboard | null = Dashboard.myActivity; // 目前預設是我的活動
@@ -89,6 +92,33 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   notifyUpdateTime: number | null = null;
 
   readonly AccessRight = AccessRight;
+  readonly linkList = {
+    userSetting: `/${dashboardHome}/${appPath.personal.userSettings}`,
+    trainlive: `/${dashboardHome}/${appPath.dashboard.trainLive}`,
+    myGroupList: `/${dashboardHome}/${appPath.professional.myGroupList}`,
+    groupSearch: `/${dashboardHome}/${appPath.professional.groupSearch}`,
+    activityList: `/${dashboardHome}/${appPath.personal.activityList}`,
+    device: `/${dashboardHome}/${appPath.device.home}`,
+    personalSportsReport: `/${dashboardHome}/${appPath.personal.sportsReport}`,
+    personalLifeTracking: `/${dashboardHome}/${appPath.personal.lifeTracking}`,
+    personalCloudrun: `/${dashboardHome}/${appPath.personal.cloudrun}`,
+    adminSettingMember: `/${dashboardHome}/${adminPath.home}/${adminPath.settingMember}`,
+    adminInnerTest: `/${dashboardHome}/${adminPath.home}/${adminPath.innerTest}`,
+    adminInnerGpx: `/${dashboardHome}/${adminPath.home}/${adminPath.innerGpx}`,
+    adminLifeTracking: `/${dashboardHome}/${adminPath.home}/${adminPath.lifeTracking}`,
+    adminSystemLog: `/${dashboardHome}/${adminPath.home}/${adminPath.systemLog}`,
+    adminFolderPermission: `/${dashboardHome}/${adminPath.home}/${adminPath.folderPermission}`,
+    adminAllGroupList: `/${dashboardHome}/${adminPath.home}/${adminPath.allGroupList}`,
+    adminCreateBrandGroup: `/${dashboardHome}/${adminPath.home}/${adminPath.createBrandGroup}`,
+    adminCreateComGroup: `/${dashboardHome}/${adminPath.home}/${adminPath.createComGroup}`,
+    adminCreatePush: `/${dashboardHome}/${adminPath.home}/${adminPath.createPush}`,
+    adminPushList: `/${dashboardHome}/${adminPath.home}/${adminPath.pushList}`,
+    adminDevicePairManagement: `/${dashboardHome}/${adminPath.home}/${adminPath.devicePairManagement}`,
+    adminDeviceLog: `/${dashboardHome}/${adminPath.home}/${adminPath.deviceLog.home}`,
+    adminSystemOperationReport: `/${dashboardHome}/${adminPath.home}/${adminPath.systemOperationReport}`,
+    adminGroupOperationList: `/${dashboardHome}/${adminPath.home}/${adminPath.groupOperationList}`,
+    adminAlaAppAnalysis: `/${dashboardHome}/${adminPath.home}/${adminPath.alaAppAnalysis}`,
+  };
 
   constructor(
     private authService: AuthService,
@@ -199,12 +229,11 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin
    */
   checkUiMode(url: string) {
-    if (url.indexOf('/dashboard/coach-dashboard') > -1) {
+    const { dashboard } = appPath;
+    const coachDashboardPath = `/${dashboard.home}/${dashboard.coachDashboard}`;
+    if (url.indexOf(coachDashboardPath) > -1) {
       this.isHadContainer = false;
       this.isHideFooter = true;
-      this.uiFlag.mobileMode = true;
-      this.shrinkSidebar();
-    } else if (url.indexOf('/dashboard/system/event-management') > -1) {
       this.uiFlag.mobileMode = true;
       this.shrinkSidebar();
     } else if (window.innerWidth > 768) {
@@ -221,62 +250,63 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin
    */
   checkCurrentPage(url: string) {
-    const [, mainPath, secondPath, thirdPath, ...rest] = url.split('/');
+    const [, , secondPath, thirdPath] = url.split('/');
+    const { dashboard, professional, device, personal, adminManage } = appPath;
     switch (secondPath) {
-      case 'coach-dashboard':
+      case dashboard.coachDashboard:
         this.target = Dashboard.trainLive;
         break;
-      case 'live':
-        if (thirdPath === 'train-live') this.target = Dashboard.trainLive;
+      case dashboard.trainLive:
+        this.target = Dashboard.trainLive;
         break;
-      case 'group-search':
+      case professional.groupSearch:
         this.target = Dashboard.searchGroup;
         break;
-      case 'activity-list':
+      case personal.activityList:
         this.target = Dashboard.myActivity;
         break;
-      case 'sport-report':
+      case personal.sportsReport:
         this.target = Dashboard.sportReport;
         break;
-      case 'my-group-list':
+      case professional.myGroupList:
         this.target = Dashboard.myGroup;
         break;
-      case 'device':
+      case device.home:
         this.target = Dashboard.myDevice;
         break;
-      case 'life-tracking':
+      case personal.lifeTracking:
         this.target = Dashboard.lifeTracking;
         break;
-      case 'cloudrun':
+      case personal.cloudrun:
         this.target = Dashboard.cloudrun;
         break;
-      case 'system':
+      case adminManage.home:
         switch (thirdPath) {
-          case 'device_log':
+          case adminManage.deviceLog.home:
             this.target = Dashboard.deviceLog;
             break;
-          case 'all-group-list':
+          case adminManage.allGroupList:
             this.target = Dashboard.allGroupList;
             break;
-          case 'create-brand-group':
+          case adminManage.createBrandGroup:
             this.target = Dashboard.createBrandGroup;
             break;
-          case 'setting-member':
+          case adminManage.settingMember:
             this.target = Dashboard.innerAdmin;
             break;
-          case 'inner-test':
+          case adminManage.innerTest:
             this.target = Dashboard.innerSearch;
             break;
-          case 'inner-gpx':
+          case adminManage.innerGpx:
             this.target = Dashboard.coordinateTranslate;
             break;
-          case 'device-pair-management':
+          case adminManage.devicePairManagement:
             this.target = Dashboard.deviceSearch;
             break;
-          case 'life-tracking':
+          case adminManage.lifeTracking:
             this.target = Dashboard.lifeTrackingLog;
             break;
-          case 'create-com-group':
+          case adminManage.createComGroup:
             this.target = Dashboard.createEnterpriseGroup;
             break;
         }
@@ -303,16 +333,16 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   onResize(event: any = null) {
     const screenWidth = event ? event.target.innerWidth : window.innerWidth;
-    const checkUrlCond = location.pathname.indexOf('/dashboard/group-info') > -1,
-      checkScreenWidthA = screenWidth < 1000,
-      checkScreenWidthB = screenWidth < 769;
+    const { pathname } = location;
+    const { dashboard, professional } = appPath;
+    const checkUrlCond =
+      pathname.indexOf(`/${dashboard.home}/${professional.groupDetail.home}`) > -1;
+    const checkScreenWidthA = screenWidth < 1000;
+    const checkScreenWidthB = screenWidth < 769;
     if ((checkUrlCond && checkScreenWidthA) || checkScreenWidthB) {
       this.uiFlag.mobileMode = true;
       this.shrinkSidebar();
-    } else if (location.pathname.indexOf('/dashboard/coach-dashboard') > -1) {
-      this.uiFlag.mobileMode = true;
-      this.shrinkSidebar();
-    } else if (location.pathname.indexOf('/dashboard/system/event-management') > -1) {
+    } else if (pathname.indexOf(`/${dashboard.home}/${dashboard.coachDashboard}`) > -1) {
       this.uiFlag.mobileMode = true;
       this.shrinkSidebar();
     } else {
@@ -322,7 +352,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   goToUserProfile(userId) {
-    this.router.navigateByUrl(`/user-profile/${this.hashIdService.handleUserIdEncode(userId)}`);
+    const { personal } = appPath;
+    this.router.navigateByUrl(`/${personal.home}/${this.hashIdService.handleUserIdEncode(userId)}`);
   }
 
   chooseItem(_target) {
@@ -341,8 +372,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   logout() {
+    const { portal } = appPath;
     this.authService.logout();
-    this.router.navigateByUrl('/signIn-web');
+    this.router.navigateByUrl(`/${portal.signInWeb}`);
   }
 
   /**
@@ -350,7 +382,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1090513
    */
   toEnableAccount(): void {
-    window.open(`/enableAccount`, '', 'height=700,width=375,resizable=no');
+    const { portal } = appPath;
+    window.open(`/${portal.enableAccount}`, '', 'height=700,width=375,resizable=no');
   }
 
   /**
@@ -557,20 +590,16 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   navigateInbox(e: MouseEvent) {
     e.preventDefault();
-    const {
-      stationMail: { home, inbox },
-    } = appPath;
-    this.router.navigateByUrl(`/dashboard/${home}/${inbox}`);
+    const { dashboard, stationMail } = appPath;
+    this.router.navigateByUrl(`/${dashboard.home}/${stationMail.home}/${stationMail.inbox}`);
   }
 
   /**
    * 轉導至建立新訊息頁面
    */
   navigateNewMailPage() {
-    const {
-      stationMail: { home, newMail },
-    } = appPath;
-    this.router.navigateByUrl(`/dashboard/${home}/${newMail}`);
+    const { dashboard, stationMail } = appPath;
+    this.router.navigateByUrl(`/${dashboard.home}/${stationMail.home}/${stationMail.newMail}`);
   }
 
   /**
@@ -586,7 +615,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   ngOnDestroy(): void {
     if (this.mailNotify) clearInterval(this.mailNotify);
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

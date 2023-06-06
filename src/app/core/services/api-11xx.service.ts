@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { throwRxError } from '../utils';
 
 /**
  * 群組相關api
@@ -18,7 +19,9 @@ export class Api11xxService {
    */
   fetchGroupList(body: any): Observable<any> {
     return <any>(
-      this.http.post('/api/v1/center/getGroupList', body).pipe(catchError((err) => throwError(err)))
+      this.http
+        .post('/api/v1/center/getGroupList', body)
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -30,7 +33,7 @@ export class Api11xxService {
     return <any>(
       this.http
         .post('/api/v1/center/getGroupListDetail', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -42,7 +45,7 @@ export class Api11xxService {
     return <any>(
       this.http
         .post('/api/v1/center/getGroupMemberList', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -52,7 +55,9 @@ export class Api11xxService {
    */
   fetchActionGroup(body: any): Observable<any> {
     return <any>(
-      this.http.post('/api/v1/center/actionGroup', body).pipe(catchError((err) => throwError(err)))
+      this.http
+        .post('/api/v1/center/actionGroup', body)
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -62,7 +67,7 @@ export class Api11xxService {
    */
   fetchEditGroup(body: any): Observable<any> {
     return <any>(
-      this.http.post('/api/v1/center/editGroup', body).pipe(catchError((err) => throwError(err)))
+      this.http.post('/api/v1/center/editGroup', body).pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -74,7 +79,7 @@ export class Api11xxService {
     return <any>(
       this.http
         .post('/api/v1/center/editGroupMember', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -86,7 +91,7 @@ export class Api11xxService {
     return <any>(
       this.http
         .post('/api/v1/center/changeGroupStatus', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -98,7 +103,7 @@ export class Api11xxService {
     return <any>(
       this.http
         .post('/api/v1/center/addGroupMember', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -108,7 +113,9 @@ export class Api11xxService {
    */
   fetchCreateGroup(body: any): Observable<any> {
     return <any>(
-      this.http.post('/api/v1/center/createGroup', body).pipe(catchError((err) => throwError(err)))
+      this.http
+        .post('/api/v1/center/createGroup', body)
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -120,7 +127,7 @@ export class Api11xxService {
     return <any>(
       this.http
         .post('/api/v1/center/updateJoinStatus', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -132,7 +139,7 @@ export class Api11xxService {
     return <any>(
       this.http
         .post('/api/v1/center/assignGroupManager', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -144,7 +151,7 @@ export class Api11xxService {
     return <any>(
       this.http
         .post('/api/v1/center/getMemberAccessRight', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -156,7 +163,7 @@ export class Api11xxService {
     return <any>(
       this.http
         .post('/api/v1/center/deleteGroupMember', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -168,7 +175,7 @@ export class Api11xxService {
     return <any>(
       this.http
         .post('/api/v1/center/getCommerceInfo', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -180,7 +187,7 @@ export class Api11xxService {
     return <any>(
       this.http
         .post('/api/v1/center/editCommerceInfo', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 
@@ -192,7 +199,7 @@ export class Api11xxService {
     return <any>(
       this.http
         .post('/api/v1/center/filterSameGroupMember', body)
-        .pipe(catchError((err) => throwError(err)))
+        .pipe(catchError((err) => throwRxError(err)))
     );
   }
 }

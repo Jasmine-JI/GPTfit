@@ -4,7 +4,7 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'swimPosture',
   standalone: true,
 })
-export class swimPosture implements PipeTransform {
+export class SwimPosturePipe implements PipeTransform {
   /**
    * 根據泳姿回傳對應多國語系的鍵。
    * @param value {string | number}-泳姿
@@ -22,6 +22,8 @@ export class swimPosture implements PipeTransform {
         return 'universal_activityData_backStroke';
       case 5:
         return 'universal_activityData_butterflyStroke';
+      default:
+        return 'universal_vocabulary_other';
     }
   }
 }

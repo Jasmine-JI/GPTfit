@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { Observable, throwError, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { HintDialogService } from '../../core/services';
+import { throwRxError } from '../utils';
 
 const { API_SERVER } = environment.url;
 
@@ -25,7 +26,7 @@ export class NodejsApiService {
   getAssignInfo(body: any): Observable<any> {
     return this.http
       .post<any>(API_SERVER + 'user/alaql', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -35,7 +36,7 @@ export class NodejsApiService {
   searchNickname(body: any): Observable<any> {
     return this.http
       .post<any>(API_SERVER + 'user/search_nickname', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -45,7 +46,7 @@ export class NodejsApiService {
   checkNickname(body: any): Observable<any> {
     return this.http
       .post<any>(API_SERVER + 'user/checkNickname', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -55,7 +56,7 @@ export class NodejsApiService {
   getUserList(body: any): Observable<any> {
     return this.http
       .post<any>(API_SERVER + 'user/getUserList', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -68,14 +69,14 @@ export class NodejsApiService {
       const errMsg = 'Get map information fail.<br>Please try again later.';
       return this.http.post<any>(API_SERVER + 'cloudrun/getAllMapInfo', {}).pipe(
         map((res) => {
-          if (res.resultCode !== 200) return throwError(errMsg);
+          if (res.resultCode !== 200) return throwRxError(errMsg);
 
           this.mapList = res.resInfo;
           return this.mapList;
         }),
         catchError((err) => {
           this.hintDialogService.openAlert(errMsg);
-          return throwError(err);
+          return throwRxError(err);
         })
       );
     }
@@ -89,12 +90,12 @@ export class NodejsApiService {
     const errMsg = 'Get map GPX fail.<br>Please try again later.';
     return this.http.post<any>(`${API_SERVER}cloudrun/getMapGpx`, body).pipe(
       map((res) => {
-        if (res.resultCode !== 200) return throwError(errMsg);
+        if (res.resultCode !== 200) return throwRxError(errMsg);
         return res.info;
       }),
       catchError((err) => {
         this.hintDialogService.openAlert(errMsg);
-        return throwError(err);
+        return throwRxError(err);
       })
     );
   }
@@ -107,7 +108,7 @@ export class NodejsApiService {
   getLeaderboardStatistics(body: any) {
     return this.http
       .post<any>(`${API_SERVER}cloudrun/getLeaderboardStatistics`, body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**
@@ -117,7 +118,7 @@ export class NodejsApiService {
   uploadSportFile(body: any) {
     return this.http
       .post<any>(API_SERVER + 'uploadSportFile', body)
-      .pipe(catchError((err) => throwError(err)));
+      .pipe(catchError((err) => throwRxError(err)));
   }
 
   /**

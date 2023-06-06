@@ -40,7 +40,11 @@
             [class.drop__menu--active]="uiFlag.showDataSelector === 'compareA'"
             (click)="handleShowDropList($event, 'compareA')"
           >
-            {{ mapOpt.compareA.type | dataTypeTranslate: [sportType, unit] | translate }}
+            {{
+              mapOpt.compareA.type
+                | dataTypeTranslate: { sportsType: sportType, unitType: unit }
+                | translate
+            }}
           </div>
           <ng-container *ngIf="uiFlag.showDataSelector === 'compareA'">
             <ng-container *ngIf="!uiFlag.showDataSelector; else dropList"></ng-container>
@@ -55,7 +59,11 @@
             [class.drop__menu--active]="uiFlag.showDataSelector === 'compareB'"
             (click)="handleShowDropList($event, 'compareB')"
           >
-            {{ mapOpt.compareB.type | dataTypeTranslate: [sportType, unit] | translate }}
+            {{
+              mapOpt.compareB.type
+                | dataTypeTranslate: { sportsType: sportType, unitType: unit }
+                | translate
+            }}
           </div>
           <ng-container *ngIf="uiFlag.showDataSelector === 'compareB'">
             <ng-container *ngIf="!uiFlag.showDataSelector; else dropList"></ng-container>

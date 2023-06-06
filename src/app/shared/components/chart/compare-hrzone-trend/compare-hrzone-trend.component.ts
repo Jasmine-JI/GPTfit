@@ -6,7 +6,7 @@ import { yAxisTimeFormat, tooltipHrZoneFormat } from '../../../../core/utils/cha
 import dayjs from 'dayjs';
 import { GlobalEventsService } from '../../../../core/services';
 import { deepCopy } from '../../../../core/utils/index';
-import { compareChartDefault } from '../../../models/chart-data';
+import { compareChartDefault } from '../../../../core/models/compo/chart-data.model';
 
 @Component({
   selector: 'app-compare-hrzone-trend',

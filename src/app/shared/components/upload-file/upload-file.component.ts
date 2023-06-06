@@ -37,6 +37,9 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
   imgSelected = false;
   imgCropping = false;
   isImgUpLoading = false;
+  canvasRotation = 0;
+  flipH = false;
+  flipV = false;
 
   @Output() onChange = new EventEmitter();
   @ViewChild('fileUpload', { static: false })
@@ -157,20 +160,43 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
     console.error('Load failed');
   }
 
+  /**
+   * 逆時針旋轉90度
+   */
   rotateLeft() {
-    this.imageCropper.rotateLeft();
+    this.canvasRotation--;
+    this.flipAfterRotate();
   }
 
+  /**
+   * 順時針旋轉90度
+   */
   rotateRight() {
-    this.imageCropper.rotateRight();
+    this.canvasRotation++;
+    this.flipAfterRotate();
   }
 
+  /**
+   * 圖片選轉時，垂直與水平翻轉 flag要交換
+   */
+  flipAfterRotate() {
+    const { flipH, flipV } = this;
+    this.flipH = flipV;
+    this.flipV = flipH;
+  }
+
+  /**
+   * 水平翻轉
+   */
   flipHorizontal() {
-    this.imageCropper.flipHorizontal();
+    this.flipH = !this.flipH;
   }
 
+  /**
+   * 垂直翻轉
+   */
   flipVertical() {
-    this.imageCropper.flipVertical();
+    this.flipV = !this.flipV;
   }
 
   reEditImg() {

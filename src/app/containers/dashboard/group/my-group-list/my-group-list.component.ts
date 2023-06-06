@@ -4,7 +4,9 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { AuthService, HashIdService, Api11xxService } from '../../../../core/services';
-import { getUrlQueryStrings } from '../../../../core/utils/index';
+import { getUrlQueryStrings } from '../../../../core/utils';
+import { appPath } from '../../../../app-path.const';
+import { QueryString } from '../../../../core/enums/common';
 
 @Component({
   selector: 'app-my-group-list',
@@ -26,6 +28,8 @@ export class MyGroupListComponent implements OnInit {
   @ViewChild('paginator', { static: true }) paginator: MatPaginator;
   @ViewChild('sortTable', { static: false }) sortTable: MatSort;
   @ViewChild('filter', { static: false }) filter: ElementRef;
+
+  readonly searchGroupLink = `/${appPath.dashboard.home}/${appPath.professional.groupSearch}`;
 
   constructor(
     private api11xxService: Api11xxService,
@@ -53,9 +57,11 @@ export class MyGroupListComponent implements OnInit {
 
     // 分頁切換時，重新取得資料
     this.paginator.page.subscribe((page: PageEvent) => {
+      const { dashboard, professional } = appPath;
+      const pageIndex = this.currentPage.pageIndex + 1;
       this.currentPage = page;
       this.router.navigateByUrl(
-        `/dashboard/my-group-list?pageNumber=${this.currentPage.pageIndex + 1}`
+        `/${dashboard.home}/${professional.myGroupList}?${QueryString.pageNumber}=${pageIndex}`
       );
       this.getLists();
     });
@@ -85,18 +91,14 @@ export class MyGroupListComponent implements OnInit {
         (_group) => _group.groupStatus !== 4 && _group.joinStatus === 2
       );
       this.totalCount = res.info.totalCounts;
-      if (this.logSource.data.length === 0) {
-        this.isEmpty = true;
-      } else {
-        this.isEmpty = false;
-      }
+      this.isEmpty = this.logSource.data.length === 0;
     });
   }
 
   goDetail(groupId) {
-    this.router.navigateByUrl(
-      `dashboard/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}`
-    );
+    const hashGroupId = this.hashIdService.handleGroupIdEncode(groupId);
+    const { dashboard, professional } = appPath;
+    this.router.navigateByUrl(`${dashboard.home}/${professional.groupDetail.home}/${hashGroupId}`);
   }
   selectTarget(_value) {
     this.selectedValue = encodeURIComponent(_value).trim();

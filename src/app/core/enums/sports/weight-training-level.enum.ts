@@ -6,3 +6,12 @@ export enum WeightTrainingLevel {
   metacarpus = 100,
   asept = 200,
 }
+
+/**
+ * 重訓程度係數
+ */
+export enum Proficiency {
+  asept = 1,
+  metacarpus = 2,
+  novice = 4,
+}

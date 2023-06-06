@@ -1,18 +1,24 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { DeviceLogService } from '../../services/device-log.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { debounce, getUrlQueryStrings } from '../../../../core/utils/index';
+import { debounce, getUrlQueryStrings } from '../../../../core/utils';
+import { appPath } from '../../../../app-path.const';
+import { Subject, merge } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { QueryString } from '../../../../core/enums/common';
 
 @Component({
   selector: 'app-device-log',
   templateUrl: './device-log.component.html',
   styleUrls: ['./device-log.component.scss'],
 })
-export class DeviceLogComponent implements OnInit {
+export class DeviceLogComponent implements OnInit, OnDestroy {
+  ngUnsubscribe = new Subject();
+
   logSource = new MatTableDataSource<any>();
   totalCount: number;
   currentPage: PageEvent;
@@ -43,30 +49,35 @@ export class DeviceLogComponent implements OnInit {
       active: '',
       direction: '',
     };
+
     this.getLists('changePage');
 
-    // 分頁切換時，重新取得資料
-    this.paginatorA.page.subscribe((page: PageEvent) => {
-      this.currentPage = page;
-      this.router.navigateByUrl(
-        `/dashboard/system/device_log?pageNumber=${this.currentPage.pageIndex + 1}`
-      );
-      this.getLists('changePage');
-    });
-
-    // 分頁切換時，重新取得資料
-    this.paginatorB.page.subscribe((page: PageEvent) => {
-      this.currentPage = page;
-      this.router.navigateByUrl(
-        `/dashboard/system/device_log?pageNumber=${this.currentPage.pageIndex + 1}`
-      );
-      this.getLists('changePage');
-    });
+    this.subscribePaginator();
   }
+
+  /**
+   * 訂閱分頁變更事件，並重新取得資料
+   */
+  subscribePaginator() {
+    merge(this.paginatorA.page, this.paginatorB.page)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((page: PageEvent) => {
+        const { dashboard, adminManage } = appPath;
+        this.currentPage = page;
+        this.router.navigateByUrl(
+          `/${dashboard.home}/${adminManage.home}/${adminManage.deviceLog.home}?${
+            QueryString.pageNumber
+          }=${this.currentPage.pageIndex + 1}`
+        );
+        this.getLists('changePage');
+      });
+  }
+
   changeSort(sortInfo: Sort) {
     this.currentSort = sortInfo;
     this.getLists('changePage');
   }
+
   getLists(act) {
     this.isLoading = true;
 
@@ -89,8 +100,11 @@ export class DeviceLogComponent implements OnInit {
   }
 
   goDetail(userId) {
-    this.router.navigateByUrl(`${location.pathname}/detail/${userId}`);
+    this.router.navigateByUrl(
+      `${location.pathname}/${appPath.adminManage.deviceLog.detail}/${userId}`
+    );
   }
+
   searchInfo(e) {
     const keyword = e.target.value;
     let params = new HttpParams();
@@ -99,6 +113,7 @@ export class DeviceLogComponent implements OnInit {
       this.infoOptions = res;
     });
   }
+
   search(e) {
     if (this.selectedValue.length > 0) {
       let params = new HttpParams();
@@ -116,7 +131,16 @@ export class DeviceLogComponent implements OnInit {
       });
     }
   }
+
   selectTarget(_value) {
     this.selectedValue = encodeURIComponent(_value).trim();
+  }
+
+  /**
+   * 取消rxjs訂閱
+   */
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next(null);
+    this.ngUnsubscribe.complete();
   }
 }

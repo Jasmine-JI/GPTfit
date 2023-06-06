@@ -15,9 +15,11 @@ import { Subject, fromEvent, Subscription, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { AccountTypeEnum } from '../../../../../shared/enum/account';
 import { TFTViewMinWidth } from '../../../models/app-webview';
 import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/utils';
+import { AccountType } from '../../../../../core/enums/personal';
+import { QueryString } from '../../../../../core/enums/common';
+import { appPath } from '../../../../../app-path.const';
 
 const errorMsg = 'Error!<br /> Please try again later.';
 type RedirectPage = 'sign' | 'setting' | 'event';
@@ -81,7 +83,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
   enableSuccess = false;
   requestHeader = {};
   redirectPage: RedirectPage = 'sign';
-  readonly AccountTypeEnum = AccountTypeEnum;
+  readonly AccountTypeEnum = AccountType;
 
   constructor(
     private translate: TranslateService,
@@ -105,7 +107,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
     this.createPlaceholder();
     this.subscribeResizeEvent();
 
-    if (location.pathname.indexOf('web') > 0) {
+    if (location.pathname.indexOf('-web') > -1) {
       this.pcView = true;
       this.setPageStyle(false);
     } else {
@@ -186,10 +188,10 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
     Object.entries(query).forEach(([_key, _value]) => {
       switch (_key) {
-        case 'tk':
+        case QueryString.token:
           this.appInfo.token = _value as string;
           break;
-        case 'p':
+        case QueryString.project:
           this.appInfo.project = +_value;
           this.emailLinkString.project = +_value;
           if (+_value === 0) {
@@ -197,16 +199,16 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
           break;
-        case 'eaf':
+        case QueryString.enableAccountFlow:
           this.emailLinkString.enableAccountFlow = +_value;
           break;
-        case 'ui':
+        case QueryString.userId:
           this.emailLinkString.userId = +_value;
           break;
-        case 'vc':
+        case QueryString.verificationCode:
           this.emailLinkString.verificationCode = _value as string;
           break;
-        case 'ru':
+        case QueryString.redirectUrl:
           this.redirectPage = _value as RedirectPage;
           break;
       }
@@ -234,7 +236,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
             userProfile,
             signIn: { accountType },
           } = res as any;
-          if (accountType === AccountTypeEnum.email) {
+          if (accountType === AccountType.email) {
             this.accountInfo = {
               type: 1,
               account: userProfile.email,
@@ -291,19 +293,19 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * 轉導至指定頁面
-   * @author kidin-1110218
    */
   redirect() {
+    const { officialActivity, dashboard, personal, portal } = appPath;
     let path: string;
     switch (this.redirectPage) {
       case 'event':
-        path = '/official-activity/my-activity';
+        path = `/${officialActivity.home}/${officialActivity.myActivity}`;
         break;
       case 'setting':
-        path = '/dashboard/user-settings';
+        path = `/${dashboard.home}/${personal.userSettings}`;
         break;
       default:
-        path = this.pcView ? '/signIn-web' : '/signIn';
+        path = this.pcView ? `/${portal.signInWeb}` : `/${portal.signIn}`;
         break;
     }
 
@@ -510,7 +512,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param fn {Founction}-轉導函式
    * @author kidin-1110110
    */
-  debounceBack(msg: string, fn: Function = undefined) {
+  debounceBack(msg: string, fn: CallableFunction = undefined) {
     this.hintDialogService.showSnackBar(msg);
     if (fn) setTimeout(fn.bind(this), 2000);
   }
@@ -603,7 +605,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1091229
    */
   showMsgBox(msg: string, action: 'turnBack' | 'enableSuccess' | 'none') {
-    let fn: Function;
+    let fn: CallableFunction;
     switch (action) {
       case 'turnBack':
         fn = this.turnBack;
@@ -663,7 +665,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
   // 離開頁面則取消隱藏navbar-kidin-1090514
   ngOnDestroy() {
     this.setPageStyle(false);
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

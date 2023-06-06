@@ -15,7 +15,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { chart } from 'highcharts';
 import * as Highcharts from 'highcharts';
 import { HighchartOption } from '../../core/classes';
-import { zoneColor, zoneCompareColor } from '../../shared/models/chart-data';
+import { zoneColor, zoneCompareColor } from '../../core/models/represent-color';
 import { GlobalEventsService } from '../../core/services/global-events.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -221,7 +221,7 @@ export class HrZoneChartComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

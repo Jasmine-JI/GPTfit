@@ -31,8 +31,15 @@ import {
   PrintButtonComponent,
   DeleteButtonComponent,
   ReturnButtonComponent,
+  CompareFileSelectorComponent,
+  InfoDataImageComponent,
+  AllInfoDataComponent,
+  LapInfoTableComponent,
 } from './components/';
 import { getUrlQueryStrings } from '../../../core/utils';
+import { AuthService } from '../../../core/services';
+import { SportType } from '../../../core/enums/sports';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-sports-detail',
@@ -53,6 +60,10 @@ import { getUrlQueryStrings } from '../../../core/utils';
     DeleteButtonComponent,
     ReturnButtonComponent,
     ConnectionErrorComponent,
+    CompareFileSelectorComponent,
+    InfoDataImageComponent,
+    AllInfoDataComponent,
+    LapInfoTableComponent,
   ],
   templateUrl: './sports-detail.component.html',
   styleUrls: ['./sports-detail.component.scss'],
@@ -88,11 +99,22 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
    */
   compareFileData: Api2103Response;
 
+  readonly SportType = SportType;
+
   constructor(
     private sportsDetailService: SportsDetailService,
+    private authService: AuthService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private snackbar: MatSnackBar
   ) {}
+
+  /**
+   * 取得是否為登入狀態
+   */
+  get isLogin() {
+    return this.authService.isLogin;
+  }
 
   /**
    * 初始化時即載入基本運動檔案資訊
@@ -189,7 +211,7 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
    */
   getRedirectPage(childPath: string) {
     const [, firstPath] = location.pathname.split('/');
-    const isDashboard = firstPath === 'dashboard';
+    const isDashboard = firstPath === appPath.dashboard.home;
     return isDashboard ? `/${firstPath}/${childPath}` : `/${childPath}`;
   }
 
@@ -207,6 +229,38 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
    */
   changeFileSenery(url: string) {
     this.baseFileData.fileInfo.photo = url;
+  }
+
+  /**
+   * 選擇比較檔案或取消比較
+   * @param fileId 比較檔案編號
+   */
+  selectCompareFile(fileId: number | null) {
+    if (!fileId) {
+      this.compareFileData = undefined;
+      return false;
+    }
+
+    this.sportsDetailService.getCompareSportsDetail(fileId).subscribe({
+      next: (res) => this.handleCompareData(res),
+      error: (error) => this.handleCompareDataError(error),
+    });
+  }
+
+  /**
+   * 處理比較檔案數據
+   * @param data 比較檔案數據
+   */
+  handleCompareData({ data }) {
+    this.compareFileData = data;
+  }
+
+  /**
+   * 處理比較檔案數據載入錯誤
+   */
+  handleCompareDataError(error: string) {
+    console.error(error);
+    this.snackbar.open('Load failed.', 'OK', { duration: 2000 });
   }
 
   ngOnDestroy(): void {}

@@ -14,9 +14,9 @@ import {
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DataUnitType } from '../../../core/enums/common';
-import { mi } from '../../models/bs-constant';
+import { mi } from '../../../core/models/const/bs-constant.model';
 import { ProfessionalService } from '../../../containers/professional/services/professional.service';
-import { SelectDate } from '../../models/utils-type';
+import { SelectDate } from '../../../core/models/common';
 import {
   AuthService,
   Api21xxService,
@@ -676,7 +676,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    */
   ngOnDestroy(): void {
     if (this.playInterval) clearInterval(this.playInterval);
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

@@ -187,7 +187,7 @@ export class ComplexSportsHandler {
 
   /**
    * 取得指定檔案數據
-   * @param index {number}-檔案序列
+   * @param index {number}-檔案索引
    */
   getAssignFile(index: number) {
     return this._fileList[index];

@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
 import { DataUnitType } from '../enums/common';
-import { mi, ft } from '../../shared/models/bs-constant';
+import { mi, ft } from '../models/const/bs-constant.model';
 import { mathRounding } from './index';
 import { getPaceUnit, paceSecondTimeFormat } from './sports';
-import { SportType } from '../../shared/enum/sports';
+import { SportType } from '../enums/sports';
 
 /**
  * 預設x軸日期顯示格式(highchart用)

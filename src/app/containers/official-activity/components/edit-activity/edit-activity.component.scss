@@ -376,6 +376,7 @@ $placeholder-img-max-size: 220px;
 }
 
 .photo__recovery__button {
+  font-size: 2rem;
   @extend .edit__photo__button;
 }
 
@@ -457,6 +458,7 @@ $placeholder-img-max-size: 220px;
     width: $drag-button-size;
     border-radius: 5px;
     margin: 5px 0;
+    padding: 0;
   }
 }
 

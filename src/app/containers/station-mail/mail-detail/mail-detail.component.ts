@@ -214,9 +214,10 @@ export class MailDetailComponent implements OnInit, OnDestroy {
    */
   getCreateMailUrl() {
     const {
-      stationMail: { home, newMail },
+      dashboard: { home: dashboardHome },
+      stationMail: { home: stationMailHome, newMail },
     } = appPath;
-    return `/dashboard/${home}/${newMail}`;
+    return `/${dashboardHome}/${stationMailHome}/${newMail}`;
   }
 
   /**
@@ -224,9 +225,10 @@ export class MailDetailComponent implements OnInit, OnDestroy {
    */
   turnBack() {
     const {
-      stationMail: { home, inbox },
+      dashboard: { home: dashboardHome },
+      stationMail: { home: stationMailHome, inbox },
     } = appPath;
-    this.router.navigateByUrl(`/dashboard/${home}/${inbox}`);
+    this.router.navigateByUrl(`/${dashboardHome}/${stationMailHome}/${inbox}`);
   }
 
   /**
@@ -280,7 +282,8 @@ export class MailDetailComponent implements OnInit, OnDestroy {
   navigateSenderPage() {
     const { senderId } = this.mailDetail;
     const hashId = this.hashIdService.handleUserIdEncode(senderId);
-    window.open(`/user-profile/${hashId}/info`, '_blank');
+    const { personal } = appPath;
+    window.open(`/${personal.home}/${hashId}/${personal.info}`, '_blank');
   }
 
   /**
@@ -429,7 +432,7 @@ export class MailDetailComponent implements OnInit, OnDestroy {
 
   /**
    * 展開或收合回覆信件
-   * @param index {number}-回覆信件序列
+   * @param index {number}-回覆信件索引
    */
   unfoldReplyMail(index: number) {
     const { unfold } = this.replyMailList[index];
@@ -438,7 +441,7 @@ export class MailDetailComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.pluralEventSubscription) this.pluralEventSubscription.unsubscribe();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnChanges, OnDestroy, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { QrcodeService } from '../../../portal/services/qrcode.service';
+import { QrcodeService } from '../../../../core/services/qrcode.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -10,9 +10,11 @@ import {
   ApiCommonService,
   Api70xxService,
 } from '../../../../core/services';
-import { PaginationSetting } from '../../../../shared/models/pagination';
+import { PaginationSetting } from '../../../../core/models/compo/pagination.model';
 import { Subject, fromEvent, Subscription, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
+import { appPath } from '../../../../app-path.const';
+import { Domain, WebIp, QueryString } from '../../../../core/enums/common';
 
 @Component({
   selector: 'app-my-device',
@@ -46,7 +48,7 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
   deviceList: Array<any>;
   readonly onePageSizeOpt = [5, 10, 20];
   readonly imgStoragePath = `http://${
-    location.hostname.includes('192.168.1.235') ? 'app.alatech.com.tw' : location.hostname
+    location.hostname.includes(WebIp.develop) ? Domain.uat : location.hostname
   }/app/public_html/products`;
 
   constructor(
@@ -62,7 +64,7 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
   ) {}
 
   ngOnInit() {
-    if (!this.targetUserId && !location.pathname.includes('system')) {
+    if (!this.targetUserId && !location.pathname.includes(appPath.adminManage.home)) {
       this.getDeviceList();
     }
   }
@@ -153,8 +155,9 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
       } else {
         this.deviceList = this.deviceList.map((_list, _idx) => {
           // 顯示fitpair qrcode
-          const checkSum = this.qrcodeService.createDeviceChecksum(_list.myEquipmentSN),
-            qrURL = `${location.origin}/pair?device_sn=${_list.myEquipmentSN}&bt_name=${_list.myEquipmentSN}&cs=${checkSum}`;
+          const checkSum = this.qrcodeService.createDeviceChecksum(_list.myEquipmentSN);
+          const { deviceSN, btName, CS } = QueryString;
+          const qrURL = `${location.origin}/${appPath.device.pair}?${deviceSN}=${_list.myEquipmentSN}&${btName}=${_list.myEquipmentSN}&${CS}=${checkSum}`;
           Object.assign(_list, { qrURL });
           // 取得裝置圖片
           const { equipmentSN, modelImg } = info.productInfo[_idx];
@@ -254,7 +257,7 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * 顯示選單與否
    * @param e {MouseEvent}
-   * @param idx {number}-該項目序列
+   * @param idx {number}-該項目索引
    * @author kidin-1100715
    */
   openMenu(e: MouseEvent, idx: number) {
@@ -270,7 +273,7 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * 顯示更多資訊與否
    * @param e {MouseEvent}
-   * @param idx {number}-該項目序列
+   * @param idx {number}-該項目索引
    * @author kidin-1100715
    */
   getMoreInfo(e: MouseEvent, idx: number) {
@@ -290,11 +293,11 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
    */
   goDetail(sn: string) {
     const { pathname } = location;
-    if (pathname.includes('system')) {
-      this.router.navigateByUrl(`/dashboard/system/device/info/${sn}`);
-    } else {
-      this.router.navigateByUrl(`/dashboard/device/info/${sn}`);
-    }
+    const { dashboard, adminManage, device } = appPath;
+    const isAdminPage = pathname.includes(adminManage.home);
+    const insertPathName = isAdminPage ? `/${adminManage.home}` : '';
+    const url = `/${dashboard.home}${insertPathName}/${device.home}/${device.info}/${sn}`;
+    this.router.navigateByUrl(url);
   }
 
   /**
@@ -321,7 +324,7 @@ export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
    * 解除rxjs訂閱
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

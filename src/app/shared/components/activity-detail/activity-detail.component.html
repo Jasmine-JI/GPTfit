@@ -186,7 +186,7 @@
                 'universal_activityData_totalTime' | translate
               }}</span>
               <span class="summary__type__content">{{
-                activityInfoLayer.totalSecond | sportTime: [true, false]
+                activityInfoLayer.totalSecond | sportTime
               }}</span>
             </div>
             <div
@@ -233,7 +233,7 @@
                 'universal_activityData_totalWeight' | translate
               }}</span>
               <span class="summary__type__content">{{
-                activityInfoLayer.totalWeightKg || 0 | weightSibs: [userProfile.unit, 0]
+                activityInfoLayer.totalWeightKg || 0 | weightSibs: { unitType: userProfile.unit }
               }}</span>
             </div>
             <div class="flexCol summery__block" *ngIf="+activityInfoLayer.type === 3">
@@ -342,7 +342,7 @@
                     'universal_activityData_totalTime' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.totalSecond | sportTime: [true, false]
+                    activityInfoLayer.totalSecond | sportTime
                   }}</span>
                 </div>
                 <div class="flexRow table__row">
@@ -355,7 +355,7 @@
                     </ng-container>
                   </span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.totalActivitySecond | sportTime: [true, false]
+                    activityInfoLayer.totalActivitySecond | sportTime
                   }}</span>
                 </div>
                 <div class="flexRow table__row">
@@ -363,7 +363,7 @@
                     'universal_activityData_restTime' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.totalRestSecond | sportTime: [true, false]
+                    activityInfoLayer.totalRestSecond | sportTime
                   }}</span>
                 </div>
               </div>
@@ -399,7 +399,7 @@
                     'universal_activityData_generalZone' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.totalHrZone0Second | sportTime: [true, false]
+                    activityInfoLayer.totalHrZone0Second | sportTime
                   }}</span>
                 </div>
                 <div class="flexRow table__row">
@@ -407,7 +407,7 @@
                     'universal_activityData_warmUpZone' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.totalHrZone1Second | sportTime: [true, false]
+                    activityInfoLayer.totalHrZone1Second | sportTime
                   }}</span>
                 </div>
                 <div class="flexRow table__row">
@@ -415,7 +415,7 @@
                     'universal_activityData_aerobicZone' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.totalHrZone2Second | sportTime: [true, false]
+                    activityInfoLayer.totalHrZone2Second | sportTime
                   }}</span>
                 </div>
                 <div class="flexRow table__row">
@@ -423,7 +423,7 @@
                     'universal_activityData_enduranceZone' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.totalHrZone3Second | sportTime: [true, false]
+                    activityInfoLayer.totalHrZone3Second | sportTime
                   }}</span>
                 </div>
                 <div class="flexRow table__row">
@@ -431,7 +431,7 @@
                     'universal_activityData_marathonZone' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.totalHrZone4Second | sportTime: [true, false]
+                    activityInfoLayer.totalHrZone4Second | sportTime
                   }}</span>
                 </div>
                 <div class="flexRow table__row">
@@ -439,7 +439,7 @@
                     'universal_activityData_anaerobicZone' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.totalHrZone5Second | sportTime: [true, false]
+                    activityInfoLayer.totalHrZone5Second | sportTime
                   }}</span>
                 </div>
               </div>
@@ -507,7 +507,7 @@
                     'universal_activityData_ftpZ0' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.totalFtpZone0Second | sportTime: [true, false]
+                    activityInfoLayer.totalFtpZone0Second | sportTime
                   }}</span>
                 </div>
                 <div class="flexRow table__row">
@@ -515,7 +515,7 @@
                     'universal_activityData_ftpZ1' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.totalFtpZone1Second | sportTime: [true, false]
+                    activityInfoLayer.totalFtpZone1Second | sportTime
                   }}</span>
                 </div>
                 <div class="flexRow table__row">
@@ -523,7 +523,7 @@
                     'universal_activityData_ftpZ2' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.totalFtpZone2Second | sportTime: [true, false]
+                    activityInfoLayer.totalFtpZone2Second | sportTime
                   }}</span>
                 </div>
                 <div class="flexRow table__row">
@@ -531,7 +531,7 @@
                     'universal_activityData_ftpZ3' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.totalFtpZone3Second | sportTime: [true, false]
+                    activityInfoLayer.totalFtpZone3Second | sportTime
                   }}</span>
                 </div>
                 <div class="flexRow table__row">
@@ -539,7 +539,7 @@
                     'universal_activityData_ftpZ4' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.totalFtpZone4Second | sportTime: [true, false]
+                    activityInfoLayer.totalFtpZone4Second | sportTime
                   }}</span>
                 </div>
                 <div class="flexRow table__row">
@@ -547,7 +547,7 @@
                     'universal_activityData_ftpZ5' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.totalFtpZone5Second | sportTime: [true, false]
+                    activityInfoLayer.totalFtpZone5Second | sportTime
                   }}</span>
                 </div>
                 <div class="flexRow table__row">
@@ -555,7 +555,7 @@
                     'universal_activityData_ftpZ6' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.totalFtpZone6Second | sportTime: [true, false]
+                    activityInfoLayer.totalFtpZone6Second | sportTime
                   }}</span>
                 </div>
               </div>
@@ -875,7 +875,9 @@
                   }}</span>
                   <span class="table__list__content">
                     <ng-container *ngIf="activityInfoLayer.avgTemp !== null; else dash">
-                      {{ activityInfoLayer.avgTemp | temperatureSibs: [userProfile.unit, 0] }}
+                      {{
+                        activityInfoLayer.avgTemp | temperatureSibs: { unitType: userProfile.unit }
+                      }}
                     </ng-container>
                   </span>
                 </div>
@@ -885,7 +887,9 @@
                   }}</span>
                   <span class="table__list__content">
                     <ng-container *ngIf="activityInfoLayer.maxTemp !== null; else dash">
-                      {{ activityInfoLayer.maxTemp | temperatureSibs: [userProfile.unit, 0] }}
+                      {{
+                        activityInfoLayer.maxTemp | temperatureSibs: { unitType: userProfile.unit }
+                      }}
                     </ng-container>
                   </span>
                 </div>
@@ -895,7 +899,9 @@
                   }}</span>
                   <span class="table__list__content">
                     <ng-container *ngIf="activityInfoLayer.minTemp !== null; else dash">
-                      {{ activityInfoLayer.minTemp | temperatureSibs: [userProfile.unit, 0] }}
+                      {{
+                        activityInfoLayer.minTemp | temperatureSibs: { unitType: userProfile.unit }
+                      }}
                     </ng-container>
                   </span>
                 </div>
@@ -990,7 +996,8 @@
                     'universal_activityData_activiyTotalWeight' | translate
                   }}</span>
                   <span class="table__list__content">{{
-                    activityInfoLayer.totalWeightKg || 0 | weightSibs: [userProfile.unit, 0]
+                    activityInfoLayer.totalWeightKg || 0
+                      | weightSibs: { unitType: userProfile.unit }
                   }}</span>
                 </div>
                 <ng-container *ngFor="let _muscleCode of muscleTranslate | keyvalue">
@@ -1004,7 +1011,7 @@
                           }}
                         </span>
                         <span class="table__list__content">
-                          {{ _part.totalWeightKg | weightSibs: [userProfile.unit, 0] }}
+                          {{ _part.totalWeightKg | weightSibs: { unitType: userProfile.unit } }}
                         </span>
                       </div>
                     </ng-container>
@@ -1323,7 +1330,7 @@
                         'universal_activityData_limit_liveLapSpeed' | translate
                       }}</span>
                       <span class="segmentation__unit">{{
-                        +userProfile.unit === 0 ? 'km/h' : 'mi/h'
+                        +userProfile.unit === 0 ? 'kph' : 'mph'
                       }}</span>
                     </div>
                   </th>
@@ -1374,7 +1381,7 @@
                       {{ _layer.dispName }}
                     </td>
                     <td class="segmentation__text">
-                      {{ +_layer.lapTotalSecond | sportTime: [true, false] }}
+                      {{ +_layer.lapTotalSecond | sportTime }}
                     </td>
                     <td class="segmentation__text">
                       {{ _layer.lapAvgHeartRateBpm || 0 }}
@@ -1413,7 +1420,10 @@
                       }}
                     </td>
                     <td class="segmentation__text" *ngIf="+activityInfoLayer.type === 3">
-                      {{ _layer.setOneRepMax || 0 | weightSibs: [userProfile.unit, 1] || 0 }}
+                      {{
+                        _layer.setOneRepMax || 0
+                          | weightSibs: { unitType: userProfile.unit, showUnit: false } || 0
+                      }}
                     </td>
                     <td class="segmentation__text" *ngIf="+activityInfoLayer.type === 3">
                       {{ _layer.setMoveRepetitionsAvgCadence || 0 }}

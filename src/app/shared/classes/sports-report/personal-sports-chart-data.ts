@@ -1,15 +1,13 @@
 import { TargetConditionMap } from '../../../core/models/api/api-common';
-import { DateUnit } from '../../enum/report';
-import { ReportCondition } from '../../models/report-condition';
-import { SportType } from '../../enum/sports';
-import { DAY } from '../../models/utils-constant';
+import { ReportCondition } from '../../../core/models/compo/report-condition.model';
+import { day } from '../../../core/models/const';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ReportDateUnit } from '../report-date-unit';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { DateRange } from '../date-range';
-import { trendChartColor } from '../../models/chart-data';
+import { trendChartColor } from '../../../core/models/represent-color';
 import { WeightTrainingTrend } from '../../classes/sports-report/weight-train-trend';
 import { BodyWeightTrend } from '../sports-report/body-weight-trend';
 import { ComplexTrend } from '../sports-report/complex-trend';
@@ -21,7 +19,8 @@ import { TypeAllChart } from '../sports-report/type-all-chart';
 import { TemporaryCount } from '../sports-report/temporary-count';
 import { SportsReport } from './sports-report';
 import { countBenefitTime, mathRounding } from '../../../core/utils';
-import { BenefitTimeStartZone } from '../../../core/enums/common';
+import { BenefitTimeStartZone, DateUnit } from '../../../core/enums/common';
+import { SportType } from '../../../core/enums/sports';
 
 dayjs.extend(isoWeek);
 
@@ -189,7 +188,7 @@ export class PersonalSportsChartData {
   }
 
   /**
-   * 根據報告時間單位、基準日期範圍與比較日期範圍產生完整的日期序列
+   * 根據報告時間單位、基準日期範圍與比較日期範圍產生完整的日期索引
    * @param dateUnit {ReportDateUnit}-選擇的報告日期單位
    * @param baseTime {DateRange}-報告基準日期
    * @param compareTime {DateRange}-報告比較日期
@@ -374,7 +373,7 @@ export class PersonalSportsChartData {
         _data.activities.benefitTime = benefitTime;
 
         // 計算pai並寫回activities
-        const rowPeriodDay = Math.round((endTime - startTime) / DAY);
+        const rowPeriodDay = Math.round((endTime - startTime) / day);
         const { pai } = SportsReport.countPai(hrZone, rowPeriodDay);
         _data.activities.pai = pai;
 

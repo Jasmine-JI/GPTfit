@@ -4,7 +4,7 @@
       <ng-container *ngIf="data.maxGForce">
         {{ 'universal_adjective_accumulation' | translate }}
       </ng-container>
-      {{ chartType | dataTypeTranslate: [sportType, unit] | translate }}
+      {{ chartType | dataTypeTranslate: { sportsType: sportType, unitType: unit } | translate }}
     </h6>
   </div>
   <main id="mainSeciton">
@@ -13,7 +13,7 @@
         <div class="flexCol infoSection">
           <span class="dataNumber">
             {{ data.maxGForce | number: '1.0-0' }}
-            {{ chartType | dataTypeUnit: [sportType, unit] }}
+            {{ chartType | dataTypeUnit: { sportsType: sportType, unitType: unit } }}
           </span>
           <span class="dataDescription">
             {{ 'universal_adjective_maxBig' | translate }}
@@ -23,7 +23,7 @@
         <div class="flexCol infoSection">
           <span class="dataNumber">
             {{ data.minGForce | number: '1.0-0' }}
-            {{ chartType | dataTypeUnit: [sportType, unit] }}
+            {{ chartType | dataTypeUnit: { sportsType: sportType, unitType: unit } }}
           </span>
           <span class="dataDescription">
             {{ 'universal_adjective_maxBig' | translate }}

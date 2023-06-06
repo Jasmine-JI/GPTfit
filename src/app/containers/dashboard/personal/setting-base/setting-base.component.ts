@@ -8,12 +8,12 @@ import {
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import dayjs from 'dayjs';
-import { Sex } from '../../../../shared/enum/personal';
-import { lb } from '../../../../shared/models/bs-constant';
+import { lb } from '../../../../core/models/const/bs-constant.model';
 import { DataUnitType } from '../../../../core/enums/common';
-import { formTest } from '../../../../shared/models/form-test';
+import { formTest } from '../../../../core/models/regex/form-test';
 import { DashboardService } from '../../services/dashboard.service';
 import { checkResponse, valueConvert, bodyHeightTransfer } from '../../../../core/utils';
+import { Gender } from '../../../../core/enums/personal';
 
 @Component({
   selector: 'app-setting-base',
@@ -57,7 +57,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
   };
 
   userInfo: any;
-  readonly Sex = Sex;
+  readonly Sex = Gender;
   readonly DataUnitType = DataUnitType;
 
   constructor(
@@ -317,9 +317,9 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
       this.editFlag.bodyHeight = true;
       const min = 100,
         max = 255;
-      if (newValue < min) {
+      if (+newValue < min) {
         this.setting.bodyHeight = bodyHeightTransfer(min, !isMetric, true);
-      } else if (newValue > max) {
+      } else if (+newValue > max) {
         this.setting.bodyHeight = bodyHeightTransfer(max, !isMetric, true);
       } else {
         this.setting.bodyHeight = inputValue;
@@ -387,10 +387,10 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
 
   /**
    * 變更性別
-   * @param sex {Sex}-性別
+   * @param sex {Gender}-性別
    * @author kidin-1100818
    */
-  changeGender(sex: Sex) {
+  changeGender(sex: Gender) {
     this.setting.gender = sex;
     this.editComplete();
   }
@@ -407,7 +407,7 @@ export class SettingBaseComponent implements OnInit, OnDestroy {
    * 取消訂閱rxjs
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

@@ -61,7 +61,7 @@
                   >
                     <i class="icon-svg_web-icon_p2_033-weight"></i>
                     <span style="font-size: 14px; margin-right: 5px">
-                      {{ _list.activityInfoLayer.totalWeightKg | weightSibs: [unit, 0] }}
+                      {{ _list.activityInfoLayer.totalWeightKg | weightSibs: { unitType: unit } }}
                     </span>
                   </ng-container>
                   <i class="icon-svg_web-icon_p1_026-time"></i>

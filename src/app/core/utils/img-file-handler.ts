@@ -119,7 +119,7 @@ export function checkImgSize([base64, width, height, canvas, ctx]) {
 
 /**
  * 建立上傳圖床圖片之名稱
- * @param index {number}-檔案序列+1
+ * @param index {number}-檔案索引+1
  * @param id {string}-user id/group id(去掉'-')/event id
  */
 export function createImgFileName(index: number, id: string | number) {

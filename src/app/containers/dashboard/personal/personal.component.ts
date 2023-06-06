@@ -6,12 +6,12 @@ import {
   ElementRef,
   AfterContentInit,
 } from '@angular/core';
-import { UserProfileInfo } from '../../../shared/models/user-profile-info';
+import { UserProfile } from '../../../core/models/api/api-10xx';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { EditMode } from '../models/personal';
-import { AlbumType } from '../../../shared/models/image';
+import { AlbumType } from '../../../core/enums/api';
 import { DashboardService } from '../services/dashboard.service';
 import {
   GlobalEventsService,
@@ -23,11 +23,10 @@ import {
 import { v5 as uuidv5 } from 'uuid';
 import dayjs from 'dayjs';
 import { ImageUploadService } from '../services/image-upload.service';
-import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { getUrlQueryStrings, base64ToFile } from '../../../core/utils';
 import { appPath } from '../../../app-path.const';
-import { QueryString } from '../../../core/enums/common';
+import { QueryString, Domain } from '../../../core/enums/common';
 
 type ImgType = 'icon' | 'scenery';
 
@@ -54,7 +53,7 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
     isLoading: false,
     isPortalMode: false,
     isPageOwner: false,
-    currentPage: 'activity-list',
+    currentPage: appPath.personal.activityList,
     editMode: <EditMode>'edit',
     descOverflow: false,
     showMorePageOpt: false,
@@ -102,11 +101,13 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
     link: '',
   };
 
-  userProfile: UserProfileInfo;
+  userProfile: UserProfile;
   hashUserId: string;
   token = this.authService.token;
-  readonly AlbumType = AlbumType;
   childPageList: Array<string> = [];
+
+  readonly AlbumType = AlbumType;
+  readonly personalPage = appPath.personal;
 
   constructor(
     private hintDialogService: HintDialogService,
@@ -116,7 +117,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
     private globalEventsService: GlobalEventsService,
     private dashboardService: DashboardService,
     private imageUploadService: ImageUploadService,
-    private dialog: MatDialog,
     private translate: TranslateService,
     private usreService: UserService,
     private authService: AuthService
@@ -145,15 +145,17 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
   checkPage() {
     const { pathname } = location;
     const [, mainPath, secondPath, thirdPath] = pathname.split('/');
+    const { dashboard, personal } = appPath;
     switch (mainPath) {
-      case 'dashboard': {
-        const isSettingPath = secondPath === 'user-settings';
-        const isStravaRedirectPath = `${secondPath}/${thirdPath}` === 'settings/account-info'; // strava轉導回GPTfit
+      case dashboard.home: {
+        const isSettingPath = secondPath === personal.userSettings;
+        const redirectUrl = personal.stravaRedirectSettings; // strava轉導回GPTfit
+        const isStravaRedirectPath = `${secondPath}/${thirdPath}` === redirectUrl; // strava轉導回GPTfit
         this.uiFlag.isSettingPage = isSettingPath || isStravaRedirectPath;
         this.uiFlag.isPortalMode = false;
         break;
       }
-      case 'user-profile': {
+      case personal.home: {
         this.handleNotDashBoardPage();
         this.checkPageOwner(thirdPath);
         break;
@@ -172,10 +174,13 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
     const userId = this.usreService.getUser().userId;
     const targetUserId = this.getPageOwnerId();
     if (targetUserId === userId) {
-      if (!thirdPath) return this.router.navigateByUrl('/dashboard/activity-list');
+      const { dashboard, personal } = appPath;
+      if (!thirdPath) {
+        return this.router.navigateByUrl(`/${dashboard.home}/${personal.activityList}`);
+      }
 
       const { search } = location;
-      const redirectPath = `/dashboard/${thirdPath}${search}`;
+      const redirectPath = `/${dashboard.home}/${thirdPath}${search}`;
       return this.router.navigateByUrl(redirectPath);
     }
   }
@@ -184,7 +189,8 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
    * 取得頁面持有人編號
    */
   getPageOwnerId() {
-    this.hashUserId = this.route.snapshot.paramMap.get('userId') as string;
+    const { personal } = appPath;
+    this.hashUserId = this.route.snapshot.paramMap.get(personal.userId) as string;
     return +this.hashIdService.handleUserIdDecode(this.hashUserId);
   }
 
@@ -230,7 +236,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * 監聽捲動事件，當捲動到tab時，tab固定置頂
-   * @author kidin-1100908
    */
   handleScroll() {
     const targetElement = document.querySelectorAll('.main__container');
@@ -242,7 +247,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * 確認tab位置與寬度
-   * @author kidin-1100908
    */
   checkPageListBarPosition() {
     if (!this.uiFlag.isSettingPage) {
@@ -274,7 +278,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * 當sidebar模式變更時，重新計算active bar位置
-   * @author kidin-1091111
    */
   handleSideBarSwitch() {
     this.globalEventsService
@@ -289,7 +292,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * 當進入編輯或建立群組模式時，讓佈景或圖片進入可編輯模式
-   * @author kidin-1091123
    */
   checkEditMode() {
     this.dashboardService
@@ -303,7 +305,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * 依瀏覽器大小將超出邊界的清單進行收納
-   * @author kidin-20200714
    */
   checkScreenSize() {
     // 確認多國語系載入後再計算按鈕位置
@@ -352,7 +353,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * 偵測全域點擊事件，以收納"更多"選單
-   * @author kidin-1100812
    */
   handleGlobalClick() {
     const clickEvent = fromEvent(document, 'click');
@@ -363,7 +363,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * 取得頁面所需資訊
-   * @author kidin-1100811
    */
   getNeedInfo() {
     this.uiFlag.isLoading = true;
@@ -377,7 +376,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * 取得指定該頁面使用者資訊，並確認是否與登入者為同一人
-   * @author kidin-1100811
    */
   getAssignUserProfile() {
     const userId = this.getPageOwnerId();
@@ -395,7 +393,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * 取得登入者資訊
-   * @author kidin-1100811
    */
   getRxUserProfile() {
     this.usreService
@@ -415,18 +412,24 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * 根據登入前後頁面，顯示可點選之子頁面
-   * @author kidin-1100811
    */
   initChildPageList(): Array<string> {
     if (!this.uiFlag.isSettingPage) {
       let childPageList = this.childPageList;
       const { isPortalMode, isSettingPage } = this.uiFlag;
+      const { personal } = appPath;
       if (!isPortalMode) {
         if (!isSettingPage) {
-          childPageList = ['activity-list', 'sport-report', 'life-tracking', 'cloudrun', 'info'];
+          childPageList = [
+            personal.activityList,
+            personal.sportsReport,
+            personal.lifeTracking,
+            personal.cloudrun,
+            personal.info,
+          ];
         }
       } else {
-        childPageList = ['activity-list', 'sport-report', 'info'];
+        childPageList = [personal.activityList, personal.sportsReport, personal.info];
       }
 
       return childPageList;
@@ -437,7 +440,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * 取得子頁面清單各選項按鈕寬度
-   * @author kidin-1100811
    */
   getPerPageOptSize() {
     if (!this.uiFlag.isSettingPage) {
@@ -464,7 +466,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * 將perPageOptSize參數進行初始化
-   * @author kidin-1100811
    */
   initPageOptSize() {
     this.uiFlag.divideIndex = null;
@@ -480,7 +481,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * 處理url param改變的事件
-   * @author kidin-1100812
    */
   detectParamChange() {
     this.router.events.pipe(takeUntil(this.ngUnsubscribe)).subscribe((event) => {
@@ -494,7 +494,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
   /**
    * 根據url對應選單
    * @param event {NavigationStart}-變更url產生的事件
-   * @author kidin-1100812
    */
   getCurrentContentPage(event: any = null): void {
     if (!this.uiFlag.isSettingPage) {
@@ -507,7 +506,7 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
       }
 
       if (isPortalMode && urlArr.length < 4) {
-        this.uiFlag.currentPage = 'activity-list';
+        this.uiFlag.currentPage = appPath.personal.activityList;
         this.uiFlag.currentTagIndex = 0;
       } else {
         this.uiFlag.currentPage = urlArr[urlArr.length - 1].split('?')[0];
@@ -518,7 +517,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * 確認個人介紹是否過長
-   * @author kidin-1100812
    */
   checkDescLen() {
     if (!this.uiFlag.isSettingPage) {
@@ -539,7 +537,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
   /**
    * 開啟圖片選擇器
    * @param img {ImgType}-圖片類別（頭像/佈景）
-   * @author kidin-1100812
    */
   openImgSelector(img: ImgType) {
     this.uiFlag.openImgSelector = img;
@@ -548,7 +545,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
   /**
    * 關閉圖片選擇器
    * @param e {any}
-   * @author kidin-1100812
    */
   closeSelector(e: any) {
     const { albumType: uploadType, origin, base64 } = e.img;
@@ -572,7 +568,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
   /**
    * 若編輯模式為complete，則上傳圖片
    * @param editMode {EditMode}-編輯模式
-   * @author kidin-1100813
    */
   upLoadImg(editMode: EditMode) {
     const { edited, icon, scenery } = this.editImage;
@@ -610,7 +605,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
    * 送出api 8001
    * @param formData {FormData}-api所需資料
    * @param groupId {string}-group id
-   * @author kidin-1091130
    */
   sendImgUploadReq(formData: FormData) {
     this.imageUploadService.addImg(formData).subscribe((res) => {
@@ -629,12 +623,11 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * 建立圖片名稱
-   * @param length {number}-檔案序列
+   * @param length {number}-檔案索引
    * @param userId {string}-使用者id
-   * @author kidin-1091125
    */
   createFileName(length: number, userId: string) {
-    const nameSpace = uuidv5('https://www.gptfit.com', uuidv5.URL),
+    const nameSpace = uuidv5(`https://${Domain.newProd}`, uuidv5.URL),
       keyword = `${dayjs().valueOf().toString()}${length}${userId.split('-').join('')}`;
     return uuidv5(keyword, nameSpace);
   }
@@ -661,9 +654,10 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
    * 開啟分享框
    */
   openSharePersonalPage() {
+    const { personal } = appPath;
     this.share = {
       title: this.userProfile.nickname || '',
-      link: `${location.origin}/user-profile/${this.hashUserId}`,
+      link: `${location.origin}/${personal.home}/${this.hashUserId}`,
     };
 
     this.uiFlag.displayShareBox = true;
@@ -681,15 +675,15 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
    * @param e {MouseEvent}
    * @param page {string}-子頁面
    * @param tagIdx {number}-tag的顯示序
-   * @author kidin-1100812
    */
   handleShowContent(e: MouseEvent | null, page: string, tagIdx: number) {
     const { isPortalMode } = this.uiFlag;
+    const { dashboard, personal } = appPath;
     if (e) e.stopPropagation();
     if (isPortalMode) {
-      this.router.navigateByUrl(`/user-profile/${this.hashUserId}/${page}`);
+      this.router.navigateByUrl(`/${personal.home}/${this.hashUserId}/${page}`);
     } else {
-      this.router.navigateByUrl(`/dashboard/${page}`);
+      this.router.navigateByUrl(`/${dashboard.home}/${page}`);
     }
 
     this.uiFlag.currentPage = page;
@@ -702,7 +696,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
   /**
    * 取得頁面tag位置
    * @param tagIdx {number}-tag的顯示序
-   * @author kidin-1100812
    */
   getBtnPosition(tagIdx: number) {
     const { divideIndex } = this.uiFlag;
@@ -727,22 +720,20 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
   /**
    * 根據子頁面捲動頁面至指定位置
    * @param page {string}-子頁面
-   * @author kidin-1100812
    */
   scrollPage(page: string) {
     const mainBodyEle = document.querySelector('.main__container') as Element;
-    if (page === 'group-introduction') {
+    if (page === appPath.personal.info) {
       mainBodyEle.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as HTMLElement,
-        pageListBarTop = pageListBar.offsetTop;
+      const pageListBar = document.querySelectorAll('.info-pageListBar')[0] as HTMLElement;
+      const pageListBarTop = pageListBar.offsetTop;
       mainBodyEle.scrollTo({ top: pageListBarTop, behavior: 'smooth' });
     }
   }
 
   /**
    * 取得"更多"按鈕的大小和位置，使active bar可以對齊
-   * @author kidin-1100812
    */
   getSeeMorePosition() {
     setTimeout(() => {
@@ -759,7 +750,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
   /**
    * 顯示或隱藏更多列表
    * @param e {MouseEvent}
-   * @author kidin-1100812
    */
   handleShowMorePageOpt(e: MouseEvent) {
     e.stopPropagation();
@@ -768,7 +758,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
 
   /**
    * 若圖片不存在或載入錯誤則隱藏該元素
-   * @author kidin-1091204
    */
   sceneryError() {
     console.error("Can't get personal scenery.");
@@ -778,7 +767,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
   /**
    * 轉導至指定子頁面
    * @param page {string}-指定之子頁面
-   * @author kidin-1100818
    */
   handleNavigation(page: string) {
     const index = this.childPageList.indexOf(page);
@@ -789,7 +777,6 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
    * 將批次修改隱私權狀態傳給子組件，
    * 以修正生日設定欄位日期選擇棄背覆蓋的問題
    * @param e {boolean}-是否開啟批次修改隱私權設定框
-   * @author kidin-1101001
    */
   passPatchEditPrivacyStatus(e: boolean) {
     this.uiFlag.patchEditPrivacy = e;
@@ -801,20 +788,18 @@ export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
   navigateNewMailPage() {
     const userId = this.getPageOwnerId().toString();
     const hashId = this.hashIdService.handleUserIdEncode(userId);
-    const {
-      stationMail: { home, newMail },
-    } = appPath;
+    const { stationMail, dashboard } = appPath;
     const { messageReceiverId, messageReceiverType } = QueryString;
-    this.router.navigateByUrl(
-      `/dashboard/${home}/${newMail}?${messageReceiverId}=${hashId}&${messageReceiverType}=p`
-    );
+    const pathName = `/${dashboard.home}/${stationMail.home}/${stationMail.newMail}`;
+    const query = `?${messageReceiverId}=${hashId}&${messageReceiverType}=p`;
+    this.router.navigateByUrl(pathName + query);
   }
 
   /**
    * 解除rxjs訂閱
    */
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

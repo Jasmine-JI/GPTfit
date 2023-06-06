@@ -16,8 +16,10 @@ import dayjs from 'dayjs';
 import { stockChart } from 'highcharts/highstock';
 import cloneDeep from 'lodash/cloneDeep';
 import keyBy from 'lodash/keyBy';
-import { getUrlQueryStrings } from '../../../../core/utils/index';
+import { getUrlQueryStrings } from '../../../../core/utils';
 import { AuthService, Api20xxService, Api70xxService } from '../../../../core/services';
+import { appPath } from '../../../../app-path.const';
+import { Domain } from '../../../../core/enums/common';
 
 export class Message {
   constructor(public classMemberDataField: any, public classMemberDataFieldValue: any) {}
@@ -206,10 +208,14 @@ export class CoachDashboardComponent implements OnInit, AfterViewInit, OnDestroy
   ];
   classImage =
     'https://www.healthcenterhoornsevaart.nl/wp-content/uploads/2018/02/combat-630x300.jpg';
-  private socket$: any;
 
+  private socket$: any;
   public serverMessages: Message;
+
+  readonly backUrl = `/${appPath.dashboard.home}/${appPath.dashboard.trainLive}`;
+
   userInfos: any = [];
+
   constructor(
     private api20xxService: Api20xxService,
     private api70xxService: Api70xxService,
@@ -219,11 +225,11 @@ export class CoachDashboardComponent implements OnInit, AfterViewInit, OnDestroy
   ) {
     setOptions({ time: { useUTC: false } });
     this.elementRef = elementRef;
-    let hostName = 'app.alatech.com.tw';
-    if (location.hostname === 'cloud.alatech.com.tw') {
-      hostName = 'cloud.alatech.com.tw';
-    } else if (location.hostname === 'www.gptfit.com') {
-      hostName = 'www.gptfit.com';
+    let hostName = Domain.uat;
+    if (location.hostname === Domain.oldProd) {
+      hostName = Domain.oldProd;
+    } else if (location.hostname === Domain.newProd) {
+      hostName = Domain.newProd;
     }
     this.socket$ = webSocket(`wss://${hostName}:9000/train`);
 

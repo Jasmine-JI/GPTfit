@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { take, map } from 'rxjs/operators';
 import { AuthService } from '../../services';
+import { appPath } from '../../../app-path.const';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class AuthGuard {
   constructor(private authService: AuthService, private router: Router) {}
 
   canActivate(
@@ -25,7 +26,7 @@ export class AuthGuard implements CanActivate {
         if (res) return true;
 
         // 導回登入頁面
-        this.router.navigate(['/signIn-web']);
+        this.router.navigate([`/${appPath.portal.signInWeb}`]);
         return false;
       })
     );

@@ -16,9 +16,10 @@ import {
   ActivityPoint,
 } from '../../../core/models/api/api-21xx';
 import { DisplayDetailField } from '../../../core/enums/api';
-import { throwError, of } from 'rxjs';
+import { of } from 'rxjs';
 import { switchMap, map, tap } from 'rxjs/operators';
 import { checkResponse, splitNameInfo, handleSceneryImg } from '../../../core/utils';
+import { appPath } from '../../../app-path.const';
 
 @Injectable({
   providedIn: 'root',
@@ -93,7 +94,7 @@ export class SportsDetailService {
     } = res;
     const notHavePhoto = !photo;
     if (notHavePhoto) {
-      res.fileInfo.photo = handleSceneryImg(+type, subtype);
+      res.fileInfo.photo = handleSceneryImg(+type, subtype ?? 0);
     }
 
     if (isBaseData) this._haveFileSenery = !notHavePhoto;
@@ -124,7 +125,7 @@ export class SportsDetailService {
    */
   getUserLink(userId: number) {
     const hashUserId = this.hashIdService.handleUserIdEncode(userId);
-    return `/user-profile/${hashUserId}`;
+    return `/${appPath.personal.home}/${hashUserId}`;
   }
 
   /**

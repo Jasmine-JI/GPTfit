@@ -30,12 +30,7 @@ export class HeaderComponent implements OnChanges {
   /**
    * 基準檔案數據
    */
-  @Input() baseData: Api2103Response;
-
-  /**
-   * 比較檔案數據
-   */
-  @Input() compareData: Api2103Response;
+  @Input() fileData: Api2103Response;
 
   constructor() {}
 

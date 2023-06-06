@@ -1,12 +1,7 @@
 <div class="pageTitle">
   App_Log Details
   <div style="display: inline-block; float: right">
-    <button
-      class="alatech-btn alatech-btn--default"
-      [routerLink]="['/dashboard/system/device_log']"
-    >
-      返回列表
-    </button>
+    <button class="alatech-btn alatech-btn--default" [routerLink]="[backUrl]">返回列表</button>
   </div>
 </div>
 <div [ngClass]="isTopIconDisplay === true ? 'gotop--show ' : 'gotop--hidden'" (click)="goTop()">

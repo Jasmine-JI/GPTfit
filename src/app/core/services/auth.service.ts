@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { LocalStorageKey } from '../../shared/enum/local-storage-key';
+import { LocalStorageKey } from '../enums/common/local-storage-key.enum';
 import { Api10xxService } from './api-10xx.service';
 import { setLocalStorageObject, getLocalStorageObject } from '../utils/index';
 import { combineLatest, Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { SignTypeEnum } from '../../shared/enum/account';
 import { UserService } from './user.service';
+import { SignInType } from '../../core/enums/personal';
 
 @Injectable({
   providedIn: 'root',
@@ -105,7 +105,7 @@ export class AuthService {
             signIn: { accountType },
             userProfile: { countryCode },
           } = res as any;
-          if (accountType === SignTypeEnum.phone) this.loginCountryCode = countryCode;
+          if (accountType === SignInType.phone) this.loginCountryCode = countryCode;
           this._isLogin$.next(true);
         }
       })
@@ -119,7 +119,7 @@ export class AuthService {
   tokenLogin() {
     const { _token: token } = this;
     if (token) {
-      const loginBody = { token, signInType: SignTypeEnum.token };
+      const loginBody = { token, signInType: SignInType.token };
       const userProfileBody = { token };
       combineLatest([
         this.api10xxService.fetchSignIn(loginBody),
