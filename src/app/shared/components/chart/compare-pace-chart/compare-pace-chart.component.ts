@@ -13,10 +13,14 @@ import { chart } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import { GlobalEventsService } from '../../../../core/services';
-import { deepCopy, paceTooltipFormatter, paceYAxisFormatter } from '../../../../core/utils/index';
-import { compareChartDefault } from '../../../models/chart-data';
-import { speedToPaceSecond } from '../../../../core/utils/sports';
-import { SportType } from '../../../enum/sports';
+import {
+  deepCopy,
+  paceTooltipFormatter,
+  paceYAxisFormatter,
+  speedToPaceSecond,
+} from '../../../../core/utils';
+import { compareChartDefault } from '../../../../core/models/compo/chart-data.model';
+import { SportType } from '../../../../core/enums/sports';
 import { DataUnitType } from '../../../../core/enums/common';
 
 @Component({

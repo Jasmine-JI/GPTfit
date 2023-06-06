@@ -308,6 +308,7 @@
           <div class="flexCol">
             <app-line-column-compare-chart
               [data]="overviewData.childGroupTeachChartData"
+              [yAxisTitleKey]="['universal_group_classUserCounts', 'universal_group_classCounts']"
             ></app-line-column-compare-chart>
           </div>
           <div
@@ -391,6 +392,7 @@
                   ? operationTrend.memberCompareTrendChart
                   : operationTrend.memberSingleTrendChart
               "
+              [yAxisTitleKey]="['universal_group_myGroup', 'universal_group_subgroup']"
             ></app-line-column-compare-chart>
           </div>
           <div
@@ -431,6 +433,7 @@
                   ? operationTrend.childCountCompareTrendChart
                   : operationTrend.singleCreateChildChartData
               "
+              [yAxisTitleKey]="getGroupCreationChartYAxisTitle()"
             ></app-line-column-compare-chart>
           </div>
           <div
@@ -466,6 +469,7 @@
                   ? operationTrend.teachCompareTrendChart
                   : operationTrend.teachSingleTrendChart
               "
+              [yAxisTitleKey]="['universal_group_classCounts', 'universal_group_classUserCounts']"
             ></app-line-column-compare-chart>
           </div>
           <div

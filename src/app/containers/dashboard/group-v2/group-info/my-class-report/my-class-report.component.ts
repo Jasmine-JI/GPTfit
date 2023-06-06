@@ -17,15 +17,17 @@ import {
 } from '../../../../../core/services';
 import { Router } from '@angular/router';
 import { chart, charts, color, each } from 'highcharts';
-import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
-import { HrZoneRange } from '../../../../../shared/models/chart-data';
-import { HrBase } from '../../../../../shared/enum/personal';
+import { ReportConditionOpt } from '../../../../../core/models/compo/report-condition.model';
+import { HrZoneRange } from '../../../../../core/models/compo/chart-data.model';
+import { HrBase } from '../../../../../core/enums/sports';
 import { ProfessionalService } from '../../../../professional/services/professional.service';
 import {
   displayGroupLevel,
   getUrlQueryStrings,
   setUrlQueryString,
 } from '../../../../../core/utils';
+import { appPath } from '../../../../../app-path.const';
+import { Domain, WebIp } from '../../../../../core/enums/common';
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -103,8 +105,6 @@ class ChartOptions {
     };
   }
 }
-
-const errMsg = `Error.<br />Please try again later.`;
 
 @Component({
   selector: 'app-my-class-report',
@@ -560,10 +560,9 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   showGroupInfo() {
     const groupIcon = this.groupData.groupIcon;
     const brandIcon = this.groupData.groupRootInfo[2].brandIcon;
-    this.groupImg =
-      groupIcon && groupIcon.length > 0 ? groupIcon : '/assets/images/group-default.svg';
-    this.brandImg =
-      brandIcon && brandIcon.length > 0 ? brandIcon : '/assets/images/group-default.svg';
+    const defaultImg = '/assets/images/group-default.svg';
+    this.groupImg = groupIcon && groupIcon.length > 0 ? groupIcon : defaultImg;
+    this.brandImg = brandIcon && brandIcon.length > 0 ? brandIcon : defaultImg;
     this.brandName = this.groupData.groupRootInfo[2].brandName;
     this.branchName = this.groupData.groupRootInfo[3].branchName;
 
@@ -657,7 +656,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
               }
             }
 
-            const { creationDate, equipmentSN } = allActivities[i].fileInfo;
+            const { equipmentSN } = allActivities[i].fileInfo;
             this.dateList.unshift(this.formatDate(allActivities[i].fileInfo.creationDate));
             this.avgHRList.unshift(avgHeartRateBpm);
             this.caloriesList.unshift(calories);
@@ -1050,8 +1049,8 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     this.api70xxService.fetchGetProductInfo(deviceDody).subscribe((res) => {
       if (res) {
         this.deviceInfo = res.info.productInfo[0];
-        if (location.hostname === '192.168.1.235') {
-          this.deviceImgUrl = `http://app.alatech.com.tw/app/public_html/products${this.deviceInfo.modelImg}`;
+        if (location.hostname === WebIp.develop) {
+          this.deviceImgUrl = `http://${Domain.uat}/app/public_html/products${this.deviceInfo.modelImg}`;
         } else {
           this.deviceImgUrl = `http://${location.hostname}/app/public_html/products${this.deviceInfo.modelImg}`;
         }
@@ -1085,21 +1084,22 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     });
   }
 
-  // 連結至個人頁面-kidin-1081223
+  // 連結至個人頁面
   visitAuthor() {
-    this.router.navigateByUrl(
-      `/user-profile/${this.hashIdService.handleUserIdEncode(
-        this.fileInfo.author.split('?')[1].split('=')[1].replace(')', '')
-      )}`
-    );
+    const userId = this.fileInfo.author.split('?')[1].split('=')[1].replace(')', '');
+    const hashUserId = this.hashIdService.handleUserIdEncode(userId);
+    this.router.navigateByUrl(`/${appPath.personal.home}/${hashUserId}`);
   }
 
-  // 連結至課程頁面-kidin-1090624
+  // 連結至課程頁面
   visitClass() {
+    const {
+      dashboard,
+      professional: { groupDetail },
+    } = appPath;
+    const hashGroupId = this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId);
     this.router.navigateByUrl(
-      `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
-        this.groupInfo.groupId
-      )}/group-introduction`
+      `/${dashboard.home}/${groupDetail.home}/${hashGroupId}/${groupDetail.introduction}`
     );
   }
 

@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { Subject, combineLatest, fromEvent, Subscription } from 'rxjs';
 import { takeUntil, switchMap, map, first } from 'rxjs/operators';
-import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
+import { ReportConditionOpt } from '../../../../../core/models/compo/report-condition.model';
 import dayjs from 'dayjs';
 import { ProfessionalService } from '../../../../professional/services/professional.service';
 import {
@@ -24,14 +24,14 @@ import {
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { TranslateService } from '@ngx-translate/core';
-import { DataUnitType } from '../../../../../core/enums/common';
+import { DataUnitType, AccessRight, QueryString } from '../../../../../core/enums/common';
 import {
   setLocalStorageObject,
   getLocalStorageObject,
   displayGroupLevel,
 } from '../../../../../core/utils';
-import { AccessRight } from '../../../../../shared/enum/accessright';
 import { SportType } from '../../../../../core/enums/sports';
+import { appPath } from '../../../../../app-path.const';
 
 type AnalysisTable = 'group' | 'member';
 type AnalysisData =
@@ -307,6 +307,16 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     private hintDialogService: HintDialogService,
     private apiCommonService: ApiCommonService
   ) {}
+
+  /**
+   * 首頁雲跑介紹區塊
+   */
+  get cloudrunIntroductionUrl() {
+    const {
+      portal: { introduction },
+    } = appPath;
+    return `/${introduction.home}/${introduction.application}/${introduction.cloudrunAnchor}`;
+  }
 
   ngOnInit(): void {
     this.windowWidth = window.innerWidth;
@@ -645,12 +655,19 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100308
    */
   updateUrl() {
-    const { startDate, endDate } = this.selectDate,
-      startDateString = startDate.split('T')[0],
-      endDateString = endDate.split('T')[0],
-      { checkCompletion: check } = this.reportConditionOpt.cloudRun;
-    let searchString = `?ipm=s&startdate=${startDateString}&enddate=${endDateString}&mapid=${this.currentMapId}&source=${this.mapSource}&check=${check}`;
-
+    const { startDate, endDate } = this.selectDate;
+    const startDateString = startDate.split('T')[0];
+    const endDateString = endDate.split('T')[0];
+    const { checkCompletion: check } = this.reportConditionOpt.cloudRun;
+    const queryArr = [
+      `${QueryString.printMode}=s`,
+      `${QueryString.startDate}=${startDateString}`,
+      `${QueryString.endDate}=${endDateString}`,
+      `${QueryString.mapId}=${this.currentMapId}`,
+      `${QueryString.mapSource}=${this.mapSource}`,
+      `${QueryString.check}=${check}`,
+    ];
+    let searchString = `?${queryArr.join('&')}`;
     let compare: string;
     const { clickList } = this.compare;
     if (clickList.length !== 0) {
@@ -661,7 +678,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     const showAllArr = [];
     if (this.groupTable.showAll) showAllArr.push('g');
     if (this.memberTable.showAll) showAllArr.push('m');
-    if (showAllArr.length > 0) searchString = `${searchString}&seemore=${showAllArr.join('')}`;
+    if (showAllArr.length > 0)
+      searchString = `${searchString}&${QueryString.seeMore}=${showAllArr.join('')}`;
 
     this.previewUrl = location.pathname + searchString;
   }
@@ -1528,7 +1546,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 根據語系回傳地圖對應語系的序列
+   * 根據語系回傳地圖對應語系的索引
    * @author kidin-1100309
    */
   checkLanguage() {
@@ -1938,22 +1956,27 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100316
    */
   goGroupPage(id: string, page: NavigationPage) {
-    const hashGroupId = this.hashIdService.handleGroupIdEncode(id),
-      startDateString = dayjs(this.selectDate.startDate).format('YYYY-MM-DD'),
-      endDateString = dayjs(this.selectDate.endDate).format('YYYY-MM-DD'),
-      reportConditionString = `?startdate=${startDateString}&enddate=${endDateString}`;
+    const hashGroupId = this.hashIdService.handleGroupIdEncode(id);
+    const startDateString = dayjs(this.selectDate.startDate).format('YYYY-MM-DD');
+    const endDateString = dayjs(this.selectDate.endDate).format('YYYY-MM-DD');
+    const reportConditionString = `?${QueryString.startDate}=${startDateString}&${QueryString.endDate}=${endDateString}`;
+    const {
+      dashboard: { home: dashboardHome },
+      professional: { groupDetail },
+    } = appPath;
+    const baseUrl = `/${dashboardHome}/${groupDetail.home}/${hashGroupId}`;
     switch (page) {
       case 'info':
-        window.open(`/dashboard/group-info/${hashGroupId}/group-introduction`);
+        window.open(`${baseUrl}/${groupDetail.introduction}`);
         break;
       case 'sportsReport':
-        window.open(`/dashboard/group-info/${hashGroupId}/sports-report${reportConditionString}`);
+        window.open(`${baseUrl}/${groupDetail.sportsReport}${reportConditionString}`);
         break;
-      case 'cloudrunReport':
-        window.open(
-          `/dashboard/group-info/${hashGroupId}/cloudrun-report${reportConditionString}&mapid=${this.currentMapId}`
-        );
+      case 'cloudrunReport': {
+        const query = `${reportConditionString}&${QueryString.mapId}=${this.currentMapId}`;
+        window.open(`${baseUrl}/${groupDetail.cloudrunReport}${query}`);
         break;
+      }
     }
 
     this.initShowMenu();
@@ -1965,22 +1988,20 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * @author kidin-1100316
    */
   goMemberPage(id: number, page: NavigationPage) {
-    const hashUserId = this.hashIdService.handleUserIdEncode(id.toString()),
-      startDateString = dayjs(this.selectDate.startDate).format('YYYY-MM-DD'),
-      endDateString = dayjs(this.selectDate.endDate).format('YYYY-MM-DD'),
-      reportConditionString = `?startdate=${startDateString}&enddate=${endDateString}`;
+    const hashUserId = this.hashIdService.handleUserIdEncode(id.toString());
+    const startDateString = dayjs(this.selectDate.startDate).format('YYYY-MM-DD');
+    const endDateString = dayjs(this.selectDate.endDate).format('YYYY-MM-DD');
+    const reportConditionString = `?${QueryString.startDate}=${startDateString}&${QueryString.endDate}=${endDateString}`;
+    const { personal } = appPath;
     switch (page) {
       case 'info':
-        window.open(`/user-profile/${hashUserId}`);
+        window.open(`/${personal.home}/${hashUserId}`);
         break;
       case 'sportsReport':
-        window.open(`/user-profile/${hashUserId}/sport-report${reportConditionString}`);
+        window.open(
+          `/${personal.home}/${hashUserId}/${personal.sportsReport}${reportConditionString}`
+        );
         break;
-      /*  待個人cloud run report支援無登入瀏覽
-      case 'cloudrunReport':
-        window.open(`/user-profile/${hashUserId}/cloudrun-report${reportConditionString}&mapid=${this.currentMapId}`);
-        break;
-      */
     }
   }
 

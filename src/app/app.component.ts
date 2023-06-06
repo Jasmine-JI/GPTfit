@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Domain } from './shared/enum/domain';
+import { Domain } from './core/enums/common/domain.enum';
 import { Router, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
 
 @Component({

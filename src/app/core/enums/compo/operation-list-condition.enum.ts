@@ -1,12 +1,4 @@
 /**
- * 列表排序升降冪
- */
-export enum SortDirection {
-  desc = 1,
-  asc,
-}
-
-/**
  * 條件類別
  */
 export enum CondtionType {

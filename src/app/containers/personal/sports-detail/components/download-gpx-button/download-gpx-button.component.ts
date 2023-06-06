@@ -122,7 +122,7 @@ export class DownloadGpxButtonComponent {
   }
 
   /**
-   * 取得數據類別對應在陣列中的序列
+   * 取得數據類別對應在陣列中的索引
    * @param keyArray 數據類別名稱陣列
    */
   getKeyIndex(keyArray: Array<string>) {

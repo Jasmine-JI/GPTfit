@@ -4,7 +4,7 @@ import { Api10xxService } from './api-10xx.service';
 import { checkResponse } from '../utils/index';
 import { of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { LocalStorageKey } from '../../shared/enum/local-storage-key';
+import { LocalStorageKey } from '../enums/common/local-storage-key.enum';
 
 @Injectable({
   providedIn: 'root',

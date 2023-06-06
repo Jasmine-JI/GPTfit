@@ -12,13 +12,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
-import { formTest } from '../../../../../shared/models/form-test';
-import { AccountTypeEnum } from '../../../../../shared/enum/account';
-import { SignTypeEnum } from '../../../../../shared/enum/account';
+import { formTest } from '../../../../../core/models/regex/form-test';
 import { TFTViewMinWidth } from '../../../models/app-webview';
 import { Subject, Subscription, fromEvent, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
 import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/utils';
+import { SignInType, AccountType } from '../../../../../core/enums/personal';
+import { errorMessage } from '../../../../../core/models/const';
+import { appPath } from '../../../../../app-path.const';
 
 type InputType = 'oldPassword' | 'newPassword';
 
@@ -32,7 +33,8 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
   private resizeSubscription = new Subscription();
 
   readonly passwordReg = formTest.password;
-  readonly SignTypeEnum = SignTypeEnum;
+  readonly SignTypeEnum = SignInType;
+  readonly userSettingUrl = `/${appPath.dashboard.home}/${appPath.personal.userSettings}`;
 
   appSys = 0; // 0: web 1: ios 2: android
   dataIncomplete = true;
@@ -89,7 +91,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getUserInfo();
     this.subscribeResizeEvent();
 
-    if (location.pathname.indexOf('web') > 0) {
+    if (location.pathname.indexOf('-web') > -1) {
       this.pcView = true;
       this.setPageStyle(false);
     } else {
@@ -100,7 +102,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)
     this.authService.isLogin.subscribe((res) => {
       if (!res && this.pcView) {
-        return this.router.navigateByUrl('/signIn-web');
+        return this.router.navigateByUrl(`/${appPath.portal.signInWeb}`);
       }
     });
   }
@@ -198,7 +200,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
           userProfile,
           signIn: { accountType },
         } = res as any;
-        if (accountType === AccountTypeEnum.email) {
+        if (accountType === AccountType.email) {
           this.editBody.newAccountType = 1;
           this.editBody.newEmail = userProfile.email;
         } else {
@@ -217,7 +219,8 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     } else if (this.appSys === 2) {
       (window as any).android.closeWebView('Close');
     } else {
-      this.router.navigateByUrl('/dashboard/user-settings');
+      const { dashboard, personal } = appPath;
+      this.router.navigateByUrl(`/${dashboard.home}/${personal.userSettings}`);
     }
   }
 
@@ -379,7 +382,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
         },
       });
     } else {
-      const msg = 'Error! Please try again later.';
+      const msg = errorMessage;
       this.debounceTurnBack(msg);
     }
   }

@@ -5,18 +5,19 @@ import { Api41xxService, HashIdService } from '../../../core/services';
 import { Api4106Post, Api4106Response } from '../../../core/models/api/api-41xx';
 import { Observable, of } from 'rxjs';
 import { tap, last } from 'rxjs/operators';
-import { PaginationSetting } from '../../../shared/models/pagination';
+import { PaginationSetting } from '../../../core/models/compo/pagination.model';
 import { PaginationComponent, OperationListConditionComponent } from '../../../components';
-import { AllOperationCondition, OperationConditionResult } from '../../../core/models/compo';
 import {
-  SortDirection,
-  CondtionType,
-  MemberListSortType,
-  MemberType,
-} from '../../../core/enums/compo';
+  AllOperationCondition,
+  OperationConditionResult,
+  OperationCondition,
+  ListItem,
+} from '../../../core/models/compo';
+import { CondtionType, MemberListSortType, MemberType } from '../../../core/enums/compo';
 import { Gender } from '../../../core/enums/personal';
 import { GroupLevel } from '../../../core/enums/professional';
 import { SportType } from '../../../core/enums/sports';
+import { DescFirstSortDirection } from '../../../core/enums/api';
 import {
   SexPipe,
   AgePipe,
@@ -28,12 +29,7 @@ import {
 import { personalIconSubstitudePath } from '../../../core/models/const';
 import { checkResponse, deepCopy, countAge } from '../../../core/utils';
 import { GroupArchitecture } from '../../dashboard/models/group-detail';
-
-const defaultPagination: PaginationSetting = {
-  totalCounts: 0,
-  pageIndex: 0,
-  onePageSize: 10,
-};
+import { appPath } from '../../../app-path.const';
 
 @Component({
   selector: 'app-member-analysis-list',
@@ -60,9 +56,9 @@ export class MemberAnalysisListComponent implements OnInit, OnChanges {
   /**
    * 教練篩選條件
    */
-  readonly coachCondition = [
+  readonly coachCondition: Array<OperationCondition> = [
     {
-      type: 'dropList' as any,
+      type: 'dropList',
       titleTranslateKey: 'universal_userProfile_gender',
       conditionCode: CondtionType.gender,
       conditionItemList: [
@@ -72,7 +68,7 @@ export class MemberAnalysisListComponent implements OnInit, OnChanges {
       ],
     },
     {
-      type: 'dropList' as any,
+      type: 'dropList',
       titleTranslateKey: 'universal_activityData_type',
       conditionCode: CondtionType.teachType,
       conditionItemList: [
@@ -86,7 +82,7 @@ export class MemberAnalysisListComponent implements OnInit, OnChanges {
       ],
     },
     {
-      type: 'keyword' as any,
+      type: 'keyword',
       titleTranslateKey: 'universal_activityData_keyword',
       conditionCode: CondtionType.keyword,
     },
@@ -95,7 +91,7 @@ export class MemberAnalysisListComponent implements OnInit, OnChanges {
   /**
    * 學員篩選條件
    */
-  readonly memberCondition = [
+  readonly memberCondition: Array<OperationCondition> = [
     {
       type: 'dropList',
       titleTranslateKey: 'universal_userProfile_gender',
@@ -196,14 +192,14 @@ export class MemberAnalysisListComponent implements OnInit, OnChanges {
       list: [
         {
           textKey: 'universal_activityData_powerDown',
-          value: SortDirection.desc,
+          value: DescFirstSortDirection.desc,
         },
         {
           textKey: 'universal_activityData_ascendingPower',
-          value: SortDirection.asc,
+          value: DescFirstSortDirection.asc,
         },
       ],
-      initIndex: SortDirection.desc - 1,
+      initIndex: DescFirstSortDirection.desc - 1,
     },
   };
 
@@ -248,7 +244,7 @@ export class MemberAnalysisListComponent implements OnInit, OnChanges {
   /**
    * 取得群組篩選條件清單，並轉為條件篩選元件介接格式
    */
-  getGroupConditionList() {
+  getGroupConditionList(): OperationCondition {
     const {
       post: { groupLevel },
       groupList,
@@ -258,13 +254,13 @@ export class MemberAnalysisListComponent implements OnInit, OnChanges {
       [GroupLevel.branch]: groupList.coaches,
     };
 
-    const groupConditoin = {
-      type: 'dropList' as any,
+    const groupConditoin: OperationCondition = {
+      type: 'dropList',
       titleTranslateKey: 'universal_group_group',
       conditionCode: CondtionType.childName,
       conditionItemList: [{ textKey: 'universal_adjective_all', value: null }],
     };
-    groupConditoin.conditionItemList = groupConditoin.conditionItemList.concat(
+    groupConditoin.conditionItemList = (groupConditoin.conditionItemList as Array<ListItem>).concat(
       (referenceList[groupLevel] ?? []).map((_list) => {
         const { groupName } = _list;
         return { textKey: groupName, value: groupName };
@@ -328,9 +324,11 @@ export class MemberAnalysisListComponent implements OnInit, OnChanges {
    */
   getRelativeLink(userId: string) {
     const hashUserId = this.hashIdService.handleUserIdEncode(userId);
+    const { personal } = appPath;
+    const baseUrl = `/${personal.home}/${hashUserId}`;
     return {
-      introduction: `/user-profile/${hashUserId}/info`,
-      sportsReport: `/user-profile/${hashUserId}/sport-report`,
+      introduction: `${baseUrl}/${personal.info}`,
+      sportsReport: `${baseUrl}/${personal.sportsReport}`,
     };
   }
 
@@ -464,7 +462,7 @@ export class MemberAnalysisListComponent implements OnInit, OnChanges {
       [MemberListSortType.lastAttendTime]: sortLastAttendTime,
     };
 
-    const sortDirectionValue = sortDirection === SortDirection.desc ? -1 : 1;
+    const sortDirectionValue = sortDirection === DescFirstSortDirection.desc ? -1 : 1;
     return sortCondition[sortType](aValue, bValue) * sortDirectionValue;
   }
 

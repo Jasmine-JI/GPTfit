@@ -30,6 +30,7 @@ export class LineColumnCompareChartComponent implements OnInit, OnChanges, OnDes
   @Input() unit: string;
   @Input() compareUnit: string;
   @Input() tooltipLegendKey: string;
+  @Input() yAxisTitleKey: Array<string>;
 
   private ngUnsubscribe = new Subject();
   private _option: HighchartOption;
@@ -99,9 +100,13 @@ export class LineColumnCompareChartComponent implements OnInit, OnChanges, OnDes
   getChartOption() {
     const chartOption = new HighchartOption('column', 250);
     const { unit, compareUnit } = this;
+    const [titleA, titleB] = this.yAxisTitleKey ?? [];
     chartOption.plotOptions = { series: { pointPadding: 0 } };
     chartOption.xAxis = { type: 'category' };
-    chartOption.yAxis = [{ title: null }, { title: null, opposite: true }];
+    chartOption.yAxis = [
+      { ...this.getYAxisModel(titleA) },
+      { ...this.getYAxisModel(titleB), opposite: true },
+    ];
     chartOption.tooltip = { shared: true };
     chartOption.series = this.data;
     if (unit || compareUnit) {
@@ -113,6 +118,17 @@ export class LineColumnCompareChartComponent implements OnInit, OnChanges, OnDes
     }
 
     return chartOption;
+  }
+
+  /**
+   * 取得y軸共用設定
+   * @param text y軸標題
+   */
+  getYAxisModel(text: string) {
+    return {
+      title: { text: text ? this.translate.instant(text) : '' },
+      tickInterval: 1,
+    };
   }
 
   /**

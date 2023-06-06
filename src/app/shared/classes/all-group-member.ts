@@ -1,7 +1,7 @@
-import { GroupMemberInfo } from '../models/group';
-import { REGEX_GROUP_ID } from '../models/utils-constant';
-import { MuscleGroup } from '../enum/weight-train';
-import { ReportDateType } from '../models/report-condition';
+import { GroupMemberInfo } from '../../core/models/api/api-11xx';
+import { groupIdReg } from '../../core/models/regex';
+import { ReportDateType } from '../../core/models/compo/report-condition.model';
+import { MuscleGroup } from '../../core/enums/sports';
 
 /**
  * 處理api 1103(infoType: 5) response 的 groupMemberInfo
@@ -45,14 +45,14 @@ export class AllGroupMember {
   getNoRepeatMemberId(groupId: string, excludeSet: Set<number> = undefined): Array<number> {
     const {
       groups: { branchId, classId },
-    } = REGEX_GROUP_ID.exec(groupId);
+    } = groupIdReg.exec(groupId);
     const idSet = new Set<number>(); // 不重複之成員id，用來取api 2014
     let memberListObj = {}; // 成員清單物件，方便後續產出團體與個人分析
     this._originMemberList.forEach((_list) => {
       const { memberId: _memberId, groupId: _groupId } = _list;
       const {
         groups: { branchId: _branchId, classId: _classId },
-      } = REGEX_GROUP_ID.exec(_groupId);
+      } = groupIdReg.exec(_groupId);
       const isSamgeGroup = groupId === _groupId;
       const isBrandLevel = branchId === '0';
       const branchLevelSameBranch = classId === '0' && branchId === _branchId;

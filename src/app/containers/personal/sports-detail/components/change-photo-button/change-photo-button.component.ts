@@ -178,7 +178,7 @@ export class ChangePhotoButtonComponent {
 
   /**
    * 建立圖片名稱
-   * @param length {number}-檔案序列
+   * @param length {number}-檔案索引
    * @param userId {string}-使用者id
    */
   createFileName(length: number, userId: number) {

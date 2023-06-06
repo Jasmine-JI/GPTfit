@@ -19,25 +19,24 @@ import {
   Api70xxService,
   HintDialogService,
 } from '../../../core/services';
-import { UserProfileInfo } from '../../models/user-profile-info';
-import { HrBase } from '../../enum/personal';
+import { UserProfile } from '../../../core/models/api/api-10xx';
+import { HrBase, SportType } from '../../../core/enums/sports';
 import { Router } from '@angular/router';
 import dayjs from 'dayjs';
 import weekday from 'dayjs/plugin/weekday';
 import { TranslateService } from '@ngx-translate/core';
 import { MuscleNamePipe } from '../../../core/pipes/muscle-name.pipe';
-import { mi, lb } from '../../models/bs-constant';
+import { mi, lb } from '../../../core/models/const/bs-constant.model';
 import { charts } from 'highcharts';
-import { HrZoneRange } from '../../models/chart-data';
-import { SportType } from '../../enum/sports';
-import { UserLevel } from '../../models/weight-train';
+import { HrZoneRange } from '../../../core/models/compo/chart-data.model';
+import { UserLevel } from '../../../core/models/common';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../message-box/message-box.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShareGroupInfoDialogComponent } from '../share-group-info-dialog/share-group-info-dialog.component';
 import { PrivacyObj } from '../../../core/enums/api';
 import { EditIndividualPrivacyComponent } from '../edit-individual-privacy/edit-individual-privacy.component';
-import { AlbumType } from '../../models/image';
+import { AlbumType } from '../../../core/enums/api';
 import { v5 as uuidv5 } from 'uuid';
 import { ImageUploadService } from '../../../containers/dashboard/services/image-upload.service';
 import {
@@ -48,13 +47,13 @@ import {
   getUserHrRange,
   deepCopy,
 } from '../../../core/utils';
-import { AccessRight } from '../../enum/accessright';
+import { AccessRight, Domain, QueryString } from '../../../core/enums/common';
 import { ComplexSportsHandler } from '../../classes/sports-report/complex-sports-handler';
 import { FileSimpleInfo } from '../../../core/models/compo';
+import { errorMessage } from '../../../core/models/const';
+import { appPath } from '../../../app-path.const';
 
 dayjs.extend(weekday);
-
-const errMsg = `Error! Please try again later.`;
 
 type DisplayTag = 'summary' | 'detail' | 'segmentation' | 'chart';
 type SegmentType = 'pointSecond' | 'distanceMeters';
@@ -119,7 +118,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   /**
    * 使用者資訊
    */
-  userProfile: UserProfileInfo;
+  userProfile: UserProfile;
 
   /**
    * 檔案持有人資訊
@@ -326,7 +325,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * 確認頁面路徑
    */
   checkUrlPath() {
-    this.uiFlag.isPortal = location.pathname.indexOf('dashboard') < 0;
+    this.uiFlag.isPortal = location.pathname.indexOf(`${appPath.dashboard.home}`) < 0;
   }
 
   /**
@@ -542,15 +541,16 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       const [userProfile, activityDetail] = resArr;
       this.userProfile = userProfile;
       const { resultCode, apiCode, resultMessage } = activityDetail;
+      const { pageNoPermission, pageNotFound } = appPath;
       switch (resultCode) {
         case 400: // 找不到該筆運動檔案或其他
           this.progress = 100;
           console.error(`${resultCode}: Api ${apiCode} ${resultMessage}`);
-          this.router.navigateByUrl('/404');
+          this.router.navigateByUrl(`/${pageNotFound}`);
           break;
         case 403: // 無權限觀看該運動檔案
           this.progress = 100;
-          this.router.navigateByUrl('/403');
+          this.router.navigateByUrl(`/${pageNoPermission}`);
           break;
         case 200:
           this.progress = 70;
@@ -559,7 +559,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         default:
           this.progress = 100;
           console.error(`${resultCode}: Api ${apiCode} ${resultMessage}`);
-          this.hintDialogService.openAlert(errMsg);
+          this.hintDialogService.openAlert(errorMessage);
           break;
       }
 
@@ -598,7 +598,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 選擇顯示的複合式運動子檔案
-   * @param index {number}-指定的複合式檔案序列
+   * @param index {number}-指定的複合式檔案索引
    */
   selectFile(index: number) {
     this.uiFlag.currentIndex = index;
@@ -1526,7 +1526,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 初始化分段數據
-   * @author kidin-1100204
    */
   initSegmentData() {
     this.segmentData = {
@@ -1550,18 +1549,16 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * 建立分段x軸數據
    * @param maxXaxis {number}-該筆運動檔案最大距離或秒數
    * @param range {number}-分段範圍
-   * @author kidin-1100204
    */
   createSegmentXAxisData(maxXaxis: number, range: number): Array<number> {
-    const length = Math.ceil(maxXaxis / range) + 1, // 含x = 0
-      xAxisDataArr = new Array(length);
+    const length = Math.ceil(maxXaxis / range) + 1; // 含x = 0
+    const xAxisDataArr = new Array(length);
 
     return xAxisDataArr.map((_x, index) => _x * index);
   }
 
   /**
    * 確認群組介紹是否過長
-   * @author kidin-1091204
    */
   checkGroupResLength(type: FooterDesc) {
     setTimeout(() => {
@@ -1583,7 +1580,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   /**
    * 展開介紹區塊
    * @param type {}-欲展開的區塊
-   * @author kidin-1100219
    */
   handleShowMore(type: FooterDesc) {
     this.uiFlag[`${type}Overflow`] = false;
@@ -1592,7 +1588,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 若該筆運動檔案未開放隱私權則顯示隱私權提示
-   * @author kidin-1100302
    */
   showPrivacyAlert() {
     const { systemAccessright } = this.userService.getUser();
@@ -1619,7 +1614,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 開放該筆運動檔案隱私權
-   * @author kidin-1100302
    */
   openFilePrivacy() {
     this.filePrivacy = [99];
@@ -1629,7 +1623,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   /**
    * 編輯該筆運動檔案隱私權
    * @param willShare {boolean}-是否顯示分享框
-   * @author kidin-1100302
    */
   editFilePrivacy(willShare = false) {
     const body = {
@@ -1653,7 +1646,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           );
         }
       } else {
-        this.hintDialogService.openAlert(errMsg);
+        this.hintDialogService.openAlert(errorMessage);
       }
 
       this.changeDetectorRef.markForCheck();
@@ -1662,16 +1655,18 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 顯示分享框
-   * @author kidin-1100220
    */
   showShareBox() {
     const { systemAccessright } = this.userService.getUser();
+    const {
+      dashboard: { home: dashboardHome },
+    } = appPath;
     const url = this.uiFlag.isPortal
       ? location.href
-      : `${location.origin}${location.pathname.split('/dashboard')[1]}`;
+      : `${location.origin}${location.pathname.split(`/${appPath.dashboard.home}`)[1]}`;
     const debugUrl = this.uiFlag.isPortal
-      ? `${location.origin}/dashboard${location.pathname}?debug=`
-      : `${location.href.split('?')[0]}?debug=`;
+      ? `${location.origin}/${dashboardHome}${location.pathname}?${QueryString.debug}=`
+      : `${location.href.split('?')[0]}?${QueryString.debug}=`;
 
     this.dialog.open(ShareGroupInfoDialogComponent, {
       hasBackdrop: true,
@@ -1689,7 +1684,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 下載raw data
-   * @author kidin-1100220
    */
   downloadRawData() {
     const CSVName = `${this.rawData.fileInfo.dispName}${this.rawData.fileInfo.creationDate}.csv`;
@@ -1735,7 +1729,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   /**
    * 攤平物件
    * @param rawData {any}-api 2103 的內容
-   * @author kidin-1100126
    */
   flattenObj(rawData: any): Array<any> {
     // csv排除以下資訊
@@ -1816,7 +1809,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 開新分頁預覽列印頁面
-   * @author kidin-1100220
    */
   printPreview() {
     this.getPreviewUrl();
@@ -1825,28 +1817,26 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 根據使用者圖表設定取得預覽列印網址
-   * @author kidin-1100225
    */
   getPreviewUrl() {
     const queryStringArr = ['ipm=s'];
     if (this.activityInfoLayer.type == 3)
-      queryStringArr.push(`weightTrainLevel=${this.uiFlag.weightTrainLevel}`);
+      queryStringArr.push(`${QueryString.weightTrainLevel}=${this.uiFlag.weightTrainLevel}`);
     if ([1, 2, 4, 6, 7].includes(+this.activityInfoLayer.type))
       queryStringArr.push(this.compareChartQueryString);
 
-    let trendChartQueryString = `xAxisType=${this.trendChartOpt.xAxisType}&segmentMode=${this.trendChartOpt.segmentMode}`;
+    let trendChartQueryString = `${QueryString.xAxisType}=${this.trendChartOpt.xAxisType}&${QueryString.segmentMode}=${this.trendChartOpt.segmentMode}`;
     if (this.trendChartOpt.segmentMode)
-      trendChartQueryString += `&segmentRange=${this.trendChartOpt.segmentRange}`;
+      trendChartQueryString += `&${QueryString.segmentRange}=${this.trendChartOpt.segmentRange}`;
     queryStringArr.push(trendChartQueryString);
 
-    if (this.uiFlag.isDebug) queryStringArr.push('debug=true');
+    if (this.uiFlag.isDebug) queryStringArr.push(`${QueryString.debug}=true`);
 
     this.previewUrl = `${location.origin}${location.pathname}?${queryStringArr.join('&')}`;
   }
 
   /**
    * 列印
-   * @author kidin-1100220
    */
   printPage() {
     window.print();
@@ -1854,7 +1844,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 顯示刪除警告視窗
-   * @author kidin-1100220
    */
   showDeleteAlert() {
     return this.dialog.open(MessageBoxComponent, {
@@ -1872,13 +1861,10 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         onConfirm: this.deleteFile.bind(this),
       },
     });
-
-    this.changeDetectorRef.markForCheck();
   }
 
   /**
    * 刪除運動檔案後導回運動列表
-   * @author kidin-1100220
    */
   deleteFile() {
     const body = {
@@ -1896,7 +1882,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         );
 
         setTimeout(() => {
-          this.router.navigateByUrl('/dashboard/activity-list');
+          const { dashboard, personal } = appPath;
+          this.router.navigateByUrl(`/${dashboard.home}/${personal.activityList}`);
         }, 2000);
       } else {
         this.snackBar.open(
@@ -1913,7 +1900,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 返回運動列表
-   * @author kidin-1100220
    */
   returnList() {
     window.close();
@@ -1922,7 +1908,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 編輯檔案名稱
-   * @author kidin-1100220
    */
   editFileName() {
     this.newFileName = this.fileInfo.dispName;
@@ -1933,7 +1918,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   /**
    * 若使用者點擊Enter，則上傳新檔案名稱
    * @param e {KeyboardEvent}
-   * @author kidin-1100220
    */
   handleKeypress(e: KeyboardEvent) {
     const oldFileName = this.fileInfo.dispName;
@@ -1949,7 +1933,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 關閉編輯活動檔案名稱模式
-   * @author kidin-1100220
    */
   cancelEdit() {
     this.uiFlag.editNameMode = false;
@@ -1974,7 +1957,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 上傳新名稱
-   * @author kidin-1100220
    */
   handleNewProfileName() {
     const body = {
@@ -1991,7 +1973,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         this.uiFlag.editNameMode = false;
         this.fileInfo.dispName = this.newFileName;
       } else {
-        this.hintDialogService.openAlert(errMsg);
+        this.hintDialogService.openAlert(errorMessage);
       }
 
       this.changeDetectorRef.markForCheck();
@@ -2000,7 +1982,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 圖片載入完成
-   * @author kidin-1100224
    */
   sceneryImgLoaded() {
     this.uiFlag.imageLoaded = true;
@@ -2018,7 +1999,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 編輯該運動檔案隱私權
-   * @author kidin-1100302
    */
   openPrivacySetting() {
     this.dialog.open(EditIndividualPrivacyComponent, {
@@ -2037,7 +2017,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   /**
    * 修改隱私權設定成功後替換fileInfo的privacy
    * @param privacy {Array<PrivacyObj>}-該筆運動檔案隱私權設定
-   * @author kidin-1100302
    */
   editPrivacy(privacy: Array<PrivacyObj>) {
     this.fileInfo.privacy = privacy;
@@ -2072,7 +2051,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @param points {Array<any>}-運動檔案單點資料
    * @param startTime {Array<any>}-運動開始時間
    * @param dispName {string}-運動檔案名稱
-   * @author kidin-1090928
    */
   switchGpxFile(points: Array<any>, startTime: string, dispName: string) {
     let content = '';
@@ -2136,8 +2114,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       // }
     });
 
+    const { newProd } = Domain;
     const gpxData = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-    <gpx xmlns="${'http://www.topografix.com/GPX/1/1'}" xmlns:gpxtpx="${'http://www.gptfit.com'}" xmlns:xsi="${'http://www.w3.org/2001/XMLSchema-instance'}" xsi:schemaLocation="${'http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd'}">
+    <gpx xmlns="${'http://www.topografix.com/GPX/1/1'}" xmlns:gpxtpx="'http://${newProd}'" xmlns:xsi="${'http://www.w3.org/2001/XMLSchema-instance'}" xsi:schemaLocation="${'http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd'}">
       <trk>
         <name>${dispName}</name>
         <trkseg>
@@ -2152,7 +2131,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 開啟圖片選擇器
-   * @author kidin-1100817
    */
   openImgSelector() {
     this.uiFlag.openImgSelector = true;
@@ -2207,7 +2185,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * 先送出api 8002刪除圖片後再送出api 8001上傳圖片
    * @param formData {FormData}-api所需資料
    * @param groupId {string}-group id
-   * @author kidin-1100817
    */
   sendImgUploadReq(formData: FormData) {
     const { photo } = this.fileInfo;
@@ -2288,13 +2265,12 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 建立圖片名稱
-   * @param length {number}-檔案序列
+   * @param length {number}-檔案索引
    * @param userId {string}-使用者id
-   * @author kidin-1100817
    */
   createFileName(length: number, userId: string) {
-    const nameSpace = uuidv5('https://www.gptfit.com', uuidv5.URL),
-      keyword = `${dayjs().valueOf().toString()}${length}${userId.split('-').join('')}`;
+    const nameSpace = uuidv5(`https://${Domain.newProd}`, uuidv5.URL);
+    const keyword = `${dayjs().valueOf().toString()}${length}${userId.split('-').join('')}`;
     return uuidv5(keyword, nameSpace);
   }
 
@@ -2313,7 +2289,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   /**
    * 從url中取得file name
    * @param url {string}
-   * @author kidin-1100817
    */
   getPhotoName(url: string) {
     const pathArr = url.split('/');
@@ -2353,7 +2328,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 切換至指定裝置資訊
-   * @param index {number}-指定之裝置資訊序列
+   * @param index {number}-指定之裝置資訊索引
    */
   switchAssignDeviceInfo(index: number) {
     const { deviceIndex } = this.uiFlag;
@@ -2366,7 +2341,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * 將相同的x軸的數據合併，並均化相對應的y軸數據
    * @param xData {Array<number>}-x軸數據
    * @param yData {Array<Array<number>>}-y軸數據
-   * @author kidin-1100205
    */
   handleRepeatXAxis(
     xData: Array<number>,

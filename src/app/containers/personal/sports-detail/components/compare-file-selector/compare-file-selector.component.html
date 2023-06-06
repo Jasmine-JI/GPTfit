@@ -1,0 +1,197 @@
+<button
+  id="compare__button"
+  class="flexCenter function__toolbar__button"
+  [title]="'universal_activityData_dataComparison' | translate"
+  (click)="toggleSelector($event)"
+>
+  <mat-icon
+    style="display: flex; align-items: center; justify-content: center; height: 30px; width: 30px"
+  >
+    compare
+  </mat-icon>
+</button>
+
+<section
+  class="selector__box"
+  [style.transform]="getTranslateXStyle()"
+  *ngIf="displaySelector"
+  (click)="closeDropList($event)"
+>
+  <h5 class="flexCenter selector__title">{{ '選擇比較運動檔案' | translate }}</h5>
+  <div class="flexCol">
+    <div class="flexRow filter__condition__row">
+      <div class="flexRow condition__item">
+        <span class="condition__label">{{ 'universal_time_date' | translate }}</span>
+        <div class="condition__content" (click)="toggleYearList($event)">
+          <span class="current__select__item year__condition__content">
+            {{ condition.filterStartTimestamp | timeFormat: 'YYYY' }}
+            <i
+              class="icon-svg_web-icon_p1_006-unfold year__fold__icon fold__icon"
+              [class.unfold]="displayYearList"
+            ></i>
+          </span>
+          <ul class="drop__list" *ngIf="displayYearList" (click)="$event.stopPropagation()">
+            <li
+              class="drop__list__item"
+              *ngFor="let _year of yearList"
+              (click)="selectYear($event, _year)"
+            >
+              {{ _year }}
+            </li>
+          </ul>
+        </div>
+      </div>
+      <span class="condition__item">
+        <label class="condition__label">{{ 'universal_activityData_name' | translate }}</label>
+        <input #keywordInput class="keyword__input" type="text" maxlength="24" />
+      </span>
+    </div>
+    <hr class="divide__line" />
+    <div class="flexRow sort__row">
+      <div class="flexRow condition__item">
+        <span class="condition__label">{{ 'universal_activityData_sort' | translate }}</span>
+        <div
+          class="condition__content"
+          style="width: fit-content"
+          (click)="toggleSortTypeList($event)"
+        >
+          <span class="current__select__item">
+            {{ condition.sortType | fileSortTypeKey | translate }}
+            <i
+              class="icon-svg_web-icon_p1_006-unfold fold__icon"
+              [class.unfold]="displaySortTypeList"
+            ></i>
+          </span>
+          <ul
+            class="drop__list"
+            style="min-width: 180px"
+            *ngIf="displaySortTypeList"
+            (click)="$event.stopPropagation()"
+          >
+            <li
+              class="drop__list__item"
+              *ngFor="let _type of sortTypeList"
+              (click)="selectSortType($event, _type)"
+            >
+              {{ _type | fileSortTypeKey | translate }}
+            </li>
+          </ul>
+        </div>
+      </div>
+      <button
+        [title]="
+          (condition.sortByDesc
+            ? 'universal_activityData_powerDown'
+            : 'universal_activityData_ascendingPower'
+          ) | translate
+        "
+        class="sort__button"
+        (click)="changeSortDirection()"
+        [disabled]="isLoading"
+      >
+        <i class="icon-svg_web-icon_p1_022-descending" *ngIf="condition.sortByDesc"></i>
+        <i class="icon-svg_web-icon_p1_023-ascending" *ngIf="!condition.sortByDesc"></i>
+      </button>
+    </div>
+  </div>
+  <ul class="flexCol file__list">
+    <ng-container *ngIf="!fileList$">
+      <li class="file__list__item no__data__text">{{ 'universal_status_noData' | translate }}</li>
+    </ng-container>
+    <ng-container *ngIf="fileList$">
+      <ng-container *ngFor="let file of fileList$ | async">
+        <li
+          class="file__list__item"
+          (click)="submitCompareFileId(file.fileInfo.fileId)"
+          *ngIf="file.fileInfo.fileId !== fileId"
+        >
+          <div class="flexCol">
+            <time class="date__time">
+              {{ file.activityInfoLayer.startTime.split('T')[0] }}
+              {{ file.activityInfoLayer.startTime | weekDayKey | translate }}
+              {{ file.activityInfoLayer.startTime.split('T')[1] | slice: 0:5 }}
+            </time>
+            <h6 class="file__title">{{ file.fileInfo.dispName }}</h6>
+            <div class="info__data__grid">
+              <span
+                *ngTemplateOutlet="
+                  fileInfoData;
+                  context: {
+                    dataType: 'avgHr',
+                    value: file.activityInfoLayer.avgHeartRateBpm ?? 0
+                  }
+                "
+              ></span>
+              <span
+                *ngTemplateOutlet="
+                  fileInfoData;
+                  context: {
+                    dataType: 'totalSecond',
+                    value: file.activityInfoLayer.totalSecond | sportTime
+                  }
+                "
+              ></span>
+              <ng-container *ngIf="showBySortType(FileSortType.distance)">
+                <span
+                  *ngTemplateOutlet="
+                    fileInfoData;
+                    context: {
+                      dataType: 'distance',
+                      value:
+                        file.activityInfoLayer.totalDistanceMeters
+                        | distanceSibs
+                          : { unitType: userUnit, showUnit: false, convertKiloAlways: true },
+                      unit: userUnit === DataUnitType.metric ? 'km' : 'mi'
+                    }
+                  "
+                ></span>
+              </ng-container>
+              <ng-container *ngIf="showBySortType(FileSortType.avgSpeed)">
+                <span
+                  *ngTemplateOutlet="
+                    fileInfoData;
+                    context: {
+                      dataType: 'avgSpeed',
+                      value:
+                        file.activityInfoLayer.avgSpeed
+                        | sportPaceSibs: { sportType: sportsType, userUnit, showUnit: false },
+                      unit: sportsType | speedPaceUnit: userUnit
+                    }
+                  "
+                ></span>
+              </ng-container>
+              <ng-container *ngIf="showBySortType(FileSortType.totalWeight)">
+                <span
+                  *ngTemplateOutlet="
+                    fileInfoData;
+                    context: {
+                      dataType: 'totalWeight',
+                      value:
+                        file.activityInfoLayer.totalWeightKg
+                        | weightSibs: { unitType: userUnit, showUnit: false },
+                      unit: userUnit === DataUnitType.metric ? 'kg' : 'lb'
+                    }
+                  "
+                ></span>
+              </ng-container>
+            </div>
+          </div>
+        </li>
+      </ng-container>
+    </ng-container>
+  </ul>
+</section>
+
+<ng-template #fileInfoData let-dataType="dataType" let-value="value" let-unit="unit">
+  <span class="file__info__data">
+    <ng-container [ngSwitch]="dataType">
+      <i class="icon-svg_web-icon_p2_006-avg_heart_rate data__icon" *ngSwitchCase="'avgHr'"></i>
+      <i class="icon-svg_web-icon_p2_019-time data__icon" *ngSwitchCase="'totalSecond'"></i>
+      <i class="icon-svg_web-icon_p2_018-distance data__icon" *ngSwitchCase="'distance'"></i>
+      <i class="icon-svg_web-icon_p1_025-speed data__icon" *ngSwitchCase="'avgSpeed'"></i>
+      <i class="icon-svg_web-icon_p2_033-weight data__icon" *ngSwitchCase="'totalWeight'"></i>
+      <span>{{ value }}</span>
+      <span *ngIf="unit">{{ unit }}</span>
+    </ng-container>
+  </span>
+</ng-template>

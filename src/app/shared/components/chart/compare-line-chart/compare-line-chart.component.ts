@@ -11,7 +11,6 @@ import { chart } from 'highcharts';
 import dayjs from 'dayjs';
 import { TranslateService } from '@ngx-translate/core';
 import {
-  DisplayPage,
   zoneColor,
   rightMoveColor,
   leftMoveColor,
@@ -20,11 +19,12 @@ import {
   jumpColor,
   landingColor,
   restHrColor,
-} from '../../../models/chart-data';
+} from '../../../../core/models/represent-color';
 import { DataUnitType } from '../../../../core/enums/common';
-import { DAY, MONTH, WEEK } from '../../../models/utils-constant';
+import { day, month, week } from '../../../../core/models/const';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { DisplayPage } from '../../../../core/models/common';
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -305,8 +305,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           formatter: function () {
             const startDate = dayjs(this.x).format('YYYY-MM-DD'),
               value = parseFloat(this.point.y.toFixed(1));
-            if (this.series.xAxis.tickInterval === MONTH) {
-              const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
+            if (this.series.xAxis.tickInterval === month) {
+              const endDate = dayjs(this.x + 6 * day).format('YYYY-MM-DD');
               return `${startDate}~${endDate}<br/>${this.series.name}: ${value}`;
             } else {
               return `${startDate}<br/>${this.series.name}: ${value}`;
@@ -325,8 +325,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           formatter: function () {
             const startDate = dayjs(this.x).format('YYYY-MM-DD'),
               value = parseFloat(this.point.y.toFixed(3));
-            if (this.series.xAxis.tickInterval === MONTH) {
-              const endDate = dayjs(this.x + 6 * DAY).format('YYYY-MM-DD');
+            if (this.series.xAxis.tickInterval === month) {
+              const endDate = dayjs(this.x + 6 * day).format('YYYY-MM-DD');
               return `${startDate}~${endDate}<br/>${this.series.name}: ${value}`;
             } else {
               return `${startDate}<br/>${this.series.name}: ${value}`;
@@ -339,11 +339,11 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
     if (this.page !== 'cloudrun') {
       // 設定圖表x軸時間間距-kidin-1090204
       if (this.dateRange === 'day' && this.dataLength <= 7) {
-        trendChartOptions['xAxis'].tickInterval = DAY; // 間距一天
+        trendChartOptions['xAxis'].tickInterval = day; // 間距一天
       } else if (this.dateRange === 'day' && this.dataLength > 7) {
-        trendChartOptions['xAxis'].tickInterval = WEEK; // 間距一週
+        trendChartOptions['xAxis'].tickInterval = week; // 間距一週
       } else {
-        trendChartOptions['xAxis'].tickInterval = MONTH; // 間距一個月
+        trendChartOptions['xAxis'].tickInterval = month; // 間距一個月
       }
     }
 

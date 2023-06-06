@@ -3,6 +3,7 @@ import { ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/ro
 import { Observable } from 'rxjs';
 import { take, map } from 'rxjs/operators';
 import { AuthService } from '../../services';
+import { appPath } from '../../../app-path.const';
 
 @Injectable()
 export class AuthGuard {
@@ -25,7 +26,7 @@ export class AuthGuard {
         if (res) return true;
 
         // 導回登入頁面
-        this.router.navigate(['/signIn-web']);
+        this.router.navigate([`/${appPath.portal.signInWeb}`]);
         return false;
       })
     );

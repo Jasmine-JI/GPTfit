@@ -3,15 +3,15 @@ import { Api11xxService, AuthService } from '../../../core/services';
 import { Observable, BehaviorSubject, ReplaySubject, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { checkResponse, displayGroupLevel } from '../../../core/utils';
-import { AccessRight } from '../../../shared/enum/accessright';
-import { GroupAccessrightInfo } from '../../../shared/models/group';
-import { GroupJoinStatus, GroupLevel } from '../../../shared/enum/professional';
-import { REGEX_GROUP_ID } from '../../../shared/models/utils-constant';
+import { AccessRight } from '../../../core/enums/common';
+import { GroupAccessrightInfo } from '../../../core/models/api/api-11xx';
+import { GroupJoinStatus, GroupLevel } from '../../../core/enums/professional';
+import { groupIdReg } from '../../../core/models/regex';
 import { GroupInfo } from '../../../shared/classes/group-info';
 import { GroupDetailInfo, UserSimpleInfo } from '../../dashboard/models/group-detail';
 import { AllGroupMember } from '../../../shared/classes/all-group-member';
 import { SportsTarget } from '../../../shared/classes/sports-target';
-import { GroupDetail } from '../../../shared/models/group';
+import { GroupDetail } from '../../../core/models/api/api-11xx';
 
 @Injectable({
   providedIn: 'root',
@@ -128,13 +128,13 @@ export class ProfessionalService {
     if (this._allAccessright && groupId) {
       const {
         groups: { brandId, branchId, classId },
-      } = REGEX_GROUP_ID.exec(groupId);
+      } = groupIdReg.exec(groupId);
       const groupLevel = GroupInfo.getGroupLevel(groupId);
       const relateAccessright = this._allAccessright
         .filter((_accessright) => {
           const {
             groups: { brandId: _brandId, branchId: _branchId, classId: _classId },
-          } = REGEX_GROUP_ID.exec(_accessright.groupId);
+          } = groupIdReg.exec(_accessright.groupId);
           const sameBrand = brandId === _brandId;
           const sameBranch = sameBrand && branchId === _branchId;
           const sameClass = sameBranch && classId === _classId;

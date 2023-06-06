@@ -23,7 +23,7 @@
     </button>
   </div>
   <div class="flexCol settingContent" *ngIf="uiFlag.expand">
-    <div class="flexRow rowContent" *ngIf="signInfo.accountStatus === AccountStatusEnum.unenabled">
+    <div class="flexRow rowContent" *ngIf="signInfo.accountStatus === AccountStatus.notEnabled">
       <span class="contentTitle">
         {{ 'universal_deviceSetting_switch' | translate }}
         {{ 'universal_userAccount_account' | translate }}
@@ -45,7 +45,7 @@
             | translate: { object: ('universal_userAccount_account' | translate) }
         }}
       </span>
-      <button class="editBtn" (click)="navigateToAssignPage('/enableAccount')">
+      <button class="editBtn" (click)="navigateToAssignPage(portalLink.enableAccount)">
         <i class="icon-svg_web-icon_p3_079-new-window openDialogIcon"></i>
       </button>
     </div>
@@ -57,7 +57,7 @@
       <span class="contentDescription">
         {{ 'universal_system_changePassword' | translate }}
       </span>
-      <button class="editBtn" (click)="navigateToAssignPage('/editPassword')">
+      <button class="editBtn" (click)="navigateToAssignPage(portalLink.editPassword)">
         <i class="icon-svg_web-icon_p3_079-new-window openDialogIcon"></i>
       </button>
     </div>
@@ -79,7 +79,7 @@
       <span class="contentDescription">
         {{ 'universal_system_changAccountName' | translate }}
       </span>
-      <button class="editBtn" (click)="navigateToAssignPage('/changeAccount')">
+      <button class="editBtn" (click)="navigateToAssignPage(portalLink.changeAccount)">
         <i class="icon-svg_web-icon_p3_079-new-window openDialogIcon"></i>
       </button>
     </div>
@@ -108,7 +108,7 @@
       <span class="contentDescription">
         {{ 'universal_system_archiveAccount' | translate }}
       </span>
-      <button class="editBtn" (click)="navigateToAssignPage('/compressData')">
+      <button class="editBtn" (click)="navigateToAssignPage(portalLink.compressData)">
         <i class="icon-svg_web-icon_p3_079-new-window openDialogIcon primary__color"></i>
       </button>
     </div>
@@ -120,7 +120,7 @@
       <span class="contentDescription">
         {{ 'universal_system_deleteAccount' | translate }}
       </span>
-      <button class="editBtn" (click)="navigateToAssignPage('/destroyAccount')">
+      <button class="editBtn" (click)="navigateToAssignPage(portalLink.destroyAccount)">
         <i class="icon-svg_web-icon_p3_079-new-window openDialogIcon del__color"></i>
       </button>
     </div>

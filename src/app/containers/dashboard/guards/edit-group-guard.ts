@@ -3,9 +3,10 @@ import { ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/ro
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ProfessionalService } from '../../professional/services/professional.service';
-import { AccessRight } from '../../../shared/enum/accessright';
+import { AccessRight } from '../../../core/enums/common';
 import { UserService, HashIdService } from '../../../core/services';
 import { displayGroupLevel } from '../../../core/utils';
+import { appPath } from '../../../app-path.const';
 
 @Injectable()
 export class EditGroupGuard {
@@ -36,7 +37,11 @@ export class EditGroupGuard {
         if (groupAccessright <= groupLevel) return true;
 
         const hashGroupId = this.hashIdService.handleGroupIdEncode(this.visittingId);
-        this.router.navigateByUrl(`/dashboard/group-info/${hashGroupId}`);
+        const {
+          dashboard,
+          professional: { groupDetail },
+        } = appPath;
+        this.router.navigateByUrl(`/${dashboard}/${groupDetail.home}/${hashGroupId}`);
         return false;
       })
     );

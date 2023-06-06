@@ -6,6 +6,7 @@ import { AuthService, Api21xxService } from '../../../../../core/services';
 import { allPrivacyItem } from '../../../../../core/models/const';
 import { Api2114Post } from '../../../../../core/models/api/api-21xx';
 import { PrivacyEditObj, RangeType } from '../../../../../core/enums/api';
+import { appPath } from '../../../../../app-path.const';
 
 @Component({
   selector: 'app-share-button',
@@ -78,8 +79,8 @@ export class ShareButtonComponent {
   showSharedBox() {
     this.displayAlert = false;
     const { origin } = location;
-    this.link = `${origin}/activity/${this.fileId}`;
-    this.debugLink = `${origin}/activity/${this.fileId}?debug=`;
+    this.link = `${origin}/${appPath.personal.activityDetail}/${this.fileId}`;
+    this.debugLink = `${this.link}?debug=`;
     this.displayShareBox = true;
   }
 

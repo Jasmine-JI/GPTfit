@@ -1,5 +1,8 @@
-import { zoneColor } from '../../models/chart-data';
-import { COLUMN_BORDER_COLOR, COMPARE_COLUMN_BORDER_COLOR } from '../../models/chart-data';
+import {
+  zoneColor,
+  columnBorderColor,
+  compareColumnBorderColor,
+} from '../../../core/models/represent-color';
 
 /**
  * 處理心率趨勢數據
@@ -22,7 +25,7 @@ export class HrZoneTrendChartData {
         data: [],
         showInLegend: false,
         color: zoneColor[_reverseIndex],
-        borderColor: COLUMN_BORDER_COLOR,
+        borderColor: columnBorderColor,
         custom: {
           dateRange: [],
         },
@@ -43,7 +46,7 @@ export class HrZoneTrendChartData {
         name: `Zone${_reverseIndex}`,
         data: [],
         stack: isCompare ? 'compare' : 'base',
-        borderColor: isCompare ? COMPARE_COLUMN_BORDER_COLOR : COLUMN_BORDER_COLOR,
+        borderColor: isCompare ? compareColumnBorderColor : columnBorderColor,
         color: zoneColor[_reverseIndex],
         showInLegend: false,
         custom: {
@@ -92,8 +95,8 @@ export class HrZoneTrendChartData {
   }
 
   /**
-   * highchart 堆疊柱狀圖堆疊順序由上到下為數據陣列前到後，故需將序列反過來
-   * @param index {number}-原序列
+   * highchart 堆疊柱狀圖堆疊順序由上到下為數據陣列前到後，故需將索引反過來
+   * @param index {number}-原索引
    */
   getReverseIndex(index: number) {
     return Math.abs(index - 5);

@@ -265,7 +265,7 @@ export class GroupAnalysisCalenderComponent implements OnChanges, OnDestroy {
   }
 
   /**
-   * 取得url指定的課程時間在選擇日期中的序列
+   * 取得url指定的課程時間在選擇日期中的索引
    */
   findClassIndex() {
     const { oneDayClassList, classTimeDayjs } = this;

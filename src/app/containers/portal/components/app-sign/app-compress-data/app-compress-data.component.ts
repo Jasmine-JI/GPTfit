@@ -11,8 +11,9 @@ import {
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TFTViewMinWidth } from '../../../models/app-webview';
-import { AlaApp } from '../../../../../shared/models/app-id';
+import { AlaApp, Domain, WebPort } from '../../../../../core/enums/common';
 import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/utils';
+import { appPath } from '../../../../../app-path.const';
 
 enum CompressStatus {
   request,
@@ -71,7 +72,6 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
 
   /**
    * 因應ios嵌入webkit物件時間點較後面，故在此生命週期才判斷裝置平台
-   * @author kidin-1090710
    */
   ngAfterViewInit() {
     this.checkQueryString(location.search);
@@ -104,8 +104,8 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
     const { p: appId, code } = query;
     this.uiFlag.tftDevice = appId && appId == AlaApp.tft;
     if (code) {
-      const downloadPort = location.hostname === 'www.gptfit.com' ? '6443' : '5443',
-        downloadUrl = `https://${location.hostname}:${downloadPort}/archive/click?code=${code}`;
+      const downloadPort = location.hostname === Domain.newProd ? WebPort.prod : WebPort.common;
+      const downloadUrl = `https://${location.hostname}:${downloadPort}/archive/click?code=${code}`;
       location.href = downloadUrl;
     }
   }
@@ -155,7 +155,7 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
 
     if (this.token.length === 0) {
       this.auth.backUrl = location.href;
-      this.router.navigateByUrl('/signIn');
+      this.router.navigateByUrl(`/${appPath.portal.signIn}`);
     } else {
       this.checkCompressStatus();
     }
@@ -218,24 +218,22 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
 
             if (res.status === CompressStatus.complete) {
               this.compressResp.archiveLink =
-                location.hostname === 'www.gptfit.com'
-                  ? res.archiveLink.replace('5443', '6443')
+                location.hostname === Domain.newProd
+                  ? res.archiveLink.replace(WebPort.common, WebPort.prod)
                   : res.archiveLink;
-              this.compressResp.archiveFakeLink = `https://${location.hostname}/compressData?${
+              const pathName = appPath.portal.compressData;
+              this.compressResp.archiveFakeLink = `https://${location.hostname}/${pathName}?${
                 res.archiveLink.split('?')[1]
               }`;
-              this.compressResp.archiveLinkDate = dayjs(res.archiveLinkTimestamp * 1000).format(
-                'YYYY-MM-DD'
-              );
-              this.compressResp.archiveLinkTime = dayjs(res.archiveLinkTimestamp * 1000).format(
-                'HH:mm'
-              );
+
+              const archiveLinkTime = res.archiveLinkTimestamp * 1000;
+              this.compressResp.archiveLinkDate = dayjs(archiveLinkTime).format('YYYY-MM-DD');
+              this.compressResp.archiveLinkTime = dayjs(archiveLinkTime).format('HH:mm');
             } else if (res.status === CompressStatus.prohibited) {
               this.compressResp.cooldownTimestamp = res.cooldownTimestamp;
-              this.compressResp.cooldownDate = dayjs(res.cooldownTimestamp * 1000).format(
-                'YYYY-MM-DD'
-              );
-              this.compressResp.cooldownTime = dayjs(res.cooldownTimestamp * 1000).format('HH:mm');
+              const cooldownTime = res.cooldownTimestamp * 1000;
+              this.compressResp.cooldownDate = dayjs(cooldownTime).format('YYYY-MM-DD');
+              this.compressResp.cooldownTime = dayjs(cooldownTime).format('HH:mm');
             }
           }
         });

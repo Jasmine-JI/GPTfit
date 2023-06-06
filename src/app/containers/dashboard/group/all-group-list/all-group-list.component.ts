@@ -1,10 +1,21 @@
-import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  ViewEncapsulation,
+  OnDestroy,
+} from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { AuthService, HashIdService, Api11xxService } from '../../../../core/services';
 import { getUrlQueryStrings, getPartGroupId } from '../../../../core/utils';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { appPath } from '../../../../app-path.const';
+import { QueryString } from '../../../../core/enums/common';
 
 @Component({
   selector: 'app-all-group-list',
@@ -12,7 +23,9 @@ import { getUrlQueryStrings, getPartGroupId } from '../../../../core/utils';
   styleUrls: ['./all-group-list.component.scss', '../group-style.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class AllGroupListComponent implements OnInit {
+export class AllGroupListComponent implements OnInit, OnDestroy {
+  private ngUnsubscribe = new Subject();
+
   groupLevel = '300';
   searchWords = '';
   token: string;
@@ -45,11 +58,23 @@ export class AllGroupListComponent implements OnInit {
       length: null,
     };
     this.getLists('changePage');
-    // 分頁切換時，重新取得資料
-    this.paginator.page.subscribe((page: PageEvent) => {
+    this.subscribePaginator();
+  }
+
+  /**
+   * 訂閱分頁變更事件，並重新取得資料
+   */
+  subscribePaginator() {
+    this.paginator.page.pipe(takeUntil(this.ngUnsubscribe)).subscribe((page: PageEvent) => {
+      const {
+        dashboard,
+        adminManage: { home: adminManageHome, allGroupList },
+      } = appPath;
       this.currentPage = page;
       this.router.navigateByUrl(
-        `/dashboard/system/all-group-list?pageNumber=${this.currentPage.pageIndex + 1}`
+        `/${dashboard.home}/${adminManageHome}/${allGroupList}?${QueryString.pageNumber}=${
+          this.currentPage.pageIndex + 1
+        }`
       );
       this.getLists('changePage');
     });
@@ -84,9 +109,9 @@ export class AllGroupListComponent implements OnInit {
   }
 
   goDetail(groupId) {
-    this.router.navigateByUrl(
-      `dashboard/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}`
-    );
+    const { dashboard, professional } = appPath;
+    const hashGroupId = this.hashIdService.handleGroupIdEncode(groupId);
+    this.router.navigateByUrl(`${dashboard.home}/${professional.groupDetail.home}/${hashGroupId}`);
   }
 
   /**
@@ -95,5 +120,13 @@ export class AllGroupListComponent implements OnInit {
    */
   displayGroupId(groupId: string) {
     return getPartGroupId(groupId, { start: 2, end: 5 });
+  }
+
+  /**
+   * 解除rxjs訂閱
+   */
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next(null);
+    this.ngUnsubscribe.complete();
   }
 }

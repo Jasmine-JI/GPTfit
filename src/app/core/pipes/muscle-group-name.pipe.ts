@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { MuscleGroup } from '../../shared/enum/weight-train';
+import { MuscleGroup } from '../enums/sports';
 
 @Pipe({
   name: 'muscleGroupName',

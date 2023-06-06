@@ -14,13 +14,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import dayjs from 'dayjs';
 import { TFTViewMinWidth } from '../../../models/app-webview';
-import { AlaApp } from '../../../../../shared/models/app-id';
+import { AlaApp, QueryString } from '../../../../../core/enums/common';
 import {
   headerKeyTranslate,
   getUrlQueryStrings,
   setLocalStorageObject,
   getLocalStorageObject,
 } from '../../../../../core/utils';
+import { appPath } from '../../../../../app-path.const';
 
 enum QrSignInFlow {
   submitGuid = 1,
@@ -91,7 +92,6 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 從url取得header
-   * @author kidin-1110114
    */
   getQueryString() {
     const query = getUrlQueryStrings(location.search);
@@ -104,7 +104,6 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 訂閱頁面尺寸改變事件
-   * @author kidin-1101230
    */
   subscribeResizeEvent() {
     const resizeEvent = fromEvent(window, 'resize');
@@ -113,17 +112,18 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
     });
   }
 
-  // 返回app-kidin-1090513
+  // 返回app
   turnBack() {
     if (this.appSys === 1) {
       (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
     } else if (this.appSys === 2) {
       (window as any).android.closeWebView('Close');
     } else {
+      const { portal } = appPath;
       if (this.pcView) {
-        this.router.navigateByUrl('/signIn-web');
+        this.router.navigateByUrl(`/${portal.signInWeb}`);
       } else {
-        this.router.navigateByUrl('/signIn');
+        this.router.navigateByUrl(`/${portal.signIn}`);
       }
     }
   }
@@ -134,7 +134,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1090720
    */
   checkPage(pathname: string): void {
-    if (pathname === '/signInQrcode' || pathname === '/signInQrcode-web') {
+    if (pathname.indexOf('-web') > -1) {
       this.displayPage = 'showQrcode';
       if (this.checkFrequency()) {
         this.createLoginQrcode();
@@ -152,14 +152,14 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
       this.displayPage = 'login';
       if (this.loginBody.token.length === 0) {
         this.auth.backUrl = location.href;
-        this.router.navigateByUrl('/signIn');
+        this.router.navigateByUrl(`/${appPath.portal.signIn}`);
       } else {
         this.getUrlString(location.search);
         this.getUserInfo();
       }
     }
 
-    if (pathname.indexOf('web') > 0) {
+    if (pathname.indexOf('-web') > -1) {
       this.pcView = true;
       this.setPageStyle(false);
     } else {
@@ -212,13 +212,15 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
     }
   }
 
-  // 創建qrcode並發送guid給server進行長輪詢-kidin-1090527
+  // 創建qrcode並發送guid給server進行長輪詢
   createLoginQrcode() {
     this.createGuid();
-    this.qrURL = `${location.origin}/qrSignIn?qsf=1&g=${this.guid}`;
+    const pathName = `${location.origin}/${appPath.portal.signInQrcode}`;
+    const query = `?${QueryString.qrSignInFlow}=1&${QueryString.guid}=${this.guid}`;
+    this.qrURL = pathName + query;
   }
 
-  // 創建guid-kidin-1090527
+  // 創建guid
   createGuid() {
     const hexadecimalTimeStamp = this.currentTimeStamp.toString(16);
     let guid = '';
@@ -332,7 +334,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
       this.auth.tokenLogin();
 
       const { backUrl } = this.auth;
-      location.href = backUrl ? backUrl : '/dashboard';
+      location.href = backUrl ? backUrl : `/${appPath.dashboard.home}`;
     }
   }
 

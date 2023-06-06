@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { appPath } from '../../../app-path.const';
 
 @Component({
   selector: 'app-page404',
@@ -13,9 +14,12 @@ export class Page404Component implements OnInit, OnDestroy {
 
   ngOnInit() {
     const { pathname, origin } = location;
+    const {
+      officialActivity: { home: officialActivityHome },
+    } = appPath;
     const pathList = pathname.split('/');
-    const isOfficialPage = pathList.indexOf('official-activity') > -1;
-    this.redirectUrl = `${origin}${isOfficialPage ? '/official-activity' : ''}`;
+    const isOfficialPage = pathList.indexOf(officialActivityHome) > -1;
+    this.redirectUrl = `${origin}${isOfficialPage ? `/${officialActivityHome}` : ''}`;
   }
 
   ngOnDestroy() {}

@@ -1,4 +1,4 @@
-import { ft, inch } from '../../shared/models/bs-constant';
+import { ft, inch } from '../models/const/bs-constant.model';
 
 /**
  * 四捨五入至小數點特定位數
@@ -7,6 +7,7 @@ import { ft, inch } from '../../shared/models/bs-constant';
  * @author kidin-1110318
  */
 export function mathRounding(decimal: number, digit: number) {
+  if (decimal === 0) return 0;
   return parseFloat(decimal.toFixed(digit));
 }
 

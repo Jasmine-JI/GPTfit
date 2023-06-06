@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import isoWeek from 'dayjs/plugin/isoWeek';
-import { DateUnit } from '../enum/report';
-import { mathRounding } from '../../core/utils/index';
-import { DAY } from '../models/utils-constant';
-import { DateRangeType } from '../models/report-condition';
+import { mathRounding } from '../../core/utils';
+import { day } from '../../core/models/const';
+import { DateRangeType } from '../../core/models/compo/report-condition.model';
+import { DateUnit } from '../../core/enums/common';
 
 dayjs.extend(quarterOfYear);
 dayjs.extend(isoWeek);
@@ -145,7 +145,7 @@ export class DateRange {
    */
   getDiffRange(unit: string, baseOnMonth = true) {
     const { _startTime, _endTime } = this;
-    const diffDay = mathRounding((_endTime - _startTime) / DAY, 0);
+    const diffDay = mathRounding((_endTime - _startTime) / day, 0);
     const [startYear, startMonth] = dayjs(_startTime)
       .format('YYYY-MM-DD')
       .split('-')

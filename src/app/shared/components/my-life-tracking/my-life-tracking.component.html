@@ -85,7 +85,9 @@
             </div>
             <div>
               <span class="report-summaryData">
-                {{ info.bodyHeight || 0 | bodyHeightSibs: [userInfo.unit, true] }}
+                {{
+                  info.bodyHeight || 0 | bodyHeightSibs: { unitType: userInfo.unit, showUnit: true }
+                }}
               </span>
               <p class="report-summaryDescription">
                 {{ 'universal_userProfile_bodyHeight' | translate }}
@@ -93,7 +95,7 @@
             </div>
             <div>
               <span class="report-summaryData">
-                {{ info.bodyWeight || 0 | weightSibs: [userInfo.unit, 0] }}
+                {{ info.bodyWeight || 0 | weightSibs: { unitType: userInfo.unit } }}
               </span>
               <p class="report-summaryDescription">
                 {{ 'universal_userProfile_bodyWeight' | translate }}
@@ -232,7 +234,7 @@
                       <span class="report-summaryData">
                         {{
                           chart.sleepTrend.ttlAvgSleepSecond / chart.sleepTrend.dataLen || 0
-                            | sportTime: [true, true]
+                            | sportTime: { showZeroHour: true, hideSecond: true }
                         }}
                       </span>
                       <span class="report-summaryDescription">
@@ -244,7 +246,7 @@
                       <span class="report-summaryData">
                         {{
                           chart.sleepTrend.ttlAvgDeepSleepSecond / chart.sleepTrend.dataLen || 0
-                            | sportTime: [true, true]
+                            | sportTime: { showZeroHour: true, hideSecond: true }
                         }}
                       </span>
                       <span class="report-summaryDescription">
@@ -256,7 +258,7 @@
                       <span class="report-summaryData">
                         {{
                           chart.sleepTrend.ttlAvgLightSleepSecond / chart.sleepTrend.dataLen || 0
-                            | sportTime: [true, true]
+                            | sportTime: { showZeroHour: true, hideSecond: true }
                         }}
                       </span>
                       <span class="report-summaryDescription">
@@ -309,7 +311,7 @@
                         }}</span
                         ><br />
                         <span class="report-summaryData">{{
-                          info.bodyWeight || 0 | weightSibs: [userInfo.unit, 0]
+                          info.bodyWeight || 0 | weightSibs: { unitType: userInfo.unit }
                         }}</span>
                       </tr>
                       <tr>

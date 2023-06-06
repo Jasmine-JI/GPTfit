@@ -26,16 +26,7 @@ export interface Api1103Response {
       branches?: Array<GroupInfo>;
       coches?: Array<GroupInfo>;
     };
-    groupMemberInfo: Array<{
-      groupId: string;
-      memberId: number;
-      memberName: string;
-      accessRight: AccessRight;
-      memberIcon: string;
-      gender: Gender;
-      birthday: string; // YYYYMMDD
-      joinStatus: GroupJoinStatus;
-    }>;
+    groupMemberInfo: Array<GroupMemberInfo>;
   };
 }
 
@@ -45,4 +36,18 @@ interface GroupInfo {
   groupStatus: GroupStatus;
   groupIcon: string;
   accessRight: AccessRight;
+}
+
+/**
+ * api 1103 response 的 info.groupMemberInfo[] 的內容
+ */
+export interface GroupMemberInfo {
+  accessRight: AccessRight;
+  birthday: string; // YYYYMMDD
+  gender: Gender;
+  groupId: string;
+  joinStatus: GroupJoinStatus;
+  memberIcon: string;
+  memberId: number;
+  memberName: string;
 }

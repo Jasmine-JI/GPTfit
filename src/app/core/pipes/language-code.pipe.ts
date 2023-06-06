@@ -28,6 +28,8 @@ export class LanguageCodePipe implements PipeTransform {
         return '義語';
       case 'pt-pt':
         return '葡萄牙語';
+      default:
+        return '繁體中文';
     }
   }
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnChanges, Input, Output, EventEmitter } from '@angular/core';
-import { codes } from '../../models/countryCode';
+import { codes } from '../../../core/models/const';
 import { TranslateService } from '@ngx-translate/core';
-import { getLocalStorageObject } from '../../../core/utils/index';
+import { getLocalStorageObject } from '../../../core/utils';
 
 @Component({
   selector: 'app-intl-phone-input',

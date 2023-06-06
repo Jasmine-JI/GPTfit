@@ -5,7 +5,7 @@ import { PrivacyObj, PrivacyEditObj } from '../../../../core/enums/api';
 import { allPrivacyItem } from '../../../../core/models/const';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
-import { SelectDate } from '../../../../shared/models/utils-type';
+import { SelectDate } from '../../../../core/models/common';
 import { UserService, AuthService, Api21xxService } from '../../../../core/services';
 import { checkResponse, deepCopy } from '../../../../core/utils/index';
 

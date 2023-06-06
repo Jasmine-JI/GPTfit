@@ -7,15 +7,14 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import dayjs from 'dayjs';
-import { ReportConditionOpt } from '../../models/report-condition';
+import { ReportConditionOpt } from '../../../core/models/compo/report-condition.model';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Lang } from '../../models/i18n';
-import { Sex } from '../../enum/personal';
 import { GlobalEventsService, NodejsApiService, ReportService } from '../../../core/services';
-import { SelectDate } from '../../models/utils-type';
-import { SportType } from '../../enum/sports';
-import { getLocalStorageObject } from '../../../core/utils/index';
+import { SelectDate, Lang } from '../../../core/models/common';
+import { SportType } from '../../../core/enums/sports';
+import { getLocalStorageObject } from '../../../core/utils';
+import { Gender } from '../../../core/enums/personal';
 
 interface DateCondition {
   type:
@@ -116,7 +115,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   routineRaceList: Array<any> = [];
 
   timeout: any;
-  readonly Sex = Sex;
+  readonly Sex = Gender;
   constructor(
     private reportService: ReportService,
     private changeDetectorRef: ChangeDetectorRef,
@@ -768,10 +767,10 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
 
   /**
    * 變更性別篩選
-   * @param gender { Sex }-性別
+   * @param gender { Gender }-性別
    * @author kidin-1100308
    */
-  changeGender(gender: Sex) {
+  changeGender(gender: Gender) {
     this.reportConditionOpt.gender = gender;
     this.changeDetectorRef.markForCheck();
   }

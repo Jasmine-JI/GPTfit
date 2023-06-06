@@ -10,12 +10,13 @@ import { takeUntil, tap } from 'rxjs/operators';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService, UserService, Api21xxService, ReportService } from '../../../core/services';
-import { ReportConditionOpt } from '../../models/report-condition';
-import { mi } from '../../models/bs-constant';
-import { DataUnitType } from '../../../core/enums/common';
-import { stepColor } from '../../models/chart-data';
-import { Sex } from '../../enum/personal';
+import { ReportConditionOpt } from '../../../core/models/compo/report-condition.model';
+import { mi } from '../../../core/models/const/bs-constant.model';
+import { DataUnitType, QueryString } from '../../../core/enums/common';
+import { stepColor } from '../../../core/models/represent-color';
 import { deepCopy, countAge, countFFMI, countBMI } from '../../../core/utils';
+import { Gender } from '../../../core/enums/personal';
+import { appPath } from '../../../app-path.const';
 
 type CommentType = 'fatRate' | 'muscleRate' | 'moistureRate';
 
@@ -187,7 +188,6 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
   /**
    * 從query string取得參數
    * @param queryString {string}
-   * @author kidin-1100616
    */
   checkQueryString(queryString: string) {
     const query = queryString.split('?')[1];
@@ -384,11 +384,11 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
     },
     type: number
   ) {
-    const { startTimestamp, endTimestamp } = date,
-      result = [];
-    let dateRange: number,
-      reportStartDate = startTimestamp,
-      reportEndDate = endTimestamp;
+    const { startTimestamp, endTimestamp } = date;
+    const result = [];
+    let dateRange: number;
+    let reportStartDate = startTimestamp;
+    let reportEndDate = endTimestamp;
     if (type === 1) {
       this.dateLen = dayjs(endTimestamp).diff(dayjs(startTimestamp), 'day') + 1;
       dateRange = 86400000; // 間隔1天(ms)
@@ -413,9 +413,9 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
    */
   createReport(data: Array<any>) {
     const dataKey =
-        this.reportTime.type === 1 ? 'reportLifeTrackingDays' : 'reportLifeTrackingWeeks',
-      lifeTracking = data[dataKey],
-      { resultCode } = data as any;
+      this.reportTime.type === 1 ? 'reportLifeTrackingDays' : 'reportLifeTrackingWeeks';
+    const lifeTracking = data[dataKey];
+    const { resultCode } = data as any;
     let haveData = false;
     if (resultCode === 200) {
       if (lifeTracking.length > 0) {
@@ -447,7 +447,6 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
             ),
           };
 
-          this.createbodyDiagram();
           this.handleData(lifeTracking);
           this.changeProgress(100);
           this.updateUrl();
@@ -458,7 +457,6 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
   /**
    * 取得報告所需數據的key
    * @returns {Array<string>}-報告所需數據的key
-   * @author kidin-1100617
    */
   getNeedKey(): Array<string> {
     return [
@@ -507,7 +505,6 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
   /**
    * 將所有成員數據進行排序與統計以生成概要數據與圖表
    * @param data {Array<any>}-生活追蹤數據
-   * @author kidin-1100617
    */
   handleData(data: Array<any>) {
     data.sort((a, b) => dayjs(a.startTime).valueOf() - dayjs(b.startTime).valueOf());
@@ -628,11 +625,11 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
    * 根據數據取得評語
    * @param commentType {CommentType}-評語類別
    * @param value {number}-數值
-   * @param gender {Sex}-性別
+   * @param gender {Gender}-性別
    * @param overThirty {boolean}-是否超過30歲
    * @author kidin-1100628
    */
-  getComment(commentType: CommentType, value: number, gender: Sex, overThirty = false) {
+  getComment(commentType: CommentType, value: number, gender: Gender, overThirty = false) {
     let boundary: Array<number>, i18KeyArr: Array<string>, bgColorArr: Array<string>;
     switch (commentType) {
       case 'fatRate':
@@ -642,7 +639,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
           'universal_activityData_high',
         ];
         bgColorArr = ['#2398c3', '#43ca81', '#ec6941'];
-        if (gender === Sex.male) {
+        if (gender === Gender.male) {
           boundary = overThirty ? [17, 25] : [14, 20];
         } else {
           boundary = overThirty ? [20, 30] : [17, 25];
@@ -656,7 +653,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
           'universal_activityData_good',
         ];
         bgColorArr = ['#ec6941', '#43ca81', '#2398c3'];
-        if (gender === Sex.male) {
+        if (gender === Gender.male) {
           boundary = overThirty ? [17, 25] : [14, 20];
         } else {
           boundary = overThirty ? [20, 30] : [17, 25];
@@ -670,7 +667,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
           'universal_activityData_high',
         ];
         bgColorArr = ['#ec6941', '#43ca81', '#2398c3'];
-        boundary = gender === Sex.male ? [55, 65] : [45, 60];
+        boundary = gender === Gender.male ? [55, 65] : [45, 60];
         break;
     }
 
@@ -769,8 +766,8 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
    * @author kidin-1100621
    */
   createStepTrendChart(strokeData: any, startTimestamp: number) {
-    const { totalStep, targetStep, totalDistanceMeters } = strokeData,
-      { stepTrend } = this.chart;
+    const { totalStep, targetStep, totalDistanceMeters } = strokeData;
+    const { stepTrend } = this.chart;
     stepTrend.totalDistance += totalDistanceMeters;
     stepTrend.totalStep += totalStep;
     if (targetStep) {
@@ -911,27 +908,20 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 建立身體素質圖表與數據
-   * @param personData {any}-個人分析數據
-   * @author kidin-1100622
-   */
-  createbodyDiagram() {}
-
-  /**
    * 建立BMI趨勢圖
    * @param strokeData {any}-一個時間單位（日/週）加總的資料
    * @param startTimestamp {number}-起始日期timestamp
    * @author kidin-1100622
    */
   createBMITrendChart(strokeData: any, startTimestamp: number) {
-    const { bodyHeight, bodyWeight } = strokeData,
-      { BMITrend } = this.chart,
-      { arr } = BMITrend.data,
-      currentDataLen = arr.length;
+    const { bodyHeight, bodyWeight } = strokeData;
+    const { BMITrend } = this.chart;
+    const { arr } = BMITrend.data;
+    const currentDataLen = arr.length;
     if (bodyHeight && bodyWeight) {
-      const weight = parseFloat(bodyWeight.toFixed(1)),
-        height = parseFloat(bodyHeight.toFixed(1)),
-        BMI = countBMI(height, weight);
+      const weight = parseFloat(bodyWeight.toFixed(1));
+      const height = parseFloat(bodyHeight.toFixed(1));
+      const BMI = countBMI(height, weight);
       BMITrend.noData = false;
       // 將前面為0的數據用後面的值補值
       if (BMITrend.zeroDataBefore) {
@@ -1076,13 +1066,22 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
    */
   updateUrl() {
     const {
-        date: { startTimestamp, endTimestamp },
-      } = this.reportConditionOpt,
-      { origin } = location,
-      startDate = dayjs(startTimestamp).format('YYYY-MM-DD'),
-      endDate = dayjs(endTimestamp).format('YYYY-MM-DD');
-    this.previewUrl = `${origin}/dashboard/life-tracking?startdate=${startDate}&enddate=${endDate}&ipm=s
-    `;
+      date: { startTimestamp, endTimestamp },
+    } = this.reportConditionOpt;
+    const { origin } = location;
+    const startDate = dayjs(startTimestamp).format('YYYY-MM-DD');
+    const endDate = dayjs(endTimestamp).format('YYYY-MM-DD');
+    const {
+      dashboard: { home: dashboardHome },
+      personal,
+    } = appPath;
+    const queryArr = [
+      `${QueryString.startDate}=${startDate}`,
+      `${QueryString.endDate}=${endDate}`,
+      `${QueryString.printMode}=s`,
+    ];
+    const query = `?${queryArr.join('&')}`;
+    this.previewUrl = `${origin}/${dashboardHome}/${personal.lifeTracking}${query}`;
   }
 
   print() {

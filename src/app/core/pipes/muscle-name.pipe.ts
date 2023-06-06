@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { MuscleCode } from '../../shared/enum/weight-train';
+import { MuscleCode } from '../enums/sports';
 
 @Pipe({
   name: 'muscleName',

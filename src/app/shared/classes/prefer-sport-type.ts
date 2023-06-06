@@ -1,4 +1,4 @@
-import { SportType } from '../enum/sports';
+import { SportType } from '../../core/enums/sports';
 
 /**
  * 統計個人運動偏好

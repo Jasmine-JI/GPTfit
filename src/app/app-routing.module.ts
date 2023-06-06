@@ -1,15 +1,18 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { PortalComponent } from './containers/portal/portal.component';
+import { appPath } from './app-path.const';
+
+const { dashboard, officialActivity } = appPath;
 
 const routes: Routes = [
   {
-    path: 'dashboard',
+    path: dashboard.home,
     loadChildren: () =>
       import('./containers/dashboard/dashboard.module').then((m) => m.DashboardModule),
   },
   {
-    path: 'official-activity',
+    path: officialActivity.home,
     loadChildren: () =>
       import('./containers/official-activity/official-activity.module').then(
         (m) => m.OfficialActivityModule

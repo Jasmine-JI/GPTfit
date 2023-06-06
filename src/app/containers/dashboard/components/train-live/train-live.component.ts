@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angula
 import { Router } from '@angular/router';
 import { buildBase64ImgString } from '../../../../core/utils/index';
 import { AuthService, Api20xxService } from '../../../../core/services';
+import { appPath } from '../../../../app-path.const';
+import { QueryString } from '../../../../core/enums/common';
 
 @Component({
   selector: 'app-train-live',
@@ -46,7 +48,10 @@ export class TrainLiveComponent implements OnInit, AfterViewInit {
   }
 
   goToClass(id, type) {
-    this.router.navigateByUrl(`/dashboard/coach-dashboard/${id}?type=${type}`);
+    const {
+      dashboard: { home, coachDashboard },
+    } = appPath;
+    this.router.navigateByUrl(`/${home}/${coachDashboard}/${id}?${QueryString.type}=${type}`);
   }
 
   hasOverflow(el, height) {

@@ -1,16 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { ft, inch, lb } from '../../../../shared/models/bs-constant';
+import { ft, inch, lb } from '../../../../core/models/const/bs-constant.model';
 import { DataUnitType } from '../../../../core/enums/common';
-import { HrBase } from '../../../../shared/enum/personal';
-import { formTest } from '../../../../shared/models/form-test';
-import { HrZoneRange } from '../../../../shared/models/chart-data';
+import { HrBase } from '../../../../core/enums/sports';
+import { formTest } from '../../../../core/models/regex/form-test';
+import { HrZoneRange } from '../../../../core/models/compo/chart-data.model';
 import dayjs from 'dayjs';
 import { TranslateService } from '@ngx-translate/core';
 import { DashboardService } from '../../services/dashboard.service';
 import { TargetConditionMap } from '../../../../core/models/api/api-common/sport-target.model';
-import { DateUnit } from '../../../../shared/enum/report';
 import {
   checkResponse,
   mathRounding,
@@ -20,7 +19,7 @@ import {
 } from '../../../../core/utils';
 import { UserService, HintDialogService } from '../../../../core/services';
 import { SportsTarget } from '../../../../shared/classes/sports-target';
-import { BenefitTimeStartZone } from '../../../../core/enums/common';
+import { BenefitTimeStartZone, DateUnit } from '../../../../core/enums/common';
 
 enum DominantHand {
   right,

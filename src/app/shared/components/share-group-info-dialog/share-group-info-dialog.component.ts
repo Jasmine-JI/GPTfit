@@ -2,6 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { appPath } from '../../../app-path.const';
 
 @Component({
   selector: 'app-share-group-info-dialog',
@@ -13,7 +14,7 @@ export class ShareGroupInfoDialogComponent implements OnInit {
     return this.data.title;
   }
   get qrURL() {
-    const _url = this.data.url.replace('/dashboard/', '/');
+    const _url = this.data.url.replace(`/${appPath.dashboard.home}/`, '/');
     return _url;
   }
 

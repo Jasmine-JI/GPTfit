@@ -7,12 +7,12 @@ import {
   ChangeDetectorRef,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { SportType } from '../../../enum/sports';
+import { SportType } from '../../../../core/enums/sports';
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-import { HrZoneRange } from '../../../models/chart-data';
-import { mi } from '../../../models/bs-constant';
+import { HrZoneRange } from '../../../../core/models/compo/chart-data.model';
+import { mi } from '../../../../core/models/const/bs-constant.model';
 import { DataUnitType } from '../../../../core/enums/common';
 import {
   setLocalStorageObject,

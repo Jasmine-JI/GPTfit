@@ -3,9 +3,9 @@ import { OfficialActivityService } from '../../services/official-activity.servic
 import { Subject, combineLatest, of, fromEvent, Subscription } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-import { MapLanguageEnum } from '../../../../shared/models/i18n';
-import { Domain, WebIp } from '../../../../shared/enum/domain';
-import { formTest } from '../../../../shared/models/form-test';
+import { MapLanguageEnum } from '../../../../core/enums/common';
+import { Domain, WebIp } from '../../../../core/enums/common/domain.enum';
+import { formTest } from '../../../../core/models/regex/form-test';
 import { EventStatus } from '../../models/activity-content';
 import {
   NodejsApiService,
@@ -163,7 +163,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
 
   /**
    * 選擇指定之副選單排行榜
-   * @param index {number}-副選單序列
+   * @param index {number}-副選單索引
    * @author kidin-1101201
    */
   selectSubList(index: number) {
@@ -346,7 +346,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 取得指定之活動列表序列
+   * 取得指定之活動列表索引
    * @param list {Array<any>}-活動列表
    * @param eventId {number}-欲顯示之
    * @author kidin-1110307
@@ -362,7 +362,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
 
   /**
    * 取得指定活動之排行榜
-   * @param index {number}-活動清單序列
+   * @param index {number}-活動清單索引
    * @author kidin-1101201
    */
   getEventRank(index: number) {
@@ -513,7 +513,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   /**
    * 取得排行榜（api 2010）
    * @param rankType {number}-排行榜類別
-   * @param index {number}-指定的副選單序列
+   * @param index {number}-指定的副選單索引
    * @author kidin-1101201
    */
   getRankData(rankType: number, index: number) {

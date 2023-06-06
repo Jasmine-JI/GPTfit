@@ -3,11 +3,11 @@ import { Subject } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
-import { AccountTypeEnum, AccountStatusEnum } from '../../../../shared/enum/account';
-import { Domain, WebIp, WebPort } from '../../../../shared/enum/domain';
+import { Domain, WebIp, WebPort } from '../../../../core/enums/common';
+import { AccountType, AccountStatus, ThirdParty } from '../../../../core/enums/personal';
 import { UserService, AuthService, Api10xxService } from '../../../../core/services';
-import { getUrlQueryStrings, checkResponse } from '../../../../core/utils/index';
-import { ThirdParty } from '../../../../shared/enum/thirdParty';
+import { getUrlQueryStrings, checkResponse } from '../../../../core/utils';
+import { appPath } from '../../../../app-path.const';
 
 /**
  * 測試環境與正式環境 strava 的 clientId
@@ -34,9 +34,10 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
   clientId = StravaClientId.uat;
   stravaApiDomain = `https://${Domain.uat}:${WebPort.common}`;
 
-  readonly AccountTypeEnum = AccountTypeEnum;
-  readonly AccountStatusEnum = AccountStatusEnum;
+  readonly AccountTypeEnum = AccountType;
+  readonly AccountStatus = AccountStatus;
   readonly ThirdParty = ThirdParty;
+  readonly portalLink = appPath.portal;
 
   constructor(
     private dialog: MatDialog,
@@ -75,7 +76,7 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
    * @param url {string}-指定頁面
    */
   navigateToAssignPage(url: string) {
-    window.open(url, '', 'height=700,width=375,resizable=no');
+    window.open(`/${url}`, '', 'height=700,width=375,resizable=no');
   }
 
   /**
@@ -99,8 +100,12 @@ export class SettingAccountComponent implements OnInit, OnDestroy {
    * @author kidin-1100819
    */
   checkPathname(pathname: string, search: string): void {
-    if (pathname.includes('settings/account-info')) {
-      const newUrl = `/dashboard/user-settings${search}`;
+    const {
+      dashboard: { home: dashboardHome },
+      personal,
+    } = appPath;
+    if (pathname.includes(personal.stravaRedirectSettings)) {
+      const newUrl = `/${dashboardHome}/${personal.userSettings}${search}`;
       window.history.pushState({ path: newUrl }, '', newUrl);
       this.uiFlag.expand = true;
     }

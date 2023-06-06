@@ -56,16 +56,11 @@ import {
   SingleTrendRange,
   CompareTrendRange,
 } from '../../../core/enums/compo';
-import {
-  OperationTableOption,
-  SingleLayerList,
-  IndexInfo,
-  TableStyleOption,
-  SeriesOption,
-} from '../../../core/models/compo';
+import { OperationTableOption, SingleLayerList, SeriesOption } from '../../../core/models/compo';
 import { DateUnit } from '../../../core/enums/common';
 import { genderColor, classTimeColor } from '../../../core/models/represent-color';
 import { AnalysisCount, IncreaseRatio, MultipleUnfoldStatus } from '../../../core/classes';
+import { appPath } from '../../../app-path.const';
 
 dayjs.extend(isoWeek);
 
@@ -807,10 +802,14 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
    * @param groupName {string}-群組名稱
    */
   getGroupLinkInfo(groupId: string, groupName: string) {
+    const {
+      dashboard: { home: dashboardHome },
+      professional: { groupDetail },
+    } = appPath;
     const hashGroupId = this.hashIdService.handleGroupIdEncode(groupId);
     return {
       name: groupName,
-      url: `dashboard/group-info/${hashGroupId}/operation-report`,
+      url: `${dashboardHome}/${groupDetail.home}/${hashGroupId}/${groupDetail.operationReport}`,
     };
   }
 
@@ -1708,7 +1707,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 取得名稱對應的陣列序列
+   * 取得名稱對應的陣列索引
    * @param fieldName {Array<string>}-cjson key
    */
   getFieldNameCorrespondence(fieldName: Array<string>) {
@@ -2178,7 +2177,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 取得根據範圍日期顯示單位將數據切分兩個時期的切分序列
+   * 取得根據範圍日期顯示單位將數據切分兩個時期的切分索引
    * @param rangeValue {Array<Array<number>>}-報告日期清單
    */
   getSplitIndex(rangeValue: Array<Array<number>>) {
@@ -2197,7 +2196,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 取得根據範圍日期顯示單位將數據切分兩年的切分序列
+   * 取得根據範圍日期顯示單位將數據切分兩年的切分索引
    * @param rangeValue {Array<Array<number>>}-報告日期清單
    */
   getSplitYearIndex(rangeValue: Array<Array<number>>) {
@@ -2211,7 +2210,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 取得根據範圍日期顯示單位將數據切分兩季的切分序列
+   * 取得根據範圍日期顯示單位將數據切分兩季的切分索引
    * @param rangeValue {Array<Array<number>>}-報告日期清單
    */
   getSplitSeasonIndex(rangeValue: Array<Array<number>>) {
@@ -2231,7 +2230,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 取得根據範圍日期顯示單位將數據切分兩月的切分序列
+   * 取得根據範圍日期顯示單位將數據切分兩月的切分索引
    * @param rangeValue {Array<Array<number>>}-報告日期清單
    */
   getSplitMonthIndex(rangeValue: Array<Array<number>>) {
@@ -2353,8 +2352,8 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 根據數據序列取得比較表格列標頭
-   * @param index {number}-數據序列
+   * 根據數據索引取得比較表格列標頭
+   * @param index {number}-數據索引
    */
   getCompareRowHeader(index: number) {
     const { trendChartUnit } = this;
@@ -2996,7 +2995,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 取得裝置類別在數據陣列中相對應的序列
+   * 取得裝置類別在數據陣列中相對應的索引
    * @param nameCode {Array<string>}
    */
   getDeviceTypeCorrespond(nameCode: Array<string>) {
@@ -3171,7 +3170,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
 
   /**
    * 顯示指定群組完整的學員數分析數據列表
-   * @param index {number}-欲展開的數據列序列
+   * @param index {number}-欲展開的數據列索引
    */
   showFullMemberTable(index: number) {
     const { sameRangeAnalysisTrend } = this;
@@ -3190,7 +3189,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
    * 處理指定的子群組學員數趨勢相關折線圖數據
    * @param timeRange {TimeRange}-統計的日期時間範圍
    * @param data {any}-學員術趨勢分析數據
-   * @param index {number}-欲完整顯示的群組序列
+   * @param index {number}-欲完整顯示的群組索引
    */
   handleFullChildTrendChart(timeRange: TimeRange, data: any, index: number) {
     const assignGroupIndex = index - 1; // 0為自己，1開始才是子群組
@@ -3243,7 +3242,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
    * 處理子群組學員數趨勢相關列表數據
    * @param timeRange {TimeRange}-統計的日期時間範圍
    * @param data {any}-學員術趨勢分析數據
-   * @param index {number}-欲完整顯示的群組序列
+   * @param index {number}-欲完整顯示的群組索引
    */
   handleFullChildTrendTable(timeRange: TimeRange, data: any, index: number) {
     const { fieldValue: dateValue } = timeRange;
@@ -3364,7 +3363,7 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
    * 處理指定的子群組開課相關趨勢折線圖數據
    * @param timeRange {TimeRange}-統計的日期時間範圍
    * @param data {any}-學員術趨勢分析數據
-   * @param index {number}-欲完整顯示的群組序列
+   * @param index {number}-欲完整顯示的群組索引
    */
   handleFullChildTeachTrend(timeRange: TimeRange, data: any, index: number) {
     const { trendChartUnit } = this;
@@ -3510,6 +3509,26 @@ export class GroupAnalysisReportComponent implements OnInit, OnDestroy {
       default:
         this.trendTableDisplayStatus.toggleStatus(key);
         break;
+    }
+  }
+
+  /**
+   * 根據群組階層取得子群組數量分析y軸標題
+   */
+  getGroupCreationChartYAxisTitle() {
+    const {
+      post: { groupLevel },
+      isCompareMode,
+    } = this;
+    switch (groupLevel) {
+      case GroupLevel.brand:
+        return isCompareMode
+          ? ['universal_group_branch', '']
+          : ['universal_group_branch', 'universal_group_class'];
+      case GroupLevel.branch:
+        return ['universal_group_class', ''];
+      default:
+        return ['', ''];
     }
   }
 

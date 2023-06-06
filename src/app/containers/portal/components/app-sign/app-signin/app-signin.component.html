@@ -98,12 +98,12 @@
       </div>
       <div class="flexRow navigate__button__area">
         <button class="forget__password__button">
-          <a href="#" [routerLink]="['/resetPassword']" class="router__link">
+          <a href="#" [routerLink]="[resetPasswordUrl]" class="router__link">
             {{ 'universal_userAccount_forgetPassword' | translate }}
           </a>
         </button>
         <button class="signup__button">
-          <a href="#" [routerLink]="['/register']" class="router__link">
+          <a href="#" [routerLink]="[registerUrl]" class="router__link">
             {{ 'universal_userAccount_signUp' | translate }}
           </a>
         </button>
@@ -184,7 +184,7 @@
                   <span class="access-text" style="margin-bottom: 10px">
                     {{ 'universal_userAccount_password' | translate }}
                   </span>
-                  (&nbsp;<a href="#" [routerLink]="['/resetPassword-web']">{{
+                  (&nbsp;<a href="#" [routerLink]="[resetPasswordWebUrl]">{{
                     'universal_userAccount_forgetPassword' | translate
                   }}</a
                   >&nbsp;)

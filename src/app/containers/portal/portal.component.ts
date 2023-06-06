@@ -5,9 +5,11 @@ import { TranslateService } from '@ngx-translate/core';
 import { DetectInappService } from '../../core/services';
 import { fromEvent, Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { langList } from '../../shared/models/i18n';
+import { langList } from '../../core/models/const';
 import { setLocalStorageObject, getLocalStorageObject } from '../../core/utils';
 import { GlobalEventsService, EnvironmentCheckService } from '../../core/services';
+import { appPath } from '../../app-path.const';
+import { QueryString } from '../../core/enums/common';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -49,7 +51,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     private globalEventsService: GlobalEventsService,
     private environmentCheckService: EnvironmentCheckService
   ) {
-    if (location.search.indexOf('ipm=s') > -1) {
+    if (location.search.indexOf(`${QueryString.printMode}=s`) > -1) {
       this.uiFlag.isPreviewMode = true;
     }
   }
@@ -117,25 +119,26 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    * @author kidin-1091008
    */
   checkPage() {
+    const { introduction } = appPath.portal;
     switch (this.router.url) {
       case '/':
-      case '/introduction/system':
+      case `/${introduction.home}/${introduction.system}`:
         this.uiFlag.page = 'system';
         break;
       case '/?openExternalBrowser=1':
-      case '/#connect':
-      case '/#cloudrun':
-      case '/#trainlive':
-      case '/#fitness':
-      case '/introduction/application#connect':
-      case '/introduction/application#cloudrun':
-      case '/introduction/application#trainlive':
-      case '/introduction/application#fitness':
-      case '/introduction/application':
+      case `/${introduction.connectAnchor}`:
+      case `/${introduction.cloudrunAnchor}`:
+      case `/${introduction.trainliveAnchor}`:
+      case `/${introduction.fitnessAnchor}`:
+      case `/${introduction.home}/${introduction.application}${introduction.connectAnchor}`:
+      case `/${introduction.home}/${introduction.application}${introduction.cloudrunAnchor}`:
+      case `/${introduction.home}/${introduction.application}${introduction.trainliveAnchor}`:
+      case `/${introduction.home}/${introduction.application}${introduction.fitnessAnchor}`:
+      case `/${introduction.home}/${introduction.application}`:
         this.uiFlag.page = 'application';
         this.clearAppViewSet();
         break;
-      case '/introduction/analysis':
+      case `/${introduction.home}/${introduction.analysis}`:
         this.uiFlag.page = 'analysis';
         this.clearAppViewSet();
         break;
@@ -310,10 +313,9 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * 根據點擊切換頁面
    * @param e {string}-點擊的頁面
-   * @author kidin-1091008
    */
   switchPage(e: string) {
-    const url = `/introduction/${e}`;
+    const url = `/${appPath.portal.introduction.home}/${e}`;
     this.router.navigateByUrl(url);
     this.uiFlag.page = e;
     window.scrollTo({ top: 0, behavior: 'auto' });

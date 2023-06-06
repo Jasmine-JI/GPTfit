@@ -25,10 +25,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { appPath } from '../../../app-path.const';
 import { QueryString } from '../../../core/enums/common';
-import { KeyCode } from '../../../shared/models/key-code';
-import { AccessRight } from '../../../shared/enum/accessright';
-import { REGEX_GROUP_ID } from '../../../shared/models/utils-constant';
-import { LocalStorageKey } from '../../../shared/enum/local-storage-key';
+import { KeyCode } from '../../../core/enums/common/key-code.enum';
+import { AccessRight } from '../../../core/enums/common';
+import { groupIdReg } from '../../../core/models/regex';
+import { LocalStorageKey } from '../../../core/enums/common/local-storage-key.enum';
 import { MessageBoxComponent } from '../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -401,7 +401,7 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   /**
    * 增加收件者
-   * @param index {number}-搜尋清單序列
+   * @param index {number}-搜尋清單索引
    */
   checkReceiverRepeat(index: number) {
     const { userId } = this.searchList[index];
@@ -451,7 +451,7 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
           const { groupAccessRight } = res.info;
           const {
             groups: { brandId, branchId, classId, subClassId },
-          } = REGEX_GROUP_ID.exec(id) as any;
+          } = groupIdReg.exec(id) as any;
           const isAdmin =
             groupAccessRight.findIndex((_group) => {
               const { groupId: _groupId, accessRight: _accessright } = _group;
@@ -464,7 +464,7 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
                   classId: _classId,
                   subClassId: _subClassId,
                 },
-              } = REGEX_GROUP_ID.exec(_groupId) as any;
+              } = groupIdReg.exec(_groupId) as any;
               const sameBrand = brandId === _brandId;
               const sameBranch = sameBrand && branchId === _branchId;
               const sameClass = sameBranch && classId === _classId;
@@ -579,9 +579,10 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   returnInbox() {
     const {
-      stationMail: { home, inbox },
+      dashboard: { home: dashboardHome },
+      stationMail: { home: stationMailHome, inbox },
     } = appPath;
-    this.router.navigateByUrl(`/dashboard/${home}/${inbox}`);
+    this.router.navigateByUrl(`/${dashboardHome}/${stationMailHome}/${inbox}`);
   }
 
   /**
@@ -590,12 +591,13 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param isGroup {boolean}-是否為群組
    */
   navigateSenderPage(id: number, isGroup = false) {
+    const { personal, professional } = appPath;
     if (!isGroup) {
       const hashId = this.hashIdService.handleUserIdEncode(`${id}`);
-      window.open(`/user-profile/${hashId}/info`, '_blank');
+      window.open(`/${personal.home}/${hashId}/${personal.info}`, '_blank');
     } else {
       const hashId = this.hashIdService.handleGroupIdEncode(`${id}`);
-      window.open(`/group-info/${hashId}`, '_blank');
+      window.open(`/${professional.groupDetail.home}/${hashId}`, '_blank');
     }
   }
 
@@ -743,7 +745,7 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * 展開或收合回覆信件
    * @param e {MouseEvent}
-   * @param index {number}-回覆信件序列
+   * @param index {number}-回覆信件索引
    */
   unfoldReplyMail(e: MouseEvent, index: number) {
     e.preventDefault();
@@ -758,9 +760,10 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
   turnBack() {
     if (history.length > 0) return history.back();
     const {
-      stationMail: { home, inbox },
+      dashboard: { home: dashboardHome },
+      stationMail: { home: StationMailHome, inbox },
     } = appPath;
-    this.router.navigateByUrl(`/dashboard/${home}/${inbox}`);
+    this.router.navigateByUrl(`/${dashboardHome}/${StationMailHome}/${inbox}`);
   }
 
   /**
@@ -788,9 +791,7 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
   saveDraft() {
     const {
       sendMail: { title, content, replyMessageId },
-      receiverList,
     } = this;
-    const checkReceiver = receiverList[0];
     const hashReceiverList = this.hashReceiverId(this.receiverList);
     const draftObj = {
       title,
@@ -822,7 +823,7 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
    * 詢問是否引入草稿
    * @param callBack {Function}-取消引入草稿後之動作
    */
-  askImportDraft(callBack: Function | null = null) {
+  askImportDraft(callBack: CallableFunction | null = null) {
     this.translateService
       .get('hello world')
       .pipe(takeUntil(this.ngUnsubscribe))
@@ -861,7 +862,7 @@ export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * 取消引入草稿
    */
-  cancelImportDraft(callBack: Function | null = null) {
+  cancelImportDraft(callBack: CallableFunction | null = null) {
     this.removeDraft();
     if (callBack) callBack();
   }

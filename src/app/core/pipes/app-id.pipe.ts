@@ -10,7 +10,7 @@ export class AppIdPipe implements PipeTransform {
    * @param value {number}-app id
    * @returns {string}-app name
    */
-  transform(value: number, args: 'name' | 'descriptionKey' = 'name'): string {
+  transform(value: number, args: 'name' | 'descriptionKey' = 'name'): string | null {
     const name = ['GPTfit', 'Connect', 'Cloud run', 'Train live', 'Fitness', 'TFT'];
     const key = [
       'universal_app_gptInfo3',

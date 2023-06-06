@@ -1,6 +1,5 @@
-import { GroupLevel } from '../../../shared/enum/professional';
-import { SportType } from '../../../shared/enum/sports';
-import { AnalysisSportsColumn } from '../../../shared/enum/report-analysis';
+import { GroupLevel } from '../../../core/enums/professional';
+import { AnalysisSportsColumn, SportType } from '../../../core/enums/sports';
 import { of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { AnalysisOneOption } from '../../../shared/classes/analysis-one-option';

@@ -1,7 +1,6 @@
 import { Observable, fromEvent, merge, of, throwError } from 'rxjs';
-import { QueryString } from '../enums/common';
+import { QueryString, DateUnit } from '../enums/common';
 import { rgbaReg, hslaReg } from '../models/regex';
-import { DateUnit } from '../../shared/enum/report';
 import { ReportDateUnit } from '../../shared/classes/report-date-unit';
 import dayjs from 'dayjs';
 
@@ -159,13 +158,22 @@ export function changeOpacity(color: string, opacity: number) {
 }
 
 /**
- * 根據對象長度及對象序列，使用hsla分配顏色，
+ * 根據對象長度及對象索引，使用hsla分配顏色，
  * 可藉此確保同類型數據各個圖表顏色分配固定
+ * @paam index 索引
+ * @param dataLength 數據長度
+ * @param arg.saturation 色彩飽和度設定
+ * @param arg.lightness 亮度設定
+ * @param arg.opacity 透明度設定
  */
-export function assignHslaColor(index: number, dataLength: number, arg: any = {}) {
-  const saturation = arg.saturation ?? 60;
-  const lightness = arg.lightness ?? 60;
-  const opacity = arg.opacity ?? 1;
+export function assignHslaColor(
+  index: number,
+  dataLength: number,
+  arg?: { saturation?: number; lightness?: number; opacity?: number }
+) {
+  const saturation = arg?.saturation ?? 60;
+  const lightness = arg?.lightness ?? 60;
+  const opacity = arg?.opacity ?? 1;
   const oneRangeDegree = dataLength ? Math.round(360 / dataLength) : 0;
   const hue = oneRangeDegree * index;
   return `hsla(${hue}, ${saturation}%, ${lightness}%, ${opacity})`;
@@ -297,8 +305,8 @@ export function getSameRangeDate(startTime: string, endTime: string, dateUnit: R
 }
 
 /**
- * 根據序列取得對應月份的翻譯鍵
- * @param index {number}-月份序列，第一個月序列為0（同dayjs）
+ * 根據索引取得對應月份的翻譯鍵
+ * @param index {number}-月份索引，第一個月索引為0（同dayjs）
  */
 export function getMonthKey(index: number) {
   switch (index) {
@@ -332,8 +340,8 @@ export function getMonthKey(index: number) {
 }
 
 /**
- * 根據序列取得對應月份的翻譯鍵
- * @param index {number}-月份序列，第一個月序列為0（同dayjs）
+ * 根據索引取得對應月份的翻譯鍵
+ * @param index {number}-月份索引，第一個月索引為0（同dayjs）
  * @param isAbbreviation {boolean}-是否用縮寫
  */
 export function getWeekdayKey(index: number, isAbbreviation = true) {

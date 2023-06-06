@@ -1,6 +1,6 @@
-import { GroupDetail } from '../models/group';
-import { REGEX_GROUP_ID } from '../models/utils-constant';
-import { GroupLevel } from '../enum/professional';
+import { GroupDetail } from '../../core/models/api/api-11xx';
+import { groupIdReg } from '../../core/models/regex';
+import { GroupLevel } from '../../core/enums/professional';
 import dayjs from 'dayjs';
 import { deepCopy } from '../../core/utils/index';
 
@@ -208,7 +208,7 @@ export class GroupInfo {
   static getGroupLevel(groupId: string): GroupLevel {
     const {
       groups: { branchId, classId },
-    } = REGEX_GROUP_ID.exec(groupId);
+    } = groupIdReg.exec(groupId);
     if (classId !== '0') return GroupLevel.class;
     if (branchId !== '0') return GroupLevel.branch;
     return GroupLevel.brand;
@@ -223,7 +223,7 @@ export class GroupInfo {
     groupIdList.forEach((_id: string) => {
       const {
         groups: { brandId, branchId, classId },
-      } = REGEX_GROUP_ID.exec(_id);
+      } = groupIdReg.exec(_id);
       const brandGroupId = `0-0-${brandId}-0-0-0`;
       const branchGroupId = `0-0-${brandId}-${branchId}-0-0`;
       const classGroupId = `0-0-${brandId}-${branchId}-${classId}-0`;

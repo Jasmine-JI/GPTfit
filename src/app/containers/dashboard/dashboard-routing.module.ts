@@ -21,7 +21,6 @@ import { QrcodeUploadComponent } from './components/qrcode-upload/qrcode-upload.
 import { EditPushMessageComponent } from './components/push-message/edit-push-message/edit-push-message.component';
 import { PushMessageListComponent } from './components/push-message/push-message-list/push-message-list.component';
 import { GroupInfoComponent } from './group-v2/group-info/group-info.component';
-import { SearchGroupComponent } from './group-v2/search-group/search-group.component';
 import { MyGroupListComponent } from './group/my-group-list/my-group-list.component';
 import { CreateGroupComponent } from './group/create-group/create-group.component';
 // import { MyGroupListComponent } from './group-v2/my-group-list/my-group-list.component';
@@ -57,6 +56,19 @@ import { Page403Component } from '../../shared/components/page403/page403.compon
 import { GroupAnalysisReportComponent } from '../professional';
 import { SportsDetailComponent } from '../personal';
 
+const {
+  personal,
+  professional,
+  device,
+  adminManage,
+  stationMail,
+  dashboard,
+  gsensor,
+  pageNoPermission,
+  pageNotFound,
+  qrcodeUploadData,
+} = appPath;
+
 const routes: Routes = [
   {
     path: '',
@@ -64,205 +76,197 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       {
-        path: 'coach-dashboard/:classId',
+        path: `${dashboard.coachDashboard}/:${dashboard.classId}`,
         component: CoachDashboardComponent,
       },
       {
-        path: 'my-group-list',
-        component: MyGroupListComponent,
-      },
-      {
-        path: 'group-search',
-        component: GroupSearchComponent,
-      },
-      {
-        path: 'system/setting-member',
-        component: InnerSettingsComponent,
+        path: adminManage.home,
         canActivate: [DashboardGuard],
+        children: [
+          {
+            path: adminManage.settingMember,
+            component: InnerSettingsComponent,
+          },
+          {
+            path: adminManage.deviceLog.home,
+            children: [
+              {
+                path: `${adminManage.deviceLog.detail}/:${personal.userId}`,
+                component: DeviceLogDetailComponent,
+              },
+              {
+                path: '',
+                component: DeviceLogComponent,
+              },
+            ],
+          },
+
+          {
+            path: adminManage.allGroupList,
+            component: AllGroupListComponent,
+          },
+          {
+            path: adminManage.createBrandGroup,
+            component: CreateGroupComponent,
+          },
+          {
+            path: adminManage.createComGroup,
+            component: CreateGroupComponent,
+          },
+          {
+            path: adminManage.innerTest,
+            component: InnerTestComponent,
+          },
+          {
+            path: adminManage.innerGpx,
+            component: CloudRunGpxComponent,
+          },
+          {
+            path: adminManage.devicePairManagement,
+            component: InnerDevicePairComponent,
+          },
+          {
+            path: `${device.home}/${device.info}/:${device.deviceSn}`,
+            component: DeviceInfoComponent,
+          },
+          {
+            path: adminManage.lifeTracking,
+            component: LifeTrackingComponent,
+          },
+          {
+            path: adminManage.createPush,
+            component: EditPushMessageComponent,
+          },
+          {
+            path: adminManage.pushDetail,
+            component: EditPushMessageComponent,
+          },
+          {
+            path: adminManage.pushList,
+            component: PushMessageListComponent,
+          },
+          {
+            path: adminManage.systemLog,
+            component: SystemLogComponent,
+          },
+          {
+            path: adminManage.folderPermission,
+            component: SystemFolderPermissionComponent,
+          },
+          {
+            path: adminManage.alaAppAnalysis,
+            component: AlaAppAnalysisComponent,
+          },
+          {
+            path: adminManage.systemOperationReport,
+            loadComponent: () =>
+              import(
+                '../admin-manage/system-operation-report/system-operation-report.component'
+              ).then((m) => m.SystemOperationReportComponent),
+          },
+          {
+            path: adminManage.groupOperationList,
+            loadComponent: () =>
+              import('../admin-manage/group-operation-list/group-operation-list.component').then(
+                (m) => m.GroupOperationListComponent
+              ),
+          },
+        ],
       },
       {
-        path: 'system/device_log',
-        component: DeviceLogComponent,
-        canActivate: [DashboardGuard],
-      },
-      {
-        path: 'system/device_log/detail/:userId',
-        component: DeviceLogDetailComponent,
-        canActivate: [DashboardGuard],
-      },
-      {
-        path: 'system/all-group-list',
-        component: AllGroupListComponent,
-        canActivate: [DashboardGuard],
-      },
-      {
-        path: 'system/create-brand-group',
-        component: CreateGroupComponent,
-        canActivate: [DashboardGuard],
-      },
-      {
-        path: 'system/create-com-group',
-        component: CreateGroupComponent,
-        canActivate: [DashboardGuard],
-      },
-      {
-        path: 'system/inner-test',
-        component: InnerTestComponent,
-        canActivate: [DashboardGuard],
-      },
-      {
-        path: 'system/inner-gpx',
-        component: CloudRunGpxComponent,
-        canActivate: [DashboardGuard],
-      },
-      {
-        path: 'system/device-pair-management',
-        component: InnerDevicePairComponent,
-        canActivate: [DashboardGuard],
-      },
-      {
-        path: 'system/device/info/:deviceSN',
-        component: DeviceInfoComponent,
-        canActivate: [DashboardGuard],
-      },
-      {
-        path: 'system/life-tracking',
-        component: LifeTrackingComponent,
-      },
-      {
-        path: 'system/create-push',
-        component: EditPushMessageComponent,
-        canActivate: [DashboardGuard],
-      },
-      {
-        path: 'system/push-detail',
-        component: EditPushMessageComponent,
-        canActivate: [DashboardGuard],
-      },
-      {
-        path: 'system/push-list',
-        component: PushMessageListComponent,
-        canActivate: [DashboardGuard],
-      },
-      {
-        path: 'system/system-log',
-        component: SystemLogComponent,
-        canActivate: [DashboardGuard],
-      },
-      {
-        path: 'system/folder-permission',
-        component: SystemFolderPermissionComponent,
-        canActivate: [DashboardGuard],
-      },
-      {
-        path: 'system/ala-app-analysis',
-        component: AlaAppAnalysisComponent,
-        canActivate: [DashboardGuard],
-      },
-      {
-        path: `system/${appPath.adminManage.systemOperationReport}`,
-        canActivate: [DashboardGuard],
-        loadComponent: () =>
-          import('../admin-manage/system-operation-report/system-operation-report.component').then(
-            (m) => m.SystemOperationReportComponent
-          ),
-      },
-      {
-        path: `system/${appPath.adminManage.groupOperationList}`,
-        canActivate: [DashboardGuard],
-        loadComponent: () =>
-          import('../admin-manage/group-operation-list/group-operation-list.component').then(
-            (m) => m.GroupOperationListComponent
-          ),
-      },
-      {
-        path: 'activity/:fileId',
+        path: `${personal.activityDetail}/:${personal.fileId}`,
         component: ActivityDetailComponent,
+        // component: SportsDetailComponent,
       },
       {
-        path: 'device',
-        component: MyDeviceComponent,
+        path: device.home,
+        children: [
+          {
+            path: `${device.info}/:${device.deviceSn}`,
+            component: DeviceInfoComponent,
+          },
+          {
+            path: '',
+            component: MyDeviceComponent,
+          },
+        ],
       },
       {
-        path: 'device/info/:deviceSN',
-        component: DeviceInfoComponent,
-      },
-      {
-        path: 'live/train-live',
+        path: dashboard.trainLive,
         component: TrainLiveComponent,
       },
       {
-        path: 'qrupload/activityfile',
+        path: qrcodeUploadData,
         component: QrcodeUploadComponent,
       },
       {
-        path: 'group-info/:groupId',
+        path: `${professional.groupDetail.home}/:${professional.groupId}`,
         component: GroupInfoComponent,
         children: [
           {
-            path: 'group-introduction',
+            path: professional.groupDetail.introduction,
             component: GroupIntroductionComponent,
           },
           {
-            path: 'commerce-plan',
+            path: professional.groupDetail.commercePlan,
             component: CommercePlanComponent,
           },
           {
-            path: 'group-architecture',
+            path: professional.groupDetail.groupArchitecture,
             component: GroupArchitectureComponent,
           },
           {
-            path: 'member-list',
+            path: professional.groupDetail.memberList,
             component: MemberListComponent,
           },
           {
-            path: 'admin-list',
+            path: professional.groupDetail.adminList,
             component: AdminListComponent,
           },
           {
-            path: 'operation-report',
+            path: professional.groupDetail.operationReport,
             component: GroupAnalysisReportComponent,
           },
           {
-            path: 'myclass-report',
+            path: professional.groupDetail.myclassReport,
             component: MyClassReportComponent,
           },
           {
-            path: 'class-analysis',
+            path: professional.groupDetail.classAnalysis,
             component: ClassAnalysisComponent,
           },
           {
-            path: 'sports-report',
+            path: professional.groupDetail.sportsReport,
             component: GroupSportsReportComponent,
           },
           {
-            path: 'life-tracking',
+            path: professional.groupDetail.lifeTracking,
             component: LifeTrackingV2Component,
           },
           {
-            path: 'cloudrun-report',
+            path: professional.groupDetail.cloudrunReport,
             component: CloudrunReportComponent,
           },
           {
-            path: 'device-list',
+            path: professional.groupDetail.deviceList,
             component: DeviceListComponent,
           },
         ],
       },
       {
-        path: 'search-group',
-        component: SearchGroupComponent,
-      },
-      {
-        path: 'mygroup-list-v2',
+        path: professional.myGroupList,
         component: MyGroupListComponent,
       },
       {
-        path: 'user-settings',
+        path: professional.groupSearch,
+        component: GroupSearchComponent,
+      },
+      {
+        path: personal.userSettings,
         component: PersonalComponent,
       },
       {
-        path: 'settings/account-info',
+        path: personal.stravaRedirectSettings,
         component: PersonalComponent,
       },
       {
@@ -270,69 +274,69 @@ const routes: Routes = [
         component: PersonalComponent,
         children: [
           {
-            path: 'activity-list',
+            path: personal.activityList,
             component: ActivityListComponent,
           },
           {
-            path: 'sport-report',
+            path: personal.sportsReport,
             component: SportsReportComponent,
           },
           {
-            path: 'life-tracking',
+            path: personal.lifeTracking,
             component: MyLifeTrackingComponent,
           },
           {
-            path: 'cloudrun',
+            path: personal.cloudrun,
             component: PersonCloudrunReport,
           },
           {
-            path: 'info',
+            path: personal.info,
             component: InfoComponent,
           },
           {
             path: '',
-            redirectTo: 'activity-list',
+            redirectTo: personal.activityList,
             pathMatch: 'full',
           },
         ],
       },
       {
-        path: appPath.stationMail.home,
+        path: stationMail.home,
         component: StationMailComponent,
         children: [
           {
-            path: appPath.stationMail.newMail,
+            path: stationMail.newMail,
             component: CreateMailComponent,
           },
           {
-            path: appPath.stationMail.inbox,
+            path: stationMail.inbox,
             component: InboxComponent,
           },
           {
-            path: appPath.stationMail.mailDetail,
+            path: stationMail.mailDetail,
             component: MailDetailComponent,
           },
           {
-            path: appPath.stationMail.receiverList,
+            path: stationMail.receiverList,
             component: ReceiverListComponent,
           },
         ],
       },
       {
-        path: 'gsensor',
+        path: gsensor,
         component: GsensorComponent,
       },
       {
-        path: appPath.pageNoPermission,
+        path: pageNoPermission,
         component: Page403Component,
       },
       {
-        path: appPath.pageNotFound,
+        path: pageNotFound,
         component: Page404Component,
       },
       {
         path: '**',
-        redirectTo: appPath.pageNotFound,
+        redirectTo: pageNotFound,
       },
     ],
   },

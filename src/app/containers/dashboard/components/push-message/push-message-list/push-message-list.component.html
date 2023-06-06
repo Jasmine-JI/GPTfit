@@ -10,7 +10,7 @@
       <span class="push__list__btn" (click)="refreshList()">刷新列表</span>
       <span
         class="push__list__btn"
-        [routerLink]="['/dashboard/system/create-push']"
+        [routerLink]="[createPushLink]"
         *ngIf="[AccessRight.god, AccessRight.pusher].includes(systemAccessright)"
         >建立推播</span
       >

@@ -4,7 +4,7 @@
 export interface ListItem {
   textKey: string;
   id?: number;
-  value?: string | number;
+  value?: string | number | Array<number> | null;
 }
 
 /**

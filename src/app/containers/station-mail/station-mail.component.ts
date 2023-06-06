@@ -37,7 +37,7 @@ export class StationMailComponent implements OnInit, OnDestroy {
    * 根據url確認現在顯示頁面
    */
   checkPath() {
-    const [empty, firstPath, secondPath, thirdPath, ...rest] = location.pathname.split('/');
+    const [, , , thirdPath] = location.pathname.split('/');
     this.currentPage = thirdPath;
   }
 
@@ -75,9 +75,10 @@ export class StationMailComponent implements OnInit, OnDestroy {
    */
   createMail() {
     const {
-      stationMail: { home, newMail },
+      dashboard: { home: dashboardHome },
+      stationMail: { home: stationMailHome, newMail },
     } = appPath;
-    this.router.navigateByUrl(`/dashboard/${home}/${newMail}`);
+    this.router.navigateByUrl(`/${dashboardHome}/${stationMailHome}/${newMail}`);
   }
 
   /**

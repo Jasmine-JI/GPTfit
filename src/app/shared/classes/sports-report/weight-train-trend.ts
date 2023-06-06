@@ -1,14 +1,12 @@
 import dayjs from 'dayjs';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
-import { WeightTrainingInfo } from '../../models/weight-train';
-import { MuscleCode, Proficiency, WeightTrainingLevel } from '../../enum/weight-train';
-import { mathRounding } from '../../../core/utils/index';
-import { weightTrainColor } from '../../models/chart-data';
-import { deepCopy } from '../../../core/utils/index';
-import { getCorrespondingMuscleGroup } from '../../../core/utils/sports';
-import { ReportDateType } from '../../models/report-condition';
-import { lb } from '../../models/bs-constant';
+import { WeightTrainingInfo } from '../../../core/models/api/api-21xx';
+import { mathRounding, deepCopy, getCorrespondingMuscleGroup } from '../../../core/utils';
+import { weightTrainColor } from '../../../core/models/represent-color';
+import { ReportDateType } from '../../../core/models/compo/report-condition.model';
+import { lb } from '../../../core/models/const/bs-constant.model';
 import { DataUnitType } from '../../../core/enums/common';
+import { MuscleCode, Proficiency, WeightTrainingLevel } from '../../../core/enums/sports';
 
 dayjs.extend(quarterOfYear);
 

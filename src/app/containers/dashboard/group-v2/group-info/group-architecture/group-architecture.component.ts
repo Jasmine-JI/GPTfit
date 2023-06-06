@@ -10,6 +10,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { ProfessionalService } from '../../../../professional/services/professional.service';
 import { displayGroupLevel } from '../../../../../core/utils';
+import { appPath } from '../../../../../app-path.const';
+import { QueryString } from '../../../../../core/enums/common';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -144,8 +146,12 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
    * @author kidin-1091105
    */
   disbandGroup(e: any) {
+    const {
+      dashboard,
+      professional: { myGroupList },
+    } = appPath;
     if (this.groupInfo.groupId === e) {
-      this.router.navigateByUrl('/dashboard/my-group-list');
+      this.router.navigateByUrl(`/${dashboard.home}/${myGroupList}`);
     } else {
       this.refreshGroupDetail();
       this.refreshAllLevelGroupData();
@@ -159,18 +165,18 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
    */
   addGroup(type: string) {
     const { groupId, brandType } = this.groupInfo;
+    const hashGroupId = this.hashIdService.handleGroupIdEncode(groupId);
+    const {
+      dashboard,
+      professional: { groupDetail },
+    } = appPath;
+    const pathName = `/${dashboard.home}/${groupDetail.home}/${hashGroupId}/${groupDetail.introduction}`;
     if (type === 'branch') {
-      this.router.navigateByUrl(
-        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
-          groupId
-        )}/group-introduction?createType=branch&brandType=${brandType}`
-      );
+      const query = `?${QueryString.createType}=branch&${QueryString.brandType}=${brandType}`;
+      this.router.navigateByUrl(pathName + query);
     } else if (type === 'class' && brandType === 2) {
-      this.router.navigateByUrl(
-        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
-          groupId
-        )}/group-introduction?createType=department&brandType=${brandType}`
-      );
+      const query = `?${QueryString.createType}=department&${QueryString.brandType}=${brandType}`;
+      this.router.navigateByUrl(pathName + query);
     } else {
       this.translateService
         .get('hellow world')
@@ -184,11 +190,8 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
               confirmText: this.translateService.instant('universal_operating_agree'),
               cancelText: this.translateService.instant('universal_operating_disagree'),
               onConfirm: () => {
-                this.router.navigateByUrl(
-                  `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
-                    groupId
-                  )}/group-introduction?createType=coach`
-                );
+                const query = `?${QueryString.createType}=coach`;
+                this.router.navigateByUrl(pathName + query);
               },
             },
           });
