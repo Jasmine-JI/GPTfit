@@ -7,6 +7,7 @@
     "dev-ssl-start": "ng serve -c dev-web --ssl --ssl-cert /etc/ssl/free.crt --ssl-key /etc/ssl/free.key --port 8080 --host 0.0.0.0 --disable-host-check --proxy-config proxy.conf.json",
     "web-start": "ng serve -c dev-web --port 8080 --host 192.168.1.235 --proxy-config proxy.conf.json",
     "start": "node --max_old_space_size=4096 /usr/local/bin/ng serve --port 8080 --host 0.0.0.0 --hmr --disable-host-check --proxy-config proxy.conf.json",
+    "start-2": "node --max_old_space_size=4096 /usr/local/bin/ng serve --port 8081 --host 0.0.0.0 --hmr --disable-host-check --proxy-config proxy.conf.json",
     "pm2-start": "pm2 start -i 4 server.js --log-date-format 'YYYY-DD-MM HH:mm:ss.SSS'",
     "pm2-delete": "pm2 delete all",
     "pm2-kill": "pm2 kill",

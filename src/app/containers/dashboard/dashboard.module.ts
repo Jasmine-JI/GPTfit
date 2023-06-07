@@ -13,12 +13,11 @@ import { DeviceLogService } from './services/device-log.service';
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
 import { SharedModule } from '../../shared/shared.module';
-import { AccessNamePipe } from './pipes/access-name.pipe';
+import { AccessNamePipe, ProductErrorLogPipe } from '../../core/pipes';
 import { EditGroupGuard } from './guards/edit-group-guard';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { PeopleSelectorWinComponent } from './components/people-selector-win/people-selector-win.component';
 import { DashboardGuard } from './guards/dashboard-guard';
-import { ProductErrorLogPipe } from './pipes/product-error-log.pipe';
 import { MyDeviceComponent } from './components/my-device/my-device.component';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -302,10 +301,8 @@ import { MemberAnalysisListComponent } from '../professional';
     DeviceLogComponent,
     DeviceLogDetailComponent,
     CoachDashboardComponent,
-    AccessNamePipe,
     InnerSettingsComponent,
     PeopleSelectorWinComponent,
-    ProductErrorLogPipe,
     MyDeviceComponent,
     TrainLiveComponent,
     InnerTestComponent,
