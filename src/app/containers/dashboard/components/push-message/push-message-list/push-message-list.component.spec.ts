@@ -8,7 +8,7 @@ describe('PushMessageListComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [PushMessageListComponent],
+      imports: [PushMessageListComponent],
     }).compileComponents();
   }));
 

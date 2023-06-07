@@ -8,7 +8,7 @@ describe('LoadingIconComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [LoadingIconComponent],
+      imports: [LoadingIconComponent],
     }).compileComponents();
   });
 

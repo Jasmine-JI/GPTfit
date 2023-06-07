@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import { Subject, combineLatest, of, fromEvent, Subscription } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { MapLanguageEnum } from '../../../../core/enums/common';
 import { Domain, WebIp } from '../../../../core/enums/common/domain.enum';
 import { formTest } from '../../../../core/models/regex/form-test';
@@ -14,6 +14,9 @@ import {
   ApiCommonService,
 } from '../../../../core/services';
 import { getCurrentTimestamp, deepCopy, getUrlQueryStrings } from '../../../../core/utils';
+import { SportTimePipe } from '../../../../core/pipes/sport-time.pipe';
+import { NgTemplateOutlet, NgIf, NgFor, DecimalPipe } from '@angular/common';
+import { LoadingBarComponent } from '../../../../components/loading-bar/loading-bar.component';
 
 type SwitchType = 'main' | 'sub';
 type SwitchAction = 'up' | 'down';
@@ -29,6 +32,16 @@ enum RankType {
   selector: 'app-leaderboard',
   templateUrl: './leaderboard.component.html',
   styleUrls: ['./leaderboard.component.scss'],
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    NgTemplateOutlet,
+    NgIf,
+    NgFor,
+    DecimalPipe,
+    TranslateModule,
+    SportTimePipe,
+  ],
 })
 export class LeaderboardComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

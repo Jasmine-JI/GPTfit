@@ -8,7 +8,7 @@ describe('MemberAnalysisListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [MemberAnalysisListComponent],
+      imports: [MemberAnalysisListComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MemberAnalysisListComponent);

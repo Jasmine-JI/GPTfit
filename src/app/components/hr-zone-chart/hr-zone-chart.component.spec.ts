@@ -8,7 +8,7 @@ describe('HrZoneChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [HrZoneChartComponent],
+      imports: [HrZoneChartComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(HrZoneChartComponent);

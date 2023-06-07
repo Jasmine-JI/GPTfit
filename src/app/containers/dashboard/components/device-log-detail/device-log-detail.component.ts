@@ -7,30 +7,59 @@ import {
   ViewEncapsulation,
   OnDestroy,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DeviceLogService } from '../../services/device-log.service';
 import { HttpParams } from '@angular/common/http';
-import { MatDatepickerInputEvent } from '@angular/material/datepicker';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatSort, Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatDatepickerInputEvent, MatDatepickerModule } from '@angular/material/datepicker';
+import { MatPaginator, PageEvent, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { Observable, Subject, merge } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import dayjs, { Dayjs } from 'dayjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { Location, DOCUMENT } from '@angular/common';
+import {
+  UntypedFormBuilder,
+  UntypedFormGroup,
+  Validators,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { Location, DOCUMENT, NgClass, NgIf, AsyncPipe } from '@angular/common';
 import { WINDOW } from '../../../../core/services';
 import { getUrlQueryStrings } from '../../../../core/utils';
 import { QueryString } from '../../../../core/enums/common';
 import { appPath } from '../../../../app-path.const';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-device-log-detail',
   templateUrl: './device-log-detail.component.html',
   styleUrls: ['./device-log-detail.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: true,
+  imports: [
+    RouterLink,
+    NgClass,
+    MatButtonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatIconModule,
+    MatPaginatorModule,
+    NgIf,
+    MatProgressSpinnerModule,
+    MatTableModule,
+    MatSortModule,
+    AsyncPipe,
+  ],
 })
 export class DeviceLogDetailComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

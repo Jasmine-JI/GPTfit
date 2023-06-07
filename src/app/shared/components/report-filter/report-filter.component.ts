@@ -15,6 +15,12 @@ import { SelectDate, Lang } from '../../../core/models/common';
 import { SportType } from '../../../core/enums/sports';
 import { getLocalStorageObject } from '../../../core/utils';
 import { Gender } from '../../../core/enums/personal';
+import { SportTypePipe } from '../../../core/pipes/sport-type.pipe';
+import { TimeFormatPipe } from '../../../core/pipes/time-format.pipe';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatIconModule } from '@angular/material/icon';
+import { DateRangePickerComponent } from '../date-range-picker/date-range-picker.component';
+import { NgIf, NgFor } from '@angular/common';
 
 interface DateCondition {
   type:
@@ -39,6 +45,16 @@ type MapListType = 'all' | 'routine';
   selector: 'app-report-filter',
   templateUrl: './report-filter.component.html',
   styleUrls: ['./report-filter.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    DateRangePickerComponent,
+    MatIconModule,
+    NgFor,
+    TranslateModule,
+    TimeFormatPipe,
+    SportTypePipe,
+  ],
 })
 export class ReportFilterComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

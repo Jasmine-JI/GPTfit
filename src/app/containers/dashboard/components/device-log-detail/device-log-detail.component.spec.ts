@@ -8,7 +8,7 @@ describe('DeviceLogDetailComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [DeviceLogDetailComponent],
+      imports: [DeviceLogDetailComponent],
     }).compileComponents();
   }));
 

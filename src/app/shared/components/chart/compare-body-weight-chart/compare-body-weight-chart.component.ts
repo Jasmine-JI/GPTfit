@@ -10,18 +10,21 @@ import {
 import { of, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import { GlobalEventsService } from '../../../../core/services';
 import { deepCopy, mathRounding } from '../../../../core/utils/index';
 import { compareChartDefault } from '../../../../core/models/compo/chart-data.model';
 import { bodyWeightTooltip } from '../../../../core/utils/chart-formatter';
 import { lb } from '../../../../core/models/const/bs-constant.model';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-compare-body-weight-chart',
   templateUrl: './compare-body-weight-chart.component.html',
   styleUrls: ['./compare-body-weight-chart.component.scss', '../chart-share-style.scss'],
+  standalone: true,
+  imports: [NgIf, TranslateModule],
 })
 export class CompareBodyWeightChartComponent implements OnInit, OnDestroy, OnChanges {
   private ngUnsubscribe = new Subject();

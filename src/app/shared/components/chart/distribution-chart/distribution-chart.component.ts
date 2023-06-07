@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { SportType } from '../../../../core/enums/sports';
+import { TranslateModule } from '@ngx-translate/core';
+import { NgIf, NgFor } from '@angular/common';
 
 /**
  * 運動成效分佈圖
@@ -14,6 +16,8 @@ import { SportType } from '../../../../core/enums/sports';
   selector: 'app-distribution-chart',
   templateUrl: './distribution-chart.component.html',
   styleUrls: ['./distribution-chart.component.scss'],
+  standalone: true,
+  imports: [NgIf, NgFor, TranslateModule],
 })
 export class DistributionChartComponent implements OnInit, OnChanges {
   // 運動報告用變數-kidin-1090218

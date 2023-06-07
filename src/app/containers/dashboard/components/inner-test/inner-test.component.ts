@@ -11,11 +11,17 @@ import {
 import { debounce, buildBase64ImgString, displayGroupLevel } from '../../../../core/utils';
 import { Router } from '@angular/router';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { last } from 'rxjs/operators';
 import dayjs from 'dayjs';
 import { AccountType } from '../../../../core/enums/personal';
 import { appPath } from '../../../../app-path.const';
+import { GroupLevelNamePipe } from '../../../../core/pipes/group-level-name.pipe';
+import { GroupStatusPipe } from '../../../../core/pipes/group-status.pipe';
+import { LineBreakPipe } from '../../../../core/pipes/line-break.pipe';
+import { SafeHtmlPipe } from '../../../../core/pipes/safe-html.pipe';
+import { NgIf, DecimalPipe } from '@angular/common';
+import { MatTabsModule } from '@angular/material/tabs';
 
 interface UserInfo {
   userName: string;
@@ -38,6 +44,17 @@ interface UserInfo {
   selector: 'app-inner-test',
   templateUrl: './inner-test.component.html',
   styleUrls: ['./inner-test.component.scss'],
+  standalone: true,
+  imports: [
+    MatTabsModule,
+    NgIf,
+    DecimalPipe,
+    TranslateModule,
+    SafeHtmlPipe,
+    LineBreakPipe,
+    GroupStatusPipe,
+    GroupLevelNamePipe,
+  ],
 })
 export class InnerTestComponent implements OnInit {
   userInfo: UserInfo = {

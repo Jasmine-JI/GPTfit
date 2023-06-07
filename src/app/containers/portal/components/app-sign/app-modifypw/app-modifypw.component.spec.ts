@@ -8,7 +8,7 @@ describe('AppModifypwComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [AppModifypwComponent],
+      imports: [AppModifypwComponent],
     }).compileComponents();
   }));
 

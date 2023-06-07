@@ -3,7 +3,7 @@ import { Subject, combineLatestWith, fromEvent, Subscription } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { ReportConditionOpt } from '../../../../core/models/compo/report-condition.model';
 import dayjs from 'dayjs';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import {
   UserService,
   AuthService,
@@ -32,11 +32,40 @@ import {
 import { HrBase, SportType } from '../../../../core/enums/sports';
 import { paceTrendColor, costTimeColor, zoneColor } from '../../../../core/models/represent-color';
 import { appPath } from '../../../../app-path.const';
+import { SportTimePipe } from '../../../../core/pipes/sport-time.pipe';
+import { SportTypeIconPipe } from '../../../../core/pipes/sport-type-icon.pipe';
+import { SportPaceSibsPipe } from '../../../../core/pipes/sport-pace-sibs.pipe';
+import { DistanceSibsPipe } from '../../../../core/pipes/distance-sibs.pipe';
+import { FilletColumnChartComponent } from '../../../../shared/components/chart/fillet-column-chart/fillet-column-chart.component';
+import { CompareLineChartComponent } from '../../../../shared/components/chart/compare-line-chart/compare-line-chart.component';
+import { DiscolorColumnChartComponent } from '../../../../shared/components/chart/discolor-column-chart/discolor-column-chart.component';
+import { StackColumnChartComponent } from '../../../../shared/components/chart/stack-column-chart/stack-column-chart.component';
+import { CloudrunMapComponent } from '../../../../shared/components/cloudrun-map/cloudrun-map.component';
+import { ReportFilterComponent } from '../../../../shared/components/report-filter/report-filter.component';
+import { NgIf, DecimalPipe } from '@angular/common';
+import { LoadingBarComponent } from '../../../../components/loading-bar/loading-bar.component';
 
 @Component({
   selector: 'app-cloudrun-report',
   templateUrl: './cloudrun-report.component.html',
   styleUrls: ['./cloudrun-report.component.scss'],
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    NgIf,
+    ReportFilterComponent,
+    CloudrunMapComponent,
+    StackColumnChartComponent,
+    DiscolorColumnChartComponent,
+    CompareLineChartComponent,
+    FilletColumnChartComponent,
+    DecimalPipe,
+    TranslateModule,
+    DistanceSibsPipe,
+    SportPaceSibsPipe,
+    SportTypeIconPipe,
+    SportTimePipe,
+  ],
 })
 export class CloudrunReportComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

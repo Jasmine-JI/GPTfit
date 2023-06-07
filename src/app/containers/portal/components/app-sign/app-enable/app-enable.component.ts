@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import {
   Api10xxService,
   AuthService,
@@ -20,6 +20,8 @@ import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/util
 import { AccountType } from '../../../../../core/enums/personal';
 import { QueryString } from '../../../../../core/enums/common';
 import { appPath } from '../../../../../app-path.const';
+import { LoadingBarComponent } from '../../../../../components/loading-bar/loading-bar.component';
+import { NgIf, NgClass, NgTemplateOutlet } from '@angular/common';
 
 const errorMsg = 'Error!<br /> Please try again later.';
 type RedirectPage = 'sign' | 'setting' | 'event';
@@ -28,6 +30,8 @@ type RedirectPage = 'sign' | 'setting' | 'event';
   selector: 'app-app-enable',
   templateUrl: './app-enable.component.html',
   styleUrls: ['./app-enable.component.scss'],
+  standalone: true,
+  imports: [NgIf, LoadingBarComponent, NgClass, NgTemplateOutlet, TranslateModule],
 })
 export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();

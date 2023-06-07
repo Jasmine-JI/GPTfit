@@ -8,7 +8,7 @@ describe('GroupArchitectureComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [GroupArchitectureComponent],
+      imports: [GroupArchitectureComponent],
     }).compileComponents();
   }));
 

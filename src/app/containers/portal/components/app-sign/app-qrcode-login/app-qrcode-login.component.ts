@@ -9,7 +9,7 @@ import {
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { Subject, Subscription, fromEvent, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import dayjs from 'dayjs';
@@ -22,6 +22,9 @@ import {
   getLocalStorageObject,
 } from '../../../../../core/utils';
 import { appPath } from '../../../../../app-path.const';
+import { SafeHtmlPipe } from '../../../../../core/pipes/safe-html.pipe';
+import { QRCodeModule } from 'angularx-qrcode';
+import { NgIf, NgClass, NgTemplateOutlet } from '@angular/common';
 
 enum QrSignInFlow {
   submitGuid = 1,
@@ -36,6 +39,8 @@ const errorMsg = 'Error. Try again later.';
   selector: 'app-app-qrcode-login',
   templateUrl: './app-qrcode-login.component.html',
   styleUrls: ['./app-qrcode-login.component.scss'],
+  standalone: true,
+  imports: [NgIf, QRCodeModule, NgClass, NgTemplateOutlet, TranslateModule, SafeHtmlPipe],
 })
 export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();

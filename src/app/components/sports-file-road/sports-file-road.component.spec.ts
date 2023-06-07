@@ -8,7 +8,7 @@ describe('SportsFileRoadComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SportsFileRoadComponent],
+      imports: [SportsFileRoadComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SportsFileRoadComponent);

@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { chart } from 'highcharts';
 import dayjs from 'dayjs';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import {
   zoneColor,
   rightMoveColor,
@@ -25,6 +25,10 @@ import { day, month, week } from '../../../../core/models/const';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DisplayPage } from '../../../../core/models/common';
+import { DataTypeUnitPipe } from '../../../../core/pipes/data-type-unit.pipe';
+import { DataTypeTranslatePipe } from '../../../../core/pipes/data-type-translate.pipe';
+import { ThousandConversionPipe } from '../../../../core/pipes/thousand-conversion.pipe';
+import { NgIf, DecimalPipe } from '@angular/common';
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -82,6 +86,15 @@ class ChartOptions {
   selector: 'app-compare-line-chart',
   templateUrl: './compare-line-chart.component.html',
   styleUrls: ['./compare-line-chart.component.scss', '../chart-share-style.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    DecimalPipe,
+    TranslateModule,
+    ThousandConversionPipe,
+    DataTypeTranslatePipe,
+    DataTypeUnitPipe,
+  ],
 })
 export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject();

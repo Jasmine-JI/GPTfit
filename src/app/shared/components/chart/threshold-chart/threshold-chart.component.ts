@@ -9,11 +9,12 @@ import {
   Output,
   EventEmitter,
 } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { chart } from 'highcharts';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { zoneColor } from '../../../../core/models/represent-color';
+import { NgIf, DecimalPipe } from '@angular/common';
 
 /**
  * 建立圖表用
@@ -73,6 +74,8 @@ class ChartOptions {
   selector: 'app-threshold-chart',
   templateUrl: './threshold-chart.component.html',
   styleUrls: ['./threshold-chart.component.scss'],
+  standalone: true,
+  imports: [NgIf, DecimalPipe, TranslateModule],
 })
 export class ThresholdChartComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject();

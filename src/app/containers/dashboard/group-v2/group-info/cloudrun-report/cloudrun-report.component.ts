@@ -21,9 +21,9 @@ import {
   HintDialogService,
   ApiCommonService,
 } from '../../../../../core/services';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
-import { TranslateService } from '@ngx-translate/core';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { DataUnitType, AccessRight, QueryString } from '../../../../../core/enums/common';
 import {
   setLocalStorageObject,
@@ -32,6 +32,16 @@ import {
 } from '../../../../../core/utils';
 import { SportType } from '../../../../../core/enums/sports';
 import { appPath } from '../../../../../app-path.const';
+import { SportTimePipe } from '../../../../../core/pipes/sport-time.pipe';
+import { SexPipe } from '../../../../../core/pipes/sex.pipe';
+import { SportTypeIconPipe } from '../../../../../core/pipes/sport-type-icon.pipe';
+import { SportPaceSibsPipe } from '../../../../../core/pipes/sport-pace-sibs.pipe';
+import { DistanceSibsPipe } from '../../../../../core/pipes/distance-sibs.pipe';
+import { HrzoneChartComponent } from '../../../../../shared/components/chart/hrzone-chart/hrzone-chart.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { CloudrunMapComponent } from '../../../../../shared/components/cloudrun-map/cloudrun-map.component';
+import { NgIf, NgFor, DecimalPipe } from '@angular/common';
+import { LoadingBarComponent } from '../../../../../components/loading-bar/loading-bar.component';
 
 type AnalysisTable = 'group' | 'member';
 type AnalysisData =
@@ -83,6 +93,24 @@ enum MemberTableCol {
   templateUrl: './cloudrun-report.component.html',
   styleUrls: ['./cloudrun-report.component.scss', '../group-child-page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    NgIf,
+    CloudrunMapComponent,
+    NgFor,
+    MatCheckboxModule,
+    MatTableModule,
+    MatSortModule,
+    HrzoneChartComponent,
+    DecimalPipe,
+    TranslateModule,
+    DistanceSibsPipe,
+    SportPaceSibsPipe,
+    SportTypeIconPipe,
+    SexPipe,
+    SportTimePipe,
+  ],
 })
 export class CloudrunReportComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

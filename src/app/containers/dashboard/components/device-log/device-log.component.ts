@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { DeviceLogService } from '../../services/device-log.service';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatSort, Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator, PageEvent, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { debounce, getUrlQueryStrings } from '../../../../core/utils';
@@ -10,11 +10,34 @@ import { appPath } from '../../../../app-path.const';
 import { Subject, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { QueryString } from '../../../../core/enums/common';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatOptionModule } from '@angular/material/core';
+import { NgFor, NgIf } from '@angular/common';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-device-log',
   templateUrl: './device-log.component.html',
   styleUrls: ['./device-log.component.scss'],
+  standalone: true,
+  imports: [
+    MatFormFieldModule,
+    MatInputModule,
+    MatAutocompleteModule,
+    NgFor,
+    MatOptionModule,
+    MatButtonModule,
+    MatIconModule,
+    MatPaginatorModule,
+    MatTableModule,
+    MatSortModule,
+    NgIf,
+    MatProgressSpinnerModule,
+  ],
 })
 export class DeviceLogComponent implements OnInit, OnDestroy {
   ngUnsubscribe = new Subject();

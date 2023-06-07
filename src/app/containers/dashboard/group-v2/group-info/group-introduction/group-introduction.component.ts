@@ -10,7 +10,7 @@ import {
   HintDialogService,
 } from '../../../../../core/services';
 import { MatDialog } from '@angular/material/dialog';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { PeopleSelectorWinComponent } from '../../../components/people-selector-win/people-selector-win.component';
 import { planDatas } from '../../../group/desc';
 import dayjs from 'dayjs';
@@ -22,6 +22,14 @@ import { ProfessionalService } from '../../../../professional/services/professio
 import { formTest } from '../../../../../core/models/regex';
 import { GroupDetail } from '../../../../../core/models/api/api-11xx';
 import { appPath } from '../../../../../app-path.const';
+import { GroupLevelNamePipe } from '../../../../../core/pipes/group-level-name.pipe';
+import { GroupStatusPipe } from '../../../../../core/pipes/group-status.pipe';
+import { LineBreakPipe } from '../../../../../core/pipes/line-break.pipe';
+import { ReferenceHrZonePipe } from '../../../../../core/pipes/reference-hr-zone.pipe';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { SportTargetSettingComponent } from '../../../../../components/sport-target-setting/sport-target-setting.component';
+import { FeatureNounTipsComponent } from '../../../../../components/feature-noun-tips/feature-noun-tips.component';
+import { NgIf, NgTemplateOutlet, NgFor, DecimalPipe } from '@angular/common';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -29,6 +37,21 @@ const errMsg = `Error.<br />Please try again later.`;
   selector: 'app-group-introduction',
   templateUrl: './group-introduction.component.html',
   styleUrls: ['./group-introduction.component.scss', '../group-child-page.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    NgTemplateOutlet,
+    FeatureNounTipsComponent,
+    NgFor,
+    SportTargetSettingComponent,
+    MatButtonToggleModule,
+    DecimalPipe,
+    TranslateModule,
+    ReferenceHrZonePipe,
+    LineBreakPipe,
+    GroupStatusPipe,
+    GroupLevelNamePipe,
+  ],
 })
 export class GroupIntroductionComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

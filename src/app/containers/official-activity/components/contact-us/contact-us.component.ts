@@ -1,11 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import { formTest } from '../../../../core/models/regex/form-test';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Location } from '@angular/common';
+import { Location, NgIf } from '@angular/common';
 import { HintDialogService, ApiCommonService } from '../../../../core/services';
+import { MatIconModule } from '@angular/material/icon';
+import { LoadingBarComponent } from '../../../../components/loading-bar/loading-bar.component';
 
 enum ContentType {
   operation = 1,
@@ -20,6 +22,8 @@ type AlertType = 'empty' | 'format';
   selector: 'app-contact-us',
   templateUrl: './contact-us.component.html',
   styleUrls: ['./contact-us.component.scss'],
+  standalone: true,
+  imports: [LoadingBarComponent, MatIconModule, NgIf, TranslateModule],
 })
 export class ContactUsComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

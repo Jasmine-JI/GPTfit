@@ -7,7 +7,7 @@ import { HrBase } from '../../../../core/enums/sports';
 import { formTest } from '../../../../core/models/regex/form-test';
 import { HrZoneRange } from '../../../../core/models/compo/chart-data.model';
 import dayjs from 'dayjs';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { DashboardService } from '../../services/dashboard.service';
 import { TargetConditionMap } from '../../../../core/models/api/api-common/sport-target.model';
 import {
@@ -20,6 +20,13 @@ import {
 import { UserService, HintDialogService } from '../../../../core/services';
 import { SportsTarget } from '../../../../shared/classes/sports-target';
 import { BenefitTimeStartZone, DateUnit } from '../../../../core/enums/common';
+import { LengthSibsPipe } from '../../../../core/pipes/length-sibs.pipe';
+import { DataTypeUnitPipe } from '../../../../core/pipes/data-type-unit.pipe';
+import { ReferenceHrZonePipe } from '../../../../core/pipes/reference-hr-zone.pipe';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SportTargetSettingComponent } from '../../../../components/sport-target-setting/sport-target-setting.component';
+import { FeatureNounTipsComponent } from '../../../../components/feature-noun-tips/feature-noun-tips.component';
+import { NgIf, NgTemplateOutlet, NgFor, SlicePipe } from '@angular/common';
 
 enum DominantHand {
   right,
@@ -39,6 +46,20 @@ const wheelSizeCoefficient = inch * 10;
   selector: 'app-setting-prefer',
   templateUrl: './setting-prefer.component.html',
   styleUrls: ['./setting-prefer.component.scss', '../personal-child-page.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    FeatureNounTipsComponent,
+    NgTemplateOutlet,
+    SportTargetSettingComponent,
+    MatProgressSpinnerModule,
+    NgFor,
+    SlicePipe,
+    TranslateModule,
+    ReferenceHrZonePipe,
+    DataTypeUnitPipe,
+    LengthSibsPipe,
+  ],
 })
 export class SettingPreferComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

@@ -4,7 +4,7 @@ import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import dayjs from 'dayjs';
 import { getOptions } from 'highcharts';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import {
   UserService,
   HashIdService,
@@ -28,6 +28,12 @@ import {
 } from '../../../../../core/utils';
 import { appPath } from '../../../../../app-path.const';
 import { Domain, WebIp } from '../../../../../core/enums/common';
+import { SlicePipe } from '../../../../../core/pipes/slice.pipe';
+import { SportTypeIconPipe } from '../../../../../core/pipes/sport-type-icon.pipe';
+import { ProductTypePipe } from '../../../../../core/pipes/product-type.pipe';
+import { HrzoneInfoComponent } from '../../../../../shared/components/chart/hrzone-info/hrzone-info.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { NgIf, DecimalPipe } from '@angular/common';
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -110,6 +116,17 @@ class ChartOptions {
   selector: 'app-my-class-report',
   templateUrl: './my-class-report.component.html',
   styleUrls: ['./my-class-report.component.scss', '../group-child-page.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    MatProgressSpinnerModule,
+    HrzoneInfoComponent,
+    DecimalPipe,
+    TranslateModule,
+    ProductTypePipe,
+    SportTypeIconPipe,
+    SlicePipe,
+  ],
 })
 export class MyClassReportComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

@@ -14,11 +14,33 @@ import { formTest } from '../../../../core/models/regex/form-test';
 import { DashboardService } from '../../services/dashboard.service';
 import { checkResponse, valueConvert, bodyHeightTransfer } from '../../../../core/utils';
 import { Gender } from '../../../../core/enums/personal';
+import { BodyHeightSibsPipe } from '../../../../core/pipes/body-height-sibs.pipe';
+import { DataTypeUnitPipe } from '../../../../core/pipes/data-type-unit.pipe';
+import { TimeFormatPipe } from '../../../../core/pipes/time-format.pipe';
+import { SexPipe } from '../../../../core/pipes/sex.pipe';
+import { WeightSibsPipe } from '../../../../core/pipes/weight-sibs.pipe';
+import { TranslateModule } from '@ngx-translate/core';
+import { DateRangePickerComponent } from '../../../../shared/components/date-range-picker/date-range-picker.component';
+import { NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
 
 @Component({
   selector: 'app-setting-base',
   templateUrl: './setting-base.component.html',
   styleUrls: ['./setting-base.component.scss', '../personal-child-page.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    NgSwitch,
+    NgSwitchCase,
+    NgSwitchDefault,
+    DateRangePickerComponent,
+    TranslateModule,
+    WeightSibsPipe,
+    SexPipe,
+    TimeFormatPipe,
+    DataTypeUnitPipe,
+    BodyHeightSibsPipe,
+  ],
 })
 export class SettingBaseComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

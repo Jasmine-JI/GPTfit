@@ -1,11 +1,20 @@
 import { Component } from '@angular/core';
 import { Domain } from './core/enums/common/domain.enum';
-import { Router, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
+import {
+  Router,
+  NavigationEnd,
+  NavigationCancel,
+  NavigationError,
+  RouterOutlet,
+} from '@angular/router';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  standalone: true,
+  imports: [RouterOutlet, NgIf],
 })
 export class AppComponent {
   title = 'app';

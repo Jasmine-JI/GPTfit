@@ -1,15 +1,19 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { PrivacyObj } from '../../../core/enums/api';
 import { allPrivacyItem } from '../../../core/models/const';
 import { AuthService, Api21xxService } from '../../../core/services';
+import { MatButtonModule } from '@angular/material/button';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-edit-individual-privacy',
   templateUrl: './edit-individual-privacy.component.html',
   styleUrls: ['./edit-individual-privacy.component.scss'],
+  standalone: true,
+  imports: [MatDialogModule, NgIf, MatButtonModule, TranslateModule],
 })
 export class EditIndividualPrivacyComponent implements OnInit {
   i18n = {

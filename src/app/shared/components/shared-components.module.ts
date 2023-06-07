@@ -203,8 +203,6 @@ import {
     MuscleGroupNamePipe,
     MusclePartIconPipe,
     ImgCropperComponent,
-  ],
-  declarations: [
     NavbarComponent,
     Page404Component,
     LoadingComponent,

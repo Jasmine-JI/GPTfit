@@ -8,7 +8,7 @@ describe('AppForgetpwComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [AppForgetpwComponent],
+      imports: [AppForgetpwComponent],
     }).compileComponents();
   }));
 

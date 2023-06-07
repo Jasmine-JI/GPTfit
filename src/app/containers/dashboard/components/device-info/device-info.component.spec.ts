@@ -8,7 +8,7 @@ describe('DeviceInfoComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DeviceInfoComponent],
+      imports: [DeviceInfoComponent],
     }).compileComponents();
   });
 

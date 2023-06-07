@@ -1,9 +1,15 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
+import { NgTemplateOutlet, NgClass } from '@angular/common';
+import { LoadingMaskComponent } from '../../../../components/loading-mask/loading-mask.component';
+import { LoadingBarComponent } from '../../../../components/loading-bar/loading-bar.component';
 
 @Component({
   selector: 'app-about-cloudrun',
   templateUrl: './about-cloudrun.component.html',
   styleUrls: ['./about-cloudrun.component.scss'],
+  standalone: true,
+  imports: [LoadingBarComponent, LoadingMaskComponent, NgTemplateOutlet, NgClass, TranslateModule],
 })
 export class AboutCloudrunComponent implements OnInit {
   /**

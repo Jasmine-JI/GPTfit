@@ -8,7 +8,7 @@ describe('CompareHrzoneTrendComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CompareHrzoneTrendComponent],
+      imports: [CompareHrzoneTrendComponent],
     }).compileComponents();
   });
 

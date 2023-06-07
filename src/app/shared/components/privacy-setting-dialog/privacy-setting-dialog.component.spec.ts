@@ -8,7 +8,7 @@ describe('PrivacySettingDialogComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [PrivacySettingDialogComponent],
+      imports: [PrivacySettingDialogComponent],
     }).compileComponents();
   }));
 

@@ -9,11 +9,24 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AccessRight } from '../../../../core/enums/common';
 import { appPath } from '../../../../app-path.const';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { NgIf, NgTemplateOutlet, NgSwitch, NgSwitchCase, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-inner-settings',
   templateUrl: './inner-settings.component.html',
   styleUrls: ['./inner-settings.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    NgTemplateOutlet,
+    MatProgressSpinnerModule,
+    NgSwitch,
+    NgSwitchCase,
+    NgFor,
+    TranslateModule,
+  ],
 })
 export class InnerSettingsComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

@@ -8,7 +8,7 @@ describe('SystemOperationReportComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SystemOperationReportComponent],
+      imports: [SystemOperationReportComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SystemOperationReportComponent);

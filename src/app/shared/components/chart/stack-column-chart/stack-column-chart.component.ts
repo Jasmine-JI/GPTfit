@@ -10,11 +10,12 @@ import {
 import { chart } from 'highcharts';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { ZoneTrendData } from '../../../../core/models/compo/chart-data.model';
 import { zoneColor, sleepColor } from '../../../../core/models/represent-color';
 import { day, month, week } from '../../../../core/models/const';
 import { DisplayPage } from '../../../../core/models/common';
+import { NgIf } from '@angular/common';
 
 dayjs.extend(isoWeek);
 
@@ -76,6 +77,8 @@ class ChartOptions {
   selector: 'app-stack-column-chart',
   templateUrl: './stack-column-chart.component.html',
   styleUrls: ['./stack-column-chart.component.scss', '../chart-share-style.scss'],
+  standalone: true,
+  imports: [NgIf, TranslateModule],
 })
 export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   noData = true;

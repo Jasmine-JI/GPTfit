@@ -8,7 +8,7 @@ import {
 import dayjs from 'dayjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { Subject, Subscription, fromEvent } from 'rxjs';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { AuthService, UserService, Api21xxService, ReportService } from '../../../core/services';
 import { ReportConditionOpt } from '../../../core/models/compo/report-condition.model';
 import { mi } from '../../../core/models/const/bs-constant.model';
@@ -17,6 +17,20 @@ import { stepColor } from '../../../core/models/represent-color';
 import { deepCopy, countAge, countFFMI, countBMI } from '../../../core/utils';
 import { Gender } from '../../../core/enums/personal';
 import { appPath } from '../../../app-path.const';
+import { BodyHeightSibsPipe } from '../../../core/pipes/body-height-sibs.pipe';
+import { ThousandConversionPipe } from '../../../core/pipes/thousand-conversion.pipe';
+import { SportTimePipe } from '../../../core/pipes/sport-time.pipe';
+import { WeightSibsPipe } from '../../../core/pipes/weight-sibs.pipe';
+import { DistanceSibsPipe } from '../../../core/pipes/distance-sibs.pipe';
+import { FilletColumnChartComponent } from '../chart/fillet-column-chart/fillet-column-chart.component';
+import { LineChartComponent } from '../chart/line-chart/line-chart.component';
+import { BodyConstituteSvgComponent } from '../chart/body-constitute-svg/body-constitute-svg.component';
+import { StackColumnChartComponent } from '../chart/stack-column-chart/stack-column-chart.component';
+import { CompareLineChartComponent } from '../chart/compare-line-chart/compare-line-chart.component';
+import { DiscolorColumnChartComponent } from '../chart/discolor-column-chart/discolor-column-chart.component';
+import { NgIf, DecimalPipe } from '@angular/common';
+import { ReportFilterComponent } from '../report-filter/report-filter.component';
+import { LoadingBarComponent } from '../../../components/loading-bar/loading-bar.component';
 
 type CommentType = 'fatRate' | 'muscleRate' | 'moistureRate';
 
@@ -25,6 +39,25 @@ type CommentType = 'fatRate' | 'muscleRate' | 'moistureRate';
   templateUrl: './my-life-tracking.component.html',
   styleUrls: ['./my-life-tracking.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    ReportFilterComponent,
+    NgIf,
+    DiscolorColumnChartComponent,
+    CompareLineChartComponent,
+    StackColumnChartComponent,
+    BodyConstituteSvgComponent,
+    LineChartComponent,
+    FilletColumnChartComponent,
+    DecimalPipe,
+    TranslateModule,
+    DistanceSibsPipe,
+    WeightSibsPipe,
+    SportTimePipe,
+    ThousandConversionPipe,
+    BodyHeightSibsPipe,
+  ],
 })
 export class MyLifeTrackingComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

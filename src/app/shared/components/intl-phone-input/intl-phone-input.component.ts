@@ -1,12 +1,15 @@
 import { Component, OnInit, OnChanges, Input, Output, EventEmitter } from '@angular/core';
 import { codes } from '../../../core/models/const';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { getLocalStorageObject } from '../../../core/utils';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-intl-phone-input',
   templateUrl: './intl-phone-input.component.html',
   styleUrls: ['./intl-phone-input.component.scss'],
+  standalone: true,
+  imports: [NgIf, NgFor, TranslateModule],
 })
 export class IntlPhoneInputComponent implements OnInit, OnChanges {
   active = false; // select options的開關

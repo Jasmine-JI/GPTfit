@@ -1,13 +1,18 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { appPath } from '../../../app-path.const';
+import { MatButtonModule } from '@angular/material/button';
+import { NgIf } from '@angular/common';
+import { QRCodeModule } from 'angularx-qrcode';
 
 @Component({
   selector: 'app-share-group-info-dialog',
   templateUrl: './share-group-info-dialog.component.html',
   styleUrls: ['./share-group-info-dialog.component.scss'],
+  standalone: true,
+  imports: [MatDialogModule, QRCodeModule, NgIf, MatButtonModule],
 })
 export class ShareGroupInfoDialogComponent implements OnInit {
   get title() {

@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import {
   AuthService,
   Api10xxService,
@@ -9,7 +9,7 @@ import {
   ApiCommonService,
 } from '../../../../../core/services';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { formTest } from '../../../../../core/models/regex/form-test';
@@ -20,6 +20,9 @@ import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/util
 import { SignInType, AccountType } from '../../../../../core/enums/personal';
 import { errorMessage } from '../../../../../core/models/const';
 import { appPath } from '../../../../../app-path.const';
+import { FormsModule } from '@angular/forms';
+import { LoadingBarComponent } from '../../../../../components/loading-bar/loading-bar.component';
+import { NgIf, NgClass } from '@angular/common';
 
 type InputType = 'oldPassword' | 'newPassword';
 
@@ -27,6 +30,8 @@ type InputType = 'oldPassword' | 'newPassword';
   selector: 'app-app-modifypw',
   templateUrl: './app-modifypw.component.html',
   styleUrls: ['./app-modifypw.component.scss'],
+  standalone: true,
+  imports: [NgIf, LoadingBarComponent, NgClass, FormsModule, RouterLink, TranslateModule],
 })
 export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();

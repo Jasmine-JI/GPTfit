@@ -3,11 +3,15 @@ import { UserService } from '../../../core/services';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { WeightTrainingLevel } from '../../../core/enums/sports';
+import { TranslateModule } from '@ngx-translate/core';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-weight-train-level-selector',
   templateUrl: './weight-train-level-selector.component.html',
   styleUrls: ['./weight-train-level-selector.component.scss'],
+  standalone: true,
+  imports: [NgIf, TranslateModule],
 })
 export class WeightTrainLevelSelectorComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

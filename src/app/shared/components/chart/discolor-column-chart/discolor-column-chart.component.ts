@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { chart } from 'highcharts';
 import dayjs from 'dayjs';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import {
   paceTrendColor,
   speedTrendColor,
@@ -24,6 +24,9 @@ import { day, month, week } from '../../../../core/models/const';
 import { speedToPaceSecond } from '../../../../core/utils/sports';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { DisplayPage } from '../../../../core/models/common';
+import { DataTypeUnitPipe } from '../../../../core/pipes/data-type-unit.pipe';
+import { SportPaceSibsPipe } from '../../../../core/pipes/sport-pace-sibs.pipe';
+import { NgIf, DecimalPipe } from '@angular/common';
 
 dayjs.extend(isoWeek);
 
@@ -84,6 +87,15 @@ class ChartOptions {
   selector: 'app-discolor-column-chart',
   templateUrl: './discolor-column-chart.component.html',
   styleUrls: ['./discolor-column-chart.component.scss', '../chart-share-style.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    DecimalPipe,
+    TranslateModule,
+    SportPaceSibsPipe,
+    DataTypeTranslatePipe,
+    DataTypeUnitPipe,
+  ],
 })
 export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   dateList: Array<any> = [];

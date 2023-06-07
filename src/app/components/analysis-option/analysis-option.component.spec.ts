@@ -8,7 +8,7 @@ describe('AnalysisOptionComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AnalysisOptionComponent],
+      imports: [AnalysisOptionComponent],
     }).compileComponents();
   });
 

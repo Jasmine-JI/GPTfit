@@ -16,6 +16,15 @@ import {
 import { deepCopy, handleSceneryImg } from '../../../../core/utils';
 import { SportType } from '../../../../core/enums/sports';
 import { appPath } from '../../../../app-path.const';
+import { TimeFormatPipe } from '../../../../core/pipes/time-format.pipe';
+import { SportTimePipe } from '../../../../core/pipes/sport-time.pipe';
+import { SportTypeIconPipe } from '../../../../core/pipes/sport-type-icon.pipe';
+import { WeightSibsPipe } from '../../../../core/pipes/weight-sibs.pipe';
+import { DistanceSibsPipe } from '../../../../core/pipes/distance-sibs.pipe';
+import { TranslateModule } from '@ngx-translate/core';
+import { NgIf, NgFor } from '@angular/common';
+import { ReportFilterComponent } from '../../../../shared/components/report-filter/report-filter.component';
+import { LoadingBarComponent } from '../../../../components/loading-bar/loading-bar.component';
 
 const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 const defaultEnd = dayjs().endOf('day');
@@ -25,6 +34,19 @@ const defaultStart = dayjs(defaultEnd).subtract(3, 'year').startOf('day');
   selector: 'app-activity-list',
   templateUrl: './activity-list.component.html',
   styleUrls: ['./activity-list.component.scss'],
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    ReportFilterComponent,
+    NgIf,
+    NgFor,
+    TranslateModule,
+    DistanceSibsPipe,
+    WeightSibsPipe,
+    SportTypeIconPipe,
+    SportTimePipe,
+    TimeFormatPipe,
+  ],
 })
 export class ActivityListComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();

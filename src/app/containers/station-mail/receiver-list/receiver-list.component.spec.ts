@@ -8,7 +8,7 @@ describe('ReceiverListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ReceiverListComponent],
+      imports: [ReceiverListComponent],
     }).compileComponents();
   });
 
