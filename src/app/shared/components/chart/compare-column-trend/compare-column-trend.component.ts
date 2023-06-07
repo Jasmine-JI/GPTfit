@@ -10,7 +10,7 @@ import {
 import { of, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { TargetField } from '../../../../core/models/api/api-common/sport-target.model';
 import { compareChartDefault } from '../../../../core/models/compo/chart-data.model';
 import { targetLineColor } from '../../../../core/models/represent-color';
@@ -29,11 +29,14 @@ import { TargetFieldNamePipe } from '../../../../core/pipes';
 import dayjs from 'dayjs';
 import { GlobalEventsService, UserService } from '../../../../core/services';
 import { DataUnitType } from '../../../../core/enums/common';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-compare-column-trend',
   templateUrl: './compare-column-trend.component.html',
   styleUrls: ['./compare-column-trend.component.scss', '../chart-share-style.scss'],
+  standalone: true,
+  imports: [NgIf, TranslateModule],
 })
 export class CompareColumnTrendComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject();

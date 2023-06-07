@@ -1,17 +1,38 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatSort, Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
-import { Router } from '@angular/router';
+import { MatPaginator, PageEvent, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService, HashIdService, Api11xxService } from '../../../../core/services';
 import { getUrlQueryStrings } from '../../../../core/utils';
 import { appPath } from '../../../../app-path.const';
 import { QueryString } from '../../../../core/enums/common';
+import { AccessNamePipe } from '../../../../core/pipes/access-name.pipe';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { NgIf } from '@angular/common';
+import { MatOptionModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-my-group-list',
   templateUrl: './my-group-list.component.html',
   styleUrls: ['./my-group-list.component.scss', '../group-style.scss'],
+  standalone: true,
+  imports: [
+    RouterLink,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatTableModule,
+    MatSortModule,
+    NgIf,
+    MatProgressSpinnerModule,
+    MatPaginatorModule,
+    TranslateModule,
+    AccessNamePipe,
+  ],
 })
 export class MyGroupListComponent implements OnInit {
   logSource = new MatTableDataSource<any>();

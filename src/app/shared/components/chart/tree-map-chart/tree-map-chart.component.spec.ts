@@ -8,7 +8,7 @@ describe('TreeMapChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TreeMapChartComponent],
+      imports: [TreeMapChartComponent],
     }).compileComponents();
   });
 

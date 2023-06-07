@@ -57,6 +57,39 @@ import {
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { DataDescription } from '../../../../../core/models/compo';
+import { SportTypePipe } from '../../../../../core/pipes/sport-type.pipe';
+import { SportTimePipe } from '../../../../../core/pipes/sport-time.pipe';
+import { SportTypeIconPipe } from '../../../../../core/pipes/sport-type-icon.pipe';
+import { TranslateUnitKeyPipe } from '../../../../../core/pipes/translate-unit-key.pipe';
+import { TranslateKeyPipe } from '../../../../../core/pipes/translate-key.pipe';
+import { DateUnitKeyPipe } from '../../../../../core/pipes/date-unit-key.pipe';
+import { TranslateModule } from '@ngx-translate/core';
+import { RingChartComponent } from '../../../../../shared/components/chart/ring-chart/ring-chart.component';
+import { MatIconModule } from '@angular/material/icon';
+import { AnalysisInfoMenuComponent } from '../../../../../components/analysis-info-menu/analysis-info-menu.component';
+import { SmallHrzoneChartComponent } from '../../../../../components/small-hrzone-chart/small-hrzone-chart.component';
+import { AnalysisOptionComponent } from '../../../../../components/analysis-option/analysis-option.component';
+import { SportsDataTableComponent } from '../../../../../components/sports-data-table/sports-data-table.component';
+import { CompareColumnTrendComponent } from '../../../../../shared/components/chart/compare-column-trend/compare-column-trend.component';
+import { CompareHrzoneTrendComponent } from '../../../../../shared/components/chart/compare-hrzone-trend/compare-hrzone-trend.component';
+import { HrzoneInfoComponent } from '../../../../../shared/components/chart/hrzone-info/hrzone-info.component';
+import { TreeMapChartComponent } from '../../../../../shared/components/chart/tree-map-chart/tree-map-chart.component';
+import { HrzoneChartComponent } from '../../../../../shared/components/chart/hrzone-chart/hrzone-chart.component';
+import { DistributionCanvasChartComponent } from '../../../../../shared/components/chart/distribution-canvas-chart/distribution-canvas-chart.component';
+import { TipDialogComponent } from '../../../../../components/tip-dialog/tip-dialog.component';
+import { ConditionSelectorComponent } from '../../../../../shared/components/condition-selector/condition-selector.component';
+import {
+  NgIf,
+  NgClass,
+  NgTemplateOutlet,
+  NgFor,
+  NgSwitch,
+  NgSwitchCase,
+  DecimalPipe,
+  KeyValuePipe,
+} from '@angular/common';
+import { LoadingMaskComponent } from '../../../../../components/loading-mask/loading-mask.component';
+import { LoadingBarComponent } from '../../../../../components/loading-bar/loading-bar.component';
 
 dayjs.extend(isoWeek);
 
@@ -65,6 +98,40 @@ dayjs.extend(isoWeek);
   templateUrl: './sports-report.component.html',
   styleUrls: ['./sports-report.component.scss', '../group-child-page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    LoadingMaskComponent,
+    NgIf,
+    ConditionSelectorComponent,
+    NgClass,
+    NgTemplateOutlet,
+    TipDialogComponent,
+    DistributionCanvasChartComponent,
+    NgFor,
+    HrzoneChartComponent,
+    TreeMapChartComponent,
+    HrzoneInfoComponent,
+    CompareHrzoneTrendComponent,
+    CompareColumnTrendComponent,
+    SportsDataTableComponent,
+    AnalysisOptionComponent,
+    SmallHrzoneChartComponent,
+    AnalysisInfoMenuComponent,
+    NgSwitch,
+    NgSwitchCase,
+    MatIconModule,
+    RingChartComponent,
+    DecimalPipe,
+    KeyValuePipe,
+    TranslateModule,
+    DateUnitKeyPipe,
+    TranslateKeyPipe,
+    TranslateUnitKeyPipe,
+    SportTypeIconPipe,
+    SportTimePipe,
+    SportTypePipe,
+  ],
 })
 export class SportsReportComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

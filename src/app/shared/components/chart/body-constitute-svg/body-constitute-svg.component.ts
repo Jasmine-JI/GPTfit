@@ -1,10 +1,13 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-body-constitute-svg',
   templateUrl: './body-constitute-svg.component.html',
   styleUrls: ['./body-constitute-svg.component.scss'],
+  standalone: true,
+  imports: [DecimalPipe, TranslateModule],
 })
 export class BodyConstituteSvgComponent implements OnInit, OnChanges {
   maskYPoint = {

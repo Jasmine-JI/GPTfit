@@ -8,7 +8,7 @@ describe('AppEnableComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [AppEnableComponent],
+      imports: [AppEnableComponent],
     }).compileComponents();
   }));
 

@@ -6,11 +6,16 @@ import { UserService, HashIdService, AuthService } from '../../../../core/servic
 import { DashboardService } from '../../services/dashboard.service';
 import { checkResponse } from '../../../../core/utils';
 import { appPath } from '../../../../app-path.const';
+import { TranslateModule } from '@ngx-translate/core';
+import { FormsModule } from '@angular/forms';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-info',
   templateUrl: './info.component.html',
   styleUrls: ['./info.component.scss', '../personal-child-page.scss'],
+  standalone: true,
+  imports: [NgIf, FormsModule, TranslateModule],
 })
 export class InfoComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

@@ -21,11 +21,15 @@ import {
 import { mathRounding, getWeightTrainingLevelText } from '../../../../../core/utils';
 import { DataUnitType } from '../../../../../core/enums/common';
 import { MuscleCode } from '../../../../../core/enums/sports';
+import { WeightSibsPipe } from '../../../../../core/pipes/weight-sibs.pipe';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-muscle-map-chart',
   templateUrl: './muscle-map-chart.component.html',
   styleUrls: ['./muscle-map-chart.component.scss'],
+  standalone: true,
+  imports: [NgIf, WeightSibsPipe],
 })
 export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject();

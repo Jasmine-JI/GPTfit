@@ -8,7 +8,7 @@ describe('SettingPrivacyComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SettingPrivacyComponent],
+      imports: [SettingPrivacyComponent],
     }).compileComponents();
   });
 

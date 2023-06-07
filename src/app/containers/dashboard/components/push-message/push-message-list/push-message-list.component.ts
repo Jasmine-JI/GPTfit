@@ -1,4 +1,4 @@
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -7,16 +7,30 @@ import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { PushMessageService } from '../../../services/push-message.service';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, PageEvent, MatPaginatorModule } from '@angular/material/paginator';
 import dayjs from 'dayjs';
 import { AccessRight } from '../../../../../core/enums/common';
 import { appPath } from '../../../../../app-path.const';
 import { QueryString } from '../../../../../core/enums/common';
+import { TimeFormatPipe } from '../../../../../core/pipes/time-format.pipe';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { DateRangePickerComponent } from '../../../../../shared/components/date-range-picker/date-range-picker.component';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-push-message-list',
   templateUrl: './push-message-list.component.html',
   styleUrls: ['./push-message-list.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    RouterLink,
+    DateRangePickerComponent,
+    MatPaginatorModule,
+    MatProgressSpinnerModule,
+    NgFor,
+    TimeFormatPipe,
+  ],
 })
 export class PushMessageListComponent implements OnInit, OnDestroy {
   @ViewChild('paginator', { static: true })

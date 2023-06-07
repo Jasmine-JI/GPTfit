@@ -1,11 +1,15 @@
 import { Component, OnInit, OnChanges, Input, Output, EventEmitter } from '@angular/core';
 
 import { TranslateService } from '@ngx-translate/core';
+import { NgIf } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-hover-hint',
   templateUrl: './hover-hint.component.html',
   styleUrls: ['./hover-hint.component.scss'],
+  standalone: true,
+  imports: [MatIconModule, NgIf],
 })
 export class HoverHintComponent implements OnInit, OnChanges {
   @Input() type: string;

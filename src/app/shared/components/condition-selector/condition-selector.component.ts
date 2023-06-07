@@ -28,12 +28,32 @@ import { LocalstorageService, GlobalEventsService } from '../../../core/services
 import { WeekDayLock } from '../../../core/models/compo';
 import { ReportDateUnit } from '../../classes/report-date-unit';
 import { DateUnit } from '../../../core/enums/common';
+import { TimeFormatPipe } from '../../../core/pipes/time-format.pipe';
+import { DateUnitKeyPipe } from '../../../core/pipes/date-unit-key.pipe';
+import { TranslateModule } from '@ngx-translate/core';
+import { CalenderSelectorComponent } from '../../../components/calender-selector/calender-selector.component';
+import { MatIconModule } from '@angular/material/icon';
+import { NgIf, NgFor, NgTemplateOutlet, NgClass, NgSwitch, NgSwitchCase } from '@angular/common';
 
 @Component({
   selector: 'app-condition-selector',
   templateUrl: './condition-selector.component.html',
   styleUrls: ['./condition-selector.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    NgIf,
+    MatIconModule,
+    NgFor,
+    NgTemplateOutlet,
+    NgClass,
+    CalenderSelectorComponent,
+    NgSwitch,
+    NgSwitchCase,
+    TranslateModule,
+    DateUnitKeyPipe,
+    TimeFormatPipe,
+  ],
 })
 export class ConditionSelectorComponent implements OnInit, OnChanges, OnDestroy {
   /**

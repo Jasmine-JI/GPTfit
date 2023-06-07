@@ -10,7 +10,7 @@ import {
 import { SportType } from '../../../../core/enums/sports';
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { HrZoneRange } from '../../../../core/models/compo/chart-data.model';
 import { mi } from '../../../../core/models/const/bs-constant.model';
 import { DataUnitType } from '../../../../core/enums/common';
@@ -21,6 +21,11 @@ import {
   simplify,
 } from '../../../../core/utils';
 import { SportPaceSibsPipe } from '../../../../core/pipes';
+import { DataTypeUnitPipe } from '../../../../core/pipes/data-type-unit.pipe';
+import { DataTypeTranslatePipe } from '../../../../core/pipes/data-type-translate.pipe';
+import { SpeedSibsPipe } from '../../../../core/pipes/speed-sibs.pipe';
+import { SportPaceSibsPipe as SportPaceSibsPipe_1 } from '../../../../core/pipes/sport-pace-sibs.pipe';
+import { NgIf, NgFor, DecimalPipe } from '@angular/common';
 
 type QuadrantDataOpt = 'hr' | 'speed' | 'pace' | 'cadence' | 'power';
 type Axis = 'xAxis' | 'yAxis';
@@ -49,6 +54,17 @@ type ChartOpt = {
   templateUrl: './quadrant-chart.component.html',
   styleUrls: ['./quadrant-chart.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    NgIf,
+    NgFor,
+    DecimalPipe,
+    TranslateModule,
+    SportPaceSibsPipe_1,
+    SpeedSibsPipe,
+    DataTypeTranslatePipe,
+    DataTypeUnitPipe,
+  ],
 })
 export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject();

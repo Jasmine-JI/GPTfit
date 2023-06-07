@@ -8,7 +8,7 @@ describe('FormRemindComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [FormRemindComponent],
+      imports: [FormRemindComponent],
     }).compileComponents();
   }));
 

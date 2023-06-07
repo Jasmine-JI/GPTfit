@@ -8,7 +8,7 @@ describe('GroupSearchComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [GroupSearchComponent],
+      imports: [GroupSearchComponent],
     }).compileComponents();
   }));
 

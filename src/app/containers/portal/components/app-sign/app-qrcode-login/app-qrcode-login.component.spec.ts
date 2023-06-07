@@ -8,7 +8,7 @@ describe('AppQrcodeLoginComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [AppQrcodeLoginComponent],
+      imports: [AppQrcodeLoginComponent],
     }).compileComponents();
   }));
 

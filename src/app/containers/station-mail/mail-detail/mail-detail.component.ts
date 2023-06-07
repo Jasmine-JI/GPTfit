@@ -8,12 +8,17 @@ import { QueryString } from '../../../core/enums/common';
 import { Subject, fromEvent, Subscription, merge, combineLatest, Observable } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
 import { MessageType } from '../enum/station-mail';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { TimeFormatPipe } from '../../../core/pipes/time-format.pipe';
+import { ReceiverListComponent } from '../receiver-list/receiver-list.component';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-mail-detail',
   templateUrl: './mail-detail.component.html',
   styleUrls: ['./mail-detail.component.scss', '../station-mail-child.scss'],
+  standalone: true,
+  imports: [NgIf, ReceiverListComponent, NgFor, TranslateModule, TimeFormatPipe],
 })
 export class MailDetailComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

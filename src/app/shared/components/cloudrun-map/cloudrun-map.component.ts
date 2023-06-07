@@ -26,6 +26,14 @@ import {
 import { RacerInfo, RacerPositionList } from '../../../core/models/compo';
 import { displayGroupLevel } from '../../../core/utils';
 import { SportType } from '../../../core/enums/sports';
+import { TimeFormatPipe } from '../../../core/pipes/time-format.pipe';
+import { SportTimePipe } from '../../../core/pipes/sport-time.pipe';
+import { SportPaceSibsPipe } from '../../../core/pipes/sport-pace-sibs.pipe';
+import { TranslateModule } from '@ngx-translate/core';
+import { EquidistantChartComponent } from '../chart/equidistant-chart/equidistant-chart.component';
+import { LeafletMapComponent } from '../../../components/leaflet-map/leaflet-map.component';
+import { GoogleMapComponent } from '../../../components/google-map/google-map.component';
+import { NgIf, NgFor } from '@angular/common';
 
 // 若google api掛掉則建物件代替，避免造成gptfit卡住。
 const google: any = (window as any).google;
@@ -38,6 +46,18 @@ type PlaySpeed = 1 | 5 | 10 | 20 | 50 | 100;
   selector: 'app-cloudrun-map',
   templateUrl: './cloudrun-map.component.html',
   styleUrls: ['./cloudrun-map.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    GoogleMapComponent,
+    LeafletMapComponent,
+    NgFor,
+    EquidistantChartComponent,
+    TranslateModule,
+    SportPaceSibsPipe,
+    SportTimePipe,
+    TimeFormatPipe,
+  ],
 })
 export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('gMap') gMap: ElementRef;

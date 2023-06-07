@@ -129,8 +129,6 @@ import { LoadingBarComponent, LoadingMaskComponent, ImgCropperComponent } from '
     LoadingBarComponent,
     LoadingMaskComponent,
     ImgCropperComponent,
-  ],
-  declarations: [
     OfficialActivityComponent,
     ActivityListComponent,
     ActivityDetailComponent,

@@ -8,7 +8,7 @@ describe('ConditionSelectorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ConditionSelectorComponent],
+      imports: [ConditionSelectorComponent],
     }).compileComponents();
   });
 

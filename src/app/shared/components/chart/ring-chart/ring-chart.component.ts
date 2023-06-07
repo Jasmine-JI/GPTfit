@@ -77,6 +77,7 @@ class ChartOptions {
   selector: 'app-ring-chart',
   templateUrl: './ring-chart.component.html',
   styleUrls: ['./ring-chart.component.scss'],
+  standalone: true,
 })
 export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject();

@@ -8,7 +8,7 @@ describe('CloudrunReportComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CloudrunReportComponent],
+      imports: [CloudrunReportComponent],
     }).compileComponents();
   }));
 

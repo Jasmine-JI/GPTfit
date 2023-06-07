@@ -8,7 +8,7 @@ describe('CoachRexComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CoachRexComponent],
+      imports: [CoachRexComponent],
     }).compileComponents();
   }));
 

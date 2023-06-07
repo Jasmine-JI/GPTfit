@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { OfficialActivityService } from '../../services/official-activity.service';
 import { Subject, combineLatest, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { AlbumType } from '../../../../core/enums/api';
 import { ImageUploadService } from '../../../dashboard/services/image-upload.service';
 import {
@@ -14,11 +14,27 @@ import {
 } from '../../../../core/utils';
 import { AuthService, HintDialogService, ApiCommonService } from '../../../../core/services';
 import { appPath } from '../../../../app-path.const';
+import { TimeFormatPipe } from '../../../../core/pipes/time-format.pipe';
+import { MatIconModule } from '@angular/material/icon';
+import { ImgCropperComponent } from '../../../../components/image-cropper/image-cropper.component';
+import { NgFor, NgTemplateOutlet, NgIf } from '@angular/common';
+import { LoadingBarComponent } from '../../../../components/loading-bar/loading-bar.component';
 
 @Component({
   selector: 'app-edit-carousel',
   templateUrl: './edit-carousel.component.html',
   styleUrls: ['./edit-carousel.component.scss'],
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    NgFor,
+    NgTemplateOutlet,
+    NgIf,
+    ImgCropperComponent,
+    MatIconModule,
+    TranslateModule,
+    TimeFormatPipe,
+  ],
 })
 export class EditCarouselComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

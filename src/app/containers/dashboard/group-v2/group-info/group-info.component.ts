@@ -8,9 +8,9 @@ import {
 } from '@angular/core';
 import { fromEvent, Subscription, Subject, forkJoin } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { GroupDetailInfo, UserSimpleInfo, EditMode } from '../../models/group-detail';
 import dayjs from 'dayjs';
 import {
@@ -38,6 +38,12 @@ import { GroupLevel, GroupChildPage } from '../../../../core/enums/professional'
 import { deepCopy, base64ToFile, displayGroupLevel } from '../../../../core/utils';
 import { ProfessionalService } from '../../../professional/services/professional.service';
 import { appPath } from '../../../../app-path.const';
+import { GroupLevelNamePipe } from '../../../../core/pipes/group-level-name.pipe';
+import { ShareBoxComponent } from '../../../../components/share-box/share-box.component';
+import { ImgCropperComponent } from '../../../../components/image-cropper/image-cropper.component';
+import { ReportFilterComponent } from '../../../../shared/components/report-filter/report-filter.component';
+import { LoadingIconComponent } from '../../../../shared/components/loading-icon/loading-icon.component';
+import { NgIf, NgFor, NgTemplateOutlet, NgClass, NgSwitch, NgSwitchCase } from '@angular/common';
 
 const errMsg = `Error.<br />Please try again later.`;
 const replaceResult = {
@@ -57,6 +63,22 @@ const replaceResult = {
   selector: 'app-group-info-v2',
   templateUrl: './group-info.component.html',
   styleUrls: ['./group-info.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    LoadingIconComponent,
+    NgFor,
+    NgTemplateOutlet,
+    ReportFilterComponent,
+    NgClass,
+    RouterOutlet,
+    ImgCropperComponent,
+    NgSwitch,
+    NgSwitchCase,
+    ShareBoxComponent,
+    TranslateModule,
+    GroupLevelNamePipe,
+  ],
 })
 export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   @ViewChild('navSection') navSection: ElementRef;

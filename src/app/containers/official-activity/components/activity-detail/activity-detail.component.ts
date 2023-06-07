@@ -17,6 +17,12 @@ import { Gender } from '../../../../core/enums/personal';
 import { UserProfile } from '../../../../core/models/api/api-10xx';
 import { QueryString } from '../../../../core/enums/common';
 import { appPath } from '../../../../app-path.const';
+import { SafeStylePipe } from '../../../../core/pipes/safe-style.pipe';
+import { TimeFormatPipe } from '../../../../core/pipes/time-format.pipe';
+import { TranslateModule } from '@ngx-translate/core';
+import { AlaIframeComponent } from '../../../../shared/components/ala-iframe/ala-iframe.component';
+import { NgIf, NgTemplateOutlet, NgFor, NgClass } from '@angular/common';
+import { LoadingBarComponent } from '../../../../components/loading-bar/loading-bar.component';
 
 const switchButtonWidth = 40;
 const navHeight = 60;
@@ -36,6 +42,18 @@ const { officialActivity } = appPath;
   selector: 'app-activity-detail',
   templateUrl: './activity-detail.component.html',
   styleUrls: ['./activity-detail.component.scss'],
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    NgIf,
+    NgTemplateOutlet,
+    NgFor,
+    AlaIframeComponent,
+    NgClass,
+    TranslateModule,
+    TimeFormatPipe,
+    SafeStylePipe,
+  ],
 })
 export class ActivityDetailComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

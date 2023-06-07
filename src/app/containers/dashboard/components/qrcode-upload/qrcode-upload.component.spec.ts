@@ -8,7 +8,7 @@ describe('QrcodeUploadComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [QrcodeUploadComponent],
+      imports: [QrcodeUploadComponent],
     }).compileComponents();
   }));
 

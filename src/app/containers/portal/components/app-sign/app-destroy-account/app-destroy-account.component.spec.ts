@@ -8,7 +8,7 @@ describe('AppDestroyAccountComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AppDestroyAccountComponent],
+      imports: [AppDestroyAccountComponent],
     }).compileComponents();
   });
 

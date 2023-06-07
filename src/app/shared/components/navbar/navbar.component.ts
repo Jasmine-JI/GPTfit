@@ -1,17 +1,20 @@
 import { Component, OnInit, HostListener, Input, Output, EventEmitter } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService, GetClientIpService, GlobalEventsService } from '../../../core/services';
 import { Observable } from 'rxjs';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { langData } from '../../../core/models/const';
 import { setLocalStorageObject, getLocalStorageObject } from '../../../core/utils';
 import { appPath } from '../../../app-path.const';
+import { NgIf, NgTemplateOutlet, AsyncPipe } from '@angular/common';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
+  standalone: true,
+  imports: [NgIf, RouterLink, NgTemplateOutlet, AsyncPipe, TranslateModule],
 })
 export class NavbarComponent implements OnInit {
   isShowMask = false;

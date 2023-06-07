@@ -103,8 +103,6 @@ import { LoadingMaskComponent } from '../../components';
     MuscleGroupNamePipe,
     MusclePartIconPipe,
     LoadingMaskComponent,
-  ],
-  declarations: [
     StationMailComponent,
     CreateMailComponent,
     InboxComponent,

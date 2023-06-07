@@ -17,12 +17,16 @@ import { Router, NavigationEnd } from '@angular/router';
 import { QueryString } from '../../../core/enums/common';
 import { Api50xxService, AuthService } from '../../../core/services';
 import { checkResponse, deepCopy } from '../../../core/utils/index';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { TimeFormatPipe } from '../../../core/pipes/time-format.pipe';
+import { NgIf, NgFor, NgTemplateOutlet } from '@angular/common';
 
 @Component({
   selector: 'app-inbox',
   templateUrl: './inbox.component.html',
   styleUrls: ['./inbox.component.scss', '../station-mail-child.scss'],
+  standalone: true,
+  imports: [NgIf, NgFor, NgTemplateOutlet, TranslateModule, TimeFormatPipe],
 })
 export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() isBriefList = false;

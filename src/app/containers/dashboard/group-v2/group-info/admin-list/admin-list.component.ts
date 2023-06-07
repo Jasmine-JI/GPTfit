@@ -10,6 +10,10 @@ import { Subject, combineLatest, forkJoin } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ProfessionalService } from '../../../../professional/services/professional.service';
 import { displayGroupLevel } from '../../../../../core/utils';
+import { TranslateModule } from '@ngx-translate/core';
+import { MemberAnalysisListComponent } from '../../../../professional/member-analysis-list/member-analysis-list.component';
+import { MemberCapsuleComponent } from '../../../../../shared/components/member-capsule/member-capsule.component';
+import { NgIf, NgClass, NgFor } from '@angular/common';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -17,6 +21,15 @@ const errMsg = `Error.<br />Please try again later.`;
   selector: 'app-admin-list',
   templateUrl: './admin-list.component.html',
   styleUrls: ['./admin-list.component.scss', '../group-child-page.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    NgClass,
+    NgFor,
+    MemberCapsuleComponent,
+    MemberAnalysisListComponent,
+    TranslateModule,
+  ],
 })
 export class AdminListComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

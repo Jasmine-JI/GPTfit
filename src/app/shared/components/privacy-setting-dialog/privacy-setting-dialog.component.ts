@@ -1,12 +1,23 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { TranslateService } from '@ngx-translate/core';
+import { MatDialog, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { UserService } from '../../../core/services';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { HoverHintComponent } from '../hover-hint/hover-hint.component';
 
 @Component({
   selector: 'app-privacy-setting-dialog',
   templateUrl: './privacy-setting-dialog.component.html',
   styleUrls: ['./privacy-setting-dialog.component.scss'],
+  standalone: true,
+  imports: [
+    MatDialogModule,
+    HoverHintComponent,
+    MatCheckboxModule,
+    MatButtonModule,
+    TranslateModule,
+  ],
 })
 export class PrivacySettingDialogComponent implements OnInit {
   i18n = {

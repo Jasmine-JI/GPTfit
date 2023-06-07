@@ -8,7 +8,7 @@ describe('EditIndividualPrivacyComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [EditIndividualPrivacyComponent],
+      imports: [EditIndividualPrivacyComponent],
     }).compileComponents();
   });
 

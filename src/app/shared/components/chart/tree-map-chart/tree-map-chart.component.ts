@@ -13,13 +13,14 @@ import { zoneColor } from '../../../../core/models/represent-color';
 import Highcharts from 'highcharts';
 import { chart } from 'highcharts';
 import Treemap from 'highcharts/modules/treemap';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import {
   getHrZoneTranslation,
   getFtpZoneTranslation,
   getMuscleGroupTranslation,
   mathRounding,
 } from '../../../../core/utils';
+import { NgIf } from '@angular/common';
 
 // highchart 引入 tree map
 Treemap(Highcharts);
@@ -28,6 +29,8 @@ Treemap(Highcharts);
   selector: 'app-tree-map-chart',
   templateUrl: './tree-map-chart.component.html',
   styleUrls: ['./tree-map-chart.component.scss'],
+  standalone: true,
+  imports: [NgIf, TranslateModule],
 })
 export class TreeMapChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() zoneInfo: {

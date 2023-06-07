@@ -8,7 +8,7 @@ describe('OfficialActivityComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [OfficialActivityComponent],
+      imports: [OfficialActivityComponent],
     }).compileComponents();
   });
 

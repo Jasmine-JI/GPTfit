@@ -18,6 +18,8 @@ import { targetAchieveTooltip } from '../../../../core/utils/chart-formatter';
 import { compareChartDefault } from '../../../../core/models/compo/chart-data.model';
 import { deepCopy } from '../../../../core/utils/index';
 import { GlobalEventsService } from '../../../../core/services';
+import { TranslateModule } from '@ngx-translate/core';
+import { NgIf } from '@angular/common';
 
 // highchart 引入 heatmap
 heatmap(Highcharts);
@@ -26,6 +28,8 @@ heatmap(Highcharts);
   selector: 'app-target-achieve-chart',
   templateUrl: './target-achieve-chart.component.html',
   styleUrls: ['./target-achieve-chart.component.scss', '../chart-share-style.scss'],
+  standalone: true,
+  imports: [NgIf, TranslateModule],
 })
 export class TargetAchieveChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: Array<any>;

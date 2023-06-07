@@ -8,7 +8,7 @@ describe('TrendInfoChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TrendInfoChartComponent],
+      imports: [TrendInfoChartComponent],
     }).compileComponents();
   });
 

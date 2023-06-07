@@ -8,7 +8,7 @@ describe('BodyConstituteSvgComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [BodyConstituteSvgComponent],
+      imports: [BodyConstituteSvgComponent],
     }).compileComponents();
   }));
 

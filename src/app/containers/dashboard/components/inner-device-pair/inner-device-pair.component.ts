@@ -5,11 +5,17 @@ import { Router } from '@angular/router';
 import { getUrlQueryStrings } from '../../../../core/utils';
 import { QueryString } from '../../../../core/enums/common';
 import { appPath } from '../../../../app-path.const';
+import { FormsModule } from '@angular/forms';
+import { MyDeviceComponent } from '../my-device/my-device.component';
+import { NgIf } from '@angular/common';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-inner-device-pair',
   templateUrl: './inner-device-pair.component.html',
   styleUrls: ['./inner-device-pair.component.scss'],
+  standalone: true,
+  imports: [MatTabsModule, NgIf, MyDeviceComponent, FormsModule],
 })
 export class InnerDevicePairComponent implements OnInit {
   targetUserId: number;

@@ -17,10 +17,7 @@
 </div>
 <div style="display: flex; justify-content: space-between">
   <app-upload-file
-    [maxFileSize]="maxFileSize"
-    [disabled]="isUploading"
     btnText="Select File"
-    [isLoading]="isUploading"
     [accept]="acceptFileExtensions.join()"
     (onChange)="handleAttachmentChange($event)"
   ></app-upload-file>

@@ -1,9 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-form-remind',
   templateUrl: './form-remind.component.html',
   styleUrls: ['./form-remind.component.scss'],
+  standalone: true,
+  imports: [NgIf],
 })
 export class FormRemindComponent implements OnInit {
   @Input() className: string;

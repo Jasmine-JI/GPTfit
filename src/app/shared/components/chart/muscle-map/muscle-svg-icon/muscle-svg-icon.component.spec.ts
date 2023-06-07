@@ -8,7 +8,7 @@ describe('MuscleSvgIconComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [MuscleSvgIconComponent],
+      imports: [MuscleSvgIconComponent],
     }).compileComponents();
   }));
 

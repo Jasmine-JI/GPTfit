@@ -2,12 +2,13 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Domain, WebIp, WebPort } from '../../../../core/enums/common';
 import { AccountType, AccountStatus, ThirdParty } from '../../../../core/enums/personal';
 import { UserService, AuthService, Api10xxService } from '../../../../core/services';
 import { getUrlQueryStrings, checkResponse } from '../../../../core/utils';
 import { appPath } from '../../../../app-path.const';
+import { NgIf } from '@angular/common';
 
 /**
  * 測試環境與正式環境 strava 的 clientId
@@ -21,6 +22,8 @@ enum StravaClientId {
   selector: 'app-setting-account',
   templateUrl: './setting-account.component.html',
   styleUrls: ['./setting-account.component.scss', '../personal-child-page.scss'],
+  standalone: true,
+  imports: [NgIf, TranslateModule],
 })
 export class SettingAccountComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

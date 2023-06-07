@@ -8,7 +8,7 @@ describe('TargetAchieveChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TargetAchieveChartComponent],
+      imports: [TargetAchieveChartComponent],
     }).compileComponents();
   });
 

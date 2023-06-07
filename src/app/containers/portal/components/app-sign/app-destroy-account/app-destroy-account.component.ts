@@ -13,12 +13,14 @@ import {
 } from '../../../../../core/services';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { TFTViewMinWidth } from '../../../models/app-webview';
 import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/utils';
 import { AccountType } from '../../../../../core/enums/personal';
 import { errorMessage } from '../../../../../core/models/const';
 import { appPath } from '../../../../../app-path.const';
+import { NgIf, NgClass } from '@angular/common';
+import { LoadingBarComponent } from '../../../../../components/loading-bar/loading-bar.component';
 
 enum DestroyFlow {
   search = 1,
@@ -37,6 +39,8 @@ enum DestroyStatus {
   selector: 'app-app-destroy-account',
   templateUrl: './app-destroy-account.component.html',
   styleUrls: ['./app-destroy-account.component.scss'],
+  standalone: true,
+  imports: [LoadingBarComponent, NgIf, NgClass, TranslateModule],
 })
 export class AppDestroyAccountComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();

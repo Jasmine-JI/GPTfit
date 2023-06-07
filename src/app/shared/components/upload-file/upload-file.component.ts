@@ -11,14 +11,26 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { ImageCroppedEvent } from 'ngx-image-cropper';
+import { ImageCroppedEvent, ImageCropperModule } from 'ngx-image-cropper';
 import { ImageCropperComponent } from 'ngx-image-cropper';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { NgIf, AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-upload-file',
   templateUrl: './upload-file.component.html',
   styleUrls: ['./upload-file.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    MatProgressSpinnerModule,
+    ImageCropperModule,
+    AsyncPipe,
+    TranslateModule,
+    SafeHtmlPipe,
+  ],
 })
 export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isUserAvastarMode: false;

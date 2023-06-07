@@ -64,6 +64,7 @@ class ChartOptions {
   selector: 'app-line-chart',
   templateUrl: './line-chart.component.html',
   styleUrls: ['./line-chart.component.scss'],
+  standalone: true,
 })
 export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: any;

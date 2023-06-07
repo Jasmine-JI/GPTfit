@@ -24,7 +24,7 @@ import { HrBase, SportType } from '../../../core/enums/sports';
 import { Router } from '@angular/router';
 import dayjs from 'dayjs';
 import weekday from 'dayjs/plugin/weekday';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { MuscleNamePipe } from '../../../core/pipes/muscle-name.pipe';
 import { mi, lb } from '../../../core/models/const/bs-constant.model';
 import { charts } from 'highcharts';
@@ -52,6 +52,29 @@ import { ComplexSportsHandler } from '../../classes/sports-report/complex-sports
 import { FileSimpleInfo } from '../../../core/models/compo';
 import { errorMessage } from '../../../core/models/const';
 import { appPath } from '../../../app-path.const';
+import { SwimPosturePipe } from '../../../core/pipes/swim-posture.pipe';
+import { TemperatureSibsPipe } from '../../../core/pipes/temperature-sibs.pipe';
+import { SpeedSibsPipe } from '../../../core/pipes/speed-sibs.pipe';
+import { ThousandConversionPipe } from '../../../core/pipes/thousand-conversion.pipe';
+import { SportTimePipe } from '../../../core/pipes/sport-time.pipe';
+import { SportTypeIconPipe } from '../../../core/pipes/sport-type-icon.pipe';
+import { ProductTypePipe } from '../../../core/pipes/product-type.pipe';
+import { WeightSibsPipe } from '../../../core/pipes/weight-sibs.pipe';
+import { SportPaceSibsPipe } from '../../../core/pipes/sport-pace-sibs.pipe';
+import { DistanceSibsPipe } from '../../../core/pipes/distance-sibs.pipe';
+import { ImgCropperComponent } from '../../../components/image-cropper/image-cropper.component';
+import { TrendInfoChartComponent } from '../chart/trend-info-chart/trend-info-chart.component';
+import { QuadrantChartComponent } from '../chart/quadrant-chart/quadrant-chart.component';
+import { ThresholdInfoComponent } from '../chart/threshold-info/threshold-info.component';
+import { ThresholdChartComponent } from '../chart/threshold-chart/threshold-chart.component';
+import { HrzoneInfoComponent } from '../chart/hrzone-info/hrzone-info.component';
+import { HrzoneChartComponent } from '../chart/hrzone-chart/hrzone-chart.component';
+import { MuscleMapCardComponent } from './muscle-map-card/muscle-map-card.component';
+import { MapChartCompareComponent } from '../map-chart-compare/map-chart-compare.component';
+import { SportsFileRoadComponent } from '../../../components/sports-file-road/sports-file-road.component';
+import { FormsModule } from '@angular/forms';
+import { NgIf, NgFor, NgTemplateOutlet, DecimalPipe, KeyValuePipe } from '@angular/common';
+import { LoadingBarComponent } from '../../../components/loading-bar/loading-bar.component';
 
 dayjs.extend(weekday);
 
@@ -66,6 +89,37 @@ type FooterDesc = 'classDesc' | 'teacherDesc';
   templateUrl: './activity-detail.component.html',
   styleUrls: ['./activity-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    NgIf,
+    FormsModule,
+    SportsFileRoadComponent,
+    NgFor,
+    MapChartCompareComponent,
+    MuscleMapCardComponent,
+    HrzoneChartComponent,
+    HrzoneInfoComponent,
+    ThresholdChartComponent,
+    ThresholdInfoComponent,
+    QuadrantChartComponent,
+    TrendInfoChartComponent,
+    NgTemplateOutlet,
+    ImgCropperComponent,
+    DecimalPipe,
+    KeyValuePipe,
+    TranslateModule,
+    DistanceSibsPipe,
+    SportPaceSibsPipe,
+    WeightSibsPipe,
+    ProductTypePipe,
+    SportTypeIconPipe,
+    SportTimePipe,
+    ThousandConversionPipe,
+    SpeedSibsPipe,
+    TemperatureSibsPipe,
+    SwimPosturePipe,
+  ],
 })
 export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('tagBar') tagBar: ElementRef;
