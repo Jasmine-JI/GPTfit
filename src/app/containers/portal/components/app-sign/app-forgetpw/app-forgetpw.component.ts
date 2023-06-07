@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import {
   AuthService,
   GetClientIpService,
@@ -12,7 +12,7 @@ import {
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { Subject, Subscription, fromEvent, merge, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { formTest } from '../../../../../core/models/regex/form-test';
 import { codes } from '../../../../../core/models/const';
@@ -21,6 +21,10 @@ import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/util
 import { SignInType } from '../../../../../core/enums/personal';
 import { appPath } from '../../../../../app-path.const';
 import { QueryString } from '../../../../../core/enums/common';
+import { FormsModule } from '@angular/forms';
+import { IntlPhoneInputComponent } from '../../../../../shared/components/intl-phone-input/intl-phone-input.component';
+import { LoadingBarComponent } from '../../../../../components/loading-bar/loading-bar.component';
+import { NgIf, NgClass, NgFor, NgTemplateOutlet, NgSwitch, NgSwitchCase } from '@angular/common';
 
 const errorCaptchaI18nKey = 'universal_userAccount_errorCaptcha';
 enum ResetFlow {
@@ -33,6 +37,20 @@ enum ResetFlow {
   selector: 'app-app-forgetpw',
   templateUrl: './app-forgetpw.component.html',
   styleUrls: ['./app-forgetpw.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    LoadingBarComponent,
+    NgClass,
+    NgFor,
+    NgTemplateOutlet,
+    NgSwitch,
+    NgSwitchCase,
+    IntlPhoneInputComponent,
+    FormsModule,
+    RouterLink,
+    TranslateModule,
+  ],
 })
 export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();

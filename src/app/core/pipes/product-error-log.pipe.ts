@@ -4,9 +4,12 @@ import { Pipe, PipeTransform } from '@angular/core';
  * 裝置日誌log轉譯
  * @version 20210428
  */
-@Pipe({ name: 'productErrorLog' })
+@Pipe({
+  name: 'productErrorLog',
+  standalone: true,
+})
 export class ProductErrorLogPipe implements PipeTransform {
-  transform(value: string, args: string[]): any {
+  transform(value: string): any {
     switch (value) {
       case 'errorCode_treadmill_a00':
         return '控制器錯誤:上表顯示E00: 通訊異常';

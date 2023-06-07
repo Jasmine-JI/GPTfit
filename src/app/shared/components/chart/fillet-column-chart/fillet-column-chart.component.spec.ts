@@ -8,7 +8,7 @@ describe('FilletColumnChartComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [FilletColumnChartComponent],
+      imports: [FilletColumnChartComponent],
     }).compileComponents();
   }));
 

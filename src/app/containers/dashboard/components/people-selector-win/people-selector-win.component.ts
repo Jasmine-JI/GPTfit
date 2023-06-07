@@ -5,14 +5,35 @@ import {
   NodejsApiService,
 } from '../../../../core/services';
 import { Component, OnInit, Inject, HostListener } from '@angular/core';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { HttpParams } from '@angular/common/http';
 import { deepCopy } from '../../../../core/utils/index';
+import { SystemIdPipe } from '../../../../core/pipes/system-id.pipe';
+import { AppIdPipe } from '../../../../core/pipes/app-id.pipe';
+import { LanguageCodePipe } from '../../../../core/pipes/language-code.pipe';
+import { RegionCodePipe } from '../../../../core/pipes/region-code.pipe';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatButtonModule } from '@angular/material/button';
+import { FormsModule } from '@angular/forms';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-people-selector-win',
   templateUrl: './people-selector-win.component.html',
   styleUrls: ['./people-selector-win.component.scss'],
+  standalone: true,
+  imports: [
+    MatDialogModule,
+    NgIf,
+    NgFor,
+    FormsModule,
+    MatButtonModule,
+    TranslateModule,
+    RegionCodePipe,
+    LanguageCodePipe,
+    AppIdPipe,
+    SystemIdPipe,
+  ],
 })
 export class PeopleSelectorWinComponent implements OnInit {
   pushCondition = ['地區', '系統', '應用', '群組', '會員', '語言'];

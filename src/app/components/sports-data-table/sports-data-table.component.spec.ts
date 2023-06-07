@@ -8,7 +8,7 @@ describe('SportsDataTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SportsDataTableComponent],
+      imports: [SportsDataTableComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SportsDataTableComponent);

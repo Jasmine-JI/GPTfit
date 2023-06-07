@@ -8,7 +8,7 @@ describe('AppCompressDataComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AppCompressDataComponent],
+      imports: [AppCompressDataComponent],
     }).compileComponents();
   });
 

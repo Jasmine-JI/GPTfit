@@ -1,20 +1,25 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { AuthService, GlobalEventsService } from '../../../../../core/services';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { Subject, Subscription, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { formTest } from '../../../../../core/models/regex/form-test';
 import { getLocalStorageObject } from '../../../../../core/utils';
 import { SignInType } from '../../../../../core/enums/personal';
 import { appPath } from '../../../../../app-path.const';
+import { IntlPhoneInputComponent } from '../../../../../shared/components/intl-phone-input/intl-phone-input.component';
+import { FormsModule } from '@angular/forms';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-app-signin',
   templateUrl: './app-signin.component.html',
   styleUrls: ['./app-signin.component.scss'],
+  standalone: true,
+  imports: [NgIf, NgFor, FormsModule, RouterLink, IntlPhoneInputComponent, TranslateModule],
 })
 export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();

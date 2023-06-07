@@ -8,11 +8,18 @@ import {
 import { DataUnitType } from '../../../../core/enums/common';
 import { MuscleCode, Proficiency } from '../../../../core/enums/sports';
 import { UserLevel } from '../../../../core/models/common';
+import { MuscleNamePipe } from '../../../../core/pipes/muscle-name.pipe';
+import { WeightSibsPipe } from '../../../../core/pipes/weight-sibs.pipe';
+import { TranslateModule } from '@ngx-translate/core';
+import { MuscleSvgIconComponent } from '../../chart/muscle-map/muscle-svg-icon/muscle-svg-icon.component';
+import { NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-muscle-map-card',
   templateUrl: './muscle-map-card.component.html',
   styleUrls: ['./muscle-map-card.component.scss'],
+  standalone: true,
+  imports: [NgFor, MuscleSvgIconComponent, TranslateModule, WeightSibsPipe, MuscleNamePipe],
 })
 export class MuscleMapCardComponent implements OnInit, OnChanges, OnDestroy {
   @Input()

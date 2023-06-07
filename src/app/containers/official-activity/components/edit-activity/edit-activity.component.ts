@@ -38,6 +38,15 @@ import {
 import { day } from '../../../../core/models/const';
 import { Gender } from '../../../../core/enums/personal';
 import { appPath } from '../../../../app-path.const';
+import { TimeFormatPipe } from '../../../../core/pipes/time-format.pipe';
+import { TranslateModule } from '@ngx-translate/core';
+import { ImgCropperComponent } from '../../../../components/image-cropper/image-cropper.component';
+import { AlaIframeComponent } from '../../../../shared/components/ala-iframe/ala-iframe.component';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
+import { MatIconModule } from '@angular/material/icon';
+import { DateRangePickerComponent } from '../../../../shared/components/date-range-picker/date-range-picker.component';
+import { NgIf, NgFor, NgTemplateOutlet } from '@angular/common';
+import { LoadingBarComponent } from '../../../../components/loading-bar/loading-bar.component';
 
 const leaveMessage = '尚未儲存，是否仍要離開此頁面？';
 const contentTextLimit = 2500; // 詳細內容單一區塊字數上限
@@ -54,6 +63,20 @@ enum HaveNumberLimit {
   selector: 'app-edit-activity',
   templateUrl: './edit-activity.component.html',
   styleUrls: ['./edit-activity.component.scss'],
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    NgIf,
+    DateRangePickerComponent,
+    NgFor,
+    MatIconModule,
+    CKEditorModule,
+    AlaIframeComponent,
+    NgTemplateOutlet,
+    ImgCropperComponent,
+    TranslateModule,
+    TimeFormatPipe,
+  ],
 })
 export class EditActivityComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

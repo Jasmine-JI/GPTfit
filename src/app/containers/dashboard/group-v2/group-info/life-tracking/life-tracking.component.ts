@@ -6,13 +6,13 @@ import {
   ChangeDetectorRef,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { MatSort, Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import SimpleLinearRegression from 'ml-regression-simple-linear';
 import dayjs from 'dayjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { Subject, Subscription, fromEvent, combineLatest, of, merge } from 'rxjs';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import {
   HashIdService,
   UserService,
@@ -27,7 +27,7 @@ import { ReportConditionOpt } from '../../../../../core/models/compo/report-cond
 import { mi } from '../../../../../core/models/const/bs-constant.model';
 import { DataUnitType, QueryString } from '../../../../../core/enums/common';
 import { GroupLevel, SettingObj } from '../../../../dashboard/models/group-detail';
-import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { stepColor } from '../../../../../core/models/represent-color';
 import {
   setLocalStorageObject,
@@ -39,12 +39,47 @@ import {
   displayGroupLevel,
 } from '../../../../../core/utils';
 import { appPath } from '../../../../../app-path.const';
+import { BodyAssessmentPipe } from '../../../../../core/pipes/body-assessment.pipe';
+import { BMIPipe } from '../../../../../core/pipes/bmi.pipe';
+import { BodyHeightSibsPipe } from '../../../../../core/pipes/body-height-sibs.pipe';
+import { ThousandConversionPipe } from '../../../../../core/pipes/thousand-conversion.pipe';
+import { SportTimePipe } from '../../../../../core/pipes/sport-time.pipe';
+import { DistanceSibsPipe } from '../../../../../core/pipes/distance-sibs.pipe';
+import { FilletColumnChartComponent } from '../../../../../shared/components/chart/fillet-column-chart/fillet-column-chart.component';
+import { LineChartComponent } from '../../../../../shared/components/chart/line-chart/line-chart.component';
+import { DistributionChartComponent } from '../../../../../shared/components/chart/distribution-chart/distribution-chart.component';
+import { StackColumnChartComponent } from '../../../../../shared/components/chart/stack-column-chart/stack-column-chart.component';
+import { DiscolorColumnChartComponent } from '../../../../../shared/components/chart/discolor-column-chart/discolor-column-chart.component';
+import { NgIf, NgFor, DecimalPipe } from '@angular/common';
+import { LoadingBarComponent } from '../../../../../components/loading-bar/loading-bar.component';
 
 @Component({
   selector: 'app-life-tracking',
   templateUrl: './life-tracking.component.html',
   styleUrls: ['./life-tracking.component.scss', '../group-child-page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    NgIf,
+    DiscolorColumnChartComponent,
+    StackColumnChartComponent,
+    DistributionChartComponent,
+    LineChartComponent,
+    FilletColumnChartComponent,
+    NgFor,
+    MatCheckboxModule,
+    MatTableModule,
+    MatSortModule,
+    DecimalPipe,
+    TranslateModule,
+    DistanceSibsPipe,
+    SportTimePipe,
+    ThousandConversionPipe,
+    BodyHeightSibsPipe,
+    BMIPipe,
+    BodyAssessmentPipe,
+  ],
 })
 export class LifeTrackingComponent implements OnInit, OnDestroy {
   @ViewChild('groupSortTable', { static: false })

@@ -8,7 +8,7 @@ describe('GroupOperationListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [GroupOperationListComponent],
+      imports: [GroupOperationListComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(GroupOperationListComponent);

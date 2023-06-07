@@ -8,7 +8,7 @@ describe('AlaIframeComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [AlaIframeComponent],
+      imports: [AlaIframeComponent],
     }).compileComponents();
   }));
 

@@ -13,16 +13,19 @@ import { AuthService, HashIdService, Api11xxService } from '../../../core/servic
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MessageBoxComponent } from '../message-box/message-box.component';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { LongTextPipe } from '../../../core/pipes/long-text.pipe';
 import { ProfessionalService } from '../../../containers/professional/services/professional.service';
 import { appPath } from '../../../app-path.const';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-member-capsule',
   templateUrl: './member-capsule.component.html',
   styleUrls: ['./member-capsule.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: true,
+  imports: [NgIf, TranslateModule],
 })
 export class MemberCapsuleComponent implements OnInit, OnChanges {
   @Input() memberInfo: any;

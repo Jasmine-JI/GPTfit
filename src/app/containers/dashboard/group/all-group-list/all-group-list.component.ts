@@ -6,9 +6,9 @@ import {
   ViewEncapsulation,
   OnDestroy,
 } from '@angular/core';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatSort, Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator, PageEvent, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { AuthService, HashIdService, Api11xxService } from '../../../../core/services';
 import { getUrlQueryStrings, getPartGroupId } from '../../../../core/utils';
@@ -16,12 +16,43 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { appPath } from '../../../../app-path.const';
 import { QueryString } from '../../../../core/enums/common';
+import { GroupStatusPipe } from '../../../../core/pipes/group-status.pipe';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { NgFor, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
+import { MatOptionModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-all-group-list',
   templateUrl: './all-group-list.component.html',
   styleUrls: ['./all-group-list.component.scss', '../group-style.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: true,
+  imports: [
+    MatFormFieldModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatInputModule,
+    MatAutocompleteModule,
+    FormsModule,
+    NgFor,
+    MatButtonModule,
+    MatIconModule,
+    MatTableModule,
+    MatSortModule,
+    NgIf,
+    MatProgressSpinnerModule,
+    MatPaginatorModule,
+    TranslateModule,
+    GroupStatusPipe,
+  ],
 })
 export class AllGroupListComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

@@ -1,17 +1,21 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MessageBoxComponent } from '../message-box/message-box.component';
 import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { HashIdService } from '../../../core/services';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { appPath } from '../../../app-path.const';
 import { QueryString } from '../../../core/enums/common';
+import { MatLineModule } from '@angular/material/core';
+import { MatListModule } from '@angular/material/list';
 
 @Component({
   selector: 'app-bottom-sheet',
   templateUrl: './bottom-sheet.component.html',
   styleUrls: ['./bottom-sheet.component.scss'],
+  standalone: true,
+  imports: [MatListModule, MatLineModule, TranslateModule],
 })
 export class BottomSheetComponent implements OnInit {
   title: string;

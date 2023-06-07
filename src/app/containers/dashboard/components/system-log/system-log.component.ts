@@ -7,8 +7,13 @@ import { takeUntil } from 'rxjs/operators';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Api10xxService, AuthService, ApiCommonService } from '../../../../core/services';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, PageEvent, MatPaginatorModule } from '@angular/material/paginator';
 import { SelectDate } from '../../../../core/models/common';
+import { AppIdPipe } from '../../../../core/pipes/app-id.pipe';
+import { DateRangePickerComponent } from '../../../../shared/components/date-range-picker/date-range-picker.component';
+import { FormsModule } from '@angular/forms';
+import { NgIf, NgFor } from '@angular/common';
+import { LoadingBarComponent } from '../../../../components/loading-bar/loading-bar.component';
 
 type Serverity = 'INFO' | 'WARN' | 'ERROR' | 'DEBUG';
 type TargetType = 'user' | 'equipment';
@@ -18,6 +23,16 @@ const apiDateFormat = 'YYYY-MM-DD HH:mm:ss';
   selector: 'app-system-log',
   templateUrl: './system-log.component.html',
   styleUrls: ['./system-log.component.scss'],
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    NgIf,
+    FormsModule,
+    DateRangePickerComponent,
+    MatPaginatorModule,
+    NgFor,
+    AppIdPipe,
+  ],
 })
 export class SystemLogComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

@@ -8,7 +8,7 @@ describe('GroupIntroductionComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [GroupIntroductionComponent],
+      imports: [GroupIntroductionComponent],
     }).compileComponents();
   }));
 

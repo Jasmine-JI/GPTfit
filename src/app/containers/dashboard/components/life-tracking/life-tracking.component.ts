@@ -9,19 +9,36 @@ import {
 } from '@angular/core';
 import { LifeTrackingService } from '../../services/life-tracking.service';
 import { Router } from '@angular/router';
-import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MatDatepickerInputEvent, MatDatepickerModule } from '@angular/material/datepicker';
 import { HashIdService, AuthService } from '../../../../core/services';
 import dayjs, { Dayjs } from 'dayjs';
 import { chart, charts, each } from 'highcharts';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import { MatDialog } from '@angular/material/dialog';
 import { appPath } from '../../../../app-path.const';
+import { SexPipe } from '../../../../core/pipes/sex.pipe';
+import { TranslateModule } from '@ngx-translate/core';
+import { FormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { NgIf, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-life-tracking',
   templateUrl: './life-tracking.component.html',
   styleUrls: ['./life-tracking.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: true,
+  imports: [
+    NgIf,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    FormsModule,
+    DecimalPipe,
+    TranslateModule,
+    SexPipe,
+  ],
 })
 export class LifeTrackingComponent implements OnInit, OnDestroy {
   _options = {

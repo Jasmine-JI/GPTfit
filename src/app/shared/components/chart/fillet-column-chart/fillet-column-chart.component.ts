@@ -10,7 +10,7 @@ import {
 import { chart } from 'highcharts';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { planeGColor, planeMaxGColor, fitTimeColor } from '../../../../core/models/represent-color';
@@ -19,6 +19,11 @@ import { DataUnitType } from '../../../../core/enums/common';
 import { day, month, week } from '../../../../core/models/const';
 import { SportType } from '../../../../core/enums/sports';
 import { DisplayPage } from '../../../../core/models/common';
+import { DataTypeTranslatePipe } from '../../../../core/pipes/data-type-translate.pipe';
+import { ThousandConversionPipe } from '../../../../core/pipes/thousand-conversion.pipe';
+import { SportTimePipe } from '../../../../core/pipes/sport-time.pipe';
+import { DistanceSibsPipe } from '../../../../core/pipes/distance-sibs.pipe';
+import { NgIf, DecimalPipe } from '@angular/common';
 
 dayjs.extend(isoWeek);
 
@@ -81,6 +86,16 @@ class ChartOptions {
   selector: 'app-fillet-column-chart',
   templateUrl: './fillet-column-chart.component.html',
   styleUrls: ['./fillet-column-chart.component.scss', '../chart-share-style.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    DecimalPipe,
+    TranslateModule,
+    DistanceSibsPipe,
+    SportTimePipe,
+    ThousandConversionPipe,
+    DataTypeTranslatePipe,
+  ],
 })
 export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject();

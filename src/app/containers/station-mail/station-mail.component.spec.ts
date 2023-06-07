@@ -8,7 +8,7 @@ describe('StationMailComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [StationMailComponent],
+      imports: [StationMailComponent],
     }).compileComponents();
   });
 

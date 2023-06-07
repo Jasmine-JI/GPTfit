@@ -43,7 +43,7 @@ import { DefaultDateRange } from '../../classes/default-date-range';
 import { zoneColor, sportTypeColor, trendChartColor } from '../../../core/models/represent-color';
 import { WeightTrainingAnalysis } from '../../classes/sports-report/weight-train-anaysis';
 import { WeightTrainAnalysisOption } from '../../classes/weight-train-analysis-option';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { WeightTrainingAnalysisSort } from '../../classes/sports-report/weight-training-analysis-sort';
 import {
   speedToPace,
@@ -66,6 +66,50 @@ import { SameWeekLifeTrackingData } from '../../classes/same-week-lifetracking-d
 import { PersonalChartAnalysisOption } from '../../../containers/personal/classes/personal-chart-analysis-option';
 import { DataDescription } from '../../../core/models/compo';
 import { MuscleAnalysisColumn, MuscleGroup, SportType } from '../../../core/enums/sports';
+import { MusclePartIconPipe } from '../../../core/pipes/muscle-part-icon.pipe';
+import { MuscleGroupNamePipe } from '../../../core/pipes/muscle-group-name.pipe';
+import { MuscleGroupIconPipe } from '../../../core/pipes/muscle-group-icon.pipe';
+import { DataTypeUnitPipe } from '../../../core/pipes/data-type-unit.pipe';
+import { DataTypeTranslatePipe } from '../../../core/pipes/data-type-translate.pipe';
+import { SportTypePipe } from '../../../core/pipes/sport-type.pipe';
+import { SportTimePipe } from '../../../core/pipes/sport-time.pipe';
+import { SportTypeIconPipe } from '../../../core/pipes/sport-type-icon.pipe';
+import { WeightSibsPipe } from '../../../core/pipes/weight-sibs.pipe';
+import { SportPaceSibsPipe } from '../../../core/pipes/sport-pace-sibs.pipe';
+import { TranslateUnitKeyPipe } from '../../../core/pipes/translate-unit-key.pipe';
+import { TranslateKeyPipe } from '../../../core/pipes/translate-key.pipe';
+import { DateUnitKeyPipe } from '../../../core/pipes/date-unit-key.pipe';
+import { MatIconModule } from '@angular/material/icon';
+import { RingChartComponent } from '../chart/ring-chart/ring-chart.component';
+import { AnalysisOptionComponent } from '../../../components/analysis-option/analysis-option.component';
+import { SportsDataTableComponent } from '../../../components/sports-data-table/sports-data-table.component';
+import { CompareBodyWeightChartComponent } from '../chart/compare-body-weight-chart/compare-body-weight-chart.component';
+import { TargetAchieveChartComponent } from '../chart/target-achieve-chart/target-achieve-chart.component';
+import { CompareExtremeGforceChartComponent } from '../chart/compare-extreme-gforce-chart/compare-extreme-gforce-chart.component';
+import { ComparePaceChartComponent } from '../chart/compare-pace-chart/compare-pace-chart.component';
+import { CompareOverlayColumnChartComponent } from '../chart/compare-overlay-column-chart/compare-overlay-column-chart.component';
+import { CompareColumnTrendComponent } from '../chart/compare-column-trend/compare-column-trend.component';
+import { CompareHrzoneTrendComponent } from '../chart/compare-hrzone-trend/compare-hrzone-trend.component';
+import { HrzoneInfoComponent } from '../chart/hrzone-info/hrzone-info.component';
+import { TreeMapChartComponent } from '../chart/tree-map-chart/tree-map-chart.component';
+import { HrzoneChartComponent } from '../chart/hrzone-chart/hrzone-chart.component';
+import { MuscleMapChartComponent } from '../chart/muscle-map/muscle-map-chart/muscle-map-chart.component';
+import { WeightTrainLevelSelectorComponent } from '../weight-train-level-selector/weight-train-level-selector.component';
+import { DistributionCanvasChartComponent } from '../chart/distribution-canvas-chart/distribution-canvas-chart.component';
+import { TipDialogComponent } from '../../../components/tip-dialog/tip-dialog.component';
+import {
+  NgIf,
+  NgClass,
+  NgTemplateOutlet,
+  NgFor,
+  NgSwitch,
+  NgSwitchCase,
+  DecimalPipe,
+  KeyValuePipe,
+} from '@angular/common';
+import { ConditionSelectorComponent } from '../condition-selector/condition-selector.component';
+import { LoadingMaskComponent } from '../../../components/loading-mask/loading-mask.component';
+import { LoadingBarComponent } from '../../../components/loading-bar/loading-bar.component';
 
 dayjs.extend(isoWeek);
 
@@ -74,6 +118,52 @@ dayjs.extend(isoWeek);
   templateUrl: './sports-report.component.html',
   styleUrls: ['./sports-report.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    LoadingMaskComponent,
+    ConditionSelectorComponent,
+    NgIf,
+    NgClass,
+    NgTemplateOutlet,
+    TipDialogComponent,
+    DistributionCanvasChartComponent,
+    NgFor,
+    WeightTrainLevelSelectorComponent,
+    MuscleMapChartComponent,
+    HrzoneChartComponent,
+    TreeMapChartComponent,
+    HrzoneInfoComponent,
+    CompareHrzoneTrendComponent,
+    CompareColumnTrendComponent,
+    CompareOverlayColumnChartComponent,
+    ComparePaceChartComponent,
+    CompareExtremeGforceChartComponent,
+    TargetAchieveChartComponent,
+    CompareBodyWeightChartComponent,
+    SportsDataTableComponent,
+    AnalysisOptionComponent,
+    NgSwitch,
+    NgSwitchCase,
+    RingChartComponent,
+    MatIconModule,
+    DecimalPipe,
+    KeyValuePipe,
+    TranslateModule,
+    DateUnitKeyPipe,
+    TranslateKeyPipe,
+    TranslateUnitKeyPipe,
+    SportPaceSibsPipe,
+    WeightSibsPipe,
+    SportTypeIconPipe,
+    SportTimePipe,
+    SportTypePipe,
+    DataTypeTranslatePipe,
+    DataTypeUnitPipe,
+    MuscleGroupIconPipe,
+    MuscleGroupNamePipe,
+    MusclePartIconPipe,
+  ],
 })
 export class SportsReportComponent implements OnInit, OnDestroy {
   @Output() showPrivacyUi = new EventEmitter();

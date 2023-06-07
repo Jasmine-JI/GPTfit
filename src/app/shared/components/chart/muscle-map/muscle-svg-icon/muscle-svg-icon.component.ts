@@ -13,6 +13,7 @@ import { MuscleGroup } from '../../../../../core/enums/sports';
   selector: 'app-muscle-svg-icon',
   templateUrl: './muscle-svg-icon.component.html',
   styleUrls: ['./muscle-svg-icon.component.scss'],
+  standalone: true,
 })
 export class MuscleSvgIconComponent implements OnInit, OnChanges {
   @Input() muscleCode: any = [];

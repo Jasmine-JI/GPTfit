@@ -14,6 +14,16 @@ import { TFTViewMinWidth } from '../../../models/app-webview';
 import { AlaApp, Domain, WebPort } from '../../../../../core/enums/common';
 import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/utils';
 import { appPath } from '../../../../../app-path.const';
+import { TranslateModule } from '@ngx-translate/core';
+import {
+  NgClass,
+  NgIf,
+  NgTemplateOutlet,
+  NgSwitch,
+  NgSwitchCase,
+  NgSwitchDefault,
+} from '@angular/common';
+import { LoadingBarComponent } from '../../../../../components/loading-bar/loading-bar.component';
 
 enum CompressStatus {
   request,
@@ -26,6 +36,17 @@ enum CompressStatus {
   selector: 'app-app-compress-data',
   templateUrl: './app-compress-data.component.html',
   styleUrls: ['./app-compress-data.component.scss'],
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    NgClass,
+    NgIf,
+    NgTemplateOutlet,
+    NgSwitch,
+    NgSwitchCase,
+    NgSwitchDefault,
+    TranslateModule,
+  ],
 })
 export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('dataLink') dataLink: ElementRef;

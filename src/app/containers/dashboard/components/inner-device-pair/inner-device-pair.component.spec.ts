@@ -8,7 +8,7 @@ describe('InnerDevicePairComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [InnerDevicePairComponent],
+      imports: [InnerDevicePairComponent],
     }).compileComponents();
   }));
 

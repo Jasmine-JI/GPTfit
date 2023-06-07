@@ -24,6 +24,7 @@ import { GlobalEventsService } from '../../../../core/services';
   templateUrl: './distribution-canvas-chart.component.html',
   styleUrls: ['./distribution-canvas-chart.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
 })
 export class DistributionCanvasChartComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject();

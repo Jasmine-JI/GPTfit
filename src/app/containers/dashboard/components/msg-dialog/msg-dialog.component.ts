@@ -1,11 +1,15 @@
 import { Component, OnInit, Inject, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-msg',
   templateUrl: './msg-dialog.component.html',
   styleUrls: ['./msg-dialog.component.scss'],
+  standalone: true,
+  imports: [MatDialogModule, MatButtonModule, TranslateModule],
 })
 export class MsgDialogComponent implements OnInit {
   @Output() onConfirm: EventEmitter<any> = new EventEmitter();

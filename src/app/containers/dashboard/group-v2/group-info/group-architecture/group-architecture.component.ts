@@ -7,11 +7,13 @@ import { takeUntil } from 'rxjs/operators';
 import { GroupIdSlicePipe } from '../../../../../core/pipes';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { ProfessionalService } from '../../../../professional/services/professional.service';
 import { displayGroupLevel } from '../../../../../core/utils';
 import { appPath } from '../../../../../app-path.const';
 import { QueryString } from '../../../../../core/enums/common';
+import { MemberCapsuleComponent } from '../../../../../shared/components/member-capsule/member-capsule.component';
+import { NgIf, NgFor } from '@angular/common';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -19,6 +21,8 @@ const errMsg = `Error.<br />Please try again later.`;
   selector: 'app-group-architecture',
   templateUrl: './group-architecture.component.html',
   styleUrls: ['./group-architecture.component.scss', '../group-child-page.scss'],
+  standalone: true,
+  imports: [NgIf, MemberCapsuleComponent, NgFor, TranslateModule],
 })
 export class GroupArchitectureComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

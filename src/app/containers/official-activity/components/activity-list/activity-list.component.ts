@@ -25,7 +25,7 @@ import {
   ListStatus,
 } from '../../models/activity-content';
 import { AccessRight, QueryString, Domain } from '../../../../core/enums/common';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { codes } from '../../../../core/models/const';
 import {
   getLocalStorageObject,
@@ -34,6 +34,14 @@ import {
 } from '../../../../core/utils';
 import { AccountType, AccountStatus } from '../../../../core/enums/personal';
 import { appPath } from '../../../../app-path.const';
+import { ShippedStatusPipe } from '../../../../core/pipes/shipped-status.pipe';
+import { ListStatusPipe } from '../../../../core/pipes/list-status.pipe';
+import { TimeFormatPipe } from '../../../../core/pipes/time-format.pipe';
+import { SportTimePipe } from '../../../../core/pipes/sport-time.pipe';
+import { MatIconModule } from '@angular/material/icon';
+import { DateRangePickerComponent } from '../../../../shared/components/date-range-picker/date-range-picker.component';
+import { NgIf, NgFor, NgTemplateOutlet } from '@angular/common';
+import { LoadingBarComponent } from '../../../../components/loading-bar/loading-bar.component';
 
 enum AllStatus {
   notEnable,
@@ -56,6 +64,20 @@ const { officialActivity } = appPath;
   selector: 'app-activity-list',
   templateUrl: './activity-list.component.html',
   styleUrls: ['./activity-list.component.scss'],
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    NgIf,
+    DateRangePickerComponent,
+    MatIconModule,
+    NgFor,
+    NgTemplateOutlet,
+    TranslateModule,
+    SportTimePipe,
+    TimeFormatPipe,
+    ListStatusPipe,
+    ShippedStatusPipe,
+  ],
 })
 export class ActivityListComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

@@ -7,12 +7,13 @@ import {
   ElementRef,
   Input,
 } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { chart } from 'highcharts';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { zoneColor } from '../../../../core/models/represent-color';
 import { GlobalEventsService } from '../../../../core/services';
+import { NgIf, DecimalPipe } from '@angular/common';
 
 /**
  * 建立圖表用
@@ -73,6 +74,8 @@ class ChartOptions {
   selector: 'app-hrzone-chart',
   templateUrl: './hrzone-chart.component.html',
   styleUrls: ['./hrzone-chart.component.scss', '../chart-share-style.scss'],
+  standalone: true,
+  imports: [NgIf, DecimalPipe, TranslateModule],
 })
 export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject();

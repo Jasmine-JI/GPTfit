@@ -112,6 +112,7 @@ class ChartOptions {
   selector: 'app-trinomial-chart',
   templateUrl: './trinomial-chart.component.html',
   styleUrls: ['./trinomial-chart.component.scss'],
+  standalone: true,
 })
 export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject();

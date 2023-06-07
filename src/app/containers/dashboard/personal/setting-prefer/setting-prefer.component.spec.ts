@@ -8,7 +8,7 @@ describe('SettingPreferComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SettingPreferComponent],
+      imports: [SettingPreferComponent],
     }).compileComponents();
   });
 

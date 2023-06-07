@@ -1,11 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject, fromEvent, Subscription, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { TranslateModule } from '@ngx-translate/core';
+import { NgIf } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-sports-target-tip',
   templateUrl: './sports-target-tip.component.html',
   styleUrls: ['./sports-target-tip.component.scss'],
+  standalone: true,
+  imports: [MatIconModule, NgIf, TranslateModule],
 })
 export class SportsTargetTipComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

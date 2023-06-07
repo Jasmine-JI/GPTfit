@@ -8,7 +8,7 @@ describe('CompareOverlayColumnChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CompareOverlayColumnChartComponent],
+      imports: [CompareOverlayColumnChartComponent],
     }).compileComponents();
   });
 

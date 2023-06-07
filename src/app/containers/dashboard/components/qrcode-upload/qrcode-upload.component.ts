@@ -11,11 +11,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import md5 from 'md5';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { appPath } from '../../../../app-path.const';
+import { SpeedSibsPipe } from '../../../../core/pipes/speed-sibs.pipe';
+import { SafeHtmlPipe } from '../../../../core/pipes/safe-html.pipe';
+import { NgIf } from '@angular/common';
 
 const timeFormat = 'YYYY-MM-DD HH:mm';
 
@@ -23,6 +26,8 @@ const timeFormat = 'YYYY-MM-DD HH:mm';
   selector: 'app-qrcode-upload',
   templateUrl: './qrcode-upload.component.html',
   styleUrls: ['./qrcode-upload.component.scss'],
+  standalone: true,
+  imports: [NgIf, TranslateModule, SafeHtmlPipe, SpeedSibsPipe],
 })
 export class QrcodeUploadComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

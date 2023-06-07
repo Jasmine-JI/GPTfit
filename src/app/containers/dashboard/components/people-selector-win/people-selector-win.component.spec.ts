@@ -8,7 +8,7 @@ describe('InnerSelectorWinComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [InnerSelectorWinComponent],
+      imports: [InnerSelectorWinComponent],
     }).compileComponents();
   }));
 

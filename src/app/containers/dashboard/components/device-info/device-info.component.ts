@@ -12,13 +12,13 @@ import {
   HintDialogService,
   ApiCommonService,
 } from '../../../../core/services';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { langList } from '../../../../core/models/const';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
 import { UserProfile } from '../../../../core/models/api/api-10xx';
-import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MatDatepickerInputEvent, MatDatepickerModule } from '@angular/material/datepicker';
 import { PaginationSetting } from '../../../../core/models/compo/pagination.model';
 import {
   setLocalStorageObject,
@@ -29,6 +29,22 @@ import { AccessRight } from '../../../../core/enums/common';
 import { errorMessage } from '../../../../core/models/const';
 import { appPath } from '../../../../app-path.const';
 import { Domain, WebIp, QueryString } from '../../../../core/enums/common';
+import { ProductErrorLogPipe } from '../../../../core/pipes/product-error-log.pipe';
+import { ThousandConversionPipe } from '../../../../core/pipes/thousand-conversion.pipe';
+import { AppIdPipe } from '../../../../core/pipes/app-id.pipe';
+import { TimeFormatPipe } from '../../../../core/pipes/time-format.pipe';
+import { SportTimePipe } from '../../../../core/pipes/sport-time.pipe';
+import { ProductTypePipe } from '../../../../core/pipes/product-type.pipe';
+import { PaginationComponent } from '../../../../components/pagination/pagination.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { FormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { QRCodeModule } from 'angularx-qrcode';
+import { LoadingIconComponent } from '../../../../shared/components/loading-icon/loading-icon.component';
+import { NgIf, NgFor, NgTemplateOutlet } from '@angular/common';
+import { LoadingBarComponent } from '../../../../components/loading-bar/loading-bar.component';
 
 type DisplayPage = 'fitPair' | 'system' | 'myDevice';
 type MainContent = 'info' | 'management' | 'odometer' | 'log' | 'register';
@@ -37,6 +53,29 @@ type MainContent = 'info' | 'management' | 'odometer' | 'log' | 'register';
   selector: 'app-device-info',
   templateUrl: './device-info.component.html',
   styleUrls: ['./device-info.component.scss'],
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    NgIf,
+    LoadingIconComponent,
+    NgFor,
+    NgTemplateOutlet,
+    QRCodeModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    FormsModule,
+    MatButtonModule,
+    MatIconModule,
+    PaginationComponent,
+    TranslateModule,
+    ProductTypePipe,
+    SportTimePipe,
+    TimeFormatPipe,
+    AppIdPipe,
+    ThousandConversionPipe,
+    ProductErrorLogPipe,
+  ],
 })
 export class DeviceInfoComponent implements OnInit, OnDestroy {
   @ViewChild('navSection') navSection: ElementRef;

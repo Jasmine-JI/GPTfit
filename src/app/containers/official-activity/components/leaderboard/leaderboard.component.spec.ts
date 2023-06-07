@@ -8,7 +8,7 @@ describe('LeaderboardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [LeaderboardComponent],
+      imports: [LeaderboardComponent],
     }).compileComponents();
   });
 

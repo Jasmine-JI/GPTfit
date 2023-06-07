@@ -2,7 +2,7 @@ import { Component, OnInit, OnChanges, OnDestroy, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { QrcodeService } from '../../../../core/services/qrcode.service';
 import { MatDialog } from '@angular/material/dialog';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   Api10xxService,
@@ -15,11 +15,28 @@ import { Subject, fromEvent, Subscription, combineLatest } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 import { appPath } from '../../../../app-path.const';
 import { Domain, WebIp, QueryString } from '../../../../core/enums/common';
+import { TimeFormatPipe } from '../../../../core/pipes/time-format.pipe';
+import { ProductTypePipe } from '../../../../core/pipes/product-type.pipe';
+import { QRCodeModule } from 'angularx-qrcode';
+import { PaginationComponent } from '../../../../components/pagination/pagination.component';
+import { NgIf, NgFor } from '@angular/common';
+import { LoadingBarComponent } from '../../../../components/loading-bar/loading-bar.component';
 
 @Component({
   selector: 'app-my-device',
   templateUrl: './my-device.component.html',
   styleUrls: ['./my-device.component.scss'],
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    NgIf,
+    PaginationComponent,
+    NgFor,
+    QRCodeModule,
+    TranslateModule,
+    ProductTypePipe,
+    TimeFormatPipe,
+  ],
 })
 export class MyDeviceComponent implements OnInit, OnChanges, OnDestroy {
   @Input() targetUserId: number;

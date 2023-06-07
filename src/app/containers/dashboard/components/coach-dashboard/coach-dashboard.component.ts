@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { demoCoachInfo, demoLessonInfo } from './fakeUsers';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { setOptions } from 'highcharts';
 import { webSocket } from 'rxjs/webSocket';
 import dayjs from 'dayjs';
@@ -20,6 +20,11 @@ import { getUrlQueryStrings } from '../../../../core/utils';
 import { AuthService, Api20xxService, Api70xxService } from '../../../../core/services';
 import { appPath } from '../../../../app-path.const';
 import { Domain } from '../../../../core/enums/common';
+import { SafeHtmlPipe } from '../../../../core/pipes/safe-html.pipe';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AlaIframeComponent } from '../../../../shared/components/ala-iframe/ala-iframe.component';
+import { NgIf, NgClass, NgFor } from '@angular/common';
 
 export class Message {
   constructor(public classMemberDataField: any, public classMemberDataFieldValue: any) {}
@@ -70,6 +75,17 @@ export class Message {
       ),
       transition('* => *', animate('1000ms')),
     ]),
+  ],
+  standalone: true,
+  imports: [
+    NgIf,
+    RouterLink,
+    AlaIframeComponent,
+    NgClass,
+    MatProgressSpinnerModule,
+    NgFor,
+    TranslateModule,
+    SafeHtmlPipe,
   ],
 })
 export class CoachDashboardComponent implements OnInit, AfterViewInit, OnDestroy {

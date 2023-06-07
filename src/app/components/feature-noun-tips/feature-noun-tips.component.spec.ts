@@ -8,7 +8,7 @@ describe('FeatureNounTipsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [FeatureNounTipsComponent],
+      imports: [FeatureNounTipsComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(FeatureNounTipsComponent);

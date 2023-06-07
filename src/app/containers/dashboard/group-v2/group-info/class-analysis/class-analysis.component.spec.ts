@@ -8,7 +8,7 @@ describe('ClassAnalysisComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ClassAnalysisComponent],
+      imports: [ClassAnalysisComponent],
     }).compileComponents();
   }));
 

@@ -8,7 +8,7 @@ describe('MessageBoxComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [MessageBoxComponent],
+      imports: [MessageBoxComponent],
     }).compileComponents();
   }));
 

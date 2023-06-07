@@ -9,7 +9,7 @@ import {
 import { UserProfile } from '../../../core/models/api/api-10xx';
 import { Subject, Subscription, fromEvent } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { Router, ActivatedRoute, NavigationEnd, RouterOutlet } from '@angular/router';
 import { EditMode } from '../models/personal';
 import { AlbumType } from '../../../core/enums/api';
 import { DashboardService } from '../services/dashboard.service';
@@ -23,10 +23,18 @@ import {
 import { v5 as uuidv5 } from 'uuid';
 import dayjs from 'dayjs';
 import { ImageUploadService } from '../services/image-upload.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { getUrlQueryStrings, base64ToFile } from '../../../core/utils';
 import { appPath } from '../../../app-path.const';
 import { QueryString, Domain } from '../../../core/enums/common';
+import { ShareBoxComponent } from '../../../components/share-box/share-box.component';
+import { ImgCropperComponent } from '../../../components/image-cropper/image-cropper.component';
+import { SettingAccountComponent } from './setting-account/setting-account.component';
+import { SettingPreferComponent } from './setting-prefer/setting-prefer.component';
+import { SettingPrivacyComponent } from './setting-privacy/setting-privacy.component';
+import { SettingBaseComponent } from './setting-base/setting-base.component';
+import { LoadingIconComponent } from '../../../shared/components/loading-icon/loading-icon.component';
+import { NgIf, NgFor, NgTemplateOutlet } from '@angular/common';
 
 type ImgType = 'icon' | 'scenery';
 
@@ -34,6 +42,21 @@ type ImgType = 'icon' | 'scenery';
   selector: 'app-personal',
   templateUrl: './personal.component.html',
   styleUrls: ['./personal.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    LoadingIconComponent,
+    NgFor,
+    NgTemplateOutlet,
+    RouterOutlet,
+    SettingBaseComponent,
+    SettingPrivacyComponent,
+    SettingPreferComponent,
+    SettingAccountComponent,
+    ImgCropperComponent,
+    ShareBoxComponent,
+    TranslateModule,
+  ],
 })
 export class PersonalComponent implements OnInit, AfterContentInit, OnDestroy {
   private ngUnsubscribe = new Subject();

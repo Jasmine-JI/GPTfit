@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import {
   AuthService,
   Api10xxService,
@@ -12,7 +12,7 @@ import {
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { Subject, Subscription, fromEvent, merge, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { formTest } from '../../../../../core/models/regex/form-test';
 import { codes, errorMessage } from '../../../../../core/models/const';
@@ -24,11 +24,26 @@ import {
 } from '../../../../../core/utils';
 import { SignInType, AccountType } from '../../../../../core/enums/personal';
 import { appPath } from '../../../../../app-path.const';
+import { IntlPhoneInputComponent } from '../../../../../shared/components/intl-phone-input/intl-phone-input.component';
+import { FormsModule } from '@angular/forms';
+import { LoadingBarComponent } from '../../../../../components/loading-bar/loading-bar.component';
+import { NgIf, NgClass, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-app-change-account',
   templateUrl: './app-change-account.component.html',
   styleUrls: ['./app-change-account.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    LoadingBarComponent,
+    NgClass,
+    NgFor,
+    FormsModule,
+    IntlPhoneInputComponent,
+    RouterLink,
+    TranslateModule,
+  ],
 })
 export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();

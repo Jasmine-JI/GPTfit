@@ -8,7 +8,7 @@ describe('DistributionChartComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [DistributionChartComponent],
+      imports: [DistributionChartComponent],
     }).compileComponents();
   }));
 

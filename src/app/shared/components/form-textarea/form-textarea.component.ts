@@ -8,12 +8,15 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { DEFAULT_MAXLENGTH } from '../../../core/utils/index';
-import { UntypedFormGroup } from '@angular/forms';
+import { UntypedFormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormRemindComponent } from '../form-remind/form-remind.component';
 
 @Component({
   selector: 'app-form-textarea',
   templateUrl: './form-textarea.component.html',
   styleUrls: ['./form-textarea.component.scss'],
+  standalone: true,
+  imports: [FormsModule, ReactiveFormsModule, FormRemindComponent],
 })
 export class FormTextareaComponent implements OnInit, OnChanges {
   @Input() class_name = 'form-field';

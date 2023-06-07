@@ -8,7 +8,7 @@ describe('RingChartComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [RingChartComponent],
+      imports: [RingChartComponent],
     }).compileComponents();
   }));
 

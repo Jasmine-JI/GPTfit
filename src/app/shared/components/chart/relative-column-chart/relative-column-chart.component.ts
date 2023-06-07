@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { chart } from 'highcharts';
 import dayjs from 'dayjs';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import {
   rightMoveColor,
   leftMoveColor,
@@ -22,6 +22,9 @@ import {
 } from '../../../../core/models/represent-color';
 import { RelativeTrendChart } from '../../../../core/models/compo/chart-data.model';
 import { day, month, week } from '../../../../core/models/const';
+import { DataTypeUnitPipe } from '../../../../core/pipes/data-type-unit.pipe';
+import { DataTypeTranslatePipe } from '../../../../core/pipes/data-type-translate.pipe';
+import { NgIf, DecimalPipe } from '@angular/common';
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -80,6 +83,8 @@ class ChartOptions {
   selector: 'app-relative-column-chart',
   templateUrl: './relative-column-chart.component.html',
   styleUrls: ['./relative-column-chart.component.scss', '../chart-share-style.scss'],
+  standalone: true,
+  imports: [NgIf, DecimalPipe, TranslateModule, DataTypeTranslatePipe, DataTypeUnitPipe],
 })
 export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   dateList = [];

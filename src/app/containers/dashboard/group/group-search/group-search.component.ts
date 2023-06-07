@@ -1,18 +1,50 @@
 import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatSort, Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
-import { Router } from '@angular/router';
+import { MatPaginator, PageEvent, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService, HashIdService, Api11xxService } from '../../../../core/services';
 import { getUrlQueryStrings } from '../../../../core/utils';
 import { appPath } from '../../../../app-path.const';
 import { QueryString } from '../../../../core/enums/common';
+import { GroupStatusPipe } from '../../../../core/pipes/group-status.pipe';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { NgFor, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
+import { MatOptionModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-group-search',
   templateUrl: './group-search.component.html',
   styleUrls: ['./group-search.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: true,
+  imports: [
+    RouterLink,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatInputModule,
+    MatAutocompleteModule,
+    FormsModule,
+    NgFor,
+    MatButtonModule,
+    MatIconModule,
+    MatTableModule,
+    MatSortModule,
+    NgIf,
+    MatProgressSpinnerModule,
+    MatPaginatorModule,
+    TranslateModule,
+    GroupStatusPipe,
+  ],
 })
 export class GroupSearchComponent implements OnInit {
   groupLevel = '130';

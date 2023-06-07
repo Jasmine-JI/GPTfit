@@ -8,7 +8,7 @@ describe('SportFileFooterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SportFileFooterComponent],
+      imports: [SportFileFooterComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SportFileFooterComponent);

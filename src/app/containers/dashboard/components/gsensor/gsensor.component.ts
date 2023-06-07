@@ -4,6 +4,7 @@ import { takeUntil, filter, tap, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { appPath } from '../../../../app-path.const';
 import { chart } from 'highcharts';
+import { NgIf, DecimalPipe } from '@angular/common';
 
 type Axis = 'x' | 'y' | 'z';
 
@@ -65,6 +66,8 @@ const defaultOption = {
   selector: 'app-gsensor',
   templateUrl: './gsensor.component.html',
   styleUrls: ['./gsensor.component.scss'],
+  standalone: true,
+  imports: [NgIf, DecimalPipe],
 })
 export class GsensorComponent implements OnInit, OnDestroy {
   @ViewChild('xChart') xChart: ElementRef;

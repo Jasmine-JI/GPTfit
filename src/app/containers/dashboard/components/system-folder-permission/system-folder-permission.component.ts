@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { AuthService, HintDialogService } from '../../../../core/services';
+import { NgIf, NgFor } from '@angular/common';
 
 enum DevelopGroup {
   app = 1,
@@ -22,6 +23,8 @@ type ListEditMode = 'delUser' | 'addFolder' | 'delFolder';
   selector: 'app-system-folder-permission',
   templateUrl: './system-folder-permission.component.html',
   styleUrls: ['./system-folder-permission.component.scss'],
+  standalone: true,
+  imports: [NgIf, NgFor],
 })
 export class SystemFolderPermissionComponent implements OnInit {
   constructor(

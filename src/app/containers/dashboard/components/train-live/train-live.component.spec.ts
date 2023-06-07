@@ -8,7 +8,7 @@ describe('TrainLiveComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [TrainLiveComponent],
+      imports: [TrainLiveComponent],
     }).compileComponents();
   }));
 

@@ -8,7 +8,7 @@ describe('SmallHrzoneChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SmallHrzoneChartComponent],
+      imports: [SmallHrzoneChartComponent],
     }).compileComponents();
   });
 
