@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef, AfterViewChecked, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { NavigationEnd } from '@angular/router';
 import {
   HashIdService,
@@ -19,6 +19,8 @@ import { AccessRight } from '../../core/enums/common';
 import { setLocalStorageObject, getLocalStorageObject, checkResponse } from '../../core/utils';
 import { appPath } from '../../app-path.const';
 import { StationMailService } from '../station-mail/services/station-mail.service';
+import { InboxComponent } from '../station-mail/inbox/inbox.component';
+import { NgIf, NgTemplateOutlet, NgClass, NgFor } from '@angular/common';
 
 enum Dashboard {
   trainLive,
@@ -56,6 +58,17 @@ const adminPath = appPath.adminManage;
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    InboxComponent,
+    RouterLink,
+    NgTemplateOutlet,
+    NgClass,
+    RouterOutlet,
+    NgFor,
+    TranslateModule,
+  ],
 })
 export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   private ngUnsubscribe = new Subject();

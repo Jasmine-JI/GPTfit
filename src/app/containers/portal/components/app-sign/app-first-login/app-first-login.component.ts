@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -9,11 +9,17 @@ import { AuthService, Api10xxService, GlobalEventsService } from '../../../../..
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { imageToDataUri } from '../../../../../core/utils';
 import { appPath } from '../../../../../app-path.const';
+import { FormsModule } from '@angular/forms';
+import { MatRadioModule } from '@angular/material/radio';
+import { UploadFileComponent } from '../../../../../shared/components/upload-file/upload-file.component';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-app-first-login',
   templateUrl: './app-first-login.component.html',
   styleUrls: ['./app-first-login.component.scss'],
+  standalone: true,
+  imports: [NgIf, UploadFileComponent, MatRadioModule, FormsModule, TranslateModule],
 })
 export class AppFirstLoginComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import {
   AuthService,
   GetClientIpService,
@@ -10,7 +10,7 @@ import {
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { fromEvent, Subscription, Subject, merge, of } from 'rxjs';
 import { takeUntil, tap, switchMap } from 'rxjs/operators';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { formTest } from '../../../../../core/models/regex';
 import { codes } from '../../../../../core/models/const';
@@ -19,6 +19,11 @@ import { headerKeyTranslate, getUrlQueryStrings } from '../../../../../core/util
 import { SignInType } from '../../../../../core/enums/personal';
 import { Lang } from '../../../../../core/models/common';
 import { appPath } from '../../../../../app-path.const';
+import { FormsModule } from '@angular/forms';
+import { IntlPhoneInputComponent } from '../../../../../shared/components/intl-phone-input/intl-phone-input.component';
+import { PrivacyPolicyComponent } from '../../../../../shared/components/privacy-policy/privacy-policy.component';
+import { TermsComponent } from '../../../../../shared/components/terms/terms.component';
+import { NgIf, NgTemplateOutlet, NgClass, NgFor } from '@angular/common';
 
 interface RegCheck {
   email: RegExp;
@@ -36,6 +41,19 @@ type PolicyType = 'termsConditions' | 'privacyPolicy' | null;
   selector: 'app-app-signup',
   templateUrl: './app-signup.component.html',
   styleUrls: ['./app-signup.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    NgTemplateOutlet,
+    TermsComponent,
+    PrivacyPolicyComponent,
+    NgClass,
+    NgFor,
+    IntlPhoneInputComponent,
+    FormsModule,
+    RouterLink,
+    TranslateModule,
+  ],
 })
 export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();

@@ -8,7 +8,7 @@ describe('MyClassReportComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [MyClassReportComponent],
+      imports: [MyClassReportComponent],
     }).compileComponents();
   }));
 

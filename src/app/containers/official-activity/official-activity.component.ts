@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { Subject, Subscription, fromEvent, merge, combineLatest, of } from 'rxjs';
 import { takeUntil, switchMap, tap, debounceTime } from 'rxjs/operators';
 import { UserProfile } from '../../core/models/api/api-10xx';
 import { OfficialActivityService } from './services/official-activity.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { codes, errorMessage } from '../../core/models/const';
 import { formTest } from '../../core/models/regex/form-test';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -33,6 +33,12 @@ import {
 } from '../../core/utils';
 import { StationMailService } from '../station-mail/services/station-mail.service';
 import { appPath } from '../../app-path.const';
+import { FormsModule } from '@angular/forms';
+import { QRCodeModule } from 'angularx-qrcode';
+import { MatIconModule } from '@angular/material/icon';
+import { InboxComponent } from '../station-mail/inbox/inbox.component';
+import { NgIf, NgClass, NgFor } from '@angular/common';
+import { LoadingBarComponent } from '../../components/loading-bar/loading-bar.component';
 
 const { officialActivity } = appPath;
 
@@ -50,6 +56,19 @@ type AlertType = 'empty' | 'format' | 'mistake' | 'repeat' | 'improper' | 'overd
   selector: 'app-official-activity',
   templateUrl: './official-activity.component.html',
   styleUrls: ['./official-activity.component.scss'],
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    NgIf,
+    InboxComponent,
+    NgClass,
+    NgFor,
+    RouterOutlet,
+    MatIconModule,
+    QRCodeModule,
+    FormsModule,
+    TranslateModule,
+  ],
 })
 export class OfficialActivityComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();

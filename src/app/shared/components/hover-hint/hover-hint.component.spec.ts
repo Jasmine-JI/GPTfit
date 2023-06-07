@@ -8,7 +8,7 @@ describe('HoverHintComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [HoverHintComponent],
+      imports: [HoverHintComponent],
     }).compileComponents();
   }));
 

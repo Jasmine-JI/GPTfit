@@ -14,6 +14,9 @@ import { StationMailService } from '../services/station-mail.service';
 import { checkResponse } from '../../../core/utils/index';
 import { Subject, Subscription, combineLatest, fromEvent, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatIconModule } from '@angular/material/icon';
+import { NgIf, NgTemplateOutlet, NgFor } from '@angular/common';
 
 type ContactListType = 'favorite' | 'black' | null;
 
@@ -21,6 +24,8 @@ type ContactListType = 'favorite' | 'black' | null;
   selector: 'app-receiver-list',
   templateUrl: './receiver-list.component.html',
   styleUrls: ['./receiver-list.component.scss'],
+  standalone: true,
+  imports: [NgIf, MatIconModule, NgTemplateOutlet, NgFor, TranslateModule],
 })
 export class ReceiverListComponent implements OnInit, OnChanges, OnDestroy {
   @Input() showBlackList = false;

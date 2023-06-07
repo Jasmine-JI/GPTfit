@@ -8,7 +8,7 @@ describe('ActivityDetailComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ActivityDetailComponent],
+      imports: [ActivityDetailComponent],
     }).compileComponents();
   });
 

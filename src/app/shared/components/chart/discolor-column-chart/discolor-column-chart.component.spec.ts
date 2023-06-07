@@ -8,7 +8,7 @@ describe('DiscolorColumnChartComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [DiscolorColumnChartComponent],
+      imports: [DiscolorColumnChartComponent],
     }).compileComponents();
   }));
 

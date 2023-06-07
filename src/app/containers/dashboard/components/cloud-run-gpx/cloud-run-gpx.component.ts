@@ -3,6 +3,15 @@ import { InnerAdminService } from '../../services/inner-admin.service';
 import { saveAs } from 'file-saver'; // 引入前記得要裝： npm install file-saver
 import { transform, WGS84, GCJ02 } from 'gcoord';
 import { chinaBorder, taiwanBorder } from '../../../../core/models/const';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatTableModule } from '@angular/material/table';
+import { NgIf } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { UploadFileComponent } from '../../../../shared/components/upload-file/upload-file.component';
+import { MatOptionModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 export interface PeriodicElement {
   crs: string;
@@ -33,6 +42,18 @@ declare let google: any;
   selector: 'app-cloud-run-gpx',
   templateUrl: './cloud-run-gpx.component.html',
   styleUrls: ['./cloud-run-gpx.component.scss'],
+  standalone: true,
+  imports: [
+    MatFormFieldModule,
+    MatSelectModule,
+    MatOptionModule,
+    UploadFileComponent,
+    MatButtonModule,
+    MatIconModule,
+    NgIf,
+    MatTableModule,
+    TranslateModule,
+  ],
 })
 export class CloudRunGpxComponent implements OnInit {
   fileLink: string;

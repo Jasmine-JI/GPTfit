@@ -10,11 +10,29 @@ import dayjs from 'dayjs';
 import { PushMessageService } from '../../../services/push-message.service';
 import { NodejsApiService, AuthService } from '../../../../../core/services';
 import { appPath } from '../../../../../app-path.const';
+import { SystemIdPipe } from '../../../../../core/pipes/system-id.pipe';
+import { AppIdPipe } from '../../../../../core/pipes/app-id.pipe';
+import { LanguageCodePipe } from '../../../../../core/pipes/language-code.pipe';
+import { RegionCodePipe } from '../../../../../core/pipes/region-code.pipe';
+import { TimeFormatPipe } from '../../../../../core/pipes/time-format.pipe';
+import { DateRangePickerComponent } from '../../../../../shared/components/date-range-picker/date-range-picker.component';
+import { NgIf, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-edit-push-message',
   templateUrl: './edit-push-message.component.html',
   styleUrls: ['./edit-push-message.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    DateRangePickerComponent,
+    NgFor,
+    TimeFormatPipe,
+    RegionCodePipe,
+    LanguageCodePipe,
+    AppIdPipe,
+    SystemIdPipe,
+  ],
 })
 export class EditPushMessageComponent implements OnInit {
   uiFlag = {

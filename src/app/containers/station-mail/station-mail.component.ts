@@ -2,12 +2,18 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { fromEvent, Subject, Subscription } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
 import { appPath } from '../../app-path.const';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
+import { MailDetailComponent } from './mail-detail/mail-detail.component';
+import { CreateMailComponent } from './create-mail/create-mail.component';
+import { InboxComponent } from './inbox/inbox.component';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-station-mail',
   templateUrl: './station-mail.component.html',
   styleUrls: ['./station-mail.component.scss'],
+  standalone: true,
+  imports: [NgIf, RouterOutlet, InboxComponent, CreateMailComponent, MailDetailComponent],
 })
 export class StationMailComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

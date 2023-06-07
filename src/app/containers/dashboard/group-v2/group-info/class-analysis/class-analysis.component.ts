@@ -7,14 +7,14 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
-import { MatSort, Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { GroupDetailInfo, UserSimpleInfo, MemberInfo } from '../../../models/group-detail';
 import { Subject, combineLatest, of } from 'rxjs';
 import { takeUntil, map, switchMap, first } from 'rxjs/operators';
 import dayjs from 'dayjs';
 import weekday from 'dayjs/plugin/weekday';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import {
   HashIdService,
@@ -48,6 +48,18 @@ import { DataIntegration } from '../../../../../core/classes';
 import { SportType } from '../../../../../core/enums/sports';
 import { caloriesColor, avgHrColor } from '../../../../../core/models/represent-color';
 import { appPath } from '../../../../../app-path.const';
+import { SpeedSibsPipe } from '../../../../../core/pipes/speed-sibs.pipe';
+import { SportTimePipe } from '../../../../../core/pipes/sport-time.pipe';
+import { SportTypeIconPipe } from '../../../../../core/pipes/sport-type-icon.pipe';
+import { DistanceSibsPipe } from '../../../../../core/pipes/distance-sibs.pipe';
+import { SportFileFooterComponent } from '../../../../../components/sport-file-footer/sport-file-footer.component';
+import { StationAnalysisListComponent } from '../../../../../components/station-analysis-list/station-analysis-list.component';
+import { SmallHrzoneChartComponent } from '../../../../../components/small-hrzone-chart/small-hrzone-chart.component';
+import { LineCompareChartComponent } from '../../../../../components/line-compare-chart/line-compare-chart.component';
+import { PieChartComponent } from '../../../../../components/pie-chart/pie-chart.component';
+import { HrZoneChartComponent } from '../../../../../components/hr-zone-chart/hr-zone-chart.component';
+import { GroupAnalysisCalenderComponent } from '../../../../../components/group-analysis-calender/group-analysis-calender.component';
+import { NgIf, NgTemplateOutlet, NgClass, DecimalPipe } from '@angular/common';
 
 dayjs.extend(weekday);
 
@@ -58,6 +70,27 @@ const errMsg = `Error.<br />Please try again later.`;
   templateUrl: './class-analysis.component.html',
   styleUrls: ['./class-analysis.component.scss', '../group-child-page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    NgIf,
+    GroupAnalysisCalenderComponent,
+    NgTemplateOutlet,
+    HrZoneChartComponent,
+    PieChartComponent,
+    LineCompareChartComponent,
+    MatTableModule,
+    MatSortModule,
+    NgClass,
+    SmallHrzoneChartComponent,
+    StationAnalysisListComponent,
+    SportFileFooterComponent,
+    DecimalPipe,
+    TranslateModule,
+    DistanceSibsPipe,
+    SportTypeIconPipe,
+    SportTimePipe,
+    SpeedSibsPipe,
+  ],
 })
 export class ClassAnalysisComponent implements OnInit, OnDestroy {
   @ViewChild('sortTable', { static: false })

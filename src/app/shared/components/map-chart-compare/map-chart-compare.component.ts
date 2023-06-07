@@ -14,8 +14,12 @@ import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { HintDialogService } from '../../../core/services';
 import { SportType } from '../../../core/enums/sports';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { DataTypeTranslatePipe } from '../../../core/pipes/data-type-translate.pipe';
+import { TrinomialChartComponent } from '../chart/trinomial-chart/trinomial-chart.component';
+import { LeafletMapComponent } from '../../../components/leaflet-map/leaflet-map.component';
+import { GoogleMapComponent } from '../../../components/google-map/google-map.component';
+import { NgIf } from '@angular/common';
 
 declare let google: any;
 
@@ -36,6 +40,15 @@ type CompareDataOpt =
   selector: 'app-map-chart-compare',
   templateUrl: './map-chart-compare.component.html',
   styleUrls: ['./map-chart-compare.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    GoogleMapComponent,
+    LeafletMapComponent,
+    TrinomialChartComponent,
+    TranslateModule,
+    DataTypeTranslatePipe,
+  ],
 })
 export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
   @Input() userPoint: Array<any>;

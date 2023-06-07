@@ -7,6 +7,11 @@ import { Subject, fromEvent, Subscription } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { HttpParams } from '@angular/common/http';
 import { AuthService, NodejsApiService, ApiCommonService } from '../../../../core/services';
+import { DataFlowConversionPipe } from '../../../../core/pipes/data-flow-conversion.pipe';
+import { StackColumnChartComponent } from '../../../../shared/components/chart/stack-column-chart/stack-column-chart.component';
+import { DateRangePickerComponent } from '../../../../shared/components/date-range-picker/date-range-picker.component';
+import { NgIf, NgTemplateOutlet, NgFor } from '@angular/common';
+import { LoadingBarComponent } from '../../../../components/loading-bar/loading-bar.component';
 
 enum StatisticTypeEnum {
   sports = 1,
@@ -48,9 +53,19 @@ const commonLanguage = [
 ];
 
 @Component({
-  selector: 'app-AlaApp-analysis',
+  selector: 'app-ala-app-analysis',
   templateUrl: './ala-app-analysis.component.html',
   styleUrls: ['./ala-app-analysis.component.scss'],
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    NgIf,
+    DateRangePickerComponent,
+    NgTemplateOutlet,
+    StackColumnChartComponent,
+    NgFor,
+    DataFlowConversionPipe,
+  ],
 })
 export class AlaAppAnalysisComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

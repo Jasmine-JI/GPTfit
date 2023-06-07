@@ -8,7 +8,7 @@ describe('MuscleMapComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [MuscleMapComponent],
+      imports: [MuscleMapComponent],
     }).compileComponents();
   }));
 

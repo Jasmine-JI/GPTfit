@@ -8,7 +8,7 @@ describe('ComparePaceChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ComparePaceChartComponent],
+      imports: [ComparePaceChartComponent],
     }).compileComponents();
   });
 

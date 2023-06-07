@@ -8,7 +8,7 @@ describe('InnerSettingsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [InnerSettingsComponent],
+      imports: [InnerSettingsComponent],
     }).compileComponents();
   }));
 

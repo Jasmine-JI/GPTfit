@@ -18,6 +18,7 @@ const pickDateFormat = 'YYYY-MM-DD';
   selector: 'app-date-range-picker',
   templateUrl: './date-range-picker.component.html',
   styleUrls: ['./date-range-picker.component.scss'],
+  standalone: true,
 })
 export class DateRangePickerComponent implements OnInit, OnChanges, OnDestroy {
   @Output() selectDateRange: EventEmitter<any> = new EventEmitter();

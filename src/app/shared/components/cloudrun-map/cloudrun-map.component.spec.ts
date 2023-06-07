@@ -8,7 +8,7 @@ describe('CloudrunMapComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CloudrunMapComponent],
+      imports: [CloudrunMapComponent],
     }).compileComponents();
   });
 

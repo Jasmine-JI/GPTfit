@@ -15,12 +15,21 @@ import {
 } from '../../models/activity-content';
 import dayjs from 'dayjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { AgePipe, SportTimePipe, PaidStatusPipe, ShippedStatusPipe } from '../../../../core/pipes';
 import { getCurrentTimestamp, deepCopy } from '../../../../core/utils';
 import { AuthService, NodejsApiService, ApiCommonService } from '../../../../core/services';
 import { Gender } from '../../../../core/enums/personal';
 import { appPath } from '../../../../app-path.const';
+import { ShippedStatusPipe as ShippedStatusPipe_1 } from '../../../../core/pipes/shipped-status.pipe';
+import { PaidStatusPipe as PaidStatusPipe_1 } from '../../../../core/pipes/paid-status.pipe';
+import { RankSuffixPipe } from '../../../../core/pipes/rank-suffix.pipe';
+import { AgePipe as AgePipe_1 } from '../../../../core/pipes/age.pipe';
+import { TimeFormatPipe } from '../../../../core/pipes/time-format.pipe';
+import { SexPipe } from '../../../../core/pipes/sex.pipe';
+import { MatIconModule } from '@angular/material/icon';
+import { NgIf, NgFor, NgTemplateOutlet, NgClass, NgStyle } from '@angular/common';
+import { LoadingBarComponent } from '../../../../components/loading-bar/loading-bar.component';
 
 type SortType =
   | 'rank'
@@ -55,6 +64,23 @@ const defaultSortSet = <SortSet>{
   selector: 'app-contestant-list',
   templateUrl: './contestant-list.component.html',
   styleUrls: ['./contestant-list.component.scss'],
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    NgIf,
+    MatIconModule,
+    NgFor,
+    NgTemplateOutlet,
+    NgClass,
+    NgStyle,
+    TranslateModule,
+    SexPipe,
+    TimeFormatPipe,
+    AgePipe_1,
+    RankSuffixPipe,
+    PaidStatusPipe_1,
+    ShippedStatusPipe_1,
+  ],
 })
 export class ContestantListComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

@@ -8,7 +8,7 @@ describe('AppChangeAccountComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [AppChangeAccountComponent],
+      imports: [AppChangeAccountComponent],
     }).compileComponents();
   }));
 

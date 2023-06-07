@@ -6,6 +6,14 @@ import { takeUntil } from 'rxjs/operators';
 import { SelectDate } from '../../../../../core/models/common';
 import { planDatas } from '../../../group/desc';
 import { ProfessionalService } from '../../../../professional/services/professional.service';
+import { TranslateModule } from '@ngx-translate/core';
+import { DateRangePickerComponent } from '../../../../../shared/components/date-range-picker/date-range-picker.component';
+import { FormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatOptionModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { NgIf, DatePipe } from '@angular/common';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -13,6 +21,18 @@ const errMsg = `Error.<br />Please try again later.`;
   selector: 'app-commerce-plan',
   templateUrl: './commerce-plan.component.html',
   styleUrls: ['./commerce-plan.component.scss', '../group-child-page.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatInputModule,
+    FormsModule,
+    DateRangePickerComponent,
+    DatePipe,
+    TranslateModule,
+  ],
 })
 export class CommercePlanComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

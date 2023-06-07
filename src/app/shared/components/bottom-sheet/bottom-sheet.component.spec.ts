@@ -8,7 +8,7 @@ describe('BottomSheetComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [BottomSheetComponent],
+      imports: [BottomSheetComponent],
     }).compileComponents();
   }));
 

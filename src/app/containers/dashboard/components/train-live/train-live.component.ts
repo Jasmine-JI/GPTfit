@@ -4,11 +4,18 @@ import { buildBase64ImgString } from '../../../../core/utils/index';
 import { AuthService, Api20xxService } from '../../../../core/services';
 import { appPath } from '../../../../app-path.const';
 import { QueryString } from '../../../../core/enums/common';
+import { SportTypePipe } from '../../../../core/pipes/sport-type.pipe';
+import { SafeHtmlPipe } from '../../../../core/pipes/safe-html.pipe';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatCardModule } from '@angular/material/card';
+import { NgIf, NgStyle, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-train-live',
   templateUrl: './train-live.component.html',
   styleUrls: ['./train-live.component.scss'],
+  standalone: true,
+  imports: [NgIf, MatCardModule, NgStyle, NgFor, TranslateModule, SafeHtmlPipe, SportTypePipe],
 })
 export class TrainLiveComponent implements OnInit, AfterViewInit {
   classLists: any;

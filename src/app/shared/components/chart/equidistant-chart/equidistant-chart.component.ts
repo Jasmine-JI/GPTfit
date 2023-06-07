@@ -94,6 +94,7 @@ class ChartOptions {
   selector: 'app-equidistant-chart',
   templateUrl: './equidistant-chart.component.html',
   styleUrls: ['./equidistant-chart.component.scss', '../chart-share-style.scss'],
+  standalone: true,
 })
 export class EquidistantChartComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject();

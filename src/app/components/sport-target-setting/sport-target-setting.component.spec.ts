@@ -8,7 +8,7 @@ describe('SportTargetSettingComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SportTargetSettingComponent],
+      imports: [SportTargetSettingComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SportTargetSettingComponent);

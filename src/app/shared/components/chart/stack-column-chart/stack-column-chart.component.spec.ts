@@ -8,7 +8,7 @@ describe('StackColumnChartComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [StackColumnChartComponent],
+      imports: [StackColumnChartComponent],
     }).compileComponents();
   }));
 

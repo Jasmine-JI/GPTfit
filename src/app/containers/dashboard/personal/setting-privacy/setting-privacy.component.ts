@@ -4,10 +4,14 @@ import { takeUntil } from 'rxjs/operators';
 import { PrivacyObj, PrivacyEditObj } from '../../../../core/enums/api';
 import { allPrivacyItem } from '../../../../core/models/const';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { SelectDate } from '../../../../core/models/common';
 import { UserService, AuthService, Api21xxService } from '../../../../core/services';
 import { checkResponse, deepCopy } from '../../../../core/utils/index';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { DateRangePickerComponent } from '../../../../shared/components/date-range-picker/date-range-picker.component';
+import { NgIf, NgTemplateOutlet } from '@angular/common';
+import { LoadingBarComponent } from '../../../../components/loading-bar/loading-bar.component';
 
 enum RangeType {
   date = 1,
@@ -18,6 +22,15 @@ enum RangeType {
   selector: 'app-setting-privacy',
   templateUrl: './setting-privacy.component.html',
   styleUrls: ['./setting-privacy.component.scss', '../personal-child-page.scss'],
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    NgIf,
+    NgTemplateOutlet,
+    DateRangePickerComponent,
+    MatProgressSpinnerModule,
+    TranslateModule,
+  ],
 })
 export class SettingPrivacyComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

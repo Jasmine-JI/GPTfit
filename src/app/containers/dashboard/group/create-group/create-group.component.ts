@@ -4,12 +4,14 @@ import { UntypedFormGroup } from '@angular/forms';
 import { HashIdService } from '../../../../core/services';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { getUrlQueryStrings } from '../../../../core/utils';
 import { appPath } from '../../../../app-path.const';
 import { BrandType } from '../../../../core/enums/professional';
 import { QueryString } from '../../../../core/enums/common';
+import { CommercePlanTableComponent } from '../commerce-plan-table/commerce-plan-table.component';
+import { NgIf } from '@angular/common';
 
 /**
  * 新建的群組類別
@@ -27,6 +29,8 @@ enum CreateGroupType {
   templateUrl: './create-group.component.html',
   styleUrls: ['./create-group.component.scss', '../group-style.scss'],
   encapsulation: ViewEncapsulation.None,
+  standalone: true,
+  imports: [NgIf, CommercePlanTableComponent, TranslateModule],
 })
 export class CreateGroupComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

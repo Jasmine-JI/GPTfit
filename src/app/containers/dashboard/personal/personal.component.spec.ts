@@ -8,7 +8,7 @@ describe('PersonalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [PersonalComponent],
+      imports: [PersonalComponent],
     }).compileComponents();
   });
 

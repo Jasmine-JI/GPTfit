@@ -7,11 +7,15 @@ import dayjs from 'dayjs';
 import { GlobalEventsService } from '../../../../core/services';
 import { deepCopy } from '../../../../core/utils/index';
 import { compareChartDefault } from '../../../../core/models/compo/chart-data.model';
+import { TranslateModule } from '@ngx-translate/core';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-compare-hrzone-trend',
   templateUrl: './compare-hrzone-trend.component.html',
   styleUrls: ['./compare-hrzone-trend.component.scss', '../chart-share-style.scss'],
+  standalone: true,
+  imports: [NgIf, TranslateModule],
 })
 export class CompareHrzoneTrendComponent implements OnInit {
   private ngUnsubscribe = new Subject();

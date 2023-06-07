@@ -11,7 +11,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { chart } from 'highcharts';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { HrZoneRange } from '../../../../core/models/compo/chart-data.model';
@@ -19,6 +19,10 @@ import { mi, ft } from '../../../../core/models/const/bs-constant.model';
 import { SportType } from '../../../../core/enums/sports';
 import { TemperatureSibsPipe } from '../../../../core/pipes/temperature-sibs.pipe';
 import { mathRounding } from '../../../../core/utils';
+import { DataTypeUnitPipe } from '../../../../core/pipes/data-type-unit.pipe';
+import { DataTypeTranslatePipe } from '../../../../core/pipes/data-type-translate.pipe';
+import { SportPaceSibsPipe } from '../../../../core/pipes/sport-pace-sibs.pipe';
+import { NgIf, DecimalPipe } from '@angular/common';
 
 type ChartType =
   | 'hr'
@@ -110,6 +114,15 @@ class ChartOptions {
   templateUrl: './trend-info-chart.component.html',
   styleUrls: ['./trend-info-chart.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    NgIf,
+    DecimalPipe,
+    TranslateModule,
+    SportPaceSibsPipe,
+    DataTypeTranslatePipe,
+    DataTypeUnitPipe,
+  ],
 })
 export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject();

@@ -10,17 +10,20 @@ import {
 import { of, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { chart } from 'highcharts';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import { GlobalEventsService } from '../../../../core/services';
 import { deepCopy } from '../../../../core/utils/index';
 import { compareChartDefault } from '../../../../core/models/compo/chart-data.model';
 import { complexTrendTooltip } from '../../../../core/utils/chart-formatter';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-compare-extreme-gforce-chart',
   templateUrl: './compare-extreme-gforce-chart.component.html',
   styleUrls: ['./compare-extreme-gforce-chart.component.scss'],
+  standalone: true,
+  imports: [NgIf, TranslateModule],
 })
 export class CompareExtremeGforceChartComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject();

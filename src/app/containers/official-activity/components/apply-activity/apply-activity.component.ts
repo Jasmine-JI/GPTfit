@@ -27,13 +27,21 @@ import {
 } from '../../models/activity-content';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { EnableAccountFlow } from '../../../../core/enums/api';
 import { LockCaptcha } from '../../../../shared/classes/lock-captcha';
 import { checkResponse, getCurrentTimestamp, getUrlQueryStrings } from '../../../../core/utils';
 import { QueryString, AlaApp } from '../../../../core/enums/common';
 import { SignInType, AccountType, AccountStatus, Gender } from '../../../../core/enums/personal';
 import { appPath } from '../../../../app-path.const';
+import { PatchUnitPipe } from '../../../../core/pipes/patch-unit.pipe';
+import { TimeFormatPipe } from '../../../../core/pipes/time-format.pipe';
+import { SexPipe } from '../../../../core/pipes/sex.pipe';
+import { DateRangePickerComponent } from '../../../../shared/components/date-range-picker/date-range-picker.component';
+import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
+import { NgIf, NgFor, NgTemplateOutlet } from '@angular/common';
+import { LoadingBarComponent } from '../../../../components/loading-bar/loading-bar.component';
 
 const stageHeight = 90;
 const fullMsg = 'Apply group full.';
@@ -47,6 +55,20 @@ interface NewRegister {
   selector: 'app-apply-activity',
   templateUrl: './apply-activity.component.html',
   styleUrls: ['./apply-activity.component.scss'],
+  standalone: true,
+  imports: [
+    LoadingBarComponent,
+    NgIf,
+    FormsModule,
+    MatIconModule,
+    NgFor,
+    NgTemplateOutlet,
+    DateRangePickerComponent,
+    TranslateModule,
+    SexPipe,
+    TimeFormatPipe,
+    PatchUnitPipe,
+  ],
 })
 export class ApplyActivityComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngUnsubscribe = new Subject();

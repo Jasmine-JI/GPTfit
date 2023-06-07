@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { GroupDetailInfo, UserSimpleInfo } from '../../../models/group-detail';
 import { MessageBoxComponent } from '../../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { QrcodeService } from '../../../../../core/services/qrcode.service';
 import {
   Api10xxService,
@@ -20,6 +20,10 @@ import { deepCopy, displayGroupLevel } from '../../../../../core/utils';
 import { ProfessionalService } from '../../../../professional/services/professional.service';
 import { appPath } from '../../../../../app-path.const';
 import { Domain, WebIp, QueryString } from '../../../../../core/enums/common';
+import { TimeFormatPipe } from '../../../../../core/pipes/time-format.pipe';
+import { ProductTypePipe } from '../../../../../core/pipes/product-type.pipe';
+import { NgIf, NgFor } from '@angular/common';
+import { LoadingBarComponent } from '../../../../../components/loading-bar/loading-bar.component';
 
 type EditMode = 'add' | 'del';
 
@@ -27,6 +31,8 @@ type EditMode = 'add' | 'del';
   selector: 'app-device-list',
   templateUrl: './device-list.component.html',
   styleUrls: ['./device-list.component.scss'],
+  standalone: true,
+  imports: [LoadingBarComponent, NgIf, NgFor, TranslateModule, ProductTypePipe, TimeFormatPipe],
 })
 export class DeviceListComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();

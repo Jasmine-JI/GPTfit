@@ -8,7 +8,7 @@ describe('SportsTargetTipComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SportsTargetTipComponent],
+      imports: [SportsTargetTipComponent],
     }).compileComponents();
   });
 

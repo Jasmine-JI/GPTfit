@@ -8,7 +8,7 @@ describe('MemberCapsuleComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [MemberCapsuleComponent],
+      imports: [MemberCapsuleComponent],
     }).compileComponents();
   }));
 

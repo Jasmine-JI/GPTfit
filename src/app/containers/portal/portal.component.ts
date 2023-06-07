@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { DetectInappService } from '../../core/services';
 import { fromEvent, Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -10,12 +10,16 @@ import { setLocalStorageObject, getLocalStorageObject } from '../../core/utils';
 import { GlobalEventsService, EnvironmentCheckService } from '../../core/services';
 import { appPath } from '../../app-path.const';
 import { QueryString } from '../../core/enums/common';
+import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
+import { NgIf, NgClass } from '@angular/common';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'portal',
   templateUrl: './portal.component.html',
   styleUrls: ['./portal.component.scss'],
+  standalone: true,
+  imports: [NgIf, NavbarComponent, NgClass, RouterOutlet, TranslateModule],
 })
 export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
   private ngUnsubscribe = new Subject();

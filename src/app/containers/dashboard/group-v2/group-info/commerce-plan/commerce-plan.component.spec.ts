@@ -8,7 +8,7 @@ describe('CommercePlanComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [CommercePlanComponent],
+      imports: [CommercePlanComponent],
     }).compileComponents();
   }));
 

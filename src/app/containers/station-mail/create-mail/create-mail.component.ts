@@ -21,7 +21,7 @@ import { ReceiverType, MessageType } from '../enum/station-mail';
 import { Receiver } from '../models/station-mail';
 import { Subject, Subscription, fromEvent, of, merge, combineLatest, Observable } from 'rxjs';
 import { takeUntil, debounceTime, switchMap, map } from 'rxjs/operators';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 import { appPath } from '../../../app-path.const';
 import { QueryString } from '../../../core/enums/common';
@@ -31,11 +31,16 @@ import { groupIdReg } from '../../../core/models/regex';
 import { LocalStorageKey } from '../../../core/enums/common/local-storage-key.enum';
 import { MessageBoxComponent } from '../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
+import { ReceiverListComponent } from '../receiver-list/receiver-list.component';
+import { NgIf, NgFor } from '@angular/common';
+import { LoadingMaskComponent } from '../../../components/loading-mask/loading-mask.component';
 
 @Component({
   selector: 'app-create-mail',
   templateUrl: './create-mail.component.html',
   styleUrls: ['./create-mail.component.scss', '../station-mail-child.scss'],
+  standalone: true,
+  imports: [LoadingMaskComponent, NgIf, NgFor, ReceiverListComponent, TranslateModule],
 })
 export class CreateMailComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('receiverInput') receiverInput: ElementRef;

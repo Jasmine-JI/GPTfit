@@ -8,7 +8,7 @@ describe('AppFirstLoginComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [AppFirstLoginComponent],
+      imports: [AppFirstLoginComponent],
     }).compileComponents();
   }));
 

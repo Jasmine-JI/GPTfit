@@ -1,11 +1,15 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { DEFAULT_MAXLENGTH } from '../../../core/utils/index';
-import { UntypedFormGroup } from '@angular/forms';
+import { UntypedFormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormRemindComponent } from '../form-remind/form-remind.component';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-form-text',
   templateUrl: './form-text.component.html',
   styleUrls: ['./form-text.component.scss'],
+  standalone: true,
+  imports: [NgIf, FormsModule, ReactiveFormsModule, FormRemindComponent],
 })
 export class FormTextComponent implements OnInit {
   @Input() class_name = 'form-field';

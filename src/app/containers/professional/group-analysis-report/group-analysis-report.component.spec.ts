@@ -8,7 +8,7 @@ describe('GroupAnalysisReportComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [GroupAnalysisReportComponent],
+      imports: [GroupAnalysisReportComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(GroupAnalysisReportComponent);
