@@ -1,0 +1,34 @@
+<div style="position: relative">
+  <button class="flexCenter optional__button" (click)="toogleOptional($event)">
+    <i class="icon-svg_web-icon_p1_001-setting"></i>
+  </button>
+  <section class="drop__menu" *ngIf="displayOptional">
+    <div class="flexRow">
+      <span
+        *ngTemplateOutlet="
+          oneOptional;
+          context: {
+            mapSource: MapSource.google
+          }
+        "
+      ></span>
+      <span
+        *ngTemplateOutlet="
+          oneOptional;
+          context: {
+            mapSource: MapSource.osm
+          }
+        "
+      >
+      </span>
+    </div>
+  </section>
+</div>
+
+<ng-template #oneOptional let-mapSource="mapSource">
+  <span class="flexRow radioSelector" [ngSwitch]="mapSource" (click)="changeMapSource(mapSource)">
+    <button class="radioBtn" role="radio" [class.radioBtn--active]="source === mapSource"></button>
+    <ng-container *ngSwitchCase="MapSource.google"> Google </ng-container>
+    <ng-container *ngSwitchCase="MapSource.osm"> OSM </ng-container>
+  </span>
+</ng-template>

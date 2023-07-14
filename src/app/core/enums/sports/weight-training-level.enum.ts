@@ -4,14 +4,14 @@
 export enum WeightTrainingLevel {
   novice = 50,
   metacarpus = 100,
-  asept = 200,
+  adept = 200,
 }
 
 /**
  * 重訓程度係數
  */
 export enum Proficiency {
-  asept = 1,
+  adept = 1,
   metacarpus = 2,
   novice = 4,
 }

@@ -63,7 +63,7 @@ import {
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { SameWeekLifeTrackingData } from '../../classes/same-week-lifetracking-data';
-import { PersonalChartAnalysisOption } from '../../../containers/personal/classes/personal-chart-analysis-option';
+import { PersonalChartAnalysisOption } from '../../../containers/personal/classes';
 import { DataDescription } from '../../../core/models/compo';
 import { MuscleAnalysisColumn, MuscleGroup, SportType } from '../../../core/enums/sports';
 import { MusclePartIconPipe } from '../../../core/pipes/muscle-part-icon.pipe';
@@ -91,7 +91,7 @@ import { CompareOverlayColumnChartComponent } from '../chart/compare-overlay-col
 import { CompareColumnTrendComponent } from '../chart/compare-column-trend/compare-column-trend.component';
 import { CompareHrzoneTrendComponent } from '../chart/compare-hrzone-trend/compare-hrzone-trend.component';
 import { HrzoneInfoComponent } from '../chart/hrzone-info/hrzone-info.component';
-import { TreeMapChartComponent } from '../chart/tree-map-chart/tree-map-chart.component';
+import { TreeMapChartComponent } from '../../../components/tree-map-chart/tree-map-chart.component';
 import { HrzoneChartComponent } from '../chart/hrzone-chart/hrzone-chart.component';
 import { MuscleMapChartComponent } from '../chart/muscle-map/muscle-map-chart/muscle-map-chart.component';
 import { WeightTrainLevelSelectorComponent } from '../weight-train-level-selector/weight-train-level-selector.component';

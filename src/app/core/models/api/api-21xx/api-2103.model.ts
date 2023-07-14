@@ -1,5 +1,6 @@
 import { DisplayDetailField, FileType } from '../../../enums/api';
 import { WeightTrainingInfo } from '../api-common';
+import { MuscleCode } from '../../../enums/sports';
 
 export interface Api2103Post {
   token: string; // 登入權杖
@@ -149,7 +150,7 @@ export interface ActivityInfo {
   fileId?: number; // 檔案編號(這邊應該是 api 誤回，請以 fileInfo.fileId 為主)
   totalReps?: number | null; // 總動作次數
   totalWeightKg?: number | null; // 總重
-  useViceMuscle?: Array<string>; // 動作訓練主要肌肉部位
+  useViceMuscle?: Array<string | MuscleCode>; // 動作訓練主要肌肉部位
   weightTrainingInfo?: Array<WeightTrainingInfo>; // 動作訓練主要肌肉部位概要資訊
   avgSwolf?: number | null;
   bestSwolf?: number | null;

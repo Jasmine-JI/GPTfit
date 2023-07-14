@@ -1,0 +1,12 @@
+@import 'z-index.scss';
+
+.drop__menu {
+  position: absolute;
+  right: 0;
+  background-color: white;
+  padding: 0.5rem;
+  border: 1px solid rgb(150, 150, 150);
+  box-shadow: -2px 2px 2px #00000080;
+  width: 220px;
+  z-index: $drop-menu;
+}

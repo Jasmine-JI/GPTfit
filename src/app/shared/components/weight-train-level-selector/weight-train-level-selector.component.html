@@ -12,7 +12,7 @@
       <ng-container *ngIf="weightTrainLevel === WeightTrainingLevel.metacarpus">
         {{ 'universal_activityData_advanced' | translate }}
       </ng-container>
-      <ng-container *ngIf="weightTrainLevel === WeightTrainingLevel.asept">
+      <ng-container *ngIf="weightTrainLevel === WeightTrainingLevel.adept">
         {{ 'universal_activityData_highRanker' | translate }}
       </ng-container>
     </span>
@@ -23,7 +23,7 @@
       <li class="list__option" (click)="changeLevel(WeightTrainingLevel.metacarpus)">
         {{ 'universal_activityData_advanced' | translate }}
       </li>
-      <li class="list__option" (click)="changeLevel(WeightTrainingLevel.asept)">
+      <li class="list__option" (click)="changeLevel(WeightTrainingLevel.adept)">
         {{ 'universal_activityData_highRanker' | translate }}
       </li>
     </ul>

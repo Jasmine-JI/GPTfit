@@ -17,3 +17,4 @@ export * from './image-cropper.model';
 export * from './report-analysis.model';
 export * from './sports-report.model';
 export * from './chart-data.model';
+export * from './quadrant-setting.model';

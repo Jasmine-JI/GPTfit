@@ -1,0 +1,95 @@
+<div class="flexRow info__table" *ngIf="setting && quadrantNum">
+  <div
+    *ngTemplateOutlet="
+      oneInfo;
+      context: {
+        presentColor: quadrantColor.ii,
+        title: setting.meaning.quadrantII,
+        value: percentage.ii + '%'
+      }
+    "
+  ></div>
+  <div
+    *ngTemplateOutlet="
+      oneInfo;
+      context: {
+        presentColor: quadrantColor.i,
+        title: setting.meaning.quadrantI,
+        value: percentage.i + '%'
+      }
+    "
+  ></div>
+  <div
+    *ngTemplateOutlet="
+      oneInfo;
+      context: {
+        presentColor: quadrantColor.iii,
+        title: setting.meaning.quadrantIII,
+        value: percentage.iii + '%'
+      }
+    "
+  ></div>
+  <div
+    *ngTemplateOutlet="
+      oneInfo;
+      context: {
+        presentColor: quadrantColor.iv,
+        title: setting.meaning.quadrantIV,
+        value: percentage.iv + '%'
+      }
+    "
+  ></div>
+  <div
+    *ngTemplateOutlet="
+      oneInfo;
+      context: {
+        title:
+          ('universal_vocabulary_xOrigin' | translate) +
+          '-' +
+          (setting.xAxis.type | dataTypeTranslate: { unitType: unit, sportsType } | translate),
+        value:
+          setting.xAxis.type === 'speed'
+            ? (setting.xAxis.origin
+              | sportPaceSibs: { sportType: sportsType, userUnit: unit, showUnit: false })
+            : setting.xAxis.origin
+      }
+    "
+  ></div>
+  <div
+    *ngTemplateOutlet="
+      oneInfo;
+      context: {
+        title:
+          ('universal_vocabulary_yOrigin' | translate) +
+          '-' +
+          (setting.yAxis.type | dataTypeTranslate: { unitType: unit, sportsType } | translate),
+        value:
+          setting.yAxis.type === 'speed'
+            ? (setting.yAxis.origin
+              | sportPaceSibs: { sportType: sportsType, userUnit: unit, showUnit: false })
+            : setting.yAxis.origin
+      }
+    "
+  ></div>
+</div>
+
+<ng-template #oneInfo let-presentColor="presentColor" let-title="title" let-value="value">
+  <div class="flexCol info__column">
+    <p class="info__label">
+      <span class="quadrant__label__dot" [style.color]="presentColor" *ngIf="presentColor">
+        ●
+      </span>
+      <span>{{ title }}</span>
+    </p>
+    <p
+      [ngClass]="{
+        flexCol: true,
+        info__value: true,
+        base__value: isBaseFile,
+        compare__value: !isBaseFile
+      }"
+    >
+      {{ value }}
+    </p>
+  </div>
+</ng-template>

@@ -2,12 +2,12 @@ import { HrBase } from '../../enums/sports';
 
 export interface HrZoneRange {
   hrBase: HrBase;
-  z0: number | 'Z0';
-  z1: number | 'Z1';
-  z2: number | 'Z2';
-  z3: number | 'Z3';
-  z4: number | 'Z4';
-  z5: number | 'Z5';
+  z0: number;
+  z1: number;
+  z2: number;
+  z3: number;
+  z4: number;
+  z5: number;
 }
 
 /**

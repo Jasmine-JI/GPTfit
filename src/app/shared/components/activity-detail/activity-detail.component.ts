@@ -811,14 +811,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       info.totalHrZone5Second,
     ];
 
-    const userAge = this.uiFlag.isFileOwner
-        ? dayjs().diff(this.userProfile.birthday, 'year')
-        : null,
-      userHRBase = this.userProfile.heartRateBase,
-      userMaxHR = this.userProfile.heartRateMax,
-      userRestHR = this.userProfile.heartRateResting;
-    this.chartData.hrInfo = getUserHrRange(userHRBase, userAge, userMaxHR, userRestHR);
-    this.chartData.defaultHrInfo = getUserHrRange(0, 30, 190, 60); // 預設的心率區間
+    this.chartData.hrInfo = this.userService.getUser().userHrRange;
+    this.chartData.defaultHrInfo = getUserHrRange(); // 預設的心率區間
   }
 
   /**
@@ -871,7 +865,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   getUserWeightTrainLevel() {
     switch (`${this.userProfile.weightTrainingStrengthLevel}%`) {
       case '200%':
-        this.uiFlag.weightTrainLevel = 'asept';
+        this.uiFlag.weightTrainLevel = 'adept';
         break;
       case '50%':
         this.uiFlag.weightTrainLevel = 'novice';
@@ -1220,7 +1214,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         return 50;
       case 'metacarpus':
         return 100;
-      case 'asept':
+      case 'adept':
         return 200;
     }
   }

@@ -260,7 +260,9 @@
         </ng-container>
       </figure>
       <figure class="report-infoChart">
-        <app-hrzone-info [hrZoneRange]="hrZoneRange"></app-hrzone-info>
+        <app-hrzone-info
+          [hrZoneRange]="uiFlag.isPageOwner ? hrZoneRange : undefined"
+        ></app-hrzone-info>
       </figure>
     </div>
   </section>

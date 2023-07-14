@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { DataUnitOption } from '../models/common';
-import { DataUnitType } from '../enums/common';
+import { tempTransfer } from '../utils';
 
 @Pipe({
   name: 'temperatureSibs',
@@ -14,14 +14,6 @@ export class TemperatureSibsPipe implements PipeTransform {
    * @param args.showUnit 是否顯示單位
    */
   transform(value: number, args: DataUnitOption): number | string {
-    const checkValue = value ? value : 0;
-    const { unitType, showUnit } = args;
-    if (unitType === DataUnitType.metric) {
-      const resultValue = checkValue.toFixed(1);
-      return showUnit ?? true ? `${resultValue} °C` : +`${resultValue}`;
-    } else {
-      const resultValue = (checkValue * (9 / 5) + 32).toFixed(1);
-      return showUnit ?? true ? `${resultValue} °F` : +`${resultValue}`;
-    }
+    return tempTransfer(value, args);
   }
 }

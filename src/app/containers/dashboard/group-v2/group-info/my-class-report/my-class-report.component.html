@@ -136,7 +136,9 @@
               </div>
             </div>
             <div style="width: 45%; height: 100%">
-              <app-hrzone-info [hrZoneRange]="hrZoneRange"></app-hrzone-info>
+              <app-hrzone-info
+                [hrZoneRange]="uiFlag.isPageOwner ? hrZoneRange : undefined"
+              ></app-hrzone-info>
             </div>
           </div>
         </div>

@@ -12,7 +12,12 @@ import {
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
-import { AuthService, Api21xxService, UserService } from '../../../../../core/services';
+import {
+  AuthService,
+  Api21xxService,
+  UserService,
+  GlobalEventsService,
+} from '../../../../../core/services';
 import { Api2116Post, SportsListItem } from '../../../../../core/models/api/api-21xx';
 import { utcFormat } from '../../../../../core/models/const';
 import { SportType } from '../../../../../core/enums/sports';
@@ -179,10 +184,18 @@ export class CompareFileSelectorComponent implements OnChanges, OnDestroy {
   readonly FileSortType = FileSortType;
   readonly DescFirstSortDirection = DescFirstSortDirection;
 
+  /**
+   * 組件唯一碼，
+   * 用來即使點擊頁面取消冒泡的其他下拉選單元素而無法偵測到點擊事件，
+   * 亦可再透過全域下拉事件取得組件唯一碼後觸發
+   */
+  private readonly componentId = this.globalEventsService.getComponentUniqueId();
+
   constructor(
     private authService: AuthService,
     private api21xxService: Api21xxService,
-    private userService: UserService
+    private userService: UserService,
+    private globalEventsService: GlobalEventsService
   ) {}
 
   /**
@@ -254,6 +267,7 @@ export class CompareFileSelectorComponent implements OnChanges, OnDestroy {
    * 顯示選擇器
    */
   showSelector() {
+    this.globalEventsService.setRxCloseDropList(this.componentId);
     this.getFileList();
     this.subscribeSelectorPluralEvent();
     this.subscribeKeywordInput();
@@ -283,10 +297,14 @@ export class CompareFileSelectorComponent implements OnChanges, OnDestroy {
     const scrollElement = document.querySelector('.main__container') as Element;
     const scrollEvent = fromEvent(scrollElement, 'scroll');
     const clickEvent = fromEvent(document, 'click');
-    this.pluralEventSubscription = merge(clickEvent, scrollEvent)
+    this.pluralEventSubscription = merge(
+      clickEvent,
+      scrollEvent,
+      this.globalEventsService.getRxCloseDropList()
+    )
       .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe(() => {
-        this.unsubscribeSelectorPluralEvent();
+      .subscribe((e) => {
+        if (e !== this.componentId) this.unsubscribeSelectorPluralEvent();
       });
   }
 
@@ -295,7 +313,7 @@ export class CompareFileSelectorComponent implements OnChanges, OnDestroy {
    */
   unsubscribeSelectorPluralEvent() {
     this.pluralEventSubscription.unsubscribe();
-    this.displaySelector = false;
+    this.closeSelector();
   }
 
   /**
@@ -326,6 +344,8 @@ export class CompareFileSelectorComponent implements OnChanges, OnDestroy {
    */
   closeSelector() {
     this.displaySelector = false;
+    this.hideSortTypeList();
+    this.hideYearList();
     this.unsubscribeKeywordInput();
   }
 
@@ -490,7 +510,7 @@ export class CompareFileSelectorComponent implements OnChanges, OnDestroy {
    */
   getTranslateXStyle() {
     const { innerWidth } = window;
-    const button = document.getElementById('compare__button');
+    const button = document.getElementById('compare__button') as Element;
     const { left } = button.getBoundingClientRect();
     const rightPadding = 10;
     const selectorDisplayWidth = innerWidth - left - rightPadding;

@@ -2,10 +2,10 @@
  * 用來取得 google 或 leaflet 地圖路線在視圖中的相對位置
  */
 export class MapReservedSpace {
-  private _boundaryTop: number | null = null;
-  private _boundaryBottom: number | null = null;
-  private _boundaryLeft: number | null = null;
-  private _boundaryRight: number | null = null;
+  private _boundaryTop?: number;
+  private _boundaryBottom?: number;
+  private _boundaryLeft?: number;
+  private _boundaryRight?: number;
   private _bottomReservedPercentage = 0.2;
 
   /**
@@ -44,6 +44,7 @@ export class MapReservedSpace {
       _boundaryRight,
       _bottomReservedPercentage,
     } = this;
+
     const horizonCenter = ((_boundaryLeft as number) + (_boundaryRight as number)) / 2;
     // 將整體路線在顯示中向上偏移，以留給圖表
     const space =

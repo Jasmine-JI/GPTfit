@@ -50,7 +50,6 @@ export class UserService {
 
   /**
    * 取得使用者相關資訊
-   * @author kidin-1110314
    */
   getUser() {
     return this._user;

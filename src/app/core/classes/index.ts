@@ -7,3 +7,4 @@ export * from './operation-cjson-handler.class';
 export * from './analysis-count.class';
 export * from './increase-ratio.class';
 export * from './multiple-toggle-status.class';
+export * from './min-max-handler.class';

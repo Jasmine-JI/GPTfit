@@ -3,15 +3,18 @@ import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SportsDetailService } from './sports-detail.service';
-import { Subject, of } from 'rxjs';
-import { takeUntil, map, switchMap } from 'rxjs/operators';
+import { Subject, of, fromEvent } from 'rxjs';
+import { takeUntil, map, switchMap, debounceTime } from 'rxjs/operators';
 import { TranslateModule } from '@ngx-translate/core';
-import { ResultCode, QueryString } from '../../../core/enums/common';
+import { ResultCode, QueryString, DataUnitType } from '../../../core/enums/common';
+import { SportType, WeightTrainingLevel } from '../../../core/enums/sports';
+import { MapSource, MapType } from '../../../core/enums/compo';
 import { appPath } from '../../../app-path.const';
 import {
   LoadingBarComponent,
   LoadingMaskComponent,
   ConnectionErrorComponent,
+  LineAreaCompareChartComponent,
 } from '../../../components';
 import {
   Api2103Response,
@@ -35,11 +38,41 @@ import {
   InfoDataImageComponent,
   AllInfoDataComponent,
   LapInfoTableComponent,
+  MapOptionComponent,
+  TrendChartInfoComponent,
+  QuadrantChartComponent,
+  QuadrantInfoComponent,
+  QuadrantSettingComponent,
+  WeightTrainLevelComponent,
+  InfoDataCompareRwdComponent,
 } from './components/';
-import { getUrlQueryStrings } from '../../../core/utils';
-import { AuthService } from '../../../core/services';
-import { SportType } from '../../../core/enums/sports';
+import { getUrlQueryStrings, deepCopy } from '../../../core/utils';
+import { AuthService, UserService } from '../../../core/services';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import {
+  TreeMapChartComponent,
+  GoogleMapComponent,
+  LeafletMapComponent,
+  SportsFileRoadComponent,
+  MuscleMapComponent,
+  MuscleInfoCardComponent,
+} from '../../../components';
+import { SportsDetailHandler } from '../classes';
+import { zoneColor } from '../../../core/models/represent-color';
+import {
+  AreaZoneColor,
+  FileSimpleInfo,
+  QuadrantSetting,
+  QuadrantData,
+} from '../../../core/models/compo';
+import {
+  DataTypeTranslatePipe,
+  DataTypeUnitPipe,
+  SportPaceSibsPipe,
+  TemperatureSibsPipe,
+} from '../../../core/pipes';
+
+declare let google;
 
 @Component({
   selector: 'app-sports-detail',
@@ -64,11 +97,31 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     InfoDataImageComponent,
     AllInfoDataComponent,
     LapInfoTableComponent,
+    TreeMapChartComponent,
+    GoogleMapComponent,
+    LeafletMapComponent,
+    MapOptionComponent,
+    TrendChartInfoComponent,
+    DataTypeTranslatePipe,
+    LineAreaCompareChartComponent,
+    DataTypeUnitPipe,
+    SportPaceSibsPipe,
+    TemperatureSibsPipe,
+    SportsFileRoadComponent,
+    QuadrantChartComponent,
+    QuadrantInfoComponent,
+    QuadrantSettingComponent,
+    MuscleMapComponent,
+    MuscleInfoCardComponent,
+    WeightTrainLevelComponent,
+    InfoDataCompareRwdComponent,
   ],
   templateUrl: './sports-detail.component.html',
   styleUrls: ['./sports-detail.component.scss'],
 })
 export class SportsDetailComponent implements OnInit, OnDestroy {
+  private _ngUnsubscribe = new Subject();
+
   /**
    * 頁面載入進度
    */
@@ -90,23 +143,92 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
   isPreviewPrint = false;
 
   /**
+   * 是否為登入前模式
+   */
+  isPortal = false;
+
+  /**
+   * 原始數據，用來處理複合式運動頁面切換
+   */
+  private _originData: Api2103Response;
+
+  /**
    * 基準檔案數據
    */
-  baseFileData: Api2103Response;
+  baseFileData: SportsDetailHandler;
 
   /**
    * 比較檔案數據
    */
-  compareFileData: Api2103Response;
+  compareFileData?: SportsDetailHandler;
+
+  /**
+   * 用來促使圖表重繪來自適應頁面寬度改變
+   */
+  reflowCount = 0;
+
+  /**
+   * 圖資來源
+   */
+  mapSource = MapSource.google;
+
+  /**
+   * 地圖類別
+   */
+  mapType = MapType.normal;
+
+  /**
+   * 心率區間顏色範圍（用於趨勢圖）
+   */
+  hrZoneColor: Array<AreaZoneColor>;
+
+  /**
+   * 心率趨勢y軸軸線呈現位置
+   */
+  hrYAxisTickPosition: Array<number>;
+
+  /**
+   * 複合式運動檔案目前瀏覽索引
+   */
+  complexFileIndex = 0;
+
+  /**
+   * 象限圖設定
+   */
+  quadrantSetting$: Subject<QuadrantSetting>;
+
+  /**
+   * 基準象限圖相關數據
+   */
+  baseQuadrantData: QuadrantData;
+
+  /**
+   * 比較象限圖相關數據
+   */
+  compareQuadrantData?: QuadrantData;
+
+  /**
+   * 螢幕寬度
+   */
+  screenWidth = window.innerWidth;
+
+  /**
+   * 複合式運動簡易檔案資訊清單
+   */
+  private _infoList: Array<FileSimpleInfo>;
 
   readonly SportType = SportType;
+  readonly MapSource = MapSource;
+  readonly canUseGoogle = 'google' in window && typeof google?.maps === 'object';
+  readonly rwdWidth = 767;
 
   constructor(
     private sportsDetailService: SportsDetailService,
     private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    private userService: UserService
   ) {}
 
   /**
@@ -117,11 +239,105 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 取得使用者使用單位
+   */
+  get unit() {
+    return this.userService.getUser().unit;
+  }
+
+  /**
+   * 取得是否為公制
+   */
+  get isMetric() {
+    return this.unit === DataUnitType.metric;
+  }
+
+  /**
+   * 取得運動檔案類別
+   */
+  get sportsType() {
+    return +(this.baseFileData?.activityInfoLayer.type ?? SportType.all);
+  }
+
+  /**
+   * 取得配速sportPaceSibs pipe所需參數
+   */
+  get PacePipeArgs() {
+    const { sportsType, unit } = this;
+    return { sportType: sportsType, userUnit: unit, showUnit: false };
+  }
+
+  /**
+   * 取得temperatureSibs pipe所需參數
+   */
+  get tempPipeArgs() {
+    return { unitType: this.unit, showUnit: false };
+  }
+
+  /**
+   * 取得複合式運動簡易概要資訊清單
+   */
+  get complexInfoList() {
+    return this._infoList;
+  }
+
+  /**
+   * 取得目前顯示檔案是否為主檔案
+   */
+  get isMainFile() {
+    return this.complexFileIndex === 0;
+  }
+
+  /**
+   * 取得使用者體重
+   */
+  get bodyWeight() {
+    return this.userService.getUser().userProfile.bodyWeight;
+  }
+
+  /**
+   * 取得使用者重訓程度
+   */
+  get weightTrainLevel() {
+    return this.userService.getUser().userProfile.weightTrainingStrengthLevel;
+  }
+
+  /**
+   * 是否為大螢幕畫面
+   */
+  get isLargeScreen() {
+    return this.screenWidth > this.rwdWidth;
+  }
+
+  /**
    * 初始化時即載入基本運動檔案資訊
    */
   ngOnInit(): void {
+    this.subscribeResizeEvent();
+    this.checkPathName();
     this.checkUrlParam();
+    this.hrZoneColor = this.getHrZoneColor();
+    this.hrYAxisTickPosition = this.getHrYAxisTickPosition();
     this.getBaseFileData();
+  }
+
+  /**
+   * 訂閱視窗大小變更事件
+   */
+  subscribeResizeEvent() {
+    const resizeEvent = fromEvent(window, 'resize');
+    resizeEvent.pipe(debounceTime(100), takeUntil(this._ngUnsubscribe)).subscribe(() => {
+      this.screenWidth = window.innerWidth;
+    });
+  }
+
+  /**
+   * 確認路徑位址為登入前頁面還是登入後
+   */
+  checkPathName() {
+    const { pathname } = location;
+    const [, firstPath] = pathname.split('/');
+    this.isPortal = firstPath !== appPath.dashboard.home;
   }
 
   /**
@@ -140,6 +356,61 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 取得心率區間趨勢圖顏色設定
+   */
+  getHrZoneColor() {
+    const {
+      userHrRange: { z0, z1, z2, z3, z4 },
+    } = this.userService.getUser();
+
+    return [
+      {
+        value: z0 as number,
+        color: zoneColor[0],
+      },
+      {
+        value: z1 as number,
+        color: zoneColor[1],
+      },
+      {
+        value: z2 as number,
+        color: zoneColor[2],
+      },
+      {
+        value: z3 as number,
+        color: zoneColor[3],
+      },
+      {
+        value: z4 as number,
+        color: zoneColor[4],
+      },
+      {
+        color: zoneColor[5],
+      },
+    ];
+  }
+
+  /**
+   * 取得心率趨勢圖y軸標線呈現位置
+   */
+  getHrYAxisTickPosition() {
+    const {
+      userHrRange: { z0, z1, z2, z3, z4, z5 },
+    } = this.userService.getUser();
+
+    return [
+      60,
+      z0 as number,
+      z1 as number,
+      z2 as number,
+      z3 as number,
+      z4 as number,
+      z5 as number,
+      220,
+    ];
+  }
+
+  /**
    * 取得此運動檔案資料
    */
   getBaseFileData() {
@@ -150,9 +421,11 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
         switchMap((fileId) => this.getBaseSportsFile(fileId))
       )
       .subscribe({
-        next: (res) => this.handleBaseData(res),
-        error: (error) =>
-          error.name ? this.handleConnectionError(error) : this.handleApiError(error),
+        next: (res) => {
+          this._originData = deepCopy(res.data);
+          this.handleBaseData(res);
+        },
+        error: (error) => this.handleApiError(error),
       });
   }
 
@@ -160,7 +433,7 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
    * 取得此檔案流水編號
    */
   getFileId(): number {
-    return +this.route.snapshot.paramMap.get('fileId');
+    return +(this.route.snapshot.paramMap.get('fileId') as string);
   }
 
   /**
@@ -176,31 +449,55 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
    * @param
    */
   handleBaseData({ data, isFileOwner }) {
-    this.baseFileData = data;
+    const type = +data.activityInfoLayer.type;
+    if (type === SportType.complex) this._infoList = this.getInfoList();
+
+    const args = this.getFileHandlerArgs(type);
+    this.baseFileData = new SportsDetailHandler(data, args);
+
+    if (this.displayQuadrantData()) this.subscribeQuadrantData(data);
+
     this.isFileOwner = isFileOwner;
     this.progress = 100;
   }
 
   /**
-   * 處理連線異常問題
-   * @param error angular httpErrorResponse
+   * 取得 SportsDetailHandler args 參數
+   * @param sportsType 運動類別
    */
-  handleConnectionError(error: HttpErrorResponse) {
-    this.progress = 100;
-    this.connectionError = true;
+  getFileHandlerArgs(sportsType: SportType) {
+    let args: any = { unit: this.unit as DataUnitType };
+    if (sportsType === SportType.weightTrain) {
+      const { bodyWeight, weightTrainLevel } = this;
+      args = { ...args, bodyWeight, weightTrainLevel };
+    }
+
+    return args;
   }
 
   /**
    * 確認檔案是否不符隱私權規則或找不到該運動檔案
-   * @param error api resultCode(200以外)
+   * @param error 錯誤資訊
    */
-  handleApiError(error: ResultCode) {
+  handleApiError(error: any) {
     this.progress = 100;
+    const resultCode = +(error.message ?? ResultCode.pageNotFound);
+    if (resultCode === ResultCode.connectError) {
+      this.connectionError = true;
+    } else {
+      this.redirectErrorPage(resultCode);
+    }
+  }
 
+  /**
+   * 轉址至對應錯誤訊息頁面
+   * @param resultCode 錯誤代碼
+   */
+  redirectErrorPage(resultCode: ResultCode) {
     const errorPage = {
       [ResultCode.forbidden]: appPath.pageNoPermission,
     };
-    const redirectPath = errorPage[error as ResultCode] ?? appPath.pageNotFound;
+    const redirectPath = errorPage[resultCode] ?? appPath.pageNotFound;
     const redirectPage = this.getRedirectPage(redirectPath);
     this.router.navigateByUrl(redirectPage);
   }
@@ -220,7 +517,7 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
    * @param name 新的檔案名稱
    */
   updateFileName(name: string) {
-    this.baseFileData.fileInfo.dispName = name;
+    this.baseFileData.fileName = name;
   }
 
   /**
@@ -228,7 +525,16 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
    * @param url 新的檔案佈景圖路徑
    */
   changeFileSenery(url: string) {
-    this.baseFileData.fileInfo.photo = url;
+    this.baseFileData.photo = url;
+  }
+
+  /**
+   * 取消比較模式
+   */
+  cancelFileCompare() {
+    this.compareFileData = undefined;
+    this.compareQuadrantData = undefined;
+    this.reflowCount++;
   }
 
   /**
@@ -236,6 +542,8 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
    * @param fileId 比較檔案編號
    */
   selectCompareFile(fileId: number | null) {
+    this.reflowCount++;
+    this.initStatus();
     if (!fileId) {
       this.compareFileData = undefined;
       return false;
@@ -248,11 +556,21 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 將部份狀態初始化
+   */
+  initStatus() {
+    const { sportsType } = this;
+    if (sportsType === SportType.weightTrain) this.baseFileData.weightTrainData.blurMuscle();
+  }
+
+  /**
    * 處理比較檔案數據
    * @param data 比較檔案數據
    */
   handleCompareData({ data }) {
-    this.compareFileData = data;
+    const args = this.getFileHandlerArgs(this.sportsType);
+    this.compareFileData = new SportsDetailHandler(data, args);
+    if (this.displayQuadrantData()) this.subscribeCompareQuadrant(data);
   }
 
   /**
@@ -263,5 +581,136 @@ export class SportsDetailComponent implements OnInit, OnDestroy {
     this.snackbar.open('Load failed.', 'OK', { duration: 2000 });
   }
 
-  ngOnDestroy(): void {}
+  /**
+   * 變更地圖圖資
+   * @param source 圖資來源
+   */
+  mapSourceChange(source: MapSource) {
+    this.mapSource = source;
+  }
+
+  /**
+   * 此運動類別是否包含於清單中
+   * @param list
+   */
+  isIncluded(list: Array<SportType>) {
+    return list.includes(this.sportsType);
+  }
+
+  /**
+   * 是否需顯示象限圖數據
+   */
+  private displayQuadrantData() {
+    return this.isIncluded([SportType.run, SportType.cycle, SportType.swim, SportType.row]);
+  }
+
+  /**
+   * 選擇顯示的複合式運動子檔案
+   * @param index {number}-指定的複合式檔案索引
+   */
+  selectFile(index: number) {
+    this.complexFileIndex = index;
+    const targetFile = this.getAssignFile(index);
+    this.sportsDetailService.handleBaseComplexDetail(targetFile).subscribe((res) => {
+      this.handleBaseData(res);
+    });
+  }
+
+  /**
+   * 取得各檔案概要資訊列表
+   */
+  private getInfoList(): Array<FileSimpleInfo> {
+    const { activityInfoLayer, fileInfo, info } = this._originData;
+    const infoList = (info as Array<any>).map((_list) => {
+      const {
+        activityInfoLayer: { type, totalSecond, avgHeartRateBpm, avgSpeed },
+        fileInfo: { dispName },
+      } = _list;
+      return {
+        type: +type,
+        totalSecond: totalSecond ?? 0,
+        avgHeartRateBpm: avgHeartRateBpm ?? 0,
+        avgSpeed: avgSpeed ?? 0,
+        dispName,
+      };
+    });
+
+    infoList.unshift({
+      type: +activityInfoLayer.type,
+      totalSecond: activityInfoLayer.totalSecond ?? 0,
+      avgHeartRateBpm: activityInfoLayer.avgHeartRateBpm ?? 0,
+      avgSpeed: activityInfoLayer.avgSpeed ?? 0,
+      dispName: fileInfo.dispName,
+    });
+
+    return infoList;
+  }
+
+  /**
+   * 訂閱象限圖相關設定以及基準檔案象限圖資訊與數據
+   * @param baseData 基準運動檔案
+   */
+  private subscribeQuadrantData(baseData: Api2103Response) {
+    this.quadrantSetting$ = this.sportsDetailService.getRxQuadrantSetting();
+    this.sportsDetailService
+      .getRxQuadrantData(baseData)
+      .pipe(takeUntil(this._ngUnsubscribe))
+      .subscribe((data) => {
+        this.baseQuadrantData = data;
+      });
+  }
+
+  /**
+   * 訂閱檔案象限圖資訊與數據
+   * @param compareData 比較運動檔案
+   */
+  private subscribeCompareQuadrant(compareData: Api2103Response) {
+    this.sportsDetailService
+      .getRxQuadrantData(compareData)
+      .pipe(takeUntil(this._ngUnsubscribe))
+      .subscribe((data) => {
+        this.compareQuadrantData = data;
+      });
+  }
+
+  /**
+   * 取得指定檔案數據
+   * @param index {number}-檔案索引
+   */
+  getAssignFile(index: number) {
+    const { _originData } = this;
+    return index === 0 ? _originData : (_originData.info as Array<any>)[index - 1];
+  }
+
+  /**
+   * 聚焦肌肉部位
+   * @param e 聚焦肌肉部位id
+   */
+  focusMusclePart(e: number) {
+    this.baseFileData.weightTrainData.setFocusMuscle(e);
+    this.compareFileData?.weightTrainData.setFocusMuscle(e);
+  }
+
+  /**
+   * 聚焦肌群
+   * @param e 聚焦肌群id
+   */
+  focusMuscleGroup(e: number) {
+    this.baseFileData.weightTrainData.setFocusMuscleGroup(e);
+    this.compareFileData?.weightTrainData.setFocusMuscleGroup(e);
+  }
+
+  /**
+   * 變更使用者重訓程度
+   * @param level 重訓程度
+   */
+  changeLevel(level: WeightTrainingLevel) {
+    this.baseFileData.weightTrainData.changeWeightTrainLevel(level);
+    this.compareFileData?.weightTrainData.changeWeightTrainLevel(level);
+  }
+
+  ngOnDestroy(): void {
+    this._ngUnsubscribe.next(null);
+    this._ngUnsubscribe.complete();
+  }
 }

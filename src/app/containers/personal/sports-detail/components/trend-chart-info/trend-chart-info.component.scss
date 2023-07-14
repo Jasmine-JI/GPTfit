@@ -1,0 +1,94 @@
+@import 'color.scss';
+@import 'screen-size.scss';
+
+@mixin small-font($color: rgba(150, 150, 150, 1)) {
+  font-size: 0.75rem;
+  color: $color;
+  line-height: 1;
+  margin-right: 0.5rem;
+}
+
+@mixin color-bar($color) {
+  &:before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    background-color: $color;
+    border-radius: 4px;
+    margin-right: 5px;
+  }
+}
+
+@mixin diff-value($color, $bg-color) {
+  background-color: $bg-color;
+  color: $color;
+  font-size: 0.8rem;
+  text-align: center;
+  margin: 0 5px;
+}
+
+.row__grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr 3fr 3fr;
+
+  @include medium-screen() {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.trend__title {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.125rem;
+  grid-column: 1 / 1;
+
+  @include medium-screen() {
+    display: inline-block;
+    text-align: center;
+    grid-column: 1 / 3;
+  }
+}
+
+.base__info__card {
+  grid-column: 2 / 3;
+  @include color-bar($file-base-color);
+  @include medium-screen() {
+    grid-column: 1 / 1;
+  }
+}
+
+.compare__info__card {
+  grid-column: 3 / 3;
+  @include color-bar($file-compare-color);
+  @include medium-screen() {
+    grid-column: 2 / 2;
+  }
+}
+
+.file__time {
+  @include small-font();
+}
+
+.trend__info__label {
+  @include small-font();
+}
+
+.trend__info__value {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-right: 2px;
+}
+
+.trend__info__unit {
+  @include small-font(black);
+}
+
+.positive__value {
+  @include diff-value($positive-color, $positive-bg-color);
+}
+
+.negative__value {
+  @include diff-value($negative-color, $negative-bg-color);
+}

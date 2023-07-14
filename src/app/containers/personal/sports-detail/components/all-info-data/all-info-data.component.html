@@ -276,10 +276,10 @@
           oneInfo;
           context: {
             title: 'universal_activityData_limit_totalActivitySet',
-            value: activityInfo.totalRestLapOrSet,
+            value: activityInfo.totalActivityLapOrSet,
             unit: 'sets',
-            diff: diffData?.totalRestLapOrSet ?? 0,
-            isPositiveDiff: diffData?.totalRestLapOrSet >= 0
+            diff: diffData?.totalActivityLapOrSet ?? 0,
+            isPositiveDiff: diffData?.totalActivityLapOrSet >= 0
           }
         "
       ></div>
@@ -301,7 +301,7 @@
           context: {
             title: 'universal_activityData_limit_activiyTotalWeight',
             value: activityInfo.totalWeightKg | weightSibs: weightPipeOption,
-            unit: userUnit === metric ? 'kg' : 'lb',
+            unit: userUnit === DataUnitType.metric ? 'kg' : 'lb',
             diff: diffData?.totalWeightKg ?? 0 | weightSibs: weightPipeOption,
             isPositiveDiff: diffData?.totalWeightKg >= 0
           }

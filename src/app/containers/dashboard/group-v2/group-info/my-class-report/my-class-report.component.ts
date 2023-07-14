@@ -135,6 +135,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
    * UI會用到的各個flag
    */
   uiFlag = {
+    isPageOwner: false,
     isDebugMode: false,
     isPreviewMode: false,
     isLoading: false,
@@ -246,15 +247,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     { y: 0, color: '#f36953' },
   ];
   colorIdx = 0;
-  hrZoneRange = <HrZoneRange>{
-    hrBase: HrBase.max,
-    z0: 'Z0',
-    z1: 'Z1',
-    z2: 'Z2',
-    z3: 'Z3',
-    z4: 'Z4',
-    z5: 'Z5',
-  };
+  hrZoneRange: HrZoneRange;
 
   /**
    * 報告頁面可讓使用者篩選的條件
@@ -501,76 +494,9 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       .getUser()
       .rxUserProfile.pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((res) => {
-        if (+this.userId !== res.userId) {
-          this.hrZoneRange['hrBase'] = HrBase.max;
-          this.hrZoneRange['z0'] = 'Z0';
-          this.hrZoneRange['z1'] = 'Z1';
-          this.hrZoneRange['z2'] = 'Z2';
-          this.hrZoneRange['z3'] = 'Z3';
-          this.hrZoneRange['z4'] = 'Z4';
-          this.hrZoneRange['z5'] = 'Z5';
-        } else {
-          const userAge = dayjs().diff(res.birthday, 'year'),
-            userHRBase = res.heartRateBase,
-            userMaxHR = res.heartRateMax,
-            userRestHR = res.heartRateResting;
-
-          this.getUserBodyInfo(userHRBase, userAge, userMaxHR, userRestHR);
-        }
+        this.uiFlag.isPageOwner = +this.userId === res.userId;
+        this.hrZoneRange = this.userService.getUser().userHrRange;
       });
-  }
-
-  // 取得使用者資訊並計算心率區間範圍()-kidin-1090203
-  getUserBodyInfo(userHRBase, userAge, userMaxHR, userRestHR) {
-    if (userAge !== null) {
-      if (userMaxHR && userRestHR) {
-        if (userHRBase === HrBase.max) {
-          // 區間數值採無條件捨去法
-          this.hrZoneRange['hrBase'] = userHRBase;
-          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5 - 1);
-          this.hrZoneRange['z1'] = Math.floor((220 - userAge) * 0.6 - 1);
-          this.hrZoneRange['z2'] = Math.floor((220 - userAge) * 0.7 - 1);
-          this.hrZoneRange['z3'] = Math.floor((220 - userAge) * 0.8 - 1);
-          this.hrZoneRange['z4'] = Math.floor((220 - userAge) * 0.9 - 1);
-          this.hrZoneRange['z5'] = Math.floor((220 - userAge) * 1);
-        } else {
-          this.hrZoneRange['hrBase'] = userHRBase;
-          this.hrZoneRange['z0'] = Math.floor((userMaxHR - userRestHR) * 0.55) + userRestHR;
-          this.hrZoneRange['z1'] = Math.floor((userMaxHR - userRestHR) * 0.6) + userRestHR;
-          this.hrZoneRange['z2'] = Math.floor((userMaxHR - userRestHR) * 0.65) + userRestHR;
-          this.hrZoneRange['z3'] = Math.floor((userMaxHR - userRestHR) * 0.75) + userRestHR;
-          this.hrZoneRange['z4'] = Math.floor((userMaxHR - userRestHR) * 0.85) + userRestHR;
-          this.hrZoneRange['z5'] = Math.floor((userMaxHR - userRestHR) * 1) + userRestHR;
-        }
-      } else {
-        if (userHRBase === HrBase.max) {
-          // 區間數值採無條件捨去法
-          this.hrZoneRange['hrBase'] = userHRBase;
-          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5 - 1);
-          this.hrZoneRange['z1'] = Math.floor((220 - userAge) * 0.6 - 1);
-          this.hrZoneRange['z2'] = Math.floor((220 - userAge) * 0.7 - 1);
-          this.hrZoneRange['z3'] = Math.floor((220 - userAge) * 0.8 - 1);
-          this.hrZoneRange['z4'] = Math.floor((220 - userAge) * 0.9 - 1);
-          this.hrZoneRange['z5'] = Math.floor((220 - userAge) * 1);
-        } else {
-          this.hrZoneRange['hrBase'] = userHRBase;
-          this.hrZoneRange['z0'] = Math.floor((220 - userAge - userRestHR) * 0.55) + userRestHR;
-          this.hrZoneRange['z1'] = Math.floor((220 - userAge - userRestHR) * 0.6) + userRestHR;
-          this.hrZoneRange['z2'] = Math.floor((220 - userAge - userRestHR) * 0.65) + userRestHR;
-          this.hrZoneRange['z3'] = Math.floor((220 - userAge - userRestHR) * 0.75) + userRestHR;
-          this.hrZoneRange['z4'] = Math.floor((220 - userAge - userRestHR) * 0.85) + userRestHR;
-          this.hrZoneRange['z5'] = Math.floor((220 - userAge - userRestHR) * 1) + userRestHR;
-        }
-      }
-    } else {
-      this.hrZoneRange['hrBase'] = HrBase.max;
-      this.hrZoneRange['z0'] = 'Z0';
-      this.hrZoneRange['z1'] = 'Z1';
-      this.hrZoneRange['z2'] = 'Z2';
-      this.hrZoneRange['z3'] = 'Z3';
-      this.hrZoneRange['z4'] = 'Z4';
-      this.hrZoneRange['z5'] = 'Z5';
-    }
   }
 
   // 顯示群組資料-kidin-1081227

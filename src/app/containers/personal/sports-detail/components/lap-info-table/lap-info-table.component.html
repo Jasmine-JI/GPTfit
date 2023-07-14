@@ -4,68 +4,297 @@
     <div class="flexCol column__header__block">
       <li class="flexRow table__column__header">
         <span class="lap__column">Lap</span>
-        <div class="flexRow lap__content">
-          <span class="one__column" *ngIf="showName">Name</span>
-          <span class="one__column">Time</span>
-          <span class="one__column">HR</span>
-          <span class="one__column" *ngIf="showDistance">Dist</span>
-          <span class="one__column" *ngIf="showSpeed">Spd</span>
-          <span class="one__column" *ngIf="showPace">Pace</span>
-          <span class="one__column" *ngIf="showSwimPosture">Posture</span>
-          <ng-container *ngIf="showWeightTrainData">
-            <span class="one__column">1RM</span>
-            <span class="one__column">Avg. TP.</span>
+        <div class="flexRow lap__content lap__content__title">
+          <ng-container *ngFor="let _column of displayColumn; let _columnIndex = index">
+            <div
+              *ngTemplateOutlet="
+                columnHeaderUnit;
+                context: {
+                  title: 'Time',
+                  display: _column === 'lapTotalSecond',
+                  columnIndex: _columnIndex
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                columnHeaderUnit;
+                context: {
+                  title: 'HR',
+                  unit: 'bpm',
+                  display: _column === 'lapAvgHeartRateBpm',
+                  columnIndex: _columnIndex
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                columnHeaderUnit;
+                context: {
+                  title: 'Dist',
+                  unit: 'distanceKilo' | dataTypeUnit: unitContext,
+                  display: _column === 'lapTotalDistanceMeters',
+                  columnIndex: _columnIndex
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                columnHeaderUnit;
+                context: {
+                  title: 'Spd',
+                  unit: 'speed' | dataTypeUnit: unitContext,
+                  display: _column === 'lapAvgSpeed' && !isPaceType,
+                  columnIndex: _columnIndex
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                columnHeaderUnit;
+                context: {
+                  title: 'Pace',
+                  unit: 'pace' | dataTypeUnit: unitContext,
+                  display: _column === 'lapAvgSpeed' && isPaceType,
+                  columnIndex: _columnIndex
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                columnHeaderUnit;
+                context: {
+                  title: 'Cad',
+                  unit: 'spm',
+                  display: _column === 'lapRunAvgCadence' || _column === 'lapSwimAvgCadence',
+                  columnIndex: _columnIndex
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                columnHeaderUnit;
+                context: {
+                  title: 'Cad',
+                  unit: 'rpm',
+                  display: _column === 'lapCycleAvgCadence' || _column === 'lapRowingAvgCadence',
+                  columnIndex: _columnIndex
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                columnHeaderUnit;
+                context: {
+                  title: 'Climb',
+                  unit: userUnit === DataUnitType.metric ? 'm' : 'lb',
+                  display: _column === 'lapElevGain',
+                  columnIndex: _columnIndex
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                columnHeaderUnit;
+                context: {
+                  title: 'Landing',
+                  unit: userUnit === DataUnitType.metric ? 'm' : 'lb',
+                  display: _column === 'lapElevLoss',
+                  columnIndex: _columnIndex
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                columnHeaderUnit;
+                context: {
+                  title: 'Reps',
+                  unit: '',
+                  display: _column === 'setTotalReps',
+                  columnIndex: _columnIndex
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                columnHeaderUnit;
+                context: {
+                  title: '1RM',
+                  unit: 'weight' | dataTypeUnit: unitContext,
+                  display: _column === 'setOneRepMax',
+                  columnIndex: _columnIndex
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                columnHeaderUnit;
+                context: {
+                  title: 'Ttl. Wt.',
+                  unit: 'weight' | dataTypeUnit: unitContext,
+                  display: _column === 'setTotalWeightKg',
+                  columnIndex: _columnIndex
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                columnHeaderUnit;
+                context: {
+                  title: 'Avg. Wt.',
+                  unit: 'weight' | dataTypeUnit: unitContext,
+                  display: _column === 'setAvgWeightKg',
+                  columnIndex: _columnIndex
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                columnHeaderUnit;
+                context: {
+                  title: 'Avg. TP.',
+                  unit: 'spm',
+                  display: _column === 'setMoveRepetitionsAvgCadence',
+                  columnIndex: _columnIndex
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                columnHeaderUnit;
+                context: {
+                  title: 'Strokes',
+                  unit: '',
+                  display: _column === 'lapTotalStrokes',
+                  columnIndex: _columnIndex
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                columnHeaderUnit;
+                context: {
+                  title: 'Swolf',
+                  unit: 'spm',
+                  display: _column === 'lapSwolf',
+                  columnIndex: _columnIndex
+                }
+              "
+            ></div>
+            <div
+              *ngTemplateOutlet="
+                columnHeaderUnit;
+                context: {
+                  title: 'Power',
+                  unit: 'w',
+                  display: _column === 'lapCycleAvgWatt' || _column === 'lapRowingAvgWatt',
+                  columnIndex: _columnIndex
+                }
+              "
+            ></div>
           </ng-container>
         </div>
       </li>
     </div>
-    <div class="table__content" (scroll)="handleSynchronizeScroll($event)">
-      <ng-container *ngFor="let _lap of lapData; let _index = index">
-        <li class="flexRow table__row" *ngIf="_index !== 0">
-          <span class="lap__column">{{ _index }}</span>
-          <div
-            class="flexRow lap__content"
-            [class.base__row]="isBaseFile"
-            [class.compare__row]="!isBaseFile"
-          >
-            <ng-container *ngIf="showName">
-              <div
-                *ngTemplateOutlet="
-                  tableValue;
-                  context: {
-                    value: _lap ? _lap[dataIndex['dispName']] : ''
-                  }
-                "
-              ></div>
-            </ng-container>
-            <div *ngTemplateOutlet="tableValue; context: getTimeRangeContext(_index)"></div>
-            <div *ngTemplateOutlet="tableValue; context: getAvgHrContext(_index)"></div>
-            <ng-container *ngIf="showDistance">
-              <div *ngTemplateOutlet="tableValue; context: getDistanceContext(_index)"></div>
-            </ng-container>
-            <ng-container *ngIf="showSpeed">
-              <div *ngTemplateOutlet="tableValue; context: getSpeedContext(_index)"></div>
-            </ng-container>
-            <ng-container *ngIf="showPace">
-              <div *ngTemplateOutlet="tableValue; context: getPaceContext(_index)"></div>
-            </ng-container>
-            <ng-container *ngIf="showSwimPosture">
-              <div
-                *ngTemplateOutlet="
-                  tableValue;
-                  context: {
-                    value: _lap ? (_lap[dataIndex['lapSwimPosture']] | swimPosture | translate) : ''
-                  }
-                "
-              ></div>
-            </ng-container>
 
-            <ng-container *ngIf="showWeightTrainData">
-              <div *ngTemplateOutlet="tableValue; context: getOneMaxRepContext(_index)"></div>
+    <div class="table__content">
+      <ng-container *ngFor="let _lap of lapData; let _lapIndex = index">
+        <li class="flexRow table__row" *ngIf="_lapIndex !== 0">
+          <span class="lap__column">{{ _lapIndex }}</span>
+          <div class="flexCol" style="width: 100%">
+            <span class="lap__display__name" *ngIf="_lap && !compareLapData">
+              <ng-container *ngIf="sportsType !== SportType.swim && _lap[dataIndex['dispName']]">
+                {{ _lap[dataIndex['dispName']] }}
+              </ng-container>
+              <ng-container
+                *ngIf="sportsType === SportType.swim && _lap[dataIndex['lapSwimPosture']]"
+              >
+                {{ _lap[dataIndex['lapSwimPosture']] | swimPosture | translate }}
+              </ng-container>
+            </span>
+
+            <div class="flexRow lap__content base__row">
+              <ng-container *ngTemplateOutlet="contentRow; context: { data: _lap }"></ng-container>
+            </div>
+
+            <div
+              class="flexRow lap__content diff__row"
+              *ngIf="
+                (compareLapData && sportsType !== SportType.weightTrain) ||
+                (!compareLapData && _lapIndex > 1)
+              "
+            >
               <div
-                *ngTemplateOutlet="tableValue; context: getWeightTrainCadenceContext(_index)"
-              ></div>
-            </ng-container>
+                [class]="{
+                  one__column: true,
+                  diff__value: true,
+                  positive__value: diffLapData.get(_column)[_lapIndex - 2] >= 0,
+                  negative__value: diffLapData.get(_column)[_lapIndex - 2] < 0
+                }"
+                [ngSwitch]="_column"
+                *ngFor="let _column of displayColumn"
+              >
+                <ng-container *ngSwitchCase="'lapTotalSecond'">
+                  {{
+                    diffLapData.get(_column)[_lapIndex - 2]
+                      | timeRangeString: { showZeroHour: false, hideSecond: false }
+                  }}
+                </ng-container>
+                <ng-container *ngSwitchCase="'lapTotalDistanceMeters'">
+                  {{
+                    diffLapData.get(_column)[_lapIndex - 2]
+                      | distanceSibs
+                        : { unitType: userUnit, showUnit: false, convertKiloAlways: true }
+                  }}
+                </ng-container>
+                <ng-container *ngSwitchCase="'lapAvgSpeed'">
+                  <ng-container *ngIf="!isPaceType">
+                    {{
+                      diffLapData.get(_column)[_lapIndex - 2]
+                        | speedSibs: { unitType: userUnit, showUnit: false }
+                    }}
+                  </ng-container>
+                  <ng-container *ngIf="isPaceType">
+                    {{
+                      diffLapData.get(_column)[_lapIndex - 2]
+                        | sportPaceSibs: { sportType: sportsType, userUnit, showUnit: false }
+                    }}
+                  </ng-container>
+                </ng-container>
+                <ng-container *ngSwitchCase="setOneRepMax">
+                  {{
+                    diffLapData.get(_column)[_lapIndex - 2]
+                      | weightSibs: { unitType: userUnit, showUnit: false }
+                  }}
+                </ng-container>
+                <ng-container *ngSwitchCase="lapElevGain">
+                  {{
+                    diffLapData.get(_column)[_lapIndex - 2]
+                      | distanceSibs
+                        : { unitType: userUnit, showUnit: false, convertKiloAlways: false }
+                  }}
+                </ng-container>
+                <ng-container *ngSwitchCase="lapElevLoss">
+                  {{
+                    diffLapData.get(_column)[_lapIndex - 2]
+                      | distanceSibs
+                        : { unitType: userUnit, showUnit: false, convertKiloAlways: false }
+                  }}
+                </ng-container>
+                <ng-container *ngSwitchDefault>
+                  {{ diffLapData.get(_column)[_lapIndex - 2] }}
+                </ng-container>
+              </div>
+            </div>
+
+            <div
+              class="flexRow lap__content compare__row"
+              *ngIf="compareLapData && sportsType !== SportType.weightTrain"
+            >
+              <ng-container
+                *ngTemplateOutlet="contentRow; context: { data: compareLapData[_lapIndex] }"
+              ></ng-container>
+            </div>
           </div>
         </li>
       </ng-container>
@@ -74,27 +303,140 @@
 </section>
 
 <ng-template
-  #tableValue
-  let-value="value"
+  #columnHeaderUnit
+  let-title="title"
   let-unit="unit"
-  let-diffValue="diffValue"
-  let-isPositiveDiff="isPositiveDiff"
-  let-displayDiff="displayDiff"
+  let-columnIndex="columnIndex"
+  let-display="display"
 >
-  <div class="flexCol one__column">
-    <div>
-      {{ value }}
+  <div
+    class="flexRow one__column one__title__column"
+    (click)="openColumnMenu($event, columnIndex)"
+    *ngIf="display"
+  >
+    <div class="flexCol">
+      <span class="column__title">{{ title }}</span>
       <span class="table__unit" *ngIf="unit">{{ unit }}</span>
     </div>
-    <div
-      class="diff__value"
-      [class.positive__value]="isPositiveDiff"
-      [class.negative__value]="!(isPositiveDiff ?? true)"
-      *ngIf="displayDiff"
-    >
-      <ng-container *ngIf="diffValue !== undefined">
-        {{ isPositiveDiff ? '+' : '' }}{{ diffValue }}
+    <i
+      class="icon-svg_web-icon_p1_006-unfold unfold__icon"
+      [class.unfold__icon--active]="columnIndex === displayColumnMenu"
+    ></i>
+    <ul class="column__type__menu" *ngIf="columnIndex === displayColumnMenu">
+      <li
+        class="column__type__item"
+        [ngSwitch]="_column"
+        (click)="changeColumnType($event, columnIndex, _column)"
+        *ngFor="let _column of getEffectKey()"
+      >
+        <ng-container *ngSwitchCase="'lapTotalSecond'">
+          {{ 'Time' }}
+        </ng-container>
+        <ng-container *ngSwitchCase="'lapAvgHeartRateBpm'">
+          {{ 'HR' }}
+        </ng-container>
+        <ng-container *ngSwitchCase="'lapTotalDistanceMeters'">
+          {{ 'Dist' }}
+        </ng-container>
+        <ng-container *ngSwitchCase="'lapAvgSpeed'">
+          <ng-container *ngIf="!isPaceType">
+            {{ 'Spd' }}
+          </ng-container>
+          <ng-container *ngIf="!isPaceType">
+            {{ 'Pace' }}
+          </ng-container>
+        </ng-container>
+        <ng-container *ngSwitchCase="'lapRunAvgCadence'">
+          {{ 'Cad' }}
+        </ng-container>
+        <ng-container *ngSwitchCase="'lapSwimAvgCadence'">
+          {{ 'Cad' }}
+        </ng-container>
+        <ng-container *ngSwitchCase="'lapCycleAvgCadence'">
+          {{ 'Cad' }}
+        </ng-container>
+        <ng-container *ngSwitchCase="'lapRowingAvgCadence'">
+          {{ 'Cad' }}
+        </ng-container>
+        <ng-container *ngSwitchCase="'lapElevGain'">
+          {{ 'Climb' }}
+        </ng-container>
+        <ng-container *ngSwitchCase="'lapElevLoss'">
+          {{ 'Landing' }}
+        </ng-container>
+        <ng-container *ngSwitchCase="'setTotalReps'">
+          {{ 'Reps' }}
+        </ng-container>
+        <ng-container *ngSwitchCase="'setOneRepMax'">
+          {{ '1RM' }}
+        </ng-container>
+        <ng-container *ngSwitchCase="'setTotalWeightKg'">
+          {{ 'Ttl. Wt.' }}
+        </ng-container>
+        <ng-container *ngSwitchCase="'setAvgWeightKg'">
+          {{ 'Avg. Wt.' }}
+        </ng-container>
+        <ng-container *ngSwitchCase="'setMoveRepetitionsAvgCadence'">
+          {{ 'Avg. TP.' }}
+        </ng-container>
+        <ng-container *ngSwitchCase="'lapTotalStrokes'">
+          {{ 'Strokes' }}
+        </ng-container>
+        <ng-container *ngSwitchCase="'lapSwolf'">
+          {{ 'Swolf' }}
+        </ng-container>
+        <ng-container *ngSwitchCase="'lapRowingAvgWatt'">
+          {{ 'Power' }}
+        </ng-container>
+        <ng-container *ngSwitchCase="'lapCycleAvgWatt'">
+          {{ 'Power' }}
+        </ng-container>
+      </li>
+    </ul>
+  </div>
+</ng-template>
+
+<ng-template #contentRow let-data="data">
+  <ng-container [ngSwitch]="_column" *ngFor="let _column of displayColumn">
+    <div class="one__column" *ngSwitchCase="'lapTotalSecond'">
+      {{
+        data[dataIndex[_column]] ?? 0 | timeRangeString: { showZeroHour: false, hideSecond: false }
+      }}
+    </div>
+    <div class="one__column" *ngSwitchCase="'lapTotalDistanceMeters'">
+      {{
+        data[dataIndex[_column]] ?? 0
+          | distanceSibs: { unitType: userUnit, showUnit: false, convertKiloAlways: true }
+      }}
+    </div>
+    <div class="one__column" *ngSwitchCase="'lapAvgSpeed'">
+      <ng-container *ngIf="!isPaceType">
+        {{ data[dataIndex[_column]] ?? 0 | speedSibs: { unitType: userUnit, showUnit: false } }}
+      </ng-container>
+      <ng-container *ngIf="isPaceType">
+        {{
+          data[dataIndex[_column]] ?? 0
+            | sportPaceSibs: { sportType: sportsType, userUnit, showUnit: false }
+        }}
       </ng-container>
     </div>
-  </div>
+    <div class="one__column" *ngSwitchCase="setOneRepMax">
+      {{ data[dataIndex[_column]] ?? 0 | weightSibs: { unitType: userUnit, showUnit: false } }}
+    </div>
+    <div class="one__column" *ngSwitchCase="lapElevGain">
+      {{
+        data[dataIndex[_column]] ?? 0
+          | distanceSibs: { unitType: userUnit, showUnit: false, convertKiloAlways: false }
+      }}
+    </div>
+    <div class="one__column" *ngSwitchCase="lapElevLoss">
+      {{
+        data[dataIndex[_column]] ?? 0
+          | distanceSibs: { unitType: userUnit, showUnit: false, convertKiloAlways: false }
+      }}
+    </div>
+    <div class="one__column" *ngSwitchDefault>
+      {{ data[dataIndex[_column]] ?? 0 }}
+    </div>
+  </ng-container>
 </ng-template>

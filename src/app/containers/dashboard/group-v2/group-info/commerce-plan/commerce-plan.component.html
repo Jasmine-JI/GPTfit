@@ -116,7 +116,7 @@
         </div>
         <div class="group-list-item">
           {{ 'universal_group_authorizationDueDate' | translate }}：
-          <span *ngIf="!uiFlag.editMode">
+          <span [class.plan__expired]="groupInfo.expired" *ngIf="!uiFlag.editMode">
             {{ commerceInfo.commercePlanExpired | date: 'y-MM-dd' }}
           </span>
           <span *ngIf="uiFlag.editMode">
@@ -135,12 +135,6 @@
         {{ 'universal_group_totalMember' | translate }}
       </span>
       <div class="group-list">
-        <div class="group-list-item" *ngIf="!uiFlag.editMode">
-          {{ 'universal_group_numberOfAdministrators' | translate }}：
-          <span *ngIf="!uiFlag.editMode">
-            {{ totalAdmin }}
-          </span>
-        </div>
         <div
           class="group-list-item"
           [class.full]="

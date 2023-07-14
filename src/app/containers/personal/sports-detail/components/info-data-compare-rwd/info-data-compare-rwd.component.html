@@ -1,0 +1,505 @@
+<section class="flexCol">
+  <div
+    *ngTemplateOutlet="
+      infoRow;
+      context: {
+        title: 'universal_activityData_totalTime',
+        icon: 'icon-svg_web-icon_p2_019-time',
+        baseValue: baseInfo.totalSecond | sportTime,
+        compareValue: compareInfo.totalSecond | sportTime,
+        diffValue: diffData.totalSecond | sportTime,
+        isPositiveDiff: diffData.totalSecond >= 0,
+        dataUnit: ''
+      }
+    "
+  ></div>
+  <div
+    *ngTemplateOutlet="
+      infoRow;
+      context: {
+        title: 'universal_activityData_activityTime',
+        icon: 'icon-svg_web-icon_p2_031-activity_time',
+        baseValue: baseInfo.totalActivitySecond | sportTime,
+        compareValue: compareInfo.totalActivitySecond | sportTime,
+        diffValue: diffData.totalActivitySecond | sportTime,
+        isPositiveDiff: diffData.totalActivitySecond >= 0,
+        dataUnit: ''
+      }
+    "
+  ></div>
+  <div
+    *ngTemplateOutlet="
+      infoRow;
+      context: {
+        title: 'universal_activityData_restTime',
+        icon: 'icon-svg_web-icon_p2_032-rest_time',
+        baseValue: baseInfo.totalRestSecond | sportTime,
+        compareValue: compareInfo.totalRestSecond | sportTime,
+        diffValue: diffData.totalRestSecond | sportTime,
+        isPositiveDiff: diffData.totalRestSecond >= 0,
+        dataUnit: ''
+      }
+    "
+  ></div>
+  <div
+    *ngTemplateOutlet="
+      infoRow;
+      context: {
+        title: 'universal_activityData_avgHr',
+        icon: 'icon-svg_web-icon_p2_006-avg_heart_rate',
+        baseValue: baseInfo.avgHeartRateBpm,
+        compareValue: compareInfo.avgHeartRateBpm,
+        diffValue: diffData.avgHeartRateBpm,
+        isPositiveDiff: diffData.avgHeartRateBpm >= 0,
+        dataUnit: 'bpm'
+      }
+    "
+  ></div>
+  <div
+    *ngTemplateOutlet="
+      infoRow;
+      context: {
+        title: 'universal_userProfile_maxHr',
+        icon: 'icon-svg_web-icon_p2_007-max_heart_rate',
+        baseValue: baseInfo.maxHeartRateBpm,
+        compareValue: compareInfo.maxHeartRateBpm,
+        diffValue: diffData.maxHeartRateBpm,
+        isPositiveDiff: diffData.maxHeartRateBpm >= 0,
+        dataUnit: 'bpm'
+      }
+    "
+  ></div>
+  <div
+    *ngTemplateOutlet="
+      infoRow;
+      context: {
+        title: 'universal_userProfile_calories',
+        icon: 'icon-svg_web-icon_p2_010-calorie',
+        baseValue: baseInfo.calories | number: '1.0-2',
+        compareValue: compareInfo.calories | number: '1.0-2',
+        diffValue: diffData.calories | number: '1.0-2',
+        isPositiveDiff: diffData.calories >= 0,
+        dataUnit: 'cal'
+      }
+    "
+  ></div>
+
+  <ng-container
+    *ngIf="
+      includeSportsType([
+        SportType.run,
+        SportType.cycle,
+        SportType.swim,
+        SportType.row,
+        SportType.ball,
+        SportType.complex
+      ])
+    "
+  >
+    <div *ngTemplateOutlet="infoRow; context: getDistanceContext()"></div>
+  </ng-container>
+
+  <ng-container
+    *ngIf="includeSportsType([SportType.run, SportType.cycle, SportType.row, SportType.complex])"
+  >
+    <div
+      *ngTemplateOutlet="
+        infoRow;
+        context: {
+          title: 'universal_activityData_climbGain',
+          icon: 'icon-svg_web-icon_p3_045-climbing_distance',
+          baseValue: baseInfo.elevGain ?? 0 | distanceSibs: elevPipeOption,
+          compareValue: compareInfo.elevGain ?? 0 | distanceSibs: elevPipeOption,
+          diffValue: diffData.elevGain ?? 0 | distanceSibs: elevPipeOption,
+          isPositiveDiff: diffData.elevGain >= 0,
+          dataUnit: elevUnit
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        infoRow;
+        context: {
+          title: 'universal_activityData_climbLoss',
+          icon: 'icon-svg_web-icon_p3_046-landing_distance',
+          baseValue: baseInfo.elevGain ?? 0 | distanceSibs: elevPipeOption,
+          compareValue: compareInfo.elevGain ?? 0 | distanceSibs: elevPipeOption,
+          diffValue: diffData.elevGain ?? 0 | distanceSibs: elevPipeOption,
+          isPositiveDiff: diffData.elevGain >= 0,
+          dataUnit: elevUnit
+        }
+      "
+    ></div>
+  </ng-container>
+
+  <ng-container *ngIf="includeSportsType([SportType.run, SportType.swim, SportType.row])">
+    <div *ngTemplateOutlet="infoRow; context: getPaceContext('avgSpeed')"></div>
+    <div *ngTemplateOutlet="infoRow; context: getPaceContext('maxSpeed')"></div>
+  </ng-container>
+
+  <ng-container *ngIf="sportsType === SportType.cycle">
+    <div *ngTemplateOutlet="infoRow; context: getSpeedContext('avgSpeed')"></div>
+    <div *ngTemplateOutlet="infoRow; context: getSpeedContext('maxSpeed')"></div>
+  </ng-container>
+
+  <ng-container *ngIf="sportsType === SportType.run">
+    <div
+      *ngTemplateOutlet="
+        infoRow;
+        context: {
+          title: 'universal_activityData_avgStepCadence',
+          icon: 'icon-svg_web-icon_p2_034-cadence',
+          baseValue: baseInfo.runAvgCadence,
+          compareValue: compareInfo.runAvgCadence,
+          diffValue: diffData.runAvgCadence,
+          isPositiveDiff: diffData.runAvgCadence >= 0,
+          dataUnit: 'spm'
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        infoRow;
+        context: {
+          title: 'universal_activityData_liveMaxStepCadence',
+          icon: 'icon-svg_web-icon_p2_034-cadence',
+          baseValue: baseInfo.runMaxCadence,
+          compareValue: compareInfo.runMaxCadence,
+          diffValue: diffData.runMaxCadence,
+          isPositiveDiff: diffData.runMaxCadence >= 0,
+          dataUnit: 'spm'
+        }
+      "
+    ></div>
+  </ng-container>
+
+  <ng-container *ngIf="sportsType === SportType.cycle">
+    <div
+      *ngTemplateOutlet="
+        infoRow;
+        context: {
+          title: 'universal_activityData_avgCyclingCadence',
+          icon: 'icon-svg_web-icon_p2_034-cadence',
+          baseValue: baseInfo.cycleAvgCadence,
+          compareValue: compareInfo.cycleAvgCadence,
+          diffValue: diffData.cycleAvgCadence,
+          isPositiveDiff: diffData.cycleAvgCadence >= 0,
+          dataUnit: 'rpm'
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        infoRow;
+        context: {
+          title: 'universal_activityData_liveMaxCycleCadence',
+          icon: 'icon-svg_web-icon_p2_034-cadence',
+          baseValue: baseInfo.cycleMaxCadence,
+          compareValue: compareInfo.cycleMaxCadence,
+          diffValue: diffData.cycleMaxCadence,
+          isPositiveDiff: diffData.cycleMaxCadence >= 0,
+          dataUnit: 'rpm'
+        }
+      "
+    ></div>
+  </ng-container>
+
+  <ng-container *ngIf="sportsType === SportType.swim">
+    <div
+      *ngTemplateOutlet="
+        infoRow;
+        context: {
+          title: 'universal_activityData_avgSwimReps',
+          icon: 'icon-svg_web-icon_p2_034-cadence',
+          baseValue: baseInfo.swimAvgCadence,
+          compareValue: compareInfo.swimAvgCadence,
+          diffValue: diffData.swimAvgCadence,
+          isPositiveDiff: diffData.swimAvgCadence >= 0,
+          dataUnit: 'spm'
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        infoRow;
+        context: {
+          title: 'universal_activityData_baetSwimReps',
+          icon: 'icon-svg_web-icon_p2_034-cadence',
+          baseValue: baseInfo.swimMaxCadence,
+          compareValue: compareInfo.swimMaxCadence,
+          diffValue: diffData.swimMaxCadence,
+          isPositiveDiff: diffData.swimMaxCadence >= 0,
+          dataUnit: 'spm'
+        }
+      "
+    ></div>
+  </ng-container>
+
+  <ng-container *ngIf="sportsType === SportType.row">
+    <div
+      *ngTemplateOutlet="
+        infoRow;
+        context: {
+          title: 'universal_activityData_avgRowCadence',
+          icon: 'icon-svg_web-icon_p2_034-cadence',
+          baseValue: baseInfo.rowingAvgCadence,
+          compareValue: compareInfo.rowingAvgCadence,
+          diffValue: diffData.rowingAvgCadence,
+          isPositiveDiff: diffData.rowingAvgCadence >= 0,
+          dataUnit: 'rpm'
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        infoRow;
+        context: {
+          title: 'universal_activityData_baetRowReps',
+          icon: 'icon-svg_web-icon_p2_034-cadence',
+          baseValue: baseInfo.rowingMaxCadence,
+          compareValue: compareInfo.rowingMaxCadence,
+          diffValue: diffData.rowingMaxCadence,
+          isPositiveDiff: diffData.rowingMaxCadence >= 0,
+          dataUnit: 'rpm'
+        }
+      "
+    ></div>
+  </ng-container>
+
+  <ng-container *ngIf="sportsType === SportType.cycle">
+    <div
+      *ngTemplateOutlet="
+        infoRow;
+        context: {
+          title: 'universal_activityData_avgPower',
+          icon: 'icon-svg_web-icon_p2_040-watt',
+          baseValue: baseInfo.cycleAvgWatt | number: '1.0-2',
+          compareValue: compareInfo.cycleAvgWatt | number: '1.0-2',
+          diffValue: diffData.cycleAvgWatt | number: '1.0-2',
+          isPositiveDiff: diffData.cycleAvgWatt >= 0,
+          dataUnit: 'whr'
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        infoRow;
+        context: {
+          title: 'universal_activityData_maxPower',
+          icon: 'icon-svg_web-icon_p2_040-watt',
+          baseValue: baseInfo.cycleMaxWatt | number: '1.0-2',
+          compareValue: compareInfo.cycleMaxWatt | number: '1.0-2',
+          diffValue: diffData.cycleMaxWatt | number: '1.0-2',
+          isPositiveDiff: diffData.cycleMaxWatt >= 0,
+          dataUnit: 'whr'
+        }
+      "
+    ></div>
+  </ng-container>
+
+  <ng-container *ngIf="sportsType === SportType.row">
+    <div
+      *ngTemplateOutlet="
+        infoRow;
+        context: {
+          title: 'universal_activityData_avgPower',
+          icon: 'icon-svg_web-icon_p2_040-watt',
+          baseValue: baseInfo.rowingAvgWatt | number: '1.0-2',
+          compareValue: compareInfo.rowingAvgWatt | number: '1.0-2',
+          diffValue: diffData.rowingAvgWatt | number: '1.0-2',
+          isPositiveDiff: diffData.rowingAvgWatt >= 0,
+          dataUnit: 'w'
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        infoRow;
+        context: {
+          title: 'universal_activityData_maxPower',
+          icon: 'icon-svg_web-icon_p2_040-watt',
+          baseValue: baseInfo.rowingMaxWatt | number: '1.0-2',
+          compareValue: compareInfo.rowingMaxWatt | number: '1.0-2',
+          diffValue: diffData.rowingMaxWatt | number: '1.0-2',
+          isPositiveDiff: diffData.rowingMaxWatt >= 0,
+          dataUnit: 'w'
+        }
+      "
+    ></div>
+  </ng-container>
+
+  <ng-container
+    *ngIf="
+      sportsType === SportType.run &&
+      (baseInfo.totalFeedbackEnergy || compareInfo.totalFeedbackEnergy)
+    "
+  >
+    <div
+      *ngTemplateOutlet="
+        infoRow;
+        context: {
+          title: 'universal_activityData_totalEnergyGen',
+          icon: 'icon-svg_web-icon_p3_083-feedback_power',
+          baseValue: baseInfo.totalFeedbackEnergy | number: '1.0-2',
+          compareValue: compareInfo.totalFeedbackEnergy | number: '1.0-2',
+          diffValue: diffData.totalFeedbackEnergy | number: '1.0-2',
+          isPositiveDiff: diffData.totalFeedbackEnergy >= 0,
+          dataUnit: 'whr'
+        }
+      "
+    ></div>
+  </ng-container>
+
+  <ng-container *ngIf="sportsType === SportType.weightTrain">
+    <div
+      *ngTemplateOutlet="
+        infoRow;
+        context: {
+          title: 'universal_activityData_totalActivitySet',
+          icon: 'icon-svg_web-icon_p2_065-part_weight_training',
+          baseValue: baseInfo.totalActivityLapOrSet,
+          compareValue: compareInfo.totalActivityLapOrSet,
+          diffValue: diffData.totalActivityLapOrSet,
+          isPositiveDiff: diffData.totalActivityLapOrSet >= 0,
+          dataUnit: 'sets'
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        infoRow;
+        context: {
+          title: 'universal_activityData_totalReps',
+          icon: 'icon-svg_web-icon_p2_065-part_weight_training',
+          baseValue: baseInfo.totalReps,
+          compareValue: compareInfo.totalReps,
+          diffValue: diffData.totalReps,
+          isPositiveDiff: diffData.totalReps >= 0,
+          dataUnit: 'reps'
+        }
+      "
+    ></div>
+    <div
+      *ngTemplateOutlet="
+        infoRow;
+        context: {
+          title: 'universal_activityData_totalWeight',
+          icon: 'icon-svg_web-icon_p1_080-weight',
+          baseValue: baseInfo.totalWeightKg | weightSibs: weightPipeOption,
+          compareValue: compareInfo.totalWeightKg | weightSibs: weightPipeOption,
+          diffValue: diffData.totalWeightKg | weightSibs: weightPipeOption,
+          isPositiveDiff: diffData.totalWeightKg >= 0,
+          dataUnit: weightUnit,
+        }
+      "
+    ></div>
+  </ng-container>
+
+  <ng-container *ngIf="sportsType === SportType.swim">
+    <div
+      *ngTemplateOutlet="
+        infoRow;
+        context: {
+          title: 'universal_activityData_totalSwimReps',
+          icon: 'icon-svg_web-icon_p2_062-open_water_swim',
+          baseValue: baseInfo.totalStrokes,
+          compareValue: compareInfo.totalStrokes,
+          diffValue: diffData.totalStrokes,
+          isPositiveDiff: diffData.totalStrokes >= 0,
+          dataUnit: 'spm'
+        }
+      "
+    ></div>
+    <div *ngTemplateOutlet="infoRow; context: getAvgStrokeContext()"></div>
+    <ng-container *ngIf="baseInfo.avgSwolf || compareInfo.avgSwolf">
+      <div
+        *ngTemplateOutlet="
+          infoRow;
+          context: {
+            title: 'universal_activityData_avgSwolf',
+            icon: 'icon-svg_web-icon_p2_062-open_water_swim',
+            baseValue: baseInfo.avgSwolf ?? 0,
+            compareValue: compareInfo.avgSwolf ?? 0,
+            diffValue: diffData.avgSwolf ?? 0,
+            isPositiveDiff: diffData.avgSwolf >= 0,
+            dataUnit: 'spm'
+          }
+        "
+      ></div>
+      <div
+        *ngTemplateOutlet="
+          infoRow;
+          context: {
+            title: 'universal_activityData_bestSwolf',
+            icon: 'icon-svg_web-icon_p2_062-open_water_swim',
+            baseValue: baseInfo.bestSwolf ?? 0,
+            compareValue: compareInfo.bestSwolf ?? 0,
+            diffValue: diffData.bestSwolf ?? 0,
+            isPositiveDiff: diffData.bestSwolf >= 0,
+            dataUnit: 'spm'
+          }
+        "
+      ></div>
+    </ng-container>
+  </ng-container>
+</section>
+
+<ng-template
+  #infoRow
+  let-title="title"
+  let-icon="icon"
+  let-baseValue="baseValue"
+  let-compareValue="compareValue"
+  let-diffValue="diffValue"
+  let-isPositiveDiff="isPositiveDiff"
+  let-dataUnit="dataUnit"
+>
+  <div class="grid__container">
+    <h6 class="info__title">{{ title | translate }}</h6>
+    <i class="flexCenter info__icon" [class]="icon"></i>
+    <div
+      *ngTemplateOutlet="
+        infoValue;
+        context: {
+          value: baseValue,
+          dataUnit,
+          isBaseData: true
+        }
+      "
+    ></div>
+    <div class="column__divide__line"></div>
+    <div
+      *ngTemplateOutlet="
+        infoValue;
+        context: {
+          value: compareValue,
+          dataUnit,
+          isBaseData: false
+        }
+      "
+    ></div>
+    <div
+      [class]="{
+        info__diff: true,
+        positive__value: isPositiveDiff,
+        negative__value: !isPositiveDiff
+      }"
+    >
+      {{ isPositiveDiff ? '+' : '' }}{{ diffValue }}
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #infoValue let-value="value" let-dataUnit="dataUnit" let-isBaseData="isBaseData">
+  <div
+    [class]="{
+      flexCol: true,
+      info__value__unit: true,
+      base__value: isBaseData,
+      compare__value: !isBaseData
+    }"
+  >
+    <span class="info__value">{{ value }}</span>
+    <span class="info__unit" *ngIf="dataUnit">{{ dataUnit }}</span>
+  </div>
+</ng-template>

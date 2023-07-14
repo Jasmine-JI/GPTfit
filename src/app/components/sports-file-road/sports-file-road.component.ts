@@ -99,7 +99,7 @@ export class SportsFileRoadComponent implements OnInit, AfterViewInit, OnDestroy
   handleListSwitch(entries: Array<IntersectionObserverEntry>) {
     entries.forEach((_entries) => {
       const { isIntersecting, target } = _entries;
-      const isFirstTarget = +target.getAttribute('data-index') === 0;
+      const isFirstTarget = +(target.getAttribute('data-index') ?? 0) === 0;
       if (isFirstTarget) {
         this.canSwitchPrev = !isIntersecting;
       } else {
@@ -128,7 +128,7 @@ export class SportsFileRoadComponent implements OnInit, AfterViewInit, OnDestroy
     if (this.canSwitchNext) {
       const scrollPosition = this.getScrollPosition();
       const scrollElement = document.querySelector('.list__container');
-      scrollElement.scroll(scrollPosition + scrollDisplacement, 0);
+      scrollElement?.scroll(scrollPosition + scrollDisplacement, 0);
       this.changeDetectorRef.markForCheck();
     }
   }
@@ -140,7 +140,7 @@ export class SportsFileRoadComponent implements OnInit, AfterViewInit, OnDestroy
     if (this.canSwitchPrev) {
       const scrollPosition = this.getScrollPosition();
       const scrollElement = document.querySelector('.list__container');
-      scrollElement.scroll(scrollPosition - scrollDisplacement, 0);
+      scrollElement?.scroll(scrollPosition - scrollDisplacement, 0);
       this.changeDetectorRef.markForCheck();
     }
   }
@@ -150,7 +150,7 @@ export class SportsFileRoadComponent implements OnInit, AfterViewInit, OnDestroy
    */
   getScrollPosition() {
     const targetElement = document.querySelector('.list__container');
-    return targetElement.scrollLeft;
+    return targetElement?.scrollLeft ?? 0;
   }
 
   /**

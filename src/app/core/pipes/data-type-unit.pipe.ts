@@ -73,6 +73,7 @@ export class DataTypeUnitPipe implements PipeTransform {
         return 'g';
       case 'bodyHeight':
         return unitType === DataUnitType.metric ? 'cm' : 'inch';
+      case 'weight':
       case 'bodyWeight':
         return unitType === DataUnitType.metric ? 'kg' : 'lb';
       case 'wheelSize':

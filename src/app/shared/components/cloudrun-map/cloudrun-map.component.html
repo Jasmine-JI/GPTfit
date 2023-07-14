@@ -18,12 +18,18 @@
     </button>
     <div id="map__opt__menu" *ngIf="uiFlag.showMapOpt" (click)="$event.stopPropagation()">
       <div class="flexRow selector__section" *ngIf="mapOpt.showMapSourceSelector && uiFlag.showMap">
-        <span class="flexRow radioSelector" (click)="changeMapSource('google')">
-          <span class="radioBtn" [class.radioBtn--active]="mapOpt.mapSource === 'google'"></span>
+        <span class="flexRow radioSelector" (click)="changeMapSource(MapSource.google)">
+          <span
+            class="radioBtn"
+            [class.radioBtn--active]="mapOpt.mapSource === MapSource.google"
+          ></span>
           Google
         </span>
-        <span class="flexRow radioSelector" (click)="changeMapSource('OSM')">
-          <span class="radioBtn" [class.radioBtn--active]="mapOpt.mapSource === 'OSM'"></span>
+        <span class="flexRow radioSelector" (click)="changeMapSource(MapSource.osm)">
+          <span
+            class="radioBtn"
+            [class.radioBtn--active]="mapOpt.mapSource === MapSource.osm"
+          ></span>
           OSM
         </span>
       </div>
@@ -42,7 +48,7 @@
         [playSecond]="mapPlay.truthSecond"
         [currentFocusRacer]="currentFocusRacer"
         [removeAllRacer]="uiFlag.removeAllRacer"
-        *ngIf="mapOpt.mapSource === 'google'"
+        *ngIf="mapOpt.mapSource === MapSource.google"
       ></app-google-map>
       <app-leaflet-map
         class="map__style"
@@ -55,7 +61,7 @@
         [playSecond]="mapPlay.truthSecond"
         [currentFocusRacer]="currentFocusRacer"
         [removeAllRacer]="uiFlag.removeAllRacer"
-        *ngIf="mapOpt.mapSource === 'OSM'"
+        *ngIf="mapOpt.mapSource === MapSource.osm"
       ></app-leaflet-map>
       <div id="play__bar" class="flexRow" *ngIf="uiFlag.showMap && !isPreviewMode">
         <div id="play__btn__section" class="flexRow">

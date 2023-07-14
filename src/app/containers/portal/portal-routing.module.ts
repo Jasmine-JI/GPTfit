@@ -1,7 +1,6 @@
 import { IntroductionComponent } from './components/introduction/introduction.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { PortalComponent } from './portal.component';
 import { SigninGuard } from '../../core/guard/signin/signin.guard';
 import { SportsReportComponent } from '../../shared/components/sports-report/sports-report.component';
 import { Page404Component } from '../../shared/components/page404/page404.component';
@@ -19,7 +18,6 @@ import { GroupInfoComponent } from '../dashboard/group-v2/group-info/group-info.
 import { GroupIntroductionComponent } from '../../containers/dashboard/group-v2/group-info/group-introduction/group-introduction.component';
 import { AppCompressDataComponent } from './components/app-sign/app-compress-data/app-compress-data.component';
 import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-account/app-destroy-account.component';
-import { ActivityDetailComponent } from '../../shared/components/activity-detail/activity-detail.component';
 import { DeviceInfoComponent } from '../dashboard/components/device-info/device-info.component';
 import { PersonalComponent } from '../dashboard/personal/personal.component';
 import { ActivityListComponent } from '../dashboard/personal/activity-list/activity-list.component';
@@ -43,8 +41,7 @@ const routes: Routes = [
   },
   {
     path: `${personal.activityDetail}/:${personal.fileId}`,
-    component: ActivityDetailComponent,
-    // component: SportsDetailComponent,
+    component: SportsDetailComponent,
   },
 
   {

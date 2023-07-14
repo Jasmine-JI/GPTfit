@@ -6,11 +6,6 @@ import { NgIf, NgFor } from '@angular/common';
 /**
  * 運動成效分佈圖
  * @註 適用日報告和週報告，以及不同運動類型(全類型其不同類型的點不合併)。
- * @export
- * @class DistributionChartComponent
- * @implements {OnInit}
- * @implements {OnChanges}
- * @author kidin-1090715
  */
 @Component({
   selector: 'app-distribution-chart',
@@ -23,19 +18,17 @@ export class DistributionChartComponent implements OnInit, OnChanges {
   // 運動報告用變數-kidin-1090218
   @Input() typeList: Array<number>;
   @Input() perAvgHR: Array<any>;
-  @Input() perActivityTime: Array<any>;
   @Input() HRRange: Array<any>;
   @Input() selectType: number;
 
   // 生活追蹤用變數
   @Input() data: Array<any>;
-  xBoundary = [];
-  yBoundary = [];
+  xBoundary: Array<any> = [];
+  yBoundary: Array<any> = [];
 
   floatText = true;
-  pageType = '';
 
-  points = []; // 落點用變數-kidin-1090130
+  points: Array<any> = []; // 落點用變數-kidin-1090130
 
   // 左上區塊-kidin-1090323
   blockOne = {
@@ -101,14 +94,7 @@ export class DistributionChartComponent implements OnInit, OnChanges {
 
   ngOnChanges() {
     this.initVariable();
-
-    if (this.perActivityTime) {
-      this.pageType = 'sport';
-      this.initRePortChart();
-    } else if (this.data) {
-      this.pageType = 'lifeTracking';
-      this.initLifeTrackingChart();
-    }
+    this.initLifeTrackingChart();
   }
 
   /**
@@ -171,100 +157,6 @@ export class DistributionChartComponent implements OnInit, OnChanges {
     };
 
     this.points = [];
-  }
-
-  /**
-   * 運動報告用圖表
-   * @author kidin-1090218
-   */
-  initRePortChart() {
-    // 定義心率在每個區塊的x軸邊界值，取不到心率區間則設z5的預設值為190-kidin-1090213
-    let range,
-      boundary,
-      total = 0;
-    if (this.HRRange[1] === 'Z5') {
-      (range = Math.floor((190 - this.HRRange[0]) / 3)),
-        (boundary = [
-          +this.HRRange[0],
-          +this.HRRange[0] + range,
-          +this.HRRange[0] + range * 2,
-          190,
-        ]);
-    } else {
-      (range = Math.floor((this.HRRange[1] - this.HRRange[0]) / 3)),
-        (boundary = [
-          +this.HRRange[0],
-          +this.HRRange[0] + range,
-          +this.HRRange[0] + range * 2,
-          +this.HRRange[1],
-        ]);
-    }
-
-    for (let i = 0, len = this.perAvgHR.length; i < len; i++) {
-      if (this.selectType === SportType.all || this.typeList[i] == this.selectType) {
-        let y;
-        if (this.perAvgHR[i] >= boundary[0] && this.perAvgHR[i] <= boundary[1]) {
-          if (+this.perActivityTime[i] <= 1200) {
-            y = this.getYPoint(this.perActivityTime[i], 0, 196, 1200, 3600);
-            this.blockThree.stroke++;
-            total++;
-          } else if (+this.perActivityTime[i] > 1200 && +this.perActivityTime[i] <= 2400) {
-            y = this.getYPoint(this.perActivityTime[i], 1200, 131, 1200, 3600);
-            this.blockTwo.stroke++;
-            total++;
-          } else {
-            y = this.getYPoint(+this.perActivityTime[i], 2400, 66, 1200, 3600);
-            this.blockOne.stroke++;
-            total++;
-          }
-
-          this.points.push({
-            x: this.getXPoint(this.perAvgHR[i], boundary[0], boundary[1], 44, this.HRRange[1]),
-            y: y,
-          });
-        } else if (this.perAvgHR[i] > boundary[1] && this.perAvgHR[i] <= boundary[2]) {
-          if (+this.perActivityTime[i] <= 1200) {
-            y = this.getYPoint(this.perActivityTime[i], 0, 196, 1200, 3600);
-            this.blockSix.stroke++;
-            total++;
-          } else if (+this.perActivityTime[i] > 1200 && +this.perActivityTime[i] <= 2400) {
-            y = this.getYPoint(this.perActivityTime[i], 1200, 131, 1200, 3600);
-            this.blockFive.stroke++;
-            total++;
-          } else {
-            y = this.getYPoint(this.perActivityTime[i], 2400, 66, 1200, 3600);
-            this.blockFour.stroke++;
-            total++;
-          }
-
-          this.points.push({
-            x: this.getXPoint(this.perAvgHR[i], boundary[1], boundary[2], 184, this.HRRange[1]),
-            y: y,
-          });
-        } else if (this.perAvgHR[i] > boundary[2]) {
-          if (+this.perActivityTime[i] <= 1200) {
-            y = this.getYPoint(this.perActivityTime[i], 0, 196, 1200, 3600);
-            this.blockNine.stroke++;
-            total++;
-          } else if (+this.perActivityTime[i] > 1200 && +this.perActivityTime[i] <= 2400) {
-            y = this.getYPoint(this.perActivityTime[i], 1200, 131, 1200, 3600);
-            this.blockEight.stroke++;
-            total++;
-          } else {
-            y = this.getYPoint(this.perActivityTime[i], 2400, 66, 1200, 3600);
-            this.blockSeven.stroke++;
-            total++;
-          }
-
-          this.points.push({
-            x: this.getXPoint(this.perAvgHR[i], boundary[2], boundary[3], 324, this.HRRange[1]),
-            y: y,
-          });
-        }
-      }
-    }
-
-    this.calPercentage(total);
   }
 
   /**
@@ -456,8 +348,8 @@ export class DistributionChartComponent implements OnInit, OnChanges {
     const svgArr = document.querySelectorAll('#distributeChart [fill]');
 
     for (let i = 0; i < svgArr.length; i++) {
-      const element = svgArr[i],
-        maskId = element.getAttribute('fill').replace('url(', '').replace(')', '');
+      const element = svgArr[i];
+      const maskId = element.getAttribute('fill')?.replace('url(', '').replace(')', '');
       element.setAttribute('fill', `url(${this.baseUrl + maskId})`);
     }
   }
