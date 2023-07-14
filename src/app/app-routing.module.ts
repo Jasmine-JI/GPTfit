@@ -21,6 +21,7 @@ const routes: Routes = [
   {
     path: '',
     component: PortalComponent,
+    loadChildren: () => import('./containers/portal/portal.module').then((m) => m.PortalModule),
   },
 ];
 

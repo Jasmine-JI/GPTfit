@@ -2037,7 +2037,7 @@
  "universal_unit_abridgeInch": "po",
  "universal_unit_abridgeKg": "kg",
  "universal_unit_abridgeKilometer": "km",
- "universal_unit_abridgeKmPerHour": "kph",
+ "universal_unit_abridgeKmPerHour": "km/h",
  "universal_unit_abridgeLb": "lb",
  "universal_unit_abridgeMeter": "m",
  "universal_unit_abridgeMile": "mile",
@@ -2068,7 +2068,7 @@
  "universal_unit_inch": "po",
  "universal_unit_kg": "kg",
  "universal_unit_kilometer": "km",
- "universal_unit_kmPerHour": "kph",
+ "universal_unit_kmPerHour": "km/h",
  "universal_unit_lb": "lb",
  "universal_unit_limit_metersPerSecond": "m/s",
  "universal_unit_limit_percentage": "%",
@@ -2820,4 +2820,8 @@
  "universal_group_userAnalysisList": "Liste d'analyse des étudiants",
  "universal_group_userTotalClassCounts": "Nombre total de classes",
  "universal_group_userTotalClassTime": "Durée totale des cours",
- "universal_group_userLastClassDate": "Date du dernier cours"}
+ "universal_group_userLastClassDate": "Date du dernier cours",
+ "universal_popUpMessage_wt02ConnectFail": "This device can't connect now, please connect before start",
+ "universal_message_dataCollection": "Data Collection",
+ "universal_message_classManage": "Class Management",
+ "universal_message_dataAnalysis": "Data Analysis"}

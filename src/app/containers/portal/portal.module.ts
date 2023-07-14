@@ -1,4 +1,4 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientJsonpModule } from '@angular/common/http';
@@ -21,7 +21,7 @@ import { AppFirstLoginComponent } from './components/app-sign/app-first-login/ap
 import { QRCodeModule } from 'angularx-qrcode';
 import { AppCompressDataComponent } from './components/app-sign/app-compress-data/app-compress-data.component';
 import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-account/app-destroy-account.component';
-import { HashIdService, DetectInappService, QrcodeService } from '../../core/services';
+import { HashIdService, DetectInappService, QrcodeService, AuthService } from '../../core/services';
 import {
   SportPaceSibsPipe,
   SportTypeIconPipe,
@@ -188,6 +188,7 @@ import { LoadingBarComponent } from '../../components';
     TargetFieldUnitPipe,
     MuscleGroupNamePipe,
     MusclePartIconPipe,
+    AuthService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: EmptyResponseBodyErrorInterceptor,
@@ -195,6 +196,5 @@ import { LoadingBarComponent } from '../../components';
     },
     PatternValidator,
   ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class PortalModule {}

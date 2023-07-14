@@ -2037,7 +2037,7 @@
  "universal_unit_abridgeInch": "in",
  "universal_unit_abridgeKg": "kg",
  "universal_unit_abridgeKilometer": "km",
- "universal_unit_abridgeKmPerHour": "kph",
+ "universal_unit_abridgeKmPerHour": "km/h",
  "universal_unit_abridgeLb": "lb",
  "universal_unit_abridgeMeter": "m",
  "universal_unit_abridgeMile": "mile",
@@ -2820,4 +2820,8 @@
  "universal_group_userAnalysisList": "學員分析列表",
  "universal_group_userTotalClassCounts": "累計上課次數",
  "universal_group_userTotalClassTime": "累計上課時數",
- "universal_group_userLastClassDate": "最後上課日"}
+ "universal_group_userLastClassDate": "最後上課日",
+ "universal_popUpMessage_wt02ConnectFail": "此裝置不支援中途加入，請退出運動於開始前加入",
+ "universal_message_dataCollection": "運動資料收集",
+ "universal_message_classManage": "運動課程管理",
+ "universal_message_dataAnalysis": "運動資料分析"}

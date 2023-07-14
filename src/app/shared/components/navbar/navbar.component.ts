@@ -1,43 +1,68 @@
-import { Component, OnInit, HostListener, Input, Output, EventEmitter } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { AuthService, GetClientIpService, GlobalEventsService } from '../../../core/services';
-import { Observable } from 'rxjs';
+import { Component, OnInit, OnDestroy, HostListener, Input, ElementRef } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import {
+  AuthService,
+  GetClientIpService,
+  GlobalEventsService,
+  UserService,
+} from '../../../core/services';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { langData } from '../../../core/models/const';
 import { setLocalStorageObject, getLocalStorageObject } from '../../../core/utils';
 import { appPath } from '../../../app-path.const';
 import { NgIf, NgTemplateOutlet, AsyncPipe } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-  // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
   standalone: true,
-  imports: [NgIf, RouterLink, NgTemplateOutlet, AsyncPipe, TranslateModule],
+  imports: [
+    MatIconModule,
+    NgIf,
+    RouterLink,
+    NgTemplateOutlet,
+    AsyncPipe,
+    TranslateModule,
+    RouterLinkActive,
+    FormsModule,
+  ],
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
+  /**
+   * 解除rxjs用
+   */
+  private _ngUnsubscirbe = new Subject();
+
   isShowMask = false;
-  isCollapseShow = false;
   href: string;
   deviceWidth: number;
-  navItemNum = 1;
+  navItemStr = '';
   login$: Observable<boolean>;
   langName: string;
-  hideLogout = false;
   showActivityEntry = false;
-
+  isCountdownFinished = false;
+  menu = {
+    MainNav: false,
+    memberMenu: false,
+  };
+  avatarUrl: string;
+  nickname: string;
   readonly dashboardHomeUrl = `/${appPath.dashboard.home}`;
-
   @Input() isAlphaVersion = false;
-  @Output() selectPage = new EventEmitter<string>();
+  @Input() activePage = '';
 
   constructor(
     private router: Router,
     private authService: AuthService,
     private getClientIp: GetClientIpService,
     private translateService: TranslateService,
-    private globalEventsService: GlobalEventsService
+    private globalEventsService: GlobalEventsService,
+    private el: ElementRef,
+    private userService: UserService
   ) {}
 
   ngOnInit() {
@@ -46,60 +71,65 @@ export class NavbarComponent implements OnInit {
     this.login$ = this.authService.isLogin;
     this.deviceWidth = window.innerWidth;
     this.href = this.router.url;
-    this.handleActivePage();
+    this.subscribeRxUserProfile();
   }
 
   /**
-   * 確認現在頁面以對應active連結
-   * @author kidin-1091013
+   * 訂閱使用者個人資訊(訪客/登入者)
    */
-  handleActivePage() {
-    const {
-      portal: { introduction, signInWeb },
-      officialActivity,
-    } = appPath;
-    switch (this.router.url) {
-      case '/':
-      case `/${introduction.home}/${introduction.system}`:
-        this.navItemNum = 1;
-        break;
-      case `/${introduction.home}/${introduction.application}`:
-      case `/${introduction.home}/${introduction.application}${introduction.connectAnchor}`:
-      case `/${introduction.home}/${introduction.application}${introduction.cloudrunAnchor}`:
-      case `/${introduction.home}/${introduction.application}${introduction.trainliveAnchor}`:
-      case `/${introduction.home}/${introduction.application}${introduction.fitnessAnchor}`:
-      case `/${introduction.connectAnchor}`:
-      case `/${introduction.cloudrunAnchor}`:
-      case `/${introduction.trainliveAnchor}`:
-      case `/${introduction.fitnessAnchor}`:
-        this.navItemNum = 2;
-        break;
-      case `/${introduction.home}/${introduction.analysis}`:
-        this.navItemNum = 3;
-        break;
-      case `/${officialActivity.home}`:
-        this.navItemNum = 4;
-        break;
-      case `/${signInWeb}`:
-        this.navItemNum = 5;
-        break;
-      default:
-        this.navItemNum = 0;
-        break;
-    }
+  subscribeRxUserProfile() {
+    this.userService
+      .getUser()
+      .rxUserProfile.pipe(takeUntil(this._ngUnsubscirbe))
+      .subscribe((userProfile) => {
+        this.avatarUrl = userProfile.avatarUrl;
+        this.nickname = userProfile.nickname;
+      });
   }
 
   @HostListener('window:resize', [])
   onResize() {
     this.deviceWidth = window.innerWidth;
+    this.checkShowMask();
   }
 
-  toggleMenu() {
-    if (this.deviceWidth < 992) {
-      const { isShowMask, isCollapseShow } = this;
-      this.isShowMask = !isShowMask;
-      this.isCollapseShow = !isCollapseShow;
-      this.globalEventsService.setShowMaskStatus(this.isShowMask);
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!this.el.nativeElement.contains(target)) {
+      this.isShowMask = false;
+      this.menu.memberMenu = false;
+      this.menu.MainNav = false;
+    }
+  }
+
+  /**
+   * 重新調整視窗大小時，判斷是否出現開合選單
+   */
+  checkShowMask() {
+    if (this.deviceWidth > 767) {
+      this.menu.MainNav = false;
+      this.isShowMask = this.menu.memberMenu ? true : false;
+    }
+  }
+
+  /**
+   * 點擊選單 hamber時，判斷 ckecked 狀態顯示遮罩
+   * @param ifchecked
+   */
+  toggleMenu(ifchecked: boolean) {
+    this.menu.MainNav = ifchecked;
+    this.isShowMask = ifchecked;
+    this.menu.memberMenu = false;
+  }
+
+  toggle(str: string) {
+    switch (str) {
+      case 'memberMenu':
+        this.menu.memberMenu = !this.menu.memberMenu;
+        this.menu.MainNav = false;
+        this.isShowMask = this.menu.memberMenu ? true : false;
+        break;
     }
   }
 
@@ -107,27 +137,19 @@ export class NavbarComponent implements OnInit {
     this.authService.logout();
   }
 
-  chooseNavItem(num: number) {
+  chooseNavItem(string: string) {
     const { officialActivity, portal } = appPath;
-    this.navItemNum = num;
-    this.isCollapseShow = false;
+    this.navItemStr = string;
     this.isShowMask = false;
     this.globalEventsService.setShowMaskStatus(this.isShowMask);
-    switch (num) {
-      case 1:
-        this.selectPage.emit('system');
+    switch (string) {
+      case 'home':
+        this.router.navigateByUrl(`/`);
         break;
-      case 2:
-        this.selectPage.emit('application');
-        break;
-      case 3:
-        this.selectPage.emit('analysis');
-        break;
-      case 4:
+      case 'activity':
         this.router.navigateByUrl(`/${officialActivity.home}`);
         break;
-      case 5:
-      case 6:
+      case 'signIn':
         this.router.navigateByUrl(`/${portal.signInWeb}`);
         break;
     }
@@ -151,5 +173,13 @@ export class NavbarComponent implements OnInit {
         this.showActivityEntry = true;
       }
     });
+  }
+
+  /**
+   * 解除rxjs訂閱
+   */
+  ngOnDestroy() {
+    this._ngUnsubscirbe.next(null);
+    this._ngUnsubscirbe.complete();
   }
 }
